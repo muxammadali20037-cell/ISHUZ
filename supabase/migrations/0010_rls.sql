@@ -204,7 +204,8 @@ returns boolean language sql stable security definer set search_path = public as
       or exists (select 1 from public.job_offers o join public.worker_profiles w on w.id = o.worker_id where o.vacancy_id = p_vacancy_id and w.profile_id = auth.uid());
 $$;
 create policy "vacancies_read_applied" on public.vacancies for select to authenticated using (public.worker_related_to_vacancy(id));
-create policy "vacancies_read_own" on public.vacancies for select to authenticated using (public.manages_vacancy(id) or public.has_admin_permission('vacancies.view'));
+create policy "vacancies_read_own" on public.vacancies for select to authenticated
+  using (owner_profile_id = auth.uid() or public.manages_vacancy(id) or public.has_admin_permission('vacancies.view'));
 create policy "vacancies_insert" on public.vacancies for insert to authenticated
   with check (owner_profile_id = auth.uid() and status = 'draft' and public.is_active_user()
     and not is_featured and featured_until is null and not requires_review and moderation_note is null

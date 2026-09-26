@@ -70,6 +70,10 @@ insert into public.vacancies (owner_profile_id, company_id, title, category_id, 
 select 'a1000000-0000-0000-0000-000000000002', t.company_id, 'Kassir', c.id, r.id, d.id, 41.30, 69.25, 5000000, 7000000, 60
 from t, public.categories c, public.regions r join public.districts d on d.region_id = r.id and d.slug = 'yunusobod' where c.slug = 'sales' and r.slug = 'tashkent_city';
 alter table t add column vacancy_id uuid; update t set vacancy_id = (select id from public.vacancies where title = 'Kassir');
+create temp table t_v (id uuid);
+with ins as (insert into public.vacancies (owner_profile_id, title) values (auth.uid(), 'Returning test') returning id) insert into t_v select id from ins;
+select pg_temp.ok((select count(*) from t_v) = 1, 'vacancies insert ... returning ishlaydi (RLS)');
+delete from public.vacancies where id = (select id from t_v);
 select pg_temp.fails($$insert into public.vacancies (owner_profile_id, title, is_featured) values (auth.uid(), 'Featured', true)$$, 'RLS: is_featured bilan yaratib bo''lmaydi');
 select pg_temp.fails($$update public.vacancies set owner_profile_id = 'a1000000-0000-0000-0000-000000000005' where id = (select vacancy_id from t)$$, 'RLS: vakansiya egasini o''zgartirib bo''lmaydi');
 select pg_temp.fails($$update public.vacancies set expires_at = now() + interval '10 years' where id = (select vacancy_id from t)$$, 'RLS: expires_at ni o''zi uzaytira olmaydi');
