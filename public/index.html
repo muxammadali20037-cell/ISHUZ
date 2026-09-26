@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="uz">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Ish UZ — ish va ishchi topish</title>
+  <meta name="description" content="Ish UZ: ish qidirayotganlarni ish bilan, ish beruvchilarni munosib xodim bilan bog'laydigan platforma.">
+  <meta name="theme-color" content="#1f6feb">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/icon.svg">
+  <link rel="stylesheet" href="/styles.css">
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <button class="icon-btn" id="backBtn" aria-label="Orqaga" hidden>←</button>
+    <a href="#/" class="brand"><span class="logo">IU</span> Ish UZ</a>
+    <span class="spacer"></span>
+    <span id="userName" class="muted small"></span>
+  </header>
+
+  <main id="view" class="view" aria-live="polite"></main>
+
+  <nav class="tabbar" id="tabbar">
+    <a href="#/" data-tab="home"><span>🏠</span>Bosh</a>
+    <a href="#/jobs" data-tab="jobs"><span>🔎</span>Ishlar</a>
+    <a href="#/hire" data-tab="hire"><span>🧑‍💼</span>Ishchilar</a>
+    <a href="#/requests" data-tab="requests"><span>🤝</span>So'rovlar<b class="badge" id="reqBadge" hidden></b></a>
+    <a href="#/profile" data-tab="profile"><span>👤</span>Profil</a>
+  </nav>
+
+  <div id="toast" class="toast" role="status" hidden></div>
+  <script src="/app.js"></script>
+</body>
+</html>

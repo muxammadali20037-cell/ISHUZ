@@ -1,0 +1,13 @@
+{
+  "name": "Ish UZ — ish va ishchi topish",
+  "short_name": "Ish UZ",
+  "description": "Ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1f6feb",
+  "lang": "uz",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
