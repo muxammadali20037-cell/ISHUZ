@@ -1,0 +1,31 @@
+export {
+  WEIGHTS,
+  ageFromBirthDate,
+  computeMatch,
+  createMatchEngine,
+  distanceKm,
+  educationRank,
+  experienceLevelMonths,
+  languageLevelRank,
+  matchTone,
+  roundNumeric,
+  ruleBasedEngine,
+  summarizeReasons,
+} from "./engine";
+export { MATCH_REASON_KEYS } from "./types";
+export type {
+  GeoPoint,
+  MatchEngine,
+  MatchEngineKind,
+  MatchOptions,
+  MatchReason,
+  MatchReasonKey,
+  MatchResult,
+  MatchTone,
+  ReasonSummary,
+  VacancyLanguage,
+  VacancyMatchInput,
+  WorkerLanguage,
+  WorkerMatchInput,
+  WorkerMatchPreferences,
+} from "./types";

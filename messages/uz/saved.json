@@ -1,1 +1,12 @@
-{}
+{
+  "title": "Saqlangan vakansiyalar",
+  "subtitle": "{count} ta vakansiya",
+  "empty_title": "Hali saqlangan vakansiyalar yo'q",
+  "empty_desc": "Yoqqan vakansiyalarni belgilab qo'ying — ular shu yerda to'planadi.",
+  "empty_action": "Vakansiyalarni ko'rish",
+  "expired_title": "Vakansiya endi mavjud emas",
+  "expired_desc": "Muddati tugagan yoki ish beruvchi tomonidan yopilgan",
+  "remove": "Olib tashlash",
+  "removed": "Saqlanganlardan olib tashlandi",
+  "saved_at": "{time} saqlangan"
+}

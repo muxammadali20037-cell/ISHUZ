@@ -1,1 +1,92 @@
-{}
+{
+  "title": "Уведомления",
+  "description": "Уведомления об откликах, предложениях и сообщениях",
+  "empty_title": "Уведомлений нет",
+  "empty_desc": "Здесь появятся статусы откликов, предложения и новые сообщения",
+  "mark_all_read": "Отметить все как прочитанные",
+  "all_read_toast": "Все уведомления прочитаны",
+  "unread": "Непрочитанное",
+  "unread_count": "Непрочитанных: {count}",
+  "today": "Сегодня",
+  "yesterday": "Вчера",
+  "prev": "Назад",
+  "next": "Далее",
+  "page": "Страница {page}",
+  "open": "Открыть",
+  "salary": {
+    "currency": "сум",
+    "range": "{from} – {to} {currency}",
+    "from": "от {from} {currency}",
+    "to": "до {to} {currency}"
+  },
+  "types": {
+    "application_received": {
+      "title": "Новый отклик: {vacancy_title}",
+      "body": "{worker_name} отправил(а) отклик",
+      "body_score": "{worker_name} отправил(а) отклик · совпадение {score}%"
+    },
+    "application_status": {
+      "title": "Статус отклика: {status}",
+      "body": "{vacancy_title}",
+      "body_company": "{vacancy_title} · {company_name}",
+      "title_withdrawn": "Кандидат отозвал отклик",
+      "body_withdrawn": "{vacancy_title}"
+    },
+    "interview_invite": {
+      "title": "Вас пригласили на собеседование",
+      "body": "Приглашение на собеседование по вакансии «{vacancy_title}»",
+      "body_company": "{company_name} приглашает вас на собеседование по вакансии «{vacancy_title}»"
+    },
+    "offer_received": {
+      "title": "Новое предложение о работе",
+      "body": "{company_name}: {title}",
+      "body_salary": "{company_name}: {title} · {salary}"
+    },
+    "offer_response": {
+      "title": "Ответ на предложение: {status}",
+      "title_accepted": "Предложение принято",
+      "title_declined": "Предложение отклонено",
+      "body": "{worker_name} · {title}"
+    },
+    "new_message": {
+      "title": "{sender_name}",
+      "body": "{preview}",
+      "body_attachment": "Отправил(а) новое сообщение"
+    },
+    "vacancy_expiring": {
+      "title": "Срок вакансии истекает",
+      "body": "«{vacancy_title}» закроется {expires_at}. Продлите срок."
+    },
+    "new_matching_vacancy": {
+      "title": "Подходящая вакансия: {vacancy_title}",
+      "body": "Совпадение {score}%. Посмотрите и откликнитесь.",
+      "body_noscore": "Посмотрите и откликнитесь."
+    },
+    "new_matching_worker": {
+      "title": "Подходящий кандидат",
+      "body": "{worker_name} · совпадение {score}% для «{vacancy_title}»",
+      "body_noscore": "{worker_name} · «{vacancy_title}»"
+    },
+    "verification_result": {
+      "title": "Результат проверки",
+      "title_verified": "Проверка успешно пройдена",
+      "title_rejected": "Проверка отклонена",
+      "body": "{type}",
+      "body_note": "{type} · {note}"
+    },
+    "review_received": {
+      "title": "Вам оставили новый отзыв",
+      "body": "Оценка: {rating} / 5"
+    },
+    "system": {
+      "title": "Системное сообщение",
+      "body": ""
+    }
+  },
+  "telegram": {
+    "welcome": "Здравствуйте! Добро пожаловать в бот ISH.UZ.\nСюда будут приходить уведомления об откликах, предложениях и новых сообщениях.",
+    "hint": "Нажмите кнопку ниже, чтобы открыть приложение.",
+    "open_app": "Открыть ISH.UZ",
+    "open": "Открыть"
+  }
+}

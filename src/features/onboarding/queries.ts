@@ -1,0 +1,92 @@
+import "server-only";
+
+import { cache } from "react";
+import { createClient } from "@/lib/supabase/server";
+import type { SessionContext } from "@/features/auth/session";
+import type { DraftSkill, SkillOption, WorkerDraft } from "./types";
+
+const WORKER_COLUMNS =
+  "id, headline, category_id, subcategory_id, experience_level, region_id, district_id, area_hint, remote_preference, work_format, onboarding_step, onboarding_completed_at, completeness";
+
+/**
+ * Wizard qoralamasi: profil + kontakt + worker jadvallari (hammasi egasi sifatida, RLS ostida).
+ * Worker profili hali yo'q bo'lsa bo'sh qoralama (1-qadam).
+ */
+export const getWorkerDraft = cache(async (session: SessionContext): Promise<WorkerDraft> => {
+  const supabase = await createClient();
+  const p = session.profile;
+  const profile = { first_name: p.first_name, last_name: p.last_name, birth_date: p.birth_date, gender: p.gender, avatar_url: p.avatar_url };
+
+  const [contactsRes, workerRes] = await Promise.all([
+    supabase.from("profile_contacts").select("phone, phone_verified_at, telegram_username").eq("profile_id", session.userId).maybeSingle(),
+    supabase.from("worker_profiles").select(WORKER_COLUMNS).eq("profile_id", session.userId).maybeSingle(),
+  ]);
+
+  const base: WorkerDraft = {
+    workerId: null,
+    onboardingStep: 1,
+    profile,
+    contacts: contactsRes.data ?? null,
+    worker: null,
+    locations: [],
+    hasGeo: false,
+    skills: [],
+    languages: [],
+    experience: [],
+    education: [],
+    portfolio: [],
+    preferences: null,
+  };
+  const worker = workerRes.data;
+  if (!worker) return base;
+  const wid = worker.id;
+
+  const [locations, geo, skills, languages, experience, education, portfolio, preferences] = await Promise.all([
+    supabase.from("worker_locations").select("district_id").eq("worker_id", wid),
+    supabase.from("worker_geo").select("worker_id").eq("worker_id", wid).maybeSingle(),
+    supabase.from("worker_skills").select("skill_id, level, skills(name_uz, name_ru)").eq("worker_id", wid),
+    supabase.from("worker_languages").select("language_code, level").eq("worker_id", wid),
+    supabase.from("worker_experience").select("*").eq("worker_id", wid).order("sort_order").order("started_on", { ascending: false }),
+    supabase.from("worker_education").select("*").eq("worker_id", wid).order("created_at"),
+    supabase.from("worker_portfolio").select("*").eq("worker_id", wid).order("sort_order").order("created_at"),
+    supabase.from("worker_preferences").select("*").eq("worker_id", wid).maybeSingle(),
+  ]);
+
+  const draftSkills: DraftSkill[] = (skills.data ?? []).map((row) => ({
+    skill_id: row.skill_id,
+    level: row.level,
+    name_uz: row.skills?.name_uz ?? "",
+    name_ru: row.skills?.name_ru ?? "",
+  }));
+
+  return {
+    ...base,
+    workerId: wid,
+    onboardingStep: worker.onboarding_step,
+    worker,
+    locations: (locations.data ?? []).map((l) => l.district_id),
+    hasGeo: !!geo.data,
+    skills: draftSkills,
+    languages: languages.data ?? [],
+    experience: experience.data ?? [],
+    education: education.data ?? [],
+    portfolio: portfolio.data ?? [],
+    preferences: preferences.data ?? null,
+  };
+});
+
+/**
+ * Ko'nikma tanlash ro'yxati: barcha tasdiqlangan ko'nikmalar + foydalanuvchining o'zi qo'shganlari.
+ * Tartib: ko'p ishlatilganlar birinchi. Kategoriya bo'yicha tavsiya client'da ajratiladi.
+ */
+export const getSkillOptions = cache(async (userId: string): Promise<SkillOption[]> => {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("skills")
+    .select("id, name_uz, name_ru, category_id")
+    .or(`is_approved.eq.true,created_by.eq.${userId}`)
+    .order("usage_count", { ascending: false })
+    .order("name_uz")
+    .limit(1500);
+  return data ?? [];
+});
