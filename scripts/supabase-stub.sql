@@ -13,10 +13,18 @@ create schema if not exists extensions;
 
 create table if not exists auth.users (
   id uuid primary key default gen_random_uuid(),
+  instance_id uuid default '00000000-0000-0000-0000-000000000000',
+  aud text default 'authenticated',
+  role text default 'authenticated',
   email text,
+  encrypted_password text,
   phone text,
   phone_confirmed_at timestamptz,
   email_confirmed_at timestamptz,
+  confirmation_token text default '',
+  recovery_token text default '',
+  email_change_token_new text default '',
+  email_change text default '',
   raw_user_meta_data jsonb default '{}'::jsonb,
   raw_app_meta_data jsonb default '{}'::jsonb,
   created_at timestamptz default now(),
