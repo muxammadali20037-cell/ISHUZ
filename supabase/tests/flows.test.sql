@@ -156,8 +156,9 @@ select pg_temp.ok((select count(*) from public.notifications) = 0, 'RLS: begona 
 -- ---------- Ali: bildirishnoma, chat ----------
 select pg_temp.login('11111111-1111-1111-1111-111111111111');
 select pg_temp.ok((select count(*) from public.notifications where type = 'interview_invite') = 1, 'ishchiga suhbat bildirishnomasi');
-select pg_temp.ok((select notifications from public.unread_counts()) = 2, 'unread_counts: 2 ta o''qilmagan');
-select pg_temp.ok(public.mark_notifications_read() = 2, 'mark_notifications_read');
+select pg_temp.ok((select count(*) from public.notifications where type = 'new_matching_vacancy') = 1, 'birinchi e''londa mos vakansiya bildirishnomasi');
+select pg_temp.ok((select notifications from public.unread_counts()) = 3, 'unread_counts: 3 ta o''qilmagan');
+select pg_temp.ok(public.mark_notifications_read() = 3, 'mark_notifications_read');
 select pg_temp.ok((select public.get_or_create_conversation(p_application_id => (select id from public.applications))) is not null, 'chat ochildi');
 select pg_temp.ok((select count(*) from public.conversation_members) = 2, 'chatda 2 a''zo');
 select pg_temp.ok((select public.send_message((select id from public.conversations), 'text', 'Assalomu alaykum!')) is not null, 'xabar yuborildi');

@@ -7,6 +7,11 @@ begin
   perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, false);
   execute 'set role authenticated';
 end $$;
+create or replace function pg_temp.anon() returns void language plpgsql as $$
+begin
+  perform set_config('request.jwt.claims', json_build_object('role', 'anon')::text, false);
+  execute 'set role anon';
+end $$;
 create or replace function pg_temp.superuser() returns void language plpgsql as $$
 begin execute 'reset role'; perform set_config('request.jwt.claims', '', false); end $$;
 create or replace function pg_temp.ok(p_cond boolean, p_name text) returns void language plpgsql as $$
@@ -102,6 +107,27 @@ select pg_temp.ok((select score from public.compute_match((select id from public
 select pg_temp.login('a1000000-0000-0000-0000-000000000005');
 select pg_temp.fails($$select * from public.compute_match((select id from public.worker_profiles limit 1), (select vacancy_id from t))$$, 'begona compute_match chaqira olmaydi', '42501');
 select pg_temp.fails($$select public.refresh_matches_for_worker((select id from public.worker_profiles limit 1))$$, 'begona refresh_matches chaqira olmaydi', '42501');
+-- begona o'z qoralamasi orqali ham yopiq/begona ishchini "probe" qila olmaydi (can_view_worker talab qilinadi)
+select pg_temp.superuser();
+update public.worker_profiles set is_public = false where profile_id = 'a1000000-0000-0000-0000-000000000001';
+create temp table t_probe as select id as worker_id from public.worker_profiles where profile_id = 'a1000000-0000-0000-0000-000000000001';
+grant select on t_probe to public;
+select pg_temp.login('a1000000-0000-0000-0000-000000000005');
+insert into public.vacancies (owner_profile_id, title, category_id, region_id, salary_to, age_min) values (auth.uid(), 'Probe', (select id from public.categories where slug = 'sales'), (select id from public.regions limit 1), 1, 33);
+select pg_temp.fails($$select * from public.compute_match((select worker_id from t_probe), (select id from public.vacancies where title = 'Probe'))$$, 'begona o''z qoralamasi bilan yopiq ishchini probe qila olmaydi', '42501');
+-- anon compute_match chaqira olmaydi
+select pg_temp.anon();
+select pg_temp.fails($$select * from public.compute_match((select worker_id from t_probe), (select vacancy_id from t))$$, 'anon compute_match chaqira olmaydi', '42501');
+select pg_temp.fails($$select birth_date from public.profiles$$, 'anon profiles.birth_date o''qiy olmaydi', '42501');
+select pg_temp.ok((select count(*) from (select id, first_name, last_name, avatar_url from public.profiles) x) >= 0, 'anon profiles ochiq ustunlarini o''qiy oladi');
+select pg_temp.superuser();
+update public.worker_profiles set is_public = true where profile_id = 'a1000000-0000-0000-0000-000000000001';
+-- support admin soxta audit yoza olmaydi
+select pg_temp.login('a1000000-0000-0000-0000-000000000006');
+select pg_temp.fails($$select public.admin_log('user.block', 'profile', 'a1000000-0000-0000-0000-000000000001')$$, 'support admin_log yoza olmaydi', '42501');
+-- kompaniya admini a'zo qatorining profile_id sini o'zgartira olmaydi
+select pg_temp.login('a1000000-0000-0000-0000-000000000002');
+select pg_temp.fails($$update public.company_members set profile_id = 'a1000000-0000-0000-0000-000000000005' where profile_id = 'a1000000-0000-0000-0000-000000000004'$$, 'RLS: a''zo profile_id sini almashtirib bo''lmaydi', '42501');
 
 -- ---------- Ariza: qaytarib olish va qayta yuborish ----------
 select pg_temp.login('a1000000-0000-0000-0000-000000000001');
