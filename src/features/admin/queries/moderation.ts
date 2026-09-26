@@ -131,8 +131,9 @@ export interface ReviewFilters {
 
 export function parseReviewFilters(sp: SearchParams): ReviewFilters {
   const rating = Number.parseInt(param(sp, "rating"), 10);
+  const status = param(sp, "status");
   return {
-    status: oneOf(param(sp, "status"), REVIEW_STATUSES) ?? "pending",
+    status: status === "all" ? undefined : (oneOf(status, REVIEW_STATUSES) ?? "pending"),
     q: param(sp, "q"),
     rating: rating >= 1 && rating <= 5 ? rating : undefined,
     page: parsePage(sp),

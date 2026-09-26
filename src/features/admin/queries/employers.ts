@@ -72,7 +72,8 @@ export async function getEmployerDetail(id: string) {
   const { data } = await supabase
     .from("employer_profiles")
     .select(
-      `${LIST_SELECT}, about, districts(name_uz, name_ru),
+      `id, profile_id, employer_type, display_name, verification_status, onboarding_completed_at, created_at, contact_phone, about,
+       profiles!inner(first_name, last_name, avatar_url, is_blocked), regions(name_uz, name_ru), districts(name_uz, name_ru),
        companies(id, name, slug, logo_url, verification_status, is_blocked, tin, phone, telegram, website, address, size, about, verified_at, created_at, company_members(role, profiles!company_members_profile_id_fkey(id, first_name, last_name)))`,
     )
     .eq("id", id)
