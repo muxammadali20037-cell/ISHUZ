@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * Har 5 daqiqada (vercel.json crons): yuborilmagan bildirishnomalarni Telegram bot orqali yuboradi.
+ * Supabase pg_cron `ishuz-telegram` (0015) har daqiqada, kutayotgan xabar bo'lsa chaqiradi: yuborilmagan bildirishnomalarni Telegram bot orqali yuboradi.
  * Auth: Authorization: Bearer CRON_SECRET (Vercel avtomatik yuboradi) yoki x-cron-secret.
  */
 async function handle(req: NextRequest) {

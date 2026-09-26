@@ -57,7 +57,11 @@ npm run lint && npm run typecheck && npm run build
 2. **Auth → URL Configuration**: Site URL = ilova manzili.
 3. **Storage**: bucket'lar migratsiya bilan yaratiladi (`avatars`, `company-logos`, `portfolio` — public; `chat`, `documents` — private).
 4. **Realtime**: `messages`, `notifications`, `applications`, `job_offers`, `conversations` jadvallari publikatsiyaga qo'shilgan (migratsiyada).
-5. **Cron** (ixtiyoriy, pg_cron): `select cron.schedule('expire', '0 3 * * *', $$select public.expire_vacancies(); select public.expire_offers(); select public.notify_expiring_vacancies();$$);` — yoki Vercel cron (`vercel.json`) `/api/cron/vacancies` ni chaqiradi.
+5. **Cron** — migratsiya `0015` bilan Supabase ichida (`pg_cron` + `pg_net`) sozlangan: `ishuz-maintenance` (har kuni 03:05 Toshkent) va `ishuz-telegram` (har daqiqa, faqat yuboriladigan bildirishnoma bo'lsa ilovani chaqiradi). Telegram yuborish uchun deploydan keyin bir marta SQL Editor'da:
+   ```sql
+   select vault.create_secret('https://<domen>', 'ishuz_app_url');
+   select vault.create_secret('<CRON_SECRET qiymati>', 'ishuz_cron_secret');
+   ```
 6. Birinchi adminni tayinlash: `insert into public.admin_users (profile_id, role) values ('<auth.users.id>', 'super_admin');`
 
 ## Telegram
@@ -69,9 +73,10 @@ npm run lint && npm run typecheck && npm run build
 
 ## Deploy (Vercel)
 
-1. Repo'ni Vercel'ga ulang, env o'zgaruvchilarini kiriting.
-2. `vercel.json` cron'lari avtomatik ishlaydi (`CRON_SECRET` Vercel tomonidan yuboriladi).
-3. Domen (`ishuz.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
+1. [vercel.com/new](https://vercel.com/new) → GitHub repo'ni import qiling (Framework: Next.js, sozlamalar standart).
+2. **Environment Variables**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `APP_URL`, `CRON_SECRET` (masalan `openssl rand -hex 32`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` → Deploy.
+3. `vercel.json` funksiyalarni `bom1` (Mumbai) regionida ishga tushiradi — Supabase (ap-south-1) bilan bir joyda. Cron'lar Vercel'da emas, Supabase `pg_cron` da (Hobby tarifi cheklovi yo'q).
+4. Domen (`ishuz.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
 
 ## Tuzilma
 

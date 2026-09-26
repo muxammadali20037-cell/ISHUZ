@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 /**
- * Kuniga 1 marta (vercel.json crons): muddati o'tgan vakansiya/takliflarni yopish va
+ * Kuniga 1 marta (Supabase pg_cron `ishuz-maintenance` to'g'ridan-to'g'ri SQL bilan bajaradi; bu endpoint qo'lda ishga tushirish uchun): muddati o'tgan vakansiya/takliflarni yopish va
  * 1–2 kun ichida tugaydigan vakansiyalar haqida ogohlantirish.
  */
 async function handle(req: NextRequest) {
