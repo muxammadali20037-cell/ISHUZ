@@ -19,7 +19,11 @@ O'qishlar: `applications` ⋈ `vacancies` ⋈ `companies` ⋈ `application_event
    profilini yopib qo'ysa, `worker_profiles` join `null` keladi — UI "Nomzod profili yopiq" ko'rsatadi (holat amallari va chat ishlayveradi).
    **So'rov:** `can_view_worker` ga "nomzod mening vakansiyamga ariza yuborgan / taklifimni qabul qilgan" shartini qo'shish
    (`can_view_profile` da bu allaqachon bor — `worker_profiles` uchun ham xuddi shunday).
-3. **`withdraw_offer` / `mark_offer_viewed` jim ishlaydi** (void, xatosiz). Action natijani qayta o'qib (`job_offers.status`) foydalanuvchiga
+3. **`respond_offer` muddati o'tganda `status = 'expired'` saqlanmaydi.** Funksiya `update ... set status = 'expired'` dan keyin
+   `raise exception 'offer_expired'` qiladi — plpgsql'da exception funksiya ichidagi o'zgarishlarni bekor qiladi, taklif `sent/viewed` bo'lib qolaveradi
+   (lokal tekshiruvda tasdiqlandi). UI `expires_at` bo'yicha o'zi "muddati tugagan" ko'rsatadi va tugmalarni yashiradi. **So'rov:** yoki xato o'rniga
+   `return`/natija qaytarish, yoki cron `expire_offers()` bilan statusni yangilash.
+4. **`withdraw_offer` / `mark_offer_viewed` jim ishlaydi** (void, xatosiz). Action natijani qayta o'qib (`job_offers.status`) foydalanuvchiga
    `offer_closed` qaytaradi. Ixtiyoriy: RPC `boolean` (o'zgardi/o'zgarmadi) qaytarsa qo'shimcha so'rov kerak bo'lmaydi.
 
 ## Tekshirilgan (lokal Postgres, `scripts/db-local.sh` sxemasi)
