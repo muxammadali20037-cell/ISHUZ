@@ -1,13 +1,11 @@
 {
-  "name": "Ish UZ — ish va ishchi topish",
-  "short_name": "Ish UZ",
+  "name": "ISH.UZ — ish va ishchi topish",
+  "short_name": "ISH.UZ",
   "description": "Ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#1f6feb",
+  "background_color": "#f6f8fb",
+  "theme_color": "#1d5fe0",
   "lang": "uz",
-  "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
-  ]
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
 }

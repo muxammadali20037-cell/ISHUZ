@@ -1,0 +1,263 @@
+{
+  "experience_level": {
+    "none": "Tajriba yo'q",
+    "lt_6m": "0–6 oy",
+    "6_12m": "6–12 oy",
+    "1_2y": "1–2 yil",
+    "2_3y": "2–3 yil",
+    "3_5y": "3–5 yil",
+    "5y_plus": "5+ yil"
+  },
+  "experience_min_months": {
+    "0": "Tajriba kerak emas",
+    "6": "6 oydan",
+    "12": "1 yildan",
+    "24": "2 yildan",
+    "36": "3 yildan",
+    "60": "5+ yil"
+  },
+  "education_level": {
+    "secondary": "O'rta",
+    "vocational": "O'rta maxsus",
+    "incomplete_higher": "Tugallanmagan oliy",
+    "higher": "Oliy",
+    "master": "Magistr"
+  },
+  "skill_level": {
+    "beginner": "Boshlang'ich",
+    "intermediate": "O'rta",
+    "good": "Yaxshi",
+    "professional": "Professional"
+  },
+  "language_level": {
+    "a1": "A1 — Boshlang'ich",
+    "a2": "A2 — Elementar",
+    "b1": "B1 — O'rta",
+    "b2": "B2 — O'rtadan yuqori",
+    "c1": "C1 — Ilg'or",
+    "c2": "C2 — Mukammal",
+    "native": "Ona tili"
+  },
+  "employment_type": {
+    "permanent": "Doimiy",
+    "temporary": "Vaqtinchalik",
+    "part_time": "Part-time",
+    "full_time": "Full-time",
+    "shift": "Smenali",
+    "remote": "Masofaviy",
+    "freelance": "Freelance",
+    "internship": "Stajirovka"
+  },
+  "work_schedule": {
+    "5_2": "5/2",
+    "6_1": "6/1",
+    "2_2": "2/2",
+    "shift": "Smenali",
+    "flexible": "Erkin grafik",
+    "negotiable": "Kelishiladi"
+  },
+  "salary_type": {
+    "monthly": "Oylik",
+    "daily": "Kunlik",
+    "hourly": "Soatlik",
+    "piecework": "Ishbay",
+    "negotiable": "Kelishiladi"
+  },
+  "salary_type_suffix": {
+    "monthly": "/oy",
+    "daily": "/kun",
+    "hourly": "/soat",
+    "piecework": "ishbay",
+    "negotiable": ""
+  },
+  "availability": {
+    "today": "Bugun",
+    "tomorrow": "Ertaga",
+    "within_3_days": "3 kun ichida",
+    "within_week": "1 hafta ichida",
+    "negotiable": "Kelishiladi"
+  },
+  "work_format": {
+    "official": "Rasmiy",
+    "unofficial": "Norasmiy",
+    "any": "Farqi yo'q"
+  },
+  "remote_preference": {
+    "yes": "Ha",
+    "no": "Yo'q",
+    "any": "Farqi yo'q"
+  },
+  "worker_status": {
+    "active": "Faol ish qidiryapman",
+    "open": "Takliflarni ko'rib chiqaman",
+    "not_looking": "Hozir ish qidirmayapman"
+  },
+  "worker_status_short": {
+    "active": "Hozir ish qidirmoqda",
+    "open": "Takliflarga ochiq",
+    "not_looking": "Ish qidirmayapti"
+  },
+  "gender": {
+    "male": "Erkak",
+    "female": "Ayol"
+  },
+  "employer_type": {
+    "company": "Kompaniya",
+    "individual_entrepreneur": "Yakka tadbirkor",
+    "person": "Oddiy shaxs"
+  },
+  "company_size": {
+    "1_10": "1–10 xodim",
+    "11_50": "11–50 xodim",
+    "51_200": "51–200 xodim",
+    "201_500": "201–500 xodim",
+    "500_plus": "500+ xodim"
+  },
+  "company_member_role": {
+    "owner": "Egasi",
+    "admin": "Administrator",
+    "recruiter": "Rekruter",
+    "viewer": "Kuzatuvchi"
+  },
+  "verification_status": {
+    "unverified": "Tasdiqlanmagan",
+    "pending": "Tekshirilmoqda",
+    "verified": "Tasdiqlangan",
+    "rejected": "Rad etilgan"
+  },
+  "verification_type": {
+    "phone": "Telefon",
+    "telegram": "Telegram",
+    "identity": "Shaxs",
+    "education": "Ta'lim",
+    "company": "Kompaniya",
+    "tin": "STIR",
+    "documents": "Hujjatlar"
+  },
+  "vacancy_status": {
+    "draft": "Qoralama",
+    "pending_review": "Moderatsiyada",
+    "active": "Faol",
+    "paused": "To'xtatilgan",
+    "closed": "Yopilgan",
+    "expired": "Muddati tugagan",
+    "hidden": "Yashirilgan",
+    "rejected": "Rad etilgan"
+  },
+  "application_status": {
+    "sent": "Yuborildi",
+    "viewed": "Ko'rib chiqildi",
+    "shortlisted": "Tanlovda",
+    "interview": "Suhbatga chaqirildi",
+    "offered": "Taklif berildi",
+    "hired": "Ishga qabul qilindi",
+    "rejected": "Rad etildi",
+    "withdrawn": "Qaytarib olindi"
+  },
+  "offer_status": {
+    "sent": "Yuborildi",
+    "viewed": "Ko'rildi",
+    "accepted": "Qabul qilindi",
+    "declined": "Rad etildi",
+    "expired": "Muddati tugagan",
+    "withdrawn": "Qaytarib olindi"
+  },
+  "portfolio_type": {
+    "image": "Rasm",
+    "video": "Video",
+    "pdf": "PDF",
+    "document": "Hujjat",
+    "link": "Havola"
+  },
+  "phone_visibility": {
+    "nobody": "Hech kim",
+    "applicants": "Men ariza yuborgan / menga taklif bergan tomon",
+    "on_request": "Faqat men ruxsat berganda",
+    "everyone": "Hammaga"
+  },
+  "report_reason": {
+    "fraud": "Firibgarlik",
+    "fake_vacancy": "Soxta vakansiya",
+    "asked_money": "Pul talab qildi",
+    "wrong_info": "Noto'g'ri ma'lumot",
+    "spam": "Spam",
+    "abuse": "Haqorat",
+    "other": "Boshqa"
+  },
+  "report_status": {
+    "open": "Ochiq",
+    "in_review": "Ko'rib chiqilmoqda",
+    "resolved": "Hal qilindi",
+    "dismissed": "Rad etildi"
+  },
+  "review_status": {
+    "pending": "Moderatsiyada",
+    "approved": "Tasdiqlangan",
+    "rejected": "Rad etilgan"
+  },
+  "admin_role": {
+    "super_admin": "Super admin",
+    "admin": "Admin",
+    "moderator": "Moderator",
+    "support": "Qo'llab-quvvatlash"
+  },
+  "notification_type": {
+    "application_received": "Yangi ariza",
+    "application_status": "Ariza holati",
+    "offer_received": "Ish taklifi",
+    "offer_response": "Taklifga javob",
+    "new_message": "Yangi xabar",
+    "interview_invite": "Suhbatga taklif",
+    "vacancy_expiring": "Vakansiya muddati",
+    "new_matching_vacancy": "Sizga mos ish",
+    "new_matching_worker": "Sizga mos nomzod",
+    "verification_result": "Tasdiqlash natijasi",
+    "review_received": "Yangi sharh",
+    "system": "Tizim"
+  },
+  "match_reason": {
+    "category_match": "Kasbingiz mos",
+    "category_match_partial": "Soha mos, yo'nalish farq qiladi",
+    "category_mismatch": "Kasb mos emas",
+    "remote_ok": "Masofaviy ish",
+    "district_match": "Siz tanlagan hudud",
+    "distance_near": "Sizdan {km} km",
+    "distance_ok": "Sizdan {km} km",
+    "region_match": "Viloyat mos, tuman farq qiladi",
+    "location_far": "Hudud mos emas",
+    "salary_ok": "Maosh talabingiz mos",
+    "salary_min_ok": "Maosh minimal talabingizga mos",
+    "salary_negotiable": "Maosh kelishiladi",
+    "salary_unspecified": "Maosh talabingiz ko'rsatilmagan",
+    "salary_below": "Maosh talabingizdan past",
+    "experience_ok": "Tajribangiz yetarli",
+    "experience_close": "Tajriba biroz kam",
+    "experience_low": "Tajriba talab qilinadi",
+    "skills_not_required": "Maxsus ko'nikma talab qilinmaydi",
+    "skills_matched": "Ko'nikmalar: {matched}/{required}",
+    "schedule_ok": "Grafik sizga mos",
+    "schedule_partial": "Grafik qisman mos",
+    "schedule_mismatch": "Grafik mos emas",
+    "employment_ok": "Bandlik turi mos",
+    "employment_mismatch": "Bandlik turi mos emas",
+    "work_format_ok": "Rasmiylik mos",
+    "work_format_mismatch": "Rasmiy/norasmiy talab farq qiladi",
+    "language_required": "{lang} tili talab qilinadi ({level})",
+    "languages_ok": "Til talablari mos",
+    "education_required": "Ta'lim talab qilinadi: {level}",
+    "age_out_of_range": "Yosh talabi: {min}–{max}"
+  },
+  "language_code": {
+    "uz": "O'zbek",
+    "ru": "Rus",
+    "en": "Ingliz",
+    "tr": "Turk",
+    "kk": "Qozoq",
+    "tg": "Tojik",
+    "ko": "Koreys",
+    "zh": "Xitoy",
+    "de": "Nemis",
+    "ar": "Arab",
+    "fr": "Fransuz"
+  }
+}

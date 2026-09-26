@@ -1,0 +1,29 @@
+{
+  "name": "ishuz",
+  "version": "1.0.0",
+  "description": "Ish UZ — ish qidiruvchilar va ish beruvchilarni bog'laydigan Telegram Mini App, sayt va PWA",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muxammadali20037-cell/ISHUZ.git"
+  },
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/muxammadali20037-cell/ISHUZ/issues"
+  },
+  "homepage": "https://github.com/muxammadali20037-cell/ISHUZ#readme",
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.2.1",
+    "multer": "^2.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "private": true
+}

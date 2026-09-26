@@ -1,0 +1,263 @@
+{
+  "experience_level": {
+    "none": "Без опыта",
+    "lt_6m": "0–6 месяцев",
+    "6_12m": "6–12 месяцев",
+    "1_2y": "1–2 года",
+    "2_3y": "2–3 года",
+    "3_5y": "3–5 лет",
+    "5y_plus": "5+ лет"
+  },
+  "experience_min_months": {
+    "0": "Без опыта",
+    "6": "От 6 месяцев",
+    "12": "От 1 года",
+    "24": "От 2 лет",
+    "36": "От 3 лет",
+    "60": "5+ лет"
+  },
+  "education_level": {
+    "secondary": "Среднее",
+    "vocational": "Среднее специальное",
+    "incomplete_higher": "Неоконченное высшее",
+    "higher": "Высшее",
+    "master": "Магистр"
+  },
+  "skill_level": {
+    "beginner": "Начальный",
+    "intermediate": "Средний",
+    "good": "Хороший",
+    "professional": "Профессионал"
+  },
+  "language_level": {
+    "a1": "A1 — Начальный",
+    "a2": "A2 — Элементарный",
+    "b1": "B1 — Средний",
+    "b2": "B2 — Выше среднего",
+    "c1": "C1 — Продвинутый",
+    "c2": "C2 — В совершенстве",
+    "native": "Родной"
+  },
+  "employment_type": {
+    "permanent": "Постоянная",
+    "temporary": "Временная",
+    "part_time": "Частичная занятость",
+    "full_time": "Полная занятость",
+    "shift": "Сменная",
+    "remote": "Удалённая",
+    "freelance": "Фриланс",
+    "internship": "Стажировка"
+  },
+  "work_schedule": {
+    "5_2": "5/2",
+    "6_1": "6/1",
+    "2_2": "2/2",
+    "shift": "Сменный",
+    "flexible": "Гибкий график",
+    "negotiable": "По договорённости"
+  },
+  "salary_type": {
+    "monthly": "В месяц",
+    "daily": "В день",
+    "hourly": "В час",
+    "piecework": "Сдельная",
+    "negotiable": "Договорная"
+  },
+  "salary_type_suffix": {
+    "monthly": "/мес",
+    "daily": "/день",
+    "hourly": "/час",
+    "piecework": "сдельно",
+    "negotiable": ""
+  },
+  "availability": {
+    "today": "Сегодня",
+    "tomorrow": "Завтра",
+    "within_3_days": "В течение 3 дней",
+    "within_week": "В течение недели",
+    "negotiable": "По договорённости"
+  },
+  "work_format": {
+    "official": "Официально",
+    "unofficial": "Неофициально",
+    "any": "Не важно"
+  },
+  "remote_preference": {
+    "yes": "Да",
+    "no": "Нет",
+    "any": "Не важно"
+  },
+  "worker_status": {
+    "active": "Активно ищу работу",
+    "open": "Рассматриваю предложения",
+    "not_looking": "Сейчас не ищу работу"
+  },
+  "worker_status_short": {
+    "active": "Сейчас ищет работу",
+    "open": "Открыт к предложениям",
+    "not_looking": "Не ищет работу"
+  },
+  "gender": {
+    "male": "Мужской",
+    "female": "Женский"
+  },
+  "employer_type": {
+    "company": "Компания",
+    "individual_entrepreneur": "Индивидуальный предприниматель",
+    "person": "Частное лицо"
+  },
+  "company_size": {
+    "1_10": "1–10 сотрудников",
+    "11_50": "11–50 сотрудников",
+    "51_200": "51–200 сотрудников",
+    "201_500": "201–500 сотрудников",
+    "500_plus": "500+ сотрудников"
+  },
+  "company_member_role": {
+    "owner": "Владелец",
+    "admin": "Администратор",
+    "recruiter": "Рекрутер",
+    "viewer": "Наблюдатель"
+  },
+  "verification_status": {
+    "unverified": "Не проверено",
+    "pending": "На проверке",
+    "verified": "Проверено",
+    "rejected": "Отклонено"
+  },
+  "verification_type": {
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "identity": "Личность",
+    "education": "Образование",
+    "company": "Компания",
+    "tin": "ИНН",
+    "documents": "Документы"
+  },
+  "vacancy_status": {
+    "draft": "Черновик",
+    "pending_review": "На модерации",
+    "active": "Активна",
+    "paused": "Приостановлена",
+    "closed": "Закрыта",
+    "expired": "Истекла",
+    "hidden": "Скрыта",
+    "rejected": "Отклонена"
+  },
+  "application_status": {
+    "sent": "Отправлен",
+    "viewed": "Просмотрен",
+    "shortlisted": "В шорт-листе",
+    "interview": "Приглашение на собеседование",
+    "offered": "Сделано предложение",
+    "hired": "Принят на работу",
+    "rejected": "Отклонён",
+    "withdrawn": "Отозван"
+  },
+  "offer_status": {
+    "sent": "Отправлено",
+    "viewed": "Просмотрено",
+    "accepted": "Принято",
+    "declined": "Отклонено",
+    "expired": "Истекло",
+    "withdrawn": "Отозвано"
+  },
+  "portfolio_type": {
+    "image": "Изображение",
+    "video": "Видео",
+    "pdf": "PDF",
+    "document": "Документ",
+    "link": "Ссылка"
+  },
+  "phone_visibility": {
+    "nobody": "Никто",
+    "applicants": "Те, кому я откликнулся / кто мне сделал предложение",
+    "on_request": "Только с моего разрешения",
+    "everyone": "Все"
+  },
+  "report_reason": {
+    "fraud": "Мошенничество",
+    "fake_vacancy": "Фейковая вакансия",
+    "asked_money": "Требовали деньги",
+    "wrong_info": "Неверная информация",
+    "spam": "Спам",
+    "abuse": "Оскорбления",
+    "other": "Другое"
+  },
+  "report_status": {
+    "open": "Открыта",
+    "in_review": "Рассматривается",
+    "resolved": "Решена",
+    "dismissed": "Отклонена"
+  },
+  "review_status": {
+    "pending": "На модерации",
+    "approved": "Одобрен",
+    "rejected": "Отклонён"
+  },
+  "admin_role": {
+    "super_admin": "Супер-админ",
+    "admin": "Админ",
+    "moderator": "Модератор",
+    "support": "Поддержка"
+  },
+  "notification_type": {
+    "application_received": "Новый отклик",
+    "application_status": "Статус отклика",
+    "offer_received": "Предложение о работе",
+    "offer_response": "Ответ на предложение",
+    "new_message": "Новое сообщение",
+    "interview_invite": "Приглашение на собеседование",
+    "vacancy_expiring": "Срок вакансии",
+    "new_matching_vacancy": "Подходящая вакансия",
+    "new_matching_worker": "Подходящий кандидат",
+    "verification_result": "Результат проверки",
+    "review_received": "Новый отзыв",
+    "system": "Система"
+  },
+  "match_reason": {
+    "category_match": "Ваша профессия подходит",
+    "category_match_partial": "Сфера совпадает, направление отличается",
+    "category_mismatch": "Профессия не совпадает",
+    "remote_ok": "Удалённая работа",
+    "district_match": "Выбранный вами район",
+    "distance_near": "{km} км от вас",
+    "distance_ok": "{km} км от вас",
+    "region_match": "Область совпадает, район отличается",
+    "location_far": "Район не подходит",
+    "salary_ok": "Зарплата соответствует ожиданиям",
+    "salary_min_ok": "Зарплата соответствует минимуму",
+    "salary_negotiable": "Зарплата договорная",
+    "salary_unspecified": "Вы не указали ожидания по зарплате",
+    "salary_below": "Зарплата ниже ваших ожиданий",
+    "experience_ok": "Вашего опыта достаточно",
+    "experience_close": "Опыта немного не хватает",
+    "experience_low": "Требуется опыт",
+    "skills_not_required": "Специальные навыки не требуются",
+    "skills_matched": "Навыки: {matched}/{required}",
+    "schedule_ok": "График подходит",
+    "schedule_partial": "График частично подходит",
+    "schedule_mismatch": "График не подходит",
+    "employment_ok": "Тип занятости подходит",
+    "employment_mismatch": "Тип занятости не подходит",
+    "work_format_ok": "Оформление подходит",
+    "work_format_mismatch": "Официальное/неофициальное оформление отличается",
+    "language_required": "Требуется {lang} язык ({level})",
+    "languages_ok": "Языковые требования выполнены",
+    "education_required": "Требуется образование: {level}",
+    "age_out_of_range": "Требование по возрасту: {min}–{max}"
+  },
+  "language_code": {
+    "uz": "Узбекский",
+    "ru": "Русский",
+    "en": "Английский",
+    "tr": "Турецкий",
+    "kk": "Казахский",
+    "tg": "Таджикский",
+    "ko": "Корейский",
+    "zh": "Китайский",
+    "de": "Немецкий",
+    "ar": "Арабский",
+    "fr": "Французский"
+  }
+}

@@ -1,0 +1,70 @@
+/**
+ * Barcha tarjima fayllari. Har modul o'z namespace faylida:
+ *   messages/uz/<namespace>.json, messages/ru/<namespace>.json
+ * Kalit: "namespace.path.to.key". Ingliz tili qo'shish: messages/en/* + LOCALES ga 'en'.
+ */
+import type { Locale } from "./config";
+
+import uzCommon from "../../../messages/uz/common.json";
+import uzAuth from "../../../messages/uz/auth.json";
+import uzOnboarding from "../../../messages/uz/onboarding.json";
+import uzJobs from "../../../messages/uz/jobs.json";
+import uzWorkers from "../../../messages/uz/workers.json";
+import uzEmployer from "../../../messages/uz/employer.json";
+import uzApplications from "../../../messages/uz/applications.json";
+import uzChat from "../../../messages/uz/chat.json";
+import uzProfile from "../../../messages/uz/profile.json";
+import uzAdmin from "../../../messages/uz/admin.json";
+import uzEnums from "../../../messages/uz/enums.json";
+
+import ruCommon from "../../../messages/ru/common.json";
+import ruAuth from "../../../messages/ru/auth.json";
+import ruOnboarding from "../../../messages/ru/onboarding.json";
+import ruJobs from "../../../messages/ru/jobs.json";
+import ruWorkers from "../../../messages/ru/workers.json";
+import ruEmployer from "../../../messages/ru/employer.json";
+import ruApplications from "../../../messages/ru/applications.json";
+import ruChat from "../../../messages/ru/chat.json";
+import ruProfile from "../../../messages/ru/profile.json";
+import ruAdmin from "../../../messages/ru/admin.json";
+import ruEnums from "../../../messages/ru/enums.json";
+
+export const messages = {
+  uz: {
+    common: uzCommon,
+    auth: uzAuth,
+    onboarding: uzOnboarding,
+    jobs: uzJobs,
+    workers: uzWorkers,
+    employer: uzEmployer,
+    applications: uzApplications,
+    chat: uzChat,
+    profile: uzProfile,
+    admin: uzAdmin,
+    enums: uzEnums,
+  },
+  ru: {
+    common: ruCommon,
+    auth: ruAuth,
+    onboarding: ruOnboarding,
+    jobs: ruJobs,
+    workers: ruWorkers,
+    employer: ruEmployer,
+    applications: ruApplications,
+    chat: ruChat,
+    profile: ruProfile,
+    admin: ruAdmin,
+    enums: ruEnums,
+  },
+} satisfies Record<Locale, Record<string, unknown>>;
+
+export type Messages = (typeof messages)["uz"];
+
+/** "common.actions.save" ko'rinishidagi barcha kalitlar (tip darajasida) */
+type Paths<T, Prefix extends string = ""> = T extends string
+  ? Prefix
+  : {
+      [K in keyof T & string]: Paths<T[K], Prefix extends "" ? K : `${Prefix}.${K}`>;
+    }[keyof T & string];
+
+export type MessageKey = Paths<Messages>;
