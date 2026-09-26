@@ -15,6 +15,10 @@ import uzApplications from "../../../messages/uz/applications.json";
 import uzChat from "../../../messages/uz/chat.json";
 import uzProfile from "../../../messages/uz/profile.json";
 import uzAdmin from "../../../messages/uz/admin.json";
+import uzVacancies from "../../../messages/uz/vacancies.json";
+import uzOffers from "../../../messages/uz/offers.json";
+import uzNotifications from "../../../messages/uz/notifications.json";
+import uzSaved from "../../../messages/uz/saved.json";
 import uzEnums from "../../../messages/uz/enums.json";
 
 import ruCommon from "../../../messages/ru/common.json";
@@ -27,6 +31,10 @@ import ruApplications from "../../../messages/ru/applications.json";
 import ruChat from "../../../messages/ru/chat.json";
 import ruProfile from "../../../messages/ru/profile.json";
 import ruAdmin from "../../../messages/ru/admin.json";
+import ruVacancies from "../../../messages/ru/vacancies.json";
+import ruOffers from "../../../messages/ru/offers.json";
+import ruNotifications from "../../../messages/ru/notifications.json";
+import ruSaved from "../../../messages/ru/saved.json";
 import ruEnums from "../../../messages/ru/enums.json";
 
 export const messages = {
@@ -41,6 +49,10 @@ export const messages = {
     chat: uzChat,
     profile: uzProfile,
     admin: uzAdmin,
+    vacancies: uzVacancies,
+    offers: uzOffers,
+    notifications: uzNotifications,
+    saved: uzSaved,
     enums: uzEnums,
   },
   ru: {
@@ -54,6 +66,10 @@ export const messages = {
     chat: ruChat,
     profile: ruProfile,
     admin: ruAdmin,
+    vacancies: ruVacancies,
+    offers: ruOffers,
+    notifications: ruNotifications,
+    saved: ruSaved,
     enums: ruEnums,
   },
 } satisfies Record<Locale, Record<string, unknown>>;
