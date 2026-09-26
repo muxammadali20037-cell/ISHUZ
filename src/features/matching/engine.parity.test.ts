@@ -7,7 +7,8 @@
  * tanasi supabase/migrations dagi bilan mos kelmasa) ham skip qilinadi — bu holda TS bilan
  * solishtirish ma'nosiz; `npm run db:local` bilan bazani yangilang.
  *
- * Barcha yozuvlar bitta tranzaksiyada yaratiladi va oxirida ROLLBACK qilinadi.
+ * Superuser sifatida ulanadi (JWT claims yo'q → auth.uid() null), shuning uchun compute_match'ning
+ * 'forbidden' tekshiruvi o'tadi. Barcha yozuvlar bitta tranzaksiyada yaratiladi va oxirida ROLLBACK.
  */
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
@@ -15,6 +16,7 @@ import type { Client } from "pg";
 import pg from "pg";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 import { computeMatch, distanceKm, educationRank, experienceLevelMonths, languageLevelRank } from "./engine";
+import { MATCH_REASON_KEYS } from "./types";
 import type { MatchResult, VacancyMatchInput, WorkerMatchInput } from "./types";
 
 const DEFAULT_URL = "postgres://postgres:postgres@127.0.0.1:5432/ishuz_dev";
@@ -145,7 +147,7 @@ async function loadRefs(db: Client): Promise<Refs> {
   };
 }
 
-/** To'liq profil: savdo, Chilonzor, 1–2 yil, maosh 4–6 mln, 3 ko'nikma, 3 til, o'rta-maxsus, 31 yosh. */
+/** To'liq profil: savdo, Chilonzor, 1–2 yil, oylik 4–6 mln, 3 ko'nikma, 3 til, o'rta-maxsus, 31 yosh. */
 function fullWorker(r: Refs): WorkerMatchInput {
   return {
     categoryId: r.cat.sales,
@@ -157,7 +159,13 @@ function fullWorker(r: Refs): WorkerMatchInput {
     workFormat: "official",
     experienceLevel: "1_2y",
     birthDate: "1995-06-15",
-    preferences: { employmentTypes: ["full_time", "part_time"], schedules: ["5_2", "2_2"], salaryMin: 4_000_000, salaryExpected: 6_000_000 },
+    preferences: {
+      employmentTypes: ["full_time", "part_time"],
+      schedules: ["5_2", "2_2"],
+      salaryMin: 4_000_000,
+      salaryExpected: 6_000_000,
+      salaryType: "monthly",
+    },
     skillIds: [r.skill.sales_pos, r.skill.sales_cash, r.skill.sales_click],
     languages: [
       { code: "uz", level: "native" },
@@ -167,6 +175,11 @@ function fullWorker(r: Refs): WorkerMatchInput {
     educationLevels: ["vocational"],
     geo: { lat: r.district.chilonzor.lat, lng: r.district.chilonzor.lng },
   };
+}
+
+/** To'liq profil, lekin faqat masofaviy ish istaydi (remote_preferred tarmog'i). */
+function remoteWorker(r: Refs): WorkerMatchInput {
+  return { ...fullWorker(r), remotePreference: "yes" };
 }
 
 /** Bo'sh profil: kategoriya/hudud/istak/ko'nikma/til/ta'lim/geo/tug'ilgan sana yo'q, masofaviy ishlamaydi. */
@@ -189,12 +202,12 @@ function emptyWorker(): WorkerMatchInput {
   };
 }
 
-const VACANCY_NAMES = ["perfect", "partial", "remote_negotiable", "region_min_salary", "near_negotiable"] as const;
+const VACANCY_NAMES = ["perfect", "partial", "remote_negotiable", "region_min_salary", "near_hourly"] as const;
 type VacancyName = (typeof VACANCY_NAMES)[number];
 
 function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
   return {
-    // Hammasi mos: 100
+    // Hammasi mos (ixtiyoriy ko'nikma hisobga olinmaydi): 100
     perfect: {
       categoryId: r.cat.sales,
       subcategoryId: r.sub.sales_manager,
@@ -206,11 +219,16 @@ function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
       salaryFrom: 5_000_000,
       salaryTo: 7_000_000,
       salaryNegotiable: false,
+      salaryType: "monthly",
       experienceMinMonths: 12,
       employmentType: "full_time",
       schedule: "5_2",
       workFormat: "official",
-      requiredSkillIds: [r.skill.sales_pos, r.skill.sales_cash],
+      skills: [
+        { skillId: r.skill.sales_pos, isRequired: true },
+        { skillId: r.skill.sales_cash, isRequired: true },
+        { skillId: r.skill.sales_1c, isRequired: false },
+      ],
       languages: [
         { code: "ru", minLevel: "b1" },
         { code: "uz", minLevel: "b1" },
@@ -219,7 +237,7 @@ function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
       ageMin: 20,
       ageMax: 40,
     },
-    // Qisman kategoriya, 7 km, maosh past, tajriba kam, 2/3 ko'nikma, grafik/bandlik/rasmiylik mos emas, 1/2 til, ta'lim/yosh ogohlantirish
+    // Qisman kategoriya, ~7 km, maosh past, tajriba kam, 2/3 majburiy ko'nikma, grafik/bandlik/rasmiylik mos emas, 1/2 til, ta'lim/yosh ogohlantirish
     partial: {
       categoryId: r.cat.sales,
       subcategoryId: r.sub.agent,
@@ -231,11 +249,16 @@ function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
       salaryFrom: 3_000_000,
       salaryTo: 3_500_000,
       salaryNegotiable: false,
+      salaryType: "monthly",
       experienceMinMonths: 36,
       employmentType: "temporary",
       schedule: "shift",
       workFormat: "unofficial",
-      requiredSkillIds: [r.skill.sales_pos, r.skill.sales_click, r.skill.sales_1c],
+      skills: [
+        { skillId: r.skill.sales_pos, isRequired: true },
+        { skillId: r.skill.sales_click, isRequired: true },
+        { skillId: r.skill.sales_1c, isRequired: true },
+      ],
       languages: [
         { code: "en", minLevel: "b2" },
         { code: "ru", minLevel: "b1" },
@@ -256,17 +279,19 @@ function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
       salaryFrom: null,
       salaryTo: null,
       salaryNegotiable: true,
+      salaryType: "negotiable",
       experienceMinMonths: 0,
       employmentType: "remote",
       schedule: "flexible",
       workFormat: "any",
-      requiredSkillIds: [],
+      skills: [],
       languages: [],
       educationMin: null,
       ageMin: null,
       ageMax: 30,
     },
-    // Subkategoriyasiz, koordinatasiz boshqa tuman (region_match), faqat salary_from, tajriba aynan chegarada, 0/1 ko'nikma, til yo'q, faqat age_min
+    // Subkategoriyasiz, koordinatasiz boshqa tuman (region_match), faqat salary_from, tajriba aynan chegarada,
+    // majburiy ko'nikma yo'q → ixtiyoriylar bo'yicha 1/2, til yo'q, faqat age_min
     region_min_salary: {
       categoryId: r.cat.sales,
       subcategoryId: null,
@@ -278,18 +303,22 @@ function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
       salaryFrom: 4_500_000,
       salaryTo: null,
       salaryNegotiable: false,
+      salaryType: "monthly",
       experienceMinMonths: 24,
       employmentType: "full_time",
       schedule: "6_1",
       workFormat: "any",
-      requiredSkillIds: [r.skill.sales_reporting],
+      skills: [
+        { skillId: r.skill.sales_reporting, isRequired: false },
+        { skillId: r.skill.sales_pos, isRequired: false },
+      ],
       languages: [{ code: "tr", minLevel: "b1" }],
       educationMin: null,
       ageMin: 35,
       ageMax: null,
     },
-    // ~2 km (distance_near), faqat salary_to, tajriba juda kam, kelishiladigan grafik, til mos, magistr talabi
-    near_negotiable: {
+    // ~2 km (distance_near), soatlik maosh (turi farq qiladi), tajriba juda kam, kelishiladigan grafik, til mos, magistr talabi
+    near_hourly: {
       categoryId: r.cat.sales,
       subcategoryId: r.sub.sales_manager,
       districtId: r.district.mirobod.id,
@@ -300,11 +329,12 @@ function vacancies(r: Refs): Record<VacancyName, VacancyMatchInput> {
       salaryFrom: null,
       salaryTo: 8_000_000,
       salaryNegotiable: false,
+      salaryType: "hourly",
       experienceMinMonths: 60,
       employmentType: "part_time",
       schedule: "negotiable",
       workFormat: "official",
-      requiredSkillIds: [],
+      skills: [],
       languages: [{ code: "uz", minLevel: "c1" }],
       educationMin: "master",
       ageMin: null,
@@ -328,8 +358,9 @@ async function insertWorker(db: Client, w: WorkerMatchInput): Promise<string> {
   );
   if (w.preferences) {
     await db.query(
-      "insert into public.worker_preferences (worker_id, employment_types, schedules, salary_min, salary_expected) values ($1, $2::public.employment_type[], $3::public.work_schedule[], $4, $5)",
-      [id, w.preferences.employmentTypes, w.preferences.schedules, w.preferences.salaryMin, w.preferences.salaryExpected],
+      `insert into public.worker_preferences (worker_id, employment_types, schedules, salary_min, salary_expected, salary_type)
+       values ($1, $2::public.employment_type[], $3::public.work_schedule[], $4, $5, $6)`,
+      [id, w.preferences.employmentTypes, w.preferences.schedules, w.preferences.salaryMin, w.preferences.salaryExpected, w.preferences.salaryType],
     );
   }
   for (const districtId of w.workDistrictIds) {
@@ -352,8 +383,9 @@ async function insertVacancy(db: Client, ownerProfileId: string, title: string, 
   const { id } = await one<{ id: string }>(
     db,
     `insert into public.vacancies (owner_profile_id, title, category_id, subcategory_id, region_id, district_id, lat, lng, is_remote,
-       salary_from, salary_to, salary_negotiable, employment_type, schedule, work_format, experience_min_months, education_min, age_min, age_max, status)
-     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, 'draft') returning id`,
+       salary_from, salary_to, salary_negotiable, salary_type, employment_type, schedule, work_format, experience_min_months,
+       education_min, age_min, age_max, status)
+     values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, 'draft') returning id`,
     [
       ownerProfileId,
       title,
@@ -367,6 +399,7 @@ async function insertVacancy(db: Client, ownerProfileId: string, title: string, 
       v.salaryFrom,
       v.salaryTo,
       v.salaryNegotiable,
+      v.salaryType,
       v.employmentType,
       v.schedule,
       v.workFormat,
@@ -376,8 +409,8 @@ async function insertVacancy(db: Client, ownerProfileId: string, title: string, 
       v.ageMax,
     ],
   );
-  for (const skillId of v.requiredSkillIds) {
-    await db.query("insert into public.vacancy_skills (vacancy_id, skill_id) values ($1, $2)", [id, skillId]);
+  for (const skill of v.skills) {
+    await db.query("insert into public.vacancy_skills (vacancy_id, skill_id, is_required) values ($1, $2, $3)", [id, skill.skillId, skill.isRequired]);
   }
   // SQL loop'da ORDER BY yo'q; kiritish tartibi = TS tartibi (kodlar alifbo tartibida, PK bilan ham mos).
   for (const lang of v.languages) {
@@ -399,28 +432,33 @@ async function dbComputeMatch(db: Client, workerId: string, vacancyId: string): 
 // Suite
 // ---------------------------------------------------------------------------
 
-const WORKER_NAMES = ["full", "empty"] as const;
+const WORKER_NAMES = ["full", "remote", "empty"] as const;
 type WorkerName = (typeof WORKER_NAMES)[number];
 
-/** Fixture'lar mo'ljallangan darajalarni qamrab olganini tekshirish uchun kutilgan ballar. */
+/** Fixture'lar mo'ljallangan darajalarni qamrab olganini tekshirish uchun kutilgan ballar (SQL og'irliklari bo'yicha). */
 const EXPECTED_SCORES: Record<WorkerName, Record<VacancyName, number>> = {
-  full: { perfect: 100, partial: 41, remote_negotiable: 60, region_min_salary: 60, near_negotiable: 85 },
-  empty: { perfect: 25, partial: 25, remote_negotiable: 55, region_min_salary: 25, near_negotiable: 40 },
+  full: { perfect: 100, partial: 41, remote_negotiable: 60, region_min_salary: 68, near_hourly: 78 },
+  remote: { perfect: 90, partial: 36, remote_negotiable: 60, region_min_salary: 65, near_hourly: 68 },
+  empty: { perfect: 25, partial: 25, remote_negotiable: 55, region_min_salary: 25, near_hourly: 40 },
 };
+
+/** Fixture'lar chiqarmaydigan kalitlar (qamrov tekshiruvidan chiqariladi). */
+const UNCOVERED_KEYS: ReadonlySet<string> = new Set(["experience_close"]);
 
 suite("compute_match parity (Postgres)", () => {
   const db = client as Client;
-  let refs: Refs;
   const results = new Map<string, { db: MatchResult; ts: MatchResult }>();
 
   beforeAll(async () => {
     await db.query("begin");
-    refs = await loadRefs(db);
-    const workers: Record<WorkerName, WorkerMatchInput> = { full: fullWorker(refs), empty: emptyWorker() };
-    const workerIds: Record<WorkerName, string> = { full: await insertWorker(db, workers.full), empty: await insertWorker(db, workers.empty) };
-    const { id: ownerProfileId } = await one<{ profile_id: string; id: string }>(db, "select profile_id as id from public.worker_profiles where id = $1", [
-      workerIds.full,
-    ]);
+    const refs = await loadRefs(db);
+    const workers: Record<WorkerName, WorkerMatchInput> = { full: fullWorker(refs), remote: remoteWorker(refs), empty: emptyWorker() };
+    const workerIds: Record<WorkerName, string> = {
+      full: await insertWorker(db, workers.full),
+      remote: await insertWorker(db, workers.remote),
+      empty: await insertWorker(db, workers.empty),
+    };
+    const { id: ownerProfileId } = await one<{ id: string }>(db, "select profile_id as id from public.worker_profiles where id = $1", [workerIds.full]);
     const vacancyInputs = vacancies(refs);
     const now = new Date();
     for (const vName of VACANCY_NAMES) {
@@ -446,14 +484,17 @@ suite("compute_match parity (Postgres)", () => {
     const exp = await db.query<{ level: "none"; months: number }>(
       "select level, public.experience_level_months(level) as months from unnest(enum_range(null::public.experience_level)) level",
     );
+    expect(exp.rows).toHaveLength(7);
     for (const row of exp.rows) expect({ level: row.level, months: experienceLevelMonths(row.level) }).toEqual(row);
     const edu = await db.query<{ level: "secondary"; rank: number }>(
       "select level, public.education_rank(level) as rank from unnest(enum_range(null::public.education_level)) level",
     );
+    expect(edu.rows).toHaveLength(5);
     for (const row of edu.rows) expect({ level: row.level, rank: educationRank(row.level) }).toEqual(row);
     const lang = await db.query<{ level: "a1"; rank: number }>(
       "select level, public.language_level_rank(level) as rank from unnest(enum_range(null::public.language_level)) level",
     );
+    expect(lang.rows).toHaveLength(7);
     for (const row of lang.rows) expect({ level: row.level, rank: languageLevelRank(row.level) }).toEqual(row);
   });
 
@@ -485,46 +526,20 @@ suite("compute_match parity (Postgres)", () => {
     }
   }
 
-  test("fixtures cover the intended tiers (DB scores)", () => {
+  test("fixtures cover the intended tiers (DB scores and reason keys)", () => {
     const actual: Record<string, number> = {};
     for (const [key, pair] of results) actual[key] = pair.db.score;
     const expected: Record<string, number> = {};
     for (const wName of WORKER_NAMES) for (const vName of VACANCY_NAMES) expected[`${wName}/${vName}`] = EXPECTED_SCORES[wName][vName];
     expect(actual).toEqual(expected);
+
     const seen = new Set<string>();
     for (const pair of results.values()) for (const item of pair.db.reasons) seen.add(item.key);
-    for (const key of [
-      "category_match",
-      "category_match_partial",
-      "category_mismatch",
-      "remote_ok",
-      "district_match",
-      "distance_near",
-      "distance_ok",
-      "region_match",
-      "location_far",
-      "salary_unspecified",
-      "salary_negotiable",
-      "salary_ok",
-      "salary_min_ok",
-      "salary_below",
-      "experience_ok",
-      "experience_low",
-      "skills_not_required",
-      "skills_matched",
-      "schedule_ok",
-      "schedule_partial",
-      "schedule_mismatch",
-      "employment_ok",
-      "employment_mismatch",
-      "work_format_ok",
-      "work_format_mismatch",
-      "language_required",
-      "languages_ok",
-      "education_required",
-      "age_out_of_range",
-    ]) {
-      expect(seen.has(key), `reason ${key} not covered`).toBe(true);
+    for (const key of MATCH_REASON_KEYS) {
+      if (UNCOVERED_KEYS.has(key)) continue;
+      expect(seen.has(key), `reason ${key} not covered by fixtures`).toBe(true);
     }
+    // DB faqat ma'lum kalitlarni chiqaradi
+    for (const key of seen) expect(MATCH_REASON_KEYS as readonly string[], `unknown reason key ${key}`).toContain(key);
   });
 });

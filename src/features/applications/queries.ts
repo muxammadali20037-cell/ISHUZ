@@ -33,7 +33,7 @@ type VacancyRow = {
   salary_to: number | null;
   salary_type: Enums<"salary_type">;
   salary_negotiable: boolean;
-  owner_profile_id: string;
+  owner_profile_id: string | null;
   company_id: string | null;
   company: { id: string; name: string; slug: string; logo_url: string | null; verification_status: Enums<"verification_status"> } | null;
 };

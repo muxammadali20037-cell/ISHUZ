@@ -1,6 +1,7 @@
 export {
   WEIGHTS,
   ageFromBirthDate,
+  ceilKm,
   computeMatch,
   createMatchEngine,
   distanceKm,
@@ -25,6 +26,7 @@ export type {
   ReasonSummary,
   VacancyLanguage,
   VacancyMatchInput,
+  VacancySkill,
   WorkerLanguage,
   WorkerMatchInput,
   WorkerMatchPreferences,

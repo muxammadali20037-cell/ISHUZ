@@ -73,7 +73,7 @@ export async function getEmployerDetail(id: string) {
     .from("employer_profiles")
     .select(
       `${LIST_SELECT}, about, districts(name_uz, name_ru),
-       companies(id, name, slug, logo_url, verification_status, is_blocked, tin, phone, telegram, website, address, size, about, verified_at, created_at, company_members(role, profiles(id, first_name, last_name)))`,
+       companies(id, name, slug, logo_url, verification_status, is_blocked, tin, phone, telegram, website, address, size, about, verified_at, created_at, company_members(role, profiles!company_members_profile_id_fkey(id, first_name, last_name)))`,
     )
     .eq("id", id)
     .maybeSingle();

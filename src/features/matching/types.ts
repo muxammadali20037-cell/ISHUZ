@@ -12,6 +12,8 @@ export interface WorkerMatchPreferences {
   schedules: Enums<"work_schedule">[];
   salaryMin: number | null;
   salaryExpected: number | null;
+  /** worker_preferences.salary_type (default 'monthly') */
+  salaryType: Enums<"salary_type">;
 }
 
 /** worker_languages qatori. */
@@ -54,6 +56,12 @@ export interface VacancyLanguage {
   minLevel: Enums<"language_level">;
 }
 
+/** vacancy_skills qatori. */
+export interface VacancySkill {
+  skillId: string;
+  isRequired: boolean;
+}
+
 /**
  * Vakansiya tomonidagi kirish ma'lumotlari.
  * Manba: vacancies + vacancy_skills + vacancy_languages.
@@ -69,15 +77,17 @@ export interface VacancyMatchInput {
   salaryFrom: number | null;
   salaryTo: number | null;
   salaryNegotiable: boolean;
+  /** vacancies.salary_type (default 'monthly') */
+  salaryType: Enums<"salary_type">;
   experienceMinMonths: number;
   employmentType: Enums<"employment_type">;
   schedule: Enums<"work_schedule">;
   workFormat: Enums<"work_format">;
   /**
-   * vacancy_skills.skill_id[] — SQL `count(*)` barcha vacancy_skills qatorlarini sanaydi
-   * (is_required dan qat'i nazar), shuning uchun bu yerga ham hammasi beriladi.
+   * vacancy_skills — hammasi (is_required bilan). SQL faqat majburiylarini sanaydi;
+   * majburiysi bo'lmasa — barchasi bo'yicha nisbat; umuman bo'lmasa — skills_not_required.
    */
-  requiredSkillIds: string[];
+  skills: VacancySkill[];
   /** vacancy_languages — SQL tartibida (PK: language_code bo'yicha) bering */
   languages: VacancyLanguage[];
   educationMin: Enums<"education_level"> | null;
@@ -91,6 +101,7 @@ export const MATCH_REASON_KEYS = [
   "category_match_partial",
   "category_mismatch",
   "remote_ok",
+  "remote_preferred",
   "district_match",
   "distance_near",
   "distance_ok",
@@ -98,6 +109,7 @@ export const MATCH_REASON_KEYS = [
   "location_far",
   "salary_unspecified",
   "salary_negotiable",
+  "salary_type_differs",
   "salary_ok",
   "salary_min_ok",
   "salary_below",
@@ -115,6 +127,7 @@ export const MATCH_REASON_KEYS = [
   "work_format_mismatch",
   "language_required",
   "languages_ok",
+  "languages_partial",
   "education_required",
   "age_out_of_range",
 ] as const;
@@ -123,7 +136,7 @@ export type MatchReasonKey = (typeof MATCH_REASON_KEYS)[number];
 
 /**
  * Bitta moslik sababi. `key` va `ok` dan tashqari parametrlar SQL bilan bir xil:
- * km (1 kasr), matched/required, required_months, vacancy_max/worker_min, vacancy_schedule,
+ * km (butun, ≥1), matched/required, required_months, vacancy_max/worker_min, vacancy_schedule,
  * vacancy_type, vacancy_format, lang/level, level, min/max. SQL `jsonb_build_object` null
  * qiymatlarni saqlaydi — shuning uchun bu yerda ham `null` aniq beriladi (`undefined` emas).
  */

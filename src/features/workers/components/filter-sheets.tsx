@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { LocateFixed, Search, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatMoneyShort } from "@/lib/format";
@@ -343,27 +343,28 @@ const SECTION_RESET: Record<Exclude<SheetKind, "all">, Partial<WorkerSearchParam
   schedule: { schedule: [], employment: [] },
 };
 
-export function FilterSheet({
-  kind,
-  onClose,
-  params,
-  reference,
-  vacancyHasCoords,
-  onApply,
-}: {
+interface FilterSheetProps {
   kind: SheetKind | null;
   onClose: () => void;
   params: WorkerSearchParams;
   reference: FilterReference;
   vacancyHasCoords: boolean;
   onApply: (draft: WorkerSearchParams) => void;
-}) {
+}
+
+/** Dialog qobig'i: har ochilishda tana (draft holati) qaytadan yaratiladi (key = kind) */
+export function FilterSheet(props: FilterSheetProps) {
+  const open = props.kind !== null;
+  return (
+    <Dialog open={open} onOpenChange={(o) => (!o ? props.onClose() : undefined)}>
+      {props.kind ? <FilterSheetBody key={props.kind} {...props} kind={props.kind} /> : null}
+    </Dialog>
+  );
+}
+
+function FilterSheetBody({ kind, onClose, params, reference, vacancyHasCoords, onApply }: FilterSheetProps & { kind: SheetKind }) {
   const { t } = useT();
-  const open = kind !== null;
   const [draft, setDraft] = useState<WorkerSearchParams>(params);
-  useEffect(() => {
-    if (open) setDraft(params);
-  }, [open, params]);
   const patch: Patch = (p) => setDraft((d) => ({ ...d, ...p }));
   const props: SectionProps = { draft, patch, reference };
 
@@ -377,7 +378,6 @@ export function FilterSheet({
   };
 
   const reset = () => {
-    if (!kind) return;
     if (kind === "all") {
       setDraft({ ...EMPTY_WORKER_SEARCH, q: draft.q, vacancy: draft.vacancy, lat: draft.lat, lng: draft.lng, sort: draft.sort === "distance" && draft.lat === null && !vacancyHasCoords ? "relevant" : draft.sort });
       return;
@@ -434,32 +434,28 @@ export function FilterSheet({
   }
 
   return (
-    <Dialog open={open} onOpenChange={(o) => (!o ? onClose() : undefined)}>
-      {kind ? (
-        <Sheet
-          title={titles[kind]}
-          className={kind === "all" ? "sm:max-w-2xl" : undefined}
-          footer={
-            <div className="flex gap-2">
-              <Button type="button" variant="secondary" onClick={reset}>
-                {t("workers.filters.reset")}
-              </Button>
-              <Button
-                type="button"
-                fullWidth
-                onClick={() => {
-                  onApply(draft);
-                  onClose();
-                }}
-              >
-                {t("workers.filters.show_results")}
-              </Button>
-            </div>
-          }
-        >
-          <div className="pt-1">{body}</div>
-        </Sheet>
-      ) : null}
-    </Dialog>
+    <Sheet
+      title={titles[kind]}
+      className={kind === "all" ? "sm:max-w-2xl" : undefined}
+      footer={
+        <div className="flex gap-2">
+          <Button type="button" variant="secondary" onClick={reset}>
+            {t("workers.filters.reset")}
+          </Button>
+          <Button
+            type="button"
+            fullWidth
+            onClick={() => {
+              onApply(draft);
+              onClose();
+            }}
+          >
+            {t("workers.filters.show_results")}
+          </Button>
+        </div>
+      }
+    >
+      <div className="pt-1">{body}</div>
+    </Sheet>
   );
 }

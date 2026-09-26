@@ -134,6 +134,14 @@ export function roundNumeric(value: number, decimals = 0): number {
 }
 
 /**
+ * SQL `greatest(1, ceil(km))::int` — masofa butun km gacha yuqoriga yaxlitlanadi (aniq koordinata
+ * oshkor bo'lmasligi uchun), minimal qiymat 1.
+ */
+export function ceilKm(km: number): number {
+  return Math.max(1, Math.ceil(km));
+}
+
+/**
  * Postgres `extract(year from age(birth_date))` nusxasi: to'liq yillar soni.
  * `now` ning UTC sanasi ishlatiladi (Supabase sessiyasi UTC). Noto'g'ri sana → null.
  */
@@ -187,8 +195,9 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
     r.push(reason("category_mismatch", false));
   }
 
-  // -- 2. Joylashuv (15)
+  // -- 2. Joylashuv (15). km = greatest(1, ceil(km)) — butun son
   //   v.is_remote and w.remote_preference <> 'no'                        → 15 remote_ok
+  //   w.remote_preference = 'yes' and not v.is_remote                    →  5 remote_preferred (warn)
   //   aks holda km := distance_km(worker_geo, v.lat/lng) (null bo'lishi mumkin):
   //     v.district_id = w.district_id yoki worker_locations ichida        → 15 district_match {km|null}
   //     km <= 5                                                          → 15 distance_near {km}
@@ -198,6 +207,9 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
   if (vacancy.isRemote && worker.remotePreference !== "no") {
     s += 15;
     r.push(reason("remote_ok", true));
+  } else if (worker.remotePreference === "yes" && !vacancy.isRemote) {
+    s += 5;
+    r.push(reason("remote_preferred", "warn"));
   } else {
     const km = worker.geo ? distanceKm(worker.geo.lat, worker.geo.lng, vacancy.lat, vacancy.lng) : null;
     const districtMatch =
@@ -205,13 +217,13 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
       (vacancy.districtId === worker.districtId || worker.workDistrictIds.includes(vacancy.districtId));
     if (districtMatch) {
       s += 15;
-      r.push(reason("district_match", true, { km: km !== null ? roundNumeric(km, 1) : null }));
+      r.push(reason("district_match", true, { km: km !== null ? ceilKm(km) : null }));
     } else if (km !== null && km <= 5) {
       s += 15;
-      r.push(reason("distance_near", true, { km: roundNumeric(km, 1) }));
+      r.push(reason("distance_near", true, { km: ceilKm(km) }));
     } else if (km !== null && km <= 15) {
       s += 10;
-      r.push(reason("distance_ok", "warn", { km: roundNumeric(km, 1) }));
+      r.push(reason("distance_ok", "warn", { km: ceilKm(km) }));
     } else if (vacancy.regionId !== null && vacancy.regionId === worker.regionId) {
       s += 8;
       r.push(reason("region_match", "warn"));
@@ -220,24 +232,29 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
     }
   }
 
-  // -- 3. Maosh (15)
+  // -- 3. Maosh (15). Turlari (oylik/kunlik/soatlik) farq qilsa taqqoslanmaydi
   //   worker_min := coalesce(pr.salary_min, pr.salary_expected)
   //   worker_min is null                                                 → 10 salary_unspecified (warn)
   //   v.salary_negotiable or (from is null and to is null)               →  8 salary_negotiable (warn)
+  //   pr.salary_type <> 'negotiable' and v.salary_type <> 'negotiable'
+  //     and pr.salary_type <> v.salary_type                              →  8 salary_type_differs {vacancy_type} (warn)
   //   coalesce(to, from) >= coalesce(pr.salary_expected, worker_min)     → 15 salary_ok
   //   coalesce(to, from) >= worker_min                                   → 12 salary_min_ok
   //   aks holda                                                          →  0 salary_below {vacancy_max, worker_min}
   const workerMin = pr?.salaryMin ?? pr?.salaryExpected ?? null;
-  if (workerMin === null) {
+  if (workerMin === null || pr === null) {
     s += 10;
     r.push(reason("salary_unspecified", "warn"));
   } else if (vacancy.salaryNegotiable || (vacancy.salaryFrom === null && vacancy.salaryTo === null)) {
     s += 8;
     r.push(reason("salary_negotiable", "warn"));
+  } else if (pr.salaryType !== "negotiable" && vacancy.salaryType !== "negotiable" && pr.salaryType !== vacancy.salaryType) {
+    s += 8;
+    r.push(reason("salary_type_differs", "warn", { vacancy_type: vacancy.salaryType }));
   } else {
     // Bu yerda kamida bittasi null emas (yuqoridagi shart).
     const vacancyMax = (vacancy.salaryTo ?? vacancy.salaryFrom) as number;
-    const expected = pr?.salaryExpected ?? workerMin;
+    const expected = pr.salaryExpected ?? workerMin;
     if (vacancyMax >= expected) {
       s += 15;
       r.push(reason("salary_ok", true));
@@ -265,20 +282,25 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
     r.push(reason("experience_low", false, { required_months: vacancy.experienceMinMonths }));
   }
 
-  // -- 5. Ko'nikmalar (15)
-  //   req_skills = count(vacancy_skills); req_skills = 0                 → 15 skills_not_required
-  //   aks holda matched = count(vacancy_skills ∩ worker_skills)
-  //     s += round(15.0 * matched / req)  (numeric: 0.5 noldan uzoqqa)
+  // -- 5. Ko'nikmalar (15): faqat majburiy (is_required) ko'nikmalar; majburiysi bo'lmasa — barchasi
+  //   req_skills = count(vacancy_skills where is_required)
+  //   req_skills = 0 → req_skills = count(vacancy_skills), matched = count(barchasi ∩ worker_skills)
+  //   aks holda        matched = count(majburiylar ∩ worker_skills)
+  //   req_skills = 0                                                     → 15 skills_not_required
+  //   aks holda s += round(15.0 * matched / req)  (numeric: 0.5 noldan uzoqqa)
   //     skills_matched {matched, required}, ok: matched = req → true, > 0 → 'warn', 0 → false
-  const requiredSkills = new Set(vacancy.requiredSkillIds);
-  const reqSkills = requiredSkills.size;
+  const vacancySkills = new Map<string, boolean>(); // PK (vacancy_id, skill_id): bitta skill bir marta
+  for (const skill of vacancy.skills) vacancySkills.set(skill.skillId, skill.isRequired);
+  let countedSkills = [...vacancySkills].filter(([, isRequired]) => isRequired).map(([id]) => id);
+  if (countedSkills.length === 0) countedSkills = [...vacancySkills.keys()];
+  const reqSkills = countedSkills.length;
   if (reqSkills === 0) {
     s += 15;
     r.push(reason("skills_not_required", true));
   } else {
     const workerSkills = new Set(worker.skillIds);
     let matchedSkills = 0;
-    for (const id of requiredSkills) if (workerSkills.has(id)) matchedSkills += 1;
+    for (const id of countedSkills) if (workerSkills.has(id)) matchedSkills += 1;
     s += roundNumeric((15 * matchedSkills) / reqSkills);
     r.push(
       reason("skills_matched", matchedSkills === reqSkills ? true : matchedSkills > 0 ? "warn" : false, {
@@ -326,7 +348,9 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
   //   har bir vacancy_languages uchun: worker_languages'da shu kod va rank(level) >= rank(min_level)
   //     bo'lsa matched++, aks holda language_required {lang, level} (false)
   //   lang_total = 0                                                     → 5 (sababsiz)
-  //   aks holda s += round(5.0 * matched / total); hammasi mos bo'lsa    → languages_ok
+  //   aks holda s += round(5.0 * matched / total);
+  //     hammasi mos                                                      → languages_ok
+  //     qismi mos (matched > 0)                                          → languages_partial {matched, required} (warn)
   let langTotal = 0;
   let langMatched = 0;
   let langOk = true;
@@ -346,6 +370,7 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
   } else {
     s += roundNumeric((5 * langMatched) / langTotal);
     if (langOk) r.push(reason("languages_ok", true));
+    else if (langMatched > 0) r.push(reason("languages_partial", "warn", { matched: langMatched, required: langTotal }));
   }
 
   // -- Ogohlantirishlar (ballga ta'sir qilmaydi)

@@ -188,8 +188,26 @@ function publicUrl(supabase: SupabaseServer, bucket: "portfolio" | "avatars", pa
   return supabase.storage.from(bucket).getPublicUrl(path).data.publicUrl;
 }
 
+/** Vakansiya men boshqaradiganlar ichidami? Ro'yxatda bo'lmasa manages_vacancy RPC bilan tekshiriladi. */
+export async function getManagedVacancy(vacancyId: string | null, session: Pick<SessionContext, "userId" | "companyId">): Promise<MyVacancy | null> {
+  if (!vacancyId || !isUuid(vacancyId)) return null;
+  const mine = (await getMyVacancies(session)).find((v) => v.id === vacancyId);
+  if (mine) return mine;
+  if (!(await managesVacancy(vacancyId))) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.from("vacancies").select(VACANCY_COLS).eq("id", vacancyId).maybeSingle();
+  return data ?? null;
+}
+
+/** get_contact: telefon ko'rsatishga ruxsat bormi va tasdiqlanganmi (raqamning o'zi ContactCard'da) */
+export async function getContactFlags(profileId: string): Promise<{ allowed: boolean; phoneVerified: boolean }> {
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("get_contact", { p_profile_id: profileId }).maybeSingle();
+  return { allowed: data?.allowed === true, phoneVerified: data?.allowed === true && data.phone_verified === true };
+}
+
 /** worker_profiles.id bo'yicha to'liq profil. RLS yashirsa null. Koordinatalar hech qachon o'qilmaydi. */
-export async function getCandidate(id: string): Promise<CandidateProfile | null> {
+export const getCandidate = cache(async (id: string): Promise<CandidateProfile | null> => {
   if (!isUuid(id)) return null;
   const supabase = await createClient();
   const { data } = await supabase
@@ -258,7 +276,7 @@ export async function getCandidate(id: string): Promise<CandidateProfile | null>
     education,
     portfolio,
   };
-}
+});
 
 /** Ko'rishlar sonini oshirish (xatolik e'tiborsiz) */
 export async function recordWorkerView(workerId: string): Promise<void> {

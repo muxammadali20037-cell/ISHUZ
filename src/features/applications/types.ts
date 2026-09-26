@@ -75,7 +75,8 @@ export interface VacancySummary {
   salary_to: number | null;
   salary_type: Enums<"salary_type">;
   salary_negotiable: boolean;
-  owner_profile_id: string;
+  /** Egasi (kompaniya vakansiyasida null bo'lishi mumkin) */
+  owner_profile_id: string | null;
   company_id: string | null;
   company: CompanySummary | null;
 }
@@ -145,7 +146,7 @@ export interface ManagedVacancy {
   title: string;
   slug: string;
   status: Enums<"vacancy_status">;
-  owner_profile_id: string;
+  owner_profile_id: string | null;
   company_id: string | null;
 }
 
