@@ -2313,6 +2313,16 @@ export type Database = {
           vacancies: number;
         }[];
       };
+      admin_log: {
+        Args: {
+          p_action: string;
+          p_after?: Json;
+          p_before?: Json;
+          p_target_id?: string;
+          p_target_type: string;
+        };
+        Returns: undefined;
+      };
       admin_moderate_review: {
         Args: {
           p_note?: string;

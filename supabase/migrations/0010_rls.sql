@@ -341,7 +341,7 @@ grant execute on function
   public.admin_set_user_block(uuid, boolean, text), public.admin_set_vacancy_status(uuid, public.vacancy_status, text),
   public.admin_review_verification(uuid, public.verification_status, text), public.admin_resolve_report(uuid, public.report_status, text),
   public.admin_moderate_review(uuid, public.review_status, text), public.admin_broadcast(text, text, public.app_role, text),
-  public.admin_stats(), public.admin_daily_stats(int)
+  public.admin_stats(), public.admin_daily_stats(int), public.admin_log(text, text, text, jsonb, jsonb)
   to authenticated;
 -- Faqat server (service_role): expire_vacancies, expire_offers, notify_expiring_vacancies, notify_matching_workers, check_rate_limit, write_audit, notify
 grant execute on all functions in schema public to service_role;

@@ -1122,6 +1122,15 @@ begin
   return n;
 end $$;
 
+-- Admin to'g'ridan-to'g'ri jadval yozuvlari (kategoriya, ko'nikma, hudud, sozlamalar, adminlar) uchun audit
+create or replace function public.admin_log(p_action text, p_target_type text, p_target_id text default null, p_before jsonb default null, p_after jsonb default null)
+returns void language plpgsql security definer set search_path = public as $$
+begin
+  if not public.is_admin() then raise exception 'forbidden' using errcode = '42501'; end if;
+  if p_action !~ '^[a-z_]+\.[a-z_]+$' then raise exception 'invalid_action' using errcode = '23514'; end if;
+  perform public.write_audit(p_action, p_target_type, p_target_id, p_before, p_after);
+end $$;
+
 create or replace function public.admin_stats()
 returns jsonb language plpgsql stable security definer set search_path = public as $$
 begin
