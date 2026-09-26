@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Images, Link2, Plus, Sparkles, Trash2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -25,7 +25,6 @@ export function Step7Portfolio({ userId, items, recommended }: { userId: string;
     register,
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<PortfolioInput>({
     resolver: zodResolver(portfolioSchema),
@@ -34,6 +33,7 @@ export function Step7Portfolio({ userId, items, recommended }: { userId: string;
     },
   });
   const { fields, append, remove } = useFieldArray({ control, name: "items" });
+  const watchedItems = useWatch({ control, name: "items" });
   const typeOptions = Constants.public.Enums.portfolio_type.map((v) => ({ value: v, label: tEnum("portfolio_type", v) }));
 
   return (
@@ -58,7 +58,7 @@ export function Step7Portfolio({ userId, items, recommended }: { userId: string;
       ) : null}
 
       {fields.map((item, i) => {
-        const type = watch(`items.${i}.type`);
+        const type = watchedItems[i]?.type ?? "image";
         const itemErrors = errors.items?.[i];
         return (
           <div key={item.id} className="space-y-4 rounded-2xl border border-border bg-card p-4">

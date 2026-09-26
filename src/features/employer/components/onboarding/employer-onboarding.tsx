@@ -1,16 +1,15 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/misc";
 import { toast } from "@/components/ui/toast";
-import { completeCompanyOnboarding, completePersonOnboarding, saveEmployerDraft, saveEmployerType } from "../../actions";
+import { completeCompanyOnboarding, completePersonOnboarding, saveCompanyLogo, saveEmployerDraft, saveEmployerType } from "../../actions";
 import { errorMessageKey } from "../../mappers";
 import { uploadCompanyLogo } from "../../storage";
-import { saveCompanyLogo } from "../../actions";
 import type { CompanyFormValues, PersonFormInput, PersonFormValues } from "../../schema";
 import { CompanyForm } from "../company-form";
 import { PersonForm } from "../person-form";
@@ -38,7 +37,6 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const [step, setStep] = useState<1 | 2>(prefill.employerType ? 2 : 1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [pending, startTransition] = useTransition();
-  const personValues = useRef<(() => PersonFormInput) | null>(null);
 
   const fail = (code: string): void => {
     toast.error(t(errorMessageKey(code)));
@@ -168,10 +166,8 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
               onSubmit={submitPerson}
               submitLabel={t("employer.onboarding.finish")}
               pending={pending}
-              onValuesRef={(get) => {
-                personValues.current = get;
-              }}
-              secondaryAction={backButton(() => goBack(personValues.current?.()))}
+              onBack={(draft) => goBack(draft)}
+              backLabel={t("common.actions.back")}
             />
           </div>
         </section>

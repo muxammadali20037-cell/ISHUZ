@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, type ReactNode } from "react";
-import { useForm } from "react-hook-form";
+import { useMemo } from "react";
+import { ChevronLeft } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -20,19 +21,19 @@ export function PersonForm({
   onSubmit,
   submitLabel,
   pending,
-  secondaryAction,
+  onBack,
+  backLabel,
   className,
-  /** Orqaga bosilganda joriy qiymatlarni olish uchun (qoralama saqlash) */
-  onValuesRef,
 }: {
   defaultValues?: Partial<PersonFormInput>;
   refs: Pick<ReferenceLists, "regions" | "districts">;
   onSubmit: (values: PersonFormValues) => void | Promise<void>;
   submitLabel: string;
   pending?: boolean;
-  secondaryAction?: ReactNode;
+  /** "Orqaga": joriy (tekshirilmagan) qiymatlar qoralama sifatida beriladi */
+  onBack?: (draft: PersonFormInput) => void;
+  backLabel?: string;
   className?: string;
-  onValuesRef?: (getValues: () => PersonFormInput) => void;
 }) {
   const { t, name } = useT();
   const form = useForm<PersonFormInput, unknown, PersonFormValues>({
@@ -40,10 +41,9 @@ export function PersonForm({
     defaultValues: { ...EMPTY_PERSON_FORM, ...defaultValues },
     mode: "onBlur",
   });
-  const { register, control, handleSubmit, watch, setValue, getValues, formState } = form;
-  onValuesRef?.(getValues);
+  const { register, control, handleSubmit, setValue, getValues, formState } = form;
   const errors = formState.errors;
-  const regionId = watch("regionId");
+  const regionId = useWatch({ control, name: "regionId" });
   const regionOptions = useMemo(() => refs.regions.map((r) => ({ value: r.id, label: name(r) })), [refs.regions, name]);
   const districtOptions = useMemo(() => refs.districts.filter((d) => d.region_id === regionId).map((d) => ({ value: d.id, label: name(d) })), [refs.districts, regionId, name]);
   const err = (key: keyof PersonFormInput) => {
@@ -77,7 +77,11 @@ export function PersonForm({
         </Field>
       </fieldset>
       <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-        {secondaryAction}
+        {onBack ? (
+          <Button type="button" variant="ghost" size="lg" disabled={pending} onClick={() => onBack(getValues())}>
+            <ChevronLeft className="size-5" /> {backLabel}
+          </Button>
+        ) : null}
         <Button type="submit" size="lg" loading={pending} className="sm:min-w-48">
           {submitLabel}
         </Button>

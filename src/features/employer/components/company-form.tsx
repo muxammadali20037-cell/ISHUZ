@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, type ReactNode } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -57,9 +57,9 @@ export function CompanyForm({
     defaultValues: { ...EMPTY_COMPANY_FORM, ...defaultValues },
     mode: "onBlur",
   });
-  const { register, control, handleSubmit, watch, setValue, formState } = form;
+  const { register, control, handleSubmit, setValue, formState } = form;
   const errors = formState.errors;
-  const regionId = watch("regionId");
+  const regionId = useWatch({ control, name: "regionId" });
 
   const regionOptions = useMemo(() => refs.regions.map((r) => ({ value: r.id, label: name(r) })), [refs.regions, name]);
   const districtOptions = useMemo(() => refs.districts.filter((d) => d.region_id === regionId).map((d) => ({ value: d.id, label: name(d) })), [refs.districts, regionId, name]);

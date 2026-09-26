@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Briefcase, Plus, Trash2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -31,7 +31,6 @@ export function Step4Experience({ draft }: { draft: ExperienceDraft }) {
     register,
     control,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<ExperienceInput>({
@@ -50,7 +49,8 @@ export function Step4Experience({ draft }: { draft: ExperienceDraft }) {
     },
   });
   const { fields, append, remove } = useFieldArray({ control, name: "entries" });
-  const level = watch("experience_level");
+  const level = useWatch({ control, name: "experience_level" });
+  const entries = useWatch({ control, name: "entries" });
   const showEntries = !!level && level !== "none";
 
   return (
@@ -78,7 +78,7 @@ export function Step4Experience({ draft }: { draft: ExperienceDraft }) {
           </div>
 
           {fields.map((item, i) => {
-            const isCurrent = watch(`entries.${i}.is_current`);
+            const isCurrent = entries[i]?.is_current ?? false;
             const entryErrors = errors.entries?.[i];
             return (
               <div key={item.id} className="space-y-4 rounded-2xl border border-border bg-card p-4">

@@ -189,7 +189,7 @@ function NoteEditor({ item, onSaved }: { item: SavedWorkerItem; onSaved: (note: 
     );
   }
   return (
-    <button type="button" onClick={() => setEditing(true)} className={cn("flex w-full items-start gap-2 rounded-xl px-2 py-1.5 text-left text-sm transition-colors hover:bg-secondary", item.note ? "text-foreground" : "text-muted-foreground")}>
+    <button type="button" onClick={() => setEditing(true)} title={item.note ? t("workers.saved.note_edit") : t("workers.saved.note_add")} className={cn("flex w-full items-start gap-2 rounded-xl px-2 py-1.5 text-left text-sm transition-colors hover:bg-secondary", item.note ? "text-foreground" : "text-muted-foreground")}>
       <StickyNote className="mt-0.5 size-4 shrink-0 text-warning" />
       <span className="whitespace-pre-line">{item.note ?? t("workers.saved.note_add")}</span>
     </button>

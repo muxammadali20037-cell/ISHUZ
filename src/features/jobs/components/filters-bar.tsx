@@ -7,7 +7,7 @@ import { useT } from "@/lib/i18n/client";
 import { formatMoneyShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { FilterChip } from "@/components/ui/chip";
-import { DEFAULT_JOBS_PARAMS, clearFilters, countActiveFilters, jobsHref, parseJobsSearchParams, type JobsSearchParams } from "../search-params";
+import { clearFilters, countActiveFilters, jobsHref, parseJobsSearchParams, type JobsSearchParams } from "../search-params";
 import type { JobsFilterRefs } from "../types";
 import { FilterSheet, type SheetKind } from "./filter-sheet";
 
@@ -39,7 +39,8 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
   const router = useRouter();
   const sp = useSearchParams();
   const params = useMemo(() => parseJobsSearchParams(new URLSearchParams(sp.toString())), [sp]);
-  const [sheet, setSheet] = useState<SheetKind | null>(null);
+  const [sheet, setSheet] = useState<SheetKind>("all");
+  const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<JobsSearchParams>(params);
   const [pending, startTransition] = useTransition();
 
@@ -47,10 +48,11 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
   const openSheet = (kind: SheetKind) => {
     setDraft(params);
     setSheet(kind);
+    setOpen(true);
   };
   const patch = (p: Partial<JobsSearchParams>) => setDraft((d) => ({ ...d, ...p }));
   const apply = () => {
-    setSheet(null);
+    setOpen(false);
     push(draft);
   };
   const resetSheet = () => {
@@ -134,10 +136,9 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
 
       <FilterSheet
         kind={sheet}
-        onOpenChange={(open) => {
-          if (!open) setSheet(null);
-        }}
-        draft={sheet ? draft : DEFAULT_JOBS_PARAMS}
+        open={open}
+        onOpenChange={setOpen}
+        draft={draft}
         patch={patch}
         refs={refs}
         onApply={apply}

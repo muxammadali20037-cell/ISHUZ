@@ -22,7 +22,6 @@
     "location_denied": "Joylashuvni aniqlab bo'lmadi. Brauzer ruxsatini tekshiring",
     "location_unsupported": "Qurilmangiz joylashuvni aniqlashni qo'llab-quvvatlamaydi",
     "near_me": "Yaqinimda",
-    "within_km": "{km} km ichida",
     "vacancy_location": "Vakansiya manzilidan",
     "my_location": "Mening joylashuvim",
     "updating": "Yangilanmoqda..."
@@ -38,7 +37,6 @@
     "title": "Filtrlar",
     "category": "Kasb",
     "subcategory": "Yo'nalish",
-    "all_subcategories": "Barcha yo'nalishlar",
     "region": "Viloyat",
     "all_regions": "Butun O'zbekiston",
     "districts": "Tumanlar",
@@ -55,8 +53,6 @@
     "skills": "Ko'nikmalar",
     "skills_search": "Ko'nikma qidiring",
     "skills_none": "Ko'nikma topilmadi",
-    "skills_for_category": "Kasb bo'yicha",
-    "skills_other": "Boshqa ko'nikmalar",
     "status": "Nomzod holati",
     "availability": "Qachon boshlay oladi",
     "extra": "Qo'shimcha",
@@ -68,7 +64,6 @@
     "distance": "Masofa",
     "distance_hint": "Masofa bo'yicha filtrlash uchun joylashuvingizni yoqing yoki vakansiya tanlang",
     "max_km": "{km} km gacha",
-    "any": "Farqi yo'q",
     "selected_count": "{count} ta tanlandi",
     "show_results": "Natijalarni ko'rsatish",
     "reset": "Tozalash"
@@ -91,8 +86,7 @@
     "save_toast": "Nomzod saqlandi",
     "unsave_toast": "Saqlanganlardan olib tashlandi",
     "prev": "Oldingi",
-    "next": "Keyingi",
-    "page_of": "{page} / {total}"
+    "next": "Keyingi"
   },
   "candidate": {
     "back": "Nomzodlar",
@@ -133,10 +127,7 @@
     "match_select_placeholder": "Vakansiyani tanlang",
     "match_none": "Vakansiyasiz",
     "no_active_vacancies": "Moslikni ko'rish uchun faol vakansiya kerak",
-    "contact": "Kontakt",
-    "verified_phone": "Telefon tasdiqlangan",
-    "share": "Ulashish",
-    "link_copied": "Havola nusxalandi"
+    "verified_phone": "Telefon tasdiqlangan"
   },
   "actions": {
     "offer": "Taklif yuborish",
@@ -177,8 +168,7 @@
     "note_placeholder": "Bu nomzod haqida qisqa eslatma",
     "submit": "Saqlash",
     "saved": "Nomzod saqlandi",
-    "removed": "Saqlanganlardan olib tashlandi",
-    "no_folder": "Papkasiz"
+    "removed": "Saqlanganlardan olib tashlandi"
   },
   "saved": {
     "title": "Saqlangan nomzodlar",
@@ -210,7 +200,6 @@
   "candidates": {
     "title": "Vakansiya bo'yicha nomzodlar",
     "desc": "Nomzodlar tanlangan vakansiya talablariga mosligi bo'yicha saralanadi",
-    "choose": "Vakansiyani tanlang",
     "no_active_hint": "Faol vakansiyangiz yo'q. Quyidagilardan birini tanlang yoki yangi vakansiya joylang",
     "empty_title": "Hali vakansiyangiz yo'q",
     "empty_desc": "Vakansiya joylang — nomzodlar sizga mosligi bo'yicha saralanadi",

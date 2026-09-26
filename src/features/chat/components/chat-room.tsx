@@ -106,12 +106,23 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   const listRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const nearBottomRef = useRef(true);
-  const lastCountRef = useRef(initial.messages.length);
 
+  /** Faqat DOM: pastga skroll (holatga tegmaydi) */
   const scrollToBottom = useCallback((behavior: ScrollBehavior = "auto") => {
     bottomRef.current?.scrollIntoView({ block: "end", behavior });
-    setShowJump(false);
   }, []);
+
+  /** Yangi xabar qo'shilgandan keyin: pastda bo'lsak yoki o'zimizniki bo'lsa — pastga; aks holda "Yangi xabarlar" tugmasi */
+  const afterAppend = useCallback(
+    (mine: boolean) => {
+      if (mine || nearBottomRef.current) {
+        requestAnimationFrame(() => scrollToBottom("smooth"));
+      } else {
+        setShowJump(true);
+      }
+    },
+    [scrollToBottom],
+  );
 
   const markRead = useCallback(() => {
     if (typeof document !== "undefined" && document.visibilityState !== "visible") return;
@@ -144,18 +155,6 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
     if (nearBottomRef.current) setShowJump(false);
   };
 
-  // Yangi xabar kelganda: pastda bo'lsak yoki o'zimizniki bo'lsa — pastga; aks holda "Pastga" tugmasi
-  useEffect(() => {
-    if (messages.length <= lastCountRef.current) {
-      lastCountRef.current = messages.length;
-      return;
-    }
-    lastCountRef.current = messages.length;
-    const last = messages[messages.length - 1];
-    if (nearBottomRef.current || last?.sender_id === myId) scrollToBottom("smooth");
-    else setShowJump(true);
-  }, [messages, myId, scrollToBottom]);
-
   // Realtime: INSERT / UPDATE (o'chirish) faqat shu suhbat uchun
   useEffect(() => {
     const supabase = createClient();
@@ -164,6 +163,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
       .on<MessageRow>("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` }, (payload) => {
         const row = payload.new;
         setMessages((prev) => mergeIncoming(prev, rowToMessage(row), myId));
+        afterAppend(row.sender_id === myId);
         if (row.sender_id !== myId) markRead();
       })
       .on<MessageRow>("postgres_changes", { event: "UPDATE", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` }, (payload) => {
@@ -174,7 +174,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
     return () => {
       void supabase.removeChannel(channel);
     };
-  }, [conversationId, myId, markRead]);
+  }, [conversationId, myId, markRead, afterAppend]);
 
   const failTemp = (clientId: string, code: string) => {
     setMessages((prev) => prev.map((m) => (m.client_id === clientId ? { ...m, status: "failed" } : m)));
@@ -185,6 +185,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   const handleSendText = async (text: string): Promise<boolean> => {
     const temp = makeTemp(conversationId, myId, { type: "text", body: text });
     setMessages((prev) => [...prev, temp]);
+    afterAppend(true);
     const res = await sendTextMessage({ conversationId, body: text });
     if (!res.ok || !res.data) {
       failTemp(temp.client_id ?? "", res.ok ? "generic" : res.error);
@@ -198,6 +199,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   const sendUploaded = async (file: File | Blob, kind: UploadKind, extra: { name?: string; duration?: number }, preview: Partial<ChatMessage>) => {
     const temp = makeTemp(conversationId, myId, { type: kind, ...preview });
     setMessages((prev) => [...prev, temp]);
+    afterAppend(true);
     const uploaded = await uploadChatFile(conversationId, file, kind, extra);
     if (!uploaded.ok) {
       setMessages((prev) => prev.filter((m) => m.client_id !== temp.client_id));
@@ -233,6 +235,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   const handleSendLocation = async (lat: number, lng: number) => {
     const temp = makeTemp(conversationId, myId, { type: "location", lat, lng });
     setMessages((prev) => [...prev, temp]);
+    afterAppend(true);
     const res = await sendLocationMessage({ conversationId, lat, lng });
     if (!res.ok || !res.data) {
       failTemp(temp.client_id ?? "", res.ok ? "generic" : res.error);
@@ -372,7 +375,10 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
         <div className="pointer-events-none relative">
           <button
             type="button"
-            onClick={() => scrollToBottom("smooth")}
+            onClick={() => {
+              setShowJump(false);
+              scrollToBottom("smooth");
+            }}
             className={cn(
               "pointer-events-auto absolute bottom-3 left-1/2 flex h-9 -translate-x-1/2 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-semibold text-primary-foreground shadow-lg",
               "animate-in fade-in-0 slide-in-from-bottom-2",

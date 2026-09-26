@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LocateFixed, MapPin, ShieldCheck } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -35,7 +35,6 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
     control,
     register,
     handleSubmit,
-    watch,
     setValue,
     formState: { errors },
   } = useForm<LocationInput>({
@@ -48,8 +47,8 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
       remote_preference: draft.remote_preference ?? undefined,
     },
   });
-  const regionId = watch("region_id");
-  const workDistricts = watch("work_districts");
+  const regionId = useWatch({ control, name: "region_id" });
+  const workDistricts = useWatch({ control, name: "work_districts" });
   const [browseRegion, setBrowseRegion] = useState(draft.region_id ?? regions[0]?.id ?? "");
 
   const regionOptions = useMemo(() => regions.map((r) => ({ value: r.id, label: name(r) })), [regions, name]);

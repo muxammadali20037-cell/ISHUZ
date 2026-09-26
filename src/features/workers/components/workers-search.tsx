@@ -3,6 +3,7 @@
 import { useMemo, useState, type FormEvent } from "react";
 import { Briefcase, MapPin, Clock, Wallet, CalendarDays, LocateFixed, Loader2, Search, SlidersHorizontal, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import type { TFunction } from "@/lib/i18n/translate";
 import { formatMoneyShort } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { Chip, FilterChip } from "@/components/ui/chip";
@@ -18,6 +19,11 @@ interface ActiveChip {
   key: string;
   label: string;
   remove: Partial<WorkerSearchParams>;
+}
+
+/** Tajriba chipi matni: preset bo'lsa tarjima, aks holda "18+" */
+function experienceLabel(t: TFunction, months: number): string {
+  return (EXPERIENCE_MIN_OPTIONS as readonly number[]).includes(months) ? t(`enums.experience_min_months.${months}`) : `${months}+`;
 }
 
 /**
@@ -54,7 +60,6 @@ export function WorkersSearch({
   const subcategory = category ? (reference.subcategories.find((s) => s.slug === params.subcategory && s.category_id === category.id) ?? null) : null;
   const region = reference.regions.find((r) => r.slug === params.region) ?? null;
   const activeCount = countActiveFilters(params);
-  const experienceLabel = (months: number) => ((EXPERIENCE_MIN_OPTIONS as readonly number[]).includes(months) ? t(`enums.experience_min_months.${months}`) : `${months}+`);
 
   const chips = useMemo<ActiveChip[]>(() => {
     const out: ActiveChip[] = [];
@@ -66,7 +71,7 @@ export function WorkersSearch({
       const label = names.length && names.length <= 2 ? names.map((d) => name(d)).join(", ") : t("workers.filters.selected_count", { count: params.district.length });
       out.push({ key: "district", label, remove: { district: [] } });
     }
-    if (params.experience_min !== null) out.push({ key: "experience", label: experienceLabel(params.experience_min), remove: { experience_min: null } });
+    if (params.experience_min !== null) out.push({ key: "experience", label: experienceLabel(t, params.experience_min), remove: { experience_min: null } });
     if (params.salary_max !== null) out.push({ key: "salary", label: t("workers.filters.salary_up_to", { amount: formatMoneyShort(params.salary_max, locale) }), remove: { salary_max: null } });
     for (const s of params.schedule) out.push({ key: `schedule-${s}`, label: tEnum("work_schedule", s), remove: { schedule: params.schedule.filter((x) => x !== s) } });
     for (const e of params.employment) out.push({ key: `employment-${e}`, label: tEnum("employment_type", e), remove: { employment: params.employment.filter((x) => x !== e) } });
@@ -111,7 +116,7 @@ export function WorkersSearch({
   const quick: { kind: SheetKind; icon: React.ReactNode; label: string; active: boolean }[] = [
     { kind: "category", icon: <Briefcase />, label: category ? name(category) : t("workers.search.chip_category"), active: !!category },
     { kind: "region", icon: <MapPin />, label: region ? name(region) : t("workers.search.chip_region"), active: !!region },
-    { kind: "experience", icon: <Clock />, label: params.experience_min !== null ? experienceLabel(params.experience_min) : t("workers.search.chip_experience"), active: params.experience_min !== null },
+    { kind: "experience", icon: <Clock />, label: params.experience_min !== null ? experienceLabel(t, params.experience_min) : t("workers.search.chip_experience"), active: params.experience_min !== null },
     { kind: "salary", icon: <Wallet />, label: params.salary_max !== null ? formatMoneyShort(params.salary_max, locale) : t("workers.search.chip_salary"), active: params.salary_max !== null },
     {
       kind: "schedule",

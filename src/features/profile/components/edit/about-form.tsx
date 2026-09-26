@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useT } from "@/lib/i18n/client";
@@ -23,8 +23,10 @@ export function AboutForm({ headline, about }: { headline: string | null; about:
   const { pending, run } = useAction();
   const form = useForm<FormValues>({ resolver: zodResolver(formSchema), defaultValues: { headline: headline ?? "", about: about ?? "" } });
   const { errors } = form.formState;
-  const headlineLen = form.watch("headline").length;
-  const aboutLen = form.watch("about").length;
+  const headlineValue = useWatch({ control: form.control, name: "headline" });
+  const aboutValue = useWatch({ control: form.control, name: "about" });
+  const headlineLen = headlineValue.length;
+  const aboutLen = aboutValue.length;
 
   return (
     <form onSubmit={form.handleSubmit((v) => run(() => updateAbout(v)))}>

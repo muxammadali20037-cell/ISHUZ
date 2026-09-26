@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useT } from "@/lib/i18n/client";
 import { Constants, type Enums } from "@/types/database.types";
@@ -29,7 +29,6 @@ export function Step8Preferences({ draft, officialTerms }: { draft: PreferencesD
     register,
     control,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm<PreferencesInput>({
     resolver: zodResolver(preferencesSchema),
@@ -46,7 +45,7 @@ export function Step8Preferences({ draft, officialTerms }: { draft: PreferencesD
       official_terms: p?.official_terms ?? [],
     },
   });
-  const workFormat = watch("work_format");
+  const workFormat = useWatch({ control, name: "work_format" });
   const E = Constants.public.Enums;
 
   return (

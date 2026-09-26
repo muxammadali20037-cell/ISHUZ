@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Upload, X } from "lucide-react";
@@ -46,7 +46,7 @@ export function PortfolioDialog({ item, userId, onClose }: { item: WorkerPortfol
     defaultValues: { title: item?.title ?? "", description: item?.description ?? "", type: item?.type ?? "image", link_url: item?.link_url ?? "" },
   });
   const { errors } = form.formState;
-  const type = form.watch("type") as PortfolioType;
+  const type = useWatch({ control: form.control, name: "type" }) as PortfolioType;
   const totalFiles = existing.length + files.length;
   const busy = pending || !!progress;
 

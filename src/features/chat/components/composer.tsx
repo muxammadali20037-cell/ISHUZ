@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore, type ChangeEvent, type KeyboardEvent } from "react";
 import { Ban, FileText, Image as ImageIcon, MapPin, Mic, Paperclip, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,8 @@ export interface ComposerProps {
 }
 
 const MAX_TEXTAREA_PX = 160;
+const noopSubscribe = () => () => {};
+const getIsTouch = () => navigator.maxTouchPoints > 0 || "ontouchstart" in window;
 
 export function Composer({ disabled, disabledNotice, disabledAction, onSendText, onSendFile, onSendVoice, onSendLocation }: ComposerProps) {
   const { t } = useT();
@@ -32,16 +34,12 @@ export function Composer({ disabled, disabledNotice, disabledAction, onSendText,
   const [recording, setRecording] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const [locating, setLocating] = useState(false);
-  const [voiceMime, setVoiceMime] = useState<string | null>(null);
-  const [isTouch, setIsTouch] = useState(false);
+  // Faqat client'da ma'lum bo'ladigan imkoniyatlar (SSR: null/false → gidratsiya mos)
+  const voiceMime = useSyncExternalStore(noopSubscribe, pickRecorderMime, () => null);
+  const isTouch = useSyncExternalStore(noopSubscribe, getIsTouch, () => false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const docInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    setVoiceMime(pickRecorderMime());
-    setIsTouch(typeof window !== "undefined" && (navigator.maxTouchPoints > 0 || "ontouchstart" in window));
-  }, []);
 
   const resize = useCallback(() => {
     const el = textareaRef.current;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Building2, Pencil, Plus, Trash2 } from "lucide-react";
@@ -126,7 +126,7 @@ function ExperienceDialog({ item, onClose }: { item: WorkerExperienceRow | null;
   const { pending, run } = useAction();
   const form = useForm<FormValues>({ resolver: zodResolver(formSchema), defaultValues: item ? toForm(item) : EMPTY });
   const { errors } = form.formState;
-  const isCurrent = form.watch("is_current");
+  const isCurrent = useWatch({ control: form.control, name: "is_current" });
 
   const submit = form.handleSubmit((v) =>
     run(

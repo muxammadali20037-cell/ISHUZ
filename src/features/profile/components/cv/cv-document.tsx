@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Link2, Mail, MapPin, Phone, Printer, Send, Share2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate, formatMoney, formatPhone, fullName, initials } from "@/lib/format";
@@ -12,6 +12,30 @@ import { ageFrom, formatExperienceRange, formatYearRange } from "../../pure";
 import type { WorkerProfileFull } from "../../queries";
 
 const SHOW_PHONE_KEY = "ishuz_cv_show_phone";
+const phoneListeners = new Set<() => void>();
+function subscribeShowPhone(cb: () => void) {
+  phoneListeners.add(cb);
+  window.addEventListener("storage", cb);
+  return () => {
+    phoneListeners.delete(cb);
+    window.removeEventListener("storage", cb);
+  };
+}
+function readShowPhone(): boolean {
+  try {
+    return localStorage.getItem(SHOW_PHONE_KEY) !== "0";
+  } catch {
+    return true;
+  }
+}
+function writeShowPhone(v: boolean) {
+  try {
+    localStorage.setItem(SHOW_PHONE_KEY, v ? "1" : "0");
+  } catch {
+    /* localStorage yo'q */
+  }
+  phoneListeners.forEach((l) => l());
+}
 
 const PRINT_CSS = `
 @media print {
@@ -34,22 +58,8 @@ export type CvContacts = { phone: string | null; email: string | null; telegram:
  */
 export function CvDocument({ data, profile, contacts, officialTermNames }: { data: WorkerProfileFull; profile: CvProfile; contacts: CvContacts; officialTermNames: Record<string, string> }) {
   const { t, tEnum, name, locale } = useT();
-  const [showPhone, setShowPhone] = useState(true);
-  useEffect(() => {
-    try {
-      setShowPhone(localStorage.getItem(SHOW_PHONE_KEY) !== "0");
-    } catch {
-      /* localStorage yo'q */
-    }
-  }, []);
-  const togglePhone = (v: boolean) => {
-    setShowPhone(v);
-    try {
-      localStorage.setItem(SHOW_PHONE_KEY, v ? "1" : "0");
-    } catch {
-      /* e'tiborsiz */
-    }
-  };
+  const showPhone = useSyncExternalStore(subscribeShowPhone, readShowPhone, () => true);
+  const togglePhone = (v: boolean) => writeShowPhone(v);
 
   const share = async () => {
     const url = `${window.location.origin}/workers/${data.worker.id}`;

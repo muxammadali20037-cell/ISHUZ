@@ -37,10 +37,13 @@ export function NotificationList({
   const [unread, setUnread] = useState(initialUnread);
   const [pending, startTransition] = useTransition();
 
-  useEffect(() => {
+  // Server qayta render qilganda (router.refresh) props'dan holatni yangilash (render vaqtida — React tavsiyasi)
+  const [syncedItems, setSyncedItems] = useState(initialItems);
+  if (syncedItems !== initialItems) {
+    setSyncedItems(initialItems);
     setItems(initialItems);
     setUnread(initialUnread);
-  }, [initialItems, initialUnread]);
+  }
 
   // Realtime: menga yangi bildirishnoma → boshiga qo'shish + toast
   useEffect(() => {

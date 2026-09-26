@@ -35,8 +35,10 @@ export function VoiceRecorder({ mimeType, onCancel, onFinish }: { mimeType: stri
   const cancelledRef = useRef(false);
   const onFinishRef = useRef(onFinish);
   const onCancelRef = useRef(onCancel);
-  onFinishRef.current = onFinish;
-  onCancelRef.current = onCancel;
+  useEffect(() => {
+    onFinishRef.current = onFinish;
+    onCancelRef.current = onCancel;
+  }, [onFinish, onCancel]);
 
   useEffect(() => {
     let active = true;

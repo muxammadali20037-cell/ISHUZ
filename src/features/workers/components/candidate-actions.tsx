@@ -121,7 +121,7 @@ export function CandidateActions(props: Props) {
         className="fixed inset-x-0 z-30 border-t border-border bg-card/95 px-4 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-card/85 md:hidden"
         style={{ bottom: "calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px))" }}
       >
-        <div className="container-app flex items-center gap-2 px-0">
+        <div className="mx-auto flex max-w-6xl items-center gap-2">
           {saveButton(true)}
           {writeButton(true)}
           <div className="flex-1">{offerButton}</div>

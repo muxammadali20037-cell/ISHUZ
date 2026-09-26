@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Check, Pencil, Search } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -27,8 +27,8 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
   const { pending, submit } = useStepSubmit();
   const {
     register,
+    control,
     handleSubmit,
-    watch,
     setValue,
     getValues,
     formState: { errors },
@@ -36,8 +36,8 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
     resolver: zodResolver(professionSchema),
     defaultValues: { category_id: draft.category_id ?? "", subcategory_id: draft.subcategory_id, headline: draft.headline ?? "" },
   });
-  const categoryId = watch("category_id");
-  const subcategoryId = watch("subcategory_id");
+  const categoryId = useWatch({ control, name: "category_id" });
+  const subcategoryId = useWatch({ control, name: "subcategory_id" });
   const [browsing, setBrowsing] = useState(!draft.category_id);
   const [query, setQuery] = useState("");
   const [autoHeadline, setAutoHeadline] = useState<string | null>(null);

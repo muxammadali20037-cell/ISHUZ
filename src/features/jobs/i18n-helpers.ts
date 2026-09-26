@@ -11,5 +11,9 @@ export function errorMessage(t: TFunction, code: string, prefix?: string): strin
   const commonKey = `common.errors.${safe}`;
   const common = t(commonKey);
   if (common !== commonKey) return common;
-  return prefix ? t(`${prefix}.generic`) : t("common.errors.generic");
+  if (prefix) {
+    const fallback = t(`${prefix}.generic`);
+    if (fallback !== `${prefix}.generic`) return fallback;
+  }
+  return t("common.errors.generic");
 }
