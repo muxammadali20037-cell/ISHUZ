@@ -168,5 +168,10 @@
     "privacy": "Maxfiylik siyosati",
     "support": "Yordam",
     "rights": "© {year} ISH.UZ. Barcha huquqlar himoyalangan."
-  }
+  },
+  "report_sent": "Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.",
+  "report_desc": "Nima uchun shikoyat qilyapsiz?",
+  "report_details": "Batafsil (ixtiyoriy)",
+  "contact_locked": "Telefon raqam ariza yoki taklif qabul qilingandan keyin ochiladi.",
+  "contact_title": "Kontakt"
 }
