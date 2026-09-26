@@ -1,6 +1,5 @@
 import { AlertTriangle, ShieldOff } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
-import { cn } from "@/lib/utils";
 
 /** Ruxsat yo'q sahifa */
 export async function Forbidden({ perm }: { perm?: string }) {
