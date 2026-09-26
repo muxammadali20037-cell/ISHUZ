@@ -32,7 +32,6 @@
     "done": "Bajarildi",
     "saved": "Saqlandi",
     "deleted": "O'chirildi",
-    "unaudited": "Bu bo'limdagi o'zgarishlar audit jurnaliga yozilmaydi",
     "forbidden_title": "Ruxsat yo'q",
     "forbidden_desc": "Bu bo'limni ko'rish uchun sizning rolingizda yetarli ruxsat yo'q. Super adminga murojaat qiling.",
     "load_error": "Ma'lumotlarni yuklab bo'lmadi"
@@ -314,7 +313,14 @@
     "group_verification": "Verifikatsiya",
     "group_report": "Shikoyat",
     "group_review": "Sharh",
-    "group_notifications": "Bildirishnoma"
+    "group_notifications": "Bildirishnoma",
+    "group_category": "Kategoriya",
+    "group_subcategory": "Subkategoriya",
+    "group_skill": "Ko'nikma",
+    "group_region": "Viloyat",
+    "group_district": "Tuman",
+    "group_settings": "Sozlama",
+    "group_admin": "Admin foydalanuvchi"
   },
   "ref": {
     "name_uz": "Nomi (o'zbekcha)",

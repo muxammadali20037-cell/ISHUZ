@@ -30,6 +30,18 @@ function targetHref(type: string, id: string | null): string | null {
       return `/admin/vacancies?q=${id}`;
     case "review":
       return `/admin/reviews?q=${id}&status=all`;
+    case "category":
+    case "subcategory":
+      return "/admin/categories";
+    case "skill":
+      return `/admin/skills?q=${id}`;
+    case "region":
+    case "district":
+      return "/admin/regions";
+    case "app_setting":
+      return "/admin/settings#settings";
+    case "admin_user":
+      return "/admin/settings#admins";
     default:
       return null;
   }

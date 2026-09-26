@@ -2,10 +2,16 @@
 
 Modul: `src/app/admin/**`, `src/features/admin/**`, `messages/*/admin.json`.
 
-## 1. `admin_log(action, target_type, target_id, before, after)` RPC — audit uchun (MUHIM)
+## 1. `admin_log(action, target_type, target_id, before, after)` RPC — BAJARILDI ✓
 
-Hozir `public.write_audit` faqat `service_role` ga ochiq, `audit_logs` ga insert RLS bilan yopiq.
-Admin paneldagi **to'g'ridan-to'g'ri jadval yozuvlari** (RLS `*.manage` orqali) audit jurnaliga tushmaydi:
+`public.admin_log(p_action, p_target_type, p_target_id, p_before, p_after)` mavjud (0008_functions.sql).
+Admin panel har bir to'g'ridan-to'g'ri jadval yozuvidan keyin uni chaqiradi (`src/features/admin/actions/guard.ts` → `logAdmin`,
+`actions/reference.ts`, `actions/settings.ts`), before/after snapshot bilan. Ishlatiladigan action'lar:
+`category|subcategory|region|district.(create|update|delete)`, `skill.(update|approve|unapprove|delete)`, `settings.update`,
+`admin.(add|update|activate|deactivate)`. Target turlari: `category`, `subcategory`, `skill`, `region`, `district`, `app_setting`, `admin_user`.
+`UnauditedNote` olib tashlandi. Quyidagi matn tarix uchun qoldirildi.
+
+Ilgari `public.write_audit` faqat `service_role` ga ochiq edi va **to'g'ridan-to'g'ri jadval yozuvlari** audit jurnaliga tushmas edi:
 
 - `categories`, `subcategories` (categories.manage)
 - `skills` (skills.manage)
@@ -13,10 +19,7 @@ Admin paneldagi **to'g'ridan-to'g'ri jadval yozuvlari** (RLS `*.manage` orqali) 
 - `app_settings` (settings.manage)
 - `admin_users` (admins.manage)
 
-UI da bu bo'limlarda «Bu bo'limdagi o'zgarishlar audit jurnaliga yozilmaydi» belgisi ko'rsatilgan
-(`src/features/admin/components/notes.tsx` → `UnauditedNote`).
-
-So'rov:
+So'ralgan (va amalga oshirilgan) shakl:
 ```sql
 create or replace function public.admin_log(p_action text, p_target_type text, p_target_id text, p_before jsonb default null, p_after jsonb default null)
 returns void language plpgsql security definer set search_path = public as $$
@@ -28,11 +31,7 @@ begin
 end $$;
 grant execute on function public.admin_log(text, text, text, jsonb, jsonb) to authenticated;
 ```
-Tayyor bo'lgach `src/features/admin/actions/reference.ts` va `actions/settings.ts` dagi har bir yozuvdan keyin
-`supabase.rpc("admin_log", {...})` chaqiriladi va `UnauditedNote` olib tashlanadi.
-
-Muqobil (yaxshiroq): trigger'lar orqali `categories/skills/regions/districts/app_settings/admin_users` ga
-`after insert/update/delete` da `write_audit(...)` chaqirish — u holda kod o'zgarmaydi.
+Eslatma: `admin_log` xatosi asosiy yozuvni buzmaydi (yozuv allaqachon bajarilgan) — faqat server logiga tushadi.
 
 ## 2. `admin_users` RLS — o'z-o'zini o'chirish/pasaytirish himoyasi (ixtiyoriy)
 

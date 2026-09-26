@@ -529,7 +529,8 @@ $$;
 
 create or replace function public.record_vacancy_view(p_vacancy_id uuid)
 returns void language sql security definer set search_path = public as $$
-  update public.vacancies set views_count = views_count + 1 where id = p_vacancy_id and status = 'active';
+  update public.vacancies set views_count = views_count + 1
+  where id = p_vacancy_id and status = 'active' and (auth.uid() is null or not public.manages_vacancy(p_vacancy_id));
 $$;
 
 -- =====================================================================
@@ -568,7 +569,7 @@ returns void language plpgsql security definer set search_path = public as $$
 begin
   if not public.can_edit_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
   if p_status not in ('paused', 'closed', 'draft') then raise exception 'invalid_status' using errcode = '23514'; end if;
-  update public.vacancies set status = p_status where id = p_vacancy_id and status in ('active', 'paused', 'pending_review', 'draft', 'expired');
+  update public.vacancies set status = p_status where id = p_vacancy_id and status in ('active', 'paused', 'pending_review', 'draft', 'expired', 'rejected');
 end $$;
 
 -- =====================================================================

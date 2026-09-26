@@ -4,7 +4,7 @@ import { getAdminContext } from "@/features/admin/context";
 import { listAdminUsers, listSettings } from "@/features/admin/queries/settings";
 import { SettingsEditor } from "@/features/admin/components/settings-editor";
 import { AdminsManager } from "@/features/admin/components/admins-manager";
-import { AdminPageHeader, QueryError, UnauditedNote } from "@/features/admin/components/notes";
+import { AdminPageHeader, QueryError } from "@/features/admin/components/notes";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/misc";
 
@@ -22,7 +22,7 @@ export default async function AdminSettingsPage() {
 
   return (
     <div>
-      <AdminPageHeader title={t("admin.settings.title")} subtitle={t("admin.settings.subtitle")} actions={canSettings || canAdmins ? <UnauditedNote /> : undefined} />
+      <AdminPageHeader title={t("admin.settings.title")} subtitle={t("admin.settings.subtitle")} />
       <section id="settings">
         <div className="mb-3 flex items-center gap-2">
           <h2 className="text-base font-semibold">{t("admin.settings.app_settings")}</h2>

@@ -8,7 +8,7 @@ import { DataTable } from "@/features/admin/components/data-table";
 import { Filters, FilterSearch, FilterSelect } from "@/features/admin/components/filters";
 import { LinkTabs } from "@/features/admin/components/link-tabs";
 import { Pagination } from "@/features/admin/components/pagination";
-import { AdminPageHeader, Forbidden, QueryError, UnauditedNote } from "@/features/admin/components/notes";
+import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 import { SkillActions } from "@/features/admin/components/skill-actions";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/misc";
@@ -31,7 +31,7 @@ export default async function AdminSkillsPage({ searchParams }: { searchParams: 
 
   return (
     <div>
-      <AdminPageHeader title={t("admin.skills.title")} subtitle={t("common.labels.results", { count: paged.total })} actions={<UnauditedNote />} />
+      <AdminPageHeader title={t("admin.skills.title")} subtitle={t("common.labels.results", { count: paged.total })} />
       <LinkTabs
         tabs={[
           { href: BASE, label: t("admin.vacancies.all"), active: !f.approved && !f.custom },

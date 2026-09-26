@@ -3,7 +3,7 @@ import { getT } from "@/lib/i18n/server";
 import { getAdminContext } from "@/features/admin/context";
 import { listRegionsWithDistricts } from "@/features/admin/queries/reference";
 import { RegionManager } from "@/features/admin/components/region-manager";
-import { AdminPageHeader, Forbidden, QueryError, UnauditedNote } from "@/features/admin/components/notes";
+import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -18,7 +18,7 @@ export default async function AdminRegionsPage() {
   const districts = rows.reduce((n, r) => n + r.districts.length, 0);
   return (
     <div>
-      <AdminPageHeader title={t("admin.regions.title")} subtitle={t("admin.regions.subtitle", { regions: rows.length, districts })} actions={<UnauditedNote />} />
+      <AdminPageHeader title={t("admin.regions.title")} subtitle={t("admin.regions.subtitle", { regions: rows.length, districts })} />
       <QueryError message={error} />
       <RegionManager regions={rows} canManage={ctx.can("regions.manage")} />
     </div>

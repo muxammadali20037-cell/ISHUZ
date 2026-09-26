@@ -1,17 +1,6 @@
-import { AlertTriangle, ShieldOff, Info } from "lucide-react";
+import { AlertTriangle, ShieldOff } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
-
-/** "Bu amallar audit jurnaliga yozilmaydi" belgisi (to'g'ridan-to'g'ri jadval yozuvlari uchun) */
-export async function UnauditedNote({ className }: { className?: string }) {
-  const { t } = await getT();
-  return (
-    <p className={cn("inline-flex items-center gap-1.5 rounded-lg bg-warning-soft px-2.5 py-1.5 text-xs text-warning", className)}>
-      <Info className="size-3.5 shrink-0" />
-      {t("admin.common.unaudited")}
-    </p>
-  );
-}
 
 /** Ruxsat yo'q sahifa */
 export async function Forbidden({ perm }: { perm?: string }) {

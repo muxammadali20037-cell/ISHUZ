@@ -32,7 +32,6 @@
     "done": "Готово",
     "saved": "Сохранено",
     "deleted": "Удалено",
-    "unaudited": "Изменения в этом разделе не записываются в журнал аудита",
     "forbidden_title": "Нет доступа",
     "forbidden_desc": "У вашей роли недостаточно прав для просмотра этого раздела. Обратитесь к супер-админу.",
     "load_error": "Не удалось загрузить данные"
@@ -314,7 +313,14 @@
     "group_verification": "Верификация",
     "group_report": "Жалоба",
     "group_review": "Отзыв",
-    "group_notifications": "Уведомление"
+    "group_notifications": "Уведомление",
+    "group_category": "Категория",
+    "group_subcategory": "Подкатегория",
+    "group_skill": "Навык",
+    "group_region": "Регион",
+    "group_district": "Район",
+    "group_settings": "Настройка",
+    "group_admin": "Администратор"
   },
   "ref": {
     "name_uz": "Название (узбекский)",

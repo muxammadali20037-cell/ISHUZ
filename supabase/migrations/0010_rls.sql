@@ -216,7 +216,7 @@ create policy "vacancies_insert" on public.vacancies for insert to authenticated
 create policy "vacancies_update" on public.vacancies for update to authenticated
   using (public.can_edit_vacancy(id) and status <> 'hidden')
   with check (public.can_edit_vacancy(id)
-    and (status in ('draft', 'paused', 'closed', 'pending_review', 'rejected')
+    and (status in ('draft', 'paused', 'closed', 'pending_review', 'rejected', 'expired')
          or (status = 'active' and (select v.status from public.vacancies v where v.id = vacancies.id) = 'active'))
     and (company_id is null or public.is_company_member(company_id))
     and owner_profile_id is not distinct from (select v.owner_profile_id from public.vacancies v where v.id = vacancies.id)

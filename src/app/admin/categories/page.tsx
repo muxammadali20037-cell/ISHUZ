@@ -3,7 +3,7 @@ import { getT } from "@/lib/i18n/server";
 import { getAdminContext } from "@/features/admin/context";
 import { listCategoriesWithSubs } from "@/features/admin/queries/reference";
 import { CategoryManager } from "@/features/admin/components/category-manager";
-import { AdminPageHeader, Forbidden, QueryError, UnauditedNote } from "@/features/admin/components/notes";
+import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -17,7 +17,7 @@ export default async function AdminCategoriesPage() {
   const { rows, error } = await listCategoriesWithSubs();
   return (
     <div>
-      <AdminPageHeader title={t("admin.categories.title")} subtitle={t("admin.categories.subtitle", { count: rows.length })} actions={<UnauditedNote />} />
+      <AdminPageHeader title={t("admin.categories.title")} subtitle={t("admin.categories.subtitle", { count: rows.length })} />
       <QueryError message={error} />
       <CategoryManager categories={rows} canManage={ctx.can("categories.manage")} />
     </div>

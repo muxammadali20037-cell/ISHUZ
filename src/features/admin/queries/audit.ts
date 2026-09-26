@@ -5,7 +5,7 @@ import type { Tables } from "@/types/database.types";
 import { PAGE_SIZE, isUuid, pageRange, parsePage, param, toPaged, type Paged, type SearchParams } from "./shared";
 
 /** RPC'lar yozadigan action prefikslari (filtr uchun) */
-export const AUDIT_ACTION_GROUPS = ["user.", "vacancy.", "verification.", "report.", "review.", "notifications."] as const;
+export const AUDIT_ACTION_GROUPS = ["user.", "vacancy.", "verification.", "report.", "review.", "notifications.", "category.", "subcategory.", "skill.", "region.", "district.", "settings.", "admin."] as const;
 
 export interface AuditFilters {
   action: string;

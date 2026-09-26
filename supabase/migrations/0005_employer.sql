@@ -97,7 +97,9 @@ begin
   if new.created_by is not null then
     insert into public.company_members (company_id, profile_id, role) values (new.id, new.created_by, 'owner')
     on conflict do nothing;
-    update public.employer_profiles set company_id = new.id, employer_type = 'company'
+    -- YaTT (individual_entrepreneur) turi saqlanadi; faqat 'person' → 'company'
+    update public.employer_profiles
+    set company_id = new.id, employer_type = case when employer_type = 'person' then 'company'::public.employer_type else employer_type end
     where profile_id = new.created_by and company_id is null;
   end if;
   return new;
