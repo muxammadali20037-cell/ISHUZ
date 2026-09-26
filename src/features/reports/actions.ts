@@ -22,12 +22,12 @@ export async function submitReport(input: ReportInput): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   const supabase = await createClient();
-  const { error } = await supabase.from("reports").insert({
-    reporter_profile_id: session.userId,
-    target_type: parsed.data.targetType,
-    target_id: parsed.data.targetId,
-    reason: parsed.data.reason,
-    details: parsed.data.details?.trim() || null,
+  // RPC: blok tekshiruvi + rate limit + takroriy shikoyatdan himoya
+  const { error } = await supabase.rpc("submit_report", {
+    p_target_type: parsed.data.targetType,
+    p_target_id: parsed.data.targetId,
+    p_reason: parsed.data.reason,
+    p_details: parsed.data.details?.trim() || undefined,
   });
   if (error) return { ok: false, error: errorCode(error) };
   return { ok: true };

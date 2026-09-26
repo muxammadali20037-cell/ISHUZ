@@ -132,12 +132,12 @@ begin
   if perm = any(a.permissions) then return true; end if;
   return case a.role
     when 'admin' then perm in (
-      'users.view', 'users.block', 'workers.view', 'employers.view', 'employers.verify',
+      'users.view', 'users.block', 'users.contacts', 'workers.view', 'employers.view', 'employers.verify',
       'vacancies.view', 'vacancies.moderate', 'categories.manage', 'skills.manage', 'regions.manage',
-      'reports.view', 'reports.resolve', 'reviews.moderate', 'notifications.broadcast', 'analytics.view', 'audit.view')
+      'reports.view', 'reports.resolve', 'reviews.moderate', 'chat.moderate', 'notifications.broadcast', 'analytics.view', 'audit.view')
     when 'moderator' then perm in (
       'users.view', 'workers.view', 'employers.view', 'vacancies.view', 'vacancies.moderate',
-      'reports.view', 'reports.resolve', 'reviews.moderate', 'analytics.view')
+      'reports.view', 'reports.resolve', 'reviews.moderate', 'chat.moderate', 'analytics.view')
     when 'support' then perm in ('users.view', 'workers.view', 'employers.view', 'vacancies.view', 'reports.view', 'analytics.view')
     else false
   end;
@@ -146,6 +146,12 @@ end $$;
 create or replace function public.is_blocked(pid uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select coalesce((select is_blocked from public.profiles where id = pid), false);
+$$;
+
+-- Kirgan va bloklanmagan foydalanuvchi (RLS yozish siyosatlarida ishlatiladi)
+create or replace function public.is_active_user()
+returns boolean language sql stable security definer set search_path = public as $$
+  select auth.uid() is not null and not coalesce((select is_blocked from public.profiles where id = auth.uid()), true);
 $$;
 
 -- Rate limit: key uchun window_seconds ichida limit dan oshmaganini tekshiradi va sanaydi

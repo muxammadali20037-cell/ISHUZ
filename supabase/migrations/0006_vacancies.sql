@@ -2,7 +2,7 @@
 
 create table public.vacancies (
   id                    uuid primary key default gen_random_uuid(),
-  owner_profile_id      uuid not null references public.profiles(id) on delete cascade,   -- yaratgan foydalanuvchi
+  owner_profile_id      uuid references public.profiles(id) on delete set null,          -- yaratgan foydalanuvchi (hisob o'chsa kompaniya vakansiyasi qoladi)
   company_id            uuid references public.companies(id) on delete set null,
   title                 text not null,
   slug                  text not null unique,           -- SEO: kassir-anor-market-toshkent-ab12cd
@@ -32,6 +32,7 @@ create table public.vacancies (
   official_terms        text[] not null default '{}',   -- benefits.code (kind = official_term)
   status                public.vacancy_status not null default 'draft',
   moderation_note       text,
+  requires_review       boolean not null default false,  -- admin yashirgan/rad etgan: qayta e'lon faqat moderatsiya orqali
   published_at          timestamptz,
   expires_at            timestamptz,
   views_count           int not null default 0,
@@ -107,7 +108,7 @@ begin
 end $$;
 create trigger trg_vacancy_before_write before insert or update on public.vacancies for each row execute function public.handle_vacancy_before_write();
 
--- Vakansiyani kim boshqara oladi: egasi yoki kompaniya a'zosi
+-- Vakansiyani kim ko'ra/boshqara oladi: egasi yoki kompaniya a'zosi (viewer ham ko'radi)
 create or replace function public.manages_vacancy(p_vacancy_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
@@ -115,6 +116,17 @@ returns boolean language sql stable security definer set search_path = public as
     where v.id = p_vacancy_id
       and (v.owner_profile_id = auth.uid() or (v.company_id is not null and public.is_company_member(v.company_id)))
   );
+$$;
+
+-- Vakansiyani kim TAHRIRLAY oladi: egasi yoki owner/admin/recruiter rolidagi a'zo (viewer emas)
+create or replace function public.can_edit_vacancy(p_vacancy_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (
+    select 1 from public.vacancies v
+    where v.id = p_vacancy_id
+      and (v.owner_profile_id = auth.uid() or (v.company_id is not null and exists (
+        select 1 from public.company_members m where m.company_id = v.company_id and m.profile_id = auth.uid() and m.role in ('owner', 'admin', 'recruiter'))))
+  ) and public.is_active_user();
 $$;
 
 -- Muddati o'tgan vakansiyalarni yopish (pg_cron: har soat)

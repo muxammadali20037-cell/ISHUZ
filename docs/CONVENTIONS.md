@@ -40,7 +40,16 @@ Asosiy RPC'lar (supabase/migrations/0008_functions.sql):
 `set_conversation_block`, `my_conversations`, `mark_notifications_read`, `unread_counts`, `create_review`, `profile_rating`,
 `employer_dashboard_stats`, `worker_dashboard_stats`, `recommended_vacancies`, `recommended_workers`, `worker_completeness`,
 `refresh_worker_completeness`, `refresh_matches_for_worker`, `publish_vacancy`, `set_vacancy_status`, `record_vacancy_view`, `record_worker_view`,
+`submit_report(p_target_type, p_target_id, p_reason, p_details)` (shikoyat FAQAT shu RPC orqali), `delete_message(p_message_id)` (xabarni o'chirish faqat RPC),
+`mark_offer_hired(p_offer_id)` (custom taklif bo'yicha ishga olindi), `create_review(p_application_id | p_job_offer_id, p_rating, p_text)`,
+`accept_company_invite(p_token)` (kompaniyaga a'zo qo'shish faqat `company_invites` jadvali + shu RPC orqali; to'g'ridan-to'g'ri company_members insert TAQIQLANGAN),
+`can_edit_vacancy(id)` (owner/admin/recruiter — viewer emas; UI'da tahrirlash tugmalarini shu bilan boshqaring), `expire_offers()` (cron, service role),
 `admin_*` (stats, daily_stats, set_user_block, set_vacancy_status, review_verification, resolve_report, moderate_review, broadcast).
+
+Muhim qoidalar (audit'dan keyin): faol (active) vakansiyani to'g'ridan-to'g'ri tahrirlash MUMKIN (holat saqlanadi); activ'ga o'tish faqat `publish_vacancy`.
+Admin yashirgan (hidden) vakansiyaga egasi tega olmaydi; rad etilgan (rejected) ni tahrirlab qayta yuborsa — `pending_review` ga tushadi.
+`profiles` jadvali faqat "aloqador" profillar uchun o'qiladi (ochiq ishchi, faol vakansiya egasi, suhbatdosh, ariza/taklif tomoni) — begona id bo'yicha o'qib bo'lmaydi.
+`conversation_members` da foydalanuvchi faqat `is_muted` ni o'zgartira oladi. Masofa (`distance_km`, moslik `km`) butun km gacha yaxlitlangan.
 
 ## Server action shakli
 ```ts

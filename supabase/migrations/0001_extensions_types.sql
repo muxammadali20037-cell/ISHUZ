@@ -76,13 +76,14 @@ $$;
 create or replace function public.experience_level_months(level public.experience_level)
 returns int language sql immutable as $$
   select case level
+    -- yuqori chegara: "3–5 yil" degan nomzod 5 yil talab qilinadigan vakansiyaga mos deb hisoblanadi
     when 'none' then 0
-    when 'lt_6m' then 3
-    when '6_12m' then 9
-    when '1_2y' then 18
-    when '2_3y' then 30
-    when '3_5y' then 48
-    when '5y_plus' then 72
+    when 'lt_6m' then 6
+    when '6_12m' then 12
+    when '1_2y' then 24
+    when '2_3y' then 36
+    when '3_5y' then 60
+    when '5y_plus' then 96
   end;
 $$;
 

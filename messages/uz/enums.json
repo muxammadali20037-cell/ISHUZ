@@ -245,7 +245,10 @@
     "language_required": "{lang} tili talab qilinadi ({level})",
     "languages_ok": "Til talablari mos",
     "education_required": "Ta'lim talab qilinadi: {level}",
-    "age_out_of_range": "Yosh talabi: {min}–{max}"
+    "age_out_of_range": "Yosh talabi: {min}–{max}",
+    "remote_preferred": "Siz masofaviy ishni xohlaysiz, bu ish joyida",
+    "salary_type_differs": "Maosh turi farq qiladi (oylik/kunlik/soatlik)",
+    "languages_partial": "Tillar: {matched}/{required}"
   },
   "language_code": {
     "uz": "O'zbek",

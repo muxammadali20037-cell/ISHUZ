@@ -43,6 +43,7 @@ create table public.job_offers (
   status              public.offer_status not null default 'sent',
   viewed_at           timestamptz,
   responded_at        timestamptz,
+  hired_at            timestamptz,                                               -- custom (vakansiyasiz) taklif bo'yicha ishga olindi
   expires_at          timestamptz,
   created_at          timestamptz not null default now(),
   updated_at          timestamptz not null default now(),
@@ -119,7 +120,7 @@ create table public.messages (
   lng              double precision,
   created_at       timestamptz not null default now(),
   deleted_at       timestamptz,
-  constraint messages_body_check check (type = 'text' and body is not null and length(body) between 1 and 4000 or type <> 'text'),
+  constraint messages_body_check check (deleted_at is not null or (type = 'text' and body is not null and length(body) between 1 and 4000) or type <> 'text'),
   constraint messages_attachment_check check (type not in ('image', 'document', 'voice') or attachment_path is not null),
   constraint messages_location_check check (type <> 'location' or (lat is not null and lng is not null))
 );
@@ -144,7 +145,8 @@ create table public.reviews (
   id                 uuid primary key default gen_random_uuid(),
   author_profile_id  uuid not null references public.profiles(id) on delete cascade,
   target_profile_id  uuid not null references public.profiles(id) on delete cascade,
-  application_id     uuid not null references public.applications(id) on delete cascade,  -- faqat real ish (hired) dan keyin
+  application_id     uuid references public.applications(id) on delete set null,  -- faqat real ish (hired) dan keyin
+  job_offer_id       uuid references public.job_offers(id) on delete set null,     -- yoki custom taklif bo'yicha ishga olingandan keyin
   rating             int not null,
   text               text,
   status             public.review_status not null default 'pending',
@@ -152,12 +154,13 @@ create table public.reviews (
   moderation_note    text,
   created_at         timestamptz not null default now(),
   updated_at         timestamptz not null default now(),
-  unique (application_id, author_profile_id),
   constraint reviews_rating_check check (rating between 1 and 5),
   constraint reviews_text_check check (text is null or length(text) <= 2000),
   constraint reviews_not_self check (author_profile_id <> target_profile_id)
 );
 create index idx_reviews_target on public.reviews(target_profile_id) where status = 'approved';
+create unique index uq_reviews_application_author on public.reviews(application_id, author_profile_id) where application_id is not null;
+create unique index uq_reviews_offer_author on public.reviews(job_offer_id, author_profile_id) where job_offer_id is not null;
 create trigger trg_reviews_updated before update on public.reviews for each row execute function public.set_updated_at();
 
 create table public.reports (

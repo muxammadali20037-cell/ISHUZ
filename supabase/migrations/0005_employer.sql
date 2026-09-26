@@ -40,6 +40,21 @@ create table public.company_members (
 );
 create index idx_company_members_profile on public.company_members(profile_id);
 
+-- Kompaniyaga a'zo qo'shish faqat taklif havolasi orqali (a'zoning roziligi bilan)
+create table public.company_invites (
+  id           uuid primary key default gen_random_uuid(),
+  company_id   uuid not null references public.companies(id) on delete cascade,
+  invited_by   uuid not null references public.profiles(id) on delete cascade,
+  role         public.company_member_role not null default 'recruiter',
+  token        text not null unique default encode(extensions.gen_random_bytes(18), 'hex'),
+  expires_at   timestamptz not null default now() + interval '7 days',
+  accepted_by  uuid references public.profiles(id) on delete set null,
+  accepted_at  timestamptz,
+  created_at   timestamptz not null default now(),
+  constraint company_invites_role_check check (role <> 'owner')
+);
+create index idx_company_invites_company on public.company_invites(company_id);
+
 create table public.employer_profiles (
   id                   uuid primary key default gen_random_uuid(),
   profile_id           uuid not null unique references public.profiles(id) on delete cascade,
@@ -120,6 +135,29 @@ create or replace function public.is_company_admin(p_company_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (select 1 from public.company_members m where m.company_id = p_company_id and m.profile_id = auth.uid() and m.role in ('owner', 'admin'));
 $$;
+
+-- Taklifni qabul qilish: kirgan foydalanuvchi kompaniya a'zosi bo'ladi
+create or replace function public.accept_company_invite(p_token text)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare
+  inv public.company_invites;
+begin
+  if auth.uid() is null then raise exception 'not_authenticated' using errcode = '42501'; end if;
+  if public.is_blocked(auth.uid()) then raise exception 'blocked' using errcode = '42501'; end if;
+  select * into inv from public.company_invites where token = p_token;
+  if inv.id is null or inv.accepted_at is not null or inv.expires_at < now() then
+    raise exception 'invite_invalid' using errcode = 'P0002';
+  end if;
+  insert into public.company_members (company_id, profile_id, role, invited_by)
+  values (inv.company_id, auth.uid(), inv.role, inv.invited_by)
+  on conflict (company_id, profile_id) do update set role = excluded.role;
+  update public.company_invites set accepted_by = auth.uid(), accepted_at = now() where id = inv.id;
+  -- ish beruvchi profili bo'lmasa yaratamiz
+  insert into public.employer_profiles (profile_id, employer_type, company_id, onboarding_completed_at)
+  values (auth.uid(), 'company', inv.company_id, now())
+  on conflict (profile_id) do update set company_id = coalesce(public.employer_profiles.company_id, excluded.company_id);
+  return inv.company_id;
+end $$;
 
 create or replace function public.current_worker_id()
 returns uuid language sql stable security definer set search_path = public as $$

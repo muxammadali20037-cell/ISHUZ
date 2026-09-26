@@ -13,7 +13,7 @@ declare
 begin
   if viewer is null then return false; end if;
   if viewer = p_owner then return true; end if;
-  if public.is_admin() then return true; end if;
+  if public.has_admin_permission('users.contacts') then return true; end if;
   select phone_visibility into vis from public.profile_contacts where profile_id = p_owner;
   if vis is null or vis = 'nobody' then return false; end if;
   if vis = 'everyone' then return true; end if;
@@ -99,6 +99,10 @@ begin
   if w.id is null or v.id is null then
     score := 0; reasons := '[]'::jsonb; return next; return;
   end if;
+  -- Ruxsat: ishchining o'zi, vakansiyani boshqaruvchi, admin yoki server (service role)
+  if auth.uid() is not null and not (w.profile_id = auth.uid() or public.manages_vacancy(p_vacancy_id) or public.is_admin()) then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
   select * into pr from public.worker_preferences where worker_id = w.id;
   select * into p from public.profiles where id = w.profile_id;
 
@@ -113,19 +117,21 @@ begin
     r := r || jsonb_build_object('key', 'category_mismatch', 'ok', false);
   end if;
 
-  -- 2. Joylashuv (15)
+  -- 2. Joylashuv (15). Masofa butun km gacha yaxlitlanadi (aniq koordinata oshkor bo'lmasligi uchun)
   if v.is_remote and w.remote_preference <> 'no' then
     s := s + 15; r := r || jsonb_build_object('key', 'remote_ok', 'ok', true);
+  elsif w.remote_preference = 'yes' and not v.is_remote then
+    s := s + 5; r := r || jsonb_build_object('key', 'remote_preferred', 'ok', 'warn');
   else
     select public.distance_km(g.lat, g.lng, v.lat, v.lng) into km from public.worker_geo g where g.worker_id = w.id;
     if v.district_id is not null and (v.district_id = w.district_id or exists (
         select 1 from public.worker_locations wl where wl.worker_id = w.id and wl.district_id = v.district_id)) then
       s := s + 15;
-      r := r || jsonb_build_object('key', 'district_match', 'ok', true, 'km', case when km is not null then round(km::numeric, 1) end);
+      r := r || jsonb_build_object('key', 'district_match', 'ok', true, 'km', case when km is not null then greatest(1, ceil(km))::int end);
     elsif km is not null and km <= 5 then
-      s := s + 15; r := r || jsonb_build_object('key', 'distance_near', 'ok', true, 'km', round(km::numeric, 1));
+      s := s + 15; r := r || jsonb_build_object('key', 'distance_near', 'ok', true, 'km', greatest(1, ceil(km))::int);
     elsif km is not null and km <= 15 then
-      s := s + 10; r := r || jsonb_build_object('key', 'distance_ok', 'ok', 'warn', 'km', round(km::numeric, 1));
+      s := s + 10; r := r || jsonb_build_object('key', 'distance_ok', 'ok', 'warn', 'km', greatest(1, ceil(km))::int);
     elsif v.region_id is not null and v.region_id = w.region_id then
       s := s + 8; r := r || jsonb_build_object('key', 'region_match', 'ok', 'warn');
     else
@@ -133,12 +139,14 @@ begin
     end if;
   end if;
 
-  -- 3. Maosh (15)
+  -- 3. Maosh (15). Turlari (oylik/kunlik/soatlik) farq qilsa taqqoslanmaydi
   worker_min := coalesce(pr.salary_min, pr.salary_expected);
   if worker_min is null then
     s := s + 10; r := r || jsonb_build_object('key', 'salary_unspecified', 'ok', 'warn');
   elsif v.salary_negotiable or (v.salary_from is null and v.salary_to is null) then
     s := s + 8; r := r || jsonb_build_object('key', 'salary_negotiable', 'ok', 'warn');
+  elsif pr.salary_type <> 'negotiable' and v.salary_type <> 'negotiable' and pr.salary_type <> v.salary_type then
+    s := s + 8; r := r || jsonb_build_object('key', 'salary_type_differs', 'ok', 'warn', 'vacancy_type', v.salary_type);
   elsif coalesce(v.salary_to, v.salary_from) >= coalesce(pr.salary_expected, worker_min) then
     s := s + 15; r := r || jsonb_build_object('key', 'salary_ok', 'ok', true);
   elsif coalesce(v.salary_to, v.salary_from) >= worker_min then
@@ -157,14 +165,21 @@ begin
     r := r || jsonb_build_object('key', 'experience_low', 'ok', false, 'required_months', v.experience_min_months);
   end if;
 
-  -- 5. Ko'nikmalar (15)
-  select count(*) into req_skills from public.vacancy_skills vs where vs.vacancy_id = v.id;
+  -- 5. Ko'nikmalar (15): faqat majburiy (is_required) ko'nikmalar hisoblanadi; majburiysi bo'lmasa — barchasi
+  select count(*) into req_skills from public.vacancy_skills vs where vs.vacancy_id = v.id and vs.is_required;
   if req_skills = 0 then
-    s := s + 15; r := r || jsonb_build_object('key', 'skills_not_required', 'ok', true);
-  else
+    select count(*) into req_skills from public.vacancy_skills vs where vs.vacancy_id = v.id;
     select count(*) into matched_skills
     from public.vacancy_skills vs join public.worker_skills ws on ws.skill_id = vs.skill_id and ws.worker_id = w.id
     where vs.vacancy_id = v.id;
+  else
+    select count(*) into matched_skills
+    from public.vacancy_skills vs join public.worker_skills ws on ws.skill_id = vs.skill_id and ws.worker_id = w.id
+    where vs.vacancy_id = v.id and vs.is_required;
+  end if;
+  if req_skills = 0 then
+    s := s + 15; r := r || jsonb_build_object('key', 'skills_not_required', 'ok', true);
+  else
     s := s + round(15.0 * matched_skills / req_skills)::int;
     r := r || jsonb_build_object('key', 'skills_matched', 'ok', case when matched_skills = req_skills then to_jsonb(true) when matched_skills > 0 then to_jsonb('warn'::text) else to_jsonb(false) end, 'matched', matched_skills, 'required', req_skills);
   end if;
@@ -205,7 +220,11 @@ begin
     s := s + 5;
   else
     s := s + round(5.0 * lang_matched / lang_total)::int;
-    if lang_ok then r := r || jsonb_build_object('key', 'languages_ok', 'ok', true); end if;
+    if lang_ok then
+      r := r || jsonb_build_object('key', 'languages_ok', 'ok', true);
+    elsif lang_matched > 0 then
+      r := r || jsonb_build_object('key', 'languages_partial', 'ok', 'warn', 'matched', lang_matched, 'required', lang_total);
+    end if;
   end if;
 
   -- Ogohlantirishlar (ballga ta'sir qilmaydi)
@@ -230,6 +249,9 @@ create or replace function public.refresh_matches_for_worker(p_worker_id uuid)
 returns int language plpgsql security definer set search_path = public as $$
 declare n int;
 begin
+  if auth.uid() is not null and not (public.is_admin() or exists (select 1 from public.worker_profiles w where w.id = p_worker_id and w.profile_id = auth.uid())) then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
   delete from public.matches where worker_id = p_worker_id;
   insert into public.matches (worker_id, vacancy_id, score, reasons)
   select p_worker_id, v.id, m.score, m.reasons
@@ -247,6 +269,9 @@ create or replace function public.refresh_matches_for_vacancy(p_vacancy_id uuid)
 returns int language plpgsql security definer set search_path = public as $$
 declare n int;
 begin
+  if auth.uid() is not null and not (public.is_admin() or public.manages_vacancy(p_vacancy_id)) then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
   delete from public.matches where vacancy_id = p_vacancy_id;
   insert into public.matches (worker_id, vacancy_id, score, reasons)
   select w.id, p_vacancy_id, m.score, m.reasons
@@ -323,13 +348,19 @@ begin
               select 1 from public.vacancy_benefits vb where vb.vacancy_id = v.id and vb.benefit_code = b)))
       and (q is null or v.search_vector @@ q or v.title ilike '%' || p_query || '%' or c.name ilike '%' || p_query || '%')
   ),
+  counted as (
+    select b.*, count(*) over () as total,
+      (b.is_featured and (b.featured_until is null or b.featured_until > now())) as featured_now
+    from base b
+    order by (b.is_featured and (b.featured_until is null or b.featured_until > now())) desc, b.published_at desc
+    limit case when wid is not null and p_sort = 'relevant' then 300 else 100000 end  -- moslik faqat oxirgi 300 ta uchun hisoblanadi
+  ),
   scored as (
     select b.*,
       case when wid is not null then m.score end as ms,
       case when wid is not null then m.reasons end as mr,
-      case when q is not null then ts_rank(b.search_vector, q) else 0 end as rank,
-      count(*) over () as total
-    from base b
+      case when q is not null then ts_rank(b.search_vector, q) else 0 end as rank
+    from counted b
     left join lateral (select * from public.compute_match(wid, b.id)) m on wid is not null
   )
   select
@@ -338,7 +369,7 @@ begin
     s.salary_from, s.salary_to, s.salary_type, s.salary_negotiable,
     s.employment_type, s.schedule, s.work_time_from, s.work_time_to, s.experience_min_months, s.work_format,
     coalesce((select array_agg(vb.benefit_code order by vb.benefit_code) from public.vacancy_benefits vb where vb.vacancy_id = s.id), '{}'),
-    s.published_at, s.expires_at, s.views_count, s.applications_count, s.is_featured,
+    s.published_at, s.expires_at, s.views_count, s.applications_count, s.featured_now,
     s.ms, s.mr,
     (wid is not null and exists (select 1 from public.saved_vacancies sv where sv.worker_id = wid and sv.vacancy_id = s.id)),
     (wid is not null and exists (select 1 from public.applications a where a.worker_id = wid and a.vacancy_id = s.id)),
@@ -349,7 +380,7 @@ begin
   left join public.regions rg on rg.id = s.region_id
   left join public.districts d on d.id = s.district_id
   order by
-    s.is_featured desc,
+    s.featured_now desc,
     case when p_sort = 'newest' then s.published_at end desc nulls last,
     case when p_sort = 'salary' then coalesce(s.salary_to, s.salary_from, 0) end desc nulls last,
     case when p_sort = 'relevant' then coalesce(s.ms, 0) + s.rank * 20 end desc nulls last,
@@ -398,7 +429,7 @@ returns table (
   skills jsonb, languages jsonb, completeness int, has_portfolio boolean, phone_verified boolean,
   match_score int, match_reasons jsonb, distance_km double precision, is_saved boolean, last_active_at timestamptz, total_count bigint
 )
-language plpgsql stable security definer set search_path = public as $$
+language plpgsql volatile security definer set search_path = public as $$
 declare
   me uuid := auth.uid();
 begin
@@ -409,13 +440,17 @@ begin
   if p_vacancy_id is not null and not public.manages_vacancy(p_vacancy_id) and not public.is_admin() then
     p_vacancy_id := null;
   end if;
+  if not public.check_rate_limit('search_workers:' || me, 120, 60) then
+    raise exception 'rate_limited' using errcode = 'P0001';
+  end if;
 
   return query
   with base as (
     select w.*, pf.first_name as fn, pf.last_name as ln, pf.avatar_url as av, pf.gender as gd, pf.birth_date as bd,
       pr.salary_min as smin, pr.salary_expected as sexp, pr.salary_type as stype, pr.employment_types as etypes,
       pr.schedules as scheds, pr.availability as avail,
-      public.distance_km(p_lat, p_lng, g.lat, g.lng) as dist
+      -- masofa butun km gacha yaxlitlanadi: aniq koordinatani trilateratsiya bilan topib bo'lmaydi
+      case when p_lat is null then null else greatest(1.0, ceil(public.distance_km(p_lat, p_lng, g.lat, g.lng))) end as dist
     from public.worker_profiles w
     join public.profiles pf on pf.id = w.profile_id
     left join public.worker_preferences pr on pr.worker_id = w.id
@@ -507,16 +542,16 @@ declare
   moderation boolean := coalesce((select (value)::boolean from public.app_settings where key = 'vacancy_moderation_enabled'), false);
   new_status public.vacancy_status;
 begin
-  if not public.manages_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
-  if public.is_blocked(auth.uid()) then raise exception 'blocked' using errcode = '42501'; end if;
+  if not public.can_edit_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
   select * into v from public.vacancies where id = p_vacancy_id;
-  if v.category_id is null or v.region_id is null and not v.is_remote then
+  if v.category_id is null or (v.region_id is null and not v.is_remote) then
     raise exception 'vacancy_incomplete' using errcode = '23514';
   end if;
   if v.status not in ('draft', 'paused', 'closed', 'expired', 'pending_review', 'rejected') then
     raise exception 'invalid_status' using errcode = '23514';
   end if;
-  new_status := case when moderation then 'pending_review' else 'active' end;
+  -- admin yashirgan/rad etgan vakansiya faqat moderatsiya orqali qaytadi
+  new_status := case when moderation or v.requires_review then 'pending_review' else 'active' end;
   update public.vacancies
   set status = new_status,
       published_at = case when new_status = 'active' then now() else published_at end,
@@ -531,7 +566,7 @@ end $$;
 create or replace function public.set_vacancy_status(p_vacancy_id uuid, p_status public.vacancy_status)
 returns void language plpgsql security definer set search_path = public as $$
 begin
-  if not public.manages_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
+  if not public.can_edit_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
   if p_status not in ('paused', 'closed', 'draft') then raise exception 'invalid_status' using errcode = '23514'; end if;
   update public.vacancies set status = p_status where id = p_vacancy_id and status in ('active', 'paused', 'pending_review', 'draft', 'expired');
 end $$;
@@ -554,19 +589,32 @@ begin
   select * into v from public.vacancies where id = p_vacancy_id;
   if v.id is null or v.status <> 'active' then raise exception 'vacancy_not_active' using errcode = '23514'; end if;
   if v.owner_profile_id = auth.uid() then raise exception 'own_vacancy' using errcode = '23514'; end if;
-  if exists (select 1 from public.applications a where a.vacancy_id = p_vacancy_id and a.worker_id = wid) then
+  select id into app_id from public.applications a where a.vacancy_id = p_vacancy_id and a.worker_id = wid;
+  if app_id is not null and (select status from public.applications where id = app_id) <> 'withdrawn' then
     raise exception 'already_applied' using errcode = '23505';
   end if;
   if not public.check_rate_limit('apply:' || auth.uid(), daily, 86400) then
     raise exception 'rate_limited' using errcode = 'P0001';
   end if;
   select * into m from public.compute_match(wid, p_vacancy_id);
-  insert into public.applications (vacancy_id, worker_id, cover_message, match_score, match_reasons)
-  values (p_vacancy_id, wid, nullif(trim(p_message), ''), m.score, m.reasons)
-  returning id into app_id;
-  insert into public.application_events (application_id, from_status, to_status, actor_id) values (app_id, null, 'sent', auth.uid());
+  if app_id is null then
+    insert into public.applications (vacancy_id, worker_id, cover_message, match_score, match_reasons)
+    values (p_vacancy_id, wid, nullif(trim(p_message), ''), m.score, m.reasons)
+    returning id into app_id;
+    insert into public.application_events (application_id, from_status, to_status, actor_id) values (app_id, null, 'sent', auth.uid());
+  else
+    -- qaytarib olingan ariza qayta yuboriladi
+    update public.applications set status = 'sent', cover_message = nullif(trim(p_message), ''), match_score = m.score, match_reasons = m.reasons, viewed_at = null
+    where id = app_id;
+    insert into public.application_events (application_id, from_status, to_status, actor_id) values (app_id, 'withdrawn', 'sent', auth.uid());
+  end if;
   return app_id;
 end $$;
+
+create or replace function public.application_stage_rank(s public.application_status)
+returns int language sql immutable as $$
+  select case s when 'sent' then 1 when 'viewed' then 2 when 'shortlisted' then 3 when 'interview' then 4 when 'offered' then 5 when 'hired' then 6 else 0 end;
+$$;
 
 create or replace function public.set_application_status(p_application_id uuid, p_status public.application_status, p_note text default null)
 returns void language plpgsql security definer set search_path = public as $$
@@ -577,7 +625,8 @@ declare
 begin
   select * into a from public.applications where id = p_application_id;
   if a.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
-  is_employer := public.manages_vacancy(a.vacancy_id);
+  if public.is_blocked(auth.uid()) then raise exception 'blocked' using errcode = '42501'; end if;
+  is_employer := public.can_edit_vacancy(a.vacancy_id);
   is_worker := a.worker_id is not distinct from public.current_worker_id();
   if not (is_employer or is_worker or public.is_admin()) then raise exception 'forbidden' using errcode = '42501'; end if;
   if a.status in ('hired', 'rejected', 'withdrawn') then raise exception 'application_closed' using errcode = '23514'; end if;
@@ -589,6 +638,10 @@ begin
       raise exception 'invalid_status' using errcode = '23514';
     end if;
     if p_status = 'viewed' and a.status <> 'sent' then return; end if;
+    -- faqat oldinga: sent → viewed → shortlisted → interview → offered → hired (bosqich tashlab o'tish mumkin, orqaga yo'q)
+    if p_status <> 'rejected' and public.application_stage_rank(p_status) <= public.application_stage_rank(a.status) then
+      raise exception 'invalid_transition' using errcode = '23514';
+    end if;
   end if;
   if p_status = a.status then return; end if;
 
@@ -619,7 +672,7 @@ begin
     raise exception 'worker_not_found' using errcode = 'P0002';
   end if;
   if p_vacancy_id is not null then
-    if not public.manages_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
+    if not public.can_edit_vacancy(p_vacancy_id) then raise exception 'forbidden' using errcode = '42501'; end if;
     select * into v from public.vacancies where id = p_vacancy_id;
     if v.status <> 'active' then raise exception 'vacancy_not_active' using errcode = '23514'; end if;
     if exists (select 1 from public.job_offers o where o.vacancy_id = p_vacancy_id and o.worker_id = p_worker_id and o.status in ('sent', 'viewed')) then
@@ -644,20 +697,31 @@ returns void language plpgsql security definer set search_path = public as $$
 declare
   o public.job_offers;
   app_id uuid;
+  prev_status public.application_status;
 begin
   select * into o from public.job_offers where id = p_offer_id;
   if o.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
   if o.worker_id is distinct from public.current_worker_id() then raise exception 'forbidden' using errcode = '42501'; end if;
   if o.status not in ('sent', 'viewed') then raise exception 'offer_closed' using errcode = '23514'; end if;
+  if o.expires_at is not null and o.expires_at < now() then
+    update public.job_offers set status = 'expired' where id = p_offer_id;
+    raise exception 'offer_expired' using errcode = '23514';
+  end if;
   update public.job_offers set status = case when p_accept then 'accepted'::public.offer_status else 'declined'::public.offer_status end, responded_at = now() where id = p_offer_id;
-  -- Qabul qilingan taklif vakansiya bo'yicha bo'lsa — ariza "offered" holatida yaratiladi
+  -- Qabul qilingan taklif vakansiya bo'yicha bo'lsa — ariza "offered" holatiga o'tadi (yakunlangan arizalar qayta ochilmaydi)
   if p_accept and o.vacancy_id is not null then
-    insert into public.applications (vacancy_id, worker_id, status, cover_message)
-    values (o.vacancy_id, o.worker_id, 'offered', null)
-    on conflict (vacancy_id, worker_id) do update set status = 'offered'
-    returning id into app_id;
-    insert into public.application_events (application_id, from_status, to_status, actor_id, note)
-    values (app_id, null, 'offered', auth.uid(), 'offer_accepted');
+    select id, status into app_id, prev_status from public.applications where vacancy_id = o.vacancy_id and worker_id = o.worker_id;
+    if app_id is null then
+      insert into public.applications (vacancy_id, worker_id, status, cover_message)
+      values (o.vacancy_id, o.worker_id, 'offered', null)
+      returning id into app_id;
+      insert into public.application_events (application_id, from_status, to_status, actor_id, note)
+      values (app_id, null, 'offered', auth.uid(), 'offer_accepted');
+    elsif prev_status in ('sent', 'viewed', 'shortlisted', 'interview') then
+      update public.applications set status = 'offered' where id = app_id;
+      insert into public.application_events (application_id, from_status, to_status, actor_id, note)
+      values (app_id, prev_status, 'offered', auth.uid(), 'offer_accepted');
+    end if;
   end if;
 end $$;
 
@@ -672,6 +736,34 @@ returns void language sql security definer set search_path = public as $$
   update public.job_offers set status = 'withdrawn'
   where id = p_offer_id and employer_profile_id = auth.uid() and status in ('sent', 'viewed');
 $$;
+
+-- Custom (vakansiyasiz) taklif bo'yicha ishga olindi: sharh va statistika uchun
+create or replace function public.mark_offer_hired(p_offer_id uuid)
+returns void language plpgsql security definer set search_path = public as $$
+declare o public.job_offers; app_id uuid;
+begin
+  select * into o from public.job_offers where id = p_offer_id;
+  if o.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
+  if o.employer_profile_id is distinct from auth.uid() and not (o.company_id is not null and public.is_company_admin(o.company_id)) then
+    raise exception 'forbidden' using errcode = '42501';
+  end if;
+  if o.status <> 'accepted' then raise exception 'offer_not_accepted' using errcode = '23514'; end if;
+  update public.job_offers set hired_at = now() where id = p_offer_id and hired_at is null;
+  if o.vacancy_id is not null then
+    select id into app_id from public.applications where vacancy_id = o.vacancy_id and worker_id = o.worker_id and status = 'offered';
+    if app_id is not null then perform public.set_application_status(app_id, 'hired', 'offer_hired'); end if;
+  end if;
+end $$;
+
+-- Muddati o'tgan takliflar (cron)
+create or replace function public.expire_offers()
+returns int language plpgsql security definer set search_path = public as $$
+declare n int;
+begin
+  update public.job_offers set status = 'expired' where status in ('sent', 'viewed') and expires_at is not null and expires_at < now();
+  get diagnostics n = row_count;
+  return n;
+end $$;
 
 -- =====================================================================
 -- Chat
@@ -767,6 +859,30 @@ returns void language sql security definer set search_path = public as $$
   update public.conversation_members set is_blocked = p_blocked where conversation_id = p_conversation_id and profile_id = auth.uid();
 $$;
 
+-- O'z xabarini o'chirish (yumshoq)
+create or replace function public.delete_message(p_message_id bigint)
+returns void language sql security definer set search_path = public as $$
+  update public.messages set deleted_at = now(), body = null, attachment_path = null, attachment_meta = null, lat = null, lng = null
+  where id = p_message_id and sender_id = auth.uid() and deleted_at is null;
+$$;
+
+-- Shikoyat (blok + rate limit bilan)
+create or replace function public.submit_report(p_target_type public.report_target, p_target_id text, p_reason public.report_reason, p_details text default null)
+returns uuid language plpgsql security definer set search_path = public as $$
+declare rid uuid;
+begin
+  if auth.uid() is null then raise exception 'not_authenticated' using errcode = '42501'; end if;
+  if public.is_blocked(auth.uid()) then raise exception 'blocked' using errcode = '42501'; end if;
+  if not public.check_rate_limit('report:' || auth.uid(), 20, 86400) then raise exception 'rate_limited' using errcode = 'P0001'; end if;
+  if exists (select 1 from public.reports r where r.reporter_profile_id = auth.uid() and r.target_type = p_target_type and r.target_id = p_target_id and r.status in ('open', 'in_review')) then
+    raise exception 'already_reported' using errcode = '23505';
+  end if;
+  insert into public.reports (reporter_profile_id, target_type, target_id, reason, details)
+  values (auth.uid(), p_target_type, p_target_id, p_reason, nullif(trim(p_details), ''))
+  returning id into rid;
+  return rid;
+end $$;
+
 -- Mening suhbatlarim (ro'yxat uchun)
 create or replace function public.my_conversations()
 returns table (
@@ -820,25 +936,44 @@ $$;
 -- =====================================================================
 -- Sharhlar (faqat "hired" dan keyin)
 -- =====================================================================
-create or replace function public.create_review(p_application_id uuid, p_rating int, p_text text default null)
+create or replace function public.create_review(p_application_id uuid default null, p_rating int default 5, p_text text default null, p_job_offer_id uuid default null)
 returns uuid language plpgsql security definer set search_path = public as $$
 declare
   a public.applications;
+  o public.job_offers;
   worker_profile uuid;
   employer_profile uuid;
   target uuid;
   rid uuid;
 begin
-  select * into a from public.applications where id = p_application_id;
-  if a.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
-  if a.status <> 'hired' then raise exception 'review_requires_hire' using errcode = '23514'; end if;
-  select w.profile_id into worker_profile from public.worker_profiles w where w.id = a.worker_id;
-  select v.owner_profile_id into employer_profile from public.vacancies v where v.id = a.vacancy_id;
-  if auth.uid() = worker_profile then target := employer_profile;
-  elsif public.manages_vacancy(a.vacancy_id) then target := worker_profile;
-  else raise exception 'forbidden' using errcode = '42501'; end if;
-  insert into public.reviews (author_profile_id, target_profile_id, application_id, rating, text)
-  values (auth.uid(), target, p_application_id, p_rating, nullif(trim(p_text), ''))
+  if auth.uid() is null then raise exception 'not_authenticated' using errcode = '42501'; end if;
+  if public.is_blocked(auth.uid()) then raise exception 'blocked' using errcode = '42501'; end if;
+  if num_nonnulls(p_application_id, p_job_offer_id) <> 1 then raise exception 'one_source_required' using errcode = '23514'; end if;
+  if not public.check_rate_limit('review:' || auth.uid(), 20, 86400) then raise exception 'rate_limited' using errcode = 'P0001'; end if;
+
+  if p_application_id is not null then
+    select * into a from public.applications where id = p_application_id;
+    if a.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
+    if a.status <> 'hired' then raise exception 'review_requires_hire' using errcode = '23514'; end if;
+    select w.profile_id into worker_profile from public.worker_profiles w where w.id = a.worker_id;
+    select coalesce(v.owner_profile_id, (select m.profile_id from public.company_members m where m.company_id = v.company_id and m.role = 'owner' limit 1))
+      into employer_profile from public.vacancies v where v.id = a.vacancy_id;
+    if auth.uid() = worker_profile then target := employer_profile;
+    elsif public.manages_vacancy(a.vacancy_id) then target := worker_profile;
+    else raise exception 'forbidden' using errcode = '42501'; end if;
+  else
+    select * into o from public.job_offers where id = p_job_offer_id;
+    if o.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
+    if o.hired_at is null then raise exception 'review_requires_hire' using errcode = '23514'; end if;
+    select w.profile_id into worker_profile from public.worker_profiles w where w.id = o.worker_id;
+    employer_profile := o.employer_profile_id;
+    if auth.uid() = worker_profile then target := employer_profile;
+    elsif auth.uid() = employer_profile then target := worker_profile;
+    else raise exception 'forbidden' using errcode = '42501'; end if;
+  end if;
+  if target is null then raise exception 'not_found' using errcode = 'P0002'; end if;
+  insert into public.reviews (author_profile_id, target_profile_id, application_id, job_offer_id, rating, text)
+  values (auth.uid(), target, p_application_id, p_job_offer_id, p_rating, nullif(trim(p_text), ''))
   returning id into rid;
   return rid;
 end $$;
@@ -926,7 +1061,16 @@ begin
   if not public.has_admin_permission('vacancies.moderate') then raise exception 'forbidden' using errcode = '42501'; end if;
   if p_status not in ('active', 'hidden', 'rejected', 'closed') then raise exception 'invalid_status' using errcode = '23514'; end if;
   select jsonb_build_object('status', status, 'moderation_note', moderation_note) into before_row from public.vacancies where id = p_vacancy_id;
-  update public.vacancies set status = p_status, moderation_note = p_note where id = p_vacancy_id;
+  if p_status = 'active' then
+    update public.vacancies
+    set status = 'active', moderation_note = p_note, requires_review = false,
+        published_at = coalesce(published_at, now()),
+        expires_at = case when expires_at is null or expires_at < now() then now() + make_interval(days => coalesce((select (value)::int from public.app_settings where key = 'vacancy_lifetime_days'), 30)) else expires_at end
+    where id = p_vacancy_id;
+    perform public.refresh_matches_for_vacancy(p_vacancy_id);
+  else
+    update public.vacancies set status = p_status, moderation_note = p_note, requires_review = (p_status in ('hidden', 'rejected')) where id = p_vacancy_id;
+  end if;
   perform public.write_audit('vacancy.' || p_status, 'vacancy', p_vacancy_id::text, before_row, jsonb_build_object('status', p_status, 'note', p_note));
 end $$;
 
@@ -939,10 +1083,10 @@ begin
   select * into r from public.verification_requests where id = p_request_id;
   if r.id is null then raise exception 'not_found' using errcode = 'P0002'; end if;
   update public.verification_requests set status = p_status, review_note = p_note, reviewed_by = auth.uid(), reviewed_at = now() where id = p_request_id;
-  if r.type in ('company', 'tin', 'documents') and r.company_id is not null then
+  if r.company_id is not null then
     update public.companies set verification_status = p_status, verified_at = case when p_status = 'verified' then now() end where id = r.company_id;
     update public.employer_profiles set verification_status = p_status where company_id = r.company_id;
-  elsif r.type = 'identity' then
+  elsif r.type in ('identity', 'company', 'tin', 'documents') then
     update public.employer_profiles set verification_status = p_status where profile_id = r.profile_id;
   end if;
   perform public.write_audit('verification.' || p_status, 'verification_request', p_request_id::text, to_jsonb(r), jsonb_build_object('status', p_status, 'note', p_note));
@@ -990,7 +1134,7 @@ begin
     'active_vacancies', (select count(*) from public.vacancies where status = 'active'),
     'pending_vacancies', (select count(*) from public.vacancies where status = 'pending_review'),
     'applications', (select count(*) from public.applications),
-    'hires', (select count(*) from public.applications where status = 'hired'),
+    'hires', (select count(*) from public.applications where status = 'hired') + (select count(*) from public.job_offers where hired_at is not null and vacancy_id is null),
     'new_registrations_7d', (select count(*) from public.profiles where created_at > now() - interval '7 days'),
     'open_reports', (select count(*) from public.reports where status in ('open', 'in_review')),
     'pending_verifications', (select count(*) from public.verification_requests where status = 'pending'),
@@ -1007,11 +1151,11 @@ begin
   if not public.has_admin_permission('analytics.view') then raise exception 'forbidden' using errcode = '42501'; end if;
   return query
   select d::date,
-    (select count(*) from public.profiles p where p.created_at::date = d::date),
-    (select count(*) from public.vacancies v where v.created_at::date = d::date),
-    (select count(*) from public.applications a where a.created_at::date = d::date),
-    (select count(*) from public.application_events e where e.to_status = 'hired' and e.created_at::date = d::date)
-  from generate_series(current_date - (greatest(1, least(p_days, 365)) - 1), current_date, interval '1 day') d
+    (select count(*) from public.profiles p where (p.created_at at time zone 'Asia/Tashkent')::date = d::date),
+    (select count(*) from public.vacancies v where (v.created_at at time zone 'Asia/Tashkent')::date = d::date),
+    (select count(*) from public.applications a where (a.created_at at time zone 'Asia/Tashkent')::date = d::date),
+    (select count(*) from public.application_events e where e.to_status = 'hired' and (e.created_at at time zone 'Asia/Tashkent')::date = d::date)
+  from generate_series((now() at time zone 'Asia/Tashkent')::date - (greatest(1, least(p_days, 365)) - 1), (now() at time zone 'Asia/Tashkent')::date, interval '1 day') d
   order by 1;
 end $$;
 

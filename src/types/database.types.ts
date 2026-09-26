@@ -390,6 +390,64 @@ export type Database = {
           },
         ];
       };
+      company_invites: {
+        Row: {
+          accepted_at: string | null;
+          accepted_by: string | null;
+          company_id: string;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          invited_by: string;
+          role: Database["public"]["Enums"]["company_member_role"];
+          token: string;
+        };
+        Insert: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          company_id: string;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by: string;
+          role?: Database["public"]["Enums"]["company_member_role"];
+          token?: string;
+        };
+        Update: {
+          accepted_at?: string | null;
+          accepted_by?: string | null;
+          company_id?: string;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          invited_by?: string;
+          role?: Database["public"]["Enums"]["company_member_role"];
+          token?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "company_invites_accepted_by_fkey";
+            columns: ["accepted_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "company_invites_company_id_fkey";
+            columns: ["company_id"];
+            isOneToOne: false;
+            referencedRelation: "companies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "company_invites_invited_by_fkey";
+            columns: ["invited_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       company_members: {
         Row: {
           company_id: string;
@@ -715,6 +773,7 @@ export type Database = {
           created_at: string;
           employer_profile_id: string;
           expires_at: string | null;
+          hired_at: string | null;
           id: string;
           message: string | null;
           responded_at: string | null;
@@ -732,6 +791,7 @@ export type Database = {
           created_at?: string;
           employer_profile_id: string;
           expires_at?: string | null;
+          hired_at?: string | null;
           id?: string;
           message?: string | null;
           responded_at?: string | null;
@@ -749,6 +809,7 @@ export type Database = {
           created_at?: string;
           employer_profile_id?: string;
           expires_at?: string | null;
+          hired_at?: string | null;
           id?: string;
           message?: string | null;
           responded_at?: string | null;
@@ -1149,10 +1210,11 @@ export type Database = {
       };
       reviews: {
         Row: {
-          application_id: string;
+          application_id: string | null;
           author_profile_id: string;
           created_at: string;
           id: string;
+          job_offer_id: string | null;
           moderated_by: string | null;
           moderation_note: string | null;
           rating: number;
@@ -1162,10 +1224,11 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
-          application_id: string;
+          application_id?: string | null;
           author_profile_id: string;
           created_at?: string;
           id?: string;
+          job_offer_id?: string | null;
           moderated_by?: string | null;
           moderation_note?: string | null;
           rating: number;
@@ -1175,10 +1238,11 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
-          application_id?: string;
+          application_id?: string | null;
           author_profile_id?: string;
           created_at?: string;
           id?: string;
+          job_offer_id?: string | null;
           moderated_by?: string | null;
           moderation_note?: string | null;
           rating?: number;
@@ -1200,6 +1264,13 @@ export type Database = {
             columns: ["author_profile_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "reviews_job_offer_id_fkey";
+            columns: ["job_offer_id"];
+            isOneToOne: false;
+            referencedRelation: "job_offers";
             referencedColumns: ["id"];
           },
           {
@@ -1488,9 +1559,10 @@ export type Database = {
           lng: number | null;
           moderation_note: string | null;
           official_terms: string[];
-          owner_profile_id: string;
+          owner_profile_id: string | null;
           published_at: string | null;
           region_id: string | null;
+          requires_review: boolean;
           salary_from: number | null;
           salary_negotiable: boolean;
           salary_to: number | null;
@@ -1530,9 +1602,10 @@ export type Database = {
           lng?: number | null;
           moderation_note?: string | null;
           official_terms?: string[];
-          owner_profile_id: string;
+          owner_profile_id?: string | null;
           published_at?: string | null;
           region_id?: string | null;
+          requires_review?: boolean;
           salary_from?: number | null;
           salary_negotiable?: boolean;
           salary_to?: number | null;
@@ -1572,9 +1645,10 @@ export type Database = {
           lng?: number | null;
           moderation_note?: string | null;
           official_terms?: string[];
-          owner_profile_id?: string;
+          owner_profile_id?: string | null;
           published_at?: string | null;
           region_id?: string | null;
+          requires_review?: boolean;
           salary_from?: number | null;
           salary_negotiable?: boolean;
           salary_to?: number | null;
@@ -2219,6 +2293,7 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      accept_company_invite: { Args: { p_token: string }; Returns: string };
       admin_broadcast: {
         Args: {
           p_body: string;
@@ -2275,11 +2350,17 @@ export type Database = {
         Returns: undefined;
       };
       admin_stats: { Args: Record<PropertyKey, never>; Returns: Json };
+      application_stage_rank: {
+        Args: { s: Database["public"]["Enums"]["application_status"] };
+        Returns: number;
+      };
       apply_to_vacancy: {
         Args: { p_message?: string; p_vacancy_id: string };
         Returns: string;
       };
+      can_edit_vacancy: { Args: { p_vacancy_id: string }; Returns: boolean };
       can_view_phone: { Args: { p_owner: string }; Returns: boolean };
+      can_view_profile: { Args: { p_profile_id: string }; Returns: boolean };
       can_view_worker: { Args: { p_worker_id: string }; Returns: boolean };
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
@@ -2293,7 +2374,12 @@ export type Database = {
         }[];
       };
       create_review: {
-        Args: { p_application_id: string; p_rating: number; p_text?: string };
+        Args: {
+          p_application_id?: string;
+          p_job_offer_id?: string;
+          p_rating?: number;
+          p_text?: string;
+        };
         Returns: string;
       };
       current_employer_id: {
@@ -2302,7 +2388,7 @@ export type Database = {
       };
       current_profile_id: { Args: Record<PropertyKey, never>; Returns: string };
       current_worker_id: { Args: Record<PropertyKey, never>; Returns: string };
-      dearmor: { Args: { "": string }; Returns: string };
+      delete_message: { Args: { p_message_id: number }; Returns: undefined };
       distance_km: {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number };
         Returns: number;
@@ -2319,9 +2405,8 @@ export type Database = {
         Args: { level: Database["public"]["Enums"]["experience_level"] };
         Returns: number;
       };
+      expire_offers: { Args: Record<PropertyKey, never>; Returns: number };
       expire_vacancies: { Args: Record<PropertyKey, never>; Returns: number };
-      gen_random_uuid: { Args: Record<PropertyKey, never>; Returns: string };
-      gen_salt: { Args: { "": string }; Returns: string };
       get_contact: {
         Args: { p_profile_id: string };
         Returns: {
@@ -2336,10 +2421,15 @@ export type Database = {
         Returns: string;
       };
       has_admin_permission: { Args: { perm: string }; Returns: boolean };
+      is_active_user: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_blocked: { Args: { pid: string }; Returns: boolean };
       is_company_admin: { Args: { p_company_id: string }; Returns: boolean };
       is_company_member: { Args: { p_company_id: string }; Returns: boolean };
+      is_conversation_member: {
+        Args: { p_conversation_id: string };
+        Returns: boolean;
+      };
       language_level_rank: {
         Args: { level: Database["public"]["Enums"]["language_level"] };
         Returns: number;
@@ -2350,6 +2440,7 @@ export type Database = {
         Returns: undefined;
       };
       mark_notifications_read: { Args: { p_ids?: number[] }; Returns: number };
+      mark_offer_hired: { Args: { p_offer_id: string }; Returns: undefined };
       mark_offer_viewed: { Args: { p_offer_id: string }; Returns: undefined };
       my_conversations: {
         Args: Record<PropertyKey, never>;
@@ -2383,10 +2474,6 @@ export type Database = {
       notify_matching_workers: {
         Args: { p_min_score?: number; p_vacancy_id: string };
         Returns: number;
-      };
-      pgp_armor_headers: {
-        Args: { "": string };
-        Returns: Record<string, unknown>[];
       };
       profile_rating: {
         Args: { p_profile_id: string };
@@ -2608,11 +2695,17 @@ export type Database = {
         };
         Returns: undefined;
       };
-      show_limit: { Args: Record<PropertyKey, never>; Returns: number };
-      show_trgm: { Args: { "": string }; Returns: string[] };
       slugify: { Args: { input: string }; Returns: string };
+      submit_report: {
+        Args: {
+          p_details?: string;
+          p_reason: Database["public"]["Enums"]["report_reason"];
+          p_target_id: string;
+          p_target_type: Database["public"]["Enums"]["report_target"];
+        };
+        Returns: string;
+      };
       touch_last_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
-      unaccent: { Args: { "": string }; Returns: string };
       unread_counts: {
         Args: Record<PropertyKey, never>;
         Returns: {
