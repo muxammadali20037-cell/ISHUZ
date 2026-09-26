@@ -3,12 +3,11 @@ import Link from "next/link";
 import { Pencil } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { ReferenceData } from "@/lib/reference";
-import { ageFromBirthDate, formatMoney, formatPhone, formatWorkTime, fullName, initials } from "@/lib/format";
+import { ageFromBirthDate, formatDate, formatMoney, formatPhone, formatWorkTime, fullName, initials } from "@/lib/format";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import type { WorkerDraft } from "../types";
-import { dateToMonth } from "../utils";
 import { FinishBar } from "./finish-bar";
 import { stepHref } from "./wizard-shell";
 
@@ -95,7 +94,7 @@ export async function Review({ draft, reference }: { draft: WorkerDraft; referen
             {e.position}
             <span className="text-muted-foreground">
               {" "}
-              · {dateToMonth(e.started_on)} – {e.is_current ? t("onboarding.worker.review.present") : (dateToMonth(e.ended_on) ?? "")}
+              · {formatDate(e.started_on, locale, "LLLL yyyy")} – {e.is_current ? t("onboarding.worker.review.present") : formatDate(e.ended_on, locale, "LLLL yyyy")}
             </span>
           </Row>
         ))}

@@ -16,6 +16,10 @@ import { saveProfession } from "../../actions";
 import { professionSchema, type ProfessionInput } from "../../schema";
 import { WizardFooter, fieldError, singleValue, useStepSubmit } from "../wizard-shell";
 
+function matchesQuery(row: { name_uz: string; name_ru: string }, q: string) {
+  return row.name_uz.toLowerCase().includes(q) || row.name_ru.toLowerCase().includes(q);
+}
+
 export interface ProfessionDraft {
   category_id: string | null;
   subcategory_id: string | null;
@@ -40,23 +44,24 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
   const subcategoryId = useWatch({ control, name: "subcategory_id" });
   const [browsing, setBrowsing] = useState(!draft.category_id);
   const [query, setQuery] = useState("");
-  const [autoHeadline, setAutoHeadline] = useState<string | null>(null);
+  const [autoHeadline, setAutoHeadline] = useState<string | null>(() => {
+    const sub = subcategories.find((s) => s.id === draft.subcategory_id);
+    return sub && name(sub) === draft.headline ? draft.headline : null;
+  });
 
   const selected = categories.find((c) => c.id === categoryId) ?? null;
   const subs = useMemo(() => subcategories.filter((s) => s.category_id === categoryId), [subcategories, categoryId]);
   const q = query.trim().toLowerCase();
-  const matches = (row: { name_uz: string; name_ru: string }) => row.name_uz.toLowerCase().includes(q) || row.name_ru.toLowerCase().includes(q);
   const visible = useMemo(() => {
     if (!q) return categories.map((c) => ({ category: c, hits: [] as Subcategory[] }));
     return categories
-      .map((c) => ({ category: c, hits: subcategories.filter((s) => s.category_id === c.id && matches(s)) }))
-      .filter(({ category, hits }) => matches(category) || hits.length > 0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- matches() faqat q ga bog'liq
+      .map((c) => ({ category: c, hits: subcategories.filter((s) => s.category_id === c.id && matchesQuery(s, q)) }))
+      .filter(({ category, hits }) => matchesQuery(category, q) || hits.length > 0);
   }, [categories, subcategories, q]);
 
   const pickCategory = (id: string, subId: string | null = null) => {
     setValue("category_id", id, { shouldValidate: true });
-    setValue("subcategory_id", null);
+    if (id !== categoryId) setValue("subcategory_id", null);
     setBrowsing(false);
     setQuery("");
     if (subId) pickSubcategory(subId, subcategories.filter((s) => s.category_id === id));

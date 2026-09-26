@@ -92,13 +92,20 @@ alter table public.worker_experience enable row level security;
 alter table public.worker_education enable row level security;
 alter table public.worker_portfolio enable row level security;
 
+-- Ishchi profilini kim ko'radi: o'zi, admin, ochiq profil (kirgan foydalanuvchilarga),
+-- yoki yopiq bo'lsa ham — u ariza yuborgan vakansiya boshqaruvchisi / unga taklif yuborgan ish beruvchi
 create or replace function public.can_view_worker(p_worker_id uuid)
 returns boolean language sql stable security definer set search_path = public as $$
   select exists (
     select 1 from public.worker_profiles w join public.profiles p on p.id = w.profile_id
     where w.id = p_worker_id and (
       w.profile_id = auth.uid() or public.is_admin()
-      or (auth.uid() is not null and w.is_public and not p.is_blocked and w.onboarding_completed_at is not null)
+      or (auth.uid() is not null and not p.is_blocked and w.onboarding_completed_at is not null and (
+        w.is_public
+        or exists (select 1 from public.applications a join public.vacancies v on v.id = a.vacancy_id
+                   where a.worker_id = w.id and (v.owner_profile_id = auth.uid() or (v.company_id is not null and public.is_company_member(v.company_id))))
+        or exists (select 1 from public.job_offers o where o.worker_id = w.id and (o.employer_profile_id = auth.uid() or (o.company_id is not null and public.is_company_member(o.company_id))))
+      ))
     ));
 $$;
 
@@ -189,6 +196,13 @@ alter table public.vacancy_languages enable row level security;
 alter table public.vacancy_benefits enable row level security;
 
 create policy "vacancies_read_active" on public.vacancies for select using (status = 'active');
+-- Ishchi ariza yuborgan / taklif olgan vakansiyasini holatidan qat'i nazar ko'radi (arxiv arizalar uchun)
+create or replace function public.worker_related_to_vacancy(p_vacancy_id uuid)
+returns boolean language sql stable security definer set search_path = public as $$
+  select exists (select 1 from public.applications a join public.worker_profiles w on w.id = a.worker_id where a.vacancy_id = p_vacancy_id and w.profile_id = auth.uid())
+      or exists (select 1 from public.job_offers o join public.worker_profiles w on w.id = o.worker_id where o.vacancy_id = p_vacancy_id and w.profile_id = auth.uid());
+$$;
+create policy "vacancies_read_applied" on public.vacancies for select to authenticated using (public.worker_related_to_vacancy(id));
 create policy "vacancies_read_own" on public.vacancies for select to authenticated using (public.manages_vacancy(id) or public.has_admin_permission('vacancies.view'));
 create policy "vacancies_insert" on public.vacancies for insert to authenticated
   with check (owner_profile_id = auth.uid() and status = 'draft' and public.is_active_user()
@@ -304,7 +318,7 @@ grant execute on function public.record_vacancy_view(uuid), public.profile_ratin
 grant execute on function public.current_profile_id(), public.is_admin(), public.has_admin_permission(text), public.is_blocked(uuid),
   public.is_company_member(uuid), public.is_company_admin(uuid), public.current_worker_id(), public.current_employer_id(),
   public.manages_vacancy(uuid), public.can_edit_vacancy(uuid), public.can_view_worker(uuid), public.can_view_profile(uuid), public.is_active_user(),
-  public.compute_match(uuid, uuid), public.is_conversation_member(uuid), public.application_stage_rank(public.application_status) to anon;
+  public.compute_match(uuid, uuid), public.is_conversation_member(uuid), public.application_stage_rank(public.application_status), public.worker_related_to_vacancy(uuid) to anon;
 grant execute on function
   public.current_profile_id(), public.is_admin(), public.has_admin_permission(text), public.is_blocked(uuid),
   public.can_view_phone(uuid), public.get_contact(uuid), public.compute_match(uuid, uuid),
@@ -317,7 +331,7 @@ grant execute on function
   public.mark_conversation_read(uuid), public.set_conversation_block(uuid, boolean), public.my_conversations(),
   public.mark_notifications_read(bigint[]), public.unread_counts(), public.create_review(uuid, int, text, uuid),
   public.delete_message(bigint), public.submit_report(public.report_target, text, public.report_reason, text),
-  public.mark_offer_hired(uuid), public.accept_company_invite(text), public.can_edit_vacancy(uuid), public.can_view_profile(uuid), public.is_active_user(),
+  public.mark_offer_hired(uuid), public.accept_company_invite(text), public.can_edit_vacancy(uuid), public.can_view_profile(uuid), public.is_active_user(), public.worker_related_to_vacancy(uuid),
   public.application_stage_rank(public.application_status),
   public.employer_dashboard_stats(), public.worker_dashboard_stats(), public.recommended_vacancies(int), public.recommended_workers(uuid, int),
   public.worker_completeness(uuid), public.refresh_worker_completeness(uuid), public.touch_last_seen(),

@@ -12,7 +12,11 @@ import type { ChatMessage } from "../types";
 import { formatBytes, formatDuration, mapUrl } from "../utils";
 
 /** Yopiq bucket fayli uchun imzolangan URL: serverdan kelgan bo'lsa shu, bo'lmasa action orqali */
-function useAttachmentUrl(path: string | null, initial: string | null) {
+function useAttachmentUrl(message: ChatMessage) {
+  const path = message.attachment_path;
+  const initial = message.signed_url;
+  // Yuborilayotgan (optimistik) xabar: fayl hali bucket'da yo'q — so'ramaymiz, skeleton ko'rsatamiz
+  const sending = message.status === "sending";
   const query = useQuery({
     queryKey: ["chat-attachment", path],
     queryFn: async () => {
@@ -21,18 +25,19 @@ function useAttachmentUrl(path: string | null, initial: string | null) {
       if (!res.data) throw new Error("not_found");
       return res.data.url;
     },
-    enabled: !!path && !initial,
+    enabled: !!path && !initial && !sending,
     initialData: initial ?? undefined,
     staleTime: 50 * 60 * 1000,
     gcTime: 60 * 60 * 1000,
     retry: 1,
   });
-  return { url: query.data ?? null, loading: query.isPending && !!path && !initial, failed: query.isError };
+  const url = query.data ?? null;
+  return { url, loading: !url && ((sending && !message.deleted_at) || (query.isPending && !!path && !initial)), failed: !sending && query.isError };
 }
 
 export function ImageAttachment({ message, mine }: { message: ChatMessage; mine: boolean }) {
   const { t } = useT();
-  const { url, loading, failed } = useAttachmentUrl(message.attachment_path, message.signed_url);
+  const { url, loading, failed } = useAttachmentUrl(message);
   const [open, setOpen] = useState(false);
   const name = message.attachment_meta?.name ?? t("chat.room.image");
   if (loading || (!url && !failed)) return <Skeleton className="h-48 w-56 rounded-xl" />;
@@ -55,7 +60,7 @@ export function ImageAttachment({ message, mine }: { message: ChatMessage; mine:
 
 export function DocumentAttachment({ message, mine }: { message: ChatMessage; mine: boolean }) {
   const { t } = useT();
-  const { url, loading, failed } = useAttachmentUrl(message.attachment_path, message.signed_url);
+  const { url, loading, failed } = useAttachmentUrl(message);
   const meta = message.attachment_meta;
   const name = meta?.name ?? t("chat.room.document");
   const size = formatBytes(meta?.size);
@@ -85,7 +90,7 @@ export function DocumentAttachment({ message, mine }: { message: ChatMessage; mi
 
 export function VoiceAttachment({ message, mine }: { message: ChatMessage; mine: boolean }) {
   const { t } = useT();
-  const { url, loading, failed } = useAttachmentUrl(message.attachment_path, message.signed_url);
+  const { url, loading, failed } = useAttachmentUrl(message);
   const duration = message.attachment_meta?.duration;
   if (loading) return <Skeleton className="h-12 w-60 rounded-xl" />;
   if (!url || failed) return <Unavailable mine={mine} />;

@@ -2728,6 +2728,10 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      worker_related_to_vacancy: {
+        Args: { p_vacancy_id: string };
+        Returns: boolean;
+      };
       write_audit: {
         Args: {
           p_action: string;

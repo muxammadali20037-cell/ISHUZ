@@ -1,0 +1,69 @@
+"use client";
+
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useT } from "@/lib/i18n/client";
+import { Input } from "@/components/ui/input";
+import { ChipGroup } from "@/components/ui/chip";
+import { Field } from "@/components/ui/label";
+import { EMPLOYMENT_TYPES, WORK_SCHEDULES, scheduleSchema, type ScheduleInput } from "../../../schema";
+import { toHHMM } from "../../../utils";
+import { useSaveStep } from "../use-save-step";
+import { WizardFooter } from "../wizard-footer";
+import type { StepProps } from "../types";
+
+/** 5-qadam: bandlik turi, grafik, ish vaqti */
+export function StepSchedule({ mode, vacancy }: StepProps) {
+  const { t, tEnum } = useT();
+  const saver = useSaveStep(mode, vacancy.id, "schedule");
+  const form = useForm<ScheduleInput>({
+    resolver: zodResolver(scheduleSchema),
+    defaultValues: {
+      employmentType: vacancy.employment_type,
+      schedule: vacancy.schedule,
+      workTimeFrom: toHHMM(vacancy.work_time_from) || null,
+      workTimeTo: toHHMM(vacancy.work_time_to) || null,
+    },
+  });
+  const errors = form.formState.errors;
+  const onSubmit = form.handleSubmit((data) => saver.save({ step: "schedule", data }));
+
+  return (
+    <form onSubmit={onSubmit} noValidate className="space-y-5">
+      <Field label={t("vacancies.wizard.schedule.employment")}>
+        <Controller
+          control={form.control}
+          name="employmentType"
+          render={({ field }) => (
+            <ChipGroup options={EMPLOYMENT_TYPES.map((v) => ({ value: v, label: tEnum("employment_type", v) }))} value={field.value} onChange={(v) => { if (typeof v === "string") field.onChange(v); }} size="lg" />
+          )}
+        />
+      </Field>
+      <Field label={t("vacancies.wizard.schedule.schedule")}>
+        <Controller
+          control={form.control}
+          name="schedule"
+          render={({ field }) => (
+            <ChipGroup options={WORK_SCHEDULES.map((v) => ({ value: v, label: tEnum("work_schedule", v) }))} value={field.value} onChange={(v) => { if (typeof v === "string") field.onChange(v); }} size="lg" />
+          )}
+        />
+      </Field>
+      <div>
+        <div className="mb-1.5 text-sm font-medium">
+          {t("vacancies.wizard.schedule.time")} <span className="text-xs font-normal text-muted-foreground">({t("common.labels.optional")})</span>
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label={t("vacancies.wizard.schedule.time_from")} htmlFor="time-from" error={errors.workTimeFrom?.message ? t(errors.workTimeFrom.message) : undefined}>
+            <Input id="time-from" type="time" step={300} {...form.register("workTimeFrom", { setValueAs: (v: string) => (v ? v : null) })} />
+          </Field>
+          <Field label={t("vacancies.wizard.schedule.time_to")} htmlFor="time-to" error={errors.workTimeTo?.message ? t(errors.workTimeTo.message) : undefined}>
+            <Input id="time-to" type="time" step={300} {...form.register("workTimeTo", { setValueAs: (v: string) => (v ? v : null) })} />
+          </Field>
+        </div>
+        <p className="mt-1 text-xs text-muted-foreground">{t("vacancies.wizard.schedule.time_hint")}</p>
+      </div>
+
+      <WizardFooter mode={mode} step="schedule" pending={saver.pending} onBack={saver.back} onSkip={saver.skip} />
+    </form>
+  );
+}

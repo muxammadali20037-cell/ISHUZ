@@ -55,7 +55,7 @@ export function LocationForm({
     const others = workIds.filter((id) => byId.get(id)?.region_id !== browseRegion);
     const merged = [...others, ...ids];
     if (merged.length > MAX_WORK_DISTRICTS) {
-      toast.error(t("common.errors.max_length", { max: MAX_WORK_DISTRICTS }));
+      toast.error(t("profile.errors.max_districts", { max: MAX_WORK_DISTRICTS }));
       return;
     }
     setWorkIds(merged);

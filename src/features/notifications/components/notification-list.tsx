@@ -12,7 +12,7 @@ import { toast } from "@/components/ui/toast";
 import { formatDate, formatTime } from "@/lib/format";
 import type { Tables } from "@/types/database.types";
 import { cn } from "@/lib/utils";
-import { dayKey, groupByDay, relativeDay } from "@/features/chat/utils";
+import { groupByDay, relativeDay } from "@/features/chat/utils";
 import { markNotificationsRead } from "../actions";
 import type { NotificationRow } from "../queries";
 import { renderNotification } from "../render";
@@ -176,4 +176,3 @@ export function NotificationList({
   );
 }
 
-export { dayKey };

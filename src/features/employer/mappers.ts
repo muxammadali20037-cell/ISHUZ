@@ -138,7 +138,7 @@ export function employerDisplayName(input: { companyName?: string | null; displa
 }
 
 /** Xatolik kodini i18n kalitiga aylantiradi (modul yoki umumiy) */
-const MODULE_ERRORS = new Set(["company_exists", "not_admin", "owner_locked", "invalid_path", "already_pending"]);
+const MODULE_ERRORS = new Set(["company_exists", "not_admin", "owner_locked", "invalid_path", "already_pending", "invite_invalid"]);
 const COMMON_ERRORS = new Set(["generic", "network", "forbidden", "not_authenticated", "rate_limited", "blocked", "validation", "invalid_phone", "invalid_url", "file_too_large", "file_type"]);
 
 export function errorMessageKey(code: string): string {

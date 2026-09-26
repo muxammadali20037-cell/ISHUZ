@@ -30,7 +30,8 @@
     "invalid_init_data": "Telegram ma'lumotlari tasdiqlanmadi. Mini App'ni qayta oching.",
     "telegram_linked_to_other_account": "Bu Telegram hisobi boshqa profilga bog'langan",
     "bad_request": "So'rov noto'g'ri",
-    "clipboard": "Nusxalab bo'lmadi. Havolani qo'lda nusxalang."
+    "clipboard": "Nusxalab bo'lmadi. Havolani qo'lda nusxalang.",
+    "max_districts": "Ko'pi bilan {max} ta tuman"
   },
   "view": {
     "view_cv": "CV ko'rish",

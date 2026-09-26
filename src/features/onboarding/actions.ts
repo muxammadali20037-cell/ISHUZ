@@ -291,8 +291,8 @@ export async function createCustomSkill(input: unknown): Promise<ActionResult<{ 
   const supabase = await createClient();
   const name = parsed.data.name;
 
-  const safe = name.replace(/["\\(),.]/g, " ").trim();
-  if (safe.length >= 2) {
+  const safe = name.replace(/["\\(),.%*_]/g, " ").replace(/\s+/g, " ").trim();
+  if (safe.length >= 2 && safe === name) {
     const { data: existing } = await supabase
       .from("skills")
       .select("id, name_uz, name_ru, category_id")
@@ -393,6 +393,13 @@ export async function savePreferences(input: unknown): Promise<StepResult> {
   const { supabase, workerId } = res.ctx;
   const d = parsed.data;
 
+  let officialTerms: string[] = [];
+  if (d.work_format === "official" && d.official_terms.length) {
+    const { data: benefits } = await supabase.from("benefits").select("code").eq("kind", "official_term").eq("is_active", true);
+    const allowed = new Set((benefits ?? []).map((b) => b.code));
+    officialTerms = [...new Set(d.official_terms.filter((c) => allowed.has(c)))];
+  }
+
   const { error: prefError } = await supabase.from("worker_preferences").upsert(
     {
       worker_id: workerId,
@@ -404,7 +411,7 @@ export async function savePreferences(input: unknown): Promise<StepResult> {
       salary_expected: d.salary_expected,
       salary_type: d.salary_type,
       availability: d.availability,
-      official_terms: d.work_format === "official" ? [...new Set(d.official_terms)] : [],
+      official_terms: officialTerms,
     },
     { onConflict: "worker_id" },
   );

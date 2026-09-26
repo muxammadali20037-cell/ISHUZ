@@ -704,7 +704,7 @@ begin
   if o.worker_id is distinct from public.current_worker_id() then raise exception 'forbidden' using errcode = '42501'; end if;
   if o.status not in ('sent', 'viewed') then raise exception 'offer_closed' using errcode = '23514'; end if;
   if o.expires_at is not null and o.expires_at < now() then
-    update public.job_offers set status = 'expired' where id = p_offer_id;
+    -- (holatni bu yerda yangilab bo'lmaydi: exception tranzaksiyani qaytaradi; expire_offers() cron bajaradi)
     raise exception 'offer_expired' using errcode = '23514';
   end if;
   update public.job_offers set status = case when p_accept then 'accepted'::public.offer_status else 'declined'::public.offer_status end, responded_at = now() where id = p_offer_id;

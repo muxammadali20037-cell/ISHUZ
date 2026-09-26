@@ -68,7 +68,7 @@ export function ConversationList({ items, errorCode }: { items: ConversationList
       {items.map((c) => {
         const unread = Number(c.unread_count ?? 0);
         const kind = previewKind(c.last_message_preview);
-        const previewIcon = kind === "image" ? ImageIcon : kind === "document" ? FileText : kind === "location" ? MapPin : kind === "voice" ? Mic : null;
+        const PreviewIcon = kind === "image" ? ImageIcon : kind === "document" ? FileText : kind === "location" ? MapPin : kind === "voice" ? Mic : null;
         const previewText =
           kind === "text"
             ? c.last_message_preview
@@ -101,7 +101,7 @@ export function ConversationList({ items, errorCode }: { items: ConversationList
                 ) : null}
                 <div className="mt-1 flex items-center justify-between gap-2">
                   <p className={cn("flex min-w-0 items-center gap-1 truncate text-sm", unread ? "font-medium text-foreground" : "text-muted-foreground")}>
-                    {previewIcon ? <span className="inline-flex shrink-0 [&_svg]:size-3.5">{previewIcon({})}</span> : null}
+                    {PreviewIcon ? <PreviewIcon className="size-3.5 shrink-0" /> : null}
                     <span className="truncate">{previewText}</span>
                   </p>
                   {unread ? (

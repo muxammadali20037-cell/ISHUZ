@@ -42,7 +42,7 @@ export function SkillPicker({
   extraNames: Record<string, { name_uz: string; name_ru: string }>;
   invalid?: boolean;
 }) {
-  const { t, tEnum, name, locale } = useT();
+  const { t, tEnum, name } = useT();
   const [custom, setCustom] = useState<SkillOption[]>([]);
   const [query, setQuery] = useState("");
   const [creating, startCreate] = useTransition();
@@ -92,7 +92,7 @@ export function SkillPicker({
     });
   };
 
-  const label = (id: string) => name(names.get(id) ?? null) || (locale === "ru" ? extraNames[id]?.name_ru : extraNames[id]?.name_uz) || "…";
+  const label = (id: string) => name(names.get(id) ?? null) || "…";
 
   return (
     <div className="space-y-4">

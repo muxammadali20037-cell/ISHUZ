@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { Users, Filter, ArrowUpRight } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { Button } from "@/components/ui/button";
@@ -27,7 +28,9 @@ export async function EmployerPipeline({ vacancy, status, sort }: { vacancy: Man
           </Button>
         }
       />
-      <PipelineFilters counts={counts} status={status} sort={sort} />
+      <Suspense fallback={null}>
+        <PipelineFilters counts={counts} status={status} sort={sort} />
+      </Suspense>
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         {items.length ? (
           items.map((item) => <ApplicantCard key={item.id} item={item} canAct={canAct} />)

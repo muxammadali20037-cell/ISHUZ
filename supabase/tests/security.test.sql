@@ -111,6 +111,20 @@ select pg_temp.login('a1000000-0000-0000-0000-000000000001');
 select public.respond_offer((select id from public.job_offers), true);
 select pg_temp.ok((select status from public.applications) = 'rejected', 'rad etilgan ariza taklif bilan tirilmaydi');
 
+-- ---------- Yopiq profil ham ariza yuborgan ish beruvchisiga ko'rinadi; arxiv vakansiya ishchiga ko'rinadi ----------
+select pg_temp.login('a1000000-0000-0000-0000-000000000001');
+update public.worker_profiles set is_public = false where profile_id = auth.uid();
+select pg_temp.login('a1000000-0000-0000-0000-000000000005');
+select pg_temp.ok((select count(*) from public.worker_profiles) = 0, 'yopiq profil begonaga ko''rinmaydi');
+select pg_temp.login('a1000000-0000-0000-0000-000000000002');
+select pg_temp.ok((select count(*) from public.worker_profiles where profile_id = 'a1000000-0000-0000-0000-000000000001') = 1, 'yopiq profil ariza olgan ish beruvchiga ko''rinadi');
+select public.set_vacancy_status((select vacancy_id from t), 'closed');
+select pg_temp.login('a1000000-0000-0000-0000-000000000001');
+select pg_temp.ok((select count(*) from public.vacancies where id = (select vacancy_id from t)) = 1, 'yopilgan vakansiya ariza yuborgan ishchiga ko''rinadi');
+update public.worker_profiles set is_public = true where profile_id = auth.uid();
+select pg_temp.login('a1000000-0000-0000-0000-000000000002');
+select public.publish_vacancy((select vacancy_id from t));
+
 -- ---------- Custom taklif → ishga olish → sharh ----------
 select pg_temp.login('a1000000-0000-0000-0000-000000000002');
 select public.send_offer((select id from public.worker_profiles limit 1), null, 'Omborchi', 'Sizni taklif qilamiz', 4000000, 5000000);

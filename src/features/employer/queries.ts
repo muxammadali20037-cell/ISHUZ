@@ -93,7 +93,7 @@ export async function getRecentApplications(userId: string, companyId: string | 
   if (!ids.length) return [];
   const { data, error } = await supabase
     .from("applications")
-    .select("id, status, match_score, created_at, vacancy_id, vacancies!inner(title), worker_profiles!inner(profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url))")
+    .select("id, status, match_score, created_at, vacancy_id, vacancies!inner(title), worker_profiles(profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url))")
     .in("vacancy_id", ids)
     .order("created_at", { ascending: false })
     .limit(limit);
