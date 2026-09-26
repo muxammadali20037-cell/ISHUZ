@@ -33,7 +33,9 @@ npx supabase db push              # supabase/migrations/*.sql tartib bilan
 npm run db:types                  # src/types/database.types.ts ni yangilash (lokal DB dan)
 ```
 
-Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0012` fayllarini tartib bilan ishga tushiring.
+Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0014` fayllarini tartib bilan ishga tushiring.
+
+> Ishlab chiqarish loyihasi `ISHUZ` (ref `oquqqubmicldvreeqgsg`, ap-south-1) ga 0001–0014 migratsiyalar qo'llangan (0012 seed to'rt qismga bo'lib: 0012a–0012d). `NEXT_PUBLIC_SUPABASE_URL=https://oquqqubmicldvreeqgsg.supabase.co`.
 
 Lokal PostgreSQL bilan sxema/RLS testlari (Supabase stub bilan, Docker shart emas):
 
