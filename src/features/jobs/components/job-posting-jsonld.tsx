@@ -72,7 +72,8 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
           },
         }
       : undefined,
-    experienceRequirements: v.experience_min_months > 0 ? { "@type": "OccupationalExperienceRequirements", monthsOfExperience: v.experience_min_months } : undefined,
+    experienceRequirements:
+      v.experience_min_months > 0 ? { "@type": "OccupationalExperienceRequirements", monthsOfExperience: v.experience_min_months } : undefined,
     experienceInPlaceOfEducation: v.experience_min_months === 0 ? true : undefined,
     educationRequirements: v.education_min ? { "@type": "EducationalOccupationalCredential", credentialCategory: EDUCATION[v.education_min] } : undefined,
     skills: v.skills.length ? v.skills.map((s) => s.name_uz).join(", ") : undefined,

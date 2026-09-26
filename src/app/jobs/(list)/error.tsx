@@ -10,5 +10,13 @@ export default function JobsError({ error, reset }: { error: Error & { digest?: 
   useEffect(() => {
     console.error("[jobs] page error", error);
   }, [error]);
-  return <EmptyState className="mt-4" icon={AlertTriangle} title={t("jobs.error.title")} description={t("jobs.error.description")} action={{ label: t("common.actions.retry"), onClick: reset }} />;
+  return (
+    <EmptyState
+      className="mt-4"
+      icon={AlertTriangle}
+      title={t("jobs.error.title")}
+      description={t("jobs.error.description")}
+      action={{ label: t("common.actions.retry"), onClick: reset }}
+    />
+  );
 }

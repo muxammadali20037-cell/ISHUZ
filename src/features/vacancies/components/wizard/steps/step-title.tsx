@@ -2,7 +2,7 @@
 
 import { useMemo, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -33,8 +33,8 @@ export function StepTitle({ mode, vacancy, refs }: { mode: WizardMode; vacancy: 
     resolver: zodResolver(titleSchema),
     defaultValues: { title: vacancy?.title ?? "", subcategoryId: null },
   });
-  const title = form.watch("title");
-  const pickedSub = form.watch("subcategoryId");
+  const title = useWatch({ control: form.control, name: "title" });
+  const pickedSub = useWatch({ control: form.control, name: "subcategoryId" });
 
   const suggestions = useMemo(() => {
     const q = title.trim().toLowerCase();

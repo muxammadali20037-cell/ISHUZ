@@ -7,7 +7,10 @@ import { getWorkerDashboardStats } from "../../queries";
 
 function StatTile({ href, icon: Icon, value, label }: { href: string; icon: LucideIcon; value: number; label: string }) {
   return (
-    <Link href={href} className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-colors hover:border-primary/40">
+    <Link
+      href={href}
+      className="group flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-colors hover:border-primary/40"
+    >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
         <Icon className="size-5" />
       </span>
@@ -36,7 +39,11 @@ export async function WorkerStats() {
           <div className="min-w-0 flex-1">
             <p className="font-semibold">{t("jobs.home.completeness_title", { percent: stats.completeness })}</p>
             <p className="mt-0.5 text-sm text-muted-foreground">{t("jobs.home.completeness_desc")}</p>
-            <Progress value={stats.completeness} className="mt-3" tone={stats.completeness >= 70 ? "success" : stats.completeness >= 40 ? "primary" : "warning"} />
+            <Progress
+              value={stats.completeness}
+              className="mt-3"
+              tone={stats.completeness >= 70 ? "success" : stats.completeness >= 40 ? "primary" : "warning"}
+            />
           </div>
           <Button asChild size="sm" className="shrink-0">
             <Link href="/profile/edit">{t("jobs.home.completeness_action")}</Link>

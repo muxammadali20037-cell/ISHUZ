@@ -11,7 +11,19 @@ import { clearFilters, countActiveFilters, jobsHref, parseJobsSearchParams, type
 import type { JobsFilterRefs } from "../types";
 import { FilterSheet, type SheetKind } from "./filter-sheet";
 
-function QuickChip({ active, onClick, children, icon, badge }: { active?: boolean; onClick: () => void; children: ReactNode; icon?: ReactNode; badge?: number }) {
+function QuickChip({
+  active,
+  onClick,
+  children,
+  icon,
+  badge,
+}: {
+  active?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+  icon?: ReactNode;
+  badge?: number;
+}) {
   return (
     <button
       type="button"
@@ -24,7 +36,9 @@ function QuickChip({ active, onClick, children, icon, badge }: { active?: boolea
     >
       {icon}
       <span className="max-w-[11rem] truncate">{children}</span>
-      {badge ? <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">{badge}</span> : null}
+      {badge ? (
+        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">{badge}</span>
+      ) : null}
       {!icon ? <ChevronDown className="opacity-60" /> : null}
     </button>
   );
@@ -65,7 +79,8 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
 
   const activeCount = countActiveFilters(params);
   const category = params.category ? refs.categories.find((c) => c.slug === params.category) : undefined;
-  const subcategory = params.subcategory && category ? refs.subcategories.find((s) => s.slug === params.subcategory && s.category_id === category.id) : undefined;
+  const subcategory =
+    params.subcategory && category ? refs.subcategories.find((s) => s.slug === params.subcategory && s.category_id === category.id) : undefined;
   const region = params.region ? refs.regions.find((r) => r.slug === params.region) : undefined;
   const districts = params.district.flatMap((id) => refs.districts.filter((d) => d.id === id));
   const experienceLabel = params.noExperience
@@ -82,16 +97,27 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
       ? t("jobs.filters.districts_count", { count: districts.length })
       : null;
   const scheduleLabels = [...params.schedule.map((s) => tEnum("work_schedule", s)), ...params.employment.map((e) => tEnum("employment_type", e))];
-  const scheduleSummary = scheduleLabels.length ? (scheduleLabels.length > 2 ? `${scheduleLabels.slice(0, 2).join(", ")} +${scheduleLabels.length - 2}` : scheduleLabels.join(", ")) : null;
+  const scheduleSummary = scheduleLabels.length
+    ? scheduleLabels.length > 2
+      ? `${scheduleLabels.slice(0, 2).join(", ")} +${scheduleLabels.length - 2}`
+      : scheduleLabels.join(", ")
+    : null;
 
   const chips: { key: string; label: string; next: JobsSearchParams }[] = [];
   if (category) chips.push({ key: "category", label: name(category), next: { ...params, category: null, subcategory: null } });
   if (subcategory) chips.push({ key: "subcategory", label: name(subcategory), next: { ...params, subcategory: null } });
   if (region) chips.push({ key: "region", label: name(region), next: { ...params, region: null, district: [] } });
   for (const d of districts) chips.push({ key: `district-${d.id}`, label: name(d), next: { ...params, district: params.district.filter((x) => x !== d.id) } });
-  if (params.salaryMin) chips.push({ key: "salary", label: t("jobs.filters.salary_from", { amount: formatMoneyShort(params.salaryMin, locale) }), next: { ...params, salaryMin: null } });
-  for (const s of params.schedule) chips.push({ key: `schedule-${s}`, label: tEnum("work_schedule", s), next: { ...params, schedule: params.schedule.filter((x) => x !== s) } });
-  for (const e of params.employment) chips.push({ key: `employment-${e}`, label: tEnum("employment_type", e), next: { ...params, employment: params.employment.filter((x) => x !== e) } });
+  if (params.salaryMin)
+    chips.push({
+      key: "salary",
+      label: t("jobs.filters.salary_from", { amount: formatMoneyShort(params.salaryMin, locale) }),
+      next: { ...params, salaryMin: null },
+    });
+  for (const s of params.schedule)
+    chips.push({ key: `schedule-${s}`, label: tEnum("work_schedule", s), next: { ...params, schedule: params.schedule.filter((x) => x !== s) } });
+  for (const e of params.employment)
+    chips.push({ key: `employment-${e}`, label: tEnum("employment_type", e), next: { ...params, employment: params.employment.filter((x) => x !== e) } });
   if (params.format) chips.push({ key: "format", label: tEnum("work_format", params.format), next: { ...params, format: null } });
   if (experienceLabel) chips.push({ key: "experience", label: experienceLabel, next: { ...params, experienceMax: null, noExperience: false } });
   if (params.remote) chips.push({ key: "remote", label: t("jobs.filters.remote"), next: { ...params, remote: false } });
@@ -103,7 +129,11 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
 
   return (
     <div className="space-y-3" aria-busy={pending || undefined}>
-      <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 scrollbar-none sm:mx-0 sm:flex-wrap sm:px-0" role="toolbar" aria-label={t("common.actions.filters")}>
+      <div
+        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-0.5 scrollbar-none sm:mx-0 sm:flex-wrap sm:px-0"
+        role="toolbar"
+        aria-label={t("common.actions.filters")}
+      >
         <QuickChip onClick={() => openSheet("all")} active={activeCount > 0} icon={<SlidersHorizontal />} badge={activeCount || undefined}>
           {t("jobs.filters.all")}
         </QuickChip>

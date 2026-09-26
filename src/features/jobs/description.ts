@@ -4,10 +4,7 @@
  * Boshqa hamma narsa oddiy matn sifatida qoladi (React o'zi escape qiladi, HTML yo'q).
  */
 export type Inline = { type: "text"; value: string } | { type: "bold"; value: string };
-export type Block =
-  | { type: "paragraph"; lines: Inline[][] }
-  | { type: "list"; ordered: boolean; items: Inline[][] }
-  | { type: "heading"; inlines: Inline[] };
+export type Block = { type: "paragraph"; lines: Inline[][] } | { type: "list"; ordered: boolean; items: Inline[][] } | { type: "heading"; inlines: Inline[] };
 
 const BULLET_RE = /^\s*(?:[-*•–]\s+|(\d{1,2})[.)]\s+)(.*)$/;
 const HEADING_RE = /^\s*#{1,4}\s+(.*)$/;

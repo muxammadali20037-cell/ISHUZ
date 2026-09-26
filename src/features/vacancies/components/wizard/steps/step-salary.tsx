@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Handshake } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -22,7 +22,7 @@ export function StepSalary({ mode, vacancy }: StepProps) {
     resolver: zodResolver(salarySchema),
     defaultValues: { salaryNegotiable: vacancy.salary_negotiable, salaryFrom: vacancy.salary_from, salaryTo: vacancy.salary_to, salaryType: vacancy.salary_type },
   });
-  const values = form.watch();
+  const values = useWatch({ control: form.control });
   const errors = form.formState.errors;
   const onSubmit = form.handleSubmit((data) => saver.save({ step: "salary", data }));
 

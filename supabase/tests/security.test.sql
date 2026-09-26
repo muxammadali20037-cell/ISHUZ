@@ -41,9 +41,14 @@ insert into public.admin_users (profile_id, role) values ('a1000000-0000-0000-00
 
 -- ---------- Ali: ishchi ----------
 select pg_temp.login('a1000000-0000-0000-0000-000000000001');
-insert into public.worker_profiles (profile_id, headline, category_id, region_id, district_id, experience_level, onboarding_completed_at)
-select 'a1000000-0000-0000-0000-000000000001', 'Kassir', c.id, r.id, d.id, '3_5y', now()
-from public.categories c, public.regions r join public.districts d on d.region_id = r.id and d.slug = 'chilonzor' where c.slug = 'sales' and r.slug = 'tashkent_city';
+create temp table t_w (id uuid);
+with ins as (
+  insert into public.worker_profiles (profile_id, headline, category_id, region_id, district_id, experience_level, onboarding_completed_at)
+  select 'a1000000-0000-0000-0000-000000000001', 'Kassir', c.id, r.id, d.id, '3_5y', now()
+  from public.categories c, public.regions r join public.districts d on d.region_id = r.id and d.slug = 'chilonzor' where c.slug = 'sales' and r.slug = 'tashkent_city'
+  returning id
+) insert into t_w select id from ins;
+select pg_temp.ok((select count(*) from t_w) = 1, 'worker_profiles insert ... returning ishlaydi (RLS)');
 insert into public.worker_geo (worker_id, lat, lng) values (public.current_worker_id(), 41.2753, 69.2040);
 select pg_temp.fails($$update public.worker_profiles set views_count = 9999 where profile_id = auth.uid()$$, 'RLS: views_count ni o''zi oshira olmaydi');
 select pg_temp.ok((select count(*) from public.profiles where id = 'a1000000-0000-0000-0000-000000000008') = 0, 'RLS: aloqasi yo''q profil ko''rinmaydi');

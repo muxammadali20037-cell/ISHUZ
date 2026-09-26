@@ -33,18 +33,13 @@ interface SectionProps {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return (
-    <h3 className="mb-2 text-sm font-semibold text-foreground">{children}</h3>
-  );
+  return <h3 className="mb-2 text-sm font-semibold text-foreground">{children}</h3>;
 }
 
 function CategorySection({ draft, patch, refs }: SectionProps) {
   const { t, name } = useT();
-  const category =
-    refs.categories.find((c) => c.slug === draft.category) ?? null;
-  const subs = category
-    ? refs.subcategories.filter((s) => s.category_id === category.id)
-    : [];
+  const category = refs.categories.find((c) => c.slug === draft.category) ?? null;
+  const subs = category ? refs.subcategories.filter((s) => s.category_id === category.id) : [];
   const catId = useId();
   const subId = useId();
   return (
@@ -58,9 +53,7 @@ function CategorySection({ draft, patch, refs }: SectionProps) {
             value: c.slug,
             label: name(c),
           }))}
-          onChange={(e) =>
-            patch({ category: e.target.value || null, subcategory: null })
-          }
+          onChange={(e) => patch({ category: e.target.value || null, subcategory: null })}
         />
       </Field>
       <Field label={t("jobs.filters.subcategory")} htmlFor={subId}>
@@ -80,9 +73,7 @@ function CategorySection({ draft, patch, refs }: SectionProps) {
 function RegionSection({ draft, patch, refs }: SectionProps) {
   const { t, name } = useT();
   const region = refs.regions.find((r) => r.slug === draft.region) ?? null;
-  const districts = region
-    ? refs.districts.filter((d) => d.region_id === region.id)
-    : [];
+  const districts = region ? refs.districts.filter((d) => d.region_id === region.id) : [];
   const id = useId();
   return (
     <div className="space-y-3">
@@ -92,16 +83,12 @@ function RegionSection({ draft, patch, refs }: SectionProps) {
           value={draft.region ?? ""}
           placeholder={t("jobs.filters.all_regions")}
           options={refs.regions.map((r) => ({ value: r.slug, label: name(r) }))}
-          onChange={(e) =>
-            patch({ region: e.target.value || null, district: [] })
-          }
+          onChange={(e) => patch({ region: e.target.value || null, district: [] })}
         />
       </Field>
       {districts.length ? (
         <div>
-          <Label hint={t("jobs.filters.districts_hint")}>
-            {t("jobs.filters.districts")}
-          </Label>
+          <Label hint={t("jobs.filters.districts_hint")}>{t("jobs.filters.districts")}</Label>
           <ChipGroup
             multiple
             size="sm"
@@ -131,25 +118,15 @@ function SalarySection({ draft, patch }: SectionProps) {
           label: `${formatMoneyShort(p, locale)}+`,
         }))}
         value={draft.salaryMin ? String(draft.salaryMin) : null}
-        onChange={(next) =>
-          patch({ salaryMin: typeof next === "string" ? Number(next) : null })
-        }
+        onChange={(next) => patch({ salaryMin: typeof next === "string" ? Number(next) : null })}
       />
-      <Field
-        label={t("jobs.filters.salary_min")}
-        htmlFor={id}
-        hint={t("jobs.filters.salary_min_hint")}
-      >
+      <Field label={t("jobs.filters.salary_min")} htmlFor={id} hint={t("jobs.filters.salary_min_hint")}>
         <Input
           id={id}
           inputMode="numeric"
           autoComplete="off"
           placeholder={t("jobs.filters.salary_placeholder")}
-          value={
-            draft.salaryMin
-              ? formatMoney(draft.salaryMin, locale, { withCurrency: false })
-              : ""
-          }
+          value={draft.salaryMin ? formatMoney(draft.salaryMin, locale, { withCurrency: false }) : ""}
           onChange={(e) => {
             const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
             const n = digits ? Math.min(Number(digits), SALARY_MAX) : 0;
@@ -174,11 +151,7 @@ function ScheduleSection({ draft, patch }: SectionProps) {
       value={draft.schedule}
       onChange={(next) =>
         patch({
-          schedule: (Array.isArray(next)
-            ? next
-            : next
-              ? [next]
-              : []) as WorkSchedule[],
+          schedule: (Array.isArray(next) ? next : next ? [next] : []) as WorkSchedule[],
         })
       }
     />
@@ -198,11 +171,7 @@ function EmploymentSection({ draft, patch }: SectionProps) {
       value={draft.employment}
       onChange={(next) =>
         patch({
-          employment: (Array.isArray(next)
-            ? next
-            : next
-              ? [next]
-              : []) as EmploymentType[],
+          employment: (Array.isArray(next) ? next : next ? [next] : []) as EmploymentType[],
         })
       }
     />
@@ -211,11 +180,7 @@ function EmploymentSection({ draft, patch }: SectionProps) {
 
 function ExperienceSection({ draft, patch }: SectionProps) {
   const { t } = useT();
-  const value = draft.noExperience
-    ? "0"
-    : draft.experienceMax !== null
-      ? String(draft.experienceMax)
-      : "any";
+  const value = draft.noExperience ? "0" : draft.experienceMax !== null ? String(draft.experienceMax) : "any";
   return (
     <RadioGroup
       value={value}
@@ -228,11 +193,7 @@ function ExperienceSection({ draft, patch }: SectionProps) {
     >
       <RadioItem value="any" label={t("jobs.filters.any")} />
       {EXPERIENCE_MAX_OPTIONS.map((m) => (
-        <RadioItem
-          key={m}
-          value={String(m)}
-          label={t(`jobs.filters.experience_options.${m}`)}
-        />
+        <RadioItem key={m} value={String(m)} label={t(`jobs.filters.experience_options.${m}`)} />
       ))}
     </RadioGroup>
   );
@@ -269,11 +230,7 @@ function TogglesSection({ draft, patch, refs }: SectionProps) {
         label={t("jobs.filters.remote")}
         description={t("jobs.filters.remote_hint")}
       />
-      <Checkbox
-        checked={draft.verified}
-        onCheckedChange={(c) => patch({ verified: c === true })}
-        label={t("jobs.filters.verified")}
-      />
+      <Checkbox checked={draft.verified} onCheckedChange={(c) => patch({ verified: c === true })} label={t("jobs.filters.verified")} />
       {refs.benefits.length ? (
         <div className="pt-3">
           <SectionTitle>{t("jobs.filters.benefits")}</SectionTitle>
@@ -284,10 +241,7 @@ function TogglesSection({ draft, patch, refs }: SectionProps) {
                 checked={draft.benefits.includes(b.code)}
                 onCheckedChange={(c) =>
                   patch({
-                    benefits:
-                      c === true
-                        ? [...draft.benefits, b.code]
-                        : draft.benefits.filter((x) => x !== b.code),
+                    benefits: c === true ? [...draft.benefits, b.code] : draft.benefits.filter((x) => x !== b.code),
                   })
                 }
                 label={name(b)}
@@ -340,20 +294,10 @@ export function FilterSheet({
         title={titles[kind]}
         footer={
           <div className="flex gap-2">
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={onReset}
-              className="shrink-0"
-            >
+            <Button type="button" variant="secondary" onClick={onReset} className="shrink-0">
               {t("jobs.filters.reset")}
             </Button>
-            <Button
-              type="button"
-              onClick={onApply}
-              loading={pending}
-              className="flex-1"
-            >
+            <Button type="button" onClick={onApply} loading={pending} className="flex-1">
               {t("common.actions.show_results")}
             </Button>
           </div>

@@ -45,7 +45,11 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
 
       {hasDistricts ? (
         <Suspense fallback={<HomeSectionSkeleton />}>
-          <HomeSection title={t("jobs.home.nearby")} href={jobsHref({ district: ctx.districtIds, sort: "newest" })} args={{ p_district_ids: ctx.districtIds, p_sort: "newest" }} />
+          <HomeSection
+            title={t("jobs.home.nearby")}
+            href={jobsHref({ district: ctx.districtIds, sort: "newest" })}
+            args={{ p_district_ids: ctx.districtIds, p_sort: "newest" }}
+          />
         </Suspense>
       ) : null}
 

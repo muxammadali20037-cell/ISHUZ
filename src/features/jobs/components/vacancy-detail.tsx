@@ -1,8 +1,26 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import {
-  BadgeCheck, Briefcase, CalendarDays, ChevronLeft, ChevronRight, Clock, ExternalLink, Eye, FileCheck2, FileText, Gift, GraduationCap,
-  Languages, MapPin, Settings2, Sparkles, UserRound, Users, Wifi, type LucideIcon,
+  BadgeCheck,
+  Briefcase,
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Clock,
+  ExternalLink,
+  Eye,
+  FileCheck2,
+  FileText,
+  Gift,
+  GraduationCap,
+  Languages,
+  MapPin,
+  Settings2,
+  Sparkles,
+  UserRound,
+  Users,
+  Wifi,
+  type LucideIcon,
 } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatRelative, formatWorkTime } from "@/lib/format";
@@ -50,7 +68,15 @@ function InfoItem({ icon: Icon, label, children }: { icon: LucideIcon; label: st
 }
 
 /** /jobs/[slug] to'liq sahifa (server). Ko'ruvchi holati serverda hisoblangan. */
-export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: VacancyDetailData; viewer: VacancyViewerState; session: SessionContext | null }) {
+export async function VacancyDetail({
+  vacancy: v,
+  viewer,
+  session,
+}: {
+  vacancy: VacancyDetailData;
+  viewer: VacancyViewerState;
+  session: SessionContext | null;
+}) {
   const { t, tEnum, locale, name } = await getT();
   const company = v.company;
   const companyName = company?.name ?? t("common.role.employer");
@@ -74,7 +100,10 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
   return (
     <div className="container-app pb-24 pt-4 sm:pt-6 lg:pb-8">
       <div className="mb-3 flex items-center justify-between gap-2">
-        <Link href="/jobs" className="-ml-1 inline-flex h-9 items-center gap-1 rounded-lg px-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground">
+        <Link
+          href="/jobs"
+          className="-ml-1 inline-flex h-9 items-center gap-1 rounded-lg px-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+        >
           <ChevronLeft className="size-5" /> {t("jobs.detail.back")}
         </Link>
         {isManager ? (
@@ -98,9 +127,14 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
                 <h1 className="text-xl font-bold leading-tight sm:text-2xl">{v.title}</h1>
                 <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                   {company ? (
-                    <Link href={`/company/${company.slug}`} className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline">
+                    <Link
+                      href={`/company/${company.slug}`}
+                      className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
+                    >
                       {company.name}
-                      {company.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} /> : null}
+                      {company.verification_status === "verified" ? (
+                        <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} />
+                      ) : null}
                     </Link>
                   ) : (
                     <span className="text-muted-foreground">{companyName}</span>
@@ -147,7 +181,9 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
                 </Badge>
               ) : null}
             </div>
-            {v.status !== "active" && !isManager ? <p className="mt-3 rounded-xl bg-warning-soft px-3 py-2 text-sm text-warning">{t("jobs.detail.status_inactive")}</p> : null}
+            {v.status !== "active" && !isManager ? (
+              <p className="mt-3 rounded-xl bg-warning-soft px-3 py-2 text-sm text-warning">{t("jobs.detail.status_inactive")}</p>
+            ) : null}
           </header>
 
           {/* Moslik */}
@@ -166,7 +202,10 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
             <div className="grid gap-4 sm:grid-cols-2">
               <InfoItem icon={v.is_remote ? Wifi : MapPin} label={t("jobs.detail.location")}>
                 {v.is_remote ? (
-                  <span>{t("jobs.detail.remote")}{locationText ? ` · ${locationText}` : ""}</span>
+                  <span>
+                    {t("jobs.detail.remote")}
+                    {locationText ? ` · ${locationText}` : ""}
+                  </span>
                 ) : (
                   <>
                     <span>{locationText || t("common.labels.not_specified")}</span>
@@ -174,7 +213,12 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
                   </>
                 )}
                 {mapHref ? (
-                  <a href={mapHref} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
+                  <a
+                    href={mapHref}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
+                  >
                     {t("jobs.detail.map")} <ExternalLink className="size-3.5" />
                   </a>
                 ) : null}
@@ -284,7 +328,11 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
 
           {/* Tavsif */}
           <Section title={t("jobs.detail.about")} icon={FileText}>
-            {v.description?.trim() ? <VacancyDescription text={v.description} /> : <p className="text-sm text-muted-foreground">{t("jobs.detail.no_description")}</p>}
+            {v.description?.trim() ? (
+              <VacancyDescription text={v.description} />
+            ) : (
+              <p className="text-sm text-muted-foreground">{t("jobs.detail.no_description")}</p>
+            )}
           </Section>
 
           {/* Kompaniya */}
@@ -295,7 +343,9 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1 font-semibold">
                     {company.name}
-                    {company.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} /> : null}
+                    {company.verification_status === "verified" ? (
+                      <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} />
+                    ) : null}
                   </p>
                   {company.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
                   {company.about ? <p className="mt-2 text-sm text-foreground/90">{descriptionExcerpt(company.about, 240)}</p> : null}
@@ -328,7 +378,13 @@ export async function VacancyDetail({ vacancy: v, viewer, session }: { vacancy: 
         </aside>
       </div>
 
-      <Suspense fallback={<div className="mt-8"><HomeSectionSkeleton /></div>}>
+      <Suspense
+        fallback={
+          <div className="mt-8">
+            <HomeSectionSkeleton />
+          </div>
+        }
+      >
         <SimilarVacancies vacancy={v} />
       </Suspense>
     </div>

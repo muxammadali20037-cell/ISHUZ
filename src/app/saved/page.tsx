@@ -15,7 +15,9 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SavedPage() {
   const session = await requireWorker("/saved");
   const [{ t }, items] = await Promise.all([getT(), getSavedVacancies(session.workerId)]);
-  const empty = <EmptyState icon={Bookmark} title={t("saved.empty_title")} description={t("saved.empty_desc")} action={{ label: t("saved.empty_action"), href: "/jobs" }} />;
+  const empty = (
+    <EmptyState icon={Bookmark} title={t("saved.empty_title")} description={t("saved.empty_desc")} action={{ label: t("saved.empty_action"), href: "/jobs" }} />
+  );
   return (
     <div className="container-app py-5 sm:py-8">
       <PageHeader title={t("saved.title")} subtitle={items.length ? t("saved.subtitle", { count: items.length }) : undefined} backHref="/profile" />

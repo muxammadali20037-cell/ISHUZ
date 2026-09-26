@@ -1,6 +1,6 @@
 "use client";
 
-import { Controller, useFieldArray, useForm } from "react-hook-form";
+import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -33,7 +33,8 @@ export function StepRequirements({ mode, vacancy, refs }: StepProps) {
   });
   const languages = useFieldArray({ control: form.control, name: "languages" });
   const errors = form.formState.errors;
-  const chosen = new Set(form.watch("languages").map((l) => l.code));
+  const watchedLanguages = useWatch({ control: form.control, name: "languages" });
+  const chosen = new Set((watchedLanguages ?? []).map((l) => l.code));
   const nextLanguage = refs.languages.find((l) => !chosen.has(l.code));
   const onSubmit = form.handleSubmit((data) => saver.save({ step: "requirements", data }));
 
@@ -57,10 +58,10 @@ export function StepRequirements({ mode, vacancy, refs }: StepProps) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label={t("vacancies.wizard.requirements.age_min")} htmlFor="age-min" error={errors.ageMin?.message ? t(errors.ageMin.message) : undefined}>
-            <Input id="age-min" type="number" inputMode="numeric" min={14} max={80} placeholder="18" invalid={!!errors.ageMin} {...form.register("ageMin", { setValueAs: numberField })} />
+            <Controller control={form.control} name="ageMin" render={({ field }) => <Input id="age-min" type="number" inputMode="numeric" min={14} max={80} placeholder="18" invalid={!!errors.ageMin} value={field.value ?? ""} onChange={(e) => field.onChange(numberField(e.target.value))} onBlur={field.onBlur} />} />
           </Field>
           <Field label={t("vacancies.wizard.requirements.age_max")} htmlFor="age-max" error={errors.ageMax?.message ? t(errors.ageMax.message) : undefined}>
-            <Input id="age-max" type="number" inputMode="numeric" min={14} max={80} placeholder="45" invalid={!!errors.ageMax} {...form.register("ageMax", { setValueAs: numberField })} />
+            <Controller control={form.control} name="ageMax" render={({ field }) => <Input id="age-max" type="number" inputMode="numeric" min={14} max={80} placeholder="45" invalid={!!errors.ageMax} value={field.value ?? ""} onChange={(e) => field.onChange(numberField(e.target.value))} onBlur={field.onBlur} />} />
           </Field>
         </div>
       </div>

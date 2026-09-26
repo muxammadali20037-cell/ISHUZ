@@ -200,7 +200,12 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
               </Button>
             }
           >
-            <Field label={t("jobs.apply.message_label")} hint={t("jobs.apply.message_hint")} htmlFor="apply-message" description={t("jobs.apply.chars", { count: message.length, max: APPLY_MESSAGE_MAX })}>
+            <Field
+              label={t("jobs.apply.message_label")}
+              hint={t("jobs.apply.message_hint")}
+              htmlFor="apply-message"
+              description={t("jobs.apply.chars", { count: message.length, max: APPLY_MESSAGE_MAX })}
+            >
               <Textarea
                 id="apply-message"
                 value={message}

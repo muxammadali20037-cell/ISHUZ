@@ -20,7 +20,8 @@ function pageItems(page: number, pageCount: number): (number | "gap")[] {
   return out;
 }
 
-const btn = "inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-xl border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-secondary";
+const btn =
+  "inline-flex h-10 min-w-10 items-center justify-center gap-1 rounded-xl border border-border bg-card px-3 text-sm font-medium transition-colors hover:bg-secondary";
 const disabled = "pointer-events-none opacity-40";
 
 /** Prev/Next (mobil) + sahifa raqamlari (desktop). Havolalar orqali — ulashiladigan URL. */

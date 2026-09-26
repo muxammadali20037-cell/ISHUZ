@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LocateFixed, MapPin, ExternalLink, X, Wifi } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -37,11 +37,11 @@ export function StepLocation({ mode, vacancy, refs }: StepProps) {
       lng: vacancy.lng,
     },
   });
-  const isRemote = form.watch("isRemote");
-  const regionId = form.watch("regionId");
-  const districtId = form.watch("districtId");
-  const lat = form.watch("lat");
-  const lng = form.watch("lng");
+  const isRemote = useWatch({ control: form.control, name: "isRemote" });
+  const regionId = useWatch({ control: form.control, name: "regionId" });
+  const districtId = useWatch({ control: form.control, name: "districtId" });
+  const lat = useWatch({ control: form.control, name: "lat" });
+  const lng = useWatch({ control: form.control, name: "lng" });
   const districts = refs.districts.filter((d) => d.region_id === regionId);
   const district = districts.find((d) => d.id === districtId) ?? null;
   const errors = form.formState.errors;
@@ -127,7 +127,11 @@ export function StepLocation({ mode, vacancy, refs }: StepProps) {
       </div>
 
       <Field label={t("vacancies.wizard.location.address")} htmlFor="address" hint={t("common.labels.optional")} error={errors.address?.message ? t(errors.address.message) : undefined}>
-        <Input id="address" maxLength={200} placeholder={t("vacancies.wizard.location.address_placeholder")} leftIcon={<MapPin />} {...form.register("address", { setValueAs: (v: string) => (v?.trim() ? v : null) })} />
+        <Controller
+          control={form.control}
+          name="address"
+          render={({ field }) => <Input id="address" maxLength={200} placeholder={t("vacancies.wizard.location.address_placeholder")} leftIcon={<MapPin />} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value === "" ? null : e.target.value)} onBlur={field.onBlur} />}
+        />
       </Field>
 
       {!isRemote ? (

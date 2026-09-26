@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, PenLine } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -20,7 +20,7 @@ export function StepDescription({ mode, vacancy }: StepProps) {
   const saver = useSaveStep(mode, vacancy.id, "description");
   const [preview, setPreview] = useState(false);
   const form = useForm<DescriptionInput>({ resolver: zodResolver(descriptionSchema), defaultValues: { description: vacancy.description ?? "" } });
-  const text = form.watch("description");
+  const text = useWatch({ control: form.control, name: "description" }) ?? "";
   const err = form.formState.errors.description?.message;
   const onSubmit = form.handleSubmit((data) => saver.save({ step: "description", data }));
 

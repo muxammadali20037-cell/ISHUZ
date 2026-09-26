@@ -54,10 +54,10 @@ export function StepSchedule({ mode, vacancy }: StepProps) {
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label={t("vacancies.wizard.schedule.time_from")} htmlFor="time-from" error={errors.workTimeFrom?.message ? t(errors.workTimeFrom.message) : undefined}>
-            <Input id="time-from" type="time" step={300} {...form.register("workTimeFrom", { setValueAs: (v: string) => (v ? v : null) })} />
+            <Controller control={form.control} name="workTimeFrom" render={({ field }) => <Input id="time-from" type="time" step={300} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value || null)} onBlur={field.onBlur} invalid={!!errors.workTimeFrom} />} />
           </Field>
           <Field label={t("vacancies.wizard.schedule.time_to")} htmlFor="time-to" error={errors.workTimeTo?.message ? t(errors.workTimeTo.message) : undefined}>
-            <Input id="time-to" type="time" step={300} {...form.register("workTimeTo", { setValueAs: (v: string) => (v ? v : null) })} />
+            <Controller control={form.control} name="workTimeTo" render={({ field }) => <Input id="time-to" type="time" step={300} value={field.value ?? ""} onChange={(e) => field.onChange(e.target.value || null)} onBlur={field.onBlur} invalid={!!errors.workTimeTo} />} />
           </Field>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{t("vacancies.wizard.schedule.time_hint")}</p>

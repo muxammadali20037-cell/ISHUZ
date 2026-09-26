@@ -23,7 +23,9 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
     );
   }
 
-  const smartName = result.smart ? [name(result.smart.category), result.smart.subcategory ? name(result.smart.subcategory) : null].filter(Boolean).join(" › ") : null;
+  const smartName = result.smart
+    ? [name(result.smart.category), result.smart.subcategory ? name(result.smart.subcategory) : null].filter(Boolean).join(" › ")
+    : null;
 
   return (
     <section className="mt-4" aria-label={t("jobs.search.title")}>

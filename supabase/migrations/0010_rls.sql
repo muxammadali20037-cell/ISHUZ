@@ -109,7 +109,8 @@ returns boolean language sql stable security definer set search_path = public as
     ));
 $$;
 
-create policy "worker_profiles_read" on public.worker_profiles for select to authenticated using (public.can_view_worker(id));
+-- o'z qatori to'g'ridan-to'g'ri (insert ... returning ishlashi uchun), boshqalar can_view_worker orqali
+create policy "worker_profiles_read" on public.worker_profiles for select to authenticated using (profile_id = auth.uid() or public.can_view_worker(id));
 create policy "worker_profiles_insert" on public.worker_profiles for insert to authenticated with check (profile_id = auth.uid() and public.is_active_user());
 create policy "worker_profiles_update" on public.worker_profiles for update to authenticated using (profile_id = auth.uid())
   with check (profile_id = auth.uid() and public.is_active_user()

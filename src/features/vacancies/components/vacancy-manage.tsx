@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Eye, Users, ExternalLink, Pencil, Play, Pause, XCircle, Copy, Trash2, MoreVertical, CalendarDays, ShieldAlert, Lock, UserSearch } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate } from "@/lib/format";
@@ -36,6 +37,7 @@ export function VacancyManage({
   benefits: Benefit[];
 }) {
   const { t, locale } = useT();
+  const router = useRouter();
   const actions = useVacancyActions();
   const [confirm, setConfirm] = useState<Confirm>(null);
   const busy = actions.busyId === v.id;
@@ -45,7 +47,7 @@ export function VacancyManage({
 
   const onConfirm = () => {
     const done = () => setConfirm(null);
-    if (confirm === "delete") actions.remove(v.id, () => window.location.assign("/employer/vacancies"));
+    if (confirm === "delete") actions.remove(v.id, () => router.push("/employer/vacancies"));
     else if (confirm === "close") actions.close(v.id, done);
     else if (confirm === "pause") actions.pause(v.id, done);
   };

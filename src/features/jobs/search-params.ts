@@ -126,14 +126,18 @@ export function parseJobsSearchParams(raw: RawSearchParams): JobsSearchParams {
     category: slug(first(raw, "category")),
     subcategory: slug(first(raw, "subcategory")),
     region: slug(first(raw, "region")),
-    district: csv(first(raw, "district")).filter((d) => UUID_RE.test(d)).slice(0, 30),
+    district: csv(first(raw, "district"))
+      .filter((d) => UUID_RE.test(d))
+      .slice(0, 30),
     salaryMin: int(first(raw, "salary_min"), 1, SALARY_MAX),
     employment: pickEnum(csv(first(raw, "employment")), EMPLOYMENT_TYPES),
     schedule: pickEnum(csv(first(raw, "schedule")), SCHEDULES),
     format,
     experienceMax,
     remote: bool(first(raw, "remote")),
-    benefits: csv(first(raw, "benefits")).filter((b) => CODE_RE.test(b)).slice(0, 20),
+    benefits: csv(first(raw, "benefits"))
+      .filter((b) => CODE_RE.test(b))
+      .slice(0, 20),
     verified: bool(first(raw, "verified")),
     noExperience: bool(first(raw, "no_experience")),
     sort,

@@ -3,11 +3,7 @@ import { cn } from "@/lib/utils";
 import { parseDescription, type Inline } from "../description";
 
 function Inlines({ inlines }: { inlines: Inline[] }) {
-  return (
-    <>
-      {inlines.map((x, i) => (x.type === "bold" ? <strong key={i}>{x.value}</strong> : <Fragment key={i}>{x.value}</Fragment>))}
-    </>
-  );
+  return <>{inlines.map((x, i) => (x.type === "bold" ? <strong key={i}>{x.value}</strong> : <Fragment key={i}>{x.value}</Fragment>))}</>;
 }
 
 /** Tavsif matnini xavfsiz render qiladi: paragraf, ro'yxat, sarlavha, qalin. HTML kiritilmaydi. */

@@ -16,11 +16,23 @@ describe("parseInlines", () => {
 
 describe("parseDescription", () => {
   it("paragraf, ro'yxat va sarlavha", () => {
-    const blocks = parseDescription("Savdo markazida kassir kerak.\nIkkinchi qator\n\n## Talablar\n- POS bilan ishlash\n* **1C** bilish\n\n1. Birinchi\n2) Ikkinchi\n");
+    const blocks = parseDescription(
+      "Savdo markazida kassir kerak.\nIkkinchi qator\n\n## Talablar\n- POS bilan ishlash\n* **1C** bilish\n\n1. Birinchi\n2) Ikkinchi\n",
+    );
     expect(blocks).toEqual([
       { type: "paragraph", lines: [[{ type: "text", value: "Savdo markazida kassir kerak." }], [{ type: "text", value: "Ikkinchi qator" }]] },
       { type: "heading", inlines: [{ type: "text", value: "Talablar" }] },
-      { type: "list", ordered: false, items: [[{ type: "text", value: "POS bilan ishlash" }], [{ type: "bold", value: "1C" }, { type: "text", value: " bilish" }]] },
+      {
+        type: "list",
+        ordered: false,
+        items: [
+          [{ type: "text", value: "POS bilan ishlash" }],
+          [
+            { type: "bold", value: "1C" },
+            { type: "text", value: " bilish" },
+          ],
+        ],
+      },
       { type: "list", ordered: true, items: [[{ type: "text", value: "Birinchi" }], [{ type: "text", value: "Ikkinchi" }]] },
     ]);
   });

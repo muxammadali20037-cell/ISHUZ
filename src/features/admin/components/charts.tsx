@@ -80,7 +80,6 @@ export function DailyBarChart({
         {data.map((d, i) => {
           const x = padL + i * slot + (slot - barW) / 2;
           const h = max ? (d.value / max) * innerH : 0;
-          const y = padT + innerH - h;
           const isActive = active === i;
           const r = Math.min(4, barW / 2, h);
           const path = h > 0 ? `M${x},${padT + innerH} v${-(h - r)} a${r},${r} 0 0 1 ${r},${-r} h${barW - 2 * r} a${r},${r} 0 0 1 ${r},${r} v${h - r} z` : "";
