@@ -41,7 +41,7 @@ export function AdminTopbar({
         </Sheet>
       </Dialog>
       <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight lg:hidden">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">IU</span>
+        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">W</span>
         <span className="text-base">{t("admin.shell.title")}</span>
       </Link>
       <div className="flex-1" />

@@ -18,7 +18,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
     <header className="sticky top-0 z-40 border-b border-border/70 bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
       <div className="container-app flex h-14 items-center gap-3">
         <Link href={role === "employer" ? "/employer" : "/"} className="flex items-center gap-2 font-extrabold tracking-tight">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">IU</span>
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">W</span>
           <span className="text-lg">
             Work<span className="text-primary">lyn</span>
           </span>

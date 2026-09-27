@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
+import Script from "next/script";
 import { cookies } from "next/headers";
 import { getLocale } from "@/lib/i18n/server";
 import { Providers } from "./providers";
@@ -39,6 +40,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
       <head>
+        {/* Telegram Mini App SDK: window.Telegram.WebApp (initData) gidratsiyadan oldin mavjud bo'lishi kerak */}
+        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
         {/* Mavzu: cookie yo'q ("system") bo'lsa — qurilma sozlamasiga qarab, gidratsiyadan oldin (miltillashsiz) */}
         <script
           dangerouslySetInnerHTML={{

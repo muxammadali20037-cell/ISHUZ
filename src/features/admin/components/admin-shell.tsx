@@ -25,7 +25,7 @@ export async function AdminShell({ ctx, children }: { ctx: AdminContext; childre
       <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border/70 bg-card lg:flex">
         <div className="flex h-14 items-center gap-2 border-b border-border/70 px-5">
           <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">IU</span>
+            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">W</span>
             <span className="text-lg">
               Work<span className="text-primary">lyn</span>
             </span>

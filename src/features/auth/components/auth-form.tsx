@@ -14,7 +14,7 @@ import { sendPhoneOtp, verifyPhoneOtp } from "@/features/auth/actions";
 
 type Step = "phone" | "code";
 
-export function AuthForm({ next }: { next: string }) {
+export function AuthForm({ next, botUsername }: { next: string; botUsername: string | null }) {
   const { t, locale } = useT();
   const router = useRouter();
   const { isTelegram, webApp } = useTelegram();
@@ -157,7 +157,7 @@ export function AuthForm({ next }: { next: string }) {
         </form>
       )}
 
-      {!isTelegram ? (
+      {!isTelegram && botUsername ? (
         <>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
@@ -165,7 +165,7 @@ export function AuthForm({ next }: { next: string }) {
             <span className="h-px flex-1 bg-border" />
           </div>
           <Button asChild variant="outline" size="lg" fullWidth>
-            <a href={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME ? `https://t.me/${process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}?startapp=login` : "#"}>
+            <a href={`https://t.me/${botUsername}?startapp=login`}>
               <Send className="size-5 text-[#2AABEE]" /> {t("auth.telegram_login")}
             </a>
           </Button>
