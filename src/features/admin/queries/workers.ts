@@ -85,7 +85,7 @@ export async function getWorkerDetail(id: string) {
   const { data } = await supabase
     .from("worker_profiles")
     .select(
-      `${LIST_SELECT}, about, work_format, remote_preference, area_hint, subcategories(name_uz, name_ru), districts(name_uz, name_ru),
+      `${LIST_SELECT}, about, work_format, remote_preference, area_hint, subcategories(name_uz, name_ru), districts!worker_profiles_district_id_fkey(name_uz, name_ru),
        worker_skills(level, skills(name_uz, name_ru)),
        worker_languages(level, languages(name_uz, name_ru)),
        worker_preferences(employment_types, schedules, salary_min, salary_expected, salary_type, availability, official_terms),

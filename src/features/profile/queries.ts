@@ -11,7 +11,7 @@ export function publicMediaUrl(supabase: SupabaseServerClient, bucket: "avatars"
 }
 
 const WORKER_SELECT =
-  "*, category:categories(id, slug, name_uz, name_ru, icon, portfolio_recommended), subcategory:subcategories(id, slug, name_uz, name_ru), region:regions(id, slug, name_uz, name_ru), district:districts(id, slug, name_uz, name_ru)" as const;
+  "*, category:categories(id, slug, name_uz, name_ru, icon, portfolio_recommended), subcategory:subcategories(id, slug, name_uz, name_ru), region:regions(id, slug, name_uz, name_ru), district:districts!worker_profiles_district_id_fkey(id, slug, name_uz, name_ru)" as const;
 
 /**
  * Ish qidiruvchi profilining to'liq ko'rinishi (faqat egasi uchun chaqiriladi; RLS egasiga hammasini ochadi).
