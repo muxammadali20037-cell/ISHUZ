@@ -45,5 +45,7 @@
     "ai_failed": "AI tushuna olmadi. Boshqacharoq yozib ko'ring yoki qo'lda to'ldiring",
     "ai_busy": "AI hozir band. Bir daqiqadan keyin urinib ko'ring",
     "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring"
-  }
+  },
+  "cta_worker_update": "✨ Profilingizni AI bilan yangilang",
+  "cta_worker_update_desc": "Nima o'zgargan bo'lsa oddiy tilda yozing — AI kerakli bo'limlarni o'zi yangilaydi"
 }

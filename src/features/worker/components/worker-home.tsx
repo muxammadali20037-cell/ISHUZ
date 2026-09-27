@@ -12,6 +12,8 @@ import { jobsHref } from "@/features/jobs/search-params";
 import { createClient } from "@/lib/supabase/server";
 import { TopProfileCard } from "@/features/billing/components/top-profile-card";
 import { CrossRoleCard } from "@/components/shared/quick-actions";
+import { aiEnabled } from "@/lib/ai/client";
+import { AiCtaCard } from "@/features/ai/components/ai-composer";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
@@ -43,6 +45,7 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
         <WorkerStats />
       </Suspense>
 
+      {aiEnabled() ? <AiCtaCard title={t("ai.cta_worker_update")} description={t("ai.cta_worker_update_desc")} href="/onboarding/worker/ai" /> : null}
       <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} />
       <CrossRoleCard role="worker" />
 

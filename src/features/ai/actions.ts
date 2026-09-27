@@ -104,7 +104,13 @@ export async function applyWorkerPlan(input: unknown): Promise<ActionResult<{ re
   if (!session) return { ok: false, error: "not_authenticated" };
   const p = parsed.data;
   const supabase = await createClient();
+  // To'ldirilgan profil (yangilash): o'tmagan qadam o'tkazib yuboriladi, eski ma'lumot qoladi
+  const onboarded = session.workerOnboarded;
   const stop = (step: number) => ({ ok: true as const, data: { redirect: stepHref(step) } });
+  const done = async () => {
+    if (onboarded && session.workerId) await supabase.rpc("refresh_worker_completeness", { p_worker_id: session.workerId });
+    return { ok: true as const, data: { redirect: onboarded ? "/profile" : stepHref(9) } };
+  };
 
   const { data: contacts } = await supabase.from("profile_contacts").select("telegram_username").eq("profile_id", session.userId).maybeSingle();
   const personal = await savePersonal({ ...p.personal, telegram_username: contacts?.telegram_username ?? "" });
@@ -112,17 +118,22 @@ export async function applyWorkerPlan(input: unknown): Promise<ActionResult<{ re
     // To'liq bo'lmasa ham ismlarni saqlab qo'yamiz — 1-qadamda tayyor turadi
     const names = { first_name: p.personal.first_name, last_name: p.personal.last_name };
     if (names.first_name.length >= 2 && names.last_name.length >= 2) await supabase.from("profiles").update(names).eq("id", session.userId);
-    return stop(1);
+    if (!onboarded) return stop(1);
   }
-  if (!p.location || !(await saveLocation(p.location)).ok) return stop(2);
-  if (!p.profession || !(await saveProfession(p.profession)).ok) return stop(3);
-  if (!(await saveExperience(p.experience)).ok) return stop(4);
-  if (!p.skills.skills.length || !(await saveSkills(p.skills)).ok) return stop(5);
-  if (!(p.education ? (await saveEducation(p.education)).ok : (await skipStep({ step: 6 })).ok)) return stop(6);
-  if (!(await skipStep({ step: 7 })).ok) return stop(7);
-  if (!p.preferences || !(await savePreferences(p.preferences)).ok) return stop(8);
+  const steps: [number, () => Promise<boolean>][] = [
+    [2, async () => !!p.location && (await saveLocation(p.location)).ok],
+    [3, async () => !!p.profession && (await saveProfession(p.profession)).ok],
+    [4, async () => (await saveExperience(p.experience)).ok],
+    [5, async () => p.skills.skills.length > 0 && (await saveSkills(p.skills)).ok],
+    [6, async () => (p.education ? (await saveEducation(p.education)).ok : onboarded || (await skipStep({ step: 6 })).ok)],
+    [7, async () => onboarded || (await skipStep({ step: 7 })).ok],
+    [8, async () => !!p.preferences && (await savePreferences(p.preferences)).ok],
+  ];
+  for (const [step, run] of steps) {
+    if (!(await run()) && !onboarded) return stop(step);
+  }
   if (p.about.trim()) await supabase.from("worker_profiles").update({ about: p.about.trim() }).eq("profile_id", session.userId);
-  return stop(9);
+  return done();
 }
 
 // ---------------------------------------------------------------------------

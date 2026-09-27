@@ -25,7 +25,7 @@ export interface WorkerAiRefs {
 
 type Personal = { first_name: string; last_name: string; birth_date: string; gender: Enums<"gender"> | null };
 
-export function WorkerAiAssistant({ refs, current }: { refs: WorkerAiRefs; current: Personal }) {
+export function WorkerAiAssistant({ refs, current, manualHref }: { refs: WorkerAiRefs; current: Personal; manualHref: string }) {
   const { t } = useT();
   const router = useRouter();
   const [text, setText] = useState("");
@@ -86,7 +86,7 @@ export function WorkerAiAssistant({ refs, current }: { refs: WorkerAiRefs; curre
         pending={pending}
         error={error}
         initialText={text}
-        manualHref="/onboarding/worker?step=1"
+        manualHref={manualHref}
         manualLabel={t("ai.worker.manual")}
         onSubmit={analyze}
       />

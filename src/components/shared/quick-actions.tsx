@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { FileUser, Megaphone, Search, Users } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
+import { aiEnabled } from "@/lib/ai/client";
 
 /** Bosh sahifadagi 4 ta katta tugma — har biri nima qilishi yozuvi bilan (mehmon uchun) */
 export async function QuickActions() {
@@ -8,7 +9,7 @@ export async function QuickActions() {
   const items = [
     { href: "/jobs", icon: Search, label: t("welcome.quick.jobs"), tone: "bg-primary text-primary-foreground" },
     { href: "/auth?next=%2Fworkers", icon: Users, label: t("welcome.quick.workers"), tone: "bg-success text-success-foreground" },
-    { href: "/auth?next=%2Femployer%2Fvacancies%2Fnew", icon: Megaphone, label: t("welcome.quick.post"), tone: "bg-warning text-warning-foreground" },
+    { href: aiEnabled() ? "/auth?next=%2Femployer%2Fvacancies%2Fnew%2Fai" : "/auth?next=%2Femployer%2Fvacancies%2Fnew", icon: Megaphone, label: t("welcome.quick.post"), tone: "bg-warning text-warning-foreground" },
     { href: "/auth?next=%2Fonboarding%2Fworker", icon: FileUser, label: t("welcome.quick.resume"), tone: "bg-[#7c3aed] text-white" },
   ];
   return (
@@ -34,7 +35,7 @@ export async function CrossRoleCard({ role }: { role: "worker" | "employer" }) {
   const worker = role === "worker";
   return (
     <Link
-      href={worker ? "/employer/vacancies/new" : "/jobs"}
+      href={worker ? (aiEnabled() ? "/employer/vacancies/new/ai" : "/employer/vacancies/new") : "/jobs"}
       className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary-soft/30"
     >
       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">{worker ? <Megaphone className="size-5" /> : <Search className="size-5" />}</span>
