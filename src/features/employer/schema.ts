@@ -3,8 +3,9 @@ import { normalizePhone } from "@/lib/format";
 
 /** Ish beruvchi moduli: zod sxemalar va normalizatorlar (client va server bir xil). */
 
-export const EMPLOYER_TYPES = ["company", "individual_entrepreneur", "person"] as const;
-export const COMPANY_EMPLOYER_TYPES = ["company", "individual_entrepreneur"] as const;
+export const EMPLOYER_TYPES = ["company", "government", "individual_entrepreneur", "person"] as const;
+/** Tashkilot sahifasi (companies) bilan ishlaydigan turlar */
+export const COMPANY_EMPLOYER_TYPES = ["company", "government", "individual_entrepreneur"] as const;
 export const COMPANY_SIZES = ["1_10", "11_50", "51_200", "201_500", "500_plus"] as const;
 export const ASSIGNABLE_MEMBER_ROLES = ["admin", "recruiter", "viewer"] as const;
 export const COMPANY_VERIFICATION_TYPES = ["company", "tin", "documents"] as const;
@@ -94,17 +95,24 @@ export function validateDocumentFile(file: { type: string; size: number }): stri
 
 // ---------- zod yordamchilar ----------
 
-const optionalText = (max: number, maxMessage: string) => z.string().trim().max(max, maxMessage).transform((v) => (v === "" ? null : v));
+/**
+ * Forma qiymatlari ikki marta tekshiriladi: client (zodResolver → natija: "" o'rniga null) va server action.
+ * Shuning uchun har bir maydon null/undefined ni ham qabul qiladi ("" deb qaraladi) — sxema idempotent.
+ */
+const text = () => z.string().nullish().transform((v) => v ?? "");
 
-const uuidOrNull = z
-  .string()
-  .trim()
+const optionalText = (max: number, maxMessage: string) =>
+  text()
+    .pipe(z.string().trim().max(max, maxMessage))
+    .transform((v) => (v === "" ? null : v));
+
+const uuidOrNull = text()
+  .transform((v) => v.trim())
   .transform((v) => (v === "" ? null : v))
   .pipe(z.uuid("common.errors.validation").nullable());
 
-const phoneField = z
-  .string()
-  .trim()
+const phoneField = text()
+  .transform((v) => v.trim())
   .transform((v, ctx) => {
     if (!v) return null;
     const n = normalizePhone(v);
@@ -115,7 +123,7 @@ const phoneField = z
     return n;
   });
 
-const telegramField = z.string().transform((v, ctx) => {
+const telegramField = text().transform((v, ctx) => {
   const n = normalizeTelegram(v);
   if (n === null) {
     ctx.addIssue({ code: "custom", message: "employer.form.errors.telegram" });
@@ -124,7 +132,7 @@ const telegramField = z.string().transform((v, ctx) => {
   return n || null;
 });
 
-const instagramField = z.string().transform((v, ctx) => {
+const instagramField = text().transform((v, ctx) => {
   const n = normalizeInstagram(v);
   if (n === null) {
     ctx.addIssue({ code: "custom", message: "employer.form.errors.instagram" });
@@ -133,7 +141,7 @@ const instagramField = z.string().transform((v, ctx) => {
   return n || null;
 });
 
-const websiteField = z.string().transform((v, ctx) => {
+const websiteField = text().transform((v, ctx) => {
   const n = normalizeWebsite(v);
   if (n === null) {
     ctx.addIssue({ code: "custom", message: "common.errors.invalid_url" });
@@ -142,9 +150,8 @@ const websiteField = z.string().transform((v, ctx) => {
   return n || null;
 });
 
-const tinField = z
-  .string()
-  .trim()
+const tinField = text()
+  .transform((v) => v.trim())
   .transform((v, ctx) => {
     const digits = v.replace(/\s/g, "");
     if (!digits) return null;
@@ -155,8 +162,7 @@ const tinField = z
     return digits;
   });
 
-const sizeField = z
-  .string()
+const sizeField = text()
   .transform((v) => (v === "" ? null : v))
   .pipe(z.enum(COMPANY_SIZES).nullable());
 

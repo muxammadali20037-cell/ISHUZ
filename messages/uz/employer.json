@@ -14,7 +14,8 @@
     "done_toast": "Xush kelibsiz! Endi vakansiya joylashingiz mumkin.",
     "logo_later": "Logotipni keyinroq sozlamalardan ham yuklash mumkin.",
     "logo_failed": "Kompaniya yaratildi, lekin logotip yuklanmadi. Uni sozlamalardan yuklashingiz mumkin.",
-    "draft_saved": "Ma'lumotlar saqlandi"
+    "draft_saved": "Ma'lumotlar saqlandi",
+    "type_government_desc": "Vazirlik, hokimlik, davlat korxonasi, maktab, shifoxona va boshqa davlat muassasalari. Tasdiqlangach vakansiyalaringiz \"Davlat tashkiloti\" belgisi bilan alohida bo'limda chiqadi."
   },
   "form": {
     "company_name": "Kompaniya nomi",

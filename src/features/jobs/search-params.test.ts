@@ -20,7 +20,7 @@ describe("parseJobsSearchParams", () => {
   });
 
   it("to'liq URL ni o'qiydi (Record va URLSearchParams)", () => {
-    const qs = `q=%20kassir%20&category=sales&subcategory=cashier&region=tashkent_city&district=${D1},${D2}&salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official&experience_max=12&remote=1&benefits=food,transport&verified=1&no_experience=true&sort=newest&page=3`;
+    const qs = `q=%20kassir%20&category=sales&subcategory=cashier&region=tashkent_city&district=${D1},${D2}&salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official&experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=true&sort=newest&page=3`;
     const parsed = parseJobsSearchParams(new URLSearchParams(qs));
     expect(parsed).toEqual({
       q: "kassir",
@@ -36,6 +36,7 @@ describe("parseJobsSearchParams", () => {
       remote: true,
       benefits: ["food", "transport"],
       verified: true,
+      government: true,
       noExperience: true,
       sort: "newest",
       page: 3,
@@ -130,8 +131,13 @@ describe("toSearchVacanciesArgs", () => {
       p_limit: 20,
       p_offset: 20,
       p_verified_only: true,
+      p_government_only: false,
       p_no_experience: false,
     });
+  });
+  it("gov=1 → p_government_only", () => {
+    expect(toSearchVacanciesArgs(parseJobsSearchParams({ gov: "1" }), {}).p_government_only).toBe(true);
+    expect(parseJobsSearchParams({ gov: "yes" }).government).toBe(false);
   });
   it("experience_max=0 va remote to'g'ri uzatiladi, limit sozlanadi", () => {
     const params = parseJobsSearchParams({ experience_max: "0", remote: "1", format: "unofficial", salary_min: "3000000" });

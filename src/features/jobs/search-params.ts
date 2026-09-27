@@ -4,7 +4,7 @@
  *
  * URL: /jobs?q=kassir&category=sales&subcategory=cashier&region=tashkent_city&district=<uuid>,<uuid>
  *      &salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official
- *      &experience_max=12&remote=1&benefits=food,transport&verified=1&no_experience=1&sort=newest&page=2
+ *      &experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=1&sort=newest&page=2
  */
 import type { Database, Enums } from "@/types/database.types";
 
@@ -43,6 +43,8 @@ export interface JobsSearchParams {
   /** benefits.code ro'yxati */
   benefits: string[];
   verified: boolean;
+  /** Faqat tasdiqlangan davlat tashkilotlari */
+  government: boolean;
   noExperience: boolean;
   sort: SortKey;
   page: number;
@@ -65,6 +67,7 @@ export const DEFAULT_JOBS_PARAMS: JobsSearchParams = {
   remote: false,
   benefits: [],
   verified: false,
+  government: false,
   noExperience: false,
   sort: "relevant",
   page: 1,
@@ -139,6 +142,7 @@ export function parseJobsSearchParams(raw: RawSearchParams): JobsSearchParams {
       .filter((b) => CODE_RE.test(b))
       .slice(0, 20),
     verified: bool(first(raw, "verified")),
+    government: bool(first(raw, "gov")),
     noExperience: bool(first(raw, "no_experience")),
     sort,
     page: int(first(raw, "page"), 1, MAX_PAGE) ?? 1,
@@ -162,6 +166,7 @@ export function serializeJobsSearchParams(params: Partial<JobsSearchParams>): st
   if (p.remote) sp.set("remote", "1");
   if (p.benefits.length) sp.set("benefits", p.benefits.join(","));
   if (p.verified) sp.set("verified", "1");
+  if (p.government) sp.set("gov", "1");
   if (p.noExperience) sp.set("no_experience", "1");
   if (p.sort !== "relevant") sp.set("sort", p.sort);
   if (p.page > 1) sp.set("page", String(p.page));
@@ -189,6 +194,7 @@ export function countActiveFilters(p: JobsSearchParams): number {
   if (p.remote) n++;
   if (p.benefits.length) n++;
   if (p.verified) n++;
+  if (p.government) n++;
   if (p.noExperience) n++;
   return n;
 }
@@ -211,6 +217,7 @@ export function toSearchVacanciesArgs(p: JobsSearchParams, ids: ResolvedIds, lim
     p_limit: limit,
     p_offset: (p.page - 1) * limit,
     p_verified_only: p.verified,
+    p_government_only: p.government,
     p_no_experience: p.noExperience,
   };
   if (p.q) args.p_query = p.q;

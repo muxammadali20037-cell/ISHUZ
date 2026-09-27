@@ -70,7 +70,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   };
 
   const submitCompany = (values: CompanyFormValues) => {
-    if (type !== "company" && type !== "individual_entrepreneur") return;
+    if (type !== "company" && type !== "government" && type !== "individual_entrepreneur") return;
     startTransition(async () => {
       const res = await completeCompanyOnboarding({ ...values, employerType: type });
       if (!res.ok) {
@@ -107,7 +107,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
     </Button>
   );
 
-  const isCompanyType = type === "company" || type === "individual_entrepreneur";
+  const isCompanyType = type === "company" || type === "government" || type === "individual_entrepreneur";
   const personDefaults: Partial<PersonFormInput> = {
     displayName: prefill.displayName ?? "",
     contactPhone: prefill.contactPhone ?? "",

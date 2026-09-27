@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Clock, CalendarDays, FileCheck2, Utensils, BadgeCheck, Bookmark, Wifi } from "lucide-react";
+import { MapPin, Clock, CalendarDays, FileCheck2, Utensils, BadgeCheck, Bookmark, Wifi, Landmark } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatRelative, formatWorkTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,8 @@ export interface VacancyCardData {
   is_saved: boolean | null;
   has_applied: boolean | null;
   is_featured?: boolean | null;
+  /** Tasdiqlangan davlat tashkiloti vakansiyasi */
+  is_government?: boolean | null;
 }
 
 export function VacancyCard({
@@ -75,6 +77,11 @@ export function VacancyCard({
             {v.company_name ?? t("common.role.employer")}
             {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary" aria-label={t("common.labels.verified")} /> : null}
           </p>
+          {v.is_government ? (
+            <Badge variant="primary" size="sm" className="mt-1 gap-1">
+              <Landmark className="size-3.5" /> {t("jobs.government.badge")}
+            </Badge>
+          ) : null}
         </div>
       </div>
 

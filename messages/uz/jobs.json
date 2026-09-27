@@ -52,7 +52,10 @@
       "60": "5 yilgacha"
     },
     "active_count": "{count} ta filtr",
-    "reset": "Tozalash"
+    "reset": "Tozalash",
+    "government": "Faqat davlat tashkilotlari",
+    "government_hint": "Tasdiqlangan davlat muassasalari vakansiyalari",
+    "government_short": "Davlat tashkilotlari"
   },
   "empty": {
     "title": "Vakansiya topilmadi",
@@ -163,6 +166,10 @@
     "top_salary": "Yuqori maoshli",
     "no_experience": "Tajriba talab qilmaydi",
     "remote": "Masofaviy ishlar",
-    "categories": "Kategoriyalar bo'yicha"
+    "categories": "Kategoriyalar bo'yicha",
+    "government": "Davlat tashkilotlarida ish"
+  },
+  "government": {
+    "badge": "Davlat tashkiloti"
   }
 }

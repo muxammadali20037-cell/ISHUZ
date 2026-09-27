@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useTransition, type ReactNode } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, Landmark, SlidersHorizontal } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatMoneyShort } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -126,6 +126,7 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
     chips.push({ key: `benefit-${code}`, label: b ? name(b) : code, next: { ...params, benefits: params.benefits.filter((x) => x !== code) } });
   }
   if (params.verified) chips.push({ key: "verified", label: t("jobs.filters.verified_short"), next: { ...params, verified: false } });
+  if (params.government) chips.push({ key: "government", label: t("jobs.filters.government_short"), next: { ...params, government: false } });
 
   return (
     <div className="space-y-3" aria-busy={pending || undefined}>
@@ -148,6 +149,9 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
         </QuickChip>
         <QuickChip onClick={() => openSheet("experience")} active={!!experienceLabel}>
           {experienceLabel ?? t("jobs.filters.experience")}
+        </QuickChip>
+        <QuickChip onClick={() => push({ ...params, government: !params.government })} active={params.government} icon={<Landmark />}>
+          {t("jobs.filters.government_short")}
         </QuickChip>
       </div>
 

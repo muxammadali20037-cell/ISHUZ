@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, Store, UserRound, type LucideIcon } from "lucide-react";
+import { Building2, Landmark, Store, UserRound, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { RadioGroup, RadioItem } from "@/components/ui/checkbox";
 import { EMPLOYER_TYPES } from "../../schema";
@@ -8,9 +8,10 @@ import type { Enums } from "@/types/database.types";
 
 export type EmployerType = Enums<"employer_type">;
 
-const ICONS: Record<EmployerType, LucideIcon> = { company: Building2, individual_entrepreneur: Store, person: UserRound };
+const ICONS: Record<EmployerType, LucideIcon> = { company: Building2, government: Landmark, individual_entrepreneur: Store, person: UserRound };
 const DESC: Record<EmployerType, string> = {
   company: "employer.onboarding.type_company_desc",
+  government: "employer.onboarding.type_government_desc",
   individual_entrepreneur: "employer.onboarding.type_ie_desc",
   person: "employer.onboarding.type_person_desc",
 };

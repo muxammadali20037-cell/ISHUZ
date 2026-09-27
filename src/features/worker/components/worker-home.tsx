@@ -54,6 +54,10 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
       ) : null}
 
       <Suspense fallback={<HomeSectionSkeleton />}>
+        <HomeSection title={t("jobs.home.government")} href={jobsHref({ government: true })} args={{ p_government_only: true, p_sort: "newest" }} />
+      </Suspense>
+
+      <Suspense fallback={<HomeSectionSkeleton />}>
         <HomeSection title={t("jobs.home.newest")} href={jobsHref({ sort: "newest" })} args={{ p_sort: "newest" }} />
       </Suspense>
 

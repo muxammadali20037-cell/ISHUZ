@@ -300,6 +300,7 @@ export type Database = {
           industry_category_id: string | null;
           instagram: string | null;
           is_blocked: boolean;
+          is_government: boolean;
           logo_url: string | null;
           name: string;
           phone: string | null;
@@ -323,6 +324,7 @@ export type Database = {
           industry_category_id?: string | null;
           instagram?: string | null;
           is_blocked?: boolean;
+          is_government?: boolean;
           logo_url?: string | null;
           name: string;
           phone?: string | null;
@@ -346,6 +348,7 @@ export type Database = {
           industry_category_id?: string | null;
           instagram?: string | null;
           is_blocked?: boolean;
+          is_government?: boolean;
           logo_url?: string | null;
           name?: string;
           phone?: string | null;
@@ -1601,6 +1604,7 @@ export type Database = {
           gender: Database["public"]["Enums"]["gender"] | null;
           id: string;
           is_featured: boolean;
+          is_government: boolean;
           is_remote: boolean;
           lat: number | null;
           lng: number | null;
@@ -1644,6 +1648,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender"] | null;
           id?: string;
           is_featured?: boolean;
+          is_government?: boolean;
           is_remote?: boolean;
           lat?: number | null;
           lng?: number | null;
@@ -1687,6 +1692,7 @@ export type Database = {
           gender?: Database["public"]["Enums"]["gender"] | null;
           id?: string;
           is_featured?: boolean;
+          is_government?: boolean;
           is_remote?: boolean;
           lat?: number | null;
           lng?: number | null;
@@ -2589,6 +2595,7 @@ export type Database = {
           p_district_ids?: string[];
           p_employment_types?: Database["public"]["Enums"]["employment_type"][];
           p_experience_max_months?: number;
+          p_government_only?: boolean;
           p_is_remote?: boolean;
           p_limit?: number;
           p_no_experience?: boolean;
@@ -2621,6 +2628,7 @@ export type Database = {
           has_applied: boolean;
           id: string;
           is_featured: boolean;
+          is_government: boolean;
           is_remote: boolean;
           is_saved: boolean;
           match_reasons: Json;
@@ -2821,7 +2829,8 @@ export type Database = {
       device_platform: "web" | "android" | "ios";
       education_level:
         "secondary" | "vocational" | "incomplete_higher" | "higher" | "master";
-      employer_type: "company" | "individual_entrepreneur" | "person";
+      employer_type:
+        "company" | "individual_entrepreneur" | "person" | "government";
       employment_type:
         | "permanent"
         | "temporary"
@@ -3047,7 +3056,12 @@ export const Constants = {
         "higher",
         "master",
       ],
-      employer_type: ["company", "individual_entrepreneur", "person"],
+      employer_type: [
+        "company",
+        "individual_entrepreneur",
+        "person",
+        "government",
+      ],
       employment_type: [
         "permanent",
         "temporary",

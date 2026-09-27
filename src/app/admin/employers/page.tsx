@@ -65,7 +65,7 @@ export default async function AdminEmployersPage({ searchParams }: { searchParam
           name="type"
           defaultValue={f.type}
           placeholder={t("admin.employers.col_type")}
-          options={(["company", "individual_entrepreneur", "person"] as const).map((s) => ({ value: s, label: tEnum("employer_type", s) }))}
+          options={(["company", "government", "individual_entrepreneur", "person"] as const).map((s) => ({ value: s, label: tEnum("employer_type", s) }))}
         />
       </Filters>
       <QueryError message={paged.error} />

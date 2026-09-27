@@ -20,6 +20,7 @@ import {
   UserRound,
   Users,
   Wifi,
+  Landmark,
   type LucideIcon,
 } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -125,6 +126,13 @@ export async function VacancyDetail({
               <Avatar src={company?.logo_url} fallback={companyName.slice(0, 2)} square size="xl" alt="" className="size-16 sm:size-20" />
               <div className="min-w-0 flex-1">
                 <h1 className="text-xl font-bold leading-tight sm:text-2xl">{v.title}</h1>
+                {v.is_government ? (
+                  <Link href="/jobs?gov=1" className="mt-1.5 inline-flex">
+                    <Badge variant="primary" className="gap-1">
+                      <Landmark className="size-3.5" /> {t("jobs.government.badge")}
+                    </Badge>
+                  </Link>
+                ) : null}
                 <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                   {company ? (
                     <Link

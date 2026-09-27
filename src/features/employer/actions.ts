@@ -125,7 +125,7 @@ export async function completeCompanyOnboarding(input: unknown): Promise<ActionR
     if (!data) return { ok: false, error: "forbidden" };
     slug = data.slug;
   } else {
-    const insert: TablesInsert<"companies"> = { ...companyColumns(v), name: v.name, slug: "", created_by: userId }; // slug: trigger yaratadi
+    const insert: TablesInsert<"companies"> = { ...companyColumns(v), name: v.name, slug: "", created_by: userId, is_government: v.employerType === "government" }; // slug: trigger yaratadi
     const { data, error } = await supabase.from("companies").insert(insert).select("id, slug").single();
     if (error) return { ok: false, error: errorCode(error) };
     companyId = data.id;
@@ -248,12 +248,12 @@ export async function createCompanyForEmployer(input: unknown): Promise<ActionRe
   if (!employerId) return { ok: false, error: "forbidden" };
   const v = parsed.data;
   const supabase = await createClient();
-  const insert: TablesInsert<"companies"> = { ...companyColumns(v), name: v.name, slug: "", created_by: userId }; // slug: trigger yaratadi
+  // Trigger employer_type ni 'company' qiladi; YaTT / davlat tashkiloti bo'lsa turini saqlab qolamiz
+  const { data: ep } = await supabase.from("employer_profiles").select("employer_type").eq("profile_id", userId).maybeSingle();
+  const keepType = ep?.employer_type === "individual_entrepreneur" || ep?.employer_type === "government" ? ep.employer_type : "company";
+  const insert: TablesInsert<"companies"> = { ...companyColumns(v), name: v.name, slug: "", created_by: userId, is_government: keepType === "government" }; // slug: trigger yaratadi
   const { data, error } = await supabase.from("companies").insert(insert).select("id, slug").single();
   if (error) return { ok: false, error: errorCode(error) };
-  // Trigger employer_type ni 'company' qiladi; YaTT bo'lsa turini saqlab qolamiz
-  const { data: ep } = await supabase.from("employer_profiles").select("employer_type").eq("profile_id", userId).maybeSingle();
-  const keepType = ep?.employer_type === "individual_entrepreneur" ? "individual_entrepreneur" : "company";
   const { error: epErr } = await supabase.from("employer_profiles").update({ company_id: data.id, employer_type: keepType }).eq("profile_id", userId);
   if (epErr) console.error("[employer] link company", epErr.message);
   revalidateEmployer(data.slug);

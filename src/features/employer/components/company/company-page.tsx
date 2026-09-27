@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AtSign, BadgeCheck, Globe, MapPin, Send, Settings, Star, Users, Phone } from "lucide-react";
+import { AtSign, BadgeCheck, Globe, MapPin, Send, Settings, Star, Users, Phone, Landmark } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatPhone, initials } from "@/lib/format";
 import { Avatar } from "@/components/ui/avatar";
@@ -36,6 +36,11 @@ export async function CompanyPage({ company, vacancies, rating, canManage }: { c
               {verified ? (
                 <span className="inline-flex items-center gap-1 rounded-lg bg-success-soft px-2 py-0.5 text-xs font-semibold text-success">
                   <BadgeCheck className="size-4" /> {t("employer.company.verified")}
+                </span>
+              ) : null}
+              {verified && company.is_government ? (
+                <span className="inline-flex items-center gap-1 rounded-lg bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">
+                  <Landmark className="size-4" /> {t("jobs.government.badge")}
                 </span>
               ) : null}
             </div>

@@ -109,6 +109,7 @@ export function toVacancyCardData(row: SearchVacancyRow): VacancyCardData {
     company_name: row.company_name ?? null,
     company_logo_url: row.company_logo_url ?? null,
     company_verified: row.company_verified ?? null,
+    is_government: row.is_government ?? null,
     region_name_uz: row.region_name_uz ?? null,
     region_name_ru: row.region_name_ru ?? null,
     district_name_uz: row.district_name_uz ?? null,

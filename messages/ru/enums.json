@@ -104,7 +104,8 @@
   "employer_type": {
     "company": "Компания",
     "individual_entrepreneur": "Индивидуальный предприниматель",
-    "person": "Частное лицо"
+    "person": "Частное лицо",
+    "government": "Государственная организация"
   },
   "company_size": {
     "1_10": "1–10 сотрудников",

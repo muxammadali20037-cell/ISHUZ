@@ -231,6 +231,12 @@ function TogglesSection({ draft, patch, refs }: SectionProps) {
         description={t("jobs.filters.remote_hint")}
       />
       <Checkbox checked={draft.verified} onCheckedChange={(c) => patch({ verified: c === true })} label={t("jobs.filters.verified")} />
+      <Checkbox
+        checked={draft.government}
+        onCheckedChange={(c) => patch({ government: c === true })}
+        label={t("jobs.filters.government")}
+        description={t("jobs.filters.government_hint")}
+      />
       {refs.benefits.length ? (
         <div className="pt-3">
           <SectionTitle>{t("jobs.filters.benefits")}</SectionTitle>
