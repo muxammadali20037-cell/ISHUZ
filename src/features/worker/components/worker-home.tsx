@@ -11,6 +11,7 @@ import { getWorkerHomeContext } from "@/features/jobs/queries";
 import { jobsHref } from "@/features/jobs/search-params";
 import { createClient } from "@/lib/supabase/server";
 import { TopProfileCard } from "@/features/billing/components/top-profile-card";
+import { CrossRoleCard } from "@/components/shared/quick-actions";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
@@ -43,6 +44,7 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
       </Suspense>
 
       <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} />
+      <CrossRoleCard role="worker" />
 
       <Suspense fallback={<HomeSectionSkeleton />}>
         <HomeSection

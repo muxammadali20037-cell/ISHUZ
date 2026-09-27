@@ -1,0 +1,41 @@
+{
+  "choose_language": "Tilni tanlang",
+  "choose_language_sub": "Выберите язык",
+  "skip": "O'tkazib yuborish",
+  "next": "Keyingi",
+  "start": "Boshlash",
+  "slides": {
+    "jobs": {
+      "title": "Ish toping",
+      "text": "«Ishlar» tugmasi — barcha vakansiyalar. Hudud, maosh va jadval bo'yicha saralang, bir bosishda ariza yuboring."
+    },
+    "workers": {
+      "title": "Ishchi toping",
+      "text": "«Ishchilar» tugmasi — tayyor nomzodlar. Har birida sizning vakansiyangizga moslik foizi ko'rsatiladi."
+    },
+    "post": {
+      "title": "E'lonni AI yozadi",
+      "text": "«E'lon» tugmasi — o'z so'zingiz bilan yozing. AI bo'limlarga ajratadi, chiroyli matn va reklama rasmi tayyorlaydi."
+    },
+    "chat": {
+      "title": "Chat va xabarlar",
+      "text": "Arizalar, takliflar va javoblar «Chat» va 🔔 da. Muhim xabarlar Telegram'ga ham keladi."
+    }
+  },
+  "quick": {
+    "title": "Nima qilmoqchisiz?",
+    "jobs": "Ish topish",
+    "workers": "Ishchi topish",
+    "post": "E'lon joylash",
+    "resume": "Rezyume yaratish",
+    "pricing": "Narxlar"
+  },
+  "cross": {
+    "worker_title": "Ishchi kerakmi?",
+    "worker_desc": "Siz ham vakansiya joylashingiz mumkin — AI 1 daqiqada yozib beradi",
+    "worker_cta": "E'lon joylash",
+    "employer_title": "O'zingiz ish qidiryapsizmi?",
+    "employer_desc": "Bitta akkauntda ham ish, ham ishchi qidirish mumkin",
+    "employer_cta": "Ish qidirish"
+  }
+}

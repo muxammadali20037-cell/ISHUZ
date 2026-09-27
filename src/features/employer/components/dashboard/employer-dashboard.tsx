@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { CrossRoleCard } from "@/components/shared/quick-actions";
 import { Building2, PlusCircle, Search, ShieldCheck } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getRegions } from "@/lib/reference";
@@ -85,6 +86,10 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
           </Button>
         </div>
       </header>
+
+      <div className="mt-5">
+        <CrossRoleCard role="employer" />
+      </div>
 
       {/* Statistika */}
       <div className="mt-6">

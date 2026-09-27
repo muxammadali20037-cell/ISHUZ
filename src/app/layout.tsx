@@ -3,6 +3,9 @@ import { Manrope } from "next/font/google";
 import Script from "next/script";
 import { cookies } from "next/headers";
 import { getLocale } from "@/lib/i18n/server";
+import { WelcomeGate } from "@/components/shared/welcome-gate";
+import { WELCOME_COOKIE } from "@/components/shared/welcome-cookie";
+import { LOCALE_COOKIE } from "@/lib/i18n/config";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -36,7 +39,9 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
-  const theme = (await cookies()).get("ishuz_theme")?.value;
+  const cookieStore = await cookies();
+  const theme = cookieStore.get("ishuz_theme")?.value;
+  const showWelcome = !cookieStore.has(WELCOME_COOKIE);
   return (
     <html lang={locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
       <head>
@@ -50,7 +55,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="font-sans">
-        <Providers locale={locale}>{children}</Providers>
+        <Providers locale={locale}>
+          {children}
+          {showWelcome ? <WelcomeGate needLanguage={!cookieStore.has(LOCALE_COOKIE)} /> : null}
+        </Providers>
       </body>
     </html>
   );

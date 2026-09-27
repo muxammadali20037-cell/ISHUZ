@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/shared/category-icon";
+import { QuickActions } from "@/components/shared/quick-actions";
 
 export async function LandingPage() {
   const { t, name } = await getT();
@@ -19,6 +20,8 @@ export async function LandingPage() {
         <h1 className="mx-auto max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl md:text-5xl">{t("common.landing.hero_title")}</h1>
         <p className="mx-auto mt-3 max-w-xl text-base text-muted-foreground sm:text-lg">{t("common.landing.hero_subtitle")}</p>
       </section>
+
+      <QuickActions />
 
       <section className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
         <Link
@@ -105,6 +108,10 @@ export async function LandingPage() {
       </div>
 
       <footer className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
+        <Link href="/pricing" className="mb-2 inline-block font-medium text-primary hover:underline">
+          {t("welcome.quick.pricing")}
+        </Link>
+        <br />
         {t("common.footer.rights", { year: new Date().getFullYear() })}
       </footer>
     </div>
