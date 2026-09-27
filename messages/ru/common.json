@@ -106,7 +106,8 @@
     "views": "{count} просмотров",
     "published": "Опубликовано",
     "expires": "Срок",
-    "updated": "Обновлено"
+    "updated": "Обновлено",
+    "question_of": "Вопрос {current} из {total}"
   },
   "errors": {
     "generic": "Что-то пошло не так. Попробуйте ещё раз.",

@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useT } from "@/lib/i18n/client";
 import type { Language } from "@/lib/reference";
 import { Label } from "@/components/ui/label";
+import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { saveSkills } from "../../actions";
 import { skillsSchema, type SkillsInput } from "../../schema";
 import type { DraftLanguage, DraftSkill, SkillOption } from "../../types";
@@ -22,6 +23,7 @@ export function Step5Skills({ draft, options, categoryId, languages }: { draft: 
   const {
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<SkillsInput>({
     resolver: zodResolver(skillsSchema),
@@ -30,12 +32,23 @@ export function Step5Skills({ draft, options, categoryId, languages }: { draft: 
       languages: draft.languages.length ? draft.languages : [{ language_code: "uz", level: "native" }],
     },
   });
+  const flow = useQuestionFlow<SkillsInput>(
+    [
+      { id: "skills", fields: ["skills"] },
+      { id: "languages", fields: ["languages"] },
+    ],
+    trigger,
+  );
   const extraNames = Object.fromEntries(draft.skills.map((s) => [s.skill_id, { name_uz: s.name_uz, name_ru: s.name_ru }]));
 
   return (
-    <form noValidate onSubmit={handleSubmit((values) => submit(() => saveSkills(values)))} className="space-y-8">
-      <section>
-        <Label required>{t("onboarding.worker.skills.title")}</Label>
+    <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => saveSkills(values)), flow.onInvalid))} className="space-y-6">
+      <QuestionProgress flow={flow} />
+
+      <Question show={flow.is("skills")} className="space-y-0">
+        <Label required className="mb-2 text-xl font-semibold leading-snug sm:text-2xl">
+          {t("onboarding.worker.skills.title")}
+        </Label>
         <p className="-mt-1 mb-3 text-xs text-muted-foreground">{t("onboarding.worker.skills.hint")}</p>
         <Controller
           control={control}
@@ -47,10 +60,12 @@ export function Step5Skills({ draft, options, categoryId, languages }: { draft: 
             {fieldError(t, errors.skills)}
           </p>
         ) : null}
-      </section>
+      </Question>
 
-      <section>
-        <Label required>{t("onboarding.worker.skills.languages_title")}</Label>
+      <Question show={flow.is("languages")} className="space-y-0">
+        <Label required className="mb-2 text-xl font-semibold leading-snug sm:text-2xl">
+          {t("onboarding.worker.skills.languages_title")}
+        </Label>
         <p className="-mt-1 mb-3 text-xs text-muted-foreground">{t("onboarding.worker.skills.languages_hint")}</p>
         <Controller control={control} name="languages" render={({ field }) => <LanguagePicker languages={languages} value={field.value} onChange={field.onChange} invalid={!!errors.languages} />} />
         {fieldError(t, errors.languages) ? (
@@ -58,9 +73,9 @@ export function Step5Skills({ draft, options, categoryId, languages }: { draft: 
             {fieldError(t, errors.languages)}
           </p>
         ) : null}
-      </section>
+      </Question>
 
-      <WizardFooter step={5} pending={pending} />
+      <WizardFooter step={5} pending={pending} onBack={flow.isFirst ? undefined : flow.back} continueLabel={flow.isLast ? undefined : t("common.actions.next")} />
     </form>
   );
 }

@@ -14,6 +14,7 @@ import { ChipGroup } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
+import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { savePersonal, sendPhoneChangeCode, verifyPhoneChangeCode } from "../../actions";
 import { personalSchema, type PersonalInput } from "../../schema";
 import type { DraftContacts, DraftProfile } from "../../types";
@@ -29,6 +30,7 @@ export function Step1Personal({ userId, profile, contacts }: { userId: string; p
     register,
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<PersonalInput>({
     resolver: zodResolver(personalSchema),
@@ -41,52 +43,103 @@ export function Step1Personal({ userId, profile, contacts }: { userId: string; p
     },
   });
 
+  const flow = useQuestionFlow<PersonalInput>(
+    [
+      { id: "first_name", fields: ["first_name"] },
+      { id: "last_name", fields: ["last_name"] },
+      { id: "phone", hidden: !!contacts?.phone },
+      { id: "birth_date", fields: ["birth_date"] },
+      { id: "gender", fields: ["gender"] },
+      { id: "telegram", fields: ["telegram_username"] },
+      { id: "avatar" },
+    ],
+    trigger,
+  );
+
   return (
-    <form noValidate onSubmit={handleSubmit((values) => submit(() => savePersonal(values)))} className="space-y-6">
-      <AvatarUpload userId={userId} url={profile.avatar_url} fallback={initials(profile.first_name, profile.last_name)} />
+    <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => savePersonal(values)), flow.onInvalid))} className="space-y-6">
+      <QuestionProgress flow={flow} />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("onboarding.worker.personal.first_name")} htmlFor="first_name" required error={fieldError(t, errors.first_name)}>
-          <Input id="first_name" autoComplete="given-name" placeholder={t("onboarding.worker.personal.first_name_placeholder")} invalid={!!errors.first_name} {...register("first_name")} />
+      <Question show={flow.is("first_name")}>
+        <Field size="lg" label={t("onboarding.worker.personal.first_name")} htmlFor="first_name" required error={fieldError(t, errors.first_name)}>
+          <Input id="first_name" autoFocus autoComplete="given-name" placeholder={t("onboarding.worker.personal.first_name_placeholder")} invalid={!!errors.first_name} {...register("first_name")} />
         </Field>
-        <Field label={t("onboarding.worker.personal.last_name")} htmlFor="last_name" required error={fieldError(t, errors.last_name)}>
-          <Input id="last_name" autoComplete="family-name" placeholder={t("onboarding.worker.personal.last_name_placeholder")} invalid={!!errors.last_name} {...register("last_name")} />
-        </Field>
-      </div>
+      </Question>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("onboarding.worker.personal.birth_date")} htmlFor="birth_date" required error={fieldError(t, errors.birth_date)} description={t("onboarding.worker.personal.birth_date_hint")}>
+      <Question show={flow.is("last_name")}>
+        <Field size="lg" label={t("onboarding.worker.personal.last_name")} htmlFor="last_name" required error={fieldError(t, errors.last_name)}>
+          <Input id="last_name" autoFocus autoComplete="family-name" placeholder={t("onboarding.worker.personal.last_name_placeholder")} invalid={!!errors.last_name} {...register("last_name")} />
+        </Field>
+      </Question>
+
+      <Question show={flow.is("phone")}>
+        <PhoneField contacts={contacts} />
+      </Question>
+
+      <Question show={flow.is("birth_date")}>
+        <Field
+          size="lg"
+          label={t("onboarding.worker.personal.birth_date")}
+          htmlFor="birth_date"
+          required
+          error={fieldError(t, errors.birth_date)}
+          description={t("onboarding.worker.personal.birth_date_hint")}
+        >
           <Input id="birth_date" type="date" min={bounds.min} max={bounds.max} invalid={!!errors.birth_date} {...register("birth_date")} />
         </Field>
-        <Field label={t("onboarding.worker.personal.gender")} required error={fieldError(t, errors.gender)}>
+      </Question>
+
+      <Question show={flow.is("gender")}>
+        <Field size="lg" label={t("onboarding.worker.personal.gender")} required error={fieldError(t, errors.gender)}>
           <Controller
             control={control}
             name="gender"
             render={({ field }) => (
               <ChipGroup
                 size="lg"
-                options={Constants.public.Enums.gender.map((g) => ({ value: g, label: tEnum("gender", g) }))}
+                options={Constants.public.Enums.gender.map((g) => ({
+                  value: g,
+                  label: tEnum("gender", g),
+                }))}
                 value={field.value ?? null}
-                onChange={(v) => field.onChange(singleValue(v))}
+                onChange={(v) => {
+                  const next = singleValue(v);
+                  field.onChange(next);
+                  if (next) flow.advance();
+                }}
               />
             )}
           />
         </Field>
-      </div>
+      </Question>
 
-      <PhoneField contacts={contacts} />
+      <Question show={flow.is("telegram")}>
+        <Field
+          size="lg"
+          label={t("onboarding.worker.personal.telegram")}
+          htmlFor="telegram_username"
+          hint={t("common.labels.optional")}
+          error={fieldError(t, errors.telegram_username)}
+          description={t("onboarding.worker.personal.telegram_hint")}
+        >
+          <Input
+            id="telegram_username"
+            autoFocus
+            leftIcon={<AtSign />}
+            placeholder="username"
+            autoCapitalize="none"
+            autoCorrect="off"
+            invalid={!!errors.telegram_username}
+            {...register("telegram_username")}
+          />
+        </Field>
+      </Question>
 
-      <Field
-        label={t("onboarding.worker.personal.telegram")}
-        htmlFor="telegram_username"
-        hint={t("common.labels.optional")}
-        error={fieldError(t, errors.telegram_username)}
-        description={t("onboarding.worker.personal.telegram_hint")}
-      >
-        <Input id="telegram_username" leftIcon={<AtSign />} placeholder="username" autoCapitalize="none" autoCorrect="off" invalid={!!errors.telegram_username} {...register("telegram_username")} />
-      </Field>
+      <Question show={flow.is("avatar")}>
+        <AvatarUpload userId={userId} url={profile.avatar_url} fallback={initials(profile.first_name, profile.last_name)} />
+      </Question>
 
-      <WizardFooter step={1} pending={pending} />
+      <WizardFooter step={1} pending={pending} onBack={flow.isFirst ? undefined : flow.back} continueLabel={flow.isLast ? undefined : t("common.actions.next")} />
     </form>
   );
 }
@@ -179,6 +232,12 @@ function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
               placeholder={t("auth.phone_placeholder")}
               value={phone}
               invalid={!!error}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  send();
+                }
+              }}
               onChange={(e) => {
                 const raw = e.target.value;
                 setPhone(raw.length < phone.length ? raw : formatPhoneAsYouType(raw.startsWith("+") ? raw : `+${raw}`));
@@ -200,6 +259,12 @@ function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
               placeholder={t("auth.code_placeholder")}
               value={code}
               invalid={!!error}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (code.length >= 4) verify();
+                }
+              }}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
               className="tracking-[0.3em]"
             />
@@ -208,7 +273,15 @@ function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
             </Button>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <button type="button" className="text-muted-foreground hover:text-foreground" onClick={() => { setStage("idle"); setCode(""); setError(null); }}>
+            <button
+              type="button"
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => {
+                setStage("idle");
+                setCode("");
+                setError(null);
+              }}
+            >
               {t("auth.change_phone")}
             </button>
             {countdown > 0 ? (

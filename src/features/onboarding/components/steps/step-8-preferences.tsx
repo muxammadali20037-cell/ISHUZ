@@ -10,6 +10,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ChipGroup } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Field, Label } from "@/components/ui/label";
+import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { savePreferences } from "../../actions";
 import { preferencesSchema, type PreferencesInput } from "../../schema";
 import type { DraftPreferences } from "../../types";
@@ -29,6 +30,7 @@ export function Step8Preferences({ draft, officialTerms }: { draft: PreferencesD
     register,
     control,
     handleSubmit,
+    trigger,
     formState: { errors },
   } = useForm<PreferencesInput>({
     resolver: zodResolver(preferencesSchema),
@@ -47,27 +49,50 @@ export function Step8Preferences({ draft, officialTerms }: { draft: PreferencesD
   });
   const workFormat = useWatch({ control, name: "work_format" });
   const E = Constants.public.Enums;
+  const flow = useQuestionFlow<PreferencesInput>(
+    [
+      { id: "employment_types", fields: ["employment_types"] },
+      { id: "schedules", fields: ["schedules"] },
+      { id: "work_time", fields: ["work_time_from", "work_time_to"] },
+      { id: "salary", fields: ["salary_type", "salary_min", "salary_expected"] },
+      { id: "availability", fields: ["availability"] },
+      { id: "work_format", fields: ["work_format", "official_terms"] },
+    ],
+    trigger,
+  );
 
   return (
-    <form noValidate onSubmit={handleSubmit((values) => submit(() => savePreferences(values)))} className="space-y-6">
-      <Field label={t("onboarding.worker.preferences.employment_types")} description={t("onboarding.worker.preferences.multi_hint")} error={fieldError(t, errors.employment_types)}>
-        <Controller
-          control={control}
-          name="employment_types"
-          render={({ field }) => <ChipGroup multiple options={E.employment_type.map((v) => ({ value: v, label: tEnum("employment_type", v) }))} value={field.value} onChange={(v) => field.onChange(multiValue(v))} />}
-        />
-      </Field>
+    <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => savePreferences(values)), flow.onInvalid))} className="space-y-6">
+      <QuestionProgress flow={flow} />
 
-      <Field label={t("onboarding.worker.preferences.schedules")} description={t("onboarding.worker.preferences.multi_hint")} error={fieldError(t, errors.schedules)}>
-        <Controller
-          control={control}
-          name="schedules"
-          render={({ field }) => <ChipGroup multiple options={E.work_schedule.map((v) => ({ value: v, label: tEnum("work_schedule", v) }))} value={field.value} onChange={(v) => field.onChange(multiValue(v))} />}
-        />
-      </Field>
+      <Question show={flow.is("employment_types")}>
+        <Field size="lg" label={t("onboarding.worker.preferences.employment_types")} description={t("onboarding.worker.preferences.multi_hint")} error={fieldError(t, errors.employment_types)}>
+          <Controller
+            control={control}
+            name="employment_types"
+            render={({ field }) => (
+              <ChipGroup multiple options={E.employment_type.map((v) => ({ value: v, label: tEnum("employment_type", v) }))} value={field.value} onChange={(v) => field.onChange(multiValue(v))} />
+            )}
+          />
+        </Field>
+      </Question>
 
-      <div>
-        <Label hint={t("common.labels.optional")}>{t("onboarding.worker.preferences.work_time")}</Label>
+      <Question show={flow.is("schedules")}>
+        <Field size="lg" label={t("onboarding.worker.preferences.schedules")} description={t("onboarding.worker.preferences.multi_hint")} error={fieldError(t, errors.schedules)}>
+          <Controller
+            control={control}
+            name="schedules"
+            render={({ field }) => (
+              <ChipGroup multiple options={E.work_schedule.map((v) => ({ value: v, label: tEnum("work_schedule", v) }))} value={field.value} onChange={(v) => field.onChange(multiValue(v))} />
+            )}
+          />
+        </Field>
+      </Question>
+
+      <Question show={flow.is("work_time")}>
+        <Label hint={t("common.labels.optional")} className="mb-3 text-xl font-semibold leading-snug sm:text-2xl">
+          {t("onboarding.worker.preferences.work_time")}
+        </Label>
         <div className="grid grid-cols-2 gap-3">
           <Field htmlFor="work_time_from" error={fieldError(t, errors.work_time_from)}>
             <Input id="work_time_from" type="time" aria-label={t("common.labels.from")} invalid={!!errors.work_time_from} {...register("work_time_from")} />
@@ -76,66 +101,103 @@ export function Step8Preferences({ draft, officialTerms }: { draft: PreferencesD
             <Input id="work_time_to" type="time" aria-label={t("common.labels.to")} invalid={!!errors.work_time_to} {...register("work_time_to")} />
           </Field>
         </div>
-      </div>
+      </Question>
 
-      <div className="space-y-4 rounded-2xl border border-border bg-card p-4">
-        <Field label={t("onboarding.worker.preferences.salary_type")} required error={fieldError(t, errors.salary_type)}>
+      <Question show={flow.is("salary")}>
+        <Field size="lg" label={t("onboarding.worker.preferences.salary_type")} required error={fieldError(t, errors.salary_type)}>
           <Controller
             control={control}
             name="salary_type"
-            render={({ field }) => <ChipGroup size="sm" options={E.salary_type.map((v) => ({ value: v, label: tEnum("salary_type", v) }))} value={field.value} onChange={(v) => field.onChange(singleValue(v) ?? field.value)} />}
+            render={({ field }) => (
+              <ChipGroup
+                size="sm"
+                options={E.salary_type.map((v) => ({ value: v, label: tEnum("salary_type", v) }))}
+                value={field.value}
+                onChange={(v) => field.onChange(singleValue(v) ?? field.value)}
+              />
+            )}
           />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label={t("onboarding.worker.preferences.salary_min")} htmlFor="salary_min" error={fieldError(t, errors.salary_min)} description={t("onboarding.worker.preferences.salary_min_hint")}>
-            <Controller control={control} name="salary_min" render={({ field }) => <MoneyInput id="salary_min" value={field.value} onChange={field.onChange} placeholder="3 000 000" invalid={!!errors.salary_min} />} />
+            <Controller
+              control={control}
+              name="salary_min"
+              render={({ field }) => <MoneyInput id="salary_min" value={field.value} onChange={field.onChange} placeholder="3 000 000" invalid={!!errors.salary_min} />}
+            />
           </Field>
-          <Field label={t("onboarding.worker.preferences.salary_expected")} htmlFor="salary_expected" error={fieldError(t, errors.salary_expected)} description={t("onboarding.worker.preferences.salary_expected_hint")}>
-            <Controller control={control} name="salary_expected" render={({ field }) => <MoneyInput id="salary_expected" value={field.value} onChange={field.onChange} placeholder="5 000 000" invalid={!!errors.salary_expected} />} />
+          <Field
+            label={t("onboarding.worker.preferences.salary_expected")}
+            htmlFor="salary_expected"
+            error={fieldError(t, errors.salary_expected)}
+            description={t("onboarding.worker.preferences.salary_expected_hint")}
+          >
+            <Controller
+              control={control}
+              name="salary_expected"
+              render={({ field }) => <MoneyInput id="salary_expected" value={field.value} onChange={field.onChange} placeholder="5 000 000" invalid={!!errors.salary_expected} />}
+            />
           </Field>
         </div>
-      </div>
+      </Question>
 
-      <Field label={t("onboarding.worker.preferences.availability")} required error={fieldError(t, errors.availability)}>
-        <Controller
-          control={control}
-          name="availability"
-          render={({ field }) => <ChipGroup size="lg" options={E.availability.map((v) => ({ value: v, label: tEnum("availability", v) }))} value={field.value ?? null} onChange={(v) => field.onChange(singleValue(v))} />}
-        />
-      </Field>
-
-      <Field label={t("onboarding.worker.preferences.work_format")} required error={fieldError(t, errors.work_format)} description={t("onboarding.worker.preferences.work_format_hint")}>
-        <Controller
-          control={control}
-          name="work_format"
-          render={({ field }) => <ChipGroup size="lg" options={E.work_format.map((v) => ({ value: v, label: tEnum("work_format", v) }))} value={field.value ?? null} onChange={(v) => field.onChange(singleValue(v))} />}
-        />
-      </Field>
-
-      {workFormat === "official" && officialTerms.length ? (
-        <div className="rounded-2xl border border-border bg-card p-4">
-          <p className="text-sm font-semibold">{t("onboarding.worker.preferences.official_terms")}</p>
-          <p className="mb-2 text-xs text-muted-foreground">{t("onboarding.worker.preferences.official_terms_hint")}</p>
+      <Question show={flow.is("availability")}>
+        <Field size="lg" label={t("onboarding.worker.preferences.availability")} required error={fieldError(t, errors.availability)}>
           <Controller
             control={control}
-            name="official_terms"
+            name="availability"
             render={({ field }) => (
-              <div className="divide-y divide-border">
-                {officialTerms.map((b) => (
-                  <Checkbox
-                    key={b.code}
-                    checked={field.value.includes(b.code)}
-                    onCheckedChange={(checked) => field.onChange(checked === true ? [...field.value, b.code] : field.value.filter((c) => c !== b.code))}
-                    label={name(b)}
-                  />
-                ))}
-              </div>
+              <ChipGroup
+                size="lg"
+                options={E.availability.map((v) => ({ value: v, label: tEnum("availability", v) }))}
+                value={field.value ?? null}
+                onChange={(v) => {
+                  const next = singleValue(v);
+                  field.onChange(next);
+                  if (next) flow.advance();
+                }}
+              />
             )}
           />
-        </div>
-      ) : null}
+        </Field>
+      </Question>
 
-      <WizardFooter step={8} pending={pending} />
+      <Question show={flow.is("work_format")}>
+        <Field size="lg" label={t("onboarding.worker.preferences.work_format")} required error={fieldError(t, errors.work_format)} description={t("onboarding.worker.preferences.work_format_hint")}>
+          <Controller
+            control={control}
+            name="work_format"
+            render={({ field }) => (
+              <ChipGroup size="lg" options={E.work_format.map((v) => ({ value: v, label: tEnum("work_format", v) }))} value={field.value ?? null} onChange={(v) => field.onChange(singleValue(v))} />
+            )}
+          />
+        </Field>
+
+        {workFormat === "official" && officialTerms.length ? (
+          <div className="rounded-2xl border border-border bg-card p-4">
+            <p className="text-sm font-semibold">{t("onboarding.worker.preferences.official_terms")}</p>
+            <p className="mb-2 text-xs text-muted-foreground">{t("onboarding.worker.preferences.official_terms_hint")}</p>
+            <Controller
+              control={control}
+              name="official_terms"
+              render={({ field }) => (
+                <div className="divide-y divide-border">
+                  {officialTerms.map((b) => (
+                    <Checkbox
+                      key={b.code}
+                      checked={field.value.includes(b.code)}
+                      onCheckedChange={(checked) => field.onChange(checked === true ? [...field.value, b.code] : field.value.filter((c) => c !== b.code))}
+                      label={name(b)}
+                    />
+                  ))}
+                </div>
+              )}
+            />
+          </div>
+        ) : null}
+      </Question>
+
+      <WizardFooter step={8} pending={pending} onBack={flow.isFirst ? undefined : flow.back} continueLabel={flow.isLast ? undefined : t("common.actions.next")} />
     </form>
   );
 }

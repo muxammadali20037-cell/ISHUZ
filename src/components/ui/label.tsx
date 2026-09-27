@@ -22,6 +22,7 @@ function Field({
   description,
   children,
   className,
+  size = "md",
 }: {
   label?: string;
   htmlFor?: string;
@@ -31,11 +32,13 @@ function Field({
   description?: string;
   children: React.ReactNode;
   className?: string;
+  /** "lg" — bitta-savol rejimi uchun katta sarlavha */
+  size?: "md" | "lg";
 }) {
   return (
     <div className={cn("space-y-1", className)}>
       {label ? (
-        <Label htmlFor={htmlFor} required={required} hint={hint}>
+        <Label htmlFor={htmlFor} required={required} hint={hint} className={size === "lg" ? "mb-3 text-xl font-semibold leading-snug sm:text-2xl" : undefined}>
           {label}
         </Label>
       ) : null}

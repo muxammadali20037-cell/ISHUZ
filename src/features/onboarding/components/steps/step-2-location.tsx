@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Field, Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
+import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { saveLocation, saveWorkerGeo } from "../../actions";
 import { locationSchema, type LocationInput } from "../../schema";
 import { WizardFooter, errorMessage, fieldError, multiValue, singleValue, useStepSubmit } from "../wizard-shell";
@@ -36,6 +37,7 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
     register,
     handleSubmit,
     setValue,
+    trigger,
     formState: { errors },
   } = useForm<LocationInput>({
     resolver: zodResolver(locationSchema),
@@ -56,29 +58,59 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
   const browseDistricts = useMemo(() => districts.filter((d) => d.region_id === browseRegion), [districts, browseRegion]);
   const districtById = useMemo(() => new Map(districts.map((d) => [d.id, d])), [districts]);
 
+  const flow = useQuestionFlow<LocationInput>(
+    [
+      { id: "region", fields: ["region_id"] },
+      { id: "district", fields: ["district_id"] },
+      { id: "work_districts", fields: ["work_districts"] },
+      { id: "remote", fields: ["remote_preference"] },
+      { id: "details", fields: ["area_hint"] },
+    ],
+    trigger,
+  );
+
   const onRegionChange = (id: string) => {
     setValue("region_id", id, { shouldValidate: true });
     setValue("district_id", "");
-    if (id) setBrowseRegion(id);
+    if (id) {
+      setBrowseRegion(id);
+      flow.advance();
+    }
   };
   const onDistrictChange = (id: string) => {
     setValue("district_id", id, { shouldValidate: true });
-    if (id && !workDistricts.includes(id)) setValue("work_districts", [...workDistricts, id], { shouldValidate: true });
+    if (id && !workDistricts.includes(id))
+      setValue("work_districts", [...workDistricts, id], {
+        shouldValidate: true,
+      });
+    if (id) flow.advance();
   };
 
   return (
-    <form noValidate onSubmit={handleSubmit((values) => submit(() => saveLocation(values)))} className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={t("onboarding.worker.location.region")} htmlFor="region_id" required error={fieldError(t, errors.region_id)}>
+    <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => saveLocation(values)), flow.onInvalid))} className="space-y-6">
+      <QuestionProgress flow={flow} />
+
+      <Question show={flow.is("region")}>
+        <Field size="lg" label={t("onboarding.worker.location.region")} htmlFor="region_id" required error={fieldError(t, errors.region_id)}>
           <Controller
             control={control}
             name="region_id"
             render={({ field }) => (
-              <Select id="region_id" options={regionOptions} placeholder={t("common.actions.choose")} value={field.value} invalid={!!errors.region_id} onChange={(e) => onRegionChange(e.target.value)} />
+              <Select
+                id="region_id"
+                options={regionOptions}
+                placeholder={t("common.actions.choose")}
+                value={field.value}
+                invalid={!!errors.region_id}
+                onChange={(e) => onRegionChange(e.target.value)}
+              />
             )}
           />
         </Field>
-        <Field label={t("onboarding.worker.location.district")} htmlFor="district_id" required error={fieldError(t, errors.district_id)}>
+      </Question>
+
+      <Question show={flow.is("district")}>
+        <Field size="lg" label={t("onboarding.worker.location.district")} htmlFor="district_id" required error={fieldError(t, errors.district_id)}>
           <Controller
             control={control}
             name="district_id"
@@ -95,14 +127,12 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
             )}
           />
         </Field>
-      </div>
+      </Question>
 
-      <Field label={t("onboarding.worker.location.area_hint")} htmlFor="area_hint" hint={t("common.labels.optional")} error={fieldError(t, errors.area_hint)}>
-        <Input id="area_hint" placeholder={t("onboarding.worker.location.area_hint_placeholder")} maxLength={120} {...register("area_hint")} />
-      </Field>
-
-      <div>
-        <Label required>{t("onboarding.worker.location.work_districts")}</Label>
+      <Question show={flow.is("work_districts")}>
+        <Label required className="mb-1 text-xl font-semibold leading-snug sm:text-2xl">
+          {t("onboarding.worker.location.work_districts")}
+        </Label>
         <p className="-mt-1 mb-3 text-xs text-muted-foreground">{t("onboarding.worker.location.work_districts_hint")}</p>
         <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 scrollbar-none">
           {regions.map((r) => {
@@ -122,7 +152,10 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
             <div className="mt-3 space-y-3">
               <ChipGroup
                 multiple
-                options={browseDistricts.map((d) => ({ value: d.id, label: name(d) }))}
+                options={browseDistricts.map((d) => ({
+                  value: d.id,
+                  label: name(d),
+                }))}
                 value={field.value.filter((id) => districtById.get(id)?.region_id === browseRegion)}
                 onChange={(next) => {
                   const others = field.value.filter((id) => districtById.get(id)?.region_id !== browseRegion);
@@ -150,26 +183,40 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
             {fieldError(t, errors.work_districts)}
           </p>
         ) : null}
-      </div>
+      </Question>
 
-      <Field label={t("onboarding.worker.location.remote")} required error={fieldError(t, errors.remote_preference)}>
-        <Controller
-          control={control}
-          name="remote_preference"
-          render={({ field }) => (
-            <ChipGroup
-              size="lg"
-              options={Constants.public.Enums.remote_preference.map((v) => ({ value: v, label: tEnum("remote_preference", v) }))}
-              value={field.value ?? null}
-              onChange={(v) => field.onChange(singleValue(v))}
-            />
-          )}
-        />
-      </Field>
+      <Question show={flow.is("remote")}>
+        <Field size="lg" label={t("onboarding.worker.location.remote")} required error={fieldError(t, errors.remote_preference)}>
+          <Controller
+            control={control}
+            name="remote_preference"
+            render={({ field }) => (
+              <ChipGroup
+                size="lg"
+                options={Constants.public.Enums.remote_preference.map((v) => ({
+                  value: v,
+                  label: tEnum("remote_preference", v),
+                }))}
+                value={field.value ?? null}
+                onChange={(v) => {
+                  const next = singleValue(v);
+                  field.onChange(next);
+                  if (next) flow.advance();
+                }}
+              />
+            )}
+          />
+        </Field>
+      </Question>
 
-      <GeoCard hasGeo={draft.hasGeo} />
+      <Question show={flow.is("details")}>
+        <Field size="lg" label={t("onboarding.worker.location.area_hint")} htmlFor="area_hint" hint={t("common.labels.optional")} error={fieldError(t, errors.area_hint)}>
+          <Input id="area_hint" placeholder={t("onboarding.worker.location.area_hint_placeholder")} maxLength={120} {...register("area_hint")} />
+        </Field>
+        <GeoCard hasGeo={draft.hasGeo} />
+      </Question>
 
-      <WizardFooter step={2} pending={pending} />
+      <WizardFooter step={2} pending={pending} onBack={flow.isFirst ? undefined : flow.back} continueLabel={flow.isLast ? undefined : t("common.actions.next")} />
     </form>
   );
 }
@@ -189,7 +236,10 @@ function GeoCard({ hasGeo }: { hasGeo: boolean }) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         startTransition(async () => {
-          const res = await saveWorkerGeo({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+          const res = await saveWorkerGeo({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude,
+          });
           if (!res.ok) {
             setState(hasGeo ? "saved" : "idle");
             toast.error(errorMessage(t, res.error));

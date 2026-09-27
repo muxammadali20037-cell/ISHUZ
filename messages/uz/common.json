@@ -106,7 +106,8 @@
     "views": "{count} ko'rildi",
     "published": "Joylandi",
     "expires": "Muddati",
-    "updated": "Yangilangan"
+    "updated": "Yangilangan",
+    "question_of": "Savol {current} / {total}"
   },
   "errors": {
     "generic": "Nimadir xato ketdi. Qayta urinib ko'ring.",

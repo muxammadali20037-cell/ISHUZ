@@ -79,17 +79,25 @@ export function WizardFooter({
   pending,
   onSkip,
   continueLabel,
+  onBack,
 }: {
   step: number;
   pending: boolean;
   onSkip?: () => void;
   continueLabel?: string;
+  /** Qadam ichidagi oldingi savolga qaytish (bo'lmasa — oldingi qadam sahifasiga) */
+  onBack?: () => void;
 }) {
   const { t } = useT();
   return (
     <div className="sticky bottom-0 z-30 -mx-4 mt-8 border-t border-border/70 bg-background/95 px-4 pt-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-2 sm:backdrop-blur-none">
       <div className="flex gap-3">
-        {step > 1 ? (
+        {onBack ? (
+          <Button type="button" variant="outline" size="lg" className="shrink-0 px-4" aria-label={t("common.actions.back")} onClick={onBack} disabled={pending}>
+            <ChevronLeft className="size-5" />
+            <span className="hidden sm:inline">{t("common.actions.back")}</span>
+          </Button>
+        ) : step > 1 ? (
           <Button asChild variant="outline" size="lg" className="shrink-0 px-4" aria-label={t("common.actions.back")}>
             <Link href={stepHref(step - 1)}>
               <ChevronLeft className="size-5" />

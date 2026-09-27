@@ -139,6 +139,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_company_subtitle")}</p>
           <div className="mt-6 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
             <CompanyForm
+              stepByStep
               refs={refs}
               defaultValues={{ regionId: prefill.regionId ?? "", districtId: prefill.districtId ?? "", about: prefill.about ?? "", phone: prefill.contactPhone ?? "" }}
               onSubmit={submitCompany}
@@ -161,6 +162,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_person_subtitle")}</p>
           <div className="mt-6 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
             <PersonForm
+              stepByStep
               refs={refs}
               defaultValues={{ ...personDefaults, displayName: personDefaults.displayName || firstName }}
               onSubmit={submitPerson}

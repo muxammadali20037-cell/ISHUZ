@@ -12,6 +12,7 @@ import { ChipGroup } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { CategoryIcon } from "@/components/shared/category-icon";
+import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { saveProfession } from "../../actions";
 import { professionSchema, type ProfessionInput } from "../../schema";
 import { WizardFooter, fieldError, singleValue, useStepSubmit } from "../wizard-shell";
@@ -35,6 +36,7 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
     handleSubmit,
     setValue,
     getValues,
+    trigger,
     formState: { errors },
   } = useForm<ProfessionInput>({
     resolver: zodResolver(professionSchema),
@@ -42,7 +44,13 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
   });
   const categoryId = useWatch({ control, name: "category_id" });
   const subcategoryId = useWatch({ control, name: "subcategory_id" });
-  const [browsing, setBrowsing] = useState(!draft.category_id);
+  const flow = useQuestionFlow<ProfessionInput>(
+    [
+      { id: "category", fields: ["category_id"] },
+      { id: "headline", fields: ["headline"] },
+    ],
+    trigger,
+  );
   const [query, setQuery] = useState("");
   const [autoHeadline, setAutoHeadline] = useState<string | null>(() => {
     const sub = subcategories.find((s) => s.id === draft.subcategory_id);
@@ -62,9 +70,13 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
   const pickCategory = (id: string, subId: string | null = null) => {
     setValue("category_id", id, { shouldValidate: true });
     if (id !== categoryId) setValue("subcategory_id", null);
-    setBrowsing(false);
     setQuery("");
-    if (subId) pickSubcategory(subId, subcategories.filter((s) => s.category_id === id));
+    if (subId)
+      pickSubcategory(
+        subId,
+        subcategories.filter((s) => s.category_id === id),
+      );
+    flow.advance();
   };
   const pickSubcategory = (id: string | null, list: Subcategory[] = subs) => {
     setValue("subcategory_id", id);
@@ -78,8 +90,10 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
   };
 
   return (
-    <form noValidate onSubmit={handleSubmit((values) => submit(() => saveProfession(values)))} className="space-y-6">
-      {selected && !browsing ? (
+    <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => saveProfession(values)), flow.onInvalid))} className="space-y-6">
+      <QuestionProgress flow={flow} />
+
+      {selected && flow.is("headline") ? (
         <div className="flex items-center gap-3 rounded-2xl border border-primary/40 bg-primary-soft/50 p-4">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
             <CategoryIcon name={selected.icon} className="size-6" />
@@ -88,53 +102,67 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
             <p className="text-xs font-medium uppercase tracking-wide text-primary">{t("onboarding.worker.profession.category")}</p>
             <p className="truncate text-base font-semibold">{name(selected)}</p>
           </div>
-          <Button type="button" variant="ghost" size="sm" onClick={() => setBrowsing(true)}>
+          <Button type="button" variant="ghost" size="sm" onClick={flow.back}>
             <Pencil className="size-4" />
             {t("common.actions.edit")}
           </Button>
         </div>
-      ) : (
-        <div className="space-y-3">
-          <Input type="search" leftIcon={<Search />} placeholder={t("onboarding.worker.profession.search_placeholder")} value={query} onChange={(e) => setQuery(e.target.value)} aria-label={t("common.actions.search")} />
-          {fieldError(t, errors.category_id) ? (
-            <p className="text-sm text-destructive" role="alert">
-              {fieldError(t, errors.category_id)}
-            </p>
-          ) : null}
-          {visible.length ? (
-            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3" role="radiogroup" aria-label={t("onboarding.worker.profession.category")}>
-              {visible.map(({ category: c, hits }) => {
-                const active = c.id === categoryId;
-                return (
-                  <button
-                    key={c.id}
-                    type="button"
-                    role="radio"
-                    aria-checked={active}
-                    onClick={() => pickCategory(c.id, hits.length === 1 ? (hits[0]?.id ?? null) : null)}
-                    className={cn(
-                      "flex min-h-[72px] items-center gap-3 rounded-2xl border bg-card p-3 text-left transition-colors",
-                      active ? "border-primary bg-primary-soft/50" : "border-border hover:border-primary/40 hover:bg-secondary/60",
-                    )}
-                  >
-                    <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", active ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary")}>
-                      {active ? <Check className="size-5" strokeWidth={3} /> : <CategoryIcon name={c.icon} className="size-5" />}
-                    </span>
-                    <span className="min-w-0">
-                      <span className="block text-sm font-medium leading-tight">{name(c)}</span>
-                      {hits.length ? <span className="mt-0.5 block truncate text-xs text-muted-foreground">{hits.slice(0, 3).map((h) => name(h)).join(" · ")}</span> : null}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">{t("common.labels.no_results")}</p>
-          )}
-        </div>
-      )}
+      ) : null}
 
-      {selected && !browsing ? (
+      <Question show={flow.is("category")} className="space-y-3">
+        <Input
+          type="search"
+          leftIcon={<Search />}
+          placeholder={t("onboarding.worker.profession.search_placeholder")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          aria-label={t("common.actions.search")}
+        />
+        {fieldError(t, errors.category_id) ? (
+          <p className="text-sm text-destructive" role="alert">
+            {fieldError(t, errors.category_id)}
+          </p>
+        ) : null}
+        {visible.length ? (
+          <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3" role="radiogroup" aria-label={t("onboarding.worker.profession.category")}>
+            {visible.map(({ category: c, hits }) => {
+              const active = c.id === categoryId;
+              return (
+                <button
+                  key={c.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => pickCategory(c.id, hits.length === 1 ? (hits[0]?.id ?? null) : null)}
+                  className={cn(
+                    "flex min-h-[72px] items-center gap-3 rounded-2xl border bg-card p-3 text-left transition-colors",
+                    active ? "border-primary bg-primary-soft/50" : "border-border hover:border-primary/40 hover:bg-secondary/60",
+                  )}
+                >
+                  <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", active ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary")}>
+                    {active ? <Check className="size-5" strokeWidth={3} /> : <CategoryIcon name={c.icon} className="size-5" />}
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium leading-tight">{name(c)}</span>
+                    {hits.length ? (
+                      <span className="mt-0.5 block truncate text-xs text-muted-foreground">
+                        {hits
+                          .slice(0, 3)
+                          .map((h) => name(h))
+                          .join(" · ")}
+                      </span>
+                    ) : null}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <p className="rounded-xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">{t("common.labels.no_results")}</p>
+        )}
+      </Question>
+
+      {selected && flow.is("headline") ? (
         <>
           {subs.length ? (
             <Field label={t("onboarding.worker.profession.subcategory")} description={t("onboarding.worker.profession.subcategory_hint")}>
@@ -147,7 +175,7 @@ export function Step3Profession({ draft, categories, subcategories }: { draft: P
         </>
       ) : null}
 
-      <WizardFooter step={3} pending={pending} />
+      <WizardFooter step={3} pending={pending} onBack={flow.isFirst ? undefined : flow.back} continueLabel={flow.isLast ? undefined : t("common.actions.next")} />
     </form>
   );
 }

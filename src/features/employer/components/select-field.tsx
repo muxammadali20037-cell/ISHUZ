@@ -16,6 +16,7 @@ export function SelectField<TIn extends FieldValues, TOut extends FieldValues = 
   disabled,
   required,
   onValueChange,
+  size,
 }: {
   control: Control<TIn, unknown, TOut>;
   name: FieldPath<TIn>;
@@ -27,13 +28,14 @@ export function SelectField<TIn extends FieldValues, TOut extends FieldValues = 
   disabled?: boolean;
   required?: boolean;
   onValueChange?: (value: string) => void;
+  size?: "md" | "lg";
 }) {
   return (
     <Controller
       control={control}
       name={name}
       render={({ field }) => (
-        <Field label={label} htmlFor={field.name} error={error} hint={hint} required={required}>
+        <Field label={label} htmlFor={field.name} error={error} hint={hint} required={required} size={size}>
           <Select
             id={field.name}
             name={field.name}
