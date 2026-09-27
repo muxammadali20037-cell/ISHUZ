@@ -16,6 +16,9 @@ const serverSchema = z.object({
   TELEGRAM_BOT_USERNAME: z.string().optional(),
   TELEGRAM_WEBHOOK_SECRET: z.string().optional(),
   CRON_SECRET: z.string().optional(),
+  /** Google Play (TWA): paket nomi va imzo sertifikati SHA-256 barmoq izlari (vergul bilan) */
+  ANDROID_PACKAGE_NAME: z.string().default("uz.worklyn.app"),
+  ANDROID_SHA256_CERT_FINGERPRINTS: z.string().optional(),
   APP_URL: z.string().url().default("http://localhost:3000"),
 });
 
@@ -43,6 +46,8 @@ export function getServerEnv() {
     TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME,
     TELEGRAM_WEBHOOK_SECRET: process.env.TELEGRAM_WEBHOOK_SECRET,
     CRON_SECRET: process.env.CRON_SECRET,
+    ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME || undefined,
+    ANDROID_SHA256_CERT_FINGERPRINTS: process.env.ANDROID_SHA256_CERT_FINGERPRINTS,
     APP_URL: process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL,
   });
 }

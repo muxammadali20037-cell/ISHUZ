@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bir necha daqiqada aniq bog'laydigan platforma.",
   applicationName: "Worklyn",
   manifest: "/manifest.webmanifest",
-  icons: { icon: "/icon.svg", apple: "/icon.svg" },
+  icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
   openGraph: { type: "website", siteName: "Worklyn", locale: "uz_UZ", alternateLocale: ["ru_RU"] },
   appleWebApp: { capable: true, statusBarStyle: "default", title: "Worklyn" },
 };

@@ -78,6 +78,16 @@ npm run lint && npm run typecheck && npm run build
 3. `vercel.json` funksiyalarni `bom1` (Mumbai) regionida ishga tushiradi — Supabase (ap-south-1) bilan bir joyda. Cron'lar Vercel'da emas, Supabase `pg_cron` da (Hobby tarifi cheklovi yo'q).
 4. Domen (masalan `worklyn.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
 
+## Mobil ilova
+
+Sayt to'liq PWA (manifest, PNG/maskable ikonkalar, service worker, oflayn sahifa):
+
+- **Telefonga o'rnatish (hozir):** Android Chrome → ⋮ → "Ilovani o'rnatish"; iPhone Safari → Ulashish → "Bosh ekranga qo'shish".
+- **Google Play (Android, TWA):** [pwabuilder.com](https://www.pwabuilder.com) → sayt manzili → Package for stores → Android → Package ID `uz.worklyn.app` →
+  yuklab olingan `.aab` ni Play Console'ga yuklang. Play Console → App integrity → App signing dagi **SHA-256** ni Vercel env
+  `ANDROID_SHA256_CERT_FINGERPRINTS` ga yozing (PWABuilder kalitining SHA-256 si ham, vergul bilan) → Redeploy. Tekshirish: `/.well-known/assetlinks.json`.
+- **App Store (iOS):** Mac + Apple Developer ($99/yil) kerak; Capacitor bilan o'raladi va push-bildirishnoma kabi native imkoniyat qo'shiladi.
+
 ## Tuzilma
 
 ```
