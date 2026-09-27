@@ -1,0 +1,49 @@
+{
+  "badge": "AI yordamchi",
+  "cta_worker": "Erinsangiz — o'zingiz haqingizda yozing, AI o'zi to'ldiradi",
+  "cta_worker_desc": "Anketa to'ldirish shart emas: 2–3 gapda yozing, qolganini AI bo'limlarga ajratadi",
+  "cta_employer": "Vakansiyani o'z so'zingiz bilan yozing — AI chiroyli e'lon qilib beradi",
+  "cta_employer_desc": "Kategoriya, maosh, jadval, talablar — hammasini AI o'zi ajratadi, siz faqat tekshirasiz",
+  "open": "AI bilan to'ldirish",
+  "worker": {
+    "title": "O'zingiz haqingizda yozing",
+    "subtitle": "Oddiy tilda, xuddi do'stingizga aytgandek. AI hammasini kerakli bo'limlarga joylaydi",
+    "placeholder": "Masalan: Ismim Aziza Karimova, 24 yoshdaman. Toshkent, Chilonzor tumanida yashayman. 3 yil do'konda sotuvchi bo'lib ishlaganman, kassa va 1C ni bilaman. O'zbek va rus tilida gaplashaman. Oyiga 4–5 mln so'm maosh istayman, ertadan ishga chiqa olaman.",
+    "hints": "Ism va yosh | Kasbingiz | Tajriba | Qayerda yashaysiz | Qancha maosh | Qachon chiqa olasiz",
+    "review_title": "AI shunday tushundi",
+    "review_subtitle": "Tekshiring. Xato bo'lsa — keyingi sahifalarda o'zgartirasiz",
+    "need_title": "Yana bir oz ma'lumot",
+    "save": "Tasdiqlash va saqlash",
+    "manual": "Savollar bo'yicha to'ldirish"
+  },
+  "employer": {
+    "title": "Vakansiyani yozing",
+    "subtitle": "Kim kerak, qayerda, qancha maosh, qanday sharoit — erkin yozing. AI chiroyli e'lon tayyorlaydi",
+    "placeholder": "Masalan: Chilonzordagi kafemizga oshpaz kerak. Tajriba 1 yildan. Ish vaqti 9:00–21:00, 2/2 grafik. Maosh 6–8 mln, ovqat va yo'lkira bepul. Rasmiy ishga olamiz.",
+    "hints": "Lavozim | Manzil | Maosh | Ish vaqti | Talablar | Qulayliklar",
+    "manual": "Qadamma-qadam to'ldirish"
+  },
+  "analyze": "AI to'ldirsin",
+  "analyzing": "Matn o'qilmoqda… | Bo'limlarga ajratilmoqda… | Kategoriya tanlanmoqda… | Chiroyli matn yozilmoqda… | Deyarli tayyor…",
+  "rewrite": "Qayta yozish",
+  "min_hint": "Kamida bir-ikki gap yozing",
+  "sections": {
+    "personal": "Shaxsiy",
+    "location": "Joylashuv",
+    "profession": "Kasb",
+    "experience": "Tajriba",
+    "skills": "Ko'nikmalar",
+    "languages": "Tillar",
+    "education": "Ta'lim",
+    "preferences": "Ish istagi",
+    "about": "O'zim haqimda"
+  },
+  "not_found": "Topilmadi — keyin tanlaysiz",
+  "errors": {
+    "ai_disabled": "AI yordamchi hozircha o'chirilgan",
+    "ai_text_short": "Juda qisqa. Yana bir-ikki gap qo'shing",
+    "ai_failed": "AI tushuna olmadi. Boshqacharoq yozib ko'ring yoki qo'lda to'ldiring",
+    "ai_busy": "AI hozir band. Bir daqiqadan keyin urinib ko'ring",
+    "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring"
+  }
+}

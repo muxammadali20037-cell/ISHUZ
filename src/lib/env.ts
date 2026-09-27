@@ -20,6 +20,8 @@ const serverSchema = z.object({
   ANDROID_PACKAGE_NAME: z.string().default("uz.worklyn.app"),
   ANDROID_SHA256_CERT_FINGERPRINTS: z.string().optional(),
   APP_URL: z.string().url().default("http://localhost:3000"),
+  /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
+  ANTHROPIC_API_KEY: z.string().optional(),
 });
 
 function readPublic() {
@@ -49,5 +51,6 @@ export function getServerEnv() {
     ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME || undefined,
     ANDROID_SHA256_CERT_FINGERPRINTS: process.env.ANDROID_SHA256_CERT_FINGERPRINTS,
     APP_URL: process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL,
+    ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
   });
 }

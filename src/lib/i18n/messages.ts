@@ -15,6 +15,7 @@ import uzApplications from "../../../messages/uz/applications.json";
 import uzChat from "../../../messages/uz/chat.json";
 import uzProfile from "../../../messages/uz/profile.json";
 import uzAdmin from "../../../messages/uz/admin.json";
+import uzAi from "../../../messages/uz/ai.json";
 import uzVacancies from "../../../messages/uz/vacancies.json";
 import uzOffers from "../../../messages/uz/offers.json";
 import uzNotifications from "../../../messages/uz/notifications.json";
@@ -31,6 +32,7 @@ import ruApplications from "../../../messages/ru/applications.json";
 import ruChat from "../../../messages/ru/chat.json";
 import ruProfile from "../../../messages/ru/profile.json";
 import ruAdmin from "../../../messages/ru/admin.json";
+import ruAi from "../../../messages/ru/ai.json";
 import ruVacancies from "../../../messages/ru/vacancies.json";
 import ruOffers from "../../../messages/ru/offers.json";
 import ruNotifications from "../../../messages/ru/notifications.json";
@@ -54,6 +56,7 @@ export const messages = {
     notifications: uzNotifications,
     saved: uzSaved,
     enums: uzEnums,
+    ai: uzAi,
   },
   ru: {
     common: ruCommon,
@@ -71,6 +74,7 @@ export const messages = {
     notifications: ruNotifications,
     saved: ruSaved,
     enums: ruEnums,
+    ai: ruAi,
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

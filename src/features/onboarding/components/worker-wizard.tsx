@@ -1,5 +1,7 @@
 import type { ReactNode } from "react";
 import { getT } from "@/lib/i18n/server";
+import { aiEnabled } from "@/lib/ai/client";
+import { AiCtaCard } from "@/features/ai/components/ai-composer";
 import type { ReferenceData } from "@/lib/reference";
 import { REVIEW_STEP, STEP_KEYS, type SkillOption, type WorkerDraft } from "../types";
 import { Review } from "./review";
@@ -27,7 +29,16 @@ export async function WorkerWizard({ step, draft, reference, skills, userId }: {
   let content: ReactNode;
   switch (step) {
     case 1:
-      content = <Step1Personal userId={userId} profile={draft.profile} contacts={draft.contacts} />;
+      content = (
+        <>
+          {aiEnabled() && saved <= 1 ? (
+            <div className="mb-6">
+              <AiCtaCard title={t("ai.cta_worker")} description={t("ai.cta_worker_desc")} href="/onboarding/worker/ai" />
+            </div>
+          ) : null}
+          <Step1Personal userId={userId} profile={draft.profile} contacts={draft.contacts} />
+        </>
+      );
       break;
     case 2:
       content = (

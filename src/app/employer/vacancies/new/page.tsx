@@ -10,6 +10,8 @@ import { stepFromParam, type WizardStep } from "@/features/vacancies/steps";
 import type { VacancyFull } from "@/features/vacancies/types";
 import { isUuid } from "@/features/vacancies/utils";
 import { VacancyWizard } from "@/features/vacancies/components/wizard/wizard";
+import { aiEnabled } from "@/lib/ai/client";
+import { AiCtaCard } from "@/features/ai/components/ai-composer";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -38,8 +40,14 @@ export default async function NewVacancyPage({ searchParams }: { searchParams: P
 
   const [refs, suggestedSkills] = await Promise.all([getReferenceData(), step === "skills" ? getSkills(vacancy?.category_id ?? undefined) : Promise.resolve([])]);
 
+  const { t } = await getT();
   return (
     <Shell hideNav>
+      {!vacancy && aiEnabled() ? (
+        <div className="container-narrow pt-5 sm:pt-8">
+          <AiCtaCard title={t("ai.cta_employer")} description={t("ai.cta_employer_desc")} href="/employer/vacancies/new/ai" />
+        </div>
+      ) : null}
       <VacancyWizard mode="create" vacancy={vacancy} step={step} refs={refs} suggestedSkills={suggestedSkills} />
     </Shell>
   );
