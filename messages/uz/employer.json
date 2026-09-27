@@ -112,7 +112,7 @@
     "location": "Joylashuv",
     "manage": "Sozlamalar",
     "meta_title": "{name} — vakansiyalar",
-    "meta_description": "{name} kompaniyasining Worklyn dagi faol vakansiyalari va ma'lumotlari"
+    "meta_description": "{name} kompaniyasining «Ish beruvchi» platformasidagi faol vakansiyalari va ma'lumotlari"
   },
   "settings": {
     "title": "Kompaniya sozlamalari",
@@ -141,7 +141,7 @@
     "role_updated": "Rol yangilandi",
     "removed": "A'zo chiqarildi",
     "invite_title": "A'zo qo'shish",
-    "invite_desc": "Taklif havolasini yarating va a'zoga yuboring. U Worklyn ga kirib, havolani ochadi va jamoaga qo'shiladi. Havola 7 kun amal qiladi.",
+    "invite_desc": "Taklif havolasini yarating va a'zoga yuboring. U «Ish beruvchi» ilovasiga kirib, havolani ochadi va jamoaga qo'shiladi. Havola 7 kun amal qiladi.",
     "roles_help": "Administrator — barcha sozlamalar va a'zolar; Rekruter — vakansiya va arizalar; Kuzatuvchi — faqat ko'rish.",
     "invite_role": "Yangi a'zo roli",
     "create_invite": "Taklif havolasi yaratish",

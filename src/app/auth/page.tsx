@@ -16,9 +16,9 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="container-narrow flex h-14 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-extrabold tracking-tight">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">W</span>
+          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs text-primary-foreground">IB</span>
           <span className="text-lg">
-            Work<span className="text-primary">lyn</span>
+            Ish <span className="text-primary">beruvchi</span>
           </span>
         </Link>
         <LanguageSwitcher />

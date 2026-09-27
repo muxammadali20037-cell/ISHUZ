@@ -18,13 +18,13 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "Worklyn — Ish qidirmang. O'zingizga mos ishni toping.", template: "%s · Worklyn" },
+  title: { default: "Ish beruvchi — Ish qidirmang. O'zingizga mos ishni toping.", template: "%s · Ish beruvchi" },
   description: "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bir necha daqiqada aniq bog'laydigan platforma.",
-  applicationName: "Worklyn",
+  applicationName: "Ish beruvchi",
   manifest: "/manifest.webmanifest",
   icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
-  openGraph: { type: "website", siteName: "Worklyn", locale: "uz_UZ", alternateLocale: ["ru_RU"] },
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Worklyn" },
+  openGraph: { type: "website", siteName: "Ish beruvchi", locale: "uz_UZ", alternateLocale: ["ru_RU"] },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Ish beruvchi" },
 };
 
 export const viewport: Viewport = {

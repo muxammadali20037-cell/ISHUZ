@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Worklyn",
+    "name": "Ish beruvchi",
     "tagline": "Ish qidirmang. O'zingizga mos ishni toping.",
     "tagline_employer": "Ko'p CV ko'rmang. Sizga mos xodimni toping.",
     "description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"
@@ -140,7 +140,7 @@
   },
   "landing": {
     "hero_title": "Ish qidirmang. O'zingizga mos ishni toping.",
-    "hero_subtitle": "Worklyn — O'zbekistonda ish qidiruvchi va ish beruvchini bir necha daqiqada aniq bog'laydigan platforma.",
+    "hero_subtitle": "«Ish beruvchi» — O'zbekistonda ish qidiruvchi va ish beruvchini bir necha daqiqada aniq bog'laydigan platforma.",
     "worker_card_title": "Men ish qidiryapman",
     "worker_card_subtitle": "O'zingizga mos ishni toping",
     "worker_card_cta": "Ish topish",
@@ -168,7 +168,7 @@
     "terms": "Foydalanish shartlari",
     "privacy": "Maxfiylik siyosati",
     "support": "Yordam",
-    "rights": "© {year} Worklyn. Barcha huquqlar himoyalangan."
+    "rights": "© {year} Ish beruvchi. Barcha huquqlar himoyalangan."
   },
   "report_sent": "Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.",
   "report_desc": "Nima uchun shikoyat qilyapsiz?",

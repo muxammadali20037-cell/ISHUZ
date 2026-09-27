@@ -51,7 +51,7 @@ export function PromoPanel({ slug, caption, url, isActive }: { slug: string; cap
           <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-xl bg-secondary/60 p-3 font-sans text-sm leading-relaxed">{caption}</pre>
           <div className="grid gap-2 sm:grid-cols-3">
             <Button asChild variant="default">
-              <a href={src} download={`worklyn-${slug}-${format}.png`}>
+              <a href={src} download={`ishberuvchi-${slug}-${format}.png`}>
                 <Download className="size-4" />
                 {t("promo.download")}
               </a>

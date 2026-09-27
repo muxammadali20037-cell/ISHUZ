@@ -55,7 +55,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
       <div className="w-full max-w-md animate-fade-in rounded-t-3xl bg-card p-6 pb-safe shadow-xl sm:rounded-3xl">
         {step === "lang" ? (
           <div className="py-2 text-center">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary text-3xl font-extrabold text-primary-foreground">W</div>
+            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary text-2xl font-extrabold text-primary-foreground">IB</div>
             <h2 className="mt-4 text-2xl font-bold">Tilni tanlang</h2>
             <p className="text-muted-foreground">Выберите язык</p>
             <div className="mt-6 grid gap-3">

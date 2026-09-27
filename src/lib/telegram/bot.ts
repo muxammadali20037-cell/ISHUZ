@@ -47,7 +47,7 @@ export const removeKeyboard: RemoveKeyboard = { remove_keyboard: true };
 
 export async function setBotMenuButton() {
   const { APP_URL } = getServerEnv();
-  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Worklyn", web_app: { url: APP_URL } } });
+  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Ish beruvchi", web_app: { url: APP_URL } } });
 }
 
 export async function setBotWebhook(url: string, secret: string) {

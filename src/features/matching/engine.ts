@@ -1,5 +1,5 @@
 /**
- * Worklyn — moslik dvigateli (rule-based).
+ * Ish beruvchi — moslik dvigateli (rule-based).
  *
  * Bu fayl `public.compute_match(worker_id, vacancy_id)` SQL funksiyasining
  * (supabase/migrations/0008_functions.sql) AYNAN nusxasi: bir xil og'irliklar,

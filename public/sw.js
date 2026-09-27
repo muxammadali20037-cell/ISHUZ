@@ -1,6 +1,6 @@
-/* Worklyn service worker — faqat ilova qobig'i va oflayn sahifa.
+/* Ish beruvchi service worker — faqat ilova qobig'i va oflayn sahifa.
  * Ma'lumotlar (Supabase, /api, sahifa HTML) keshlanmaydi: har doim yangi, maxfiy ma'lumot qurilmada qolmaydi. */
-const VERSION = "worklyn-v1";
+const VERSION = "ishberuvchi-v2";
 const PRECACHE = ["/offline.html", "/icons/icon-192.png", "/icons/icon-512.png", "/icon.svg", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

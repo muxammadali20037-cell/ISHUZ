@@ -28,7 +28,7 @@ export async function jobsListMetadata(params: JobsSearchParams): Promise<Metada
     title,
     description,
     alternates: { canonical },
-    openGraph: { title: `${title} · Worklyn`, description, url: canonical, type: "website" },
+    openGraph: { title: `${title} · Ish beruvchi`, description, url: canonical, type: "website" },
     robots: noindex ? { index: false, follow: true } : undefined,
   };
 }
@@ -57,7 +57,7 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
     description,
     alternates: { canonical: url },
     openGraph: {
-      title: `${title} · Worklyn`,
+      title: `${title} · Ish beruvchi`,
       description,
       url,
       type: "article",
