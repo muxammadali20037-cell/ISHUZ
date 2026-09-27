@@ -62,8 +62,10 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
       url,
       type: "article",
       publishedTime: v.published_at ?? undefined,
-      images: v.company?.logo_url ? [{ url: v.company.logo_url }] : undefined,
+      // Telegram/Facebook oldindan ko'rinishi: vakansiya reklama kartasi
+      images: [{ url: `/api/promo/vacancy/${v.slug}?f=og`, width: 1200, height: 630 }],
     },
+    twitter: { card: "summary_large_image" },
     robots: v.status === "active" ? undefined : { index: false, follow: false },
   };
 }
