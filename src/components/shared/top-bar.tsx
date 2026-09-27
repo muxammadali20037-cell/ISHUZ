@@ -20,7 +20,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
         <Link href={role === "employer" ? "/employer" : "/"} className="flex items-center gap-2 font-extrabold tracking-tight">
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">IU</span>
           <span className="text-lg">
-            ISH<span className="text-primary">.UZ</span>
+            Work<span className="text-primary">lyn</span>
           </span>
         </Link>
         <div className="ml-4 flex-1">

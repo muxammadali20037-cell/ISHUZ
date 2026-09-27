@@ -14,13 +14,13 @@ const manrope = Manrope({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "ISH.UZ — Ish qidirmang. O'zingizga mos ishni toping.", template: "%s · ISH.UZ" },
+  title: { default: "Worklyn — Ish qidirmang. O'zingizga mos ishni toping.", template: "%s · Worklyn" },
   description: "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bir necha daqiqada aniq bog'laydigan platforma.",
-  applicationName: "ISH.UZ",
+  applicationName: "Worklyn",
   manifest: "/manifest.webmanifest",
   icons: { icon: "/icon.svg", apple: "/icon.svg" },
-  openGraph: { type: "website", siteName: "ISH.UZ", locale: "uz_UZ", alternateLocale: ["ru_RU"] },
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "ISH.UZ" },
+  openGraph: { type: "website", siteName: "Worklyn", locale: "uz_UZ", alternateLocale: ["ru_RU"] },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "Worklyn" },
 };
 
 export const viewport: Viewport = {

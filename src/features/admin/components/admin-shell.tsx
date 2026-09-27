@@ -27,7 +27,7 @@ export async function AdminShell({ ctx, children }: { ctx: AdminContext; childre
           <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight">
             <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-sm text-primary-foreground">IU</span>
             <span className="text-lg">
-              ISH<span className="text-primary">.UZ</span>
+              Work<span className="text-primary">lyn</span>
             </span>
           </Link>
           <Badge variant="outline" size="sm" className="ml-auto">

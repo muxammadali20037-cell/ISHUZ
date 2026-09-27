@@ -84,9 +84,9 @@
     }
   },
   "telegram": {
-    "welcome": "Assalomu alaykum! ISH.UZ botiga xush kelibsiz.\nArizalar, takliflar va yangi xabarlar haqidagi bildirishnomalar shu yerga keladi.",
+    "welcome": "Assalomu alaykum! Worklyn botiga xush kelibsiz.\nArizalar, takliflar va yangi xabarlar haqidagi bildirishnomalar shu yerga keladi.",
     "hint": "Ilovani ochish uchun quyidagi tugmani bosing.",
-    "open_app": "ISH.UZ ni ochish",
+    "open_app": "Worklyn ni ochish",
     "open": "Ochish"
   }
 }

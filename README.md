@@ -1,4 +1,4 @@
-# ISH.UZ
+# Worklyn (ISH.UZ)
 
 > Ish qidirmang. O'zingizga mos ishni toping. · Ko'p CV ko'rmang. Sizga mos xodimni toping.
 
@@ -76,7 +76,7 @@ npm run lint && npm run typecheck && npm run build
 1. [vercel.com/new](https://vercel.com/new) → GitHub repo'ni import qiling (Framework: Next.js, sozlamalar standart).
 2. **Environment Variables**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `APP_URL`, `CRON_SECRET` (masalan `openssl rand -hex 32`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` → Deploy.
 3. `vercel.json` funksiyalarni `bom1` (Mumbai) regionida ishga tushiradi — Supabase (ap-south-1) bilan bir joyda. Cron'lar Vercel'da emas, Supabase `pg_cron` da (Hobby tarifi cheklovi yo'q).
-4. Domen (`ishuz.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
+4. Domen (masalan `worklyn.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
 
 ## Tuzilma
 
