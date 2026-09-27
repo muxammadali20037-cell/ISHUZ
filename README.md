@@ -109,8 +109,12 @@ SQL (`public.compute_match`) va TypeScript (`src/features/matching`) versiyalari
 
 ## AI yordamchi va to'lovlar
 
-**AI (Claude)** — ishchi o'zi haqida, ish beruvchi vakansiya haqida erkin yozadi, AI bo'limlarga ajratadi.
-Vercel → Environment Variables: `ANTHROPIC_API_KEY` (console.anthropic.com). Kalit bo'lmasa AI tugmalari ko'rinmaydi.
+**AI** — ishchi o'zi haqida, ish beruvchi vakansiya haqida erkin yozadi, AI bo'limlarga ajratadi.
+Vercel → Environment Variables (bittasi kifoya; ikkalasi bo'lsa Gemini ishlatiladi):
+- `GEMINI_API_KEY` — bepul: https://aistudio.google.com/apikey (ixtiyoriy `GEMINI_MODEL`, standart `gemini-flash-latest`)
+- `ANTHROPIC_API_KEY` — pullik Claude: console.anthropic.com
+
+Kalit bo'lmasa AI tugmalari ko'rinmaydi.
 
 **To'lovlar** (narxlar `app_settings` da, admin → Sozlamalar'dan o'zgartiriladi):
 

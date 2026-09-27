@@ -5,6 +5,8 @@ import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
 import { Constants } from "@/types/database.types";
 import { AI_MODEL, getAiClient } from "@/lib/ai/client";
+import { AiBusyError, geminiJson } from "@/lib/ai/gemini";
+import { getServerEnv } from "@/lib/env";
 import type { Locale } from "@/lib/i18n/config";
 import type { AiCatalog } from "./catalog";
 
@@ -113,6 +115,10 @@ const VACANCY_TASK = `Bu — ISH BERUVCHI vakansiya haqida yozgan matn. Vakansiy
 - is_remote: faqat masofaviy ish bo'lsa true.`;
 
 async function run<T extends z.ZodType>(schema: T, task: string, catalog: AiCatalog, text: string, locale: Locale): Promise<z.infer<T> | null> {
+  // Gemini kaliti bo'lsa — u (bepul limit), aks holda Claude
+  if (getServerEnv().GEMINI_API_KEY) {
+    return geminiJson(schema, `${COMMON}\n\n# Ma'lumotnoma\n${catalog.text}\n\n${task}\nMatnlarni ${localeName(locale)} yoz.`, text);
+  }
   const client = getAiClient();
   if (!client) return null;
   const response = await client.beta.messages.parse({
@@ -141,5 +147,5 @@ export async function extractVacancy(catalog: AiCatalog, text: string, locale: L
 }
 
 export function isAiRateLimit(error: unknown): boolean {
-  return error instanceof Anthropic.RateLimitError;
+  return error instanceof Anthropic.RateLimitError || error instanceof AiBusyError;
 }

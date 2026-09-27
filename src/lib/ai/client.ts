@@ -16,6 +16,8 @@ export function getAiClient(): Anthropic | null {
   return cached;
 }
 
+/** AI yoqilgan: Gemini (bepul) yoki Claude kaliti bor */
 export function aiEnabled(): boolean {
-  return !!getServerEnv().ANTHROPIC_API_KEY;
+  const env = getServerEnv();
+  return !!(env.GEMINI_API_KEY || env.ANTHROPIC_API_KEY);
 }

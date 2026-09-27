@@ -22,6 +22,9 @@ const serverSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
+  /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
+  GEMINI_API_KEY: z.string().optional(),
+  GEMINI_MODEL: z.string().optional(),
   /** Payme (Paycom) merchant: kassa ID va kalit; PAYME_TEST=1 — test kassa */
   PAYME_MERCHANT_ID: z.string().optional(),
   PAYME_KEY: z.string().optional(),
@@ -60,6 +63,8 @@ export function getServerEnv() {
     ANDROID_SHA256_CERT_FINGERPRINTS: process.env.ANDROID_SHA256_CERT_FINGERPRINTS,
     APP_URL: process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
+    GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
     PAYME_MERCHANT_ID: process.env.PAYME_MERCHANT_ID || undefined,
     PAYME_KEY: process.env.PAYME_KEY || undefined,
     PAYME_TEST: process.env.PAYME_TEST || undefined,
