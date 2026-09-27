@@ -10,11 +10,11 @@ import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/misc";
 import { toast } from "@/components/ui/toast";
 import type { ActionResult } from "@/features/auth/actions";
-import { TOTAL_STEPS, WIZARD_PATH } from "../types";
+import { TOTAL_STEPS } from "../types";
 
-export function stepHref(step: number) {
-  return `${WIZARD_PATH}?step=${step}`;
-}
+import { stepHref } from "../utils";
+
+export { stepHref };
 
 /** Xato kodi → matn: avval modul kalitlari, keyin umumiy/auth, oxirida generic */
 export function errorMessage(t: TFunction, code: string): string {

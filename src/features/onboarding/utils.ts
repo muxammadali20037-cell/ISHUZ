@@ -1,7 +1,12 @@
 /**
  * Onboarding uchun sof (pure) yordamchi funksiyalar — server va client'da ishlaydi, test qilinadi.
  */
-import { REVIEW_STEP } from "./types";
+import { REVIEW_STEP, WIZARD_PATH } from "./types";
+
+/** Wizard qadami URL i (server va client komponentlarda ishlatiladi) */
+export function stepHref(step: number) {
+  return `${WIZARD_PATH}?step=${step}`;
+}
 
 /** So'ralgan qadamni saqlangan qadamdan oshirmaydi: oldinga sakrab bo'lmaydi, orqaga mumkin */
 export function clampStep(requested: number | null | undefined, saved: number): number {

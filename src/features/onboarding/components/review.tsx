@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import type { WorkerDraft } from "../types";
 import { FinishBar } from "./finish-bar";
-import { stepHref } from "./wizard-shell";
+import { stepHref } from "../utils";
 
 /**
  * Yakuniy tekshiruv: barcha qadamlar xulosasi + har biriga "Tahrirlash" havolasi (server komponent).
