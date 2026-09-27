@@ -3,6 +3,9 @@ import "server-only";
 import { getServerEnv } from "@/lib/env";
 
 type InlineKeyboard = { inline_keyboard: { text: string; url?: string; web_app?: { url: string } }[][] };
+type ReplyKeyboard = { keyboard: { text: string; request_contact?: boolean }[][]; resize_keyboard?: boolean; one_time_keyboard?: boolean; is_persistent?: boolean };
+type RemoveKeyboard = { remove_keyboard: true };
+export type ReplyMarkup = InlineKeyboard | ReplyKeyboard | RemoveKeyboard;
 
 /** Telegram Bot API ga so'rov (faqat server) */
 async function callBot<T = unknown>(method: string, payload: Record<string, unknown>): Promise<T | null> {
@@ -31,9 +34,16 @@ export function openAppKeyboard(text: string, path = "/"): InlineKeyboard {
   return { inline_keyboard: [[{ text, web_app: { url: `${APP_URL}${path}` } }]] };
 }
 
-export async function sendTelegramMessage(chatId: number, html: string, keyboard?: InlineKeyboard) {
+export async function sendTelegramMessage(chatId: number, html: string, keyboard?: ReplyMarkup) {
   return callBot("sendMessage", { chat_id: chatId, text: html, parse_mode: "HTML", reply_markup: keyboard, disable_web_page_preview: true });
 }
+
+/** "📱 Raqamni yuborish" — Telegram foydalanuvchining o'z raqamini ulashadi (request_contact) */
+export function shareContactKeyboard(text: string): ReplyKeyboard {
+  return { keyboard: [[{ text, request_contact: true }]], resize_keyboard: true, one_time_keyboard: true };
+}
+
+export const removeKeyboard: RemoveKeyboard = { remove_keyboard: true };
 
 export async function setBotMenuButton() {
   const { APP_URL } = getServerEnv();

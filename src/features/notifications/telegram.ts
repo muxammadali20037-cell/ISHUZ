@@ -21,6 +21,8 @@ export const telegramMessageSchema = z
     message_id: z.number().int(),
     text: z.string().optional(),
     from: telegramUserSchema.optional(),
+    /** request_contact tugmasi orqali ulashilgan kontakt */
+    contact: z.object({ phone_number: z.string(), user_id: z.number().int().optional() }).loose().optional(),
     chat: z.object({ id: z.number().int(), type: z.string() }).loose(),
   })
   .loose();

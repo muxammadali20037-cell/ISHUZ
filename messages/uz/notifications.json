@@ -87,6 +87,14 @@
     "welcome": "Assalomu alaykum! Worklyn botiga xush kelibsiz.\nArizalar, takliflar va yangi xabarlar haqidagi bildirishnomalar shu yerga keladi.",
     "hint": "Ilovani ochish uchun quyidagi tugmani bosing.",
     "open_app": "Worklyn ni ochish",
-    "open": "Ochish"
+    "open": "Ochish",
+    "login_code_title": "Worklyn kirish kodi",
+    "login_code_warning": "Kod 5 daqiqa amal qiladi. Uni hech kimga bermang — Worklyn xodimlari kodni hech qachon so'ramaydi.",
+    "share_phone_prompt": "Saytda (brauzerda) telefon raqamingiz bilan kirishingiz uchun raqamingizni ulang — kirish kodlari SMS o'rniga shu yerga keladi. Pastdagi tugmani bosing 👇",
+    "share_phone_button": "📱 Raqamni yuborish",
+    "phone_linked": "✅ Raqamingiz ulandi: {phone}\nEndi saytda shu raqamni kiritsangiz, kirish kodi shu chatga keladi.",
+    "phone_already_linked": "Raqamingiz ulangan: {phone}\nSaytga qaytib, \"Kod yuborish\" tugmasini bosing — kod shu yerga keladi.",
+    "phone_not_own": "Iltimos, faqat o'zingizning raqamingizni pastdagi tugma orqali yuboring.",
+    "phone_invalid": "Raqamni o'qib bo'lmadi. Qayta urinib ko'ring."
   }
 }

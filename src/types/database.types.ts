@@ -877,6 +877,47 @@ export type Database = {
         };
         Relationships: [];
       };
+      login_codes: {
+        Row: {
+          attempts: number;
+          code_hash: string;
+          consumed_at: string | null;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          phone: string;
+          telegram_user_id: number;
+        };
+        Insert: {
+          attempts?: number;
+          code_hash: string;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at: string;
+          id?: string;
+          phone: string;
+          telegram_user_id: number;
+        };
+        Update: {
+          attempts?: number;
+          code_hash?: string;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          phone?: string;
+          telegram_user_id?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "login_codes_telegram_user_id_fkey";
+            columns: ["telegram_user_id"];
+            isOneToOne: false;
+            referencedRelation: "telegram_accounts";
+            referencedColumns: ["telegram_user_id"];
+          },
+        ];
+      };
       matches: {
         Row: {
           computed_at: string;
@@ -1470,6 +1511,8 @@ export type Database = {
           last_name: string | null;
           last_seen_at: string | null;
           linked_at: string;
+          phone: string | null;
+          phone_shared_at: string | null;
           photo_url: string | null;
           profile_id: string;
           telegram_user_id: number;
@@ -1482,6 +1525,8 @@ export type Database = {
           last_name?: string | null;
           last_seen_at?: string | null;
           linked_at?: string;
+          phone?: string | null;
+          phone_shared_at?: string | null;
           photo_url?: string | null;
           profile_id: string;
           telegram_user_id: number;
@@ -1494,6 +1539,8 @@ export type Database = {
           last_name?: string | null;
           last_seen_at?: string | null;
           linked_at?: string;
+          phone?: string | null;
+          phone_shared_at?: string | null;
           photo_url?: string | null;
           profile_id?: string;
           telegram_user_id?: number;
@@ -2399,6 +2446,7 @@ export type Database = {
       current_profile_id: { Args: Record<PropertyKey, never>; Returns: string };
       current_worker_id: { Args: Record<PropertyKey, never>; Returns: string };
       delete_message: { Args: { p_message_id: number }; Returns: undefined };
+      dispatch_app_cron: { Args: { p_path: string }; Returns: number };
       distance_km: {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number };
         Returns: number;

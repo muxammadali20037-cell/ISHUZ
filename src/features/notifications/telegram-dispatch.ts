@@ -1,7 +1,7 @@
 import "server-only";
 
 import { getServerEnv } from "@/lib/env";
-import { escapeHtml, openAppKeyboard } from "@/lib/telegram/bot";
+import { escapeHtml, openAppKeyboard, type ReplyMarkup } from "@/lib/telegram/bot";
 import { makeT } from "@/lib/i18n/translate";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import { renderNotification } from "./render";
@@ -21,7 +21,7 @@ export interface TelegramSendResult {
  * sendMessage — `@/lib/telegram/bot`.sendTelegramMessage bilan bir xil payload, lekin
  * error_code qaytaradi (403 → bot_started=false qilish uchun). Log: bot.ts bilan bir xil format.
  */
-export async function sendTelegramHtml(chatId: number, html: string, keyboard: ReturnType<typeof openAppKeyboard>): Promise<TelegramSendResult> {
+export async function sendTelegramHtml(chatId: number, html: string, keyboard?: ReplyMarkup): Promise<TelegramSendResult> {
   const { TELEGRAM_BOT_TOKEN } = getServerEnv();
   if (!TELEGRAM_BOT_TOKEN) return { ok: false, code: 0, description: "telegram_not_configured", transient: false };
   try {

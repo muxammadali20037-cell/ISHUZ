@@ -10,10 +10,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/misc";
-import { sendPhoneOtp, verifyPhoneOtp } from "@/features/auth/actions";
 
-type Step = "phone" | "code";
+type Step = "phone" | "link" | "code";
 
+const KNOWN_ERRORS = new Set([
+  "invalid_phone",
+  "otp_send_failed",
+  "invalid_code",
+  "code_expired",
+  "rate_limited",
+  "telegram_not_configured",
+  "telegram_not_linked",
+  "telegram_blocked",
+  "wait_before_resend",
+  "auth_failed",
+]);
+
+async function postJson(url: string, body: unknown): Promise<{ ok: boolean; error?: string }> {
+  try {
+    const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
+    const data = (await r.json().catch(() => ({}))) as { error?: string };
+    return r.ok ? { ok: true } : { ok: false, error: data.error ?? "auth_failed" };
+  } catch {
+    return { ok: false, error: "auth_failed" };
+  }
+}
+
+/**
+ * Kirish: telefon raqam → kod Telegram bot orqali (SMS o'rniga) → tasdiqlash.
+ * Telegram Mini App ichida initData bilan avtomatik kiriladi.
+ */
 export function AuthForm({ next, botUsername }: { next: string; botUsername: string | null }) {
   const { t, locale } = useT();
   const router = useRouter();
@@ -28,6 +54,8 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
   const tgStarted = useRef(false);
   const codeRef = useRef<HTMLInputElement>(null);
   const tgLoading = isTelegram && !tgFailed;
+  const botLink = botUsername ? `https://t.me/${botUsername}?start=login` : null;
+  const errorText = (code: string | undefined) => t(`auth.errors.${code && KNOWN_ERRORS.has(code) ? code : "auth_failed"}`);
 
   // Telegram ichida: initData bilan avtomatik kirish (bir marta)
   useEffect(() => {
@@ -52,19 +80,25 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
     return () => clearTimeout(id);
   }, [countdown]);
 
-  const submitPhone = (e?: React.FormEvent) => {
+  const sendCode = (e?: React.FormEvent) => {
     e?.preventDefault();
     setError(null);
-    if (!normalizePhone(phone)) {
+    const normalized = normalizePhone(phone);
+    if (!normalized) {
       setError(t("auth.errors.invalid_phone"));
       return;
     }
     startTransition(async () => {
-      const res = await sendPhoneOtp({ phone, locale });
+      const res = await postJson("/api/auth/phone-code/send", { phone: normalized, locale });
       if (!res.ok) {
-        setError(t(`auth.errors.${res.error}`));
+        if (res.error === "telegram_not_linked") {
+          setStep("link");
+          return;
+        }
+        setError(errorText(res.error));
         return;
       }
+      setCode("");
       setStep("code");
       setCountdown(60);
       setTimeout(() => codeRef.current?.focus(), 50);
@@ -75,9 +109,9 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
     e.preventDefault();
     setError(null);
     startTransition(async () => {
-      const res = await verifyPhoneOtp({ phone, token: code.trim() });
+      const res = await postJson("/api/auth/phone-code/verify", { phone: normalizePhone(phone), code: code.trim() });
       if (!res.ok) {
-        setError(t(`auth.errors.${res.error}`));
+        setError(errorText(res.error));
         return;
       }
       router.replace(next);
@@ -94,12 +128,14 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
     );
   }
 
+  const prettyPhone = formatPhone(normalizePhone(phone));
+
   return (
     <div className="space-y-5">
       {tgFailed ? <p className="rounded-xl bg-warning-soft p-3 text-sm text-warning">{t("auth.telegram_failed")}</p> : null}
 
       {step === "phone" ? (
-        <form onSubmit={submitPhone} className="space-y-4">
+        <form onSubmit={sendCode} className="space-y-4">
           <Field label={t("auth.phone_label")} htmlFor="phone" error={error ?? undefined}>
             <Input
               id="phone"
@@ -118,12 +154,44 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
             />
           </Field>
           <Button type="submit" size="lg" fullWidth loading={pending}>
-            {t("auth.send_code")}
+            <Send className="size-4" /> {t("auth.send_code")}
           </Button>
         </form>
-      ) : (
+      ) : null}
+
+      {step === "link" ? (
+        <div className="space-y-4 rounded-2xl border border-border bg-card p-4">
+          <div>
+            <h2 className="font-semibold">{t("auth.link_title")}</h2>
+            <p className="mt-1 text-sm text-muted-foreground">{t("auth.link_desc", { phone: prettyPhone })}</p>
+          </div>
+          <ol className="list-decimal space-y-1.5 pl-5 text-sm">
+            <li>{t("auth.link_step1")}</li>
+            <li>{t("auth.link_step2")}</li>
+            <li>{t("auth.link_step3")}</li>
+          </ol>
+          {error ? <p className="text-sm text-destructive">{error}</p> : null}
+          <div className="grid gap-2 sm:grid-cols-2">
+            {botLink ? (
+              <Button asChild size="lg" variant="outline">
+                <a href={botLink} target="_blank" rel="noopener noreferrer">
+                  <Send className="size-4 text-[#2AABEE]" /> {t("auth.open_bot")}
+                </a>
+              </Button>
+            ) : null}
+            <Button size="lg" onClick={() => sendCode()} loading={pending}>
+              {t("auth.retry")}
+            </Button>
+          </div>
+          <button type="button" className="text-sm text-muted-foreground hover:text-foreground" onClick={() => { setStep("phone"); setError(null); }}>
+            {t("auth.change_phone")}
+          </button>
+        </div>
+      ) : null}
+
+      {step === "code" ? (
         <form onSubmit={submitCode} className="space-y-4">
-          <p className="text-sm text-muted-foreground">{t("auth.code_sent", { phone: formatPhone(normalizePhone(phone)) })}</p>
+          <p className="text-sm text-muted-foreground">{t("auth.code_sent_telegram", { phone: prettyPhone, bot: botUsername ?? "" })}</p>
           <Field label={t("auth.code_label")} htmlFor="code" error={error ?? undefined}>
             <Input
               ref={codeRef}
@@ -131,7 +199,7 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
               inputMode="numeric"
               autoComplete="one-time-code"
               pattern="\d*"
-              maxLength={8}
+              maxLength={6}
               placeholder={t("auth.code_placeholder")}
               value={code}
               invalid={!!error}
@@ -139,9 +207,16 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
               className="text-center text-2xl tracking-[0.4em]"
             />
           </Field>
-          <Button type="submit" size="lg" fullWidth loading={pending} disabled={code.length < 4}>
+          <Button type="submit" size="lg" fullWidth loading={pending} disabled={code.length !== 6}>
             {t("auth.verify")}
           </Button>
+          {botLink ? (
+            <Button asChild variant="ghost" size="sm" fullWidth>
+              <a href={`https://t.me/${botUsername}`} target="_blank" rel="noopener noreferrer">
+                <Send className="size-4 text-[#2AABEE]" /> {t("auth.open_bot")}
+              </a>
+            </Button>
+          ) : null}
           <div className="flex items-center justify-between text-sm">
             <button type="button" className="text-muted-foreground hover:text-foreground" onClick={() => { setStep("phone"); setCode(""); setError(null); }}>
               {t("auth.change_phone")}
@@ -149,15 +224,15 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
             {countdown > 0 ? (
               <span className="tabular text-muted-foreground">{t("auth.resend_in", { seconds: countdown })}</span>
             ) : (
-              <button type="button" className="font-medium text-primary" onClick={() => submitPhone()} disabled={pending}>
+              <button type="button" className="font-medium text-primary" onClick={() => sendCode()} disabled={pending}>
                 {t("auth.resend")}
               </button>
             )}
           </div>
         </form>
-      )}
+      ) : null}
 
-      {!isTelegram && botUsername ? (
+      {!isTelegram && botUsername && step === "phone" ? (
         <>
           <div className="flex items-center gap-3 text-xs text-muted-foreground">
             <span className="h-px flex-1 bg-border" />
