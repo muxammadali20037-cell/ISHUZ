@@ -12,12 +12,20 @@ function tone(score: number) {
   return { text: "text-muted-foreground", bg: "bg-secondary", ring: "stroke-muted-foreground" };
 }
 
-/** "Sizga 89% mos" nishoni (kartalar uchun) */
+/** Soxta aniqlik ("97.4%") o'rniga tushunarli daraja */
+export function matchLevel(score: number): "very" | "good" | "partial" | "low" {
+  if (score >= 75) return "very";
+  if (score >= 50) return "good";
+  if (score >= 30) return "partial";
+  return "low";
+}
+
+/** "Juda mos" / "Mos" / "Qisman mos" nishoni (kartalar uchun) */
 export function MatchScore({ score, className, size = "md", label }: { score: number | null | undefined; className?: string; size?: "sm" | "md" | "lg"; label?: "long" | "short" }) {
   const { t } = useT();
   if (score === null || score === undefined) return null;
   const c = tone(score);
-  const text = label === "long" ? t("common.labels.match", { score }) : label === "short" ? t("common.labels.match_short", { score }) : `${score}%`;
+  const text = t(`common.labels.match_level.${matchLevel(score)}`);
   return (
     <span
       className={cn(
@@ -27,7 +35,8 @@ export function MatchScore({ score, className, size = "md", label }: { score: nu
         c.text,
         className,
       )}
-      aria-label={t("common.labels.match", { score })}
+      aria-label={`${text} (${score}%)`}
+      title={`${score}%`}
     >
       {text}
     </span>
@@ -47,8 +56,8 @@ export function MatchRing({ score, className }: { score: number; className?: str
         <circle cx="32" cy="32" r={r} fill="none" className={c.ring} strokeWidth="6" strokeLinecap="round" strokeDasharray={circ} strokeDashoffset={circ * (1 - score / 100)} />
       </svg>
       <div>
-        <div className={cn("text-2xl font-extrabold tabular", c.text)}>{score}%</div>
-        <div className="text-xs text-muted-foreground">{t("common.labels.match", { score }).replace(/\d+%/, "").trim()}</div>
+        <div className={cn("text-xl font-extrabold", c.text)}>{t(`common.labels.match_level.${matchLevel(score)}`)}</div>
+        <div className="text-xs text-muted-foreground">{t("common.labels.match_hint")}</div>
       </div>
     </div>
   );

@@ -127,6 +127,15 @@ export async function resolveSearch(params: WorkerSearchParams, session: Pick<Se
   return { args, category, subcategory, region, vacancy, origin, myVacancies };
 }
 
+/** Faqat nomzodlar soni (bo'sh holat maslahatlari uchun). Xatoda 0. */
+export async function countWorkers(params: WorkerSearchParams, session: Pick<SessionContext, "userId" | "companyId">): Promise<number> {
+  const { args } = await resolveSearch({ ...params, page: 1 }, session);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("search_workers", { ...args, p_limit: 1, p_offset: 0 });
+  if (error) return 0;
+  return Number(data?.[0]?.total_count ?? 0);
+}
+
 /** search_workers RPC → WorkerCardData ro'yxati + umumiy son */
 export async function searchWorkers(args: SearchArgs): Promise<WorkerSearchResult> {
   const supabase = await createClient();

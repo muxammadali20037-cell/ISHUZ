@@ -24,7 +24,9 @@
     "near_me": "Yaqinimda",
     "vacancy_location": "Vakansiya manzilidan",
     "my_location": "Mening joylashuvim",
-    "updating": "Yangilanmoqda..."
+    "updating": "Yangilanmoqda...",
+    "understood": "«{query}» — tushundim, mos filtrlar qo'yildi.",
+    "search_exact": "Aynan shu so'z bilan qidirish"
   },
   "banner": {
     "for_vacancy": "«{title}» uchun nomzodlar",
@@ -86,7 +88,11 @@
     "save_toast": "Nomzod saqlandi",
     "unsave_toast": "Saqlanganlardan olib tashlandi",
     "prev": "Oldingi",
-    "next": "Keyingi"
+    "next": "Keyingi",
+    "exact_empty_title": "Aynan mos nomzod hozircha yo'q",
+    "relax_title": "Talabni biroz kengaytirsangiz:",
+    "relax_description": "Quyidagi o'zgarishlardan birida mos nomzodlar chiqadi.",
+    "relax_count": "{count} ta nomzod"
   },
   "candidate": {
     "back": "Nomzodlar",
@@ -217,5 +223,26 @@
     "salary_range": "Maosh oralig'i noto'g'ri: «gacha» «dan» dan kichik bo'lmasligi kerak",
     "not_saved": "Nomzod saqlanganlar ro'yxatida emas",
     "not_found": "Yozuv topilmadi"
+  },
+  "relax": {
+    "q": "Qidiruv so'zini olib tashlash",
+    "subcategory": "Butun soha bo'yicha",
+    "category": "Barcha kasblar",
+    "district": "Butun viloyat bo'yicha",
+    "region": "Barcha hududlar",
+    "salary": "Maosh chegarasini olib tashlash",
+    "experience": "Tajriba talabini yumshatish",
+    "schedule": "Boshqa grafiklar ham",
+    "employment": "Boshqa bandlik turlari ham",
+    "skills": "Ko'nikmalar talabisiz",
+    "languages": "Til talabisiz",
+    "availability": "Boshqa vaqtda boshlay oladiganlar ham",
+    "education": "Ma'lumot talabisiz",
+    "gender": "Jinsidan qat'i nazar",
+    "remote": "Masofaviy talabisiz",
+    "distance": "Masofa chegarasini olib tashlash",
+    "portfolio": "Portfoliosizlar ham",
+    "verified": "Tasdiqlanmaganlar ham",
+    "profession_only": "Faqat kasb bo'yicha (boshqa filtrlarsiz)"
   }
 }

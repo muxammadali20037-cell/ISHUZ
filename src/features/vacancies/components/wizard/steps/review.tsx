@@ -16,6 +16,7 @@ import { STEP_KEYS, missingSteps, stepIndex, wizardHref, type StepKey } from "..
 import { errorMessage } from "../../../utils";
 import { descriptionExcerpt } from "../../description";
 import { VacancyPreview } from "../../vacancy-preview";
+import { QualityPanel } from "../../insights/quality-panel";
 import type { StepProps } from "../types";
 import { PublishModeNote, requestPayment } from "@/features/billing/components/payment-dialog";
 
@@ -105,6 +106,8 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
           </div>
         </div>
       ) : null}
+
+      {publishable ? <QualityPanel mode={mode} vacancy={v} /> : null}
 
       <VacancyPreview vacancy={v} benefits={refs.benefits} />
 

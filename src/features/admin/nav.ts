@@ -17,7 +17,8 @@ export type NavIcon =
   | "notifications"
   | "audit"
   | "settings"
-  | "payments";
+  | "payments"
+  | "search";
 
 export interface NavItem {
   href: string;
@@ -67,6 +68,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/categories", key: "categories", icon: "categories", perm: "categories.manage" },
       { href: "/admin/skills", key: "skills", icon: "skills", perm: "skills.manage" },
       { href: "/admin/regions", key: "regions", icon: "regions", perm: "regions.manage" },
+      { href: "/admin/search", key: "search", icon: "search", perm: "analytics.view" },
     ],
   },
   {

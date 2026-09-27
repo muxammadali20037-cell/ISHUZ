@@ -27,7 +27,8 @@
     "notifications": "Bildirishnomalar",
     "audit": "Audit jurnali",
     "settings": "Sozlamalar",
-    "payments": "To'lovlar"
+    "payments": "To'lovlar",
+    "search": "Qidiruv tahlili"
   },
   "common": {
     "done": "Bajarildi",
@@ -348,7 +349,9 @@
     "portfolio_recommended": "Portfolio tavsiya qilinadi",
     "portfolio_hint": "Dizayn, qurilish, IT kabi sohalar uchun",
     "portfolio_short": "Portfolio",
-    "delete_desc": "Kategoriya bilan birga subkategoriyalari ham o'chadi. Vakansiya va profillarda kategoriya bo'sh qoladi."
+    "delete_desc": "Kategoriya bilan birga subkategoriyalari ham o'chadi. Vakansiya va profillarda kategoriya bo'sh qoladi.",
+    "aliases": "Sinonimlar (xalq tilidagi nomlar)",
+    "aliases_hint": "Vergul bilan: svarchik, сварщик, svarka. Qidiruvda kasb shu so'zlar bo'yicha ham topiladi."
   },
   "skills": {
     "title": "Ko'nikmalar",
@@ -441,5 +444,20 @@
       "cancelled": "Bekor",
       "failed": "Xato"
     }
+  },
+  "search": {
+    "title": "Qidiruv tahlili",
+    "subtitle": "Oxirgi 30 kun: odamlar nimani qidirib, topa olmayapti. Ko'p uchraganlarini kasb sinonimi sifatida qo'shing.",
+    "query": "So'rov",
+    "scope": "Qayerda",
+    "searches": "Qidirildi",
+    "zero": "Natijasiz",
+    "last": "Oxirgi marta",
+    "scopes": {
+      "jobs": "Vakansiyalar",
+      "workers": "Nomzodlar"
+    },
+    "hint": "Sinonim qo'shish: Kategoriyalar → kasbni tahrirlash → «Sinonimlar»",
+    "empty": "Hozircha qidiruvlar yo'q"
   }
 }

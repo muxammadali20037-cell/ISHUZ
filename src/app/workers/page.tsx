@@ -4,7 +4,11 @@ import { requireEmployer } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { getReferenceData } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
-import { parseWorkerSearchParams, serializeWorkerSearchParams } from "@/features/workers/search-params";
+import { redirect } from "next/navigation";
+import { buildWorkersUrl, parseWorkerSearchParams, serializeWorkerSearchParams } from "@/features/workers/search-params";
+import { applyUnderstoodToWorkers } from "@/features/search/apply";
+import { getSearchDictionary } from "@/features/search/dictionary";
+import { understandQuery } from "@/features/search/understand";
 import { resolveSearch, getSkillOptions } from "@/features/workers/queries";
 import { WorkersSearch } from "@/features/workers/components/workers-search";
 import { WorkersResults } from "@/features/workers/components/workers-results";
@@ -22,6 +26,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function WorkersPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const session = await requireEmployer("/workers");
   const params = parseWorkerSearchParams(await searchParams);
+  // "2 yildan ko'p tajribali oshpaz Chilonzorda" → kasb, tuman, tajriba filtrlari
+  if (params.q && !params.exact) {
+    const next = applyUnderstoodToWorkers(params, understandQuery(params.q, await getSearchDictionary()), params.q);
+    if (next) redirect(buildWorkersUrl(next, { page: 1 }));
+  }
   const [{ args, category, vacancy, origin, myVacancies }, reference] = await Promise.all([resolveSearch(params, session), getReferenceData()]);
   const skills = await getSkillOptions(category?.id ?? null, params.skills);
   const key = serializeWorkerSearchParams(params);
@@ -45,7 +54,7 @@ export default async function WorkersPage({ searchParams }: { searchParams: Prom
         />
         <div className="mt-5">
           <Suspense key={key} fallback={<WorkersResultsSkeleton />}>
-            <WorkersResults params={params} args={args} origin={origin} />
+            <WorkersResults params={params} args={args} origin={origin} session={session} />
           </Suspense>
         </div>
       </div>

@@ -14,13 +14,13 @@ export function JobsSearchBar({ className }: { className?: string }) {
   const router = useRouter();
   const sp = useSearchParams();
   const current = parseJobsSearchParams(new URLSearchParams(sp.toString()));
-  const [value, setValue] = useState(current.q);
+  const [value, setValue] = useState(current.q || current.from);
   const [pending, startTransition] = useTransition();
 
   const submit = (e: FormEvent) => {
     e.preventDefault();
     const q = value.replace(/\s+/g, " ").trim();
-    startTransition(() => router.push(jobsHref(current, { q, page: 1 })));
+    startTransition(() => router.push(jobsHref(current, { q, page: 1, exact: false, from: "" })));
   };
 
   return (
@@ -46,7 +46,7 @@ export function JobsSearchBar({ className }: { className?: string }) {
                 aria-label={t("common.actions.clear")}
                 onClick={() => {
                   setValue("");
-                  if (current.q) startTransition(() => router.push(jobsHref(current, { q: "", page: 1 })));
+                  if (current.q || current.from) startTransition(() => router.push(jobsHref(current, { q: "", page: 1, exact: false, from: "" })));
                 }}
               >
                 <X className="size-4" />

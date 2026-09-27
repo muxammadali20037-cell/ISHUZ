@@ -81,8 +81,7 @@ export interface JobsSearchResult {
   smart: { category: RefItem; subcategory: RefItem | null } | null;
 }
 
-/** /jobs qidiruvi: slug → id, aqlli kategoriya, RPC */
-export async function searchVacancies(params: JobsSearchParams): Promise<JobsSearchResult> {
+async function resolveSearch(params: JobsSearchParams, limit: number) {
   const refs = await getJobsFilterRefs();
   const explicitCategory = params.category ? (refs.categories.find((c) => c.slug === params.category) ?? null) : null;
   const smart = !explicitCategory && params.q ? matchQueryToCategory(params.q, refs.categories, refs.subcategories) : null;
@@ -93,9 +92,14 @@ export async function searchVacancies(params: JobsSearchParams): Promise<JobsSea
       : (smart?.subcategory ?? null)
     : null;
   const region = params.region ? (refs.regions.find((r) => r.slug === params.region) ?? null) : null;
+  const args = toSearchVacanciesArgs(params, { categoryId: category?.id, subcategoryId: subcategory?.id, regionId: region?.id }, limit);
+  return { args, smart };
+}
 
+/** /jobs qidiruvi: slug → id, aqlli kategoriya, RPC */
+export async function searchVacancies(params: JobsSearchParams): Promise<JobsSearchResult> {
+  const { args, smart } = await resolveSearch(params, PAGE_SIZE);
   const supabase = await createClient();
-  const args = toSearchVacanciesArgs(params, { categoryId: category?.id, subcategoryId: subcategory?.id, regionId: region?.id });
   const { data, error } = await supabase.rpc("search_vacancies", args);
   if (error) {
     console.error("[jobs] search_vacancies", error.message);
@@ -110,6 +114,15 @@ export async function searchVacancies(params: JobsSearchParams): Promise<JobsSea
     pageCount: Math.max(1, Math.ceil(total / PAGE_SIZE)),
     smart: smart ? { category: smart.category, subcategory: smart.subcategory } : null,
   };
+}
+
+/** Faqat natijalar soni (bo'sh holatda "filtrni olib tashlasangiz N ta" maslahatlari uchun). Xatoda 0. */
+export async function countVacancies(params: JobsSearchParams): Promise<number> {
+  const { args } = await resolveSearch({ ...params, page: 1, sort: "newest" }, 1);
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("search_vacancies", args);
+  if (error) return 0;
+  return Number(data?.[0]?.total_count ?? 0);
 }
 
 /** Kichik ro'yxatlar (bosh sahifa bo'limlari, o'xshash vakansiyalar). Xatoda bo'sh ro'yxat. */

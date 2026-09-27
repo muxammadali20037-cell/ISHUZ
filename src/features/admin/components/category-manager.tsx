@@ -8,12 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { Field } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Switch } from "@/components/ui/checkbox";
 import { EmptyState } from "@/components/ui/misc";
 import { CategoryIcon } from "@/components/shared/category-icon";
 import { cn } from "@/lib/utils";
-import { categorySchema, subcategorySchema, type CategoryInput, type SubcategoryInput } from "../schema";
+import { categorySchema, parseAliases, subcategorySchema, type CategoryInput, type SubcategoryInput } from "../schema";
 import { deleteCategory, deleteSubcategory, saveCategory, saveSubcategory } from "../actions/reference";
 import { CATEGORY_ICONS } from "../icons";
 import type { CategoryRow } from "../queries/reference";
@@ -34,6 +35,7 @@ export function CategoryManager({ categories, canManage }: { categories: Categor
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [catForm, setCatForm] = useState<CategoryInput | null>(null);
   const [subForm, setSubForm] = useState<SubcategoryInput | null>(null);
+  const [aliasText, setAliasText] = useState("");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [del, setDel] = useState<{ kind: "cat" | "sub"; id: string; label: string } | null>(null);
 
@@ -55,7 +57,7 @@ export function CategoryManager({ categories, canManage }: { categories: Categor
   };
   const submitSub = () => {
     if (!subForm) return;
-    const parsed = subcategorySchema.safeParse(subForm);
+    const parsed = subcategorySchema.safeParse({ ...subForm, aliases: parseAliases(aliasText) });
     if (!parsed.success) {
       setErrors(issuesToErrors(parsed.error.issues, t("common.errors.validation")));
       return;
@@ -73,6 +75,7 @@ export function CategoryManager({ categories, canManage }: { categories: Categor
   const editSub = (s: Sub) => {
     setErrors({});
     setSubForm({ id: s.id, category_id: s.category_id, slug: s.slug, name_uz: s.name_uz, name_ru: s.name_ru, sort_order: s.sort_order, is_active: s.is_active });
+    setAliasText(s.aliases.join(", "));
   };
 
   return (
@@ -103,7 +106,7 @@ export function CategoryManager({ categories, canManage }: { categories: Categor
             {categories.map((c) => {
               const open = expanded.has(c.id);
               return (
-                <CategoryRows key={c.id} c={c} open={open} onToggle={() => toggle(c.id)} canManage={canManage} onEdit={() => editCat(c)} onDelete={() => setDel({ kind: "cat", id: c.id, label: name(c) })} onAddSub={() => { setErrors({}); setSubForm(emptySub(c.id)); }} onEditSub={editSub} onDeleteSub={(s) => setDel({ kind: "sub", id: s.id, label: name(s) })} />
+                <CategoryRows key={c.id} c={c} open={open} onToggle={() => toggle(c.id)} canManage={canManage} onEdit={() => editCat(c)} onDelete={() => setDel({ kind: "cat", id: c.id, label: name(c) })} onAddSub={() => { setErrors({}); setAliasText(""); setSubForm(emptySub(c.id)); }} onEditSub={editSub} onDeleteSub={(s) => setDel({ kind: "sub", id: s.id, label: name(s) })} />
               );
             })}
           </tbody>
@@ -133,6 +136,9 @@ export function CategoryManager({ categories, canManage }: { categories: Categor
           </Field>
           <NameFields value={subForm} onChange={(v) => setSubForm({ ...subForm, ...v })} errors={errors} autoSlug={!subForm.id} />
           <SortActiveFields sort={subForm.sort_order} active={subForm.is_active} onSort={(n) => setSubForm({ ...subForm, sort_order: n })} onActive={(b) => setSubForm({ ...subForm, is_active: b })} error={errors.sort_order} />
+          <Field label={t("admin.categories.aliases")} description={t("admin.categories.aliases_hint")} htmlFor="sub-aliases">
+            <Textarea id="sub-aliases" rows={4} value={aliasText} onChange={(e) => setAliasText(e.target.value)} placeholder="svarchik, сварщик, svarka" />
+          </Field>
         </RefFormSheet>
       ) : null}
 

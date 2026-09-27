@@ -1519,6 +1519,47 @@ export type Database = {
           },
         ];
       };
+      search_logs: {
+        Row: {
+          created_at: string;
+          id: number;
+          profile_id: string | null;
+          query: string;
+          query_norm: string;
+          results_count: number;
+          scope: string;
+          understood: NonNullable<Json>;
+        };
+        Insert: {
+          created_at?: string;
+          id?: never;
+          profile_id?: string | null;
+          query: string;
+          query_norm: string;
+          results_count: number;
+          scope: string;
+          understood?: NonNullable<Json>;
+        };
+        Update: {
+          created_at?: string;
+          id?: never;
+          profile_id?: string | null;
+          query?: string;
+          query_norm?: string;
+          results_count?: number;
+          scope?: string;
+          understood?: NonNullable<Json>;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "search_logs_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       skills: {
         Row: {
           category_id: string | null;
@@ -1575,6 +1616,7 @@ export type Database = {
       };
       subcategories: {
         Row: {
+          aliases: string[];
           category_id: string;
           created_at: string;
           id: string;
@@ -1586,6 +1628,7 @@ export type Database = {
           updated_at: string;
         };
         Insert: {
+          aliases?: string[];
           category_id: string;
           created_at?: string;
           id?: string;
@@ -1597,6 +1640,7 @@ export type Database = {
           updated_at?: string;
         };
         Update: {
+          aliases?: string[];
           category_id?: string;
           created_at?: string;
           id?: string;
@@ -2521,6 +2565,16 @@ export type Database = {
         };
         Returns: undefined;
       };
+      admin_search_insights: {
+        Args: { p_days?: number; p_limit?: number };
+        Returns: {
+          last_at: string;
+          query_norm: string;
+          scope: string;
+          searches: number;
+          zero_results: number;
+        }[];
+      };
       admin_set_user_block: {
         Args: { p_block: boolean; p_profile_id: string; p_reason?: string };
         Returns: undefined;
@@ -2751,6 +2805,10 @@ export type Database = {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
       };
+      purge_search_logs: {
+        Args: Record<PropertyKey, never>;
+        Returns: undefined;
+      };
       recommended_vacancies: {
         Args: { p_limit?: number };
         Returns: {
@@ -2787,6 +2845,26 @@ export type Database = {
       respond_offer: {
         Args: { p_accept: boolean; p_offer_id: string };
         Returns: undefined;
+      };
+      salary_insight: {
+        Args: {
+          p_region_id?: string;
+          p_salary_type?: Database["public"]["Enums"]["salary_type"];
+          p_subcategory_id: string;
+        };
+        Returns: {
+          p25: number;
+          p50: number;
+          p75: number;
+          sample_size: number;
+        }[];
+      };
+      salary_monthly_equivalent: {
+        Args: {
+          p_amount: number;
+          p_type: Database["public"]["Enums"]["salary_type"];
+        };
+        Returns: number;
       };
       search_vacancies: {
         Args: {
@@ -2966,6 +3044,16 @@ export type Database = {
         Args: { p_default: number; p_key: string };
         Returns: number;
       };
+      similar_vacancies: {
+        Args: { p_vacancy_id: string };
+        Returns: {
+          created_at: string;
+          id: string;
+          similarity: number;
+          status: Database["public"]["Enums"]["vacancy_status"];
+          title: string;
+        }[];
+      };
       slugify: { Args: { input: string }; Returns: string };
       submit_report: {
         Args: {
@@ -2989,6 +3077,10 @@ export type Database = {
       vacancy_managers: { Args: { p_vacancy_id: string }; Returns: string[] };
       vacancy_publish_mode: { Args: { p_vacancy_id: string }; Returns: string };
       vacancy_publish_quote: { Args: { p_vacancy_id: string }; Returns: Json };
+      vacancy_risk_flags: {
+        Args: { p_description: string; p_title: string };
+        Returns: string[];
+      };
       withdraw_offer: { Args: { p_offer_id: string }; Returns: undefined };
       worker_completeness: {
         Args: { p_worker_id: string };

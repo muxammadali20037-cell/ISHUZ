@@ -10,6 +10,7 @@ import { Field } from "@/components/ui/label";
 import { SalaryText } from "@/components/shared/salary-text";
 import { SALARY_TYPES, salarySchema, type SalaryInput } from "../../../schema";
 import { MoneyInput } from "../money-input";
+import { SalaryInsightHint } from "../../insights/salary-insight";
 import { useSaveStep } from "../use-save-step";
 import { WizardFooter } from "../wizard-footer";
 import type { StepProps } from "../types";
@@ -65,6 +66,17 @@ export function StepSalary({ mode, vacancy }: StepProps) {
         />
       </Field>
 
+      <SalaryInsightHint
+        subcategoryId={vacancy.subcategory_id}
+        regionId={vacancy.region_id}
+        salaryType={values.salaryType}
+        onApply={(from, to) => {
+          form.setValue("salaryNegotiable", false, { shouldDirty: true });
+          form.setValue("salaryFrom", roundSalary(from), { shouldDirty: true });
+          form.setValue("salaryTo", roundSalary(to), { shouldDirty: true });
+        }}
+      />
+
       <div className="rounded-xl bg-secondary px-4 py-3 text-sm">
         <span className="text-muted-foreground">{t("vacancies.wizard.salary.preview")} </span>
         <SalaryText from={values.salaryFrom} to={values.salaryTo} type={values.salaryType} negotiable={values.salaryNegotiable} />
@@ -73,4 +85,10 @@ export function StepSalary({ mode, vacancy }: StepProps) {
       <WizardFooter mode={mode} step="salary" pending={saver.pending} onBack={saver.back} onSkip={saver.skip} />
     </form>
   );
+}
+
+/** Taklif qilingan oraliqni chiroyli yaxlitlash: 4 730 000 → 4 700 000, 263 000 → 260 000 */
+function roundSalary(n: number): number {
+  const step = n >= 1_000_000 ? 100_000 : 10_000;
+  return Math.max(step, Math.round(n / step) * step);
 }

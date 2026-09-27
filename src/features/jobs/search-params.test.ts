@@ -40,6 +40,8 @@ describe("parseJobsSearchParams", () => {
       noExperience: true,
       sort: "newest",
       page: 3,
+      exact: false,
+      from: "",
     });
     expect(parseJobsSearchParams(Object.fromEntries(new URLSearchParams(qs)))).toEqual(parsed);
   });

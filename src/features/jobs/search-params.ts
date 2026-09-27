@@ -48,6 +48,10 @@ export interface JobsSearchParams {
   noExperience: boolean;
   sort: SortKey;
   page: number;
+  /** Matnni filtrlarga aylantirmasdan aynan qidirish */
+  exact: boolean;
+  /** Filtrlarga aylantirilgan asl so'rov (foydalanuvchiga ko'rsatish uchun) */
+  from: string;
 }
 
 export type RawSearchParams = Record<string, string | string[] | undefined> | URLSearchParams;
@@ -71,6 +75,8 @@ export const DEFAULT_JOBS_PARAMS: JobsSearchParams = {
   noExperience: false,
   sort: "relevant",
   page: 1,
+  exact: false,
+  from: "",
 };
 
 const SLUG_RE = /^[a-z0-9_-]{1,64}$/i;
@@ -146,6 +152,8 @@ export function parseJobsSearchParams(raw: RawSearchParams): JobsSearchParams {
     noExperience: bool(first(raw, "no_experience")),
     sort,
     page: int(first(raw, "page"), 1, MAX_PAGE) ?? 1,
+    exact: bool(first(raw, "exact")),
+    from: (first(raw, "from") ?? "").replace(/\s+/g, " ").trim().slice(0, 120),
   };
 }
 
@@ -170,6 +178,8 @@ export function serializeJobsSearchParams(params: Partial<JobsSearchParams>): st
   if (p.noExperience) sp.set("no_experience", "1");
   if (p.sort !== "relevant") sp.set("sort", p.sort);
   if (p.page > 1) sp.set("page", String(p.page));
+  if (p.exact) sp.set("exact", "1");
+  if (p.from) sp.set("from", p.from);
   return sp.toString();
 }
 

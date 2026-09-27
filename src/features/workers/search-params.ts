@@ -46,6 +46,10 @@ export interface WorkerSearchParams {
   max_km: number | null;
   sort: WorkerSort;
   page: number;
+  /** Matnni filtrlarga aylantirmasdan aynan qidirish */
+  exact: boolean;
+  /** Filtrlarga aylantirilgan asl so'rov */
+  from: string;
 }
 
 export type RawSearchParams = Record<string, string | string[] | undefined> | URLSearchParams;
@@ -145,6 +149,8 @@ export function parseWorkerSearchParams(raw: RawSearchParams): WorkerSearchParam
     max_km: maxKm,
     sort: oneOf(first(raw, "sort"), WORKER_SORTS) ?? "relevant",
     page: intOrNull(first(raw, "page"), { min: 1, max: 10_000 }) ?? 1,
+    exact: flag(first(raw, "exact")),
+    from: (first(raw, "from") ?? "").replace(/\s+/g, " ").trim().slice(0, 100),
   };
 }
 
@@ -187,6 +193,8 @@ export function serializeWorkerSearchParams(p: Partial<WorkerSearchParams>): str
   if (p.max_km !== null && p.max_km !== undefined) set("max_km", String(p.max_km));
   if (p.sort && p.sort !== "relevant") set("sort", p.sort);
   if (p.page && p.page > 1) set("page", String(p.page));
+  if (p.exact) set("exact", "1");
+  set("from", p.from);
   return sp.toString();
 }
 

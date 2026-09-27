@@ -13,7 +13,9 @@
     "results": "{count} ta vakansiya",
     "results_for": "«{query}» bo'yicha {count} ta vakansiya",
     "smart_category": "Kategoriya avtomatik tanlandi: {name}",
-    "sort_label": "Saralash"
+    "sort_label": "Saralash",
+    "understood": "«{query}» — tushundim, mos filtrlar qo'yildi.",
+    "search_exact": "Aynan shu so'z bilan qidirish"
   },
   "filters": {
     "all": "Barcha filtrlar",
@@ -60,7 +62,11 @@
   "empty": {
     "title": "Vakansiya topilmadi",
     "description": "Filtrlarni o'zgartirib yoki qidiruv so'zini qisqartirib ko'ring.",
-    "action": "Filtrlarni tozalash"
+    "action": "Filtrlarni tozalash",
+    "exact_title": "Aynan mos vakansiya hozircha yo'q",
+    "relax_title": "Shunday qilsangiz topiladi:",
+    "relax_description": "Talabni biroz kengaytirsangiz, mos vakansiyalar chiqadi.",
+    "count": "{count} ta"
   },
   "error": {
     "title": "Vakansiyalarni yuklab bo'lmadi",
@@ -171,5 +177,23 @@
   },
   "government": {
     "badge": "Davlat tashkiloti"
+  },
+  "relax": {
+    "q": "Qidiruv so'zini olib tashlash",
+    "subcategory": "Butun sohani ko'rish",
+    "category": "Barcha kasblar",
+    "district": "Butun viloyat bo'yicha",
+    "region": "Barcha hududlar",
+    "salary": "Maosh chegarasini olib tashlash",
+    "schedule": "Boshqa grafiklar ham",
+    "employment": "Boshqa bandlik turlari ham",
+    "experience": "Tajriba talabini olib tashlash",
+    "no_experience": "Tajriba talab qilinadiganlar ham",
+    "remote": "Ofisdagi ishlar ham",
+    "format": "Rasmiy / norasmiy — farqi yo'q",
+    "benefits": "Qo'shimcha imkoniyatlarsiz",
+    "verified": "Tasdiqlanmagan kompaniyalar ham",
+    "government": "Davlat tashkilotlaridan tashqari ham",
+    "profession_only": "Faqat kasb bo'yicha (boshqa filtrlarsiz)"
   }
 }

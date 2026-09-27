@@ -47,12 +47,12 @@ export function WorkersSearch({
   const { navigate, pending } = useWorkersNav(params);
   const { locate, locating } = useGeolocate();
   const [sheet, setSheet] = useState<SheetKind | null>(null);
-  const [q, setQ] = useState(params.q ?? "");
+  const [q, setQ] = useState(params.q || params.from || "");
   // URL'dagi q o'zgarsa (orqaga/oldinga, chip orqali tozalash) inputni sinxronlash — render vaqtida, effect'siz
   const [syncedQ, setSyncedQ] = useState(params.q);
   if (syncedQ !== params.q) {
     setSyncedQ(params.q);
-    setQ(params.q ?? "");
+    setQ(params.q || params.from || "");
   }
 
   const vacancyHasCoords = vacancy?.lat != null && vacancy.lng != null;
@@ -99,7 +99,7 @@ export function WorkersSearch({
   const submitQuery = (e: FormEvent) => {
     e.preventDefault();
     const next = q.trim() || null;
-    if (next !== params.q) navigate({ q: next });
+    if (next !== params.q || params.from) navigate({ q: next, exact: false, from: "" });
   };
 
   const nearMe = async () => {
@@ -154,7 +154,7 @@ export function WorkersSearch({
                 aria-label={t("common.actions.clear")}
                 onClick={() => {
                   setQ("");
-                  if (params.q) navigate({ q: null });
+                  if (params.q || params.from) navigate({ q: null, exact: false, from: "" });
                 }}
               >
                 <X className="size-4" />

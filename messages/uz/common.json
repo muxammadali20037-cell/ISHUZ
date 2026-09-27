@@ -107,7 +107,14 @@
     "published": "Joylandi",
     "expires": "Muddati",
     "updated": "Yangilangan",
-    "question_of": "Savol {current} / {total}"
+    "question_of": "Savol {current} / {total}",
+    "match_level": {
+      "very": "Juda mos",
+      "good": "Mos",
+      "partial": "Qisman mos",
+      "low": "Kam mos"
+    },
+    "match_hint": "Nima uchun — pastda"
   },
   "errors": {
     "generic": "Nimadir xato ketdi. Qayta urinib ko'ring.",

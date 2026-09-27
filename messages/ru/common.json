@@ -107,7 +107,14 @@
     "published": "Опубликовано",
     "expires": "Срок",
     "updated": "Обновлено",
-    "question_of": "Вопрос {current} из {total}"
+    "question_of": "Вопрос {current} из {total}",
+    "match_level": {
+      "very": "Очень подходит",
+      "good": "Подходит",
+      "partial": "Частично подходит",
+      "low": "Мало подходит"
+    },
+    "match_hint": "Почему — ниже"
   },
   "errors": {
     "generic": "Что-то пошло не так. Попробуйте ещё раз.",

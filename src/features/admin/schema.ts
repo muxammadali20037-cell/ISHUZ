@@ -90,7 +90,13 @@ export const subcategorySchema = z.object({
   name_ru: name,
   sort_order: z.coerce.number().int().min(0).max(10000),
   is_active: z.boolean(),
+  /** Xalq tilidagi nomlar / sinonimlar — qidiruv shular bo'yicha kasbni taniydi */
+  aliases: z.array(z.string().trim().toLowerCase().min(2).max(60)).max(80).optional(),
 });
+/** "svarchik, сварщик\nsvarka" → ["svarchik", "сварщик", "svarka"] (takrorlarsiz) */
+export function parseAliases(text: string): string[] {
+  return [...new Set(text.split(/[,;\n]/).map((a) => a.trim().toLowerCase().replace(/\s+/g, " ")).filter((a) => a.length >= 2))].slice(0, 80);
+}
 export type SubcategoryInput = z.infer<typeof subcategorySchema>;
 
 export const skillUpdateSchema = z.object({

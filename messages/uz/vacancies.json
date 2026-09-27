@@ -135,17 +135,61 @@
     "view_only_title": "Faqat ko'rish huquqi",
     "view_only_desc": "Kompaniyada sizning rolingiz «Kuzatuvchi». Tahrirlash uchun administrator yoki rekruter huquqi kerak.",
     "steps": {
-      "title": { "name": "Lavozim", "heading": "Qaysi lavozimga xodim kerak?", "hint": "Qisqa va aniq yozing — nomzodlar shu nom bo'yicha qidiradi." },
-      "category": { "name": "Kategoriya", "heading": "Qaysi sohaga tegishli?", "hint": "Kategoriya mos nomzodlarni topishda asosiy mezon." },
-      "location": { "name": "Manzil", "heading": "Ish qayerda?", "hint": "Nomzodlar masofa bo'yicha saralanadi." },
-      "salary": { "name": "Maosh", "heading": "Qancha to'laysiz?", "hint": "Maoshi ko'rsatilgan vakansiyalar 2 barobar ko'proq ariza oladi." },
-      "schedule": { "name": "Grafik", "heading": "Ish grafigi qanday?", "hint": "Bandlik turi, grafik va ish vaqti." },
-      "requirements": { "name": "Talablar", "heading": "Nomzodga talablar", "hint": "Faqat haqiqatan zarur talablarni qo'ying — shunda mos nomzodlar ko'proq bo'ladi." },
-      "skills": { "name": "Ko'nikmalar", "heading": "Qanday ko'nikmalar kerak?", "hint": "Chipga bosib tanlang. Tanlanganiga yana bosib «afzallik» qilib belgilang." },
-      "work_format": { "name": "Ish turi", "heading": "Rasmiy yoki norasmiy?", "hint": "Rasmiy ish uchun shartlarni belgilang." },
-      "description": { "name": "Vazifalar", "heading": "Vazifalar va shartlar", "hint": "Nima qilinadi, qanday sharoit — 3–5 ta jumla yetarli." },
-      "benefits": { "name": "Imkoniyatlar", "heading": "Qo'shimcha imkoniyatlar", "hint": "Ovqat, transport, bonus — nomzodlar uchun muhim." },
-      "review": { "name": "Ko'rib chiqish", "heading": "Hammasi tayyor!", "hint": "E'lon nomzodlarga shunday ko'rinadi. Tekshiring va e'lon qiling." }
+      "title": {
+        "name": "Lavozim",
+        "heading": "Qaysi lavozimga xodim kerak?",
+        "hint": "Qisqa va aniq yozing — nomzodlar shu nom bo'yicha qidiradi."
+      },
+      "category": {
+        "name": "Kategoriya",
+        "heading": "Qaysi sohaga tegishli?",
+        "hint": "Kategoriya mos nomzodlarni topishda asosiy mezon."
+      },
+      "location": {
+        "name": "Manzil",
+        "heading": "Ish qayerda?",
+        "hint": "Nomzodlar masofa bo'yicha saralanadi."
+      },
+      "salary": {
+        "name": "Maosh",
+        "heading": "Qancha to'laysiz?",
+        "hint": "Maoshi ko'rsatilgan vakansiyalar 2 barobar ko'proq ariza oladi."
+      },
+      "schedule": {
+        "name": "Grafik",
+        "heading": "Ish grafigi qanday?",
+        "hint": "Bandlik turi, grafik va ish vaqti."
+      },
+      "requirements": {
+        "name": "Talablar",
+        "heading": "Nomzodga talablar",
+        "hint": "Faqat haqiqatan zarur talablarni qo'ying — shunda mos nomzodlar ko'proq bo'ladi."
+      },
+      "skills": {
+        "name": "Ko'nikmalar",
+        "heading": "Qanday ko'nikmalar kerak?",
+        "hint": "Chipga bosib tanlang. Tanlanganiga yana bosib «afzallik» qilib belgilang."
+      },
+      "work_format": {
+        "name": "Ish turi",
+        "heading": "Rasmiy yoki norasmiy?",
+        "hint": "Rasmiy ish uchun shartlarni belgilang."
+      },
+      "description": {
+        "name": "Vazifalar",
+        "heading": "Vazifalar va shartlar",
+        "hint": "Nima qilinadi, qanday sharoit — 3–5 ta jumla yetarli."
+      },
+      "benefits": {
+        "name": "Imkoniyatlar",
+        "heading": "Qo'shimcha imkoniyatlar",
+        "hint": "Ovqat, transport, bonus — nomzodlar uchun muhim."
+      },
+      "review": {
+        "name": "Ko'rib chiqish",
+        "heading": "Hammasi tayyor!",
+        "hint": "E'lon nomzodlarga shunday ko'rinadi. Tekshiring va e'lon qiling."
+      }
     },
     "title": {
       "label": "Lavozim nomi",
@@ -318,5 +362,34 @@
     "info": "Asosiy ma'lumotlar",
     "requirements": "Talablar",
     "no_requirements": "Maxsus talablar yo'q"
+  },
+  "quality": {
+    "title": "E'lon sifati",
+    "level": {
+      "good": "Ajoyib e'lon — nomzodlar uchun hammasi tushunarli",
+      "ok": "Yaxshi, lekin yanada kuchliroq qilish mumkin",
+      "weak": "E'lonni yaxshilash tavsiya etiladi"
+    },
+    "fix": "Tuzatish",
+    "all_good": "Maosh, joy, grafik va tavsif — hammasi joyida.",
+    "tips": {
+      "scam_words": "Matnda oldindan pul so'rash belgisi bor (to'lov, depozit, garov). Bunday e'lonlar firibgarlik deb baholanadi va moderatsiyaga tushadi.",
+      "contact_in_text": "Telefon yoki havolani matndan olib tashlang — nomzodlar siz bilan ilova ichida xavfsiz bog'lanadi.",
+      "salary_missing": "Maoshni ko'rsatsangiz, ko'proq mos nomzod chiqadi.",
+      "salary_suspicious": "Maosh odatiy oraliqdan juda farq qiladi — raqam va to'lov turini tekshiring.",
+      "description_short": "Tavsifga 2–3 gap qo'shing: vazifalar va sharoitlar.",
+      "caps_title": "Sarlavhani katta harflarsiz yozing — shunda o'qish osonroq.",
+      "shouting": "Ko'p undov belgilari va katta harflar ishonchni kamaytiradi.",
+      "no_skills": "2–3 ta ko'nikma qo'shing — moslik aniqroq hisoblanadi.",
+      "no_address": "Tuman yoki manzilni ko'rsating — yaqin nomzodlar topiladi.",
+      "no_work_time": "Ish vaqtini ko'rsating (masalan, 09:00–18:00).",
+      "wide_age": "Yosh oralig'i juda tor — mos nomzodlar sonini kamaytiradi."
+    },
+    "similar_title": "Sizda shunga o'xshash e'lon bor",
+    "similar_desc": "Bir xil e'lonni qayta joylash o'rniga mavjudini yangilashingiz mumkin.",
+    "salary_range": "Shu lavozimdagi e'lonlarda odatda {from} – {to}",
+    "salary_basis_region": "shu viloyatdagi {count} ta e'lon asosida",
+    "salary_basis_country": "{count} ta faol e'lon asosida",
+    "salary_apply": "qo'yish uchun bosing"
   }
 }
