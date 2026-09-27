@@ -7,6 +7,7 @@ import type { Locale } from "@/lib/i18n/config";
 import { Toaster } from "@/components/ui/toast";
 import { TelegramProvider } from "@/lib/telegram/provider";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
+import { PaymentDialogHost } from "@/features/billing/components/payment-dialog";
 
 export function Providers({ locale, children }: { locale: Locale; children: ReactNode }) {
   const [queryClient] = useState(
@@ -24,6 +25,7 @@ export function Providers({ locale, children }: { locale: Locale; children: Reac
           {children}
           <Toaster />
           <ServiceWorkerRegistrar />
+          <PaymentDialogHost />
         </TelegramProvider>
       </I18nProvider>
     </QueryClientProvider>

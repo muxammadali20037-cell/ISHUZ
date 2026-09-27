@@ -106,3 +106,24 @@ legacy/express-v1  birinchi prototip (Express + SQLite) — faqat tarix uchun
 
 Qoidaga asoslangan: kategoriya 25 · joylashuv 15 · maosh 15 · tajriba 10 · ko'nikmalar 15 · grafik 10 · bandlik/rasmiylik 5 · til 5 = 100.
 SQL (`public.compute_match`) va TypeScript (`src/features/matching`) versiyalari bir xil; parity testi bilan tekshiriladi. Sabablar foydalanuvchiga ko'rsatiladi ("✓ Kasbingiz mos", "⚠ Rus tili talab qilinadi"). `MatchEngine` interfeysi kelajakda AI modelga almashtirishga tayyor.
+
+## AI yordamchi va to'lovlar
+
+**AI (Claude)** — ishchi o'zi haqida, ish beruvchi vakansiya haqida erkin yozadi, AI bo'limlarga ajratadi.
+Vercel → Environment Variables: `ANTHROPIC_API_KEY` (console.anthropic.com). Kalit bo'lmasa AI tugmalari ko'rinmaydi.
+
+**To'lovlar** (narxlar `app_settings` da, admin → Sozlamalar'dan o'zgartiriladi):
+
+| Xizmat | Narx | Bepul |
+|---|---|---|
+| Vakansiya e'loni (30 kun) | `price_vacancy_publish` = 50 000 so'm | birinchisi — 24 soat |
+| Ishchi profili TOP (24 soat) | `price_worker_promotion` = 20 000 so'm | birinchisi |
+| Aksiya | `billing_free_until` gacha hammasi bepul | |
+
+Payme (merchant kabinetda endpoint: `https://<domen>/api/payments/payme`, hisob maydoni `order_id`):
+`PAYME_MERCHANT_ID`, `PAYME_KEY` (test uchun `PAYME_TEST=1`).
+
+Click (Prepare va Complete URL: `https://<domen>/api/payments/click`):
+`CLICK_SERVICE_ID`, `CLICK_MERCHANT_ID`, `CLICK_SECRET_KEY`.
+
+To'lov holati faqat server funksiyalarida o'zgaradi (`0019_billing.sql`), testlar: `supabase/tests/billing.test.sql`.

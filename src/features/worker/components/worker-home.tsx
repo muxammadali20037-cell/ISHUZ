@@ -9,6 +9,8 @@ import { WorkerStats } from "@/features/jobs/components/home/worker-stats";
 import { HomeSectionSkeleton, StatsSkeleton } from "@/features/jobs/components/skeletons";
 import { getWorkerHomeContext } from "@/features/jobs/queries";
 import { jobsHref } from "@/features/jobs/search-params";
+import { createClient } from "@/lib/supabase/server";
+import { TopProfileCard } from "@/features/billing/components/top-profile-card";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
@@ -17,7 +19,12 @@ import { jobsHref } from "@/features/jobs/search-params";
  */
 export async function WorkerHome({ session }: { session: SessionContext }) {
   if (!session.workerId || !session.workerOnboarded) redirect("/onboarding/worker");
-  const [{ t }, ctx] = await Promise.all([getT(), getWorkerHomeContext(session.workerId)]);
+  const supabase = await createClient();
+  const [{ t }, ctx, promo] = await Promise.all([
+    getT(),
+    getWorkerHomeContext(session.workerId),
+    supabase.from("worker_profiles").select("promoted_until").eq("id", session.workerId).maybeSingle(),
+  ]);
   const firstName = session.profile.first_name?.trim() || t("common.role.worker");
   const hasDistricts = ctx.districtIds.length > 0;
 
@@ -34,6 +41,8 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
       <Suspense fallback={<StatsSkeleton />}>
         <WorkerStats />
       </Suspense>
+
+      <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} />
 
       <Suspense fallback={<HomeSectionSkeleton />}>
         <HomeSection

@@ -26,7 +26,8 @@
     "regions": "Hududlar",
     "notifications": "Bildirishnomalar",
     "audit": "Audit jurnali",
-    "settings": "Sozlamalar"
+    "settings": "Sozlamalar",
+    "payments": "To'lovlar"
   },
   "common": {
     "done": "Bajarildi",
@@ -417,5 +418,28 @@
     "deactivate": "Faolsizlantirish",
     "activate_title": "{name} ni qayta faollashtirish",
     "deactivate_title": "{name} ni faolsizlantirish"
+  },
+  "payments": {
+    "title": "To'lovlar",
+    "subtitle": "Payme va Click orqali tushumlar",
+    "total_paid": "Jami tushum",
+    "count_paid": "To'langan",
+    "count_pending": "Kutilmoqda",
+    "order": "Buyurtma",
+    "purpose": "Maqsad",
+    "amount": "Summa",
+    "provider": "Tizim",
+    "status": "Holat",
+    "date": "Sana",
+    "purposes": {
+      "vacancy_publish": "Vakansiya e'loni",
+      "worker_promotion": "TOP profil"
+    },
+    "statuses": {
+      "pending": "Kutilmoqda",
+      "paid": "To'langan",
+      "cancelled": "Bekor",
+      "failed": "Xato"
+    }
   }
 }

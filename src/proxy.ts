@@ -16,6 +16,7 @@ const PROTECTED_PREFIXES = [
   "/company",
   "/workers",
   "/admin",
+  "/billing",
 ];
 
 export async function proxy(request: NextRequest) {

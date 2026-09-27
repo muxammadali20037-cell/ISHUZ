@@ -17,6 +17,7 @@ import uzProfile from "../../../messages/uz/profile.json";
 import uzAdmin from "../../../messages/uz/admin.json";
 import uzAi from "../../../messages/uz/ai.json";
 import uzPromo from "../../../messages/uz/promo.json";
+import uzBilling from "../../../messages/uz/billing.json";
 import uzVacancies from "../../../messages/uz/vacancies.json";
 import uzOffers from "../../../messages/uz/offers.json";
 import uzNotifications from "../../../messages/uz/notifications.json";
@@ -35,6 +36,7 @@ import ruProfile from "../../../messages/ru/profile.json";
 import ruAdmin from "../../../messages/ru/admin.json";
 import ruAi from "../../../messages/ru/ai.json";
 import ruPromo from "../../../messages/ru/promo.json";
+import ruBilling from "../../../messages/ru/billing.json";
 import ruVacancies from "../../../messages/ru/vacancies.json";
 import ruOffers from "../../../messages/ru/offers.json";
 import ruNotifications from "../../../messages/ru/notifications.json";
@@ -60,6 +62,7 @@ export const messages = {
     enums: uzEnums,
     ai: uzAi,
     promo: uzPromo,
+    billing: uzBilling,
   },
   ru: {
     common: ruCommon,
@@ -79,6 +82,7 @@ export const messages = {
     enums: ruEnums,
     ai: ruAi,
     promo: ruPromo,
+    billing: ruBilling,
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 

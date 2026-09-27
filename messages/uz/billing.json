@@ -1,0 +1,66 @@
+{
+  "currency": "so'm",
+  "pay_title": "To'lov",
+  "vacancy_title": "Vakansiyani e'lon qilish",
+  "vacancy_desc": "{days} kun davomida faol: nomzodlarga ko'rinadi, mos ishchilarga bildirishnoma boradi",
+  "promotion_title": "Profilni TOP ga chiqarish",
+  "promotion_desc": "{hours} soat davomida profilingiz ish beruvchilar ro'yxatida eng yuqorida turadi",
+  "pay_with": "{provider} orqali to'lash",
+  "no_providers": "Onlayn to'lov hali ulanmagan. Iltimos, qo'llab-quvvatlash xizmatiga yozing",
+  "secure": "To'lov Payme / Click sahifasida xavfsiz amalga oshiriladi. Karta ma'lumotlari bizga kelmaydi",
+  "mode": {
+    "promo": "🎉 Aksiya: {date} gacha e'lon joylash bepul",
+    "free_trial": "🎁 Birinchi vakansiyangiz bepul — {hours} soat faol bo'ladi",
+    "paid_window": "✅ To'langan: {date} gacha faol",
+    "payment_required": "E'lon narxi: {price} so'm · {days} kun"
+  },
+  "promo_mode": {
+    "promo": "🎉 Aksiya: {date} gacha TOP bepul",
+    "free_trial": "🎁 Birinchi TOP bepul — {hours} soat",
+    "payment_required": "{hours} soat TOP — {price} so'm"
+  },
+  "top": {
+    "title": "Profilingizni TOP ga chiqaring",
+    "desc": "Ish beruvchilar sizni birinchi bo'lib ko'radi — takliflar ko'payadi",
+    "button": "TOP ga chiqarish",
+    "active": "TOP faol: {date} gacha",
+    "badge": "TOP",
+    "done": "Profilingiz TOP da!",
+    "already": "TOP hali faol — tugagach yana yoqishingiz mumkin"
+  },
+  "return": {
+    "title": "To'lov holati",
+    "pending": "To'lov tasdiqlanishi kutilmoqda…",
+    "pending_desc": "Bu bir necha soniya olishi mumkin. Sahifa o'zi yangilanadi",
+    "paid": "To'lov qabul qilindi!",
+    "paid_vacancy": "Vakansiyangiz e'lon qilindi",
+    "paid_promotion": "Profilingiz TOP ga chiqdi",
+    "cancelled": "To'lov bekor qilindi",
+    "cancelled_desc": "Pul yechilmagan. Qayta urinib ko'rishingiz mumkin",
+    "not_found": "To'lov topilmadi",
+    "to_vacancy": "Vakansiyaga o'tish",
+    "to_home": "Bosh sahifa"
+  },
+  "pricing": {
+    "title": "Narxlar",
+    "subtitle": "Oddiy va tushunarli. Yashirin to'lovlar yo'q",
+    "promo_banner": "🎉 Ishga tushish aksiyasi: {date} gacha hamma xizmatlar BEPUL",
+    "vacancy": "Vakansiya e'loni",
+    "vacancy_note": "{days} kun faol, mos nomzodlarga bildirishnoma",
+    "vacancy_free": "Birinchi vakansiya — bepul ({hours} soat)",
+    "top": "Ishchi profili TOP da",
+    "top_note": "{hours} soat ro'yxat boshida",
+    "top_free": "Birinchi TOP — bepul",
+    "search": "Ish va ishchi qidirish, ariza, chat",
+    "search_note": "Har doim bepul",
+    "free": "Bepul",
+    "methods": "To'lov usullari"
+  },
+  "errors": {
+    "payment_required": "Bu amal uchun to'lov kerak",
+    "provider_disabled": "Bu to'lov usuli hozircha ulanmagan",
+    "already_paid": "Bu vakansiya uchun to'lov qilingan",
+    "already_promoted": "TOP hali faol — tugagach yana yoqishingiz mumkin",
+    "onboarding_required": "Avval profilingizni to'ldiring"
+  }
+}

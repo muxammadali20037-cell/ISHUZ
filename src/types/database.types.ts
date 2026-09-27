@@ -250,6 +250,32 @@ export type Database = {
         };
         Relationships: [];
       };
+      billing_usage: {
+        Row: {
+          free_promotion_used_at: string | null;
+          free_vacancy_used_at: string | null;
+          profile_id: string;
+        };
+        Insert: {
+          free_promotion_used_at?: string | null;
+          free_vacancy_used_at?: string | null;
+          profile_id: string;
+        };
+        Update: {
+          free_promotion_used_at?: string | null;
+          free_vacancy_used_at?: string | null;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "billing_usage_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       categories: {
         Row: {
           created_at: string;
@@ -1061,6 +1087,91 @@ export type Database = {
           },
         ];
       };
+      payments: {
+        Row: {
+          amount: number;
+          cancel_reason: number | null;
+          cancelled_at: string | null;
+          created_at: string;
+          id: string;
+          order_no: number;
+          paid_at: string | null;
+          profile_id: string;
+          provider: Database["public"]["Enums"]["payment_provider"] | null;
+          provider_cancel_time: number | null;
+          provider_create_time: number | null;
+          provider_perform_time: number | null;
+          provider_state: number | null;
+          provider_txn_id: string | null;
+          purpose: Database["public"]["Enums"]["payment_purpose"];
+          status: Database["public"]["Enums"]["payment_status"];
+          vacancy_id: string | null;
+          worker_id: string | null;
+        };
+        Insert: {
+          amount: number;
+          cancel_reason?: number | null;
+          cancelled_at?: string | null;
+          created_at?: string;
+          id?: string;
+          order_no?: never;
+          paid_at?: string | null;
+          profile_id: string;
+          provider?: Database["public"]["Enums"]["payment_provider"] | null;
+          provider_cancel_time?: number | null;
+          provider_create_time?: number | null;
+          provider_perform_time?: number | null;
+          provider_state?: number | null;
+          provider_txn_id?: string | null;
+          purpose: Database["public"]["Enums"]["payment_purpose"];
+          status?: Database["public"]["Enums"]["payment_status"];
+          vacancy_id?: string | null;
+          worker_id?: string | null;
+        };
+        Update: {
+          amount?: number;
+          cancel_reason?: number | null;
+          cancelled_at?: string | null;
+          created_at?: string;
+          id?: string;
+          order_no?: never;
+          paid_at?: string | null;
+          profile_id?: string;
+          provider?: Database["public"]["Enums"]["payment_provider"] | null;
+          provider_cancel_time?: number | null;
+          provider_create_time?: number | null;
+          provider_perform_time?: number | null;
+          provider_state?: number | null;
+          provider_txn_id?: string | null;
+          purpose?: Database["public"]["Enums"]["payment_purpose"];
+          status?: Database["public"]["Enums"]["payment_status"];
+          vacancy_id?: string | null;
+          worker_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "payments_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payments_vacancy_id_fkey";
+            columns: ["vacancy_id"];
+            isOneToOne: false;
+            referencedRelation: "vacancies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "payments_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: false;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profile_contacts: {
         Row: {
           email: string | null;
@@ -1611,6 +1722,7 @@ export type Database = {
           moderation_note: string | null;
           official_terms: string[];
           owner_profile_id: string | null;
+          paid_until: string | null;
           published_at: string | null;
           region_id: string | null;
           requires_review: boolean;
@@ -1655,6 +1767,7 @@ export type Database = {
           moderation_note?: string | null;
           official_terms?: string[];
           owner_profile_id?: string | null;
+          paid_until?: string | null;
           published_at?: string | null;
           region_id?: string | null;
           requires_review?: boolean;
@@ -1699,6 +1812,7 @@ export type Database = {
           moderation_note?: string | null;
           official_terms?: string[];
           owner_profile_id?: string | null;
+          paid_until?: string | null;
           published_at?: string | null;
           region_id?: string | null;
           requires_review?: boolean;
@@ -2216,6 +2330,7 @@ export type Database = {
           onboarding_completed_at: string | null;
           onboarding_step: number;
           profile_id: string;
+          promoted_until: string | null;
           region_id: string | null;
           remote_preference: Database["public"]["Enums"]["remote_preference"];
           status: Database["public"]["Enums"]["worker_status"];
@@ -2239,6 +2354,7 @@ export type Database = {
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
           profile_id: string;
+          promoted_until?: string | null;
           region_id?: string | null;
           remote_preference?: Database["public"]["Enums"]["remote_preference"];
           status?: Database["public"]["Enums"]["worker_status"];
@@ -2262,6 +2378,7 @@ export type Database = {
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
           profile_id?: string;
+          promoted_until?: string | null;
           region_id?: string | null;
           remote_preference?: Database["public"]["Enums"]["remote_preference"];
           status?: Database["public"]["Enums"]["worker_status"];
@@ -2347,6 +2464,10 @@ export type Database = {
     };
     Functions: {
       accept_company_invite: { Args: { p_token: string }; Returns: string };
+      activate_vacancy_internal: {
+        Args: { p_vacancy_id: string; p_window_end: string };
+        Returns: Database["public"]["Enums"]["vacancy_status"];
+      };
       admin_broadcast: {
         Args: {
           p_body: string;
@@ -2417,8 +2538,20 @@ export type Database = {
         Args: { s: Database["public"]["Enums"]["application_status"] };
         Returns: number;
       };
+      apply_payment_internal: {
+        Args: { p_payment_id: string };
+        Returns: undefined;
+      };
       apply_to_vacancy: {
         Args: { p_message?: string; p_vacancy_id: string };
+        Returns: string;
+      };
+      billing_promo_active: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      billing_promo_until: {
+        Args: Record<PropertyKey, never>;
         Returns: string;
       };
       can_edit_vacancy: { Args: { p_vacancy_id: string }; Returns: boolean };
@@ -2429,12 +2562,38 @@ export type Database = {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
       };
+      click_complete: {
+        Args: {
+          p_amount: number;
+          p_click_trans_id: number;
+          p_error: number;
+          p_order: string;
+          p_prepare_id: number;
+        };
+        Returns: Json;
+      };
+      click_prepare: {
+        Args: {
+          p_amount: number;
+          p_click_trans_id: number;
+          p_error: number;
+          p_order: string;
+        };
+        Returns: Json;
+      };
       compute_match: {
         Args: { p_vacancy_id: string; p_worker_id: string };
         Returns: {
           reasons: Json;
           score: number;
         }[];
+      };
+      create_payment: {
+        Args: {
+          p_purpose: Database["public"]["Enums"]["payment_purpose"];
+          p_target_id: string;
+        };
+        Returns: Json;
       };
       create_review: {
         Args: {
@@ -2471,6 +2630,10 @@ export type Database = {
       };
       expire_offers: { Args: Record<PropertyKey, never>; Returns: number };
       expire_vacancies: { Args: Record<PropertyKey, never>; Returns: number };
+      extend_worker_promotion_internal: {
+        Args: { p_worker_id: string };
+        Returns: string;
+      };
       get_contact: {
         Args: { p_profile_id: string };
         Returns: {
@@ -2539,6 +2702,43 @@ export type Database = {
         Args: { p_min_score?: number; p_vacancy_id: string };
         Returns: number;
       };
+      payme_cancel: {
+        Args: { p_reason: number; p_txn: string };
+        Returns: Json;
+      };
+      payme_check: { Args: { p_txn: string }; Returns: Json };
+      payme_check_perform: {
+        Args: { p_amount: number; p_order: string };
+        Returns: Json;
+      };
+      payme_create: {
+        Args: {
+          p_amount: number;
+          p_order: string;
+          p_time: number;
+          p_txn: string;
+        };
+        Returns: Json;
+      };
+      payme_error: {
+        Args: {
+          p_code: number;
+          p_data?: string;
+          p_en: string;
+          p_ru: string;
+          p_uz: string;
+        };
+        Returns: Json;
+      };
+      payme_perform: { Args: { p_txn: string }; Returns: Json };
+      payme_statement: {
+        Args: { p_from: number; p_to: number };
+        Returns: Json;
+      };
+      payme_validate_order: {
+        Args: { p_amount: number; p_order: string };
+        Returns: Json;
+      };
       profile_rating: {
         Args: { p_profile_id: string };
         Returns: {
@@ -2546,6 +2746,7 @@ export type Database = {
           reviews_count: number;
         }[];
       };
+      promote_worker: { Args: Record<PropertyKey, never>; Returns: string };
       publish_vacancy: {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
@@ -2761,6 +2962,10 @@ export type Database = {
         };
         Returns: undefined;
       };
+      setting_int: {
+        Args: { p_default: number; p_key: string };
+        Returns: number;
+      };
       slugify: { Args: { input: string }; Returns: string };
       submit_report: {
         Args: {
@@ -2782,6 +2987,8 @@ export type Database = {
         }[];
       };
       vacancy_managers: { Args: { p_vacancy_id: string }; Returns: string[] };
+      vacancy_publish_mode: { Args: { p_vacancy_id: string }; Returns: string };
+      vacancy_publish_quote: { Args: { p_vacancy_id: string }; Returns: Json };
       withdraw_offer: { Args: { p_offer_id: string }; Returns: undefined };
       worker_completeness: {
         Args: { p_worker_id: string };
@@ -2791,6 +2998,14 @@ export type Database = {
         }[];
       };
       worker_dashboard_stats: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
+      worker_promotion_mode: {
+        Args: Record<PropertyKey, never>;
+        Returns: string;
+      };
+      worker_promotion_quote: {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
@@ -2861,6 +3076,9 @@ export type Database = {
         | "system";
       offer_status:
         "sent" | "viewed" | "accepted" | "declined" | "expired" | "withdrawn";
+      payment_provider: "payme" | "click";
+      payment_purpose: "vacancy_publish" | "worker_promotion";
+      payment_status: "pending" | "paid" | "cancelled" | "failed";
       phone_visibility: "nobody" | "applicants" | "on_request" | "everyone";
       portfolio_type: "image" | "video" | "pdf" | "document" | "link";
       remote_preference: "yes" | "no" | "any";
@@ -3113,6 +3331,9 @@ export const Constants = {
         "expired",
         "withdrawn",
       ],
+      payment_provider: ["payme", "click"],
+      payment_purpose: ["vacancy_publish", "worker_promotion"],
+      payment_status: ["pending", "paid", "cancelled", "failed"],
       phone_visibility: ["nobody", "applicants", "on_request", "everyone"],
       portfolio_type: ["image", "video", "pdf", "document", "link"],
       remote_preference: ["yes", "no", "any"],

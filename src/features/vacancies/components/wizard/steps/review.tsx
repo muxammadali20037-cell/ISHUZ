@@ -17,6 +17,7 @@ import { errorMessage } from "../../../utils";
 import { descriptionExcerpt } from "../../description";
 import { VacancyPreview } from "../../vacancy-preview";
 import type { StepProps } from "../types";
+import { PublishModeNote, requestPayment } from "@/features/billing/components/payment-dialog";
 
 /**
  * Ko'rib chiqish: to'liq preview + qadamlar xulosasi (tahrirlash havolalari) + E'lon qilish / Qoralama.
@@ -40,6 +41,10 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
     startTransition(async () => {
       const res = await publishVacancy({ vacancyId: v.id });
       if (!res.ok) {
+        if (res.error === "payment_required") {
+          requestPayment({ purpose: "vacancy_publish", targetId: v.id });
+          return;
+        }
         if (res.error === "vacancy_incomplete") setHighlight(true);
         toast.error(errorMessage(t, res.error));
         return;
@@ -129,6 +134,7 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
       <div className="sticky bottom-0 z-20 -mx-4 border-t border-border bg-card/95 px-4 py-3 pb-safe backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
         {publishable ? (
           <>
+            <PublishModeNote vacancyId={v.id} />
             <p className="mb-2 text-xs text-muted-foreground">{t(v.status === "rejected" ? "vacancies.wizard.review.moderation_hint" : "vacancies.wizard.review.publish_hint")}</p>
             <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               {mode === "create" ? (

@@ -152,6 +152,10 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       return { title: t(`${k}.title`, params), body: t(`${k}.body`, params), icon: "review" };
     }
     case "system":
+      if (str(p, "kind") === "payment_success") {
+        return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : "billing.return.paid_promotion"), icon: "system" };
+      }
+    // falls through
     default: {
       const title = str(p, "title") || t("notifications.types.system.title");
       return { title, body: str(p, "body"), icon: "system" };

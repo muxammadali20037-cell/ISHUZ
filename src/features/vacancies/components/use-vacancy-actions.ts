@@ -7,6 +7,7 @@ import { toast } from "@/components/ui/toast";
 import { deleteVacancy, duplicateVacancy, publishVacancy, setVacancyStatus } from "../actions";
 import type { VacancyStatus } from "../types";
 import { errorMessage } from "../utils";
+import { requestPayment } from "@/features/billing/components/payment-dialog";
 
 /**
  * Ro'yxat va boshqaruv sahifasi uchun umumiy amallar: e'lon qilish, to'xtatish, yopish, nusxa, o'chirish.
@@ -33,6 +34,10 @@ export function useVacancyActions() {
     run(id, async () => {
       const res = await publishVacancy({ vacancyId: id });
       if (!res.ok) {
+        if (res.error === "payment_required") {
+          requestPayment({ purpose: "vacancy_publish", targetId: id });
+          return;
+        }
         toast.error(errorMessage(t, res.error));
         return;
       }

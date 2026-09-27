@@ -26,7 +26,8 @@
     "regions": "Регионы",
     "notifications": "Уведомления",
     "audit": "Журнал аудита",
-    "settings": "Настройки"
+    "settings": "Настройки",
+    "payments": "Платежи"
   },
   "common": {
     "done": "Готово",
@@ -417,5 +418,28 @@
     "deactivate": "Отключить",
     "activate_title": "Снова активировать {name}",
     "deactivate_title": "Отключить {name}"
+  },
+  "payments": {
+    "title": "Платежи",
+    "subtitle": "Поступления через Payme и Click",
+    "total_paid": "Всего поступлений",
+    "count_paid": "Оплачено",
+    "count_pending": "В ожидании",
+    "order": "Заказ",
+    "purpose": "Назначение",
+    "amount": "Сумма",
+    "provider": "Система",
+    "status": "Статус",
+    "date": "Дата",
+    "purposes": {
+      "vacancy_publish": "Публикация вакансии",
+      "worker_promotion": "ТОП профиль"
+    },
+    "statuses": {
+      "pending": "В ожидании",
+      "paid": "Оплачено",
+      "cancelled": "Отменён",
+      "failed": "Ошибка"
+    }
   }
 }

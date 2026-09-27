@@ -22,6 +22,14 @@ const serverSchema = z.object({
   APP_URL: z.string().url().default("http://localhost:3000"),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
+  /** Payme (Paycom) merchant: kassa ID va kalit; PAYME_TEST=1 — test kassa */
+  PAYME_MERCHANT_ID: z.string().optional(),
+  PAYME_KEY: z.string().optional(),
+  PAYME_TEST: z.string().optional(),
+  /** Click SHOP API */
+  CLICK_SERVICE_ID: z.string().optional(),
+  CLICK_MERCHANT_ID: z.string().optional(),
+  CLICK_SECRET_KEY: z.string().optional(),
 });
 
 function readPublic() {
@@ -52,5 +60,11 @@ export function getServerEnv() {
     ANDROID_SHA256_CERT_FINGERPRINTS: process.env.ANDROID_SHA256_CERT_FINGERPRINTS,
     APP_URL: process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
+    PAYME_MERCHANT_ID: process.env.PAYME_MERCHANT_ID || undefined,
+    PAYME_KEY: process.env.PAYME_KEY || undefined,
+    PAYME_TEST: process.env.PAYME_TEST || undefined,
+    CLICK_SERVICE_ID: process.env.CLICK_SERVICE_ID || undefined,
+    CLICK_MERCHANT_ID: process.env.CLICK_MERCHANT_ID || undefined,
+    CLICK_SECRET_KEY: process.env.CLICK_SECRET_KEY || undefined,
   });
 }
