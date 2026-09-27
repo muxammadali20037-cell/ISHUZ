@@ -22,7 +22,7 @@ import {
 const VACANCY_SELECT =
   "id, title, slug, status, salary_from, salary_to, salary_type, salary_negotiable, owner_profile_id, company_id, company:companies(id, name, slug, logo_url, verification_status)";
 const EVENTS_SELECT = "events:application_events(id, from_status, to_status, actor_id, note, created_at)";
-const CANDIDATE_SELECT = "worker:worker_profiles(id, profile_id, headline, experience_level, profile:profiles(first_name, last_name, avatar_url))";
+const CANDIDATE_SELECT = "worker:worker_profiles(id, profile_id, headline, experience_level, profile:profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url))";
 
 type VacancyRow = {
   id: string;

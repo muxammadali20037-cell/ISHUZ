@@ -10,7 +10,7 @@ const OFFER_FIELDS =
 const VACANCY_SELECT = "vacancy:vacancies(id, title, slug, status)";
 const COMPANY_SELECT = "company:companies(id, name, slug, logo_url, verification_status)";
 const EMPLOYER_SELECT = "employer:profiles!job_offers_employer_profile_id_fkey(id, first_name, last_name, avatar_url)";
-const CANDIDATE_SELECT = "worker:worker_profiles(id, profile_id, headline, experience_level, profile:profiles(first_name, last_name, avatar_url))";
+const CANDIDATE_SELECT = "worker:worker_profiles(id, profile_id, headline, experience_level, profile:profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url))";
 
 type OfferRow = {
   id: string;

@@ -139,7 +139,7 @@ export async function getUserDetail(id: string): Promise<UserDetail | null> {
       `id, first_name, last_name, avatar_url, created_at, last_seen_at, is_blocked, blocked_reason, locale, birth_date, gender, blocked_at, user_roles(role),
        profile_contacts(phone, telegram_username, email, phone_verified_at, phone_visibility),
        telegram_accounts(telegram_user_id, username, bot_started, linked_at),
-       worker_profiles(id, headline, status, completeness, is_public, onboarding_completed_at, categories(name_uz, name_ru), regions(name_uz, name_ru)),
+       worker_profiles!worker_profiles_profile_id_fkey(id, headline, status, completeness, is_public, onboarding_completed_at, categories(name_uz, name_ru), regions(name_uz, name_ru)),
        employer_profiles(id, employer_type, display_name, verification_status, onboarding_completed_at, companies(id, name, slug, verification_status)),
        admin_users!admin_users_profile_id_fkey(role, is_active)`,
     )

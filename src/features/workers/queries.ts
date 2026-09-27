@@ -214,7 +214,7 @@ export const getCandidate = cache(async (id: string): Promise<CandidateProfile |
     .from("worker_profiles")
     .select(
       `id, profile_id, headline, about, experience_level, status, remote_preference, work_format, completeness, views_count, last_active_at,
-       profile:profiles(first_name, last_name, avatar_url, birth_date, gender),
+       profile:profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url, birth_date, gender),
        region:regions(name_uz, name_ru),
        district:districts(name_uz, name_ru),
        category:categories(id, slug, name_uz, name_ru, icon),
@@ -360,7 +360,7 @@ export async function getSavedFolders(userId: string): Promise<string[]> {
 // ---------------------------------------------------------------------------
 
 const SAVED_CARD_SELECT = `id, headline, experience_level, status,
-  profile:profiles(first_name, last_name, avatar_url),
+  profile:profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url),
   category:categories(name_uz, name_ru),
   region:regions(name_uz, name_ru),
   district:districts(name_uz, name_ru),

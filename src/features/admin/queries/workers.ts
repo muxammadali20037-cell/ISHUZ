@@ -34,7 +34,7 @@ export function parseWorkerFilters(sp: SearchParams): WorkerFilters {
 }
 
 const LIST_SELECT =
-  "id, profile_id, headline, status, completeness, is_public, onboarding_completed_at, experience_level, last_active_at, created_at, views_count, profiles!inner(first_name, last_name, avatar_url, is_blocked), categories(name_uz, name_ru), regions(name_uz, name_ru)" as const;
+  "id, profile_id, headline, status, completeness, is_public, onboarding_completed_at, experience_level, last_active_at, created_at, views_count, profiles!worker_profiles_profile_id_fkey!inner(first_name, last_name, avatar_url, is_blocked), categories(name_uz, name_ru), regions(name_uz, name_ru)" as const;
 
 export type WorkerRow = {
   id: string;
