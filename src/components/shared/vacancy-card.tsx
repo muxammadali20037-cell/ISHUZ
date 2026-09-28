@@ -71,7 +71,7 @@ export function VacancyCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="line-clamp-2 text-base font-semibold leading-snug">{v.title}</h3>
-            {!hideMatch ? <MatchScore score={v.match_score} /> : null}
+            {!hideMatch ? <MatchScore score={v.match_score} size="sm" className={onToggleSave ? "mr-9" : undefined} /> : null}
           </div>
           <p className="mt-0.5 flex items-center gap-1 truncate text-sm text-muted-foreground">
             {v.company_name ?? t("common.role.employer")}

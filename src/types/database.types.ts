@@ -1444,6 +1444,95 @@ export type Database = {
           },
         ];
       };
+      saved_searches: {
+        Row: {
+          category_id: string | null;
+          created_at: string;
+          district_ids: string[];
+          employment_types: Database["public"]["Enums"]["employment_type"][];
+          id: string;
+          is_remote: boolean;
+          label: string;
+          last_checked_at: string;
+          no_experience: boolean;
+          notify: boolean;
+          profile_id: string;
+          q: string | null;
+          query_string: string;
+          region_id: string | null;
+          salary_min: number | null;
+          schedules: Database["public"]["Enums"]["work_schedule"][];
+          subcategory_id: string | null;
+        };
+        Insert: {
+          category_id?: string | null;
+          created_at?: string;
+          district_ids?: string[];
+          employment_types?: Database["public"]["Enums"]["employment_type"][];
+          id?: string;
+          is_remote?: boolean;
+          label: string;
+          last_checked_at?: string;
+          no_experience?: boolean;
+          notify?: boolean;
+          profile_id: string;
+          q?: string | null;
+          query_string: string;
+          region_id?: string | null;
+          salary_min?: number | null;
+          schedules?: Database["public"]["Enums"]["work_schedule"][];
+          subcategory_id?: string | null;
+        };
+        Update: {
+          category_id?: string | null;
+          created_at?: string;
+          district_ids?: string[];
+          employment_types?: Database["public"]["Enums"]["employment_type"][];
+          id?: string;
+          is_remote?: boolean;
+          label?: string;
+          last_checked_at?: string;
+          no_experience?: boolean;
+          notify?: boolean;
+          profile_id?: string;
+          q?: string | null;
+          query_string?: string;
+          region_id?: string | null;
+          salary_min?: number | null;
+          schedules?: Database["public"]["Enums"]["work_schedule"][];
+          subcategory_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "saved_searches_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "saved_searches_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "saved_searches_region_id_fkey";
+            columns: ["region_id"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "saved_searches_subcategory_id_fkey";
+            columns: ["subcategory_id"];
+            isOneToOne: false;
+            referencedRelation: "subcategories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       saved_vacancies: {
         Row: {
           created_at: string;
@@ -2723,6 +2812,10 @@ export type Database = {
       mark_notifications_read: { Args: { p_ids?: number[] }; Returns: number };
       mark_offer_hired: { Args: { p_offer_id: string }; Returns: undefined };
       mark_offer_viewed: { Args: { p_offer_id: string }; Returns: undefined };
+      mark_saved_search_seen: {
+        Args: { p_search_id: string };
+        Returns: undefined;
+      };
       my_conversations: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -2737,6 +2830,17 @@ export type Database = {
           other_name: string;
           other_profile_id: string;
           unread_count: number;
+        }[];
+      };
+      my_saved_searches: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          created_at: string;
+          id: string;
+          label: string;
+          new_count: number;
+          notify: boolean;
+          query_string: string;
         }[];
       };
       notify: {
@@ -2846,6 +2950,10 @@ export type Database = {
         Args: { p_accept: boolean; p_offer_id: string };
         Returns: undefined;
       };
+      run_saved_search_alerts: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       salary_insight: {
         Args: {
           p_region_id?: string;
@@ -2864,6 +2972,10 @@ export type Database = {
           p_amount: number;
           p_type: Database["public"]["Enums"]["salary_type"];
         };
+        Returns: number;
+      };
+      saved_search_new_count: {
+        Args: { p_search_id: string; p_since: string };
         Returns: number;
       };
       search_vacancies: {

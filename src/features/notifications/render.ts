@@ -152,6 +152,9 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       return { title: t(`${k}.title`, params), body: t(`${k}.body`, params), icon: "review" };
     }
     case "system":
+      if (str(p, "kind") === "saved_search") {
+        return { title: t("saved.searches.notification_title"), body: t("saved.searches.notification_body", { label: str(p, "label"), count: num(p, "count") ?? 0 }), icon: "match_vacancy" };
+      }
       if (str(p, "kind") === "payment_success") {
         return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : "billing.return.paid_promotion"), icon: "system" };
       }

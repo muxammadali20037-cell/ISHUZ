@@ -8,5 +8,28 @@
   "expired_desc": "Muddati tugagan yoki ish beruvchi tomonidan yopilgan",
   "remove": "Olib tashlash",
   "removed": "Saqlanganlardan olib tashlandi",
-  "saved_at": "{time} saqlangan"
+  "saved_at": "{time} saqlangan",
+  "searches": {
+    "title": "Saqlangan qidiruvlar",
+    "hint": "Yangi mos vakansiya chiqsa, kuniga bir marta xabar beramiz.",
+    "save": "Qidiruvni saqlash",
+    "saved_short": "Saqlangan",
+    "saved": "Qidiruv saqlandi",
+    "saved_desc": "Yangi mos vakansiyalar chiqsa, kuniga bir marta xabar beramiz.",
+    "removed": "Qidiruv o'chirildi",
+    "notify_on": "Xabar: yoqilgan",
+    "notify_off": "Xabar: o'chirilgan",
+    "turn_on": "Xabarni yoqish",
+    "turn_off": "Xabarni o'chirish",
+    "new_count": "{count} ta yangi",
+    "salary_from": "{amount} dan",
+    "notification_title": "Yangi mos vakansiyalar",
+    "notification_body": "«{label}» bo'yicha {count} ta yangi vakansiya chiqdi.",
+    "errors": {
+      "already_saved": "Bu qidiruv allaqachon saqlangan",
+      "saved_search_limit": "Ko'pi bilan 20 ta qidiruv saqlash mumkin",
+      "empty_search": "Avval kasb, hudud yoki boshqa filtr tanlang",
+      "not_authenticated": "Avval tizimga kiring"
+    }
+  }
 }

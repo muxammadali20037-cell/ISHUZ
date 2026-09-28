@@ -8,7 +8,9 @@ import { getSearchDictionary, logSearch } from "@/features/search/dictionary";
 import { understandQuery } from "@/features/search/understand";
 import { countVacancies, searchVacancies } from "../queries";
 import { jobsRelaxations } from "../relax";
-import { DEFAULT_JOBS_PARAMS, clearFilters, jobsHref, type JobsSearchParams } from "../search-params";
+import { findSavedSearchId } from "@/features/saved-searches/queries";
+import { SaveSearchButton } from "@/features/saved-searches/components/save-search-button";
+import { DEFAULT_JOBS_PARAMS, clearFilters, countActiveFilters, jobsHref, serializeJobsSearchParams, type JobsSearchParams } from "../search-params";
 import { Pagination } from "./pagination";
 import { SortSelect } from "./sort-select";
 import { VacancyList } from "./vacancy-list";
@@ -25,6 +27,17 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
       await logSearch({ scope: "jobs", query: typed, understood: params.from ? understandQuery(params.from, dict) : null, results: result.total, profileId: session?.userId ?? null });
     });
   }
+
+  // "Qidiruvni saqlash": faqat biror filtr yoki so'z bo'lsa
+  const saveable = !!params.q || countActiveFilters(params) > 0;
+  const session = saveable ? await getSession() : null;
+  const saveButton = saveable ? (
+    <SaveSearchButton
+      query={serializeJobsSearchParams({ ...params, page: 1, sort: DEFAULT_JOBS_PARAMS.sort, from: "", exact: false })}
+      savedId={session ? await findSavedSearchId(params) : null}
+      loggedIn={!!session}
+    />
+  ) : null;
 
   const understoodNote = params.from ? (
     <p className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-primary-soft/60 px-3 py-2 text-sm">
@@ -47,6 +60,7 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
     return (
       <div className="mt-4">
         {understoodNote}
+        {saveButton ? <div className="mb-3 flex justify-end">{saveButton}</div> : null}
         <SmartEmptyState
           icon={SearchX}
           title={options.length ? t("jobs.empty.exact_title") : t("jobs.empty.title")}
@@ -78,7 +92,10 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
             </p>
           ) : null}
         </div>
-        <SortSelect params={params} />
+        <div className="flex items-center gap-2">
+          {saveButton}
+          <SortSelect params={params} />
+        </div>
       </div>
       <VacancyList items={result.items} layout="grid" />
       <Pagination params={params} pageCount={result.pageCount} />

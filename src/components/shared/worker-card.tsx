@@ -72,7 +72,7 @@ export function WorkerCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="truncate text-base font-semibold">{shortName(w.first_name, w.last_initial)}</h3>
-            {!hideMatch ? <MatchScore score={w.match_score} /> : null}
+            {!hideMatch ? <MatchScore score={w.match_score} size="sm" className={onToggleSave ? "mr-9" : undefined} /> : null}
           </div>
           <p className="truncate text-sm text-foreground/90">{w.headline ?? name({ name_uz: w.category_name_uz ?? "", name_ru: w.category_name_ru ?? "" })}</p>
         </div>
