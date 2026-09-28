@@ -80,6 +80,7 @@ uz/ru i18n (`messages/`) · Telegram Mini App + PWA · Gemini/Claude (ixtiyoriy 
 4. **Kasbga qarab savollar** — `skill_questions`: haydovchi toifasi, buxgalteriya dasturlari, IT stek, oshxona... javob = ko'nikma (`0024`).
 5. **Hisobni o'chirish** — to'lovlar ismsiz saqlanadi, egasiz vakansiyalar yopiladi, audit; `sitemap.xml`, `robots.txt`, umumiy xato sahifalari (`0025`).
 6. **Xavfsizlik** — logotiplarda SVG taqiqlandi (stored XSS), vakansiya yaratishga cheklov: soatiga 10, sutkasiga 30 (`0026`).
+7. **Telegram bot ichida CV** — `/cv`: tugmali savol-javob (orqaga, o'tkazib yuborish, kasbga mos ko'nikmalar) → profil saqlanadi → professional PDF CV chatga yuboriladi → `/jobs` mos vakansiyalar (moslik darajasi, «Yana 5 ta», «🔔 Xabar berish»); `/pdf` — CV'ni qayta olish. Holat `bot_sessions` da, faqat server (`0027`, `features/bot`).
 
 ## 4. Keyingi imkoniyatlar
 

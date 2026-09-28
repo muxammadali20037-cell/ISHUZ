@@ -230,7 +230,8 @@
     "generated": "«Ish beruvchi» orqali tayyorlandi · {date}",
     "age": "{age} yosh",
     "location": "Joylashuv",
-    "salary": "Kutilayotgan maosh"
+    "salary": "Kutilayotgan maosh",
+    "print": "Chop etish"
   },
   "settings": {
     "title": "Sozlamalar",

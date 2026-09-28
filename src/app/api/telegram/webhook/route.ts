@@ -2,11 +2,12 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { escapeHtml, openAppKeyboard, removeKeyboard, sendTelegramMessage, shareContactKeyboard } from "@/lib/telegram/bot";
+import { escapeHtml, removeKeyboard, sendTelegramMessage, shareContactKeyboard } from "@/lib/telegram/bot";
 import { makeT } from "@/lib/i18n/translate";
 import { formatPhone } from "@/lib/format";
 import { parseBotCommand, resolveTelegramLocale, telegramUpdateSchema } from "@/features/notifications/telegram";
 import { ensureTelegramProfile, normalizeContactPhone } from "@/features/auth/telegram-session";
+import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -24,6 +25,7 @@ const UZ_PHONE = /^\+998\d{9}$/;
  * Telegram Bot webhook (setWebhook secret_token bilan).
  * /start [login] → salomlashish + "Ilovani ochish" tugmasi; raqam ulanmagan bo'lsa "📱 Raqamni yuborish" (request_contact).
  * contact (faqat o'z raqami) → telegram_accounts.phone — saytda shu raqam bilan kirishda kod bot orqali keladi.
+ * /cv, /jobs, /pdf va inline tugmalar (callback_query) → bot ichida CV to'ldirish, PDF, mos ishlar (features/bot).
  * Har doim 200 (Telegram qayta yubormasin).
  */
 export async function POST(req: NextRequest) {
@@ -34,6 +36,25 @@ export async function POST(req: NextRequest) {
 
   const parsed = telegramUpdateSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ ok: true, ignored: "unparsable" });
+
+  // ---------- inline tugma ----------
+  const callback = parsed.data.callback_query;
+  if (callback) {
+    const chat = callback.message?.chat;
+    if (callback.from.is_bot || !chat || chat.type !== "private" || !callback.data) return NextResponse.json({ ok: true, ignored: "callback" });
+    try {
+      const admin = createAdminClient();
+      const { data: account } = await admin.from("telegram_accounts").select("language_code, profiles(locale)").eq("telegram_user_id", callback.from.id).maybeSingle();
+      const locale = resolveTelegramLocale([account?.profiles?.locale, account?.language_code, callback.from.language_code]);
+      const ctx: BotCtx = { admin, from: callback.from, chatId: chat.id, locale, t: makeT(locale) };
+      await handleBotCallback(ctx, callback.id, callback.data, callback.message?.message_id ?? null);
+      return NextResponse.json({ ok: true, callback: true });
+    } catch (e) {
+      console.error("[telegram webhook] callback", e instanceof Error ? e.message : e);
+      return NextResponse.json({ ok: true, error: "internal" });
+    }
+  }
+
   const message = parsed.data.message;
   if (!message?.from || message.from.is_bot || message.chat.type !== "private") return NextResponse.json({ ok: true, ignored: "not_private_message" });
 
@@ -52,6 +73,7 @@ export async function POST(req: NextRequest) {
     const locale = resolveTelegramLocale([account?.profiles?.locale, account?.language_code, from.language_code]);
     const t = makeT(locale);
     const tt = (key: string, params?: Record<string, string | number>) => escapeHtml(t(`notifications.telegram.${key}`, params));
+    const bot: BotCtx = { admin, from, chatId, locale, t };
 
     if (account) {
       await admin
@@ -92,14 +114,31 @@ export async function POST(req: NextRequest) {
       }
 
       await sendTelegramMessage(chatId, tt("phone_linked", { phone: formatPhone(phone) }), removeKeyboard);
-      await sendTelegramMessage(chatId, tt("hint"), openAppKeyboard(t("notifications.telegram.open_app"), "/"));
+      // CV oxirgi savolda (telefon) turgan bo'lsa — CV tugatiladi va PDF yuboriladi
+      if (await continueAfterPhone(bot)) return NextResponse.json({ ok: true, contact: "linked", cv: true });
+      await sendTelegramMessage(chatId, tt("hint"), botMenuKeyboard(t));
       return NextResponse.json({ ok: true, contact: "linked" });
     }
+
+    // ---------- bot ichida CV / ishlar ----------
+    if (command?.name === "cv") {
+      await startCv(bot);
+      return NextResponse.json({ ok: true, command: "cv" });
+    }
+    if (command?.name === "jobs") {
+      await sendMatchingJobs(bot, 0);
+      return NextResponse.json({ ok: true, command: "jobs" });
+    }
+    if (command?.name === "pdf") {
+      await sendCvPdf(bot);
+      return NextResponse.json({ ok: true, command: "pdf" });
+    }
+    if (!command && message.text && (await handleBotText(bot, message.text))) return NextResponse.json({ ok: true, cv: true });
 
     // ---------- /start va boshqa matnlar ----------
     const isStart = command?.name === "start";
     const text = isStart ? `${tt("welcome")}\n\n${tt("hint")}` : tt("hint");
-    await sendTelegramMessage(chatId, text, openAppKeyboard(t("notifications.telegram.open_app"), "/"));
+    await sendTelegramMessage(chatId, text, botMenuKeyboard(t));
 
     if (account?.phone) {
       if (isStart && command?.param === "login") await sendTelegramMessage(chatId, tt("phone_already_linked", { phone: formatPhone(account.phone) }));

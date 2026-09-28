@@ -321,6 +321,41 @@ export type Database = {
           },
         ];
       };
+      bot_sessions: {
+        Row: {
+          data: NonNullable<Json>;
+          flow: string;
+          profile_id: string | null;
+          step: string;
+          telegram_user_id: number;
+          updated_at: string;
+        };
+        Insert: {
+          data?: NonNullable<Json>;
+          flow?: string;
+          profile_id?: string | null;
+          step: string;
+          telegram_user_id: number;
+          updated_at?: string;
+        };
+        Update: {
+          data?: NonNullable<Json>;
+          flow?: string;
+          profile_id?: string | null;
+          step?: string;
+          telegram_user_id?: number;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "bot_sessions_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       categories: {
         Row: {
           created_at: string;
@@ -2866,6 +2901,26 @@ export type Database = {
       billing_promo_until: {
         Args: Record<PropertyKey, never>;
         Returns: string;
+      };
+      bot_matching_vacancies: {
+        Args: { p_limit?: number; p_offset?: number; p_worker_id: string };
+        Returns: {
+          company_name: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          id: string;
+          is_remote: boolean;
+          region_name_ru: string;
+          region_name_uz: string;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          score: number;
+          slug: string;
+          title: string;
+          total: number;
+        }[];
       };
       bulk_set_application_status: {
         Args: {

@@ -2,8 +2,9 @@ import "server-only";
 
 import { getServerEnv } from "@/lib/env";
 
-type InlineKeyboard = { inline_keyboard: { text: string; url?: string; web_app?: { url: string } }[][] };
-type ReplyKeyboard = { keyboard: { text: string; request_contact?: boolean }[][]; resize_keyboard?: boolean; one_time_keyboard?: boolean; is_persistent?: boolean };
+export type InlineButton = { text: string; url?: string; web_app?: { url: string }; callback_data?: string };
+export type InlineKeyboard = { inline_keyboard: InlineButton[][] };
+export type ReplyKeyboard = { keyboard: { text: string; request_contact?: boolean }[][]; resize_keyboard?: boolean; one_time_keyboard?: boolean; is_persistent?: boolean; input_field_placeholder?: string };
 type RemoveKeyboard = { remove_keyboard: true };
 export type ReplyMarkup = InlineKeyboard | ReplyKeyboard | RemoveKeyboard;
 
@@ -51,5 +52,54 @@ export async function setBotMenuButton() {
 }
 
 export async function setBotWebhook(url: string, secret: string) {
-  return callBot("setWebhook", { url, secret_token: secret, allowed_updates: ["message"] });
+  return callBot("setWebhook", { url, secret_token: secret, allowed_updates: ["message", "callback_query"] });
+}
+
+/** Bot menyusidagi buyruqlar (chap pastdagi "/" ro'yxati) */
+export async function setBotCommands(commands: { command: string; description: string }[], languageCode?: string) {
+  return callBot("setMyCommands", { commands, ...(languageCode ? { language_code: languageCode } : {}) });
+}
+
+export function webAppUrl(path = "/") {
+  return `${getServerEnv().APP_URL}${path}`;
+}
+
+/** Xabar yuboradi va message_id qaytaradi (keyin tahrirlash uchun) */
+export async function sendBotMessage(chatId: number, html: string, keyboard?: ReplyMarkup): Promise<number | null> {
+  const res = await callBot<{ message_id: number }>("sendMessage", { chat_id: chatId, text: html, parse_mode: "HTML", reply_markup: keyboard, disable_web_page_preview: true });
+  return res?.message_id ?? null;
+}
+
+export async function editBotMessage(chatId: number, messageId: number, html: string, keyboard?: InlineKeyboard) {
+  return callBot("editMessageText", { chat_id: chatId, message_id: messageId, text: html, parse_mode: "HTML", reply_markup: keyboard, disable_web_page_preview: true });
+}
+
+export async function editBotKeyboard(chatId: number, messageId: number, keyboard: InlineKeyboard) {
+  return callBot("editMessageReplyMarkup", { chat_id: chatId, message_id: messageId, reply_markup: keyboard });
+}
+
+export async function answerCallback(callbackId: string, text?: string) {
+  return callBot("answerCallbackQuery", { callback_query_id: callbackId, ...(text ? { text } : {}) });
+}
+
+export async function sendChatAction(chatId: number, action: "typing" | "upload_document") {
+  return callBot("sendChatAction", { chat_id: chatId, action });
+}
+
+/** Fayl (PDF) yuborish — multipart/form-data */
+export async function sendBotDocument(chatId: number, file: Uint8Array, fileName: string, captionHtml?: string, keyboard?: ReplyMarkup): Promise<boolean> {
+  const { TELEGRAM_BOT_TOKEN } = getServerEnv();
+  if (!TELEGRAM_BOT_TOKEN) return false;
+  const form = new FormData();
+  form.set("chat_id", String(chatId));
+  form.set("document", new Blob([new Uint8Array(file)], { type: "application/pdf" }), fileName);
+  if (captionHtml) {
+    form.set("caption", captionHtml);
+    form.set("parse_mode", "HTML");
+  }
+  if (keyboard) form.set("reply_markup", JSON.stringify(keyboard));
+  const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, { method: "POST", body: form, cache: "no-store" });
+  const data = (await res.json().catch(() => null)) as { ok: boolean; description?: string } | null;
+  if (!data?.ok) console.warn(`[telegram] sendDocument: ${data?.description ?? res.status}`);
+  return !!data?.ok;
 }

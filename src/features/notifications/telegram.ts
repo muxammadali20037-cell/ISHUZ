@@ -27,11 +27,23 @@ export const telegramMessageSchema = z
   })
   .loose();
 
-/** Bizga faqat `message` kerak; boshqa update turlari (edited_message, callback_query ...) e'tiborsiz qoladi */
+/** Inline tugma bosilganda (bot ichida CV to'ldirish va h.k.) */
+export const telegramCallbackSchema = z
+  .object({
+    id: z.string(),
+    from: telegramUserSchema,
+    data: z.string().max(64).optional(),
+    message: z.object({ message_id: z.number().int(), chat: z.object({ id: z.number().int(), type: z.string() }).loose() }).loose().optional(),
+  })
+  .loose();
+
+/** `message` va `callback_query`; boshqa update turlari (edited_message ...) e'tiborsiz qoladi */
 export const telegramUpdateSchema = z
   .object({
     update_id: z.number().int(),
     message: telegramMessageSchema.optional(),
+    // noto'g'ri tuzilgan callback butun update'ni rad etmaydi — shunchaki e'tiborsiz qoladi
+    callback_query: telegramCallbackSchema.optional().catch(undefined),
   })
   .loose();
 

@@ -1,0 +1,19 @@
+{
+  "pdf": {
+    "age": "{age} лет",
+    "phone": "Тел",
+    "about": "Обо мне",
+    "experience": "Опыт работы",
+    "present": "по настоящее время",
+    "skills": "Навыки",
+    "languages": "Языки",
+    "education": "Образование",
+    "preferences": "Пожелания к работе",
+    "salary": "Ожидаемая зарплата",
+    "employment": "Тип занятости",
+    "schedule": "График",
+    "availability": "Может выйти",
+    "footer": "Составлено в «Ish beruvchi» · {date}"
+  },
+  "download": "Скачать PDF"
+}

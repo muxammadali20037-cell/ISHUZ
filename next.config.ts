@@ -11,6 +11,11 @@ const supabaseHost = (() => {
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // PDF CV shriftlari serverless funksiyaga qo'shiladi (fs orqali o'qiladi)
+  outputFileTracingIncludes: {
+    "/api/telegram/webhook": ["./src/features/cv/fonts/*"],
+    "/api/cv/pdf": ["./src/features/cv/fonts/*"],
+  },
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "*.supabase.co" },

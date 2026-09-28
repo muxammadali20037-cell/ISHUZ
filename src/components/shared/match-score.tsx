@@ -3,6 +3,7 @@
 import { Check, AlertTriangle, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
+import { matchLevel } from "@/features/matching/level";
 
 export type MatchReason = { key: string; ok: boolean | "warn"; [param: string]: unknown };
 
@@ -12,13 +13,7 @@ function tone(score: number) {
   return { text: "text-muted-foreground", bg: "bg-secondary", ring: "stroke-muted-foreground" };
 }
 
-/** Soxta aniqlik ("97.4%") o'rniga tushunarli daraja */
-export function matchLevel(score: number): "very" | "good" | "partial" | "low" {
-  if (score >= 75) return "very";
-  if (score >= 50) return "good";
-  if (score >= 30) return "partial";
-  return "low";
-}
+export { matchLevel };
 
 /** "Juda mos" / "Mos" / "Qisman mos" nishoni (kartalar uchun) */
 export function MatchScore({ score, className, size = "md", label }: { score: number | null | undefined; className?: string; size?: "sm" | "md" | "lg"; label?: "long" | "short" }) {

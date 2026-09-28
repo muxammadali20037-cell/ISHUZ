@@ -1,0 +1,19 @@
+{
+  "pdf": {
+    "age": "{age} yosh",
+    "phone": "Tel",
+    "about": "O'zim haqimda",
+    "experience": "Ish tajribasi",
+    "present": "hozirgacha",
+    "skills": "Ko'nikmalar",
+    "languages": "Tillar",
+    "education": "Ma'lumoti",
+    "preferences": "Ish istagi",
+    "salary": "Kutilayotgan maosh",
+    "employment": "Bandlik turi",
+    "schedule": "Ish grafigi",
+    "availability": "Ishga chiqa oladi",
+    "footer": "«Ish beruvchi» orqali tayyorlandi · {date}"
+  },
+  "download": "PDF yuklab olish"
+}

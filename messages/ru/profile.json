@@ -230,7 +230,8 @@
     "generated": "Создано через «Ish beruvchi» · {date}",
     "age": "{age} лет",
     "location": "Местоположение",
-    "salary": "Ожидаемая зарплата"
+    "salary": "Ожидаемая зарплата",
+    "print": "Печать"
   },
   "settings": {
     "title": "Настройки",

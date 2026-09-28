@@ -1,7 +1,7 @@
 "use client";
 
 import { useSyncExternalStore } from "react";
-import { Link2, Mail, MapPin, Phone, Printer, Send, Share2 } from "lucide-react";
+import { Download, Link2, Mail, MapPin, Phone, Printer, Send, Share2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate, formatMoney, formatPhone, fullName, initials } from "@/lib/format";
 import { Avatar } from "@/components/ui/avatar";
@@ -86,8 +86,13 @@ export function CvDocument({ data, profile, contacts, officialTermNames }: { dat
       <style>{PRINT_CSS}</style>
 
       <div data-print-hide className="mb-4 flex flex-wrap items-center gap-2">
-        <Button type="button" onClick={() => window.print()}>
-          <Printer className="size-4" /> {t("profile.cv.download_pdf")}
+        <Button asChild>
+          <a href="/api/cv/pdf" download>
+            <Download className="size-4" /> {t("profile.cv.download_pdf")}
+          </a>
+        </Button>
+        <Button type="button" variant="outline" onClick={() => window.print()}>
+          <Printer className="size-4" /> {t("profile.cv.print")}
         </Button>
         <Button type="button" variant="outline" onClick={share}>
           <Share2 className="size-4" /> {t("profile.cv.share")}

@@ -15,6 +15,14 @@ describe("telegram webhook helpers", () => {
     expect(parsed.success).toBe(true);
     expect(parsed.data?.message).toBeUndefined();
   });
+  it("update sxemasi: inline tugma (callback_query)", () => {
+    const parsed = telegramUpdateSchema.safeParse({
+      update_id: 3,
+      callback_query: { id: "cb", from: { id: 5, first_name: "A" }, data: "cv:v:gender:male", message: { message_id: 9, chat: { id: 5, type: "private" } } },
+    });
+    expect(parsed.data?.callback_query?.data).toBe("cv:v:gender:male");
+    expect(parsed.data?.callback_query?.message?.chat.id).toBe(5);
+  });
   it("noto'g'ri update rad etiladi", () => {
     expect(telegramUpdateSchema.safeParse({ message: {} }).success).toBe(false);
   });
