@@ -1,10 +1,10 @@
 {
   "meta": {
-    "title": "Vakansiyalar",
+    "title": "Ish va vakansiyalar",
     "title_query": "«{query}» — vakansiyalar",
-    "title_category": "{category} vakansiyalari",
-    "title_region": "{region} — vakansiyalar",
-    "title_category_region": "{category} vakansiyalari — {region}",
+    "title_category": "{category} — ish va vakansiyalar",
+    "title_region": "Ish: {region} — vakansiyalar",
+    "title_category_region": "{category} — ish, {region}",
     "description": "O'zbekiston bo'ylab faol vakansiyalar. Hudud, maosh, grafik va tajriba bo'yicha filtrlang, sizga mos ishni toping.",
     "detail_description": "{title} — {company}. {salary}. {location}."
   },

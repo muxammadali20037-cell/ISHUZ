@@ -13,18 +13,22 @@ const PROTECTED_PREFIXES = [
   "/profile",
   "/settings",
   "/employer",
-  "/company",
+  // /company/[slug] — ochiq (SEO); faqat boshqaruv sahifalari yopiq
+  "/company/settings",
+  "/company/join",
   "/workers",
   "/admin",
   "/billing",
 ];
 
 export async function proxy(request: NextRequest) {
+  // Til: ?lang=ru → shu so'rovning o'zi ham shu tilda chiziladi (Google ruscha sahifani ko'rishi uchun) + cookie
+  const lang = request.nextUrl.searchParams.get("lang");
+  if (lang && isLocale(lang)) request.cookies.set(LOCALE_COOKIE, lang);
+
   const { response, user } = await updateSession(request);
   const { pathname, search } = request.nextUrl;
 
-  // Til: ?lang=ru → cookie
-  const lang = request.nextUrl.searchParams.get("lang");
   if (lang && isLocale(lang)) {
     response.cookies.set(LOCALE_COOKIE, lang, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   }

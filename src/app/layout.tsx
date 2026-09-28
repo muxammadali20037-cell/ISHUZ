@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
 import Script from "next/script";
 import { cookies } from "next/headers";
-import { getLocale } from "@/lib/i18n/server";
+import { getLocale, getT } from "@/lib/i18n/server";
+import { getServerEnv } from "@/lib/env";
 import { WelcomeGate } from "@/components/shared/welcome-gate";
 import { WELCOME_COOKIE } from "@/components/shared/welcome-cookie";
 import { LOCALE_COOKIE } from "@/lib/i18n/config";
@@ -16,16 +17,25 @@ const manrope = Manrope({
   weight: ["400", "500", "600", "700", "800"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-  title: { default: "Ish beruvchi — Ish qidirmang. O'zingizga mos ishni toping.", template: "%s · Ish beruvchi" },
-  description: "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bir necha daqiqada aniq bog'laydigan platforma.",
-  applicationName: "Ish beruvchi",
-  manifest: "/manifest.webmanifest",
-  icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
-  openGraph: { type: "website", siteName: "Ish beruvchi", locale: "uz_UZ", alternateLocale: ["ru_RU"] },
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "Ish beruvchi" },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { t, locale } = await getT();
+  const { GOOGLE_SITE_VERIFICATION, YANDEX_VERIFICATION } = getServerEnv();
+  return {
+    metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
+    title: { default: t("common.meta.title"), template: "%s · Ish beruvchi" },
+    description: t("common.meta.description"),
+    keywords: t("common.meta.keywords"),
+    applicationName: "Ish beruvchi",
+    manifest: "/manifest.webmanifest",
+    icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
+    openGraph: { type: "website", siteName: "Ish beruvchi", locale: locale === "ru" ? "ru_RU" : "uz_UZ", alternateLocale: [locale === "ru" ? "uz_UZ" : "ru_RU"] },
+    appleWebApp: { capable: true, statusBarStyle: "default", title: "Ish beruvchi" },
+    verification: {
+      google: GOOGLE_SITE_VERIFICATION,
+      yandex: YANDEX_VERIFICATION,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

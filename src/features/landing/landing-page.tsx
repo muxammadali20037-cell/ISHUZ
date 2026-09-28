@@ -5,10 +5,26 @@ import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
 import { CategoryIcon } from "@/components/shared/category-icon";
 import { QuickActions } from "@/components/shared/quick-actions";
+import { getCategories, getRegions } from "@/lib/reference";
+import { publicEnv } from "@/lib/env";
 
 export async function LandingPage() {
   const { t, name } = await getT();
   const supabase = await createClient();
+  const [allCategories, regions] = await Promise.all([getCategories(), getRegions()]);
+  const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  // Google: sayt nomi, logotip va sayt ichidagi qidiruv (sitelinks search box)
+  const jsonLd = JSON.stringify([
+    { "@context": "https://schema.org", "@type": "Organization", name: "Ish beruvchi", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "Ish beruvchi",
+      url: base,
+      inLanguage: ["uz", "ru"],
+      potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${base}/jobs?q={search_term_string}` }, "query-input": "required name=search_term_string" },
+    },
+  ]).replace(/</g, "\\u003c");
   const [{ data: categories }, { count: vacancyCount }] = await Promise.all([
     supabase.from("categories").select("id, slug, name_uz, name_ru, icon").eq("is_active", true).order("sort_order").limit(12),
     supabase.from("vacancies").select("id", { count: "exact", head: true }).eq("status", "active"),
@@ -16,6 +32,7 @@ export async function LandingPage() {
 
   return (
     <div className="container-app py-6 sm:py-10">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <section className="text-center">
         <h1 className="mx-auto max-w-2xl text-3xl font-extrabold leading-tight sm:text-4xl md:text-5xl">{t("common.landing.hero_title")}</h1>
         <p className="mx-auto mt-3 max-w-xl text-base text-muted-foreground sm:text-lg">{t("common.landing.hero_subtitle")}</p>
@@ -107,11 +124,50 @@ export async function LandingPage() {
         </span>
       </div>
 
+      {/* Qidiruv tizimlari uchun ham foydali: hudud va kasb bo'yicha ish sahifalariga to'g'ridan-to'g'ri havolalar */}
+      <section className="mt-12 grid gap-8 sm:grid-cols-2">
+        <nav aria-labelledby="seo-regions">
+          <h2 id="seo-regions" className="mb-3 text-lg font-bold">
+            {t("common.landing.seo_regions")}
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {regions.map((r) => (
+              <li key={r.id}>
+                <Link href={`/jobs?region=${r.slug}`} className="inline-block rounded-full border border-border px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+                  {name(r)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+        <nav aria-labelledby="seo-categories">
+          <h2 id="seo-categories" className="mb-3 text-lg font-bold">
+            {t("common.landing.seo_categories")}
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {allCategories.map((c) => (
+              <li key={c.id}>
+                <Link href={`/jobs?category=${c.slug}`} className="inline-block rounded-full border border-border px-3 py-1.5 text-sm hover:border-primary hover:text-primary">
+                  {name(c)}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </section>
+
       <footer className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
-        <Link href="/pricing" className="mb-2 inline-block font-medium text-primary hover:underline">
-          {t("welcome.quick.pricing")}
-        </Link>
-        <br />
+        <div className="mb-2 flex flex-wrap justify-center gap-x-4 gap-y-1 font-medium">
+          <Link href="/pricing" className="text-primary hover:underline">
+            {t("welcome.quick.pricing")}
+          </Link>
+          <Link href="/privacy" className="text-primary hover:underline">
+            {t("common.footer.privacy")}
+          </Link>
+          <Link href="/account-deletion" className="text-primary hover:underline">
+            {t("common.footer.deletion")}
+          </Link>
+        </div>
         {t("common.footer.rights", { year: new Date().getFullYear() })}
       </footer>
     </div>

@@ -17,9 +17,14 @@ const serverSchema = z.object({
   TELEGRAM_WEBHOOK_SECRET: z.string().optional(),
   CRON_SECRET: z.string().optional(),
   /** Google Play (TWA): paket nomi va imzo sertifikati SHA-256 barmoq izlari (vergul bilan) */
-  ANDROID_PACKAGE_NAME: z.string().default("uz.worklyn.app"),
+  ANDROID_PACKAGE_NAME: z.string().default("uz.ishberuvchi.app"),
   ANDROID_SHA256_CERT_FINGERPRINTS: z.string().optional(),
   APP_URL: z.string().url().default("http://localhost:3000"),
+  /** Google Search Console / Yandex Webmaster: sayt egaligini tasdiqlash kodi (meta teg "content" qiymati) */
+  GOOGLE_SITE_VERIFICATION: z.string().optional(),
+  YANDEX_VERIFICATION: z.string().optional(),
+  /** Maxfiylik siyosati va do'kon sahifasidagi aloqa uchun email (ixtiyoriy) */
+  SUPPORT_EMAIL: z.string().email().optional(),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
@@ -62,6 +67,9 @@ export function getServerEnv() {
     ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME || undefined,
     ANDROID_SHA256_CERT_FINGERPRINTS: process.env.ANDROID_SHA256_CERT_FINGERPRINTS,
     APP_URL: process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL,
+    GOOGLE_SITE_VERIFICATION: process.env.GOOGLE_SITE_VERIFICATION || undefined,
+    YANDEX_VERIFICATION: process.env.YANDEX_VERIFICATION || undefined,
+    SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || undefined,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,

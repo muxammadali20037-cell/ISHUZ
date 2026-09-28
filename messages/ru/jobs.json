@@ -1,10 +1,10 @@
 {
   "meta": {
-    "title": "Вакансии",
+    "title": "Работа и вакансии",
     "title_query": "«{query}» — вакансии",
-    "title_category": "Вакансии: {category}",
-    "title_region": "{region} — вакансии",
-    "title_category_region": "Вакансии: {category} — {region}",
+    "title_category": "{category} — работа и вакансии",
+    "title_region": "Работа: {region} — вакансии",
+    "title_category_region": "{category} — работа, {region}",
     "description": "Актуальные вакансии по всему Узбекистану. Фильтруйте по региону, зарплате, графику и опыту — найдите подходящую работу.",
     "detail_description": "{title} — {company}. {salary}. {location}."
   },

@@ -1,8 +1,15 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { getLocale } from "@/lib/i18n/server";
+import { localeAlternates } from "@/lib/seo";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { LandingPage } from "@/features/landing/landing-page";
 import { WorkerHome } from "@/features/worker/components/worker-home";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return { alternates: localeAlternates("/", await getLocale()) };
+}
 
 /**
  * Bosh sahifa:

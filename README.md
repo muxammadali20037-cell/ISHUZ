@@ -83,9 +83,7 @@ npm run lint && npm run typecheck && npm run build
 Sayt to'liq PWA (manifest, PNG/maskable ikonkalar, service worker, oflayn sahifa):
 
 - **Telefonga o'rnatish (hozir):** Android Chrome → ⋮ → "Ilovani o'rnatish"; iPhone Safari → Ulashish → "Bosh ekranga qo'shish".
-- **Google Play (Android, TWA):** [pwabuilder.com](https://www.pwabuilder.com) → sayt manzili → Package for stores → Android → Package ID `uz.worklyn.app` →
-  yuklab olingan `.aab` ni Play Console'ga yuklang. Play Console → App integrity → App signing dagi **SHA-256** ni Vercel env
-  `ANDROID_SHA256_CERT_FINGERPRINTS` ga yozing (PWABuilder kalitining SHA-256 si ham, vergul bilan) → Redeploy. Tekshirish: `/.well-known/assetlinks.json`.
+- **Google Play (Android, TWA) va Google qidiruvi:** bosqichma-bosqich qo'llanma, do'kon matnlari va rasmlar — [`docs/PLAY_MARKET.md`](docs/PLAY_MARKET.md) (paket: `uz.ishberuvchi.app`).
 - **App Store (iOS):** Mac + Apple Developer ($99/yil) kerak; Capacitor bilan o'raladi va push-bildirishnoma kabi native imkoniyat qo'shiladi.
 
 ## Tuzilma

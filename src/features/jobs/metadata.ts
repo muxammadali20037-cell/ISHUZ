@@ -3,6 +3,7 @@ import "server-only";
 import type { Metadata } from "next";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getRegions } from "@/lib/reference";
+import { localeAlternates } from "@/lib/seo";
 import { formatSalaryRange } from "@/lib/format";
 import { descriptionExcerpt } from "./description";
 import { countActiveFilters, jobsHref, type JobsSearchParams } from "./search-params";
@@ -10,7 +11,7 @@ import type { VacancyDetail } from "./types";
 
 /** /jobs sahifasi SEO: sarlavha kategoriya/hududga qarab */
 export async function jobsListMetadata(params: JobsSearchParams): Promise<Metadata> {
-  const { t, name } = await getT();
+  const { t, name, locale } = await getT();
   const [categories, regions] = await Promise.all([getCategories(), getRegions()]);
   const category = params.category ? (categories.find((c) => c.slug === params.category) ?? null) : null;
   const region = params.region ? (regions.find((r) => r.slug === params.region) ?? null) : null;
@@ -27,8 +28,8 @@ export async function jobsListMetadata(params: JobsSearchParams): Promise<Metada
   return {
     title,
     description,
-    alternates: { canonical },
-    openGraph: { title: `${title} · Ish beruvchi`, description, url: canonical, type: "website" },
+    alternates: localeAlternates(canonical, locale),
+    openGraph: { title: `${title} · Ish beruvchi`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : "uz_UZ" },
     robots: noindex ? { index: false, follow: true } : undefined,
   };
 }
@@ -55,7 +56,7 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: { canonical: url },
+    alternates: localeAlternates(url, locale),
     openGraph: {
       title: `${title} · Ish beruvchi`,
       description,

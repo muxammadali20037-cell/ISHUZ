@@ -168,14 +168,17 @@
     "latest_jobs": "Yangi vakansiyalar",
     "for_employers": "Ish beruvchilar uchun",
     "employer_pitch": "Vakansiyani 2–4 daqiqada joylang. Nomzodlar sizga mosligi bo'yicha saralanadi.",
-    "post_vacancy": "Vakansiya joylash"
+    "post_vacancy": "Vakansiya joylash",
+    "seo_regions": "Hududlar bo'yicha ish",
+    "seo_categories": "Kasblar bo'yicha ish"
   },
   "footer": {
     "about": "Platforma haqida",
     "terms": "Foydalanish shartlari",
     "privacy": "Maxfiylik siyosati",
     "support": "Yordam",
-    "rights": "© {year} Ish beruvchi. Barcha huquqlar himoyalangan."
+    "rights": "© {year} Ish beruvchi. Barcha huquqlar himoyalangan.",
+    "deletion": "Hisobni o'chirish"
   },
   "report_sent": "Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.",
   "report_desc": "Nima uchun shikoyat qilyapsiz?",
@@ -187,5 +190,11 @@
     "desc": "Xavotir olmang — ma'lumotlaringiz saqlangan. Qayta urinib ko'ring yoki bosh sahifaga qayting.",
     "home": "Bosh sahifa",
     "code": "Xato kodi: {code}"
+  },
+  "meta": {
+    "title": "Ish beruvchi — ish topish va vakansiyalar O'zbekistonda",
+    "description": "Toshkent va butun O'zbekiston bo'ylab ish va vakansiyalar. Rezyume 2 daqiqada, sizga mos ishlar, bir bosishda ariza. Ish beruvchilar uchun tez nomzod topish.",
+    "keywords": "ish, ish topish, vakansiyalar, Toshkentda ish, ish e'lonlari, rezyume, ishchi kerak, ish qidirish",
+    "org_description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"
   }
 }

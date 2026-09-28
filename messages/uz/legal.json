@@ -1,0 +1,71 @@
+{
+  "updated": "Oxirgi yangilanish: 2026-yil 28-sentabr",
+  "contact_title": "Aloqa",
+  "contact_body": "Savol yoki so'rovlar bo'yicha yozing:",
+  "privacy": {
+    "title": "Maxfiylik siyosati",
+    "description": "«Ish beruvchi» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi va ularni qanday boshqarishingiz mumkin.",
+    "intro": "«Ish beruvchi» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi. Unda qaysi ma'lumotlarni yig'ishimiz, nima uchun ishlatishimiz va ularni qanday boshqarishingiz mumkinligi tushuntiriladi.",
+    "sections": [
+      [
+        "Qaysi ma'lumotlar yig'iladi",
+        "- Hisob: telefon raqami, Telegram identifikatori va foydalanuvchi nomi, ism-familiya, tanlangan til.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, hudud va tuman, rasm va portfolio fayllari.\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chatdagi xabarlar, saqlangan qidiruvlar va bildirishnomalar.\n- To'lovlar: summa, xizmat turi va holati. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (natijalarni yaxshilash uchun, 90 kun saqlanadi) va xavfsizlik jurnallari."
+      ],
+      [
+        "Ma'lumotlar nima uchun ishlatiladi",
+        "- Hisobni yaratish va tizimga kirish.\n- Rezyume va vakansiyalarni ko'rsatish, ular bir-biriga qanchalik mosligini hisoblash.\n- Ariza, suhbat va yangi mos ishlar haqida bildirishnoma yuborish (ilova va Telegram orqali).\n- Firibgarlik, spam va suiiste'moldan himoya qilish.\n- Pullik xizmatlar uchun to'lovni qabul qilish.\nMa'lumotlaringizni sotmaymiz va reklama maqsadida uchinchi shaxslarga bermaymiz."
+      ],
+      [
+        "Ma'lumotlarni kim ko'radi",
+        "- Ochiq rezyumeni ish beruvchilar ko'radi. Rezyumeni istalgan vaqtda yashirishingiz mumkin.\n- Telefon raqamingiz faqat sozlamalarda o'zingiz tanlagan tartibda ko'rinadi: hech kimga, ariza bergan ish beruvchilarga, so'rov orqali yoki hammaga.\n- Vakansiyalar va kompaniya sahifalari hamma uchun ochiq.\n- Chat xabarlarini faqat suhbat ishtirokchilari ko'radi."
+      ],
+      [
+        "Xizmat ko'rsatuvchilar",
+        "Platforma quyidagi xizmatlardan foydalanadi. Ular ma'lumotlarni faqat shu xizmatni ko'rsatish uchun qayta ishlaydi:\n- Supabase — ma'lumotlar bazasi va fayllar.\n- Vercel — sayt xostingi.\n- Telegram — kirish va bildirishnomalar.\n- Payme va Click — to'lovlar.\n- Google Gemini va Anthropic Claude — faqat «AI bilan to'ldirish» tugmasini bosganingizda yozgan matningizni tahlil qilish uchun."
+      ],
+      [
+        "Saqlash muddati",
+        "- Hisob faol ekan, ma'lumotlar saqlanadi.\n- Hisob o'chirilganda profil, rezyume, portfolio, arizalar, suhbatlar va Telegram ulanishi o'chiriladi.\n- To'lov yozuvlari moliyaviy hisobot uchun ismsiz saqlanadi.\n- Telegram botdagi tugallanmagan suhbatlar 30 kunda, qidiruv jurnali 90 kunda avtomatik o'chiriladi."
+      ],
+      [
+        "Sizning huquqlaringiz",
+        "- Ma'lumotlaringizni ko'rish va tuzatish — «Profil» bo'limida.\n- Rezyumeni yashirish va telefon ko'rinishini sozlash — «Sozlamalar»da.\n- Hisobni va ma'lumotlarni butunlay o'chirish — «Hisobni o'chirish» sahifasida tushuntirilgan.\n- Telegram bildirishnomalarini to'xtatish — botni to'xtatish yoki bloklash orqali."
+      ],
+      [
+        "Yosh chegarasi",
+        "Platforma 14 yoshdan katta foydalanuvchilar uchun mo'ljallangan."
+      ],
+      [
+        "Xavfsizlik",
+        "Barcha ulanishlar shifrlangan (HTTPS). Ma'lumotlarga kirish huquqlari ma'lumotlar bazasi darajasida cheklangan: har bir foydalanuvchi faqat o'ziga ruxsat berilgan ma'lumotlarni ko'radi."
+      ],
+      [
+        "O'zgarishlar",
+        "Siyosat o'zgarsa, shu sahifada yangilanish sanasi bilan e'lon qilinadi."
+      ]
+    ]
+  },
+  "deletion": {
+    "title": "Hisobni o'chirish",
+    "description": "«Ish beruvchi» hisobingizni va ma'lumotlaringizni qanday o'chirish mumkin.",
+    "intro": "Hisobingizni va unga bog'liq ma'lumotlarni istalgan vaqtda o'zingiz o'chirishingiz mumkin. O'chirish darhol amalga oshadi va uni qaytarib bo'lmaydi.",
+    "sections": [
+      [
+        "Ilova yoki sayt orqali",
+        "- «Ish beruvchi» ilovasi yoki saytiga kiring.\n- «Sozlamalar» bo'limini oching.\n- «Hisobni o'chirish» tugmasini bosing.\n- Tasdiqlash uchun «O'CHIRISH» so'zini yozing va «Butunlay o'chirish» ni bosing."
+      ],
+      [
+        "Tizimga kira olmasangiz",
+        "Hisobga ulangan telefon raqami yoki Telegram hisobidan quyidagi manzilga yozing — hisobingiz 7 kun ichida o'chiriladi."
+      ],
+      [
+        "Nimalar o'chiriladi",
+        "- Profil, rezyume, portfolio fayllari.\n- Arizalar, takliflar, suhbatlar va bildirishnomalar.\n- Telefon raqami va Telegram ulanishi.\n- Faqat sizga tegishli faol vakansiyalar yopiladi."
+      ],
+      [
+        "Nimalar saqlanadi",
+        "- To'lov yozuvlari (summa, sana, xizmat) — qonun bo'yicha moliyaviy hisobot uchun, ismingiz va profilingizsiz.\n- Xavfsizlik jurnalidagi «hisob o'chirildi» yozuvi."
+      ]
+    ]
+  }
+}

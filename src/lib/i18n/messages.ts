@@ -22,6 +22,7 @@ import uzWelcome from "../../../messages/uz/welcome.json";
 import uzContacts from "../../../messages/uz/contacts.json";
 import uzCv from "../../../messages/uz/cv.json";
 import uzBot from "../../../messages/uz/bot.json";
+import uzLegal from "../../../messages/uz/legal.json";
 import uzVacancies from "../../../messages/uz/vacancies.json";
 import uzOffers from "../../../messages/uz/offers.json";
 import uzNotifications from "../../../messages/uz/notifications.json";
@@ -45,6 +46,7 @@ import ruWelcome from "../../../messages/ru/welcome.json";
 import ruContacts from "../../../messages/ru/contacts.json";
 import ruCv from "../../../messages/ru/cv.json";
 import ruBot from "../../../messages/ru/bot.json";
+import ruLegal from "../../../messages/ru/legal.json";
 import ruVacancies from "../../../messages/ru/vacancies.json";
 import ruOffers from "../../../messages/ru/offers.json";
 import ruNotifications from "../../../messages/ru/notifications.json";
@@ -75,6 +77,7 @@ export const messages = {
     contacts: uzContacts,
     cv: uzCv,
     bot: uzBot,
+    legal: uzLegal,
   },
   ru: {
     common: ruCommon,
@@ -99,6 +102,7 @@ export const messages = {
     contacts: ruContacts,
     cv: ruCv,
     bot: ruBot,
+    legal: ruLegal,
   },
 } satisfies Record<Locale, Record<string, unknown>>;
 
