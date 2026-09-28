@@ -174,7 +174,8 @@
     "no_experience": "Tajriba talab qilmaydi",
     "remote": "Masofaviy ishlar",
     "categories": "Kategoriyalar bo'yicha",
-    "government": "Davlat tashkilotlarida ish"
+    "government": "Davlat tashkilotlarida ish",
+    "quick_filters": "Tezkor filtrlar"
   },
   "government": {
     "badge": "Davlat tashkiloti"

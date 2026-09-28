@@ -393,5 +393,10 @@
     "salary_basis_region": "shu viloyatdagi {count} ta e'lon asosida",
     "salary_basis_country": "{count} ta faol e'lon asosida",
     "salary_apply": "qo'yish uchun bosing"
+  },
+  "published_banner": {
+    "title": "Vakansiyangiz joylandi! 🎉",
+    "found": "Sizga mos {count} ta nomzod topildi — pastda ko'ring",
+    "none": "Mos nomzodlar paydo bo'lishi bilan xabar beramiz"
   }
 }

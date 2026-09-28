@@ -23,5 +23,20 @@
   "focus_empty": "No jobs for “{name}” right now",
   "focus_empty_desc": "We'll notify you on Telegram as soon as a new one appears.",
   "focus_similar": "Similar: {name}",
-  "focus_sector": "Whole sector"
+  "focus_sector": "Whole sector",
+  "focus_pick_title": "What do you do?",
+  "focus_pick_desc": "Pick your exact profession — we'll show only jobs that fit you",
+  "my_title": "My professions",
+  "primary": "Main profession",
+  "extra": "Additional professions",
+  "extra_hint": "Know more than one trade? Add it with its own experience (up to 5).",
+  "add_extra": "Add a profession",
+  "extra_experience": "How much experience do you have as “{name}”?",
+  "saved": "Saved",
+  "errors": {
+    "too_many_professions": "Up to 5 additional professions",
+    "validation": "Please pick an exact profession"
+  },
+  "my_card": "My professions",
+  "my_card_desc": "Main and additional"
 }

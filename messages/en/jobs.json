@@ -174,7 +174,8 @@
     "no_experience": "No experience required",
     "remote": "Remote jobs",
     "categories": "By category",
-    "government": "Jobs in government organizations"
+    "government": "Jobs in government organizations",
+    "quick_filters": "Quick filters"
   },
   "government": {
     "badge": "Government organization"

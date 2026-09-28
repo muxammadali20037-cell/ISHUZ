@@ -23,7 +23,9 @@
     "logout": "Log out",
     "login": "Log in",
     "switch_to_employer": "Employer mode",
-    "switch_to_worker": "Job seeker mode"
+    "switch_to_worker": "Job seeker mode",
+    "candidates": "Candidates",
+    "vacancies": "Jobs posted"
   },
   "actions": {
     "save": "Save",

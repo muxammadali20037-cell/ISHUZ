@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, FileText, MessageCircle, User, LayoutDashboard, Users, PlusCircle, type LucideIcon } from "lucide-react";
+import { Home, Search, Heart, User, Users, ClipboardList, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { useTelegram } from "@/lib/telegram/provider";
@@ -20,17 +20,26 @@ interface NavItem {
 const WORKER_NAV: NavItem[] = [
   { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" },
   { href: "/jobs", labelKey: "common.nav.jobs", icon: Search, match: (p) => p.startsWith("/jobs") },
-  { href: "/applications", labelKey: "common.nav.applications", icon: FileText, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
-  { href: "/messages", labelKey: "common.nav.messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
-  { href: "/profile", labelKey: "common.nav.profile", icon: User, match: (p) => p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/saved") || p.startsWith("/notifications") },
+  { href: "/saved", labelKey: "common.nav.saved", icon: Heart, match: (p) => p.startsWith("/saved") },
+  {
+    href: "/profile",
+    labelKey: "common.nav.profile",
+    icon: User,
+    badgeKey: "offers",
+    match: (p) => p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/notifications") || p.startsWith("/applications") || p.startsWith("/offers"),
+  },
 ];
 
 const EMPLOYER_NAV: NavItem[] = [
-  { href: "/employer", labelKey: "common.nav.dashboard", icon: LayoutDashboard, match: (p) => p === "/employer" },
-  { href: "/workers", labelKey: "common.nav.workers", icon: Users, match: (p) => p.startsWith("/workers") || p.startsWith("/employer/candidates") },
-  { href: "/employer/vacancies/new", labelKey: "common.nav.post", icon: PlusCircle, match: (p) => p.startsWith("/employer/vacancies") },
-  { href: "/messages", labelKey: "common.nav.messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
-  { href: "/profile", labelKey: "common.nav.profile", icon: User, match: (p) => p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/company") || p.startsWith("/employer/saved") || p.startsWith("/notifications") },
+  { href: "/employer", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/employer" },
+  { href: "/workers", labelKey: "common.nav.candidates", icon: Users, match: (p) => p.startsWith("/workers") || p.startsWith("/employer/candidates") },
+  { href: "/employer/vacancies", labelKey: "common.nav.vacancies", icon: ClipboardList, match: (p) => p.startsWith("/employer/vacancies") },
+  {
+    href: "/profile",
+    labelKey: "common.nav.profile",
+    icon: User,
+    match: (p) => p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/company") || p.startsWith("/employer/saved") || p.startsWith("/notifications"),
+  },
 ];
 
 const GUEST_NAV: NavItem[] = [

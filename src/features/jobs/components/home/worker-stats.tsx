@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bookmark, ChevronRight, Eye, FileText, Gift, type LucideIcon } from "lucide-react";
+import { ChevronRight, FileText, Gift, type LucideIcon } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
@@ -23,16 +23,14 @@ function StatTile({ href, icon: Icon, value, label }: { href: string; icon: Luci
   );
 }
 
-/** worker_dashboard_stats: 4 ta ko'rsatkich + profil to'liqligi (< 100 bo'lsa) */
+/** worker_dashboard_stats: arizalar va takliflar + profil to'liqligi (< 100 bo'lsa) */
 export async function WorkerStats() {
   const [{ t }, stats] = await Promise.all([getT(), getWorkerDashboardStats()]);
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3">
         <StatTile href="/applications" icon={FileText} value={stats.active_applications} label={t("jobs.home.stats_applications")} />
         <StatTile href="/offers" icon={Gift} value={stats.offers} label={t("jobs.home.stats_offers")} />
-        <StatTile href="/profile" icon={Eye} value={stats.profile_views} label={t("jobs.home.stats_views")} />
-        <StatTile href="/saved" icon={Bookmark} value={stats.saved} label={t("jobs.home.stats_saved")} />
       </div>
       {stats.completeness < 100 ? (
         <div className="flex flex-col gap-3 rounded-2xl border border-primary/20 bg-primary-soft/50 p-4 sm:flex-row sm:items-center sm:gap-5">

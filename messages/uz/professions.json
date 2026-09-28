@@ -23,5 +23,20 @@
   "focus_empty": "Hozir aynan «{name}» bo'yicha vakansiya yo'q",
   "focus_empty_desc": "Yangi vakansiya chiqishi bilan Telegramga xabar yuboramiz.",
   "focus_similar": "O'xshash: {name}",
-  "focus_sector": "Butun soha bo'yicha"
+  "focus_sector": "Butun soha bo'yicha",
+  "focus_pick_title": "Qaysi kasbda ishlaysiz?",
+  "focus_pick_desc": "Aniq kasbingizni tanlang — faqat sizga mos ishlarni ko'rsatamiz",
+  "my_title": "Kasblarim",
+  "primary": "Asosiy kasbingiz",
+  "extra": "Qo'shimcha kasblar",
+  "extra_hint": "Bir nechta kasbni bilsangiz qo'shing — har biriga tajribani alohida belgilang (5 tagacha).",
+  "add_extra": "Yana kasb qo'shish",
+  "extra_experience": "«{name}» bo'yicha tajribangiz qancha?",
+  "saved": "Saqlandi",
+  "errors": {
+    "too_many_professions": "Ko'pi bilan 5 ta qo'shimcha kasb",
+    "validation": "Iltimos, aniq kasbni tanlang"
+  },
+  "my_card": "Kasblarim",
+  "my_card_desc": "Asosiy va qo'shimcha kasblar"
 }

@@ -7,13 +7,13 @@ import { getMyVacancies } from "../../queries";
 import { VacancyStatusBadge } from "./status-badge";
 
 /** Mening vakansiyalarim: updated_at bo'yicha top 5 → /employer/vacancies/[id] */
-export async function MyVacanciesSection({ userId, companyId }: { userId: string; companyId: string | null }) {
+export async function MyVacanciesSection({ userId, companyId, limit = 5, title }: { userId: string; companyId: string | null; limit?: number; title?: string }) {
   const { t, tEnum, locale } = await getT();
-  const vacancies = await getMyVacancies(userId, companyId, 5);
+  const vacancies = await getMyVacancies(userId, companyId, limit);
   if (!vacancies.length) return null;
   return (
     <section className="mt-8">
-      <SectionHeader title={t("employer.dashboard.my_vacancies")} href="/employer/vacancies" linkLabel={t("employer.dashboard.all")} />
+      <SectionHeader title={title ?? t("employer.dashboard.my_vacancies")} href="/employer/vacancies" linkLabel={t("employer.dashboard.all")} />
       <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
         {vacancies.map((v) => (
           <li key={v.id}>

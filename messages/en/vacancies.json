@@ -393,5 +393,10 @@
     "salary_basis_region": "based on {count} posts in this region",
     "salary_basis_country": "based on {count} active posts",
     "salary_apply": "tap to apply"
+  },
+  "published_banner": {
+    "title": "Your job is live! 🎉",
+    "found": "{count} matching candidates found — see below",
+    "none": "We'll notify you as soon as matching candidates appear"
   }
 }

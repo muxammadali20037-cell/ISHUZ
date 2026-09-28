@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bell, Bookmark } from "lucide-react";
+import { Bell, Bookmark, MessageCircle } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { getSession } from "@/features/auth/session";
 import { createClient } from "@/lib/supabase/server";
@@ -30,11 +30,23 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
           <LanguageSwitcher className="hidden sm:inline-flex" />
           {session ? (
             <>
-              <Button asChild variant="ghost" size="icon-sm" className="relative" aria-label={t("common.nav.saved")}>
-                <Link href={role === "employer" ? "/employer/saved" : "/saved"}>
-                  <Bookmark className="size-5" />
+              <Button asChild variant="ghost" size="icon-sm" className="relative" aria-label={t("common.nav.messages")}>
+                <Link href="/messages">
+                  <MessageCircle className="size-5" />
+                  {counts?.messages ? (
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
+                      {counts.messages > 99 ? "99+" : counts.messages}
+                    </span>
+                  ) : null}
                 </Link>
               </Button>
+              {role === "employer" ? (
+                <Button asChild variant="ghost" size="icon-sm" className="relative hidden sm:inline-flex" aria-label={t("common.nav.saved")}>
+                  <Link href="/employer/saved">
+                    <Bookmark className="size-5" />
+                  </Link>
+                </Button>
+              ) : null}
               <Button asChild variant="ghost" size="icon-sm" className="relative" aria-label={t("common.nav.notifications")}>
                 <Link href="/notifications">
                   <Bell className="size-5" />

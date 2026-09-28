@@ -52,7 +52,7 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
       }
       if (res.data?.status === "pending_review") toast.success(t("vacancies.toast.pending_review"), t("vacancies.toast.pending_review_desc"));
       else toast.success(t("vacancies.toast.published"), t("vacancies.toast.published_desc"));
-      router.push(`/employer/vacancies/${v.id}`);
+      router.push(`/employer/vacancies/${v.id}?published=1`);
     });
   };
 

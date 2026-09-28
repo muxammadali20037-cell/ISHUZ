@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import type { SessionContext } from "@/features/auth/session";
 import { getCompleteness, getMyContacts, getMyRating, getWorkerProfileFull } from "../queries";
 import { ProfileHeader } from "./profile-header";
+import { ProfileShortcuts } from "./profile-shortcuts";
+import { CrossRoleCard } from "@/components/shared/quick-actions";
 import { CompletenessCard } from "./completeness-card";
 import { RatingCard } from "./rating-card";
 import { AboutSection, EducationSection, ExperienceSection, LanguagesSection, LocationSection, PortfolioSection, PreferencesSection, SkillsSection } from "./profile-sections";
@@ -35,6 +37,7 @@ export async function WorkerProfileView({ session, workerId }: { session: Sessio
       <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-6">
         <div className="space-y-4">
           <ProfileHeader session={session} data={data} />
+          <ProfileShortcuts workerId={workerId} />
           <div className="lg:hidden">
             <CompletenessCard completeness={completeness} />
           </div>
@@ -57,6 +60,7 @@ export async function WorkerProfileView({ session, workerId }: { session: Sessio
             <RatingCard rating={rating} />
           </div>
           <div className="lg:hidden">{privacy}</div>
+          <CrossRoleCard role="worker" />
         </div>
         <aside className="hidden space-y-4 lg:sticky lg:top-20 lg:block">
           <CompletenessCard completeness={completeness} />

@@ -96,7 +96,10 @@
     "empty_desc": "Post your first vacancy — matching candidates will be shortlisted automatically.",
     "empty_cta": "Post your first vacancy",
     "unknown_candidate": "Candidate",
-    "no_applications": "No applications yet"
+    "no_applications": "No applications yet",
+    "post_vacancy_big": "+ Post a job",
+    "post_vacancy_hint": "3 minutes: profession → conditions → publish. We show matching candidates right away",
+    "matching": "Matching candidates"
   },
   "company": {
     "verified": "Verified company",

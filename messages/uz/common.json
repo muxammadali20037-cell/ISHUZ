@@ -14,7 +14,7 @@
     "dashboard": "Dashboard",
     "workers": "Ishchilar",
     "post": "E'lon",
-    "saved": "Saqlanganlar",
+    "saved": "Saqlangan",
     "notifications": "Bildirishnomalar",
     "settings": "Sozlamalar",
     "offers": "Takliflar",
@@ -23,7 +23,9 @@
     "logout": "Chiqish",
     "login": "Kirish",
     "switch_to_employer": "Ish beruvchi rejimi",
-    "switch_to_worker": "Ish qidiruvchi rejimi"
+    "switch_to_worker": "Ish qidiruvchi rejimi",
+    "candidates": "Nomzodlar",
+    "vacancies": "Vakansiyalar"
   },
   "actions": {
     "save": "Saqlash",

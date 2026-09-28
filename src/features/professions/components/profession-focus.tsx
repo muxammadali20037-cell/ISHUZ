@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, BellPlus, Target } from "lucide-react";
+import { ArrowRight, BellPlus, Pencil, Target } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,21 @@ export async function ProfessionFocus({ workerId, categorySlug }: { workerId: st
   const supabase = await createClient();
   const { data: w } = await supabase.from("worker_profiles").select("profession_node_id").eq("id", workerId).maybeSingle();
   const nodeId = w?.profession_node_id;
-  if (!nodeId) return null;
+  if (!nodeId) {
+    const { t } = await getT();
+    return (
+      <Link href="/profile/profession" className="group flex items-center gap-4 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+          <Target className="size-7" />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-lg font-extrabold">{t("professions.focus_pick_title")}</span>
+          <span className="mt-0.5 block text-sm text-primary-foreground/85">{t("professions.focus_pick_desc")}</span>
+        </span>
+        <ArrowRight className="size-6 shrink-0 transition-transform group-hover:translate-x-1" />
+      </Link>
+    );
+  }
   const [{ t, name }, trail, { data: subtree }] = await Promise.all([
     getT(),
     getProfessionTrail(nodeId),
@@ -43,6 +57,7 @@ export async function ProfessionFocus({ workerId, categorySlug }: { workerId: st
     );
   }
 
+
   return (
     <section className="rounded-2xl border border-dashed border-border p-5 text-center">
       <BellPlus className="mx-auto size-8 text-primary" aria-hidden />
@@ -55,6 +70,11 @@ export async function ProfessionFocus({ workerId, categorySlug }: { workerId: st
             <Link href={jobsHref({ q: name(parent), category: categorySlug ?? "" })}>{t("professions.focus_similar", { name: name(parent) })}</Link>
           </Button>
         ) : null}
+        <Button asChild size="sm" variant="ghost">
+          <Link href="/profile/profession">
+            <Pencil className="size-4" /> {t("professions.change")}
+          </Link>
+        </Button>
         {categorySlug ? (
           <Button asChild size="sm" variant="ghost">
             <Link href={jobsHref({ category: categorySlug })}>{t("professions.focus_sector")}</Link>

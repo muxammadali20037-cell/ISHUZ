@@ -1,3 +1,4 @@
+import { CrossRoleCard } from "@/components/shared/quick-actions";
 import Link from "next/link";
 import { ArrowRight, BadgeCheck, Building2, LayoutDashboard, MapPin, Settings, UserRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -86,6 +87,7 @@ export async function EmployerSummary({ session, data }: { session: SessionConte
           <ArrowRight className="size-5 shrink-0 text-primary" />
         </Link>
       ) : null}
+      <CrossRoleCard role="employer" />
     </div>
   );
 }

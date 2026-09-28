@@ -1,8 +1,8 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
-import { CategoryGrid } from "@/features/jobs/components/home/category-grid";
 import { HomeSearch } from "@/features/jobs/components/home/home-search";
 import { HomeSection } from "@/features/jobs/components/home/home-section";
 import { WorkerStats } from "@/features/jobs/components/home/worker-stats";
@@ -11,15 +11,13 @@ import { getWorkerHomeContext } from "@/features/jobs/queries";
 import { jobsHref } from "@/features/jobs/search-params";
 import { createClient } from "@/lib/supabase/server";
 import { TopProfileCard } from "@/features/billing/components/top-profile-card";
-import { CrossRoleCard } from "@/components/shared/quick-actions";
 import { aiEnabled } from "@/lib/ai/client";
 import { AiCtaCard } from "@/features/ai/components/ai-composer";
 import { ProfessionFocus } from "@/features/professions/components/profession-focus";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
- * "Siz uchun" / "Yaqin atrofda" / "Yangi" / "Yuqori maoshli" / "Tajribasiz" / "Masofaviy" bo'limlari (har biri Suspense bilan oqimlanadi),
- * kategoriyalar to'ri.
+ * aniq kasb kartasi, "Siz uchun" / "Yangi" / "Yaqin atrofda" bo'limlari; qolgan filtrlar — tezkor tugmalar.
  */
 export async function WorkerHome({ session }: { session: SessionContext }) {
   if (!session.workerId || !session.workerOnboarded) redirect("/onboarding/worker");
@@ -32,27 +30,33 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
   const firstName = session.profile.first_name?.trim() || t("common.role.worker");
   const hasDistricts = ctx.districtIds.length > 0;
 
+  const quick = [
+    { href: jobsHref({ government: true }), label: t("jobs.home.government") },
+    { href: jobsHref({ sort: "salary" }), label: t("jobs.home.top_salary") },
+    { href: jobsHref({ noExperience: true }), label: t("jobs.home.no_experience") },
+    { href: jobsHref({ remote: true }), label: t("jobs.home.remote") },
+  ];
+
   return (
-    <div className="container-app space-y-8 py-5 sm:py-8">
+    <div className="container-app space-y-7 py-5 sm:py-8">
       <section className="space-y-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{t("jobs.home.greeting", { name: firstName })}</h1>
           <p className="mt-1 text-sm text-muted-foreground sm:text-base">{t("jobs.home.subtitle")}</p>
         </div>
         <HomeSearch className="max-w-2xl" />
+        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" aria-label={t("jobs.home.quick_filters")}>
+          {quick.map((q) => (
+            <Link key={q.href} href={q.href} className="shrink-0 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary">
+              {q.label}
+            </Link>
+          ))}
+        </nav>
       </section>
 
       <Suspense fallback={null}>
         <ProfessionFocus workerId={session.workerId} categorySlug={ctx.categorySlug} />
       </Suspense>
-
-      <Suspense fallback={<StatsSkeleton />}>
-        <WorkerStats />
-      </Suspense>
-
-      {aiEnabled() ? <AiCtaCard title={t("ai.cta_worker_update")} description={t("ai.cta_worker_update_desc")} href="/onboarding/worker/ai" /> : null}
-      <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} />
-      <CrossRoleCard role="worker" />
 
       <Suspense fallback={<HomeSectionSkeleton />}>
         <HomeSection
@@ -60,6 +64,10 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
           href={jobsHref({ category: ctx.categorySlug, district: ctx.districtIds })}
           args={{ p_category_id: ctx.categoryId ?? undefined, p_district_ids: hasDistricts ? ctx.districtIds : undefined, p_sort: "relevant" }}
         />
+      </Suspense>
+
+      <Suspense fallback={<HomeSectionSkeleton />}>
+        <HomeSection title={t("jobs.home.newest")} href={jobsHref({ sort: "newest" })} args={{ p_sort: "newest" }} />
       </Suspense>
 
       {hasDistricts ? (
@@ -72,29 +80,12 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
         </Suspense>
       ) : null}
 
-      <Suspense fallback={<HomeSectionSkeleton />}>
-        <HomeSection title={t("jobs.home.government")} href={jobsHref({ government: true })} args={{ p_government_only: true, p_sort: "newest" }} />
+      <Suspense fallback={<StatsSkeleton />}>
+        <WorkerStats />
       </Suspense>
 
-      <Suspense fallback={<HomeSectionSkeleton />}>
-        <HomeSection title={t("jobs.home.newest")} href={jobsHref({ sort: "newest" })} args={{ p_sort: "newest" }} />
-      </Suspense>
-
-      <Suspense fallback={<HomeSectionSkeleton />}>
-        <HomeSection title={t("jobs.home.top_salary")} href={jobsHref({ sort: "salary" })} args={{ p_sort: "salary" }} />
-      </Suspense>
-
-      <Suspense fallback={<HomeSectionSkeleton />}>
-        <HomeSection title={t("jobs.home.no_experience")} href={jobsHref({ noExperience: true })} args={{ p_no_experience: true, p_sort: "relevant" }} />
-      </Suspense>
-
-      <Suspense fallback={<HomeSectionSkeleton />}>
-        <HomeSection title={t("jobs.home.remote")} href={jobsHref({ remote: true })} args={{ p_is_remote: true, p_sort: "newest" }} />
-      </Suspense>
-
-      <Suspense fallback={<HomeSectionSkeleton />}>
-        <CategoryGrid />
-      </Suspense>
+      <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} />
+      {aiEnabled() ? <AiCtaCard title={t("ai.cta_worker_update")} description={t("ai.cta_worker_update_desc")} href="/onboarding/worker/ai" /> : null}
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Briefcase, Inbox, FileText, Eye, Bookmark, Send, UserCheck, type LucideIcon } from "lucide-react";
+import { Briefcase, Inbox, FileText, Eye, Bookmark, Send, UserCheck, Users, ChevronRight, type LucideIcon } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 import { getDashboardStats } from "../../queries";
@@ -52,6 +52,44 @@ export async function StatsTiles() {
           </Link>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * Soddalashtirilgan bosh sahifa: faqat 3 ta asosiy karta — faol vakansiyalar, yangi arizalar, mos nomzodlar.
+ * (To'liq statistika /employer/vacancies da.)
+ */
+export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
+  const { t, locale } = await getT();
+  const stats = await getDashboardStats();
+  const fmt = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ");
+  const tiles = [
+    { href: "/employer/vacancies", icon: Briefcase, label: t("employer.dashboard.stats.active_vacancies"), value: stats?.active_vacancies ?? null, hot: false },
+    { href: "/employer/candidates", icon: Inbox, label: t("employer.dashboard.stats.new_applications"), value: stats?.new_applications ?? null, hot: (stats?.new_applications ?? 0) > 0 },
+    { href: candidatesHref, icon: Users, label: t("employer.dashboard.matching"), value: null, hot: false },
+  ];
+  return (
+    <div className="grid gap-3 sm:grid-cols-3">
+      {tiles.map((x) => (
+        <Link
+          key={x.href + x.label}
+          href={x.href}
+          className={cn(
+            "flex items-center gap-4 rounded-2xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md",
+            x.hot ? "border-primary/40 bg-primary-soft/40" : "border-border/70",
+          )}
+        >
+          <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", x.hot ? "bg-primary text-primary-foreground" : "bg-secondary text-primary")}>
+            <x.icon className="size-6" />
+          </span>
+          <span className="min-w-0 flex-1">
+            <span className="block text-[15px] font-semibold">{x.label}</span>
+            {x.value !== null ? <span className={cn("block text-2xl font-extrabold tabular leading-tight", x.hot && "text-primary")}>{fmt.format(x.value)}</span> : null}
+          </span>
+          <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
+        </Link>
+      ))}
     </div>
   );
 }

@@ -173,7 +173,7 @@ export function VacancyManage({
         ) : null}
       </section>
 
-      <section className="mt-8">
+      <section id="matching" className="mt-8">
         <SectionHeader title={t("vacancies.manage.matching_title")} href={workersHref} linkLabel={t("vacancies.actions.all_workers")} />
         <p className="-mt-2 mb-3 text-sm text-muted-foreground">{t("vacancies.manage.matching_desc")}</p>
         {workers.length ? (

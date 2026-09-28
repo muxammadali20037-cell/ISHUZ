@@ -9,13 +9,13 @@ import { getRecentApplications } from "../../queries";
 import { ApplicationStatusBadge } from "./status-badge";
 
 /** So'nggi 5 ta ariza → /employer/vacancies/[vacancyId]/applications */
-export async function RecentApplicationsSection({ userId, companyId }: { userId: string; companyId: string | null }) {
+export async function RecentApplicationsSection({ userId, companyId, limit = 5, title }: { userId: string; companyId: string | null; limit?: number; title?: string }) {
   const { t, tEnum, locale } = await getT();
-  const apps = await getRecentApplications(userId, companyId, 5);
+  const apps = await getRecentApplications(userId, companyId, limit);
   if (!apps.length) return null;
   return (
     <section className="mt-8">
-      <SectionHeader title={t("employer.dashboard.recent_applications")} href="/employer/candidates" linkLabel={t("employer.dashboard.all")} />
+      <SectionHeader title={title ?? t("employer.dashboard.recent_applications")} href="/employer/candidates" linkLabel={t("employer.dashboard.all")} />
       <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
         {apps.map((a) => {
           const name = fullName(a.first_name, a.last_name) || t("employer.dashboard.unknown_candidate");

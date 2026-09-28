@@ -23,7 +23,9 @@
     "logout": "Выйти",
     "login": "Войти",
     "switch_to_employer": "Режим работодателя",
-    "switch_to_worker": "Режим соискателя"
+    "switch_to_worker": "Режим соискателя",
+    "candidates": "Кандидаты",
+    "vacancies": "Вакансии"
   },
   "actions": {
     "save": "Сохранить",
