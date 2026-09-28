@@ -1736,6 +1736,89 @@ export type Database = {
           },
         ];
       };
+      skill_question_options: {
+        Row: {
+          question_id: string;
+          skill_id: string;
+          sort_order: number;
+        };
+        Insert: {
+          question_id: string;
+          skill_id: string;
+          sort_order?: number;
+        };
+        Update: {
+          question_id?: string;
+          skill_id?: string;
+          sort_order?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "skill_question_options_question_id_fkey";
+            columns: ["question_id"];
+            isOneToOne: false;
+            referencedRelation: "skill_questions";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "skill_question_options_skill_id_fkey";
+            columns: ["skill_id"];
+            isOneToOne: false;
+            referencedRelation: "skills";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      skill_questions: {
+        Row: {
+          category_id: string;
+          created_at: string;
+          hint_ru: string | null;
+          hint_uz: string | null;
+          id: string;
+          is_active: boolean;
+          slug: string;
+          sort_order: number;
+          subcategory_slugs: string[];
+          title_ru: string;
+          title_uz: string;
+        };
+        Insert: {
+          category_id: string;
+          created_at?: string;
+          hint_ru?: string | null;
+          hint_uz?: string | null;
+          id?: string;
+          is_active?: boolean;
+          slug: string;
+          sort_order?: number;
+          subcategory_slugs?: string[];
+          title_ru: string;
+          title_uz: string;
+        };
+        Update: {
+          category_id?: string;
+          created_at?: string;
+          hint_ru?: string | null;
+          hint_uz?: string | null;
+          id?: string;
+          is_active?: boolean;
+          slug?: string;
+          sort_order?: number;
+          subcategory_slugs?: string[];
+          title_ru?: string;
+          title_uz?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "skill_questions_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       skills: {
         Row: {
           category_id: string | null;

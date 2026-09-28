@@ -71,3 +71,13 @@ export const PORTFOLIO_MIME: Record<Exclude<Enums<"portfolio_type">, "link">, re
   pdf: ["application/pdf"],
   document: ["application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/pdf"],
 };
+
+/** Kasbga qarab savol: javob — ko'nikmalar (worker_skills) */
+export interface SkillQuestion {
+  id: string;
+  title_uz: string;
+  title_ru: string;
+  hint_uz: string | null;
+  hint_ru: string | null;
+  options: { id: string; name_uz: string; name_ru: string }[];
+}

@@ -4,7 +4,7 @@ import { requireSession } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { getReferenceData } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
-import { getSkillOptions, getWorkerDraft } from "@/features/onboarding/queries";
+import { getSkillOptions, getSkillQuestions, getWorkerDraft } from "@/features/onboarding/queries";
 import { WorkerWizard } from "@/features/onboarding/components/worker-wizard";
 import { clampStep } from "@/features/onboarding/utils";
 
@@ -25,11 +25,12 @@ export default async function WorkerOnboardingPage({ searchParams }: { searchPar
   const [draft, reference] = await Promise.all([getWorkerDraft(session), getReferenceData()]);
   const requested = stepParam ? Number.parseInt(stepParam, 10) : null;
   const step = clampStep(requested, draft.onboardingStep);
-  const skills = step === 5 ? await getSkillOptions(session.userId) : null;
+  const [skills, questions] =
+    step === 5 ? await Promise.all([getSkillOptions(session.userId), getSkillQuestions(draft.worker?.category_id ?? null, draft.worker?.subcategory_id ?? null)]) : [null, []];
 
   return (
     <Shell hideNav>
-      <WorkerWizard step={step} draft={draft} reference={reference} skills={skills} userId={session.userId} />
+      <WorkerWizard step={step} draft={draft} reference={reference} skills={skills} questions={questions} userId={session.userId} />
     </Shell>
   );
 }

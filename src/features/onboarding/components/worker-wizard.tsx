@@ -3,7 +3,7 @@ import { getT } from "@/lib/i18n/server";
 import { aiEnabled } from "@/lib/ai/client";
 import { AiCtaCard } from "@/features/ai/components/ai-composer";
 import type { ReferenceData } from "@/lib/reference";
-import { REVIEW_STEP, STEP_KEYS, type SkillOption, type WorkerDraft } from "../types";
+import { REVIEW_STEP, STEP_KEYS, type SkillOption, type SkillQuestion, type WorkerDraft } from "../types";
 import { Review } from "./review";
 import { WizardShell } from "./wizard-shell";
 import { Step1Personal } from "./steps/step-1-personal";
@@ -20,7 +20,21 @@ import { Step8Preferences } from "./steps/step-8-preferences";
  * Enum default'lari (remote_preference, experience_level, work_format) faqat o'sha qadam saqlangan bo'lsa ko'rsatiladi —
  * aks holda foydalanuvchi "tanlanmagan" holatni ko'radi.
  */
-export async function WorkerWizard({ step, draft, reference, skills, userId }: { step: number; draft: WorkerDraft; reference: ReferenceData; skills: SkillOption[] | null; userId: string }) {
+export async function WorkerWizard({
+  step,
+  draft,
+  reference,
+  skills,
+  questions = [],
+  userId,
+}: {
+  step: number;
+  draft: WorkerDraft;
+  reference: ReferenceData;
+  skills: SkillOption[] | null;
+  questions?: SkillQuestion[];
+  userId: string;
+}) {
   const { t } = await getT();
   const key = STEP_KEYS[step - 1] ?? "personal";
   const w = draft.worker;
@@ -69,7 +83,7 @@ export async function WorkerWizard({ step, draft, reference, skills, userId }: {
       content = <Step4Experience draft={{ experience_level: w && saved > 4 ? w.experience_level : null, entries: draft.experience }} />;
       break;
     case 5:
-      content = <Step5Skills draft={{ skills: draft.skills, languages: draft.languages }} options={skills ?? []} categoryId={w?.category_id ?? null} languages={reference.languages} />;
+      content = <Step5Skills draft={{ skills: draft.skills, languages: draft.languages }} options={skills ?? []} categoryId={w?.category_id ?? null} languages={reference.languages} questions={questions} />;
       break;
     case 6:
       content = <Step6Education draft={{ level: draft.education[0]?.level ?? null, entries: draft.education }} />;

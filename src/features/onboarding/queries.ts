@@ -3,7 +3,7 @@ import "server-only";
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { SessionContext } from "@/features/auth/session";
-import type { DraftSkill, SkillOption, WorkerDraft } from "./types";
+import type { DraftSkill, SkillOption, SkillQuestion, WorkerDraft } from "./types";
 
 const WORKER_COLUMNS =
   "id, headline, category_id, subcategory_id, experience_level, region_id, district_id, area_hint, remote_preference, work_format, onboarding_step, onboarding_completed_at, completeness";
@@ -89,4 +89,38 @@ export const getSkillOptions = cache(async (userId: string): Promise<SkillOption
     .order("name_uz")
     .limit(1500);
   return data ?? [];
+});
+
+/**
+ * Ishchi kasbiga mos savollar ("Guvohnoma toifasi?", "Qaysi dasturlar?").
+ * Butun soha uchun (subcategory_slugs bo'sh) yoki aynan shu kasb uchun.
+ */
+export const getSkillQuestions = cache(async (categoryId: string | null, subcategoryId: string | null): Promise<SkillQuestion[]> => {
+  if (!categoryId) return [];
+  const supabase = await createClient();
+  const [{ data: sub }, { data, error }] = await Promise.all([
+    subcategoryId ? supabase.from("subcategories").select("slug").eq("id", subcategoryId).maybeSingle() : Promise.resolve({ data: null }),
+    supabase
+      .from("skill_questions")
+      .select("id, title_uz, title_ru, hint_uz, hint_ru, subcategory_slugs, sort_order, options:skill_question_options(sort_order, skill:skills(id, name_uz, name_ru))")
+      .eq("category_id", categoryId)
+      .eq("is_active", true)
+      .order("sort_order"),
+  ]);
+  if (error) {
+    console.error("[onboarding] skill questions", error.message);
+    return [];
+  }
+  const slug = sub?.slug ?? null;
+  return (data ?? [])
+    .filter((q) => q.subcategory_slugs.length === 0 || (slug !== null && q.subcategory_slugs.includes(slug)))
+    .map((q) => ({
+      id: q.id,
+      title_uz: q.title_uz,
+      title_ru: q.title_ru,
+      hint_uz: q.hint_uz,
+      hint_ru: q.hint_ru,
+      options: [...q.options].sort((a, b) => a.sort_order - b.sort_order).flatMap((o) => (o.skill ? [o.skill] : [])),
+    }))
+    .filter((q) => q.options.length > 0);
 });
