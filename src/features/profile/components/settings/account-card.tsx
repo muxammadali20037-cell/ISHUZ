@@ -8,6 +8,7 @@ import { signOut } from "@/features/auth/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/dialog";
+import { DeleteAccount } from "./delete-account";
 
 export function AccountCard({ phone, phoneVerified, email }: { phone: string | null; phoneVerified: boolean; email: string | null }) {
   const { t } = useT();
@@ -54,6 +55,7 @@ export function AccountCard({ phone, phoneVerified, email }: { phone: string | n
         loading={pending}
         onConfirm={() => startTransition(() => signOut())}
       />
+      <DeleteAccount />
     </div>
   );
 }

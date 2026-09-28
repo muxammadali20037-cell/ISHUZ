@@ -1183,7 +1183,7 @@ export type Database = {
           id: string;
           order_no: number;
           paid_at: string | null;
-          profile_id: string;
+          profile_id: string | null;
           provider: Database["public"]["Enums"]["payment_provider"] | null;
           provider_cancel_time: number | null;
           provider_create_time: number | null;
@@ -1203,7 +1203,7 @@ export type Database = {
           id?: string;
           order_no?: never;
           paid_at?: string | null;
-          profile_id: string;
+          profile_id?: string | null;
           provider?: Database["public"]["Enums"]["payment_provider"] | null;
           provider_cancel_time?: number | null;
           provider_create_time?: number | null;
@@ -1223,7 +1223,7 @@ export type Database = {
           id?: string;
           order_no?: never;
           paid_at?: string | null;
-          profile_id?: string;
+          profile_id?: string | null;
           provider?: Database["public"]["Enums"]["payment_provider"] | null;
           provider_cancel_time?: number | null;
           provider_create_time?: number | null;
@@ -3085,6 +3085,10 @@ export type Database = {
       };
       payme_validate_order: {
         Args: { p_amount: number; p_order: string };
+        Returns: Json;
+      };
+      prepare_account_deletion: {
+        Args: Record<PropertyKey, never>;
         Returns: Json;
       };
       profile_display_name: { Args: { p_profile: string }; Returns: string };

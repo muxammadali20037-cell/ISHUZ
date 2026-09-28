@@ -181,5 +181,11 @@
   "report_desc": "Nima uchun shikoyat qilyapsiz?",
   "report_details": "Batafsil (ixtiyoriy)",
   "contact_locked": "Telefon raqam ariza yoki taklif qabul qilingandan keyin ochiladi.",
-  "contact_title": "Kontakt"
+  "contact_title": "Kontakt",
+  "error_page": {
+    "title": "Nimadir xato ketdi",
+    "desc": "Xavotir olmang — ma'lumotlaringiz saqlangan. Qayta urinib ko'ring yoki bosh sahifaga qayting.",
+    "home": "Bosh sahifa",
+    "code": "Xato kodi: {code}"
+  }
 }

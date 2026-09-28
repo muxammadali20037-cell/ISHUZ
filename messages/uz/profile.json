@@ -302,5 +302,24 @@
     "reviews_count": "{count} ta sharh",
     "no_rating": "Hali baholanmagan",
     "anonymous": "Foydalanuvchi"
+  },
+  "delete_account": {
+    "title": "Hisobni o'chirish",
+    "hint": "Hisob va barcha shaxsiy ma'lumotlaringiz butunlay o'chiriladi.",
+    "button": "Hisobni o'chirish",
+    "desc": "Bu amalni qaytarib bo'lmaydi.",
+    "what_1": "Profil, CV, portfolio, arizalar va xabarlaringiz o'chiriladi.",
+    "what_2": "Telefon raqamingiz va Telegram ulanishi o'chiriladi.",
+    "what_3": "Faqat sizniki bo'lgan faol vakansiyalar yopiladi.",
+    "what_4": "To'lov yozuvlari qonun bo'yicha ismsiz saqlanadi.",
+    "alternative": "Vaqtincha yashirinmoqchimisiz? Profil sahifasida «Hozir ish qidirmayapman» holatini tanlang — hisob saqlanadi.",
+    "type_word": "Tasdiqlash uchun «{word}» deb yozing",
+    "word": "O'CHIRISH",
+    "confirm_button": "Butunlay o'chirish",
+    "errors": {
+      "confirm_mismatch": "Tasdiq so'zi noto'g'ri",
+      "admin_cannot_delete": "Admin hisobini o'chirish uchun avval admin huquqini olib tashlang",
+      "not_authenticated": "Avval tizimga kiring"
+    }
   }
 }
