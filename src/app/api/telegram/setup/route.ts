@@ -8,7 +8,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * Bir martalik sozlash: webhook (secret_token bilan) + menyu tugmasi (web_app) + buyruqlar ro'yxati (/cv, /jobs, /pdf).
+ * Bir martalik sozlash: webhook (secret_token bilan) + menyu tugmasi (web_app) + buyruqlar ro'yxati (/cv, /jobs, /pdf, /lang).
  *   curl -X POST -H "Authorization: Bearer $CRON_SECRET" https://<app>/api/telegram/setup
  */
 export async function POST(req: NextRequest) {
@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
   const webhookUrl = `${APP_URL.replace(/\/$/, "")}/api/telegram/webhook`;
   const commands = (locale: "uz" | "ru") => {
     const t = makeT(locale);
-    return (["start", "cv", "jobs", "pdf"] as const).map((command) => ({ command, description: t(`bot.menu.cmd_${command}`) }));
+    return (["start", "cv", "jobs", "pdf", "lang"] as const).map((command) => ({ command, description: t(`bot.menu.cmd_${command}`) }));
   };
   const [webhook, menu, cmdDefault, cmdRu] = await Promise.all([
     setBotWebhook(webhookUrl, TELEGRAM_WEBHOOK_SECRET),

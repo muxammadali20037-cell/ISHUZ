@@ -8,7 +8,9 @@
     "cmd_cv": "CV tuzish (savol-javob)",
     "cmd_jobs": "Menga mos ishlar",
     "cmd_pdf": "CV'ni PDF qilib olish",
-    "cmd_start": "Bosh menyu"
+    "cmd_start": "Bosh menyu",
+    "lang": "🌐 Til / Язык",
+    "cmd_lang": "Tilni o'zgartirish"
   },
   "cv": {
     "intro": "Keling, professional CV tuzamiz! 👇\nHar bir savolga javob bering — tugmani bosing yoki yozing. Taxminan 2 daqiqa.",
@@ -75,5 +77,9 @@
     "negotiable": "kelishiladi",
     "remote": "masofaviy",
     "match": "moslik {score}%"
+  },
+  "lang": {
+    "title": "Tilni tanlang / Выберите язык",
+    "changed": "✅ Til: O'zbekcha"
   }
 }

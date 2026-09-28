@@ -7,7 +7,7 @@ import { makeT } from "@/lib/i18n/translate";
 import { formatPhone } from "@/lib/format";
 import { parseBotCommand, resolveTelegramLocale, telegramUpdateSchema } from "@/features/notifications/telegram";
 import { ensureTelegramProfile, normalizeContactPhone } from "@/features/auth/telegram-session";
-import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
+import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendLanguagePicker, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -128,6 +128,10 @@ export async function POST(req: NextRequest) {
     if (command?.name === "jobs") {
       await sendMatchingJobs(bot, 0);
       return NextResponse.json({ ok: true, command: "jobs" });
+    }
+    if (command?.name === "lang") {
+      await sendLanguagePicker(bot, "menu");
+      return NextResponse.json({ ok: true, command: "lang" });
     }
     if (command?.name === "pdf") {
       await sendCvPdf(bot);

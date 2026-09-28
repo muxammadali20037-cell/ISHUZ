@@ -4,7 +4,7 @@ import type { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import type { Locale } from "@/lib/i18n/config";
 import type { TFunction } from "@/lib/i18n/translate";
-import { makeTEnum } from "@/lib/i18n/translate";
+import { makeT, makeTEnum } from "@/lib/i18n/translate";
 import { formatMoney, formatMoneyShort, formatSalaryRange } from "@/lib/format";
 import {
   answerCallback,
@@ -100,6 +100,7 @@ export function botMenuKeyboard(t: TFunction): InlineKeyboard {
         { text: t("bot.menu.pdf"), callback_data: "menu:pdf" },
         { text: t("bot.menu.app"), web_app: { url: webAppUrl("/") } },
       ],
+      [{ text: t("bot.menu.lang"), callback_data: "menu:lang" }],
     ],
   };
 }
@@ -343,10 +344,10 @@ async function advance(ctx: BotCtx, s: Session) {
 // ---------------------------------------------------------------------------
 
 /** /cv yoki "CV tuzish": mavjud CV bo'lsa — tanlov, bo'lmasa savollar */
-export async function startCv(ctx: BotCtx, opts: { force?: boolean } = {}) {
+export async function startCv(ctx: BotCtx, opts: { force?: boolean; langChosen?: boolean } = {}) {
   const profileId = await ensureTelegramProfile(ctx.admin, ctx.from, ctx.locale);
   const worker = await workerOf(ctx, profileId);
-  if (worker?.onboarding_completed_at && !opts.force) {
+  if (worker?.onboarding_completed_at && !opts.force && !opts.langChosen) {
     await sendBotMessage(ctx.chatId, b(ctx, "cv.exists"), {
       inline_keyboard: [
         [{ text: ctx.t("bot.menu.pdf"), callback_data: "menu:pdf" }],
@@ -354,6 +355,11 @@ export async function startCv(ctx: BotCtx, opts: { force?: boolean } = {}) {
         [{ text: ctx.t("bot.cv.refill"), callback_data: "cv:restart" }],
       ],
     });
+    return;
+  }
+  // savol-javob til tanlashdan boshlanadi (CV ham shu tilda tuziladi)
+  if (!opts.langChosen) {
+    await sendLanguagePicker(ctx, opts.force ? "cvr" : "cv");
     return;
   }
   const s: Session = {
@@ -368,6 +374,37 @@ export async function startCv(ctx: BotCtx, opts: { force?: boolean } = {}) {
   };
   await sendBotMessage(ctx.chatId, b(ctx, "cv.intro"));
   await askStep(ctx, s);
+}
+
+// ---------------------------------------------------------------------------
+// Til
+// ---------------------------------------------------------------------------
+
+type LangTarget = "cv" | "cvr" | "menu";
+const LOCALES = [
+  ["uz", "🇺🇿 O'zbekcha"],
+  ["ru", "🇷🇺 Русский"],
+] as const;
+
+/** "Tilni tanlang / Выберите язык" — ikki tilda, joriy til ✅ bilan */
+export async function sendLanguagePicker(ctx: BotCtx, target: LangTarget) {
+  await sendBotMessage(ctx.chatId, escapeHtml(ctx.t("bot.lang.title")), {
+    inline_keyboard: [LOCALES.map(([code, label]) => ({ text: `${code === ctx.locale ? "✅ " : ""}${label}`, callback_data: `lang:${code}:${target}` }))],
+  });
+}
+
+/** Tanlangan til profilga yoziladi (keyingi xabarlar, CV va PDF shu tilda) */
+async function applyLanguage(ctx: BotCtx, locale: Locale, target: LangTarget, messageId: number | null) {
+  const profileId = await ensureTelegramProfile(ctx.admin, ctx.from, locale);
+  const { error } = await ctx.admin.from("profiles").update({ locale }).eq("id", profileId);
+  if (error) console.error("[bot] locale", error.message);
+  const next: BotCtx = { ...ctx, locale, t: makeT(locale) };
+  if (messageId) await editBotMessage(ctx.chatId, messageId, escapeHtml(next.t("bot.lang.changed")));
+  if (target === "menu") {
+    await sendBotMessage(ctx.chatId, b(next, "menu.title"), botMenuKeyboard(next.t));
+    return;
+  }
+  await startCv(next, { force: target === "cvr", langChosen: true });
 }
 
 // ---------------------------------------------------------------------------
@@ -470,6 +507,9 @@ export async function handleBotCallback(ctx: BotCtx, callbackId: string, data: s
     if (data === "cv:restart") return await startCv(ctx, { force: true });
     if (data === "menu:jobs") return await sendMatchingJobs(ctx, 0);
     if (data === "menu:pdf") return await sendCvPdf(ctx);
+    if (data === "menu:lang") return await sendLanguagePicker(ctx, "menu");
+    const lang = /^lang:(uz|ru):(cv|cvr|menu)$/.exec(data);
+    if (lang) return await applyLanguage(ctx, lang[1] as Locale, lang[2] as LangTarget, messageId);
     if (data === "jobs:alert") return await createJobAlert(ctx);
     const jobs = /^jobs:(\d{1,3})$/.exec(data);
     if (jobs) return await sendMatchingJobs(ctx, Number(jobs[1]));
