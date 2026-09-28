@@ -72,20 +72,23 @@ uz/ru i18n (`messages/`) · Telegram Mini App + PWA · Gemini/Claude (ixtiyoriy 
 - **Hozirgi holat:** "Sizga 73% mos".
 - **Yechim:** "Juda mos / Mos / Qisman mos / Kam mos" va sabablar ro'yxati. Foiz faqat yordamchi `title` sifatida qoladi.
 
-## 3. Keyingi bosqichlar (ustuvorlik bo'yicha)
+## 3. Ikkinchi bosqich (bajarildi)
 
-1. **Saqlangan qidiruv va bildirishnoma**: "Chilonzorda sizga mos 3 ta yangi ish". `search_logs` va tushunish moduli bunga tayyor; kerak bo'ladi: `saved_searches` jadvali, cron, Telegram yuborish.
-2. **Kontakt so'rash oqimi**: `phone_visibility = on_request` uchun so'rov → tasdiqlash (`contact_grants` bor, UI yo'q).
-3. **Ish beruvchi pipeline**: ommaviy holat o'zgartirish, suhbat sanasi va vaqti, har bir arizaga shaxsiy izoh.
-4. **Bildirishnoma sozlamalari**: tur va kanal bo'yicha o'chirish.
-5. **Chat tezkor javoblari**: "Suhbatga qachon kela olasiz?" va hokazo.
-6. **Hisobni o'chirish** (o'zi), kompaniyalarni kuzatish.
-7. **SEO**: `sitemap.ts`, `robots.ts`, kompaniya uchun Organization JSON-LD. **Xatolar**: `global-error.tsx` va har bir bo'lim uchun `error.tsx`.
-8. **Kasbga qarab savollar**: haydovchiga guvohnoma toifasi, buxgalterga 1C/Didox, dasturchiga stek. "Qaysi kasb sizga mos?" yo'naltiruvchi.
-9. **Filial (branch)** va jamoa huquqlarini nozik taqsimlash; obuna/entitlement arxitekturasi.
-10. **Xavfsizlik**: `company-logos` bucket'ida SVG'ni taqiqlash (stored XSS xavfi); vakansiya yaratish/e'lon qilishga rate limit.
+1. **Saqlangan qidiruv + kunlik xabar** — `saved_searches`, `run_saved_search_alerts` (pg_cron 09:05), "N ta yangi" belgisi (`0021`).
+2. **Telefon so'rash** — `contact_requests`: so'rov → ruxsat / rad (7 kun kutish, kuniga 30 ta), ikki tomonga bildirishnoma (`0022`).
+3. **Ish beruvchi pipeline'i** — suhbat sanasi/joyi (`schedule_interview`, Toshkent vaqti), ommaviy saralash/rad etish, shaxsiy izohlar (nomzod ko'rmaydi) (`0023`).
+4. **Kasbga qarab savollar** — `skill_questions`: haydovchi toifasi, buxgalteriya dasturlari, IT stek, oshxona... javob = ko'nikma (`0024`).
+5. **Hisobni o'chirish** — to'lovlar ismsiz saqlanadi, egasiz vakansiyalar yopiladi, audit; `sitemap.xml`, `robots.txt`, umumiy xato sahifalari (`0025`).
+6. **Xavfsizlik** — logotiplarda SVG taqiqlandi (stored XSS), vakansiya yaratishga cheklov: soatiga 10, sutkasiga 30 (`0026`).
 
-## 4. Tamoyillar (har bir o'zgarishda tekshiriladi)
+## 4. Keyingi imkoniyatlar
+
+- Filial (branch) va jamoa huquqlarini nozik taqsimlash; obuna/entitlement arxitekturasi.
+- Chatda tezkor javoblar; bildirishnoma sozlamalari (tur/kanal bo'yicha).
+- "Qaysi kasb sizga mos?" yo'naltiruvchi; kompaniyalarni kuzatish.
+- Admin panelda kasb savollarini tahrirlash sahifasi (hozir jadval RLS bilan tayyor, UI yo'q).
+
+## 5. Tamoyillar (har bir o'zgarishda tekshiriladi)
 - AI ixtiyoriy: qidiruv, filtrlar, vakansiya yaratish va ariza AI'siz ham ishlaydi.
 - Mijoz rolga ishonilmaydi: hamma cheklov RLS va security-definer RPC'da.
 - Soxta raqam, soxta belgi, soxta shoshilinchlik yo'q: statistika faqat haqiqiy ma'lumotdan olinadi, yetarli bo'lmasa ko'rsatilmaydi.

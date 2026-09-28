@@ -61,7 +61,7 @@
       "tin": "STIR 9 ta raqamdan iborat bo'lishi kerak",
       "about_max": "Ko'pi bilan 2000 belgi",
       "address_max": "Ko'pi bilan 200 belgi",
-      "logo_type": "Faqat JPG, PNG, WEBP yoki SVG",
+      "logo_type": "Faqat JPG, PNG yoki WEBP",
       "logo_size": "Logotip 3 MB dan katta bo'lmasligi kerak",
       "upload_failed": "Faylni yuklab bo'lmadi. Qayta urinib ko'ring."
     }

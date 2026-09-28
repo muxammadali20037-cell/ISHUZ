@@ -17,7 +17,6 @@ export const LOGO_MIME: Record<string, string> = {
   "image/jpeg": "jpg",
   "image/png": "png",
   "image/webp": "webp",
-  "image/svg+xml": "svg",
 };
 export const DOC_MAX_BYTES = 15 * 1024 * 1024;
 export const DOC_MAX_COUNT = 5;
