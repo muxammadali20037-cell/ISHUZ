@@ -32,3 +32,22 @@ export const createReviewSchema = z
   })
   .refine((d) => (d.applicationId ? 1 : 0) + (d.offerId ? 1 : 0) === 1, { message: "one_source_required", path: ["applicationId"] });
 export type CreateReviewInput = z.infer<typeof createReviewSchema>;
+
+/** Suhbat: sana-vaqt (ISO, Toshkent vaqti bilan), joy (ixtiyoriy), izoh (ixtiyoriy) */
+export const scheduleInterviewSchema = z.object({
+  applicationId: uuidSchema,
+  vacancyId: uuidSchema,
+  at: z.string().datetime({ offset: true }),
+  place: z.string().trim().max(300).optional(),
+  note: z.string().trim().max(1000).optional(),
+});
+
+export const bulkStatusSchema = z.object({
+  vacancyId: uuidSchema,
+  ids: z.array(uuidSchema).min(1).max(100),
+  status: z.enum(["shortlisted", "rejected"]),
+  note: z.string().trim().max(1000).optional(),
+});
+
+export const addNoteSchema = z.object({ applicationId: uuidSchema, vacancyId: uuidSchema, body: z.string().trim().min(1).max(1000) });
+export const deleteNoteSchema = z.object({ id: uuidSchema, applicationId: uuidSchema, vacancyId: uuidSchema });

@@ -35,7 +35,10 @@
     "interview_invite": {
       "title": "Suhbatga taklif qilindingiz",
       "body": "«{vacancy_title}» bo'yicha suhbatga taklif qilindingiz",
-      "body_company": "{company_name} sizni «{vacancy_title}» bo'yicha suhbatga taklif qildi"
+      "body_company": "{company_name} sizni «{vacancy_title}» bo'yicha suhbatga taklif qildi",
+      "when": "🗓 {when}",
+      "where": "📍 {place}",
+      "title_rescheduled": "Suhbat vaqti o'zgardi"
     },
     "offer_received": {
       "title": "Yangi ish taklifi",

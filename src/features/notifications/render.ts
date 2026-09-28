@@ -6,6 +6,7 @@
 import type { TFunction } from "@/lib/i18n/translate";
 import type { Locale } from "@/lib/i18n/config";
 import type { Enums, Json } from "@/types/database.types";
+import { isoToTashkent } from "@/features/applications/tashkent-time";
 
 export type NotificationType = Enums<"notification_type">;
 
@@ -108,7 +109,17 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
     }
     case "interview_invite": {
       const params = { vacancy_title: str(p, "vacancy_title"), company_name: str(p, "company_name") };
-      return { title: t(`${k}.title`, params), body: params.company_name ? t(`${k}.body_company`, params) : t(`${k}.body`, params), icon: "interview" };
+      const lines = [params.company_name ? t(`${k}.body_company`, params) : t(`${k}.body`, params)];
+      // Suhbat vaqti va joyi (Toshkent vaqti) — bo'lsa qo'shiladi
+      const at = str(p, "interview_at");
+      if (at && !Number.isNaN(Date.parse(at))) {
+        const { date, time } = isoToTashkent(at);
+        lines.push(t(`${k}.when`, { when: `${date.split("-").reverse().join(".")} ${time}` }));
+      }
+      const place = str(p, "interview_place");
+      if (place) lines.push(t(`${k}.where`, { place }));
+      const rescheduled = p.rescheduled === true;
+      return { title: t(rescheduled ? `${k}.title_rescheduled` : `${k}.title`, params), body: lines.join("\n"), icon: "interview" };
     }
     case "offer_received": {
       const salary = salaryText(t, num(p, "salary_from"), num(p, "salary_to"));

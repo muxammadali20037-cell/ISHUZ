@@ -5,6 +5,7 @@ import type { Enums } from "@/types/database.types";
 import {
   parseMatchReasons,
   type ApplicationEvent,
+  type ApplicationNote,
   type ApplicationStatus,
   type CandidateSummary,
   type EmployerApplicationDetail,
@@ -129,7 +130,7 @@ export async function getWorkerApplication(applicationId: string, workerId: stri
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
-    .select(`id, status, match_score, match_reasons, cover_message, viewed_at, created_at, updated_at, vacancy:vacancies(${VACANCY_SELECT}), ${EVENTS_SELECT}`)
+    .select(`id, status, match_score, match_reasons, cover_message, interview_at, interview_place, viewed_at, created_at, updated_at, vacancy:vacancies(${VACANCY_SELECT}), ${EVENTS_SELECT}`)
     .eq("id", applicationId)
     .eq("worker_id", workerId)
     .maybeSingle();
@@ -142,6 +143,8 @@ export async function getWorkerApplication(applicationId: string, workerId: stri
     match_score: data.match_score,
     match_reasons: parseMatchReasons(data.match_reasons),
     cover_message: data.cover_message,
+    interview_at: data.interview_at,
+    interview_place: data.interview_place,
     viewed_at: data.viewed_at,
     created_at: data.created_at,
     updated_at: data.updated_at,
@@ -216,7 +219,7 @@ export async function getEmployerApplication(applicationId: string, userId: stri
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("applications")
-    .select(`id, vacancy_id, status, match_score, match_reasons, cover_message, viewed_at, created_at, updated_at, vacancy:vacancies(id, title, slug, status), ${CANDIDATE_SELECT}, ${EVENTS_SELECT}`)
+    .select(`id, vacancy_id, status, match_score, match_reasons, cover_message, interview_at, interview_place, viewed_at, created_at, updated_at, vacancy:vacancies(id, title, slug, status), ${CANDIDATE_SELECT}, ${EVENTS_SELECT}`)
     .eq("id", applicationId)
     .maybeSingle();
   if (error) throw new Error(`application: ${error.message}`);
@@ -229,6 +232,8 @@ export async function getEmployerApplication(applicationId: string, userId: stri
     match_score: data.match_score,
     match_reasons: parseMatchReasons(data.match_reasons),
     cover_message: data.cover_message,
+    interview_at: data.interview_at,
+    interview_place: data.interview_place,
     viewed_at: data.viewed_at,
     created_at: data.created_at,
     updated_at: data.updated_at,
@@ -252,4 +257,26 @@ export async function markApplicationViewedOnOpen(applicationId: string, current
     return false;
   }
   return true;
+}
+
+/** Ariza bo'yicha shaxsiy izohlar (RLS: faqat vakansiya boshqaruvchilari) */
+export async function getApplicationNotes(applicationId: string): Promise<ApplicationNote[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("application_notes")
+    .select("id, body, created_at, author_id, author:profiles!application_notes_author_id_fkey(first_name, last_name)")
+    .eq("application_id", applicationId)
+    .order("created_at", { ascending: false })
+    .limit(100);
+  if (error) {
+    console.error("[applications] notes", error.message);
+    return [];
+  }
+  return (data ?? []).map((n) => ({
+    id: n.id,
+    body: n.body,
+    created_at: n.created_at,
+    author_id: n.author_id,
+    author_name: n.author ? [n.author.first_name, n.author.last_name].filter(Boolean).join(" ") : "",
+  }));
 }

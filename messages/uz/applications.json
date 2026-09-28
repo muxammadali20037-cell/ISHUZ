@@ -140,6 +140,48 @@
     "review_exists": "Siz allaqachon sharh qoldirgansiz",
     "note_required": "Izoh majburiy",
     "not_found": "Ariza topilmadi",
-    "invalid_transition": "Holatni orqaga qaytarib bo'lmaydi"
+    "invalid_transition": "Holatni orqaga qaytarib bo'lmaydi",
+    "invalid_interview_time": "Suhbat vaqti kelajakda (120 kun ichida) bo'lishi kerak"
+  },
+  "interview": {
+    "title": "Suhbatga chaqirish",
+    "reschedule_title": "Suhbat vaqtini o'zgartirish",
+    "desc": "Sana va vaqtni tanlang — nomzodga Telegram orqali xabar boradi.",
+    "date": "Sana",
+    "time": "Vaqt",
+    "place": "Manzil yoki havola",
+    "place_placeholder": "Masalan: Chilonzor 5-kvartal, 12-ofis yoki Zoom havolasi",
+    "note": "Qo'shimcha izoh",
+    "note_placeholder": "Masalan: pasport olib keling",
+    "submit": "Suhbatga chaqirish",
+    "submit_reschedule": "Vaqtni o'zgartirish",
+    "card_title": "Suhbat",
+    "reschedule": "Vaqtni o'zgartirish",
+    "saved": "Suhbat belgilandi",
+    "when": "{date}",
+    "where": "Manzil: {place}",
+    "worker_hint": "Vaqtingiz to'g'ri kelmasa, chat orqali ish beruvchiga yozing."
+  },
+  "bulk": {
+    "select": "Tanlash",
+    "cancel": "Bekor qilish",
+    "selected": "{count} ta tanlandi",
+    "shortlist": "Tanlovga olish",
+    "reject": "Rad etish",
+    "reject_title": "Tanlanganlarni rad etish",
+    "reject_desc": "Nomzodlarga xabar boradi. Sababni yozsangiz, ular uchun foydali bo'ladi.",
+    "reject_note": "Sabab (ixtiyoriy)",
+    "done": "{count} ta arizaga qo'llandi",
+    "none": "Tanlanganlarga bu amalni qo'llab bo'lmaydi",
+    "select_all": "Hammasini tanlash"
+  },
+  "notes": {
+    "title": "Shaxsiy izohlar",
+    "hint": "Faqat siz va jamoangiz ko'radi. Nomzod ko'rmaydi.",
+    "placeholder": "Masalan: tajribasi yaxshi, maosh bo'yicha kelishish kerak",
+    "add": "Izoh qo'shish",
+    "empty": "Hali izoh yo'q",
+    "delete": "O'chirish",
+    "saved": "Izoh saqlandi"
   }
 }

@@ -122,11 +122,52 @@ export type Database = {
           },
         ];
       };
+      application_notes: {
+        Row: {
+          application_id: string;
+          author_id: string | null;
+          body: string;
+          created_at: string;
+          id: string;
+        };
+        Insert: {
+          application_id: string;
+          author_id?: string | null;
+          body: string;
+          created_at?: string;
+          id?: string;
+        };
+        Update: {
+          application_id?: string;
+          author_id?: string | null;
+          body?: string;
+          created_at?: string;
+          id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "application_notes_application_id_fkey";
+            columns: ["application_id"];
+            isOneToOne: false;
+            referencedRelation: "applications";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "application_notes_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       applications: {
         Row: {
           cover_message: string | null;
           created_at: string;
           id: string;
+          interview_at: string | null;
+          interview_place: string | null;
           match_reasons: Json | null;
           match_score: number | null;
           status: Database["public"]["Enums"]["application_status"];
@@ -139,6 +180,8 @@ export type Database = {
           cover_message?: string | null;
           created_at?: string;
           id?: string;
+          interview_at?: string | null;
+          interview_place?: string | null;
           match_reasons?: Json | null;
           match_score?: number | null;
           status?: Database["public"]["Enums"]["application_status"];
@@ -151,6 +194,8 @@ export type Database = {
           cover_message?: string | null;
           created_at?: string;
           id?: string;
+          interview_at?: string | null;
+          interview_place?: string | null;
           match_reasons?: Json | null;
           match_score?: number | null;
           status?: Database["public"]["Enums"]["application_status"];
@@ -2739,6 +2784,14 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: string;
       };
+      bulk_set_application_status: {
+        Args: {
+          p_ids: string[];
+          p_note?: string;
+          p_status: Database["public"]["Enums"]["application_status"];
+        };
+        Returns: number;
+      };
       can_edit_vacancy: { Args: { p_vacancy_id: string }; Returns: boolean };
       can_view_phone: { Args: { p_owner: string }; Returns: boolean };
       can_view_profile: { Args: { p_profile_id: string }; Returns: boolean };
@@ -3037,6 +3090,15 @@ export type Database = {
       saved_search_new_count: {
         Args: { p_search_id: string; p_since: string };
         Returns: number;
+      };
+      schedule_interview: {
+        Args: {
+          p_application_id: string;
+          p_at: string;
+          p_note?: string;
+          p_place?: string;
+        };
+        Returns: undefined;
       };
       search_vacancies: {
         Args: {

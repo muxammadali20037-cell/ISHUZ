@@ -35,7 +35,10 @@
     "interview_invite": {
       "title": "Вас пригласили на собеседование",
       "body": "Приглашение на собеседование по вакансии «{vacancy_title}»",
-      "body_company": "{company_name} приглашает вас на собеседование по вакансии «{vacancy_title}»"
+      "body_company": "{company_name} приглашает вас на собеседование по вакансии «{vacancy_title}»",
+      "when": "🗓 {when}",
+      "where": "📍 {place}",
+      "title_rescheduled": "Собеседование перенесено"
     },
     "offer_received": {
       "title": "Новое предложение о работе",

@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { EMPLOYER_NEXT_STATUSES, type ApplicationStatus, type EmployerStatus } from "../types";
 import { StatusSheet, type SheetStatus } from "./status-sheet";
+import { InterviewSheet } from "./interview-sheet";
 import { useStatusChange } from "./use-status-change";
 
 const ICON: Record<EmployerStatus, LucideIcon> = { shortlisted: ListChecks, interview: CalendarClock, offered: Gift, hired: UserCheck, rejected: XCircle };
@@ -47,7 +48,11 @@ export function StatusActionBar({ applicationId, vacancyId, status }: { applicat
           );
         })}
       </div>
-      {sheet ? <StatusSheet key={sheet} status={sheet} open onOpenChange={(o) => !o && setSheet(null)} onSubmit={(note) => run(sheet, note)} pending={pending} /> : null}
+      {sheet === "interview" ? (
+        <InterviewSheet applicationId={applicationId} vacancyId={vacancyId} open onOpenChange={(o) => !o && setSheet(null)} />
+      ) : sheet ? (
+        <StatusSheet key={sheet} status={sheet} open onOpenChange={(o) => !o && setSheet(null)} onSubmit={(note) => run(sheet, note)} pending={pending} />
+      ) : null}
       <ConfirmDialog
         open={hireOpen}
         onOpenChange={setHireOpen}

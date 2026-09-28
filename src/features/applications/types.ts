@@ -101,6 +101,8 @@ export interface WorkerApplicationItem {
 
 export interface WorkerApplicationDetail extends WorkerApplicationItem {
   cover_message: string | null;
+  interview_at: string | null;
+  interview_place: string | null;
   match_reasons: MatchReason[] | null;
   viewed_at: string | null;
   events: ApplicationEvent[];
@@ -131,6 +133,8 @@ export interface EmployerApplicationItem {
 
 export interface EmployerApplicationDetail extends EmployerApplicationItem {
   match_reasons: MatchReason[] | null;
+  interview_at: string | null;
+  interview_place: string | null;
   viewed_at: string | null;
   events: ApplicationEvent[];
   my_review: ReviewSummary | null;
@@ -170,4 +174,13 @@ export function isPipelineSort(v: unknown): v is PipelineSort {
 
 export function isApplicationStatus(v: unknown): v is ApplicationStatus {
   return typeof v === "string" && (ALL_STATUSES as readonly string[]).includes(v);
+}
+
+/** Ish beruvchining shaxsiy izohi (nomzod ko'rmaydi) */
+export interface ApplicationNote {
+  id: string;
+  body: string;
+  created_at: string;
+  author_id: string | null;
+  author_name: string;
 }

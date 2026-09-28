@@ -15,6 +15,7 @@ import { WithdrawButton } from "./withdraw-button";
 import { ReviewSheet } from "./review-sheet";
 import { ReviewCard } from "./review-card";
 import { TONE_BANNER } from "./tone";
+import { InterviewCard } from "./interview-card";
 
 /** /applications/[id] — ishchi uchun ariza tafsiloti */
 export async function WorkerApplicationDetail({ app, userId }: { app: Detail; userId: string }) {
@@ -72,6 +73,8 @@ export async function WorkerApplicationDetail({ app, userId }: { app: Detail; us
               </div>
             ) : null}
           </section>
+
+          {app.status === "interview" && app.interview_at ? <InterviewCard at={app.interview_at} place={app.interview_place} /> : null}
 
           {app.my_review ? <ReviewCard review={app.my_review} /> : null}
 

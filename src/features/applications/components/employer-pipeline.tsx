@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
 import { canEditVacancy, getPipelineCounts, getVacancyApplications } from "../queries";
 import type { ManagedVacancy, PipelineSort, PipelineStatusFilter } from "../types";
-import { ApplicantCard } from "./applicant-card";
+import { PipelineList } from "./pipeline-list";
 import { PipelineFilters } from "./pipeline-filters";
 
 /** /employer/vacancies/[id]/applications — nomzodlar pipeline'i */
@@ -33,7 +33,7 @@ export async function EmployerPipeline({ vacancy, status, sort }: { vacancy: Man
       </Suspense>
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         {items.length ? (
-          items.map((item) => <ApplicantCard key={item.id} item={item} canAct={canAct} />)
+          <PipelineList items={items} canAct={canAct} vacancyId={vacancy.id} />
         ) : counts.all === 0 ? (
           <EmptyState icon={Users} title={t("applications.pipeline.empty_title")} description={t("applications.pipeline.empty_desc")} className="md:col-span-2" />
         ) : (

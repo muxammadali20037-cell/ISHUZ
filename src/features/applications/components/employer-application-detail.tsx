@@ -15,10 +15,14 @@ import { StatusActionBar } from "./status-action-bar";
 import { ReviewSheet } from "./review-sheet";
 import { ReviewCard } from "./review-card";
 import { TONE_BANNER } from "./tone";
+import { InterviewCard } from "./interview-card";
+import { ApplicationNotes } from "./application-notes";
+import { getApplicationNotes } from "../queries";
+import { getSession } from "@/features/auth/session";
 
 /** /employer/vacancies/[id]/applications/[applicationId] — nomzod tafsiloti */
 export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app: Detail; vacancy: ManagedVacancy; canAct: boolean }) {
-  const { t, tEnum } = await getT();
+  const [{ t, tEnum }, notes, session] = await Promise.all([getT(), getApplicationNotes(app.id), getSession()]);
   const c = app.candidate;
   const name = c ? shortName(c.first_name, c.last_initial) : t("applications.pipeline.candidate_hidden");
   const pipelineHref = `/employer/vacancies/${vacancy.id}/applications`;
@@ -69,6 +73,10 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
             ) : null}
           </section>
 
+          {app.status === "interview" && app.interview_at ? (
+            <InterviewCard at={app.interview_at} place={app.interview_place} manage={canAct ? { applicationId: app.id, vacancyId: vacancy.id } : undefined} />
+          ) : null}
+
           {app.my_review ? <ReviewCard review={app.my_review} /> : null}
 
           {/* Moslik */}
@@ -85,6 +93,8 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
             <SectionHeader title={t("applications.candidate.cover")} />
             {app.cover_message ? <p className="whitespace-pre-line text-sm leading-relaxed">{app.cover_message}</p> : <p className="text-sm text-muted-foreground">{t("applications.pipeline.no_cover")}</p>}
           </section>
+
+          <ApplicationNotes applicationId={app.id} vacancyId={vacancy.id} notes={notes} myId={session?.userId ?? ""} canWrite={canAct} />
 
           {/* Timeline */}
           <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">

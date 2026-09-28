@@ -13,10 +13,22 @@ import { MatchScore } from "@/components/shared/match-score";
 import { EMPLOYER_NEXT_STATUSES, type EmployerApplicationItem } from "../types";
 import { ApplicationStatusBadge } from "./status-badge";
 import { StatusSheet, type SheetStatus } from "./status-sheet";
+import { InterviewSheet } from "./interview-sheet";
 import { useStatusChange } from "./use-status-change";
 
 /** Ish beruvchi pipeline'idagi nomzod kartasi + tezkor amallar */
-export function ApplicantCard({ item, canAct, className }: { item: EmployerApplicationItem; canAct: boolean; className?: string }) {
+export function ApplicantCard({
+  item,
+  canAct,
+  className,
+  selection,
+}: {
+  item: EmployerApplicationItem;
+  canAct: boolean;
+  className?: string;
+  /** Ommaviy tanlash rejimi: kartani bosish tanlaydi (havolaga o'tmaydi) */
+  selection?: { selected: boolean; onToggle: () => void };
+}) {
   const { t, tEnum, locale } = useT();
   const { pending, run } = useStatusChange({ applicationId: item.id, vacancyId: item.vacancy_id });
   const [sheet, setSheet] = useState<SheetStatus | null>(null);
@@ -27,8 +39,16 @@ export function ApplicantCard({ item, canAct, className }: { item: EmployerAppli
   const quick = (["shortlisted", "interview", "rejected"] as const).filter((s) => next.includes(s));
 
   return (
-    <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", item.status === "sent" && "border-sky-300/70 dark:border-sky-800", className)}>
-      <Link href={href} className="absolute inset-0 rounded-2xl" aria-label={name} />
+    <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", item.status === "sent" && "border-sky-300/70 dark:border-sky-800", selection?.selected && "border-primary ring-2 ring-primary/30", className)}>
+      {selection ? (
+        <button type="button" onClick={selection.onToggle} className="absolute inset-0 z-20 rounded-2xl" aria-pressed={selection.selected} aria-label={name}>
+          <span className={cn("absolute right-3 top-3 flex size-6 items-center justify-center rounded-md border-2 text-xs font-bold", selection.selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card")}>
+            {selection.selected ? "✓" : ""}
+          </span>
+        </button>
+      ) : (
+        <Link href={href} className="absolute inset-0 rounded-2xl" aria-label={name} />
+      )}
       <div className="flex items-start gap-3">
         {c ? <Avatar src={c.avatar_url} fallback={initials(c.first_name, c.last_initial)} size="lg" alt="" /> : <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-secondary text-muted-foreground"><UserX className="size-6" /></div>}
         <div className="min-w-0 flex-1">
@@ -83,7 +103,11 @@ export function ApplicantCard({ item, canAct, className }: { item: EmployerAppli
         </span>
       </div>
 
-      {sheet ? <StatusSheet key={sheet} status={sheet} open onOpenChange={(o) => !o && setSheet(null)} onSubmit={(note) => run(sheet, note)} pending={pending} /> : null}
+      {sheet === "interview" ? (
+        <InterviewSheet applicationId={item.id} vacancyId={item.vacancy_id} open onOpenChange={(o) => !o && setSheet(null)} />
+      ) : sheet ? (
+        <StatusSheet key={sheet} status={sheet} open onOpenChange={(o) => !o && setSheet(null)} onSubmit={(note) => run(sheet, note)} pending={pending} />
+      ) : null}
     </article>
   );
 }

@@ -100,4 +100,17 @@ describe("renderNotification", () => {
     expect(renderNotification("application_received", "oops", uz, "uz").title).toBe("Yangi ariza: ");
     expect(renderNotification("review_received", [1, 2], uz, "uz").body).toBe("Baho:  / 5");
   });
+
+  it("interview_invite: vaqt va joy Toshkent vaqtida", () => {
+    const r = renderNotification("interview_invite", { vacancy_title: "Kassir", company_name: "Anor", interview_at: "2026-10-03T05:30:00+00:00", interview_place: "Chilonzor 5" }, uz, "uz");
+    expect(r.body).toBe("Anor sizni «Kassir» bo'yicha suhbatga taklif qildi\n🗓 03.10.2026 10:30\n📍 Chilonzor 5");
+    const moved = renderNotification("interview_invite", { vacancy_title: "Kassir", rescheduled: true }, ru, "ru");
+    expect(moved.title).toBe("Собеседование перенесено");
+  });
+
+  it("saved_search va contact_request (system)", () => {
+    expect(renderNotification("system", { kind: "saved_search", label: "Oshpaz", count: 3 }, uz, "uz").body).toBe("«Oshpaz» bo'yicha 3 ta yangi vakansiya chiqdi.");
+    expect(renderNotification("system", { kind: "contact_request", name: "Kafe" }, uz, "uz").title).toBe("Telefon raqamingizni so'rashdi");
+  });
 });
+
