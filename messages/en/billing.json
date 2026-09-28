@@ -1,0 +1,66 @@
+{
+  "currency": "UZS",
+  "pay_title": "Payment",
+  "vacancy_title": "Publish vacancy",
+  "vacancy_desc": "Active for {days} days: visible to candidates, and matching job seekers get notified",
+  "promotion_title": "Boost profile to TOP",
+  "promotion_desc": "For {hours} hours your profile will appear at the top of employers' lists",
+  "pay_with": "Pay with {provider}",
+  "no_providers": "Online payment isn't connected yet. Please contact support",
+  "secure": "Payment is processed securely on the Payme / Click page. We never receive your card details",
+  "mode": {
+    "promo": "🎉 Promotion: posting is free until {date}",
+    "free_trial": "🎁 Your first vacancy is free — active for {hours} hours",
+    "paid_window": "✅ Paid: active until {date}",
+    "payment_required": "Listing price: {price} UZS · {days} days"
+  },
+  "promo_mode": {
+    "promo": "🎉 Promotion: TOP is free until {date}",
+    "free_trial": "🎁 Your first TOP is free — {hours} hours",
+    "payment_required": "TOP for {hours} hours — {price} UZS"
+  },
+  "top": {
+    "title": "Boost your profile to TOP",
+    "desc": "Employers will see you first — get more offers",
+    "button": "Boost to TOP",
+    "active": "TOP active until {date}",
+    "badge": "TOP",
+    "done": "Your profile is in TOP!",
+    "already": "TOP is still active — you can turn it on again once it ends"
+  },
+  "return": {
+    "title": "Payment status",
+    "pending": "Waiting for payment confirmation…",
+    "pending_desc": "This may take a few seconds. The page will refresh automatically",
+    "paid": "Payment received!",
+    "paid_vacancy": "Your vacancy has been published",
+    "paid_promotion": "Your profile has been boosted to TOP",
+    "cancelled": "Payment canceled",
+    "cancelled_desc": "No money was charged. You can try again",
+    "not_found": "Payment not found",
+    "to_vacancy": "Go to vacancy",
+    "to_home": "Home"
+  },
+  "pricing": {
+    "title": "Pricing",
+    "subtitle": "Simple and clear. No hidden fees",
+    "promo_banner": "🎉 Launch promotion: all services are FREE until {date}",
+    "vacancy": "Vacancy listing",
+    "vacancy_note": "Active for {days} days, notifications to matching candidates",
+    "vacancy_free": "First vacancy — free ({hours} h)",
+    "top": "Job seeker profile in TOP",
+    "top_note": "{hours} h at the top of the list",
+    "top_free": "First TOP — free",
+    "search": "Job and candidate search, applications, chat",
+    "search_note": "Always free",
+    "free": "Free",
+    "methods": "Payment methods"
+  },
+  "errors": {
+    "payment_required": "Payment is required for this action",
+    "provider_disabled": "This payment method isn't connected yet",
+    "already_paid": "This vacancy has already been paid for",
+    "already_promoted": "TOP is still active — you can turn it on again once it ends",
+    "onboarding_required": "Please complete your profile first"
+  }
+}

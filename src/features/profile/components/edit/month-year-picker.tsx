@@ -2,7 +2,7 @@
 
 import { useMemo } from "react";
 import { format } from "date-fns";
-import { ru as ruLocale, uz as uzLocale } from "date-fns/locale";
+import { ru as ruLocale, uz as uzLocale, enUS } from "date-fns/locale";
 import { useT } from "@/lib/i18n/client";
 import { Select } from "@/components/ui/select";
 import { yearOptions } from "./form-utils";
@@ -13,7 +13,7 @@ export type MonthYear = { year: number | null; month: number | null };
 export function MonthYearPicker({ value, onChange, disabled, invalid, minYear = 1970 }: { value: MonthYear; onChange: (v: MonthYear) => void; disabled?: boolean; invalid?: boolean; minYear?: number }) {
   const { t, locale } = useT();
   const months = useMemo(() => {
-    const l = locale === "ru" ? ruLocale : uzLocale;
+    const l = locale === "ru" ? ruLocale : locale === "en" ? enUS : uzLocale;
     return Array.from({ length: 12 }, (_, i) => {
       const label = format(new Date(2000, i, 1), "LLLL", { locale: l });
       return { value: String(i + 1), label: label.charAt(0).toUpperCase() + label.slice(1) };

@@ -8,8 +8,8 @@ export const revalidate = 3600;
 
 /** Har bir sahifa uchun ruscha versiya (?lang=ru) — hreflang */
 function entry(base: string, path: string, e: Omit<MetadataRoute.Sitemap[number], "url">): MetadataRoute.Sitemap[number] {
-  const ru = `${base}${path}${path.includes("?") ? "&" : "?"}lang=ru`;
-  return { url: `${base}${path}`, ...e, alternates: { languages: { uz: `${base}${path}`, ru } } };
+  const sep = path.includes("?") ? "&" : "?";
+  return { url: `${base}${path}`, ...e, alternates: { languages: { uz: `${base}${path}`, ru: `${base}${path}${sep}lang=ru`, en: `${base}${path}${sep}lang=en` } } };
 }
 
 /**

@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import type { Locale } from "@/lib/i18n/config";
-import { makeT, makeTEnum } from "@/lib/i18n/translate";
+import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
 import { formatDate, formatMoney, formatPhone } from "@/lib/format";
 import { ageFrom, formatExperienceRange, formatYearRange } from "@/features/profile/pure";
 import type { CvPdfData, CvPdfItem } from "./pdf";
@@ -17,7 +17,7 @@ type Client = SupabaseClient<Database>;
 export async function buildCvData(client: Client, workerId: string, locale: Locale, opts: { includePhone: boolean }): Promise<CvPdfData | null> {
   const t = makeT(locale);
   const tEnum = makeTEnum(t);
-  const nm = (r: { name_uz: string; name_ru: string } | null | undefined) => (r ? (locale === "ru" ? r.name_ru : r.name_uz) : "");
+  const nm = (r: { name_uz: string; name_ru: string; name_en?: string | null } | null | undefined) => localizedName(locale, r);
 
   const { data: w } = await client
     .from("worker_profiles")

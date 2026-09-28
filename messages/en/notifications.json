@@ -1,0 +1,103 @@
+{
+  "title": "Notifications",
+  "description": "Notifications about applications, offers and messages",
+  "empty_title": "No notifications",
+  "empty_desc": "Application updates, offers and new messages will appear here",
+  "mark_all_read": "Mark all as read",
+  "all_read_toast": "All notifications marked as read",
+  "unread": "Unread",
+  "unread_count": "{count} unread",
+  "today": "Today",
+  "yesterday": "Yesterday",
+  "prev": "Previous",
+  "next": "Next",
+  "page": "Page {page}",
+  "open": "Open",
+  "salary": {
+    "currency": "UZS",
+    "range": "{from} – {to} {currency}",
+    "from": "from {from} {currency}",
+    "to": "up to {to} {currency}"
+  },
+  "types": {
+    "application_received": {
+      "title": "New application: {vacancy_title}",
+      "body": "{worker_name} applied",
+      "body_score": "{worker_name} applied · {score}% match"
+    },
+    "application_status": {
+      "title": "Application status: {status}",
+      "body": "{vacancy_title}",
+      "body_company": "{vacancy_title} · {company_name}",
+      "title_withdrawn": "A candidate withdrew their application",
+      "body_withdrawn": "{vacancy_title}"
+    },
+    "interview_invite": {
+      "title": "You've been invited to an interview",
+      "body": "You've been invited to an interview for “{vacancy_title}”",
+      "body_company": "{company_name} invited you to an interview for “{vacancy_title}”",
+      "when": "🗓 {when}",
+      "where": "📍 {place}",
+      "title_rescheduled": "Interview time changed"
+    },
+    "offer_received": {
+      "title": "New job offer",
+      "body": "{company_name}: {title}",
+      "body_salary": "{company_name}: {title} · {salary}"
+    },
+    "offer_response": {
+      "title": "Offer response: {status}",
+      "title_accepted": "Offer accepted",
+      "title_declined": "Offer declined",
+      "body": "{worker_name} · {title}"
+    },
+    "new_message": {
+      "title": "{sender_name}",
+      "body": "{preview}",
+      "body_attachment": "Sent a new message"
+    },
+    "vacancy_expiring": {
+      "title": "Vacancy is expiring",
+      "body": "“{vacancy_title}” closes on {expires_at}. Extend the deadline."
+    },
+    "new_matching_vacancy": {
+      "title": "A job for you: {vacancy_title}",
+      "body": "{score}% match. View the details and apply.",
+      "body_noscore": "View the details and apply."
+    },
+    "new_matching_worker": {
+      "title": "A matching candidate",
+      "body": "{worker_name} · {score}% match for “{vacancy_title}”",
+      "body_noscore": "{worker_name} · “{vacancy_title}”"
+    },
+    "verification_result": {
+      "title": "Verification result",
+      "title_verified": "Verification successful",
+      "title_rejected": "Verification rejected",
+      "body": "{type}",
+      "body_note": "{type} · {note}"
+    },
+    "review_received": {
+      "title": "You received a new review",
+      "body": "Rating: {rating} / 5"
+    },
+    "system": {
+      "title": "System message",
+      "body": ""
+    }
+  },
+  "telegram": {
+    "welcome": "Hello! Welcome to the “Ish beruvchi” bot.\nNotifications about applications, offers and new messages will arrive here.",
+    "hint": "Tap the button below to open the app.",
+    "open_app": "Open “Ish beruvchi”",
+    "open": "Open",
+    "login_code_title": "“Ish beruvchi” login code",
+    "login_code_warning": "The code is valid for 5 minutes. Don't share it with anyone — “Ish beruvchi” staff will never ask for your code.",
+    "share_phone_prompt": "Link your phone number so you can sign in on the website (in a browser) with it — login codes will arrive here instead of by SMS. Tap the button below 👇",
+    "share_phone_button": "📱 Send number",
+    "phone_linked": "✅ Your number is linked: {phone}\nNow when you enter this number on the website, the login code will arrive in this chat.",
+    "phone_already_linked": "Your number is linked: {phone}\nGo back to the website and tap “Send code” — the code will arrive here.",
+    "phone_not_own": "Please send only your own number using the button below.",
+    "phone_invalid": "Couldn't read the number. Please try again."
+  }
+}

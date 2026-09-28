@@ -1,0 +1,71 @@
+{
+  "updated": "Last updated: September 28, 2026",
+  "contact_title": "Contact",
+  "contact_body": "For questions or requests, write to:",
+  "privacy": {
+    "title": "Privacy Policy",
+    "description": "What data “Ish beruvchi” collects, why it is used, and how you can manage it.",
+    "intro": "“Ish beruvchi” is a platform that connects job seekers and employers. This policy applies equally to the website, the Android app and the Telegram bot. It explains what data we collect, why we use it, and how you can manage it.",
+    "sections": [
+      [
+        "What data is collected",
+        "- Account: phone number, Telegram ID and username, first and last name, selected language.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, region and district, photo and portfolio files.\n- Employer: company name, logo, address, TIN (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches and notifications.\n- Payments: amount, service type and status. Bank card details stay with Payme/Click and are never sent to us.\n- Technical: search queries (to improve results, stored for 90 days) and security logs."
+      ],
+      [
+        "Why the data is used",
+        "- Creating an account and signing in.\n- Showing resumes and vacancies and calculating how well they match each other.\n- Sending notifications about applications, interviews and new matching jobs (in the app and via Telegram).\n- Protecting against fraud, spam and abuse.\n- Accepting payments for paid services.\nWe do not sell your data or share it with third parties for advertising purposes."
+      ],
+      [
+        "Who can see the data",
+        "- Public resumes are visible to employers. You can hide your resume at any time.\n- Your phone number is visible only as you choose in settings: to no one, to employers you applied to, on request, or to everyone.\n- Vacancies and company pages are public.\n- Chat messages are visible only to the participants of the conversation."
+      ],
+      [
+        "Service providers",
+        "The platform uses the following services. They process data only to provide their service:\n- Supabase — database and files.\n- Vercel — website hosting.\n- Telegram — sign-in and notifications.\n- Payme and Click — payments.\n- Google Gemini and Anthropic Claude — only when you tap “Fill with AI”, to analyze the text you wrote."
+      ],
+      [
+        "Retention period",
+        "- Data is stored while your account is active.\n- When an account is deleted, the profile, resume, portfolio, applications, conversations and Telegram link are deleted.\n- Payment records are kept without your name for financial reporting.\n- Unfinished conversations in the Telegram bot are automatically deleted after 30 days, and the search log after 90 days."
+      ],
+      [
+        "Your rights",
+        "- View and correct your data — in the “Profile” section.\n- Hide your resume and set phone number visibility — in “Settings”.\n- Permanently delete your account and data — explained on the “Delete account” page.\n- Stop Telegram notifications — by stopping or blocking the bot."
+      ],
+      [
+        "Age requirement",
+        "The platform is intended for users over 14 years of age."
+      ],
+      [
+        "Security",
+        "All connections are encrypted (HTTPS). Access to data is restricted at the database level: each user sees only the data they are permitted to see."
+      ],
+      [
+        "Changes",
+        "If the policy changes, the update will be published on this page with the date of the update."
+      ]
+    ]
+  },
+  "deletion": {
+    "title": "Delete account",
+    "description": "How to delete your “Ish beruvchi” account and data.",
+    "intro": "You can delete your account and its associated data yourself at any time. Deletion takes effect immediately and cannot be undone.",
+    "sections": [
+      [
+        "Via the app or website",
+        "- Sign in to the “Ish beruvchi” app or website.\n- Open the “Settings” section.\n- Tap the “Delete account” button.\n- To confirm, type the word “DELETE” and tap “Delete permanently”."
+      ],
+      [
+        "If you can't sign in",
+        "Write to the address below from the phone number or Telegram account linked to your account — your account will be deleted within 7 days."
+      ],
+      [
+        "What is deleted",
+        "- Profile, resume, portfolio files.\n- Applications, offers, conversations and notifications.\n- Phone number and Telegram link.\n- Active vacancies that belong only to you are closed."
+      ],
+      [
+        "What is kept",
+        "- Payment records (amount, date, service) — for financial reporting as required by law, without your name or profile.\n- The “account deleted” entry in the security log."
+      ]
+    ]
+  }
+}

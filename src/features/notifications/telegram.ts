@@ -65,8 +65,13 @@ export function parseBotCommand(text: string | undefined | null): BotCommand | n
   return { name: (m[1] ?? "").toLowerCase(), param };
 }
 
-/** Til: profil tili → telegram_accounts.language_code → xabardagi from.language_code → uz */
+/**
+ * Til: profil tili → telegram_accounts.language_code → xabardagi from.language_code → uz.
+ * Ingliz tili faqat foydalanuvchi o'zi tanlagan bo'lsa (birinchi nomzod — profil tili "en");
+ * Telegram ilovasining inglizcha interfeysi avtomatik ingliz tiliga o'tkazmaydi.
+ */
 export function resolveTelegramLocale(candidates: Array<string | null | undefined>): Locale {
+  if (candidates[0]?.toLowerCase() === "en") return "en";
   for (const c of candidates) {
     if (!c) continue;
     const code = c.toLowerCase();

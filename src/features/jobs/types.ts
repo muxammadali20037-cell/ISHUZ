@@ -53,6 +53,8 @@ export interface VacancyDetail extends Tables<"vacancies"> {
   } | null;
   category: RefItem | null;
   subcategory: RefItem | null;
+  /** kasblar daraxtidagi aniq kasb */
+  profession: { id: string; name_uz: string; name_ru: string; name_en: string | null } | null;
   region: RefItem | null;
   district: RefItem | null;
   skills: { id: string; slug: string; name_uz: string; name_ru: string; is_required: boolean }[];

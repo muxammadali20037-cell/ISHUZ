@@ -41,6 +41,8 @@ export const titleSchema = z.object({
 export const categorySchema = z.object({
   categoryId: uuid.nullable().refine((v): v is string => v !== null, E.category),
   subcategoryId: uuid.nullable(),
+  /** kasblar daraxtidagi aniq kasb (ishchilar bilan bir xil daraxt) */
+  professionNodeId: uuid.nullable().optional(),
 });
 
 export const locationSchema = z
@@ -83,6 +85,8 @@ export const languageRequirementSchema = z.object({
 export const requirementsSchema = z
   .object({
     experienceMinMonths: z.number().int().refine((v) => (EXPERIENCE_OPTIONS as readonly number[]).includes(v)),
+    /** nechta xodim kerak */
+    positionsCount: z.number().int().min(1).max(1000).optional(),
     ageMin: z.number().int().min(14, E.age).max(80, E.age).nullable(),
     ageMax: z.number().int().min(14, E.age).max(80, E.age).nullable(),
     educationMin: z.enum(EDUCATION_LEVELS).nullable(),

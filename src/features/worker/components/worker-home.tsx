@@ -14,6 +14,7 @@ import { TopProfileCard } from "@/features/billing/components/top-profile-card";
 import { CrossRoleCard } from "@/components/shared/quick-actions";
 import { aiEnabled } from "@/lib/ai/client";
 import { AiCtaCard } from "@/features/ai/components/ai-composer";
+import { ProfessionFocus } from "@/features/professions/components/profession-focus";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
@@ -40,6 +41,10 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
         </div>
         <HomeSearch className="max-w-2xl" />
       </section>
+
+      <Suspense fallback={null}>
+        <ProfessionFocus workerId={session.workerId} categorySlug={ctx.categorySlug} />
+      </Suspense>
 
       <Suspense fallback={<StatsSkeleton />}>
         <WorkerStats />

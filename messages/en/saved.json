@@ -1,0 +1,35 @@
+{
+  "title": "Saved vacancies",
+  "subtitle": "{count} vacancies",
+  "empty_title": "No saved vacancies yet",
+  "empty_desc": "Bookmark vacancies you like — they'll be collected here.",
+  "empty_action": "Browse vacancies",
+  "expired_title": "This vacancy is no longer available",
+  "expired_desc": "It has expired or was closed by the employer",
+  "remove": "Remove",
+  "removed": "Removed from saved",
+  "saved_at": "Saved {time}",
+  "searches": {
+    "title": "Saved searches",
+    "hint": "We'll notify you once a day when new matching vacancies appear.",
+    "save": "Save search",
+    "saved_short": "Saved",
+    "saved": "Search saved",
+    "saved_desc": "We'll notify you once a day when new matching vacancies appear.",
+    "removed": "Search deleted",
+    "notify_on": "Alerts: on",
+    "notify_off": "Alerts: off",
+    "turn_on": "Turn on alerts",
+    "turn_off": "Turn off alerts",
+    "new_count": "{count} new",
+    "salary_from": "from {amount}",
+    "notification_title": "New matching vacancies",
+    "notification_body": "{count} new vacancies for “{label}”.",
+    "errors": {
+      "already_saved": "This search is already saved",
+      "saved_search_limit": "You can save up to 20 searches",
+      "empty_search": "First choose a profession, region or another filter",
+      "not_authenticated": "Please sign in first"
+    }
+  }
+}

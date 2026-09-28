@@ -30,6 +30,11 @@ export interface WorkerLanguage {
 export interface WorkerMatchInput {
   categoryId: string | null;
   subcategoryId: string | null;
+  /**
+   * profession_nodes.path — asosiy va qo'shimcha kasblar (ildizdan tugungacha id lar).
+   * Bo'sh/yo'q bo'lsa eski category/subcategory mantig'i ishlaydi.
+   */
+  professionPaths?: string[][];
   districtId: string | null;
   regionId: string | null;
   /** worker_locations.district_id[] — ishlay oladigan tumanlar */
@@ -69,6 +74,8 @@ export interface VacancySkill {
 export interface VacancyMatchInput {
   categoryId: string | null;
   subcategoryId: string | null;
+  /** vakansiya kasbining profession_nodes.path; yo'q bo'lsa null */
+  professionPath?: string[] | null;
   districtId: string | null;
   regionId: string | null;
   isRemote: boolean;

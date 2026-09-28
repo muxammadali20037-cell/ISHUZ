@@ -250,7 +250,8 @@
       "languages": "Til talablari",
       "language": "Til",
       "level": "Minimal daraja",
-      "no_languages": "Til talabi qo'yilmagan — istalgan nomzod mos keladi"
+      "no_languages": "Til talabi qo'yilmagan — istalgan nomzod mos keladi",
+      "positions": "Nechta xodim kerak?"
     },
     "skills": {
       "suggested": "Tavsiya etilgan ko'nikmalar",
@@ -361,7 +362,8 @@
     "employer_person": "Ish beruvchi",
     "info": "Asosiy ma'lumotlar",
     "requirements": "Talablar",
-    "no_requirements": "Maxsus talablar yo'q"
+    "no_requirements": "Maxsus talablar yo'q",
+    "positions": "{count} ta xodim kerak"
   },
   "quality": {
     "title": "E'lon sifati",

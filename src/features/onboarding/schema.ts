@@ -57,6 +57,8 @@ export type GeoInput = z.infer<typeof geoSchema>;
 export const professionSchema = z.object({
   category_id: uuid,
   subcategory_id: z.uuid().nullable(),
+  /** kasblar daraxtidan tanlangan tugun; bo'lsa category/subcategory undan olinadi */
+  profession_node_id: z.uuid().nullable().optional(),
   headline: z.string(err("required")).trim().min(2, err("headline_min")).max(80, err("too_long")),
 });
 export type ProfessionInput = z.infer<typeof professionSchema>;

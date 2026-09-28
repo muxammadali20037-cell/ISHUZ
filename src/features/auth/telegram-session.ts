@@ -25,7 +25,7 @@ export function telegramEmail(tgId: number) {
  * Telegram hisobi uchun profilni topadi yoki yaratadi va telegram_accounts ni yangilaydi.
  * Qaytaradi: profile_id (= auth.users.id).
  */
-export async function ensureTelegramProfile(admin: AdminClient, u: TelegramIdentity, locale?: "uz" | "ru"): Promise<string> {
+export async function ensureTelegramProfile(admin: AdminClient, u: TelegramIdentity, locale?: "uz" | "ru" | "en"): Promise<string> {
   const { data: linked } = await admin.from("telegram_accounts").select("profile_id").eq("telegram_user_id", u.id).maybeSingle();
   let userId = linked?.profile_id ?? null;
 

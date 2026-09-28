@@ -50,37 +50,45 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
 
   if (!open) return null;
 
+  // 1-ekran: to'liq ekranli til tanlash (boshqa navigatsiyasiz), keyin qisqa tanishtiruv
+  if (step === "lang") {
+    return (
+      <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-background px-5 py-10" role="dialog" aria-modal="true" aria-labelledby="welcome-lang-title">
+        <div className="w-full max-w-sm animate-fade-in text-center">
+          <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-primary text-3xl font-extrabold text-primary-foreground shadow-lg">IB</div>
+          <h1 id="welcome-lang-title" className="mt-6 text-3xl font-extrabold tracking-tight">
+            Tilni tanlang
+          </h1>
+          <p className="mt-1 text-muted-foreground">Выберите язык · Choose language</p>
+          <div className="mt-8 grid gap-3">
+            {(
+              [
+                ["uz", "🇺🇿", "O'zbekcha"],
+                ["ru", "🇷🇺", "Русский"],
+                ["en", "🇬🇧", "English"],
+              ] as const
+            ).map(([code, flag, label]) => (
+              <button
+                key={code}
+                type="button"
+                disabled={pending}
+                onClick={() => pickLanguage(code)}
+                className="flex h-20 items-center gap-5 rounded-3xl border-2 border-border bg-card px-6 text-xl font-bold shadow-sm transition-all hover:border-primary hover:bg-primary-soft active:scale-[0.98] disabled:opacity-60"
+              >
+                <span className="text-4xl">{flag}</span>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true">
       <div className="w-full max-w-md animate-fade-in rounded-t-3xl bg-card p-6 pb-safe shadow-xl sm:rounded-3xl">
-        {step === "lang" ? (
-          <div className="py-2 text-center">
-            <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-primary text-2xl font-extrabold text-primary-foreground">IB</div>
-            <h2 className="mt-4 text-2xl font-bold">Tilni tanlang</h2>
-            <p className="text-muted-foreground">Выберите язык</p>
-            <div className="mt-6 grid gap-3">
-              {(
-                [
-                  ["uz", "🇺🇿", "O'zbekcha"],
-                  ["ru", "🇷🇺", "Русский"],
-                ] as const
-              ).map(([code, flag, label]) => (
-                <button
-                  key={code}
-                  type="button"
-                  disabled={pending}
-                  onClick={() => pickLanguage(code)}
-                  className="flex h-16 items-center gap-4 rounded-2xl border-2 border-border bg-card px-5 text-lg font-semibold transition-colors hover:border-primary hover:bg-primary-soft disabled:opacity-60"
-                >
-                  <span className="text-3xl">{flag}</span>
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <Slide index={step} onNext={() => (step < SLIDES.length - 1 ? setStep(step + 1) : finish())} onSkip={finish} t={t} />
-        )}
+        <Slide index={step} onNext={() => (step < SLIDES.length - 1 ? setStep(step + 1) : finish())} onSkip={finish} t={t} />
       </div>
     </div>
   );

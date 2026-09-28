@@ -56,7 +56,7 @@ export async function getMyVacancies(session: SessionContext): Promise<VacancyLi
 }
 
 const FULL_SELECT =
-  "*, category:categories(id, slug, name_uz, name_ru, icon), subcategory:subcategories(id, name_uz, name_ru), region:regions(id, name_uz, name_ru), district:districts(id, name_uz, name_ru, lat, lng), company:companies(id, name, slug, logo_url, verification_status), vacancy_skills(skill_id, is_required, skill:skills(id, name_uz, name_ru)), vacancy_languages(language_code, min_level), vacancy_benefits(benefit_code)";
+  "*, category:categories(id, slug, name_uz, name_ru, icon), subcategory:subcategories(id, name_uz, name_ru), profession:profession_nodes(id, name_uz, name_ru, name_en), region:regions(id, name_uz, name_ru), district:districts(id, name_uz, name_ru, lat, lng), company:companies(id, name, slug, logo_url, verification_status), vacancy_skills(skill_id, is_required, skill:skills(id, name_uz, name_ru)), vacancy_languages(language_code, min_level), vacancy_benefits(benefit_code)";
 
 /** Vakansiya + bog'liq yozuvlar. RLS: menga ko'rinmasa null. */
 export const getVacancyFull = cache(async (id: string): Promise<VacancyFull | null> => {

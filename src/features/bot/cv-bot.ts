@@ -4,7 +4,7 @@ import type { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import type { Locale } from "@/lib/i18n/config";
 import type { TFunction } from "@/lib/i18n/translate";
-import { makeT, makeTEnum } from "@/lib/i18n/translate";
+import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
 import { formatMoney, formatMoneyShort, formatSalaryRange } from "@/lib/format";
 import {
   answerCallback,
@@ -80,7 +80,7 @@ const JOBS_PAGE = 5;
 const TWO = 2;
 
 const b = (ctx: BotCtx, key: string, params?: Record<string, string | number>) => escapeHtml(ctx.t(`bot.${key}`, params));
-const nm = (ctx: BotCtx, r: { name_uz: string; name_ru: string } | null | undefined) => (r ? (ctx.locale === "ru" ? r.name_ru : r.name_uz) : "");
+const nm = (ctx: BotCtx, r: { name_uz: string; name_ru: string; name_en?: string | null } | null | undefined) => localizedName(ctx.locale, r);
 
 function rows(buttons: InlineButton[], perRow: number): InlineButton[][] {
   const out: InlineButton[][] = [];
@@ -384,6 +384,7 @@ type LangTarget = "cv" | "cvr" | "menu";
 const LOCALES = [
   ["uz", "🇺🇿 O'zbekcha"],
   ["ru", "🇷🇺 Русский"],
+  ["en", "🇬🇧 English"],
 ] as const;
 
 /** "Tilni tanlang / Выберите язык" — ikki tilda, joriy til ✅ bilan */
@@ -508,7 +509,7 @@ export async function handleBotCallback(ctx: BotCtx, callbackId: string, data: s
     if (data === "menu:jobs") return await sendMatchingJobs(ctx, 0);
     if (data === "menu:pdf") return await sendCvPdf(ctx);
     if (data === "menu:lang") return await sendLanguagePicker(ctx, "menu");
-    const lang = /^lang:(uz|ru):(cv|cvr|menu)$/.exec(data);
+    const lang = /^lang:(uz|ru|en):(cv|cvr|menu)$/.exec(data);
     if (lang) return await applyLanguage(ctx, lang[1] as Locale, lang[2] as LangTarget, messageId);
     if (data === "jobs:alert") return await createJobAlert(ctx);
     const jobs = /^jobs:(\d{1,3})$/.exec(data);

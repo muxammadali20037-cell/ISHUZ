@@ -122,7 +122,8 @@
     "link_copied": "Ссылка скопирована",
     "share_text": "{title} — {company} · Ish beruvchi",
     "save": "Сохранить",
-    "saved": "Сохранено"
+    "saved": "Сохранено",
+    "positions": "Сколько сотрудников"
   },
   "apply": {
     "title": "Отклик на вакансию",

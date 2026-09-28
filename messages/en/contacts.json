@@ -1,0 +1,33 @@
+{
+  "request": {
+    "hint": "The phone number is hidden. Send a request — if the owner approves, the number will appear here.",
+    "button": "Request phone number",
+    "pending": "Request sent — waiting for a response",
+    "sent": "Request sent",
+    "sent_desc": "You'll be notified if access is granted.",
+    "declined": "Your previous request was declined.",
+    "errors": {
+      "contact_hidden": "This user doesn't share their phone number with anyone",
+      "declined_recently": "Your request was recently declined. Try again in a week.",
+      "rate_limited": "You've sent too many requests today. Try again tomorrow.",
+      "blocked": "Your account is restricted",
+      "not_authenticated": "Please sign in first"
+    }
+  },
+  "incoming": {
+    "title": "Phone requests",
+    "hint": "These people requested your phone number. If you approve, they'll see it.",
+    "empty": "No new requests",
+    "approve": "Approve",
+    "decline": "Decline",
+    "approved": "Approved",
+    "declined": "Declined"
+  },
+  "notify": {
+    "request_title": "Someone requested your phone number",
+    "request_body": "{name} wants to see your phone number. Allow?",
+    "approved_title": "Phone number shared",
+    "approved_body": "{name} allowed you to see their phone number."
+  },
+  "no_contact": "No phone number or Telegram added yet — send a message in chat."
+}

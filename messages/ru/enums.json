@@ -249,7 +249,12 @@
     "age_out_of_range": "Требование по возрасту: {min}–{max}",
     "remote_preferred": "Вы хотите удалённую работу, а эта — в офисе",
     "salary_type_differs": "Тип оплаты отличается (месячная/дневная/почасовая)",
-    "languages_partial": "Языки: {matched}/{required}"
+    "languages_partial": "Языки: {matched}/{required}",
+    "profession_exact": "Ваша профессия точно совпадает",
+    "profession_specialist": "Вы узкий специалист в этой профессии",
+    "profession_general": "Профессия близкая, но нужен более узкий специалист",
+    "profession_related": "Смежное направление",
+    "profession_other_branch": "Та же сфера, другая профессия"
   },
   "language_code": {
     "uz": "Узбекский",

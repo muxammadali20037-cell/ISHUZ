@@ -29,7 +29,7 @@ export async function jobsListMetadata(params: JobsSearchParams): Promise<Metada
     title,
     description,
     alternates: localeAlternates(canonical, locale),
-    openGraph: { title: `${title} · Ish beruvchi`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : "uz_UZ" },
+    openGraph: { title: `${title} · Ish beruvchi`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ" },
     robots: noindex ? { index: false, follow: true } : undefined,
   };
 }

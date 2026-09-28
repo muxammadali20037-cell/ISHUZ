@@ -16,6 +16,8 @@ import type { StepProps } from "../types";
 
 type GenderChoice = "any" | "male" | "female";
 
+const POSITION_PRESETS = [1, 2, 3, 5, 10];
+
 /** 6-qadam: tajriba, yosh, ta'lim, jins, til talablari */
 export function StepRequirements({ mode, vacancy, refs }: StepProps) {
   const { t, tEnum } = useT();
@@ -24,6 +26,7 @@ export function StepRequirements({ mode, vacancy, refs }: StepProps) {
     resolver: zodResolver(requirementsSchema),
     defaultValues: {
       experienceMinMonths: vacancy.experience_min_months,
+      positionsCount: vacancy.positions_count ?? 1,
       ageMin: vacancy.age_min,
       ageMax: vacancy.age_max,
       educationMin: vacancy.education_min,
@@ -42,12 +45,45 @@ export function StepRequirements({ mode, vacancy, refs }: StepProps) {
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
+      <Field label={t("vacancies.wizard.requirements.positions")} htmlFor="positions">
+        <Controller
+          control={form.control}
+          name="positionsCount"
+          render={({ field }) => (
+            <div className="space-y-2">
+              <ChipGroup
+                size="lg"
+                options={POSITION_PRESETS.map((n) => ({ value: String(n), label: n === 10 ? "10+" : String(n) }))}
+                value={POSITION_PRESETS.includes(field.value ?? 1) ? String(field.value ?? 1) : null}
+                onChange={(v) => typeof v === "string" && field.onChange(Number(v))}
+              />
+              <Input
+                id="positions"
+                type="number"
+                inputMode="numeric"
+                min={1}
+                max={1000}
+                className="max-w-40"
+                value={field.value ?? 1}
+                onChange={(e) => field.onChange(Math.max(1, Math.min(1000, Number(e.target.value) || 1)))}
+                aria-label={t("vacancies.wizard.requirements.positions")}
+              />
+            </div>
+          )}
+        />
+      </Field>
+
       <Field label={t("vacancies.wizard.requirements.experience")} htmlFor="experience">
         <Controller
           control={form.control}
           name="experienceMinMonths"
           render={({ field }) => (
-            <Select id="experience" value={String(field.value)} onChange={(e) => field.onChange(Number(e.target.value))} options={EXPERIENCE_OPTIONS.map((m) => ({ value: String(m), label: tEnum("experience_min_months", String(m)) }))} />
+            <ChipGroup
+              size="lg"
+              options={EXPERIENCE_OPTIONS.map((m) => ({ value: String(m), label: tEnum("experience_min_months", String(m)) }))}
+              value={String(field.value)}
+              onChange={(v) => typeof v === "string" && field.onChange(Number(v))}
+            />
           )}
         />
       </Field>

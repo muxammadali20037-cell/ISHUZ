@@ -1,0 +1,19 @@
+{
+  "pdf": {
+    "age": "{age} years old",
+    "phone": "Phone",
+    "about": "About me",
+    "experience": "Work experience",
+    "present": "present",
+    "skills": "Skills",
+    "languages": "Languages",
+    "education": "Education",
+    "preferences": "Job preferences",
+    "salary": "Expected salary",
+    "employment": "Employment type",
+    "schedule": "Schedule",
+    "availability": "Available to start",
+    "footer": "Created with «Ish beruvchi» · {date}"
+  },
+  "download": "Download PDF"
+}

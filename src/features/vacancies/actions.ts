@@ -142,6 +142,12 @@ async function applyStep(supabase: SupabaseServerClient, v: EditableVacancy, pay
       return updateRow(supabase, v.id, patch);
     }
     case "category": {
+      if (payload.data.professionNodeId) {
+        // soha va yo'nalish trigger orqali tugundan olinadi
+        const { data: node } = await supabase.from("profession_nodes").select("id, is_active").eq("id", payload.data.professionNodeId).maybeSingle();
+        if (!node?.is_active) return { ok: false, error: "validation" };
+        return updateRow(supabase, v.id, { profession_node_id: node.id });
+      }
       let subcategoryId: string | null = null;
       if (payload.data.subcategoryId) {
         const { data: sub } = await supabase.from("subcategories").select("id, category_id").eq("id", payload.data.subcategoryId).maybeSingle();
@@ -177,6 +183,7 @@ async function applyStep(supabase: SupabaseServerClient, v: EditableVacancy, pay
       const d = payload.data;
       const row = await updateRow(supabase, v.id, {
         experience_min_months: d.experienceMinMonths,
+        ...(d.positionsCount ? { positions_count: d.positionsCount } : {}),
         age_min: d.ageMin,
         age_max: d.ageMax,
         education_min: d.educationMin,

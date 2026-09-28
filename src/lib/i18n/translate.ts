@@ -42,8 +42,10 @@ export function makeTEnum(t: TFunction) {
   };
 }
 
-/** Ma'lumotnoma yozuvlaridagi name_uz / name_ru dan tilga mos nomni oladi */
-export function localizedName(locale: Locale, row: { name_uz: string; name_ru: string } | null | undefined): string {
+/** Ma'lumotnoma yozuvlaridagi name_uz / name_ru / name_en dan tilga mos nomni oladi (ingliz nomi bo'lmasa — o'zbekcha) */
+export function localizedName(locale: Locale, row: { name_uz: string; name_ru: string; name_en?: string | null } | null | undefined): string {
   if (!row) return "";
-  return locale === "ru" ? row.name_ru : row.name_uz;
+  if (locale === "ru") return row.name_ru;
+  if (locale === "en") return row.name_en || row.name_uz;
+  return row.name_uz;
 }

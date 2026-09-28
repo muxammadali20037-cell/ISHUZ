@@ -28,7 +28,7 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: "Ish beruvchi",
     manifest: "/manifest.webmanifest",
     icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
-    openGraph: { type: "website", siteName: "Ish beruvchi", locale: locale === "ru" ? "ru_RU" : "uz_UZ", alternateLocale: [locale === "ru" ? "uz_UZ" : "ru_RU"] },
+    openGraph: { type: "website", siteName: "Ish beruvchi", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
     appleWebApp: { capable: true, statusBarStyle: "default", title: "Ish beruvchi" },
     verification: {
       google: GOOGLE_SITE_VERIFICATION,

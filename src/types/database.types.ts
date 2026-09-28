@@ -362,6 +362,7 @@ export type Database = {
           icon: string | null;
           id: string;
           is_active: boolean;
+          name_en: string | null;
           name_ru: string;
           name_uz: string;
           portfolio_recommended: boolean;
@@ -374,6 +375,7 @@ export type Database = {
           icon?: string | null;
           id?: string;
           is_active?: boolean;
+          name_en?: string | null;
           name_ru: string;
           name_uz: string;
           portfolio_recommended?: boolean;
@@ -386,6 +388,7 @@ export type Database = {
           icon?: string | null;
           id?: string;
           is_active?: boolean;
+          name_en?: string | null;
           name_ru?: string;
           name_uz?: string;
           portfolio_recommended?: boolean;
@@ -803,6 +806,7 @@ export type Database = {
           is_active: boolean;
           lat: number | null;
           lng: number | null;
+          name_en: string | null;
           name_ru: string;
           name_uz: string;
           region_id: string;
@@ -814,6 +818,7 @@ export type Database = {
           is_active?: boolean;
           lat?: number | null;
           lng?: number | null;
+          name_en?: string | null;
           name_ru: string;
           name_uz: string;
           region_id: string;
@@ -825,6 +830,7 @@ export type Database = {
           is_active?: boolean;
           lat?: number | null;
           lng?: number | null;
+          name_en?: string | null;
           name_ru?: string;
           name_uz?: string;
           region_id?: string;
@@ -1294,6 +1300,110 @@ export type Database = {
           },
         ];
       };
+      profession_nodes: {
+        Row: {
+          aliases: string[];
+          category_id: string;
+          created_at: string;
+          depth: number;
+          effective_subcategory_id: string | null;
+          icon: string | null;
+          id: string;
+          is_active: boolean;
+          is_popular: boolean;
+          kind: string;
+          metadata: NonNullable<Json>;
+          name_en: string | null;
+          name_ru: string;
+          name_uz: string;
+          parent_id: string | null;
+          path: string[];
+          search_text: string;
+          selectable: boolean;
+          slug: string;
+          sort_order: number;
+          subcategory_id: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          aliases?: string[];
+          category_id: string;
+          created_at?: string;
+          depth?: number;
+          effective_subcategory_id?: string | null;
+          icon?: string | null;
+          id?: string;
+          is_active?: boolean;
+          is_popular?: boolean;
+          kind?: string;
+          metadata?: NonNullable<Json>;
+          name_en?: string | null;
+          name_ru: string;
+          name_uz: string;
+          parent_id?: string | null;
+          path?: string[];
+          search_text?: string;
+          selectable?: boolean;
+          slug: string;
+          sort_order?: number;
+          subcategory_id?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          aliases?: string[];
+          category_id?: string;
+          created_at?: string;
+          depth?: number;
+          effective_subcategory_id?: string | null;
+          icon?: string | null;
+          id?: string;
+          is_active?: boolean;
+          is_popular?: boolean;
+          kind?: string;
+          metadata?: NonNullable<Json>;
+          name_en?: string | null;
+          name_ru?: string;
+          name_uz?: string;
+          parent_id?: string | null;
+          path?: string[];
+          search_text?: string;
+          selectable?: boolean;
+          slug?: string;
+          sort_order?: number;
+          subcategory_id?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profession_nodes_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profession_nodes_effective_subcategory_id_fkey";
+            columns: ["effective_subcategory_id"];
+            isOneToOne: false;
+            referencedRelation: "subcategories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profession_nodes_parent_id_fkey";
+            columns: ["parent_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profession_nodes_subcategory_id_fkey";
+            columns: ["subcategory_id"];
+            isOneToOne: false;
+            referencedRelation: "subcategories";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profile_contacts: {
         Row: {
           email: string | null;
@@ -1405,6 +1515,7 @@ export type Database = {
         Row: {
           id: string;
           is_active: boolean;
+          name_en: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
@@ -1413,6 +1524,7 @@ export type Database = {
         Insert: {
           id?: string;
           is_active?: boolean;
+          name_en?: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
@@ -1421,6 +1533,7 @@ export type Database = {
         Update: {
           id?: string;
           is_active?: boolean;
+          name_en?: string | null;
           name_ru?: string;
           name_uz?: string;
           slug?: string;
@@ -1812,6 +1925,7 @@ export type Database = {
           hint_uz: string | null;
           id: string;
           is_active: boolean;
+          profession_node_id: string | null;
           slug: string;
           sort_order: number;
           subcategory_slugs: string[];
@@ -1825,6 +1939,7 @@ export type Database = {
           hint_uz?: string | null;
           id?: string;
           is_active?: boolean;
+          profession_node_id?: string | null;
           slug: string;
           sort_order?: number;
           subcategory_slugs?: string[];
@@ -1838,6 +1953,7 @@ export type Database = {
           hint_uz?: string | null;
           id?: string;
           is_active?: boolean;
+          profession_node_id?: string | null;
           slug?: string;
           sort_order?: number;
           subcategory_slugs?: string[];
@@ -1852,6 +1968,13 @@ export type Database = {
             referencedRelation: "categories";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "skill_questions_profession_node_id_fkey";
+            columns: ["profession_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
         ];
       };
       skills: {
@@ -1862,6 +1985,7 @@ export type Database = {
           id: string;
           is_approved: boolean;
           is_custom: boolean;
+          name_en: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
@@ -1874,6 +1998,7 @@ export type Database = {
           id?: string;
           is_approved?: boolean;
           is_custom?: boolean;
+          name_en?: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
@@ -1886,6 +2011,7 @@ export type Database = {
           id?: string;
           is_approved?: boolean;
           is_custom?: boolean;
+          name_en?: string | null;
           name_ru?: string;
           name_uz?: string;
           slug?: string;
@@ -1915,6 +2041,7 @@ export type Database = {
           created_at: string;
           id: string;
           is_active: boolean;
+          name_en: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
@@ -1927,6 +2054,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           is_active?: boolean;
+          name_en?: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
@@ -1939,6 +2067,7 @@ export type Database = {
           created_at?: string;
           id?: string;
           is_active?: boolean;
+          name_en?: string | null;
           name_ru?: string;
           name_uz?: string;
           slug?: string;
@@ -2061,6 +2190,8 @@ export type Database = {
           official_terms: string[];
           owner_profile_id: string | null;
           paid_until: string | null;
+          positions_count: number;
+          profession_node_id: string | null;
           published_at: string | null;
           region_id: string | null;
           requires_review: boolean;
@@ -2106,6 +2237,8 @@ export type Database = {
           official_terms?: string[];
           owner_profile_id?: string | null;
           paid_until?: string | null;
+          positions_count?: number;
+          profession_node_id?: string | null;
           published_at?: string | null;
           region_id?: string | null;
           requires_review?: boolean;
@@ -2151,6 +2284,8 @@ export type Database = {
           official_terms?: string[];
           owner_profile_id?: string | null;
           paid_until?: string | null;
+          positions_count?: number;
+          profession_node_id?: string | null;
           published_at?: string | null;
           region_id?: string | null;
           requires_review?: boolean;
@@ -2197,6 +2332,13 @@ export type Database = {
             columns: ["owner_profile_id"];
             isOneToOne: false;
             referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "vacancies_profession_node_id_fkey";
+            columns: ["profession_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
             referencedColumns: ["id"];
           },
           {
@@ -2652,6 +2794,42 @@ export type Database = {
           },
         ];
       };
+      worker_professions: {
+        Row: {
+          created_at: string;
+          experience_level: Database["public"]["Enums"]["experience_level"];
+          node_id: string;
+          worker_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          experience_level?: Database["public"]["Enums"]["experience_level"];
+          node_id: string;
+          worker_id: string;
+        };
+        Update: {
+          created_at?: string;
+          experience_level?: Database["public"]["Enums"]["experience_level"];
+          node_id?: string;
+          worker_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "worker_professions_node_id_fkey";
+            columns: ["node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "worker_professions_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: false;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       worker_profiles: {
         Row: {
           about: string | null;
@@ -2667,6 +2845,7 @@ export type Database = {
           last_active_at: string;
           onboarding_completed_at: string | null;
           onboarding_step: number;
+          profession_node_id: string | null;
           profile_id: string;
           promoted_until: string | null;
           region_id: string | null;
@@ -2691,6 +2870,7 @@ export type Database = {
           last_active_at?: string;
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
+          profession_node_id?: string | null;
           profile_id: string;
           promoted_until?: string | null;
           region_id?: string | null;
@@ -2715,6 +2895,7 @@ export type Database = {
           last_active_at?: string;
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
+          profession_node_id?: string | null;
           profile_id?: string;
           promoted_until?: string | null;
           region_id?: string | null;
@@ -2738,6 +2919,13 @@ export type Database = {
             columns: ["district_id"];
             isOneToOne: false;
             referencedRelation: "districts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "worker_profiles_profession_node_id_fkey";
+            columns: ["profession_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
             referencedColumns: ["id"];
           },
           {
@@ -2835,6 +3023,10 @@ export type Database = {
         };
         Returns: undefined;
       };
+      admin_merge_profession_node: {
+        Args: { p_from: string; p_into: string };
+        Returns: undefined;
+      };
       admin_moderate_review: {
         Args: {
           p_note?: string;
@@ -2842,6 +3034,14 @@ export type Database = {
           p_status: Database["public"]["Enums"]["review_status"];
         };
         Returns: undefined;
+      };
+      admin_profession_node_stats: {
+        Args: { p_category_id?: string; p_parent_id?: string };
+        Returns: {
+          id: string;
+          profiles: number;
+          vacancies: number;
+        }[];
       };
       admin_resolve_report: {
         Args: {
@@ -3088,6 +3288,7 @@ export type Database = {
           query_string: string;
         }[];
       };
+      normalize_search_text: { Args: { p: string }; Returns: string };
       notify: {
         Args: {
           p_link?: string;
@@ -3145,6 +3346,21 @@ export type Database = {
       prepare_account_deletion: {
         Args: Record<PropertyKey, never>;
         Returns: Json;
+      };
+      profession_node_trail: {
+        Args: { p_node_id: string };
+        Returns: {
+          depth: number;
+          id: string;
+          name_en: string;
+          name_ru: string;
+          name_uz: string;
+          selectable: boolean;
+        }[];
+      };
+      profession_relation: {
+        Args: { p_vacancy_path: string[]; p_worker_path: string[] };
+        Returns: number;
       };
       profile_display_name: { Args: { p_profile: string }; Returns: string };
       profile_rating: {
@@ -3241,6 +3457,24 @@ export type Database = {
           p_place?: string;
         };
         Returns: undefined;
+      };
+      search_profession_nodes: {
+        Args: { p_category_id?: string; p_limit?: number; p_query: string };
+        Returns: {
+          category_id: string;
+          depth: number;
+          has_children: boolean;
+          icon: string;
+          id: string;
+          name_en: string;
+          name_ru: string;
+          name_uz: string;
+          parent_id: string;
+          score: number;
+          selectable: boolean;
+          slug: string;
+          trail: Json;
+        }[];
       };
       search_vacancies: {
         Args: {

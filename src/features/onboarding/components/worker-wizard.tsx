@@ -3,6 +3,7 @@ import { getT } from "@/lib/i18n/server";
 import { aiEnabled } from "@/lib/ai/client";
 import { AiCtaCard } from "@/features/ai/components/ai-composer";
 import type { ReferenceData } from "@/lib/reference";
+import type { TrailItem } from "@/features/professions/types";
 import { REVIEW_STEP, STEP_KEYS, type SkillOption, type SkillQuestion, type WorkerDraft } from "../types";
 import { Review } from "./review";
 import { WizardShell } from "./wizard-shell";
@@ -26,6 +27,7 @@ export async function WorkerWizard({
   reference,
   skills,
   questions = [],
+  professionTrail = [],
   userId,
 }: {
   step: number;
@@ -33,6 +35,7 @@ export async function WorkerWizard({
   reference: ReferenceData;
   skills: SkillOption[] | null;
   questions?: SkillQuestion[];
+  professionTrail?: TrailItem[];
   userId: string;
 }) {
   const { t } = await getT();
@@ -73,9 +76,14 @@ export async function WorkerWizard({
     case 3:
       content = (
         <Step3Profession
-          draft={{ category_id: w?.category_id ?? null, subcategory_id: w?.subcategory_id ?? null, headline: w?.headline ?? null }}
+          draft={{
+            category_id: w?.category_id ?? null,
+            subcategory_id: w?.subcategory_id ?? null,
+            profession_node_id: w?.profession_node_id ?? null,
+            headline: w?.headline ?? null,
+            trail: professionTrail,
+          }}
           categories={reference.categories}
-          subcategories={reference.subcategories}
         />
       );
       break;

@@ -6,7 +6,7 @@ import type { SessionContext } from "@/features/auth/session";
 import type { DraftSkill, SkillOption, SkillQuestion, WorkerDraft } from "./types";
 
 const WORKER_COLUMNS =
-  "id, headline, category_id, subcategory_id, experience_level, region_id, district_id, area_hint, remote_preference, work_format, onboarding_step, onboarding_completed_at, completeness";
+  "id, headline, category_id, subcategory_id, profession_node_id, experience_level, region_id, district_id, area_hint, remote_preference, work_format, onboarding_step, onboarding_completed_at, completeness";
 
 /**
  * Wizard qoralamasi: profil + kontakt + worker jadvallari (hammasi egasi sifatida, RLS ostida).
@@ -95,14 +95,19 @@ export const getSkillOptions = cache(async (userId: string): Promise<SkillOption
  * Ishchi kasbiga mos savollar ("Guvohnoma toifasi?", "Qaysi dasturlar?").
  * Butun soha uchun (subcategory_slugs bo'sh) yoki aynan shu kasb uchun.
  */
-export const getSkillQuestions = cache(async (categoryId: string | null, subcategoryId: string | null): Promise<SkillQuestion[]> => {
+/**
+ * Kasbga xos savollar: soha savollari + yo'nalish (subcategory) savollari + kasblar daraxti bo'ylab meros
+ * (tugunga bog'langan savol shu tugun va uning barcha ichki yo'nalishlariga beriladi).
+ */
+export const getSkillQuestions = cache(async (categoryId: string | null, subcategoryId: string | null, nodeId: string | null = null): Promise<SkillQuestion[]> => {
   if (!categoryId) return [];
   const supabase = await createClient();
-  const [{ data: sub }, { data, error }] = await Promise.all([
+  const [{ data: sub }, { data: node }, { data, error }] = await Promise.all([
     subcategoryId ? supabase.from("subcategories").select("slug").eq("id", subcategoryId).maybeSingle() : Promise.resolve({ data: null }),
+    nodeId ? supabase.from("profession_nodes").select("path").eq("id", nodeId).maybeSingle() : Promise.resolve({ data: null }),
     supabase
       .from("skill_questions")
-      .select("id, title_uz, title_ru, hint_uz, hint_ru, subcategory_slugs, sort_order, options:skill_question_options(sort_order, skill:skills(id, name_uz, name_ru))")
+      .select("id, title_uz, title_ru, hint_uz, hint_ru, subcategory_slugs, profession_node_id, sort_order, options:skill_question_options(sort_order, skill:skills(id, name_uz, name_ru))")
       .eq("category_id", categoryId)
       .eq("is_active", true)
       .order("sort_order"),
@@ -114,6 +119,7 @@ export const getSkillQuestions = cache(async (categoryId: string | null, subcate
   const slug = sub?.slug ?? null;
   return (data ?? [])
     .filter((q) => q.subcategory_slugs.length === 0 || (slug !== null && q.subcategory_slugs.includes(slug)))
+    .filter((q) => !q.profession_node_id || (node?.path ?? []).includes(q.profession_node_id))
     .map((q) => ({
       id: q.id,
       title_uz: q.title_uz,

@@ -1,0 +1,41 @@
+{
+  "choose_language": "Choose a language",
+  "choose_language_sub": "Tilni tanlang · Выберите язык",
+  "skip": "Skip",
+  "next": "Next",
+  "start": "Get started",
+  "slides": {
+    "jobs": {
+      "title": "Find a job",
+      "text": "The «Jobs» tab shows all vacancies. Filter by area, salary and schedule, and apply in one tap."
+    },
+    "workers": {
+      "title": "Find workers",
+      "text": "The «Workers» tab shows ready candidates. Each one displays a match percentage for your vacancy."
+    },
+    "post": {
+      "title": "AI writes your job post",
+      "text": "The «Post» tab — describe it in your own words. AI organizes it into sections and creates polished text and a promo image."
+    },
+    "chat": {
+      "title": "Chat and notifications",
+      "text": "Applications, offers and replies are in «Chat» and 🔔. Important messages also arrive on Telegram."
+    }
+  },
+  "quick": {
+    "title": "What would you like to do?",
+    "jobs": "Find a job",
+    "workers": "Find workers",
+    "post": "Post a vacancy",
+    "resume": "Create a resume",
+    "pricing": "Pricing"
+  },
+  "cross": {
+    "worker_title": "Need workers?",
+    "worker_desc": "You can post a vacancy too — AI will write it in 1 minute",
+    "worker_cta": "Post a vacancy",
+    "employer_title": "Looking for a job yourself?",
+    "employer_desc": "One account lets you search for both jobs and workers",
+    "employer_cta": "Find a job"
+  }
+}

@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getLocale } from "@/lib/i18n/server";
 import { aiEnabled } from "@/lib/ai/client";
+import { resolveProfessionNode } from "@/features/professions/queries";
 import { savePersonal, saveLocation, saveProfession, saveExperience, saveSkills, saveEducation, savePreferences, skipStep } from "@/features/onboarding/actions";
 import { stepHref } from "@/features/onboarding/utils";
 import { createDraft, saveStep } from "@/features/vacancies/actions";
@@ -122,7 +123,7 @@ export async function applyWorkerPlan(input: unknown): Promise<ActionResult<{ re
   }
   const steps: [number, () => Promise<boolean>][] = [
     [2, async () => !!p.location && (await saveLocation(p.location)).ok],
-    [3, async () => !!p.profession && (await saveProfession(p.profession)).ok],
+    [3, async () => !!p.profession && (await saveProfession(await withProfessionNode(p.profession))).ok],
     [4, async () => (await saveExperience(p.experience)).ok],
     [5, async () => p.skills.skills.length > 0 && (await saveSkills(p.skills)).ok],
     [6, async () => (p.education ? (await saveEducation(p.education)).ok : onboarded || (await skipStep({ step: 6 })).ok)],
@@ -160,8 +161,22 @@ export async function createVacancyFromText(input: unknown): Promise<ActionResul
       // Majburiy qadamlar: kategoriya va joylashuv — o'tmasa foydalanuvchi o'zi tanlaydi
       if (!res.ok && !firstMissing && (payload.step === "category" || payload.step === "location")) firstMissing = payload.step;
     }
+    // Aniq kasb (kasblar daraxti): "yurak jarrohi kerak" → Tibbiyot › ... › Kardiojarroh. Ishonchsiz bo'lsa — tanlanmaydi.
+    const categoryStep = plan.steps.find((s) => s.step === "category");
+    const categoryId = categoryStep && "categoryId" in categoryStep.data ? categoryStep.data.categoryId : null;
+    const nodeId = await resolveProfessionNode([title, pre.text], categoryId);
+    if (nodeId && categoryId) await saveStep({ vacancyId: id, payload: { step: "category", data: { categoryId, subcategoryId: null, professionNodeId: nodeId } } });
     return { ok: true, data: { redirect: `/employer/vacancies/new?id=${id}&step=${firstMissing ?? "review"}` } };
   } catch (error) {
     return aiError(error, "createVacancyFromText");
   }
+}
+
+/** AI sarlavhasidan aniq kasb tugunini topib, kasb qadamiga qo'shadi */
+async function withProfessionNode(profession: unknown): Promise<unknown> {
+  if (!profession || typeof profession !== "object") return profession;
+  const p = profession as { category_id?: unknown; headline?: unknown };
+  if (typeof p.category_id !== "string" || typeof p.headline !== "string") return profession;
+  const nodeId = await resolveProfessionNode([p.headline], p.category_id);
+  return nodeId ? { ...p, profession_node_id: nodeId } : profession;
 }

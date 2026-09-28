@@ -19,6 +19,7 @@ export type DraftWorker = Pick<
   | "id"
   | "headline"
   | "category_id"
+  | "profession_node_id"
   | "subcategory_id"
   | "experience_level"
   | "region_id"

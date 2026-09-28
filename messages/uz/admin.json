@@ -28,7 +28,8 @@
     "audit": "Audit jurnali",
     "settings": "Sozlamalar",
     "payments": "To'lovlar",
-    "search": "Qidiruv tahlili"
+    "search": "Qidiruv tahlili",
+    "professions": "Kasblar daraxti"
   },
   "common": {
     "done": "Bajarildi",
@@ -46,7 +47,9 @@
     "invalid_json": "JSON noto'g'ri",
     "profile_not_found": "Bunday ID li profil topilmadi",
     "invalid_status": "Bu holatga o'tkazib bo'lmaydi",
-    "not_found": "Yozuv topilmadi"
+    "not_found": "Yozuv topilmadi",
+    "cycle_detected": "Tugunni o'z ichki tuguniga ko'chirib bo'lmaydi",
+    "node_in_use": "Ishlatilgan tugunni o'chirib bo'lmaydi — nofaol qiling yoki birlashtiring"
   },
   "table": {
     "range": "{from}–{to} / {total}"
@@ -459,5 +462,35 @@
     },
     "hint": "Sinonim qo'shish: Kategoriyalar → kasbni tahrirlash → «Sinonimlar»",
     "empty": "Hozircha qidiruvlar yo'q"
+  },
+  "professions": {
+    "title": "Kasblar daraxti",
+    "subtitle": "Soha → kasb → yo'nalish. Kod o'zgartirmasdan yangi kasb qo'shing",
+    "root": "Barcha sohalar",
+    "add_root": "Yangi bo'lim qo'shish",
+    "add_child": "«{name}» ichiga qo'shish",
+    "col_name": "Nomi",
+    "col_flags": "Belgilar",
+    "col_usage": "Ishlatilishi",
+    "children": "{count} ta ichki",
+    "selectable": "Tanlanadi",
+    "group": "Guruh",
+    "popular": "Ommabop",
+    "inactive": "Nofaol",
+    "usage": "{vacancies} vak. · {profiles} profil",
+    "move": "Ko'chirish",
+    "merge": "Birlashtirish",
+    "empty": "Bu darajada hali tugun yo'q",
+    "edit": "Tugunni tahrirlash",
+    "create": "Yangi tugun",
+    "aliases": "Sinonimlar (xalq tilida ham)",
+    "aliases_hint": "Vergul bilan: svarchik, сварщик, welder",
+    "icon": "Belgi",
+    "selectable_hint": "Foydalanuvchi aynan shuni tanlay oladi",
+    "move_title": "«{name}» ni ko'chirish",
+    "merge_title": "«{name}» ni birlashtirish",
+    "move_hint": "Yangi ota tugunni qidiring. Ichki tugunlar ham birga ko'chadi.",
+    "merge_hint": "Qaysi tugunga qo'shilsin? Profillar, vakansiyalar va ichki tugunlar o'tadi, eski nom sinonim bo'ladi.",
+    "to_root": "Soha ildiziga"
   }
 }

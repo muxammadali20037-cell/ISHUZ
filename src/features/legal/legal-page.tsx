@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import uz from "../../../messages/uz/legal.json";
 import ru from "../../../messages/ru/legal.json";
+import en from "../../../messages/en/legal.json";
 import { getLocale } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
 import { localeAlternates } from "@/lib/seo";
@@ -12,7 +13,7 @@ const PATH: Record<Doc, string> = { privacy: "/privacy", deletion: "/account-del
 
 async function content() {
   const locale = await getLocale();
-  return { locale, L: locale === "ru" ? ru : uz };
+  return { locale, L: locale === "ru" ? ru : locale === "en" ? en : uz };
 }
 
 export async function legalMetadata(doc: Doc): Promise<Metadata> {

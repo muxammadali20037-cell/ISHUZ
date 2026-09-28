@@ -1,5 +1,6 @@
 "use client";
 
+import type { Locale } from "@/lib/i18n/config";
 import { useState } from "react";
 import { Save } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -46,7 +47,7 @@ export function SettingsEditor({ settings, canManage }: { settings: SettingRow[]
   );
 }
 
-function SettingRowEditor({ setting, canManage, locale }: { setting: SettingRow; canManage: boolean; locale: "uz" | "ru" }) {
+function SettingRowEditor({ setting, canManage, locale }: { setting: SettingRow; canManage: boolean; locale: Locale }) {
   const { t } = useT();
   const { pending, run } = useAdminAction();
   const kind = kindOf(setting.value);

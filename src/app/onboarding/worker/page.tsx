@@ -7,6 +7,7 @@ import { Shell } from "@/components/shared/shell";
 import { getSkillOptions, getSkillQuestions, getWorkerDraft } from "@/features/onboarding/queries";
 import { WorkerWizard } from "@/features/onboarding/components/worker-wizard";
 import { clampStep } from "@/features/onboarding/utils";
+import { getProfessionTrail } from "@/features/professions/queries";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -26,11 +27,14 @@ export default async function WorkerOnboardingPage({ searchParams }: { searchPar
   const requested = stepParam ? Number.parseInt(stepParam, 10) : null;
   const step = clampStep(requested, draft.onboardingStep);
   const [skills, questions] =
-    step === 5 ? await Promise.all([getSkillOptions(session.userId), getSkillQuestions(draft.worker?.category_id ?? null, draft.worker?.subcategory_id ?? null)]) : [null, []];
+    step === 5
+      ? await Promise.all([getSkillOptions(session.userId), getSkillQuestions(draft.worker?.category_id ?? null, draft.worker?.subcategory_id ?? null, draft.worker?.profession_node_id ?? null)])
+      : [null, []];
+  const professionTrail = step === 3 ? await getProfessionTrail(draft.worker?.profession_node_id) : [];
 
   return (
     <Shell hideNav>
-      <WorkerWizard step={step} draft={draft} reference={reference} skills={skills} questions={questions} userId={session.userId} />
+      <WorkerWizard step={step} draft={draft} reference={reference} skills={skills} questions={questions} professionTrail={professionTrail} userId={session.userId} />
     </Shell>
   );
 }

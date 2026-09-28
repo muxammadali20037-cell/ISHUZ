@@ -19,7 +19,7 @@ function niceMax(max: number): number {
 
 function shortDay(iso: string, locale: string): string {
   const d = new Date(`${iso}T00:00:00`);
-  return d.toLocaleDateString(locale === "ru" ? "ru-RU" : "uz-UZ", { day: "numeric", month: "short" });
+  return d.toLocaleDateString(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ", { day: "numeric", month: "short" });
 }
 
 /**

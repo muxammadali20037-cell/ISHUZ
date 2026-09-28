@@ -10,6 +10,7 @@ import {
   experienceLevelMonths,
   languageLevelRank,
   matchTone,
+  professionRelation,
   roundNumeric,
   ruleBasedEngine,
   summarizeReasons,
@@ -661,5 +662,33 @@ describe("engine API", () => {
       ]),
     ).toEqual({ positives: 1, warnings: 1, negatives: 2 });
     expect(summarizeReasons([])).toEqual({ positives: 0, warnings: 0, negatives: 0 });
+  });
+});
+
+describe("kasblar daraxti (profession_relation)", () => {
+  const MED = "n-med", DOC = "n-doctors", SURG = "n-surgery", CARD = "n-cardiac", URO = "n-urolog", NURSE = "n-nurse";
+  test("munosabat darajalari", () => {
+    expect(professionRelation([MED, DOC, SURG, CARD], [MED, DOC, SURG, CARD])).toBe(3);
+    expect(professionRelation([MED, DOC, SURG, CARD], [MED, DOC, SURG])).toBe(2);
+    expect(professionRelation([MED, DOC], [MED, DOC, SURG])).toBe(1);
+    expect(professionRelation([MED, DOC, URO], [MED, DOC, SURG])).toBe(0);
+    expect(professionRelation([NURSE], [MED, DOC])).toBe(-1);
+    expect(professionRelation([], [MED])).toBeNull();
+  });
+  test("aynan kasb — 25, boshqa shoxdagi shifokor — kam", () => {
+    const exact = run({ professionPaths: [[DOC, SURG, CARD]] }, { professionPath: [DOC, SURG, CARD] });
+    expect(find(exact, "profession_exact")?.ok).toBe(true);
+    const sibling = run({ professionPaths: [[DOC, URO]] }, { professionPath: [DOC, SURG, CARD] });
+    expect(find(sibling, "profession_related")?.ok).toBe("warn");
+    expect(exact.score - sibling.score).toBe(13);
+    const other = run({ professionPaths: [[NURSE]] }, { professionPath: [DOC, SURG, CARD] });
+    expect(find(other, "profession_other_branch")).toBeDefined();
+  });
+  test("qo'shimcha kasblardan eng yaqini olinadi", () => {
+    const res = run({ professionPaths: [[NURSE], [DOC, SURG, CARD, "n-kids"]] }, { professionPath: [DOC, SURG, CARD] });
+    expect(find(res, "profession_specialist")?.ok).toBe(true);
+  });
+  test("tugun bo'lmasa eski mantiq", () => {
+    expect(find(run({}, { professionPath: [DOC] }), "category_match")).toBeDefined();
   });
 });

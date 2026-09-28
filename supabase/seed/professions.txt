@@ -1,0 +1,776 @@
+# Kasblar daraxti (boshlang'ich to'plam). Keyin admin paneldan tahrirlanadi.
+# Format: har bir qator — tugun. Chekinish (2 bo'shliq) = bir daraja chuqurroq.
+#   nom_uz | nom_ru | nom_en | bayroqlar
+# Bayroqlar: group (faqat guruh, tanlanmaydi), pop (ommabop), sub=<eski subcategory slug>, icon=<lucide>, a=sinonim1;sinonim2
+# "@slug" — soha (categories.slug). Yangi sohalar pastda "!category" qatorlari bilan qo'shiladi.
+!category hotel | Mehmonxona va turizm | Гостиницы и туризм | Hotels & tourism | bed-double
+!category legal | Huquq | Юриспруденция | Legal | scale
+!category science | Fan va laboratoriya | Наука и лаборатории | Science & laboratory | flask-conical
+!category management | Boshqaruv va rahbarlik | Управление и руководство | Management | user-cog
+!category government | Davlat sektori | Государственный сектор | Public sector | landmark
+!category engineering | Muhandislik | Инженерия | Engineering | drafting-compass
+
+@medicine
+Shifokorlar | Врачи | Doctors | group pop sub=doctor icon=stethoscope a=vrach;врач;doktor;shifokor
+  Terapiya | Терапия | Internal medicine | group
+    Terapevt | Терапевт | General practitioner | pop a=terapevt;терапевт;umumiy amaliyot shifokori
+    Oilaviy shifokor | Семейный врач | Family doctor | pop a=oilaviy vrach;семейный врач;vop;воп
+    Ichki kasalliklar mutaxassisi | Врач-интернист | Internist
+    Gastroenterolog | Гастроэнтеролог | Gastroenterologist
+    Pulmonolog | Пульмонолог | Pulmonologist
+    Nefrolog | Нефролог | Nephrologist
+    Endokrinolog | Эндокринолог | Endocrinologist | pop
+    Revmatolog | Ревматолог | Rheumatologist
+    Allergolog-immunolog | Аллерголог-иммунолог | Allergist-immunologist | a=allergolog;immunolog
+    Infeksionist | Инфекционист | Infectious disease specialist
+    Gematolog | Гематолог | Hematologist
+  Kardiologiya | Кардиология | Cardiology | group
+    Kardiolog | Кардиолог | Cardiologist | pop a=yurak shifokori;кардиолог
+    Bolalar kardiologi | Детский кардиолог | Pediatric cardiologist
+    Aritmolog | Аритмолог | Arrhythmologist
+  Pediatriya | Педиатрия | Pediatrics | group
+    Pediatr | Педиатр | Pediatrician | pop a=bolalar shifokori;детский врач;педиатр
+    Neonatolog | Неонатолог | Neonatologist
+    Bolalar nevrologi | Детский невролог | Pediatric neurologist
+  Jarrohlik | Хирургия | Surgery | group
+    Umumiy jarroh | Общий хирург | General surgeon | pop a=jarroh;xirurg;хирург
+    Kardiojarrohlik | Кардиохирургия | Cardiac surgery | group
+      Kardiojarroh | Кардиохирург | Cardiac surgeon | a=yurak jarrohi;кардиохирург
+        Bolalar kardiojarrohi | Детский кардиохирург | Pediatric cardiac surgeon
+    Neyroxirurg | Нейрохирург | Neurosurgeon | a=neyrojarroh
+    Plastik jarroh | Пластический хирург | Plastic surgeon
+    Tomir jarrohi | Сосудистый хирург | Vascular surgeon
+    Travmatolog-ortoped | Травматолог-ортопед | Orthopedic trauma surgeon | pop a=travmatolog;ortoped;травматолог;ортопед
+    Proktolog | Проктолог | Proctologist | a=koloproktolog
+    Bolalar jarrohi | Детский хирург | Pediatric surgeon
+    Onkojarroh | Онкохирург | Surgical oncologist
+    Anesteziolog-reanimatolog | Анестезиолог-реаниматолог | Anesthesiologist | a=anesteziolog;reanimatolog;анестезиолог;реаниматолог
+  Urologiya | Урология | Urology | group
+    Urolog | Уролог | Urologist | pop a=urolog;уролог
+      Urolog-androlog | Уролог-андролог | Urologist-andrologist | a=androlog;андролог
+      Bolalar urologi | Детский уролог | Pediatric urologist
+  Nevrologiya va psixiatriya | Неврология и психиатрия | Neurology & psychiatry | group
+    Nevrolog | Невролог | Neurologist | pop a=nevropatolog;невропатолог
+    Psixiatr | Психиатр | Psychiatrist
+    Psixoterapevt | Психотерапевт | Psychotherapist
+    Narkolog | Нарколог | Addiction specialist
+  Ayollar salomatligi | Женское здоровье | Women's health | group
+    Ginekolog | Гинеколог | Gynecologist | pop a=akusher-ginekolog;акушер-гинеколог;гинеколог
+    Akusher | Акушер | Obstetrician
+    Mammolog | Маммолог | Breast specialist
+    Reproduktolog | Репродуктолог | Fertility specialist
+  Ko'z, quloq, teri | Глаза, ЛОР, кожа | Eyes, ENT, skin | group
+    Oftalmolog | Офтальмолог | Ophthalmologist | pop a=ko'z shifokori;окулист;oftalmolog
+    Otorinolaringolog (LOR) | Оториноларинголог (ЛОР) | ENT specialist | pop a=lor;лор;otorinolaringolog
+    Dermatolog | Дерматолог | Dermatologist | a=dermatovenerolog;дерматовенеролог
+  Onkologiya | Онкология | Oncology | group
+    Onkolog | Онколог | Oncologist
+    Radioterapevt | Радиотерапевт | Radiation oncologist
+  Boshqa mutaxassisliklar | Другие специальности | Other specialties | group
+    Sport shifokori | Спортивный врач | Sports physician
+    Reabilitolog | Реабилитолог | Rehabilitation physician
+    Dietolog | Диетолог | Dietitian | a=nutritsiolog;нутрициолог
+    Sud-tibbiy ekspert | Судмедэксперт | Forensic medical examiner
+    Tez yordam shifokori | Врач скорой помощи | Emergency physician | a=tez yordam;скорая помощь
+Hamshiralik | Сестринское дело | Nursing | group pop sub=nurse icon=heart-pulse
+  Hamshira | Медсестра | Nurse | pop a=medsestra;медсестра;hamshira
+    Operatsiya hamshirasi | Операционная медсестра | Operating room nurse
+    Protsedura hamshirasi | Процедурная медсестра | Procedure nurse
+    Bolalar hamshirasi | Детская медсестра | Pediatric nurse
+    Patronaj hamshirasi | Патронажная медсестра | Home care nurse
+  Katta hamshira | Старшая медсестра | Head nurse
+  Akusherka | Акушерка | Midwife | a=doya;акушерка
+  Feldsher | Фельдшер | Paramedic
+Stomatologiya | Стоматология | Dentistry | group pop sub=dentist icon=smile
+  Terapevtik stomatologiya | Терапевтическая стоматология | General dentistry | group
+    Stomatolog-terapevt | Стоматолог-терапевт | General dentist | pop a=stomatolog;tish shifokori;стоматолог
+  Jarrohlik stomatologiyasi | Хирургическая стоматология | Oral surgery | group
+    Stomatolog-jarroh | Стоматолог-хирург | Oral surgeon
+    Implantolog | Имплантолог | Implantologist
+  Ortodont | Ортодонт | Orthodontist
+  Stomatolog-ortoped | Стоматолог-ортопед | Prosthodontist
+  Bolalar stomatologi | Детский стоматолог | Pediatric dentist
+  Tish texnigi | Зубной техник | Dental technician
+  Stomatolog yordamchisi | Ассистент стоматолога | Dental assistant
+Diagnostika | Диагностика | Diagnostics | group icon=scan
+  Radiologiya | Радиология | Radiology | group
+    Rentgenolog | Рентгенолог | Radiologist (X-ray) | a=rentgen;рентген
+    MRT mutaxassisi | Специалист МРТ | MRI specialist | a=mrt;мрт
+    KT mutaxassisi | Специалист КТ | CT specialist | a=kt;кт
+  UZI | УЗИ | Ultrasound | group a=uzi;узи
+    UZI shifokori | Врач УЗИ | Ultrasound doctor | pop a=uzi;узи;uzi mutaxassisi
+      Homiladorlik UZI mutaxassisi | Специалист УЗИ беременности | Obstetric ultrasound specialist
+      Yurak UZI (EXO) mutaxassisi | Специалист ЭхоКГ | Echocardiography specialist | a=exokg;эхокг
+  Funksional diagnostika shifokori | Врач функциональной диагностики | Functional diagnostics doctor | a=ekg;экг
+  Endoskopist | Эндоскопист | Endoscopist
+Laboratoriya | Лаборатория | Laboratory | group sub=lab icon=flask-conical
+  Laborant | Лаборант | Lab technician | pop a=laborant;лаборант
+  Klinik laboratoriya shifokori | Врач клинической лаборатории | Clinical laboratory physician
+  Bakteriolog | Бактериолог | Bacteriologist
+Farmatsiya | Фармация | Pharmacy | group sub=pharmacist icon=pill
+  Farmatsevt | Фармацевт | Pharmacist | pop a=aptekachi;провизор;фармацевт
+  Provizor | Провизор | Senior pharmacist
+  Dorixona mudiri | Заведующий аптекой | Pharmacy manager
+  Tibbiy vakil | Медицинский представитель | Medical representative | a=medpred;медпред
+Reabilitatsiya | Реабилитация | Rehabilitation | group sub=physio
+  Fizioterapevt | Физиотерапевт | Physiotherapist | a=fizioterapiya
+  Massajchi | Массажист | Massage therapist | pop sub=massage a=massaj;массажист
+  LFK instruktori | Инструктор ЛФК | Exercise therapy instructor
+  Logoped | Логопед | Speech therapist
+Tibbiy yordamchi xodimlar | Младший медперсонал | Medical support staff | group sub=orderly
+  Sanitar | Санитар | Orderly | a=sanitarka;санитарка
+  Kichik hamshira | Младшая медсестра | Nursing assistant
+  Bemorga qarovchi | Сиделка | Caregiver | pop sub=caregiver a=sidelka;сиделка
+Klinika boshqaruvi | Управление клиникой | Clinic management | group
+  Bosh shifokor | Главный врач | Chief physician
+  Klinika administratori | Администратор клиники | Clinic administrator | pop a=registratura;регистратор
+  Tibbiy statistik | Медицинский статистик | Medical records specialist
+
+@education
+Maktab | Школа | School | group pop icon=school
+  O'qituvchi | Учитель | Teacher | group pop sub=teacher a=o'qituvchi;ustoz;учитель;педагог
+    Boshlang'ich sinf o'qituvchisi | Учитель начальных классов | Primary school teacher | pop
+    Aniq fanlar | Точные науки | STEM subjects | group
+      Matematika o'qituvchisi | Учитель математики | Math teacher | pop sub=math a=matematik
+        Olimpiada matematika o'qituvchisi | Преподаватель олимпиадной математики | Math olympiad coach
+      Fizika o'qituvchisi | Учитель физики | Physics teacher
+      Kimyo o'qituvchisi | Учитель химии | Chemistry teacher
+      Biologiya o'qituvchisi | Учитель биологии | Biology teacher
+      Informatika o'qituvchisi | Учитель информатики | Computer science teacher
+    Chet tillari | Иностранные языки | Foreign languages | group
+      Ingliz tili o'qituvchisi | Учитель английского языка | English teacher | pop sub=english a=ingliz tili;english;английский
+        IELTS o'qituvchisi | Преподаватель IELTS | IELTS teacher | pop a=ielts
+          IELTS Speaking o'qituvchisi | Преподаватель IELTS Speaking | IELTS Speaking teacher
+          IELTS Writing o'qituvchisi | Преподаватель IELTS Writing | IELTS Writing teacher
+        General English o'qituvchisi | Преподаватель General English | General English teacher
+        CEFR o'qituvchisi | Преподаватель CEFR | CEFR teacher | a=cefr
+        SAT o'qituvchisi | Преподаватель SAT | SAT teacher | a=sat
+      Rus tili o'qituvchisi | Учитель русского языка | Russian teacher | sub=russian
+      Nemis tili o'qituvchisi | Учитель немецкого языка | German teacher
+      Koreys tili o'qituvchisi | Учитель корейского языка | Korean teacher
+      Arab tili o'qituvchisi | Учитель арабского языка | Arabic teacher
+      Fransuz tili o'qituvchisi | Учитель французского языка | French teacher
+      Turk tili o'qituvchisi | Учитель турецкого языка | Turkish teacher
+    Ijtimoiy fanlar | Гуманитарные науки | Humanities | group
+      O'zbek tili va adabiyoti o'qituvchisi | Учитель узбекского языка и литературы | Uzbek language teacher
+      Tarix o'qituvchisi | Учитель истории | History teacher
+      Geografiya o'qituvchisi | Учитель географии | Geography teacher
+      Huquq o'qituvchisi | Учитель права | Law teacher
+      Iqtisod o'qituvchisi | Учитель экономики | Economics teacher
+    San'at va sport | Искусство и спорт | Arts & sports | group
+      Jismoniy tarbiya o'qituvchisi | Учитель физкультуры | PE teacher | a=fizruk;физрук
+      Musiqa o'qituvchisi | Учитель музыки | Music teacher
+      Tasviriy san'at o'qituvchisi | Учитель ИЗО | Art teacher
+      Texnologiya o'qituvchisi | Учитель технологии | Technology teacher
+  Maktab boshqaruvi | Управление школой | School management | group
+    Direktor | Директор школы | School principal
+    Direktor o'rinbosari | Заместитель директора | Deputy principal
+    O'quv ishlari bo'yicha mudir | Завуч | Head of academics | a=zavuch;завуч
+    Ma'naviy-ma'rifiy ishlar bo'yicha o'rinbosar | Заместитель по воспитательной работе | Deputy for student affairs
+  Maktab psixologi | Школьный психолог | School psychologist
+  Kutubxonachi | Библиотекарь | Librarian
+Maktabgacha ta'lim | Дошкольное образование | Preschool | group sub=kindergarten icon=baby
+  Tarbiyachi | Воспитатель | Kindergarten teacher | pop a=bog'cha tarbiyachisi;воспитатель
+  Tarbiyachi yordamchisi | Помощник воспитателя | Teacher assistant | a=enaga;няня
+  Bog'cha mudirasi | Заведующая детсадом | Kindergarten director
+  Bog'cha metodisti | Методист детсада | Preschool methodologist
+O'quv markazi va repetitorlik | Учебные центры и репетиторство | Tutoring & learning centers | group pop sub=tutor
+  Repetitor | Репетитор | Tutor | pop a=repetitor;репетитор
+  Online o'qituvchi | Онлайн-преподаватель | Online teacher
+  Mental arifmetika o'qituvchisi | Преподаватель ментальной арифметики | Mental arithmetic teacher
+  Robototexnika o'qituvchisi | Преподаватель робототехники | Robotics teacher
+  O'quv markazi administratori | Администратор учебного центра | Learning center administrator
+IT ta'lim | IT-образование | IT education | group
+  Dasturlash o'qituvchisi | Преподаватель программирования | Programming teacher | pop
+    Frontend o'qituvchisi | Преподаватель Frontend | Frontend instructor
+      HTML/CSS o'qituvchisi | Преподаватель HTML/CSS | HTML/CSS instructor
+      JavaScript o'qituvchisi | Преподаватель JavaScript | JavaScript instructor
+      React o'qituvchisi | Преподаватель React | React instructor
+    Python o'qituvchisi | Преподаватель Python | Python instructor
+    Kompyuter savodxonligi o'qituvchisi | Преподаватель компьютерной грамотности | Computer literacy teacher
+  Dizayn o'qituvchisi | Преподаватель дизайна | Design instructor
+Oliy ta'lim | Высшее образование | Higher education | group
+  Universitet o'qituvchisi | Преподаватель вуза | University lecturer | a=dotsent;professor;доцент;профессор
+  Assistent o'qituvchi | Ассистент преподавателя | Teaching assistant
+  Kafedra mudiri | Заведующий кафедрой | Head of department
+  Dekanat xodimi | Сотрудник деканата | Dean's office staff
+Avtomaktab | Автошкола | Driving school | group icon=car
+  Avtoinstruktor | Автоинструктор | Driving instructor | pop a=instruktor;инструктор;avtoinstruktor
+    Mexanik uzatmali avtomobil instruktori | Инструктор на механике | Manual transmission instructor
+    Avtomat uzatmali avtomobil instruktori | Инструктор на автомате | Automatic transmission instructor
+    B toifa instruktori | Инструктор категории B | Category B instructor
+    C toifa instruktori | Инструктор категории C | Category C instructor
+    D toifa instruktori | Инструктор категории D | Category D instructor
+  Nazariya o'qituvchisi (YHQ) | Преподаватель теории ПДД | Traffic rules teacher | a=pdd;пдд;yhq
+Sport va trenerlik | Спорт и тренерство | Sports coaching | group sub=trainer
+  Fitnes trener | Фитнес-тренер | Fitness trainer | pop a=trener;тренер;fitnes
+  Suzish murabbiyi | Тренер по плаванию | Swimming coach
+  Futbol murabbiyi | Тренер по футболу | Football coach
+  Kurash va yakkakurash murabbiyi | Тренер по единоборствам | Martial arts coach
+  Yoga instruktori | Инструктор йоги | Yoga instructor
+Metodist | Методист | Methodologist | sub=methodist
+Ta'lim administratori | Администратор в образовании | Education administrator
+
+@auto_service
+Avtoservis | Автосервис | Car service | group pop icon=wrench
+  Avtomexanik | Автомеханик | Car mechanic | pop a=mexanik;avtomexanik;usta;механик;автослесарь;avtoslesar
+    Dvigatel ustasi (motorist) | Моторист | Engine specialist | pop sub=motorist a=motorchi;motorist;моторист;dvigatelchi
+      Benzin dvigateli | Бензиновые двигатели | Gasoline engines
+      Dizel dvigateli | Дизельные двигатели | Diesel engines
+      Turbo tizimlari | Турбосистемы | Turbo systems
+    Transmissiya ustasi | Мастер по трансмиссии | Transmission specialist | a=korobka ustasi;каробка;кпп
+      Avtomat karobka (AKPP) ustasi | Мастер АКПП | Automatic gearbox specialist | a=akpp;акпп
+    Konditsioner ustasi | Мастер по автокондиционерам | Car A/C technician
+    Gaz uskunasi ustasi (metan/propan) | Мастер газового оборудования | CNG/LPG equipment technician | a=metan;propan;газ
+  Hodovoy ustasi | Мастер по ходовой | Chassis & suspension mechanic | pop sub=chassis a=hodovik;hodovoy;ходовик;ходовая
+    Amortizator va podveska | Амортизаторы и подвеска | Suspension
+    Rul tizimi | Рулевое управление | Steering
+    Tormoz tizimi | Тормозная система | Brakes
+    Razval-shodilanish ustasi | Мастер развал-схождения | Wheel alignment technician | a=razval;развал
+  Shinomontajchi | Шиномонтажник | Tire technician | pop sub=tire a=shinomontaj;шиномонтаж
+  Moy almashtirish ustasi | Мастер по замене масла | Oil change technician | sub=oil
+Avtoelektrika | Автоэлектрика | Auto electrics | group sub=auto_electric icon=zap
+  Avtoelektrik | Автоэлектрик | Auto electrician | pop a=avtoelektrik;автоэлектрик
+    Starter va generator ustasi | Мастер стартеров и генераторов | Starter & alternator specialist
+    Avtoelektronika (ECU, datchiklar) | Автоэлектроника (ЭБУ, датчики) | Car electronics (ECU, sensors) | a=ecu;эбу
+  Kompyuter diagnostika ustasi | Компьютерный диагност | Car diagnostics technician | pop sub=diagnost a=diagnost;диагност;skaner
+  Signalizatsiya va multimedia o'rnatuvchi | Установщик сигнализаций и мультимедиа | Car alarm & audio installer
+Kuzov ishlari | Кузовные работы | Body work | group sub=body icon=car-front
+  Kuzov ustasi | Кузовщик | Body repair technician | pop a=kuzovchi;жестянщик;кузовщик;rixtovka;рихтовка
+  Avtomalyar | Автомаляр | Car painter | pop sub=paint a=malyar;маляр;bo'yoqchi
+  Polirovka ustasi | Полировщик | Car polisher
+  Avtooyna ustasi | Мастер по автостеклам | Auto glass technician
+Avtomoyka va deteyling | Автомойка и детейлинг | Car wash & detailing | group sub=detailing
+  Avtomoyka xodimi | Мойщик автомобилей | Car washer | pop a=moyka;мойщик;moykachi
+  Deteyling ustasi | Детейлер | Detailer | a=deteyling;детейлинг;ximchistka
+  Plyonka va tonirovka ustasi | Мастер по плёнке и тонировке | Wrap & tint installer | a=tonirovka;тонировка
+Avto savdo va servis boshqaruvi | Автопродажи и управление сервисом | Auto sales & service management | group
+  Ehtiyot qismlar sotuvchisi | Продавец автозапчастей | Auto parts seller | pop a=zapchast;запчасти
+  Avtosalon menejeri | Менеджер автосалона | Car sales manager
+  Servis administratori (priyomshik) | Мастер-приёмщик | Service advisor | a=priyomshik;приёмщик
+  Servis menejeri | Менеджер сервиса | Service manager
+
+@mechanic
+Mexanik | Механик | Mechanic | pop sub=mechanic a=mexanik;механик
+Texnik | Техник | Technician | sub=technician
+Stanokchi | Станочник | Machine tool operator | pop sub=machinist a=tokar;frezerovshik;токарь;фрезеровщик
+  Tokar | Токарь | Lathe operator | a=tokar;токарь
+  Frezerovshik | Фрезеровщик | Milling operator
+  CNC operatori | Оператор ЧПУ | CNC operator | a=chpu;чпу;cnc
+Uskunalarga texnik xizmat ko'rsatuvchi | Техник по обслуживанию оборудования | Maintenance technician | sub=maintenance
+Lift ustasi | Лифтёр / механик лифтов | Elevator technician
+Qishloq xo'jaligi texnikasi ustasi | Механик сельхозтехники | Agricultural machinery mechanic
+
+@it
+Dasturlash | Программирование | Software development | group pop icon=code
+  Frontend | Frontend | Frontend | group pop sub=frontend a=frontend;фронтенд
+    Frontend dasturchi | Frontend-разработчик | Frontend developer | pop a=frontend developer;верстальщик
+      React dasturchi | React-разработчик | React developer | pop a=react;reactjs
+        Next.js dasturchi | Next.js-разработчик | Next.js developer | a=next.js;nextjs
+      Vue dasturchi | Vue-разработчик | Vue developer | a=vue;vuejs;nuxt
+      Angular dasturchi | Angular-разработчик | Angular developer | a=angular
+      Veb-verstalshik (HTML/CSS) | Верстальщик | HTML/CSS developer | a=verstka;вёрстка
+  Backend | Backend | Backend | group pop sub=backend a=backend;бэкенд
+    Backend dasturchi | Backend-разработчик | Backend developer | pop
+      Node.js dasturchi | Node.js-разработчик | Node.js developer | a=node;nodejs;nestjs;express
+      Python dasturchi | Python-разработчик | Python developer | pop a=python;django;fastapi;flask
+      Java dasturchi | Java-разработчик | Java developer | a=java;spring
+      .NET dasturchi | .NET-разработчик | .NET developer | a=c#;dotnet;.net
+      PHP dasturchi | PHP-разработчик | PHP developer | a=php;laravel;yii
+      Go dasturchi | Go-разработчик | Go developer | a=golang;go
+  Full Stack dasturchi | Full Stack-разработчик | Full stack developer | pop sub=fullstack a=fullstack;фулстек
+  Mobil dasturlash | Мобильная разработка | Mobile development | group
+    Flutter dasturchi | Flutter-разработчик | Flutter developer | pop sub=flutter a=flutter;dart
+    Android dasturchi | Android-разработчик | Android developer | sub=android a=android;kotlin
+    iOS dasturchi | iOS-разработчик | iOS developer | sub=ios a=ios;swift
+    React Native dasturchi | React Native-разработчик | React Native developer | a=react native
+  1C dasturchi | Программист 1С | 1C developer | pop sub=1c a=1c;1с
+  WordPress dasturchi | WordPress-разработчик | WordPress developer | sub=wordpress a=wordpress
+  No-code dasturchi | No-code разработчик | No-code developer | sub=nocode a=bubble;tilda;no-code
+  O'yin dasturchisi | Разработчик игр | Game developer | a=unity;unreal;gamedev
+Test va sifat (QA) | Тестирование (QA) | Quality assurance | group sub=qa
+  QA muhandis | QA-инженер | QA engineer | pop a=tester;тестировщик;qa
+    Manual QA | Ручной тестировщик | Manual QA engineer
+    Avtomatlashtirilgan QA | Автоматизатор тестирования | QA automation engineer | a=autotest;автотесты;selenium
+Dizayn (UI/UX) | Дизайн (UI/UX) | Product design | group sub=uiux
+  UI/UX dizayner | UI/UX-дизайнер | UI/UX designer | pop a=ui;ux;figma;дизайнер интерфейсов
+  Product dizayner | Продуктовый дизайнер | Product designer
+Ma'lumotlar va AI | Данные и AI | Data & AI | group sub=data
+  Data analitik | Аналитик данных | Data analyst | pop a=data analyst;аналитик данных
+    BI analitik (Power BI) | BI-аналитик | BI analyst | a=power bi;tableau
+  Data engineer | Дата-инженер | Data engineer | sub=data_engineer
+  Data scientist | Data Scientist | Data scientist | sub=ml_ai
+  Machine Learning muhandisi | ML-инженер | Machine learning engineer | sub=ml_ai a=ml;машинное обучение
+  AI muhandisi | AI-инженер | AI engineer | sub=ml_ai a=ai;ии;llm
+Infratuzilma | Инфраструктура | Infrastructure | group icon=server
+  Tizim administratori | Системный администратор | System administrator | pop sub=sysadmin a=sisadmin;сисадмин
+  Tarmoq muhandisi | Сетевой инженер | Network engineer | a=cisco;mikrotik
+  DevOps muhandis | DevOps-инженер | DevOps engineer | pop sub=devops a=devops;docker;kubernetes
+  Cloud muhandis | Облачный инженер | Cloud engineer | sub=devops a=aws;azure;gcp
+  Kiberxavfsizlik mutaxassisi | Специалист по кибербезопасности | Cybersecurity specialist | sub=cybersecurity a=pentest;ib;иб
+Boshqaruv va tahlil | Управление и аналитика | Management & analysis | group
+  Project Manager | Проджект-менеджер | Project manager | sub=it_project_manager a=pm;проджект
+  Product Manager | Продакт-менеджер | Product manager | sub=product_manager a=продакт
+  Biznes analitik | Бизнес-аналитик | Business analyst | sub=business_analyst a=ba
+  Scrum master | Скрам-мастер | Scrum master
+Texnik qo'llab-quvvatlash | Техническая поддержка | Technical support | group sub=support
+  Texnik yordam mutaxassisi | Специалист техподдержки | Technical support specialist | pop a=support;техподдержка;helpdesk
+  CRM mutaxassisi | CRM-специалист | CRM specialist | sub=crm a=amocrm;bitrix24;битрикс
+
+@construction
+Umumiy qurilish | Общестрой | General construction | group pop icon=hard-hat
+  Quruvchi | Строитель | Builder | pop a=stroitel;строитель;quruvchi
+  G'isht teruvchi | Каменщик | Bricklayer | pop sub=mason a=kamenshik;каменщик;g'ishtchi
+  Betonchi | Бетонщик | Concrete worker | sub=concrete a=betonshik;бетонщик
+  Armaturachi | Арматурщик | Rebar worker | a=armaturshik;арматурщик
+  Qurilish yordamchisi | Разнорабочий на стройке | Construction laborer | pop sub=laborer a=podsobnik;подсобник;разнорабочий
+  Tom yopuvchi | Кровельщик | Roofer | sub=roofer a=krovelshik;кровельщик
+  Payvandchi | Сварщик | Welder | pop sub=welder a=svarchik;svarshik;сварщик;welder;elektrosvarshik
+Ichki pardoz | Внутренняя отделка | Interior finishing | group pop sub=finishing
+  Pardozlovchi usta | Мастер-отделочник | Finishing master | pop a=otdelochnik;отделочник;remontchi
+    Gipsokarton ustasi | Мастер по гипсокартону | Drywall installer | a=gipsokarton;гипсокартон;gkl
+    Shpaklyovka ustasi | Шпаклёвщик | Putty specialist | a=shpaklyovka;шпаклёвка
+    Bo'yoqchi (malyar) | Маляр | Painter | a=malyar;маляр;bo'yoqchi
+    Dekorativ suvoq ustasi | Мастер декоративной штукатурки | Decorative plaster specialist
+  Suvoqchi | Штукатур | Plasterer | pop sub=plasterer a=shtukatur;штукатур
+  Kafelchi | Плиточник | Tiler | pop sub=tiler a=plitochnik;плиточник;kafel
+  Pol ustasi (laminat, parket) | Мастер по полам | Flooring installer | a=laminat;parket;ламинат;паркет
+  Oyna va eshik o'rnatuvchi | Установщик окон и дверей | Window & door installer | a=plastik oyna;окна
+Tashqi ishlar | Наружные работы | Exterior works | group
+  Fasad ustasi | Фасадчик | Facade worker | sub=facade a=fasad;фасад
+  Balandlikda ishlovchi (promalpinist) | Промышленный альпинист | Rope access worker | a=promalp;промальп
+  Landshaft ishchisi | Работник по благоустройству | Landscaping worker
+Qurilish elektrikasi va santexnikasi | Электрика и сантехника на стройке | Construction MEP | group
+  Qurilish elektrigi | Электрик на стройке | Construction electrician | sub=engineer a=elektrik;электрик
+  Qurilish santexnigi | Сантехник на стройке | Construction plumber | a=santexnik;сантехник
+  Ventilyatsiya o'rnatuvchi | Монтажник вентиляции | Ventilation installer
+Duradgorlik | Столярные работы | Carpentry | group sub=carpenter
+  Duradgor | Столяр | Joiner | pop a=stolyar;столяр;duradgor
+  Plotnik | Плотник | Carpenter | a=plotnik;плотник
+Maxsus texnika | Спецтехника | Heavy equipment | group pop icon=truck
+  Ekskavator operatori | Машинист экскаватора | Excavator operator | pop sub=excavator a=ekskavatorchi;экскаваторщик
+  Kran operatori | Крановщик | Crane operator | sub=crane a=kranovshik;крановщик
+  Buldozer operatori | Бульдозерист | Bulldozer operator | a=buldozerist
+  Avtogreyder operatori | Машинист автогрейдера | Grader operator
+  Katok operatori | Машинист катка | Road roller operator
+  Beton nasosi operatori | Оператор бетононасоса | Concrete pump operator
+  Traktor operatori (pogruzchik) | Тракторист-погрузчик | Loader operator | a=traktorchi;тракторист
+Muhandis-texnik xodimlar | Инженерно-технический персонал | Engineering & site staff | group
+  Prorab | Прораб | Site manager | pop sub=foreman a=prorab;прораб
+  Qurilish muhandisi | Инженер-строитель | Civil engineer | sub=engineer a=pto;пто
+  Texnik nazorat muhandisi | Инженер технадзора | Construction supervision engineer | a=texnadzor;технадзор
+  Smeta mutaxassisi | Сметчик | Cost estimator | sub=estimator a=smetchik;сметчик
+  Geodezist | Геодезист | Surveyor | sub=surveyor a=geodezist;геодезист
+  Arxitektor | Архитектор | Architect | sub=architect a=arxitektor;архитектор
+  Ichki dizayner | Дизайнер интерьера | Interior designer | a=interyer;интерьер
+  Mehnat muhofazasi mutaxassisi | Специалист по охране труда | Health & safety officer | a=texnika xavfsizligi;охрана труда
+
+@craftsman
+Universal usta | Мастер на все руки | Handyman | pop sub=universal a=usta;мастер;xizmat
+Mebel ustasi | Мебельщик | Furniture maker | pop sub=furniture a=mebelchi;мебельщик
+  Korpus mebel yig'uvchi | Сборщик корпусной мебели | Cabinet furniture assembler | a=sborshik;сборщик мебели
+  Yumshoq mebel ustasi | Мастер мягкой мебели | Upholsterer | a=obivshik;обивщик
+Konditsioner ustasi | Мастер по кондиционерам | HVAC technician | pop sub=hvac a=konditsioner;кондиционер;holodilshik
+Maishiy texnika ustasi | Мастер по ремонту бытовой техники | Appliance repair technician | sub=appliance a=kir yuvish mashinasi;холодильник
+Chilangar | Слесарь | Locksmith / fitter | sub=locksmith a=slesar;слесарь
+Telefon ustasi | Мастер по ремонту телефонов | Phone repair technician | a=telefon remonti;ремонт телефонов
+Kompyuter ustasi | Мастер по ремонту компьютеров | Computer repair technician
+
+@electrician
+Elektrik | Электрик | Electrician | pop sub=electrician a=elektrik;электрик;elektromontyor
+  Uy elektrigi | Бытовой электрик | Residential electrician
+  Sanoat elektrigi | Промышленный электрик | Industrial electrician
+  Elektromontajchi | Электромонтажник | Electrical installer | sub=electromontage a=montajnik;монтажник
+  Yuqori kuchlanish elektrigi | Электрик высокого напряжения | High-voltage electrician | sub=high_voltage
+  Shit yig'uvchi | Сборщик электрощитов | Panel builder | sub=panel
+Past tok tizimlari | Слаботочные системы | Low-voltage systems | group sub=low_voltage
+  Kuzatuv kameralari o'rnatuvchi (CCTV) | Монтажник видеонаблюдения | CCTV installer | pop sub=cctv a=kamera;видеонаблюдение;cctv
+  Signalizatsiya o'rnatuvchi | Монтажник сигнализации | Alarm system installer
+  Yong'in xavfsizligi tizimlari | Системы пожарной безопасности | Fire alarm systems technician | sub=fire_alarm a=pojarka;пожарная сигнализация
+  Tarmoq kabeli o'rnatuvchi | Монтажник СКС | Structured cabling installer | a=sks;скс
+Elektronika ustasi | Мастер по электронике | Electronics technician | sub=electronics
+Energetik | Энергетик | Power engineer | sub=maintenance a=energetik;энергетик
+
+@plumber
+Santexnik | Сантехник | Plumber | pop sub=plumber a=santexnik;сантехник
+  Suv tizimi ustasi | Мастер водоснабжения | Water supply plumber
+  Kanalizatsiya ustasi | Мастер по канализации | Sewer technician | sub=sewage a=kanalizatsiya;канализация
+  Isitish tizimi ustasi | Мастер по отоплению | Heating technician | sub=heating a=otopleniye;отопление
+    Issiq pol o'rnatuvchi | Монтажник тёплого пола | Underfloor heating installer | a=issiq pol;тёплый пол
+    Qozon (kotel) ustasi | Мастер по котлам | Boiler technician | a=kotel;котёл;qozon
+Gaz payvandchi | Газосварщик | Gas welder
+
+@restaurant
+Oshxona | Кухня | Kitchen | group pop icon=chef-hat
+  Oshpaz | Повар | Cook | pop sub=cook a=povar;повар;oshpaz
+    Milliy taomlar oshpazi | Повар национальной кухни | National cuisine cook | pop a=milliy taom;palovchi;oshpaz milliy
+      Palovchi (oshpaz) | Повар плова | Plov cook | a=palovchi;плов;osh
+    Issiq taomlar oshpazi | Повар горячего цеха | Hot kitchen cook | a=goryachiy tsex;горячий цех
+    Sovuq taomlar oshpazi | Повар холодного цеха | Cold kitchen cook | a=xolodniy tsex;холодный цех
+    Yevropa taomlari oshpazi | Повар европейской кухни | European cuisine cook
+    Turk oshxonasi oshpazi | Повар турецкой кухни | Turkish cuisine cook
+    Koreys oshxonasi oshpazi | Повар корейской кухни | Korean cuisine cook
+    Fast food oshpazi | Повар фастфуда | Fast food cook | a=fastfud;фастфуд;burger;lavash
+    Pitsa ustasi | Пиццамейкер | Pizza maker | sub=pizza a=pitsa;пицца;pizza
+    Sushi ustasi | Сушист | Sushi chef | sub=sushi a=sushi;сушист
+    Grill va kabob ustasi | Мастер гриля | Grill cook | sub=shashlik a=kabobchi;shashlikchi;мангальщик;шашлык
+    Somsa ustasi | Мастер самсы | Samsa baker | sub=samsa a=somsa;самса
+  Bosh oshpaz | Шеф-повар | Head chef | pop sub=chef a=shef;шеф;шеф-повар
+  Su-shef | Су-шеф | Sous chef | sub=chef
+  Oshpaz yordamchisi | Помощник повара | Kitchen assistant | pop sub=cook_assistant a=povar yordamchisi;помощник повара
+  Oshxona ishchisi | Кухонный работник | Kitchen worker | sub=kitchen_worker
+  Idish yuvuvchi | Посудомойщица | Dishwasher | pop sub=dishwasher a=posudomoyshik;посудомойка
+Non va qandolatchilik | Выпечка и кондитерская | Bakery & pastry | group
+  Nonvoy | Пекарь | Baker | pop sub=baker a=novvoy;пекарь;tandirchi
+  Qandolatchi | Кондитер | Pastry chef | pop sub=confectioner a=konditer;кондитер;tort
+Zal | Зал | Front of house | group pop icon=utensils
+  Ofitsiant | Официант | Waiter | pop sub=waiter a=ofitsiant;официант;ofitsiantka
+  Runner | Раннер | Runner | sub=runner
+  Hostess | Хостес | Host / hostess | sub=hostess a=hostes
+  Kassir (restoran) | Кассир (ресторан) | Restaurant cashier | sub=cashier
+Bar va qahvaxona | Бар и кофейня | Bar & coffee | group
+  Barista | Бариста | Barista | pop sub=barista a=barista;бариста;kofe
+  Barmen | Бармен | Bartender | sub=bartender a=barmen;бармен
+Boshqaruv | Управление | Management | group
+  Restoran administratori | Администратор ресторана | Restaurant administrator | pop sub=admin a=administrator;администратор
+  Restoran menejeri | Менеджер ресторана | Restaurant manager | sub=restaurant_manager
+  Oshxona mudiri | Заведующий производством | Kitchen manager | a=zavproizvodstvom;завпроизводством
+
+@hotel
+Mehmonxona | Гостиница | Hotel | group pop
+  Resepshn administratori | Администратор ресепшн | Front desk agent | pop a=resepshn;ресепшн;reception
+  Xona tozalovchi (gornichnaya) | Горничная | Housekeeper | pop a=gornichnaya;горничная
+  Konsyerj | Консьерж | Concierge
+  Mehmonxona menejeri | Менеджер гостиницы | Hotel manager
+  Bellboy (porter) | Портье / белл-бой | Porter
+Turizm | Туризм | Tourism | group
+  Turoperator | Туроператор | Tour operator
+  Turagentlik menejeri | Менеджер турагентства | Travel agent | a=turagent;турагент
+  Gid (ekskursovod) | Гид-экскурсовод | Tour guide | a=gid;экскурсовод
+  Gid-tarjimon | Гид-переводчик | Guide-interpreter
+
+@sales
+Chakana savdo | Розничная торговля | Retail | group pop icon=shopping-cart
+  Sotuvchi | Продавец | Sales assistant | pop sub=seller a=sotuvchi;продавец;prodavets
+    Kiyim do'koni sotuvchisi | Продавец одежды | Clothing store sales assistant
+    Telefon va texnika sotuvchisi | Продавец телефонов и техники | Electronics sales assistant
+    Oziq-ovqat do'koni sotuvchisi | Продавец продуктового магазина | Grocery store assistant
+    Qurilish mollari sotuvchisi | Продавец стройматериалов | Building materials sales assistant
+  Sotuvchi-konsultant | Продавец-консультант | Sales consultant | pop sub=consultant a=konsultant;консультант
+  Kassir | Кассир | Cashier | pop sub=cashier a=kassir;кассир
+  Do'kon administratori | Администратор магазина | Store administrator
+  Supervayzer | Супервайзер | Supervisor | sub=supervisor a=supervayzer;супервайзер
+  Merchandayzer | Мерчендайзер | Merchandiser | sub=merchandiser a=merch;мерчендайзер
+  Promouter | Промоутер | Promoter | sub=promoter a=promouter;промоутер
+B2B savdo | B2B-продажи | B2B sales | group
+  Savdo menejeri | Менеджер по продажам | Sales manager | pop sub=sales_manager a=menejer po prodajam;менеджер по продажам;sotuv menejeri
+  Savdo agenti | Торговый агент | Sales representative | pop sub=agent a=agent;торговый представитель
+  Key account menejer | Key account менеджер | Key account manager
+  Biznesni rivojlantirish menejeri | Менеджер по развитию бизнеса | Business development manager | a=bdm
+  Hududiy savdo menejeri | Региональный менеджер по продажам | Regional sales manager
+  Savdo bo'limi boshlig'i | Руководитель отдела продаж | Head of sales | a=rop;роп
+Onlayn savdo | Онлайн-продажи | Online sales | group sub=online_sales
+  Onlayn sotuvchi | Онлайн-продавец | Online sales manager | a=instagram savdo
+  Marketpleys menejeri | Менеджер маркетплейсов | Marketplace manager | sub=marketplace a=uzum;wildberries;ozon
+
+@marketing
+Raqamli marketing | Digital-маркетинг | Digital marketing | group pop icon=megaphone
+  SMM menejer | SMM-менеджер | SMM manager | pop sub=smm a=smm;смм;smmchi
+  Targetolog | Таргетолог | Targeting specialist | pop sub=target a=target;таргет
+  Media-bayer | Медиабайер | Media buyer
+  Performance marketolog | Performance-маркетолог | Performance marketer
+  SEO mutaxassisi | SEO-специалист | SEO specialist | a=seo;сео
+  PPC (kontekst reklama) mutaxassisi | Специалист по контекстной рекламе | PPC specialist | a=google ads;yandex direct;контекст
+  Email marketolog | Email-маркетолог | Email marketer
+Kontent | Контент | Content | group
+  Kopirayter | Копирайтер | Copywriter | pop sub=copywriter a=kopirayter;копирайтер
+  Kontent menejer | Контент-менеджер | Content manager | sub=content
+  Ssenariynavis | Сценарист | Scriptwriter
+  Mobilograf (Reels) | Мобилограф | Mobile videographer | pop sub=mobilographer a=reels;рилс;mobilograf
+  Kontent yaratuvchi | Контент-мейкер | Content creator | a=blogger;блогер
+Marketing boshqaruvi | Управление маркетингом | Marketing management | group
+  Marketolog | Маркетолог | Marketer | pop sub=marketer a=marketolog;маркетолог
+  Brend menejer | Бренд-менеджер | Brand manager | sub=brand
+  PR menejer | PR-менеджер | PR manager | sub=pr a=pr;пиар
+  Marketing direktori | Директор по маркетингу | Marketing director | a=cmo
+
+@design
+Grafik dizayn | Графический дизайн | Graphic design | group pop sub=graphic icon=palette
+  Grafik dizayner | Графический дизайнер | Graphic designer | pop a=dizayner;дизайнер
+  Logotip va brending dizayneri | Дизайнер логотипов и брендинга | Brand designer
+  Illyustrator | Иллюстратор | Illustrator
+  Poligrafiya dizayneri | Дизайнер полиграфии | Print designer
+Video va animatsiya | Видео и анимация | Video & animation | group
+  Video montajchi | Видеомонтажёр | Video editor | pop sub=video a=montajchi;монтажёр;montaj
+  Motion dizayner | Моушн-дизайнер | Motion designer | sub=motion a=motion;моушн
+  3D dizayner | 3D-дизайнер | 3D artist | sub=3d a=3d;blender;3ds max
+Foto va video | Фото и видео | Photo & video | group
+  Fotograf | Фотограф | Photographer | pop sub=photographer a=fotograf;фотограф
+  Videograf | Видеограф | Videographer | sub=videographer a=videograf;видеооператор;operator
+Media | Медиа | Media | group
+  Jurnalist | Журналист | Journalist
+  Muharrir | Редактор | Editor | a=redaktor;редактор
+  Teleboshlovchi | Телеведущий | TV presenter
+  Ovoz rejissyori | Звукорежиссёр | Sound engineer
+  Diktor (ovoz beruvchi) | Диктор | Voice-over artist
+Interyer dizayneri | Дизайнер интерьера | Interior designer | sub=interior
+
+@finance
+Buxgalteriya | Бухгалтерия | Accounting | group pop icon=calculator
+  Buxgalter | Бухгалтер | Accountant | pop sub=accountant a=buxgalter;бухгалтер;bugalter
+    Ish haqi buxgalteri | Бухгалтер по зарплате | Payroll accountant
+    Ombor buxgalteri | Бухгалтер по складу | Inventory accountant
+    Soliq buxgalteri | Налоговый бухгалтер | Tax accountant
+    Moliyaviy hisobot mutaxassisi (IFRS) | Специалист по МСФО | IFRS reporting specialist | a=msfo;мсфо;ifrs
+  Bosh buxgalter | Главный бухгалтер | Chief accountant | pop sub=chief_accountant a=glavbux;главбух
+  Yordamchi buxgalter | Помощник бухгалтера | Assistant accountant | sub=assistant_accountant
+  1C operatori | Оператор 1С | 1C operator | a=1c;1с
+Audit | Аудит | Audit | group sub=auditor
+  Ichki auditor | Внутренний аудитор | Internal auditor
+  Tashqi auditor | Внешний аудитор | External auditor
+  Audit assistenti | Ассистент аудитора | Audit assistant
+Bank | Банк | Banking | group pop icon=landmark
+  Bank kassiri | Кассир банка | Bank teller | a=kassir bank;операционист
+  Kredit mutaxassisi | Кредитный специалист | Loan officer | pop sub=credit a=kredit;кредит
+  Kredit analitigi | Кредитный аналитик | Credit analyst
+  Risk mutaxassisi | Риск-менеджер | Risk specialist
+  Korporativ mijozlar menejeri | Менеджер по работе с корпоративными клиентами | Corporate relationship manager
+  Bank operatsionisti | Операционист банка | Bank operations officer
+Moliya va iqtisod | Финансы и экономика | Finance & economics | group
+  Moliyachi | Финансист | Financial specialist | sub=financier a=finansist;финансист
+  Iqtisodchi | Экономист | Economist | sub=economist a=ekonomist;экономист
+  Moliyaviy analitik | Финансовый аналитик | Financial analyst
+  Moliyaviy direktor | Финансовый директор | CFO | a=cfo;findir;финдиректор
+Sug'urta agenti | Страховой агент | Insurance agent
+
+@driver
+Yengil avtomobil | Легковой автомобиль | Car driver | group pop sub=cat_b icon=car
+  Shaxsiy haydovchi | Личный водитель | Personal driver | pop sub=personal a=lichniy voditel;личный водитель
+  Taksi haydovchisi | Водитель такси | Taxi driver | pop sub=taxi a=taksi;такси;yandex taxi
+  Kuryer-haydovchi | Водитель-курьер | Driver courier | sub=delivery
+  Damas haydovchisi | Водитель Дамаса | Damas driver | sub=damas a=damas;дамас;labo
+Yuk mashinasi | Грузовой автомобиль | Truck driver | group pop sub=truck icon=truck
+  C toifa haydovchi | Водитель категории C | Category C driver | pop sub=cat_c a=gruzovik;грузовик;fura
+  CE toifa haydovchi (fura) | Водитель категории CE (фура) | Category CE driver (semi-truck) | a=fura;фура;tyagach
+  Xalqaro yuk tashuvchi haydovchi | Водитель-международник | International truck driver | a=mejdunarodnik;международник
+Avtobus | Автобус | Bus driver | group sub=bus
+  D toifa haydovchi | Водитель категории D | Category D driver | pop sub=cat_d a=avtobus;автобус;marshrutka
+Maxsus transport | Спецтранспорт | Special vehicles | group
+  Traktor haydovchisi | Тракторист | Tractor driver | sub=tractor a=traktorchi;тракторист
+  Forklift haydovchisi | Водитель погрузчика | Forklift driver | sub=forklift a=pogruzchik;погрузчик;forklift
+
+@courier
+Piyoda kuryer | Пеший курьер | Walking courier | pop sub=foot a=kuryer;курьер;dostavka
+Skuter/velosiped kuryeri | Курьер на самокате/велосипеде | Scooter / bike courier | pop sub=scooter a=samokat;самокат
+Avtokuryer | Автокурьер | Car courier | sub=auto
+Ovqat yetkazib beruvchi | Доставщик еды | Food delivery courier | pop sub=food a=express24;wolt;yandex eda;доставка еды
+
+@logistics
+Ombor | Склад | Warehouse | group pop sub=warehouse icon=package
+  Omborchi | Кладовщик | Storekeeper | pop sub=storekeeper a=kladovshik;кладовщик;omborchi
+  Yuklovchi | Грузчик | Loader | pop sub=loader a=gruzchik;грузчик;hammol
+  Komplektovchi | Комплектовщик | Order picker | sub=picker a=komplektovshik;комплектовщик
+  Forklift operatori | Оператор погрузчика | Forklift operator | a=pogruzchik;погрузчик
+  Inventarizatsiya nazoratchisi | Специалист по инвентаризации | Inventory controller
+  Ombor mudiri | Заведующий складом | Warehouse manager | a=zavsklad;завсклад
+Logistika | Логистика | Logistics | group
+  Logist | Логист | Logistics specialist | pop sub=logist a=logist;логист
+  Ekspeditor | Экспедитор | Freight forwarder | sub=forwarder a=ekspeditor;экспедитор
+  Dispetcher | Диспетчер | Dispatcher | sub=dispatcher a=dispetcher;диспетчер
+  Bojxona deklaranti | Таможенный декларант | Customs broker | a=deklarant;декларант;broker
+  Ta'minot menejeri | Менеджер по закупкам | Procurement manager | a=zakupshik;закупщик;snabjenets
+
+@call_center
+Call-markaz operatori | Оператор колл-центра | Call center agent | pop sub=operator a=operator;оператор;koll-tsentr
+  Kiruvchi qo'ng'iroqlar operatori | Оператор входящих звонков | Inbound call agent
+  Chiquvchi qo'ng'iroqlar (telemarketing) | Оператор исходящих звонков | Outbound telemarketing agent | sub=telemarketing a=telemarketing;телемаркетинг
+  Onlayn chat operatori | Оператор онлайн-чата | Chat support agent | sub=online a=chat operator
+Call-markaz supervayzeri | Супервайзер колл-центра | Call center supervisor | sub=call_center
+
+@office
+Ofis va ma'muriyat | Офис и администрирование | Office & administration | group pop icon=briefcase
+  Ofis menejeri | Офис-менеджер | Office manager | pop sub=office_manager a=ofis menejer;офис-менеджер
+  Administrator | Администратор | Administrator | pop sub=administrator a=admin;администратор
+  Kotiba | Секретарь | Secretary | pop sub=secretary a=sekretar;секретарь;kotib
+  Resepshionist | Ресепшионист | Receptionist | sub=receptionist a=resepshn;ресепшн
+  Rahbar yordamchisi | Помощник руководителя | Executive assistant | sub=assistant a=assistent;ассистент
+  Kompyuter operatori | Оператор ПК | Data entry operator | sub=pc_operator a=operator pk;оператор пк
+  Hujjatlar bo'yicha mutaxassis | Делопроизводитель | Records clerk | a=deloproizvoditel;делопроизводитель
+Kadrlar (HR) | Кадры (HR) | Human resources | group sub=hr
+  HR menejer | HR-менеджер | HR manager | pop a=hr;эйчар;kadrlar
+  Rekruter | Рекрутер | Recruiter | sub=recruiter a=rekruter;рекрутер
+  Kadrlar bo'limi inspektori | Инспектор отдела кадров | HR officer | a=kadrovik;кадровик
+Tarjimon | Переводчик | Translator | pop sub=translator a=perevodchik;переводчик;tarjimon
+  Ingliz tili tarjimoni | Переводчик английского | English translator
+  Rus tili tarjimoni | Переводчик русского | Russian translator
+  Koreys tili tarjimoni | Переводчик корейского | Korean translator
+  Sinxron tarjimon | Синхронный переводчик | Simultaneous interpreter
+Loyiha menejeri | Проектный менеджер | Project manager | sub=project_manager
+
+@legal
+Yurist | Юрист | Lawyer | pop sub=lawyer a=yurist;юрист;huquqshunos
+  Korporativ yurist | Корпоративный юрист | Corporate lawyer
+  Soliq yuristi | Налоговый юрист | Tax lawyer
+  Mehnat huquqi yuristi | Юрист по трудовому праву | Employment lawyer
+  Sud ishlari yuristi | Судебный юрист | Litigation lawyer
+Advokat | Адвокат | Attorney | a=advokat;адвокат
+Notarius | Нотариус | Notary
+Notarius yordamchisi | Помощник нотариуса | Notary assistant
+Yuridik maslahatchi | Юрисконсульт | Legal counsel | a=yuriskonsult;юрисконсульт
+Komplayens mutaxassisi | Комплаенс-специалист | Compliance officer | a=compliance
+
+@cleaning
+Tozalash | Уборка | Cleaning | group pop sub=cleaner icon=sparkles
+  Farrosh | Уборщица | Cleaner | pop a=farrosh;уборщица;tozalovchi
+  Ofis tozalovchi | Уборщик офисов | Office cleaner
+  Kliner (professional tozalash) | Клинер | Professional cleaner | a=kliner;клининг;klining
+  Oyna yuvuvchi | Мойщик окон | Window cleaner | sub=window_cleaner
+  Kimyoviy tozalash xodimi | Сотрудник химчистки | Dry cleaning worker | sub=dry_cleaning a=ximchistka;химчистка
+  Kir yuvish xodimi | Работник прачечной | Laundry worker | sub=laundry a=prachechnaya;прачечная
+Uy xizmatlari | Домашний персонал | Household staff | group pop
+  Uy bekasi yordamchisi | Домработница | Housekeeper | pop sub=housekeeper a=domrabotnitsa;домработница
+  Enaga | Няня | Nanny | pop sub=nanny a=nyanya;няня;enaga
+  Uy oshpazi | Повар в семью | Family cook | sub=cook_home
+  Bog'bon | Садовник | Gardener | sub=gardener a=sadovnik;садовник
+  Qarovchi (dvornik) | Дворник | Yard keeper | a=dvornik;дворник
+  Keksalarga qarovchi | Сиделка для пожилых | Elderly caregiver | a=sidelka;сиделка
+
+@security
+Qo'riqchi | Охранник | Security guard | pop sub=guard a=oxrana;охранник;qorovul
+  Obyekt qo'riqchisi | Охранник объекта | Site security guard
+  Savdo markazi qo'riqchisi | Охранник ТЦ | Mall security guard
+  Tungi qorovul | Ночной сторож | Night watchman | a=storoj;сторож
+Xavfsizlik xizmati xodimi | Сотрудник службы безопасности | Security officer | sub=security_officer
+Videokuzatuv operatori | Оператор видеонаблюдения | CCTV operator | sub=cctv
+Tansoqchi | Телохранитель | Bodyguard | sub=bodyguard a=telohranitel;телохранитель
+Inkassator | Инкассатор | Cash-in-transit guard
+
+@sewing
+Tikuvchi | Швея | Seamstress | pop sub=seamstress a=tikuvchi;швея;shveya
+  Tikuv mashinasi operatori | Оператор швейного оборудования | Sewing machine operator
+  Kiyim ta'mirlash ustasi | Мастер по ремонту одежды | Clothing alteration specialist
+Bichuvchi | Закройщик | Cutter | sub=cutter a=zakroyshik;закройщик
+Dazmolchi | Утюжильщик | Presser | sub=ironer
+To'quvchi | Вязальщица | Knitter | sub=knitter
+Kiyim dizayneri (konstruktor) | Модельер-конструктор | Fashion designer | sub=designer a=modelyer;модельер
+Tikuv sexi texnologi | Технолог швейного производства | Garment technologist
+
+@beauty
+Soch | Волосы | Hair | group pop sub=hairdresser icon=scissors
+  Sartarosh | Парикмахер | Hairdresser | pop a=parikmaxer;парикмахер;sartarosh
+    Ayollar sartaroshi | Женский парикмахер | Women's hairdresser
+    Erkaklar sartaroshi | Мужской парикмахер | Men's hairdresser
+  Barber | Барбер | Barber | pop sub=barber a=barber;барбер
+  Kolorist | Колорист | Colorist
+  Stilist | Стилист | Stylist
+Tirnoq | Ногти | Nails | group sub=manicure
+  Manikyur ustasi | Мастер маникюра | Manicurist | pop a=manikyur;маникюр;nogti
+  Pedikyur ustasi | Мастер педикюра | Pedicurist | a=pedikyur;педикюр
+  Neyl-art ustasi | Нейл-артист | Nail artist
+Kosmetologiya | Косметология | Cosmetology | group sub=cosmetologist
+  Kosmetolog | Косметолог | Cosmetologist | pop a=kosmetolog;косметолог
+  Estetist | Эстетист | Esthetician
+  Lazer epilyatsiya mutaxassisi | Специалист по лазерной эпиляции | Laser hair removal specialist | a=lazer;лазер
+  Permanent makiyaj ustasi | Мастер перманентного макияжа | Permanent makeup artist | a=tatuaj;татуаж
+Qosh va kiprik | Брови и ресницы | Brows & lashes | group
+  Brou-master | Бровист | Brow artist | sub=brows a=brovist;бровист
+  Lashmeyker | Лэшмейкер | Lash artist | sub=lashes a=kiprik;ресницы;lash
+Vizajist (makiyaj ustasi) | Визажист | Makeup artist | pop sub=makeup a=vizajist;визажист
+Spa massajchi | Спа-массажист | Spa massage therapist | sub=massage
+Go'zallik saloni administratori | Администратор салона красоты | Beauty salon administrator
+
+@production
+Ishlab chiqarish liniyasi | Производственная линия | Production line | group pop icon=factory
+  Liniya operatori | Оператор линии | Line operator | pop sub=operator a=operator;оператор линии
+  Uskuna operatori | Оператор станка | Machine operator | sub=machine_operator
+  Qadoqlovchi | Упаковщик | Packer | pop sub=packer a=upakovshik;упаковщик;fasovshik
+  Yig'uvchi | Сборщик | Assembler | sub=assembler a=sborshik;сборщик
+  Ishlab chiqarish ishchisi | Рабочий на производство | Factory worker | pop a=rabochiy;рабочий;ishchi
+Sifat va texnologiya | Качество и технологии | Quality & technology | group
+  Sifat nazoratchisi (OTK) | Контролёр ОТК | Quality control inspector | sub=qc a=otk;отк
+  Texnolog | Технолог | Process technologist | sub=technologist a=texnolog;технолог
+  Oziq-ovqat texnologi | Технолог пищевого производства | Food technologist | sub=food_production
+Sex boshlig'i | Начальник цеха | Shop floor manager | sub=shift_lead a=smena boshlig'i;мастер смены
+Tekstil ishlab chiqarish | Текстильное производство | Textile production | sub=textile
+Qandolat va non ishlab chiqarish | Кондитерское и хлебное производство | Bakery production | sub=food_production
+
+@agriculture
+Dehqonchilik | Растениеводство | Crop farming | group pop icon=wheat
+  Fermer | Фермер | Farmer | pop sub=farmer a=dehqon;фермер
+  Agronom | Агроном | Agronomist | pop sub=agronomist a=agronom;агроном
+  Issiqxona ishchisi | Работник теплицы | Greenhouse worker | sub=greenhouse a=teplitsa;теплица
+  Bog'dorchilik ishchisi | Садовод | Orchard worker
+Chorvachilik | Животноводство | Livestock | group sub=livestock
+  Chorvador | Животновод | Livestock farmer | pop a=chorvador;животновод
+  Veterinar | Ветеринар | Veterinarian | pop sub=vet a=veterinar;ветеринар;vetvrach
+  Parrandachilik ishchisi | Работник птицефабрики | Poultry worker
+  Asalarichi | Пчеловод | Beekeeper
+
+
+@science
+Laboratoriya tadqiqotlari | Лабораторные исследования | Laboratory research | group pop
+  Kimyogar | Химик | Chemist | a=ximik;химик
+  Kimyogar-laborant | Химик-лаборант | Laboratory chemist
+  Biolog | Биолог | Biologist
+  Mikrobiolog | Микробиолог | Microbiologist
+  Laboratoriya mudiri | Заведующий лабораторией | Laboratory manager
+Ilmiy xodimlar | Научные сотрудники | Researchers | group
+  Ilmiy xodim | Научный сотрудник | Research fellow | a=ilmiy tadqiqotchi;исследователь
+  Kichik ilmiy xodim | Младший научный сотрудник | Junior research fellow
+  Ekolog | Эколог | Ecologist | a=ekolog;эколог
+  Geolog | Геолог | Geologist
+
+@management
+Rahbarlar | Руководители | Executives | group pop
+  Direktor | Директор | Director | pop a=direktor;директор;rahbar
+  Bosh direktor (CEO) | Генеральный директор | CEO | a=ceo;гендиректор
+  Operatsion direktor (COO) | Операционный директор | COO | a=coo
+  Tijorat direktori | Коммерческий директор | Commercial director
+  Filial rahbari | Руководитель филиала | Branch manager
+Bo'lim boshqaruvi | Управление подразделениями | Department management | group
+  Bo'lim boshlig'i | Начальник отдела | Head of department
+  Loyiha rahbari | Руководитель проекта | Project lead
+  Ishlab chiqarish direktori | Директор по производству | Production director
+  Kadrlar direktori (HRD) | HR-директор | HR director | a=hrd
+
+@government
+Ma'muriy ishlar | Административная работа | Administration | group pop
+  Mutaxassis | Специалист | Specialist
+  Yetakchi mutaxassis | Ведущий специалист | Leading specialist
+  Bosh mutaxassis | Главный специалист | Chief specialist
+  Bo'lim boshlig'i (davlat) | Начальник отдела (гос.) | Department head (public)
+  Devonxona xodimi | Сотрудник канцелярии | Office clerk | a=kanselyariya;канцелярия
+Davlat xizmatlari | Государственные услуги | Public services | group
+  Davlat xizmatlari markazi operatori | Оператор центра госуслуг | Public service center operator | a=dxm;цгу
+  Ijtimoiy xodim | Социальный работник | Social worker
+  Mahalla faoli | Активист махалли | Mahalla activist | a=mahalla
+Kommunal xizmatlar | Коммунальные службы | Utilities | group
+  Kommunal xizmat ishchisi | Работник коммунальных служб | Utility worker
+  Suv ta'minoti operatori | Оператор водоснабжения | Water utility operator
+  Elektr tarmoqlari montyori | Электромонтёр сетей | Power line technician
+
+@engineering
+Qurilish muhandisligi | Строительная инженерия | Civil engineering | group pop
+  Konstruktor muhandis | Инженер-конструктор | Structural engineer
+  Loyihachi muhandis | Инженер-проектировщик | Design engineer | a=proektirovshik;проектировщик;autocad
+  Yo'l qurilishi muhandisi | Инженер-дорожник | Road engineer
+Mexanika va energetika | Механика и энергетика | Mechanical & energy | group
+  Mexanik muhandis | Инженер-механик | Mechanical engineer
+  Energetik muhandis | Инженер-энергетик | Energy engineer
+  Issiqlik texnikasi muhandisi | Инженер-теплотехник | Heating engineer
+  Avtomatlashtirish muhandisi (KIPiA) | Инженер КИПиА | Automation engineer | a=kipia;кипиа;asu
+Elektr va elektronika | Электротехника и электроника | Electrical & electronics | group
+  Elektr muhandisi | Инженер-электрик | Electrical engineer
+  Elektronika muhandisi | Инженер-электроник | Electronics engineer
+  Telekommunikatsiya muhandisi | Инженер связи | Telecom engineer
+Sanoat muhandisligi | Промышленная инженерия | Industrial engineering | group
+  Ishlab chiqarish muhandisi | Инженер-технолог производства | Manufacturing engineer
+  Sifat muhandisi | Инженер по качеству | Quality engineer
+  Kimyo muhandisi | Инженер-химик | Chemical engineer
+  Neft va gaz muhandisi | Инженер нефти и газа | Oil & gas engineer
+
+@other
+Kunlik ish (mardikor) | Подённая работа | Day labor | pop sub=daily_worker a=mardikor;мардикор;kunlik ish;разнорабочий
+Animator | Аниматор | Entertainer | sub=animator a=animator;аниматор
+Talabalar uchun ish | Работа для студентов | Student jobs | sub=student a=talaba;студент
+Boshqa kasb | Другая профессия | Other profession | sub=other

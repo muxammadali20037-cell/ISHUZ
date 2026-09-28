@@ -161,6 +161,32 @@ export function ageFromBirthDate(birthDate: string, now: Date = new Date()): num
 }
 
 // ---------------------------------------------------------------------------
+// Kasblar daraxti: public.profession_relation
+// ---------------------------------------------------------------------------
+
+/**
+ * Ikki tugun yo'li qanchalik yaqin (SQL profession_relation bilan bir xil):
+ * 3 — aynan bir kasb; 2 — ishchi so'ralgan kasbning ichki yo'nalishi (Frontend → React);
+ * 1 — ishchi umumiyroq (React so'ralgan, ishchi Frontend); 0 — bir shox; -1 — boshqa shox; null — ma'lumot yo'q.
+ */
+export function professionRelation(workerPath: readonly string[], vacancyPath: readonly string[]): number | null {
+  if (!workerPath.length || !vacancyPath.length) return null;
+  const contains = (a: readonly string[], b: readonly string[]) => b.every((x) => a.includes(x));
+  if (workerPath.length === vacancyPath.length && contains(workerPath, vacancyPath)) return 3;
+  if (contains(workerPath, vacancyPath)) return 2;
+  if (contains(vacancyPath, workerPath)) return 1;
+  if (workerPath[0] === vacancyPath[0]) return 0;
+  return -1;
+}
+
+const PROFESSION_SCORES: Record<number, [number, string, boolean | "warn"]> = {
+  3: [25, "profession_exact", true],
+  2: [23, "profession_specialist", true],
+  1: [17, "profession_general", "warn"],
+  0: [12, "profession_related", "warn"],
+};
+
+// ---------------------------------------------------------------------------
 // compute_match
 // ---------------------------------------------------------------------------
 
@@ -183,7 +209,21 @@ export function computeMatch(worker: WorkerMatchInput, vacancy: VacancyMatchInpu
   //     v.subcategory_id is null or w.subcategory_id = v.subcategory_id  → 25 category_match
   //     aks holda                                                       → 18 category_match_partial (warn)
   //   aks holda                                                         →  0 category_mismatch
-  if (worker.categoryId !== null && worker.categoryId === vacancy.categoryId) {
+  // Kasblar daraxti (0028): ikkala tomonda tugun bo'lsa ierarxik baho, aks holda eski mantiq
+  const rel = vacancy.professionPath?.length
+    ? (worker.professionPaths ?? []).reduce<number | null>((best, p) => {
+        const r = professionRelation(p, vacancy.professionPath ?? []);
+        return r === null ? best : best === null ? r : Math.max(best, r);
+      }, null)
+    : null;
+  if (rel !== null && rel >= 0) {
+    const [pts, key, ok] = PROFESSION_SCORES[rel]!;
+    s += pts;
+    r.push(reason(key, ok));
+  } else if (rel === -1 && worker.categoryId !== null && worker.categoryId === vacancy.categoryId) {
+    s += 8;
+    r.push(reason("profession_other_branch", "warn"));
+  } else if (worker.categoryId !== null && worker.categoryId === vacancy.categoryId) {
     if (vacancy.subcategoryId === null || (worker.subcategoryId !== null && worker.subcategoryId === vacancy.subcategoryId)) {
       s += 25;
       r.push(reason("category_match", true));

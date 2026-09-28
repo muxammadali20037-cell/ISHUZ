@@ -161,6 +161,12 @@ export async function VacancyDetail({
                           </Link>
                         </>
                       ) : null}
+                      {v.profession && (!v.subcategory || name(v.profession) !== name(v.subcategory)) ? (
+                        <>
+                          <ChevronRight className="size-3.5" />
+                          <span className="font-medium text-foreground">{name(v.profession)}</span>
+                        </>
+                      ) : null}
                     </span>
                   ) : null}
                 </div>
@@ -245,6 +251,11 @@ export async function VacancyDetail({
               <InfoItem icon={FileText} label={t("jobs.detail.experience")}>
                 {tEnum("experience_min_months", String(experienceKey))}
               </InfoItem>
+              {v.positions_count > 1 ? (
+                <InfoItem icon={Users} label={t("jobs.detail.positions")}>
+                  {t("vacancies.preview.positions", { count: v.positions_count })}
+                </InfoItem>
+              ) : null}
               {v.education_min ? (
                 <InfoItem icon={GraduationCap} label={t("jobs.detail.education")}>
                   {tEnum("education_level", v.education_min)}

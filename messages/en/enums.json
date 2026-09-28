@@ -1,0 +1,273 @@
+{
+  "experience_level": {
+    "none": "No experience",
+    "lt_6m": "0–6 months",
+    "6_12m": "6–12 months",
+    "1_2y": "1–2 years",
+    "2_3y": "2–3 years",
+    "3_5y": "3–5 years",
+    "5y_plus": "5+ years"
+  },
+  "experience_min_months": {
+    "0": "No experience required",
+    "6": "6+ months",
+    "12": "1+ year",
+    "24": "2+ years",
+    "36": "3+ years",
+    "60": "5+ years"
+  },
+  "education_level": {
+    "secondary": "Secondary",
+    "vocational": "Vocational",
+    "incomplete_higher": "Incomplete higher",
+    "higher": "Higher",
+    "master": "Master's"
+  },
+  "skill_level": {
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "good": "Good",
+    "professional": "Professional"
+  },
+  "language_level": {
+    "a1": "A1 — Beginner",
+    "a2": "A2 — Elementary",
+    "b1": "B1 — Intermediate",
+    "b2": "B2 — Upper intermediate",
+    "c1": "C1 — Advanced",
+    "c2": "C2 — Proficient",
+    "native": "Native"
+  },
+  "employment_type": {
+    "permanent": "Permanent",
+    "temporary": "Temporary",
+    "part_time": "Part-time",
+    "full_time": "Full-time",
+    "shift": "Shift work",
+    "remote": "Remote",
+    "freelance": "Freelance",
+    "internship": "Internship"
+  },
+  "work_schedule": {
+    "5_2": "5/2",
+    "6_1": "6/1",
+    "2_2": "2/2",
+    "shift": "Shifts",
+    "flexible": "Flexible hours",
+    "negotiable": "Negotiable"
+  },
+  "salary_type": {
+    "monthly": "Monthly",
+    "daily": "Daily",
+    "hourly": "Hourly",
+    "piecework": "Piece rate",
+    "negotiable": "Negotiable"
+  },
+  "salary_type_suffix": {
+    "monthly": "/mo",
+    "daily": "/day",
+    "hourly": "/hr",
+    "piecework": "piece rate",
+    "negotiable": ""
+  },
+  "availability": {
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "within_3_days": "Within 3 days",
+    "within_week": "Within a week",
+    "negotiable": "Negotiable"
+  },
+  "work_format": {
+    "official": "Official",
+    "unofficial": "Unofficial",
+    "any": "Any"
+  },
+  "remote_preference": {
+    "yes": "Yes",
+    "no": "No",
+    "any": "Any"
+  },
+  "worker_status": {
+    "active": "Actively looking for a job",
+    "open": "Open to offers",
+    "not_looking": "Not looking right now"
+  },
+  "worker_status_short": {
+    "active": "Actively looking",
+    "open": "Open to offers",
+    "not_looking": "Not looking"
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "employer_type": {
+    "company": "Company",
+    "individual_entrepreneur": "Sole proprietor",
+    "person": "Private individual",
+    "government": "Government organization"
+  },
+  "company_size": {
+    "1_10": "1–10 employees",
+    "11_50": "11–50 employees",
+    "51_200": "51–200 employees",
+    "201_500": "201–500 employees",
+    "500_plus": "500+ employees"
+  },
+  "company_member_role": {
+    "owner": "Owner",
+    "admin": "Administrator",
+    "recruiter": "Recruiter",
+    "viewer": "Viewer"
+  },
+  "verification_status": {
+    "unverified": "Unverified",
+    "pending": "Under review",
+    "verified": "Verified",
+    "rejected": "Rejected"
+  },
+  "verification_type": {
+    "phone": "Phone",
+    "telegram": "Telegram",
+    "identity": "Identity",
+    "education": "Education",
+    "company": "Company",
+    "tin": "TIN",
+    "documents": "Documents"
+  },
+  "vacancy_status": {
+    "draft": "Draft",
+    "pending_review": "Under moderation",
+    "active": "Active",
+    "paused": "Paused",
+    "closed": "Closed",
+    "expired": "Expired",
+    "hidden": "Hidden",
+    "rejected": "Rejected"
+  },
+  "application_status": {
+    "sent": "Sent",
+    "viewed": "Viewed",
+    "shortlisted": "Shortlisted",
+    "interview": "Invited to interview",
+    "offered": "Offer made",
+    "hired": "Hired",
+    "rejected": "Rejected",
+    "withdrawn": "Withdrawn"
+  },
+  "offer_status": {
+    "sent": "Sent",
+    "viewed": "Viewed",
+    "accepted": "Accepted",
+    "declined": "Declined",
+    "expired": "Expired",
+    "withdrawn": "Withdrawn"
+  },
+  "portfolio_type": {
+    "image": "Image",
+    "video": "Video",
+    "pdf": "PDF",
+    "document": "Document",
+    "link": "Link"
+  },
+  "phone_visibility": {
+    "nobody": "Nobody",
+    "applicants": "Employers I've applied to / who sent me an offer",
+    "on_request": "Only with my permission",
+    "everyone": "Everyone"
+  },
+  "report_reason": {
+    "fraud": "Fraud",
+    "fake_vacancy": "Fake vacancy",
+    "asked_money": "Asked for money",
+    "wrong_info": "Incorrect information",
+    "spam": "Spam",
+    "abuse": "Abuse",
+    "other": "Other"
+  },
+  "report_status": {
+    "open": "Open",
+    "in_review": "In review",
+    "resolved": "Resolved",
+    "dismissed": "Dismissed"
+  },
+  "review_status": {
+    "pending": "Under moderation",
+    "approved": "Approved",
+    "rejected": "Rejected"
+  },
+  "admin_role": {
+    "super_admin": "Super admin",
+    "admin": "Admin",
+    "moderator": "Moderator",
+    "support": "Support"
+  },
+  "notification_type": {
+    "application_received": "New application",
+    "application_status": "Application status",
+    "offer_received": "Job offer",
+    "offer_response": "Offer response",
+    "new_message": "New message",
+    "interview_invite": "Interview invitation",
+    "vacancy_expiring": "Vacancy expiring",
+    "new_matching_vacancy": "Job that matches you",
+    "new_matching_worker": "Candidate that matches you",
+    "verification_result": "Verification result",
+    "review_received": "New review",
+    "system": "System"
+  },
+  "match_reason": {
+    "category_match": "Your profession matches",
+    "category_match_partial": "Same field, different specialization",
+    "category_mismatch": "Profession doesn't match",
+    "remote_ok": "Remote work",
+    "district_match": "In your selected area",
+    "distance_near": "{km} km from you",
+    "distance_ok": "{km} km from you",
+    "region_match": "Same region, different district",
+    "location_far": "Location doesn't match",
+    "salary_ok": "Salary meets your expectations",
+    "salary_min_ok": "Salary meets your minimum",
+    "salary_negotiable": "Salary is negotiable",
+    "salary_unspecified": "You haven't set salary expectations",
+    "salary_below": "Salary is below your expectations",
+    "experience_ok": "Your experience is sufficient",
+    "experience_close": "Slightly less experience than required",
+    "experience_low": "Experience required",
+    "skills_not_required": "No special skills required",
+    "skills_matched": "Skills: {matched}/{required}",
+    "schedule_ok": "Schedule suits you",
+    "schedule_partial": "Schedule partially suits you",
+    "schedule_mismatch": "Schedule doesn't suit you",
+    "employment_ok": "Employment type matches",
+    "employment_mismatch": "Employment type doesn't match",
+    "work_format_ok": "Employment formality matches",
+    "work_format_mismatch": "Official/unofficial employment differs",
+    "language_required": "{lang} required ({level})",
+    "languages_ok": "Language requirements met",
+    "education_required": "Education required: {level}",
+    "age_out_of_range": "Age requirement: {min}–{max}",
+    "remote_preferred": "You prefer remote work; this job is on-site",
+    "salary_type_differs": "Pay type differs (monthly/daily/hourly)",
+    "languages_partial": "Languages: {matched}/{required}",
+    "profession_exact": "Your profession is an exact match",
+    "profession_specialist": "You are a specialist in this profession",
+    "profession_general": "Close profession, but a narrower specialist is needed",
+    "profession_related": "Related field",
+    "profession_other_branch": "Same sector, different profession"
+  },
+  "language_code": {
+    "uz": "Uzbek",
+    "ru": "Russian",
+    "en": "English",
+    "tr": "Turkish",
+    "kk": "Kazakh",
+    "tg": "Tajik",
+    "ko": "Korean",
+    "zh": "Chinese",
+    "de": "German",
+    "ar": "Arabic",
+    "fr": "French"
+  },
+  "benefit_food": "Meals"
+}

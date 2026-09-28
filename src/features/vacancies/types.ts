@@ -27,6 +27,8 @@ export interface VacancyLanguageItem {
 export interface VacancyFull extends VacancyRow {
   category: (NamedRef & { id: string; slug: string; icon: string | null }) | null;
   subcategory: (NamedRef & { id: string }) | null;
+  /** kasblar daraxtidagi aniq kasb */
+  profession: (NamedRef & { id: string; name_en: string | null }) | null;
   region: (NamedRef & { id: string }) | null;
   district: (NamedRef & { id: string; lat: number | null; lng: number | null }) | null;
   company: { id: string; name: string; slug: string; logo_url: string | null; verification_status: Enums<"verification_status"> } | null;

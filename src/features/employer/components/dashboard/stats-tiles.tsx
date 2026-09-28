@@ -29,7 +29,7 @@ export async function StatsTiles() {
   if (!stats) {
     return <p className="rounded-2xl border border-dashed border-border p-4 text-center text-sm text-muted-foreground">{t("employer.dashboard.stats_error")}</p>;
   }
-  const fmt = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : "uz-UZ");
+  const fmt = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ");
   return (
     <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 xl:grid-cols-7">
       {TILES.map(({ key, icon: Icon, href, highlight }) => {

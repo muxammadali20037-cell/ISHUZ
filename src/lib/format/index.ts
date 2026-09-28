@@ -1,6 +1,6 @@
 import { formatInTimeZone } from "date-fns-tz";
 import { formatDistanceToNowStrict } from "date-fns";
-import { ru as ruLocale, uz as uzLocale } from "date-fns/locale";
+import { enUS as enLocale, ru as ruLocale, uz as uzLocale } from "date-fns/locale";
 import { parsePhoneNumberFromString, AsYouType } from "libphonenumber-js";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -13,7 +13,7 @@ export function formatMoney(amount: number | null | undefined, locale: Locale = 
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   if (opts.withCurrency === false) return n;
-  return `${n} ${locale === "ru" ? "сум" : "so'm"}`;
+  return `${n} ${locale === "ru" ? "сум" : locale === "en" ? "UZS" : "so'm"}`;
 }
 
 /** Maosh oralig'i: "5 000 000 – 7 000 000 so'm", "5 000 000 so'm dan", "Kelishiladi" */
@@ -35,8 +35,8 @@ export function formatSalaryRange(
 /** Qisqa ko'rinish: 5 000 000 → "5 mln", 750 000 → "750 ming" */
 export function formatMoneyShort(amount: number | null | undefined, locale: Locale = "uz"): string {
   if (!amount) return "";
-  const mln = locale === "ru" ? "млн" : "mln";
-  const thousand = locale === "ru" ? "тыс." : "ming";
+  const mln = locale === "ru" ? "млн" : locale === "en" ? "M" : "mln";
+  const thousand = locale === "ru" ? "тыс." : locale === "en" ? "K" : "ming";
   if (amount >= 1_000_000) {
     const v = amount / 1_000_000;
     return `${Number.isInteger(v) ? v : v.toFixed(1).replace(/\.0$/, "")} ${mln}`;
@@ -66,7 +66,7 @@ export function formatPhoneAsYouType(input: string): string {
   return new AsYouType("UZ").input(input);
 }
 
-const dateLocales = { uz: uzLocale, ru: ruLocale };
+const dateLocales = { uz: uzLocale, ru: ruLocale, en: enLocale };
 
 /** ISO → "26 sentabr 2026" (Toshkent vaqti) */
 export function formatDate(iso: string | Date | null | undefined, locale: Locale = "uz", pattern = "d MMMM yyyy"): string {

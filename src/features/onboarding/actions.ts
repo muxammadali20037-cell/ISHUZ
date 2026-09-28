@@ -7,7 +7,7 @@ import type { ActionResult } from "@/features/auth/actions";
 import { errorCode } from "@/lib/utils";
 import { normalizePhone } from "@/lib/format";
 import { publicEnv } from "@/lib/env";
-import type { Enums, TablesInsert } from "@/types/database.types";
+import type { Enums, TablesInsert, TablesUpdate } from "@/types/database.types";
 import {
   avatarSchema,
   customSkillSchema,
@@ -204,15 +204,21 @@ export async function saveProfession(input: unknown): Promise<StepResult> {
   const { supabase, workerId } = res.ctx;
   const d = parsed.data;
 
-  if (d.subcategory_id) {
-    const { data: sub } = await supabase.from("subcategories").select("id, category_id").eq("id", d.subcategory_id).maybeSingle();
-    if (!sub || sub.category_id !== d.category_id) return { ok: false, error: "validation" };
-  }
   const nextStep = nextStepAfter(res.ctx.savedStep, 3);
-  const { error } = await supabase
-    .from("worker_profiles")
-    .update({ category_id: d.category_id, subcategory_id: d.subcategory_id, headline: d.headline, onboarding_step: nextStep })
-    .eq("id", workerId);
+  let patch: TablesUpdate<"worker_profiles">;
+  if (d.profession_node_id) {
+    // soha va yo'nalish bazadagi trigger orqali tugundan olinadi (mijozga ishonilmaydi)
+    const { data: node } = await supabase.from("profession_nodes").select("id, is_active").eq("id", d.profession_node_id).maybeSingle();
+    if (!node?.is_active) return { ok: false, error: "validation" };
+    patch = { profession_node_id: node.id, headline: d.headline, onboarding_step: nextStep };
+  } else {
+    if (d.subcategory_id) {
+      const { data: sub } = await supabase.from("subcategories").select("id, category_id").eq("id", d.subcategory_id).maybeSingle();
+      if (!sub || sub.category_id !== d.category_id) return { ok: false, error: "validation" };
+    }
+    patch = { category_id: d.category_id, subcategory_id: d.subcategory_id, headline: d.headline, onboarding_step: nextStep };
+  }
+  const { error } = await supabase.from("worker_profiles").update(patch).eq("id", workerId);
   if (error) return { ok: false, error: errorCode(error) };
   return advance(res.ctx, 3, true);
 }

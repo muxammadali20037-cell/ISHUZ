@@ -1,0 +1,247 @@
+{
+  "role": {
+    "greeting": "Welcome, {name}!",
+    "worker_title": "I'm looking for a job",
+    "worker_desc": "Create a profile — we'll find the right jobs for you",
+    "worker_cta": "Create profile",
+    "employer_title": "I'm hiring",
+    "employer_desc": "Post a vacancy — matching candidates arrive already sorted",
+    "employer_cta": "Get started",
+    "note": "You can turn on both modes later"
+  },
+  "worker": {
+    "title": "Create profile",
+    "step_label": "Step",
+    "steps": {
+      "personal": {
+        "title": "Personal details",
+        "subtitle": "This is how employers will get to know you"
+      },
+      "location": {
+        "title": "Location",
+        "subtitle": "So we can show jobs near you"
+      },
+      "profession": {
+        "title": "Profession",
+        "subtitle": "What field are you looking for work in?"
+      },
+      "experience": {
+        "title": "Experience",
+        "subtitle": "A short summary of your work experience"
+      },
+      "skills": {
+        "title": "Skills and languages",
+        "subtitle": "What can you do? This improves your matches"
+      },
+      "education": {
+        "title": "Education",
+        "subtitle": "Your level of education and where you studied"
+      },
+      "portfolio": {
+        "title": "Portfolio",
+        "subtitle": "Samples of your work — optional, but helpful"
+      },
+      "preferences": {
+        "title": "Job preferences",
+        "subtitle": "What kind of job and salary are you looking for?"
+      },
+      "review": {
+        "title": "Review your details",
+        "subtitle": "Is everything correct? Your profile will then go live"
+      }
+    },
+    "common": {
+      "month": "Month",
+      "year": "Year"
+    },
+    "months": {
+      "1": "January",
+      "2": "February",
+      "3": "March",
+      "4": "April",
+      "5": "May",
+      "6": "June",
+      "7": "July",
+      "8": "August",
+      "9": "September",
+      "10": "October",
+      "11": "November",
+      "12": "December"
+    },
+    "personal": {
+      "first_name": "First name",
+      "first_name_placeholder": "Ali",
+      "last_name": "Last name",
+      "last_name_placeholder": "Valiyev",
+      "birth_date": "Date of birth",
+      "birth_date_hint": "Only your age is shown, not the date",
+      "gender": "Gender",
+      "telegram": "Telegram",
+      "telegram_hint": "Employers will be able to contact you via Telegram",
+      "avatar_title": "Profile photo",
+      "avatar_hint": "JPG, PNG or WEBP, up to {max} MB. Profiles with a photo get 3x more views",
+      "avatar_upload": "Upload photo",
+      "avatar_change": "Change photo",
+      "avatar_saved": "Photo saved",
+      "phone_locked_hint": "Your phone number is used to sign in and can't be changed here",
+      "phone_add_title": "Add a phone number",
+      "phone_add_hint": "Employers will contact you by phone. We'll verify it with an SMS code",
+      "phone_verified": "Phone number verified"
+    },
+    "location": {
+      "region": "Region",
+      "district": "District / city",
+      "choose_region_first": "Select a region first",
+      "area_hint": "Neighborhood or landmark",
+      "area_hint_placeholder": "E.g. Chilanzar, block 20",
+      "work_districts": "Where can you work?",
+      "work_districts_hint": "Select several districts — they can be in other regions too",
+      "remote": "Open to remote work?",
+      "geo_title": "Precise location",
+      "geo_desc": "If you turn this on, we'll show the distance to each job and rank nearby jobs higher",
+      "geo_privacy": "Your precise location is never shown to anyone — it's only used to calculate distance",
+      "geo_detect": "Detect my location",
+      "geo_update": "Detect again",
+      "geo_saved": "Location saved",
+      "geo_saved_badge": "Saved"
+    },
+    "profession": {
+      "category": "Field",
+      "subcategory": "Specialization",
+      "subcategory_hint": "The more precise your choice, the more matching jobs we'll find",
+      "headline": "Job title",
+      "headline_hint": "Employers will see this title in the list",
+      "headline_placeholder": "E.g. Sales assistant",
+      "search_placeholder": "Search for a profession or field"
+    },
+    "experience": {
+      "level": "Total work experience",
+      "entries_title": "Work history",
+      "entries_hint": "Add your most recent jobs — it makes your profile more credible",
+      "entry_n": "Job {n}",
+      "company": "Company",
+      "company_placeholder": "E.g. Anor Market",
+      "position": "Position",
+      "position_placeholder": "E.g. Cashier",
+      "started": "Start date",
+      "ended": "End date",
+      "is_current": "I currently work here",
+      "responsibilities": "Responsibilities",
+      "responsibilities_placeholder": "What did you do?",
+      "achievements": "Achievements",
+      "achievements_placeholder": "What did you achieve?",
+      "empty": "No jobs added yet",
+      "add": "Add job"
+    },
+    "skills": {
+      "title": "Skills",
+      "hint": "Select at least 3 — employers search by skills",
+      "suggested": "Suggested for your field",
+      "search_placeholder": "Search skills",
+      "search_hint": "Not on the list? Type it in the search and add it yourself",
+      "add_custom": "Add “{name}”",
+      "custom_added": "Skill added",
+      "selected_title": "Selected skills",
+      "level": "Level",
+      "languages_title": "Languages",
+      "languages_hint": "Which languages do you speak?",
+      "question_skip": "If none apply, just continue without selecting."
+    },
+    "education": {
+      "level": "Your education",
+      "entries_title": "Educational institutions",
+      "entries_hint": "College, university or courses",
+      "entry_n": "Institution {n}",
+      "institution": "Institution",
+      "institution_placeholder": "E.g. TSUE",
+      "field": "Field of study",
+      "field_placeholder": "E.g. Accounting",
+      "started_year": "Start year",
+      "ended_year": "End year",
+      "add": "Add institution"
+    },
+    "portfolio": {
+      "recommended_title": "A portfolio matters in your field",
+      "recommended_desc": "Candidates with work samples get more offers. Add 2–3 of your projects",
+      "empty_title": "Work samples",
+      "empty_desc": "Add photos, videos, PDFs or links — let employers see your work",
+      "add": "Add work sample",
+      "item_n": "Sample {n}",
+      "item_title": "Title",
+      "item_title_placeholder": "E.g. Kitchen renovation, 2025",
+      "type": "Type",
+      "link": "Link",
+      "files": "Files",
+      "description": "Description",
+      "description_placeholder": "What did you do, and what was the result?",
+      "upload_hint": "Up to {max} files, {size} MB each"
+    },
+    "preferences": {
+      "employment_types": "Employment type",
+      "schedules": "Work schedule",
+      "multi_hint": "You can select several. Leave blank if you have no preference",
+      "work_time": "Preferred working hours",
+      "salary_type": "Pay type",
+      "salary_min": "Minimum salary",
+      "salary_min_hint": "You won't see offers below this",
+      "salary_expected": "Expected salary",
+      "salary_expected_hint": "An amount that works for you",
+      "salary": "Salary",
+      "availability": "When can you start?",
+      "work_format": "Employment terms",
+      "work_format_hint": "Official — with an employment contract",
+      "official_terms": "Official employment terms",
+      "official_terms_hint": "Check the terms that matter to you",
+      "currency": "UZS"
+    },
+    "review": {
+      "completeness_hint": "The more complete your profile, the higher it ranks",
+      "age": "{age} years old",
+      "expected": "expected",
+      "present": "present",
+      "files": "{count} files",
+      "done_toast": "Your profile is ready!",
+      "done_desc": "Now we'll show you jobs that match",
+      "finish_hint": "Once you finish, your profile will be visible to employers. You can edit it anytime"
+    },
+    "errors": {
+      "required": "This field is required",
+      "name_min": "At least 2 letters",
+      "too_long": "Too long",
+      "too_many": "Too many",
+      "birth_date_invalid": "Check the date",
+      "age_range": "Age must be between 14 and 90",
+      "telegram_invalid": "Telegram username must be 5–32 letters, digits or _",
+      "work_districts_min": "Select at least one district",
+      "headline_min": "Enter a job title",
+      "company_min": "Enter the company name",
+      "position_min": "Enter the position",
+      "started_required": "Select the start month and year",
+      "ended_required": "Select the end month and year, or check «I currently work here»",
+      "ended_before_start": "End date can't be before start date",
+      "skills_min": "Select at least one skill",
+      "languages_min": "Select at least one language",
+      "custom_skill_min": "Skill name must be at least 2 letters",
+      "institution_min": "Enter the institution name",
+      "year_invalid": "Check the year",
+      "years_order": "End year can't be before start year",
+      "title_min": "Enter a title",
+      "link_invalid": "Link must start with https://",
+      "link_required": "Enter a link",
+      "media_required": "Upload at least one file",
+      "max_files": "{max} files max",
+      "salary_invalid": "Check the amount",
+      "salary_order": "Expected salary can't be lower than the minimum",
+      "time_invalid": "Check the time",
+      "upload_failed": "File upload failed. Please try again",
+      "geo_unavailable": "Couldn't detect your location",
+      "geo_denied": "Location access denied. Allow it in your browser settings",
+      "phone_locked": "A phone number is already set",
+      "phone_taken": "This number is linked to another account",
+      "no_worker": "Complete step 1 first",
+      "incomplete_personal": "Enter your first and last name",
+      "incomplete_location": "Select your area",
+      "incomplete_profession": "Select a profession"
+    }
+  }
+}

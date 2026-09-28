@@ -8,7 +8,8 @@ describe("seo", () => {
     expect(withLang("/jobs?category=sales", "ru")).toBe("/jobs?category=sales&lang=ru");
   });
   it("localeAlternates", () => {
-    expect(localeAlternates("/", "ru")).toEqual({ canonical: "/?lang=ru", languages: { uz: "/", ru: "/?lang=ru", "x-default": "/" } });
+    expect(localeAlternates("/", "ru")).toEqual({ canonical: "/?lang=ru", languages: { uz: "/", ru: "/?lang=ru", en: "/?lang=en", "x-default": "/" } });
+    expect(withLang("/jobs", "en")).toBe("/jobs?lang=en");
     expect(localeAlternates("/jobs/x", "uz").canonical).toBe("/jobs/x");
   });
 });

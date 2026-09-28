@@ -1,0 +1,51 @@
+{
+  "badge": "AI assistant",
+  "cta_worker": "Short on time? Write about yourself — AI will fill everything in",
+  "cta_worker_desc": "No forms to fill: write 2–3 sentences and AI will sort the rest into sections",
+  "cta_employer": "Describe the job in your own words — AI will turn it into a polished listing",
+  "cta_employer_desc": "Category, salary, schedule, requirements — AI extracts it all, you just review",
+  "open": "Fill in with AI",
+  "worker": {
+    "title": "Tell us about yourself",
+    "subtitle": "In plain words, as if talking to a friend. AI will put everything in the right sections",
+    "placeholder": "For example: My name is Aziza Karimova, I'm 24. I live in Tashkent, Chilanzar district. I worked as a shop sales assistant for 3 years and know the cash register and 1C. I speak Uzbek and Russian. I'd like a salary of 4–5 million UZS per month and can start tomorrow.",
+    "hints": "Name and age | Your profession | Experience | Where you live | Expected salary | When you can start",
+    "review_title": "Here's what AI understood",
+    "review_subtitle": "Please review. If something's wrong, you can fix it in the next steps",
+    "need_title": "A bit more information",
+    "save": "Confirm and save",
+    "manual": "Fill in step by step"
+  },
+  "employer": {
+    "title": "Describe the job",
+    "subtitle": "Who you need, where, the salary and conditions — write freely. AI will prepare a polished listing",
+    "placeholder": "For example: Our cafe in Chilanzar needs a cook. 1+ year of experience. Working hours 9:00–21:00, 2/2 schedule. Salary 6–8 million, free meals and transport. Official employment.",
+    "hints": "Position | Address | Salary | Working hours | Requirements | Benefits",
+    "manual": "Fill in step by step"
+  },
+  "analyze": "Fill in with AI",
+  "analyzing": "Reading the text… | Sorting into sections… | Choosing a category… | Writing a polished text… | Almost done…",
+  "rewrite": "Rewrite",
+  "min_hint": "Write at least a sentence or two",
+  "sections": {
+    "personal": "Personal",
+    "location": "Location",
+    "profession": "Profession",
+    "experience": "Experience",
+    "skills": "Skills",
+    "languages": "Languages",
+    "education": "Education",
+    "preferences": "Job preferences",
+    "about": "About me"
+  },
+  "not_found": "Not found — you'll choose later",
+  "errors": {
+    "ai_disabled": "The AI assistant is currently disabled",
+    "ai_text_short": "Too short. Add a sentence or two",
+    "ai_failed": "AI couldn't understand the text. Try rephrasing it or fill it in manually",
+    "ai_busy": "AI is busy right now. Please try again in a minute",
+    "rate_limited": "Too many attempts. Please try again later"
+  },
+  "cta_worker_update": "✨ Update your profile with AI",
+  "cta_worker_update_desc": "Describe what has changed in plain words — AI will update the right sections for you"
+}

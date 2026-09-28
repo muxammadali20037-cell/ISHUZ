@@ -38,7 +38,8 @@ describe("telegram webhook helpers", () => {
     expect(resolveTelegramLocale(["ru", "uz"])).toBe("ru");
     expect(resolveTelegramLocale([null, undefined, "en", "uz-UZ"])).toBe("uz");
     expect(resolveTelegramLocale([undefined, "ru-RU"])).toBe("ru");
-    expect(resolveTelegramLocale(["en"])).toBe("uz");
+    expect(resolveTelegramLocale([undefined, "en"])).toBe("uz");
+    expect(resolveTelegramLocale(["en", "ru"])).toBe("en");
   });
   it("isTelegramBlockedError", () => {
     expect(isTelegramBlockedError(403, "Forbidden: bot was blocked by the user")).toBe(true);

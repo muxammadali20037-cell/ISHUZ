@@ -12,6 +12,7 @@ export type NavIcon =
   | "reports"
   | "reviews"
   | "categories"
+  | "professions"
   | "skills"
   | "regions"
   | "notifications"
@@ -66,6 +67,7 @@ export const NAV_GROUPS: NavGroup[] = [
     key: "reference",
     items: [
       { href: "/admin/categories", key: "categories", icon: "categories", perm: "categories.manage" },
+      { href: "/admin/professions", key: "professions", icon: "professions", perm: "categories.manage" },
       { href: "/admin/skills", key: "skills", icon: "skills", perm: "skills.manage" },
       { href: "/admin/regions", key: "regions", icon: "regions", perm: "regions.manage" },
       { href: "/admin/search", key: "search", icon: "search", perm: "analytics.view" },

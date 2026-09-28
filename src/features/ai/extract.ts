@@ -99,7 +99,7 @@ Qoidalar:
 - Yozadigan matnlaring (sarlavha, tavsif) toza, xatosiz va do'stona bo'lsin.`;
 
 function localeName(locale: Locale) {
-  return locale === "ru" ? "rus tilida" : "o'zbek tilida (lotin yozuvi)";
+  return locale === "ru" ? "rus tilida" : locale === "en" ? "ingliz tilida (English)" : "o'zbek tilida (lotin yozuvi)";
 }
 
 const WORKER_TASK = `Bu — ISH QIDIRUVCHI o'zi haqida yozgan matn. Profilini to'ldir.

@@ -249,7 +249,12 @@
     "age_out_of_range": "Yosh talabi: {min}–{max}",
     "remote_preferred": "Siz masofaviy ishni xohlaysiz, bu ish joyida",
     "salary_type_differs": "Maosh turi farq qiladi (oylik/kunlik/soatlik)",
-    "languages_partial": "Tillar: {matched}/{required}"
+    "languages_partial": "Tillar: {matched}/{required}",
+    "profession_exact": "Kasbingiz aynan mos",
+    "profession_specialist": "Siz shu kasbning aniq mutaxassisisiz",
+    "profession_general": "Kasbingiz yaqin, lekin bu yerda torroq mutaxassis kerak",
+    "profession_related": "O'xshash yo'nalish",
+    "profession_other_branch": "Soha bir xil, kasb boshqa"
   },
   "language_code": {
     "uz": "O'zbek",
