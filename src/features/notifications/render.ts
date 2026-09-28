@@ -152,6 +152,12 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       return { title: t(`${k}.title`, params), body: t(`${k}.body`, params), icon: "review" };
     }
     case "system":
+      if (str(p, "kind") === "contact_request") {
+        return { title: t("contacts.notify.request_title"), body: t("contacts.notify.request_body", { name: str(p, "name") || "—" }), icon: "system" };
+      }
+      if (str(p, "kind") === "contact_approved") {
+        return { title: t("contacts.notify.approved_title"), body: t("contacts.notify.approved_body", { name: str(p, "name") || "—" }), icon: "system" };
+      }
       if (str(p, "kind") === "saved_search") {
         return { title: t("saved.searches.notification_title"), body: t("saved.searches.notification_body", { label: str(p, "label"), count: num(p, "count") ?? 0 }), icon: "match_vacancy" };
       }

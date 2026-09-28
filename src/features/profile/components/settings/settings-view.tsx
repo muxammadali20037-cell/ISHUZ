@@ -14,6 +14,8 @@ import { PhoneVisibilityForm } from "./phone-visibility-form";
 import { RoleSwitch } from "./role-switch";
 import { TelegramCard } from "./telegram-card";
 import { ThemeSelector } from "./theme-selector";
+import { getIncomingContactRequests } from "@/features/contacts/queries";
+import { IncomingContactRequests } from "@/features/contacts/incoming-requests";
 
 function SettingsCard({ title, description, children }: { title: string; description?: string; children: ReactNode }) {
   return (
@@ -29,7 +31,13 @@ function SettingsCard({ title, description, children }: { title: string; descrip
 
 export async function SettingsView({ session }: { session: SessionContext }) {
   const { t } = await getT();
-  const [contacts, grants, telegram, cookieStore] = await Promise.all([getMyContacts(session.userId), getMyContactGrants(session.userId), getMyTelegram(session.userId), cookies()]);
+  const [contacts, grants, telegram, cookieStore, requests] = await Promise.all([
+    getMyContacts(session.userId),
+    getMyContactGrants(session.userId),
+    getMyTelegram(session.userId),
+    cookies(),
+    getIncomingContactRequests(),
+  ]);
   const theme = themeFromCookie(cookieStore.get(THEME_COOKIE)?.value);
   const botUsername = getServerEnv().TELEGRAM_BOT_USERNAME ?? null;
 
@@ -40,6 +48,14 @@ export async function SettingsView({ session }: { session: SessionContext }) {
       <SettingsCard title={t("profile.settings.language")} description={t("profile.settings.language_hint")}>
         <LanguageSwitcher size="md" />
       </SettingsCard>
+
+      {requests.length ? (
+        <div id="contact-requests" className="scroll-mt-20">
+          <SettingsCard title={t("contacts.incoming.title")} description={t("contacts.incoming.hint")}>
+            <IncomingContactRequests items={requests} />
+          </SettingsCard>
+        </div>
+      ) : null}
 
       <SettingsCard title={t("profile.settings.phone_privacy")} description={t("profile.settings.phone_privacy_hint")}>
         <PhoneVisibilityForm value={contacts?.phone_visibility ?? "applicants"} />

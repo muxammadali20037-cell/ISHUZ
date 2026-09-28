@@ -556,6 +556,48 @@ export type Database = {
           },
         ];
       };
+      contact_requests: {
+        Row: {
+          created_at: string;
+          id: string;
+          owner_profile_id: string;
+          requester_profile_id: string;
+          responded_at: string | null;
+          status: Database["public"]["Enums"]["contact_request_status"];
+        };
+        Insert: {
+          created_at?: string;
+          id?: string;
+          owner_profile_id: string;
+          requester_profile_id: string;
+          responded_at?: string | null;
+          status?: Database["public"]["Enums"]["contact_request_status"];
+        };
+        Update: {
+          created_at?: string;
+          id?: string;
+          owner_profile_id?: string;
+          requester_profile_id?: string;
+          responded_at?: string | null;
+          status?: Database["public"]["Enums"]["contact_request_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contact_requests_owner_profile_id_fkey";
+            columns: ["owner_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "contact_requests_requester_profile_id_fkey";
+            columns: ["requester_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       conversation_members: {
         Row: {
           conversation_id: string;
@@ -2731,6 +2773,7 @@ export type Database = {
           score: number;
         }[];
       };
+      contact_status_for: { Args: { p_owner: string }; Returns: string };
       create_payment: {
         Args: {
           p_purpose: Database["public"]["Enums"]["payment_purpose"];
@@ -2816,6 +2859,17 @@ export type Database = {
         Args: { p_search_id: string };
         Returns: undefined;
       };
+      my_contact_requests: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          avatar_url: string;
+          created_at: string;
+          id: string;
+          name: string;
+          person: string;
+          requester_profile_id: string;
+        }[];
+      };
       my_conversations: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -2897,6 +2951,7 @@ export type Database = {
         Args: { p_amount: number; p_order: string };
         Returns: Json;
       };
+      profile_display_name: { Args: { p_profile: string }; Returns: string };
       profile_rating: {
         Args: { p_profile_id: string };
         Returns: {
@@ -2945,6 +3000,11 @@ export type Database = {
       refresh_worker_completeness: {
         Args: { p_worker_id: string };
         Returns: number;
+      };
+      request_contact: { Args: { p_owner: string }; Returns: string };
+      respond_contact_request: {
+        Args: { p_approve: boolean; p_request_id: string };
+        Returns: Database["public"]["Enums"]["contact_request_status"];
       };
       respond_offer: {
         Args: { p_accept: boolean; p_offer_id: string };
@@ -3245,6 +3305,7 @@ export type Database = {
         "today" | "tomorrow" | "within_3_days" | "within_week" | "negotiable";
       company_member_role: "owner" | "admin" | "recruiter" | "viewer";
       company_size: "1_10" | "11_50" | "51_200" | "201_500" | "500_plus";
+      contact_request_status: "pending" | "approved" | "declined";
       device_platform: "web" | "android" | "ios";
       education_level:
         "secondary" | "vocational" | "incomplete_higher" | "higher" | "master";
@@ -3470,6 +3531,7 @@ export const Constants = {
       ],
       company_member_role: ["owner", "admin", "recruiter", "viewer"],
       company_size: ["1_10", "11_50", "51_200", "201_500", "500_plus"],
+      contact_request_status: ["pending", "approved", "declined"],
       device_platform: ["web", "android", "ios"],
       education_level: [
         "secondary",

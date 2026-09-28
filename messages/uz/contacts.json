@@ -1,0 +1,33 @@
+{
+  "request": {
+    "hint": "Telefon raqami yashirin. So'rov yuboring — egasi ruxsat bersa, raqam shu yerda ochiladi.",
+    "button": "Telefon raqamini so'rash",
+    "pending": "So'rov yuborildi — javobini kutyapmiz",
+    "sent": "So'rov yuborildi",
+    "sent_desc": "Ruxsat berilsa, sizga xabar keladi.",
+    "declined": "Oldingi so'rov rad etilgan edi.",
+    "errors": {
+      "contact_hidden": "Bu foydalanuvchi telefonini hech kimga ko'rsatmaydi",
+      "declined_recently": "So'rov yaqinda rad etilgan. Bir haftadan keyin qayta urinib ko'ring.",
+      "rate_limited": "Bugun juda ko'p so'rov yubordingiz. Ertaga urinib ko'ring.",
+      "blocked": "Hisobingiz cheklangan",
+      "not_authenticated": "Avval tizimga kiring"
+    }
+  },
+  "incoming": {
+    "title": "Telefon so'rovlari",
+    "hint": "Bu odamlar telefon raqamingizni so'radi. Ruxsat bersangiz, raqamingizni ko'radi.",
+    "empty": "Yangi so'rovlar yo'q",
+    "approve": "Ruxsat berish",
+    "decline": "Rad etish",
+    "approved": "Ruxsat berildi",
+    "declined": "Rad etildi"
+  },
+  "notify": {
+    "request_title": "Telefon raqamingizni so'rashdi",
+    "request_body": "{name} telefon raqamingizni ko'rmoqchi. Ruxsat berasizmi?",
+    "approved_title": "Telefon raqami ochildi",
+    "approved_body": "{name} telefon raqamini ko'rishga ruxsat berdi."
+  },
+  "no_contact": "Telefon raqami va Telegram hali kiritilmagan — chat orqali yozing."
+}
