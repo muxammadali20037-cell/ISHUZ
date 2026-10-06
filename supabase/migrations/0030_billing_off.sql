@@ -99,6 +99,5 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists trg_payments_billing_guard on public.payments;
-create trigger trg_payments_billing_guard before insert on public.payments
+create or replace trigger trg_payments_billing_guard before insert on public.payments
   for each row execute function public.billing_guard_payment();

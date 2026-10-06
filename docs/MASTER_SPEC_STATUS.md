@@ -94,6 +94,7 @@ O'lchov: bajarildi/yo'q, vaqt, qayerda to'xtadi. Natijalar shu hujjatga qo'shila
 
 ## Keyingi eng zarur qadamlar
 
+0. **Supabase SQL Editor'da `docs/db-requests/0033b_search_vacancies.sql` ni bir marta ishga tushirish** — imkoniyat turi va talabalar filtri qidiruvda shundan keyin ishlaydi (MCP orqali `drop function` tasdiqsiz bajarilmadi). Ungacha ilova eski imzo bilan qidiradi (filtrlar e'tiborsiz qoladi, lekin qidiruv ishlaydi).
 1. Video qo'llanmalar (uz, oz, ru) yozish va `/help` ga ulash.
 2. Hududlarni rasmiy SOATO manbasi bilan solishtirish.
 3. Katalogga ISCO-08 kodlarini biriktirish, yaqin-dublikatlarni birlashtirish, `custom_occupation_requests` navbatini ko'rib chiqish (kelajakdagi admin tizimida).

@@ -23,17 +23,16 @@ create unique index if not exists uq_custom_occ_worker on public.custom_occupati
 create unique index if not exists uq_custom_occ_vacancy on public.custom_occupation_requests(vacancy_id, normalized) where vacancy_id is not null;
 
 alter table public.custom_occupation_requests enable row level security;
-drop policy if exists "custom_occ_own_read" on public.custom_occupation_requests;
-drop policy if exists "custom_occ_own_insert" on public.custom_occupation_requests;
-drop policy if exists "custom_occ_admin" on public.custom_occupation_requests;
-create policy "custom_occ_own_read" on public.custom_occupation_requests for select using (created_by = auth.uid());
-create policy "custom_occ_own_insert" on public.custom_occupation_requests for insert with check (
+do $$ begin
+  create policy "custom_occ_own_read" on public.custom_occupation_requests for select using (created_by = auth.uid());
+  create policy "custom_occ_own_insert" on public.custom_occupation_requests for insert with check (
   created_by = auth.uid()
   and (worker_id is null or exists (select 1 from public.worker_profiles w where w.id = worker_id and w.profile_id = auth.uid()))
   and (vacancy_id is null or public.can_edit_vacancy(vacancy_id))
 );
-create policy "custom_occ_admin" on public.custom_occupation_requests for all
+  create policy "custom_occ_admin" on public.custom_occupation_requests for all
   using (public.has_admin_permission('categories.manage')) with check (public.has_admin_permission('categories.manage'));
+exception when duplicate_object then null; end $$;
 grant select, insert on public.custom_occupation_requests to authenticated;
 
 -- Tugun tanlansa qo'lda yozilgan kasb tozalanadi (ikkalasi bir vaqtda bo'lmaydi)
@@ -45,9 +44,7 @@ begin
   end if;
   return new;
 end $$;
-drop trigger if exists trg_worker_profiles_custom on public.worker_profiles;
-create trigger trg_worker_profiles_custom before insert or update of profession_node_id on public.worker_profiles
+create or replace trigger trg_worker_profiles_custom before insert or update of profession_node_id on public.worker_profiles
   for each row execute function public.clear_custom_profession_on_node();
-drop trigger if exists trg_vacancies_custom on public.vacancies;
-create trigger trg_vacancies_custom before insert or update of profession_node_id on public.vacancies
+create or replace trigger trg_vacancies_custom before insert or update of profession_node_id on public.vacancies
   for each row execute function public.clear_custom_profession_on_node();

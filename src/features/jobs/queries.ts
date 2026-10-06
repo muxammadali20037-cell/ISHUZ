@@ -98,11 +98,24 @@ async function resolveSearch(params: JobsSearchParams, limit: number) {
   return { args, smart };
 }
 
+/**
+ * search_vacancies RPC. Baza hali yangi imkoniyat-turi parametrlarisiz bo'lsa (migratsiya 0033 qo'llanmagan),
+ * PostgREST PGRST202 qaytaradi — shunda eski imzo bilan qayta so'raymiz, qidiruv ishlashda davom etadi.
+ */
+async function rpcSearch(supabase: Awaited<ReturnType<typeof createClient>>, args: SearchVacanciesArgs) {
+  const res = await supabase.rpc("search_vacancies", args);
+  if (res.error?.code !== "PGRST202") return res;
+  const legacy = { ...args };
+  delete legacy.p_opportunity_types;
+  delete legacy.p_student_friendly;
+  return supabase.rpc("search_vacancies", legacy);
+}
+
 /** /jobs qidiruvi: slug → id, aqlli kategoriya, RPC */
 export async function searchVacancies(params: JobsSearchParams): Promise<JobsSearchResult> {
   const { args, smart } = await resolveSearch(params, PAGE_SIZE);
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("search_vacancies", args);
+  const { data, error } = await rpcSearch(supabase, args);
   if (error) {
     console.error("[jobs] search_vacancies", error.message);
     throw new Error("search_failed");
@@ -122,7 +135,7 @@ export async function searchVacancies(params: JobsSearchParams): Promise<JobsSea
 export async function countVacancies(params: JobsSearchParams): Promise<number> {
   const { args } = await resolveSearch({ ...params, page: 1, sort: "newest" }, 1);
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("search_vacancies", args);
+  const { data, error } = await rpcSearch(supabase, args);
   if (error) return 0;
   return Number(data?.[0]?.total_count ?? 0);
 }
@@ -130,7 +143,7 @@ export async function countVacancies(params: JobsSearchParams): Promise<number> 
 /** Kichik ro'yxatlar (bosh sahifa bo'limlari, o'xshash vakansiyalar). Xatoda bo'sh ro'yxat. */
 export async function searchVacancyCards(args: SearchVacanciesArgs): Promise<VacancyCardData[]> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("search_vacancies", args);
+  const { data, error } = await rpcSearch(supabase, args);
   if (error) {
     console.error("[jobs] search_vacancies", error.message);
     return [];
