@@ -8,7 +8,7 @@ type I18nContextValue = {
   locale: Locale;
   t: TFunction;
   tEnum: ReturnType<typeof makeTEnum>;
-  name: (row: { name_uz: string; name_ru: string; name_en?: string | null } | null | undefined) => string;
+  name: (row: { name_uz: string; name_ru: string; name_en?: string | null; name_oz?: string | null } | null | undefined) => string;
 };
 
 const I18nContext = createContext<I18nContextValue | null>(null);

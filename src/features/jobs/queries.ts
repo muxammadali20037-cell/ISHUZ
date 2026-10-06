@@ -69,6 +69,8 @@ export function toCardData(row: VacancySearchRow): VacancyCardData {
     has_applied: row.has_applied,
     is_featured: row.is_featured,
     is_government: row.is_government,
+    opportunity_type: row.opportunity_type,
+    is_paid: row.is_paid,
   };
 }
 

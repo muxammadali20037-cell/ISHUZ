@@ -236,7 +236,15 @@
       "time": "Working hours",
       "time_from": "From",
       "time_to": "To",
-      "time_hint": "Leave blank to hide"
+      "time_hint": "Leave blank to hide",
+      "opportunity": "Opportunity type",
+      "opportunity_hint": "Separate from employment and format: e.g. a remote internship can be part-time.",
+      "paid": "Is it paid?",
+      "paid_yes": "Yes, paid",
+      "paid_no": "Unpaid",
+      "student_friendly": "Good for students (can work after classes)",
+      "student_friendly_hint": "Shown in “For students and beginners”",
+      "unpaid_only_learning": "Only internships, placements or apprenticeships can be unpaid"
     },
     "requirements": {
       "experience": "Minimum experience",

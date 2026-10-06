@@ -1,0 +1,284 @@
+{
+  "experience_level": {
+    "none": "Тажриба ёъқ",
+    "lt_6m": "0–6 ой",
+    "6_12m": "6–12 ой",
+    "1_2y": "1–2 йил",
+    "2_3y": "2–3 йил",
+    "3_5y": "3–5 йил",
+    "5y_plus": "5+ йил"
+  },
+  "experience_min_months": {
+    "0": "Тажриба керак эмас",
+    "6": "6 ойдан",
+    "12": "1 йилдан",
+    "24": "2 йилдан",
+    "36": "3 йилдан",
+    "60": "5+ йил"
+  },
+  "education_level": {
+    "secondary": "Ўрта",
+    "vocational": "Ўрта махсус",
+    "incomplete_higher": "Тугалланмаган олий",
+    "higher": "Олий",
+    "master": "Магистр"
+  },
+  "skill_level": {
+    "beginner": "Бошланғич",
+    "intermediate": "Ўрта",
+    "good": "Яхши",
+    "professional": "Профессионал"
+  },
+  "language_level": {
+    "a1": "А1 — Бошланғич",
+    "a2": "А2 — Элементар",
+    "b1": "Б1 — Ўрта",
+    "b2": "Б2 — Ўртадан юқори",
+    "c1": "C1 — Илғор",
+    "c2": "C2 — Мукаммал",
+    "native": "Она тили"
+  },
+  "employment_type": {
+    "permanent": "Доимий",
+    "temporary": "Вақтинчалик",
+    "part_time": "Part-time",
+    "full_time": "Full-time",
+    "shift": "Сменали",
+    "remote": "Масофавий",
+    "freelance": "Freelance",
+    "internship": "Стажировка"
+  },
+  "work_schedule": {
+    "5_2": "5/2",
+    "6_1": "6/1",
+    "2_2": "2/2",
+    "shift": "Сменали",
+    "flexible": "Эркин график",
+    "negotiable": "Келишилади"
+  },
+  "salary_type": {
+    "monthly": "Ойлик",
+    "daily": "Кунлик",
+    "hourly": "Соатлик",
+    "piecework": "Ишбай",
+    "negotiable": "Келишилади"
+  },
+  "salary_type_suffix": {
+    "monthly": "/oy",
+    "daily": "/kun",
+    "hourly": "/soat",
+    "piecework": "ишбай",
+    "negotiable": ""
+  },
+  "availability": {
+    "today": "Бугун",
+    "tomorrow": "Эртага",
+    "within_3_days": "3 кун ичида",
+    "within_week": "1 ҳафта ичида",
+    "negotiable": "Келишилади"
+  },
+  "work_format": {
+    "official": "Расмий",
+    "unofficial": "Норасмий",
+    "any": "Фарқи ёъқ"
+  },
+  "remote_preference": {
+    "yes": "Ҳа",
+    "no": "Ёъқ",
+    "any": "Фарқи ёъқ"
+  },
+  "worker_status": {
+    "active": "Фаол иш қидиряпман",
+    "open": "Таклифларни кўриб чиқаман",
+    "not_looking": "Ҳозир иш қидирмаяпман"
+  },
+  "worker_status_short": {
+    "active": "Ҳозир иш қидирмоқда",
+    "open": "Таклифларга очиқ",
+    "not_looking": "Иш қидирмаяпти"
+  },
+  "gender": {
+    "male": "Эркак",
+    "female": "Аёл"
+  },
+  "employer_type": {
+    "company": "Хусусий компания ёки ташкилот",
+    "individual_entrepreneur": "Якка тартибдаги тадбиркор (ЯТТ)",
+    "person": "Ўзим ёки оилам учун ходим керак",
+    "government": "Давлат ташкилоти",
+    "self_employed": "Ўзини ўзи банд қилган шахс",
+    "other": "Бошқа ташкилот тури"
+  },
+  "company_size": {
+    "1_10": "1–10 ходим",
+    "11_50": "11–50 ходим",
+    "51_200": "51–200 ходим",
+    "201_500": "201–500 ходим",
+    "500_plus": "500+ ходим"
+  },
+  "company_member_role": {
+    "owner": "Эгаси",
+    "admin": "Администратор",
+    "recruiter": "Рекрутер",
+    "viewer": "Кузатувчи"
+  },
+  "verification_status": {
+    "unverified": "Тасдиқланмаган",
+    "pending": "Текширилмоқда",
+    "verified": "Тасдиқланган",
+    "rejected": "Рад этилган"
+  },
+  "verification_type": {
+    "phone": "Телефон",
+    "telegram": "Telegram",
+    "identity": "Шахс",
+    "education": "Таълим",
+    "company": "Компания",
+    "tin": "СТИР",
+    "documents": "Ҳужжатлар"
+  },
+  "vacancy_status": {
+    "draft": "Қоралама",
+    "pending_review": "Модератсияда",
+    "active": "Фаол",
+    "paused": "Тўхтатилган",
+    "closed": "Ёпилган",
+    "expired": "Муддати тугаган",
+    "hidden": "Яширилган",
+    "rejected": "Рад этилган"
+  },
+  "application_status": {
+    "sent": "Юборилди",
+    "viewed": "Кўриб чиқилди",
+    "shortlisted": "Танловда",
+    "interview": "Суҳбатга чақирилди",
+    "offered": "Таклиф берилди",
+    "hired": "Ишга қабул қилинди",
+    "rejected": "Рад этилди",
+    "withdrawn": "Қайтариб олинди"
+  },
+  "offer_status": {
+    "sent": "Юборилди",
+    "viewed": "Кўрилди",
+    "accepted": "Қабул қилинди",
+    "declined": "Рад этилди",
+    "expired": "Муддати тугаган",
+    "withdrawn": "Қайтариб олинди"
+  },
+  "portfolio_type": {
+    "image": "Расм",
+    "video": "Видео",
+    "pdf": "PDF",
+    "document": "Ҳужжат",
+    "link": "Ҳавола"
+  },
+  "phone_visibility": {
+    "nobody": "Ҳеч ким",
+    "applicants": "Мен ариза юборган / менга таклиф берган томон",
+    "on_request": "Фақат мен рухсат берганда",
+    "everyone": "Ҳаммага"
+  },
+  "report_reason": {
+    "fraud": "Фирибгарлик",
+    "fake_vacancy": "Сохта вакансия",
+    "asked_money": "Пул талаб қилди",
+    "wrong_info": "Нотўғри маълумот",
+    "spam": "Спам",
+    "abuse": "Ҳақорат",
+    "other": "Бошқа"
+  },
+  "report_status": {
+    "open": "Очиқ",
+    "in_review": "Кўриб чиқилмоқда",
+    "resolved": "Ҳал қилинди",
+    "dismissed": "Рад этилди"
+  },
+  "review_status": {
+    "pending": "Модератсияда",
+    "approved": "Тасдиқланган",
+    "rejected": "Рад этилган"
+  },
+  "admin_role": {
+    "super_admin": "Супер админ",
+    "admin": "Админ",
+    "moderator": "Модератор",
+    "support": "Қўллаб-қувватлаш"
+  },
+  "notification_type": {
+    "application_received": "Янги ариза",
+    "application_status": "Ариза ҳолати",
+    "offer_received": "Иш таклифи",
+    "offer_response": "Таклифга жавоб",
+    "new_message": "Янги хабар",
+    "interview_invite": "Суҳбатга таклиф",
+    "vacancy_expiring": "Вакансия муддати",
+    "new_matching_vacancy": "Сизга мос иш",
+    "new_matching_worker": "Сизга мос номзод",
+    "verification_result": "Тасдиқлаш натижаси",
+    "review_received": "Янги шарҳ",
+    "system": "Тизим"
+  },
+  "match_reason": {
+    "category_match": "Касбингиз мос",
+    "category_match_partial": "Соҳа мос, ёъналиш фарқ қилади",
+    "category_mismatch": "Касб мос эмас",
+    "remote_ok": "Масофавий иш",
+    "district_match": "Сиз танлаган ҳудуд",
+    "distance_near": "Сиздан {km} км",
+    "distance_ok": "Сиздан {km} км",
+    "region_match": "Вилоят мос, туман фарқ қилади",
+    "location_far": "Ҳудуд мос эмас",
+    "salary_ok": "Маош талабингиз мос",
+    "salary_min_ok": "Маош минимал талабингизга мос",
+    "salary_negotiable": "Маош келишилади",
+    "salary_unspecified": "Маош талабингиз кўрсатилмаган",
+    "salary_below": "Маош талабингиздан паст",
+    "experience_ok": "Тажрибангиз етарли",
+    "experience_close": "Тажриба бироз кам",
+    "experience_low": "Тажриба талаб қилинади",
+    "skills_not_required": "Махсус кўникма талаб қилинмайди",
+    "skills_matched": "Кўникмалар: {matched}/{required}",
+    "schedule_ok": "График сизга мос",
+    "schedule_partial": "График қисман мос",
+    "schedule_mismatch": "График мос эмас",
+    "employment_ok": "Бандлик тури мос",
+    "employment_mismatch": "Бандлик тури мос эмас",
+    "work_format_ok": "Расмийлик мос",
+    "work_format_mismatch": "Расмий/norasmiy талаб фарқ қилади",
+    "language_required": "{lang} тили талаб қилинади ({level})",
+    "languages_ok": "Тил талаблари мос",
+    "education_required": "Таълим талаб қилинади: {level}",
+    "age_out_of_range": "Ёш талаби: {min}–{max}",
+    "remote_preferred": "Сиз масофавий ишни хоҳлайсиз, бу иш жойида",
+    "salary_type_differs": "Маош тури фарқ қилади (ойлик/kunlik/soatlik)",
+    "languages_partial": "Тиллар: {matched}/{required}",
+    "profession_exact": "Касбингиз айнан мос",
+    "profession_specialist": "Сиз шу касбнинг аниқ мутахассисисиз",
+    "profession_general": "Касбингиз яқин, лекин бу ерда торроқ мутахассис керак",
+    "profession_related": "Ўхшаш ёъналиш",
+    "profession_other_branch": "Соҳа бир хил, касб бошқа"
+  },
+  "language_code": {
+    "uz": "Ўзбек",
+    "ru": "Рус",
+    "en": "Инглиз",
+    "tr": "Турк",
+    "kk": "Қозоқ",
+    "tg": "Тожик",
+    "ko": "Корейс",
+    "zh": "Хитой",
+    "de": "Немис",
+    "ar": "Араб",
+    "fr": "Франсуз"
+  },
+  "benefit_food": "Овқат",
+  "opportunity_type": {
+    "job": "Доимий иш",
+    "fixed_term": "Муддатли иш",
+    "one_time": "Бир марталик иш",
+    "seasonal": "Мавсумий иш",
+    "internship": "Стажировка",
+    "practice": "Амалиёт (ўқув/ishlab чиқариш)",
+    "apprenticeship": "Шогирдлик (устага)"
+  }
+}

@@ -4,8 +4,8 @@
   "contact_body": "Savol yoki so'rovlar bo'yicha yozing:",
   "privacy": {
     "title": "Maxfiylik siyosati",
-    "description": "«Ish beruvchi» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi va ularni qanday boshqarishingiz mumkin.",
-    "intro": "«Ish beruvchi» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi. Unda qaysi ma'lumotlarni yig'ishimiz, nima uchun ishlatishimiz va ularni qanday boshqarishingiz mumkinligi tushuntiriladi.",
+    "description": "«Ish Beruvchi» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi va ularni qanday boshqarishingiz mumkin.",
+    "intro": "«Ish Beruvchi» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi. Unda qaysi ma'lumotlarni yig'ishimiz, nima uchun ishlatishimiz va ularni qanday boshqarishingiz mumkinligi tushuntiriladi.",
     "sections": [
       [
         "Qaysi ma'lumotlar yig'iladi",
@@ -47,12 +47,12 @@
   },
   "deletion": {
     "title": "Hisobni o'chirish",
-    "description": "«Ish beruvchi» hisobingizni va ma'lumotlaringizni qanday o'chirish mumkin.",
+    "description": "«Ish Beruvchi» hisobingizni va ma'lumotlaringizni qanday o'chirish mumkin.",
     "intro": "Hisobingizni va unga bog'liq ma'lumotlarni istalgan vaqtda o'zingiz o'chirishingiz mumkin. O'chirish darhol amalga oshadi va uni qaytarib bo'lmaydi.",
     "sections": [
       [
         "Ilova yoki sayt orqali",
-        "- «Ish beruvchi» ilovasi yoki saytiga kiring.\n- «Sozlamalar» bo'limini oching.\n- «Hisobni o'chirish» tugmasini bosing.\n- Tasdiqlash uchun «O'CHIRISH» so'zini yozing va «Butunlay o'chirish» ni bosing."
+        "- «Ish Beruvchi» ilovasi yoki saytiga kiring.\n- «Sozlamalar» bo'limini oching.\n- «Hisobni o'chirish» tugmasini bosing.\n- Tasdiqlash uchun «O'CHIRISH» so'zini yozing va «Butunlay o'chirish» ni bosing."
       ],
       [
         "Tizimga kira olmasangiz",

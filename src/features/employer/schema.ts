@@ -3,9 +3,11 @@ import { normalizePhone } from "@/lib/format";
 
 /** Ish beruvchi moduli: zod sxemalar va normalizatorlar (client va server bir xil). */
 
-export const EMPLOYER_TYPES = ["company", "government", "individual_entrepreneur", "person"] as const;
+export const EMPLOYER_TYPES = ["company", "government", "individual_entrepreneur", "self_employed", "person", "other"] as const;
 /** Tashkilot sahifasi (companies) bilan ishlaydigan turlar */
-export const COMPANY_EMPLOYER_TYPES = ["company", "government", "individual_entrepreneur"] as const;
+export const COMPANY_EMPLOYER_TYPES = ["company", "government", "individual_entrepreneur", "other"] as const;
+/** Kompaniya nomi/STIR so'ralmaydigan turlar (jismoniy shaxs, o'zini o'zi band qilgan) */
+export const PERSON_EMPLOYER_TYPES = ["person", "self_employed"] as const;
 export const COMPANY_SIZES = ["1_10", "11_50", "51_200", "201_500", "500_plus"] as const;
 export const ASSIGNABLE_MEMBER_ROLES = ["admin", "recruiter", "viewer"] as const;
 export const COMPANY_VERIFICATION_TYPES = ["company", "tin", "documents"] as const;
@@ -167,7 +169,11 @@ const sizeField = text()
 
 // ---------- sxemalar ----------
 
-export const employerTypeSchema = z.object({ employerType: z.enum(EMPLOYER_TYPES) });
+export const employerTypeSchema = z.object({
+  employerType: z.enum(EMPLOYER_TYPES),
+  /** "Boshqa tashkilot turi" izohi */
+  note: z.string().trim().max(120).optional(),
+});
 export type EmployerTypeInput = z.infer<typeof employerTypeSchema>;
 
 export const companySchema = z.object({
@@ -188,6 +194,7 @@ export type CompanyFormInput = z.input<typeof companySchema>;
 export type CompanyFormValues = z.output<typeof companySchema>;
 
 export const personSchema = z.object({
+  employerType: z.enum(PERSON_EMPLOYER_TYPES).optional(),
   displayName: z.string().trim().min(2, "employer.form.errors.display_name_length").max(80, "employer.form.errors.display_name_length"),
   contactPhone: phoneField,
   regionId: uuidOrNull,

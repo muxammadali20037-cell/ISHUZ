@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { billingEnabled } from "@/lib/features";
 import { ArrowRight, Briefcase, Building2, Search, UserRound, Sparkles, MessageCircle } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
@@ -15,11 +16,11 @@ export async function LandingPage() {
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   // Google: sayt nomi, logotip va sayt ichidagi qidiruv (sitelinks search box)
   const jsonLd = JSON.stringify([
-    { "@context": "https://schema.org", "@type": "Organization", name: "Ish beruvchi", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
+    { "@context": "https://schema.org", "@type": "Organization", name: "Ish Beruvchi", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Ish beruvchi",
+      name: "Ish Beruvchi",
       url: base,
       inLanguage: ["uz", "ru"],
       potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${base}/jobs?q={search_term_string}` }, "query-input": "required name=search_term_string" },
@@ -158,9 +159,11 @@ export async function LandingPage() {
 
       <footer className="mt-10 border-t border-border pt-6 text-center text-xs text-muted-foreground">
         <div className="mb-2 flex flex-wrap justify-center gap-x-4 gap-y-1 font-medium">
-          <Link href="/pricing" className="text-primary hover:underline">
-            {t("welcome.quick.pricing")}
-          </Link>
+          {billingEnabled() ? (
+            <Link href="/pricing" className="text-primary hover:underline">
+              {t("welcome.quick.pricing")}
+            </Link>
+          ) : null}
           <Link href="/privacy" className="text-primary hover:underline">
             {t("common.footer.privacy")}
           </Link>

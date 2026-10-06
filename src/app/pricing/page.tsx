@@ -1,3 +1,5 @@
+import { billingEnabled } from "@/lib/features";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { BadgeCheck, Crown, Megaphone, Search } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -12,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** Ochiq narxlar sahifasi — qiymatlar app_settings'dan (admin o'zgartirsa shu yerda ham o'zgaradi) */
 export default async function PricingPage() {
+  if (!billingEnabled()) notFound();
   const { t, locale } = await getT();
   const supabase = await createClient();
   const { data } = await supabase

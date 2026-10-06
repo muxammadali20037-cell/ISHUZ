@@ -42,6 +42,10 @@ export interface VacancyCardData {
   is_featured?: boolean | null;
   /** Tasdiqlangan davlat tashkiloti vakansiyasi */
   is_government?: boolean | null;
+  /** Imkoniyat turi (oddiy ishdan boshqasi kartada ko'rsatiladi) */
+  opportunity_type?: Enums<"opportunity_type"> | null;
+  /** false — haq to'lanmaydi (faqat stajirovka/amaliyot/shogirdlik) */
+  is_paid?: boolean | null;
 }
 
 export function VacancyCard({
@@ -110,6 +114,8 @@ export function VacancyCard({
         <Badge variant={v.work_format === "official" ? "primary" : "default"}>
           <FileCheck2 /> {tEnum("work_format", v.work_format)}
         </Badge>
+        {v.opportunity_type && v.opportunity_type !== "job" ? <Badge variant="primary">{tEnum("opportunity_type", v.opportunity_type)}</Badge> : null}
+        {v.is_paid === false ? <Badge variant="warning">{t("jobs.card.unpaid")}</Badge> : null}
         <Badge>{tEnum("employment_type", v.employment_type)}</Badge>
         {v.benefits?.includes("food") ? (
           <Badge variant="success">

@@ -59,6 +59,8 @@ export const professionSchema = z.object({
   subcategory_id: z.uuid().nullable(),
   /** kasblar daraxtidan tanlangan tugun; bo'lsa category/subcategory undan olinadi */
   profession_node_id: z.uuid().nullable().optional(),
+  /** katalogda topilmagan kasb — foydalanuvchi o'zi yozgan asl matn */
+  custom_profession: z.string().trim().min(2).max(120).nullable().optional(),
   headline: z.string(err("required")).trim().min(2, err("headline_min")).max(80, err("too_long")),
 });
 export type ProfessionInput = z.infer<typeof professionSchema>;

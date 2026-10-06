@@ -11,7 +11,7 @@
     },
     "workers": {
       "title": "Ishchi toping",
-      "text": "«Ishchilar» tugmasi — tayyor nomzodlar. Har birida sizning vakansiyangizga moslik foizi ko'rsatiladi."
+      "text": "«Nomzodlar» tugmasi — tayyor nomzodlar. Har birida vakansiyangizga nima jihatdan mos ekani ko'rsatiladi."
     },
     "post": {
       "title": "E'lonni AI yozadi",
@@ -37,5 +37,28 @@
     "employer_title": "O'zingiz ish qidiryapsizmi?",
     "employer_desc": "Bitta akkauntda ham ish, ham ishchi qidirish mumkin",
     "employer_cta": "Ish qidirish"
+  },
+  "help": {
+    "title": "Yordam",
+    "subtitle": "Ilovadan qanday foydalanish — qisqa va oddiy.",
+    "replay_tour": "Qisqacha ko'rsatib bering (tur)",
+    "worker_title": "Ish qidiryapman",
+    "worker_1": "Bosh sahifada «Bo'sh ish o'rinlarini ko'rish» ni bosing.",
+    "worker_2": "Yuqoridagi qidiruvga kasbingizni yozing yoki hudud va filtrlarni tanlang.",
+    "worker_3": "Yoqqan vakansiyani oching va «Ariza yuborish» ni bosing — «Arizangiz yuborildi» chiqsa, yetib bordi.",
+    "worker_4": "«Ish qidirish e'loni yaratish» orqali nimalarni bilishingizni yozing — ish beruvchilar sizni o'zlari topadi.",
+    "worker_5": "Javoblar va takliflar «Arizalarim» va 🔔 bildirishnomalarda ko'rinadi.",
+    "employer_title": "Xodim qidiryapman",
+    "employer_1": "Bosh sahifadagi katta «+ Vakansiya joylashtirish» tugmasini bosing.",
+    "employer_2": "Kim kerakligini tanlang (soha → kasb), keyin shartlarni bosqichma-bosqich belgilang.",
+    "employer_3": "Tayyor e'lonni ko'rib chiqing va «E'lonni joylash» ni bosing.",
+    "employer_4": "E'lon joylangach mos nomzodlar darhol ko'rsatiladi; «Nomzodlar» bo'limida qidirishingiz ham mumkin.",
+    "employer_5": "Kelgan arizalarni «Vakansiyalar» bo'limida ko'ring, javob yozing yoki suhbatga taklif qiling.",
+    "safety_title": "Xavfsizlik",
+    "safety_1": "Ishga kirish uchun hech kimga oldindan pul o'tkazmang.",
+    "safety_2": "Telefon raqamingiz faqat siz ruxsat bergan ish beruvchiga ko'rinadi.",
+    "safety_3": "Shubhali e'lon yoki xabar ko'rsangiz — «Shikoyat qilish» tugmasini bosing.",
+    "report_hint": "Har bir vakansiya va profil sahifasida «Shikoyat qilish» bor.",
+    "more": "Shaxsiy ma'lumotlar haqida:"
   }
 }

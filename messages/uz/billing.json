@@ -12,7 +12,8 @@
     "promo": "🎉 Aksiya: {date} gacha e'lon joylash bepul",
     "free_trial": "🎁 Birinchi vakansiyangiz bepul — {hours} soat faol bo'ladi",
     "paid_window": "✅ To'langan: {date} gacha faol",
-    "payment_required": "E'lon narxi: {price} so'm · {days} kun"
+    "payment_required": "E'lon narxi: {price} so'm · {days} kun",
+    "free": "E'lon bepul — {days} kun faol bo'ladi"
   },
   "promo_mode": {
     "promo": "🎉 Aksiya: {date} gacha TOP bepul",

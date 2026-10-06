@@ -29,7 +29,7 @@ export async function jobsListMetadata(params: JobsSearchParams): Promise<Metada
     title,
     description,
     alternates: localeAlternates(canonical, locale),
-    openGraph: { title: `${title} · Ish beruvchi`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ" },
+    openGraph: { title: `${title} · Ish Beruvchi`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : locale === "oz" ? "uz_UZ" : "uz_UZ" },
     robots: noindex ? { index: false, follow: true } : undefined,
   };
 }
@@ -58,7 +58,7 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
     description,
     alternates: localeAlternates(url, locale),
     openGraph: {
-      title: `${title} · Ish beruvchi`,
+      title: `${title} · Ish Beruvchi`,
       description,
       url,
       type: "article",

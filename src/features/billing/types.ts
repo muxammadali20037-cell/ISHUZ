@@ -1,6 +1,6 @@
 import type { PaymentProvider } from "./providers";
 
-export type PublishMode = "paid_window" | "promo" | "free_trial" | "payment_required";
+export type PublishMode = "paid_window" | "free" | "promo" | "free_trial" | "payment_required";
 
 export interface VacancyQuote {
   mode: PublishMode;

@@ -765,6 +765,141 @@ export type Database = {
           },
         ];
       };
+      custom_occupation_requests: {
+        Row: {
+          category_id: string | null;
+          context: string;
+          created_at: string;
+          created_by: string;
+          id: string;
+          linked_node_id: string | null;
+          normalized: string | null;
+          raw_text: string;
+          status: string;
+          vacancy_id: string | null;
+          worker_id: string | null;
+        };
+        Insert: {
+          category_id?: string | null;
+          context: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          linked_node_id?: string | null;
+          normalized?: never;
+          raw_text: string;
+          status?: string;
+          vacancy_id?: string | null;
+          worker_id?: string | null;
+        };
+        Update: {
+          category_id?: string | null;
+          context?: string;
+          created_at?: string;
+          created_by?: string;
+          id?: string;
+          linked_node_id?: string | null;
+          normalized?: never;
+          raw_text?: string;
+          status?: string;
+          vacancy_id?: string | null;
+          worker_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "custom_occupation_requests_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "custom_occupation_requests_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "custom_occupation_requests_linked_node_id_fkey";
+            columns: ["linked_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "custom_occupation_requests_vacancy_id_fkey";
+            columns: ["vacancy_id"];
+            isOneToOne: false;
+            referencedRelation: "vacancies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "custom_occupation_requests_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: false;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      demo_vv: {
+        Row: {
+          cat: string | null;
+          co: string | null;
+          descr: string | null;
+          descr_ru: string | null;
+          dist: string | null;
+          emp: Database["public"]["Enums"]["employment_type"] | null;
+          exp: number | null;
+          hours: number | null;
+          remote: boolean | null;
+          sched: Database["public"]["Enums"]["work_schedule"] | null;
+          sf: number | null;
+          st: number | null;
+          stype: Database["public"]["Enums"]["salary_type"] | null;
+          sub: string | null;
+          title: string | null;
+          title_ru: string | null;
+        };
+        Insert: {
+          cat?: string | null;
+          co?: string | null;
+          descr?: string | null;
+          descr_ru?: string | null;
+          dist?: string | null;
+          emp?: Database["public"]["Enums"]["employment_type"] | null;
+          exp?: number | null;
+          hours?: number | null;
+          remote?: boolean | null;
+          sched?: Database["public"]["Enums"]["work_schedule"] | null;
+          sf?: number | null;
+          st?: number | null;
+          stype?: Database["public"]["Enums"]["salary_type"] | null;
+          sub?: string | null;
+          title?: string | null;
+          title_ru?: string | null;
+        };
+        Update: {
+          cat?: string | null;
+          co?: string | null;
+          descr?: string | null;
+          descr_ru?: string | null;
+          dist?: string | null;
+          emp?: Database["public"]["Enums"]["employment_type"] | null;
+          exp?: number | null;
+          hours?: number | null;
+          remote?: boolean | null;
+          sched?: Database["public"]["Enums"]["work_schedule"] | null;
+          sf?: number | null;
+          st?: number | null;
+          stype?: Database["public"]["Enums"]["salary_type"] | null;
+          sub?: string | null;
+          title?: string | null;
+          title_ru?: string | null;
+        };
+        Relationships: [];
+      };
       device_tokens: {
         Row: {
           created_at: string;
@@ -804,38 +939,53 @@ export type Database = {
         Row: {
           id: string;
           is_active: boolean;
+          kind: string;
           lat: number | null;
           lng: number | null;
           name_en: string | null;
+          name_oz: string | null;
           name_ru: string;
           name_uz: string;
           region_id: string;
           slug: string;
+          soato: string | null;
           sort_order: number;
+          source: string | null;
+          source_updated_at: string | null;
         };
         Insert: {
           id?: string;
           is_active?: boolean;
+          kind?: string;
           lat?: number | null;
           lng?: number | null;
           name_en?: string | null;
+          name_oz?: string | null;
           name_ru: string;
           name_uz: string;
           region_id: string;
           slug: string;
+          soato?: string | null;
           sort_order?: number;
+          source?: string | null;
+          source_updated_at?: string | null;
         };
         Update: {
           id?: string;
           is_active?: boolean;
+          kind?: string;
           lat?: number | null;
           lng?: number | null;
           name_en?: string | null;
+          name_oz?: string | null;
           name_ru?: string;
           name_uz?: string;
           region_id?: string;
           slug?: string;
+          soato?: string | null;
           sort_order?: number;
+          source?: string | null;
+          source_updated_at?: string | null;
         };
         Relationships: [
           {
@@ -856,6 +1006,7 @@ export type Database = {
           display_name: string | null;
           district_id: string | null;
           employer_type: Database["public"]["Enums"]["employer_type"];
+          employer_type_note: string | null;
           id: string;
           onboarding_completed_at: string | null;
           profile_id: string;
@@ -871,6 +1022,7 @@ export type Database = {
           display_name?: string | null;
           district_id?: string | null;
           employer_type?: Database["public"]["Enums"]["employer_type"];
+          employer_type_note?: string | null;
           id?: string;
           onboarding_completed_at?: string | null;
           profile_id: string;
@@ -886,6 +1038,7 @@ export type Database = {
           display_name?: string | null;
           district_id?: string | null;
           employer_type?: Database["public"]["Enums"]["employer_type"];
+          employer_type_note?: string | null;
           id?: string;
           onboarding_completed_at?: string | null;
           profile_id?: string;
@@ -1513,30 +1666,39 @@ export type Database = {
       };
       regions: {
         Row: {
+          country_code: string;
           id: string;
           is_active: boolean;
           name_en: string | null;
+          name_oz: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
+          soato: string | null;
           sort_order: number;
         };
         Insert: {
+          country_code?: string;
           id?: string;
           is_active?: boolean;
           name_en?: string | null;
+          name_oz?: string | null;
           name_ru: string;
           name_uz: string;
           slug: string;
+          soato?: string | null;
           sort_order?: number;
         };
         Update: {
+          country_code?: string;
           id?: string;
           is_active?: boolean;
           name_en?: string | null;
+          name_oz?: string | null;
           name_ru?: string;
           name_uz?: string;
           slug?: string;
+          soato?: string | null;
           sort_order?: number;
         };
         Relationships: [];
@@ -2172,6 +2334,7 @@ export type Database = {
           category_id: string | null;
           company_id: string | null;
           created_at: string;
+          custom_profession: string | null;
           description: string | null;
           district_id: string | null;
           education_min: Database["public"]["Enums"]["education_level"] | null;
@@ -2183,11 +2346,13 @@ export type Database = {
           id: string;
           is_featured: boolean;
           is_government: boolean;
+          is_paid: boolean | null;
           is_remote: boolean;
           lat: number | null;
           lng: number | null;
           moderation_note: string | null;
           official_terms: string[];
+          opportunity_type: Database["public"]["Enums"]["opportunity_type"];
           owner_profile_id: string | null;
           paid_until: string | null;
           positions_count: number;
@@ -2203,6 +2368,7 @@ export type Database = {
           search_vector: unknown;
           slug: string;
           status: Database["public"]["Enums"]["vacancy_status"];
+          student_friendly: boolean;
           subcategory_id: string | null;
           title: string;
           updated_at: string;
@@ -2219,6 +2385,7 @@ export type Database = {
           category_id?: string | null;
           company_id?: string | null;
           created_at?: string;
+          custom_profession?: string | null;
           description?: string | null;
           district_id?: string | null;
           education_min?: Database["public"]["Enums"]["education_level"] | null;
@@ -2230,11 +2397,13 @@ export type Database = {
           id?: string;
           is_featured?: boolean;
           is_government?: boolean;
+          is_paid?: boolean | null;
           is_remote?: boolean;
           lat?: number | null;
           lng?: number | null;
           moderation_note?: string | null;
           official_terms?: string[];
+          opportunity_type?: Database["public"]["Enums"]["opportunity_type"];
           owner_profile_id?: string | null;
           paid_until?: string | null;
           positions_count?: number;
@@ -2250,6 +2419,7 @@ export type Database = {
           search_vector?: unknown;
           slug: string;
           status?: Database["public"]["Enums"]["vacancy_status"];
+          student_friendly?: boolean;
           subcategory_id?: string | null;
           title: string;
           updated_at?: string;
@@ -2266,6 +2436,7 @@ export type Database = {
           category_id?: string | null;
           company_id?: string | null;
           created_at?: string;
+          custom_profession?: string | null;
           description?: string | null;
           district_id?: string | null;
           education_min?: Database["public"]["Enums"]["education_level"] | null;
@@ -2277,11 +2448,13 @@ export type Database = {
           id?: string;
           is_featured?: boolean;
           is_government?: boolean;
+          is_paid?: boolean | null;
           is_remote?: boolean;
           lat?: number | null;
           lng?: number | null;
           moderation_note?: string | null;
           official_terms?: string[];
+          opportunity_type?: Database["public"]["Enums"]["opportunity_type"];
           owner_profile_id?: string | null;
           paid_until?: string | null;
           positions_count?: number;
@@ -2297,6 +2470,7 @@ export type Database = {
           search_vector?: unknown;
           slug?: string;
           status?: Database["public"]["Enums"]["vacancy_status"];
+          student_friendly?: boolean;
           subcategory_id?: string | null;
           title?: string;
           updated_at?: string;
@@ -2837,6 +3011,7 @@ export type Database = {
           category_id: string | null;
           completeness: number;
           created_at: string;
+          custom_profession: string | null;
           district_id: string | null;
           experience_level: Database["public"]["Enums"]["experience_level"];
           headline: string | null;
@@ -2862,6 +3037,7 @@ export type Database = {
           category_id?: string | null;
           completeness?: number;
           created_at?: string;
+          custom_profession?: string | null;
           district_id?: string | null;
           experience_level?: Database["public"]["Enums"]["experience_level"];
           headline?: string | null;
@@ -2887,6 +3063,7 @@ export type Database = {
           category_id?: string | null;
           completeness?: number;
           created_at?: string;
+          custom_profession?: string | null;
           district_id?: string | null;
           experience_level?: Database["public"]["Enums"]["experience_level"];
           headline?: string | null;
@@ -3094,6 +3271,7 @@ export type Database = {
         Args: { p_message?: string; p_vacancy_id: string };
         Returns: string;
       };
+      billing_enabled: { Args: Record<PropertyKey, never>; Returns: boolean };
       billing_promo_active: {
         Args: Record<PropertyKey, never>;
         Returns: boolean;
@@ -3489,12 +3667,14 @@ export type Database = {
           p_limit?: number;
           p_no_experience?: boolean;
           p_offset?: number;
+          p_opportunity_types?: Database["public"]["Enums"]["opportunity_type"][];
           p_query?: string;
           p_region_id?: string;
           p_salary_min?: number;
           p_schedules?: Database["public"]["Enums"]["work_schedule"][];
           p_sort?: string;
           p_start_today?: boolean;
+          p_student_friendly?: boolean;
           p_subcategory_id?: string;
           p_verified_only?: boolean;
           p_work_format?: Database["public"]["Enums"]["work_format"];
@@ -3518,10 +3698,12 @@ export type Database = {
           id: string;
           is_featured: boolean;
           is_government: boolean;
+          is_paid: boolean;
           is_remote: boolean;
           is_saved: boolean;
           match_reasons: Json;
           match_score: number;
+          opportunity_type: Database["public"]["Enums"]["opportunity_type"];
           published_at: string;
           region_id: string;
           region_name_ru: string;
@@ -3532,6 +3714,7 @@ export type Database = {
           salary_type: Database["public"]["Enums"]["salary_type"];
           schedule: Database["public"]["Enums"]["work_schedule"];
           slug: string;
+          student_friendly: boolean;
           title: string;
           total_count: number;
           views_count: number;
@@ -3728,7 +3911,7 @@ export type Database = {
     };
     Enums: {
       admin_role: "super_admin" | "admin" | "moderator" | "support";
-      app_locale: "uz" | "ru" | "en";
+      app_locale: "uz" | "oz" | "ru" | "en";
       app_role: "worker" | "employer";
       application_status:
         | "sent"
@@ -3748,7 +3931,12 @@ export type Database = {
       education_level:
         "secondary" | "vocational" | "incomplete_higher" | "higher" | "master";
       employer_type:
-        "company" | "individual_entrepreneur" | "person" | "government";
+        | "company"
+        | "individual_entrepreneur"
+        | "person"
+        | "government"
+        | "self_employed"
+        | "other";
       employment_type:
         | "permanent"
         | "temporary"
@@ -3779,6 +3967,14 @@ export type Database = {
         | "system";
       offer_status:
         "sent" | "viewed" | "accepted" | "declined" | "expired" | "withdrawn";
+      opportunity_type:
+        | "job"
+        | "fixed_term"
+        | "one_time"
+        | "seasonal"
+        | "internship"
+        | "practice"
+        | "apprenticeship";
       payment_provider: "payme" | "click";
       payment_purpose: "vacancy_publish" | "worker_promotion";
       payment_status: "pending" | "paid" | "cancelled" | "failed";
@@ -3948,7 +4144,7 @@ export const Constants = {
   public: {
     Enums: {
       admin_role: ["super_admin", "admin", "moderator", "support"],
-      app_locale: ["uz", "ru", "en"],
+      app_locale: ["uz", "oz", "ru", "en"],
       app_role: ["worker", "employer"],
       application_status: [
         "sent",
@@ -3983,6 +4179,8 @@ export const Constants = {
         "individual_entrepreneur",
         "person",
         "government",
+        "self_employed",
+        "other",
       ],
       employment_type: [
         "permanent",
@@ -4034,6 +4232,15 @@ export const Constants = {
         "declined",
         "expired",
         "withdrawn",
+      ],
+      opportunity_type: [
+        "job",
+        "fixed_term",
+        "one_time",
+        "seasonal",
+        "internship",
+        "practice",
+        "apprenticeship",
       ],
       payment_provider: ["payme", "click"],
       payment_purpose: ["vacancy_publish", "worker_promotion"],

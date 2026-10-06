@@ -1,4 +1,4 @@
--- Worklyn · to'lovlar: aksiya davri, bepul vakansiya (24 soat), to'lov talabi, Payme/Click oqimlari, TOP profil
+-- Ish Beruvchi · to'lovlar (billing_enabled=true holatida): aksiya davri, bepul vakansiya (24 soat), to'lov talabi, Payme/Click oqimlari, TOP profil
 \set ON_ERROR_STOP on
 \set QUIET on
 
@@ -32,6 +32,8 @@ begin
 end $$;
 
 begin;
+-- 0030 dan beri to'lov sukut bo'yicha o'chiq; bu test yoqilgan rejimni tekshiradi
+update public.app_settings set value = 'true'::jsonb where key = 'billing_enabled';
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('e7000000-0000-0000-0000-000000000001', '+998903000001', now(), '{"first_name":"Kafe","last_name":"Egasi"}'),

@@ -236,7 +236,15 @@
       "time": "Ish vaqti",
       "time_from": "Dan",
       "time_to": "Gacha",
-      "time_hint": "Bo'sh qoldirsangiz ko'rsatilmaydi"
+      "time_hint": "Bo'sh qoldirsangiz ko'rsatilmaydi",
+      "opportunity": "Imkoniyat turi",
+      "opportunity_hint": "Bandlik va ish formatidan alohida: masalan, masofaviy stajirovka yarim kunlik bo'lishi mumkin.",
+      "paid": "Haq to'lanadimi?",
+      "paid_yes": "Ha, haq to'lanadi",
+      "paid_no": "Haq to'lanmaydi",
+      "student_friendly": "Talabalarga mos (darsdan keyin ham ishlash mumkin)",
+      "student_friendly_hint": "«Talabalar va tajribasizlar uchun» bo'limida ko'rinadi",
+      "unpaid_only_learning": "Haq to'lanmaydigan imkoniyat faqat stajirovka, amaliyot yoki shogirdlik bo'lishi mumkin"
     },
     "requirements": {
       "experience": "Minimal tajriba",
@@ -359,7 +367,7 @@
     "age_range": "{min}–{max} yosh",
     "age_from": "{min} yoshdan",
     "age_to": "{max} yoshgacha",
-    "employer_person": "Ish beruvchi",
+    "employer_person": "Ish Beruvchi",
     "info": "Asosiy ma'lumotlar",
     "requirements": "Talablar",
     "no_requirements": "Maxsus talablar yo'q",

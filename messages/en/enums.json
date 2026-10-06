@@ -102,10 +102,12 @@
     "female": "Female"
   },
   "employer_type": {
-    "company": "Company",
+    "company": "Private company or organisation",
     "individual_entrepreneur": "Sole proprietor",
-    "person": "Private individual",
-    "government": "Government organization"
+    "person": "For myself or my family",
+    "government": "Government organisation",
+    "self_employed": "Self-employed",
+    "other": "Other type of organisation"
   },
   "company_size": {
     "1_10": "1–10 employees",
@@ -269,5 +271,14 @@
     "ar": "Arabic",
     "fr": "French"
   },
-  "benefit_food": "Meals"
+  "benefit_food": "Meals",
+  "opportunity_type": {
+    "job": "Permanent job",
+    "fixed_term": "Fixed-term job",
+    "one_time": "One-off job",
+    "seasonal": "Seasonal job",
+    "internship": "Internship",
+    "practice": "Work placement",
+    "apprenticeship": "Apprenticeship"
+  }
 }

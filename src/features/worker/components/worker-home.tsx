@@ -1,9 +1,7 @@
 import { Suspense } from "react";
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
-import { HomeSearch } from "@/features/jobs/components/home/home-search";
 import { HomeSection } from "@/features/jobs/components/home/home-section";
 import { WorkerStats } from "@/features/jobs/components/home/worker-stats";
 import { HomeSectionSkeleton, StatsSkeleton } from "@/features/jobs/components/skeletons";
@@ -12,8 +10,10 @@ import { jobsHref } from "@/features/jobs/search-params";
 import { createClient } from "@/lib/supabase/server";
 import { TopProfileCard } from "@/features/billing/components/top-profile-card";
 import { aiEnabled } from "@/lib/ai/client";
+import { billingEnabled } from "@/lib/features";
 import { AiCtaCard } from "@/features/ai/components/ai-composer";
 import { ProfessionFocus } from "@/features/professions/components/profession-focus";
+import { WorkerMainCards } from "./worker-main-cards";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
@@ -30,13 +30,6 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
   const firstName = session.profile.first_name?.trim() || t("common.role.worker");
   const hasDistricts = ctx.districtIds.length > 0;
 
-  const quick = [
-    { href: jobsHref({ government: true }), label: t("jobs.home.government") },
-    { href: jobsHref({ sort: "salary" }), label: t("jobs.home.top_salary") },
-    { href: jobsHref({ noExperience: true }), label: t("jobs.home.no_experience") },
-    { href: jobsHref({ remote: true }), label: t("jobs.home.remote") },
-  ];
-
   return (
     <div className="container-app space-y-7 py-5 sm:py-8">
       <section className="space-y-4">
@@ -44,14 +37,7 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{t("jobs.home.greeting", { name: firstName })}</h1>
           <p className="mt-1 text-sm text-muted-foreground sm:text-base">{t("jobs.home.subtitle")}</p>
         </div>
-        <HomeSearch className="max-w-2xl" />
-        <nav className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1" aria-label={t("jobs.home.quick_filters")}>
-          {quick.map((q) => (
-            <Link key={q.href} href={q.href} className="shrink-0 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium hover:border-primary hover:text-primary">
-              {q.label}
-            </Link>
-          ))}
-        </nav>
+        <WorkerMainCards workerId={session.workerId} />
       </section>
 
       <Suspense fallback={null}>
@@ -84,7 +70,7 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
         <WorkerStats />
       </Suspense>
 
-      <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} />
+      {billingEnabled() ? <TopProfileCard workerId={session.workerId} promotedUntil={promo.data?.promoted_until ?? null} /> : null}
       {aiEnabled() ? <AiCtaCard title={t("ai.cta_worker_update")} description={t("ai.cta_worker_update_desc")} href="/onboarding/worker/ai" /> : null}
     </div>
   );

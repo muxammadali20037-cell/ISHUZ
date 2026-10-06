@@ -34,6 +34,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const { t } = useT();
   const router = useRouter();
   const [type, setType] = useState<EmployerType | null>(prefill.employerType);
+  const [note, setNote] = useState("");
   const [step, setStep] = useState<1 | 2>(prefill.employerType ? 2 : 1);
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [pending, startTransition] = useTransition();
@@ -45,7 +46,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const continueFromType = () => {
     if (!type) return;
     startTransition(async () => {
-      const res = await saveEmployerType({ employerType: type });
+      const res = await saveEmployerType({ employerType: type, note });
       if (!res.ok) {
         fail(res.error);
         return;
@@ -92,7 +93,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
 
   const submitPerson = (values: PersonFormValues) => {
     startTransition(async () => {
-      const res = await completePersonOnboarding(values);
+      const res = await completePersonOnboarding({ ...values, employerType: type === "self_employed" ? "self_employed" : "person" });
       if (!res.ok) {
         fail(res.error);
         return;
@@ -107,7 +108,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
     </Button>
   );
 
-  const isCompanyType = type === "company" || type === "government" || type === "individual_entrepreneur";
+  const isCompanyType = type === "company" || type === "government" || type === "individual_entrepreneur" || type === "other";
   const personDefaults: Partial<PersonFormInput> = {
     displayName: prefill.displayName ?? "",
     contactPhone: prefill.contactPhone ?? "",
@@ -125,7 +126,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
           <h1 className="text-2xl font-bold sm:text-3xl">{t("employer.onboarding.step_type_title")}</h1>
           <p className="mt-2 text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_type_subtitle")}</p>
           <div className="mt-6">
-            <EmployerTypeStep value={type} onChange={setType} disabled={pending} />
+            <EmployerTypeStep value={type} onChange={setType} disabled={pending} note={note} onNoteChange={setNote} />
           </div>
           <div className="mt-8 flex justify-end">
             <Button size="lg" onClick={continueFromType} disabled={!type} loading={pending} className="w-full sm:w-auto sm:min-w-48">

@@ -8,7 +8,7 @@ export default function GlobalError({ error, retry }: { error: Error & { digest?
   return (
     <html lang="uz">
       <body style={{ margin: 0, fontFamily: "system-ui, sans-serif", background: "#f6f8fb", color: "#0f172a" }}>
-        <title>Ish beruvchi</title>
+        <title>Ish Beruvchi</title>
         <main style={{ minHeight: "100vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 24, textAlign: "center" }}>
           <h1 style={{ fontSize: 20, margin: 0 }}>Nimadir xato ketdi · Что-то пошло не так</h1>
           <p style={{ fontSize: 14, color: "#64748b", maxWidth: 360 }}>{"Sahifani qayta yuklang. Muammo takrorlansa, birozdan keyin urinib ko'ring."}</p>

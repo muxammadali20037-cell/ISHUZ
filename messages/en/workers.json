@@ -1,7 +1,7 @@
 {
   "meta": {
     "search_title": "Candidates",
-    "search_description": "“Ish beruvchi” — find job seekers who meet your requirements",
+    "search_description": "“Ish Beruvchi” — find job seekers who meet your requirements",
     "candidate_title": "Candidate",
     "saved_title": "Saved candidates",
     "candidates_title": "Candidates for vacancy"
@@ -32,7 +32,7 @@
     "for_vacancy": "Candidates for “{title}”",
     "select_label": "Vacancy",
     "no_vacancy": "General search (no vacancy)",
-    "hint": "Match percentage is calculated from the selected vacancy's requirements",
+    "hint": "Match is assessed from the selected vacancy's requirements: profession, area, schedule, pay, experience",
     "inactive": "Vacancy is not active"
   },
   "filters": {

@@ -19,6 +19,8 @@ export interface ProfessionDraft {
   subcategory_id: string | null;
   profession_node_id: string | null;
   headline: string | null;
+  /** katalogda topilmay, qo'lda yozilgan kasb */
+  custom_profession?: string | null;
   /** tanlangan tugunning yo'li (server tayyorlaydi) */
   trail: TrailItem[];
 }
@@ -32,6 +34,7 @@ export function Step3Profession({ draft, categories }: { draft: ProfessionDraft;
   const initial: PickedProfession | null =
     draft.profession_node_id && draft.category_id && draft.trail.length ? { id: draft.profession_node_id, categoryId: draft.category_id, trail: draft.trail } : null;
   const [picked, setPicked] = useState<PickedProfession | null>(initial);
+  const [custom, setCustom] = useState<string | null>(draft.custom_profession ?? null);
   const [autoHeadline, setAutoHeadline] = useState<string | null>(() => {
     const last = initial?.trail.at(-1);
     return last && name(last) === draft.headline ? draft.headline : null;
@@ -50,6 +53,7 @@ export function Step3Profession({ draft, categories }: { draft: ProfessionDraft;
       subcategory_id: null,
       profession_node_id: initial?.id ?? null,
       headline: draft.headline ?? "",
+      custom_profession: draft.custom_profession ?? null,
     },
   });
   const flow = useQuestionFlow<ProfessionInput>(
@@ -62,6 +66,8 @@ export function Step3Profession({ draft, categories }: { draft: ProfessionDraft;
 
   const pick = (p: PickedProfession) => {
     setPicked(p);
+    setCustom(null);
+    setValue("custom_profession", null);
     setValue("category_id", p.categoryId, { shouldValidate: true });
     setValue("profession_node_id", p.id);
     setValue("subcategory_id", null);
@@ -74,12 +80,27 @@ export function Step3Profession({ draft, categories }: { draft: ProfessionDraft;
     flow.advance();
   };
 
+  const pickCustom = (text: string, categoryId: string) => {
+    setPicked(null);
+    setCustom(text);
+    setValue("category_id", categoryId, { shouldValidate: true });
+    setValue("profession_node_id", null);
+    setValue("subcategory_id", null);
+    setValue("custom_profession", text);
+    const current = getValues("headline").trim();
+    if (!current || current === autoHeadline) {
+      setValue("headline", text.slice(0, 80), { shouldValidate: true });
+      setAutoHeadline(text.slice(0, 80));
+    }
+    flow.advance();
+  };
+
   return (
     <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => saveProfession(values)), flow.onInvalid))} className="space-y-6">
       <QuestionProgress flow={flow} />
 
       <Question show={flow.is("profession")} className="space-y-3">
-        <ProfessionPicker categories={categories} value={picked} onChange={pick} title={t("professions.worker_title")} subtitle={t("professions.worker_sub")} />
+        <ProfessionPicker categories={categories} value={picked} onChange={pick} onCustom={pickCustom} title={t("professions.worker_title")} subtitle={t("professions.worker_sub")} />
         {fieldError(t, errors.category_id) ? (
           <p className="text-sm text-destructive" role="alert">
             {t("professions.pick_required")}
@@ -90,6 +111,12 @@ export function Step3Profession({ draft, categories }: { draft: ProfessionDraft;
       {flow.is("headline") ? (
         <div className="space-y-5">
           {picked ? <ProfessionPicker categories={categories} value={picked} onChange={pick} /> : null}
+          {!picked && custom ? (
+            <button type="button" onClick={flow.back} className="w-full rounded-2xl border border-primary bg-primary-soft p-4 text-left">
+              <span className="block text-xs font-medium text-muted-foreground">{t("professions.custom_badge")}</span>
+              <span className="block font-semibold">{custom}</span>
+            </button>
+          ) : null}
           <Field label={t("onboarding.worker.profession.headline")} htmlFor="headline" required error={fieldError(t, errors.headline)} description={t("onboarding.worker.profession.headline_hint")}>
             <Input id="headline" className="h-14 text-base" placeholder={t("onboarding.worker.profession.headline_placeholder")} maxLength={80} invalid={!!errors.headline} {...register("headline")} />
           </Field>

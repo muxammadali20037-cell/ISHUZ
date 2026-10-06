@@ -124,7 +124,7 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
           <div style={{ width: z.logo, height: z.logo, borderRadius: z.logo * 0.28, background: "#fff", color: "#1d5fe0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: z.logo * 0.42, fontWeight: 800, letterSpacing: -1 }}>IB</div>
-          <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>Ish beruvchi</div>
+          <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>Ish Beruvchi</div>
         </div>
         <div style={{ display: "flex", transform: "rotate(6deg)", background: "#fde047", color: "#0f172a", padding: `${z.brand * 0.3}px ${z.brand * 0.7}px`, borderRadius: 999, fontSize: z.brand * 0.72, fontWeight: 800, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
           {data.labels.hiring}

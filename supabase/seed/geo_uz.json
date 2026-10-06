@@ -1,0 +1,3598 @@
+{
+ "source": [
+  {
+   "url": "https://raw.githubusercontent.com/MIMAXUZ/uzbekistan-regions-data/master/JSON/districts.json",
+   "fetched": "2026-10-06",
+   "note": "regions/districts with soato_id, name_uz/oz/ru"
+  },
+  {
+   "url": "https://raw.githubusercontent.com/MIMAXUZ/uzbekistan-regions-data/master/JSON/regions.json",
+   "fetched": "2026-10-06"
+  },
+  {
+   "url": "https://raw.githubusercontent.com/nurbekjummayev/laravel-region/main/database/data/regions.json",
+   "fetched": "2026-10-06",
+   "note": "COATO classifier, 14 regions / 209 districts with type district|city (packagist nurbekjummayev/laravel-region)"
+  },
+  {
+   "url": "https://kun.uz/news/2019/09/30/andijon-viloyatining-boz-tumani-boston-tumaniga-ozgartirildi",
+   "fetched": "2026-10-06",
+   "note": "via web search result only (Bo'z -> Bo'ston rename)"
+  },
+  {
+   "url": "https://stat.uz (32 cities of republican/regional subordination as of 2023-01-01, per-region split)",
+   "fetched": "2026-10-06",
+   "note": "seen via web search snippet only; site blocked by egress policy"
+  }
+ ],
+ "notes": {
+  "summary": "Units = all tumanlar (incl. Tashkent city districts and 2 city-internal districts of Namangan) + cities of regional/republican subordination (SOATO 7-digit codes 17RR4NN). Built by merging two independent public SOATO-coded datasets; Russian/Uzbek-Cyrillic names come from the sources (Latin homoglyphs inside Cyrillic words normalized). No coordinates in either source, so lat/lng are null. Official sites (stat.uz, siat.stat.uz, lex.uz, data.gov.uz, wikipedia) were blocked by the network egress policy and could not be fetched directly; the per-region count of regional-subordination cities was cross-checked against a stat.uz figure (32 cities as of 2023-01-01) seen via web search snippet only.",
+  "counts": {
+   "andijan": {
+    "districts": 14,
+    "cities": 2
+   },
+   "bukhara": {
+    "districts": 11,
+    "cities": 2
+   },
+   "fergana": {
+    "districts": 15,
+    "cities": 4
+   },
+   "jizzakh": {
+    "districts": 12,
+    "cities": 1
+   },
+   "karakalpakstan": {
+    "districts": 16,
+    "cities": 1
+   },
+   "kashkadarya": {
+    "districts": 14,
+    "cities": 2
+   },
+   "khorezm": {
+    "districts": 11,
+    "cities": 2
+   },
+   "namangan": {
+    "districts": 13,
+    "cities": 1
+   },
+   "navoi": {
+    "districts": 8,
+    "cities": 3
+   },
+   "samarkand": {
+    "districts": 14,
+    "cities": 2
+   },
+   "surkhandarya": {
+    "districts": 14,
+    "cities": 1
+   },
+   "syrdarya": {
+    "districts": 8,
+    "cities": 3
+   },
+   "tashkent_city": {
+    "districts": 12,
+    "cities": 0
+   },
+   "tashkent_region": {
+    "districts": 15,
+    "cities": 7
+   }
+  },
+  "totals": {
+   "districts": 177,
+   "cities": 31,
+   "units": 208
+  },
+  "excluded_from_sources": {
+   "1726260260": "aggregat yozuv (\"Toshkent shahrining tumanlari\"), hududiy birlik emas",
+   "1724414": "Baxt: faqat MIMAXUZ da bor; stat.uz 01.01.2023 maʼlumotiga koʻra Sirdaryo viloyatida 3 ta viloyat ahamiyatidagi shahar (Guliston, Shirin, Yangiyer); Baxt Sirdaryo tumani tarkibidagi shahar sifatida koʻrsatiladi — tasdiqlanmagan, kiritilmadi"
+  },
+  "nj_rows_without_code_dropped": [
+   "1703: Bo‘z tumani (duplicate of 1703209 under old name)"
+  ],
+  "cross_check_differences": [
+   "1703209: nom farqi MIMAXUZ='Bo'z tumani' NJ='Bo‘ston tumani'",
+   "1703230: nom farqi MIMAXUZ='Shahrixon tumani' NJ='Shaxrixon tumani'",
+   "1708212: nom farqi MIMAXUZ='Sh.Rashidov tumani' NJ='Sharof Rashidov tumani'",
+   "1726277: nom farqi MIMAXUZ='Shayxontohur tumani' NJ='Shayxontoxur tumani'"
+  ],
+  "ambiguous_matches": [
+   "bukhara/kogon \"Kogon\": candidates ['1706219', '1706403'], matched 1706219",
+   "karakalpakstan/nukus \"Nukus\": candidates ['1735225', '1735401'], matched 1735225",
+   "kashkadarya/karshi \"Qarshi\": candidates ['1710224', '1710401'], matched 1710224",
+   "kashkadarya/shahrisabz \"Shahrisabz\": candidates ['1710245', '1710405'], matched 1710245",
+   "khorezm/khiva \"Xiva\": candidates ['1733226', '1733406'], matched 1733226",
+   "khorezm/urgench \"Urganch\": candidates ['1733217', '1733401'], matched 1733217",
+   "samarkand/kattaqorgon \"Kattaqo'rg'on\": candidates ['1718215', '1718406'], matched 1718215",
+   "surkhandarya/termez \"Termiz\": candidates ['1722220', '1722401'], matched 1722220",
+   "syrdarya/guliston \"Guliston\": candidates ['1724220', '1724401'], matched 1724220",
+   "tashkent_region/bekobod \"Bekobod\": candidates ['1727220', '1727413'], matched 1727220",
+   "tashkent_region/ohangaron \"Ohangaron\": candidates ['1727212', '1727415'], matched 1727212",
+   "tashkent_region/yangiyol \"Yangiyo'l\": candidates ['1727259', '1727424'], matched 1727259"
+  ],
+  "unmatched_existing_db_rows": [],
+  "units_without_existing_row": [
+   "andijan: 1703203 Andijon tumani",
+   "bukhara: 1706403 Kogon shahri",
+   "bukhara: 1706207 Buxoro tumani",
+   "fergana: 1730218 Quva tumani",
+   "fergana: 1730233 Farg'ona tumani",
+   "karakalpakstan: 1735401 Nukus shahri",
+   "kashkadarya: 1710401 Qarshi shahri",
+   "kashkadarya: 1710405 Shahrisabz shahri",
+   "kashkadarya: 1710240 Ko'kdala tumani",
+   "khorezm: 1733401 Urganch shahri",
+   "khorezm: 1733406 Xiva shahri",
+   "namangan: 1714212 Namangan tumani",
+   "namangan: 1714401365 Davlatobod tumani",
+   "namangan: 1714401367 Yangi Namangan tumani",
+   "samarkand: 1718406 Kattaqo'rg'on shahri",
+   "samarkand: 1718233 Samarqand tumani",
+   "surkhandarya: 1722401 Termiz shahri",
+   "syrdarya: 1724401 Guliston shahri",
+   "tashkent_region: 1727413 Bekobod shahri",
+   "tashkent_region: 1727415 Ohangaron shahri",
+   "tashkent_region: 1727424 Yangiyo'l shahri",
+   "tashkent_region: 1727265 Toshkent tumani"
+  ]
+ },
+ "regions": [
+  {
+   "slug": "andijan",
+   "soato": "1703",
+   "name_uz": "Andijon viloyati",
+   "name_ru": "Андижанская область",
+   "name_oz": "Андижон вилояти"
+  },
+  {
+   "slug": "bukhara",
+   "soato": "1706",
+   "name_uz": "Buxoro viloyati",
+   "name_ru": "Бухарская область",
+   "name_oz": "Бухоро вилояти"
+  },
+  {
+   "slug": "fergana",
+   "soato": "1730",
+   "name_uz": "Farg'ona viloyati",
+   "name_ru": "Ферганская область",
+   "name_oz": "Фарғона вилояти"
+  },
+  {
+   "slug": "jizzakh",
+   "soato": "1708",
+   "name_uz": "Jizzax viloyati",
+   "name_ru": "Джизакская область",
+   "name_oz": "Жиззах вилояти"
+  },
+  {
+   "slug": "karakalpakstan",
+   "soato": "1735",
+   "name_uz": "Qoraqalpog'iston Respublikasi",
+   "name_ru": "Республика Каракалпакстан",
+   "name_oz": "Қорақалпоғистон Республикаси"
+  },
+  {
+   "slug": "kashkadarya",
+   "soato": "1710",
+   "name_uz": "Qashqadaryo viloyati",
+   "name_ru": "Кашкадарьинская область",
+   "name_oz": "Қашқадарё вилояти"
+  },
+  {
+   "slug": "khorezm",
+   "soato": "1733",
+   "name_uz": "Xorazm viloyati",
+   "name_ru": "Хорезмская область",
+   "name_oz": "Хоразм вилояти"
+  },
+  {
+   "slug": "namangan",
+   "soato": "1714",
+   "name_uz": "Namangan viloyati",
+   "name_ru": "Наманганская область",
+   "name_oz": "Наманган вилояти"
+  },
+  {
+   "slug": "navoi",
+   "soato": "1712",
+   "name_uz": "Navoiy viloyati",
+   "name_ru": "Навоийская область",
+   "name_oz": "Навоий вилояти"
+  },
+  {
+   "slug": "samarkand",
+   "soato": "1718",
+   "name_uz": "Samarqand viloyati",
+   "name_ru": "Самаркандская область",
+   "name_oz": "Самарқанд вилояти"
+  },
+  {
+   "slug": "surkhandarya",
+   "soato": "1722",
+   "name_uz": "Surxondaryo viloyati",
+   "name_ru": "Сурхандарьинская область",
+   "name_oz": "Сурхондарё вилояти"
+  },
+  {
+   "slug": "syrdarya",
+   "soato": "1724",
+   "name_uz": "Sirdaryo viloyati",
+   "name_ru": "Сырдарьинская область",
+   "name_oz": "Сирдарё вилояти"
+  },
+  {
+   "slug": "tashkent_city",
+   "soato": "1726",
+   "name_uz": "Toshkent shahri",
+   "name_ru": "город Ташкент",
+   "name_oz": "Тошкент шаҳри"
+  },
+  {
+   "slug": "tashkent_region",
+   "soato": "1727",
+   "name_uz": "Toshkent viloyati",
+   "name_ru": "Ташкентская область",
+   "name_oz": "Тошкент вилояти"
+  }
+ ],
+ "units": [
+  {
+   "region_slug": "andijan",
+   "soato": "1703401",
+   "type": "city",
+   "name_uz": "Andijon shahri",
+   "name_ru": "Андижан",
+   "name_oz": "Андижон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "andijan_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703408",
+   "type": "city",
+   "name_uz": "Xonobod shahri",
+   "name_ru": "Ханабад",
+   "name_oz": "Хонобод шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "xonobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703202",
+   "type": "district",
+   "name_uz": "Oltinko'l tumani",
+   "name_ru": "Алтынкульский район",
+   "name_oz": "Олтинкўл тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "oltinkol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703203",
+   "type": "district",
+   "name_uz": "Andijon tumani",
+   "name_ru": "Андижанский район",
+   "name_oz": "Андижон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703206",
+   "type": "district",
+   "name_uz": "Baliqchi tumani",
+   "name_ru": "Балыкчинский район",
+   "name_oz": "Балиқчи тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "baliqchi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703209",
+   "type": "district",
+   "name_uz": "Bo'ston tumani",
+   "name_ru": "Бустонский район",
+   "name_oz": "Бўстон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "boz",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "note": "2019-09-30 da Bo'z tumani Bo'ston deb qayta nomlangan (kun.uz); MIMAXUZ eski nomni beradi",
+   "match_note": "alias"
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703210",
+   "type": "district",
+   "name_uz": "Buloqboshi tumani",
+   "name_ru": "Булакбашинский район",
+   "name_oz": "Булоқбоши тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "buloqboshi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703211",
+   "type": "district",
+   "name_uz": "Jalaquduq tumani",
+   "name_ru": "Джалалкудукский район",
+   "name_oz": "Жалақудуқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "jalaquduq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703214",
+   "type": "district",
+   "name_uz": "Izboskan tumani",
+   "name_ru": "Избасканский район",
+   "name_oz": "Избоскан тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "izboskan",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703217",
+   "type": "district",
+   "name_uz": "Ulug'nor tumani",
+   "name_ru": "Улугнорский район",
+   "name_oz": "Улуғнор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "ulugnor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703220",
+   "type": "district",
+   "name_uz": "Qo'rg'ontepa tumani",
+   "name_ru": "Кургантепинский район",
+   "name_oz": "Қўрғонтепа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qorgontepa",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703224",
+   "type": "district",
+   "name_uz": "Asaka tumani",
+   "name_ru": "Асакинский район",
+   "name_oz": "Асака тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "asaka",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703227",
+   "type": "district",
+   "name_uz": "Marxamat tumani",
+   "name_ru": "Мархаматский район",
+   "name_oz": "Мархамат тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "marhamat",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703230",
+   "type": "district",
+   "name_uz": "Shahrixon tumani",
+   "name_ru": "Шахриханский район",
+   "name_oz": "Шаҳрихон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shahrixon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703232",
+   "type": "district",
+   "name_uz": "Paxtaobod tumani",
+   "name_ru": "Пахтаабадский район",
+   "name_oz": "Пахтаобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "paxtaobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "andijan",
+   "soato": "1703236",
+   "type": "district",
+   "name_uz": "Xo'jaobod tumani",
+   "name_ru": "Ходжаабадский район",
+   "name_oz": "Хўжаобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "xojaobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706401",
+   "type": "city",
+   "name_uz": "Buxoro shahri",
+   "name_ru": "Бухара",
+   "name_oz": "Бухоро шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bukhara_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706403",
+   "type": "city",
+   "name_uz": "Kogon shahri",
+   "name_ru": "Каган",
+   "name_oz": "Когон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706204",
+   "type": "district",
+   "name_uz": "Olot tumani",
+   "name_ru": "Алатский район",
+   "name_oz": "Олот тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "olot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706207",
+   "type": "district",
+   "name_uz": "Buxoro tumani",
+   "name_ru": "Бухарский район",
+   "name_oz": "Бухоро тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706212",
+   "type": "district",
+   "name_uz": "Vobkent tumani",
+   "name_ru": "Вабкентский район",
+   "name_oz": "Вобкент тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "vobkent",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706215",
+   "type": "district",
+   "name_uz": "G'ijduvon tumani",
+   "name_ru": "Гиждуванский район",
+   "name_oz": "Ғиждувон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "gijduvon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706219",
+   "type": "district",
+   "name_uz": "Kogon tumani",
+   "name_ru": "Каганский район",
+   "name_oz": "Когон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kogon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706230",
+   "type": "district",
+   "name_uz": "Qorako'l tumani",
+   "name_ru": "Каракульский район",
+   "name_oz": "Қоракўл тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qorakol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706232",
+   "type": "district",
+   "name_uz": "Qorovulbozor tumani",
+   "name_ru": "Караулбазарский район",
+   "name_oz": "Қоровулбозор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qorovulbozor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706240",
+   "type": "district",
+   "name_uz": "Peshku tumani",
+   "name_ru": "Пешкунский район",
+   "name_oz": "Пешку тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "peshku",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706242",
+   "type": "district",
+   "name_uz": "Romitan tumani",
+   "name_ru": "Ромитанский район",
+   "name_oz": "Ромитан тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "romitan",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706246",
+   "type": "district",
+   "name_uz": "Jondor tumani",
+   "name_ru": "Жандарский район",
+   "name_oz": "Жондор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "jondor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "bukhara",
+   "soato": "1706258",
+   "type": "district",
+   "name_uz": "Shofirkon tumani",
+   "name_ru": "Шафирканский район",
+   "name_oz": "Шофиркон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shofirkon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730401",
+   "type": "city",
+   "name_uz": "Farg'ona shahri",
+   "name_ru": "Фергана",
+   "name_oz": "Фарғона шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "fergana_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730405",
+   "type": "city",
+   "name_uz": "Qo'qon shahri",
+   "name_ru": "Коканд",
+   "name_oz": "Қўқон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kokand",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730408",
+   "type": "city",
+   "name_uz": "Quvasoy shahri",
+   "name_ru": "Кувасай",
+   "name_oz": "Қувасой шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "quvasoy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730412",
+   "type": "city",
+   "name_uz": "Marg'ilon shahri",
+   "name_ru": "Маргилан",
+   "name_oz": "Марғилон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "margilan",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730203",
+   "type": "district",
+   "name_uz": "Oltiariq tumani",
+   "name_ru": "Алтыарыкский район",
+   "name_oz": "Олтиариқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "oltiariq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730206",
+   "type": "district",
+   "name_uz": "Qo'shtepa tumani",
+   "name_ru": "Куштепинский район",
+   "name_oz": "Қўштепа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qoshtepa",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730209",
+   "type": "district",
+   "name_uz": "Bog'dod tumani",
+   "name_ru": "Багдадский район",
+   "name_oz": "Боғдод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bagdod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "alias"
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730212",
+   "type": "district",
+   "name_uz": "Buvayda tumani",
+   "name_ru": "Бувайдинский район",
+   "name_oz": "Бувайда тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "buvayda",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730215",
+   "type": "district",
+   "name_uz": "Beshariq tumani",
+   "name_ru": "Бешарыкский район",
+   "name_oz": "Бешариқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "beshariq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730218",
+   "type": "district",
+   "name_uz": "Quva tumani",
+   "name_ru": "Кувинский район",
+   "name_oz": "Қува тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730221",
+   "type": "district",
+   "name_uz": "Uchko'prik tumani",
+   "name_ru": "Учкуприкский район",
+   "name_oz": "Учкўприк тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "uchkoprik",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730224",
+   "type": "district",
+   "name_uz": "Rishton tumani",
+   "name_ru": "Риштанский район",
+   "name_oz": "Риштон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "rishton",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730226",
+   "type": "district",
+   "name_uz": "So'x tumani",
+   "name_ru": "Сохский район",
+   "name_oz": "Сўх тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sox",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730227",
+   "type": "district",
+   "name_uz": "Toshloq tumani",
+   "name_ru": "Ташлакский район",
+   "name_oz": "Тошлоқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "toshloq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730230",
+   "type": "district",
+   "name_uz": "O'zbekiston tumani",
+   "name_ru": "Узбекистанский район",
+   "name_oz": "Ўзбекистон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "ozbekiston",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730233",
+   "type": "district",
+   "name_uz": "Farg'ona tumani",
+   "name_ru": "Ферганский район",
+   "name_oz": "Фарғона тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730236",
+   "type": "district",
+   "name_uz": "Dang'ara tumani",
+   "name_ru": "Дангаринский район",
+   "name_oz": "Данғара тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "dangara",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730238",
+   "type": "district",
+   "name_uz": "Furqat tumani",
+   "name_ru": "Фуркатский район",
+   "name_oz": "Фурқат тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "furqat",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "fergana",
+   "soato": "1730242",
+   "type": "district",
+   "name_uz": "Yozyovon tumani",
+   "name_ru": "Язъяванский район",
+   "name_oz": "Ёзёвон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yozyovon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708401",
+   "type": "city",
+   "name_uz": "Jizzax shahri",
+   "name_ru": "Джизак",
+   "name_oz": "Жиззах шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "jizzakh_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708201",
+   "type": "district",
+   "name_uz": "Arnasoy tumani",
+   "name_ru": "Арнасайский район",
+   "name_oz": "Арнасой тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "arnasoy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708204",
+   "type": "district",
+   "name_uz": "Baxmal tumani",
+   "name_ru": "Бахмальский район",
+   "name_oz": "Бахмал тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "baxmal",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708209",
+   "type": "district",
+   "name_uz": "G'allaorol tumani",
+   "name_ru": "Галляаральский район",
+   "name_oz": "Ғаллаорол тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "gallaorol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708212",
+   "type": "district",
+   "name_uz": "Sharof Rashidov tumani",
+   "name_ru": "Шароф Рашидовский район",
+   "name_oz": "Шароф Рашидов тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sharof_rashidov",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708215",
+   "type": "district",
+   "name_uz": "Do'stlik tumani",
+   "name_ru": "Дустликский район",
+   "name_oz": "Дўстлик тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "dostlik",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708218",
+   "type": "district",
+   "name_uz": "Zomin tumani",
+   "name_ru": "Зааминский район",
+   "name_oz": "Зомин тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "zomin",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708220",
+   "type": "district",
+   "name_uz": "Zarbdor tumani",
+   "name_ru": "Зарбдарский район",
+   "name_oz": "Зарбдор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "zarbdor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708223",
+   "type": "district",
+   "name_uz": "Mirzacho'l tumani",
+   "name_ru": "Мирзачульский район",
+   "name_oz": "Мирзачўл тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "mirzachol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708225",
+   "type": "district",
+   "name_uz": "Zafarobod tumani",
+   "name_ru": "Зафарабадский район",
+   "name_oz": "Зафаробод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "zafarobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708228",
+   "type": "district",
+   "name_uz": "Paxtakor tumani",
+   "name_ru": "Пахтакорский район",
+   "name_oz": "Пахтакор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "paxtakor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708235",
+   "type": "district",
+   "name_uz": "Forish tumani",
+   "name_ru": "Фаришский район",
+   "name_oz": "Фориш тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "forish",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "jizzakh",
+   "soato": "1708237",
+   "type": "district",
+   "name_uz": "Yangiobod tumani",
+   "name_ru": "Янгиабадский район",
+   "name_oz": "Янгиобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangiobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735401",
+   "type": "city",
+   "name_uz": "Nukus shahri",
+   "name_ru": "Нукус",
+   "name_oz": "Нукус шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735204",
+   "type": "district",
+   "name_uz": "Amudaryo tumani",
+   "name_ru": "Амударьинский район",
+   "name_oz": "Амударё тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "amudaryo",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735207",
+   "type": "district",
+   "name_uz": "Beruniy tumani",
+   "name_ru": "Берунийский район",
+   "name_oz": "Беруний тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "beruniy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735209",
+   "type": "district",
+   "name_uz": "Bo'zatov tumani",
+   "name_ru": "Бузатовский район",
+   "name_oz": "Бўзатов тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bozatov",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735211",
+   "type": "district",
+   "name_uz": "Qorao'zak tumani",
+   "name_ru": "Караузякский район",
+   "name_oz": "Қораўзак тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qoraozak",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735212",
+   "type": "district",
+   "name_uz": "Kegeyli tumani",
+   "name_ru": "Кегейлийский район",
+   "name_oz": "Кегейли тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kegeyli",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735215",
+   "type": "district",
+   "name_uz": "Qo'ng'irot tumani",
+   "name_ru": "Кунградский район",
+   "name_oz": "Қўнғирот тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qongirot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735218",
+   "type": "district",
+   "name_uz": "Qanliko'l tumani",
+   "name_ru": "Канлыкульский район",
+   "name_oz": "Қанликўл тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qanlikol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735222",
+   "type": "district",
+   "name_uz": "Mo'ynoq tumani",
+   "name_ru": "Муйнакский район",
+   "name_oz": "Мўйноқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "moynoq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735225",
+   "type": "district",
+   "name_uz": "Nukus tumani",
+   "name_ru": "Нукусский район",
+   "name_oz": "Нукус тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "nukus",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735228",
+   "type": "district",
+   "name_uz": "Taxiatosh tumani",
+   "name_ru": "Тахиаташский район",
+   "name_oz": "Тахиатош тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "taxiatosh",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735230",
+   "type": "district",
+   "name_uz": "Taxtako'pir tumani",
+   "name_ru": "Тахтакупырский район",
+   "name_oz": "Тахтакўпир тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "taxtakopir",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735233",
+   "type": "district",
+   "name_uz": "To'rtko'l tumani",
+   "name_ru": "Турткульский район",
+   "name_oz": "Тўрткўл тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "tortkol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735236",
+   "type": "district",
+   "name_uz": "Xo'jayli tumani",
+   "name_ru": "Ходжейлийский район",
+   "name_oz": "Хўжайли тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "xojayli",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735240",
+   "type": "district",
+   "name_uz": "Chimboy tumani",
+   "name_ru": "Чимбайский район",
+   "name_oz": "Чимбой тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chimboy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735243",
+   "type": "district",
+   "name_uz": "Shumanay tumani",
+   "name_ru": "Шуманайский район",
+   "name_oz": "Шуманай тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shumanay",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "karakalpakstan",
+   "soato": "1735250",
+   "type": "district",
+   "name_uz": "Ellikqal'a tumani",
+   "name_ru": "Элликкалинский район",
+   "name_oz": "Элликқалъа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "ellikqala",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710401",
+   "type": "city",
+   "name_uz": "Qarshi shahri",
+   "name_ru": "Карши",
+   "name_oz": "Қарши шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710405",
+   "type": "city",
+   "name_uz": "Shahrisabz shahri",
+   "name_ru": "Шахрисабз",
+   "name_oz": "Шаҳрисабз шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710207",
+   "type": "district",
+   "name_uz": "G'uzor tumani",
+   "name_ru": "Гузарский район",
+   "name_oz": "Ғузор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "guzor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710212",
+   "type": "district",
+   "name_uz": "Dehqonobod tumani",
+   "name_ru": "Дехканабадский район",
+   "name_oz": "Деҳқонобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "dehqonobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710220",
+   "type": "district",
+   "name_uz": "Qamashi tumani",
+   "name_ru": "Камашинский район",
+   "name_oz": "Қамаши тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qamashi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710224",
+   "type": "district",
+   "name_uz": "Qarshi tumani",
+   "name_ru": "Каршинский район",
+   "name_oz": "Қарши тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "karshi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710229",
+   "type": "district",
+   "name_uz": "Koson tumani",
+   "name_ru": "Касанский район",
+   "name_oz": "Косон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "koson",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710232",
+   "type": "district",
+   "name_uz": "Kitob tumani",
+   "name_ru": "Китабский район",
+   "name_oz": "Китоб тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kitob",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710233",
+   "type": "district",
+   "name_uz": "Mirishkor tumani",
+   "name_ru": "Миришкорский район",
+   "name_oz": "Миришкор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "mirishkor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710234",
+   "type": "district",
+   "name_uz": "Muborak tumani",
+   "name_ru": "Мубарекский район",
+   "name_oz": "Муборак тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "muborak",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710235",
+   "type": "district",
+   "name_uz": "Nishon tumani",
+   "name_ru": "Нишанский район",
+   "name_oz": "Нишон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "nishon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710237",
+   "type": "district",
+   "name_uz": "Kasbi tumani",
+   "name_ru": "Касбинский район",
+   "name_oz": "Касби тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kasbi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710240",
+   "type": "district",
+   "name_uz": "Ko'kdala tumani",
+   "name_ru": "Кукдалинский район",
+   "name_oz": "Кўкдала тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710242",
+   "type": "district",
+   "name_uz": "Chiroqchi tumani",
+   "name_ru": "Чиракчинский район",
+   "name_oz": "Чироқчи тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chiroqchi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710245",
+   "type": "district",
+   "name_uz": "Shahrisabz tumani",
+   "name_ru": "Шахрисабзский район",
+   "name_oz": "Шаҳрисабз тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shahrisabz",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "kashkadarya",
+   "soato": "1710250",
+   "type": "district",
+   "name_uz": "Yakkabog' tumani",
+   "name_ru": "Яккабагский район",
+   "name_oz": "Яккабоғ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yakkabog",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733401",
+   "type": "city",
+   "name_uz": "Urganch shahri",
+   "name_ru": "Ургенч",
+   "name_oz": "Урганч шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733406",
+   "type": "city",
+   "name_uz": "Xiva shahri",
+   "name_ru": "Хива",
+   "name_oz": "Хива шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733204",
+   "type": "district",
+   "name_uz": "Bog'ot tumani",
+   "name_ru": "Багатский район",
+   "name_oz": "Боғот тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bogot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733208",
+   "type": "district",
+   "name_uz": "Gurlan tumani",
+   "name_ru": "Гурленский район",
+   "name_oz": "Гурлан тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "gurlan",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733212",
+   "type": "district",
+   "name_uz": "Qo'shko'pir tumani",
+   "name_ru": "Кошкупырский район",
+   "name_oz": "Қўшкўпир тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qoshkopir",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733217",
+   "type": "district",
+   "name_uz": "Urganch tumani",
+   "name_ru": "Ургенчский район",
+   "name_oz": "Урганч тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "urgench",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733220",
+   "type": "district",
+   "name_uz": "Xazorasp tumani",
+   "name_ru": "Хазараспский район",
+   "name_oz": "Хазорасп тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "hazorasp",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733221",
+   "type": "district",
+   "name_uz": "Tuproqqal'a tumani",
+   "name_ru": "Тупроккалинский район",
+   "name_oz": "Тупроққалъа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "tuproqqala",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733223",
+   "type": "district",
+   "name_uz": "Xonqa tumani",
+   "name_ru": "Ханкинский район",
+   "name_oz": "Хонқа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "xonqa",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733226",
+   "type": "district",
+   "name_uz": "Xiva tumani",
+   "name_ru": "Хивинский район",
+   "name_oz": "Хива тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "khiva",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733230",
+   "type": "district",
+   "name_uz": "Shovot tumani",
+   "name_ru": "Шаватский район",
+   "name_oz": "Шовот тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shovot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733233",
+   "type": "district",
+   "name_uz": "Yangiariq tumani",
+   "name_ru": "Янгиарыкский район",
+   "name_oz": "Янгиариқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangiariq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "khorezm",
+   "soato": "1733236",
+   "type": "district",
+   "name_uz": "Yangibozor tumani",
+   "name_ru": "Янгибазарский район",
+   "name_oz": "Янгибозор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangibozor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714401",
+   "type": "city",
+   "name_uz": "Namangan shahri",
+   "name_ru": "Наманган",
+   "name_oz": "Наманган шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "namangan_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714204",
+   "type": "district",
+   "name_uz": "Mingbuloq tumani",
+   "name_ru": "Мингбулакский район",
+   "name_oz": "Мингбулоқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "mingbuloq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714207",
+   "type": "district",
+   "name_uz": "Kosonsoy tumani",
+   "name_ru": "Касансайский район",
+   "name_oz": "Косонсой тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kosonsoy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714212",
+   "type": "district",
+   "name_uz": "Namangan tumani",
+   "name_ru": "Наманганский район",
+   "name_oz": "Наманган тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714216",
+   "type": "district",
+   "name_uz": "Norin tumani",
+   "name_ru": "Нарынский район",
+   "name_oz": "Норин тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "norin",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714219",
+   "type": "district",
+   "name_uz": "Pop tumani",
+   "name_ru": "Папский район",
+   "name_oz": "Поп тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "pop",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714224",
+   "type": "district",
+   "name_uz": "To'raqo'rg'on tumani",
+   "name_ru": "Туракурганский район",
+   "name_oz": "Тўрақўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "toraqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714229",
+   "type": "district",
+   "name_uz": "Uychi tumani",
+   "name_ru": "Уйчинский район",
+   "name_oz": "Уйчи тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "uychi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714234",
+   "type": "district",
+   "name_uz": "Uchqo'rg'on tumani",
+   "name_ru": "Учкурганский район",
+   "name_oz": "Учқўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "uchqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714236",
+   "type": "district",
+   "name_uz": "Chortoq tumani",
+   "name_ru": "Чартакский район",
+   "name_oz": "Чортоқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chortoq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714237",
+   "type": "district",
+   "name_uz": "Chust tumani",
+   "name_ru": "Чустский район",
+   "name_oz": "Чуст тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chust",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714242",
+   "type": "district",
+   "name_uz": "Yangiqo'rg'on tumani",
+   "name_ru": "Янгикурганский район",
+   "name_oz": "Янгиқўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangiqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714401365",
+   "type": "district",
+   "name_uz": "Davlatobod tumani",
+   "name_ru": "Давлатабадский район",
+   "name_oz": "Давлатобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "parent_city_soato": "1714401",
+   "note": "Namangan shahri tarkibidagi (shahar ichidagi) tuman"
+  },
+  {
+   "region_slug": "namangan",
+   "soato": "1714401367",
+   "type": "district",
+   "name_uz": "Yangi Namangan tumani",
+   "name_ru": "Янги Наманганский район",
+   "name_oz": "Янги Наманган тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "parent_city_soato": "1714401",
+   "note": "Namangan shahri tarkibidagi (shahar ichidagi) tuman"
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712401",
+   "type": "city",
+   "name_uz": "Navoiy shahri",
+   "name_ru": "Навои",
+   "name_oz": "Навоий шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "navoi_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712408",
+   "type": "city",
+   "name_uz": "Zarafshon shahri",
+   "name_ru": "Зарафшан",
+   "name_oz": "Зарафшон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "zarafshon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712412",
+   "type": "city",
+   "name_uz": "G'ozg'on shahri",
+   "name_ru": "Газган",
+   "name_oz": "Ғозғон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "gozgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "note": "Ikkala manba 'tuman' deb beradi, lekin SOATO kodi 4xx (viloyat ahamiyatidagi shahar) va stat.uz bo'yicha Navoiy viloyatida 3 ta shahar — 'city' deb belgilandi"
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712211",
+   "type": "district",
+   "name_uz": "Konimex tumani",
+   "name_ru": "Канимехский район",
+   "name_oz": "Конимех тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "konimex",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712216",
+   "type": "district",
+   "name_uz": "Qiziltepa tumani",
+   "name_ru": "Кызылтепинский район",
+   "name_oz": "Қизилтепа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qiziltepa",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712230",
+   "type": "district",
+   "name_uz": "Navbahor tumani",
+   "name_ru": "Навбахорский район",
+   "name_oz": "Навбаҳор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "navbahor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712234",
+   "type": "district",
+   "name_uz": "Karmana tumani",
+   "name_ru": "Карманинский район",
+   "name_oz": "Кармана тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "karmana",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712238",
+   "type": "district",
+   "name_uz": "Nurota tumani",
+   "name_ru": "Нуратинский район",
+   "name_oz": "Нурота тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "nurota",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712244",
+   "type": "district",
+   "name_uz": "Tomdi tumani",
+   "name_ru": "Тамдынский район",
+   "name_oz": "Томди тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "tomdi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712248",
+   "type": "district",
+   "name_uz": "Uchquduq tumani",
+   "name_ru": "Учкудукский район",
+   "name_oz": "Учқудуқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "uchquduq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "navoi",
+   "soato": "1712251",
+   "type": "district",
+   "name_uz": "Xatirchi tumani",
+   "name_ru": "Хатырчинский район",
+   "name_oz": "Хатирчи тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "xatirchi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718401",
+   "type": "city",
+   "name_uz": "Samarqand shahri",
+   "name_ru": "Самарканд",
+   "name_oz": "Самарқанд шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "samarkand_city",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718406",
+   "type": "city",
+   "name_uz": "Kattaqo'rg'on shahri",
+   "name_ru": "Каттакурган",
+   "name_oz": "Каттақўрғон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718203",
+   "type": "district",
+   "name_uz": "Oqdaryo tumani",
+   "name_ru": "Акдарьинский район",
+   "name_oz": "Оқдарё тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "oqdaryo",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718206",
+   "type": "district",
+   "name_uz": "Bulung'ur tumani",
+   "name_ru": "Булунгурский район",
+   "name_oz": "Булунғур тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bulungur",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718209",
+   "type": "district",
+   "name_uz": "Jomboy tumani",
+   "name_ru": "Джамбайский район",
+   "name_oz": "Жомбой тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "jomboy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718212",
+   "type": "district",
+   "name_uz": "Ishtixon tumani",
+   "name_ru": "Иштыханский район",
+   "name_oz": "Иштихон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "ishtixon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718215",
+   "type": "district",
+   "name_uz": "Kattaqo'rg'on tumani",
+   "name_ru": "Каттакурганский район",
+   "name_oz": "Каттақўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "kattaqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718216",
+   "type": "district",
+   "name_uz": "Qo'shrabot tumani",
+   "name_ru": "Кушрабадский район",
+   "name_oz": "Қўшработ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qoshrabot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718218",
+   "type": "district",
+   "name_uz": "Narpay tumani",
+   "name_ru": "Нарпайский район",
+   "name_oz": "Нарпай тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "narpay",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718224",
+   "type": "district",
+   "name_uz": "Payariq tumani",
+   "name_ru": "Пайарыкский район",
+   "name_oz": "Паяриқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "payariq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718227",
+   "type": "district",
+   "name_uz": "Pastdarg'om tumani",
+   "name_ru": "Пастдаргомский район",
+   "name_oz": "Пастдарғом тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "pastdargom",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718230",
+   "type": "district",
+   "name_uz": "Paxtachi tumani",
+   "name_ru": "Пахтачийский район",
+   "name_oz": "Пахтачи тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "paxtachi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718233",
+   "type": "district",
+   "name_uz": "Samarqand tumani",
+   "name_ru": "Самаркандский район",
+   "name_oz": "Самарқанд тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718235",
+   "type": "district",
+   "name_uz": "Nurobod tumani",
+   "name_ru": "Нурабадский район",
+   "name_oz": "Нуробод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "nurobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718236",
+   "type": "district",
+   "name_uz": "Urgut tumani",
+   "name_ru": "Ургутский район",
+   "name_oz": "Ургут тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "urgut",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "samarkand",
+   "soato": "1718238",
+   "type": "district",
+   "name_uz": "Tayloq tumani",
+   "name_ru": "Тайлякский район",
+   "name_oz": "Тайлоқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "toyloq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "alias"
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722401",
+   "type": "city",
+   "name_uz": "Termiz shahri",
+   "name_ru": "Термез",
+   "name_oz": "Термиз шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722201",
+   "type": "district",
+   "name_uz": "Oltinsoy tumani",
+   "name_ru": "Алтынсайский район",
+   "name_oz": "Олтинсой тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "oltinsoy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722202",
+   "type": "district",
+   "name_uz": "Angor tumani",
+   "name_ru": "Ангорский район",
+   "name_oz": "Ангор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "angor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722203",
+   "type": "district",
+   "name_uz": "Bandixon tumani",
+   "name_ru": "Бандиханский район",
+   "name_oz": "Бандихон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bandixon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722204",
+   "type": "district",
+   "name_uz": "Boysun tumani",
+   "name_ru": "Байсунский район",
+   "name_oz": "Бойсун тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "boysun",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722207",
+   "type": "district",
+   "name_uz": "Muzrabot tumani",
+   "name_ru": "Музрабадский район",
+   "name_oz": "Музработ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "muzrabot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722210",
+   "type": "district",
+   "name_uz": "Denov tumani",
+   "name_ru": "Денауский район",
+   "name_oz": "Денов тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "denov",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722212",
+   "type": "district",
+   "name_uz": "Jarqo'rg'on tumani",
+   "name_ru": "Джаркурганский район",
+   "name_oz": "Жарқўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "jarqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722214",
+   "type": "district",
+   "name_uz": "Qumqo'rg'on tumani",
+   "name_ru": "Кумкурганский район",
+   "name_oz": "Қумқўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qumqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722215",
+   "type": "district",
+   "name_uz": "Qiziriq tumani",
+   "name_ru": "Кизирикский район",
+   "name_oz": "Қизириқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qiziriq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722217",
+   "type": "district",
+   "name_uz": "Sariosiyo tumani",
+   "name_ru": "Сариасийский район",
+   "name_oz": "Сариосиё тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sariosiyo",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722220",
+   "type": "district",
+   "name_uz": "Termiz tumani",
+   "name_ru": "Термезский район",
+   "name_oz": "Термиз тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "termez",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722221",
+   "type": "district",
+   "name_uz": "Uzun tumani",
+   "name_ru": "Узунский район",
+   "name_oz": "Узун тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "uzun",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722223",
+   "type": "district",
+   "name_uz": "Sherobod tumani",
+   "name_ru": "Шерабадский район",
+   "name_oz": "Шеробод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sherobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "surkhandarya",
+   "soato": "1722226",
+   "type": "district",
+   "name_uz": "Sho'rchi tumani",
+   "name_ru": "Шурчинский район",
+   "name_oz": "Шўрчи тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shorchi",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724401",
+   "type": "city",
+   "name_uz": "Guliston shahri",
+   "name_ru": "Гулистан",
+   "name_oz": "Гулистон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724410",
+   "type": "city",
+   "name_uz": "Shirin shahri",
+   "name_ru": "Ширин",
+   "name_oz": "Ширин шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shirin",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724413",
+   "type": "city",
+   "name_uz": "Yangiyer shahri",
+   "name_ru": "Янгиер",
+   "name_oz": "Янгиер шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangiyer",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724206",
+   "type": "district",
+   "name_uz": "Oqoltin tumani",
+   "name_ru": "Акалтынский район",
+   "name_oz": "Оқолтин тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "oqoltin",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724212",
+   "type": "district",
+   "name_uz": "Boyovut tumani",
+   "name_ru": "Баяутский район",
+   "name_oz": "Боёвут тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "boyovut",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724216",
+   "type": "district",
+   "name_uz": "Sayxunobod tumani",
+   "name_ru": "Сайхунабадский район",
+   "name_oz": "Сайхунобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sayxunobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724220",
+   "type": "district",
+   "name_uz": "Guliston tumani",
+   "name_ru": "Гулистанский район",
+   "name_oz": "Гулистон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "guliston",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724226",
+   "type": "district",
+   "name_uz": "Sardoba tumani",
+   "name_ru": "Сардобинский район",
+   "name_oz": "Сардоба тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sardoba",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724228",
+   "type": "district",
+   "name_uz": "Mirzaobod tumani",
+   "name_ru": "Мирзаабадский район",
+   "name_oz": "Мирзаобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "mirzaobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724231",
+   "type": "district",
+   "name_uz": "Sirdaryo tumani",
+   "name_ru": "Сырдарьинский район",
+   "name_oz": "Сирдарё тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sirdaryo",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "syrdarya",
+   "soato": "1724235",
+   "type": "district",
+   "name_uz": "Xovos tumani",
+   "name_ru": "Хавастский район",
+   "name_oz": "Ховос тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "xovos",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726262",
+   "type": "district",
+   "name_uz": "Uchtepa tumani",
+   "name_ru": "Учтепинский район",
+   "name_oz": "Учтепа тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "uchtepa",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726264",
+   "type": "district",
+   "name_uz": "Bektemir tumani",
+   "name_ru": "Бектемирский район",
+   "name_oz": "Бектемир тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bektemir",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726266",
+   "type": "district",
+   "name_uz": "Yunusobod tumani",
+   "name_ru": "Юнусабадский район",
+   "name_oz": "Юнусобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yunusobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726269",
+   "type": "district",
+   "name_uz": "Mirzo Ulug'bek tumani",
+   "name_ru": "Мирзо-Улугбекский район",
+   "name_oz": "Мирзо Улуғбек тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "mirzo_ulugbek",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726273",
+   "type": "district",
+   "name_uz": "Mirobod tumani",
+   "name_ru": "Мирабадский район",
+   "name_oz": "Миробод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "mirobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726277",
+   "type": "district",
+   "name_uz": "Shayxontohur tumani",
+   "name_ru": "Шайхантахурский район",
+   "name_oz": "Шайхонтоҳур тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "shayxontohur",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726280",
+   "type": "district",
+   "name_uz": "Olmazor tumani",
+   "name_ru": "Алмазарский район",
+   "name_oz": "Олмазор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "olmazor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726283",
+   "type": "district",
+   "name_uz": "Sirg'ali tumani",
+   "name_ru": "Сергелийский район",
+   "name_oz": "Сирғали тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "sergeli",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "alias"
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726287",
+   "type": "district",
+   "name_uz": "Yakkasaroy tumani",
+   "name_ru": "Яккасарайский район",
+   "name_oz": "Яккасарой тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yakkasaroy",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726290",
+   "type": "district",
+   "name_uz": "Yashnobod tumani",
+   "name_ru": "Яшнабадский район",
+   "name_oz": "Яшнобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yashnobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726292",
+   "type": "district",
+   "name_uz": "Yangihayot tumani",
+   "name_ru": "Янгихаётский район",
+   "name_oz": "Янгиҳаёт тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangihayot",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_city",
+   "soato": "1726294",
+   "type": "district",
+   "name_uz": "Chilonzor tumani",
+   "name_ru": "Чиланзарский район",
+   "name_oz": "Чилонзор тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chilonzor",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727401",
+   "type": "city",
+   "name_uz": "Nurafshon shahri",
+   "name_ru": "Нурафшон",
+   "name_oz": "Нурафшон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "nurafshon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727404",
+   "type": "city",
+   "name_uz": "Olmaliq shahri",
+   "name_ru": "Алмалык",
+   "name_oz": "Олмалиқ шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "olmaliq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727407",
+   "type": "city",
+   "name_uz": "Angren shahri",
+   "name_ru": "Ангрен",
+   "name_oz": "Ангрен шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "angren",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727413",
+   "type": "city",
+   "name_uz": "Bekobod shahri",
+   "name_ru": "Бекабад",
+   "name_oz": "Бекобод шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727415",
+   "type": "city",
+   "name_uz": "Ohangaron shahri",
+   "name_ru": "Ахангаран",
+   "name_oz": "Оҳангарон шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727419",
+   "type": "city",
+   "name_uz": "Chirchiq shahri",
+   "name_ru": "Чирчик",
+   "name_oz": "Чирчиқ шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chirchiq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727424",
+   "type": "city",
+   "name_uz": "Yangiyo'l shahri",
+   "name_ru": "Янгиюль",
+   "name_oz": "Янгийўл шаҳри",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727206",
+   "type": "district",
+   "name_uz": "Oqqo'rg'on tumani",
+   "name_ru": "Аккурганский район",
+   "name_oz": "Оққўрғон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "oqqorgon",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727212",
+   "type": "district",
+   "name_uz": "Ohangaron tumani",
+   "name_ru": "Ахангаранский район",
+   "name_oz": "Оҳангарон тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "ohangaron",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727220",
+   "type": "district",
+   "name_uz": "Bekobod tumani",
+   "name_ru": "Бекабадский район",
+   "name_oz": "Бекобод тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bekobod",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727224",
+   "type": "district",
+   "name_uz": "Bo'stonliq tumani",
+   "name_ru": "Бостанлыкский район",
+   "name_oz": "Бўстонлиқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "bostonliq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727228",
+   "type": "district",
+   "name_uz": "Bo'ka tumani",
+   "name_ru": "Букинский район",
+   "name_oz": "Бўка тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "boka",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727233",
+   "type": "district",
+   "name_uz": "Quyichirchiq tumani",
+   "name_ru": "Куйичирчикский район",
+   "name_oz": "Қуйичирчиқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "quyichirchiq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727237",
+   "type": "district",
+   "name_uz": "Zangiota tumani",
+   "name_ru": "Зангиатинский район",
+   "name_oz": "Зангиота тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "zangiota",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727239",
+   "type": "district",
+   "name_uz": "Yuqorichirchiq tumani",
+   "name_ru": "Юкоричирчикский район",
+   "name_oz": "Юқоричирчиқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yuqorichirchiq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727248",
+   "type": "district",
+   "name_uz": "Qibray tumani",
+   "name_ru": "Кибрайский район",
+   "name_oz": "Қибрай тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "qibray",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727249",
+   "type": "district",
+   "name_uz": "Parkent tumani",
+   "name_ru": "Паркентский район",
+   "name_oz": "Паркент тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "parkent",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727250",
+   "type": "district",
+   "name_uz": "Piskent tumani",
+   "name_ru": "Пскентский район",
+   "name_oz": "Пискент тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "piskent",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727253",
+   "type": "district",
+   "name_uz": "O'rtachirchiq tumani",
+   "name_ru": "Уртачирчикский район",
+   "name_oz": "Ўртачирчиқ тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "ortachirchiq",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727256",
+   "type": "district",
+   "name_uz": "Chinoz tumani",
+   "name_ru": "Чиназский район",
+   "name_oz": "Чиноз тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "chinoz",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727259",
+   "type": "district",
+   "name_uz": "Yangiyo'l tumani",
+   "name_ru": "Янгиюльский район",
+   "name_oz": "Янгийўл тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": "yangiyol",
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ],
+   "match_note": "ambiguous: same name exists as both tuman and shahar; plain DB name matched to tuman"
+  },
+  {
+   "region_slug": "tashkent_region",
+   "soato": "1727265",
+   "type": "district",
+   "name_uz": "Toshkent tumani",
+   "name_ru": "Ташкентский район",
+   "name_oz": "Тошкент тумани",
+   "oz_source": "source",
+   "lat": null,
+   "lng": null,
+   "existing_slug": null,
+   "sources": [
+    "mimaxuz",
+    "nurbekjummayev"
+   ]
+  }
+ ]
+}

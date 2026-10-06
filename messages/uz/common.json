@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Ish beruvchi",
+    "name": "Ish Beruvchi",
     "tagline": "Ish qidirmang. O'zingizga mos ishni toping.",
     "tagline_employer": "Ko'p CV ko'rmang. Sizga mos xodimni toping.",
     "description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"
@@ -144,12 +144,12 @@
   },
   "role": {
     "worker": "Ish qidiruvchi",
-    "employer": "Ish beruvchi",
+    "employer": "Ish Beruvchi",
     "admin": "Administrator"
   },
   "landing": {
     "hero_title": "Ish qidirmang. O'zingizga mos ishni toping.",
-    "hero_subtitle": "«Ish beruvchi» — O'zbekistonda ish qidiruvchi va ish beruvchini bir necha daqiqada aniq bog'laydigan platforma.",
+    "hero_subtitle": "«Ish Beruvchi» — O'zbekistonda ish qidiruvchi va ish beruvchini bir necha daqiqada aniq bog'laydigan platforma.",
     "worker_card_title": "Men ish qidiryapman",
     "worker_card_subtitle": "O'zingizga mos ishni toping",
     "worker_card_cta": "Ish topish",
@@ -163,7 +163,7 @@
     "how_1_title": "Kimligingizni ayting",
     "how_1_desc": "Kasb, tajriba, hudud va kutilayotgan maosh — 3 daqiqada.",
     "how_2_title": "Mosligini ko'ring",
-    "how_2_desc": "Har bir vakansiya sizga necha foiz mosligi va nima uchunligini ko'rasiz.",
+    "how_2_desc": "Har bir vakansiya sizga qanchalik mos ekani va nima uchunligini ko'rasiz: «Kasbingizga mos», «Siz tanlagan tumanda».",
     "how_3_title": "Bog'laning",
     "how_3_desc": "Ariza yuboring, chatda gaplashing, suhbatga boring. Hammasi bir joyda.",
     "categories_title": "Kategoriyalar",
@@ -179,7 +179,7 @@
     "terms": "Foydalanish shartlari",
     "privacy": "Maxfiylik siyosati",
     "support": "Yordam",
-    "rights": "© {year} Ish beruvchi. Barcha huquqlar himoyalangan.",
+    "rights": "© {year} Ish Beruvchi. Barcha huquqlar himoyalangan.",
     "deletion": "Hisobni o'chirish"
   },
   "report_sent": "Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.",
@@ -194,8 +194,8 @@
     "code": "Xato kodi: {code}"
   },
   "meta": {
-    "title": "Ish beruvchi — ish topish va vakansiyalar O'zbekistonda",
-    "description": "Toshkent va butun O'zbekiston bo'ylab ish va vakansiyalar. Rezyume 2 daqiqada, sizga mos ishlar, bir bosishda ariza. Ish beruvchilar uchun tez nomzod topish.",
+    "title": "Ish Beruvchi — ish topish va vakansiyalar O'zbekistonda",
+    "description": "Toshkent va butun O'zbekiston bo'ylab ish va vakansiyalar. Rezyume 2 daqiqada, sizga mos ishlar, bir bosishda ariza. Ish Beruvchilar uchun tez nomzod topish.",
     "keywords": "ish, ish topish, vakansiyalar, Toshkentda ish, ish e'lonlari, rezyume, ishchi kerak, ish qidirish",
     "org_description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"
   }

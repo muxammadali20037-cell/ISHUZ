@@ -382,9 +382,10 @@ export async function startCv(ctx: BotCtx, opts: { force?: boolean; langChosen?:
 
 type LangTarget = "cv" | "cvr" | "menu";
 const LOCALES = [
-  ["uz", "🇺🇿 O'zbekcha"],
-  ["ru", "🇷🇺 Русский"],
-  ["en", "🇬🇧 English"],
+  ["uz", "O'zbekcha"],
+  ["oz", "Ўзбекча"],
+  ["ru", "Русский"],
+  ["en", "English"],
 ] as const;
 
 /** "Tilni tanlang / Выберите язык" — ikki tilda, joriy til ✅ bilan */
@@ -509,7 +510,7 @@ export async function handleBotCallback(ctx: BotCtx, callbackId: string, data: s
     if (data === "menu:jobs") return await sendMatchingJobs(ctx, 0);
     if (data === "menu:pdf") return await sendCvPdf(ctx);
     if (data === "menu:lang") return await sendLanguagePicker(ctx, "menu");
-    const lang = /^lang:(uz|ru|en):(cv|cvr|menu)$/.exec(data);
+    const lang = /^lang:(uz|oz|ru|en):(cv|cvr|menu)$/.exec(data);
     if (lang) return await applyLanguage(ctx, lang[1] as Locale, lang[2] as LangTarget, messageId);
     if (data === "jobs:alert") return await createJobAlert(ctx);
     const jobs = /^jobs:(\d{1,3})$/.exec(data);

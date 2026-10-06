@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Ish beruvchi — ish va ishchi topish",
-  "short_name": "Ish beruvchi",
+  "name": "Ish Beruvchi — ish va ishchi topish",
+  "short_name": "Ish Beruvchi",
   "description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma",
   "start_url": "/?source=pwa",
   "scope": "/",

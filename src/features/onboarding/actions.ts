@@ -216,10 +216,23 @@ export async function saveProfession(input: unknown): Promise<StepResult> {
       const { data: sub } = await supabase.from("subcategories").select("id, category_id").eq("id", d.subcategory_id).maybeSingle();
       if (!sub || sub.category_id !== d.category_id) return { ok: false, error: "validation" };
     }
-    patch = { category_id: d.category_id, subcategory_id: d.subcategory_id, headline: d.headline, onboarding_step: nextStep };
+    patch = {
+      category_id: d.category_id,
+      subcategory_id: d.subcategory_id,
+      headline: d.headline,
+      onboarding_step: nextStep,
+      ...(d.custom_profession ? { profession_node_id: null, custom_profession: d.custom_profession } : {}),
+    };
   }
   const { error } = await supabase.from("worker_profiles").update(patch).eq("id", workerId);
   if (error) return { ok: false, error: errorCode(error) };
+  if (!d.profession_node_id && d.custom_profession) {
+    // katalogni boyitish navbati (takror yozilsa unique indeks — xato e'tiborsiz)
+    const { error: reqErr } = await supabase
+      .from("custom_occupation_requests")
+      .insert({ raw_text: d.custom_profession, category_id: d.category_id, context: "worker", worker_id: workerId });
+    if (reqErr && reqErr.code !== "23505") console.error("[onboarding] custom occupation", reqErr.message);
+  }
   return advance(res.ctx, 3, true);
 }
 

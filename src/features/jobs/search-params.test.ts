@@ -38,6 +38,8 @@ describe("parseJobsSearchParams", () => {
       verified: true,
       government: true,
       noExperience: true,
+      opportunity: [],
+      students: false,
       sort: "newest",
       page: 3,
       exact: false,
@@ -135,6 +137,7 @@ describe("toSearchVacanciesArgs", () => {
       p_verified_only: true,
       p_government_only: false,
       p_no_experience: false,
+      p_student_friendly: false,
     });
   });
   it("gov=1 → p_government_only", () => {
@@ -175,5 +178,17 @@ describe("matchQueryToCategory", () => {
   it("mos kelmasa null", () => {
     expect(matchQueryToCategory("kassir kerak", categories, subcategories)).toBeNull();
     expect(matchQueryToCategory("k", categories, subcategories)).toBeNull();
+  });
+});
+
+describe("imkoniyat turi va talabalar filtri", () => {
+  it("opportunity va students URL ↔ RPC", () => {
+    const p = parseJobsSearchParams({ opportunity: "internship,apprenticeship,bad", students: "1" });
+    expect(p.opportunity).toEqual(["internship", "apprenticeship"]);
+    expect(p.students).toBe(true);
+    const args = toSearchVacanciesArgs(p, {});
+    expect(args.p_opportunity_types).toEqual(["internship", "apprenticeship"]);
+    expect(args.p_student_friendly).toBe(true);
+    expect(serializeJobsSearchParams(p)).toContain("opportunity=internship%2Capprenticeship");
   });
 });

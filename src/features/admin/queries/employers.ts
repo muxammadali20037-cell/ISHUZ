@@ -15,7 +15,7 @@ export function parseEmployerFilters(sp: SearchParams): EmployerFilters {
   return {
     q: param(sp, "q"),
     verification: oneOf(param(sp, "verification"), ["unverified", "pending", "verified", "rejected"] as const),
-    type: oneOf(param(sp, "type"), ["company", "government", "individual_entrepreneur", "person"] as const),
+    type: oneOf(param(sp, "type"), ["company", "government", "individual_entrepreneur", "self_employed", "person", "other"] as const),
     page: parsePage(sp),
   };
 }

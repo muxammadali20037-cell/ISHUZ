@@ -2,6 +2,7 @@ import {
   Laptop, ShoppingCart, Megaphone, Palette, Calculator, Car, Truck, Bike, HardHat, Wrench, Zap, Droplet, Cog, CarFront,
   Utensils, Headset, Briefcase, GraduationCap, Stethoscope, Sparkles, Shield, Scissors, Factory, Wheat, MoreHorizontal,
   HeartPulse, Smile, ScanLine, FlaskConical, Pill, School, Baby, Code, Server, ChefHat, Package, BedDouble, Scale, UserCog, Landmark, DraftingCompass,
+  RadioTower, PlugZap, Pickaxe, Drama, Building2, Gem,
   type LucideIcon,
 } from "lucide-react";
 
@@ -49,6 +50,12 @@ const ICONS: Record<string, LucideIcon> = {
   "user-cog": UserCog,
   landmark: Landmark,
   "drafting-compass": DraftingCompass,
+  "radio-tower": RadioTower,
+  "plug-zap": PlugZap,
+  pickaxe: Pickaxe,
+  drama: Drama,
+  "building-2": Building2,
+  gem: Gem,
 };
 
 export function CategoryIcon({ name, className }: { name: string | null | undefined; className?: string }) {

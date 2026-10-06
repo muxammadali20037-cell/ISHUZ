@@ -44,6 +44,7 @@ export function ProfessionPicker({
   title,
   subtitle,
   initialQuery = "",
+  onCustom,
 }: {
   categories: Category[];
   value: PickedProfession | null;
@@ -52,6 +53,8 @@ export function ProfessionPicker({
   subtitle?: string;
   /** masalan vakansiya nomi — qidiruv darhol mos kasblarni ko'rsatadi */
   initialQuery?: string;
+  /** "Topilmadimi? O'zingiz yozing": asl matn + eng yaqin soha (berilmasa bu yo'l ko'rsatilmaydi) */
+  onCustom?: (text: string, categoryId: string) => void;
 }) {
   const { t, name } = useT();
   const [browsing, setBrowsing] = useState(!value);
@@ -65,6 +68,8 @@ export function ProfessionPicker({
   const [searching, setSearching] = useState(false);
   const [recent, setRecent] = useState<PickedProfession[]>([]);
   const topRef = useRef<HTMLDivElement>(null);
+  const [custom, setCustom] = useState<string | null>(null);
+  const [customSector, setCustomSector] = useState<string | null>(null);
 
   useEffect(() => {
     const id = window.setTimeout(() => setRecent(readRecent()), 0);
@@ -178,6 +183,47 @@ export function ProfessionPicker({
     return <SelectedCard value={value} categories={categories} onChange={select} onEdit={() => setBrowsing(true)} />;
   }
 
+  // ------------------------------------------------------------------ qo'lda yozish
+  if (custom !== null && onCustom) {
+    const text = custom.trim();
+    return (
+      <div ref={topRef} className="scroll-mt-24 space-y-4">
+        <div>
+          <h2 className="text-2xl font-extrabold leading-tight tracking-tight">{t("professions.custom_title")}</h2>
+          <p className="mt-1 text-muted-foreground">{t("professions.custom_hint")}</p>
+        </div>
+        <Input value={custom} onChange={(e) => setCustom(e.target.value.slice(0, 120))} placeholder={t("professions.custom_placeholder")} aria-label={t("professions.custom_title")} className="h-14 rounded-2xl text-base" autoFocus />
+        <p className="text-sm font-semibold">{t("professions.custom_sector")}</p>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+          {categories.map((c) => (
+            <button
+              key={c.id}
+              type="button"
+              aria-pressed={customSector === c.id}
+              onClick={() => setCustomSector(c.id)}
+              className={cn("flex items-center gap-2 rounded-2xl border p-3 text-left text-sm font-medium", customSector === c.id ? "border-primary bg-primary-soft" : "border-border bg-card hover:border-primary/50")}
+            >
+              <CategoryIcon name={c.icon} className="size-4 shrink-0 text-primary" /> {name(c)}
+            </button>
+          ))}
+        </div>
+        <div className="flex gap-2">
+          <button type="button" onClick={() => setCustom(null)} className="rounded-2xl px-4 py-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+            {t("common.actions.back")}
+          </button>
+          <button
+            type="button"
+            disabled={text.length < 2 || !customSector}
+            onClick={() => customSector && onCustom(text, customSector)}
+            className="flex-1 rounded-2xl bg-primary px-4 py-3 font-semibold text-primary-foreground disabled:opacity-50"
+          >
+            {t("professions.custom_save")}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   const crumbs: { label: string; onClick: () => void }[] = [
     { label: t("professions.all_sectors"), onClick: () => (setSectorId(null), setPath([])) },
     ...(sector ? [{ label: name(sector), onClick: () => setPath([]) }] : []),
@@ -245,6 +291,11 @@ export function ProfessionPicker({
           ) : (
             <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-muted-foreground">{t("professions.no_results")}</p>
           )}
+          {onCustom ? (
+            <button type="button" onClick={() => setCustom(query.trim())} className="w-full rounded-2xl border border-dashed border-primary/40 p-4 text-left text-sm font-semibold text-primary hover:bg-primary-soft/40">
+              {t("professions.custom_cta", { text: query.trim() })}
+            </button>
+          ) : null}
         </section>
       ) : (
         <>
@@ -359,6 +410,11 @@ export function ProfessionPicker({
           )}
         </>
       )}
+      {onCustom && hits === null ? (
+        <button type="button" onClick={() => setCustom(query.trim())} className="text-sm font-medium text-primary hover:underline">
+          {t("professions.custom_link")}
+        </button>
+      ) : null}
     </div>
   );
 }

@@ -18,6 +18,9 @@ export function StepCategory({ mode, vacancy, refs }: StepProps) {
   const saver = useSaveStep(mode, vacancy.id, "category");
   const [picked, setPicked] = useState<PickedProfession | null>(null);
   const [loadingTrail, setLoadingTrail] = useState(!!vacancy.profession_node_id);
+  const [custom, setCustom] = useState<{ text: string; categoryId: string } | null>(
+    !vacancy.profession_node_id && vacancy.custom_profession && vacancy.category_id ? { text: vacancy.custom_profession, categoryId: vacancy.category_id } : null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   // Tahrirlashda: saqlangan kasbning yo'lini yuklash
@@ -38,8 +41,10 @@ export function StepCategory({ mode, vacancy, refs }: StepProps) {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const parsed = categorySchema.safeParse({ categoryId: picked?.categoryId ?? null, subcategoryId: null, professionNodeId: picked?.id ?? null });
-    if (!parsed.success || !picked) {
+    const parsed = custom && !picked
+      ? categorySchema.safeParse({ categoryId: custom.categoryId, subcategoryId: null, professionNodeId: null, customProfession: custom.text })
+      : categorySchema.safeParse({ categoryId: picked?.categoryId ?? null, subcategoryId: null, professionNodeId: picked?.id ?? null });
+    if (!parsed.success || (!picked && !custom)) {
       setError(t("professions.pick_required"));
       return;
     }
@@ -61,6 +66,12 @@ export function StepCategory({ mode, vacancy, refs }: StepProps) {
           value={picked}
           onChange={(p) => {
             setPicked(p);
+            setCustom(null);
+            setError(null);
+          }}
+          onCustom={(text, categoryId) => {
+            setPicked(null);
+            setCustom({ text, categoryId });
             setError(null);
           }}
           title={t("professions.employer_title")}
@@ -68,6 +79,12 @@ export function StepCategory({ mode, vacancy, refs }: StepProps) {
           initialQuery={vacancy.profession_node_id ? "" : (vacancy.title ?? "").replace(/\b(kerak|требуется|нужен|нужна|needed|wanted)\b/gi, "").trim()}
         />
       )}
+      {!picked && custom ? (
+        <div className="mt-3 rounded-2xl border border-primary bg-primary-soft p-4">
+          <span className="block text-xs font-medium text-muted-foreground">{t("professions.custom_badge")}</span>
+          <span className="block font-semibold">{custom.text}</span>
+        </div>
+      ) : null}
       {error ? (
         <p className="mt-3 text-sm text-destructive" role="alert">
           {error}

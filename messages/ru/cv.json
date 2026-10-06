@@ -13,7 +13,7 @@
     "employment": "Тип занятости",
     "schedule": "График",
     "availability": "Может выйти",
-    "footer": "Составлено в «Ish beruvchi» · {date}"
+    "footer": "Составлено в «Ish Beruvchi» · {date}"
   },
   "download": "Скачать PDF"
 }

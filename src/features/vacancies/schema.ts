@@ -43,6 +43,8 @@ export const categorySchema = z.object({
   subcategoryId: uuid.nullable(),
   /** kasblar daraxtidagi aniq kasb (ishchilar bilan bir xil daraxt) */
   professionNodeId: uuid.nullable().optional(),
+  /** katalogda topilmagan kasb (asl matn) */
+  customProfession: z.string().trim().min(2).max(120).nullable().optional(),
 });
 
 export const locationSchema = z
@@ -70,12 +72,21 @@ export const salarySchema = z
     if (d.salaryFrom !== null && d.salaryTo !== null && d.salaryTo < d.salaryFrom) ctx.addIssue({ code: "custom", path: ["salaryTo"], message: E.salary });
   });
 
-export const scheduleSchema = z.object({
+export const OPPORTUNITY_TYPES = ["job", "fixed_term", "one_time", "seasonal", "internship", "practice", "apprenticeship"] as const satisfies readonly Enums<"opportunity_type">[];
+export const LEARNING_OPPORTUNITIES = ["internship", "practice", "apprenticeship"] as const;
+
+export const scheduleSchema = z
+  .object({
+  opportunityType: z.enum(OPPORTUNITY_TYPES).default("job"),
+  /** faqat stajirovka/amaliyot/shogirdlikda: haq to'lanadimi (null — ko'rsatilmagan) */
+  isPaid: z.boolean().nullable().default(null),
+  studentFriendly: z.boolean().default(false),
   employmentType: z.enum(EMPLOYMENT_TYPES),
   schedule: z.enum(WORK_SCHEDULES),
   workTimeFrom: timeHHMM.nullable(),
   workTimeTo: timeHHMM.nullable(),
-});
+  })
+  .refine((d) => d.isPaid !== false || (LEARNING_OPPORTUNITIES as readonly string[]).includes(d.opportunityType), { path: ["isPaid"], message: "vacancies.wizard.schedule.unpaid_only_learning" });
 
 export const languageRequirementSchema = z.object({
   code: z.string().min(2).max(8),
@@ -154,7 +165,8 @@ export type TitleInput = z.infer<typeof titleSchema>;
 export type CategoryInput = z.infer<typeof categorySchema>;
 export type LocationInput = z.infer<typeof locationSchema>;
 export type SalaryInput = z.infer<typeof salarySchema>;
-export type ScheduleInput = z.infer<typeof scheduleSchema>;
+export type ScheduleInput = z.input<typeof scheduleSchema>;
+export type ScheduleValues = z.output<typeof scheduleSchema>;
 export type RequirementsInput = z.infer<typeof requirementsSchema>;
 export type SkillsInput = z.infer<typeof skillsSchema>;
 export type WorkFormatInput = z.infer<typeof workFormatSchema>;

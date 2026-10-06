@@ -80,6 +80,7 @@ export async function WorkerWizard({
             category_id: w?.category_id ?? null,
             subcategory_id: w?.subcategory_id ?? null,
             profession_node_id: w?.profession_node_id ?? null,
+            custom_profession: w?.custom_profession ?? null,
             headline: w?.headline ?? null,
             trail: professionTrail,
           }}

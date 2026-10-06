@@ -1,3 +1,4 @@
+import { latinToCyrillic } from "./translit";
 import { messages, type MessageKey } from "./messages";
 import type { Locale } from "./config";
 
@@ -43,9 +44,10 @@ export function makeTEnum(t: TFunction) {
 }
 
 /** Ma'lumotnoma yozuvlaridagi name_uz / name_ru / name_en dan tilga mos nomni oladi (ingliz nomi bo'lmasa — o'zbekcha) */
-export function localizedName(locale: Locale, row: { name_uz: string; name_ru: string; name_en?: string | null } | null | undefined): string {
+export function localizedName(locale: Locale, row: { name_uz: string; name_ru: string; name_en?: string | null; name_oz?: string | null } | null | undefined): string {
   if (!row) return "";
   if (locale === "ru") return row.name_ru;
   if (locale === "en") return row.name_en || row.name_uz;
+  if (locale === "oz") return row.name_oz || latinToCyrillic(row.name_uz);
   return row.name_uz;
 }

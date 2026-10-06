@@ -1,6 +1,6 @@
 import { formatInTimeZone } from "date-fns-tz";
 import { formatDistanceToNowStrict } from "date-fns";
-import { enUS as enLocale, ru as ruLocale, uz as uzLocale } from "date-fns/locale";
+import { enUS as enLocale, ru as ruLocale, uz as uzLocale, uzCyrl as ozLocale } from "date-fns/locale";
 import { parsePhoneNumberFromString, AsYouType } from "libphonenumber-js";
 import type { Locale } from "@/lib/i18n/config";
 
@@ -66,7 +66,7 @@ export function formatPhoneAsYouType(input: string): string {
   return new AsYouType("UZ").input(input);
 }
 
-const dateLocales = { uz: uzLocale, ru: ruLocale, en: enLocale };
+const dateLocales = { uz: uzLocale, oz: ozLocale, ru: ruLocale, en: enLocale };
 
 /** ISO → "26 sentabr 2026" (Toshkent vaqti) */
 export function formatDate(iso: string | Date | null | undefined, locale: Locale = "uz", pattern = "d MMMM yyyy"): string {

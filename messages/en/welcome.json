@@ -11,7 +11,7 @@
     },
     "workers": {
       "title": "Find workers",
-      "text": "The «Workers» tab shows ready candidates. Each one displays a match percentage for your vacancy."
+      "text": "The «Candidates» tab shows ready candidates, with what makes each one fit your vacancy."
     },
     "post": {
       "title": "AI writes your job post",
@@ -37,5 +37,28 @@
     "employer_title": "Looking for a job yourself?",
     "employer_desc": "One account lets you search for both jobs and workers",
     "employer_cta": "Find a job"
+  },
+  "help": {
+    "title": "Help",
+    "subtitle": "How to use the app — short and simple.",
+    "replay_tour": "Show the quick tour",
+    "worker_title": "I'm looking for a job",
+    "worker_1": "On the home screen tap “Browse open jobs”.",
+    "worker_2": "Type your profession in search or pick an area and filters.",
+    "worker_3": "Open a job and tap “Apply” — when you see “Application sent”, it arrived.",
+    "worker_4": "Use “Create a job-seeker listing” to say what you can do — employers will find you.",
+    "worker_5": "Replies and invitations appear in “My applications” and 🔔 notifications.",
+    "employer_title": "I'm hiring",
+    "employer_1": "On the home screen tap the big “+ Post a job” button.",
+    "employer_2": "Choose who you need (sector → profession), then set conditions step by step.",
+    "employer_3": "Review the finished listing and tap “Publish”.",
+    "employer_4": "Right after publishing we show matching candidates; you can also search in “Candidates”.",
+    "employer_5": "See applications under “Jobs posted”, reply or invite to an interview.",
+    "safety_title": "Safety",
+    "safety_1": "Never send money to anyone to get a job.",
+    "safety_2": "Your phone number is visible only to employers you allow.",
+    "safety_3": "See a suspicious listing or message? Tap “Report”.",
+    "report_hint": "Every job and profile page has a “Report” button.",
+    "more": "About personal data:"
   }
 }

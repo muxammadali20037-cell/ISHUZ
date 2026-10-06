@@ -6,7 +6,8 @@ import { useT } from "@/lib/i18n/client";
 import { Input } from "@/components/ui/input";
 import { ChipGroup } from "@/components/ui/chip";
 import { Field } from "@/components/ui/label";
-import { EMPLOYMENT_TYPES, WORK_SCHEDULES, scheduleSchema, type ScheduleInput } from "../../../schema";
+import { Checkbox } from "@/components/ui/checkbox";
+import { EMPLOYMENT_TYPES, LEARNING_OPPORTUNITIES, OPPORTUNITY_TYPES, WORK_SCHEDULES, scheduleSchema, type ScheduleInput, type ScheduleValues } from "../../../schema";
 import { toHHMM } from "../../../utils";
 import { useSaveStep } from "../use-save-step";
 import { WizardFooter } from "../wizard-footer";
@@ -16,9 +17,12 @@ import type { StepProps } from "../types";
 export function StepSchedule({ mode, vacancy }: StepProps) {
   const { t, tEnum } = useT();
   const saver = useSaveStep(mode, vacancy.id, "schedule");
-  const form = useForm<ScheduleInput>({
+  const form = useForm<ScheduleInput, unknown, ScheduleValues>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
+      opportunityType: vacancy.opportunity_type,
+      isPaid: vacancy.is_paid,
+      studentFriendly: vacancy.student_friendly,
       employmentType: vacancy.employment_type,
       schedule: vacancy.schedule,
       workTimeFrom: toHHMM(vacancy.work_time_from) || null,
@@ -26,10 +30,56 @@ export function StepSchedule({ mode, vacancy }: StepProps) {
     },
   });
   const errors = form.formState.errors;
+  const opportunity = form.watch("opportunityType");
+  const learning = (LEARNING_OPPORTUNITIES as readonly string[]).includes(opportunity ?? "job");
   const onSubmit = form.handleSubmit((data) => saver.save({ step: "schedule", data }));
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
+      <Field label={t("vacancies.wizard.schedule.opportunity")} description={t("vacancies.wizard.schedule.opportunity_hint")}>
+        <Controller
+          control={form.control}
+          name="opportunityType"
+          render={({ field }) => (
+            <ChipGroup
+              options={OPPORTUNITY_TYPES.map((v) => ({ value: v, label: tEnum("opportunity_type", v) }))}
+              value={field.value ?? "job"}
+              onChange={(v) => {
+                if (typeof v !== "string") return;
+                field.onChange(v);
+                if (!(LEARNING_OPPORTUNITIES as readonly string[]).includes(v)) form.setValue("isPaid", null);
+              }}
+              size="lg"
+            />
+          )}
+        />
+      </Field>
+      {learning ? (
+        <Field label={t("vacancies.wizard.schedule.paid")} error={errors.isPaid?.message ? t(errors.isPaid.message) : undefined}>
+          <Controller
+            control={form.control}
+            name="isPaid"
+            render={({ field }) => (
+              <ChipGroup
+                options={[
+                  { value: "yes", label: t("vacancies.wizard.schedule.paid_yes") },
+                  { value: "no", label: t("vacancies.wizard.schedule.paid_no") },
+                ]}
+                value={field.value === true ? "yes" : field.value === false ? "no" : ""}
+                onChange={(v) => field.onChange(v === "yes" ? true : v === "no" ? false : null)}
+                size="lg"
+              />
+            )}
+          />
+        </Field>
+      ) : null}
+      <Controller
+        control={form.control}
+        name="studentFriendly"
+        render={({ field }) => (
+          <Checkbox checked={!!field.value} onCheckedChange={(c) => field.onChange(c === true)} label={t("vacancies.wizard.schedule.student_friendly")} description={t("vacancies.wizard.schedule.student_friendly_hint")} />
+        )}
+      />
       <Field label={t("vacancies.wizard.schedule.employment")}>
         <Controller
           control={form.control}

@@ -38,5 +38,13 @@
     "validation": "Iltimos, aniq kasbni tanlang"
   },
   "my_card": "Kasblarim",
-  "my_card_desc": "Asosiy va qo'shimcha kasblar"
+  "my_card_desc": "Asosiy va qo'shimcha kasblar",
+  "custom_cta": "Topilmadimi? «{text}» deb o'zingiz yozing",
+  "custom_link": "Topilmadimi? O'zingiz yozing",
+  "custom_title": "Kasbni o'zingiz yozing",
+  "custom_hint": "Yozganingiz o'zgarmasdan saqlanadi va e'loningiz shu nom bilan chiqadi. Keyin uni katalogga qo'shamiz.",
+  "custom_placeholder": "Masalan: dron operatori",
+  "custom_sector": "Qaysi sohaga eng yaqin?",
+  "custom_save": "Saqlash va davom etish",
+  "custom_badge": "Qo'lda yozilgan"
 }

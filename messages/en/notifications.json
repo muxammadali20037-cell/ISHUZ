@@ -87,12 +87,12 @@
     }
   },
   "telegram": {
-    "welcome": "Hello! Welcome to the “Ish beruvchi” bot.\nNotifications about applications, offers and new messages will arrive here.",
+    "welcome": "Hello! Welcome to the “Ish Beruvchi” bot.\nNotifications about applications, offers and new messages will arrive here.",
     "hint": "Tap the button below to open the app.",
-    "open_app": "Open “Ish beruvchi”",
+    "open_app": "Open “Ish Beruvchi”",
     "open": "Open",
-    "login_code_title": "“Ish beruvchi” login code",
-    "login_code_warning": "The code is valid for 5 minutes. Don't share it with anyone — “Ish beruvchi” staff will never ask for your code.",
+    "login_code_title": "“Ish Beruvchi” login code",
+    "login_code_warning": "The code is valid for 5 minutes. Don't share it with anyone — “Ish Beruvchi” staff will never ask for your code.",
     "share_phone_prompt": "Link your phone number so you can sign in on the website (in a browser) with it — login codes will arrive here instead of by SMS. Tap the button below 👇",
     "share_phone_button": "📱 Send number",
     "phone_linked": "✅ Your number is linked: {phone}\nNow when you enter this number on the website, the login code will arrive in this chat.",

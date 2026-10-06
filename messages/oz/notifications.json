@@ -1,0 +1,103 @@
+{
+  "title": "Билдиришномалар",
+  "description": "Аризалар, таклифлар ва хабарлар ҳақида билдиришномалар",
+  "empty_title": "Билдиришномалар ёъқ",
+  "empty_desc": "Ариза ҳолати, таклифлар ва янги хабарлар шу ерда кўринади",
+  "mark_all_read": "Ҳаммасини ўқилган деб белгилаш",
+  "all_read_toast": "Барча билдиришномалар ўқилди",
+  "unread": "Ўқилмаган",
+  "unread_count": "{count} та ўқилмаган",
+  "today": "Бугун",
+  "yesterday": "Кеча",
+  "prev": "Олдинги",
+  "next": "Кейинги",
+  "page": "{page}-саҳифа",
+  "open": "Очиш",
+  "salary": {
+    "currency": "сўм",
+    "range": "{from} – {to} {currency}",
+    "from": "{from} {currency} дан",
+    "to": "{to} {currency} гача"
+  },
+  "types": {
+    "application_received": {
+      "title": "Янги ариза: {vacancy_title}",
+      "body": "{worker_name} ариза юборди",
+      "body_score": "{worker_name} ариза юборди · {score}% мос"
+    },
+    "application_status": {
+      "title": "Ариза ҳолати: {status}",
+      "body": "{vacancy_title}",
+      "body_company": "{vacancy_title} · {company_name}",
+      "title_withdrawn": "Номзод аризасини қайтариб олди",
+      "body_withdrawn": "{vacancy_title}"
+    },
+    "interview_invite": {
+      "title": "Суҳбатга таклиф қилиндингиз",
+      "body": "«{vacancy_title}» бўйича суҳбатга таклиф қилиндингиз",
+      "body_company": "{company_name} сизни «{vacancy_title}» бўйича суҳбатга таклиф қилди",
+      "when": "🗓 {when}",
+      "where": "📍 {place}",
+      "title_rescheduled": "Суҳбат вақти ўзгарди"
+    },
+    "offer_received": {
+      "title": "Янги иш таклифи",
+      "body": "{company_name}: {title}",
+      "body_salary": "{company_name}: {title} · {salary}"
+    },
+    "offer_response": {
+      "title": "Таклифга жавоб: {status}",
+      "title_accepted": "Таклиф қабул қилинди",
+      "title_declined": "Таклиф рад этилди",
+      "body": "{worker_name} · {title}"
+    },
+    "new_message": {
+      "title": "{sender_name}",
+      "body": "{preview}",
+      "body_attachment": "Янги хабар юборди"
+    },
+    "vacancy_expiring": {
+      "title": "Вакансия муддати тугаяпти",
+      "body": "«{vacancy_title}» {expires_at} куни ёпилади. Муддатни узайтиринг."
+    },
+    "new_matching_vacancy": {
+      "title": "Сизга мос иш: {vacancy_title}",
+      "body": "Мослик {score}%. Батафсил кўринг ва ариза юборинг.",
+      "body_noscore": "Батафсил кўринг ва ариза юборинг."
+    },
+    "new_matching_worker": {
+      "title": "Сизга мос номзод",
+      "body": "{worker_name} · «{vacancy_title}» учун {score}% мос",
+      "body_noscore": "{worker_name} · «{vacancy_title}»"
+    },
+    "verification_result": {
+      "title": "Тасдиқлаш натижаси",
+      "title_verified": "Тасдиқлаш муваффақиятли ўтди",
+      "title_rejected": "Тасдиқлаш рад этилди",
+      "body": "{type}",
+      "body_note": "{type} · {note}"
+    },
+    "review_received": {
+      "title": "Сизга янги шарҳ қолдирилди",
+      "body": "Баҳо: {rating} / 5"
+    },
+    "system": {
+      "title": "Тизим хабари",
+      "body": ""
+    }
+  },
+  "telegram": {
+    "welcome": "Ассалому алайкум! «Ish Beruvchi» ботига хуш келибсиз.\nАризалар, таклифлар ва янги хабарлар ҳақидаги билдиришномалар шу ерга келади.",
+    "hint": "Иловани очиш учун қуйидаги тугмани босинг.",
+    "open_app": "«Ish Beruvchi»ни очиш",
+    "open": "Очиш",
+    "login_code_title": "«Ish Beruvchi» кириш коди",
+    "login_code_warning": "Код 5 дақиқа амал қилади. Уни ҳеч кимга берманг — «Ish Beruvchi» ходимлари кодни ҳеч қачон сўрамайди.",
+    "share_phone_prompt": "Сайтда (браузерда) телефон рақамингиз билан киришингиз учун рақамингизни уланг — кириш кодлари SMS ўрнига шу ерга келади. Пастдаги тугмани босинг 👇",
+    "share_phone_button": "📱 Рақамни юбориш",
+    "phone_linked": "✅ Рақамингиз уланди: {phone}\nЭнди сайтда шу рақамни киритсангиз, кириш коди шу чатга келади.",
+    "phone_already_linked": "Рақамингиз уланган: {phone}\nСайтга қайтиб, \"Код юбориш\" тугмасини босинг — код шу ерга келади.",
+    "phone_not_own": "Илтимос, фақат ўзингизнинг рақамингизни пастдаги тугма орқали юборинг.",
+    "phone_invalid": "Рақамни ўқиб бўлмади. Қайта уриниб кўринг."
+  }
+}

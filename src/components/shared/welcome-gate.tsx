@@ -59,27 +59,31 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
           <h1 id="welcome-lang-title" className="mt-6 text-3xl font-extrabold tracking-tight">
             Tilni tanlang
           </h1>
-          <p className="mt-1 text-muted-foreground">Выберите язык · Choose language</p>
+          <p className="mt-1 text-muted-foreground">Тилни танланг · Выберите язык</p>
           <div className="mt-8 grid gap-3">
             {(
               [
-                ["uz", "🇺🇿", "O'zbekcha"],
-                ["ru", "🇷🇺", "Русский"],
-                ["en", "🇬🇧", "English"],
+                ["uz", "O'zbekcha", "lotin yozuvi"],
+                ["oz", "Ўзбекча", "кирилл ёзуви"],
+                ["ru", "Русский", "русский язык"],
               ] as const
-            ).map(([code, flag, label]) => (
+            ).map(([code, label, hint]) => (
               <button
                 key={code}
                 type="button"
+                lang={code === "oz" ? "uz-Cyrl" : code}
                 disabled={pending}
                 onClick={() => pickLanguage(code)}
-                className="flex h-20 items-center gap-5 rounded-3xl border-2 border-border bg-card px-6 text-xl font-bold shadow-sm transition-all hover:border-primary hover:bg-primary-soft active:scale-[0.98] disabled:opacity-60"
+                className="flex min-h-20 flex-col items-start justify-center rounded-3xl border-2 border-border bg-card px-6 py-3 text-left shadow-sm transition-all hover:border-primary hover:bg-primary-soft active:scale-[0.98] disabled:opacity-60"
               >
-                <span className="text-4xl">{flag}</span>
-                {label}
+                <span className="text-xl font-bold">{label}</span>
+                <span className="text-sm text-muted-foreground">{hint}</span>
               </button>
             ))}
           </div>
+          <button type="button" lang="en" disabled={pending} onClick={() => pickLanguage("en")} className="mt-5 text-sm font-medium text-primary hover:underline">
+            English
+          </button>
         </div>
       </div>
     );

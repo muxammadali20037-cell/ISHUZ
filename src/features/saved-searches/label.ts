@@ -1,3 +1,5 @@
+import type { Locale } from "@/lib/i18n/config";
+import { localizedName } from "@/lib/i18n/translate";
 /**
  * Saqlangan qidiruv uchun qisqa nom: "Oshpaz · Chilonzor · 5 mln dan".
  * Sof modul (runtime import yo'q) — vitest bilan testlanadi.
@@ -15,10 +17,10 @@ interface Named {
 export function savedSearchLabel(
   p: JobsSearchParams,
   refs: { categories: Named[]; subcategories: Named[]; regions: Named[]; districts: Named[] },
-  locale: "uz" | "ru" | "en",
+  locale: Locale,
   words: { salaryFrom: (amount: string) => string; remote: string; noExperience: string },
 ): string {
-  const nm = (r: Named | undefined) => (r ? (locale === "ru" ? r.name_ru : locale === "en" ? r.name_en || r.name_uz : r.name_uz) : null);
+  const nm = (r: Named | undefined) => (r ? localizedName(locale, r) : null);
   const parts: string[] = [];
   const sub = p.subcategory ? refs.subcategories.find((s) => s.slug === p.subcategory) : undefined;
   const cat = p.category ? refs.categories.find((c) => c.slug === p.category) : undefined;
@@ -37,10 +39,10 @@ export function savedSearchLabel(
   return (parts.join(" · ") || "—").slice(0, 160);
 }
 
-function formatMillions(n: number, locale: "uz" | "ru" | "en"): string {
+function formatMillions(n: number, locale: Locale): string {
   if (n >= 1_000_000) {
     const v = Math.round((n / 1_000_000) * 10) / 10;
-    return `${String(v).replace(".", locale === "en" ? "." : ",")} ${locale === "ru" ? "млн" : locale === "en" ? "M" : "mln"}`;
+    return `${String(v).replace(".", locale === "en" ? "." : ",")} ${locale === "ru" ? "млн" : locale === "en" ? "M" : locale === "oz" ? "млн" : "mln"}`;
   }
   return `${Math.round(n / 1000)} ${locale === "ru" ? "тыс" : locale === "en" ? "K" : "ming"}`;
 }

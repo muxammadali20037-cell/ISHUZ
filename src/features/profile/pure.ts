@@ -2,9 +2,10 @@
  * Profil moduli — sof (pure) yordamchilar. Alias importlarsiz: vitest konfiguratsiyasiz ham ishlaydi.
  */
 import { format } from "date-fns";
-import { ru as ruLocale, uz as uzLocale, enUS } from "date-fns/locale";
+import { ru as ruLocale, uz as uzLocale, uzCyrl, enUS } from "date-fns/locale";
+import type { Locale } from "@/lib/i18n/config";
 
-export type ProfileLocale = "uz" | "ru" | "en";
+export type ProfileLocale = Locale;
 
 export const EDIT_SECTIONS = ["personal", "about", "location", "category", "experience", "skills", "languages", "education", "preferences", "visibility"] as const;
 export type EditSection = (typeof EDIT_SECTIONS)[number];
@@ -52,7 +53,7 @@ export function formatMonthYear(iso: string | null | undefined, locale: ProfileL
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  const s = format(d, "LLLL yyyy", { locale: locale === "ru" ? ruLocale : locale === "en" ? enUS : uzLocale });
+  const s = format(d, "LLLL yyyy", { locale: locale === "ru" ? ruLocale : locale === "en" ? enUS : locale === "oz" ? uzCyrl : uzLocale });
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 

@@ -14,6 +14,6 @@ export function withLang(path: string, locale: Locale): string {
 export function localeAlternates(path: string, locale: Locale): NonNullable<Metadata["alternates"]> {
   return {
     canonical: withLang(path, locale),
-    languages: { uz: path, ru: withLang(path, "ru"), en: withLang(path, "en"), "x-default": path },
+    languages: { uz: path, "uz-Cyrl": withLang(path, "oz"), ru: withLang(path, "ru"), en: withLang(path, "en"), "x-default": path },
   };
 }

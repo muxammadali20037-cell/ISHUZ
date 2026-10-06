@@ -19,5 +19,5 @@ export const getLocale = cache(async (): Promise<Locale> => {
 export async function getT() {
   const locale = await getLocale();
   const t = makeT(locale);
-  return { t, tEnum: makeTEnum(t), locale, name: (row: { name_uz: string; name_ru: string; name_en?: string | null } | null | undefined) => localizedName(locale, row) };
+  return { t, tEnum: makeTEnum(t), locale, name: (row: { name_uz: string; name_ru: string; name_en?: string | null; name_oz?: string | null } | null | undefined) => localizedName(locale, row) };
 }

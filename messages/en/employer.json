@@ -15,7 +15,10 @@
     "logo_later": "You can also upload a logo later in settings.",
     "logo_failed": "The company was created, but the logo failed to upload. You can upload it in settings.",
     "draft_saved": "Details saved",
-    "type_government_desc": "Ministries, khokimiyats, state enterprises, schools, hospitals and other government institutions. Once verified, your vacancies will appear in a separate section with a \"Government organization\" badge."
+    "type_government_desc": "Ministries, khokimiyats, state enterprises, schools, hospitals and other government institutions. Once verified, your vacancies will appear in a separate section with a \"Government organization\" badge.",
+    "type_self_employed_desc": "No company name or tax ID needed — post under your own name.",
+    "type_other_desc": "Not in the list? Describe it briefly (e.g. foundation, cooperative).",
+    "type_other_note": "Organisation type (e.g. foundation, cooperative)"
   },
   "form": {
     "company_name": "Company name",
@@ -115,7 +118,7 @@
     "location": "Location",
     "manage": "Settings",
     "meta_title": "{name} — vacancies",
-    "meta_description": "Active vacancies and company information for {name} on «Ish beruvchi»"
+    "meta_description": "Active vacancies and company information for {name} on «Ish Beruvchi»"
   },
   "settings": {
     "title": "Company settings",
@@ -144,7 +147,7 @@
     "role_updated": "Role updated",
     "removed": "Member removed",
     "invite_title": "Add member",
-    "invite_desc": "Create an invite link and send it to the member. They sign in to «Ish beruvchi», open the link and join the team. The link is valid for 7 days.",
+    "invite_desc": "Create an invite link and send it to the member. They sign in to «Ish Beruvchi», open the link and join the team. The link is valid for 7 days.",
     "roles_help": "Administrator — all settings and members; Recruiter — vacancies and applications; Viewer — view only.",
     "invite_role": "New member's role",
     "create_invite": "Create invite link",

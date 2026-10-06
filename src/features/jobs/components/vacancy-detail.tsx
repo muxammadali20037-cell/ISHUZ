@@ -248,6 +248,12 @@ export async function VacancyDetail({
               <InfoItem icon={Briefcase} label={t("jobs.detail.employment")}>
                 {tEnum("employment_type", v.employment_type)}
               </InfoItem>
+              {v.opportunity_type !== "job" ? (
+                <InfoItem icon={GraduationCap} label={t("jobs.filters.opportunity")}>
+                  {tEnum("opportunity_type", v.opportunity_type)}
+                  {v.is_paid === false ? <span className="ml-2 text-sm font-normal text-warning">· {t("jobs.card.unpaid")}</span> : v.is_paid ? <span className="ml-2 text-sm font-normal text-muted-foreground">· {t("vacancies.wizard.schedule.paid_yes")}</span> : null}
+                </InfoItem>
+              ) : null}
               <InfoItem icon={FileText} label={t("jobs.detail.experience")}>
                 {tEnum("experience_min_months", String(experienceKey))}
               </InfoItem>

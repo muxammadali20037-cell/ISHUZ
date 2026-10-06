@@ -71,7 +71,11 @@ export async function saveEmployerType(input: unknown): Promise<ActionResult> {
   const auth = await requireActionSession();
   if ("ok" in auth) return auth;
   const supabase = await createClient();
-  const row: TablesInsert<"employer_profiles"> = { profile_id: auth.session.userId, employer_type: parsed.data.employerType };
+  const row: TablesInsert<"employer_profiles"> = {
+    profile_id: auth.session.userId,
+    employer_type: parsed.data.employerType,
+    employer_type_note: parsed.data.employerType === "other" ? parsed.data.note || null : null,
+  };
   const { error } = await supabase.from("employer_profiles").upsert(row, { onConflict: "profile_id" });
   if (error) return { ok: false, error: errorCode(error) };
   return { ok: true };
@@ -158,7 +162,7 @@ export async function completePersonOnboarding(input: unknown): Promise<ActionRe
   const supabase = await createClient();
   const row: TablesInsert<"employer_profiles"> = {
     profile_id: userId,
-    employer_type: "person",
+    employer_type: d.employerType ?? "person",
     display_name: d.displayName,
     contact_phone: d.contactPhone,
     region_id: d.regionId,

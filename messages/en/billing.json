@@ -12,7 +12,8 @@
     "promo": "🎉 Promotion: posting is free until {date}",
     "free_trial": "🎁 Your first vacancy is free — active for {hours} hours",
     "paid_window": "✅ Paid: active until {date}",
-    "payment_required": "Listing price: {price} UZS · {days} days"
+    "payment_required": "Listing price: {price} UZS · {days} days",
+    "free": "Posting is free — active for {days} days"
   },
   "promo_mode": {
     "promo": "🎉 Promotion: TOP is free until {date}",

@@ -1,3 +1,4 @@
+import type { Locale } from "@/lib/i18n/config";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { setBotCommands, setBotMenuButton, setBotWebhook } from "@/lib/telegram/bot";
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
   if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_WEBHOOK_SECRET) return NextResponse.json({ error: "telegram_not_configured" }, { status: 503 });
 
   const webhookUrl = `${APP_URL.replace(/\/$/, "")}/api/telegram/webhook`;
-  const commands = (locale: "uz" | "ru" | "en") => {
+  const commands = (locale: Locale) => {
     const t = makeT(locale);
     return (["start", "cv", "jobs", "pdf", "lang"] as const).map((command) => ({ command, description: t(`bot.menu.cmd_${command}`) }));
   };

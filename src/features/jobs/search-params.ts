@@ -21,6 +21,10 @@ export const EMPLOYMENT_TYPES: readonly EmploymentType[] = ["full_time", "part_t
 export const SCHEDULES: readonly WorkSchedule[] = ["5_2", "6_1", "2_2", "shift", "flexible", "negotiable"];
 /** experience_max (oy): "shuncha oygacha tajriba talab qiladigan" vakansiyalar */
 export const EXPERIENCE_MAX_OPTIONS = [0, 6, 12, 24, 36, 60] as const;
+/** Imkoniyat turlari (bandlikdan mustaqil) */
+export const OPPORTUNITY_TYPES = ["job", "fixed_term", "one_time", "seasonal", "internship", "practice", "apprenticeship"] as const;
+export type OpportunityType = (typeof OPPORTUNITY_TYPES)[number];
+
 export const SALARY_PRESETS = [2_000_000, 3_000_000, 5_000_000, 7_000_000, 10_000_000, 15_000_000] as const;
 export const SALARY_MAX = 1_000_000_000;
 
@@ -46,6 +50,10 @@ export interface JobsSearchParams {
   /** Faqat tasdiqlangan davlat tashkilotlari */
   government: boolean;
   noExperience: boolean;
+  /** Imkoniyat turi: stajirovka, amaliyot, shogirdlik va h.k. */
+  opportunity: OpportunityType[];
+  /** Talabalarga mos (darsdan keyin / o'quv imkoniyatlari) */
+  students: boolean;
   sort: SortKey;
   page: number;
   /** Matnni filtrlarga aylantirmasdan aynan qidirish */
@@ -73,6 +81,8 @@ export const DEFAULT_JOBS_PARAMS: JobsSearchParams = {
   verified: false,
   government: false,
   noExperience: false,
+  opportunity: [],
+  students: false,
   sort: "relevant",
   page: 1,
   exact: false,
@@ -150,6 +160,8 @@ export function parseJobsSearchParams(raw: RawSearchParams): JobsSearchParams {
     verified: bool(first(raw, "verified")),
     government: bool(first(raw, "gov")),
     noExperience: bool(first(raw, "no_experience")),
+    opportunity: csv(first(raw, "opportunity")).filter((o): o is OpportunityType => (OPPORTUNITY_TYPES as readonly string[]).includes(o)),
+    students: bool(first(raw, "students")),
     sort,
     page: int(first(raw, "page"), 1, MAX_PAGE) ?? 1,
     exact: bool(first(raw, "exact")),
@@ -176,6 +188,8 @@ export function serializeJobsSearchParams(params: Partial<JobsSearchParams>): st
   if (p.verified) sp.set("verified", "1");
   if (p.government) sp.set("gov", "1");
   if (p.noExperience) sp.set("no_experience", "1");
+  if (p.opportunity?.length) sp.set("opportunity", p.opportunity.join(","));
+  if (p.students) sp.set("students", "1");
   if (p.sort !== "relevant") sp.set("sort", p.sort);
   if (p.page > 1) sp.set("page", String(p.page));
   if (p.exact) sp.set("exact", "1");
@@ -206,6 +220,8 @@ export function countActiveFilters(p: JobsSearchParams): number {
   if (p.verified) n++;
   if (p.government) n++;
   if (p.noExperience) n++;
+  if (p.opportunity.length) n++;
+  if (p.students) n++;
   return n;
 }
 
@@ -229,7 +245,9 @@ export function toSearchVacanciesArgs(p: JobsSearchParams, ids: ResolvedIds, lim
     p_verified_only: p.verified,
     p_government_only: p.government,
     p_no_experience: p.noExperience,
+    p_student_friendly: p.students,
   };
+  if (p.opportunity.length) args.p_opportunity_types = p.opportunity;
   if (p.q) args.p_query = p.q;
   if (ids.categoryId) args.p_category_id = ids.categoryId;
   if (ids.subcategoryId) args.p_subcategory_id = ids.subcategoryId;

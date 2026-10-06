@@ -1,0 +1,19 @@
+{
+  "pdf": {
+    "age": "{age} ёш",
+    "phone": "Тел",
+    "about": "Ўзим ҳақимда",
+    "experience": "Иш тажрибаси",
+    "present": "ҳозиргача",
+    "skills": "Кўникмалар",
+    "languages": "Тиллар",
+    "education": "Маълумоти",
+    "preferences": "Иш истаги",
+    "salary": "Кутилаётган маош",
+    "employment": "Бандлик тури",
+    "schedule": "Иш графиги",
+    "availability": "Ишга чиқа олади",
+    "footer": "«Ish Beruvchi» орқали тайёрланди · {date}"
+  },
+  "download": "PDF юклаб олиш"
+}

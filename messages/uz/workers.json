@@ -1,7 +1,7 @@
 {
   "meta": {
     "search_title": "Nomzodlar",
-    "search_description": "«Ish beruvchi» — talabingizga mos ish qidiruvchilarni toping",
+    "search_description": "«Ish Beruvchi» — talabingizga mos ish qidiruvchilarni toping",
     "candidate_title": "Nomzod",
     "saved_title": "Saqlangan nomzodlar",
     "candidates_title": "Vakansiya bo'yicha nomzodlar"
@@ -32,7 +32,7 @@
     "for_vacancy": "«{title}» uchun nomzodlar",
     "select_label": "Vakansiya",
     "no_vacancy": "Umumiy qidiruv (vakansiyasiz)",
-    "hint": "Moslik foizi tanlangan vakansiya talablari asosida hisoblanadi",
+    "hint": "Moslik tanlangan vakansiya talablari asosida baholanadi: kasb, hudud, jadval, maosh, tajriba",
     "inactive": "Vakansiya faol emas"
   },
   "filters": {

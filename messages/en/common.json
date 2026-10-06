@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Ish beruvchi",
+    "name": "Ish Beruvchi",
     "tagline": "Stop searching for jobs. Find the one that fits you.",
     "tagline_employer": "Stop sifting through resumes. Find the right hire.",
     "description": "A platform connecting job seekers and employers in Uzbekistan"
@@ -149,7 +149,7 @@
   },
   "landing": {
     "hero_title": "Stop searching for jobs. Find the one that fits you.",
-    "hero_subtitle": "“Ish beruvchi” is a platform that precisely matches job seekers and employers in Uzbekistan in just minutes.",
+    "hero_subtitle": "“Ish Beruvchi” is a platform that precisely matches job seekers and employers in Uzbekistan in just minutes.",
     "worker_card_title": "I'm looking for a job",
     "worker_card_subtitle": "Find a job that fits you",
     "worker_card_cta": "Find a job",
@@ -163,7 +163,7 @@
     "how_1_title": "Tell us about yourself",
     "how_1_desc": "Profession, experience, location and expected salary — in 3 minutes.",
     "how_2_title": "See your match",
-    "how_2_desc": "For every vacancy, see how well it matches you, as a percentage, and why.",
+    "how_2_desc": "For every job, see how well it fits you and why: “Matches your profession”, “In your district”.",
     "how_3_title": "Connect",
     "how_3_desc": "Apply, chat, and go to the interview. All in one place.",
     "categories_title": "Categories",
@@ -179,7 +179,7 @@
     "terms": "Terms of use",
     "privacy": "Privacy policy",
     "support": "Help",
-    "rights": "© {year} Ish beruvchi. All rights reserved.",
+    "rights": "© {year} Ish Beruvchi. All rights reserved.",
     "deletion": "Delete account"
   },
   "report_sent": "Report sent. Our moderators will review it.",
@@ -194,7 +194,7 @@
     "code": "Error code: {code}"
   },
   "meta": {
-    "title": "Ish beruvchi — Jobs and Vacancies in Uzbekistan",
+    "title": "Ish Beruvchi — Jobs and Vacancies in Uzbekistan",
     "description": "Find jobs and vacancies in Tashkent and across Uzbekistan. Build your resume in 2 minutes, get matched jobs and apply in one tap. Employers find qualified candidates fast.",
     "keywords": "jobs in Uzbekistan, jobs in Tashkent, vacancies, job search, Tashkent vacancies, resume, hiring, careers Uzbekistan, find a job",
     "org_description": "A platform connecting job seekers and employers in Uzbekistan"

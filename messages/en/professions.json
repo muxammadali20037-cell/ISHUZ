@@ -38,5 +38,13 @@
     "validation": "Please pick an exact profession"
   },
   "my_card": "My professions",
-  "my_card_desc": "Main and additional"
+  "my_card_desc": "Main and additional",
+  "custom_cta": "Not found? Use “{text}” as typed",
+  "custom_link": "Not found? Type it yourself",
+  "custom_title": "Type your profession",
+  "custom_hint": "We keep your text as is and your listing shows it. We'll add it to the catalog later.",
+  "custom_placeholder": "E.g. drone operator",
+  "custom_sector": "Which sector is it closest to?",
+  "custom_save": "Save and continue",
+  "custom_badge": "Typed manually"
 }

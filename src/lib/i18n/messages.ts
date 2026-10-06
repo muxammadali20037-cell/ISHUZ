@@ -80,6 +80,31 @@ import enNotifications from "../../../messages/en/notifications.json";
 import enSaved from "../../../messages/en/saved.json";
 import enEnums from "../../../messages/en/enums.json";
 
+import ozCommon from "../../../messages/oz/common.json";
+import ozAuth from "../../../messages/oz/auth.json";
+import ozOnboarding from "../../../messages/oz/onboarding.json";
+import ozJobs from "../../../messages/oz/jobs.json";
+import ozWorkers from "../../../messages/oz/workers.json";
+import ozEmployer from "../../../messages/oz/employer.json";
+import ozApplications from "../../../messages/oz/applications.json";
+import ozChat from "../../../messages/oz/chat.json";
+import ozProfile from "../../../messages/oz/profile.json";
+import ozAdmin from "../../../messages/oz/admin.json";
+import ozAi from "../../../messages/oz/ai.json";
+import ozPromo from "../../../messages/oz/promo.json";
+import ozBilling from "../../../messages/oz/billing.json";
+import ozWelcome from "../../../messages/oz/welcome.json";
+import ozContacts from "../../../messages/oz/contacts.json";
+import ozCv from "../../../messages/oz/cv.json";
+import ozBot from "../../../messages/oz/bot.json";
+import ozLegal from "../../../messages/oz/legal.json";
+import ozProfessions from "../../../messages/oz/professions.json";
+import ozVacancies from "../../../messages/oz/vacancies.json";
+import ozOffers from "../../../messages/oz/offers.json";
+import ozNotifications from "../../../messages/oz/notifications.json";
+import ozSaved from "../../../messages/oz/saved.json";
+import ozEnums from "../../../messages/oz/enums.json";
+
 export const messages = {
   uz: {
     common: uzCommon,
@@ -132,6 +157,32 @@ export const messages = {
     bot: ruBot,
     legal: ruLegal,
     professions: ruProfessions,
+  },
+  oz: {
+    common: ozCommon,
+    auth: ozAuth,
+    onboarding: ozOnboarding,
+    jobs: ozJobs,
+    workers: ozWorkers,
+    employer: ozEmployer,
+    applications: ozApplications,
+    chat: ozChat,
+    profile: ozProfile,
+    admin: ozAdmin,
+    ai: ozAi,
+    promo: ozPromo,
+    billing: ozBilling,
+    welcome: ozWelcome,
+    contacts: ozContacts,
+    cv: ozCv,
+    bot: ozBot,
+    legal: ozLegal,
+    professions: ozProfessions,
+    vacancies: ozVacancies,
+    offers: ozOffers,
+    notifications: ozNotifications,
+    saved: ozSaved,
+    enums: ozEnums,
   },
   en: {
     common: enCommon,

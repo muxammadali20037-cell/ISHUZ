@@ -102,10 +102,12 @@
     "female": "Ayol"
   },
   "employer_type": {
-    "company": "Kompaniya",
-    "individual_entrepreneur": "Yakka tadbirkor",
-    "person": "Oddiy shaxs",
-    "government": "Davlat tashkiloti"
+    "company": "Xususiy kompaniya yoki tashkilot",
+    "individual_entrepreneur": "Yakka tartibdagi tadbirkor (YATT)",
+    "person": "O'zim yoki oilam uchun xodim kerak",
+    "government": "Davlat tashkiloti",
+    "self_employed": "O'zini o'zi band qilgan shaxs",
+    "other": "Boshqa tashkilot turi"
   },
   "company_size": {
     "1_10": "1–10 xodim",
@@ -269,5 +271,14 @@
     "ar": "Arab",
     "fr": "Fransuz"
   },
-  "benefit_food": "Ovqat"
+  "benefit_food": "Ovqat",
+  "opportunity_type": {
+    "job": "Doimiy ish",
+    "fixed_term": "Muddatli ish",
+    "one_time": "Bir martalik ish",
+    "seasonal": "Mavsumiy ish",
+    "internship": "Stajirovka",
+    "practice": "Amaliyot (o'quv/ishlab chiqarish)",
+    "apprenticeship": "Shogirdlik (ustaga)"
+  }
 }

@@ -13,6 +13,7 @@ import { Select } from "@/components/ui/select";
 import {
   EMPLOYMENT_TYPES,
   EXPERIENCE_MAX_OPTIONS,
+  OPPORTUNITY_TYPES,
   SALARY_MAX,
   SALARY_PRESETS,
   SCHEDULES,
@@ -221,7 +222,7 @@ function FormatSection({ draft, patch }: SectionProps) {
 }
 
 function TogglesSection({ draft, patch, refs }: SectionProps) {
-  const { t, name } = useT();
+  const { t, tEnum, name } = useT();
   return (
     <div className="space-y-1">
       <Checkbox
@@ -231,6 +232,25 @@ function TogglesSection({ draft, patch, refs }: SectionProps) {
         description={t("jobs.filters.remote_hint")}
       />
       <Checkbox checked={draft.verified} onCheckedChange={(c) => patch({ verified: c === true })} label={t("jobs.filters.verified")} />
+      <Checkbox
+        checked={draft.students}
+        onCheckedChange={(c) => patch({ students: c === true })}
+        label={t("jobs.filters.students")}
+        description={t("jobs.filters.students_hint")}
+      />
+      <div className="pt-3">
+        <SectionTitle>{t("jobs.filters.opportunity")}</SectionTitle>
+        <div className="grid sm:grid-cols-2">
+          {OPPORTUNITY_TYPES.map((o) => (
+            <Checkbox
+              key={o}
+              checked={draft.opportunity.includes(o)}
+              onCheckedChange={(c) => patch({ opportunity: c === true ? [...draft.opportunity, o] : draft.opportunity.filter((x) => x !== o) })}
+              label={tEnum("opportunity_type", o)}
+            />
+          ))}
+        </div>
+      </div>
       <Checkbox
         checked={draft.government}
         onCheckedChange={(c) => patch({ government: c === true })}

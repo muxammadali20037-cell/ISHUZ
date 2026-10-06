@@ -153,7 +153,19 @@ async function applyStep(supabase: SupabaseServerClient, v: EditableVacancy, pay
         const { data: sub } = await supabase.from("subcategories").select("id, category_id").eq("id", payload.data.subcategoryId).maybeSingle();
         if (sub && sub.category_id === payload.data.categoryId) subcategoryId = sub.id;
       }
-      return updateRow(supabase, v.id, { category_id: payload.data.categoryId, subcategory_id: subcategoryId });
+      const custom = payload.data.customProfession ?? null;
+      const row = await updateRow(supabase, v.id, {
+        category_id: payload.data.categoryId,
+        subcategory_id: subcategoryId,
+        ...(custom ? { profession_node_id: null, custom_profession: custom } : {}),
+      });
+      if (row.ok && custom) {
+        const { error: reqErr } = await supabase
+          .from("custom_occupation_requests")
+          .insert({ raw_text: custom, category_id: payload.data.categoryId, context: "vacancy", vacancy_id: v.id });
+        if (reqErr && reqErr.code !== "23505") console.error("[vacancies] custom occupation", reqErr.message);
+      }
+      return row;
     }
     case "location": {
       const d = payload.data;
@@ -177,7 +189,16 @@ async function applyStep(supabase: SupabaseServerClient, v: EditableVacancy, pay
     }
     case "schedule": {
       const d = payload.data;
-      return updateRow(supabase, v.id, { employment_type: d.employmentType, schedule: d.schedule, work_time_from: d.workTimeFrom, work_time_to: d.workTimeTo });
+      const learning = d.opportunityType === "internship" || d.opportunityType === "practice" || d.opportunityType === "apprenticeship";
+      return updateRow(supabase, v.id, {
+        opportunity_type: d.opportunityType,
+        is_paid: learning ? d.isPaid : null,
+        student_friendly: d.studentFriendly,
+        employment_type: d.employmentType,
+        schedule: d.schedule,
+        work_time_from: d.workTimeFrom,
+        work_time_to: d.workTimeTo,
+      });
     }
     case "requirements": {
       const d = payload.data;

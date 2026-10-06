@@ -30,8 +30,6 @@ export function MatchScore({ score, className, size = "md", label }: { score: nu
         c.text,
         className,
       )}
-      aria-label={`${text} (${score}%)`}
-      title={`${score}%`}
     >
       {text}
     </span>

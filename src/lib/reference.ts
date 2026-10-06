@@ -6,8 +6,8 @@ import type { Tables } from "@/types/database.types";
 
 export type Category = Pick<Tables<"categories">, "id" | "slug" | "name_uz" | "name_ru" | "name_en" | "icon" | "sort_order" | "portfolio_recommended">;
 export type Subcategory = Pick<Tables<"subcategories">, "id" | "category_id" | "slug" | "name_uz" | "name_ru" | "sort_order">;
-export type Region = Pick<Tables<"regions">, "id" | "slug" | "name_uz" | "name_ru" | "name_en" | "sort_order">;
-export type District = Pick<Tables<"districts">, "id" | "region_id" | "slug" | "name_uz" | "name_ru" | "lat" | "lng" | "sort_order">;
+export type Region = Pick<Tables<"regions">, "id" | "slug" | "name_uz" | "name_ru" | "name_en" | "name_oz" | "sort_order">;
+export type District = Pick<Tables<"districts">, "id" | "region_id" | "slug" | "name_uz" | "name_ru" | "name_oz" | "kind" | "lat" | "lng" | "sort_order">;
 export type Skill = Pick<Tables<"skills">, "id" | "slug" | "name_uz" | "name_ru" | "category_id" | "usage_count">;
 export type Language = Pick<Tables<"languages">, "code" | "name_uz" | "name_ru" | "sort_order">;
 export type Benefit = Pick<Tables<"benefits">, "code" | "name_uz" | "name_ru" | "kind" | "sort_order">;
@@ -32,13 +32,13 @@ export const getSubcategories = cache(async (categoryId?: string): Promise<Subca
 
 export const getRegions = cache(async (): Promise<Region[]> => {
   const supabase = await createClient();
-  const { data } = await supabase.from("regions").select("id, slug, name_uz, name_ru, name_en, sort_order").eq("is_active", true).order("sort_order");
+  const { data } = await supabase.from("regions").select("id, slug, name_uz, name_ru, name_en, name_oz, sort_order").eq("is_active", true).order("sort_order");
   return data ?? [];
 });
 
 export const getDistricts = cache(async (regionId?: string): Promise<District[]> => {
   const supabase = await createClient();
-  let q = supabase.from("districts").select("id, region_id, slug, name_uz, name_ru, lat, lng, sort_order").eq("is_active", true).order("sort_order");
+  let q = supabase.from("districts").select("id, region_id, slug, name_uz, name_ru, name_oz, kind, lat, lng, sort_order").eq("is_active", true).order("sort_order");
   if (regionId) q = q.eq("region_id", regionId);
   const { data } = await q;
   return data ?? [];

@@ -18,7 +18,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
         <Link href="/" className="flex items-center gap-2 font-extrabold tracking-tight">
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs text-primary-foreground">IB</span>
           <span className="text-lg">
-            Ish <span className="text-primary">beruvchi</span>
+            Ish <span className="text-primary">Beruvchi</span>
           </span>
         </Link>
         <LanguageSwitcher />

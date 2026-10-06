@@ -6,7 +6,7 @@ import type { SessionContext } from "@/features/auth/session";
 import type { DraftSkill, SkillOption, SkillQuestion, WorkerDraft } from "./types";
 
 const WORKER_COLUMNS =
-  "id, headline, category_id, subcategory_id, profession_node_id, experience_level, region_id, district_id, area_hint, remote_preference, work_format, onboarding_step, onboarding_completed_at, completeness";
+  "id, headline, category_id, subcategory_id, profession_node_id, custom_profession, experience_level, region_id, district_id, area_hint, remote_preference, work_format, onboarding_step, onboarding_completed_at, completeness";
 
 /**
  * Wizard qoralamasi: profil + kontakt + worker jadvallari (hammasi egasi sifatida, RLS ostida).

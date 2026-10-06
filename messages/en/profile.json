@@ -227,7 +227,7 @@
     "education": "Education",
     "portfolio": "Portfolio",
     "preferences": "Job preferences",
-    "generated": "Created with «Ish beruvchi» · {date}",
+    "generated": "Created with «Ish Beruvchi» · {date}",
     "age": "{age} years old",
     "location": "Location",
     "salary": "Expected salary",
@@ -322,5 +322,31 @@
       "admin_cannot_delete": "To delete an admin account, remove admin rights first",
       "not_authenticated": "Please sign in first"
     }
+  },
+  "listing": {
+    "title": "My job-seeker listing",
+    "subtitle": "Employers find you through this listing. Fill it in section by section — no CV writing needed.",
+    "ready": "Listing readiness",
+    "parts": "What I can do",
+    "step_profession": "My professions (main and additional)",
+    "step_skills": "Skills",
+    "step_experience": "Experience (if any)",
+    "step_location": "Where I can work",
+    "step_preferences": "Schedule and expected pay",
+    "step_education": "Education, certificates, languages",
+    "step_portfolio": "Work samples (optional)",
+    "step_about": "Short intro",
+    "visibility": "Who can see it?",
+    "mode_search": "Show in employer search",
+    "mode_search_desc": "Matching employers can find you and send invitations.",
+    "mode_applied": "Only employers I applied to",
+    "mode_applied_desc": "You don't appear in search; only employers you applied to see your listing.",
+    "mode_hidden": "Hidden for now",
+    "mode_hidden_desc": "Nobody sees it. Turn it back on anytime.",
+    "phone_note": "Your phone number is never published. Only employers you applied to or gave access can see it.",
+    "found_job": "I found a job — pause listing",
+    "found_done": "Congratulations! Your listing is paused.",
+    "reactivate": "Turn listing back on",
+    "saved": "Saved"
   }
 }

@@ -68,7 +68,7 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
     category: v.profession ? `${v.category ? `${name(v.category)} · ` : ""}${name(v.profession)}` : v.category ? `${name(v.category)}${v.subcategory ? ` · ${name(v.subcategory)}` : ""}` : notSet,
     location: v.is_remote ? t("vacancies.preview.remote") : v.region ? [v.district ? name(v.district) : null, name(v.region), v.address].filter(Boolean).join(", ") : notSet,
     salary: <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="font-medium" />,
-    schedule: `${tEnum("employment_type", v.employment_type)} · ${tEnum("work_schedule", v.schedule)}${time}`,
+    schedule: `${v.opportunity_type !== "job" ? `${tEnum("opportunity_type", v.opportunity_type)}${v.is_paid === false ? ` (${t("jobs.card.unpaid")})` : ""} · ` : ""}${tEnum("employment_type", v.employment_type)} · ${tEnum("work_schedule", v.schedule)}${time}`,
     requirements: [
       v.positions_count > 1 ? t("vacancies.preview.positions", { count: v.positions_count }) : null,
       tEnum("experience_min_months", String(v.experience_min_months)),

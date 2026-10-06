@@ -57,7 +57,10 @@
     "reset": "Reset",
     "government": "Government organizations only",
     "government_hint": "Vacancies from verified government institutions",
-    "government_short": "Government organizations"
+    "government_short": "Government organizations",
+    "students": "Good for students and beginners",
+    "students_hint": "Internships, placements, apprenticeships and after-class jobs",
+    "opportunity": "Opportunity type"
   },
   "empty": {
     "title": "No vacancies found",
@@ -197,5 +200,37 @@
     "verified": "Include unverified companies",
     "government": "Not only government organizations",
     "profession_only": "Profession only (no other filters)"
+  },
+  "worker_home": {
+    "browse_title": "Browse open jobs",
+    "browse_desc": "Find work by your profession and area.",
+    "listing_title": "Create a job-seeker listing",
+    "listing_mine": "My job-seeker listing",
+    "listing_desc": "Tell what you can do — let employers find you.",
+    "listing_hidden": "Hidden",
+    "more": "More",
+    "applications": "My applications",
+    "saved": "Saved",
+    "offers": "Invitations",
+    "profile": "Profile",
+    "help": "Help",
+    "students_title": "For students and beginners",
+    "students_desc": "Internships, practice, apprenticeships and after-class jobs"
+  },
+  "card": {
+    "unpaid": "Unpaid"
+  },
+  "students": {
+    "title": "For students and beginners",
+    "subtitle": "Internships, placements, apprenticeships and jobs you can start without experience.",
+    "internship_desc": "Learn on the job, often followed by a job offer",
+    "practice_desc": "Study or work placements",
+    "apprenticeship_desc": "Learn a trade next to a master",
+    "no_experience": "No-experience jobs",
+    "no_experience_desc": "Vacancies that require no experience",
+    "after_class": "After class and part-time",
+    "after_class_desc": "Flexible schedules that fit your studies",
+    "note": "Each listing states whether it is paid, how long it lasts and whether there is a mentor. “Unpaid” is never hidden.",
+    "latest": "New listings for students"
   }
 }
