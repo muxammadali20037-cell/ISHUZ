@@ -139,3 +139,52 @@ Taxminan 60 ta eng ommabop kasbga o'zbek kirill sinonimlari qo'shildi (ҳайд�
 - Yangi tugunlarning `sort_order` qiymati eski qo'shni tugundan keyin (+1, +2, ...) beriladi; eski tugunlar tartibi o'zgarmaydi.
 - Ilova tomonida `src/components/shared/category-icon.tsx` dagi ikonka xaritasida yangi ikonkalar (radio-tower, plug-zap,
   pickaxe, drama, building-2, gem) yo'q — hozircha Briefcase ko'rsatiladi; i18n/statik soha ro'yxatlari ham yangilanishi kerak.
+
+## v3 (0037_profession_catalog_v3.sql)
+
+Tekshirilgan sana: 2026-10-07. `ishuz_dev` ga qo'llandi: **1 303 → 2 042** tugun (**+739**: 735 tanlanadigan, 4 guruh —
+`management-consulting`, `agriculture-forestry`, `culture-visual-arts`, `education-arts-schools`). Faqat yangi tugunlar qo'shiladi,
+mavjud tugunlar (nomi, otasi, tartibi, sinonimlari) o'zgartirilmaydi; yangilarning `sort_order` qiymati 500 dan boshlanadi
+(eski qo'shnilardan keyin). Ikkinchi marta ishga tushirish — 0 o'zgarish. Toza bazada (0001–0038) daraxt `ishuz_dev` bilan bir xil.
+Yangi takroriy `name_uz` yo'q (oldingi ikkitasi — Direktor, Konditsioner ustasi — o'z holicha qoldi).
+
+| Soha | Oldin | Keyin | Qo'shildi |
+|---|---:|---:|---:|
+| `agriculture` | 32 | 60 | +28 |
+| `beauty` | 27 | 45 | +18 |
+| `call_center` | 5 | 20 | +15 |
+| `cleaning` | 21 | 33 | +12 |
+| `courier` | 4 | 20 | +16 |
+| `crafts` | 20 | 38 | +18 |
+| `craftsman` | 33 | 48 | +15 |
+| `culture` | 33 | 73 | +40 |
+| `design` | 30 | 54 | +24 |
+| `education` | 120 | 197 | +77 |
+| `electrician` | 13 | 34 | +21 |
+| `energy` | 25 | 40 | +15 |
+| `engineering` | 33 | 56 | +23 |
+| `finance` | 47 | 66 | +19 |
+| `government` | 33 | 51 | +18 |
+| `hotel` | 15 | 37 | +22 |
+| `legal` | 15 | 38 | +23 |
+| `logistics` | 19 | 37 | +18 |
+| `management` | 18 | 40 | +22 |
+| `marketing` | 29 | 50 | +21 |
+| `mechanic` | 31 | 50 | +19 |
+| `medicine` | 154 | 218 | +64 |
+| `mining` | 28 | 47 | +19 |
+| `office` | 36 | 54 | +18 |
+| `other` | 9 | 25 | +16 |
+| `plumber` | 7 | 22 | +15 |
+| `real_estate` | 15 | 29 | +14 |
+| `restaurant` | 40 | 61 | +21 |
+| `sales` | 33 | 53 | +20 |
+| `science` | 26 | 48 | +22 |
+| `security` | 14 | 29 | +15 |
+| `sewing` | 23 | 38 | +15 |
+| `telecom` | 18 | 34 | +16 |
+
+`auto_service`, `construction`, `driver`, `it`, `production` o'zgarmadi (allaqachon eng to'liq sohalar).
+Asosiy qo'shimchalar: ta'limda fanlar/cholg'ular bo'yicha o'qituvchilar, repetitorlar, raqs/san'at maktablari, OTM
+lavozimlari va fakultet yo'nalishlari, sport turlari bo'yicha murabbiylar; tibbiyotda yetishmayotgan shifokor
+mutaxassisliklari, hamshira turlari, diagnostika, stomatologiya, reabilitatsiya va farmatsiya kasblari.
