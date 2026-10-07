@@ -20,12 +20,13 @@ describe("parseJobsSearchParams", () => {
   });
 
   it("to'liq URL ni o'qiydi (Record va URLSearchParams)", () => {
-    const qs = `q=%20kassir%20&category=sales&subcategory=cashier&region=tashkent_city&district=${D1},${D2}&salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official&experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=true&sort=newest&page=3`;
+    const qs = `q=%20kassir%20&category=sales&subcategory=cashier&region=tashkent_city&district=${D1},${D2}&salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official&experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=true&profession=medicine-doctors&sort=newest&page=3`;
     const parsed = parseJobsSearchParams(new URLSearchParams(qs));
     expect(parsed).toEqual({
       q: "kassir",
       category: "sales",
       subcategory: "cashier",
+      profession: "medicine-doctors",
       region: "tashkent_city",
       district: [D1, D2],
       salaryMin: 5_000_000,
