@@ -232,5 +232,14 @@
     "after_class_desc": "O'qish bilan mos keladigan moslashuvchan jadval",
     "note": "Har bir e'londa haq to'lanadimi, davomiyligi va mentor bor-yo'qligi aniq yoziladi. «Haq to'lanmaydi» belgisi yashirilmaydi.",
     "latest": "Talabalarga mos yangi e'lonlar"
+  },
+  "directions": {
+    "title": "Yo'nalishlar",
+    "inside": "{name}: yo'nalishlar",
+    "path": "Yo'l",
+    "vacancies": "{count} ta vakansiya",
+    "workers": "{count} ta nomzod",
+    "more": "Hozircha bo'sh yo'nalishlar ({count})",
+    "sheet_hint": "Barcha yo'nalishlar (masalan, Shifokorlar → Kardiolog) sahifaning tepasida katta ko'rinishda chiqadi."
   }
 }

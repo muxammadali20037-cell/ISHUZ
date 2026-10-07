@@ -60,7 +60,6 @@ function SectionTitle({ children, className }: { children: ReactNode; className?
 function CategorySection({ draft, patch, reference }: SectionProps) {
   const { t, name } = useT();
   const selected = reference.categories.find((c) => c.slug === draft.category) ?? null;
-  const subs = selected ? reference.subcategories.filter((s) => s.category_id === selected.id) : [];
   return (
     <div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -71,7 +70,7 @@ function CategorySection({ draft, patch, reference }: SectionProps) {
               key={c.id}
               type="button"
               aria-pressed={active}
-              onClick={() => patch({ category: active ? null : c.slug, subcategory: null })}
+              onClick={() => patch({ category: active ? null : c.slug, subcategory: null, profession: null })}
               className={cn(
                 "flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors",
                 active ? "border-primary bg-primary-soft text-primary" : "border-border bg-card hover:bg-secondary",
@@ -83,12 +82,8 @@ function CategorySection({ draft, patch, reference }: SectionProps) {
           );
         })}
       </div>
-      {selected && subs.length ? (
-        <div className="mt-4">
-          <SectionTitle>{t("workers.filters.subcategory")}</SectionTitle>
-          <ChipGroup size="sm" options={subs.map((s) => ({ value: s.slug, label: name(s) }))} value={draft.subcategory} onChange={(v) => patch({ subcategory: typeof v === "string" ? v : null })} />
-        </div>
-      ) : null}
+      {/* Yo'nalishlar endi sahifada katta panelda (har biri nomzodlar soni bilan) */}
+      {selected ? <p className="mt-4 rounded-xl bg-primary-soft/60 px-3 py-2 text-sm text-foreground">{t("jobs.directions.sheet_hint")}</p> : null}
     </div>
   );
 }
@@ -336,7 +331,7 @@ function DistanceSection({ draft, patch, vacancyHasCoords }: SectionProps & { va
 // ---------------------------------------------------------------------------
 
 const SECTION_RESET: Record<Exclude<SheetKind, "all">, Partial<WorkerSearchParams>> = {
-  category: { category: null, subcategory: null },
+  category: { category: null, subcategory: null, profession: null },
   region: { region: null, district: [] },
   experience: { experience_min: null },
   salary: { salary_max: null },

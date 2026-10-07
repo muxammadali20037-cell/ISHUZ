@@ -63,7 +63,7 @@ export function WorkersSearch({
 
   const chips = useMemo<ActiveChip[]>(() => {
     const out: ActiveChip[] = [];
-    if (category) out.push({ key: "category", label: name(category), remove: { category: null, subcategory: null } });
+    if (category) out.push({ key: "category", label: name(category), remove: { category: null, subcategory: null, profession: null } });
     if (subcategory) out.push({ key: "subcategory", label: name(subcategory), remove: { subcategory: null } });
     if (region) out.push({ key: "region", label: name(region), remove: { region: null, district: [] } });
     if (params.district.length) {

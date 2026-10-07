@@ -13,6 +13,7 @@ import { resolveSearch, getSkillOptions } from "@/features/workers/queries";
 import { WorkersSearch } from "@/features/workers/components/workers-search";
 import { WorkersResults } from "@/features/workers/components/workers-results";
 import { WorkersResultsSkeleton } from "@/features/workers/components/skeletons";
+import { DirectionBrowser } from "@/features/professions/components/direction-browser";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -52,6 +53,14 @@ export default async function WorkersPage({ searchParams }: { searchParams: Prom
           vacancy={vacancy}
           origin={origin}
         />
+        {params.category && reference.categories.some((c) => c.slug === params.category) ? (
+          <DirectionBrowser
+            kind="workers"
+            category={reference.categories.find((c) => c.slug === params.category)!}
+            currentSlug={params.profession}
+            hrefFor={(slug) => buildWorkersUrl({ ...params, profession: slug, subcategory: null }, { page: 1 })}
+          />
+        ) : null}
         <div className="mt-5">
           <Suspense key={key} fallback={<WorkersResultsSkeleton />}>
             <WorkersResults params={params} args={args} origin={origin} session={session} />

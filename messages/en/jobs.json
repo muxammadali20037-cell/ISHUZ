@@ -232,5 +232,14 @@
     "after_class_desc": "Flexible schedules that fit your studies",
     "note": "Each listing states whether it is paid, how long it lasts and whether there is a mentor. “Unpaid” is never hidden.",
     "latest": "New listings for students"
+  },
+  "directions": {
+    "title": "Directions",
+    "inside": "{name}: directions",
+    "path": "Path",
+    "vacancies": "{count} vacancies",
+    "workers": "{count} candidates",
+    "more": "Directions with no listings yet ({count})",
+    "sheet_hint": "All directions (e.g. Doctors → Cardiologist) are shown large at the top of the page."
   }
 }

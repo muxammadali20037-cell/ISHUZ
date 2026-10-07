@@ -40,9 +40,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 function CategorySection({ draft, patch, refs }: SectionProps) {
   const { t, name } = useT();
   const category = refs.categories.find((c) => c.slug === draft.category) ?? null;
-  const subs = category ? refs.subcategories.filter((s) => s.category_id === category.id) : [];
   const catId = useId();
-  const subId = useId();
   return (
     <div className="grid gap-3 sm:grid-cols-2">
       <Field label={t("jobs.filters.category")} htmlFor={catId}>
@@ -54,19 +52,11 @@ function CategorySection({ draft, patch, refs }: SectionProps) {
             value: c.slug,
             label: name(c),
           }))}
-          onChange={(e) => patch({ category: e.target.value || null, subcategory: null })}
+          onChange={(e) => patch({ category: e.target.value || null, subcategory: null, profession: null })}
         />
       </Field>
-      <Field label={t("jobs.filters.subcategory")} htmlFor={subId}>
-        <Select
-          id={subId}
-          value={draft.subcategory ?? ""}
-          placeholder={t("jobs.filters.all_subcategories")}
-          disabled={!category}
-          options={subs.map((s) => ({ value: s.slug, label: name(s) }))}
-          onChange={(e) => patch({ subcategory: e.target.value || null })}
-        />
-      </Field>
+      {/* Yo'nalishlar endi sahifada katta panelda (har biri vakansiyalar soni bilan) */}
+      {category ? <p className="rounded-xl bg-primary-soft/60 px-3 py-2 text-sm text-foreground">{t("jobs.directions.sheet_hint")}</p> : null}
     </div>
   );
 }

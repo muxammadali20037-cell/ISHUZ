@@ -24,6 +24,8 @@ export interface WorkerSearchParams {
   q: string | null;
   category: string | null;
   subcategory: string | null;
+  /** profession_nodes.slug — soha ichidagi yo'nalish */
+  profession: string | null;
   region: string | null;
   district: string[];
   experience_min: number | null;
@@ -115,6 +117,7 @@ export function parseWorkerSearchParams(raw: RawSearchParams): WorkerSearchParam
   const q = (first(raw, "q") ?? "").trim().slice(0, 100);
   const category = first(raw, "category");
   const subcategory = first(raw, "subcategory");
+  const profession = first(raw, "profession");
   const region = first(raw, "region");
   const vacancy = first(raw, "vacancy");
   const lat = floatOrNull(first(raw, "lat"), -90, 90);
@@ -127,6 +130,7 @@ export function parseWorkerSearchParams(raw: RawSearchParams): WorkerSearchParam
     q: q || null,
     category: category && SLUG_RE.test(category) ? category : null,
     subcategory: subcategory && SLUG_RE.test(subcategory) ? subcategory : null,
+    profession: profession && SLUG_RE.test(profession) ? profession : null,
     region: region && SLUG_RE.test(region) ? region : null,
     district: csv(first(raw, "district")).filter(isUuid).slice(0, 30),
     experience_min: intOrNull(first(raw, "experience_min"), { min: 0, max: 600 }),
@@ -169,6 +173,7 @@ export function serializeWorkerSearchParams(p: Partial<WorkerSearchParams>): str
   set("q", p.q);
   set("category", p.category);
   set("subcategory", p.subcategory);
+  set("profession", p.profession);
   set("region", p.region);
   if (p.district?.length) set("district", p.district.join(","));
   if (p.experience_min !== null && p.experience_min !== undefined) set("experience_min", String(p.experience_min));
@@ -210,6 +215,7 @@ export function countActiveFilters(p: WorkerSearchParams): number {
   let n = 0;
   if (p.category) n++;
   if (p.subcategory) n++;
+  if (p.profession) n++;
   if (p.region) n++;
   if (p.district.length) n++;
   if (p.experience_min !== null) n++;

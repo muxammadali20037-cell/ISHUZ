@@ -6,6 +6,8 @@ import { jobsHref, parseJobsSearchParams } from "@/features/jobs/search-params";
 import { applyUnderstoodToJobs } from "@/features/search/apply";
 import { getSearchDictionary } from "@/features/search/dictionary";
 import { understandQuery } from "@/features/search/understand";
+import { getCategories } from "@/lib/reference";
+import { DirectionBrowser } from "@/features/professions/components/direction-browser";
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> };
 
@@ -21,5 +23,14 @@ export default async function JobsPage({ searchParams }: Props) {
     const next = applyUnderstoodToJobs(params, understandQuery(params.q, await getSearchDictionary()), params.q);
     if (next) redirect(jobsHref(next));
   }
-  return <JobsResults params={params} />;
+  // Soha tanlangan — katta yo'nalishlar paneli (har yo'nalishda nechta vakansiya bor)
+  const category = params.category ? ((await getCategories()).find((c) => c.slug === params.category) ?? null) : null;
+  return (
+    <>
+      {category ? (
+        <DirectionBrowser kind="jobs" category={category} currentSlug={params.profession} hrefFor={(slug) => jobsHref({ ...params, profession: slug, subcategory: null, page: 1 })} />
+      ) : null}
+      <JobsResults params={params} />
+    </>
+  );
 }

@@ -94,21 +94,32 @@ async function resolveSearch(params: JobsSearchParams, limit: number) {
       : (smart?.subcategory ?? null)
     : null;
   const region = params.region ? (refs.regions.find((r) => r.slug === params.region) ?? null) : null;
-  const args = toSearchVacanciesArgs(params, { categoryId: category?.id, subcategoryId: subcategory?.id, regionId: region?.id }, limit);
+  const professionNodeId = params.profession ? await professionNodeIdBySlug(params.profession) : null;
+  const args = toSearchVacanciesArgs(params, { categoryId: category?.id, subcategoryId: subcategory?.id, regionId: region?.id, professionNodeId }, limit);
   return { args, smart };
 }
 
+/** Yo'nalish slug → tugun id (faol bo'lsa) */
+export const professionNodeIdBySlug = cache(async (slug: string): Promise<string | null> => {
+  const supabase = await createClient();
+  const { data } = await supabase.from("profession_nodes").select("id").eq("slug", slug).eq("is_active", true).maybeSingle();
+  return data?.id ?? null;
+});
+
 /**
- * search_vacancies RPC. Baza hali yangi imkoniyat-turi parametrlarisiz bo'lsa (migratsiya 0033 qo'llanmagan),
- * PostgREST PGRST202 qaytaradi — shunda eski imzo bilan qayta so'raymiz, qidiruv ishlashda davom etadi.
+ * Vakansiya qidiruvi: search_vacancies_v2 (yo'nalish filtri bilan). Baza hali eski bo'lsa (0038/0033 qo'llanmagan)
+ * PostgREST PGRST202 qaytaradi — eski funksiya bilan qayta so'raymiz, qidiruv ishlashda davom etadi.
  */
 async function rpcSearch(supabase: Awaited<ReturnType<typeof createClient>>, args: SearchVacanciesArgs) {
-  const res = await supabase.rpc("search_vacancies", args);
+  const res = await supabase.rpc("search_vacancies_v2", args);
   if (res.error?.code !== "PGRST202") return res;
-  const legacy = { ...args };
-  delete legacy.p_opportunity_types;
-  delete legacy.p_student_friendly;
-  return supabase.rpc("search_vacancies", legacy);
+  const v1 = { ...args };
+  delete v1.p_profession_node_id;
+  const res1 = await supabase.rpc("search_vacancies", v1);
+  if (res1.error?.code !== "PGRST202") return res1;
+  delete v1.p_opportunity_types;
+  delete v1.p_student_friendly;
+  return supabase.rpc("search_vacancies", v1);
 }
 
 /** /jobs qidiruvi: slug → id, aqlli kategoriya, RPC */

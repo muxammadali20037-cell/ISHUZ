@@ -34,6 +34,8 @@ export interface JobsSearchParams {
   category: string | null;
   /** subcategories.slug */
   subcategory: string | null;
+  /** profession_nodes.slug — soha ichidagi yo'nalish (barcha ichki kasblari bilan) */
+  profession: string | null;
   /** regions.slug */
   region: string | null;
   /** districts.id (uuid) ro'yxati */
@@ -63,12 +65,13 @@ export interface JobsSearchParams {
 }
 
 export type RawSearchParams = Record<string, string | string[] | undefined> | URLSearchParams;
-export type SearchVacanciesArgs = Database["public"]["Functions"]["search_vacancies"]["Args"];
+export type SearchVacanciesArgs = Database["public"]["Functions"]["search_vacancies_v2"]["Args"];
 
 export const DEFAULT_JOBS_PARAMS: JobsSearchParams = {
   q: "",
   category: null,
   subcategory: null,
+  profession: null,
   region: null,
   district: [],
   salaryMin: null,
@@ -144,6 +147,7 @@ export function parseJobsSearchParams(raw: RawSearchParams): JobsSearchParams {
     q,
     category: slug(first(raw, "category")),
     subcategory: slug(first(raw, "subcategory")),
+    profession: slug(first(raw, "profession")),
     region: slug(first(raw, "region")),
     district: csv(first(raw, "district"))
       .filter((d) => UUID_RE.test(d))
@@ -176,6 +180,7 @@ export function serializeJobsSearchParams(params: Partial<JobsSearchParams>): st
   if (p.q) sp.set("q", p.q);
   if (p.category) sp.set("category", p.category);
   if (p.subcategory) sp.set("subcategory", p.subcategory);
+  if (p.profession) sp.set("profession", p.profession);
   if (p.region) sp.set("region", p.region);
   if (p.district.length) sp.set("district", p.district.join(","));
   if (p.salaryMin) sp.set("salary_min", String(p.salaryMin));
@@ -208,6 +213,7 @@ export function countActiveFilters(p: JobsSearchParams): number {
   let n = 0;
   if (p.category) n++;
   if (p.subcategory) n++;
+  if (p.profession) n++;
   if (p.region) n++;
   if (p.district.length) n++;
   if (p.salaryMin) n++;
@@ -234,6 +240,7 @@ export interface ResolvedIds {
   categoryId?: string | null;
   subcategoryId?: string | null;
   regionId?: string | null;
+  professionNodeId?: string | null;
 }
 
 /** Slug'lar id ga aylantirilgach RPC argumentlari */
@@ -251,6 +258,7 @@ export function toSearchVacanciesArgs(p: JobsSearchParams, ids: ResolvedIds, lim
   if (p.q) args.p_query = p.q;
   if (ids.categoryId) args.p_category_id = ids.categoryId;
   if (ids.subcategoryId) args.p_subcategory_id = ids.subcategoryId;
+  if (ids.professionNodeId) args.p_profession_node_id = ids.professionNodeId;
   if (ids.regionId) args.p_region_id = ids.regionId;
   if (p.district.length) args.p_district_ids = p.district;
   if (p.salaryMin) args.p_salary_min = p.salaryMin;

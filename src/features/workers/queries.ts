@@ -1,6 +1,7 @@
 import "server-only";
 
 import { cache } from "react";
+import { professionNodeIdBySlug } from "@/features/jobs/queries";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import { getCategories, getSubcategories, getRegions, getSkills } from "@/lib/reference";
@@ -23,7 +24,7 @@ import type {
   WorkerSearchResult,
 } from "./types";
 
-type SearchArgs = Database["public"]["Functions"]["search_workers"]["Args"];
+type SearchArgs = Database["public"]["Functions"]["search_workers_v2"]["Args"];
 
 const VACANCY_COLS = "id, title, status, salary_from, salary_to, salary_type, salary_negotiable, lat, lng, published_at, created_at";
 
@@ -100,6 +101,7 @@ export async function resolveSearch(params: WorkerSearchParams, session: Pick<Se
     p_query: params.q ?? undefined,
     p_category_id: category?.id,
     p_subcategory_id: subcategory?.id,
+    p_profession_node_id: params.profession ? ((await professionNodeIdBySlug(params.profession)) ?? undefined) : undefined,
     p_region_id: region?.id,
     p_district_ids: params.district.length ? params.district : undefined,
     p_experience_min_months: params.experience_min ?? undefined,
@@ -127,11 +129,20 @@ export async function resolveSearch(params: WorkerSearchParams, session: Pick<Se
   return { args, category, subcategory, region, vacancy, origin, myVacancies };
 }
 
+/** search_workers_v2 (yo'nalish filtri bilan); baza eski bo'lsa — eski funksiya */
+async function rpcWorkers(supabase: Awaited<ReturnType<typeof createClient>>, args: SearchArgs) {
+  const res = await supabase.rpc("search_workers_v2", args);
+  if (res.error?.code !== "PGRST202") return res;
+  const v1 = { ...args };
+  delete v1.p_profession_node_id;
+  return supabase.rpc("search_workers", v1);
+}
+
 /** Faqat nomzodlar soni (bo'sh holat maslahatlari uchun). Xatoda 0. */
 export async function countWorkers(params: WorkerSearchParams, session: Pick<SessionContext, "userId" | "companyId">): Promise<number> {
   const { args } = await resolveSearch({ ...params, page: 1 }, session);
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("search_workers", { ...args, p_limit: 1, p_offset: 0 });
+  const { data, error } = await rpcWorkers(supabase, { ...args, p_limit: 1, p_offset: 0 });
   if (error) return 0;
   return Number(data?.[0]?.total_count ?? 0);
 }
@@ -139,7 +150,7 @@ export async function countWorkers(params: WorkerSearchParams, session: Pick<Ses
 /** search_workers RPC → WorkerCardData ro'yxati + umumiy son */
 export async function searchWorkers(args: SearchArgs): Promise<WorkerSearchResult> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("search_workers", args);
+  const { data, error } = await rpcWorkers(supabase, args);
   if (error) return { rows: [], total: 0, error: errorCode(error) };
   const rows: WorkerCardData[] = (data ?? []).map((r) => ({
     id: r.id,
