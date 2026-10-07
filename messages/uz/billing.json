@@ -40,7 +40,9 @@
     "cancelled_desc": "Pul yechilmagan. Qayta urinib ko'rishingiz mumkin",
     "not_found": "To'lov topilmadi",
     "to_vacancy": "Vakansiyaga o'tish",
-    "to_home": "Bosh sahifa"
+    "to_home": "Bosh sahifa",
+    "paid_ai_alerts": "Aqlli AI qidiruv 1 oyga yoqildi",
+    "to_ai_alerts": "AI qidiruvga o'tish"
   },
   "pricing": {
     "title": "Narxlar",

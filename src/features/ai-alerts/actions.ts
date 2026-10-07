@@ -17,6 +17,8 @@ import { getSearchDictionary } from "@/features/search/dictionary";
 import { understandQuery } from "@/features/search/understand";
 import { monthlyEquivalent } from "@/features/search/apply";
 import type { Database } from "@/types/database.types";
+import { getServerEnv } from "@/lib/env";
+import { checkoutUrl, enabledProviders } from "@/features/billing/providers";
 
 type Insert = Database["public"]["Tables"]["ai_job_alerts"]["Insert"];
 const PATH = "/ai-alerts";
@@ -185,4 +187,25 @@ export async function deleteAiAlert(input: unknown): Promise<ActionResult> {
   if (error) return { ok: false, error: "generic" };
   revalidatePath(PATH);
   return { ok: true };
+}
+
+const checkoutSchema = z.object({ provider: z.enum(["payme", "click"]) });
+
+/** Obuna to'lovi: narx serverda (app_settings.price_ai_alerts), to'lov tizimi sahifasiga havola qaytaradi */
+export async function startAiAlertsCheckout(input: unknown): Promise<ActionResult<{ url: string }>> {
+  const parsed = checkoutSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
+  if (!enabledProviders().includes(parsed.data.provider)) return { ok: false, error: "provider_disabled" };
+  const session = await getSession();
+  if (!session) return { ok: false, error: "not_authenticated" };
+  const supabase = await createClient();
+  // p_target_id bu maqsad uchun ishlatilmaydi
+  const { data, error } = await supabase.rpc("create_payment", { p_purpose: "ai_alerts", p_target_id: session.userId });
+  if (error || !data) {
+    console.error("[ai-alerts] create_payment", error?.message);
+    return { ok: false, error: "generic" };
+  }
+  const payment = data as { order_no: number; amount: number };
+  const returnUrl = `${getServerEnv().APP_URL.replace(/\/$/, "")}/billing/return?order=${payment.order_no}`;
+  return { ok: true, data: { url: checkoutUrl(parsed.data.provider, payment.order_no, payment.amount, returnUrl, await getLocale()) } };
 }

@@ -40,7 +40,9 @@
     "cancelled_desc": "No money was charged. You can try again",
     "not_found": "Payment not found",
     "to_vacancy": "Go to vacancy",
-    "to_home": "Home"
+    "to_home": "Home",
+    "paid_ai_alerts": "Smart AI search is on for 1 month",
+    "to_ai_alerts": "Go to AI search"
   },
   "pricing": {
     "title": "Pricing",

@@ -32,6 +32,8 @@ begin
 end $$;
 
 begin;
+-- avval bepul rejimda sinaymiz
+update public.app_settings set value = 'false'::jsonb where key = 'ai_alerts_paid';
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('e4000000-0000-0000-0000-000000000001', '+998905000001', now(), '{"first_name":"Ishchi","last_name":"A"}'),
@@ -85,18 +87,31 @@ select 'e4000000-0000-0000-0000-000000000003', 'Nevrolog', n.category_id, n.id, 
 from public.profession_nodes n, public.regions r where n.slug = 'medicine-neurologist' and r.slug = 'tashkent_city';
 select pg_temp.ok((select count(*) from public.notifications where profile_id = 'e4000000-0000-0000-0000-000000000001' and payload->>'kind' = 'ai_alert') = 2, 'o''chirilgan alert jim');
 
--- to'lov yoqilsa: faqat to'langan alertlar ishlaydi
+-- AI qidiruv pullik (umumiy to'lov o'chiq qolsa ham): obunasizlar jim
 update public.ai_job_alerts set is_active = true;
-update public.app_settings set value = 'true'::jsonb where key = 'billing_enabled';
+update public.app_settings set value = 'true'::jsonb where key = 'ai_alerts_paid';
+select pg_temp.ok(not public.billing_enabled(), 'vakansiya e''loni hali ham bepul (umumiy to''lov o''chiq)');
 insert into public.vacancies (owner_profile_id, title, category_id, profession_node_id, region_id, status, published_at, salary_from, salary_type, slug)
 select 'e4000000-0000-0000-0000-000000000003', 'Manual terapevt', n.category_id, n.id, r.id, 'active', now(), 9000000, 'monthly', 'ai-test-manual'
 from public.profession_nodes n, public.regions r where n.slug = 'medicine-manual-therapist' and r.slug = 'tashkent_city';
-select pg_temp.ok((select count(*) from public.notifications where profile_id = 'e4000000-0000-0000-0000-000000000001' and payload->>'kind' = 'ai_alert') = 2, 'to''lov yoqilganda to''lanmagan alert jim');
-update public.ai_job_alerts set paid_until = now() + interval '30 days';
+select pg_temp.ok((select count(*) from public.notifications where profile_id = 'e4000000-0000-0000-0000-000000000001' and payload->>'kind' = 'ai_alert') = 2, 'obunasiz — xabar yo''q');
+
+-- foydalanuvchi to'lov yaratadi (15 000 so'm), to'lov tizimi tasdiqlaydi → 30 kunlik obuna
+select pg_temp.login('e4000000-0000-0000-0000-000000000001');
+select pg_temp.ok((public.create_payment('ai_alerts', null) ->> 'amount')::int = 15000, 'to''lov yaratildi: 15 000 so''m (umumiy to''lov o''chiq bo''lsa ham)');
+select pg_temp.fails($$insert into public.ai_alert_subscriptions (profile_id, paid_until) values (auth.uid(), now() + interval '1 year')$$, 'obunani o''zi yozib bo''lmaydi', '42501');
+select pg_temp.fails($$select public.apply_payment_internal((select id from public.payments where profile_id = auth.uid() limit 1))$$, 'to''lovni o''zi tasdiqlab bo''lmaydi', '42501');
+select pg_temp.superuser();
+update public.payments set status = 'paid', paid_at = now() where profile_id = 'e4000000-0000-0000-0000-000000000001' and purpose = 'ai_alerts';
+select public.apply_payment_internal((select id from public.payments where profile_id = 'e4000000-0000-0000-0000-000000000001' and purpose = 'ai_alerts'));
+select pg_temp.ok((select paid_until between now() + interval '29 days' and now() + interval '31 days' from public.ai_alert_subscriptions where profile_id = 'e4000000-0000-0000-0000-000000000001'), 'obuna 30 kun');
 insert into public.vacancies (owner_profile_id, title, category_id, profession_node_id, region_id, status, published_at, salary_from, salary_type, slug)
 select 'e4000000-0000-0000-0000-000000000003', 'Lor', n.category_id, n.id, r.id, 'active', now(), 9000000, 'monthly', 'ai-test-lor'
 from public.profession_nodes n, public.regions r where n.slug = 'medicine-ent-specialist' and r.slug = 'tashkent_city';
-select pg_temp.ok((select count(*) from public.notifications where profile_id = 'e4000000-0000-0000-0000-000000000001' and payload->>'kind' = 'ai_alert') = 3, 'to''langan alert ishlaydi');
+select pg_temp.ok((select count(*) from public.notifications where profile_id = 'e4000000-0000-0000-0000-000000000001' and payload->>'kind' = 'ai_alert') = 3, 'obuna bilan xabar keladi');
+-- ikkinchi to'lov muddatni uzaytiradi
+select public.apply_payment_internal((select id from public.payments where profile_id = 'e4000000-0000-0000-0000-000000000001' and purpose = 'ai_alerts'));
+select pg_temp.ok((select paid_until > now() + interval '59 days' from public.ai_alert_subscriptions where profile_id = 'e4000000-0000-0000-0000-000000000001'), 'qayta to''lov muddatni uzaytiradi (60 kun)');
 
 rollback;
 \echo '✓ aqlli AI qidiruv testlari o''tdi'

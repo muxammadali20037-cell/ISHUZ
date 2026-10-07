@@ -31,7 +31,7 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
   const title = status === "paid" ? t("billing.return.paid") : status === "pending" ? t("billing.return.pending") : status === "not_found" ? t("billing.return.not_found") : t("billing.return.cancelled");
   const desc =
     status === "paid"
-      ? t(p?.purpose === "vacancy_publish" ? "billing.return.paid_vacancy" : "billing.return.paid_promotion")
+      ? t(p?.purpose === "vacancy_publish" ? "billing.return.paid_vacancy" : p?.purpose === "ai_alerts" ? "billing.return.paid_ai_alerts" : "billing.return.paid_promotion")
       : status === "pending"
         ? t("billing.return.pending_desc")
         : status === "not_found"
@@ -48,6 +48,11 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
         {desc ? <p className="mt-2 max-w-sm text-muted-foreground">{desc}</p> : null}
         {p ? <p className="mt-3 text-lg font-semibold tabular">{formatMoney(p.amount, locale)}</p> : null}
         <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+          {p?.purpose === "ai_alerts" ? (
+            <Button asChild size="lg">
+              <Link href="/ai-alerts">{t("billing.return.to_ai_alerts")}</Link>
+            </Button>
+          ) : null}
           {p?.vacancy_id ? (
             <Button asChild size="lg">
               <Link href={`/employer/vacancies/${p.vacancy_id}`}>{t("billing.return.to_vacancy")}</Link>

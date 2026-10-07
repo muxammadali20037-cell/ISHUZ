@@ -54,6 +54,32 @@ export type Database = {
           },
         ];
       };
+      ai_alert_subscriptions: {
+        Row: {
+          paid_until: string;
+          profile_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          paid_until: string;
+          profile_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          paid_until?: string;
+          profile_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ai_alert_subscriptions_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       ai_job_alert_hits: {
         Row: {
           alert_id: string;
@@ -3423,6 +3449,7 @@ export type Database = {
         Returns: undefined;
       };
       admin_stats: { Args: Record<PropertyKey, never>; Returns: Json };
+      ai_alerts_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
       application_stage_rank: {
         Args: { s: Database["public"]["Enums"]["application_status"] };
         Returns: number;
@@ -4309,7 +4336,7 @@ export type Database = {
         | "practice"
         | "apprenticeship";
       payment_provider: "payme" | "click";
-      payment_purpose: "vacancy_publish" | "worker_promotion";
+      payment_purpose: "vacancy_publish" | "worker_promotion" | "ai_alerts";
       payment_status: "pending" | "paid" | "cancelled" | "failed";
       phone_visibility: "nobody" | "applicants" | "on_request" | "everyone";
       portfolio_type: "image" | "video" | "pdf" | "document" | "link";
@@ -4576,7 +4603,7 @@ export const Constants = {
         "apprenticeship",
       ],
       payment_provider: ["payme", "click"],
-      payment_purpose: ["vacancy_publish", "worker_promotion"],
+      payment_purpose: ["vacancy_publish", "worker_promotion", "ai_alerts"],
       payment_status: ["pending", "paid", "cancelled", "failed"],
       phone_visibility: ["nobody", "applicants", "on_request", "everyone"],
       portfolio_type: ["image", "video", "pdf", "document", "link"],

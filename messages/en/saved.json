@@ -66,6 +66,14 @@
       "ai_alert_limit": "Up to 3 watches. Delete one you don't need.",
       "ai_alert_unclear": "I didn't understand. Name the job more precisely, e.g. “cook”, “driver”.",
       "ai_alert_text": "Type at least 3 letters."
-    }
+    },
+    "price": "{amount} UZS per month — Telegram alert as soon as a matching job appears",
+    "active_until": "Active until {date}",
+    "pay_payme": "Pay with Payme — {amount} UZS",
+    "extend_payme": "Extend for a month — {amount} UZS",
+    "pay_click": "Pay with Click",
+    "pay_soon": "Payments will be connected soon",
+    "need_pay": "You can create a watch now. Alerts start after payment.",
+    "paid_toast": "Smart AI search is on for 1 month"
   }
 }
