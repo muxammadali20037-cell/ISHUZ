@@ -8,6 +8,7 @@ import { getEmployerProfile } from "@/features/employer/queries";
 import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/format";
 import { EmployerOnboarding } from "@/features/employer/components/onboarding/employer-onboarding";
+import { getGreetingName } from "@/features/auth/greeting-name";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -33,7 +34,7 @@ export default async function EmployerOnboardingPage() {
   return (
     <Shell hideNav forceRole="employer">
       <EmployerOnboarding
-        firstName={session.profile.first_name}
+        firstName={session.profile.first_name.trim() || (await getGreetingName())}
         prefill={{
           employerType: profile?.employer_type ?? null,
           displayName: profile?.display_name ?? null,

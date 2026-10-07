@@ -93,5 +93,19 @@
       "title": "Barcha bo'limlar",
       "desc": "E'lonlaringiz, kelgan arizalar, nomzodlar, tarix, xabarlar va kompaniya sozlamalari shu yerda."
     }
+  },
+  "later": "Keyinroq",
+  "hello": {
+    "title": "Assalomu alaykum!",
+    "ask": "Ismingiz nima?",
+    "placeholder": "Masalan: Aziz"
+  },
+  "role": {
+    "title": "Tanishganimdan xursandman, {name}!",
+    "ask": "Nima qilmoqchisiz?",
+    "worker": "Ish qidiryapman",
+    "worker_desc": "Menga mos ish topib bering",
+    "employer": "Xodim qidiryapman",
+    "employer_desc": "Vakansiya joylab, ishchi topaman"
   }
 }

@@ -93,5 +93,19 @@
       "title": "All sections",
       "desc": "Your vacancies, applications, candidates, history, messages and company settings."
     }
+  },
+  "later": "Later",
+  "hello": {
+    "title": "Hello!",
+    "ask": "What's your name?",
+    "placeholder": "e.g. Aziz"
+  },
+  "role": {
+    "title": "Nice to meet you, {name}!",
+    "ask": "What would you like to do?",
+    "worker": "I'm looking for a job",
+    "worker_desc": "Find me a job that fits",
+    "employer": "I'm hiring",
+    "employer_desc": "Post a vacancy and find a worker"
   }
 }

@@ -2,31 +2,26 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Megaphone, MessageCircle, Search, Users } from "lucide-react";
+import { ArrowRight, Building2, Search } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import type { Locale } from "@/lib/i18n/config";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { setLocale } from "@/features/auth/actions";
+import { Input } from "@/components/ui/input";
+import { saveGreetingName, setLocale } from "@/features/auth/actions";
 
 import { WELCOME_COOKIE } from "./welcome-cookie";
 
-const SLIDES = [
-  { key: "jobs", icon: Search, tone: "bg-primary text-primary-foreground" },
-  { key: "workers", icon: Users, tone: "bg-success text-success-foreground" },
-  { key: "post", icon: Megaphone, tone: "bg-warning text-warning-foreground" },
-  { key: "chat", icon: MessageCircle, tone: "bg-[#229ED9] text-white" },
-] as const;
-
 /**
- * Birinchi kirish: (til cookie'si yo'q bo'lsa) til tanlash → asosiy tugmalar nima qilishi (4 slayd).
+ * Birinchi kirish — suhbat kabi: (til cookie'si yo'q bo'lsa) til → "Assalomu alaykum! Ismingiz nima?" →
+ * "Ish qidiryapsizmi yoki xodim?" (ikki katta tugma) → tegishli oddiy savollarga o'tadi.
  * Faqat klientda, mount'dan keyin ko'rinadi — qidiruv tizimlari va SSR kontentiga ta'sir qilmaydi.
  */
 export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
-  const [step, setStep] = useState<"lang" | number>(needLanguage ? "lang" : 0);
+  const [step, setStep] = useState<"lang" | "hello" | "role">(needLanguage ? "lang" : "hello");
+  const [name, setName] = useState("");
   const [pending, startTransition] = useTransition();
 
   useEffect(() => {
@@ -45,8 +40,22 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
     startTransition(async () => {
       await setLocale(locale);
       router.refresh();
-      setStep(0);
+      setStep("hello");
     });
+
+  const submitName = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (name.trim().length < 2) return;
+    startTransition(async () => {
+      await saveGreetingName(name);
+      setStep("role");
+    });
+  };
+
+  const choose = (href: string) => {
+    finish();
+    router.push(href);
+  };
 
   if (!open) return null;
 
@@ -89,38 +98,74 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
     );
   }
 
-  return (
-    <div className="fixed inset-0 z-[60] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center" role="dialog" aria-modal="true">
-      <div className="w-full max-w-md animate-fade-in rounded-t-3xl bg-card p-6 pb-safe shadow-xl sm:rounded-3xl">
-        <Slide index={step} onNext={() => (step < SLIDES.length - 1 ? setStep(step + 1) : finish())} onSkip={finish} t={t} />
-      </div>
-    </div>
-  );
-}
+  const first = name.trim().split(/\s+/)[0] ?? "";
 
-function Slide({ index, onNext, onSkip, t }: { index: number; onNext: () => void; onSkip: () => void; t: (k: string) => string }) {
-  const s = SLIDES[index]!;
-  const last = index === SLIDES.length - 1;
   return (
-    <div key={s.key} className="animate-fade-in text-center">
-      <div className="flex justify-end">
-        <button type="button" onClick={onSkip} className="text-sm font-medium text-muted-foreground hover:text-foreground">
-          {t("welcome.skip")}
-        </button>
-      </div>
-      <span className={cn("mx-auto mt-2 flex size-20 items-center justify-center rounded-3xl shadow-md", s.tone)}>
-        <s.icon className="size-10" />
-      </span>
-      <h2 className="mt-5 text-2xl font-bold">{t(`welcome.slides.${s.key}.title`)}</h2>
-      <p className="mx-auto mt-2 max-w-xs text-[15px] leading-relaxed text-muted-foreground">{t(`welcome.slides.${s.key}.text`)}</p>
-      <div className="mt-6 flex justify-center gap-1.5" aria-hidden>
-        {SLIDES.map((x, i) => (
-          <span key={x.key} className={cn("h-2 rounded-full transition-all", i === index ? "w-6 bg-primary" : "w-2 bg-border")} />
-        ))}
-      </div>
-      <Button size="lg" fullWidth className="mt-6" onClick={onNext}>
-        {t(last ? "welcome.start" : "welcome.next")}
-      </Button>
+    <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-background px-5 py-10" role="dialog" aria-modal="true" aria-labelledby="welcome-title">
+      {step === "hello" ? (
+        <form key="hello" onSubmit={submitName} className="w-full max-w-sm animate-fade-in text-center">
+          <div className="mx-auto flex size-20 origin-bottom-right animate-[wave_1.6s_ease-in-out_2] items-center justify-center text-6xl" aria-hidden>
+            👋
+          </div>
+          <h1 id="welcome-title" className="mt-4 text-3xl font-extrabold tracking-tight">
+            {t("welcome.hello.title")}
+          </h1>
+          <p className="mt-2 text-lg text-muted-foreground">{t("welcome.hello.ask")}</p>
+          <Input
+            autoFocus
+            autoComplete="given-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder={t("welcome.hello.placeholder")}
+            maxLength={60}
+            className="mt-6 h-14 text-center text-lg"
+          />
+          <Button type="submit" size="lg" fullWidth className="mt-4 h-14 text-base" disabled={name.trim().length < 2} loading={pending}>
+            {t("welcome.next")} <ArrowRight className="size-5" />
+          </Button>
+          <button type="button" onClick={finish} className="mt-5 text-sm font-medium text-muted-foreground hover:text-foreground">
+            {t("welcome.later")}
+          </button>
+        </form>
+      ) : (
+        <div key="role" className="w-full max-w-sm animate-fade-in text-center">
+          <h1 id="welcome-title" className="text-3xl font-extrabold tracking-tight">
+            {t("welcome.role.title", { name: first })}
+          </h1>
+          <p className="mt-2 text-lg text-muted-foreground">{t("welcome.role.ask")}</p>
+          <div className="mt-8 grid gap-4">
+            <button
+              type="button"
+              onClick={() => choose("/onboarding/worker")}
+              className="flex items-center gap-4 rounded-3xl bg-primary p-5 text-left text-primary-foreground shadow-lg transition-transform active:scale-[0.98]"
+            >
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+                <Search className="size-7" />
+              </span>
+              <span>
+                <span className="block text-xl font-bold">{t("welcome.role.worker")}</span>
+                <span className="block text-sm text-primary-foreground/85">{t("welcome.role.worker_desc")}</span>
+              </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => choose("/onboarding/employer")}
+              className="flex items-center gap-4 rounded-3xl bg-success p-5 text-left text-success-foreground shadow-lg transition-transform active:scale-[0.98]"
+            >
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+                <Building2 className="size-7" />
+              </span>
+              <span>
+                <span className="block text-xl font-bold">{t("welcome.role.employer")}</span>
+                <span className="block text-sm text-success-foreground/85">{t("welcome.role.employer_desc")}</span>
+              </span>
+            </button>
+          </div>
+          <button type="button" onClick={finish} className="mt-6 text-sm font-medium text-muted-foreground hover:text-foreground">
+            {t("welcome.later")}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

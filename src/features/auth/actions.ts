@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 import { normalizePhone } from "@/lib/format";
 import { LOCALE_COOKIE, isLocale, type Locale } from "@/lib/i18n/config";
 import { getSession } from "./session";
+import { GREETING_NAME_COOKIE } from "@/components/shared/welcome-cookie";
 
 export type ActionResult<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 
@@ -57,6 +58,22 @@ export async function setLocale(locale: Locale) {
     const supabase = await createClient();
     await supabase.from("profiles").update({ locale }).eq("id", session.userId);
   }
+}
+
+/**
+ * Kirish oynasidagi ism: cookie'ga yoziladi (hali kirmagan bo'lsa ham), kirgan bo'lsa va profilda ism bo'lmasa — profilga.
+ */
+export async function saveGreetingName(raw: string): Promise<ActionResult> {
+  const name = z.string().trim().min(2).max(60).safeParse(raw);
+  if (!name.success) return { ok: false, error: "validation" };
+  const cookieStore = await cookies();
+  cookieStore.set(GREETING_NAME_COOKIE, encodeURIComponent(name.data), { path: "/", maxAge: 60 * 60 * 24 * 30, sameSite: "lax" });
+  const session = await getSession();
+  if (session && !session.profile.first_name.trim()) {
+    const supabase = await createClient();
+    await supabase.from("profiles").update({ first_name: name.data }).eq("id", session.userId);
+  }
+  return { ok: true };
 }
 
 /** Faol rolni almashtirish (worker ↔ employer) */

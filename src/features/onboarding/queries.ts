@@ -2,6 +2,7 @@ import "server-only";
 
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
+import { getGreetingName } from "@/features/auth/greeting-name";
 import type { SessionContext } from "@/features/auth/session";
 import type { DraftSkill, SkillOption, SkillQuestion, WorkerDraft } from "./types";
 
@@ -15,7 +16,7 @@ const WORKER_COLUMNS =
 export const getWorkerDraft = cache(async (session: SessionContext): Promise<WorkerDraft> => {
   const supabase = await createClient();
   const p = session.profile;
-  const profile = { first_name: p.first_name, last_name: p.last_name, birth_date: p.birth_date, gender: p.gender, avatar_url: p.avatar_url };
+  const profile = { first_name: p.first_name.trim() || (await getGreetingName()), last_name: p.last_name, birth_date: p.birth_date, gender: p.gender, avatar_url: p.avatar_url };
 
   const [contactsRes, workerRes] = await Promise.all([
     supabase.from("profile_contacts").select("phone, phone_verified_at, telegram_username").eq("profile_id", session.userId).maybeSingle(),
