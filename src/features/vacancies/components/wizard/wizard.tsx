@@ -36,8 +36,10 @@ export function VacancyWizard({
   suggestedSkills: Skill[];
 }) {
   const { t } = useT();
-  const heading = t(`vacancies.wizard.steps.${step}.heading`);
-  const hint = t(`vacancies.wizard.steps.${step}.hint`);
+  // Yangi vakansiyaning 1-qadami — kasb ro'yxatdan tanlanadi (yozish emas)
+  const picking = step === "title" && !vacancy;
+  const heading = t(picking ? "vacancies.wizard.steps.title.heading_pick" : `vacancies.wizard.steps.${step}.heading`);
+  const hint = t(picking ? "vacancies.wizard.steps.title.hint_pick" : `vacancies.wizard.steps.${step}.hint`);
   const optional = step !== "review" && isOptionalStep(step);
 
   return (

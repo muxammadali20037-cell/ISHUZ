@@ -36,6 +36,11 @@ export const titleSchema = z.object({
   title: z.string().trim().min(2, E.title).max(120, E.title),
   /** Taklifdan tanlanganda kategoriya/yo'nalish ham darhol o'rnatiladi */
   subcategoryId: uuid.nullable().optional(),
+  /** 1-qadamda kasblar daraxtidan tanlangan kasb (lavozim nomi undan olinadi) */
+  professionNodeId: uuid.nullable().optional(),
+  /** Daraxtda yo'q — o'zi yozgan kasb + eng yaqin soha */
+  customProfession: z.string().trim().min(2).max(120).nullable().optional(),
+  categoryId: uuid.nullable().optional(),
 });
 
 export const categorySchema = z.object({

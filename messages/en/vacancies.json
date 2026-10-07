@@ -138,7 +138,9 @@
       "title": {
         "name": "Position",
         "heading": "What position are you hiring for?",
-        "hint": "Keep it short and clear — candidates search by this title."
+        "hint": "Keep it short and clear — candidates search by this title.",
+        "heading_pick": "What kind of worker do you need?",
+        "hint_pick": "Pick a field or type in search (typos are fine). E.g. teacher → math teacher."
       },
       "category": {
         "name": "Category",
@@ -195,7 +197,9 @@
       "label": "Job title",
       "placeholder": "e.g. Cashier, Driver, Sales assistant",
       "suggestions": "Suggestions",
-      "suggestion_hint": "Choosing a suggestion also sets the category automatically"
+      "suggestion_hint": "Choosing a suggestion also sets the category automatically",
+      "type_instead": "Can't find it — I'll type the job title myself",
+      "creating": "Creating the vacancy…"
     },
     "category": {
       "search": "Search categories",
@@ -219,7 +223,7 @@
       "lat": "Latitude (lat)",
       "lng": "Longitude (lng)",
       "locating": "Detecting...",
-      "coords_set": "Point set"
+      "coords_set": "Exact spot set ✓ (candidates will see the distance)"
     },
     "salary": {
       "negotiable": "Salary negotiable",

@@ -138,7 +138,9 @@
       "title": {
         "name": "Lavozim",
         "heading": "Qaysi lavozimga xodim kerak?",
-        "hint": "Qisqa va aniq yozing — nomzodlar shu nom bo'yicha qidiradi."
+        "hint": "Qisqa va aniq yozing — nomzodlar shu nom bo'yicha qidiradi.",
+        "heading_pick": "Qanday xodim kerak?",
+        "hint_pick": "Sohani tanlang yoki qidiruvga yozing (xato yozsangiz ham topadi). Masalan: o'qituvchi → matematika o'qituvchisi."
       },
       "category": {
         "name": "Kategoriya",
@@ -195,7 +197,9 @@
       "label": "Lavozim nomi",
       "placeholder": "Masalan: Kassir, Haydovchi, Sotuvchi",
       "suggestions": "Takliflar",
-      "suggestion_hint": "Taklifni tanlasangiz kategoriya ham avtomatik o'rnatiladi"
+      "suggestion_hint": "Taklifni tanlasangiz kategoriya ham avtomatik o'rnatiladi",
+      "type_instead": "Ro'yxatdan topolmadimmi — lavozim nomini o'zim yozaman",
+      "creating": "Vakansiya yaratilmoqda…"
     },
     "category": {
       "search": "Kategoriya qidirish",
@@ -219,7 +223,7 @@
       "lat": "Kenglik (lat)",
       "lng": "Uzunlik (lng)",
       "locating": "Aniqlanmoqda...",
-      "coords_set": "Nuqta belgilangan"
+      "coords_set": "Aniq joy belgilandi ✓ (nomzodlar uchun masofa hisoblanadi)"
     },
     "salary": {
       "negotiable": "Maosh kelishiladi",

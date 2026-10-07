@@ -138,28 +138,14 @@ export function StepLocation({ mode, vacancy, refs }: StepProps) {
         <div className="rounded-2xl border border-border bg-card p-4">
           <div className="font-semibold">{t("vacancies.wizard.location.coords")}</div>
           <p className="mt-1 text-xs text-muted-foreground">{t("vacancies.wizard.location.coords_hint")}</p>
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            <Field label={t("vacancies.wizard.location.lat")} htmlFor="lat" error={errors.lat?.message ? t(errors.lat.message) : undefined}>
-              <Controller
-                control={form.control}
-                name="lat"
-                render={({ field }) => (
-                  <Input id="lat" type="number" step="any" inputMode="decimal" min={-90} max={90} value={field.value ?? ""} invalid={!!errors.lat} onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))} placeholder="41.311081" />
-                )}
-              />
-            </Field>
-            <Field label={t("vacancies.wizard.location.lng")} htmlFor="lng">
-              <Controller
-                control={form.control}
-                name="lng"
-                render={({ field }) => (
-                  <Input id="lng" type="number" step="any" inputMode="decimal" min={-180} max={180} value={field.value ?? ""} invalid={!!errors.lat} onChange={(e) => field.onChange(e.target.value === "" ? null : Number(e.target.value))} placeholder="69.240562" />
-                )}
-              />
-            </Field>
-          </div>
+          {/* Raqamli koordinata maydonlari yo'q — bitta tugma bilan aniqlanadi */}
+          {lat !== null && lng !== null ? (
+            <p className="mt-3 flex items-center gap-2 rounded-xl bg-success-soft px-3 py-2 text-sm font-medium text-foreground">
+              <MapPin className="size-4 text-success" /> {t("vacancies.wizard.location.coords_set")}
+            </p>
+          ) : null}
           <div className="mt-3 flex flex-wrap gap-2">
-            <Button type="button" variant="soft" size="sm" onClick={locate} loading={locating}>
+            <Button type="button" variant="soft" onClick={locate} loading={locating}>
               <LocateFixed className="size-4" /> {locating ? t("vacancies.wizard.location.locating") : t("vacancies.actions.get_location")}
             </Button>
             {district?.lat && district.lng ? (

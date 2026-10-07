@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +17,8 @@ import { errorMessage } from "../../../utils";
 import { useSaveStep } from "../use-save-step";
 import { WizardFooter } from "../wizard-footer";
 import type { WizardRefs } from "../types";
+import { ProfessionPicker } from "@/features/professions/components/profession-picker";
+import type { PickedProfession } from "@/features/professions/types";
 
 const MAX_SUGGESTIONS = 6;
 
@@ -63,6 +65,42 @@ export function StepTitle({ mode, vacancy, refs }: { mode: WizardMode; vacancy: 
 
   const pending = creating || saver.pending;
   const err = form.formState.errors.title?.message;
+
+  // Yangi vakansiya: lavozim yozilmaydi — kasblar daraxtidan tanlanadi (soha → kasb → ixtisoslik).
+  // Tanlangan kasb nomi lavozim nomi bo'ladi (keyin tahrirlash mumkin), kasb qadami o'tkazib yuboriladi.
+  const [manual, setManual] = useState(false);
+  const createFrom = (input: { title: string; professionNodeId?: string; customProfession?: string; categoryId?: string }) => {
+    startCreate(async () => {
+      const res = await createDraft({ ...input, title: input.title.slice(0, 120), subcategoryId: null });
+      if (!res.ok || !res.data) {
+        toast.error(errorMessage(t, res.ok ? "generic" : res.error));
+        return;
+      }
+      router.push(wizardHref("create", res.data.id, "location"));
+    });
+  };
+  const pickProfession = (p: PickedProfession) => {
+    const last = p.trail.at(-1);
+    if (!last) return;
+    createFrom({ title: name(last), professionNodeId: p.id });
+  };
+
+  if (!vacancy && !manual) {
+    return (
+      <div className="space-y-4" aria-busy={creating}>
+        <ProfessionPicker
+          categories={refs.categories}
+          value={null}
+          onChange={pickProfession}
+          onCustom={(text, categoryId) => createFrom({ title: text, customProfession: text, categoryId })}
+        />
+        <button type="button" onClick={() => setManual(true)} className="w-full text-center text-sm text-muted-foreground hover:text-foreground">
+          {t("vacancies.wizard.title.type_instead")}
+        </button>
+        {creating ? <p className="text-center text-sm text-muted-foreground">{t("vacancies.wizard.title.creating")}</p> : null}
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={onSubmit} noValidate>

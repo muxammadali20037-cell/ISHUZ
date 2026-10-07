@@ -79,14 +79,45 @@ export async function createDraft(input: unknown): Promise<ActionResult<{ id: st
     }
   }
 
+  // Kasblar daraxtidan tanlangan bo'lsa — soha/yo'nalish trigger orqali tugundan olinadi
+  let professionNodeId: string | null = null;
+  if (parsed.data.professionNodeId) {
+    const { data: node } = await supabase.from("profession_nodes").select("id, is_active").eq("id", parsed.data.professionNodeId).maybeSingle();
+    if (!node?.is_active) return { ok: false, error: "validation" };
+    professionNodeId = node.id;
+  }
+  const custom = !professionNodeId && parsed.data.customProfession && parsed.data.categoryId ? parsed.data.customProfession : null;
+  if (custom) categoryId = parsed.data.categoryId ?? null;
+
+  // Ish joyi — kompaniya (yoki ish beruvchi) manzili oldindan qo'yiladi, keyingi qadamda o'zgartirish mumkin
+  const place: { region_id: string | null; district_id: string | null; address?: string | null } | null = session.companyId
+    ? (await supabase.from("companies").select("region_id, district_id, address").eq("id", session.companyId).maybeSingle()).data
+    : (await supabase.from("employer_profiles").select("region_id, district_id").eq("profile_id", session.userId).maybeSingle()).data;
+
   const id = randomUUID();
-  const base = { id, owner_profile_id: session.userId, title: parsed.data.title, slug: "", category_id: categoryId, subcategory_id: subcategoryId };
+  const base = {
+    id,
+    region_id: place?.region_id ?? null,
+    district_id: place?.district_id ?? null,
+    ...(place?.address ? { address: place.address } : {}),
+    owner_profile_id: session.userId,
+    title: parsed.data.title,
+    slug: "",
+    category_id: categoryId,
+    subcategory_id: subcategoryId,
+    ...(professionNodeId ? { profession_node_id: professionNodeId } : {}),
+    ...(custom ? { custom_profession: custom } : {}),
+  };
   let { error } = await supabase.from("vacancies").insert({ ...base, company_id: session.companyId });
   // Kompaniyada faqat "viewer" bo'lsa RLS rad etadi — shaxsiy vakansiya sifatida yaratiladi
   if (error && session.companyId && errorCode(error) === "forbidden") {
     ({ error } = await supabase.from("vacancies").insert({ ...base, company_id: null }));
   }
   if (error) return { ok: false, error: errorCode(error) };
+  if (custom) {
+    const { error: reqErr } = await supabase.from("custom_occupation_requests").insert({ raw_text: custom, category_id: categoryId, context: "vacancy", vacancy_id: id });
+    if (reqErr && reqErr.code !== "23505") console.error("[vacancies] custom occupation", reqErr.message);
+  }
   revalidateVacancy(id);
   return { ok: true, data: { id } };
 }
