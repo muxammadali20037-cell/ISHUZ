@@ -17,6 +17,7 @@ import { errorMessage } from "../i18n-helpers";
 import { APPLY_MESSAGE_MAX } from "../schema";
 import type { VacancyViewerState } from "../types";
 import { useSaveVacancy } from "./use-save-vacancy";
+import { celebrate } from "@/lib/celebrate";
 
 export interface VacancyActionsProps {
   vacancy: { id: string; slug: string; title: string; companyName: string | null; status: Enums<"vacancy_status"> };
@@ -87,6 +88,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
         const id = res.data?.id ?? null;
         setApplication({ id });
         setDone(id);
+        celebrate();
         return;
       }
       switch (res.error) {

@@ -5,6 +5,7 @@ import { cookies } from "next/headers";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
 import { WelcomeGate } from "@/components/shared/welcome-gate";
+import { CelebrationListener } from "@/components/shared/celebration-listener";
 import { WELCOME_COOKIE } from "@/components/shared/welcome-cookie";
 import { LOCALE_COOKIE } from "@/lib/i18n/config";
 import { Providers } from "./providers";
@@ -67,6 +68,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-sans">
         <Providers locale={locale}>
           {children}
+          <CelebrationListener />
           {showWelcome ? <WelcomeGate needLanguage={!cookieStore.has(LOCALE_COOKIE)} /> : null}
         </Providers>
       </body>

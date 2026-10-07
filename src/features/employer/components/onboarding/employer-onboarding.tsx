@@ -14,6 +14,7 @@ import { CompanyForm } from "../company-form";
 import { PersonForm } from "../person-form";
 import type { ReferenceLists } from "../ref-types";
 import { EmployerTypeStep, type EmployerType } from "./employer-type-step";
+import { celebrateAfterNavigation } from "@/lib/celebrate";
 
 export interface OnboardingPrefill {
   employerType: EmployerType | null;
@@ -62,6 +63,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   };
 
   const finish = () => {
+    celebrateAfterNavigation();
     toast.success(t("employer.onboarding.done_toast"));
     router.replace("/employer");
     router.refresh();

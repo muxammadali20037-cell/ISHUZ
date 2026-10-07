@@ -2,7 +2,8 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Send, PartyPopper } from "lucide-react";
+import { Eye, EyeOff, Send, PartyPopper, ShieldCheck } from "lucide-react";
+import { celebrate } from "@/lib/celebrate";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
@@ -29,14 +30,34 @@ export function ListingVisibility({ isPublic, status }: { isPublic: boolean; sta
         toast.error(t("common.errors.generic"));
         return;
       }
+      if (found) celebrate();
       toast.success(found ? t("profile.listing.found_done") : t("profile.listing.saved"));
       router.refresh();
     });
 
-  const options: { key: Mode; icon: typeof Eye; title: string; desc: string }[] = [
-    { key: "search", icon: Eye, title: t("profile.listing.mode_search"), desc: t("profile.listing.mode_search_desc") },
-    { key: "applied", icon: Send, title: t("profile.listing.mode_applied"), desc: t("profile.listing.mode_applied_desc") },
-    { key: "hidden", icon: EyeOff, title: t("profile.listing.mode_hidden"), desc: t("profile.listing.mode_hidden_desc") },
+  // Har bir holat o'z rangida: yashil — hamma ko'radi, ko'k — faqat murojaat qilinganlar, kulrang — yashirin
+  const options: { key: Mode; icon: typeof Eye; title: string; desc: string; tone: { on: string; icon: string; dot: string } }[] = [
+    {
+      key: "search",
+      icon: Eye,
+      title: t("profile.listing.mode_search"),
+      desc: t("profile.listing.mode_search_desc"),
+      tone: { on: "border-success bg-success-soft", icon: "bg-success text-success-foreground", dot: "bg-success" },
+    },
+    {
+      key: "applied",
+      icon: Send,
+      title: t("profile.listing.mode_applied"),
+      desc: t("profile.listing.mode_applied_desc"),
+      tone: { on: "border-primary bg-primary-soft", icon: "bg-primary text-primary-foreground", dot: "bg-primary" },
+    },
+    {
+      key: "hidden",
+      icon: EyeOff,
+      title: t("profile.listing.mode_hidden"),
+      desc: t("profile.listing.mode_hidden_desc"),
+      tone: { on: "border-warning bg-warning-soft", icon: "bg-warning text-warning-foreground", dot: "bg-warning" },
+    },
   ];
 
   return (
@@ -51,21 +72,29 @@ export function ListingVisibility({ isPublic, status }: { isPublic: boolean; sta
             disabled={pending}
             onClick={() => mode !== o.key && apply(o.key)}
             className={cn(
-              "flex w-full items-start gap-3 rounded-2xl border-2 p-4 text-left transition-colors disabled:opacity-60",
-              mode === o.key ? "border-primary bg-primary-soft/50" : "border-border bg-card hover:border-primary/50",
+              "flex w-full items-start gap-3 rounded-2xl border-2 p-4 text-left transition-all disabled:opacity-60",
+              mode === o.key ? cn(o.tone.on, "shadow-sm") : "border-border bg-card hover:border-primary/40",
             )}
           >
-            <o.icon className={cn("mt-0.5 size-5 shrink-0", mode === o.key ? "text-primary" : "text-muted-foreground")} />
-            <span>
-              <span className="block font-semibold">{o.title}</span>
+            <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-xl", mode === o.key ? o.tone.icon : "bg-secondary text-muted-foreground")}>
+              <o.icon className="size-5" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="flex items-center gap-2 font-semibold">
+                {o.title}
+                {mode === o.key ? <span className={cn("size-2 rounded-full", o.tone.dot)} aria-hidden /> : null}
+              </span>
               <span className="block text-sm text-muted-foreground">{o.desc}</span>
             </span>
           </button>
         ))}
       </div>
-      <p className="text-xs text-muted-foreground">{t("profile.listing.phone_note")}</p>
+      <p className="flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary-soft/60 p-3 text-sm text-foreground">
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+        {t("profile.listing.phone_note")}
+      </p>
       {mode !== "hidden" ? (
-        <Button variant="outline" size="lg" className="w-full" disabled={pending} onClick={() => apply("hidden", true)}>
+        <Button size="lg" className="w-full bg-success text-success-foreground hover:bg-success/90" disabled={pending} onClick={() => apply("hidden", true)}>
           <PartyPopper className="size-5" /> {t("profile.listing.found_job")}
         </Button>
       ) : (

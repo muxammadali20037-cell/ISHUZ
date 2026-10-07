@@ -19,6 +19,7 @@ import { VacancyPreview } from "../../vacancy-preview";
 import { QualityPanel } from "../../insights/quality-panel";
 import type { StepProps } from "../types";
 import { PublishModeNote, requestPayment } from "@/features/billing/components/payment-dialog";
+import { celebrateAfterNavigation } from "@/lib/celebrate";
 
 /**
  * Ko'rib chiqish: to'liq preview + qadamlar xulosasi (tahrirlash havolalari) + E'lon qilish / Qoralama.
@@ -52,6 +53,7 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
       }
       if (res.data?.status === "pending_review") toast.success(t("vacancies.toast.pending_review"), t("vacancies.toast.pending_review_desc"));
       else toast.success(t("vacancies.toast.published"), t("vacancies.toast.published_desc"));
+      celebrateAfterNavigation();
       router.push(`/employer/vacancies/${v.id}?published=1`);
     });
   };

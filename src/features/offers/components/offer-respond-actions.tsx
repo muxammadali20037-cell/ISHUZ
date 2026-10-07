@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { actionErrorText } from "@/features/applications/errors";
 import { respondToOffer } from "../actions";
+import { celebrate } from "@/lib/celebrate";
 
 /** Ishchi: "Qabul qilish" / "Rad etish" (respond_offer) — har biri ConfirmDialog bilan */
 export function OfferRespondActions({ offerId, disabled }: { offerId: string; disabled?: boolean }) {
@@ -26,6 +27,7 @@ export function OfferRespondActions({ offerId, disabled }: { offerId: string; di
         router.refresh();
         return;
       }
+      if (accept) celebrate();
       if (accept) toast.success(t("offers.detail.accepted_toast"), t("offers.detail.accepted_desc"));
       else toast.info(t("offers.detail.declined_toast"));
       setDialog(null);

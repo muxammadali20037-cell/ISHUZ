@@ -14,6 +14,7 @@ import { QUICK_STEPS, TOTAL_STEPS } from "../types";
 
 import { stepHref } from "../utils";
 import { finishOnboarding } from "../actions";
+import { celebrateAfterNavigation } from "@/lib/celebrate";
 
 export { stepHref };
 
@@ -85,6 +86,7 @@ export function useStepSubmit() {
         toast.error(errorMessage(t, done.error));
         return;
       }
+      celebrateAfterNavigation();
       toast.success(t("onboarding.worker.quick_done"));
       router.replace(done.data?.redirect ?? "/");
       router.refresh();
