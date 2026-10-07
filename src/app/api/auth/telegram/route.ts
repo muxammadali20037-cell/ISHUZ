@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getServerEnv } from "@/lib/env";
 import { verifyTelegramInitData } from "@/lib/telegram/verify";
+import { LOCALES } from "@/lib/i18n/config";
 import { ensureTelegramProfile, startSessionForProfile } from "@/features/auth/telegram-session";
 
 /**
@@ -15,7 +16,7 @@ export async function POST(req: NextRequest) {
   const { TELEGRAM_BOT_TOKEN } = getServerEnv();
   if (!TELEGRAM_BOT_TOKEN) return NextResponse.json({ error: "telegram_not_configured" }, { status: 503 });
 
-  const body = z.object({ initData: z.string().min(10), locale: z.enum(["uz", "ru"]).optional() }).safeParse(await req.json().catch(() => null));
+  const body = z.object({ initData: z.string().min(10), locale: z.enum(LOCALES).optional() }).safeParse(await req.json().catch(() => null));
   if (!body.success) return NextResponse.json({ error: "bad_request" }, { status: 400 });
 
   const tgUser = verifyTelegramInitData(body.data.initData, TELEGRAM_BOT_TOKEN);

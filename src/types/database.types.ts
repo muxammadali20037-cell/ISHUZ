@@ -2691,6 +2691,42 @@ export type Database = {
           },
         ];
       };
+      web_login_requests: {
+        Row: {
+          confirmed_at: string | null;
+          consumed_at: string | null;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          telegram_user_id: number | null;
+          tg_user: Json | null;
+          token_hash: string;
+          user_agent: string | null;
+        };
+        Insert: {
+          confirmed_at?: string | null;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          telegram_user_id?: number | null;
+          tg_user?: Json | null;
+          token_hash: string;
+          user_agent?: string | null;
+        };
+        Update: {
+          confirmed_at?: string | null;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          telegram_user_id?: number | null;
+          tg_user?: Json | null;
+          token_hash?: string;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
       worker_education: {
         Row: {
           created_at: string;

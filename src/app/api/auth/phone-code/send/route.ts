@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getServerEnv } from "@/lib/env";
 import { normalizePhone } from "@/lib/format";
 import { makeT } from "@/lib/i18n/translate";
+import { LOCALES } from "@/lib/i18n/config";
 import { escapeHtml } from "@/lib/telegram/bot";
 import { sendTelegramHtml } from "@/features/notifications/telegram-dispatch";
 import { isTelegramBlockedError, resolveTelegramLocale } from "@/features/notifications/telegram";
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   const { TELEGRAM_BOT_TOKEN } = getServerEnv();
   if (!TELEGRAM_BOT_TOKEN) return NextResponse.json({ error: "telegram_not_configured" }, { status: 503 });
 
-  const body = z.object({ phone: z.string().max(32), locale: z.enum(["uz", "ru"]).optional() }).safeParse(await req.json().catch(() => null));
+  const body = z.object({ phone: z.string().max(32), locale: z.enum(LOCALES).optional() }).safeParse(await req.json().catch(() => null));
   const phone = body.success ? normalizePhone(body.data.phone) : null;
   if (!phone) return NextResponse.json({ error: "invalid_phone" }, { status: 400 });
 
