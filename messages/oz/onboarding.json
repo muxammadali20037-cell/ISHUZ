@@ -244,6 +244,8 @@
       "incomplete_personal": "Исм ва фамилияни киритинг",
       "incomplete_location": "Ҳудудни танланг",
       "incomplete_profession": "Касбни танланг"
-    }
+    },
+    "quick_done": "Тайёр! Энди сизга мос ишларни кўрсатамиз.",
+    "quick_finish": "Тугатиш"
   }
 }

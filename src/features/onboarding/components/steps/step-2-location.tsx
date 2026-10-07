@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { LocateFixed, MapPin, ShieldCheck } from "lucide-react";
@@ -46,7 +46,7 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
       district_id: draft.district_id ?? "",
       area_hint: draft.area_hint ?? "",
       work_districts: draft.locations,
-      remote_preference: draft.remote_preference ?? undefined,
+      remote_preference: draft.remote_preference ?? "any",
     },
   });
   const regionId = useWatch({ control, name: "region_id" });
@@ -65,14 +65,19 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
       { id: "locate", hidden: !!draft.region_id },
       { id: "region", fields: ["region_id"] },
       { id: "district", fields: ["district_id"] },
-      { id: "work_districts", fields: ["work_districts"] },
-      { id: "remote", fields: ["remote_preference"] },
-      { id: "details", fields: ["area_hint"] },
+      // Sodda onboarding: ish tumanlari (o'z tumani avtomatik), masofaviylik va mo'ljal — keyin profilda
+      { id: "work_districts", fields: ["work_districts"], hidden: true },
+      { id: "remote", fields: ["remote_preference"], hidden: true },
+      { id: "details", fields: ["area_hint"], hidden: true },
     ],
     trigger,
   );
 
   const [, startGeo] = useTransition();
+  // Ish tumanlari savoli yashirin — kamida o'z tumani bo'lsin (aks holda ko'rinmas xato chiqardi)
+  useEffect(() => {
+    if (districtId && !workDistricts.length) setValue("work_districts", [districtId], { shouldValidate: true });
+  }, [districtId, workDistricts.length, setValue]);
   const onRegionChange = (id: string) => {
     if (id !== regionId) setValue("district_id", "");
     setValue("region_id", id, { shouldValidate: true });

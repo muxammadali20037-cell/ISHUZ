@@ -2,56 +2,46 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { AtSign, BadgeCheck, Phone } from "lucide-react";
+import { BadgeCheck, Phone } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { Constants } from "@/types/database.types";
-import { formatPhone, formatPhoneAsYouType, initials, normalizePhone } from "@/lib/format";
+import { formatPhone, formatPhoneAsYouType, normalizePhone } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChipGroup } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
 import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { savePersonal, sendPhoneChangeCode, verifyPhoneChangeCode } from "../../actions";
-import { personalSchema, type PersonalInput } from "../../schema";
+import { TelegramPhoneShare } from "@/features/contacts/telegram-phone-share";
+import { useTelegram } from "@/lib/telegram/provider";
+import { onboardingPersonalSchema, type OnboardingPersonalInput } from "../../schema";
 import type { DraftContacts, DraftProfile } from "../../types";
-import { birthDateBounds } from "../../utils";
-import { AvatarUpload } from "../file-upload";
-import { WizardFooter, errorMessage, fieldError, singleValue, useStepSubmit } from "../wizard-shell";
+import { WizardFooter, errorMessage, fieldError, useStepSubmit } from "../wizard-shell";
 
-export function Step1Personal({ userId, profile, contacts }: { userId: string; profile: DraftProfile; contacts: DraftContacts | null }) {
-  const { t, tEnum } = useT();
+export function Step1Personal({ profile, contacts }: { userId: string; profile: DraftProfile; contacts: DraftContacts | null }) {
+  const { t } = useT();
   const { pending, submit } = useStepSubmit();
-  const bounds = birthDateBounds();
   const {
     register,
-    control,
     handleSubmit,
     trigger,
     formState: { errors },
-  } = useForm<PersonalInput>({
-    resolver: zodResolver(personalSchema),
+  } = useForm<OnboardingPersonalInput>({
+    resolver: zodResolver(onboardingPersonalSchema),
     defaultValues: {
       first_name: profile.first_name ?? "",
       last_name: profile.last_name ?? "",
-      birth_date: profile.birth_date ?? "",
-      gender: profile.gender ?? undefined,
-      telegram_username: contacts?.telegram_username ?? "",
     },
   });
 
-  const flow = useQuestionFlow<PersonalInput>(
+  // Sodda: ism → (familiya, ixtiyoriy) → telefon. Tug'ilgan sana, jins, rasm — keyin profilda.
+  const flow = useQuestionFlow<OnboardingPersonalInput>(
     [
       { id: "first_name", fields: ["first_name"] },
       { id: "last_name", fields: ["last_name"] },
       { id: "phone", hidden: !!contacts?.phone },
-      { id: "birth_date", fields: ["birth_date"] },
-      { id: "gender", fields: ["gender"] },
-      { id: "telegram", fields: ["telegram_username"] },
-      { id: "avatar" },
     ],
     trigger,
   );
@@ -67,76 +57,13 @@ export function Step1Personal({ userId, profile, contacts }: { userId: string; p
       </Question>
 
       <Question show={flow.is("last_name")}>
-        <Field size="lg" label={t("onboarding.worker.personal.last_name")} htmlFor="last_name" required error={fieldError(t, errors.last_name)}>
+        <Field size="lg" label={t("onboarding.worker.personal.last_name")} htmlFor="last_name" hint={t("common.labels.optional")} error={fieldError(t, errors.last_name)}>
           <Input id="last_name" autoFocus autoComplete="family-name" placeholder={t("onboarding.worker.personal.last_name_placeholder")} invalid={!!errors.last_name} {...register("last_name")} />
         </Field>
       </Question>
 
       <Question show={flow.is("phone")}>
         <PhoneField contacts={contacts} />
-      </Question>
-
-      <Question show={flow.is("birth_date")}>
-        <Field
-          size="lg"
-          label={t("onboarding.worker.personal.birth_date")}
-          htmlFor="birth_date"
-          required
-          error={fieldError(t, errors.birth_date)}
-          description={t("onboarding.worker.personal.birth_date_hint")}
-        >
-          <Input id="birth_date" type="date" min={bounds.min} max={bounds.max} invalid={!!errors.birth_date} {...register("birth_date")} />
-        </Field>
-      </Question>
-
-      <Question show={flow.is("gender")}>
-        <Field size="lg" label={t("onboarding.worker.personal.gender")} required error={fieldError(t, errors.gender)}>
-          <Controller
-            control={control}
-            name="gender"
-            render={({ field }) => (
-              <ChipGroup
-                size="lg"
-                options={Constants.public.Enums.gender.map((g) => ({
-                  value: g,
-                  label: tEnum("gender", g),
-                }))}
-                value={field.value ?? null}
-                onChange={(v) => {
-                  const next = singleValue(v);
-                  field.onChange(next);
-                  if (next) flow.advance();
-                }}
-              />
-            )}
-          />
-        </Field>
-      </Question>
-
-      <Question show={flow.is("telegram")}>
-        <Field
-          size="lg"
-          label={t("onboarding.worker.personal.telegram")}
-          htmlFor="telegram_username"
-          hint={t("common.labels.optional")}
-          error={fieldError(t, errors.telegram_username)}
-          description={t("onboarding.worker.personal.telegram_hint")}
-        >
-          <Input
-            id="telegram_username"
-            autoFocus
-            leftIcon={<AtSign />}
-            placeholder="username"
-            autoCapitalize="none"
-            autoCorrect="off"
-            invalid={!!errors.telegram_username}
-            {...register("telegram_username")}
-          />
-        </Field>
-      </Question>
-
-      <Question show={flow.is("avatar")}>
-        <AvatarUpload userId={userId} url={profile.avatar_url} fallback={initials(profile.first_name, profile.last_name)} />
       </Question>
 
       <WizardFooter step={1} pending={pending} onBack={flow.isFirst ? undefined : flow.back} continueLabel={flow.isLast ? undefined : t("common.actions.next")} />
@@ -163,6 +90,10 @@ function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
     const id = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(id);
   }, [countdown]);
+
+  const { webApp } = useTelegram();
+  const tgShare = !!webApp?.requestContact;
+  const [showSms, setShowSms] = useState(!tgShare);
 
   if (contacts?.phone) {
     return (
@@ -216,6 +147,26 @@ function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
       router.refresh();
     });
   };
+
+  if (!showSms) {
+    return (
+      <div className="space-y-4">
+        <div>
+          <h2 className="text-2xl font-extrabold leading-tight tracking-tight">{t("contacts.share.title")}</h2>
+          <p className="mt-1 text-muted-foreground">{t("contacts.share.why")}</p>
+        </div>
+        <TelegramPhoneShare
+          onShared={() => {
+            toast.success(t("onboarding.worker.personal.phone_verified"));
+            router.refresh();
+          }}
+        />
+        <button type="button" onClick={() => setShowSms(true)} className="w-full text-center text-sm font-medium text-muted-foreground hover:text-foreground">
+          {t("contacts.share.other_way")}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="rounded-2xl border border-border bg-secondary/40 p-4">

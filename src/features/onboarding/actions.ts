@@ -15,7 +15,7 @@ import {
   experienceSchema,
   geoSchema,
   locationSchema,
-  personalSchema,
+  onboardingPersonalSchema,
   phoneCodeSchema,
   phoneSchema,
   portfolioSchema,
@@ -70,23 +70,24 @@ async function advance(ctx: Ctx, completedStep: number, alreadyWritten = false):
 // 1. Shaxsiy ma'lumot
 // =====================================================================
 export async function savePersonal(input: unknown): Promise<StepResult> {
-  const parsed = personalSchema.safeParse(input);
+  const parsed = onboardingPersonalSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   const res = await getWorkerCtx({ create: true });
   if (!res.ok) return res;
   const { supabase, session } = res.ctx;
   const d = parsed.data;
 
-  const { error: profileError } = await supabase
-    .from("profiles")
-    .update({ first_name: d.first_name, last_name: d.last_name, birth_date: d.birth_date, gender: d.gender })
-    .eq("id", session.userId);
+  // Faqat ism/familiya; tug'ilgan sana, jins va boshqalar — keyin profilda (ixtiyoriy)
+  const { error: profileError } = await supabase.from("profiles").update({ first_name: d.first_name, last_name: d.last_name }).eq("id", session.userId);
   if (profileError) return { ok: false, error: errorCode(profileError) };
 
-  // Telefon bu yerda o'zgartirilmaydi (RLS): faqat telegram_username
-  const username = normalizeTelegramUsername(d.telegram_username);
-  const { error: contactError } = await supabase.from("profile_contacts").update({ telegram_username: username || null }).eq("profile_id", session.userId);
-  if (contactError) return { ok: false, error: errorCode(contactError) };
+  // Telegram ichidan kirgan bo'lsa — username avtomatik (foydalanuvchi qo'lda yozmaydi)
+  const { data: tg } = await supabase.from("telegram_accounts").select("username").eq("profile_id", session.userId).maybeSingle();
+  const username = normalizeTelegramUsername(tg?.username ?? "");
+  if (username) {
+    const { error: contactError } = await supabase.from("profile_contacts").update({ telegram_username: username }).eq("profile_id", session.userId).is("telegram_username", null);
+    if (contactError) console.error("[onboarding] telegram username", contactError.message);
+  }
 
   revalidatePath("/", "layout");
   return advance(res.ctx, 1);
@@ -462,7 +463,7 @@ export async function finishOnboarding(): Promise<ActionResult<{ redirect: strin
   if (!res.ok) return res;
   const { supabase, workerId, session } = res.ctx;
 
-  if (!session.profile.first_name.trim() || !session.profile.last_name.trim()) return { ok: false, error: "incomplete_personal" };
+  if (!session.profile.first_name.trim()) return { ok: false, error: "incomplete_personal" };
   const { data: worker, error: readError } = await supabase.from("worker_profiles").select("category_id, region_id").eq("id", workerId).single();
   if (readError || !worker) return { ok: false, error: errorCode(readError) };
   if (!worker.category_id) return { ok: false, error: "incomplete_profession" };

@@ -26,7 +26,7 @@ import {
 import { getT } from "@/lib/i18n/server";
 import { formatRelative, formatWorkTime } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
-import { ContactCard } from "@/features/contacts/contact-card";
+import { EmployerCallCard } from "@/features/contacts/employer-call-card";
 import { ReportDialog } from "@/features/reports/report-dialog";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -385,7 +385,7 @@ export async function VacancyDetail({
           {/* Kontakt (mobil: shu yerda; desktop: yon panel) */}
           {contactProfileId ? (
             <div className="lg:hidden">
-              <ContactCard profileId={contactProfileId} />
+              <EmployerCallCard companyPhone={company?.phone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
             </div>
           ) : null}
         </div>
@@ -397,7 +397,7 @@ export async function VacancyDetail({
           />
           {contactProfileId ? (
             <div className="hidden lg:block">
-              <ContactCard profileId={contactProfileId} />
+              <EmployerCallCard companyPhone={company?.phone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
             </div>
           ) : null}
         </aside>

@@ -10,9 +10,10 @@ import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/misc";
 import { toast } from "@/components/ui/toast";
 import type { ActionResult } from "@/features/auth/actions";
-import { TOTAL_STEPS } from "../types";
+import { QUICK_STEPS, TOTAL_STEPS } from "../types";
 
 import { stepHref } from "../utils";
+import { finishOnboarding } from "../actions";
 
 export { stepHref };
 
@@ -45,7 +46,8 @@ export function WizardShell({ step, title, subtitle, children }: { step: number;
   const { t } = useT();
   return (
     <div className="container-narrow py-5 sm:py-8">
-      <Stepper current={Math.min(step, TOTAL_STEPS)} total={TOTAL_STEPS} label={t("onboarding.worker.step_label")} />
+      {/* Majburiy qism — 4 qadam; qolganlari (ko'nikma, ta'lim...) keyin, ixtiyoriy */}
+      <Stepper current={step <= QUICK_STEPS ? step : Math.min(step, TOTAL_STEPS)} total={step <= QUICK_STEPS ? QUICK_STEPS : TOTAL_STEPS} label={t("onboarding.worker.step_label")} />
       <div className="mt-5 sm:mt-7">
         <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
         {subtitle ? <p className="mt-1.5 text-[15px] text-muted-foreground">{subtitle}</p> : null}
@@ -70,7 +72,25 @@ export function useStepSubmit() {
       router.push(stepHref(res.data?.nextStep ?? 1));
     });
   };
-  return { pending, submit };
+  /** Oxirgi majburiy qadam: saqlaydi va onboardingni yakunlaydi → bosh sahifa (qolgan bo'limlar keyin, ixtiyoriy) */
+  const submitAndFinish = (run: () => Promise<ActionResult<unknown>>) => {
+    startTransition(async () => {
+      const res = await run();
+      if (!res.ok) {
+        toast.error(errorMessage(t, res.error));
+        return;
+      }
+      const done = await finishOnboarding();
+      if (!done.ok) {
+        toast.error(errorMessage(t, done.error));
+        return;
+      }
+      toast.success(t("onboarding.worker.quick_done"));
+      router.replace(done.data?.redirect ?? "/");
+      router.refresh();
+    });
+  };
+  return { pending, submit, submitAndFinish };
 }
 
 /** Pastki tugmalar: Orqaga / Davom etish / (Keyinroq). Mobil — yopishqoq, desktop — oddiy */

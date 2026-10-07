@@ -2,6 +2,8 @@ import type { Enums, Tables } from "@/types/database.types";
 
 /** Onboarding qadamlari: 1..8 — savollar, 9 — yakuniy tekshiruv */
 export const TOTAL_STEPS = 8;
+/** Majburiy qadamlar: ism+telefon, joylashuv, kasb, tajriba — keyin onboarding tugaydi */
+export const QUICK_STEPS = 4;
 export const REVIEW_STEP = 9;
 export const WIZARD_PATH = "/onboarding/worker";
 

@@ -244,6 +244,8 @@
       "incomplete_personal": "Ism va familiyani kiriting",
       "incomplete_location": "Hududni tanlang",
       "incomplete_profession": "Kasbni tanlang"
-    }
+    },
+    "quick_done": "Tayyor! Endi sizga mos ishlarni ko'rsatamiz.",
+    "quick_finish": "Tugatish"
   }
 }

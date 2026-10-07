@@ -50,6 +50,8 @@ export interface VacancyDetail extends Tables<"vacancies"> {
     website: string | null;
     size: Enums<"company_size"> | null;
     verification_status: Enums<"verification_status">;
+    phone?: string | null;
+    telegram?: string | null;
   } | null;
   category: RefItem | null;
   subcategory: RefItem | null;

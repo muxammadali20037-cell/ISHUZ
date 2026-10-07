@@ -36,3 +36,12 @@ export async function respondContactRequest(input: unknown): Promise<ActionResul
   revalidatePath("/settings");
   return { ok: true };
 }
+
+/** Joriy foydalanuvchining tasdiqlangan telefoni (Telegram "Raqamni ulashish"dan keyin webhook yozadi — mijoz shuni kutadi) */
+export async function getMyPhone(): Promise<string | null> {
+  const session = await getSession();
+  if (!session) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.from("profile_contacts").select("phone").eq("profile_id", session.userId).maybeSingle();
+  return data?.phone ?? null;
+}

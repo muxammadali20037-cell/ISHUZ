@@ -26,7 +26,7 @@ const EMPTY_ENTRY: ExperienceEntryInput = { company_name: "", position: "", star
 
 export function Step4Experience({ draft }: { draft: ExperienceDraft }) {
   const { t, tEnum } = useT();
-  const { pending, submit } = useStepSubmit();
+  const { pending, submitAndFinish } = useStepSubmit();
   const {
     register,
     control,
@@ -54,7 +54,7 @@ export function Step4Experience({ draft }: { draft: ExperienceDraft }) {
   const showEntries = !!level && level !== "none";
 
   return (
-    <form noValidate onSubmit={handleSubmit((values) => submit(() => saveExperience(values)))} className="space-y-6">
+    <form noValidate onSubmit={handleSubmit((values) => submitAndFinish(() => saveExperience(values)))} className="space-y-6">
       <Field label={t("onboarding.worker.experience.level")} required error={fieldError(t, errors.experience_level)}>
         <Controller
           control={control}
@@ -154,7 +154,7 @@ export function Step4Experience({ draft }: { draft: ExperienceDraft }) {
         </div>
       ) : null}
 
-      <WizardFooter step={4} pending={pending} />
+      <WizardFooter step={4} pending={pending} continueLabel={t("onboarding.worker.quick_finish")} />
     </form>
   );
 }

@@ -244,6 +244,8 @@
       "incomplete_personal": "Укажите имя и фамилию",
       "incomplete_location": "Выберите регион",
       "incomplete_profession": "Выберите профессию"
-    }
+    },
+    "quick_done": "Готово! Теперь покажем подходящую работу.",
+    "quick_finish": "Завершить"
   }
 }

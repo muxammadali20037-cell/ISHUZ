@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 import { companySchema, COMPANY_SIZES, type CompanyFormInput, type CompanyFormValues } from "../schema";
 import { SelectField } from "./select-field";
 import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
+import { TelegramPhoneShare } from "@/features/contacts/telegram-phone-share";
+import { formatPhone } from "@/lib/format";
 import type { ReferenceLists } from "./ref-types";
 
 export const EMPTY_COMPANY_FORM: CompanyFormInput = {
@@ -171,8 +173,9 @@ export function CompanyForm({
         <div className={grid}>
           {q(
             "phone",
-            <Field size={sz} label={t("employer.form.phone")} htmlFor="company-phone" error={err("phone")}>
+            <Field size={sz} label={t("employer.form.phone")} htmlFor="company-phone" error={err("phone")} description={stepByStep ? t("contacts.share.employer_hint") : undefined}>
               <Input id="company-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder={t("employer.form.phone_placeholder")} invalid={!!errors.phone} {...register("phone")} />
+              {stepByStep ? <TelegramPhoneShare className="mt-3" onShared={(p) => setValue("phone", formatPhone(p), { shouldValidate: true })} /> : null}
             </Field>,
           )}
           {q(

@@ -22,6 +22,8 @@ export interface TelegramWebApp {
   setHeaderColor?: (color: string) => void;
   setBackgroundColor?: (color: string) => void;
   enableClosingConfirmation?: () => void;
+  /** Bot API 6.9+: foydalanuvchi raqamini botga ulashadi (Telegram tasdiqlagan raqam, SMS kodsiz) */
+  requestContact?: (callback?: (shared: boolean) => void) => void;
 }
 
 declare global {

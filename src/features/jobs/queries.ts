@@ -152,7 +152,7 @@ export async function searchVacancyCards(args: SearchVacanciesArgs): Promise<Vac
 }
 
 const VACANCY_DETAIL_SELECT = `*,
-  company:companies(id, slug, name, logo_url, about, website, size, verification_status),
+  company:companies(id, slug, name, logo_url, about, website, size, verification_status, phone, telegram),
   category:categories(id, slug, name_uz, name_ru),
   subcategory:subcategories(id, slug, name_uz, name_ru),
   profession:profession_nodes(id, name_uz, name_ru, name_en),

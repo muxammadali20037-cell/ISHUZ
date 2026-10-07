@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 import { personSchema, type PersonFormInput, type PersonFormValues } from "../schema";
 import { SelectField } from "./select-field";
 import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
+import { TelegramPhoneShare } from "@/features/contacts/telegram-phone-share";
+import { formatPhone } from "@/lib/format";
 import type { ReferenceLists } from "./ref-types";
 
 export const EMPTY_PERSON_FORM: PersonFormInput = { displayName: "", contactPhone: "", regionId: "", districtId: "", about: "" };
@@ -141,6 +143,7 @@ export function PersonForm({
           "phone",
           <Field size={sz} label={t("employer.form.contact_phone")} htmlFor="person-phone" description={t("employer.form.contact_phone_hint")} error={err("contactPhone")}>
             <Input id="person-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder={t("employer.form.phone_placeholder")} invalid={!!errors.contactPhone} {...register("contactPhone")} />
+            {stepByStep ? <TelegramPhoneShare className="mt-3" onShared={(p) => setValue("contactPhone", formatPhone(p), { shouldValidate: true })} /> : null}
           </Field>,
         )}
         <div className={cn(!stepByStep && "grid gap-4 sm:grid-cols-2")}>

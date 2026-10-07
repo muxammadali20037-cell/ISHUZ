@@ -29,5 +29,17 @@
     "approved_title": "Phone number shared",
     "approved_body": "{name} allowed you to see their phone number."
   },
-  "no_contact": "No phone number or Telegram added yet — send a message in chat."
+  "no_contact": "No phone number or Telegram added yet — send a message in chat.",
+  "call": "Call",
+  "write_telegram": "Message on Telegram",
+  "employer_title": "Contact the employer",
+  "share": {
+    "button": "Share my number",
+    "hint": "Telegram sends your number — no SMS code needed.",
+    "failed": "The number didn't arrive. Tap again or choose another way.",
+    "title": "Your phone number",
+    "why": "Employers will contact you on this number.",
+    "other_way": "Enter the number manually",
+    "employer_hint": "Candidates will call this number."
+  }
 }

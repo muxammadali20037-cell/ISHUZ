@@ -29,5 +29,17 @@
     "approved_title": "Telefon raqami ochildi",
     "approved_body": "{name} telefon raqamini ko'rishga ruxsat berdi."
   },
-  "no_contact": "Telefon raqami va Telegram hali kiritilmagan — chat orqali yozing."
+  "no_contact": "Telefon raqami va Telegram hali kiritilmagan — chat orqali yozing.",
+  "call": "Qo'ng'iroq qilish",
+  "write_telegram": "Telegram'da yozish",
+  "employer_title": "Ish beruvchi bilan bog'lanish",
+  "share": {
+    "button": "Raqamni ulashish",
+    "hint": "Telegram raqamingizni yuboradi — SMS kod kerak emas.",
+    "failed": "Raqam kelmadi. Yana bir bor bosing yoki boshqa usulni tanlang.",
+    "title": "Telefon raqamingiz",
+    "why": "Ish beruvchilar siz bilan shu raqam orqali bog'lanadi.",
+    "other_way": "Raqamni qo'lda kiritish",
+    "employer_hint": "Nomzodlar shu raqamga qo'ng'iroq qiladi."
+  }
 }

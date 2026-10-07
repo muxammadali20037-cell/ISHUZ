@@ -29,24 +29,31 @@ export async function ContactCard({ profileId, hint }: { profileId: string; hint
     );
   }
   return (
-    <div className="space-y-2 rounded-2xl border border-success/30 bg-success-soft/40 p-4">
+    <div className="space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-4">
       <p className="text-sm font-semibold">{t("common.contact_title")}</p>
       {data.phone ? (
-        <div className="flex items-center justify-between gap-2">
-          <a href={`tel:${data.phone}`} className="inline-flex items-center gap-2 text-[15px] font-semibold text-foreground">
-            <Phone className="size-4 text-success" /> {formatPhone(data.phone)}
+        <>
+          {/* Asosiy harakat — bitta bosish bilan qo'ng'iroq */}
+          <a
+            href={`tel:${data.phone}`}
+            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-success text-base font-semibold text-success-foreground shadow-sm transition-opacity hover:opacity-90"
+          >
+            <Phone className="size-5" /> {t("contacts.call")}
           </a>
-          <CopyButton value={data.phone} />
-        </div>
+          <div className="flex items-center justify-between gap-2">
+            <span className="tabular text-[15px] font-semibold">{formatPhone(data.phone)}</span>
+            <CopyButton value={data.phone} />
+          </div>
+        </>
       ) : null}
       {data.telegram_username ? (
         <a
           href={`https://t.me/${data.telegram_username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-[15px] font-semibold text-primary"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-[15px] font-semibold text-primary hover:bg-primary-soft/40"
         >
-          <Send className="size-4" /> @{data.telegram_username}
+          <Send className="size-4" /> {t("contacts.write_telegram")}
         </a>
       ) : null}
       {!data.phone && !data.telegram_username ? <p className="text-sm text-muted-foreground">{t("contacts.no_contact")}</p> : null}
