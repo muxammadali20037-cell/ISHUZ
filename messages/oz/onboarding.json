@@ -103,7 +103,9 @@
       "geo_detect": "Жойлашувимни аниқлаш",
       "geo_update": "Қайта аниқлаш",
       "geo_saved": "Жойлашув сақланди",
-      "geo_saved_badge": "Сақланган"
+      "geo_saved_badge": "Сақланган",
+      "where_title": "Сиз қаерда яшайсиз?",
+      "where_sub": "Сизга яқин ишларни биринчи кўрсатамиз."
     },
     "profession": {
       "category": "Соҳа",

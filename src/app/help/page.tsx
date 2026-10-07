@@ -69,6 +69,10 @@ export default async function HelpPage() {
             {t("common.footer.privacy")}
           </Link>
         </p>
+        {/* Qaysi versiya ochilganini tekshirish uchun (Mini App eski versiyada qolmaganini bilish) */}
+        <p className="text-xs text-muted-foreground/70">
+          {t("welcome.help.version", { v: (process.env.VERCEL_GIT_COMMIT_SHA ?? "local").slice(0, 7) })}
+        </p>
       </div>
     </Shell>
   );

@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n/client";
 import type { Category } from "@/lib/reference";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { ambiguousTerm } from "../ambiguous";
 import { CategoryIcon } from "@/components/shared/category-icon";
 import type { PickedProfession, ProfessionNode, ProfessionSearchHit, TrailItem } from "../types";
 
@@ -176,6 +177,7 @@ export function ProfessionPicker({
     scrollTop();
   };
 
+  const ambiguity = useMemo(() => ambiguousTerm(query), [query]);
   const popular = useMemo(() => (nodes && nodes.length > 10 ? nodes.filter((n) => n.is_popular) : []), [nodes]);
 
   // ------------------------------------------------------------------ tanlangan holat
@@ -248,6 +250,29 @@ export function ProfessionPicker({
         aria-label={t("professions.search_placeholder")}
         className="h-14 rounded-2xl text-base"
       />
+
+      {ambiguity ? (
+        <section className="space-y-2 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4" aria-live="polite">
+          <p className="text-base font-bold">{t(`professions.ambiguous.${ambiguity.key}.title`)}</p>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {ambiguity.options.map((o) => {
+              const sec = o.sector ? categories.find((c) => c.slug === o.sector) : null;
+              if (o.sector && !sec) return null;
+              return (
+                <button
+                  key={o.key}
+                  type="button"
+                  onClick={() => (sec ? openSector(sec.id) : setQuery(o.query ?? ""))}
+                  className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left font-medium transition-colors hover:border-primary/50"
+                >
+                  {sec ? <CategoryIcon name={sec.icon} className="size-5 shrink-0 text-primary" /> : <Search className="size-5 shrink-0 text-primary" />}
+                  <span>{t(`professions.ambiguous.${ambiguity.key}.${o.key}`)}</span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+      ) : null}
 
       {hits !== null ? (
         <section aria-live="polite" className="space-y-2">

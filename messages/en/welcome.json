@@ -59,6 +59,39 @@
     "safety_2": "Your phone number is visible only to employers you allow.",
     "safety_3": "See a suspicious listing or message? Tap “Report”.",
     "report_hint": "Every job and profile page has a “Report” button.",
-    "more": "About personal data:"
+    "more": "About personal data:",
+    "version": "App version: {v}"
+  },
+  "coach": {
+    "skip": "Skip",
+    "done": "Got it",
+    "worker-jobs": {
+      "title": "Job openings",
+      "desc": "Tap here to see jobs that fit you and are near you. Search understands typos too."
+    },
+    "worker-listing": {
+      "title": "Your job-seeker listing",
+      "desc": "Fill it in and employers will find you and send offers."
+    },
+    "worker-more": {
+      "title": "Quick links",
+      "desc": "Your applications, saved jobs and offers are here."
+    },
+    "bottom-nav": {
+      "title": "Bottom menu",
+      "desc": "Use these buttons to get back to the main sections anytime."
+    },
+    "employer-post": {
+      "title": "Post a vacancy",
+      "desc": "The main button. The app asks one question at a time — your post is ready in 3 minutes."
+    },
+    "employer-stats": {
+      "title": "Quick summary",
+      "desc": "Active vacancies, new applications and matching candidates. Tap a number to open the list."
+    },
+    "employer-sections": {
+      "title": "All sections",
+      "desc": "Your vacancies, applications, candidates, history, messages and company settings."
+    }
   }
 }

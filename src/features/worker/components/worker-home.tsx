@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { CoachTour } from "@/components/shared/coach-tour";
 import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
@@ -32,6 +33,7 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
 
   return (
     <div className="container-app space-y-7 py-5 sm:py-8">
+      <CoachTour role="worker" />
       <section className="space-y-4">
         <div>
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{t("jobs.home.greeting", { name: firstName })}</h1>

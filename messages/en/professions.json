@@ -46,5 +46,54 @@
   "custom_placeholder": "E.g. drone operator",
   "custom_sector": "Which sector is it closest to?",
   "custom_save": "Save and continue",
-  "custom_badge": "Typed manually"
+  "custom_badge": "Typed manually",
+  "ambiguous": {
+    "usta": {
+      "title": "Which kind of master?",
+      "auto": "Car mechanic",
+      "construction": "Construction",
+      "electric": "Electrician",
+      "plumbing": "Plumber",
+      "repair": "Furniture, appliance, phone repair",
+      "beauty": "Beauty master",
+      "sewing": "Seamstress",
+      "crafts": "Artisan (jeweller, potter...)"
+    },
+    "teacher": {
+      "title": "What kind of teacher?",
+      "school": "School or course teacher",
+      "driving": "Driving instructor",
+      "sport": "Sports coach",
+      "kindergarten": "Kindergarten teacher"
+    },
+    "operator": {
+      "title": "What kind of operator?",
+      "call": "Call center operator",
+      "machine": "Heavy equipment operator",
+      "cnc": "CNC machine operator",
+      "production": "Production operator"
+    },
+    "manager": {
+      "title": "Manager in which field?",
+      "sales": "Sales",
+      "marketing": "Marketing",
+      "office": "Office & HR",
+      "management": "Management"
+    },
+    "worker": {
+      "title": "What kind of worker?",
+      "production": "Manufacturing",
+      "construction": "Construction",
+      "warehouse": "Warehouse & loading",
+      "agriculture": "Agriculture",
+      "cleaning": "Cleaning & service"
+    },
+    "engineer": {
+      "title": "Engineer in which field?",
+      "engineering": "Engineering",
+      "construction": "Construction",
+      "energy": "Energy",
+      "it": "IT"
+    }
+  }
 }

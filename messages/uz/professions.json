@@ -46,5 +46,54 @@
   "custom_placeholder": "Masalan: dron operatori",
   "custom_sector": "Qaysi sohaga eng yaqin?",
   "custom_save": "Saqlash va davom etish",
-  "custom_badge": "Qo'lda yozilgan"
+  "custom_badge": "Qo'lda yozilgan",
+  "ambiguous": {
+    "usta": {
+      "title": "Qaysi usta kerak?",
+      "auto": "Avtomobil ustasi",
+      "construction": "Qurilish ustasi",
+      "electric": "Elektrik",
+      "plumbing": "Santexnik",
+      "repair": "Mebel, texnika, telefon ustasi",
+      "beauty": "Go'zallik ustasi",
+      "sewing": "Tikuvchi",
+      "crafts": "Hunarmand (zargar, kulol...)"
+    },
+    "teacher": {
+      "title": "Qanday o'qituvchi?",
+      "school": "Maktab, kurs, fan o'qituvchisi",
+      "driving": "Prava (haydovchilik) o'qituvchisi",
+      "sport": "Sport murabbiyi",
+      "kindergarten": "Bog'cha tarbiyachisi"
+    },
+    "operator": {
+      "title": "Qanday operator?",
+      "call": "Call-markaz operatori",
+      "machine": "Maxsus texnika operatori",
+      "cnc": "Stanok (CNC) operatori",
+      "production": "Ishlab chiqarish operatori"
+    },
+    "manager": {
+      "title": "Qaysi sohada menejer?",
+      "sales": "Savdo",
+      "marketing": "Marketing",
+      "office": "Ofis va kadrlar",
+      "management": "Boshqaruv"
+    },
+    "worker": {
+      "title": "Qanday ishchi?",
+      "production": "Ishlab chiqarish",
+      "construction": "Qurilish",
+      "warehouse": "Ombor va yuklash",
+      "agriculture": "Qishloq xo'jaligi",
+      "cleaning": "Tozalash va xizmat"
+    },
+    "engineer": {
+      "title": "Qaysi sohada muhandis?",
+      "engineering": "Muhandislik",
+      "construction": "Qurilish",
+      "energy": "Energetika",
+      "it": "IT"
+    }
+  }
 }

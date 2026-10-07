@@ -18,7 +18,10 @@
     "type_government_desc": "Ministries, khokimiyats, state enterprises, schools, hospitals and other government institutions. Once verified, your vacancies will appear in a separate section with a \"Government organization\" badge.",
     "type_self_employed_desc": "No company name or tax ID needed — post under your own name.",
     "type_other_desc": "Not in the list? Describe it briefly (e.g. foundation, cooperative).",
-    "type_other_note": "Organisation type (e.g. foundation, cooperative)"
+    "type_other_note": "Organisation type (e.g. foundation, cooperative)",
+    "where_title": "Where is your company located?",
+    "where_person_title": "Where are you?",
+    "where_sub": "We'll find candidates near you."
   },
   "form": {
     "company_name": "Company name",
@@ -215,5 +218,23 @@
     "invalid_desc": "The link has expired, was already used or is incorrect. Ask an administrator for a new one.",
     "missing_token": "The link has no invite code",
     "go_home": "Go to home page"
+  },
+  "sections": {
+    "title": "Sections",
+    "vacancies": "My vacancies",
+    "vacancies_desc": "Active, drafts and paused",
+    "applications": "Applications",
+    "applications_desc": "All applications to your company",
+    "applications_all": "All applications",
+    "applications_empty": "No applications yet",
+    "applications_empty_desc": "Post a vacancy — applications will appear here.",
+    "candidates": "Candidates",
+    "candidates_desc": "Find workers by field and region",
+    "history": "History",
+    "history_desc": "Closed vacancies",
+    "messages": "Messages",
+    "messages_desc": "Chats with candidates",
+    "company": "Company",
+    "company_desc": "Name, address, logo and more"
   }
 }

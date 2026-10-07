@@ -18,7 +18,10 @@
     "type_government_desc": "Vazirlik, hokimlik, davlat korxonasi, maktab, shifoxona va boshqa davlat muassasalari. Tasdiqlangach vakansiyalaringiz \"Davlat tashkiloti\" belgisi bilan alohida bo'limda chiqadi.",
     "type_self_employed_desc": "Kompaniya nomi va STIR so'ralmaydi — ismingiz bilan e'lon joylaysiz.",
     "type_other_desc": "Ro'yxatda yo'q bo'lsa — qisqacha yozing (masalan: fond, kooperativ).",
-    "type_other_note": "Tashkilot turi (masalan: fond, kooperativ)"
+    "type_other_note": "Tashkilot turi (masalan: fond, kooperativ)",
+    "where_title": "Kompaniyangiz qayerda joylashgan?",
+    "where_person_title": "Siz qayerdasiz?",
+    "where_sub": "Nomzodlarni sizga yaqin joydan topamiz."
   },
   "form": {
     "company_name": "Kompaniya nomi",
@@ -215,5 +218,23 @@
     "invalid_desc": "Havola muddati tugagan, allaqachon ishlatilgan yoki noto'g'ri. Administratordan yangi havola so'rang.",
     "missing_token": "Havolada taklif kodi yo'q",
     "go_home": "Bosh sahifaga"
+  },
+  "sections": {
+    "title": "Bo'limlar",
+    "vacancies": "Mening e'lonlarim",
+    "vacancies_desc": "Faol, qoralama va to'xtatilgan e'lonlar",
+    "applications": "Kelgan arizalar",
+    "applications_desc": "Kompaniyangizga yuborilgan barcha arizalar",
+    "applications_all": "Barcha arizalar",
+    "applications_empty": "Hozircha ariza yo'q",
+    "applications_empty_desc": "Vakansiya joylashtiring — arizalar shu yerda chiqadi.",
+    "candidates": "Nomzodlar",
+    "candidates_desc": "Soha va hudud bo'yicha xodim qidirish",
+    "history": "Tarix",
+    "history_desc": "Yopilgan e'lonlar",
+    "messages": "Xabarlar",
+    "messages_desc": "Nomzodlar bilan yozishmalar",
+    "company": "Kompaniya",
+    "company_desc": "Nom, manzil, logo va boshqalar"
   }
 }

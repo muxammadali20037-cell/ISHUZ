@@ -25,7 +25,7 @@ export async function WorkerMainCards({ workerId }: { workerId: string }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/jobs" className="group flex min-h-36 flex-col justify-between rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-6">
+        <Link href="/jobs" data-tour="worker-jobs" className="group flex min-h-36 flex-col justify-between rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-6">
           <span className="flex size-14 items-center justify-center rounded-2xl bg-white/15">
             <Search className="size-7" />
           </span>
@@ -38,6 +38,7 @@ export async function WorkerMainCards({ workerId }: { workerId: string }) {
         </Link>
         <Link
           href="/profile/listing"
+          data-tour="worker-listing"
           className="group flex min-h-36 flex-col justify-between rounded-3xl border-2 border-primary/30 bg-card p-5 shadow-sm transition-transform hover:-translate-y-0.5 hover:border-primary sm:p-6"
         >
           <span className="flex items-center justify-between">
@@ -59,7 +60,7 @@ export async function WorkerMainCards({ workerId }: { workerId: string }) {
         </Link>
       </div>
 
-      <nav aria-label={t("jobs.worker_home.more")} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
+      <nav data-tour="worker-more" aria-label={t("jobs.worker_home.more")} className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:px-0">
         {secondary.map((s) => (
           <Link key={s.href} href={s.href} className="flex shrink-0 items-center gap-2 rounded-2xl border border-border bg-card px-4 py-3 text-sm font-semibold hover:border-primary hover:text-primary">
             <s.icon className="size-4 text-primary" /> {s.label}

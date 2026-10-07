@@ -33,7 +33,7 @@ export default async function EmployerOnboardingPage() {
         }}
         refs={{
           regions: regions.map(({ id, name_uz, name_ru }) => ({ id, name_uz, name_ru })),
-          districts: districts.map(({ id, region_id, name_uz, name_ru }) => ({ id, region_id, name_uz, name_ru })),
+          districts: districts.map(({ id, region_id, name_uz, name_ru, lat, lng }) => ({ id, region_id, name_uz, name_ru, lat, lng })),
           categories: categories.map(({ id, name_uz, name_ru }) => ({ id, name_uz, name_ru })),
         }}
       />

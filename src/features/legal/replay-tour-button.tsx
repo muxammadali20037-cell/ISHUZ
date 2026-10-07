@@ -4,6 +4,7 @@ import { PlayCircle } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { WELCOME_COOKIE } from "@/components/shared/welcome-cookie";
+import { resetCoachTours } from "@/components/shared/coach-tour";
 
 /** Qisqa turni qayta ko'rsatish: belgini o'chiradi va bosh sahifaga qaytaradi */
 export function ReplayTourButton() {
@@ -13,6 +14,7 @@ export function ReplayTourButton() {
       size="lg"
       onClick={() => {
         document.cookie = `${WELCOME_COOKIE}=; path=/; max-age=0; samesite=lax`;
+        resetCoachTours();
         window.location.href = "/";
       }}
     >

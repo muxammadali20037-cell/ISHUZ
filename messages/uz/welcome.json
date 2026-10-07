@@ -59,6 +59,39 @@
     "safety_2": "Telefon raqamingiz faqat siz ruxsat bergan ish beruvchiga ko'rinadi.",
     "safety_3": "Shubhali e'lon yoki xabar ko'rsangiz — «Shikoyat qilish» tugmasini bosing.",
     "report_hint": "Har bir vakansiya va profil sahifasida «Shikoyat qilish» bor.",
-    "more": "Shaxsiy ma'lumotlar haqida:"
+    "more": "Shaxsiy ma'lumotlar haqida:",
+    "version": "Ilova versiyasi: {v}"
+  },
+  "coach": {
+    "skip": "O'tkazib yuborish",
+    "done": "Tushunarli",
+    "worker-jobs": {
+      "title": "Bo'sh ish o'rinlari",
+      "desc": "Shu yerni bosing — sizga mos va yaqin ishlar ro'yxati ochiladi. Qidiruvda kasbni xato yozsangiz ham topiladi."
+    },
+    "worker-listing": {
+      "title": "Ish qidirish e'loningiz",
+      "desc": "Bu sizning e'loningiz. To'ldirsangiz, ish beruvchilar sizni o'zlari topib, taklif yuboradi."
+    },
+    "worker-more": {
+      "title": "Tezkor havolalar",
+      "desc": "Yuborgan arizalaringiz, saqlangan ishlar va kelgan takliflar shu yerda."
+    },
+    "bottom-nav": {
+      "title": "Pastki menyu",
+      "desc": "Istalgan vaqtda shu tugmalar orqali asosiy bo'limlarga qaytasiz."
+    },
+    "employer-post": {
+      "title": "Vakansiya joylashtirish",
+      "desc": "Eng asosiy tugma. Bosing — ilova savollarni birma-bir so'raydi, 3 daqiqada e'lon tayyor."
+    },
+    "employer-stats": {
+      "title": "Qisqa hisobot",
+      "desc": "Faol e'lonlaringiz, yangi arizalar va mos nomzodlar soni. Raqamni bossangiz — ro'yxat ochiladi."
+    },
+    "employer-sections": {
+      "title": "Barcha bo'limlar",
+      "desc": "E'lonlaringiz, kelgan arizalar, nomzodlar, tarix, xabarlar va kompaniya sozlamalari shu yerda."
+    }
   }
 }

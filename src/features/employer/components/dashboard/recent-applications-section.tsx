@@ -15,7 +15,7 @@ export async function RecentApplicationsSection({ userId, companyId, limit = 5, 
   if (!apps.length) return null;
   return (
     <section className="mt-8">
-      <SectionHeader title={title ?? t("employer.dashboard.recent_applications")} href="/employer/candidates" linkLabel={t("employer.dashboard.all")} />
+      <SectionHeader title={title ?? t("employer.dashboard.recent_applications")} href="/employer/applications" linkLabel={t("employer.dashboard.all")} />
       <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
         {apps.map((a) => {
           const name = fullName(a.first_name, a.last_name) || t("employer.dashboard.unknown_candidate");

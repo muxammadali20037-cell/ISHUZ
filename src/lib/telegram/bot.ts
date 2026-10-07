@@ -31,8 +31,7 @@ export function escapeHtml(s: string) {
 }
 
 export function openAppKeyboard(text: string, path = "/"): InlineKeyboard {
-  const { APP_URL } = getServerEnv();
-  return { inline_keyboard: [[{ text, web_app: { url: `${APP_URL}${path}` } }]] };
+  return { inline_keyboard: [[{ text, web_app: { url: `${miniAppBaseUrl()}${path}` } }]] };
 }
 
 export async function sendTelegramMessage(chatId: number, html: string, keyboard?: ReplyMarkup) {
@@ -46,9 +45,35 @@ export function shareContactKeyboard(text: string): ReplyKeyboard {
 
 export const removeKeyboard: RemoveKeyboard = { remove_keyboard: true };
 
+/**
+ * Mini App ochiladigan doimiy manzil. APP_URL bitta deployga bog'langan Vercel manzili bo'lsa
+ * (masalan `ishuz-33oillnat-team.vercel.app`) — u hech qachon yangilanmaydi, shuning uchun loyihaning
+ * doimiy production domeni (VERCEL_PROJECT_PRODUCTION_URL) olinadi. O'z domeningiz bo'lsa — APP_URL o'zgarmaydi.
+ */
+export function miniAppBaseUrl(): string {
+  const appUrl = getServerEnv().APP_URL.replace(/\/$/, "");
+  const prod = process.env.VERCEL_PROJECT_PRODUCTION_URL?.replace(/^https?:\/\//, "").replace(/\/$/, "");
+  if (!prod) return appUrl;
+  try {
+    const host = new URL(appUrl).host;
+    if (host.endsWith(".vercel.app") && host !== prod) return `https://${prod}`;
+  } catch {
+    /* noto'g'ri APP_URL — production domeni */
+    return `https://${prod}`;
+  }
+  return appUrl;
+}
+
+let menuSyncedAt = 0;
+/** Har deploydan keyin menyu tugmasini avtomatik joriy manzilga ulaydi (instansiyada soatiga bir marta, xatolar e'tiborsiz). */
+export async function syncBotMenuButtonOnce() {
+  if (Date.now() - menuSyncedAt < 60 * 60 * 1000) return;
+  menuSyncedAt = Date.now();
+  await setBotMenuButton().catch(() => null);
+}
+
 export async function setBotMenuButton() {
-  const { APP_URL } = getServerEnv();
-  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Ish beruvchi", web_app: { url: APP_URL } } });
+  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Ish Beruvchi", web_app: { url: miniAppBaseUrl() } } });
 }
 
 export async function setBotWebhook(url: string, secret: string) {
@@ -61,7 +86,7 @@ export async function setBotCommands(commands: { command: string; description: s
 }
 
 export function webAppUrl(path = "/") {
-  return `${getServerEnv().APP_URL}${path}`;
+  return `${miniAppBaseUrl()}${path}`;
 }
 
 /** Xabar yuboradi va message_id qaytaradi (keyin tahrirlash uchun) */

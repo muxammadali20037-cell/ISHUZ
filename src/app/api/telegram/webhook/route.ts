@@ -2,7 +2,7 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { escapeHtml, removeKeyboard, sendTelegramMessage, shareContactKeyboard } from "@/lib/telegram/bot";
+import { escapeHtml, removeKeyboard, sendTelegramMessage, shareContactKeyboard, syncBotMenuButtonOnce } from "@/lib/telegram/bot";
 import { makeT } from "@/lib/i18n/translate";
 import { formatPhone } from "@/lib/format";
 import { parseBotCommand, resolveTelegramLocale, telegramUpdateSchema } from "@/features/notifications/telegram";
@@ -33,6 +33,9 @@ export async function POST(req: NextRequest) {
   if (!TELEGRAM_WEBHOOK_SECRET || !secretMatches(req.headers.get("x-telegram-bot-api-secret-token"), TELEGRAM_WEBHOOK_SECRET)) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
+
+  // Yangi deploydan keyin bot menyusidagi Mini App tugmasi eski manzilda qolib ketmasin
+  void syncBotMenuButtonOnce();
 
   const parsed = telegramUpdateSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ ok: true, ignored: "unparsable" });

@@ -7,6 +7,9 @@ export interface RefOption {
 
 export interface DistrictOption extends RefOption {
   region_id: string;
+  /** Joylashuvdan eng yaqin tumanni topish uchun (ixtiyoriy) */
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface ReferenceLists {

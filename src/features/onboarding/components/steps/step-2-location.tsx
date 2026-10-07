@@ -13,9 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Chip, ChipGroup, FilterChip } from "@/components/ui/chip";
 import { Input } from "@/components/ui/input";
 import { Field, Label } from "@/components/ui/label";
-import { Select } from "@/components/ui/select";
 import { toast } from "@/components/ui/toast";
 import { Question, QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
+import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
 import { saveLocation, saveWorkerGeo } from "../../actions";
 import { locationSchema, type LocationInput } from "../../schema";
 import { WizardFooter, errorMessage, fieldError, multiValue, singleValue, useStepSubmit } from "../wizard-shell";
@@ -50,6 +50,7 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
     },
   });
   const regionId = useWatch({ control, name: "region_id" });
+  const districtId = useWatch({ control, name: "district_id" });
   const workDistricts = useWatch({ control, name: "work_districts" });
   const [browseRegion, setBrowseRegion] = useState(draft.region_id ?? regions[0]?.id ?? "");
 
@@ -60,6 +61,8 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
 
   const flow = useQuestionFlow<LocationInput>(
     [
+      // Joylashuv allaqachon ma'lum bo'lsa (qaytgan foydalanuvchi) — so'ralmaydi
+      { id: "locate", hidden: !!draft.region_id },
       { id: "region", fields: ["region_id"] },
       { id: "district", fields: ["district_id"] },
       { id: "work_districts", fields: ["work_districts"] },
@@ -69,9 +72,10 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
     trigger,
   );
 
+  const [, startGeo] = useTransition();
   const onRegionChange = (id: string) => {
+    if (id !== regionId) setValue("district_id", "");
     setValue("region_id", id, { shouldValidate: true });
-    setValue("district_id", "");
     if (id) {
       setBrowseRegion(id);
       flow.advance();
@@ -90,43 +94,41 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
     <form noValidate onSubmit={flow.bindSubmit(handleSubmit((values) => submit(() => saveLocation(values)), flow.onInvalid))} className="space-y-6">
       <QuestionProgress flow={flow} />
 
+      <Question show={flow.is("locate")}>
+        <LocateAsk
+          districts={districts}
+          title={t("onboarding.worker.location.where_title")}
+          subtitle={t("onboarding.worker.location.where_sub")}
+          onLocated={(d, coords) => {
+            setValue("region_id", d.region_id, { shouldValidate: true });
+            setValue("district_id", d.id, { shouldValidate: true });
+            setBrowseRegion(d.region_id);
+            if (!workDistricts.includes(d.id)) setValue("work_districts", [...workDistricts, d.id], { shouldValidate: true });
+            // Aniq nuqta faqat masofani hisoblash uchun (foydalanuvchi o'zi ruxsat berdi), hech kimga ko'rsatilmaydi
+            startGeo(async () => {
+              await saveWorkerGeo(coords);
+            });
+            flow.advance();
+          }}
+          onManual={() => void flow.next()}
+        />
+      </Question>
+
       <Question show={flow.is("region")}>
-        <Field size="lg" label={t("onboarding.worker.location.region")} htmlFor="region_id" required error={fieldError(t, errors.region_id)}>
-          <Controller
-            control={control}
-            name="region_id"
-            render={({ field }) => (
-              <Select
-                id="region_id"
-                options={regionOptions}
-                placeholder={t("common.actions.choose")}
-                value={field.value}
-                invalid={!!errors.region_id}
-                onChange={(e) => onRegionChange(e.target.value)}
-              />
-            )}
-          />
-        </Field>
+        <ChoiceList
+          title={t("onboarding.worker.location.region")}
+          subtitle={regionId ? t("common.locate.confirm_hint") : undefined}
+          options={regionOptions}
+          value={regionId}
+          columns={2}
+          onPick={onRegionChange}
+        />
+        {fieldError(t, errors.region_id) ? <p className="mt-2 text-sm text-destructive" role="alert">{fieldError(t, errors.region_id)}</p> : null}
       </Question>
 
       <Question show={flow.is("district")}>
-        <Field size="lg" label={t("onboarding.worker.location.district")} htmlFor="district_id" required error={fieldError(t, errors.district_id)}>
-          <Controller
-            control={control}
-            name="district_id"
-            render={({ field }) => (
-              <Select
-                id="district_id"
-                options={districtOptions}
-                placeholder={regionId ? t("common.actions.choose") : t("onboarding.worker.location.choose_region_first")}
-                value={field.value}
-                disabled={!regionId}
-                invalid={!!errors.district_id}
-                onChange={(e) => onDistrictChange(e.target.value)}
-              />
-            )}
-          />
-        </Field>
+        <ChoiceList title={t("onboarding.worker.location.district")} options={districtOptions} value={districtId} columns={2} onPick={onDistrictChange} />
+        {fieldError(t, errors.district_id) ? <p className="mt-2 text-sm text-destructive" role="alert">{fieldError(t, errors.district_id)}</p> : null}
       </Question>
 
       <Question show={flow.is("work_districts")}>

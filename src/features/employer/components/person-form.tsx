@@ -12,6 +12,7 @@ import { QuestionProgress, useQuestionFlow } from "@/components/shared/question-
 import { cn } from "@/lib/utils";
 import { personSchema, type PersonFormInput, type PersonFormValues } from "../schema";
 import { SelectField } from "./select-field";
+import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
 import type { ReferenceLists } from "./ref-types";
 
 export const EMPTY_PERSON_FORM: PersonFormInput = { displayName: "", contactPhone: "", regionId: "", districtId: "", about: "" };
@@ -49,16 +50,26 @@ export function PersonForm({
   const { register, control, handleSubmit, setValue, getValues, trigger, formState } = form;
   const errors = formState.errors;
   const regionId = useWatch({ control, name: "regionId" });
+  const districtId = useWatch({ control, name: "districtId" });
   const regionOptions = useMemo(() => refs.regions.map((r) => ({ value: r.id, label: name(r) })), [refs.regions, name]);
   const districtOptions = useMemo(() => refs.districts.filter((d) => d.region_id === regionId).map((d) => ({ value: d.id, label: name(d) })), [refs.districts, regionId, name]);
   const flow = useQuestionFlow<PersonFormInput>(
-    [
-      { id: "name", fields: ["displayName"] },
-      { id: "phone", fields: ["contactPhone"] },
-      { id: "region", fields: ["regionId"] },
-      { id: "district", fields: ["districtId"] },
-      { id: "about", fields: ["about"] },
-    ],
+    // Onboarding: joylashuv → viloyat → tuman → ism → telefon (kompaniya nomi so'ralmaydi)
+    stepByStep
+      ? [
+          { id: "locate" },
+          { id: "region", fields: ["regionId"] },
+          { id: "district", fields: ["districtId"] },
+          { id: "name", fields: ["displayName"] },
+          { id: "phone", fields: ["contactPhone"] },
+        ]
+      : [
+          { id: "name", fields: ["displayName"] },
+          { id: "phone", fields: ["contactPhone"] },
+          { id: "region", fields: ["regionId"] },
+          { id: "district", fields: ["districtId"] },
+          { id: "about", fields: ["about"] },
+        ],
     trigger,
   );
   const q = (id: string, node: ReactNode) => (!stepByStep || flow.is(id) ? node : null);
@@ -73,6 +84,45 @@ export function PersonForm({
     <form onSubmit={stepByStep ? flow.bindSubmit(handleSubmit((v) => void onSubmit(v), flow.onInvalid)) : handleSubmit((v) => void onSubmit(v))} className={className} noValidate>
       {stepByStep ? <QuestionProgress flow={flow} className="mb-5" /> : null}
       <fieldset disabled={pending} className={cn("space-y-5", stepByStep && "animate-fade-in")} key={stepByStep ? flow.index : undefined}>
+        {stepByStep && flow.is("locate") ? (
+          <LocateAsk
+            districts={refs.districts}
+            title={t("employer.onboarding.where_person_title")}
+            subtitle={t("employer.onboarding.where_sub")}
+            onLocated={(d) => {
+              setValue("regionId", d.region_id, { shouldValidate: true });
+              setValue("districtId", d.id, { shouldValidate: true });
+              flow.advance();
+            }}
+            onManual={() => void flow.next()}
+          />
+        ) : null}
+        {stepByStep && flow.is("region") ? (
+          <ChoiceList
+            title={t("employer.form.region")}
+            subtitle={regionId ? t("common.locate.confirm_hint") : undefined}
+            options={regionOptions}
+            value={regionId}
+            columns={2}
+            onPick={(v) => {
+              if (v !== regionId) setValue("districtId", "");
+              setValue("regionId", v, { shouldValidate: true });
+              flow.advance();
+            }}
+          />
+        ) : null}
+        {stepByStep && flow.is("district") ? (
+          <ChoiceList
+            title={t("employer.form.district")}
+            options={districtOptions}
+            value={districtId}
+            columns={2}
+            onPick={(v) => {
+              setValue("districtId", v, { shouldValidate: true });
+              flow.advance();
+            }}
+          />
+        ) : null}
         {q(
           "name",
           <Field size={sz} label={t("employer.form.display_name")} htmlFor="person-name" required description={t("employer.form.display_name_hint")} error={err("displayName")}>
@@ -94,7 +144,7 @@ export function PersonForm({
           </Field>,
         )}
         <div className={cn(!stepByStep && "grid gap-4 sm:grid-cols-2")}>
-          {q(
+          {stepByStep ? null : q(
             "region",
             <SelectField
               size={sz}
@@ -110,7 +160,7 @@ export function PersonForm({
               }}
             />,
           )}
-          {q(
+          {stepByStep ? null : q(
             "district",
             <SelectField
               size={sz}
@@ -134,7 +184,7 @@ export function PersonForm({
           </Field>,
         )}
       </fieldset>
-      <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+      <div className={cn("mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end")}>
         {stepByStep && !flow.isFirst ? (
           <Button type="button" variant="ghost" size="lg" disabled={pending} onClick={flow.back}>
             <ChevronLeft className="size-5" /> {t("common.actions.back")}
@@ -144,7 +194,7 @@ export function PersonForm({
             <ChevronLeft className="size-5" /> {backLabel}
           </Button>
         ) : null}
-        <Button type="submit" size="lg" loading={pending} className="sm:min-w-48">
+        <Button type="submit" size="lg" loading={pending} className={cn("sm:min-w-48", stepByStep && flow.is("locate") && "hidden")}>
           {stepByStep && !flow.isLast ? t("common.actions.next") : submitLabel}
         </Button>
       </div>

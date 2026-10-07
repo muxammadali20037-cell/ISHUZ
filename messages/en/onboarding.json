@@ -103,7 +103,9 @@
       "geo_detect": "Detect my location",
       "geo_update": "Detect again",
       "geo_saved": "Location saved",
-      "geo_saved_badge": "Saved"
+      "geo_saved_badge": "Saved",
+      "where_title": "Where do you live?",
+      "where_sub": "We'll show jobs near you first."
     },
     "profession": {
       "category": "Field",

@@ -12,6 +12,7 @@ import { QuestionProgress, useQuestionFlow } from "@/components/shared/question-
 import { cn } from "@/lib/utils";
 import { companySchema, COMPANY_SIZES, type CompanyFormInput, type CompanyFormValues } from "../schema";
 import { SelectField } from "./select-field";
+import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
 import type { ReferenceLists } from "./ref-types";
 
 export const EMPTY_COMPANY_FORM: CompanyFormInput = {
@@ -66,24 +67,35 @@ export function CompanyForm({
   const { register, control, handleSubmit, setValue, trigger, formState } = form;
   const errors = formState.errors;
   const regionId = useWatch({ control, name: "regionId" });
+  const districtId = useWatch({ control, name: "districtId" });
 
   const regionOptions = useMemo(() => refs.regions.map((r) => ({ value: r.id, label: name(r) })), [refs.regions, name]);
   const districtOptions = useMemo(() => refs.districts.filter((d) => d.region_id === regionId).map((d) => ({ value: d.id, label: name(d) })), [refs.districts, regionId, name]);
   const categoryOptions = useMemo(() => refs.categories.map((c) => ({ value: c.id, label: name(c) })), [refs.categories, name]);
   const sizeOptions = useMemo(() => COMPANY_SIZES.map((s) => ({ value: s, label: tEnum("company_size", s) })), [tEnum]);
+  // Onboarding (stepByStep): faqat eng kerakli savollar — joylashuv → viloyat → tuman → nom → telefon.
+  // Qolganlari (sayt, soha, hajm, STIR, logo) keyin kompaniya sozlamalarida.
   const flow = useQuestionFlow<CompanyFormInput>(
-    [
-      { id: "name", fields: ["name"] },
-      { id: "phone", fields: ["phone", "telegram"] },
-      { id: "links", fields: ["website", "instagram"] },
-      { id: "region", fields: ["regionId"] },
-      { id: "district", fields: ["districtId"] },
-      { id: "address", fields: ["address"] },
-      { id: "industry", fields: ["industryCategoryId"] },
-      { id: "size", fields: ["size", "tin"] },
-      { id: "about", fields: ["about"] },
-      { id: "logo", hidden: !topSlot },
-    ],
+    stepByStep
+      ? [
+          { id: "locate" },
+          { id: "region", fields: ["regionId"] },
+          { id: "district", fields: ["districtId"] },
+          { id: "name", fields: ["name"] },
+          { id: "phone", fields: ["phone", "telegram"] },
+        ]
+      : [
+          { id: "name", fields: ["name"] },
+          { id: "phone", fields: ["phone", "telegram"] },
+          { id: "links", fields: ["website", "instagram"] },
+          { id: "region", fields: ["regionId"] },
+          { id: "district", fields: ["districtId"] },
+          { id: "address", fields: ["address"] },
+          { id: "industry", fields: ["industryCategoryId"] },
+          { id: "size", fields: ["size", "tin"] },
+          { id: "about", fields: ["about"] },
+          { id: "logo", hidden: !topSlot },
+        ],
     trigger,
   );
   const q = (id: string, node: ReactNode) => (!stepByStep || flow.is(id) ? node : null);
@@ -101,6 +113,46 @@ export function CompanyForm({
       {stepByStep ? <QuestionProgress flow={flow} className="mb-5" /> : null}
       <fieldset disabled={disabled} className={cn("space-y-5", stepByStep && "animate-fade-in")} key={stepByStep ? flow.index : undefined}>
         {stepByStep ? null : topSlot}
+        {stepByStep && flow.is("locate") ? (
+          <LocateAsk
+            districts={refs.districts}
+            title={t("employer.onboarding.where_title")}
+            subtitle={t("employer.onboarding.where_sub")}
+            onLocated={(d) => {
+              setValue("regionId", d.region_id, { shouldValidate: true });
+              setValue("districtId", d.id, { shouldValidate: true });
+              flow.advance();
+            }}
+            onManual={() => void flow.next()}
+          />
+        ) : null}
+        {stepByStep && flow.is("region") ? (
+          <ChoiceList
+            title={t("employer.form.region")}
+            subtitle={regionId ? t("common.locate.confirm_hint") : undefined}
+            options={regionOptions}
+            value={regionId}
+            columns={2}
+            onPick={(v) => {
+              if (v !== regionId) setValue("districtId", "");
+              setValue("regionId", v, { shouldValidate: true });
+              flow.advance();
+            }}
+          />
+        ) : null}
+        {stepByStep && flow.is("district") ? (
+          <ChoiceList
+            title={t("employer.form.district")}
+            options={districtOptions}
+            value={districtId}
+            columns={2}
+            onPick={(v) => {
+              setValue("districtId", v, { shouldValidate: true });
+              flow.advance();
+            }}
+          />
+        ) : null}
+        {err("regionId") && stepByStep && flow.is("region") ? <p className="text-sm text-destructive">{err("regionId")}</p> : null}
         {q(
           "name",
           <Field size={sz} label={t("employer.form.company_name")} htmlFor="company-name" required error={err("name")}>
@@ -144,7 +196,7 @@ export function CompanyForm({
         </div>
 
         <div className={grid}>
-          {q(
+          {stepByStep ? null : q(
             "region",
             <SelectField
               size={sz}
@@ -160,7 +212,7 @@ export function CompanyForm({
               }}
             />,
           )}
-          {q(
+          {stepByStep ? null : q(
             "district",
             <SelectField
               size={sz}
@@ -220,7 +272,7 @@ export function CompanyForm({
       </fieldset>
 
       {!readOnly ? (
-        <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <div className={cn("mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end")}>
           {stepByStep && !flow.isFirst ? (
             <Button type="button" variant="ghost" size="lg" disabled={pending} onClick={flow.back}>
               <ChevronLeft className="size-5" /> {t("common.actions.back")}
@@ -228,7 +280,7 @@ export function CompanyForm({
           ) : (
             secondaryAction
           )}
-          <Button type="submit" size="lg" loading={pending} className="sm:min-w-48">
+          <Button type="submit" size="lg" loading={pending} className={cn("sm:min-w-48", stepByStep && flow.is("locate") && "hidden")}>
             {stepByStep && !flow.isLast ? t("common.actions.next") : submitLabel}
           </Button>
         </div>

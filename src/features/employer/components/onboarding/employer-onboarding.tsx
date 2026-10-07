@@ -7,13 +7,11 @@ import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Stepper } from "@/components/ui/misc";
 import { toast } from "@/components/ui/toast";
-import { completeCompanyOnboarding, completePersonOnboarding, saveCompanyLogo, saveEmployerDraft, saveEmployerType } from "../../actions";
+import { completeCompanyOnboarding, completePersonOnboarding, saveEmployerDraft, saveEmployerType } from "../../actions";
 import { errorMessageKey } from "../../mappers";
-import { uploadCompanyLogo } from "../../storage";
 import type { CompanyFormValues, PersonFormInput, PersonFormValues } from "../../schema";
 import { CompanyForm } from "../company-form";
 import { PersonForm } from "../person-form";
-import { LogoPicker } from "../logo-picker";
 import type { ReferenceLists } from "../ref-types";
 import { EmployerTypeStep, type EmployerType } from "./employer-type-step";
 
@@ -27,7 +25,7 @@ export interface OnboardingPrefill {
 }
 
 /**
- * Ish beruvchi onboarding: 1) tur  2a) kompaniya/YaTT formasi  2b) shaxs formasi.
+ * Ish beruvchi onboarding: 1) tur  2) joylashuv → viloyat → tuman → nom → telefon (logo va boshqalar — keyin sozlamalarda).
  * 1-qadam tanlovi darhol saqlanadi; qaytganda 2-qadamdan davom etadi.
  */
 export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: OnboardingPrefill; refs: ReferenceLists; firstName: string }) {
@@ -36,7 +34,6 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const [type, setType] = useState<EmployerType | null>(prefill.employerType);
   const [note, setNote] = useState("");
   const [step, setStep] = useState<1 | 2>(prefill.employerType ? 2 : 1);
-  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [pending, startTransition] = useTransition();
 
   const fail = (code: string): void => {
@@ -71,7 +68,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   };
 
   const submitCompany = (values: CompanyFormValues) => {
-    if (type !== "company" && type !== "government" && type !== "individual_entrepreneur") return;
+    if (type !== "company" && type !== "government" && type !== "individual_entrepreneur" && type !== "other") return;
     startTransition(async () => {
       const res = await completeCompanyOnboarding({ ...values, employerType: type });
       if (!res.ok) {
@@ -81,11 +78,6 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
       if (!res.data) {
         fail("generic");
         return;
-      }
-      if (logoFile) {
-        const up = await uploadCompanyLogo(res.data.companyId, logoFile);
-        const saved = up.ok ? await saveCompanyLogo({ companyId: res.data.companyId, path: up.path }) : null;
-        if (!up.ok || !saved?.ok) toast.info(t("employer.onboarding.logo_failed"));
       }
       finish();
     });
@@ -136,9 +128,8 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
         </section>
       ) : isCompanyType ? (
         <section>
-          <h1 className="text-2xl font-bold sm:text-3xl">{t("employer.onboarding.step_company_title")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_company_subtitle")}</p>
-          <div className="mt-6 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
+          <h1 className="sr-only">{t("employer.onboarding.step_company_title")}</h1>
+          <div>
             <CompanyForm
               stepByStep
               refs={refs}
@@ -146,22 +137,14 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
               onSubmit={submitCompany}
               submitLabel={t("employer.onboarding.finish")}
               pending={pending}
-              topSlot={
-                <div>
-                  <p className="mb-2 text-sm font-medium">{t("employer.form.logo")}</p>
-                  <LogoPicker currentUrl={null} fallback={firstName} file={logoFile} onChange={setLogoFile} disabled={pending} />
-                  <p className="mt-2 text-xs text-muted-foreground">{t("employer.onboarding.logo_later")}</p>
-                </div>
-              }
               secondaryAction={backButton(() => goBack())}
             />
           </div>
         </section>
       ) : (
         <section>
-          <h1 className="text-2xl font-bold sm:text-3xl">{t("employer.onboarding.step_person_title")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_person_subtitle")}</p>
-          <div className="mt-6 rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
+          <h1 className="sr-only">{t("employer.onboarding.step_person_title")}</h1>
+          <div>
             <PersonForm
               stepByStep
               refs={refs}

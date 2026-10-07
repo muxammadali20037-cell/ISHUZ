@@ -198,5 +198,12 @@
     "description": "Toshkent va butun O'zbekiston bo'ylab ish va vakansiyalar. Rezyume 2 daqiqada, sizga mos ishlar, bir bosishda ariza. Ish Beruvchilar uchun tez nomzod topish.",
     "keywords": "ish, ish topish, vakansiyalar, Toshkentda ish, ish e'lonlari, rezyume, ishchi kerak, ish qidirish",
     "org_description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"
+  },
+  "locate": {
+    "detect": "Joylashuvni aniqlash",
+    "manual": "Qo'lda tanlayman",
+    "privacy": "Faqat viloyat va tumaningizni topish uchun. Aniq manzilingiz hech kimga ko'rsatilmaydi.",
+    "failed": "Joylashuvni aniqlab bo'lmadi. Hech qisi yo'q — ro'yxatdan tanlang.",
+    "confirm_hint": "Joylashuvingiz bo'yicha belgilandi. To'g'ri bo'lsa, bosing."
   }
 }

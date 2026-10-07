@@ -198,5 +198,12 @@
     "description": "Find jobs and vacancies in Tashkent and across Uzbekistan. Build your resume in 2 minutes, get matched jobs and apply in one tap. Employers find qualified candidates fast.",
     "keywords": "jobs in Uzbekistan, jobs in Tashkent, vacancies, job search, Tashkent vacancies, resume, hiring, careers Uzbekistan, find a job",
     "org_description": "A platform connecting job seekers and employers in Uzbekistan"
+  },
+  "locate": {
+    "detect": "Detect my location",
+    "manual": "I'll choose manually",
+    "privacy": "Only to find your region and district. Your exact address is never shown.",
+    "failed": "Couldn't detect your location. No problem — pick from the list.",
+    "confirm_hint": "Pre-selected from your location. Tap if correct."
   }
 }

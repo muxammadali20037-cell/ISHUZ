@@ -103,7 +103,9 @@
       "geo_detect": "Joylashuvimni aniqlash",
       "geo_update": "Qayta aniqlash",
       "geo_saved": "Joylashuv saqlandi",
-      "geo_saved_badge": "Saqlangan"
+      "geo_saved_badge": "Saqlangan",
+      "where_title": "Siz qayerda yashaysiz?",
+      "where_sub": "Sizga yaqin ishlarni birinchi ko'rsatamiz."
     },
     "profession": {
       "category": "Soha",
