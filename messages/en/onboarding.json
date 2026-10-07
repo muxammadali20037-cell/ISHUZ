@@ -244,7 +244,7 @@
       "incomplete_personal": "Enter your first and last name",
       "incomplete_location": "Select your area",
       "incomplete_profession": "Select a profession",
-      "listing_payment_required": "Your free listing is used. Please pay to continue."
+      "listing_payment_required": "Listings are paid. Please pay to appear in search."
     },
     "quick_done": "Done! Now we'll show jobs that fit you.",
     "quick_finish": "Finish"

@@ -13,7 +13,8 @@
     "free_trial": "🎁 Birinchi e'loningiz bepul — {days} kun faol bo'ladi",
     "paid_window": "✅ To'langan: {date} gacha faol",
     "payment_required": "E'lon narxi: {price} so'm · {days} kun",
-    "free": "E'lon bepul — {days} kun faol bo'ladi"
+    "free": "E'lon bepul — {days} kun faol bo'ladi",
+    "payment_discount": "🔥 Birinchi e'lon chegirmada: {price} so'm (asl narxi {full} so'm) · {days} kun"
   },
   "promo_mode": {
     "promo": "🎉 Aksiya: {date} gacha TOP bepul",
@@ -66,8 +67,9 @@
     "already_paid": "Bu vakansiya uchun to'lov qilingan",
     "already_promoted": "TOP hali faol — tugagach yana yoqishingiz mumkin",
     "onboarding_required": "Avval profilingizni to'ldiring",
-    "listing_payment_required": "Bepul e'lon ishlatilgan. Davom etish uchun to'lov qiling."
+    "listing_payment_required": "E'lon joylash pullik. Qidiruvga chiqish uchun to'lov qiling."
   },
   "listing_title": "Ish qidirish e'lonini joylash",
-  "listing_desc": "E'loningiz {days} kun ish beruvchilar qidiruvida ko'rinadi"
+  "listing_desc": "E'loningiz {days} kun ish beruvchilar qidiruvida ko'rinadi",
+  "discount": "Birinchi e'longa {percent}% chegirma — {date} gacha"
 }

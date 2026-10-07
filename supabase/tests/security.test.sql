@@ -32,6 +32,8 @@ begin
 end $$;
 
 begin;
+-- bu test xavfsizlik haqida: e'lon to'lovi sozlamasi aralashmasin
+update public.app_settings set value = 'true'::jsonb where key = 'listing_free_trial';
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('a1000000-0000-0000-0000-000000000001', '+998901000001', now(), '{"first_name":"Ali","last_name":"Valiyev"}'),      -- ishchi

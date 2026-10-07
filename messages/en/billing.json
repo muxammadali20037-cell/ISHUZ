@@ -13,7 +13,8 @@
     "free_trial": "🎁 Your first listing is free — active for {days} days",
     "paid_window": "✅ Paid: active until {date}",
     "payment_required": "Listing price: {price} UZS · {days} days",
-    "free": "Posting is free — active for {days} days"
+    "free": "Posting is free — active for {days} days",
+    "payment_discount": "🔥 First listing discounted: {price} UZS (was {full} UZS) · {days} days"
   },
   "promo_mode": {
     "promo": "🎉 Promotion: TOP is free until {date}",
@@ -66,8 +67,9 @@
     "already_paid": "This vacancy has already been paid for",
     "already_promoted": "TOP is still active — you can turn it on again once it ends",
     "onboarding_required": "Please complete your profile first",
-    "listing_payment_required": "Your free listing is used. Please pay to continue."
+    "listing_payment_required": "Listings are paid. Please pay to appear in search."
   },
   "listing_title": "Publish your job-seeking listing",
-  "listing_desc": "Your listing is visible to employers in search for {days} days"
+  "listing_desc": "Your listing is visible to employers in search for {days} days",
+  "discount": "{percent}% off your first listing — until {date}"
 }

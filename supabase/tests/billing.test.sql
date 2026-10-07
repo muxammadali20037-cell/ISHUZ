@@ -36,6 +36,8 @@ begin;
 update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
 update public.app_settings set value = '30'::jsonb where key = 'vacancy_lifetime_days';
 update public.app_settings set value = '50000'::jsonb where key = 'price_vacancy_publish';
+update public.app_settings set value = 'true'::jsonb where key = 'listing_free_trial';
+update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'listing_discount_until';
 -- 0030 dan beri to'lov sukut bo'yicha o'chiq; bu test yoqilgan rejimni tekshiradi
 update public.app_settings set value = 'true'::jsonb where key = 'billing_enabled';
 

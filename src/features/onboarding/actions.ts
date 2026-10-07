@@ -491,6 +491,9 @@ export async function finishOnboarding(): Promise<ActionResult<{ redirect: strin
   const { error: roleError } = await supabase.from("profiles").update({ active_role: "worker" }).eq("id", session.userId);
   if (roleError) return { ok: false, error: errorCode(roleError) };
 
+  // E'lon pullik: profil saqlandi, lekin qidiruvga chiqish uchun to'lov kerak — e'lon sahifasiga yuboramiz
+  const { data: listed } = await supabase.from("worker_profiles").select("is_public").eq("id", workerId).single();
+
   revalidatePath("/", "layout");
-  return { ok: true, data: { redirect: "/" } };
+  return { ok: true, data: { redirect: listed && !listed.is_public ? "/profile/listing" : "/" } };
 }

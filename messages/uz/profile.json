@@ -350,7 +350,10 @@
     "saved": "Saqlandi",
     "term_left": "Qidiruvda: yana {days} kun ({date} gacha)",
     "term_expired": "E'lon muddati tugagan — qidiruvda ko'rinmayapsiz",
-    "term_hint": "Har bir e'lon 10 kun turadi. Uzaytirish — 20 000 so'm.",
-    "extend": "Uzaytirish"
+    "term_hint": "Har bir e'lon 10 kun turadi. Keyin uzaytirish mumkin.",
+    "extend": "Uzaytirish",
+    "pay_title": "E'loningizni qidiruvga chiqaring",
+    "pay_desc": "To'lovdan so'ng e'loningiz {days} kun ish beruvchilar qidiruvida ko'rinadi",
+    "pay_button": "Joylash — {price}"
   }
 }

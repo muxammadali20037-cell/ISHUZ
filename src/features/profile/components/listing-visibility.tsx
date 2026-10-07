@@ -1,9 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarClock, Eye, EyeOff, Send, PartyPopper, ShieldCheck } from "lucide-react";
-import { requestPayment } from "@/features/billing/components/payment-dialog";
+import { CalendarClock, Eye, EyeOff, Megaphone, Send, PartyPopper, ShieldCheck } from "lucide-react";
+import { DiscountBadge, requestPayment } from "@/features/billing/components/payment-dialog";
+import { getWorkerListingQuote } from "@/features/billing/actions";
+import type { ListingQuote } from "@/features/billing/types";
+import { formatMoney } from "@/lib/format";
 import { celebrate } from "@/lib/celebrate";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -38,7 +41,7 @@ export function ListingVisibility({
       const r1 = await updateVisibility({ is_public: next === "search" });
       const r2 = await updateWorkerStatus({ status: next === "hidden" ? "not_looking" : status === "not_looking" ? "active" : status });
       if (!r1.ok || !r2.ok) {
-        // 10 kunlik bepul e'lon ishlatilgan — qidiruvga chiqish to'lov orqali
+        // E'lon pullik — qidiruvga chiqish to'lov orqali
         if ((!r1.ok && r1.error === "listing_payment_required") || (!r2.ok && r2.error === "listing_payment_required")) {
           requestPayment({ purpose: "worker_listing", targetId: workerId });
           router.refresh();
@@ -106,6 +109,7 @@ export function ListingVisibility({
           </button>
         ))}
       </div>
+      {mode !== "hidden" ? <ListingPayCard workerId={workerId} listedUntil={listedUntil} /> : null}
       {listedUntil ? <ListingTerm until={listedUntil} active={mode === "search"} onExtend={() => requestPayment({ purpose: "worker_listing", targetId: workerId })} /> : null}
       <p className="flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary-soft/60 p-3 text-sm text-foreground">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -120,6 +124,38 @@ export function ListingVisibility({
           {t("profile.listing.reactivate")}
         </Button>
       )}
+    </div>
+  );
+}
+
+/** E'lon hali qidiruvda emas (to'lanmagan yoki muddati tugagan) — narx, chegirma va to'lov tugmasi */
+function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUntil: string | null }) {
+  const { t, locale } = useT();
+  const [q, setQ] = useState<ListingQuote | null>(null);
+  useEffect(() => {
+    let alive = true;
+    getWorkerListingQuote().then((res) => alive && res.ok && res.data && setQ(res.data));
+    return () => {
+      alive = false;
+    };
+  }, [listedUntil]);
+  if (!q || q.mode !== "payment_required" || listedUntil) return null;
+  return (
+    <div className="space-y-3 rounded-3xl border-2 border-primary bg-primary-soft/60 p-5 shadow-sm">
+      <div className="flex items-start gap-3">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
+          <Megaphone className="size-5" />
+        </span>
+        <div className="min-w-0">
+          <p className="text-lg font-bold">{t("profile.listing.pay_title")}</p>
+          <p className="text-sm text-muted-foreground">{t("profile.listing.pay_desc", { days: q.lifetime_days })}</p>
+        </div>
+      </div>
+      {q.discount_percent > 0 ? <DiscountBadge percent={q.discount_percent} until={q.discount_until} /> : null}
+      <Button size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-base font-bold" onClick={() => requestPayment({ purpose: "worker_listing", targetId: workerId })}>
+        {q.discount_percent > 0 ? <s className="font-medium opacity-70">{formatMoney(q.full_price, locale)}</s> : null}
+        {t("profile.listing.pay_button", { price: formatMoney(q.price, locale) })}
+      </Button>
     </div>
   );
 }

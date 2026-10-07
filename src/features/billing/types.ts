@@ -2,7 +2,14 @@ import type { PaymentProvider } from "./providers";
 
 export type PublishMode = "paid_window" | "free" | "promo" | "free_trial" | "payment_required";
 
-export interface VacancyQuote {
+/** Aksiya chegirmasi (birinchi to'lovda): price — chegirmali, full_price — asl narx */
+export interface ListingDiscount {
+  full_price: number;
+  discount_percent: number;
+  discount_until: string | null;
+}
+
+export interface VacancyQuote extends ListingDiscount {
   mode: PublishMode;
   price: number;
   lifetime_days: number;
@@ -12,7 +19,7 @@ export interface VacancyQuote {
   providers: PaymentProvider[];
 }
 
-export interface ListingQuote {
+export interface ListingQuote extends ListingDiscount {
   mode: Exclude<PublishMode, "promo">;
   price: number;
   lifetime_days: number;

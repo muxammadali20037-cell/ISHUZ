@@ -89,8 +89,14 @@ function PaymentSheet({ req }: { req: Request }) {
           <>
             <div className="flex items-baseline justify-between rounded-2xl bg-primary-soft/60 p-4">
               <span className="text-sm font-medium text-muted-foreground">{t("billing.pay_title")}</span>
-              <span className="text-2xl font-bold tabular">{formatMoney(quote.price, locale)}</span>
+              <span className="flex items-baseline gap-2">
+                {"discount_percent" in quote && quote.discount_percent > 0 ? (
+                  <s className="text-sm text-muted-foreground tabular">{formatMoney(quote.full_price, locale)}</s>
+                ) : null}
+                <span className="text-2xl font-bold tabular">{formatMoney(quote.price, locale)}</span>
+              </span>
             </div>
+            {"discount_percent" in quote && quote.discount_percent > 0 ? <DiscountBadge percent={quote.discount_percent} until={quote.discount_until} /> : null}
             {quote.providers.length ? (
               <div className="grid gap-2">
                 {quote.providers.map((p) => (
@@ -114,6 +120,19 @@ function PaymentSheet({ req }: { req: Request }) {
   );
 }
 
+/** Aksiya: "−50% birinchi e'longa · 1-yanvar 2027 gacha" — ko'zga tashlanadigan rangda */
+export function DiscountBadge({ percent, until }: { percent: number; until: string | null }) {
+  const { t, locale } = useT();
+  // aksiya Toshkent vaqti bilan 1-yanvar 00:00 da tugaydi — sanani shu vaqt zonasida ko'rsatamiz
+  const date = until ? new Date(until).toLocaleDateString(locale === "en" ? "en-GB" : "ru-RU", { timeZone: "Asia/Tashkent" }) : "";
+  return (
+    <p className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-500 to-orange-500 px-4 py-3 text-sm font-semibold text-white shadow-sm">
+      <span className="rounded-lg bg-white/25 px-2 py-0.5 text-base font-extrabold">−{percent}%</span>
+      <span className="min-w-0">{t("billing.discount", { percent, date })}</span>
+    </p>
+  );
+}
+
 /** "E'lon qilish" tugmasi ostidagi izoh: aksiya / bepul / to'langan / narx */
 export function PublishModeNote({ vacancyId }: { vacancyId: string }) {
   const { t, locale } = useT();
@@ -127,9 +146,19 @@ export function PublishModeNote({ vacancyId }: { vacancyId: string }) {
   }, [vacancyId]);
   if (!q) return null;
   const date = formatDate(q.mode === "paid_window" ? q.paid_until : q.promo_until, locale);
+  const discounted = q.mode === "payment_required" && q.discount_percent > 0;
   return (
-    <p className="mb-2 rounded-xl bg-primary-soft/60 px-3 py-2 text-sm font-medium text-primary">
-      {t(`billing.mode.${q.mode}`, { date, hours: q.free_hours, price: formatMoney(q.price, locale, { withCurrency: false }), days: q.lifetime_days })}
-    </p>
+    <div className="mb-2 space-y-2">
+      <p className="rounded-xl bg-primary-soft/60 px-3 py-2 text-sm font-medium text-primary">
+        {t(`billing.mode.${discounted ? "payment_discount" : q.mode}`, {
+          date,
+          hours: q.free_hours,
+          price: formatMoney(q.price, locale, { withCurrency: false }),
+          full: formatMoney(q.full_price, locale, { withCurrency: false }),
+          days: q.lifetime_days,
+        })}
+      </p>
+      {discounted ? <DiscountBadge percent={q.discount_percent} until={q.discount_until} /> : null}
+    </div>
   );
 }

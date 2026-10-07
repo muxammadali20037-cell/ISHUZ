@@ -3624,6 +3624,22 @@ export type Database = {
         Args: { level: Database["public"]["Enums"]["language_level"] };
         Returns: number;
       };
+      listing_discount_percent: {
+        Args: { p_purpose: Database["public"]["Enums"]["payment_purpose"] };
+        Returns: number;
+      };
+      listing_free_trial: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      listing_price: {
+        Args: {
+          p_default: number;
+          p_key: string;
+          p_purpose: Database["public"]["Enums"]["payment_purpose"];
+        };
+        Returns: number;
+      };
       listings_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
       manages_vacancy: { Args: { p_vacancy_id: string }; Returns: boolean };
       mark_conversation_read: {
@@ -3791,6 +3807,10 @@ export type Database = {
       publish_vacancy: {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
+      };
+      purge_old_notifications: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
       };
       purge_search_logs: {
         Args: Record<PropertyKey, never>;

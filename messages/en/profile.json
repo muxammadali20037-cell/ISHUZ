@@ -350,7 +350,10 @@
     "saved": "Saved",
     "term_left": "In search: {days} more days (until {date})",
     "term_expired": "Your listing has expired — you're not visible in search",
-    "term_hint": "Each listing lasts 10 days. Extending costs 20,000 UZS.",
-    "extend": "Extend"
+    "term_hint": "Each listing lasts 10 days. You can extend it afterwards.",
+    "extend": "Extend",
+    "pay_title": "Put your listing in search",
+    "pay_desc": "After payment your listing is visible to employers for {days} days",
+    "pay_button": "Publish — {price}"
   }
 }
