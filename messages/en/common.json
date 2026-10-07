@@ -135,7 +135,8 @@
     "invalid_url": "Invalid link (must start with https://)",
     "file_too_large": "File is too large (max {max} MB)",
     "file_type": "This file type is not supported",
-    "try_again": "Please try again"
+    "try_again": "Please try again",
+    "phone_required": "Enter your phone number — it's how people will reach you"
   },
   "empty": {
     "nothing_here": "Nothing here yet",

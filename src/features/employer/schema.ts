@@ -214,7 +214,12 @@ export const employerDraftSchema = z.object({
 });
 export type EmployerDraftInput = z.input<typeof employerDraftSchema>;
 
-export const completeCompanyOnboardingSchema = companySchema.extend({ employerType: z.enum(COMPANY_EMPLOYER_TYPES) });
+const PHONE_REQUIRED = { path: ["phone"], message: "common.errors.phone_required" };
+/** Ro'yxatdan o'tishda telefon majburiy (keyin sozlamalarda tahrirlashda — ixtiyoriy) */
+export const companyOnboardingSchema = companySchema.refine((v) => !!v.phone, PHONE_REQUIRED);
+export const personOnboardingSchema = personSchema.refine((v) => !!v.contactPhone, { path: ["contactPhone"], message: "common.errors.phone_required" });
+
+export const completeCompanyOnboardingSchema = companySchema.extend({ employerType: z.enum(COMPANY_EMPLOYER_TYPES) }).refine((v) => !!v.phone, PHONE_REQUIRED);
 export type CompleteCompanyOnboardingInput = z.input<typeof completeCompanyOnboardingSchema>;
 
 export const updateCompanySchema = companySchema.extend({ companyId: z.uuid() });

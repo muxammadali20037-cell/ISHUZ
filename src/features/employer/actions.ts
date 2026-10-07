@@ -18,6 +18,7 @@ import {
   inviteLink,
   isValidDocumentPath,
   isValidLogoPath,
+  personOnboardingSchema,
   personSchema,
   removeMemberSchema,
   saveCompanyLogoSchema,
@@ -153,7 +154,7 @@ export async function completeCompanyOnboarding(input: unknown): Promise<ActionR
 
 /** 2b-qadam: oddiy shaxs — profilni yakunlash */
 export async function completePersonOnboarding(input: unknown): Promise<ActionResult> {
-  const parsed = personSchema.safeParse(input);
+  const parsed = personOnboardingSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   const auth = await requireActionSession();
   if ("ok" in auth) return auth;

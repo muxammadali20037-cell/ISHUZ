@@ -1,6 +1,4 @@
 import { timingSafeEqual } from "node:crypto";
-import { handleWebLoginConfirm, handleWebLoginStart } from "@/features/auth/web-login-bot";
-import { WEB_LOGIN_CALLBACK_PREFIX, WEB_LOGIN_START_PREFIX } from "@/features/auth/web-login";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -52,11 +50,6 @@ export async function POST(req: NextRequest) {
       const { data: account } = await admin.from("telegram_accounts").select("language_code, profiles(locale)").eq("telegram_user_id", callback.from.id).maybeSingle();
       const locale = resolveTelegramLocale([account?.profiles?.locale, account?.language_code, callback.from.language_code]);
       const ctx: BotCtx = { admin, from: callback.from, chatId: chat.id, locale, t: makeT(locale) };
-      // Brauzerda kirishni tasdiqlash
-      if (callback.data.startsWith(WEB_LOGIN_CALLBACK_PREFIX)) {
-        await handleWebLoginConfirm(admin, ctx.t, callback.id, chat.id, callback.message?.message_id ?? null, callback.from.id, callback.data);
-        return NextResponse.json({ ok: true, webLogin: "confirm" });
-      }
       await handleBotCallback(ctx, callback.id, callback.data, callback.message?.message_id ?? null);
       return NextResponse.json({ ok: true, callback: true });
     } catch (e) {
@@ -84,12 +77,6 @@ export async function POST(req: NextRequest) {
     const t = makeT(locale);
     const tt = (key: string, params?: Record<string, string | number>) => escapeHtml(t(`notifications.telegram.${key}`, params));
     const bot: BotCtx = { admin, from, chatId, locale, t };
-
-    // ---------- brauzerda kodsiz kirish: /start wl_<token> ----------
-    if (command?.name === "start" && command.param?.startsWith(WEB_LOGIN_START_PREFIX)) {
-      await handleWebLoginStart(admin, t, chatId, from, command.param);
-      return NextResponse.json({ ok: true, webLogin: "start" });
-    }
 
     if (account) {
       await admin

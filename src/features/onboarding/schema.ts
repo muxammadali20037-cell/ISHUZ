@@ -34,7 +34,7 @@ export type PersonalInput = z.infer<typeof personalSchema>;
 /** Onboarding uchun sodda variant: faqat ism majburiy (familiya, tug'ilgan sana, jins — keyin profilda) */
 export const onboardingPersonalSchema = z.object({
   first_name: personalSchema.shape.first_name,
-  last_name: z.string().trim().max(60, err("too_long")).refine((v) => v === "" || v.length >= 2, err("name_min")),
+  last_name: personalSchema.shape.last_name,
 });
 export type OnboardingPersonalInput = z.infer<typeof onboardingPersonalSchema>;
 

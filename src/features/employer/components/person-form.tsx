@@ -10,7 +10,7 @@ import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { cn } from "@/lib/utils";
-import { personSchema, type PersonFormInput, type PersonFormValues } from "../schema";
+import { personOnboardingSchema, personSchema, type PersonFormInput, type PersonFormValues } from "../schema";
 import { SelectField } from "./select-field";
 import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
 import { TelegramPhoneShare } from "@/features/contacts/telegram-phone-share";
@@ -45,7 +45,7 @@ export function PersonForm({
 }) {
   const { t, name } = useT();
   const form = useForm<PersonFormInput, unknown, PersonFormValues>({
-    resolver: zodResolver(personSchema),
+    resolver: zodResolver(stepByStep ? personOnboardingSchema : personSchema),
     defaultValues: { ...EMPTY_PERSON_FORM, ...defaultValues },
     mode: "onBlur",
   });
@@ -141,7 +141,7 @@ export function PersonForm({
         )}
         {q(
           "phone",
-          <Field size={sz} label={t("employer.form.contact_phone")} htmlFor="person-phone" description={t("employer.form.contact_phone_hint")} error={err("contactPhone")}>
+          <Field size={sz} label={t("employer.form.contact_phone")} htmlFor="person-phone" required={stepByStep} description={t("employer.form.contact_phone_hint")} error={err("contactPhone")}>
             <Input id="person-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder={t("employer.form.phone_placeholder")} invalid={!!errors.contactPhone} {...register("contactPhone")} />
             {stepByStep ? <TelegramPhoneShare className="mt-3" onShared={(p) => setValue("contactPhone", formatPhone(p), { shouldValidate: true })} /> : null}
           </Field>,

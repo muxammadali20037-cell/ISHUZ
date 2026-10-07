@@ -10,7 +10,7 @@ import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { QuestionProgress, useQuestionFlow } from "@/components/shared/question-flow";
 import { cn } from "@/lib/utils";
-import { companySchema, COMPANY_SIZES, type CompanyFormInput, type CompanyFormValues } from "../schema";
+import { companyOnboardingSchema, companySchema, COMPANY_SIZES, type CompanyFormInput, type CompanyFormValues } from "../schema";
 import { SelectField } from "./select-field";
 import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
 import { TelegramPhoneShare } from "@/features/contacts/telegram-phone-share";
@@ -62,7 +62,7 @@ export function CompanyForm({
 }) {
   const { t, tEnum, name } = useT();
   const form = useForm<CompanyFormInput, unknown, CompanyFormValues>({
-    resolver: zodResolver(companySchema),
+    resolver: zodResolver(stepByStep ? companyOnboardingSchema : companySchema),
     defaultValues: { ...EMPTY_COMPANY_FORM, ...defaultValues },
     mode: "onBlur",
   });
@@ -173,7 +173,7 @@ export function CompanyForm({
         <div className={grid}>
           {q(
             "phone",
-            <Field size={sz} label={t("employer.form.phone")} htmlFor="company-phone" error={err("phone")} description={stepByStep ? t("contacts.share.employer_hint") : undefined}>
+            <Field size={sz} label={t("employer.form.phone")} htmlFor="company-phone" required={stepByStep} error={err("phone")} description={stepByStep ? t("contacts.share.employer_hint") : undefined}>
               <Input id="company-phone" type="tel" inputMode="tel" autoComplete="tel" placeholder={t("employer.form.phone_placeholder")} invalid={!!errors.phone} {...register("phone")} />
               {stepByStep ? <TelegramPhoneShare className="mt-3" onShared={(p) => setValue("phone", formatPhone(p), { shouldValidate: true })} /> : null}
             </Field>,

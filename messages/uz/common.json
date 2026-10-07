@@ -135,7 +135,8 @@
     "invalid_url": "Havola noto'g'ri (https:// bilan boshlanishi kerak)",
     "file_too_large": "Fayl juda katta (maks. {max} MB)",
     "file_type": "Bu fayl turi qo'llab-quvvatlanmaydi",
-    "try_again": "Qayta urinib ko'ring"
+    "try_again": "Qayta urinib ko'ring",
+    "phone_required": "Telefon raqamingizni kiriting — u bilan siz bilan bog'lanishadi"
   },
   "empty": {
     "nothing_here": "Hozircha bu yerda hech narsa yo'q",

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Phone, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { useTelegram } from "@/lib/telegram/provider";
-import { TelegramWebLogin } from "./telegram-web-login";
 import { formatPhoneAsYouType, formatPhone, normalizePhone } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,8 +51,6 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
   const [pending, startTransition] = useTransition();
   const [countdown, setCountdown] = useState(0);
   const [tgFailed, setTgFailed] = useState(false);
-  // Brauzerda asosiy usul — Telegram orqali kodsiz kirish; telefon+kod faqat zaxira
-  const [codeMode, setCodeMode] = useState(!botUsername);
   const tgStarted = useRef(false);
   const codeRef = useRef<HTMLInputElement>(null);
   const tgLoading = isTelegram && !tgFailed;
@@ -132,15 +129,6 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
   }
 
   const prettyPhone = formatPhone(normalizePhone(phone));
-
-  if (!isTelegram && !codeMode) {
-    return (
-      <div className="space-y-5">
-        <TelegramWebLogin next={next} onUseCode={() => setCodeMode(true)} />
-        <p className="text-center text-xs text-muted-foreground">{t("auth.agree", { terms: t("auth.terms"), privacy: t("auth.privacy") })}</p>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-5">
@@ -242,19 +230,6 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
             )}
           </div>
         </form>
-      ) : null}
-
-      {!isTelegram && botUsername && step === "phone" ? (
-        <>
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <span className="h-px flex-1 bg-border" />
-            {t("auth.or")}
-            <span className="h-px flex-1 bg-border" />
-          </div>
-          <Button variant="outline" size="lg" fullWidth onClick={() => setCodeMode(false)}>
-            <Send className="size-5 text-[#2AABEE]" /> {t("auth.telegram_login")}
-          </Button>
-        </>
       ) : null}
 
       <p className="text-center text-xs text-muted-foreground">

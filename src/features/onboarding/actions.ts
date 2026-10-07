@@ -77,6 +77,10 @@ export async function savePersonal(input: unknown): Promise<StepResult> {
   const { supabase, session } = res.ctx;
   const d = parsed.data;
 
+  // Telefon majburiy: ish beruvchi nomzod bilan shu raqam orqali bog'lanadi
+  const { data: contact } = await supabase.from("profile_contacts").select("phone").eq("profile_id", session.userId).maybeSingle();
+  if (!contact?.phone) return { ok: false, error: "phone_required" };
+
   // Faqat ism/familiya; tug'ilgan sana, jins va boshqalar — keyin profilda (ixtiyoriy)
   const { error: profileError } = await supabase.from("profiles").update({ first_name: d.first_name, last_name: d.last_name }).eq("id", session.userId);
   if (profileError) return { ok: false, error: errorCode(profileError) };
@@ -463,7 +467,9 @@ export async function finishOnboarding(): Promise<ActionResult<{ redirect: strin
   if (!res.ok) return res;
   const { supabase, workerId, session } = res.ctx;
 
-  if (!session.profile.first_name.trim()) return { ok: false, error: "incomplete_personal" };
+  if (!session.profile.first_name.trim() || !session.profile.last_name?.trim()) return { ok: false, error: "incomplete_personal" };
+  const { data: contact } = await supabase.from("profile_contacts").select("phone").eq("profile_id", session.userId).maybeSingle();
+  if (!contact?.phone) return { ok: false, error: "phone_required" };
   const { data: worker, error: readError } = await supabase.from("worker_profiles").select("category_id, region_id").eq("id", workerId).single();
   if (readError || !worker) return { ok: false, error: errorCode(readError) };
   if (!worker.category_id) return { ok: false, error: "incomplete_profession" };

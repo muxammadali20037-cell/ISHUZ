@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { completeCompanyOnboardingSchema, employerDraftSchema, personSchema, updateCompanySchema } from "./schema";
+import { completeCompanyOnboardingSchema, employerDraftSchema, personOnboardingSchema, personSchema, updateCompanySchema } from "./schema";
 
 /**
  * Forma client'da zodResolver bilan tekshiriladi ("" → null), keyin server action o'sha natijani qayta tekshiradi.
@@ -18,8 +18,8 @@ const emptyCompany = { name: "Yunusobod tumani 45-maktab", phone: "", telegram: 
 
 describe("employer sxemalari idempotent (client + server tekshiruvi)", () => {
   it("bo'sh ixtiyoriy maydonli kompaniya (davlat tashkiloti)", () => {
-    const out = roundTrip(completeCompanyOnboardingSchema, { ...emptyCompany, employerType: "government" });
-    expect(out).toMatchObject({ phone: null, regionId: null, size: null, tin: null, employerType: "government" });
+    const out = roundTrip(completeCompanyOnboardingSchema, { ...emptyCompany, phone: "90 111 22 33", employerType: "government" });
+    expect(out).toMatchObject({ phone: "+998901112233", regionId: null, size: null, tin: null, employerType: "government" });
   });
   it("to'ldirilgan kompaniya: normallashgan qiymatlar o'zgarmaydi", () => {
     const out = roundTrip(completeCompanyOnboardingSchema, {
@@ -42,6 +42,11 @@ describe("employer sxemalari idempotent (client + server tekshiruvi)", () => {
     roundTrip(employerDraftSchema, { displayName: "", contactPhone: "", regionId: "", districtId: "", about: "" });
   });
   it("null qiymatlar ham qabul qilinadi", () => {
-    roundTrip(completeCompanyOnboardingSchema, { ...emptyCompany, address: null, about: null, tin: null, employerType: "individual_entrepreneur" });
+    roundTrip(completeCompanyOnboardingSchema, { ...emptyCompany, phone: "+998901112233", address: null, about: null, tin: null, employerType: "individual_entrepreneur" });
+  });
+  it("ro'yxatdan o'tishda telefonsiz bo'lmaydi", () => {
+    expect(completeCompanyOnboardingSchema.safeParse({ ...emptyCompany, employerType: "company" }).success).toBe(false);
+    expect(personOnboardingSchema.safeParse({ displayName: "Aziz", contactPhone: "", regionId: "", districtId: "", about: "" }).success).toBe(false);
+    expect(personOnboardingSchema.safeParse({ displayName: "Aziz", contactPhone: "901112233", regionId: "", districtId: "", about: "" }).success).toBe(true);
   });
 });

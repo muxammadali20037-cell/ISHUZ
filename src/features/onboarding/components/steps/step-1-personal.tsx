@@ -36,7 +36,7 @@ export function Step1Personal({ profile, contacts }: { userId: string; profile: 
     },
   });
 
-  // Sodda: ism → (familiya, ixtiyoriy) → telefon. Tug'ilgan sana, jins, rasm — keyin profilda.
+  // Sodda: ism → familiya → telefon (hammasi majburiy). Tug'ilgan sana, jins, rasm — keyin profilda.
   const flow = useQuestionFlow<OnboardingPersonalInput>(
     [
       { id: "first_name", fields: ["first_name"] },
@@ -57,7 +57,7 @@ export function Step1Personal({ profile, contacts }: { userId: string; profile: 
       </Question>
 
       <Question show={flow.is("last_name")}>
-        <Field size="lg" label={t("onboarding.worker.personal.last_name")} htmlFor="last_name" hint={t("common.labels.optional")} error={fieldError(t, errors.last_name)}>
+        <Field size="lg" label={t("onboarding.worker.personal.last_name")} htmlFor="last_name" required error={fieldError(t, errors.last_name)}>
           <Input id="last_name" autoFocus autoComplete="family-name" placeholder={t("onboarding.worker.personal.last_name_placeholder")} invalid={!!errors.last_name} {...register("last_name")} />
         </Field>
       </Question>
