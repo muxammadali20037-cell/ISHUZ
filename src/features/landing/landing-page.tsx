@@ -164,6 +164,9 @@ export async function LandingPage() {
               {t("welcome.quick.pricing")}
             </Link>
           ) : null}
+          <Link href="/terms" className="text-primary hover:underline">
+            {t("common.footer.terms")}
+          </Link>
           <Link href="/privacy" className="text-primary hover:underline">
             {t("common.footer.privacy")}
           </Link>

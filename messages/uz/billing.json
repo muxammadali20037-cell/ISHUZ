@@ -67,9 +67,11 @@
     "already_paid": "Bu vakansiya uchun to'lov qilingan",
     "already_promoted": "TOP hali faol — tugagach yana yoqishingiz mumkin",
     "onboarding_required": "Avval profilingizni to'ldiring",
-    "listing_payment_required": "E'lon joylash pullik. Qidiruvga chiqish uchun to'lov qiling."
+    "listing_payment_required": "E'lon joylash pullik. Qidiruvga chiqish uchun to'lov qiling.",
+    "in_app_unavailable": "Bu xizmatni ilova ichida xarid qilib bo'lmaydi"
   },
   "listing_title": "Ish qidirish e'lonini joylash",
   "listing_desc": "E'loningiz {days} kun ish beruvchilar qidiruvida ko'rinadi",
-  "discount": "Birinchi e'longa {percent}% chegirma — {date} gacha"
+  "discount": "Birinchi e'longa {percent}% chegirma — {date} gacha",
+  "in_app_note": "Bu pullik xizmatni ilova ichida xarid qilib bo'lmaydi. Ilovaning qolgan barcha imkoniyatlari ishlayveradi."
 }

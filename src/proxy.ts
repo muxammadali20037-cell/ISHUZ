@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 import { LOCALE_COOKIE, isLocale } from "@/lib/i18n/config";
+import { ANDROID_APP, APP_COOKIE, isAndroidAppLaunch } from "@/lib/app-platform";
 
 /** Login talab qiladigan yo'llar */
 const PROTECTED_PREFIXES = [
@@ -26,11 +27,19 @@ export async function proxy(request: NextRequest) {
   const lang = request.nextUrl.searchParams.get("lang");
   if (lang && isLocale(lang)) request.cookies.set(LOCALE_COOKIE, lang);
 
+  // Google Play ilovasi (TWA) ichida ochildi — keyingi sahifalar uchun eslab qolamiz (to'lov tugmalari yashiriladi)
+  const androidLaunch = isAndroidAppLaunch(request.headers.get("referer"), request.nextUrl.searchParams.get("app"));
+  if (androidLaunch) request.cookies.set(APP_COOKIE, ANDROID_APP);
+
   const { response, user } = await updateSession(request);
   const { pathname, search } = request.nextUrl;
 
   if (lang && isLocale(lang)) {
     response.cookies.set(LOCALE_COOKIE, lang, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  }
+
+  if (androidLaunch) {
+    response.cookies.set(APP_COOKIE, ANDROID_APP, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
   }
 
   const needsAuth = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));

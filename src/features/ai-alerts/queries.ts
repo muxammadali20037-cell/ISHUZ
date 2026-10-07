@@ -3,6 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import { getServerEnv } from "@/lib/env";
 import { enabledProviders, type PaymentProvider } from "@/features/billing/providers";
+import { isAndroidApp } from "@/lib/app-platform.server";
 
 export interface AiAlertView {
   id: string;
@@ -39,17 +40,20 @@ export interface AiAlertsData {
   paidUntil: string | null;
   price: number;
   providers: PaymentProvider[];
+  /** Google Play ilovasi ichida — narx va to'lov tugmalari ko'rsatilmaydi */
+  inApp: boolean;
 }
 
 export async function getAiAlertsData(userId: string): Promise<AiAlertsData> {
   const supabase = await createClient();
-  const [alertsRes, hitsRes, tgRes, subRes, paidRes, priceRes] = await Promise.all([
+  const [alertsRes, hitsRes, tgRes, subRes, paidRes, priceRes, inApp] = await Promise.all([
     supabase.from("ai_job_alerts").select("id, prompt, label, is_active, paid_until, hits_count, last_hit_at, created_at").eq("profile_id", userId).order("created_at", { ascending: false }),
     supabase.from("notifications").select("id, payload, link, created_at").eq("profile_id", userId).eq("payload->>kind", "ai_alert").order("created_at", { ascending: false }).limit(10),
     supabase.from("telegram_accounts").select("bot_started").eq("profile_id", userId).maybeSingle(),
     supabase.from("ai_alert_subscriptions").select("paid_until").eq("profile_id", userId).maybeSingle(),
     supabase.rpc("ai_alerts_paid"),
     supabase.from("app_settings").select("value").eq("key", "price_ai_alerts").maybeSingle(),
+    isAndroidApp(),
   ]);
   const paidUntil = subRes.data?.paid_until && new Date(subRes.data.paid_until) > new Date() ? subRes.data.paid_until : null;
   const bot = getServerEnv().TELEGRAM_BOT_USERNAME?.replace(/^@/, "");
@@ -86,5 +90,6 @@ export async function getAiAlertsData(userId: string): Promise<AiAlertsData> {
     paidUntil,
     price: Number(priceRes.data?.value ?? 15000) || 15000,
     providers: enabledProviders(),
+    inApp,
   };
 }

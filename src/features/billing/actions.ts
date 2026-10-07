@@ -7,6 +7,7 @@ import { getSession } from "@/features/auth/session";
 import type { ActionResult } from "@/features/auth/actions";
 import { getLocale } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
+import { isAndroidApp } from "@/lib/app-platform.server";
 import { errorCode } from "@/lib/utils";
 import { checkoutUrl, enabledProviders } from "./providers";
 import type { ListingQuote, PromotionQuote, VacancyQuote } from "./types";
@@ -47,6 +48,8 @@ export async function startCheckout(input: unknown): Promise<ActionResult<{ url:
   const parsed = checkoutSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   if (!enabledProviders().includes(parsed.data.provider)) return { ok: false, error: "provider_disabled" };
+  // Google Play ilovasi ichida raqamli xizmat Payme/Click orqali sotilmaydi
+  if (await isAndroidApp()) return { ok: false, error: "in_app_unavailable" };
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   const supabase = await createClient();

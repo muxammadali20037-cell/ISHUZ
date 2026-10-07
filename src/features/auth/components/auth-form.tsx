@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Phone, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -233,8 +234,29 @@ export function AuthForm({ next, botUsername }: { next: string; botUsername: str
       ) : null}
 
       <p className="text-center text-xs text-muted-foreground">
-        {t("auth.agree", { terms: t("auth.terms"), privacy: t("auth.privacy") })}
+        <AgreeText text={t("auth.agree", { terms: "\u0001", privacy: "\u0002" })} terms={t("auth.terms")} privacy={t("auth.privacy")} />
       </p>
     </div>
+  );
+}
+
+/** "Davom etish orqali siz {terms} va {privacy}ga rozilik bildirasiz" — ikkala hujjat bosiladigan havola */
+function AgreeText({ text, terms, privacy }: { text: string; terms: string; privacy: string }) {
+  return (
+    <>
+      {text.split(/(\u0001|\u0002)/).map((part, i) =>
+        part === "\u0001" ? (
+          <Link key={i} href="/terms" target="_blank" className="font-medium text-primary underline-offset-2 hover:underline">
+            {terms}
+          </Link>
+        ) : part === "\u0002" ? (
+          <Link key={i} href="/privacy" target="_blank" className="font-medium text-primary underline-offset-2 hover:underline">
+            {privacy}
+          </Link>
+        ) : (
+          part
+        ),
+      )}
+    </>
   );
 }

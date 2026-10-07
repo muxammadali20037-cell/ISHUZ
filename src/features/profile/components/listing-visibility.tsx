@@ -3,7 +3,8 @@
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarClock, Eye, EyeOff, Megaphone, Send, PartyPopper, ShieldCheck } from "lucide-react";
-import { DiscountBadge, requestPayment } from "@/features/billing/components/payment-dialog";
+import { DiscountBadge, InAppNote, requestPayment } from "@/features/billing/components/payment-dialog";
+import { useAndroidApp } from "@/lib/use-android-app";
 import { getWorkerListingQuote } from "@/features/billing/actions";
 import type { ListingQuote } from "@/features/billing/types";
 import { formatMoney } from "@/lib/format";
@@ -131,6 +132,7 @@ export function ListingVisibility({
 /** E'lon hali qidiruvda emas (to'lanmagan yoki muddati tugagan) — narx, chegirma va to'lov tugmasi */
 function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUntil: string | null }) {
   const { t, locale } = useT();
+  const inApp = useAndroidApp();
   const [q, setQ] = useState<ListingQuote | null>(null);
   useEffect(() => {
     let alive = true;
@@ -151,11 +153,17 @@ function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUnt
           <p className="text-sm text-muted-foreground">{t("profile.listing.pay_desc", { days: q.lifetime_days })}</p>
         </div>
       </div>
-      {q.discount_percent > 0 ? <DiscountBadge percent={q.discount_percent} until={q.discount_until} /> : null}
-      <Button size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-base font-bold" onClick={() => requestPayment({ purpose: "worker_listing", targetId: workerId })}>
-        {q.discount_percent > 0 ? <s className="font-medium opacity-70">{formatMoney(q.full_price, locale)}</s> : null}
-        {t("profile.listing.pay_button", { price: formatMoney(q.price, locale) })}
-      </Button>
+      {inApp ? (
+        <InAppNote />
+      ) : (
+        <>
+          {q.discount_percent > 0 ? <DiscountBadge percent={q.discount_percent} until={q.discount_until} /> : null}
+          <Button size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-base font-bold" onClick={() => requestPayment({ purpose: "worker_listing", targetId: workerId })}>
+            {q.discount_percent > 0 ? <s className="font-medium opacity-70">{formatMoney(q.full_price, locale)}</s> : null}
+            {t("profile.listing.pay_button", { price: formatMoney(q.price, locale) })}
+          </Button>
+        </>
+      )}
     </div>
   );
 }
@@ -163,6 +171,7 @@ function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUnt
 /** E'lon muddati: necha kun qolgani (rangli) + 10 kunga uzaytirish */
 function ListingTerm({ until, active, onExtend }: { until: string; active: boolean; onExtend: () => void }) {
   const { t } = useT();
+  const inApp = useAndroidApp();
   const [now] = useState(() => Date.now());
   const ms = new Date(until).getTime() - now;
   const days = Math.max(0, Math.ceil(ms / 86_400_000));
@@ -182,9 +191,11 @@ function ListingTerm({ until, active, onExtend }: { until: string; active: boole
         </p>
         <p className="text-xs text-muted-foreground">{t("profile.listing.term_hint")}</p>
       </div>
-      <Button size="sm" variant={expired || soon ? "default" : "outline"} onClick={onExtend}>
-        {t("profile.listing.extend")}
-      </Button>
+      {inApp ? null : (
+        <Button size="sm" variant={expired || soon ? "default" : "outline"} onClick={onExtend}>
+          {t("profile.listing.extend")}
+        </Button>
+      )}
     </div>
   );
 }

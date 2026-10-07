@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/input";
 import { Switch } from "@/components/ui/checkbox";
 import { toast } from "@/components/ui/toast";
 import { celebrate } from "@/lib/celebrate";
+import { InAppNote } from "@/features/billing/components/payment-dialog";
 import { cn } from "@/lib/utils";
 import { createAiAlert, deleteAiAlert, startAiAlertsCheckout, toggleAiAlert } from "../actions";
 import type { AiAlertsData } from "../queries";
@@ -82,11 +83,13 @@ export function AiAlertsPanel({ data }: { data: AiAlertsData }) {
                 ? t("saved.ai_alerts.free_now")
                 : data.paidUntil
                   ? t("saved.ai_alerts.active_until", { date: until ?? "" })
-                  : t("saved.ai_alerts.price", { amount: money(data.price) })}
+                  : data.inApp
+                    ? t("saved.ai_alerts.need_pay")
+                    : t("saved.ai_alerts.price", { amount: money(data.price) })}
             </p>
           </div>
         </div>
-        {!data.free ? (
+        {!data.free && !data.inApp ? (
           data.providers.length ? (
             <div className="mt-4 grid min-w-0 gap-2">
               {data.providers.includes("payme") ? (
@@ -105,7 +108,8 @@ export function AiAlertsPanel({ data }: { data: AiAlertsData }) {
           )
         ) : null}
       </div>
-      {!active ? <p className="rounded-2xl border-2 border-warning bg-warning-soft p-3 text-sm font-medium">{t("saved.ai_alerts.need_pay")}</p> : null}
+      {!active && data.inApp ? <InAppNote /> : null}
+      {!active && !data.inApp ? <p className="rounded-2xl border-2 border-warning bg-warning-soft p-3 text-sm font-medium">{t("saved.ai_alerts.need_pay")}</p> : null}
 
       {/* Telegram ulanmagan bo'lsa — eng muhim ogohlantirish */}
       {!data.telegramConnected ? (

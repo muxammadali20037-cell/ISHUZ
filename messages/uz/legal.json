@@ -1,47 +1,47 @@
 {
-  "updated": "Oxirgi yangilanish: 2026-yil 28-sentabr",
+  "updated": "Oxirgi yangilanish: 2026-yil 7-oktabr",
   "contact_title": "Aloqa",
   "contact_body": "Savol yoki so'rovlar bo'yicha yozing:",
   "privacy": {
     "title": "Maxfiylik siyosati",
-    "description": "«Ish Beruvchi» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi va ularni qanday boshqarishingiz mumkin.",
-    "intro": "«Ish Beruvchi» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi. Unda qaysi ma'lumotlarni yig'ishimiz, nima uchun ishlatishimiz va ularni qanday boshqarishingiz mumkinligi tushuntiriladi.",
+    "description": "«Ish Beruvchi» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi, qayerda saqlaydi va ularni qanday boshqarishingiz mumkin.",
+    "intro": "«Ish Beruvchi» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi va O'zbekiston Respublikasining «Shaxsga doir ma'lumotlar to'g'risida»gi Qonuni asosida tuzilgan. Ro'yxatdan o'tib, siz shaxsga doir ma'lumotlaringizni shu siyosatda yozilgan maqsadlarda qayta ishlashga rozilik bildirasiz.",
     "sections": [
       [
         "Qaysi ma'lumotlar yig'iladi",
-        "- Hisob: telefon raqami, Telegram identifikatori va foydalanuvchi nomi, ism-familiya, tanlangan til.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, hudud va tuman, rasm va portfolio fayllari.\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chatdagi xabarlar, saqlangan qidiruvlar va bildirishnomalar.\n- To'lovlar: summa, xizmat turi va holati. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (natijalarni yaxshilash uchun, 90 kun saqlanadi) va xavfsizlik jurnallari."
+        "- Hisob: telefon raqami (majburiy), ism-familiya yoki kompaniya nomi, tanlangan til. Telegram orqali kirsangiz — Telegram identifikatori va foydalanuvchi nomi.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, rasm va portfolio fayllari.\n- Joylashuv: viloyat va tuman. «Joylashuvimni aniqlash» tugmasini bossangiz — telefoningiz GPS koordinatasi (faqat ruxsatingiz bilan).\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chat xabarlari, saqlangan qidiruvlar, AI qidiruvga yozgan so'rovlaringiz va bildirishnomalar.\n- To'lovlar: summa, xizmat turi, sana va holat. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (90 kun saqlanadi) va xavfsizlik jurnallari.\nBiz kontaktlar ro'yxati, SMS, qo'ng'iroqlar tarixi, kamera yoki mikrofonga kirmaymiz. Ilovada reklama va reklama kuzatuvchilari yo'q."
       ],
       [
         "Ma'lumotlar nima uchun ishlatiladi",
-        "- Hisobni yaratish va tizimga kirish.\n- Rezyume va vakansiyalarni ko'rsatish, ular bir-biriga qanchalik mosligini hisoblash.\n- Ariza, suhbat va yangi mos ishlar haqida bildirishnoma yuborish (ilova va Telegram orqali).\n- Firibgarlik, spam va suiiste'moldan himoya qilish.\n- Pullik xizmatlar uchun to'lovni qabul qilish.\nMa'lumotlaringizni sotmaymiz va reklama maqsadida uchinchi shaxslarga bermaymiz."
+        "- Hisobni yaratish va tizimga kirish.\n- Rezyume va vakansiyalarni ko'rsatish, ular bir-biriga qanchalik mosligini hisoblash.\n- Ariza, suhbat, mos vakansiyalar va e'lon muddati haqida bildirishnoma yuborish (ilova va Telegram orqali).\n- Pullik xizmatlarni ko'rsatish va to'lovni qabul qilish.\n- Firibgarlik, spam va suiiste'moldan himoya qilish.\nMa'lumotlaringizni sotmaymiz va reklama maqsadida uchinchi shaxslarga bermaymiz."
       ],
       [
         "Ma'lumotlarni kim ko'radi",
-        "- Ochiq rezyumeni ish beruvchilar ko'radi. Rezyumeni istalgan vaqtda yashirishingiz mumkin.\n- Telefon raqamingiz faqat sozlamalarda o'zingiz tanlagan tartibda ko'rinadi: hech kimga, ariza bergan ish beruvchilarga, so'rov orqali yoki hammaga.\n- Vakansiyalar va kompaniya sahifalari hamma uchun ochiq.\n- Chat xabarlarini faqat suhbat ishtirokchilari ko'radi."
+        "- Ish qidirish e'loningiz faol bo'lsa, ish beruvchilar rezyumeingizni ko'radi. E'lonni istalgan vaqtda yashirishingiz mumkin.\n- Telefon raqamingiz faqat o'zingiz tanlagan tartibda ko'rinadi: ariza yuborgan ish beruvchingizga, so'rov orqali yoki hammaga.\n- Aniq GPS joylashuvingiz hech kimga ko'rsatilmaydi: boshqalar faqat tuman va taxminiy masofani (butun km) ko'radi.\n- Vakansiyalar va kompaniya sahifalari hamma uchun ochiq.\n- Chat xabarlarini faqat suhbat ishtirokchilari ko'radi."
       ],
       [
-        "Xizmat ko'rsatuvchilar",
-        "Platforma quyidagi xizmatlardan foydalanadi. Ular ma'lumotlarni faqat shu xizmatni ko'rsatish uchun qayta ishlaydi:\n- Supabase — ma'lumotlar bazasi va fayllar.\n- Vercel — sayt xostingi.\n- Telegram — kirish va bildirishnomalar.\n- Payme va Click — to'lovlar.\n- Google Gemini va Anthropic Claude — faqat «AI bilan to'ldirish» tugmasini bosganingizda yozgan matningizni tahlil qilish uchun."
+        "Xizmat ko'rsatuvchilar va ma'lumotlar qayerda saqlanadi",
+        "Platforma quyidagi xizmatlardan foydalanadi. Ular ma'lumotlarni faqat shu xizmatni ko'rsatish uchun qayta ishlaydi:\n- Supabase — ma'lumotlar bazasi va fayllar. Serverlar Hindistonda (Mumbay) joylashgan.\n- Vercel — sayt xostingi (global tarmoq).\n- Telegram — kirish va bildirishnomalar.\n- Payme va Click — to'lovlar (O'zbekiston).\n- Anthropic (Claude) va Google (Gemini) — faqat AI funksiyalaridan foydalanganingizda yozgan matningizni tahlil qilish uchun.\nRo'yxatdan o'tish orqali siz ma'lumotlaringizning shu xizmatlar serverlariga, shu jumladan O'zbekistondan tashqariga uzatilishiga rozilik bildirasiz. Ma'lumotlarni O'zbekistondagi serverlarga ko'chirsak, shu sahifada e'lon qilamiz."
       ],
       [
         "Saqlash muddati",
-        "- Hisob faol ekan, ma'lumotlar saqlanadi.\n- Hisob o'chirilganda profil, rezyume, portfolio, arizalar, suhbatlar va Telegram ulanishi o'chiriladi.\n- To'lov yozuvlari moliyaviy hisobot uchun ismsiz saqlanadi.\n- Telegram botdagi tugallanmagan suhbatlar 30 kunda, qidiruv jurnali 90 kunda avtomatik o'chiriladi."
+        "- Hisob faol ekan, ma'lumotlar saqlanadi.\n- Hisob o'chirilganda profil, rezyume, portfolio, arizalar, suhbatlar, AI qidiruvlar va Telegram ulanishi o'chiriladi.\n- To'lov yozuvlari qonun bo'yicha moliyaviy hisobot uchun ismsiz saqlanadi.\n- O'qilgan bildirishnomalar 90 kunda, qolganlari 180 kunda, Telegram botdagi tugallanmagan suhbatlar 30 kunda, qidiruv jurnali 90 kunda avtomatik o'chiriladi."
       ],
       [
         "Sizning huquqlaringiz",
-        "- Ma'lumotlaringizni ko'rish va tuzatish — «Profil» bo'limida.\n- Rezyumeni yashirish va telefon ko'rinishini sozlash — «Sozlamalar»da.\n- Hisobni va ma'lumotlarni butunlay o'chirish — «Hisobni o'chirish» sahifasida tushuntirilgan.\n- Telegram bildirishnomalarini to'xtatish — botni to'xtatish yoki bloklash orqali."
+        "- Ma'lumotlaringizni ko'rish va tuzatish — «Profil» bo'limida.\n- E'lonni yashirish va telefon ko'rinishini sozlash — «Sozlamalar»da.\n- Rozilikni qaytarib olish va hisobni butunlay o'chirish — «Hisobni o'chirish» sahifasida tushuntirilgan.\n- Telegram bildirishnomalarini to'xtatish — botni to'xtatish yoki bloklash orqali.\n- Savol yoki shikoyat bo'lsa, quyidagi manzilga yozing — 10 ish kuni ichida javob beramiz."
       ],
       [
         "Yosh chegarasi",
-        "Platforma 14 yoshdan katta foydalanuvchilar uchun mo'ljallangan."
+        "Platforma 16 yoshdan katta foydalanuvchilar uchun mo'ljallangan. 16 yoshga to'lmagan bolalarning ma'lumotlarini ataylab yig'maymiz; bunday hisob aniqlansa, o'chiriladi."
       ],
       [
         "Xavfsizlik",
-        "Barcha ulanishlar shifrlangan (HTTPS). Ma'lumotlarga kirish huquqlari ma'lumotlar bazasi darajasida cheklangan: har bir foydalanuvchi faqat o'ziga ruxsat berilgan ma'lumotlarni ko'radi."
+        "Barcha ulanishlar shifrlangan (HTTPS). Ma'lumotlarga kirish huquqlari ma'lumotlar bazasi darajasida cheklangan: har bir foydalanuvchi faqat o'ziga ruxsat berilgan ma'lumotlarni ko'radi. Xodimlarimiz ma'lumotlarga faqat qo'llab-quvvatlash va xavfsizlik uchun, jurnalga yozilgan holda kiradi."
       ],
       [
         "O'zgarishlar",
-        "Siyosat o'zgarsa, shu sahifada yangilanish sanasi bilan e'lon qilinadi."
+        "Siyosat o'zgarsa, shu sahifada yangilanish sanasi bilan e'lon qilinadi. Muhim o'zgarishlar haqida ilova yoki Telegram orqali ham xabar beramiz."
       ]
     ]
   },
@@ -65,6 +65,54 @@
       [
         "Nimalar saqlanadi",
         "- To'lov yozuvlari (summa, sana, xizmat) — qonun bo'yicha moliyaviy hisobot uchun, ismingiz va profilingizsiz.\n- Xavfsizlik jurnalidagi «hisob o'chirildi» yozuvi."
+      ]
+    ]
+  },
+  "operator_title": "Ma'lumotlar operatori",
+  "terms": {
+    "title": "Foydalanish shartlari (ommaviy oferta)",
+    "description": "«Ish Beruvchi» platformasidan foydalanish qoidalari, pullik xizmatlar, narxlar va to'lovni qaytarish tartibi.",
+    "intro": "Bu hujjat «Ish Beruvchi» platformasi (sayt, Android ilova, Telegram bot) bilan foydalanuvchi o'rtasidagi ommaviy oferta hisoblanadi. Ro'yxatdan o'tish yoki xizmat uchun to'lov qilish orqali siz shu shartlarni to'liq qabul qilasiz.",
+    "sections": [
+      [
+        "Platforma nima qiladi",
+        "Platforma ish qidiruvchilar va ish beruvchilarni bog'laydi: e'lon joylash, qidiruv, ariza yuborish, chat va bildirishnomalar. Platforma ish beruvchi ham, kadrlar agentligi ham emas: ishga olish to'g'risidagi qaror va mehnat shartnomasi ish beruvchi bilan ish qidiruvchi o'rtasida tuziladi."
+      ],
+      [
+        "Bepul xizmatlar",
+        "- Vakansiyalar va rezyumelarni ko'rish va qidirish.\n- Ariza yuborish, taklif qabul qilish va chat.\n- Telegram bildirishnomalari va CV tuzish."
+      ],
+      [
+        "Pullik xizmatlar va narxlar",
+        "- Ish qidiruvchi e'lonini joylash yoki uzaytirish: {price_worker_listing} so'm, {listing_days} kun.\n- Vakansiya e'lonini joylash yoki uzaytirish: {price_vacancy_publish} so'm, {vacancy_days} kun.\n- Aqlli AI qidiruv (mos vakansiya chiqishi bilan Telegram'ga xabar): {price_ai_alerts} so'm, {ai_days} kun.\n- Aksiya: {discount_until} gacha har bir e'lon turi bo'yicha birinchi to'lovga {discount_percent}% chegirma.\nNarxlar O'zbekiston so'mida, to'lov oynasida yakuniy summa ko'rsatiladi. Narx o'zgarsa, shu sahifada e'lon qilinadi; allaqachon to'langan xizmatlarga ta'sir qilmaydi."
+      ],
+      [
+        "To'lov",
+        "To'lov Payme yoki Click orqali amalga oshiriladi. Xizmat to'lov tasdiqlangan zahoti avtomatik faollashadi. Muddat tugagach, e'lon qidiruvdan avtomatik olinadi; tugashidan oldin eslatma yuboramiz. Avtomatik yechib olish (obuna) yo'q — har safar o'zingiz to'laysiz."
+      ],
+      [
+        "To'lovni qaytarish",
+        "- Pul yechilgan, lekin xizmat faollashmagan bo'lsa — to'liq qaytariladi.\n- E'lon moderatsiyadan o'tmay rad etilsa yoki platforma aybi bilan xizmat ko'rsatilmasa — ishlatilmagan kunlar uchun qaytariladi.\n- Xizmat faollashgandan keyin o'z xohishingiz bilan to'xtatsangiz yoki «Ish topdim» desangiz, pul qaytarilmaydi.\n- Qoidalarni buzgani uchun bloklangan e'lon uchun pul qaytarilmaydi.\nQaytarish uchun quyidagi manzilga to'lov raqami bilan yozing — 10 ish kuni ichida ko'rib chiqamiz. Pul to'lov qilingan karta yoki hamyonga qaytariladi."
+      ],
+      [
+        "Foydalanuvchi majburiyatlari",
+        "- O'zingiz haqingizda va vakansiya haqida faqat to'g'ri ma'lumot yozing.\n- Bitta odam yoki kompaniya — bitta hisob.\n- Hisobingiz xavfsizligi uchun o'zingiz javobgarsiz."
+      ],
+      [
+        "Taqiqlanadi",
+        "- Soxta vakansiyalar, firibgarlik, «moliyaviy piramida» va tarmoqli marketing takliflari.\n- Ish qidiruvchidan ishga olish uchun pul, garov yoki «hujjat rasmiylashtirish» haqi so'rash.\n- Jinsi, yoshi, millati, dini, nogironligi bo'yicha kamsituvchi talablar (qonunda ruxsat etilgan hollardan tashqari).\n- Chet elga ishga yollashni litsenziyasiz e'lon qilish.\n- Haqoratli, odobsiz yoki noqonuniy kontent, spam, boshqa birovning nomidan e'lon berish.\n- Platformadagi kontaktlarni ommaviy yig'ish (scraping).\nQoidabuzarlik aniqlansa, e'lon o'chiriladi va hisob bloklanishi mumkin."
+      ],
+      [
+        "Javobgarlik",
+        "Platforma e'lonlarni avtomatik va qo'lda tekshiradi, lekin foydalanuvchilar yozgan har bir ma'lumotning to'g'riligini kafolatlay olmaydi. Ish beruvchi bilan uchrashishdan oldin kompaniyani tekshiring va hech qachon oldindan pul to'lamang. Shubhali e'lonni «Shikoyat» tugmasi orqali xabar qiling."
+      ],
+      [
+        "Nizolar",
+        "Nizolar avvalo muzokara yo'li bilan hal qilinadi: quyidagi manzilga yozing. Kelishuvga erishilmasa, nizo O'zbekiston Respublikasi qonunchiligiga muvofiq sudda ko'riladi."
+      ],
+      [
+        "O'zgarishlar",
+        "Shartlar o'zgarsa, shu sahifada yangilanish sanasi bilan e'lon qilinadi. O'zgarishdan keyin platformadan foydalanishni davom ettirsangiz, yangi shartlarni qabul qilgan hisoblanasiz."
       ]
     ]
   }

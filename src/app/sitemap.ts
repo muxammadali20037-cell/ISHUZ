@@ -25,6 +25,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry(base, "/students", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
     entry(base, "/help", { lastModified: now, changeFrequency: "monthly", priority: 0.3 }),
     entry(base, "/privacy", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
+    entry(base, "/terms", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
   ];
   try {
     const supabase = createSupabaseClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { persistSession: false } });

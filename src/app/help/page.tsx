@@ -68,6 +68,10 @@ export default async function HelpPage() {
           <Link href="/privacy" className="font-medium text-primary hover:underline">
             {t("common.footer.privacy")}
           </Link>
+          {" · "}
+          <Link href="/terms" className="font-medium text-primary hover:underline">
+            {t("common.footer.terms")}
+          </Link>
         </p>
         {/* Qaysi versiya ochilganini tekshirish uchun (Mini App eski versiyada qolmaganini bilish) */}
         <p className="text-xs text-muted-foreground/70">

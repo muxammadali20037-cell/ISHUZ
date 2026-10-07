@@ -1,47 +1,47 @@
 {
-  "updated": "Last updated: September 28, 2026",
+  "updated": "Last updated: October 7, 2026",
   "contact_title": "Contact",
   "contact_body": "For questions or requests, write to:",
   "privacy": {
     "title": "Privacy Policy",
-    "description": "What data “Ish Beruvchi” collects, why it is used, and how you can manage it.",
-    "intro": "“Ish Beruvchi” is a platform that connects job seekers and employers. This policy applies equally to the website, the Android app and the Telegram bot. It explains what data we collect, why we use it, and how you can manage it.",
+    "description": "What data Ish Beruvchi collects, why, where it is stored and how you can control it.",
+    "intro": "Ish Beruvchi is a platform that connects job seekers and employers. This policy applies equally to the website, the Android app and the Telegram bot and is based on the Law of the Republic of Uzbekistan \"On Personal Data\". By registering you consent to the processing of your personal data for the purposes described here.",
     "sections": [
       [
-        "What data is collected",
-        "- Account: phone number, Telegram ID and username, first and last name, selected language.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, region and district, photo and portfolio files.\n- Employer: company name, logo, address, TIN (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches and notifications.\n- Payments: amount, service type and status. Bank card details stay with Payme/Click and are never sent to us.\n- Technical: search queries (to improve results, stored for 90 days) and security logs."
+        "What we collect",
+        "- Account: phone number (required), first and last name or company name, chosen language. If you sign in with Telegram — your Telegram ID and username.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, photo and portfolio files.\n- Location: region and district. If you tap \"Detect my location\" — your phone's GPS coordinates (only with your permission).\n- Employers: company name, logo, address, tax ID (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches, AI search requests and notifications.\n- Payments: amount, service, date and status. Card details stay with Payme/Click and never reach us.\n- Technical: search queries (kept 90 days) and security logs.\nWe do not access your contacts, SMS, call log, camera or microphone. The app has no ads and no ad trackers."
       ],
       [
-        "Why the data is used",
-        "- Creating an account and signing in.\n- Showing resumes and vacancies and calculating how well they match each other.\n- Sending notifications about applications, interviews and new matching jobs (in the app and via Telegram).\n- Protecting against fraud, spam and abuse.\n- Accepting payments for paid services.\nWe do not sell your data or share it with third parties for advertising purposes."
+        "Why we use it",
+        "- To create your account and sign you in.\n- To show resumes and vacancies and calculate how well they match.\n- To notify you about applications, interviews, matching vacancies and listing expiry (in the app and Telegram).\n- To provide paid services and accept payments.\n- To protect against fraud, spam and abuse.\nWe do not sell your data or share it with third parties for advertising."
       ],
       [
-        "Who can see the data",
-        "- Public resumes are visible to employers. You can hide your resume at any time.\n- Your phone number is visible only as you choose in settings: to no one, to employers you applied to, on request, or to everyone.\n- Vacancies and company pages are public.\n- Chat messages are visible only to the participants of the conversation."
+        "Who sees your data",
+        "- While your job-seeker listing is active, employers can see your resume. You can hide it at any time.\n- Your phone number is shown only as you choose: to employers you applied to, on request, or to everyone.\n- Your exact GPS location is never shown: others only see the district and an approximate distance (whole km).\n- Vacancies and company pages are public.\n- Chat messages are visible only to the participants."
       ],
       [
-        "Service providers",
-        "The platform uses the following services. They process data only to provide their service:\n- Supabase — database and files.\n- Vercel — website hosting.\n- Telegram — sign-in and notifications.\n- Payme and Click — payments.\n- Google Gemini and Anthropic Claude — only when you tap “Fill with AI”, to analyze the text you wrote."
+        "Service providers and where data is stored",
+        "The platform uses the following services. They process data only to provide their service:\n- Supabase — database and files. Servers are located in India (Mumbai).\n- Vercel — website hosting (global network).\n- Telegram — sign-in and notifications.\n- Payme and Click — payments (Uzbekistan).\n- Anthropic (Claude) and Google (Gemini) — only to analyse the text you enter when you use AI features.\nBy registering you agree to the transfer of your data to these providers' servers, including outside Uzbekistan. If we move the data to servers in Uzbekistan, we will announce it on this page."
       ],
       [
-        "Retention period",
-        "- Data is stored while your account is active.\n- When an account is deleted, the profile, resume, portfolio, applications, conversations and Telegram link are deleted.\n- Payment records are kept without your name for financial reporting.\n- Unfinished conversations in the Telegram bot are automatically deleted after 30 days, and the search log after 90 days."
+        "Retention",
+        "- Data is kept while your account is active.\n- When you delete your account, your profile, resume, portfolio, applications, chats, AI searches and Telegram link are deleted.\n- Payment records are kept without your name for financial reporting as required by law.\n- Read notifications are deleted after 90 days, others after 180 days, unfinished Telegram bot dialogs after 30 days, search logs after 90 days."
       ],
       [
         "Your rights",
-        "- View and correct your data — in the “Profile” section.\n- Hide your resume and set phone number visibility — in “Settings”.\n- Permanently delete your account and data — explained on the “Delete account” page.\n- Stop Telegram notifications — by stopping or blocking the bot."
+        "- View and correct your data — in \"Profile\".\n- Hide your listing and control phone visibility — in \"Settings\".\n- Withdraw consent and delete your account completely — see the \"Account deletion\" page.\n- Stop Telegram notifications — by stopping or blocking the bot.\n- For questions or complaints write to the address below — we reply within 10 business days."
       ],
       [
-        "Age requirement",
-        "The platform is intended for users over 14 years of age."
+        "Age limit",
+        "The platform is intended for users aged 16 and over. We do not knowingly collect data from children under 16; such accounts are deleted when found."
       ],
       [
         "Security",
-        "All connections are encrypted (HTTPS). Access to data is restricted at the database level: each user sees only the data they are permitted to see."
+        "All connections are encrypted (HTTPS). Access rights are enforced at the database level: each user sees only data they are allowed to see. Staff access data only for support and security, and such access is logged."
       ],
       [
         "Changes",
-        "If the policy changes, the update will be published on this page with the date of the update."
+        "If the policy changes, we publish it on this page with the update date. We will also notify you about important changes in the app or Telegram."
       ]
     ]
   },
@@ -65,6 +65,54 @@
       [
         "What is kept",
         "- Payment records (amount, date, service) — for financial reporting as required by law, without your name or profile.\n- The “account deleted” entry in the security log."
+      ]
+    ]
+  },
+  "operator_title": "Data controller",
+  "terms": {
+    "title": "Terms of Use (public offer)",
+    "description": "Rules for using Ish Beruvchi, paid services, prices and refunds.",
+    "intro": "This document is a public offer between the Ish Beruvchi platform (website, Android app, Telegram bot) and the user. By registering or paying for a service you fully accept these terms.",
+    "sections": [
+      [
+        "What the platform does",
+        "The platform connects job seekers and employers: listings, search, applications, chat and notifications. The platform is neither an employer nor a recruitment agency: hiring decisions and employment contracts are made between the employer and the job seeker."
+      ],
+      [
+        "Free services",
+        "- Viewing and searching vacancies and resumes.\n- Applying, accepting offers and chat.\n- Telegram notifications and resume builder."
+      ],
+      [
+        "Paid services and prices",
+        "- Publishing or extending a job-seeker listing: {price_worker_listing} UZS, {listing_days} days.\n- Publishing or extending a vacancy: {price_vacancy_publish} UZS, {vacancy_days} days.\n- Smart AI search (Telegram alert when a matching vacancy appears): {price_ai_alerts} UZS, {ai_days} days.\n- Promotion: until {discount_until}, {discount_percent}% off the first payment for each listing type.\nPrices are in Uzbek soum; the final amount is shown in the payment window. Price changes are announced on this page and do not affect services already paid for."
+      ],
+      [
+        "Payment",
+        "Payment is made via Payme or Click. The service activates automatically once payment is confirmed. When the term ends, the listing is removed from search automatically; we send a reminder beforehand. There are no automatic charges (no subscriptions) — you pay each time yourself."
+      ],
+      [
+        "Refunds",
+        "- Money charged but the service did not activate — full refund.\n- Listing rejected by moderation, or service not provided due to the platform's fault — refund for unused days.\n- If you stop the service yourself or tap \"I found a job\" after activation — no refund.\n- No refund for a listing blocked for breaking the rules.\nTo request a refund write to the address below with your payment number — we review it within 10 business days. Money is returned to the card or wallet used for payment."
+      ],
+      [
+        "User obligations",
+        "- Provide only truthful information about yourself and your vacancy.\n- One person or company — one account.\n- You are responsible for the security of your account."
+      ],
+      [
+        "Prohibited",
+        "- Fake vacancies, fraud, pyramid schemes and multi-level marketing.\n- Asking job seekers for money for employment, deposits or \"document processing\" fees.\n- Discriminatory requirements based on gender, age, ethnicity, religion or disability (except where permitted by law).\n- Advertising employment abroad without a licence.\n- Offensive, obscene or illegal content, spam, posting on someone else's behalf.\n- Mass harvesting of contacts from the platform (scraping).\nViolating listings are removed and the account may be blocked."
+      ],
+      [
+        "Liability",
+        "The platform checks listings automatically and manually but cannot guarantee the accuracy of every piece of information users provide. Check the company before meeting and never pay in advance. Report suspicious listings with the \"Report\" button."
+      ],
+      [
+        "Disputes",
+        "Disputes are first resolved through negotiation: write to the address below. If no agreement is reached, the dispute is settled in court under the laws of the Republic of Uzbekistan."
+      ],
+      [
+        "Changes",
+        "If the terms change, they are published on this page with the update date. By continuing to use the platform after changes you accept the new terms."
       ]
     ]
   }

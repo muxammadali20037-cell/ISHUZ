@@ -18,6 +18,7 @@ import { understandQuery } from "@/features/search/understand";
 import { monthlyEquivalent } from "@/features/search/apply";
 import type { Database } from "@/types/database.types";
 import { getServerEnv } from "@/lib/env";
+import { isAndroidApp } from "@/lib/app-platform.server";
 import { checkoutUrl, enabledProviders } from "@/features/billing/providers";
 
 type Insert = Database["public"]["Tables"]["ai_job_alerts"]["Insert"];
@@ -196,6 +197,8 @@ export async function startAiAlertsCheckout(input: unknown): Promise<ActionResul
   const parsed = checkoutSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   if (!enabledProviders().includes(parsed.data.provider)) return { ok: false, error: "provider_disabled" };
+  // Google Play ilovasi ichida raqamli xizmat Payme/Click orqali sotilmaydi
+  if (await isAndroidApp()) return { ok: false, error: "in_app_unavailable" };
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   const supabase = await createClient();

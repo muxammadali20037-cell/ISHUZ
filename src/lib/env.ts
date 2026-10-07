@@ -25,6 +25,8 @@ const serverSchema = z.object({
   YANDEX_VERIFICATION: z.string().optional(),
   /** Maxfiylik siyosati va do'kon sahifasidagi aloqa uchun email (ixtiyoriy) */
   SUPPORT_EMAIL: z.string().email().optional(),
+  /** Huquqiy sahifalardagi operator rekvizitlari, masalan: «"Topdim" MChJ, STIR 123456789, Toshkent sh., ...» (ixtiyoriy) */
+  LEGAL_OPERATOR: z.string().optional(),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
@@ -70,6 +72,7 @@ export function getServerEnv() {
     GOOGLE_SITE_VERIFICATION: process.env.GOOGLE_SITE_VERIFICATION || undefined,
     YANDEX_VERIFICATION: process.env.YANDEX_VERIFICATION || undefined,
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || undefined,
+    LEGAL_OPERATOR: process.env.LEGAL_OPERATOR || undefined,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,

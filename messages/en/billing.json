@@ -67,9 +67,11 @@
     "already_paid": "This vacancy has already been paid for",
     "already_promoted": "TOP is still active — you can turn it on again once it ends",
     "onboarding_required": "Please complete your profile first",
-    "listing_payment_required": "Listings are paid. Please pay to appear in search."
+    "listing_payment_required": "Listings are paid. Please pay to appear in search.",
+    "in_app_unavailable": "This service can't be purchased in the app"
   },
   "listing_title": "Publish your job-seeking listing",
   "listing_desc": "Your listing is visible to employers in search for {days} days",
-  "discount": "{percent}% off your first listing — until {date}"
+  "discount": "{percent}% off your first listing — until {date}",
+  "in_app_note": "This paid service can't be purchased in the app. Everything else in the app works as usual."
 }

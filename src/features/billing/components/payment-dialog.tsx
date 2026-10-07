@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
-import { CreditCard, Lock } from "lucide-react";
+import { CreditCard, Info, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import { useAndroidApp } from "@/lib/use-android-app";
 import { formatDate, formatMoney } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
@@ -41,8 +42,20 @@ export function PaymentDialogHost() {
   );
 }
 
+/** Google Play ilovasida: narx va to'lov tugmalari o'rniga neytral izoh (Play to'lov qoidasi) */
+export function InAppNote() {
+  const { t } = useT();
+  return (
+    <p className="flex items-start gap-2 rounded-2xl bg-secondary p-4 text-sm text-muted-foreground">
+      <Info className="mt-0.5 size-4 shrink-0" />
+      {t("billing.in_app_note")}
+    </p>
+  );
+}
+
 function PaymentSheet({ req }: { req: Request }) {
   const { t, locale } = useT();
+  const inApp = useAndroidApp();
   const [quote, setQuote] = useState<VacancyQuote | PromotionQuote | ListingQuote | null>(null);
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -83,7 +96,9 @@ function PaymentSheet({ req }: { req: Request }) {
   return (
     <Sheet title={title} description={description}>
       <div className="space-y-4 px-5 pb-6">
-        {!quote ? (
+        {inApp ? (
+          <InAppNote />
+        ) : !quote ? (
           <Skeleton className="h-24 w-full rounded-2xl" />
         ) : (
           <>
@@ -136,6 +151,7 @@ export function DiscountBadge({ percent, until }: { percent: number; until: stri
 /** "E'lon qilish" tugmasi ostidagi izoh: aksiya / bepul / to'langan / narx */
 export function PublishModeNote({ vacancyId }: { vacancyId: string }) {
   const { t, locale } = useT();
+  const inApp = useAndroidApp();
   const [q, setQ] = useState<VacancyQuote | null>(null);
   useEffect(() => {
     let alive = true;
@@ -144,7 +160,7 @@ export function PublishModeNote({ vacancyId }: { vacancyId: string }) {
       alive = false;
     };
   }, [vacancyId]);
-  if (!q) return null;
+  if (!q || (inApp && q.mode === "payment_required")) return null;
   const date = formatDate(q.mode === "paid_window" ? q.paid_until : q.promo_until, locale);
   const discounted = q.mode === "payment_required" && q.discount_percent > 0;
   return (

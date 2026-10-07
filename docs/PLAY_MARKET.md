@@ -10,14 +10,38 @@ Tayyor narsalar (shu repoda):
 |---|---|
 | Manifest, ikonkalar (512, maskable), service worker | `public/manifest.webmanifest`, `public/icons`, `public/sw.js` |
 | Digital Asset Links (brauzer panelini yashirish) | `/.well-known/assetlinks.json` ← Vercel env `ANDROID_SHA256_CERT_FINGERPRINTS` |
-| Maxfiylik siyosati | `https://SAYT/privacy` |
+| Maxfiylik siyosati (uz/ru/en) | `https://SAYT/privacy` |
+| Foydalanish shartlari va ommaviy oferta (narxlar, to'lovni qaytarish) | `https://SAYT/terms` |
 | Hisobni o'chirish sahifasi (Play talabi) | `https://SAYT/account-deletion` |
 | Ikona 512×512 | `docs/play-store/icon-512.png` |
 | Feature graphic 1024×500 | `docs/play-store/feature-graphic-uz.png`, `feature-graphic-ru.png` |
 | Telefon skrinshotlari 1080×1920 (6 ta) | `docs/play-store/screenshots-uz/`, `screenshots-ru/` |
 
 Paket nomi: **`uz.ishberuvchi.app`**. Play'ga birinchi yuklangandan keyin paket nomini **o'zgartirib bo'lmaydi**.
-Boshqa nom kerak bo'lsa, hozir tanlang va Vercel'da `ANDROID_PACKAGE_NAME` ga yozing.
+⚠️ **Brend nomini (masalan «Topdim») birinchi yuklashdan OLDIN tanlang.** Yangi nom bo'lsa, paket ham shunga mos bo'lsin
+(masalan `uz.topdim.app`) va Vercel'da `ANDROID_PACKAGE_NAME` ga yozing. Ilova nomi va ikonkasini keyin o'zgartirsa bo'ladi, paketni — yo'q.
+
+## 0. Chiqarishdan oldin tekshiruv ro'yxati
+
+- [ ] Brend nomi va paket nomi tanlandi
+- [ ] O'z domeningiz ulandi (`APP_URL`, `NEXT_PUBLIC_APP_URL`)
+- [ ] Vercel env: `SUPPORT_EMAIL` (majburiy — Play va huquqiy sahifalar uchun), `LEGAL_OPERATOR` (MChJ/YaTT nomi, STIR, manzil — kompaniya ochilgach)
+- [ ] `https://SAYT/privacy`, `/terms`, `/account-deletion` ochiladi va email ko'rinadi
+- [ ] Tekshiruvchi (Google reviewer) uchun test hisobi: telefon raqami va SMS kodi (yoki doimiy test kodi)
+- [ ] 12 ta tester Gmail manzili (shaxsiy hisob uchun)
+
+## Ilovada to'lovlar (muhim)
+
+Google Play raqamli xizmatlarni (pullik e'lon, AI qidiruv) ilova ichida faqat **Google Play Billing** orqali sotishga ruxsat beradi.
+Payme/Click tugmasi ilovada bo'lsa, ilova rad etilishi yoki o'chirilishi mumkin. Shuning uchun:
+
+- Ilova Play'dan ochilganda sayt buni avtomatik aniqlaydi (TWA `Referer: android-app://…` yoki start URL'dagi `?app=android`)
+  va `ib_app=android` cookie qo'yadi.
+- Shu cookie bo'lsa: narxlar, chegirma, Payme/Click tugmalari ko'rsatilmaydi, o'rniga «Bu pullik xizmatni ilova ichida xarid qilib bo'lmaydi» yoziladi.
+  Server ham ilova ichidan to'lov yaratmaydi (`in_app_unavailable`).
+- Saytga yoki Telegram'ga «u yerda to'lang» degan havola **qo'yilmagan** — Google buni ham taqiqlaydi (anti-steering).
+- Sayt va Telegram Mini App'da to'lov odatdagidek ishlaydi.
+- Play Console'da: **In-app purchases — No**.
 
 ---
 
@@ -33,7 +57,8 @@ Boshqa nom kerak bo'lsa, hozir tanlang va Vercel'da `ANDROID_PACKAGE_NAME` ga yo
 1. Sayt Vercel'da ishlab turgan bo'lsin (masalan `https://ishberuvchi.uz`).
 2. <https://www.pwabuilder.com> → sayt manzilini kiriting → **Package for stores** → **Android**.
 3. Sozlamalar:
-   - **Package ID:** `uz.ishberuvchi.app`
+   - **Package ID:** `uz.ishberuvchi.app` (yoki yangi brend paketi)
+   - **Start URL:** `/?app=android` (ilova ichida to'lov tugmalarini yashirish uchun)
    - **App name:** `Ish beruvchi`, **Launcher name:** `Ish beruvchi`
    - **Theme / navigation color:** `#1d5fe0`, **background:** `#f6f8fb`
    - **Signing key:** "Create new" (yangi kalit).
@@ -61,6 +86,7 @@ ISH QIDIRUVCHILAR UCHUN
 • Oddiy tilda qidiruv: «Chilonzorda kassir 5 mln» — tizim o'zi filtrlarga aylantiradi.
 • Har bir vakansiya sizga qanchalik mosligi sabablari bilan ko'rsatiladi.
 • Bir bosishda ariza, suhbatga taklif va yangi mos ishlar haqida Telegram'da xabar.
+• Aqlli AI qidiruv: qanday ish kerakligini o'z so'zingiz bilan yozing — mos vakansiya chiqishi bilan xabar keladi.
 
 ISH BERUVCHILAR UCHUN
 • Vakansiya bitta gapdan: AI chiroyli e'lon tayyorlaydi va sifatini tekshiradi.
@@ -72,7 +98,7 @@ XAVFSIZ
 • Shubhali e'lonlar avtomatik tekshiriladi.
 • Tasdiqlangan kompaniyalar belgisi.
 
-O'zbek va rus tillarida. Ish qidirish — bepul.
+O'zbek (lotin va kirill), rus va ingliz tillarida. Vakansiyalarni ko'rish, qidirish va ariza yuborish — bepul.
 ```
 
 **Ruscha** (Add translation → Russian):
@@ -90,6 +116,7 @@ O'zbek va rus tillarida. Ish qidirish — bepul.
 • Поиск простыми словами: «кассир Чиланзар 5 млн» — система сама настроит фильтры.
 • Для каждой вакансии видно, насколько она вам подходит и почему.
 • Отклик в одно касание, приглашения на собеседование и новые вакансии — уведомления в Telegram.
+• Умный ИИ-поиск: опишите своими словами, какая работа нужна, — уведомим, как только появится подходящая вакансия.
 
 ДЛЯ РАБОТОДАТЕЛЕЙ
 • Вакансия из одной фразы: ИИ составит красивое объявление и проверит его качество.
@@ -101,7 +128,7 @@ O'zbek va rus tillarida. Ish qidirish — bepul.
 • Подозрительные вакансии проверяются автоматически.
 • Значок проверенной компании.
 
-На узбекском и русском языках. Поиск работы — бесплатно.
+На узбекском (латиница и кириллица), русском и английском языках. Просмотр вакансий, поиск и отклики — бесплатно.
 ```
 
 **Grafika:** ikona `docs/play-store/icon-512.png`, feature graphic `feature-graphic-uz.png` (ruscha tarjimaga — `-ru`),
@@ -114,10 +141,11 @@ telefon skrinshotlari `screenshots-uz/01…06.jpg` (ruscha tarjimaga — `screen
 | Savol | Javob |
 |---|---|
 | Privacy policy | `https://SAYT/privacy` |
+| In-app purchases | Yo'q (ilova ichida hech narsa sotilmaydi — yuqoridagi «Ilovada to'lovlar» bo'limi) |
 | Ads (reklama bormi) | Yo'q |
 | App access (kirish uchun login kerakmi) | Ha, ba'zi funksiyalar uchun. Tekshiruvchiga test hisobi bering: telefon raqami va kirish yo'li (masalan, Telegram orqali kirish) |
 | Content rating | So'rovnoma: zo'ravonlik/qimor yo'q; **foydalanuvchilar o'zaro yozishadi (chat) — Ha**; foydalanuvchi joylashuvi (hudud/tuman) ulashiladi — Ha |
-| Target audience | 18+ (kichik yoshdagilar uchun alohida talablar bo'lmasligi uchun) |
+| Target audience | 16–17 va 18+ (maxfiylik siyosatidagi yosh chegarasi — 16). 13 yoshgacha **belgilamang** — bolalar uchun qo'shimcha talablar boshlanadi |
 | News app | Yo'q |
 | Government app | Yo'q |
 | Financial features | Yo'q (Payme/Click faqat xizmat uchun to'lov) |
@@ -129,11 +157,12 @@ telefon skrinshotlari `screenshots-uz/01…06.jpg` (ruscha tarjimaga — `screen
 |---|---|---|---|
 | Ism, telefon raqami, email (ixtiyoriy) | Ha | Hisob, aloqa | Telefon — ha |
 | Taxminiy joylashuv (viloyat/tuman, foydalanuvchi o'zi tanlaydi) | Ha | Ilova funksiyasi (mos ishlar) | Ha |
+| Aniq joylashuv (GPS, faqat «Joylashuvimni aniqlash» bosilganda) | Ha | Ilova funksiyasi (masofa) | Yo'q |
 | Shaxsiy ma'lumot: tug'ilgan sana, jins, ish tarixi, ta'lim (rezyume) | Ha | Ilova funksiyasi | Qisman |
 | Xabarlar (chat) | Ha | Ilova funksiyasi | Yo'q |
 | Rasmlar va fayllar (portfolio, logotip) | Ha | Ilova funksiyasi | Yo'q |
 | Xarid tarixi (xizmat to'lovlari) | Ha | Ilova funksiyasi | Yo'q |
-| Ilova faoliyati (qidiruv so'rovlari) | Ha | Analitika (natijalarni yaxshilash) | Ha |
+| Ilova faoliyati (qidiruv so'rovlari, AI qidiruv matnlari) | Ha | Ilova funksiyasi, analitika | Ha |
 
 - Ma'lumotlar uchinchi shaxslarga **sotilmaydi** va **berilmaydi**. Xizmat ko'rsatuvchilar (xosting, Telegram, to'lov tizimlari) Google qoidasiga ko'ra "sharing" hisoblanmaydi.
 - Uzatishda shifrlanadi (HTTPS) — **Ha**.
