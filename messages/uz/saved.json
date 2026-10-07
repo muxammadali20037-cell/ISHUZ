@@ -31,5 +31,41 @@
       "empty_search": "Avval kasb, hudud yoki boshqa filtr tanlang",
       "not_authenticated": "Avval tizimga kiring"
     }
+  },
+  "ai_alerts": {
+    "title": "Aqlli AI qidiruv",
+    "subtitle": "Qanday ish kerakligini yozing — mos vakansiya chiqishi bilan Telegram'ga xabar keladi. Har kuni qidirib yurish shart emas.",
+    "pro": "PRO xizmat",
+    "free_now": "Hozir bepul — ishga tushirish davri. Keyinchalik pullik bo'ladi.",
+    "paid_note": "Pullik xizmat: faol muddat tugasa, xabarlar to'xtaydi.",
+    "tg_title": "Telegram'ni ulang",
+    "tg_desc": "Xabarlar Telegram orqali keladi. Botni bir marta ishga tushiring.",
+    "tg_connect": "Botni ochish",
+    "tg_ok": "Telegram ulangan — mos ish chiqishi bilan darhol xabar olasiz",
+    "ask": "Qanday ish qidiryapsiz?",
+    "placeholder": "O'z so'zingiz bilan yozing. Masalan: Chilonzorda oshpaz bo'lib ishlamoqchiman, maosh 5 mln dan",
+    "example_1": "Toshkentda haydovchi, B toifa, 6 mln dan",
+    "example_2": "Samarqandda ingliz tili o'qituvchisi",
+    "example_3": "Uydan ishlash, operator, tajribasiz",
+    "start": "AI kuzatishni boshlash",
+    "created": "Kuzatuv boshlandi!",
+    "created_desc": "Mos vakansiya joylanishi bilan Telegram'ga yozamiz.",
+    "mine": "Men kuzatayotganlar",
+    "watching": "Kuzatilmoqda",
+    "paused": "To'xtatilgan",
+    "found": "Topildi: {count}",
+    "toggle": "Kuzatishni yoqish / o'chirish",
+    "recent": "Sizga topilgan vakansiyalar",
+    "no_hits": "Hozircha yangi mos vakansiya yo'q. Chiqishi bilan shu yerda va Telegram'da ko'rasiz.",
+    "negotiable": "Kelishiladi",
+    "card_title": "Aqlli AI qidiruv · PRO",
+    "card_desc": "Xohlagan ishingizni yozing — mos vakansiya chiqishi bilan Telegram'ga xabar keladi",
+    "notify_title": "🤖 Sizga mos yangi ish: {title}",
+    "notify_body": "{who} · {region} · {salary}",
+    "errors": {
+      "ai_alert_limit": "Ko'pi bilan 3 ta kuzatuv. Keraksizini o'chiring.",
+      "ai_alert_unclear": "Tushunolmadim. Kasbni aniqroq yozing, masalan: «oshpaz», «haydovchi».",
+      "ai_alert_text": "Kamida 3 ta harf yozing."
+    }
   }
 }

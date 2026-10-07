@@ -172,6 +172,17 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       if (str(p, "kind") === "saved_search") {
         return { title: t("saved.searches.notification_title"), body: t("saved.searches.notification_body", { label: str(p, "label"), count: num(p, "count") ?? 0 }), icon: "match_vacancy" };
       }
+      if (str(p, "kind") === "ai_alert") {
+        const from = num(p, "salary_from");
+        const to = num(p, "salary_to");
+        const salary = p.negotiable === true || (!from && !to) ? t("saved.ai_alerts.negotiable") : salaryText(t, from, to);
+        const who = str(p, "who") + (p.verified === true ? " ✅" : "");
+        return {
+          title: t("saved.ai_alerts.notify_title", { title: str(p, "title") }),
+          body: t("saved.ai_alerts.notify_body", { who: who || "—", region: str(p, "region") || "—", salary }),
+          icon: "match_vacancy",
+        };
+      }
       if (str(p, "kind") === "payment_success") {
         return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : "billing.return.paid_promotion"), icon: "system" };
       }

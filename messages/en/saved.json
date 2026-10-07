@@ -31,5 +31,41 @@
       "empty_search": "First choose a profession, region or another filter",
       "not_authenticated": "Please sign in first"
     }
+  },
+  "ai_alerts": {
+    "title": "Smart AI search",
+    "subtitle": "Describe the job you want — the moment a matching vacancy appears, you get a Telegram message. No need to search every day.",
+    "pro": "PRO service",
+    "free_now": "Free for now — launch period. It will become paid later.",
+    "paid_note": "Paid service: alerts stop when the period ends.",
+    "tg_title": "Connect Telegram",
+    "tg_desc": "Alerts arrive in Telegram. Start the bot once.",
+    "tg_connect": "Open the bot",
+    "tg_ok": "Telegram connected — you'll be messaged as soon as a matching job appears",
+    "ask": "What job are you looking for?",
+    "placeholder": "Write in your own words. E.g.: I want to work as a cook in Chilanzar, salary from 5 mln",
+    "example_1": "Driver in Tashkent, category B, from 6 mln",
+    "example_2": "English teacher in Samarkand",
+    "example_3": "Work from home, operator, no experience",
+    "start": "Start AI watch",
+    "created": "Watching started!",
+    "created_desc": "We'll message you on Telegram as soon as a matching vacancy appears.",
+    "mine": "My watches",
+    "watching": "Watching",
+    "paused": "Paused",
+    "found": "Found: {count}",
+    "toggle": "Turn on / off",
+    "recent": "Vacancies found for you",
+    "no_hits": "No new matches yet. You'll see them here and on Telegram.",
+    "negotiable": "Negotiable",
+    "card_title": "Smart AI search · PRO",
+    "card_desc": "Describe your dream job — get a Telegram alert the moment a match is posted",
+    "notify_title": "🤖 New matching job: {title}",
+    "notify_body": "{who} · {region} · {salary}",
+    "errors": {
+      "ai_alert_limit": "Up to 3 watches. Delete one you don't need.",
+      "ai_alert_unclear": "I didn't understand. Name the job more precisely, e.g. “cook”, “driver”.",
+      "ai_alert_text": "Type at least 3 letters."
+    }
   }
 }

@@ -15,6 +15,7 @@ import { billingEnabled } from "@/lib/features";
 import { AiCtaCard } from "@/features/ai/components/ai-composer";
 import { ProfessionFocus } from "@/features/professions/components/profession-focus";
 import { WorkerMainCards } from "./worker-main-cards";
+import { AiAlertsCard } from "@/features/ai-alerts/components/ai-alerts-card";
 
 /**
  * Ish qidiruvchi dashboardi ("/"): salomlashuv + qidiruv, ko'rsatkichlar, profil to'liqligi,
@@ -41,6 +42,8 @@ export async function WorkerHome({ session }: { session: SessionContext }) {
         </div>
         <WorkerMainCards workerId={session.workerId} />
       </section>
+
+      <AiAlertsCard title={t("saved.ai_alerts.card_title")} description={t("saved.ai_alerts.card_desc")} />
 
       <Suspense fallback={null}>
         <ProfessionFocus workerId={session.workerId} categorySlug={ctx.categorySlug} />
