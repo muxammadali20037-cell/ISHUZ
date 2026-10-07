@@ -243,7 +243,8 @@
       "no_worker": "Аввал 1-қадамни тўлдиринг",
       "incomplete_personal": "Исм ва фамилияни киритинг",
       "incomplete_location": "Ҳудудни танланг",
-      "incomplete_profession": "Касбни танланг"
+      "incomplete_profession": "Касбни танланг",
+      "listing_payment_required": "Бепул эълон ишлатилган. Давом этиш учун тўлов қилинг."
     },
     "quick_done": "Тайёр! Энди сизга мос ишларни кўрсатамиз.",
     "quick_finish": "Тугатиш"

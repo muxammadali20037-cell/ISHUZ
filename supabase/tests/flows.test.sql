@@ -39,6 +39,10 @@ begin
 end $$;
 
 begin;
+-- 0043 dan oldingi qoidalar bilan sinaladi (yangi 10 kunlik pullik e'lonlar — paid_listings.test.sql)
+update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
+update public.app_settings set value = '30'::jsonb where key = 'vacancy_lifetime_days';
+update public.app_settings set value = '50000'::jsonb where key = 'price_vacancy_publish';
 
 -- ---------- foydalanuvchilar ----------
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values

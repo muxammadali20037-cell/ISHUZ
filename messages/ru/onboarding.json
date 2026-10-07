@@ -243,7 +243,8 @@
       "no_worker": "Сначала заполните шаг 1",
       "incomplete_personal": "Укажите имя и фамилию",
       "incomplete_location": "Выберите регион",
-      "incomplete_profession": "Выберите профессию"
+      "incomplete_profession": "Выберите профессию",
+      "listing_payment_required": "Бесплатное объявление уже использовано. Для продолжения оплатите."
     },
     "quick_done": "Готово! Теперь покажем подходящую работу.",
     "quick_finish": "Завершить"

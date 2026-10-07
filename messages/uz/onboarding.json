@@ -243,7 +243,8 @@
       "no_worker": "Avval 1-qadamni to'ldiring",
       "incomplete_personal": "Ism va familiyani kiriting",
       "incomplete_location": "Hududni tanlang",
-      "incomplete_profession": "Kasbni tanlang"
+      "incomplete_profession": "Kasbni tanlang",
+      "listing_payment_required": "Bepul e'lon ishlatilgan. Davom etish uchun to'lov qiling."
     },
     "quick_done": "Tayyor! Endi sizga mos ishlarni ko'rsatamiz.",
     "quick_finish": "Tugatish"

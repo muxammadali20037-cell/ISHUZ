@@ -14,6 +14,7 @@ import { DEFAULT_JOBS_PARAMS, clearFilters, countActiveFilters, jobsHref, serial
 import { Pagination } from "./pagination";
 import { SortSelect } from "./sort-select";
 import { VacancyList } from "./vacancy-list";
+import { JOBS_COUNT_CAP, resultCount } from "@/lib/result-count";
 
 /** Qidiruv natijalari: soni + saralash, kartalar, sahifalash / aqlli bo'sh holat */
 export async function JobsResults({ params }: { params: JobsSearchParams }) {
@@ -84,7 +85,9 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="text-sm font-semibold">
-            {params.q ? t("jobs.search.results_for", { query: params.q, count: result.total }) : t("jobs.search.results", { count: result.total })}
+            {params.q
+              ? t("jobs.search.results_for", { query: params.q, count: resultCount(result.total, JOBS_COUNT_CAP) })
+              : t("jobs.search.results", { count: resultCount(result.total, JOBS_COUNT_CAP) })}
           </p>
           {smartName ? (
             <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">

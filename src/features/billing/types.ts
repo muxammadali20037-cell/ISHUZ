@@ -12,6 +12,14 @@ export interface VacancyQuote {
   providers: PaymentProvider[];
 }
 
+export interface ListingQuote {
+  mode: Exclude<PublishMode, "promo">;
+  price: number;
+  lifetime_days: number;
+  listed_until: string | null;
+  providers: PaymentProvider[];
+}
+
 export interface PromotionQuote {
   mode: Exclude<PublishMode, "paid_window">;
   price: number;

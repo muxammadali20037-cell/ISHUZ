@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
-import { getPromotionQuote, getVacancyQuote, startCheckout } from "../actions";
-import type { PromotionQuote, VacancyQuote } from "../types";
+import { getPromotionQuote, getVacancyQuote, getWorkerListingQuote, startCheckout } from "../actions";
+import type { ListingQuote, PromotionQuote, VacancyQuote } from "../types";
 
-type Request = { purpose: "vacancy_publish" | "worker_promotion"; targetId: string };
+type Request = { purpose: "vacancy_publish" | "worker_promotion" | "worker_listing"; targetId: string };
 
 // Istalgan joydan ochish: requestPayment({...}) — PaymentDialogHost providers'da bitta
 const listeners = new Set<(r: Request) => void>();
@@ -43,13 +43,15 @@ export function PaymentDialogHost() {
 
 function PaymentSheet({ req }: { req: Request }) {
   const { t, locale } = useT();
-  const [quote, setQuote] = useState<VacancyQuote | PromotionQuote | null>(null);
+  const [quote, setQuote] = useState<VacancyQuote | PromotionQuote | ListingQuote | null>(null);
   const [pending, startTransition] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
 
   useEffect(() => {
     let alive = true;
-    (req.purpose === "vacancy_publish" ? getVacancyQuote(req.targetId) : getPromotionQuote()).then((res) => {
+    const load: Promise<{ ok: boolean; data?: VacancyQuote | PromotionQuote | ListingQuote }> =
+      req.purpose === "vacancy_publish" ? getVacancyQuote(req.targetId) : req.purpose === "worker_listing" ? getWorkerListingQuote() : getPromotionQuote();
+    load.then((res) => {
       if (alive && res.ok && res.data) setQuote(res.data);
     });
     return () => {
@@ -70,10 +72,13 @@ function PaymentSheet({ req }: { req: Request }) {
     });
   };
 
-  const isVacancy = req.purpose === "vacancy_publish";
-  const title = t(isVacancy ? "billing.vacancy_title" : "billing.promotion_title");
+  const title = t(req.purpose === "vacancy_publish" ? "billing.vacancy_title" : req.purpose === "worker_listing" ? "billing.listing_title" : "billing.promotion_title");
   const description =
-    quote && "lifetime_days" in quote ? t("billing.vacancy_desc", { days: quote.lifetime_days }) : quote && "hours" in quote ? t("billing.promotion_desc", { hours: quote.hours }) : undefined;
+    quote && "lifetime_days" in quote
+      ? t(req.purpose === "worker_listing" ? "billing.listing_desc" : "billing.vacancy_desc", { days: quote.lifetime_days })
+      : quote && "hours" in quote
+        ? t("billing.promotion_desc", { hours: quote.hours })
+        : undefined;
 
   return (
     <Sheet title={title} description={description}>

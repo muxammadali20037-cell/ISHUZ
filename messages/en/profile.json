@@ -347,6 +347,10 @@
     "found_job": "I found a job — pause listing",
     "found_done": "Congratulations! Your listing is paused.",
     "reactivate": "Turn listing back on",
-    "saved": "Saved"
+    "saved": "Saved",
+    "term_left": "In search: {days} more days (until {date})",
+    "term_expired": "Your listing has expired — you're not visible in search",
+    "term_hint": "Each listing lasts 10 days. Extending costs 20,000 UZS.",
+    "extend": "Extend"
   }
 }

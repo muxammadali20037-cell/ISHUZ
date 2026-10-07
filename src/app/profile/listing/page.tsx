@@ -19,7 +19,7 @@ export default async function ListingPage() {
   const supabase = await createClient();
   const [{ t }, { data: w }] = await Promise.all([
     getT(),
-    supabase.from("worker_profiles").select("is_public, status, completeness").eq("id", session.workerId).maybeSingle(),
+    supabase.from("worker_profiles").select("is_public, status, completeness, listed_until").eq("id", session.workerId).maybeSingle(),
   ]);
   const steps = [
     { href: "/profile/profession", label: t("profile.listing.step_profession") },
@@ -66,7 +66,7 @@ export default async function ListingPage() {
 
         <section>
           <h2 className="mb-3 text-lg font-bold">{t("profile.listing.visibility")}</h2>
-          <ListingVisibility isPublic={!!w?.is_public} status={w?.status ?? "active"} />
+          <ListingVisibility workerId={session.workerId} isPublic={!!w?.is_public} status={w?.status ?? "active"} listedUntil={w?.listed_until ?? null} />
         </section>
       </div>
     </Shell>

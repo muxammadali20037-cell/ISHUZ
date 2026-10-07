@@ -10,7 +10,7 @@
   "secure": "Payment is processed securely on the Payme / Click page. We never receive your card details",
   "mode": {
     "promo": "🎉 Promotion: posting is free until {date}",
-    "free_trial": "🎁 Your first vacancy is free — active for {hours} hours",
+    "free_trial": "🎁 Your first listing is free — active for {days} days",
     "paid_window": "✅ Paid: active until {date}",
     "payment_required": "Listing price: {price} UZS · {days} days",
     "free": "Posting is free — active for {days} days"
@@ -42,7 +42,8 @@
     "to_vacancy": "Go to vacancy",
     "to_home": "Home",
     "paid_ai_alerts": "Smart AI search is on for 1 month",
-    "to_ai_alerts": "Go to AI search"
+    "to_ai_alerts": "Go to AI search",
+    "paid_listing": "Your listing is back in search for 10 days"
   },
   "pricing": {
     "title": "Pricing",
@@ -64,6 +65,9 @@
     "provider_disabled": "This payment method isn't connected yet",
     "already_paid": "This vacancy has already been paid for",
     "already_promoted": "TOP is still active — you can turn it on again once it ends",
-    "onboarding_required": "Please complete your profile first"
-  }
+    "onboarding_required": "Please complete your profile first",
+    "listing_payment_required": "Your free listing is used. Please pay to continue."
+  },
+  "listing_title": "Publish your job-seeking listing",
+  "listing_desc": "Your listing is visible to employers in search for {days} days"
 }

@@ -32,6 +32,10 @@ begin
 end $$;
 
 begin;
+-- 0043 dan oldingi qoidalar bilan sinaladi (yangi 10 kunlik pullik e'lonlar — paid_listings.test.sql)
+update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
+update public.app_settings set value = '30'::jsonb where key = 'vacancy_lifetime_days';
+update public.app_settings set value = '50000'::jsonb where key = 'price_vacancy_publish';
 -- 0030 dan beri to'lov sukut bo'yicha o'chiq; bu test yoqilgan rejimni tekshiradi
 update public.app_settings set value = 'true'::jsonb where key = 'billing_enabled';
 
@@ -53,13 +57,13 @@ select public.publish_vacancy((select id from vx where title = 'V1'));
 select pg_temp.ok((select status = 'active' and expires_at > now() + interval '29 days' and paid_until = expires_at from public.vacancies where title = 'V1'), 'aksiya: 30 kunga faol');
 select pg_temp.ok((select count(*) from public.billing_usage where profile_id = auth.uid()) = 0, 'aksiya: bepul limit sarflanmaydi');
 
--- ---------- 2. Aksiya tugadi: birinchi vakansiya bepul (24 soat), keyingisi pullik ----------
+-- ---------- 2. Aksiya tugadi: birinchi vakansiya bepul (0043 dan: to'liq muddat), keyingisi pullik ----------
 select pg_temp.superuser();
 update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until';
 select pg_temp.login('e7000000-0000-0000-0000-000000000001');
 select pg_temp.ok((select public.vacancy_publish_quote((select id from vx where title = 'V2')) ->> 'mode') = 'free_trial', 'birinchi bepul: rejim free_trial');
 select public.publish_vacancy((select id from vx where title = 'V2'));
-select pg_temp.ok((select status = 'active' and expires_at between now() + interval '23 hours' and now() + interval '25 hours' from public.vacancies where title = 'V2'), 'bepul vakansiya 24 soat');
+select pg_temp.ok((select status = 'active' and expires_at between now() + interval '29 days 23 hours' and now() + interval '30 days 1 hour' from public.vacancies where title = 'V2'), 'bepul vakansiya to''liq muddatga');
 select pg_temp.ok((select public.vacancy_publish_quote((select id from vx where title = 'V3')) ->> 'mode') = 'payment_required', 'ikkinchisi: to''lov kerak');
 select pg_temp.fails($$select public.publish_vacancy((select id from vx where title = 'V3'))$$, 'to''lovsiz e''lon qilib bo''lmaydi', 'payment_required');
 

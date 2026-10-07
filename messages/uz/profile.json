@@ -347,6 +347,10 @@
     "found_job": "Ish topdim — e'lonni to'xtatish",
     "found_done": "Tabriklaymiz! E'loningiz to'xtatildi.",
     "reactivate": "E'lonni qayta faollashtirish",
-    "saved": "Saqlandi"
+    "saved": "Saqlandi",
+    "term_left": "Qidiruvda: yana {days} kun ({date} gacha)",
+    "term_expired": "E'lon muddati tugagan — qidiruvda ko'rinmayapsiz",
+    "term_hint": "Har bir e'lon 10 kun turadi. Uzaytirish — 20 000 so'm.",
+    "extend": "Uzaytirish"
   }
 }

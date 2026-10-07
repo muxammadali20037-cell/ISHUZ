@@ -99,5 +99,11 @@
     "phone_already_linked": "Your number is linked: {phone}\nGo back to the website and tap “Send code” — the code will arrive here.",
     "phone_not_own": "Please send only your own number using the button below.",
     "phone_invalid": "Couldn't read the number. Please try again."
+  },
+  "listing": {
+    "listing_expiring_title": "Your listing ends tomorrow",
+    "listing_expiring_body": "Extend it so employers keep seeing you.",
+    "listing_expired_title": "Your listing has expired",
+    "listing_expired_body": "You're no longer visible in search. Tap to extend."
   }
 }

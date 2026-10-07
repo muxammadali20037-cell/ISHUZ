@@ -172,6 +172,10 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       if (str(p, "kind") === "saved_search") {
         return { title: t("saved.searches.notification_title"), body: t("saved.searches.notification_body", { label: str(p, "label"), count: num(p, "count") ?? 0 }), icon: "match_vacancy" };
       }
+      if (str(p, "kind") === "listing_expiring" || str(p, "kind") === "listing_expired") {
+        const key = str(p, "kind") === "listing_expiring" ? "listing_expiring" : "listing_expired";
+        return { title: t(`notifications.listing.${key}_title`), body: t(`notifications.listing.${key}_body`), icon: "system" };
+      }
       if (str(p, "kind") === "ai_alert") {
         const from = num(p, "salary_from");
         const to = num(p, "salary_to");
@@ -184,7 +188,7 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
         };
       }
       if (str(p, "kind") === "payment_success") {
-        return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : str(p, "purpose") === "ai_alerts" ? "billing.return.paid_ai_alerts" : "billing.return.paid_promotion"), icon: "system" };
+        return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : str(p, "purpose") === "ai_alerts" ? "billing.return.paid_ai_alerts" : str(p, "purpose") === "worker_listing" ? "billing.return.paid_listing" : "billing.return.paid_promotion"), icon: "system" };
       }
     // falls through
     default: {

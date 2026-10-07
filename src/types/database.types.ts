@@ -453,16 +453,19 @@ export type Database = {
         Row: {
           free_promotion_used_at: string | null;
           free_vacancy_used_at: string | null;
+          free_worker_listing_used_at: string | null;
           profile_id: string;
         };
         Insert: {
           free_promotion_used_at?: string | null;
           free_vacancy_used_at?: string | null;
+          free_worker_listing_used_at?: string | null;
           profile_id: string;
         };
         Update: {
           free_promotion_used_at?: string | null;
           free_vacancy_used_at?: string | null;
+          free_worker_listing_used_at?: string | null;
           profile_id?: string;
         };
         Relationships: [
@@ -3208,6 +3211,8 @@ export type Database = {
           id: string;
           is_public: boolean;
           last_active_at: string;
+          listed_until: string | null;
+          listing_warned_at: string | null;
           onboarding_completed_at: string | null;
           onboarding_step: number;
           profession_node_id: string | null;
@@ -3234,6 +3239,8 @@ export type Database = {
           id?: string;
           is_public?: boolean;
           last_active_at?: string;
+          listed_until?: string | null;
+          listing_warned_at?: string | null;
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
           profession_node_id?: string | null;
@@ -3260,6 +3267,8 @@ export type Database = {
           id?: string;
           is_public?: boolean;
           last_active_at?: string;
+          listed_until?: string | null;
+          listing_warned_at?: string | null;
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
           profession_node_id?: string | null;
@@ -3576,6 +3585,14 @@ export type Database = {
       };
       expire_offers: { Args: Record<PropertyKey, never>; Returns: number };
       expire_vacancies: { Args: Record<PropertyKey, never>; Returns: number };
+      expire_worker_listings: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+      extend_worker_listing_internal: {
+        Args: { p_worker_id: string };
+        Returns: string;
+      };
       extend_worker_promotion_internal: {
         Args: { p_worker_id: string };
         Returns: string;
@@ -3607,6 +3624,7 @@ export type Database = {
         Args: { level: Database["public"]["Enums"]["language_level"] };
         Returns: number;
       };
+      listings_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
       manages_vacancy: { Args: { p_vacancy_id: string }; Returns: boolean };
       mark_conversation_read: {
         Args: { p_conversation_id: string };
@@ -4246,6 +4264,7 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      worker_listing_quote: { Args: Record<PropertyKey, never>; Returns: Json };
       worker_promotion_mode: {
         Args: Record<PropertyKey, never>;
         Returns: string;
@@ -4336,7 +4355,8 @@ export type Database = {
         | "practice"
         | "apprenticeship";
       payment_provider: "payme" | "click";
-      payment_purpose: "vacancy_publish" | "worker_promotion" | "ai_alerts";
+      payment_purpose:
+        "vacancy_publish" | "worker_promotion" | "ai_alerts" | "worker_listing";
       payment_status: "pending" | "paid" | "cancelled" | "failed";
       phone_visibility: "nobody" | "applicants" | "on_request" | "everyone";
       portfolio_type: "image" | "video" | "pdf" | "document" | "link";
@@ -4603,7 +4623,12 @@ export const Constants = {
         "apprenticeship",
       ],
       payment_provider: ["payme", "click"],
-      payment_purpose: ["vacancy_publish", "worker_promotion", "ai_alerts"],
+      payment_purpose: [
+        "vacancy_publish",
+        "worker_promotion",
+        "ai_alerts",
+        "worker_listing",
+      ],
       payment_status: ["pending", "paid", "cancelled", "failed"],
       phone_visibility: ["nobody", "applicants", "on_request", "everyone"],
       portfolio_type: ["image", "video", "pdf", "document", "link"],

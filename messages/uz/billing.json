@@ -10,7 +10,7 @@
   "secure": "To'lov Payme / Click sahifasida xavfsiz amalga oshiriladi. Karta ma'lumotlari bizga kelmaydi",
   "mode": {
     "promo": "🎉 Aksiya: {date} gacha e'lon joylash bepul",
-    "free_trial": "🎁 Birinchi vakansiyangiz bepul — {hours} soat faol bo'ladi",
+    "free_trial": "🎁 Birinchi e'loningiz bepul — {days} kun faol bo'ladi",
     "paid_window": "✅ To'langan: {date} gacha faol",
     "payment_required": "E'lon narxi: {price} so'm · {days} kun",
     "free": "E'lon bepul — {days} kun faol bo'ladi"
@@ -42,7 +42,8 @@
     "to_vacancy": "Vakansiyaga o'tish",
     "to_home": "Bosh sahifa",
     "paid_ai_alerts": "Aqlli AI qidiruv 1 oyga yoqildi",
-    "to_ai_alerts": "AI qidiruvga o'tish"
+    "to_ai_alerts": "AI qidiruvga o'tish",
+    "paid_listing": "E'loningiz yana 10 kun qidiruvda"
   },
   "pricing": {
     "title": "Narxlar",
@@ -64,6 +65,9 @@
     "provider_disabled": "Bu to'lov usuli hozircha ulanmagan",
     "already_paid": "Bu vakansiya uchun to'lov qilingan",
     "already_promoted": "TOP hali faol — tugagach yana yoqishingiz mumkin",
-    "onboarding_required": "Avval profilingizni to'ldiring"
-  }
+    "onboarding_required": "Avval profilingizni to'ldiring",
+    "listing_payment_required": "Bepul e'lon ishlatilgan. Davom etish uchun to'lov qiling."
+  },
+  "listing_title": "Ish qidirish e'lonini joylash",
+  "listing_desc": "E'loningiz {days} kun ish beruvchilar qidiruvida ko'rinadi"
 }

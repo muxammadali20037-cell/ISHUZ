@@ -9,7 +9,7 @@ import { getLocale } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
 import { errorCode } from "@/lib/utils";
 import { checkoutUrl, enabledProviders } from "./providers";
-import type { PromotionQuote, VacancyQuote } from "./types";
+import type { ListingQuote, PromotionQuote, VacancyQuote } from "./types";
 
 const uuid = z.uuid();
 
@@ -28,8 +28,16 @@ export async function getPromotionQuote(): Promise<ActionResult<PromotionQuote>>
   return { ok: true, data: { ...(data as unknown as Omit<PromotionQuote, "providers">), providers: enabledProviders() } };
 }
 
+/** Ish qidiruvchi e'loni (10 kun): rejim, narx, muddat */
+export async function getWorkerListingQuote(): Promise<ActionResult<ListingQuote>> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("worker_listing_quote");
+  if (error || !data) return { ok: false, error: errorCode(error) };
+  return { ok: true, data: { ...(data as unknown as Omit<ListingQuote, "providers">), providers: enabledProviders() } };
+}
+
 const checkoutSchema = z.object({
-  purpose: z.enum(["vacancy_publish", "worker_promotion"]),
+  purpose: z.enum(["vacancy_publish", "worker_promotion", "worker_listing"]),
   targetId: uuid,
   provider: z.enum(["payme", "click"]),
 });

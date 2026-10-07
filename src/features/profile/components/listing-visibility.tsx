@@ -1,8 +1,9 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Send, PartyPopper, ShieldCheck } from "lucide-react";
+import { CalendarClock, Eye, EyeOff, Send, PartyPopper, ShieldCheck } from "lucide-react";
+import { requestPayment } from "@/features/billing/components/payment-dialog";
 import { celebrate } from "@/lib/celebrate";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -16,7 +17,17 @@ type Mode = "search" | "applied" | "hidden";
  * Ish qidirish e'loni ko'rinishi (spec §10): qidiruvda ko'rinsin / faqat ariza yuborgan ish beruvchilar ko'rsin /
  * hozircha yashirin. "Ish topdim" — e'lon to'xtatiladi (keyin qayta faollashtiriladi).
  */
-export function ListingVisibility({ isPublic, status }: { isPublic: boolean; status: "active" | "open" | "not_looking" }) {
+export function ListingVisibility({
+  workerId,
+  isPublic,
+  status,
+  listedUntil,
+}: {
+  workerId: string;
+  isPublic: boolean;
+  status: "active" | "open" | "not_looking";
+  listedUntil: string | null;
+}) {
   const { t } = useT();
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -27,6 +38,12 @@ export function ListingVisibility({ isPublic, status }: { isPublic: boolean; sta
       const r1 = await updateVisibility({ is_public: next === "search" });
       const r2 = await updateWorkerStatus({ status: next === "hidden" ? "not_looking" : status === "not_looking" ? "active" : status });
       if (!r1.ok || !r2.ok) {
+        // 10 kunlik bepul e'lon ishlatilgan — qidiruvga chiqish to'lov orqali
+        if ((!r1.ok && r1.error === "listing_payment_required") || (!r2.ok && r2.error === "listing_payment_required")) {
+          requestPayment({ purpose: "worker_listing", targetId: workerId });
+          router.refresh();
+          return;
+        }
         toast.error(t("common.errors.generic"));
         return;
       }
@@ -89,6 +106,7 @@ export function ListingVisibility({ isPublic, status }: { isPublic: boolean; sta
           </button>
         ))}
       </div>
+      {listedUntil ? <ListingTerm until={listedUntil} active={mode === "search"} onExtend={() => requestPayment({ purpose: "worker_listing", targetId: workerId })} /> : null}
       <p className="flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary-soft/60 p-3 text-sm text-foreground">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
         {t("profile.listing.phone_note")}
@@ -102,6 +120,35 @@ export function ListingVisibility({ isPublic, status }: { isPublic: boolean; sta
           {t("profile.listing.reactivate")}
         </Button>
       )}
+    </div>
+  );
+}
+
+/** E'lon muddati: necha kun qolgani (rangli) + 10 kunga uzaytirish */
+function ListingTerm({ until, active, onExtend }: { until: string; active: boolean; onExtend: () => void }) {
+  const { t } = useT();
+  const [now] = useState(() => Date.now());
+  const ms = new Date(until).getTime() - now;
+  const days = Math.max(0, Math.ceil(ms / 86_400_000));
+  const expired = ms <= 0 || !active;
+  const soon = !expired && days <= 2;
+  return (
+    <div
+      className={cn(
+        "flex items-center gap-3 rounded-2xl border-2 p-4",
+        expired ? "border-destructive/40 bg-destructive/5" : soon ? "border-warning bg-warning-soft" : "border-success/40 bg-success-soft",
+      )}
+    >
+      <CalendarClock className={cn("size-6 shrink-0", expired ? "text-destructive" : soon ? "text-warning" : "text-success")} />
+      <div className="min-w-0 flex-1">
+        <p className="font-semibold">
+          {expired ? t("profile.listing.term_expired") : t("profile.listing.term_left", { days, date: new Date(until).toLocaleDateString("ru-RU") })}
+        </p>
+        <p className="text-xs text-muted-foreground">{t("profile.listing.term_hint")}</p>
+      </div>
+      <Button size="sm" variant={expired || soon ? "default" : "outline"} onClick={onExtend}>
+        {t("profile.listing.extend")}
+      </Button>
     </div>
   );
 }

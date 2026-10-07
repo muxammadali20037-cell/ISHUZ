@@ -15,6 +15,7 @@ import type { DistanceOrigin } from "../types";
 import { WorkerList } from "./worker-list";
 import { SortSelect } from "./sort-select";
 import { Pagination } from "./pagination";
+import { WORKERS_COUNT_CAP, resultCount } from "@/lib/result-count";
 
 type SearchArgs = Database["public"]["Functions"]["search_workers"]["Args"];
 
@@ -89,7 +90,7 @@ export async function WorkersResults({
     <div>
       {understoodNote}
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-sm font-medium text-muted-foreground tabular">{t("common.labels.results", { count: total })}</p>
+        <p className="text-sm font-medium text-muted-foreground tabular">{t("common.labels.results", { count: resultCount(total, WORKERS_COUNT_CAP) })}</p>
         <SortSelect params={params} hasOrigin={origin !== null} />
       </div>
       <WorkerList rows={rows} vacancyId={args.p_vacancy_id ?? null} />
