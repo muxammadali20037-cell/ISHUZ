@@ -103,6 +103,23 @@ export const alertExtractSchema = z.object({
 });
 export type AlertExtract = z.infer<typeof alertExtractSchema>;
 
+/** AI yordamchi (ish beruvchi): "qanday ishchi kerak" matnidan kuzatish mezonlari */
+export const workerAlertExtractSchema = z.object({
+  profession: z.string().nullable().describe("Kerakli ishchining kasbi/lavozimi, qisqa (masalan: Oshpaz, Sotuvchi, Haydovchi C toifa). Aniq bo'lmasa null"),
+  category: code.describe("cN"),
+  subcategory: code.describe("sN"),
+  region: code.describe("rN"),
+  district: code.describe("dN"),
+  extra_districts: z.array(z.string()).describe("dN — yana mos tumanlar"),
+  experience_min_months: z.number().int().describe("Talab qilingan eng kam tajriba oyda: 0, 6, 12, 24, 36 yoki 60; aytilmasa 0"),
+  salary_max: z.number().int().nullable().describe("Oylik byudjet (eng ko'pi), so'mda; aytilmasa null"),
+  employment_types: z.array(z.enum(E.employment_type)),
+  schedules: z.array(z.enum(E.work_schedule)),
+  remote_only: z.boolean().describe("faqat masofaviy (uydan) ishchi kerak bo'lsa true"),
+  keywords: z.string().nullable().describe("Kasb topilmasa — ishchi e'lonining sarlavhasida qidiriladigan 1-2 so'z"),
+});
+export type WorkerAlertExtract = z.infer<typeof workerAlertExtractSchema>;
+
 // ---------------------------------------------------------------------------
 // Promptlar
 // ---------------------------------------------------------------------------
@@ -135,6 +152,11 @@ const VACANCY_TASK = `Bu — ISH BERUVCHI vakansiya haqida yozgan matn. Vakansiy
 const ALERT_TASK = `Bu — ISH QIDIRUVCHI qanday ish xohlashini yozgan matn. Undan yangi vakansiyalarni kuzatish uchun mezonlarni ajrat.
 - Faqat matnda aytilgan shartlarni qo'y; aytilmagan maosh, grafik, hududni o'ylab topma.
 - profession — iloji boricha aniq kasb nomi (matndagi xatolarni tuzatib).`;
+
+const WORKER_ALERT_TASK = `Bu — ISH BERUVCHI qanday ishchi kerakligini yozgan matn. Undan yangi ishchi e'lonlarini kuzatish uchun mezonlarni ajrat.
+- Faqat matnda aytilgan shartlarni qo'y; aytilmagan tajriba, byudjet, grafik, hududni o'ylab topma.
+- profession — iloji boricha aniq kasb nomi (matndagi xatolarni tuzatib).
+- salary_max — ish beruvchi to'lashga tayyor eng ko'p oylik ("6 mln gacha" = 6000000).`;
 
 async function run<T extends z.ZodType>(schema: T, task: string, catalog: AiCatalog, text: string, locale: Locale, feature: string): Promise<z.infer<T> | null> {
   // Gemini kaliti bo'lsa — u (bepul limit), aks holda Claude
@@ -175,6 +197,10 @@ export async function extractVacancy(catalog: AiCatalog, text: string, locale: L
 
 export async function extractAlert(catalog: AiCatalog, text: string, locale: Locale): Promise<AlertExtract | null> {
   return run(alertExtractSchema, ALERT_TASK, catalog, text, locale, "job_alert");
+}
+
+export async function extractWorkerAlert(catalog: AiCatalog, text: string, locale: Locale): Promise<WorkerAlertExtract | null> {
+  return run(workerAlertExtractSchema, WORKER_ALERT_TASK, catalog, text, locale, "worker_alert");
 }
 
 export function isAiRateLimit(error: unknown): boolean {

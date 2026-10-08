@@ -42,8 +42,8 @@
     "not_found": "To'lov topilmadi",
     "to_vacancy": "Vakansiyaga o'tish",
     "to_home": "Bosh sahifa",
-    "paid_ai_alerts": "Aqlli AI qidiruv 1 oyga yoqildi",
-    "to_ai_alerts": "AI qidiruvga o'tish",
+    "paid_ai_alerts": "AI yordamchi 1 oyga yoqildi — mos ish va ishchilar haqida Telegram'ga yozamiz",
+    "to_ai_alerts": "AI yordamchiga o'tish",
     "paid_listing": "E'loningiz yana 10 kun qidiruvda"
   },
   "pricing": {

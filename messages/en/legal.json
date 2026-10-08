@@ -84,7 +84,7 @@
       ],
       [
         "Paid services and prices",
-        "- Publishing or extending a job-seeker listing: {price_worker_listing} UZS, {listing_days} days.\n- Publishing or extending a vacancy: {price_vacancy_publish} UZS, {vacancy_days} days.\n- Smart AI search (Telegram alert when a matching vacancy appears): {price_ai_alerts} UZS, {ai_days} days.\n- Promotion: until {discount_until}, {discount_percent}% off the first payment for each listing type.\nPrices are in Uzbek soum; the final amount is shown in the payment window. Price changes are announced on this page and do not affect services already paid for."
+        "- Publishing or extending a job-seeker listing: {price_worker_listing} UZS, {listing_days} days.\n- Publishing or extending a vacancy: {price_vacancy_publish} UZS, {vacancy_days} days.\n- AI assistant (Telegram alert when a matching vacancy or worker listing appears; one subscription covers both): {price_ai_alerts} UZS, {ai_days} days.\n- Promotion: until {discount_until}, {discount_percent}% off the first payment for each listing type.\nPrices are in Uzbek soum; the final amount is shown in the payment window. Price changes are announced on this page and do not affect services already paid for."
       ],
       [
         "Payment",

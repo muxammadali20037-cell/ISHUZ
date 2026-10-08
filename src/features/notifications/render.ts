@@ -193,6 +193,18 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
           icon: "match_vacancy",
         };
       }
+      if (str(p, "kind") === "ai_worker_alert") {
+        // ish beruvchiga: mos nomzod (telefonsiz) — ism, hudud, tajriba, kutgan maoshi
+        const pick = (key: string) => (locale === "ru" ? str(p, `${key}_ru`) : "") || str(p, key);
+        const salary = num(p, "salary");
+        const body = [
+          str(p, "name"),
+          pick("region"),
+          tEnum(t, "experience_level", str(p, "experience")),
+          salary ? t("saved.ai_alerts.employer.notify_salary", { amount: groupThousands(salary) }) : "",
+        ].filter(Boolean);
+        return { title: t("saved.ai_alerts.employer.notify_title", { profession: pick("profession") || "—" }), body: body.join(" · "), icon: "match_worker" };
+      }
       if (str(p, "kind") === "moderation_result") {
         const state = str(p, "state");
         const key = state === "active" || state === "listed" ? "active" : state === "rejected" ? "rejected" : state === "verification_pending" ? "verification" : state === "payment_required" ? "payment" : "review";

@@ -2,7 +2,7 @@
 
 > «Siz e'lon berasiz. Tizim sizga mos ish yoki ishchini topib, xabar beradi.»
 
-Bu hujjat 0048–0053 migratsiyalari va ular bilan bog'liq kodni, tashqi sozlamalarni va hali kalit
+Bu hujjat 0048–0054 migratsiyalari va ular bilan bog'liq kodni, tashqi sozlamalarni va hali kalit
 kerak bo'lgan joylarni tushuntiradi.
 
 ## 1. Imkoniyatlar
@@ -20,11 +20,12 @@ kerak bo'lgan joylarni tushuntiradi.
 | Admin panel | Alohida host, TOTP (aal2), rollar (super_admin, admin, moderator, support, analyst), moderatsiya navbati, ish beruvchilar, moslik qoidalari, navbatlar monitoringi, statistika (Toshkent vaqti) + CSV. | `src/app/admin/*`, `src/proxy.ts`, `0052`, `0053` |
 | Statistika | Faqat haqiqiy hodisalar. «Qo'ng'iroq» bosilishi ishga olish emas; Telegram'da yetkazilgan xabar «o'qilgan» emas (ochilish faqat havola orqali). | `admin_stats_v2`, `/api/e` |
 | Brend | «Ish topdim», yangi belgi (portfel + belgi), sahifalar orasida yo'nalishli o'tishlar. | `public/icon.svg`, `src/app/template.tsx` |
+| AI yordamchi · PRO (pullik) | Ikkala rol uchun: «Menga ish topsin» (mos vakansiya) va «Menga ishchi topsin» (mos ishchi e'loni). O'z so'zi bilan yoziladi, AI kasb/hudud/tajriba/maosh mezonlarini ajratadi; mos e'lon ochilishi (moderatsiyadan o'tishi) bilan Telegram'ga darhol xabar. Bitta obuna (`price_ai_alerts`, sukut 15 000 so'm / `ai_alerts_days` 30 kun) ikkala yo'lni qamraydi; `ai_alerts_paid=false` — bepul. Bosh sahifa va Kabinetimda ko'zga tashlanadigan karta. Ish beruvchiga ishchining telefoni yuborilmaydi. Har biriga 3 tadan kuzatuv. | `0054_ai_worker_alerts.sql`, `src/features/ai-alerts/*`, `/ai-alerts?role=worker|employer` |
 
 ## 2. Migratsiyalar
 
 `0048_trust_enum_values` · `0049_moderation` · `0050_matching_v2` · `0051_match_notifications` ·
-`0052_admin_analytics` · `0053_admin_panel` — tartib bilan qo'llanadi. Mavjud e'lonlar 0049 dan keyin
+`0052_admin_analytics` · `0053_admin_panel` · `0054_ai_worker_alerts` — tartib bilan qo'llanadi. Mavjud e'lonlar 0049 dan keyin
 qayta tekshiruvga tushadi (natija chiqquncha yashirin) — AI kaliti va cron ishlayotgan bo'lishi kerak.
 
 ## 3. Muhit o'zgaruvchilari (Vercel)
@@ -55,19 +56,24 @@ Kalitlarni hech qachon chatga yoki kodga yozmang — faqat Vercel → Settings �
 
 ## 5. Sinovlar
 
-- SQL: `supabase/tests/*.test.sql` (19 to'plam, 524 tekshiruv), shu jumladan `moderation.test.sql` (90).
-- Unit: `npm test` (400 test) — qoidalar, normalizatsiya, AI hukmi, AI guard, aqlli qidiruv, davr (Toshkent),
+- SQL: `supabase/tests/*.test.sql` (20 to'plam, 551 tekshiruv), shu jumladan `moderation.test.sql` (90) va
+  `ai_worker_alerts.test.sql` (27: RLS, limit, kasb/tuman/tajriba/byudjet filtrlari, takrorsiz, pullik rejim).
+- Unit: `npm test` (401 test) — qoidalar, normalizatsiya, AI hukmi, AI guard, aqlli qidiruv, davr (Toshkent),
   admin host yo'naltirishi, tarjima kalitlari.
 - E2E (soxta Gemini va Telegram bilan, 360/390/1280 px): AI e'lon (ishchi/vakansiya), taqiqlangan matn
   (lotin, kirill, raqamli yashirish), rad etish → tahrir → qayta tekshiruv, AI uzilishi va noto'g'ri format,
   rasm ichidagi yozuv, aqlli qidiruv, admin MFA/navbat/tasdiqlash/CSV, REST orqali chetlab o'tish urinishlari,
-  Telegram obunasi (bir martalik token).
+  Telegram obunasi (bir martalik token), AI yordamchi PRO (bosh sahifa/kabinet kartasi, ish beruvchi kuzatuvi →
+  ishchi e'loni moderatsiyadan o'tadi → Telegram'ga xabar, obunasiz jim, telefon yuborilmaydi).
 
 ## 6. Hali kalit yoki qo'lda sozlash kerak bo'lgan joylar
 
 - `GEMINI_API_KEY` (yoki `ANTHROPIC_API_KEY`) qo'yilmaguncha yangi e'lonlar «tekshiruvda» kutadi
   (avtomatik tasdiq yo'q) va AI tugmalari ko'rinmaydi.
 - Telegram webhook va Vault sirlari qo'yilmaguncha xabarlar yuborilmaydi.
+- AI yordamchi PRO to'lovi: `PAYME_MERCHANT_ID`/`PAYME_KEY` yoki `CLICK_*` kalitlari qo'yilmaguncha kartada narx
+  ko'rinadi, lekin to'lov tugmasi o'rniga «To'lov tizimi tez orada ulanadi» chiqadi. Narx va muddat —
+  `app_settings.price_ai_alerts` / `ai_alerts_days`; bepul qilish — `ai_alerts_paid = false`.
 - `admin.<domen>` DNS va `ADMIN_HOST` sozlanmaguncha admin panel prod'da ochilmaydi (asosiy domenda 404).
 - Play Market: yangi ikon tayyor (`docs/play-store/icon-512.png`), lekin feature-graphic va skrinshotlarda
   eski nom bor — yangidan olish kerak. Paket nomi `uz.ishtopdim.app` (ilova avval eski paket bilan yuklangan

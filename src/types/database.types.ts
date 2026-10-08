@@ -250,6 +250,131 @@ export type Database = {
         };
         Relationships: [];
       };
+      ai_worker_alert_hits: {
+        Row: {
+          alert_id: string;
+          created_at: string;
+          worker_id: string;
+        };
+        Insert: {
+          alert_id: string;
+          created_at?: string;
+          worker_id: string;
+        };
+        Update: {
+          alert_id?: string;
+          created_at?: string;
+          worker_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ai_worker_alert_hits_alert_id_fkey";
+            columns: ["alert_id"];
+            isOneToOne: false;
+            referencedRelation: "ai_worker_alerts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ai_worker_alert_hits_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: false;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      ai_worker_alerts: {
+        Row: {
+          category_id: string | null;
+          created_at: string;
+          district_ids: string[];
+          employment_types: Database["public"]["Enums"]["employment_type"][];
+          experience_min_months: number;
+          hits_count: number;
+          id: string;
+          is_active: boolean;
+          label: string;
+          last_hit_at: string | null;
+          profession_node_id: string | null;
+          profile_id: string;
+          prompt: string;
+          q: string | null;
+          region_id: string | null;
+          remote_only: boolean;
+          salary_max: number | null;
+          schedules: Database["public"]["Enums"]["work_schedule"][];
+        };
+        Insert: {
+          category_id?: string | null;
+          created_at?: string;
+          district_ids?: string[];
+          employment_types?: Database["public"]["Enums"]["employment_type"][];
+          experience_min_months?: number;
+          hits_count?: number;
+          id?: string;
+          is_active?: boolean;
+          label: string;
+          last_hit_at?: string | null;
+          profession_node_id?: string | null;
+          profile_id: string;
+          prompt: string;
+          q?: string | null;
+          region_id?: string | null;
+          remote_only?: boolean;
+          salary_max?: number | null;
+          schedules?: Database["public"]["Enums"]["work_schedule"][];
+        };
+        Update: {
+          category_id?: string | null;
+          created_at?: string;
+          district_ids?: string[];
+          employment_types?: Database["public"]["Enums"]["employment_type"][];
+          experience_min_months?: number;
+          hits_count?: number;
+          id?: string;
+          is_active?: boolean;
+          label?: string;
+          last_hit_at?: string | null;
+          profession_node_id?: string | null;
+          profile_id?: string;
+          prompt?: string;
+          q?: string | null;
+          region_id?: string | null;
+          remote_only?: boolean;
+          salary_max?: number | null;
+          schedules?: Database["public"]["Enums"]["work_schedule"][];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "ai_worker_alerts_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ai_worker_alerts_profession_node_id_fkey";
+            columns: ["profession_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ai_worker_alerts_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "ai_worker_alerts_region_id_fkey";
+            columns: ["region_id"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       analytics_events: {
         Row: {
           anon_id: string | null;

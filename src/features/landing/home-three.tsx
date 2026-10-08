@@ -4,11 +4,13 @@ import { getT } from "@/lib/i18n/server";
 import { publicEnv } from "@/lib/env";
 import type { SessionContext } from "@/features/auth/session";
 import { countMyListings } from "@/features/cabinet/queries";
+import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import { cn } from "@/lib/utils";
 
 /**
  * Bosh sahifa — uchta katta karta: "Ish qidiryapman", "Ishchi qidiryapman", "Qidirish".
  * Har kartaning butun yuzasi bosiladi. Statistikalar, bannerlar va ko'p menyular yo'q.
+ * Ostida — pullik bonus "AI yordamchi · PRO" (mos ish yoki ishchi chiqishi bilan Telegram'ga xabar).
  * "Kabinetim" — pastda ixcham qator, kartalardan kuchsizroq ko'rinadi.
  */
 export async function HomeThree({ session }: { session: SessionContext | null }) {
@@ -96,6 +98,9 @@ export async function HomeThree({ session }: { session: SessionContext | null })
           </li>
         ))}
       </ul>
+
+      {/* Pullik bonus: AI yordamchi — ko'zga tashlanib turadi */}
+      <AiProCard userId={session?.userId ?? null} className="mx-auto mt-6 max-w-5xl" />
 
       <Link
         href={session ? "/cabinet" : "/auth?next=%2Fcabinet"}

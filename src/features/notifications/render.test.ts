@@ -112,5 +112,20 @@ describe("renderNotification", () => {
     expect(renderNotification("system", { kind: "saved_search", label: "Oshpaz", count: 3 }, uz, "uz").body).toBe("«Oshpaz» bo'yicha 3 ta yangi vakansiya chiqdi.");
     expect(renderNotification("system", { kind: "contact_request", name: "Kafe" }, uz, "uz").title).toBe("Telefon raqamingizni so'rashdi");
   });
-});
 
+  it("system/ai_worker_alert: ish beruvchiga mos nomzod (telefonsiz), ru — ruscha nomlar", () => {
+    const payload = {
+      kind: "ai_worker_alert", name: "Ali V.", profession: "Oshpaz", profession_ru: "Повар",
+      region: "Toshkent shahri, Chilonzor", region_ru: "г. Ташкент, Чиланзар", experience: "2_3y", salary: 5000000,
+    };
+    const r = renderNotification("system", payload, uz, "uz");
+    expect(r.title).toBe("🤖 Sizga mos yangi nomzod: Oshpaz");
+    expect(r.body).toContain("Ali V. · Toshkent shahri, Chilonzor · ");
+    expect(r.body).toContain("kutgan maoshi 5 000 000 so'm");
+    expect(r.icon).toBe("match_worker");
+    const rr = renderNotification("system", payload, ru, "ru");
+    expect(rr.title).toBe("🤖 Новый подходящий кандидат: Повар");
+    expect(rr.body).toContain("г. Ташкент, Чиланзар");
+    expect(renderNotification("system", { kind: "ai_worker_alert", profession: "Oshpaz" }, uz, "uz").body).toBe("");
+  });
+});

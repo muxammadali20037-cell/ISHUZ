@@ -42,8 +42,8 @@
     "not_found": "Payment not found",
     "to_vacancy": "Go to vacancy",
     "to_home": "Home",
-    "paid_ai_alerts": "Smart AI search is on for 1 month",
-    "to_ai_alerts": "Go to AI search",
+    "paid_ai_alerts": "AI assistant is on for 1 month — we'll message you on Telegram about matching jobs and workers",
+    "to_ai_alerts": "Go to the AI assistant",
     "paid_listing": "Your listing is back in search for 10 days"
   },
   "pricing": {

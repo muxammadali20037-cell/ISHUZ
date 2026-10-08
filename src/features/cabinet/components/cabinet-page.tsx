@@ -12,6 +12,7 @@ import { FoundButton, PayButton } from "./listing-actions";
 import { ModerationNotice } from "./moderation-notice";
 import { AlertToggle } from "@/features/alerts/components/alert-toggle";
 import { getAlertSubscriptions } from "@/features/alerts/queries";
+import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import type { ListingState } from "@/features/post/types";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
@@ -181,6 +182,8 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
           </div>
         ) : null}
       </section>
+
+      <AiProCard userId={session.userId} />
 
       <section className="space-y-3" aria-labelledby="new-listing">
         <h2 id="new-listing" className="text-2xl font-bold">

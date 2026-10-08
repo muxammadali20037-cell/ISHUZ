@@ -84,7 +84,7 @@
       ],
       [
         "Pullik xizmatlar va narxlar",
-        "- Ish qidiruvchi e'lonini joylash yoki uzaytirish: {price_worker_listing} so'm, {listing_days} kun.\n- Vakansiya e'lonini joylash yoki uzaytirish: {price_vacancy_publish} so'm, {vacancy_days} kun.\n- Aqlli AI qidiruv (mos vakansiya chiqishi bilan Telegram'ga xabar): {price_ai_alerts} so'm, {ai_days} kun.\n- Aksiya: {discount_until} gacha har bir e'lon turi bo'yicha birinchi to'lovga {discount_percent}% chegirma.\nNarxlar O'zbekiston so'mida, to'lov oynasida yakuniy summa ko'rsatiladi. Narx o'zgarsa, shu sahifada e'lon qilinadi; allaqachon to'langan xizmatlarga ta'sir qilmaydi."
+        "- Ish qidiruvchi e'lonini joylash yoki uzaytirish: {price_worker_listing} so'm, {listing_days} kun.\n- Vakansiya e'lonini joylash yoki uzaytirish: {price_vacancy_publish} so'm, {vacancy_days} kun.\n- AI yordamchi (mos vakansiya yoki mos ishchi e'loni chiqishi bilan Telegram'ga xabar; bitta obuna ikkalasini qamraydi): {price_ai_alerts} so'm, {ai_days} kun.\n- Aksiya: {discount_until} gacha har bir e'lon turi bo'yicha birinchi to'lovga {discount_percent}% chegirma.\nNarxlar O'zbekiston so'mida, to'lov oynasida yakuniy summa ko'rsatiladi. Narx o'zgarsa, shu sahifada e'lon qilinadi; allaqachon to'langan xizmatlarga ta'sir qilmaydi."
       ],
       [
         "To'lov",
