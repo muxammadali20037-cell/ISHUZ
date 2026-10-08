@@ -440,5 +440,43 @@
       "rate_limited": "Bugun juda ko'p urinish bo'ldi. Ertaga qayta urinib ko'ring.",
       "invalid_documents": "Hujjatni qayta yuklang."
     }
+  },
+  "photo": {
+    "title": "Ish joyi surati (ixtiyoriy)",
+    "hint": "Haqiqiy ish joyi surati. Rasm e'lon bilan birga tekshiriladi.",
+    "own_title": "O'z suratingiz (ixtiyoriy)",
+    "own_hint": "Haqiqiy suratingiz. Bo'lmasa kasb tasviri ko'rsatiladi (u haqiqiy surat emas).",
+    "add": "Surat qo'shish",
+    "remove": "Olib tashlash",
+    "alt": "Ish joyi surati",
+    "label": "Ish joyi surati",
+    "bad_type": "Faqat JPG, PNG yoki WEBP rasm.",
+    "too_large": "Rasm 5 MB dan katta bo'lmasin.",
+    "failed": "Rasmni yuklab bo'lmadi. Qayta urinib ko'ring."
+  },
+  "ai": {
+    "choose": "E'lonni qanday tayyorlaysiz?",
+    "manual": "O'zim to'ldiraman",
+    "quick": "AI bilan tez tayyorlash",
+    "worker_label": "O'zingiz haqingizda oddiy so'zlar bilan yozing",
+    "vacancy_label": "Qanday ishchi kerakligini oddiy so'zlar bilan yozing",
+    "worker_example": "Masalan: Men buxgalterman, 3 yil tajribam bor, Chilonzorda yashayman, 6 milliondan ish qidiryapman.",
+    "vacancy_example": "Masalan: Chilonzordagi kafemga 2 ta oshpaz kerak, 5–7 million, 6 kunlik ish, tajribali bo'lsin.",
+    "note": "AI faqat siz yozgan ma'lumotdan foydalanadi: tajriba, maosh yoki sharoitni o'ylab topmaydi. E'lon siz tekshirmaguningizcha joylanmaydi.",
+    "prepare": "Tayyorlash",
+    "preparing": "Tayyorlanmoqda…",
+    "too_short": "Kamida bir-ikki gap yozing",
+    "ready": "AI e'loningizni tayyorladi. Tekshirib, joylashingiz mumkin.",
+    "ready_note": "Har bir qatorni tekshiring — noto'g'ri bo'lsa «O'zgartirish»ni bosing.",
+    "missing": "Yana shu ma'lumotlar kerak:",
+    "errors": {
+      "ai_disabled": "AI hozir yoqilmagan. E'lonni o'zingiz to'ldiring.",
+      "ai_busy": "AI hozir band. Bir daqiqadan keyin qayta urinib ko'ring yoki o'zingiz to'ldiring.",
+      "ai_failed": "AI tayyorlay olmadi. Qayta urinib ko'ring yoki o'zingiz to'ldiring.",
+      "rate_limited": "Juda ko'p urinish. Biroz kutib, qayta urinib ko'ring.",
+      "prohibited": "Ish topdim faqat ish va ishchi qidirish e'lonlarini qabul qiladi. Matningizdagi ishga aloqasiz yoki taqiqlangan qismni o'zgartiring.",
+      "validation": "Kamida bir-ikki gap yozing (1500 belgigacha).",
+      "blocked": "Hisobingiz bloklangan"
+    }
   }
 }

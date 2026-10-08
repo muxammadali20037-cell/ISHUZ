@@ -104,6 +104,7 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
       salary_to: v.salaryTo,
       schedule: v.schedule,
       experience_min_months: v.experienceMonths,
+      photo_path: v.photoPath ?? null,
     },
   });
   if (error || !data) return { ok: false, error: errorCode(error) };

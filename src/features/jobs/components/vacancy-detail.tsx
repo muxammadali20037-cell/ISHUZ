@@ -40,6 +40,7 @@ import { SimilarVacancies } from "./similar-vacancies";
 import { HomeSectionSkeleton } from "./skeletons";
 import { VacancyActions } from "./vacancy-actions";
 import { VacancyDescription } from "./vacancy-description";
+import { vacancyPhotoUrl } from "@/features/post/photo";
 
 const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
 
@@ -125,6 +126,14 @@ export async function VacancyDetail({
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6">
         <div className="min-w-0 space-y-4">
+          {v.photo_path ? (
+            <figure className="relative overflow-hidden rounded-2xl border border-border/70">
+              {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan) */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={vacancyPhotoUrl(v.photo_path) ?? ""} alt={t("easy.photo.alt")} className="aspect-[16/9] w-full object-cover" />
+              <figcaption className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
+            </figure>
+          ) : null}
           {/* Sarlavha kartasi */}
           <header className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
             <div className="flex items-start gap-4">

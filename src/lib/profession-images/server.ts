@@ -1,5 +1,8 @@
 import "server-only";
 
+import { logAiUsage } from "@/lib/ai/usage";
+import { checkGeneratedImage } from "@/features/moderation/service";
+
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { getServerEnv, publicEnv } from "@/lib/env";
@@ -92,7 +95,15 @@ export async function ensureProfessionImages(nodeIds: Array<string | null | unde
       continue;
     }
     try {
-      const img = await generateImage(cfg, prompt);
+      const started = Date.now();
+      const img = await generateImage(cfg, prompt).catch(async (e) => {
+        await logAiUsage({ feature: "profession_image", provider: "gemini", model: cfg.model, ok: false, latencyMs: Date.now() - started, images: 0, error: e instanceof Error ? e.message : "error" });
+        throw e;
+      });
+      await logAiUsage({ feature: "profession_image", provider: "gemini", model: cfg.model, ok: true, latencyMs: Date.now() - started, images: 1 });
+      // yaratilgan rasm ham tekshiriladi (rasm + undagi yozuv); o'tmasa saqlanmaydi, ikonka qoladi
+      const verdict = await checkGeneratedImage({ mimeType: img.mime, data: img.bytes.toString("base64") });
+      if (verdict === "reject" || verdict === "review") throw new Error(`moderation_${verdict}`);
       const ext = img.mime === "image/jpeg" ? "jpg" : img.mime === "image/webp" ? "webp" : "png";
       const path = `${nodeId}.${ext}`;
       const up = await admin.storage.from(BUCKET).upload(path, img.bytes, { contentType: img.mime, upsert: true, cacheControl: "31536000" });

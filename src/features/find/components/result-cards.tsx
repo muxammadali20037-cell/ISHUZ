@@ -5,6 +5,7 @@ import { BriefcaseBusiness, Clock, MapPin, Phone } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatMoney, formatPhone } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
+import { vacancyPhotoUrl } from "@/features/post/photo";
 import { SalaryText } from "@/components/shared/salary-text";
 import { levelToExperience } from "@/features/post/types";
 import type { Enums } from "@/types/database.types";
@@ -105,14 +106,23 @@ export function CallBlock({ phone, detailsHref, className }: { phone: string | n
   );
 }
 
-export function JobResultCard({ job, imageUrl }: { job: JobCardData; imageUrl?: string | null }) {
+export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; imageUrl?: string | null; photoPath?: string | null }) {
   const { t, tEnum, name } = useT();
   const place = usePlace();
   const profession = job.profession_name_uz ? name({ name_uz: job.profession_name_uz, name_ru: job.profession_name_ru ?? job.profession_name_uz, name_en: job.profession_name_en }) : job.title;
   return (
     <article className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="flex gap-4">
-        <ProfessionImage url={imageUrl} categorySlug={job.category_slug} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
+        {photoPath ? (
+          <figure className="relative w-24 shrink-0 sm:w-32">
+            {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan) */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={vacancyPhotoUrl(photoPath) ?? ""} alt={t("easy.photo.alt")} loading="lazy" className="aspect-[4/3] w-full rounded-2xl object-cover" />
+            <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold text-white">{t("easy.photo.label")}</figcaption>
+          </figure>
+        ) : (
+          <ProfessionImage url={imageUrl} categorySlug={job.category_slug} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
+        )}
         <div className="min-w-0 flex-1">
           {job.is_featured ? <span className="mb-1 inline-block rounded-md bg-warning px-1.5 py-0.5 text-xs font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
           <h3 className="break-words text-xl font-bold leading-snug">{job.title}</h3>

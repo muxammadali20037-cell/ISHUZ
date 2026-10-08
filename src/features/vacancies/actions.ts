@@ -2,7 +2,10 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import type { ActionResult } from "@/features/auth/actions";
+import { moderateNow } from "@/features/moderation/service";
+import { runBackgroundTickSafe } from "@/features/notifications/tick";
 import { getSession, type SessionContext } from "@/features/auth/session";
 import { createClient, type SupabaseServerClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
@@ -155,6 +158,8 @@ export async function saveStep(input: unknown): Promise<ActionResult<{ status: V
 
   const applied = await applyStep(supabase, loaded.vacancy, payload, session.userId);
   if (!applied.ok) return applied;
+  // faol e'lon matni o'zgarsa — qayta tekshiruv (tekshirilmagan matn ommaga chiqmaydi), fonda
+  if (status === "active") after(() => runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 30, budgetMs: 25_000 }));
   revalidateVacancy(vacancyId);
   return { ok: true, data: { status, movedToDraft } };
 }
@@ -300,8 +305,16 @@ export async function publishVacancy(input: unknown): Promise<ActionResult<{ sta
   if (!c.ok) return c;
   const { data, error } = await c.ctx.supabase.rpc("publish_vacancy", { p_vacancy_id: parsed.data.vacancyId });
   if (error) return { ok: false, error: errorCode(error) };
+  let status = data;
+  // majburiy moderatsiya: darhol (vaqt cheklangan) tekshiruv, ulgurmasa — fon navbati
+  if (status === "pending_review" && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    await moderateNow("vacancy", parsed.data.vacancyId, 12_000).catch(() => null);
+    const { data: fresh } = await c.ctx.supabase.from("vacancies").select("status").eq("id", parsed.data.vacancyId).maybeSingle();
+    if (fresh) status = fresh.status;
+  }
+  after(() => runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 }));
   revalidateVacancy(parsed.data.vacancyId);
-  return { ok: true, data: { status: data } };
+  return { ok: true, data: { status } };
 }
 
 /** set_vacancy_status RPC (paused | closed | draft). Natijaviy holat qayta o'qiladi. */

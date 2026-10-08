@@ -18,6 +18,8 @@ import { useDraft, useStep } from "../use-draft";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
+import { PhotoUpload } from "./photo-upload";
+import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { ChoiceButtons, ChosenLine, FieldError, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
 
@@ -64,6 +66,7 @@ export function VacancyPost({
   prefill,
   editId,
   pricedDays,
+  aiEnabled = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -72,6 +75,7 @@ export function VacancyPost({
   prefill: Partial<VacancyDraft>;
   editId: string | null;
   pricedDays: number;
+  aiEnabled?: boolean;
 }) {
   const { t, name, tEnum } = useT();
   const router = useRouter();
@@ -175,6 +179,8 @@ export function VacancyPost({
         schedule: draft.schedule || null,
         experienceMonths: draft.experienceMonths,
         showPhone: draft.showPhone,
+        photoPath: draft.photoPath ?? null,
+        source: draft.source ?? "manual",
       });
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
@@ -287,6 +293,17 @@ export function VacancyPost({
     return <div className="container-narrow py-10 text-lg text-muted-foreground">{t("easy.wizard.loading")}</div>;
   }
 
+  // AI qoralamasi: yetishmayotgan majburiy maydonlar → qisqa savollar
+  const aiQuestions = (() => {
+    if (draft.source !== "ai") return [];
+    const e = validate(3);
+    const q: { label: string; onClick: () => void }[] = [];
+    if (e.profession) q.push({ label: e.profession, onClick: () => goTo(1) });
+    if (e.place) q.push({ label: e.place, onClick: () => goTo(2) });
+    for (const k of ["employerType", "orgName", "phone", "description", "salary"] as const) if (e[k]) q.push({ label: e[k]!, onClick: () => goTo(3) });
+    return q;
+  })();
+
   const stepNames = [t("easy.wizard.steps.specialist"), t("easy.wizard.steps.location"), t("easy.wizard.steps.job"), t("easy.wizard.steps.review")];
   const loginHref = `/auth?${new URLSearchParams({ next: `${editId ? `${PATH}?edit=${editId}&` : `${PATH}?`}step=${step}` }).toString()}`;
   const hasAnswers = !editId && !!(draft.profession || draft.place.regionId || draft.description);
@@ -315,6 +332,16 @@ export function VacancyPost({
 
       {step === 1 ? (
         <section className="space-y-3">
+          {aiEnabled && !editId ? (
+            <AiQuickFill
+              kind="vacancy"
+              onReady={(d) => {
+                update({ ...mergeAiDraft(draft, d.vacancy ?? {}), source: "ai", step: TOTAL });
+                setErrors({});
+                go(TOTAL);
+              }}
+            />
+          ) : null}
           <ProfessionPicker
             categories={categories}
             value={draft.profession}
@@ -445,6 +472,7 @@ export function VacancyPost({
                     options={VACANCY_EXPERIENCE.map((m) => ({ value: m, label: t(`easy.vacancy.exp.${m}`) }))}
                   />
                 </div>
+                {viewer.userId ? <PhotoUpload userId={viewer.userId} value={draft.photoPath ?? null} onChange={(photoPath) => update({ photoPath })} /> : null}
               </div>
             ) : null}
           </div>
@@ -454,6 +482,7 @@ export function VacancyPost({
       {step === TOTAL ? (
         <section className="space-y-5">
           <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.vacancy.review_title")}</h1>
+          {draft.source === "ai" ? <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} /> : null}
           <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
             <ProfessionImage url={imageUrl} categorySlug={category?.slug} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
             <div className="min-w-0">

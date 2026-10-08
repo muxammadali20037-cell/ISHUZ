@@ -157,3 +157,25 @@ export async function processModerationQueue(limit = 8, budgetMs = 25_000): Prom
   }
   return n;
 }
+
+/**
+ * Tizim yaratgan rasm (kasb tasviri) ham saqlashdan oldin tekshiriladi: rasm + undagi yozuv.
+ * AI sozlanmagan bo'lsa — rasm bizning nazoratdagi shablondan yaratilgani uchun o'tkaziladi ("unchecked").
+ */
+export async function checkGeneratedImage(img: AiImage): Promise<"allow" | "reject" | "review" | "unchecked"> {
+  if (!aiProviderConfigured()) return "unchecked";
+  const out = await aiJson(imageVerdictSchema, imageSystemPrompt("uz"), "Check this image.", {
+    feature: "moderation_generated_image", images: [img], timeoutMs: 30_000, temperature: 0, maxOutputTokens: 1500,
+  });
+  const { extracted_text, ...verdict } = out;
+  const result = await runModerationEngine(
+    { entity: "vacancy", locale: "uz", fields: {}, images: [{ key: "photo", url: "inline" }], signals: [] },
+    {
+      aiAvailable: true,
+      withoutAi: "review",
+      textVerdict: async () => ({ decision: "allow", category: "job_related", reason_code: "no_text", user_message: "", flagged_fields: [] }),
+      imageVerdict: async () => ({ verdict, extractedText: extracted_text ?? "" }),
+    },
+  );
+  return result.decision;
+}

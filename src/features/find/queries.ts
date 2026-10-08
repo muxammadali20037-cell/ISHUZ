@@ -77,6 +77,8 @@ export interface FindResults<T> {
   items: T[];
   total: number;
   images: Record<string, string>;
+  /** haqiqiy ish joyi suratlari (vakansiya id → yo'l) */
+  photos?: Record<string, string>;
 }
 
 interface Place {
@@ -100,8 +102,12 @@ export async function findJobs(params: FindParams, place: Place): Promise<FindRe
   });
   if (error) console.error("[find] jobs", error.message);
   const items = data ?? [];
-  const images = await getProfessionImages(items.map((r) => r.profession_node_id));
-  return { items, total: Number(items[0]?.total_count ?? 0), images };
+  const [images, photoRows] = await Promise.all([
+    getProfessionImages(items.map((r) => r.profession_node_id)),
+    items.length ? supabase.from("vacancies").select("id, photo_path").in("id", items.map((r) => r.id)).not("photo_path", "is", null) : Promise.resolve({ data: [] }),
+  ]);
+  const photos = Object.fromEntries((photoRows.data ?? []).filter((r) => r.photo_path).map((r) => [r.id, r.photo_path as string]));
+  return { items, total: Number(items[0]?.total_count ?? 0), images, photos };
 }
 
 export async function findWorkers(params: FindParams, place: Place): Promise<FindResults<WorkerRow>> {

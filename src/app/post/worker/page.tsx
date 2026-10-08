@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import { getSession } from "@/features/auth/session";
+import { aiProviderConfigured } from "@/lib/ai/json";
 import { Shell } from "@/components/shared/shell";
 import { WorkerPost } from "@/features/post/components/worker-post";
 import { getListingDays, getPostViewer, getWorkerPrefill } from "@/features/post/queries";
@@ -28,7 +29,7 @@ export default async function PostWorkerPage() {
   return (
     <Shell hideNav>
       <Suspense>
-        <WorkerPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill.draft} existing={prefill.existing} pricedDays={days.worker} />
+        <WorkerPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill.draft} existing={prefill.existing} pricedDays={days.worker} aiEnabled={aiProviderConfigured()} />
       </Suspense>
     </Shell>
   );

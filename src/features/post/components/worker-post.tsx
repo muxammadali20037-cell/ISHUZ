@@ -19,6 +19,8 @@ import { useDraft, useStep } from "../use-draft";
 import { BigCheckbox, MoneyInput, PhoneInput, VerifiedPhone, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
+import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
+import { AvatarUpload } from "@/features/profile/components/edit/avatar-upload";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { ChoiceButtons, ChosenLine, FieldError, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
 
@@ -56,6 +58,7 @@ export function WorkerPost({
   prefill,
   existing,
   pricedDays,
+  aiEnabled = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -64,6 +67,7 @@ export function WorkerPost({
   prefill: Partial<WorkerDraft>;
   existing: boolean;
   pricedDays: number;
+  aiEnabled?: boolean;
 }) {
   const { t, name, tEnum, locale } = useT();
   const router = useRouter();
@@ -158,6 +162,7 @@ export function WorkerPost({
         salary: parseMoney(draft.salary),
         schedule: draft.schedule || null,
         showPhone: draft.showPhone,
+        source: draft.source ?? "manual",
       });
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
@@ -251,6 +256,17 @@ export function WorkerPost({
     return <div className="container-narrow py-10 text-lg text-muted-foreground">{t("easy.wizard.loading")}</div>;
   }
 
+  // AI qoralamasi: yetishmayotgan majburiy maydonlar → qisqa savollar (bosilsa o'sha qadamga o'tadi)
+  const aiQuestions = (() => {
+    if (draft.source !== "ai") return [];
+    const e = validate(3);
+    const q: { label: string; onClick: () => void }[] = [];
+    if (e.profession) q.push({ label: e.profession, onClick: () => goTo(1) });
+    if (e.place) q.push({ label: e.place, onClick: () => goTo(2) });
+    for (const k of ["firstName", "phone", "about", "experience"] as const) if (e[k]) q.push({ label: e[k]!, onClick: () => goTo(3) });
+    return q;
+  })();
+
   const stepNames = [t("easy.wizard.steps.profession"), t("easy.wizard.steps.location"), t("easy.wizard.steps.about"), t("easy.wizard.steps.review")];
   const loginHref = `/auth?${new URLSearchParams({ next: `${PATH}?step=${step}` }).toString()}`;
   const hasAnswers = !!(draft.profession || draft.place.regionId || draft.about);
@@ -274,6 +290,16 @@ export function WorkerPost({
 
       {step === 1 ? (
         <section className="space-y-3">
+          {aiEnabled && !existing ? (
+            <AiQuickFill
+              kind="worker"
+              onReady={(d) => {
+                update({ ...mergeAiDraft(draft, d.worker ?? {}), source: "ai", step: TOTAL });
+                setErrors({});
+                go(TOTAL);
+              }}
+            />
+          ) : null}
           <ProfessionPicker
             categories={categories}
             value={draft.profession}
@@ -379,6 +405,13 @@ export function WorkerPost({
             </button>
             {moreOpen ? (
               <div className="space-y-5 border-t border-border p-4">
+                {viewer.userId ? (
+                  <div>
+                    <p className="mb-1 text-lg font-semibold">{t("easy.photo.own_title")}</p>
+                    <p className="mb-2 text-base text-muted-foreground">{t("easy.photo.own_hint")}</p>
+                    <AvatarUpload userId={viewer.userId} avatarUrl={viewer.avatarUrl} fallback={(draft.firstName || "?").slice(0, 1).toUpperCase()} />
+                  </div>
+                ) : null}
                 <div>
                   <label htmlFor="salary" className="mb-2 block text-lg font-semibold">
                     {t("easy.worker.salary")}
@@ -404,6 +437,7 @@ export function WorkerPost({
       {step === TOTAL ? (
         <section className="space-y-5">
           <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.worker.review_title")}</h1>
+          {draft.source === "ai" ? <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} /> : null}
           <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
             <ProfessionImage url={imageUrl} categorySlug={category?.slug} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
             <p className="text-base text-muted-foreground">{t("easy.wizard.image_note")}</p>

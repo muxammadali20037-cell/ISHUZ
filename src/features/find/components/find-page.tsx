@@ -242,7 +242,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>
-                  <JobResultCard job={job} imageUrl={job.profession_node_id ? res.images[job.profession_node_id] : null} />
+                  <JobResultCard job={job} imageUrl={job.profession_node_id ? res.images[job.profession_node_id] : null} photoPath={res.photos?.[job.id] ?? null} />
                 </li>
               ))
             : (res.items as Parameters<typeof WorkerResultCard>[0]["worker"][]).map((w) => (

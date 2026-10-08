@@ -13,11 +13,13 @@ async function picked(nodeId: string | null, categoryId: string | null): Promise
 }
 
 export async function getPostViewer(session: SessionContext | null): Promise<PostViewer> {
-  if (!session) return { loggedIn: false, phone: null, phoneVerified: false, firstName: "", lastName: "" };
+  if (!session) return { loggedIn: false, userId: null, avatarUrl: null, phone: null, phoneVerified: false, firstName: "", lastName: "" };
   const supabase = await createClient();
   const { data } = await supabase.from("profile_contacts").select("phone, phone_verified_at").eq("profile_id", session.userId).maybeSingle();
   return {
     loggedIn: true,
+    userId: session.userId,
+    avatarUrl: session.profile.avatar_url ?? null,
     phone: data?.phone ?? null,
     phoneVerified: !!data?.phone_verified_at,
     firstName: session.profile.first_name ?? "",
@@ -84,7 +86,7 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
   const [{ data: v }, { data: contact }, defaults] = await Promise.all([
     supabase
       .from("vacancies")
-      .select("id, title, profession_node_id, category_id, region_id, district_id, is_remote, description, salary_from, salary_to, salary_negotiable, schedule, experience_min_months, status, client_ref")
+      .select("id, title, profession_node_id, category_id, region_id, district_id, is_remote, description, salary_from, salary_to, salary_negotiable, schedule, experience_min_months, status, client_ref, photo_path")
       .eq("id", vacancyId)
       .maybeSingle(),
     supabase.from("vacancy_contacts").select("phone, show_phone").eq("vacancy_id", vacancyId).maybeSingle(),
@@ -101,6 +103,7 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
     title: profession && profession.trail.at(-1)?.name_uz === v.title ? "" : v.title,
     place: { regionId: v.region_id, districtId: v.district_id, districtChosen: v.is_remote || !!v.region_id, remote: v.is_remote },
     description: v.description ?? "",
+    photoPath: v.photo_path ?? null,
     negotiable: v.salary_negotiable,
     salaryFrom: v.salary_from ? String(v.salary_from) : "",
     salaryTo: v.salary_to ? String(v.salary_to) : "",

@@ -440,5 +440,43 @@
       "rate_limited": "Too many attempts today. Please try tomorrow.",
       "invalid_documents": "Please upload the document again."
     }
+  },
+  "photo": {
+    "title": "Workplace photo (optional)",
+    "hint": "A real photo of the workplace. It is checked together with the listing.",
+    "own_title": "Your photo (optional)",
+    "own_hint": "Your real photo. Otherwise a profession illustration is shown (it is not a real photo).",
+    "add": "Add photo",
+    "remove": "Remove",
+    "alt": "Workplace photo",
+    "label": "Workplace photo",
+    "bad_type": "Only JPG, PNG or WEBP images.",
+    "too_large": "The image must be under 5 MB.",
+    "failed": "Could not upload the photo. Please try again."
+  },
+  "ai": {
+    "choose": "How do you want to prepare the listing?",
+    "manual": "I'll fill it in",
+    "quick": "Quick with AI",
+    "worker_label": "Describe yourself in plain words",
+    "vacancy_label": "Describe in plain words who you need",
+    "worker_example": "E.g.: I'm an accountant with 3 years of experience, I live in Chilonzor, looking for a job from 6 million.",
+    "vacancy_example": "E.g.: My cafe in Chilonzor needs 2 cooks, 5–7 million, 6-day week, experienced.",
+    "note": "AI uses only what you wrote: it never invents experience, salary or conditions. Nothing is published until you check it.",
+    "prepare": "Prepare",
+    "preparing": "Preparing…",
+    "too_short": "Write at least a sentence or two",
+    "ready": "AI prepared your listing. Check it and publish.",
+    "ready_note": "Check every line — tap “Change” if something is wrong.",
+    "missing": "Still needed:",
+    "errors": {
+      "ai_disabled": "AI is not available now. Please fill in the listing yourself.",
+      "ai_busy": "AI is busy. Try again in a minute or fill it in yourself.",
+      "ai_failed": "AI couldn't prepare it. Try again or fill it in yourself.",
+      "rate_limited": "Too many attempts. Please wait a bit.",
+      "prohibited": "Ish topdim accepts only job and job-seeker listings. Please change the unrelated or prohibited part of your text.",
+      "validation": "Write at least a sentence or two (up to 1500 characters).",
+      "blocked": "Your account is blocked"
+    }
   }
 }

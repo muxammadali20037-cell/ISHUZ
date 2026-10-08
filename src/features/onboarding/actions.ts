@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { runBackgroundTickSafe } from "@/features/notifications/tick";
 import { createClient, type SupabaseServerClient } from "@/lib/supabase/server";
 import { getSession, type SessionContext } from "@/features/auth/session";
 import type { ActionResult } from "@/features/auth/actions";
@@ -491,9 +493,11 @@ export async function finishOnboarding(): Promise<ActionResult<{ redirect: strin
   const { error: roleError } = await supabase.from("profiles").update({ active_role: "worker" }).eq("id", session.userId);
   if (roleError) return { ok: false, error: errorCode(roleError) };
 
-  // E'lon pullik: profil saqlandi, lekin qidiruvga chiqish uchun to'lov kerak — e'lon sahifasiga yuboramiz
-  const { data: listed } = await supabase.from("worker_profiles").select("is_public").eq("id", workerId).single();
+  // E'lon majburiy moderatsiyadan (va pullik rejimda to'lovdan) keyin qidiruvga chiqadi — haqiqiy holat kabinetda
+  const { data: listed } = await supabase.from("worker_profiles").select("is_public, publish_requested, moderation_state").eq("id", workerId).single();
+  after(() => runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 }));
 
   revalidatePath("/", "layout");
-  return { ok: true, data: { redirect: listed && !listed.is_public ? "/profile/listing" : "/" } };
+  const redirect = listed?.is_public ? "/" : listed?.publish_requested && listed.moderation_state !== "allowed" ? "/cabinet" : "/profile/listing";
+  return { ok: true, data: { redirect } };
 }

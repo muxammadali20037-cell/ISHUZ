@@ -5,6 +5,7 @@ import { z } from "zod";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import { getSession } from "@/features/auth/session";
+import { aiProviderConfigured } from "@/lib/ai/json";
 import { Shell } from "@/components/shared/shell";
 import { VacancyPost } from "@/features/post/components/vacancy-post";
 import { getEmployerDefaults, getListingDays, getPostViewer, getVacancyPrefill } from "@/features/post/queries";
@@ -28,7 +29,7 @@ export default async function PostVacancyPage({ searchParams }: { searchParams: 
   return (
     <Shell hideNav>
       <Suspense>
-        <VacancyPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill ?? {}} editId={editId} pricedDays={days.vacancy} />
+        <VacancyPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill ?? {}} editId={editId} pricedDays={days.vacancy} aiEnabled={aiProviderConfigured()} />
       </Suspense>
     </Shell>
   );

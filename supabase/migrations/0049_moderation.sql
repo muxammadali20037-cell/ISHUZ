@@ -1175,6 +1175,7 @@ declare
   v_exp int := coalesce(nullif(p->>'experience_min_months', '')::int, 0);
   v_id uuid := nullif(p->>'vacancy_id', '')::uuid;
   v_ref uuid := nullif(p->>'client_ref', '')::uuid;
+  v_photo text := nullif(btrim(coalesce(p->>'photo_path', '')), '');
   is_org boolean;
   node public.profession_nodes;
   ep public.employer_profiles;
@@ -1255,9 +1256,9 @@ begin
   if v.id is null then
     insert into public.vacancies (owner_profile_id, company_id, title, slug, profession_node_id, description, region_id, district_id,
                                   is_remote, salary_from, salary_to, salary_negotiable, salary_type, schedule, experience_min_months,
-                                  is_government, client_ref)
+                                  is_government, client_ref, photo_path)
     values (me, case when is_org then cid end, v_title, '', node.id, v_desc, case when v_remote then null else v_region end, v_district,
-            v_remote, v_from, v_to, v_negotiable, 'monthly', v_schedule, v_exp, v_type = 'government', v_ref)
+            v_remote, v_from, v_to, v_negotiable, 'monthly', v_schedule, v_exp, v_type = 'government', v_ref, v_photo)
     returning * into v;
   else
     if v.status = 'hidden' then raise exception 'vacancy_locked' using errcode = '42501'; end if;
@@ -1265,7 +1266,7 @@ begin
       title = v_title, profession_node_id = node.id, custom_profession = null, description = v_desc,
       region_id = case when v_remote then null else v_region end, district_id = v_district, is_remote = v_remote,
       salary_from = v_from, salary_to = v_to, salary_negotiable = v_negotiable,
-      schedule = v_schedule, experience_min_months = v_exp
+      schedule = v_schedule, experience_min_months = v_exp, photo_path = v_photo
     where id = v.id
     returning * into v;
   end if;

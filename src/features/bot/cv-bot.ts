@@ -1,5 +1,8 @@
 import "server-only";
 
+import { after } from "next/server";
+import { runBackgroundTickSafe } from "@/features/notifications/tick";
+
 import type { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import type { Locale } from "@/lib/i18n/config";
@@ -703,6 +706,8 @@ async function saveProfile(ctx: BotCtx, s: Session): Promise<string> {
     })
     .eq("id", workerId);
   if (wErr) throw new Error(`worker update: ${wErr.message}`);
+  // bot orqali to'ldirilgan e'lon ham majburiy moderatsiyadan o'tadi (fon navbati)
+  after(() => runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 30, budgetMs: 25_000 }));
 
   const writes = [];
   if (d.district_id) writes.push(admin.from("worker_locations").upsert({ worker_id: workerId, district_id: d.district_id }, { onConflict: "worker_id,district_id", ignoreDuplicates: true }));

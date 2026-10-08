@@ -60,6 +60,8 @@ export interface WorkerDraft {
   salary: string;
   schedule: Enums<"work_schedule"> | "";
   showPhone: boolean;
+  /** "ai" — AI bilan tez tayyorlangan (statistika uchun) */
+  source?: "manual" | "ai";
 }
 
 export interface VacancyDraft {
@@ -82,6 +84,9 @@ export interface VacancyDraft {
   schedule: Enums<"work_schedule"> | "";
   experienceMonths: VacancyExperience;
   showPhone: boolean;
+  /** haqiqiy ish joyi surati (vacancy-photos bucket yo'li), ixtiyoriy */
+  photoPath?: string | null;
+  source?: "manual" | "ai";
 }
 
 /**
@@ -127,6 +132,8 @@ export function toListingStateInfo(raw: unknown): ListingStateInfo {
 /** Kirgan foydalanuvchi haqida sahifaga beriladigan ma'lumot */
 export interface PostViewer {
   loggedIn: boolean;
+  userId: string | null;
+  avatarUrl: string | null;
   phone: string | null;
   phoneVerified: boolean;
   firstName: string;

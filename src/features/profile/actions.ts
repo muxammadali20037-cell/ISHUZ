@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
+import { runBackgroundTickSafe } from "@/features/notifications/tick";
 import { cookies } from "next/headers";
 import { createClient, type SupabaseServerClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/features/auth/actions";
@@ -400,6 +402,8 @@ export async function updateVisibility(input: unknown): Promise<ActionResult> {
   if (!c.ok) return c;
   const { error } = await c.supabase.from("worker_profiles").update({ is_public: parsed.data.is_public }).eq("id", c.workerId);
   if (error) return { ok: false, error: dbError(error) };
+  // ochiq qilish so'rovi moderatsiyadan o'tgach qidiruvga chiqadi
+  if (parsed.data.is_public) after(() => runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 }));
   revalidateProfile();
   return { ok: true };
 }
