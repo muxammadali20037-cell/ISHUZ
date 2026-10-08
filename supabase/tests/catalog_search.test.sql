@@ -1,4 +1,4 @@
--- Ish Beruvchi · kasblar katalogi: xato yozilgan so'zlar va sinonimlar bo'yicha qidiruv, noaniq "usta", qo'lda yozilgan kasb navbati
+-- Ish topdim · kasblar katalogi: xato yozilgan so'zlar va sinonimlar bo'yicha qidiruv, noaniq "usta", qo'lda yozilgan kasb navbati
 \set ON_ERROR_STOP on
 \set QUIET on
 begin;

@@ -1,4 +1,4 @@
-# Ish Beruvchi — ULTRA MASTER spetsifikatsiyasi bo'yicha holat
+# Ish topdim — ULTRA MASTER spetsifikatsiyasi bo'yicha holat
 
 Sana: 2026-10-06. Belgilar: **tayyor** — kodda bor va avtomatik test/qo'lda E2E bilan tekshirilgan;
 **qisman** — asosiy qismi bor, lekin spetsifikatsiyaning bir bo'lagi yo'q yoki faqat avtomatik tekshirilgan;

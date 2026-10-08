@@ -23,7 +23,7 @@ describe("latinToCyrillic", () => {
     expect(c("Salom, {name} 👋")).toBe("Салом, {name} 👋");
     expect(c("Telegram orqali kirish")).toBe("Telegram орқали кириш");
     expect(c("IT va SMM")).toBe("IT ва SMM");
-    expect(c("Batafsil: https://ishberuvchi.uz/jobs")).toBe("Батафсил: https://ishberuvchi.uz/jobs");
+    expect(c("Batafsil: https://ishtopdim.uz/jobs")).toBe("Батафсил: https://ishtopdim.uz/jobs");
     expect(c("Full-time ish")).toBe("Full-time иш");
     expect(c("Telegram'ga keladi")).toBe("Telegramга келади");
   });

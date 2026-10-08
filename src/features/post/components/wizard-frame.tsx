@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, LogIn } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -43,8 +43,15 @@ export function WizardFrame({
   children: ReactNode;
 }) {
   const { t } = useT();
+  // qadam almashganda yo'nalish bo'yicha yengil siljish (birinchi ochilishda animatsiya yo'q)
+  const [prevStep, setPrevStep] = useState(step);
+  const [dir, setDir] = useState<"forward" | "back" | null>(null);
+  if (step !== prevStep) {
+    setPrevStep(step);
+    setDir(step > prevStep ? "forward" : "back");
+  }
   return (
-    <div className="container-narrow pb-44 pt-4 text-lg sm:pt-8">
+    <div className="container-narrow overflow-x-clip pb-44 pt-4 text-lg sm:pt-8">
       <header className="mb-6 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <p className="text-base font-bold uppercase tracking-wide text-primary">{title}</p>
@@ -66,7 +73,9 @@ export function WizardFrame({
         </div>
       </header>
 
-      {children}
+      <div key={step} className={dir === "forward" ? "step-forward" : dir === "back" ? "step-back" : undefined}>
+        {children}
+      </div>
 
       {!hideFooter ? (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
@@ -77,7 +86,7 @@ export function WizardFrame({
               </Button>
             ) : (
               <Button asChild variant="outline" size="xl" className="h-14 min-w-[7.5rem] px-4 text-lg">
-                <Link href={backHref ?? "/"}>
+                <Link href={backHref ?? "/"} transitionTypes={["nav-back"]}>
                   <ArrowLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
                 </Link>
               </Button>

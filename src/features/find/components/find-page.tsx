@@ -22,7 +22,7 @@ function StepShell({ back, title, children, summary }: { back: string | null; ti
       <div className="space-y-3">
         {back ? (
           <Button asChild variant="outline" className="h-12 px-4 text-base">
-            <Link href={back}>
+            <Link href={back} transitionTypes={["nav-back"]}>
               <ArrowLeft className="size-5" aria-hidden /> <BackLabel />
             </Link>
           </Button>
@@ -47,14 +47,14 @@ export async function FindStart({ params }: { params: FindParams }) {
   return (
     <StepShell back="/" title={t("easy.search.choose_title")}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Link href={findHref(params, { mode: "jobs", page: 1 })} className="flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform active:scale-[0.99]">
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "jobs", page: 1 })} className="flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform active:scale-[0.99]">
           <BriefcaseBusiness className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.jobs")}</span>
             <span className="block text-base text-primary-foreground/85">{t("easy.search.jobs_desc")}</span>
           </span>
         </Link>
-        <Link href={findHref(params, { mode: "workers", page: 1 })} className="flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-success p-5 text-success-foreground shadow-md transition-transform active:scale-[0.99]">
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "workers", page: 1 })} className="flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-success p-5 text-success-foreground shadow-md transition-transform active:scale-[0.99]">
           <UsersRound className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.workers")}</span>
@@ -95,14 +95,14 @@ export async function FindAskIntent({ params, node }: { params: FindParams; node
     <StepShell back="/search" title={t("easy.search.ask_intent")}>
       {said ? <p className="rounded-2xl bg-secondary px-4 py-3 text-lg">{t("easy.search.ask_intent_hint", { q: said })}</p> : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        <Link href={findHref(params, { mode: "jobs" })} className={cn(bigLink, "min-h-20 border-primary/40")}>
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "jobs" })} className={cn(bigLink, "min-h-20 border-primary/40")}>
           <BriefcaseBusiness className="size-7 shrink-0 text-primary" aria-hidden />
           <span>
             <span className="block text-xl font-bold">{t("easy.search.jobs")}</span>
             <span className="block text-base font-normal text-muted-foreground">{t("easy.search.jobs_desc")}</span>
           </span>
         </Link>
-        <Link href={findHref(params, { mode: "workers" })} className={cn(bigLink, "min-h-20 border-success/40")}>
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "workers" })} className={cn(bigLink, "min-h-20 border-success/40")}>
           <UsersRound className="size-7 shrink-0 text-success" aria-hidden />
           <span>
             <span className="block text-xl font-bold">{t("easy.search.workers")}</span>
@@ -140,7 +140,7 @@ export async function FindRegion({ params, regions, node }: { params: FindParams
     >
       <ul className="grid gap-2 sm:grid-cols-2">
         <li className="sm:col-span-2">
-          <Link href={findHref(params, { region: "all", district: null, page: 1 })} className={cn(bigLink, "border-primary/40")}>
+          <Link transitionTypes={["nav-forward"]} href={findHref(params, { region: "all", district: null, page: 1 })} className={cn(bigLink, "border-primary/40")}>
             <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
             <span className="flex-1">{t("easy.location.whole_country")}</span>
             <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
@@ -148,7 +148,7 @@ export async function FindRegion({ params, regions, node }: { params: FindParams
         </li>
         {regions.map((r) => (
           <li key={r.id}>
-            <Link href={findHref(params, { region: r.slug, district: null, page: 1 })} className={bigLink}>
+            <Link transitionTypes={["nav-forward"]} href={findHref(params, { region: r.slug, district: null, page: 1 })} className={bigLink}>
               <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
               <span className="flex-1">{name(r)}</span>
               <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
@@ -156,7 +156,7 @@ export async function FindRegion({ params, regions, node }: { params: FindParams
           </li>
         ))}
         <li className="sm:col-span-2">
-          <Link href={findHref(params, { region: "remote", district: null, page: 1 })} className={bigLink}>
+          <Link transitionTypes={["nav-forward"]} href={findHref(params, { region: "remote", district: null, page: 1 })} className={bigLink}>
             <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
             <span className="flex-1">
               <span className="block">{t("easy.location.remote")}</span>
@@ -181,7 +181,7 @@ export async function FindDistrict({ params, region, districts, node }: { params
     >
       <ul className="grid gap-2 sm:grid-cols-2">
         <li className="sm:col-span-2">
-          <Link href={findHref(params, { district: "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
+          <Link transitionTypes={["nav-forward"]} href={findHref(params, { district: "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
             <span className="flex-1">
               <span className="block">{t("easy.location.whole_region")}</span>
               <span className="block text-base font-normal text-muted-foreground">{t("easy.location.whole_region_desc")}</span>
@@ -191,7 +191,7 @@ export async function FindDistrict({ params, region, districts, node }: { params
         </li>
         {districts.map((d) => (
           <li key={d.id}>
-            <Link href={findHref(params, { district: d.id, page: 1 })} className={bigLink}>
+            <Link transitionTypes={["nav-forward"]} href={findHref(params, { district: d.id, page: 1 })} className={bigLink}>
               <span className="flex-1">{name(d)}</span>
               <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
             </Link>
@@ -240,7 +240,7 @@ export async function FindResultsView({ params, node, region, district }: { para
     <div className="container-app space-y-5 py-4 text-lg sm:py-8">
       <div className="space-y-3">
         <Button asChild variant="outline" className="h-12 px-4 text-base">
-          <Link href={backHref}>
+          <Link href={backHref} transitionTypes={["nav-back"]}>
             <ArrowLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
           </Link>
         </Button>

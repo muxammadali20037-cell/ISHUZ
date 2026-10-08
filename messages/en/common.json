@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Ish Beruvchi",
+    "name": "Ish topdim",
     "tagline": "Stop searching for jobs. Find the one that fits you.",
     "tagline_employer": "Stop sifting through resumes. Find the right hire.",
     "description": "A platform connecting job seekers and employers in Uzbekistan"
@@ -150,7 +150,7 @@
   },
   "landing": {
     "hero_title": "Stop searching for jobs. Find the one that fits you.",
-    "hero_subtitle": "“Ish Beruvchi” is a platform that precisely matches job seekers and employers in Uzbekistan in just minutes.",
+    "hero_subtitle": "“Ish topdim” is a platform that precisely matches job seekers and employers in Uzbekistan in just minutes.",
     "worker_card_title": "I'm looking for a job",
     "worker_card_subtitle": "Find a job that fits you",
     "worker_card_cta": "Find a job",
@@ -180,7 +180,7 @@
     "terms": "Terms of use",
     "privacy": "Privacy policy",
     "support": "Help",
-    "rights": "© {year} Ish Beruvchi. All rights reserved.",
+    "rights": "© {year} Ish topdim. All rights reserved.",
     "deletion": "Delete account"
   },
   "report_sent": "Report sent. Our moderators will review it.",
@@ -195,7 +195,7 @@
     "code": "Error code: {code}"
   },
   "meta": {
-    "title": "Ish Beruvchi — Jobs and Vacancies in Uzbekistan",
+    "title": "Ish topdim — Jobs and Vacancies in Uzbekistan",
     "description": "Find jobs and vacancies in Tashkent and across Uzbekistan. Build your resume in 2 minutes, get matched jobs and apply in one tap. Employers find qualified candidates fast.",
     "keywords": "jobs in Uzbekistan, jobs in Tashkent, vacancies, job search, Tashkent vacancies, resume, hiring, careers Uzbekistan, find a job",
     "org_description": "A platform connecting job seekers and employers in Uzbekistan"

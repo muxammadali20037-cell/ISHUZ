@@ -1,6 +1,6 @@
 {
   "home": {
-    "title": "Ish Beruvchi",
+    "title": "Ish topdim",
     "subtitle": "Ish toping yoki ishchi toping",
     "worker_title": "Siz ish qidiryapsizmi?",
     "worker_desc": "Sohangizni tanlang va o'zingiz haqingizda e'lon joylang.",
@@ -27,7 +27,7 @@
     "worker_listing": "Ish qidirish e'lonim",
     "vacancies": "Ish e'lonlarim (ishchi kerak)",
     "edit": "E'lonni o'zgartirish",
-    "found_job": "Ish topdim",
+    "found_job": "Ishga joylashdim",
     "found_worker": "Ishchi topdim",
     "found_job_confirm_title": "Ish topdingizmi?",
     "found_job_confirm_desc": "E'loningiz qidiruvdan olib tashlanadi. Kerak bo'lsa keyin qayta joylaysiz.",

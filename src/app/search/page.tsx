@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { ViewTransition } from "react";
+import { PAGE_ENTER, PAGE_EXIT } from "@/app/template";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
@@ -51,13 +53,27 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const districtKnown = params.district === "all" || !!district;
   const node = params.p ? await getNodeInfo(params.p) : null;
 
-  let view;
   // maqsad aniqlanmagan, lekin kasb (yoki matn) bor — bitta savol: "Ish qidiryapsizmi yoki ishchi?"
-  if (!params.mode) view = params.q || node ? <FindAskIntent params={params} node={node} /> : <FindStart params={params} />;
-  else if (!params.p || !node) view = <FindProfession params={params} categories={categories} />;
-  else if (!regionKnown) view = <FindRegion params={params} regions={regions} node={node} />;
-  else if (region && !districtKnown) view = <FindDistrict params={params} region={region} districts={districts} node={node} />;
-  else view = <FindResultsView params={params} node={node} region={region} district={district} />;
+  const stepKey = !params.mode ? "intent" : !params.p || !node ? "profession" : !regionKnown ? "region" : region && !districtKnown ? "district" : "results";
+  const view =
+    stepKey === "intent" ? (
+      params.q || node ? <FindAskIntent params={params} node={node} /> : <FindStart params={params} />
+    ) : stepKey === "profession" ? (
+      <FindProfession params={params} categories={categories} />
+    ) : stepKey === "region" ? (
+      <FindRegion params={params} regions={regions} node={node!} />
+    ) : stepKey === "district" ? (
+      <FindDistrict params={params} region={region!} districts={districts} node={node!} />
+    ) : (
+      <FindResultsView params={params} node={node} region={region} district={district} />
+    );
 
-  return <Shell>{view}</Shell>;
+  // bir sahifa ichidagi qadamlar (URL parametrlari) ham o'tish animatsiyasi bilan almashadi
+  return (
+    <Shell>
+      <ViewTransition key={stepKey} enter={PAGE_ENTER} exit={PAGE_EXIT} default="none">
+        <div>{view}</div>
+      </ViewTransition>
+    </Shell>
+  );
 }

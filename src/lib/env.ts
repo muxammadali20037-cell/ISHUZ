@@ -17,7 +17,7 @@ const serverSchema = z.object({
   TELEGRAM_WEBHOOK_SECRET: z.string().optional(),
   CRON_SECRET: z.string().optional(),
   /** Google Play (TWA): paket nomi va imzo sertifikati SHA-256 barmoq izlari (vergul bilan) */
-  ANDROID_PACKAGE_NAME: z.string().default("uz.ishberuvchi.app"),
+  ANDROID_PACKAGE_NAME: z.string().default("uz.ishtopdim.app"),
   ANDROID_SHA256_CERT_FINGERPRINTS: z.string().optional(),
   APP_URL: z.string().url().default("http://localhost:3000"),
   /** Google Search Console / Yandex Webmaster: sayt egaligini tasdiqlash kodi (meta teg "content" qiymati) */

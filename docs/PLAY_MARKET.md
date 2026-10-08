@@ -17,9 +17,8 @@ Tayyor narsalar (shu repoda):
 | Feature graphic 1024×500 | `docs/play-store/feature-graphic-uz.png`, `feature-graphic-ru.png` |
 | Telefon skrinshotlari 1080×1920 (6 ta) | `docs/play-store/screenshots-uz/`, `screenshots-ru/` |
 
-Paket nomi: **`uz.ishberuvchi.app`**. Play'ga birinchi yuklangandan keyin paket nomini **o'zgartirib bo'lmaydi**.
-⚠️ **Brend nomini (masalan «Topdim») birinchi yuklashdan OLDIN tanlang.** Yangi nom bo'lsa, paket ham shunga mos bo'lsin
-(masalan `uz.topdim.app`) va Vercel'da `ANDROID_PACKAGE_NAME` ga yozing. Ilova nomi va ikonkasini keyin o'zgartirsa bo'ladi, paketni — yo'q.
+Paket nomi: **`uz.ishtopdim.app`** (`ANDROID_PACKAGE_NAME`). Play'ga birinchi yuklangandan keyin paket nomini **o'zgartirib bo'lmaydi** — agar ilova avval `uz.ishberuvchi.app` bilan yuklangan bo'lsa, `ANDROID_PACKAGE_NAME=uz.ishberuvchi.app` qoldiring.
+Brend: **«Ish topdim»**, paket: `uz.ishtopdim.app` (Vercel'da `ANDROID_PACKAGE_NAME`). Ilova nomi va ikonkasini keyin o'zgartirsa bo'ladi, paketni — yo'q.
 
 ## 0. Chiqarishdan oldin tekshiruv ro'yxati
 
@@ -54,12 +53,12 @@ Payme/Click tugmasi ilovada bo'lsa, ilova rad etilishi yoki o'chirilishi mumkin.
 
 ## 2. Android paketini (.aab) yasash — PWABuilder
 
-1. Sayt Vercel'da ishlab turgan bo'lsin (masalan `https://ishberuvchi.uz`).
+1. Sayt Vercel'da ishlab turgan bo'lsin (masalan `https://ishtopdim.uz`).
 2. <https://www.pwabuilder.com> → sayt manzilini kiriting → **Package for stores** → **Android**.
 3. Sozlamalar:
-   - **Package ID:** `uz.ishberuvchi.app` (yoki yangi brend paketi)
+   - **Package ID:** `uz.ishtopdim.app`
    - **Start URL:** `/?app=android` (ilova ichida to'lov tugmalarini yashirish uchun)
-   - **App name:** `Ish beruvchi`, **Launcher name:** `Ish beruvchi`
+   - **App name:** `Ish topdim`, **Launcher name:** `Ish topdim`
    - **Theme / navigation color:** `#1d5fe0`, **background:** `#f6f8fb`
    - **Signing key:** "Create new" (yangi kalit).
 4. **Download** → zip ichida `.aab`, `signing.keystore` va `signing-key-info.txt` bo'ladi.
@@ -67,18 +66,18 @@ Payme/Click tugmasi ilovada bo'lsa, ilova rad etilishi yoki o'chirilishi mumkin.
 
 ## 3. Play Console'da ilova yaratish
 
-**Create app** → nom: `Ish beruvchi` → til: o'zbek → App (not game) → Free.
+**Create app** → nom: `Ish topdim` → til: o'zbek → App (not game) → Free.
 
 ### Do'kon sahifasi (Main store listing)
 
 **O'zbekcha** (asosiy):
 
-- **Nom (30 belgigacha):** `Ish beruvchi: ish topish`
+- **Nom (30 belgigacha):** `Ish topdim: ish va ishchi topish`
 - **Qisqa tavsif (80):** `Ish va vakansiyalar: AI bilan rezyume, sizga mos ishlar, bir bosishda ariza.`
 - **To'liq tavsif:**
 
 ```
-«Ish beruvchi» — O'zbekistonda ish qidiruvchilar va ish beruvchilarni bir necha daqiqada bog'laydigan platforma.
+«Ish topdim» — O'zbekistonda ish qidiruvchilar va ish beruvchilarni bir necha daqiqada bog'laydigan platforma.
 
 ISH QIDIRUVCHILAR UCHUN
 • Rezyume bir necha soniyada: o'zingiz haqingizda oddiy tilda yozing — AI hammasini joy-joyiga qo'yadi.
@@ -103,12 +102,12 @@ O'zbek (lotin va kirill), rus va ingliz tillarida. Vakansiyalarni ko'rish, qidir
 
 **Ruscha** (Add translation → Russian):
 
-- **Nom:** `Ish beruvchi: поиск работы`
+- **Nom:** `Ish topdim: поиск работы`
 - **Qisqa tavsif:** `Работа и вакансии: резюме с ИИ, подходящие вакансии, отклик в одно касание.`
 - **To'liq tavsif:**
 
 ```
-«Ish beruvchi» — платформа, которая за несколько минут соединяет соискателей и работодателей в Узбекистане.
+«Ish topdim» — платформа, которая за несколько минут соединяет соискателей и работодателей в Узбекистане.
 
 ДЛЯ СОИСКАТЕЛЕЙ
 • Резюме за секунды: напишите о себе простыми словами — ИИ всё заполнит сам.

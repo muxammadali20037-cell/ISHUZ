@@ -76,14 +76,14 @@ npm run lint && npm run typecheck && npm run build
 1. [vercel.com/new](https://vercel.com/new) → GitHub repo'ni import qiling (Framework: Next.js, sozlamalar standart).
 2. **Environment Variables**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `APP_URL`, `CRON_SECRET` (masalan `openssl rand -hex 32`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` → Deploy.
 3. `vercel.json` funksiyalarni `bom1` (Mumbai) regionida ishga tushiradi — Supabase (ap-south-1) bilan bir joyda. Cron'lar Vercel'da emas, Supabase `pg_cron` da (Hobby tarifi cheklovi yo'q).
-4. Domen (masalan `ishberuvchi.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
+4. Domen (masalan `ishtopdim.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
 
 ## Mobil ilova
 
 Sayt to'liq PWA (manifest, PNG/maskable ikonkalar, service worker, oflayn sahifa):
 
 - **Telefonga o'rnatish (hozir):** Android Chrome → ⋮ → "Ilovani o'rnatish"; iPhone Safari → Ulashish → "Bosh ekranga qo'shish".
-- **Google Play (Android, TWA) va Google qidiruvi:** bosqichma-bosqich qo'llanma, do'kon matnlari va rasmlar — [`docs/PLAY_MARKET.md`](docs/PLAY_MARKET.md) (paket: `uz.ishberuvchi.app`).
+- **Google Play (Android, TWA) va Google qidiruvi:** bosqichma-bosqich qo'llanma, do'kon matnlari va rasmlar — [`docs/PLAY_MARKET.md`](docs/PLAY_MARKET.md) (paket: `uz.ishtopdim.app`).
 - **App Store (iOS):** Mac + Apple Developer ($99/yil) kerak; Capacitor bilan o'raladi va push-bildirishnoma kabi native imkoniyat qo'shiladi.
 
 ## Tuzilma

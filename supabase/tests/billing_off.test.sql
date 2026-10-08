@@ -1,4 +1,4 @@
--- Ish Beruvchi · to'lov o'chiq (joriy reliz): e'lon va TOP bepul, to'lov yaratilmaydi: aksiya davri, bepul vakansiya (24 soat), to'lov talabi, Payme/Click oqimlari, TOP profil
+-- Ish topdim · to'lov o'chiq (joriy reliz): e'lon va TOP bepul, to'lov yaratilmaydi: aksiya davri, bepul vakansiya (24 soat), to'lov talabi, Payme/Click oqimlari, TOP profil
 \set ON_ERROR_STOP on
 \set QUIET on
 

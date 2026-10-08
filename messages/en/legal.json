@@ -4,8 +4,8 @@
   "contact_body": "For questions or requests, write to:",
   "privacy": {
     "title": "Privacy Policy",
-    "description": "What data Ish Beruvchi collects, why, where it is stored and how you can control it.",
-    "intro": "Ish Beruvchi is a platform that connects job seekers and employers. This policy applies equally to the website, the Android app and the Telegram bot and is based on the Law of the Republic of Uzbekistan \"On Personal Data\". By registering you consent to the processing of your personal data for the purposes described here.",
+    "description": "What data Ish topdim collects, why, where it is stored and how you can control it.",
+    "intro": "Ish topdim is a platform that connects job seekers and employers. This policy applies equally to the website, the Android app and the Telegram bot and is based on the Law of the Republic of Uzbekistan \"On Personal Data\". By registering you consent to the processing of your personal data for the purposes described here.",
     "sections": [
       [
         "What we collect",
@@ -47,12 +47,12 @@
   },
   "deletion": {
     "title": "Delete account",
-    "description": "How to delete your “Ish Beruvchi” account and data.",
+    "description": "How to delete your “Ish topdim” account and data.",
     "intro": "You can delete your account and its associated data yourself at any time. Deletion takes effect immediately and cannot be undone.",
     "sections": [
       [
         "Via the app or website",
-        "- Sign in to the “Ish Beruvchi” app or website.\n- Open the “Settings” section.\n- Tap the “Delete account” button.\n- To confirm, type the word “DELETE” and tap “Delete permanently”."
+        "- Sign in to the “Ish topdim” app or website.\n- Open the “Settings” section.\n- Tap the “Delete account” button.\n- To confirm, type the word “DELETE” and tap “Delete permanently”."
       ],
       [
         "If you can't sign in",
@@ -71,8 +71,8 @@
   "operator_title": "Data controller",
   "terms": {
     "title": "Terms of Use (public offer)",
-    "description": "Rules for using Ish Beruvchi, paid services, prices and refunds.",
-    "intro": "This document is a public offer between the Ish Beruvchi platform (website, Android app, Telegram bot) and the user. By registering or paying for a service you fully accept these terms.",
+    "description": "Rules for using Ish topdim, paid services, prices and refunds.",
+    "intro": "This document is a public offer between the Ish topdim platform (website, Android app, Telegram bot) and the user. By registering or paying for a service you fully accept these terms.",
     "sections": [
       [
         "What the platform does",

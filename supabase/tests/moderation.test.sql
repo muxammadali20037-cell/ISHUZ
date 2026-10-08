@@ -125,9 +125,9 @@ select pg_temp.ok((public.my_listing_state('worker', (select id from wid)) ->> '
 -- Rad etish → sabab, maydon, qayta ko'rib chiqish so'rovi
 select pg_temp.service();
 select pg_temp.ok((select public.moderation_apply('worker', (select id from wid), (select ver from wid) + 1, 'reject', 'unrelated', 'not_job',
-  'Ish Beruvchi faqat ish va ishchi qidirish e''lonlarini qabul qiladi.', array['description'], 'ai', 'test', 10, '{}', null, true)) = 'rejected', 'AI rad etdi');
+  'Ish topdim faqat ish va ishchi qidirish e''lonlarini qabul qiladi.', array['description'], 'ai', 'test', 10, '{}', null, true)) = 'rejected', 'AI rad etdi');
 select pg_temp.login('6a000000-0000-0000-0000-000000000001');
-select pg_temp.ok((select (s ->> 'state') = 'rejected' and (s -> 'fields') ? 'description' and (s ->> 'can_appeal')::boolean and (s ->> 'message') like 'Ish Beruvchi%'
+select pg_temp.ok((select (s ->> 'state') = 'rejected' and (s -> 'fields') ? 'description' and (s ->> 'can_appeal')::boolean and (s ->> 'message') like 'Ish topvchi%'
                    from public.my_listing_state('worker', (select id from wid)) s), 'egasi sababni va maydonni ko''radi');
 select pg_temp.ok((select about from public.worker_profiles where profile_id = auth.uid()) = 'Bosh buxgalter, 1C, soliq, kadrlar hisobi', 'yozilgan ma''lumot o''chirilmadi');
 select pg_temp.ok((select count(*) from public.notifications where payload ->> 'kind' = 'moderation_result' and payload ->> 'state' = 'rejected') = 1, 'rad etish haqida bildirishnoma');

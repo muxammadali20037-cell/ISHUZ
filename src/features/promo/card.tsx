@@ -123,8 +123,14 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
       {/* yuqori: brend + "Ish bor" stikeri */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ width: z.logo, height: z.logo, borderRadius: z.logo * 0.28, background: "#fff", color: "#1d5fe0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: z.logo * 0.42, fontWeight: 800, letterSpacing: -1 }}>IB</div>
-          <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>Ish Beruvchi</div>
+          <div style={{ width: z.logo, height: z.logo, borderRadius: z.logo * 0.28, background: "#fff", color: "#1d5fe0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: z.logo * 0.42, fontWeight: 800, letterSpacing: -1 }}>
+            <svg width={z.logo * 0.78} height={z.logo * 0.78} viewBox="0 0 512 512" fill="none" stroke="#1d5fe0" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M196 168 V140 A28 28 0 0 1 224 112 H288 A28 28 0 0 1 316 140 V168" strokeWidth="40" />
+              <rect x="100" y="168" width="312" height="232" rx="48" strokeWidth="40" />
+              <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
+            </svg>
+          </div>
+          <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>Ish topdim</div>
         </div>
         <div style={{ display: "flex", transform: "rotate(6deg)", background: "#fde047", color: "#0f172a", padding: `${z.brand * 0.3}px ${z.brand * 0.7}px`, borderRadius: 999, fontSize: z.brand * 0.72, fontWeight: 800, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
           {data.labels.hiring}

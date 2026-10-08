@@ -41,7 +41,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
   const tt = await getT();
   const data = buildPromoData(vacancy, tt);
 
-  const text = ["Ish Beruvchi IB", data.title, data.company, data.categoryName, data.salary, data.place, data.schedule, ...data.tags, data.url, ...Object.values(data.labels)].join(" ");
+  const text = ["Ish topdim", data.title, data.company, data.categoryName, data.salary, data.place, data.schedule, ...data.tags, data.url, ...Object.values(data.labels)].join(" ");
   const [bold, semi, stickerSrc] = await Promise.all([loadFont(text, 800), loadFont(text, 600), loadSticker(promoTheme(data.categorySlug).emoji)]);
   const fonts = [
     ...(bold ? [{ name: "Manrope", data: bold, weight: 800 as const, style: "normal" as const }, { name: "Manrope", data: bold, weight: 700 as const, style: "normal" as const }] : []),

@@ -1,6 +1,6 @@
 {
   "app": {
-    "name": "Ish Beruvchi",
+    "name": "Ish topdim",
     "tagline": "Ish qidirmang. O'zingizga mos ishni toping.",
     "tagline_employer": "Ko'p CV ko'rmang. Sizga mos xodimni toping.",
     "description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"
@@ -150,7 +150,7 @@
   },
   "landing": {
     "hero_title": "Ish qidirmang. O'zingizga mos ishni toping.",
-    "hero_subtitle": "«Ish Beruvchi» — O'zbekistonda ish qidiruvchi va ish beruvchini bir necha daqiqada aniq bog'laydigan platforma.",
+    "hero_subtitle": "«Ish topdim» — O'zbekistonda ish qidiruvchi va ish beruvchini bir necha daqiqada aniq bog'laydigan platforma.",
     "worker_card_title": "Men ish qidiryapman",
     "worker_card_subtitle": "O'zingizga mos ishni toping",
     "worker_card_cta": "Ish topish",
@@ -180,7 +180,7 @@
     "terms": "Foydalanish shartlari",
     "privacy": "Maxfiylik siyosati",
     "support": "Yordam",
-    "rights": "© {year} Ish Beruvchi. Barcha huquqlar himoyalangan.",
+    "rights": "© {year} Ish topdim. Barcha huquqlar himoyalangan.",
     "deletion": "Hisobni o'chirish"
   },
   "report_sent": "Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.",
@@ -195,7 +195,7 @@
     "code": "Xato kodi: {code}"
   },
   "meta": {
-    "title": "Ish Beruvchi — ish topish va vakansiyalar O'zbekistonda",
+    "title": "Ish topdim — ish topish va vakansiyalar O'zbekistonda",
     "description": "Toshkent va butun O'zbekiston bo'ylab ish va vakansiyalar. Rezyume 2 daqiqada, sizga mos ishlar, bir bosishda ariza. Ish Beruvchilar uchun tez nomzod topish.",
     "keywords": "ish, ish topish, vakansiyalar, Toshkentda ish, ish e'lonlari, rezyume, ishchi kerak, ish qidirish",
     "org_description": "O'zbekistonda ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma"

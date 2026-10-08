@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { AuthForm } from "@/features/auth/components/auth-form";
 import { getServerEnv } from "@/lib/env";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 export const metadata: Metadata = { title: "Kirish" };
 
@@ -18,9 +19,9 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="container-narrow flex h-14 items-center justify-between">
         <Link href="/" className="flex items-center gap-2 font-extrabold tracking-tight">
-          <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs text-primary-foreground">IB</span>
+          <BrandMark />
           <span className="text-lg">
-            Ish <span className="text-primary">Beruvchi</span>
+            Ish <span className="text-primary">topdim</span>
           </span>
         </Link>
         <LanguageSwitcher />

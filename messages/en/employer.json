@@ -121,7 +121,7 @@
     "location": "Location",
     "manage": "Settings",
     "meta_title": "{name} — vacancies",
-    "meta_description": "Active vacancies and company information for {name} on «Ish Beruvchi»"
+    "meta_description": "Active vacancies and company information for {name} on «Ish topdim»"
   },
   "settings": {
     "title": "Company settings",
@@ -150,7 +150,7 @@
     "role_updated": "Role updated",
     "removed": "Member removed",
     "invite_title": "Add member",
-    "invite_desc": "Create an invite link and send it to the member. They sign in to «Ish Beruvchi», open the link and join the team. The link is valid for 7 days.",
+    "invite_desc": "Create an invite link and send it to the member. They sign in to «Ish topdim», open the link and join the team. The link is valid for 7 days.",
     "roles_help": "Administrator — all settings and members; Recruiter — vacancies and applications; Viewer — view only.",
     "invite_role": "New member's role",
     "create_invite": "Create invite link",

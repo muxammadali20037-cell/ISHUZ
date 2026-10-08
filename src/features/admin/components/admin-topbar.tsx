@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import type { NavGroup } from "../nav";
 import type { SidebarCounts } from "../queries/dashboard";
 import { SidebarNav } from "./sidebar-nav";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 /** Yuqori panel: mobil menyu (Sheet), admin ismi/roli, til almashtirgich, chiqish */
 export function AdminTopbar({
@@ -41,7 +42,7 @@ export function AdminTopbar({
         </Sheet>
       </Dialog>
       <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight lg:hidden">
-        <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs text-primary-foreground">IB</span>
+        <BrandMark />
         <span className="text-base">{t("admin.shell.title")}</span>
       </Link>
       <div className="flex-1" />

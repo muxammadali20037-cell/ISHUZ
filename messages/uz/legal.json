@@ -4,8 +4,8 @@
   "contact_body": "Savol yoki so'rovlar bo'yicha yozing:",
   "privacy": {
     "title": "Maxfiylik siyosati",
-    "description": "«Ish Beruvchi» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi, qayerda saqlaydi va ularni qanday boshqarishingiz mumkin.",
-    "intro": "«Ish Beruvchi» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi va O'zbekiston Respublikasining «Shaxsga doir ma'lumotlar to'g'risida»gi Qonuni asosida tuzilgan. Ro'yxatdan o'tib, siz shaxsga doir ma'lumotlaringizni shu siyosatda yozilgan maqsadlarda qayta ishlashga rozilik bildirasiz.",
+    "description": "«Ish topdim» qaysi ma'lumotlarni yig'adi, nima uchun ishlatadi, qayerda saqlaydi va ularni qanday boshqarishingiz mumkin.",
+    "intro": "«Ish topdim» ish qidiruvchilar va ish beruvchilarni bog'laydigan platforma. Bu siyosat sayt, Android ilova va Telegram bot uchun bir xil amal qiladi va O'zbekiston Respublikasining «Shaxsga doir ma'lumotlar to'g'risida»gi Qonuni asosida tuzilgan. Ro'yxatdan o'tib, siz shaxsga doir ma'lumotlaringizni shu siyosatda yozilgan maqsadlarda qayta ishlashga rozilik bildirasiz.",
     "sections": [
       [
         "Qaysi ma'lumotlar yig'iladi",
@@ -47,12 +47,12 @@
   },
   "deletion": {
     "title": "Hisobni o'chirish",
-    "description": "«Ish Beruvchi» hisobingizni va ma'lumotlaringizni qanday o'chirish mumkin.",
+    "description": "«Ish topdim» hisobingizni va ma'lumotlaringizni qanday o'chirish mumkin.",
     "intro": "Hisobingizni va unga bog'liq ma'lumotlarni istalgan vaqtda o'zingiz o'chirishingiz mumkin. O'chirish darhol amalga oshadi va uni qaytarib bo'lmaydi.",
     "sections": [
       [
         "Ilova yoki sayt orqali",
-        "- «Ish Beruvchi» ilovasi yoki saytiga kiring.\n- «Sozlamalar» bo'limini oching.\n- «Hisobni o'chirish» tugmasini bosing.\n- Tasdiqlash uchun «O'CHIRISH» so'zini yozing va «Butunlay o'chirish» ni bosing."
+        "- «Ish topdim» ilovasi yoki saytiga kiring.\n- «Sozlamalar» bo'limini oching.\n- «Hisobni o'chirish» tugmasini bosing.\n- Tasdiqlash uchun «O'CHIRISH» so'zini yozing va «Butunlay o'chirish» ni bosing."
       ],
       [
         "Tizimga kira olmasangiz",
@@ -71,8 +71,8 @@
   "operator_title": "Ma'lumotlar operatori",
   "terms": {
     "title": "Foydalanish shartlari (ommaviy oferta)",
-    "description": "«Ish Beruvchi» platformasidan foydalanish qoidalari, pullik xizmatlar, narxlar va to'lovni qaytarish tartibi.",
-    "intro": "Bu hujjat «Ish Beruvchi» platformasi (sayt, Android ilova, Telegram bot) bilan foydalanuvchi o'rtasidagi ommaviy oferta hisoblanadi. Ro'yxatdan o'tish yoki xizmat uchun to'lov qilish orqali siz shu shartlarni to'liq qabul qilasiz.",
+    "description": "«Ish topdim» platformasidan foydalanish qoidalari, pullik xizmatlar, narxlar va to'lovni qaytarish tartibi.",
+    "intro": "Bu hujjat «Ish topdim» platformasi (sayt, Android ilova, Telegram bot) bilan foydalanuvchi o'rtasidagi ommaviy oferta hisoblanadi. Ro'yxatdan o'tish yoki xizmat uchun to'lov qilish orqali siz shu shartlarni to'liq qabul qilasiz.",
     "sections": [
       [
         "Platforma nima qiladi",

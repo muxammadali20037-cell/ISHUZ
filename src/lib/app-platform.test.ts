@@ -3,7 +3,7 @@ import { isAndroidAppLaunch } from "./app-platform";
 
 describe("isAndroidAppLaunch", () => {
   it("TWA referer — ilova ichida", () => {
-    expect(isAndroidAppLaunch("android-app://uz.ishberuvchi.app/", null)).toBe(true);
+    expect(isAndroidAppLaunch("android-app://uz.ishtopdim.app/", null)).toBe(true);
   });
   it("start URL'dagi ?app=android — ilova ichida", () => {
     expect(isAndroidAppLaunch(null, "android")).toBe(true);

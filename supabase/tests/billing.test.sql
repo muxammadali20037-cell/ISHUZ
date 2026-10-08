@@ -1,4 +1,4 @@
--- Ish Beruvchi · to'lovlar (billing_enabled=true holatida): aksiya davri, bepul vakansiya (24 soat), to'lov talabi, Payme/Click oqimlari, TOP profil
+-- Ish topdim · to'lovlar (billing_enabled=true holatida): aksiya davri, bepul vakansiya (24 soat), to'lov talabi, Payme/Click oqimlari, TOP profil
 \set ON_ERROR_STOP on
 \set QUIET on
 

@@ -16,11 +16,11 @@ export async function LandingPage() {
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   // Google: sayt nomi, logotip va sayt ichidagi qidiruv (sitelinks search box)
   const jsonLd = JSON.stringify([
-    { "@context": "https://schema.org", "@type": "Organization", name: "Ish Beruvchi", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
+    { "@context": "https://schema.org", "@type": "Organization", name: "Ish topdim", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Ish Beruvchi",
+      name: "Ish topdim",
       url: base,
       inLanguage: ["uz", "ru"],
       potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${base}/jobs?q={search_term_string}` }, "query-input": "required name=search_term_string" },

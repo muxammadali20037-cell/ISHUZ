@@ -16,11 +16,11 @@ export async function HomeThree({ session }: { session: SessionContext | null })
   const count = session ? await countMyListings(session) : 0;
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const jsonLd = JSON.stringify([
-    { "@context": "https://schema.org", "@type": "Organization", name: "Ish Beruvchi", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
+    { "@context": "https://schema.org", "@type": "Organization", name: "Ish topdim", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Ish Beruvchi",
+      name: "Ish topdim",
       url: base,
       inLanguage: ["uz", "ru"],
       potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${base}/search?q={search_term_string}` }, "query-input": "required name=search_term_string" },
@@ -76,6 +76,7 @@ export async function HomeThree({ session }: { session: SessionContext | null })
           <li key={c.href} className="flex">
             <Link
               href={c.href}
+              transitionTypes={["nav-forward"]}
               data-track="direction_select"
               data-track-to={c.href.replace(/[^a-z/]/g, "").slice(0, 40)}
               className={cn(

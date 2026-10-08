@@ -51,7 +51,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
   const onShare = async () => {
     const url = `${window.location.origin}${detailPath}`;
-    const text = t("jobs.detail.share_text", { title: vacancy.title, company: vacancy.companyName ?? "Ish Beruvchi" });
+    const text = t("jobs.detail.share_text", { title: vacancy.title, company: vacancy.companyName ?? "Ish topdim" });
     if (typeof navigator.share === "function") {
       try {
         await navigator.share({ title: vacancy.title, text, url });

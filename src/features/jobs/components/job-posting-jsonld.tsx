@@ -34,7 +34,7 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
     "@type": "JobPosting",
     title: v.title,
     description,
-    identifier: { "@type": "PropertyValue", name: "Ish Beruvchi", value: v.id },
+    identifier: { "@type": "PropertyValue", name: "Ish topdim", value: v.id },
     datePosted: v.published_at ?? v.created_at,
     validThrough: v.expires_at ?? undefined,
     employmentType: EMPLOYMENT[v.employment_type],
@@ -42,7 +42,7 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
     directApply: true,
     hiringOrganization: {
       "@type": "Organization",
-      name: v.company?.name ?? "Ish Beruvchi",
+      name: v.company?.name ?? "Ish topdim",
       sameAs: v.company?.website ?? undefined,
       logo: v.company?.logo_url ?? undefined,
     },

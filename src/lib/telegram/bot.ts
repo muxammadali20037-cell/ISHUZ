@@ -73,7 +73,7 @@ export async function syncBotMenuButtonOnce() {
 }
 
 export async function setBotMenuButton() {
-  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Ish Beruvchi", web_app: { url: miniAppBaseUrl() } } });
+  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Ish topdim", web_app: { url: miniAppBaseUrl() } } });
 }
 
 export async function setBotWebhook(url: string, secret: string) {

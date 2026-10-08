@@ -20,14 +20,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const { GOOGLE_SITE_VERIFICATION, YANDEX_VERIFICATION } = getServerEnv();
   return {
     metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"),
-    title: { default: t("common.meta.title"), template: "%s · Ish Beruvchi" },
+    title: { default: t("common.meta.title"), template: "%s · Ish topdim" },
     description: t("common.meta.description"),
     keywords: t("common.meta.keywords"),
-    applicationName: "Ish Beruvchi",
+    applicationName: "Ish topdim",
     manifest: "/manifest.webmanifest",
     icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
-    openGraph: { type: "website", siteName: "Ish Beruvchi", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
-    appleWebApp: { capable: true, statusBarStyle: "default", title: "Ish Beruvchi" },
+    openGraph: { type: "website", siteName: "Ish topdim", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
+    appleWebApp: { capable: true, statusBarStyle: "default", title: "Ish topdim" },
     verification: {
       google: GOOGLE_SITE_VERIFICATION,
       yandex: YANDEX_VERIFICATION,

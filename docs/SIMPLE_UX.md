@@ -1,4 +1,4 @@
-# Sodda "Ish Beruvchi" — murakkab joylar va ish rejasi
+# Sodda "Ish topdim" — murakkab joylar va ish rejasi
 
 Maqsad: yoshi katta, texnologiyani yaxshi bilmaydigan odam ham mustaqil ishlata olsin.
 Har ekranda bitta vazifa, keyingi qadam doim ko'rinib tursin.

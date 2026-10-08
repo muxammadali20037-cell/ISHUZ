@@ -87,12 +87,12 @@
     }
   },
   "telegram": {
-    "welcome": "Assalomu alaykum! «Ish Beruvchi» botiga xush kelibsiz.\nArizalar, takliflar va yangi xabarlar haqidagi bildirishnomalar shu yerga keladi.",
+    "welcome": "Assalomu alaykum! «Ish topdim» botiga xush kelibsiz.\nArizalar, takliflar va yangi xabarlar haqidagi bildirishnomalar shu yerga keladi.",
     "hint": "Ilovani ochish uchun quyidagi tugmani bosing.",
-    "open_app": "«Ish Beruvchi»ni ochish",
+    "open_app": "«Ish topdim»ni ochish",
     "open": "Ochish",
-    "login_code_title": "«Ish Beruvchi» kirish kodi",
-    "login_code_warning": "Kod 5 daqiqa amal qiladi. Uni hech kimga bermang — «Ish Beruvchi» xodimlari kodni hech qachon so'ramaydi.",
+    "login_code_title": "«Ish topdim» kirish kodi",
+    "login_code_warning": "Kod 5 daqiqa amal qiladi. Uni hech kimga bermang — «Ish topdim» xodimlari kodni hech qachon so'ramaydi.",
     "share_phone_prompt": "Saytda (brauzerda) telefon raqamingiz bilan kirishingiz uchun raqamingizni ulang — kirish kodlari SMS o'rniga shu yerga keladi. Pastdagi tugmani bosing 👇",
     "share_phone_button": "📱 Raqamni yuborish",
     "phone_linked": "✅ Raqamingiz ulandi: {phone}\nEndi saytda shu raqamni kiritsangiz, kirish kodi shu chatga keladi.",

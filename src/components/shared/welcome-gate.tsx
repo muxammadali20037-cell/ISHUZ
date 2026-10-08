@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { saveGreetingName, setLocale } from "@/features/auth/actions";
 
 import { WELCOME_COOKIE } from "./welcome-cookie";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 /**
  * Birinchi kirish — suhbat kabi: (til cookie'si yo'q bo'lsa) til → "Assalomu alaykum! Ismingiz nima?" →
@@ -64,7 +65,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
     return (
       <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-background px-5 py-10" role="dialog" aria-modal="true" aria-labelledby="welcome-lang-title">
         <div className="w-full max-w-sm animate-fade-in text-center">
-          <div className="mx-auto flex size-20 items-center justify-center rounded-3xl bg-primary text-3xl font-extrabold text-primary-foreground shadow-lg">IB</div>
+          <BrandMark className="mx-auto size-20 rounded-3xl shadow-lg" />
           <h1 id="welcome-lang-title" className="mt-6 text-3xl font-extrabold tracking-tight">
             Tilni tanlang
           </h1>

@@ -1,4 +1,4 @@
-# «Ish beruvchi» — mahsulot va arxitektura auditi
+# «Ish topdim» — mahsulot va arxitektura auditi
 
 Ushbu hujjat "dunyo darajasidagi ish platformasi" talablar ro'yxatini (119 band) mavjud kod bilan solishtiradi.
 Har bir yo'nalish uchun: **HOZIRGI HOLAT → MUAMMO → YECHIM**. Tamoyil: ishlab turgan narsani buzmaslik,

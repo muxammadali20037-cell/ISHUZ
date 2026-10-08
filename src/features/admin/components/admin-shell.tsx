@@ -10,6 +10,7 @@ import { NAV_GROUPS, type NavGroup } from "../nav";
 import { getSidebarCounts } from "../queries/dashboard";
 import { SidebarNav } from "./sidebar-nav";
 import { AdminTopbar } from "./admin-topbar";
+import { BrandMark } from "@/components/shared/brand-mark";
 
 /** Admin panel qobig'i: chap yon panel (lg+), yuqori panel, kontent */
 export async function AdminShell({ ctx, children }: { ctx: AdminContext; children: ReactNode }) {
@@ -25,9 +26,9 @@ export async function AdminShell({ ctx, children }: { ctx: AdminContext; childre
       <aside className="sticky top-0 hidden h-dvh w-64 shrink-0 flex-col border-r border-border/70 bg-card lg:flex">
         <div className="flex h-14 items-center gap-2 border-b border-border/70 px-5">
           <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs text-primary-foreground">IB</span>
+            <BrandMark />
             <span className="text-lg">
-              Ish <span className="text-primary">Beruvchi</span>
+              Ish <span className="text-primary">topdim</span>
             </span>
           </Link>
           <Badge variant="outline" size="sm" className="ml-auto">

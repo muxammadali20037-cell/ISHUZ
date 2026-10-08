@@ -89,9 +89,9 @@ function word(w: string): string {
 /** Matnni o'giradi: {o'zgaruvchilar}, URL va e-pochtalar o'zgarmaydi */
 export function latinToCyrillic(text: string): string {
   if (!text) return text;
-  // Brend nomi har doim lotinda: «Ish Beruvchi»
+  // Brend nomi har doim lotinda: «Ish topdim»
   return text
-    .split(/(Ish Beruvchi)/)
+    .split(/(Ish topdim)/)
     .map((chunk, j) => (j % 2 === 1 ? chunk : translitChunk(chunk)))
     .join("");
 }
