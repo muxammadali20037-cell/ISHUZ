@@ -24,6 +24,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
+import { createClient } from "@/lib/supabase/server";
 import { formatRelative, formatWorkTime } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
 import { EmployerCallCard } from "@/features/contacts/employer-call-card";
@@ -97,13 +98,17 @@ export async function VacancyDetail({
   const requiredSkills = v.skills.filter((s) => s.is_required);
   const niceSkills = v.skills.filter((s) => !s.is_required);
   const contactProfileId = session && !isManager ? v.owner_profile_id : null;
+  // E'londagi aloqa raqami: ish beruvchi rozilik bergan bo'lsa — hammaga (mehmonga ham); rad etgan bo'lsa — ko'rsatilmaydi
+  const supabase = await createClient();
+  const { data: adPhone } = isManager ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
+  const showContact = !isManager && (!!adPhone || !!contactProfileId);
 
   return (
     <div className="container-app pb-24 pt-4 sm:pt-6 lg:pb-8">
       <div className="mb-3 flex items-center justify-between gap-2">
         <Link
           href="/jobs"
-          className="-ml-1 inline-flex h-9 items-center gap-1 rounded-lg px-1.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+          className="-ml-1 inline-flex min-h-12 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
           <ChevronLeft className="size-5" /> {t("jobs.detail.back")}
         </Link>
@@ -383,9 +388,9 @@ export async function VacancyDetail({
           ) : null}
 
           {/* Kontakt (mobil: shu yerda; desktop: yon panel) */}
-          {contactProfileId ? (
+          {showContact ? (
             <div className="lg:hidden">
-              <EmployerCallCard companyPhone={company?.phone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
+              <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
             </div>
           ) : null}
         </div>
@@ -395,9 +400,9 @@ export async function VacancyDetail({
             vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status: v.status }}
             viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application }}
           />
-          {contactProfileId ? (
+          {showContact ? (
             <div className="hidden lg:block">
-              <EmployerCallCard companyPhone={company?.phone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
+              <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
             </div>
           ) : null}
         </aside>

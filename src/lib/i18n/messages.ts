@@ -28,6 +28,7 @@ import uzVacancies from "../../../messages/uz/vacancies.json";
 import uzOffers from "../../../messages/uz/offers.json";
 import uzNotifications from "../../../messages/uz/notifications.json";
 import uzSaved from "../../../messages/uz/saved.json";
+import uzEasy from "../../../messages/uz/easy.json";
 import uzEnums from "../../../messages/uz/enums.json";
 
 import ruCommon from "../../../messages/ru/common.json";
@@ -53,6 +54,7 @@ import ruVacancies from "../../../messages/ru/vacancies.json";
 import ruOffers from "../../../messages/ru/offers.json";
 import ruNotifications from "../../../messages/ru/notifications.json";
 import ruSaved from "../../../messages/ru/saved.json";
+import ruEasy from "../../../messages/ru/easy.json";
 import ruEnums from "../../../messages/ru/enums.json";
 
 import enCommon from "../../../messages/en/common.json";
@@ -78,6 +80,7 @@ import enVacancies from "../../../messages/en/vacancies.json";
 import enOffers from "../../../messages/en/offers.json";
 import enNotifications from "../../../messages/en/notifications.json";
 import enSaved from "../../../messages/en/saved.json";
+import enEasy from "../../../messages/en/easy.json";
 import enEnums from "../../../messages/en/enums.json";
 
 import ozCommon from "../../../messages/oz/common.json";
@@ -103,6 +106,7 @@ import ozVacancies from "../../../messages/oz/vacancies.json";
 import ozOffers from "../../../messages/oz/offers.json";
 import ozNotifications from "../../../messages/oz/notifications.json";
 import ozSaved from "../../../messages/oz/saved.json";
+import ozEasy from "../../../messages/oz/easy.json";
 import ozEnums from "../../../messages/oz/enums.json";
 
 export const messages = {
@@ -121,6 +125,7 @@ export const messages = {
     offers: uzOffers,
     notifications: uzNotifications,
     saved: uzSaved,
+    easy: uzEasy,
     enums: uzEnums,
     ai: uzAi,
     promo: uzPromo,
@@ -147,6 +152,7 @@ export const messages = {
     offers: ruOffers,
     notifications: ruNotifications,
     saved: ruSaved,
+    easy: ruEasy,
     enums: ruEnums,
     ai: ruAi,
     promo: ruPromo,
@@ -182,6 +188,7 @@ export const messages = {
     offers: ozOffers,
     notifications: ozNotifications,
     saved: ozSaved,
+    easy: ozEasy,
     enums: ozEnums,
   },
   en: {
@@ -199,6 +206,7 @@ export const messages = {
     offers: enOffers,
     notifications: enNotifications,
     saved: enSaved,
+    easy: enEasy,
     enums: enEnums,
     ai: enAi,
     promo: enPromo,

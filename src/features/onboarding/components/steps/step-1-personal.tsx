@@ -75,7 +75,7 @@ export function Step1Personal({ profile, contacts }: { userId: string; profile: 
  * Telefon: bor bo'lsa faqat o'qish (RLS o'zgartirishga yo'l qo'ymaydi).
  * Yo'q bo'lsa (Telegram orqali kirganlar) — Supabase Auth "phone change" OTP orqali qo'shiladi.
  */
-function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
+export function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
   const { t } = useT();
   const router = useRouter();
   const [phone, setPhone] = useState("+998 ");

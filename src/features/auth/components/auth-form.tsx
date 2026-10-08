@@ -41,12 +41,12 @@ async function postJson(url: string, body: unknown): Promise<{ ok: boolean; erro
  * Kirish: telefon raqam → kod Telegram bot orqali (SMS o'rniga) → tasdiqlash.
  * Telegram Mini App ichida initData bilan avtomatik kiriladi.
  */
-export function AuthForm({ next, botUsername }: { next: string; botUsername: string | null }) {
+export function AuthForm({ next, botUsername, initialPhone }: { next: string; botUsername: string | null; initialPhone?: string | null }) {
   const { t, locale } = useT();
   const router = useRouter();
   const { isTelegram, webApp } = useTelegram();
   const [step, setStep] = useState<Step>("phone");
-  const [phone, setPhone] = useState("+998 ");
+  const [phone, setPhone] = useState(initialPhone ? formatPhone(initialPhone) : "+998 ");
   const [code, setCode] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();

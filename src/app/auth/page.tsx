@@ -7,9 +7,11 @@ import { getServerEnv } from "@/lib/env";
 
 export const metadata: Metadata = { title: "Kirish" };
 
-export default async function AuthPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+export default async function AuthPage({ searchParams }: { searchParams: Promise<{ next?: string; phone?: string }> }) {
   const { t } = await getT();
-  const { next } = await searchParams;
+  const { next, phone } = await searchParams;
+  // e'lon formasida yozilgan raqam — qayta yozdirmaslik uchun oldindan to'ldiriladi
+  const initialPhone = phone && /^\+998\d{9}$/.test(phone) ? phone : null;
   const botUsername = getServerEnv().TELEGRAM_BOT_USERNAME?.replace(/^@/, "") || null;
   const safeNext = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/";
   return (
@@ -28,7 +30,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
           <h1 className="text-2xl font-bold">{t("auth.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("auth.subtitle")}</p>
           <div className="mt-6">
-            <AuthForm next={safeNext} botUsername={botUsername} />
+            <AuthForm next={safeNext} botUsername={botUsername} initialPhone={initialPhone} />
           </div>
         </div>
       </main>

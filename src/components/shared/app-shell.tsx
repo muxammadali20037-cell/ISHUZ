@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, Heart, User, Users, ClipboardList, type LucideIcon } from "lucide-react";
+import { Home, Search, User, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { useTelegram } from "@/lib/telegram/provider";
@@ -17,42 +17,33 @@ interface NavItem {
   match?: (path: string) => boolean;
 }
 
-const WORKER_NAV: NavItem[] = [
+/**
+ * Hamma uchun bir xil, sodda navigatsiya: Bosh sahifa · Qidirish · Kabinetim.
+ * E'lonlar, arizalar, takliflar va sozlamalar — "Kabinetim" ichida.
+ */
+const MAIN_NAV: NavItem[] = [
   { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" },
-  { href: "/jobs", labelKey: "common.nav.jobs", icon: Search, match: (p) => p.startsWith("/jobs") },
-  { href: "/saved", labelKey: "common.nav.saved", icon: Heart, match: (p) => p.startsWith("/saved") },
   {
-    href: "/profile",
-    labelKey: "common.nav.profile",
+    href: "/search",
+    labelKey: "easy.nav.search",
+    icon: Search,
+    match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/workers") || p.startsWith("/listing"),
+  },
+  {
+    href: "/cabinet",
+    labelKey: "easy.nav.cabinet",
     icon: User,
     badgeKey: "offers",
-    match: (p) => p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/notifications") || p.startsWith("/applications") || p.startsWith("/offers"),
+    match: (p) =>
+      ["/cabinet", "/profile", "/settings", "/notifications", "/applications", "/offers", "/employer", "/company", "/saved", "/messages", "/post"].some((x) => p.startsWith(x)),
   },
 ];
 
-const EMPLOYER_NAV: NavItem[] = [
-  { href: "/employer", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/employer" },
-  { href: "/workers", labelKey: "common.nav.candidates", icon: Users, match: (p) => p.startsWith("/workers") || p.startsWith("/employer/candidates") },
-  { href: "/employer/vacancies", labelKey: "common.nav.vacancies", icon: ClipboardList, match: (p) => p.startsWith("/employer/vacancies") },
-  {
-    href: "/profile",
-    labelKey: "common.nav.profile",
-    icon: User,
-    match: (p) => p.startsWith("/profile") || p.startsWith("/settings") || p.startsWith("/company") || p.startsWith("/employer/saved") || p.startsWith("/notifications"),
-  },
-];
-
-const GUEST_NAV: NavItem[] = [
-  { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" },
-  { href: "/jobs", labelKey: "common.nav.jobs", icon: Search, match: (p) => p.startsWith("/jobs") },
-  { href: "/auth", labelKey: "common.nav.login", icon: User, match: (p) => p.startsWith("/auth") },
-];
-
-export function BottomNav({ role, counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
   const { haptic } = useTelegram();
-  const items = role === "worker" ? WORKER_NAV : role === "employer" ? EMPLOYER_NAV : GUEST_NAV;
+  const items = MAIN_NAV;
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 md:hidden"
@@ -69,7 +60,7 @@ export function BottomNav({ role, counts }: { role: NavRole; counts?: Partial<Re
               <Link
                 href={item.href}
                 onClick={() => haptic("light")}
-                className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+                className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-[13px] font-semibold transition-colors", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
                 <item.icon className={cn("size-6", active && "fill-primary/10")} strokeWidth={active ? 2.25 : 1.75} />
@@ -89,10 +80,10 @@ export function BottomNav({ role, counts }: { role: NavRole; counts?: Partial<Re
 }
 
 /** Desktop uchun yon/ustki navigatsiya havolalari */
-export function DesktopNavLinks({ role, counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+export function DesktopNavLinks({ counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
-  const items = role === "worker" ? WORKER_NAV : role === "employer" ? EMPLOYER_NAV : GUEST_NAV;
+  const items = MAIN_NAV;
   return (
     <ul className="hidden items-center gap-1 md:flex">
       {items.map((item) => {
@@ -102,7 +93,7 @@ export function DesktopNavLinks({ role, counts }: { role: NavRole; counts?: Part
           <li key={item.href}>
             <Link
               href={item.href}
-              className={cn("relative flex items-center gap-2 rounded-xl px-3.5 py-2 text-sm font-medium transition-colors", active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground")}
+              className={cn("relative flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors lg:px-4", active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground")}
             >
               <item.icon className="size-4.5" />
               {t(item.labelKey)}

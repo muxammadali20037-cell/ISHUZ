@@ -24,6 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry(base, "/jobs", { lastModified: now, changeFrequency: "hourly", priority: 0.9 }),
     entry(base, "/students", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
     entry(base, "/help", { lastModified: now, changeFrequency: "monthly", priority: 0.3 }),
+    entry(base, "/search", { lastModified: now, changeFrequency: "daily", priority: 0.8 }),
     entry(base, "/privacy", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
     entry(base, "/terms", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
   ];

@@ -107,6 +107,12 @@ SQL (`public.compute_match`) va TypeScript (`src/features/matching`) versiyalari
 
 ## AI yordamchi va to'lovlar
 
+**Sodda jarayonlar** (bosh sahifa → "Ish qidiryapman" / "Ishchi qidiryapman" / "Qidirish") — [docs/SIMPLE_UX.md](docs/SIMPLE_UX.md).
+
+**Kasb rasmlari** — har kasb uchun bir marta yaratiladi (fonda) va qayta ishlatiladi; kalit bo'lmasa soha ikonkasi ko'rinadi.
+`IMAGE_GEN_API_KEY` (Google AI Studio, matnli AI kalitidan alohida), ixtiyoriy `IMAGE_GEN_MODEL` (standart `gemini-2.5-flash-image`).
+Kunlik limit — `app_settings.profession_images_daily_limit`.
+
 **AI** — ishchi o'zi haqida, ish beruvchi vakansiya haqida erkin yozadi, AI bo'limlarga ajratadi.
 Vercel → Environment Variables (bittasi kifoya; ikkalasi bo'lsa Gemini ishlatiladi):
 - `GEMINI_API_KEY` — bepul: https://aistudio.google.com/apikey (ixtiyoriy `GEMINI_MODEL`, standart `gemini-flash-latest`)

@@ -7,9 +7,10 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
 import { adminUiEnabled } from "@/lib/features";
-import { LanguageSwitcher } from "./language-switcher";
+import { LanguageSelect } from "./language-switcher";
 import { DesktopNavLinks, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
+import { LoginLink } from "./login-link";
 
 /** Yuqori panel (barcha sahifalarda). Server komponent: sessiyani o'qiydi. */
 export async function TopBar({ role, counts }: { role: NavRole; counts?: { messages?: number; offers?: number; notifications?: number } }) {
@@ -18,9 +19,9 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
       <div className="container-app flex h-14 items-center gap-3">
-        <Link href={role === "employer" ? "/employer" : "/"} className="flex items-center gap-2 font-extrabold tracking-tight">
+        <Link href="/" className="flex min-h-11 items-center gap-2 font-extrabold tracking-tight" aria-label="Ish Beruvchi">
           <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-xs text-primary-foreground">IB</span>
-          <span className="text-lg">
+          <span className="hidden text-lg min-[400px]:inline">
             Ish <span className="text-primary">Beruvchi</span>
           </span>
         </Link>
@@ -28,7 +29,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
           <DesktopNavLinks role={role} counts={counts} />
         </div>
         <div className="flex items-center gap-1.5">
-          <LanguageSwitcher className="hidden sm:inline-flex" />
+          <LanguageSelect />
           {session ? (
             <>
               <Button asChild variant="ghost" size="icon-sm" className="relative" aria-label={t("common.nav.messages")}>
@@ -65,8 +66,8 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
               />
             </>
           ) : (
-            <Button asChild size="sm">
-              <Link href="/auth">{t("common.nav.login")}</Link>
+            <Button asChild className="h-11 px-4 text-base">
+              <LoginLink>{t("common.nav.login")}</LoginLink>
             </Button>
           )}
         </div>

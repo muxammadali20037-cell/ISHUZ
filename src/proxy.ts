@@ -55,8 +55,11 @@ export async function proxy(request: NextRequest) {
   if (pathname === "/auth" && user) {
     const next = request.nextUrl.searchParams.get("next");
     const url = request.nextUrl.clone();
-    url.pathname = next && next.startsWith("/") && !next.startsWith("//") ? next.split("?")[0]! : "/";
-    url.search = "";
+    // faqat shu saytdagi manzil; so'rov qismi (?step=4) saqlanadi — kirgandan keyin aynan to'xtagan qadamga qaytiladi
+    const safe = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/";
+    const [path, query] = safe.split("?");
+    url.pathname = path || "/";
+    url.search = query ? `?${query}` : "";
     const redirect = NextResponse.redirect(url);
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
     return redirect;

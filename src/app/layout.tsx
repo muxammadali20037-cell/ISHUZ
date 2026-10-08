@@ -4,10 +4,7 @@ import Script from "next/script";
 import { cookies } from "next/headers";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
-import { WelcomeGate } from "@/components/shared/welcome-gate";
 import { CelebrationListener } from "@/components/shared/celebration-listener";
-import { WELCOME_COOKIE } from "@/components/shared/welcome-cookie";
-import { LOCALE_COOKIE } from "@/lib/i18n/config";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -52,7 +49,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const cookieStore = await cookies();
   const theme = cookieStore.get("ishuz_theme")?.value;
-  const showWelcome = !cookieStore.has(WELCOME_COOKIE);
   return (
     <html lang={locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
       <head>
@@ -69,7 +65,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Providers locale={locale}>
           {children}
           <CelebrationListener />
-          {showWelcome ? <WelcomeGate needLanguage={!cookieStore.has(LOCALE_COOKIE)} /> : null}
         </Providers>
       </body>
     </html>

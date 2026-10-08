@@ -2,6 +2,7 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
+import { ChevronDown, Globe } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
 import { setLocale } from "@/features/auth/actions";
@@ -39,5 +40,39 @@ export function LanguageSwitcher({ className, size = "sm" }: { className?: strin
         </button>
       ))}
     </div>
+  );
+}
+
+const LOCALE_NAMES: Record<Locale, string> = { uz: "O'zbekcha", oz: "Ўзбекча", ru: "Русский", en: "English" };
+
+/** Ixcham til tanlagich (telefonda ham sig'adi): globus + qisqa nom, ochilganda to'liq nomlar */
+export function LanguageSelect({ className }: { className?: string }) {
+  const { locale } = useT();
+  const router = useRouter();
+  const [pending, startTransition] = useTransition();
+  return (
+    <label className={cn("relative inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-card pl-2.5 pr-2 text-sm font-bold", pending && "opacity-60", className)}>
+      <Globe className="size-4 text-muted-foreground" aria-hidden />
+      <span aria-hidden>{LOCALE_LABELS[locale]}</span>
+      <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
+      <select
+        aria-label="Til · Тил · Язык · Language"
+        value={locale}
+        onChange={(e) => {
+          const next = e.target.value as Locale;
+          startTransition(async () => {
+            await setLocale(next);
+            router.refresh();
+          });
+        }}
+        className="absolute inset-0 cursor-pointer opacity-0"
+      >
+        {LOCALES.map((l) => (
+          <option key={l} value={l} lang={l === "oz" ? "uz-Cyrl" : l}>
+            {LOCALE_NAMES[l]}
+          </option>
+        ))}
+      </select>
+    </label>
   );
 }

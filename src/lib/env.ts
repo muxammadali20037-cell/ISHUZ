@@ -32,6 +32,12 @@ const serverSchema = z.object({
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().optional(),
+  /** Kasb rasmlari generatsiyasi — matnli AI dan ALOHIDA kalit (alohida vakolat va xarajat nazorati). Bo'lmasa rasm yaratilmaydi, ikonka chiqadi */
+  IMAGE_GEN_API_KEY: z.string().optional(),
+  /** Google Gemini rasm modeli (standart: gemini-2.5-flash-image) */
+  IMAGE_GEN_MODEL: z.string().optional(),
+  /** Faqat sinov uchun: boshqa manzil (masalan lokal soxta server) */
+  IMAGE_GEN_BASE_URL: z.string().url().optional(),
   /** Payme (Paycom) merchant: kassa ID va kalit; PAYME_TEST=1 — test kassa */
   PAYME_MERCHANT_ID: z.string().optional(),
   PAYME_KEY: z.string().optional(),
@@ -76,6 +82,9 @@ export function getServerEnv() {
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
+    IMAGE_GEN_API_KEY: process.env.IMAGE_GEN_API_KEY || undefined,
+    IMAGE_GEN_MODEL: process.env.IMAGE_GEN_MODEL || undefined,
+    IMAGE_GEN_BASE_URL: process.env.IMAGE_GEN_BASE_URL || undefined,
     PAYME_MERCHANT_ID: process.env.PAYME_MERCHANT_ID || undefined,
     PAYME_KEY: process.env.PAYME_KEY || undefined,
     PAYME_TEST: process.env.PAYME_TEST || undefined,

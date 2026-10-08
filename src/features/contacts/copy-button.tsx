@@ -12,7 +12,8 @@ export function CopyButton({ value }: { value: string }) {
     <Button
       type="button"
       variant="ghost"
-      size="icon-sm"
+      size="icon"
+      className="size-12"
       aria-label={t("common.actions.copy")}
       onClick={async () => {
         try {

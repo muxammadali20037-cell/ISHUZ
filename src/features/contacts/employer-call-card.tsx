@@ -1,23 +1,17 @@
 import { Phone, Send } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
-import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/format";
 import { CopyButton } from "./copy-button";
 import { ContactCard } from "./contact-card";
 
 /**
- * Vakansiya sahifasida ish beruvchi bilan bog'lanish: kompaniya (yoki shaxs) e'lon uchun bergan aloqa telefoni —
- * katta "Qo'ng'iroq qilish" tugmasi. Aloqa telefoni bo'lmasa — oddiy kontakt kartasi (shaxsiy raqam ruxsat bo'yicha).
+ * Vakansiya sahifasida ish beruvchi bilan bog'lanish: e'londagi aloqa telefoni (`simple_vacancy_phone` — ish beruvchi
+ * rozilik bergan bo'lsa yoki kompaniya telefoni) — katta "Qo'ng'iroq qilish" tugmasi.
+ * Raqam bo'lmasa — kirgan foydalanuvchiga oddiy kontakt kartasi (shaxsiy raqam ruxsat bo'yicha), mehmonga hech narsa.
  */
-export async function EmployerCallCard({ companyPhone, companyTelegram, ownerProfileId }: { companyPhone: string | null; companyTelegram: string | null; ownerProfileId: string }) {
+export async function EmployerCallCard({ phone, companyTelegram, ownerProfileId }: { phone: string | null; companyTelegram: string | null; ownerProfileId: string | null }) {
   const { t } = await getT();
-  let phone = companyPhone;
-  if (!phone) {
-    const supabase = await createClient();
-    const { data } = await supabase.from("employer_profiles").select("contact_phone").eq("profile_id", ownerProfileId).maybeSingle();
-    phone = data?.contact_phone ?? null;
-  }
-  if (!phone) return <ContactCard profileId={ownerProfileId} />;
+  if (!phone) return ownerProfileId ? <ContactCard profileId={ownerProfileId} /> : null;
   const tg = companyTelegram?.replace(/^@/, "") || null;
   return (
     <div className="space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-4">

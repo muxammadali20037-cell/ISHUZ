@@ -1610,6 +1610,53 @@ export type Database = {
           },
         ];
       };
+      profession_images: {
+        Row: {
+          attempts: number;
+          created_at: string;
+          image_url: string | null;
+          last_error: string | null;
+          model: string | null;
+          node_id: string;
+          prompt: string | null;
+          status: string;
+          storage_path: string | null;
+          updated_at: string;
+        };
+        Insert: {
+          attempts?: number;
+          created_at?: string;
+          image_url?: string | null;
+          last_error?: string | null;
+          model?: string | null;
+          node_id: string;
+          prompt?: string | null;
+          status?: string;
+          storage_path?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          attempts?: number;
+          created_at?: string;
+          image_url?: string | null;
+          last_error?: string | null;
+          model?: string | null;
+          node_id?: string;
+          prompt?: string | null;
+          status?: string;
+          storage_path?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profession_images_node_id_fkey";
+            columns: ["node_id"];
+            isOneToOne: true;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profession_nodes: {
         Row: {
           aliases: string[];
@@ -2489,6 +2536,7 @@ export type Database = {
           age_min: number | null;
           applications_count: number;
           category_id: string | null;
+          client_ref: string | null;
           company_id: string | null;
           created_at: string;
           custom_profession: string | null;
@@ -2540,6 +2588,7 @@ export type Database = {
           age_min?: number | null;
           applications_count?: number;
           category_id?: string | null;
+          client_ref?: string | null;
           company_id?: string | null;
           created_at?: string;
           custom_profession?: string | null;
@@ -2591,6 +2640,7 @@ export type Database = {
           age_min?: number | null;
           applications_count?: number;
           category_id?: string | null;
+          client_ref?: string | null;
           company_id?: string | null;
           created_at?: string;
           custom_profession?: string | null;
@@ -2713,6 +2763,35 @@ export type Database = {
             foreignKeyName: "vacancy_benefits_vacancy_id_fkey";
             columns: ["vacancy_id"];
             isOneToOne: false;
+            referencedRelation: "vacancies";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      vacancy_contacts: {
+        Row: {
+          phone: string;
+          show_phone: boolean;
+          updated_at: string;
+          vacancy_id: string;
+        };
+        Insert: {
+          phone: string;
+          show_phone?: boolean;
+          updated_at?: string;
+          vacancy_id: string;
+        };
+        Update: {
+          phone?: string;
+          show_phone?: boolean;
+          updated_at?: string;
+          vacancy_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "vacancy_contacts_vacancy_id_fkey";
+            columns: ["vacancy_id"];
+            isOneToOne: true;
             referencedRelation: "vacancies";
             referencedColumns: ["id"];
           },
@@ -3516,6 +3595,10 @@ export type Database = {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
       };
+      claim_profession_image: {
+        Args: { p_model: string; p_node_id: string; p_prompt: string };
+        Returns: boolean;
+      };
       click_complete: {
         Args: {
           p_amount: number;
@@ -3795,6 +3878,7 @@ export type Database = {
         Args: { p_vacancy_path: string[]; p_worker_path: string[] };
         Returns: number;
       };
+      profession_subtree: { Args: { p_node_id: string }; Returns: string[] };
       profile_display_name: { Args: { p_profile: string }; Returns: string };
       profile_rating: {
         Args: { p_profile_id: string };
@@ -3882,6 +3966,8 @@ export type Database = {
         };
         Returns: number;
       };
+      save_simple_vacancy: { Args: { p: Json }; Returns: Json };
+      save_simple_worker_listing: { Args: { p: Json }; Returns: Json };
       saved_search_new_count: {
         Args: { p_search_id: string; p_since: string };
         Returns: number;
@@ -4243,6 +4329,131 @@ export type Database = {
           similarity: number;
           status: Database["public"]["Enums"]["vacancy_status"];
           title: string;
+        }[];
+      };
+      simple_search_vacancies: {
+        Args: {
+          p_district_id?: string;
+          p_limit?: number;
+          p_no_experience?: boolean;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+          p_salary_min?: number;
+          p_schedule?: Database["public"]["Enums"]["work_schedule"];
+        };
+        Returns: {
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employer_name: string;
+          employer_verified: boolean;
+          experience_min_months: number;
+          id: string;
+          is_featured: boolean;
+          is_government: boolean;
+          is_remote: boolean;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          published_at: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          summary: string;
+          title: string;
+          total_count: number;
+          work_time_from: string;
+          work_time_to: string;
+        }[];
+      };
+      simple_search_workers: {
+        Args: {
+          p_district_id?: string;
+          p_experienced?: boolean;
+          p_limit?: number;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+        };
+        Returns: {
+          about: string;
+          avatar_url: string;
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          experience_level: Database["public"]["Enums"]["experience_level"];
+          first_name: string;
+          headline: string;
+          id: string;
+          is_promoted: boolean;
+          last_active_at: string;
+          last_initial: string;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          remote_ok: boolean;
+          salary_expected: number;
+          total_count: number;
+        }[];
+      };
+      simple_vacancy_phone: { Args: { p_vacancy_id: string }; Returns: string };
+      simple_worker_listing: {
+        Args: { p_id: string };
+        Returns: {
+          about: string;
+          avatar_url: string;
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          experience_level: Database["public"]["Enums"]["experience_level"];
+          first_name: string;
+          headline: string;
+          id: string;
+          is_listed: boolean;
+          is_owner: boolean;
+          last_active_at: string;
+          last_initial: string;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          remote_ok: boolean;
+          salary_expected: number;
+          schedules: Database["public"]["Enums"]["work_schedule"][];
         }[];
       };
       slugify: { Args: { input: string }; Returns: string };
