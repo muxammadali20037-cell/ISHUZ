@@ -22,6 +22,7 @@ const MAP: Record<string, Variant> = {
   rejected: "destructive",
   unverified: "default",
   verified: "success",
+  suspended: "destructive",
   // worker
   not_looking: "default",
 };

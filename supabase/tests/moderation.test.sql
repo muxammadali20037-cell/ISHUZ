@@ -316,4 +316,18 @@ select pg_temp.ok(public.notification_open((select open_token from tok)) = (sele
 select pg_temp.superuser();
 select pg_temp.ok((select opened_at is not null from public.notifications where open_token = (select open_token from tok)), 'ochilish vaqti yozildi');
 
+-- =====================================================================
+-- Admin moderatsiya navbati (0053): faqat vacancies.moderate + aal2
+-- =====================================================================
+select pg_temp.login('6a000000-0000-0000-0000-000000000001');
+select pg_temp.fails($$select public.admin_moderation_queue('review')$$, 'oddiy foydalanuvchi navbatni ko''ra olmaydi', '42501');
+select pg_temp.login_aal1('6a000000-0000-0000-0000-000000000003');
+select pg_temp.fails($$select public.admin_moderation_queue('review')$$, 'ikki bosqichli kirishsiz admin navbatni ko''ra olmaydi', '42501');
+select pg_temp.login('6a000000-0000-0000-0000-000000000003');
+select pg_temp.fails($$select public.admin_moderation_queue('everything')$$, 'noto''g''ri tab rad etiladi', 'invalid_tab');
+select pg_temp.ok(jsonb_typeof(public.admin_moderation_queue('pending') -> 'rows') = 'array', 'navbat ro''yxati qaytdi');
+select pg_temp.ok((public.admin_moderation_queue('rejected', 'worker', 5, 0) ->> 'total')::int >= 0, 'tur va sahifa bo''yicha filtr');
+select pg_temp.ok(coalesce((select bool_and(r ? 'owner_first_name' and not (r ? 'phone')) from jsonb_array_elements(public.admin_moderation_queue('pending', null, 50, 0) -> 'rows') r), true), 'navbatda telefon kabi kontakt ma''lumotlari yo''q');
+select pg_temp.superuser();
+
 rollback;

@@ -141,7 +141,10 @@ export async function markFoundJob(): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await supabase.from("worker_profiles").update({ status: "not_looking", is_public: false }).eq("id", session.workerId);
   if (error) return { ok: false, error: errorCode(error) };
-  after(() => trackServer("outcome_found_job", session.userId));
+  after(async () => {
+    await trackServer("outcome_found_job", session.userId);
+    await trackServer("outcome_report", session.userId, { kind: "found_job" });
+  });
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -155,7 +158,10 @@ export async function markFoundWorker(input: unknown): Promise<ActionResult> {
   const supabase = await createClient();
   const { error } = await supabase.rpc("set_vacancy_status", { p_vacancy_id: parsed.data.vacancyId, p_status: "closed" });
   if (error) return { ok: false, error: errorCode(error) };
-  after(() => trackServer("outcome_found_worker", session.userId));
+  after(async () => {
+    await trackServer("outcome_found_worker", session.userId);
+    await trackServer("outcome_report", session.userId, { kind: "found_worker" });
+  });
   revalidatePath("/", "layout");
   return { ok: true };
 }

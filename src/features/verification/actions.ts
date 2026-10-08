@@ -1,11 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { getSession } from "@/features/auth/session";
 import type { ActionResult } from "@/features/auth/actions";
 import { errorCode } from "@/lib/utils";
+import { reviewVerificationRequest } from "./ai-review";
 
 const schema = z.object({
   identityNumber: z.string().trim().max(20).optional(),
@@ -28,6 +30,9 @@ export async function submitEmployerVerification(input: unknown): Promise<Action
     p_document_paths: v.documentPaths,
   });
   if (error) return { ok: false, error: errorCode(error) };
+  // adminga yordamchi eslatma (nomuvofiqliklar) — fon rejimida; qaror baribir adminniki
+  const { data: req } = await supabase.from("verification_requests").select("id").eq("profile_id", session.userId).eq("status", "pending").order("created_at", { ascending: false }).limit(1).maybeSingle();
+  if (req) after(() => reviewVerificationRequest(req.id));
   revalidatePath("/cabinet/verification");
   return { ok: true };
 }

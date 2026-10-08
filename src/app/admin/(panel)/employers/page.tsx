@@ -12,6 +12,9 @@ import { Filters, FilterSearch, FilterSelect } from "@/features/admin/components
 import { Pagination } from "@/features/admin/components/pagination";
 import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 import { StatusBadge, BoolBadge } from "@/features/admin/components/status-badge";
+import { EmployerStatusActions } from "@/features/admin/components/employer-status-actions";
+import { DocumentLinks } from "@/features/admin/components/verification-actions";
+import { VerificationAiNotes } from "@/features/admin/components/verification-ai-notes";
 import { UrlSheet } from "@/features/admin/components/url-sheet";
 import { DetailRow, DetailSection } from "@/features/admin/components/detail-sheet";
 import { UserBlockButton } from "@/features/admin/components/user-actions";
@@ -59,7 +62,7 @@ export default async function AdminEmployersPage({ searchParams }: { searchParam
           name="verification"
           defaultValue={f.verification}
           placeholder={t("admin.employers.col_verification")}
-          options={(["unverified", "pending", "verified", "rejected"] as const).map((s) => ({ value: s, label: tEnum("verification_status", s) }))}
+          options={(["unverified", "pending", "verified", "rejected", "suspended"] as const).map((s) => ({ value: s, label: tEnum("verification_status", s) }))}
         />
         <FilterSelect
           name="type"
@@ -157,12 +160,29 @@ export default async function AdminEmployersPage({ searchParams }: { searchParam
               <DetailSection title={t("admin.users.section_profile")}>
                 <DetailRow label={t("admin.employers.display_name")}>{detail.display_name ?? "—"}</DetailRow>
                 <DetailRow label={t("admin.employers.col_verification")}><StatusBadge status={detail.verification_status} label={tEnum("verification_status", detail.verification_status)} size="sm" /></DetailRow>
+                <DetailRow label={t("admin.employer_status.checked")}>
+                  {detail.verification_checks.length ? detail.verification_checks.map((c) => t(`admin.employer_status.checks.${c}`)).join(", ") : "—"}
+                  {detail.verification_note ? <span className="block text-xs text-muted-foreground">{detail.verification_note}</span> : null}
+                </DetailRow>
+                <DetailRow label={t("admin.employers.tin")}>{detail.identity_number ?? "—"}</DetailRow>
                 <DetailRow label={t("admin.employers.contact_phone")}>{detail.contact_phone ? formatPhone(detail.contact_phone) : "—"}</DetailRow>
                 <DetailRow label={t("admin.workers.region")}>{[name(detail.regions), name(detail.districts)].filter(Boolean).join(", ") || "—"}</DetailRow>
                 <DetailRow label={t("admin.workers.onboarded")}><BoolBadge value={!!detail.onboarding_completed_at} yes={t("common.labels.yes")} no={t("common.labels.no")} /></DetailRow>
                 <DetailRow label={t("admin.users.vacancies")}>{detail.counts.vacancies} ({t("admin.vacancies.active_count", { count: detail.counts.active })})</DetailRow>
                 <DetailRow label="ID"><code className="text-xs">{detail.profile_id}</code></DetailRow>
               </DetailSection>
+              {ctx.can("employers.verify") ? (
+                <div className="mt-3 rounded-xl border border-border p-3">
+                  <EmployerStatusActions
+                    profileId={detail.profile_id}
+                    name={fullName(detail.profiles.first_name, detail.profiles.last_name) || detail.display_name || "—"}
+                    status={detail.verification_status}
+                    employerType={detail.employer_type}
+                    hasIdentity={!!detail.identity_number || !!detail.companies?.tin}
+                    hasDocuments={detail.verifications.some((v) => v.document_paths.length > 0)}
+                  />
+                </div>
+              ) : null}
               {detail.about ? <p className="mt-3 whitespace-pre-line rounded-xl bg-secondary/60 p-3 text-sm">{detail.about}</p> : null}
               {detail.companies ? (
                 <DetailSection title={t("admin.employers.company")}>
@@ -189,9 +209,14 @@ export default async function AdminEmployersPage({ searchParams }: { searchParam
               {detail.verifications.length ? (
                 <DetailSection title={t("admin.employers.verification_requests")}>
                   {detail.verifications.map((v) => (
-                    <div key={v.id} className="flex items-center justify-between gap-2 py-2 text-sm">
-                      <span>{tEnum("verification_type", v.type)} · <span className="text-xs text-muted-foreground">{formatDate(v.created_at, locale, "d MMM yyyy")}</span></span>
-                      <StatusBadge status={v.status} label={tEnum("verification_status", v.status)} size="sm" />
+                    <div key={v.id} className="space-y-2 py-2 text-sm">
+                      <div className="flex items-center justify-between gap-2">
+                        <span>{tEnum("verification_type", v.type)} · <span className="text-xs text-muted-foreground">{formatDate(v.created_at, locale, "d MMM yyyy")}</span></span>
+                        <StatusBadge status={v.status} label={tEnum("verification_status", v.status)} size="sm" />
+                      </div>
+                      {v.note ? <p className="whitespace-pre-line text-xs text-muted-foreground">{v.note}</p> : null}
+                      {ctx.can("employers.verify") ? <DocumentLinks paths={v.document_paths} /> : null}
+                      {v.status === "pending" ? <VerificationAiNotes review={v.ai_review} /> : null}
                     </div>
                   ))}
                 </DetailSection>

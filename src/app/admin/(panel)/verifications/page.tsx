@@ -12,6 +12,7 @@ import { Pagination } from "@/features/admin/components/pagination";
 import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 import { StatusBadge } from "@/features/admin/components/status-badge";
 import { DocumentLinks, VerificationActions } from "@/features/admin/components/verification-actions";
+import { VerificationAiNotes } from "@/features/admin/components/verification-ai-notes";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/misc";
@@ -90,6 +91,7 @@ export default async function AdminVerificationsPage({ searchParams }: { searchP
             ),
           },
           { key: "docs", header: t("admin.verifications.col_documents"), render: (r) => <DocumentLinks paths={r.document_paths} /> },
+          { key: "ai", header: t("admin.verify_ai.col"), className: "min-w-[220px]", render: (r) => <VerificationAiNotes review={r.ai_review} /> },
           {
             key: "created",
             header: t("admin.users.col_created"),

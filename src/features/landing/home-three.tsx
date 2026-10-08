@@ -76,6 +76,8 @@ export async function HomeThree({ session }: { session: SessionContext | null })
           <li key={c.href} className="flex">
             <Link
               href={c.href}
+              data-track="direction_select"
+              data-track-to={c.href.replace(/[^a-z/]/g, "").slice(0, 40)}
               className={cn(
                 "group flex w-full flex-col rounded-3xl p-6 shadow-md transition-transform hover:-translate-y-0.5 focus-visible:ring-4 active:scale-[0.99] sm:p-7",
                 c.box,

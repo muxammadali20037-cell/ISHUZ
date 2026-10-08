@@ -149,3 +149,37 @@ export const adminUpsertSchema = z.object({
   is_active: z.boolean().default(true),
 });
 export type AdminUpsertInput = z.infer<typeof adminUpsertSchema>;
+
+// --- moderatsiya navbati, ish beruvchi holati, moslik sozlamalari, navbatlar ---
+
+export const MODERATION_DECISIONS = ["allow", "reject", "review", "recheck"] as const;
+export const MODERATION_REJECT_CATEGORIES = ["sexual_services", "extremism", "illegal_activity", "political_content", "religious_propaganda", "spam", "unrelated", "uncertain"] as const;
+export const moderationDecideSchema = z
+  .object({
+    entity: z.enum(["vacancy", "worker"]),
+    id: uuid,
+    decision: z.enum(MODERATION_DECISIONS),
+    message: z.string().trim().max(500).optional(),
+    category: z.enum(MODERATION_REJECT_CATEGORIES).optional(),
+  })
+  .refine((v) => v.decision !== "reject" || (v.message?.length ?? 0) >= 3, { message: "message_required", path: ["message"] });
+
+export const EMPLOYER_CHECKS = ["phone", "name", "region", "identity", "documents"] as const;
+export const employerStatusSchema = z
+  .object({
+    profileId: uuid,
+    status: z.enum(["verified", "rejected", "suspended"]),
+    checks: z.array(z.enum(EMPLOYER_CHECKS)).max(EMPLOYER_CHECKS.length).default([]),
+    note: z.string().trim().max(1000).optional(),
+  })
+  .refine((v) => v.status === "verified" || (v.note?.length ?? 0) >= 3, { message: "message_required", path: ["note"] });
+
+export const MATCH_WEIGHT_KEYS = ["profession", "location", "salary", "experience", "skills", "schedule", "employment", "language"] as const;
+export const matchingSchema = z
+  .object({
+    weights: z.object(Object.fromEntries(MATCH_WEIGHT_KEYS.map((k) => [k, z.number().int().min(0).max(60)])) as Record<(typeof MATCH_WEIGHT_KEYS)[number], z.ZodNumber>),
+    threshold: z.number().int().min(50).max(100),
+  })
+  .refine((v) => Object.values(v.weights).reduce((a, b) => a + b, 0) === 100, { message: "weights_must_sum_100", path: ["weights"] });
+
+export const retryQueueSchema = z.object({ kind: z.enum(["match_jobs", "telegram", "moderation"]) });

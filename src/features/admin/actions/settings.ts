@@ -15,12 +15,16 @@ import { logAdmin, requirePerm, snapshot } from "./guard";
  * Har yozuvdan keyin rpc admin_log(...) → audit_logs.
  */
 
+const MATCHING_KEYS = ["match_weights", "match_notify_threshold", "match_rules_version"];
+
 /** Sozlama qiymatini yangilash (JSON) */
 export async function updateSetting(input: unknown): Promise<ActionResult> {
   const parsed = settingUpdateSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   const guard = await requirePerm("settings.manage");
   if (!guard.ok) return guard;
+  // moslik qoidalari faqat versiyalangan yo'l orqali (admin_update_matching)
+  if (MATCHING_KEYS.includes(parsed.data.key)) return { ok: false, error: "use_matching_page" };
   let value: Json;
   try {
     value = JSON.parse(parsed.data.valueJson) as Json;

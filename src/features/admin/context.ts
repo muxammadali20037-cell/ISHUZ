@@ -16,8 +16,14 @@ export interface AdminContext {
 
 async function loadAdminRow(userId: string) {
   const supabase = await createClient();
-  const { data } = await supabase.from("admin_users").select("role, permissions, is_active").eq("profile_id", userId).maybeSingle();
-  return data;
+  const [{ data }, { data: status }] = await Promise.all([
+    supabase.from("admin_users").select("role, permissions, is_active").eq("profile_id", userId).maybeSingle(),
+    supabase.rpc("my_admin_status"),
+  ]);
+  if (!data) return null;
+  // ikki bosqichli kirish (TOTP, aal2) — bazadagi admin_aal_ok() bilan bir xil qoida
+  const aalOk = !!(status as { aal_ok?: boolean } | null)?.aal_ok;
+  return { ...data, aalOk };
 }
 
 function build(session: SessionContext, row: { role: AdminRole; permissions: string[] }): AdminContext {
@@ -34,6 +40,7 @@ export const getAdminContext = cache(async (): Promise<AdminContext> => {
   const session = await requireAdmin();
   const row = await loadAdminRow(session.userId);
   if (!row?.is_active) redirect("/");
+  if (!row.aalOk) redirect("/admin/mfa");
   return build(session, row);
 });
 
@@ -42,6 +49,6 @@ export const getAdminActor = cache(async (): Promise<AdminContext | null> => {
   const session = await getSession();
   if (!session || !session.isAdmin || session.profile.is_blocked) return null;
   const row = await loadAdminRow(session.userId);
-  if (!row?.is_active) return null;
+  if (!row?.is_active || !row.aalOk) return null;
   return build(session, row);
 });

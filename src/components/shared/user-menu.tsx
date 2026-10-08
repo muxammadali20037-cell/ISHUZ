@@ -3,12 +3,13 @@
 import { useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronDown, LogOut, Settings, User, Briefcase, Shield, Repeat } from "lucide-react";
+import { ChevronDown, LogOut, Settings, User, Briefcase, Repeat } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { setActiveRole, signOut } from "@/features/auth/actions";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
-export function UserMenu({ name, roles, activeRole, isAdmin, avatar }: { name: string; roles: string[]; activeRole: string | null; isAdmin: boolean; avatar: ReactNode }) {
+/** Admin panel bu menyuda yo'q: u alohida hostda (ADMIN_HOST) ochiladi */
+export function UserMenu({ name, roles, activeRole, avatar }: { name: string; roles: string[]; activeRole: string | null; avatar: ReactNode }) {
   const { t } = useT();
   const router = useRouter();
   const [, startTransition] = useTransition();
@@ -49,13 +50,6 @@ export function UserMenu({ name, roles, activeRole, isAdmin, avatar }: { name: s
             <Repeat /> {t("common.nav.switch_to_worker")}
           </DropdownMenuItem>
         )}
-        {isAdmin ? (
-          <DropdownMenuItem asChild>
-            <Link href="/admin">
-              <Shield /> {t("common.nav.admin")}
-            </Link>
-          </DropdownMenuItem>
-        ) : null}
         <DropdownMenuSeparator />
         <DropdownMenuItem destructive onSelect={() => startTransition(() => signOut())}>
           <LogOut /> {t("common.nav.logout")}

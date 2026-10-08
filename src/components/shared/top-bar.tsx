@@ -6,7 +6,6 @@ import { createClient } from "@/lib/supabase/server";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
-import { adminUiEnabled } from "@/lib/features";
 import { LanguageSelect } from "./language-switcher";
 import { DesktopNavLinks, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
@@ -59,7 +58,6 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
                 name={`${session.profile.first_name} ${session.profile.last_name}`.trim()}
                 roles={session.roles}
                 activeRole={session.activeRole}
-                isAdmin={session.isAdmin && adminUiEnabled()}
                 avatar={
                   <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="sm" />
                 }

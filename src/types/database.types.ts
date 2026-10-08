@@ -3974,6 +3974,10 @@ export type Database = {
         };
         Returns: string;
       };
+      admin_moderation_queue: {
+        Args: { p_entity?: string; p_limit?: number; p_offset?: number; p_tab?: string };
+        Returns: Json;
+      };
       admin_profession_node_stats: {
         Args: { p_category_id?: string; p_parent_id?: string };
         Returns: {

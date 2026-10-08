@@ -72,7 +72,7 @@ export async function getEmployerDetail(id: string) {
   const { data } = await supabase
     .from("employer_profiles")
     .select(
-      `id, profile_id, employer_type, display_name, verification_status, onboarding_completed_at, created_at, contact_phone, about,
+      `id, profile_id, employer_type, display_name, verification_status, verification_checks, verification_note, verified_at, identity_number, onboarding_completed_at, created_at, contact_phone, about,
        profiles!inner(first_name, last_name, avatar_url, is_blocked), regions(name_uz, name_ru), districts(name_uz, name_ru),
        companies(id, name, slug, logo_url, verification_status, is_blocked, tin, phone, telegram, website, address, size, about, verified_at, created_at, company_members(role, profiles!company_members_profile_id_fkey(id, first_name, last_name)))`,
     )
@@ -82,7 +82,7 @@ export async function getEmployerDetail(id: string) {
   const [vac, active, ver] = await Promise.all([
     supabase.from("vacancies").select("id", { count: "exact", head: true }).eq("owner_profile_id", data.profile_id),
     supabase.from("vacancies").select("id", { count: "exact", head: true }).eq("owner_profile_id", data.profile_id).eq("status", "active"),
-    supabase.from("verification_requests").select("id, type, status, created_at, review_note").eq("profile_id", data.profile_id).order("created_at", { ascending: false }).limit(5),
+    supabase.from("verification_requests").select("id, type, status, created_at, review_note, note, document_paths, ai_review").eq("profile_id", data.profile_id).order("created_at", { ascending: false }).limit(5),
   ]);
   return { ...data, counts: { vacancies: vac.count ?? 0, active: active.count ?? 0 }, verifications: ver.data ?? [] };
 }

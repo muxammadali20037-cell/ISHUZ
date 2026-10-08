@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -16,6 +16,7 @@ import { publishWorkerListing } from "../actions";
 import { parseMoney } from "../schema";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type ListingStateInfo, type PostViewer, type WorkerDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
+import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, VerifiedPhone, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
@@ -97,6 +98,20 @@ export function WorkerPost({
       alive = false;
     };
   }, [professionId, step]);
+
+  // voronka: e'lon boshlandi / tekshirish sahifasiga yetdi (har biri bir marta)
+  const tracked = useRef({ start: false, review: false });
+  useEffect(() => {
+    if (!ready) return;
+    if (!tracked.current.start) {
+      tracked.current.start = true;
+      track("post_start", { entity: "worker" });
+    }
+    if (step === TOTAL && !tracked.current.review) {
+      tracked.current.review = true;
+      track("post_review", { entity: "worker", source: draft.source ?? "manual" });
+    }
+  }, [ready, step, draft.source]);
 
   const goTo = (n: number) => {
     setErrors({});

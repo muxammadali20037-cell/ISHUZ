@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -15,6 +15,7 @@ import { publishVacancyListing } from "../actions";
 import { formatMoneyInput, parseMoney } from "../schema";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type ListingStateInfo, type PostViewer, type VacancyDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
+import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
@@ -106,6 +107,20 @@ export function VacancyPost({
       alive = false;
     };
   }, [professionId, step]);
+
+  // voronka: e'lon boshlandi / tekshirish sahifasiga yetdi (har biri bir marta)
+  const tracked = useRef({ start: false, review: false });
+  useEffect(() => {
+    if (!ready) return;
+    if (!tracked.current.start) {
+      tracked.current.start = true;
+      track("post_start", { entity: "vacancy" });
+    }
+    if (step === TOTAL && !tracked.current.review) {
+      tracked.current.review = true;
+      track("post_review", { entity: "vacancy", source: draft.source ?? "manual" });
+    }
+  }, [ready, step, draft.source]);
 
   const goTo = (n: number) => {
     setErrors({});

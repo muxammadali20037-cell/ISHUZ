@@ -30,6 +30,7 @@ export function NoteActionButton({
   action,
   onDone,
   className,
+  extra,
 }: {
   label: ReactNode;
   title: string;
@@ -47,6 +48,8 @@ export function NoteActionButton({
   action: (note: string) => Promise<ActionResult<unknown>>;
   onDone?: () => void;
   className?: string;
+  /** Izohdan oldingi qo'shimcha maydonlar (masalan, sabab turi) */
+  extra?: ReactNode;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -81,6 +84,7 @@ export function NoteActionButton({
       </Button>
       <Dialog open={open} onOpenChange={(o) => !pending && setOpen(o)}>
         <DialogContent title={title} description={description}>
+          {extra}
           {noteLabel ? (
             <Field label={noteLabel} htmlFor="note-dialog-note" required={noteRequired}>
               <Textarea id="note-dialog-note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} className="min-h-[90px]" autoFocus />

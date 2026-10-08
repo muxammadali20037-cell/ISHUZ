@@ -9,7 +9,9 @@ export type SettingRow = Tables<"app_settings">;
 export async function listSettings(): Promise<{ rows: SettingRow[]; error: string | null }> {
   const supabase = await createClient();
   const { data, error } = await supabase.from("app_settings").select("*").order("key");
-  return { rows: data ?? [], error: error?.message ?? null };
+  // moslik qoidalari alohida sahifada (versiya va audit bilan)
+  const hidden = new Set(["match_weights", "match_notify_threshold", "match_rules_version"]);
+  return { rows: (data ?? []).filter((r) => !hidden.has(r.key)), error: error?.message ?? null };
 }
 
 export type AdminUserRow = Tables<"admin_users"> & {
