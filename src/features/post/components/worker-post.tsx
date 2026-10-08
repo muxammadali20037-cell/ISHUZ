@@ -231,11 +231,11 @@ export function WorkerPost({
           id={result.workerId}
           info={result}
           fieldLabels={{
-            name: t("easy.fields.first_name"),
-            title: t("easy.fields.profession"),
-            profession: t("easy.fields.profession"),
-            description: t("easy.fields.about"),
-            experience: t("easy.fields.about"),
+            name: t("easy.worker.first_name"),
+            title: t("easy.wizard.steps.profession"),
+            profession: t("easy.wizard.steps.profession"),
+            description: t("easy.worker.about"),
+            experience: t("easy.worker.experience"),
             photo: t("easy.moderation.photo"),
           }}
           onEdit={() => editFlagged(result.fields)}

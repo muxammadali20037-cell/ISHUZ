@@ -63,6 +63,7 @@ export async function proxy(request: NextRequest) {
     url.search = `?next=${encodeURIComponent(request.nextUrl.pathname + search)}`;
     const redirect = NextResponse.redirect(url);
     response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
+    if (adminArea) redirect.headers.set("X-Robots-Tag", NOINDEX);
     return redirect;
   }
 

@@ -17,9 +17,22 @@ function niceMax(max: number): number {
   return step * pow;
 }
 
+// Oy nomlari qo'lda: server (Node ICU) va brauzer bir xil matn chiqarsin (gidratsiya mos kelishi uchun)
+const MONTHS: Record<string, string[]> = {
+  uz: ["yan", "fev", "mar", "apr", "may", "iyn", "iyl", "avg", "sen", "okt", "noy", "dek"],
+  oz: ["янв", "фев", "мар", "апр", "май", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"],
+  ru: ["янв", "фев", "мар", "апр", "мая", "июн", "июл", "авг", "сен", "окт", "ноя", "дек"],
+  en: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+};
+
 function shortDay(iso: string, locale: string): string {
-  const d = new Date(`${iso}T00:00:00`);
-  return d.toLocaleDateString(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ", { day: "numeric", month: "short" });
+  const [, m, d] = iso.split("-").map(Number);
+  const month = (MONTHS[locale] ?? MONTHS.uz!)[(m ?? 1) - 1] ?? "";
+  return locale === "en" ? `${month} ${d}` : `${d} ${month}`;
+}
+
+function groupDigits(n: number): string {
+  return String(Math.trunc(n)).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 /**
@@ -72,7 +85,7 @@ export function DailyBarChart({
             <g key={tick}>
               <line x1={padL} x2={W - padR} y1={y} y2={y} stroke="var(--border)" strokeWidth={1} />
               <text x={padL - 6} y={y + 3.5} textAnchor="end" fontSize={10} fill="var(--muted-foreground)" className="tabular">
-                {tick.toLocaleString("ru-RU")}
+                {groupDigits(tick)}
               </text>
             </g>
           );
@@ -116,7 +129,7 @@ export function DailyBarChart({
           style={{ left: `${Math.min(88, Math.max(4, ((padL + (active ?? 0) * slot + slot / 2) / W) * 100))}%`, transform: "translateX(-50%)" }}
           role="status"
         >
-          <p className="text-sm font-semibold tabular text-foreground">{activePoint.value.toLocaleString("ru-RU")}</p>
+          <p className="text-sm font-semibold tabular text-foreground">{groupDigits(activePoint.value)}</p>
           <p className="text-muted-foreground">{shortDay(activePoint.day, locale)}</p>
         </div>
       ) : null}

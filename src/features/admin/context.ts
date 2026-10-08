@@ -1,9 +1,9 @@
 import "server-only";
 
 import { cache } from "react";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getSession, requireAdmin, type SessionContext } from "@/features/auth/session";
+import { getSession, requireSession, type SessionContext } from "@/features/auth/session";
 import { hasPermission, type AdminRole, type Permission } from "./permissions";
 
 export interface AdminContext {
@@ -35,11 +35,15 @@ function build(session: SessionContext, row: { role: AdminRole; permissions: str
   };
 }
 
-/** Sahifalar uchun: admin bo'lmasa redirect. Bir so'rov davomida keshlanadi. */
+/**
+ * Sahifalar uchun: kirmagan bo'lsa — kirish sahifasi; admin bo'lmasa — 404 (panel borligi bildirilmaydi,
+ * alohida admin hostda "/" ga yo'naltirish aylanib qolmaydi); MFA yo'q bo'lsa — /admin/mfa. Bir so'rovda keshlanadi.
+ */
 export const getAdminContext = cache(async (): Promise<AdminContext> => {
-  const session = await requireAdmin();
+  const session = await requireSession("/admin");
+  if (!session.isAdmin || session.profile.is_blocked) notFound();
   const row = await loadAdminRow(session.userId);
-  if (!row?.is_active) redirect("/");
+  if (!row?.is_active) notFound();
   if (!row.aalOk) redirect("/admin/mfa");
   return build(session, row);
 });

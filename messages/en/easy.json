@@ -98,7 +98,8 @@
       "review": "Review"
     },
     "optional": "optional",
-    "image_note": "Profession image — shown on your listing. It is not your photo."
+    "image_note": "Profession image — shown on your listing. It is not your photo.",
+    "saving": "Saving…"
   },
   "location": {
     "worker_title": "Where do you want to work?",

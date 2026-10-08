@@ -98,7 +98,8 @@
       "review": "Tekshirish"
     },
     "optional": "ixtiyoriy",
-    "image_note": "Kasb tasviri — e'loningizda ko'rinadi. Bu sizning suratingiz emas."
+    "image_note": "Kasb tasviri — e'loningizda ko'rinadi. Bu sizning suratingiz emas.",
+    "saving": "Saqlanmoqda…"
   },
   "location": {
     "worker_title": "Qayerda ishlamoqchisiz?",

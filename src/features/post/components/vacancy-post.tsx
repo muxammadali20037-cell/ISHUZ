@@ -253,13 +253,13 @@ export function VacancyPost({
           id={result.vacancyId}
           info={result}
           fieldLabels={{
-            title: t("easy.fields.profession"),
-            profession: t("easy.fields.profession"),
-            address: t("easy.fields.region"),
-            employer: t("easy.fields.org_name"),
+            title: t("easy.wizard.steps.specialist"),
+            profession: t("easy.wizard.steps.specialist"),
+            address: t("easy.wizard.steps.location"),
+            employer: t("easy.vacancy.org_name"),
             logo: t("easy.moderation.logo"),
-            links: t("easy.fields.description"),
-            description: t("easy.fields.description"),
+            links: t("easy.vacancy.description"),
+            description: t("easy.vacancy.description"),
             photo: t("easy.moderation.photo"),
           }}
           onEdit={() => editFlagged(result.fields)}

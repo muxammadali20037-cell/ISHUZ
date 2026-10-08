@@ -63,12 +63,16 @@
     "new_matching_vacancy": {
       "title": "Сизга мос иш: {vacancy_title}",
       "body": "Мослик {score}%. Батафсил кўринг ва ариза юборинг.",
-      "body_noscore": "Батафсил кўринг ва ариза юборинг."
+      "body_noscore": "Батафсил кўринг ва ариза юборинг.",
+      "title_many": "Сизга {count} та мос иш топилди",
+      "body_many": "Энг моси: {vacancy_title} · {score}%"
     },
     "new_matching_worker": {
       "title": "Сизга мос номзод",
       "body": "{worker_name} · «{vacancy_title}» учун {score}% мос",
-      "body_noscore": "{worker_name} · «{vacancy_title}»"
+      "body_noscore": "{worker_name} · «{vacancy_title}»",
+      "title_many": "Вакансиянгизга {count} та мос номзод",
+      "body_many": "«{vacancy_title}» учун · энг моси {score}%"
     },
     "verification_result": {
       "title": "Тасдиқлаш натижаси",
@@ -98,7 +102,15 @@
     "phone_linked": "✅ Рақамингиз уланди: {phone}\nЭнди сайтда шу рақамни киритсангиз, кириш коди шу чатга келади.",
     "phone_already_linked": "Рақамингиз уланган: {phone}\nСайтга қайтиб, \"Код юбориш\" тугмасини босинг — код шу ерга келади.",
     "phone_not_own": "Илтимос, фақат ўзингизнинг рақамингизни пастдаги тугма орқали юборинг.",
-    "phone_invalid": "Рақамни ўқиб бўлмади. Қайта уриниб кўринг."
+    "phone_invalid": "Рақамни ўқиб бўлмади. Қайта уриниб кўринг.",
+    "link_ok": "✅ Telegram ҳисобингиз «Ish topdim»га боғланди.",
+    "link_used": "Бу ҳавола аллақачон ишлатилган. Иловадан янги ҳавола олинг.",
+    "link_expired": "Ҳавола муддати тугаган. Иловадан янги ҳавола олинг.",
+    "link_invalid": "Ҳавола нотўғри. Иловадан қайта уриниб кўринг.",
+    "link_elsewhere": "Бу Telegram бошқа ҳисобга боғланган. Ўша ҳисоб орқали киринг ёки қўллаб-қувватлашга ёзинг.",
+    "subscribed_worker": "🔔 Хабарнома ёқилди: сизга мос иш чиқса шу ерга ёзамиз.",
+    "subscribed_employer": "🔔 Хабарнома ёқилди: вакансиянгизга мос номзод топилса шу ерга ёзамиз.",
+    "settings_button": "Хабар созламалари"
   },
   "listing": {
     "listing_expiring_title": "Эълонингиз эртага тугайди",
@@ -106,71 +118,49 @@
     "listing_expired_title": "Эълонингиз муддати тугади",
     "listing_expired_body": "Сиз энди қидирувда кўринмайсиз. Узайтириш учун босинг."
   },
-  "notifications": {
-    "match": {
-      "worker_title": "Сизга мос янги иш топилди!",
-      "worker_title_many": "Сизга {count} та мос иш топилди!",
-      "employer_title": "Вакансиянгизга мос номзод топилди!",
-      "employer_title_many": "Вакансиянгизга {count} та мос номзод топилди!",
-      "for_vacancy": "Вакансия: {title}",
-      "salary": "Маош: {salary}",
-      "experience": "Тажриба: {experience}",
-      "score": "Мослик: {score}%",
-      "reason": "Сабаб: {list} мос.",
-      "more": "Яна {count} та — иловада",
-      "negotiable": "Келишилади",
-      "and": "ва",
-      "reasons": {
-        "profession": "касб",
-        "location": "ҳудуд",
-        "salary": "маош",
-        "experience": "тажриба",
-        "skills": "кўникмалар",
-        "schedule": "жадвал",
-        "language": "тил"
-      },
-      "btn_job": "Эълонни кўриш",
-      "btn_all": "Ҳаммасини кўриш",
-      "btn_candidate": "Номзодни кўриш",
-      "btn_candidates": "Номзодларни кўриш",
-      "btn_settings": "Хабар созламалари"
+  "match": {
+    "worker_title": "Сизга мос янги иш топилди!",
+    "worker_title_many": "Сизга {count} та мос иш топилди!",
+    "employer_title": "Вакансиянгизга мос номзод топилди!",
+    "employer_title_many": "Вакансиянгизга {count} та мос номзод топилди!",
+    "for_vacancy": "Вакансия: {title}",
+    "salary": "Маош: {salary}",
+    "experience": "Тажриба: {experience}",
+    "score": "Мослик: {score}%",
+    "reason": "Сабаб: {list} мос.",
+    "more": "Яна {count} та — иловада",
+    "negotiable": "Келишилади",
+    "and": "ва",
+    "reasons": {
+      "profession": "касб",
+      "location": "ҳудуд",
+      "salary": "маош",
+      "experience": "тажриба",
+      "skills": "кўникмалар",
+      "schedule": "жадвал",
+      "language": "тил"
     },
-    "types": {
-      "new_matching_vacancy": {
-        "title_many": "Сизга {count} та мос иш топилди",
-        "body_many": "Энг моси: {vacancy_title} · {score}%"
-      },
-      "new_matching_worker": {
-        "title_many": "Вакансиянгизга {count} та мос номзод",
-        "body_many": "«{vacancy_title}» учун · энг моси {score}%"
-      }
-    },
-    "moderation": {
-      "active_title": "Эълонингиз жойланди",
-      "active_body": "«{title}» текширувдан ўтди ва оммага чиқди.",
-      "rejected_title": "Эълон жойланмади",
-      "rejected_body": "Ish topdim фақат иш ва ишчи қидириш эълонларини қабул қилади. Матнингиздаги ишга алоқасиз ёки тақиқланган қисмни ўзгартиринг.",
-      "review_title": "Эълон қўшимча текширувда",
-      "review_body": "«{title}» модератор томонидан кўриб чиқилади. Натижасини билдирамиз.",
-      "verification_title": "Эълон текширувдан ўтди",
-      "verification_body": "Иш берувчи сифатида тасдиқланганингиздан сўнг «{title}» оммага чиқади.",
-      "payment_title": "Эълон текширувдан ўтди",
-      "payment_body": "«{title}» жойланиши учун тўловни амалга оширинг.",
-      "employer_verified_title": "Сиз тасдиқланган иш берувчисиз",
-      "employer_verified_body": "Кутиб турган вакансияларингиз оммага чиқди.",
-      "employer_rejected_title": "Иш берувчини тасдиқлаш рад этилди",
-      "employer_suspended_title": "Иш берувчи фаолияти тўхтатилди",
-      "employer_other_title": "Иш берувчи ҳолати ўзгарди"
-    },
-    "telegram": {
-      "link_ok": "✅ Telegram ҳисобингиз «Ish topdim»га боғланди.",
-      "link_used": "Бу ҳавола аллақачон ишлатилган. Иловадан янги ҳавола олинг.",
-      "link_expired": "Ҳавола муддати тугаган. Иловадан янги ҳавола олинг.",
-      "link_invalid": "Ҳавола нотўғри. Иловадан қайта уриниб кўринг.",
-      "link_elsewhere": "Бу Telegram бошқа ҳисобга боғланган. Ўша ҳисоб орқали киринг ёки қўллаб-қувватлашга ёзинг.",
-      "subscribed_worker": "🔔 Хабарнома ёқилди: сизга мос иш чиқса шу ерга ёзамиз.",
-      "subscribed_employer": "🔔 Хабарнома ёқилди: вакансиянгизга мос номзод топилса шу ерга ёзамиз.",
-      "settings_button": "Хабар созламалари"
-    }
+    "btn_job": "Эълонни кўриш",
+    "btn_all": "Ҳаммасини кўриш",
+    "btn_candidate": "Номзодни кўриш",
+    "btn_candidates": "Номзодларни кўриш",
+    "btn_settings": "Хабар созламалари"
+  },
+  "moderation": {
+    "active_title": "Эълонингиз жойланди",
+    "active_body": "«{title}» текширувдан ўтди ва оммага чиқди.",
+    "rejected_title": "Эълон жойланмади",
+    "rejected_body": "Ish topdim фақат иш ва ишчи қидириш эълонларини қабул қилади. Матнингиздаги ишга алоқасиз ёки тақиқланган қисмни ўзгартиринг.",
+    "review_title": "Эълон қўшимча текширувда",
+    "review_body": "«{title}» модератор томонидан кўриб чиқилади. Натижасини билдирамиз.",
+    "verification_title": "Эълон текширувдан ўтди",
+    "verification_body": "Иш берувчи сифатида тасдиқланганингиздан сўнг «{title}» оммага чиқади.",
+    "payment_title": "Эълон текширувдан ўтди",
+    "payment_body": "«{title}» жойланиши учун тўловни амалга оширинг.",
+    "employer_verified_title": "Сиз тасдиқланган иш берувчисиз",
+    "employer_verified_body": "Кутиб турган вакансияларингиз оммага чиқди.",
+    "employer_rejected_title": "Иш берувчини тасдиқлаш рад этилди",
+    "employer_suspended_title": "Иш берувчи фаолияти тўхтатилди",
+    "employer_other_title": "Иш берувчи ҳолати ўзгарди"
   }
 }

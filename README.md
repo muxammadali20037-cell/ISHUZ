@@ -1,8 +1,11 @@
-# Ish beruvchi (ISH.UZ)
+# Ish topdim
 
 > Ish qidirmang. O'zingizga mos ishni toping. · Ko'p CV ko'rmang. Sizga mos xodimni toping.
 
 O'zbekiston bozori uchun ish topish va ishchi topish platformasi: **Telegram Mini App**, **responsive web-ilova (PWA)** va **admin panel** — bitta Next.js kod bazasi, bitta Supabase (PostgreSQL) backend, bitta hisob.
+
+> Moderatsiya, moslik v2, Telegram obunasi, AI e'lon/qidiruv va alohida admin panel bo'yicha to'liq qo'llanma:
+> [`docs/ISH_TOPDIM.md`](docs/ISH_TOPDIM.md) (muhit o'zgaruvchilari, Vault, webhook, admin domeni, sinovlar).
 
 ## Texnologiyalar
 
