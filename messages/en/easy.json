@@ -250,7 +250,8 @@
     "region_wide": "Whole region",
     "remote": "Remote",
     "post_jobs": "No worker found? Post a job",
-    "post_workers": "No suitable job? Post a listing about yourself"
+    "post_workers": "No suitable job? Post a listing about yourself",
+    "salary_over": "from {amount} UZS"
   },
   "card": {
     "call": "Call",

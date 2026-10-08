@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
+import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
 import { findHref, parseFindParams } from "@/features/find/params";
-import { getNodeInfo, resolveFindQuery } from "@/features/find/queries";
+import { getNodeInfo } from "@/features/find/queries";
+import { smartResolveQuery } from "@/features/find/ai-search";
+import { getSession } from "@/features/auth/session";
+import { trackServer } from "@/features/analytics/server";
 import { FindAskIntent, FindDistrict, FindProfession, FindRegion, FindResultsView, FindStart } from "@/features/find/components/find-page";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -19,16 +23,23 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SearchPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const params = parseFindParams(await searchParams);
 
-  // Matn → maqsad + kasb + hudud (faqat kasb hali tanlanmagan bo'lsa); natija o'zgarsa — bir marta yo'naltiramiz
+  // Matn → maqsad + kasb + hudud + filtrlar (lug'at, kerak bo'lsa AI); natija o'zgarsa — bir marta yo'naltiramiz.
+  // Natijalar doim bazadagi haqiqiy e'lonlardan; AI faqat so'rovni tushunishga yordam beradi.
   if (params.q && !params.p) {
-    const r = await resolveFindQuery(params.q);
+    const session = await getSession();
+    const r = await smartResolveQuery(params.q, session?.userId ?? null, params.mode);
     const target = findHref(params, {
       mode: params.mode ?? r.mode,
       p: r.nodeId,
       region: params.region ?? (r.remote ? "remote" : r.regionSlug),
       district: params.district ?? r.districtId,
       q: r.nodeId ? "" : params.q,
+      salary: params.salary ?? r.salary,
+      schedule: params.schedule ?? r.schedule,
+      noexp: params.noexp || r.noexp,
+      exp: params.exp || r.exp,
     });
+    after(() => trackServer("search_submit", session?.userId ?? null, { source: r.source, found_profession: !!r.nodeId }));
     if (target !== findHref(params)) redirect(target);
   }
 

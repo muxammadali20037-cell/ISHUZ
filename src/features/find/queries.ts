@@ -4,8 +4,10 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import type { Json } from "@/types/database.types";
 import { getSearchDictionary } from "@/features/search/dictionary";
-import { understandQuery } from "@/features/search/understand";
+import { normalizeText, understandQuery } from "@/features/search/understand";
 import { getProfessionTrail } from "@/features/professions/queries";
 import type { TrailItem } from "@/features/professions/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
@@ -24,6 +26,11 @@ export interface ResolvedQuery {
   regionSlug: string | null;
   districtId: string | null;
   remote: boolean;
+  salaryMin: number | null;
+  salaryKind: "monthly" | "daily" | "hourly" | null;
+  schedules: ("5_2" | "6_1" | "2_2" | "shift" | "flexible")[];
+  noExperience: boolean;
+  experienceMonths: number | null;
 }
 
 /**
@@ -52,6 +59,11 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
     regionSlug: u.region?.slug ?? null,
     districtId: u.districts.length === 1 ? u.districts[0]!.id : null,
     remote: u.remote,
+    salaryMin: u.salaryMin,
+    salaryKind: u.salaryKind,
+    schedules: u.schedules,
+    noExperience: u.noExperience,
+    experienceMonths: u.experienceMonths,
   };
 }
 
@@ -128,3 +140,18 @@ export async function findWorkers(params: FindParams, place: Place): Promise<Fin
 }
 
 export type { JobRow, WorkerRow };
+
+/** /search natijasini qayd etish (statistika: eng ko'p qidirilgan kasblar, hududlar talabi, bo'sh natijalar) */
+export async function logFindSearch(input: { scope: "jobs" | "workers"; query: string; understood: Record<string, Json | undefined>; results: number; profileId: string | null }): Promise<void> {
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return;
+  const query = input.query.replace(/\s+/g, " ").trim().slice(0, 200);
+  if (!query) return;
+  try {
+    const understood = Object.fromEntries(Object.entries(input.understood).filter(([, v]) => v !== null && v !== undefined && v !== false)) as { [key: string]: Json };
+    await createAdminClient()
+      .from("search_logs")
+      .insert({ scope: input.scope, query, query_norm: normalizeText(query).slice(0, 200) || query, understood, results_count: Math.max(0, input.results), profile_id: input.profileId });
+  } catch (error) {
+    console.warn("[find] log", error instanceof Error ? error.message : error);
+  }
+}

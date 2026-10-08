@@ -1,13 +1,16 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { ArrowLeft, ArrowRight, BriefcaseBusiness, ChevronRight, Globe2, MapPin, Search, UsersRound } from "lucide-react";
+import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
+import { formatMoneyShort } from "@/lib/format";
+import { getSession } from "@/features/auth/session";
 import type { Category, District, Region } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { activeFilterCount, findHref, type FindParams } from "../params";
-import { PAGE_SIZE, findJobs, findWorkers, type NodeInfo } from "../queries";
+import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
 import { ChangeSheet, FilterSheet, FindProfessionStep } from "./find-client";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 
@@ -201,7 +204,7 @@ export async function FindDistrict({ params, region, districts, node }: { params
 
 /** Natijalar: qisqa xulosa + O'zgartirish + Filtr, kartalar, sahifalar, bo'sh holat */
 export async function FindResultsView({ params, node, region, district }: { params: FindParams; node: NodeInfo | null; region: Region | null; district: District | null }) {
-  const { t, name } = await getT();
+  const { t, name, tEnum, locale } = await getT();
   const remote = params.region === "remote";
   const place = { regionId: region?.id ?? null, districtId: district?.id ?? null, remote };
   const isJobs = params.mode === "jobs";
@@ -210,6 +213,28 @@ export async function FindResultsView({ params, node, region, district }: { para
   const prof = node ? name(node.trail.at(-1)!) : "";
   const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t("easy.location.whole_region")}` : t("easy.location.whole_country");
   const backHref = region ? findHref(params, { district: null, page: 1 }) : findHref(params, { region: null, district: null, page: 1 });
+  // qisqa xulosa: "Buxgalter · Toshkent · 5 mln so'mdan yuqori"
+  const filterParts = [
+    isJobs && params.salary ? t("easy.search.salary_over", { amount: formatMoneyShort(params.salary, locale) }) : null,
+    isJobs && params.schedule ? tEnum("work_schedule", params.schedule) : null,
+    isJobs && params.noexp ? t("easy.search.no_experience") : null,
+    !isJobs && params.exp ? t("easy.search.experienced") : null,
+  ].filter((x): x is string => !!x);
+  // qidiruv statistikasi (kasb/hudud ID bilan; birinchi sahifa) — talab, bo'sh natijali qidiruvlar uchun
+  if (params.page === 1) {
+    const total = res.total;
+    // after() ichida cookies o'qilmaydi — sessiya oldindan olinadi
+    const profileId = (await getSession())?.userId ?? null;
+    after(() =>
+      logFindSearch({
+        scope: isJobs ? "jobs" : "workers",
+        query: params.q || prof,
+        understood: { node: node?.id ?? null, region: region?.id ?? null, district: district?.id ?? null, remote, salary: params.salary, schedule: params.schedule },
+        results: total,
+        profileId,
+      }),
+    );
+  }
 
   return (
     <div className="container-app space-y-5 py-4 text-lg sm:py-8">
@@ -220,7 +245,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           </Link>
         </Button>
         <h1 className="text-xl font-extrabold leading-snug [overflow-wrap:anywhere] sm:text-2xl">
-          {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {prof} · {placeText}
+          {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {[prof, placeText, ...filterParts].join(" · ")}
         </h1>
       </div>
       <div className="flex flex-wrap items-center gap-3">

@@ -250,7 +250,8 @@
     "region_wide": "Butun viloyat bo'yicha",
     "remote": "Masofadan",
     "post_jobs": "Ishchi topilmadimi? O'zingiz e'lon bering",
-    "post_workers": "Mos ish topilmadimi? O'zingiz haqingizda e'lon bering"
+    "post_workers": "Mos ish topilmadimi? O'zingiz haqingizda e'lon bering",
+    "salary_over": "{amount} so'mdan yuqori"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
