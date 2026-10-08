@@ -126,7 +126,8 @@
     "unverified": "Не проверено",
     "pending": "На проверке",
     "verified": "Проверено",
-    "rejected": "Отклонено"
+    "rejected": "Отклонено",
+    "suspended": "Приостановлен"
   },
   "verification_type": {
     "phone": "Телефон",
@@ -202,7 +203,8 @@
     "super_admin": "Супер-админ",
     "admin": "Админ",
     "moderator": "Модератор",
-    "support": "Поддержка"
+    "support": "Поддержка",
+    "analyst": "Аналитик"
   },
   "notification_type": {
     "application_received": "Новый отклик",
@@ -226,7 +228,7 @@
     "district_match": "Выбранный вами район",
     "distance_near": "{km} км от вас",
     "distance_ok": "{km} км от вас",
-    "region_match": "Область совпадает, район отличается",
+    "region_match": "Регион совпадает",
     "location_far": "Район не подходит",
     "salary_ok": "Зарплата соответствует ожиданиям",
     "salary_min_ok": "Зарплата соответствует минимуму",
@@ -256,7 +258,18 @@
     "profession_specialist": "Вы узкий специалист в этой профессии",
     "profession_general": "Профессия близкая, но нужен более узкий специалист",
     "profession_related": "Смежное направление",
-    "profession_other_branch": "Та же сфера, другая профессия"
+    "profession_other_branch": "Та же сфера, другая профессия",
+    "region_other_district": "Область совпадает, район отличается",
+    "profession_unknown": "Профессия не указана",
+    "location_unknown": "Регион не указан",
+    "remote_not_preferred": "Удалённая работа, а вы предпочитаете работать на месте",
+    "salary_not_required": "Требований к зарплате нет",
+    "salary_close": "Зарплата немного ниже ожиданий",
+    "experience_not_required": "Опыт не требуется",
+    "experience_unknown": "Опыт не указан",
+    "skills_unknown": "Навыки не указаны",
+    "license_missing": "Нет обязательного удостоверения или сертификата",
+    "languages_unknown": "Языки не указаны"
   },
   "language_code": {
     "uz": "Узбекский",

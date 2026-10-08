@@ -84,8 +84,45 @@ export interface VacancyDraft {
   showPhone: boolean;
 }
 
-export type WorkerPublishState = "listed" | "payment_required" | "saved";
-export type VacancyPublishState = "active" | "review" | "payment_required" | string;
+/**
+ * E'lonning haqiqiy holati (my_listing_state): faqat "listed"/"active" — ommaga chiqqan.
+ * moderation_pending — tekshiruv kutilmoqda; review — moderator ko'radi; rejected — sababi bilan rad etildi;
+ * verification_pending — tekshiruvdan o'tdi, ish beruvchi tasdiqlanishini kutmoqda; payment_required — to'lov kerak.
+ */
+export type ListingState =
+  | "listed"
+  | "active"
+  | "moderation_pending"
+  | "review"
+  | "rejected"
+  | "verification_pending"
+  | "payment_required"
+  | "saved"
+  | "closed"
+  | "expired"
+  | "paused"
+  | "hidden";
+export type WorkerPublishState = ListingState;
+export type VacancyPublishState = ListingState;
+
+export interface ListingStateInfo {
+  state: ListingState;
+  message: string | null;
+  fields: string[];
+  category: string | null;
+  canAppeal: boolean;
+}
+
+export function toListingStateInfo(raw: unknown): ListingStateInfo {
+  const r = raw && typeof raw === "object" && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  return {
+    state: (typeof r.state === "string" ? r.state : "saved") as ListingState,
+    message: typeof r.message === "string" && r.message.trim() ? r.message : null,
+    fields: Array.isArray(r.fields) ? r.fields.filter((x): x is string => typeof x === "string") : [],
+    category: typeof r.category === "string" ? r.category : null,
+    canAppeal: r.can_appeal === true,
+  };
+}
 
 /** Kirgan foydalanuvchi haqida sahifaga beriladigan ma'lumot */
 export interface PostViewer {

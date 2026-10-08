@@ -17,6 +17,8 @@ export const workerListingSchema = z.object({
   salary: z.number().int().min(0).max(1_000_000_000).nullable(),
   schedule: schedule.nullable(),
   showPhone: z.boolean(),
+  /** "ai" — AI bilan tez tayyorlangan (statistika uchun) */
+  source: z.enum(["manual", "ai"]).optional(),
 });
 export type WorkerListingInput = z.infer<typeof workerListingSchema>;
 
@@ -40,6 +42,7 @@ export const vacancyListingSchema = z
     schedule: schedule.nullable(),
     experienceMonths: z.union([z.literal(0), z.literal(12), z.literal(36)]),
     showPhone: z.boolean(),
+    source: z.enum(["manual", "ai"]).optional(),
   })
   .refine((v) => v.remote || !!v.regionId, { path: ["regionId"] })
   .refine((v) => v.negotiable || v.salaryFrom !== null || v.salaryTo !== null, { path: ["salaryFrom"] })

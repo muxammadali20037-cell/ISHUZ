@@ -126,7 +126,8 @@
     "unverified": "Unverified",
     "pending": "Under review",
     "verified": "Verified",
-    "rejected": "Rejected"
+    "rejected": "Rejected",
+    "suspended": "Suspended"
   },
   "verification_type": {
     "phone": "Phone",
@@ -202,7 +203,8 @@
     "super_admin": "Super admin",
     "admin": "Admin",
     "moderator": "Moderator",
-    "support": "Support"
+    "support": "Support",
+    "analyst": "Analyst"
   },
   "notification_type": {
     "application_received": "New application",
@@ -226,7 +228,7 @@
     "district_match": "In your selected area",
     "distance_near": "{km} km from you",
     "distance_ok": "{km} km from you",
-    "region_match": "Same region, different district",
+    "region_match": "Region matches",
     "location_far": "Location doesn't match",
     "salary_ok": "Salary meets your expectations",
     "salary_min_ok": "Salary meets your minimum",
@@ -256,7 +258,18 @@
     "profession_specialist": "You are a specialist in this profession",
     "profession_general": "Close profession, but a narrower specialist is needed",
     "profession_related": "Related field",
-    "profession_other_branch": "Same sector, different profession"
+    "profession_other_branch": "Same sector, different profession",
+    "region_other_district": "Same region, different district",
+    "profession_unknown": "Profession is not specified",
+    "location_unknown": "Location is not specified",
+    "remote_not_preferred": "Remote job, but you prefer on-site work",
+    "salary_not_required": "No salary requirement",
+    "salary_close": "Salary is slightly below expectations",
+    "experience_not_required": "No experience required",
+    "experience_unknown": "Experience is not specified",
+    "skills_unknown": "Skills are not specified",
+    "license_missing": "Required license or certificate is missing",
+    "languages_unknown": "Languages are not specified"
   },
   "language_code": {
     "uz": "Uzbek",

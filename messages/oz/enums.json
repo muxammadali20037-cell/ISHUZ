@@ -126,7 +126,8 @@
     "unverified": "Тасдиқланмаган",
     "pending": "Текширилмоқда",
     "verified": "Тасдиқланган",
-    "rejected": "Рад этилган"
+    "rejected": "Рад этилган",
+    "suspended": "Тўхтатилган"
   },
   "verification_type": {
     "phone": "Телефон",
@@ -202,7 +203,8 @@
     "super_admin": "Супер админ",
     "admin": "Админ",
     "moderator": "Модератор",
-    "support": "Қўллаб-қувватлаш"
+    "support": "Қўллаб-қувватлаш",
+    "analyst": "Таҳлилчи"
   },
   "notification_type": {
     "application_received": "Янги ариза",
@@ -226,7 +228,7 @@
     "district_match": "Сиз танлаган ҳудуд",
     "distance_near": "Сиздан {km} км",
     "distance_ok": "Сиздан {km} км",
-    "region_match": "Вилоят мос, туман фарқ қилади",
+    "region_match": "Ҳудуд мос",
     "location_far": "Ҳудуд мос эмас",
     "salary_ok": "Маош талабингиз мос",
     "salary_min_ok": "Маош минимал талабингизга мос",
@@ -256,7 +258,18 @@
     "profession_specialist": "Сиз шу касбнинг аниқ мутахассисисиз",
     "profession_general": "Касбингиз яқин, лекин бу ерда торроқ мутахассис керак",
     "profession_related": "Ўхшаш ёъналиш",
-    "profession_other_branch": "Соҳа бир хил, касб бошқа"
+    "profession_other_branch": "Соҳа бир хил, касб бошқа",
+    "region_other_district": "Вилоят мос, туман фарқ қилади",
+    "profession_unknown": "Касб кўрсатилмаган",
+    "location_unknown": "Ҳудуд кўрсатилмаган",
+    "remote_not_preferred": "Масофавий иш, сиз жойида ишлашни хоҳлайсиз",
+    "salary_not_required": "Маош талаби қўйилмаган",
+    "salary_close": "Маош кутилганидан бироз паст",
+    "experience_not_required": "Тажриба талаб қилинмайди",
+    "experience_unknown": "Тажриба кўрсатилмаган",
+    "skills_unknown": "Кўникмалар кўрсатилмаган",
+    "license_missing": "Мажбурий гувоҳнома ёки сертификат ёъқ",
+    "languages_unknown": "Тиллар кўрсатилмаган"
   },
   "language_code": {
     "uz": "Ўзбек",

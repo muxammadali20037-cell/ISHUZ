@@ -140,7 +140,7 @@ export const settingUpdateSchema = z.object({
 });
 export type SettingUpdateInput = z.infer<typeof settingUpdateSchema>;
 
-export const ADMIN_ROLE_VALUES = ["super_admin", "admin", "moderator", "support"] as const;
+export const ADMIN_ROLE_VALUES = ["super_admin", "admin", "moderator", "support", "analyst"] as const;
 
 export const adminUpsertSchema = z.object({
   profileId: uuid,

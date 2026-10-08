@@ -5,7 +5,7 @@
 
 create or replace function pg_temp.login(p_user uuid) returns void language plpgsql as $$
 begin
-  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, false);
+  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated', 'aal', 'aal2')::text, false);
   execute 'set role authenticated';
 end $$;
 create or replace function pg_temp.anon() returns void language plpgsql as $$
@@ -39,6 +39,8 @@ begin
 end $$;
 
 begin;
+-- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
+update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
 update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until';
 -- aksiya testda doim faol bo'lsin (sanaga bog'liq bo'lmasin)
 update public.app_settings set value = to_jsonb((now() + interval '30 days')::text) where key = 'listing_discount_until';

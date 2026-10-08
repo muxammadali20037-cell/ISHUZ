@@ -30,6 +30,7 @@ const VERIFICATION: Record<Enums<"verification_status">, Variant> = {
   pending: "warning",
   verified: "success",
   rejected: "destructive",
+  suspended: "destructive",
 };
 
 export function VacancyStatusBadge({ status, label }: { status: Enums<"vacancy_status">; label: string }) {

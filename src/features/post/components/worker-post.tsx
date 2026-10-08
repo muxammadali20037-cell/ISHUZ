@@ -14,10 +14,11 @@ import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { publishWorkerListing } from "../actions";
 import { parseMoney } from "../schema";
-import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type PostViewer, type WorkerDraft, type WorkerPublishState } from "../types";
+import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type ListingStateInfo, type PostViewer, type WorkerDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
 import { BigCheckbox, MoneyInput, PhoneInput, VerifiedPhone, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
+import { ModerationOutcome } from "./moderation-outcome";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { ChoiceButtons, ChosenLine, FieldError, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
 
@@ -70,7 +71,7 @@ export function WorkerPost({
   const { step, go } = useStep(TOTAL, draft.step);
   const [errors, setErrors] = useState<Errors>({});
   const [pending, start] = useTransition();
-  const [result, setResult] = useState<{ state: WorkerPublishState; workerId: string } | null>(null);
+  const [result, setResult] = useState<(ListingStateInfo & { workerId: string }) | null>(null);
   const [moreOpen, setMoreOpen] = useState(!!(draft.salary || draft.schedule));
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -166,11 +167,31 @@ export function WorkerPost({
         scrollToError();
         return;
       }
-      clear();
+      // rad etilsa — yozilgan ma'lumot saqlanib qoladi (tuzatib qayta yuborish uchun)
+      if (res.data.state !== "rejected") clear();
       setResult(res.data);
       if (res.data.state === "listed") celebrate();
       router.refresh();
     });
+  };
+
+  // moderator belgilagan maydonlar → qaysi qadam va qaysi maydonda xato ko'rsatiladi
+  const FLAG_TO_FIELD: Record<string, { field: keyof Errors; step: number }> = {
+    name: { field: "firstName", step: 3 },
+    title: { field: "profession", step: 1 },
+    profession: { field: "profession", step: 1 },
+    description: { field: "about", step: 3 },
+    experience: { field: "about", step: 3 },
+    photo: { field: "about", step: 3 },
+  };
+  const editFlagged = (fields: string[]) => {
+    const hits = fields.map((f) => FLAG_TO_FIELD[f] ?? FLAG_TO_FIELD.description!);
+    const e: Errors = { form: t("easy.moderation.edit_hint") };
+    for (const h of hits) e[h.field] = t("easy.moderation.field_flagged");
+    setResult(null);
+    goTo(Math.min(...hits.map((h) => h.step), 3));
+    setErrors(e);
+    scrollToError();
   };
 
   const searchHref = useMemo(() => {
@@ -183,6 +204,24 @@ export function WorkerPost({
   }, [draft.profession, draft.place, regions]);
 
   if (result) {
+    if (["moderation_pending", "review", "rejected", "verification_pending"].includes(result.state)) {
+      return (
+        <ModerationOutcome
+          entity="worker"
+          id={result.workerId}
+          info={result}
+          fieldLabels={{
+            name: t("easy.fields.first_name"),
+            title: t("easy.fields.profession"),
+            profession: t("easy.fields.profession"),
+            description: t("easy.fields.about"),
+            experience: t("easy.fields.about"),
+            photo: t("easy.moderation.photo"),
+          }}
+          onEdit={() => editFlagged(result.fields)}
+        />
+      );
+    }
     if (result.state === "listed") {
       return (
         <PublishResult

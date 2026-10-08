@@ -4,7 +4,7 @@
 
 create or replace function pg_temp.login(p_user uuid) returns void language plpgsql as $$
 begin
-  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, false);
+  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated', 'aal', 'aal2')::text, false);
   execute 'set role authenticated';
 end $$;
 create or replace function pg_temp.anon() returns void language plpgsql as $$
@@ -32,6 +32,8 @@ begin
 end $$;
 
 begin;
+-- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
+update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('e4000000-0000-0000-0000-000000000001', '+998905000001', now(), '{"first_name":"Ishchi","last_name":"Ali"}'),

@@ -13,10 +13,11 @@ import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { publishVacancyListing } from "../actions";
 import { formatMoneyInput, parseMoney } from "../schema";
-import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type PostViewer, type VacancyDraft, type VacancyPublishState } from "../types";
+import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type ListingStateInfo, type PostViewer, type VacancyDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
+import { ModerationOutcome } from "./moderation-outcome";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { ChoiceButtons, ChosenLine, FieldError, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
 
@@ -79,7 +80,7 @@ export function VacancyPost({
   const { step, go } = useStep(TOTAL, draft.step);
   const [errors, setErrors] = useState<Errors>({});
   const [pending, start] = useTransition();
-  const [result, setResult] = useState<{ state: VacancyPublishState; vacancyId: string; slug: string } | null>(null);
+  const [result, setResult] = useState<(ListingStateInfo & { vacancyId: string; slug: string }) | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -182,11 +183,33 @@ export function VacancyPost({
         scrollToError();
         return;
       }
-      clear();
+      // rad etilsa — yozilgan ma'lumot saqlanib qoladi (tuzatib qayta yuborish uchun; o'sha e'lon yangilanadi)
+      if (res.data.state !== "rejected") clear();
       setResult(res.data);
       if (res.data.state === "active") celebrate();
       router.refresh();
     });
+  };
+
+  // moderator belgilagan maydonlar → qaysi qadam va qaysi maydonda xato ko'rsatiladi
+  const FLAG_TO_FIELD: Record<string, { field: keyof Errors; step: number }> = {
+    title: { field: "profession", step: 1 },
+    profession: { field: "profession", step: 1 },
+    address: { field: "place", step: 2 },
+    employer: { field: "orgName", step: 3 },
+    logo: { field: "orgName", step: 3 },
+    links: { field: "description", step: 3 },
+    description: { field: "description", step: 3 },
+    photo: { field: "description", step: 3 },
+  };
+  const editFlagged = (fields: string[]) => {
+    const hits = fields.map((f) => FLAG_TO_FIELD[f] ?? FLAG_TO_FIELD.description!);
+    const e: Errors = { form: t("easy.moderation.edit_hint") };
+    for (const h of hits) e[h.field] = t("easy.moderation.field_flagged");
+    setResult(null);
+    goTo(Math.min(...hits.map((h) => h.step), 3));
+    setErrors(e);
+    scrollToError();
   };
 
   const searchHref = useMemo(() => {
@@ -202,6 +225,26 @@ export function VacancyPost({
   }, [draft.profession, draft.place, regions]);
 
   if (result) {
+    if (["moderation_pending", "review", "rejected", "verification_pending"].includes(result.state)) {
+      return (
+        <ModerationOutcome
+          entity="vacancy"
+          id={result.vacancyId}
+          info={result}
+          fieldLabels={{
+            title: t("easy.fields.profession"),
+            profession: t("easy.fields.profession"),
+            address: t("easy.fields.region"),
+            employer: t("easy.fields.org_name"),
+            logo: t("easy.moderation.logo"),
+            links: t("easy.fields.description"),
+            description: t("easy.fields.description"),
+            photo: t("easy.moderation.photo"),
+          }}
+          onEdit={() => editFlagged(result.fields)}
+        />
+      );
+    }
     if (result.state === "active") {
       return (
         <PublishResult

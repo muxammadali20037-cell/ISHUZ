@@ -2,13 +2,14 @@ import type { Enums } from "@/types/database.types";
 
 /**
  * Admin ruxsatlari — public.has_admin_permission(perm) SQL funksiyasining aynan nusxasi
- * (supabase/migrations/0003_identity.sql). SQL o'zgarsa bu fayl ham o'zgarishi shart.
+ * (oxirgi ta'rif: supabase/migrations/0052_admin_analytics.sql). SQL o'zgarsa bu fayl ham o'zgarishi shart.
+ * Barcha admin huquqlari faqat ikki bosqichli kirish (aal2) bilan ishlaydi — buni SQL tekshiradi.
  *
  * Qoida: super_admin → hammasi; admin_users.permissions ichida bo'lsa → ha; aks holda rolga qarab.
  */
 export type AdminRole = Enums<"admin_role">;
 
-export const ADMIN_ROLES: readonly AdminRole[] = ["super_admin", "admin", "moderator", "support"];
+export const ADMIN_ROLES: readonly AdminRole[] = ["super_admin", "admin", "moderator", "support", "analyst"];
 
 export const PERMISSIONS = [
   "users.view",
@@ -71,11 +72,15 @@ const MODERATOR_PERMS: readonly Permission[] = [
 
 const SUPPORT_PERMS: readonly Permission[] = ["users.view", "workers.view", "employers.view", "vacancies.view", "reports.view", "analytics.view"];
 
+/** Tahlilchi: faqat agregat statistika (shaxsiy ma'lumotsiz) */
+const ANALYST_PERMS: readonly Permission[] = ["analytics.view"];
+
 const ROLE_PERMISSIONS: Record<AdminRole, readonly Permission[]> = {
   super_admin: PERMISSIONS,
   admin: ADMIN_PERMS,
   moderator: MODERATOR_PERMS,
   support: SUPPORT_PERMS,
+  analyst: ANALYST_PERMS,
 };
 
 export function isPermission(value: string): value is Permission {

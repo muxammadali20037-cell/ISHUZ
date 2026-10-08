@@ -2,6 +2,8 @@
 \set ON_ERROR_STOP on
 \set QUIET on
 begin;
+-- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
+update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
 
 create or replace function pg_temp.ok(p_cond boolean, p_name text) returns void language plpgsql as $$
 begin

@@ -5,7 +5,7 @@
 
 create or replace function pg_temp.login(p_user uuid) returns void language plpgsql as $$
 begin
-  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, false);
+  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated', 'aal', 'aal2')::text, false);
   execute 'set role authenticated';
 end $$;
 create or replace function pg_temp.anon() returns void language plpgsql as $$
@@ -39,6 +39,8 @@ begin
 end $$;
 
 begin;
+-- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
+update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
 -- 0043 dan oldingi qoidalar bilan sinaladi (yangi 10 kunlik pullik e'lonlar — paid_listings.test.sql)
 update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
 update public.app_settings set value = '30'::jsonb where key = 'vacancy_lifetime_days';
@@ -103,6 +105,13 @@ select pg_temp.fails($$update public.vacancies set status = 'active' where title
 select pg_temp.ok((select public.publish_vacancy(id) from public.vacancies where title = 'Kassir') = 'active', 'publish_vacancy -> active');
 select pg_temp.ok((select expires_at from public.vacancies where title = 'Kassir') > now() + interval '29 days', 'expires_at 30 kun');
 select pg_temp.ok((select count(*) from public.matches m join public.vacancies v on v.id = m.vacancy_id where v.title = 'Kassir') = 1, 'publish: matches keshi yangilandi');
+-- 0051+: mos ish bildirishnomasi navbat orqali (server), faqat chegaradan (90%) o'tgan, qat'iy talabi buzilmagan juftlikka
+select pg_temp.superuser();
+select set_config('request.jwt.claims', json_build_object('role', 'service_role')::text, false);
+select public.process_match_jobs(10);
+create temp table t_match as select m.score, m.hard_fail, m.complete from public.matches m join public.vacancies v on v.id = m.vacancy_id where v.title = 'Kassir';
+grant select on t_match to authenticated;
+select pg_temp.login('22222222-2222-2222-2222-222222222222');
 
 -- ---------- anonim qidiruv ----------
 select pg_temp.anon();
@@ -162,9 +171,10 @@ select pg_temp.ok((select count(*) from public.notifications) = 0, 'RLS: begona 
 -- ---------- Ali: bildirishnoma, chat ----------
 select pg_temp.login('11111111-1111-1111-1111-111111111111');
 select pg_temp.ok((select count(*) from public.notifications where type = 'interview_invite') = 1, 'ishchiga suhbat bildirishnomasi');
-select pg_temp.ok((select count(*) from public.notifications where type = 'new_matching_vacancy') = 1, 'birinchi e''londa mos vakansiya bildirishnomasi');
-select pg_temp.ok((select notifications from public.unread_counts()) = 3, 'unread_counts: 3 ta o''qilmagan');
-select pg_temp.ok(public.mark_notifications_read() = 3, 'mark_notifications_read');
+select pg_temp.ok((select count(*) from public.notifications where type = 'new_matching_vacancy')
+  = (select case when score >= 90 and not hard_fail and complete then 1 else 0 end from t_match), 'mos vakansiya bildirishnomasi faqat 90%+ juftlikka');
+select pg_temp.ok((select notifications from public.unread_counts()) = 2 + (select count(*) from public.notifications where type = 'new_matching_vacancy'), 'unread_counts');
+select pg_temp.ok(public.mark_notifications_read() = 2 + (select count(*) from public.notifications where type = 'new_matching_vacancy'), 'mark_notifications_read');
 select pg_temp.ok((select public.get_or_create_conversation(p_application_id => (select id from public.applications))) is not null, 'chat ochildi');
 select pg_temp.ok((select count(*) from public.conversation_members) = 2, 'chatda 2 a''zo');
 select pg_temp.ok((select public.send_message((select id from public.conversations), 'text', 'Assalomu alaykum!')) is not null, 'xabar yuborildi');

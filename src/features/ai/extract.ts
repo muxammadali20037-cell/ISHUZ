@@ -7,6 +7,7 @@ import { Constants } from "@/types/database.types";
 import { AI_MODEL, getAiClient } from "@/lib/ai/client";
 import { AiBusyError, geminiJson } from "@/lib/ai/gemini";
 import { getServerEnv } from "@/lib/env";
+import { logAiUsage } from "@/lib/ai/usage";
 import type { Locale } from "@/lib/i18n/config";
 import type { AiCatalog } from "./catalog";
 
@@ -135,13 +136,14 @@ const ALERT_TASK = `Bu — ISH QIDIRUVCHI qanday ish xohlashini yozgan matn. Und
 - Faqat matnda aytilgan shartlarni qo'y; aytilmagan maosh, grafik, hududni o'ylab topma.
 - profession — iloji boricha aniq kasb nomi (matndagi xatolarni tuzatib).`;
 
-async function run<T extends z.ZodType>(schema: T, task: string, catalog: AiCatalog, text: string, locale: Locale): Promise<z.infer<T> | null> {
+async function run<T extends z.ZodType>(schema: T, task: string, catalog: AiCatalog, text: string, locale: Locale, feature: string): Promise<z.infer<T> | null> {
   // Gemini kaliti bo'lsa — u (bepul limit), aks holda Claude
   if (getServerEnv().GEMINI_API_KEY) {
-    return geminiJson(schema, `${COMMON}\n\n# Ma'lumotnoma\n${catalog.text}\n\n${task}\nMatnlarni ${localeName(locale)} yoz.`, text);
+    return geminiJson(schema, `${COMMON}\n\n# Ma'lumotnoma\n${catalog.text}\n\n${task}\nMatnlarni ${localeName(locale)} yoz.`, text, { feature });
   }
   const client = getAiClient();
   if (!client) return null;
+  const started = Date.now();
   const response = await client.beta.messages.parse({
     model: AI_MODEL,
     max_tokens: 16000,
@@ -155,20 +157,24 @@ async function run<T extends z.ZodType>(schema: T, task: string, catalog: AiCata
     ],
     messages: [{ role: "user", content: text }],
   });
-  if (response.stop_reason === "refusal") return null;
-  return (response.parsed_output as z.infer<T> | null) ?? null;
+  const out = response.stop_reason === "refusal" ? null : ((response.parsed_output as z.infer<T> | null) ?? null);
+  await logAiUsage({
+    feature, provider: "anthropic", model: AI_MODEL, ok: out != null, latencyMs: Date.now() - started,
+    inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, error: out == null ? "invalid_output" : null,
+  });
+  return out;
 }
 
 export async function extractWorker(catalog: AiCatalog, text: string, locale: Locale): Promise<WorkerExtract | null> {
-  return run(workerExtractSchema, WORKER_TASK, catalog, text, locale);
+  return run(workerExtractSchema, WORKER_TASK, catalog, text, locale, "profile_fill_worker");
 }
 
 export async function extractVacancy(catalog: AiCatalog, text: string, locale: Locale): Promise<VacancyExtract | null> {
-  return run(vacancyExtractSchema, VACANCY_TASK, catalog, text, locale);
+  return run(vacancyExtractSchema, VACANCY_TASK, catalog, text, locale, "profile_fill_vacancy");
 }
 
 export async function extractAlert(catalog: AiCatalog, text: string, locale: Locale): Promise<AlertExtract | null> {
-  return run(alertExtractSchema, ALERT_TASK, catalog, text, locale);
+  return run(alertExtractSchema, ALERT_TASK, catalog, text, locale, "job_alert");
 }
 
 export function isAiRateLimit(error: unknown): boolean {

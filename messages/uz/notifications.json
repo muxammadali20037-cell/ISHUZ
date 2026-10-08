@@ -105,5 +105,72 @@
     "listing_expiring_body": "Ish beruvchilar sizni ko'rishda davom etishi uchun e'lonni uzaytiring.",
     "listing_expired_title": "E'loningiz muddati tugadi",
     "listing_expired_body": "Siz endi qidiruvda ko'rinmaysiz. Uzaytirish uchun bosing."
+  },
+  "notifications": {
+    "match": {
+      "worker_title": "Sizga mos yangi ish topildi!",
+      "worker_title_many": "Sizga {count} ta mos ish topildi!",
+      "employer_title": "Vakansiyangizga mos nomzod topildi!",
+      "employer_title_many": "Vakansiyangizga {count} ta mos nomzod topildi!",
+      "for_vacancy": "Vakansiya: {title}",
+      "salary": "Maosh: {salary}",
+      "experience": "Tajriba: {experience}",
+      "score": "Moslik: {score}%",
+      "reason": "Sabab: {list} mos.",
+      "more": "Yana {count} ta — ilovada",
+      "negotiable": "Kelishiladi",
+      "and": "va",
+      "reasons": {
+        "profession": "kasb",
+        "location": "hudud",
+        "salary": "maosh",
+        "experience": "tajriba",
+        "skills": "ko'nikmalar",
+        "schedule": "jadval",
+        "language": "til"
+      },
+      "btn_job": "E'lonni ko'rish",
+      "btn_all": "Hammasini ko'rish",
+      "btn_candidate": "Nomzodni ko'rish",
+      "btn_candidates": "Nomzodlarni ko'rish",
+      "btn_settings": "Xabar sozlamalari"
+    },
+    "types": {
+      "new_matching_vacancy": {
+        "title_many": "Sizga {count} ta mos ish topildi",
+        "body_many": "Eng mosi: {vacancy_title} · {score}%"
+      },
+      "new_matching_worker": {
+        "title_many": "Vakansiyangizga {count} ta mos nomzod",
+        "body_many": "«{vacancy_title}» uchun · eng mosi {score}%"
+      }
+    },
+    "moderation": {
+      "active_title": "E'loningiz joylandi",
+      "active_body": "«{title}» tekshiruvdan o'tdi va ommaga chiqdi.",
+      "rejected_title": "E'lon joylanmadi",
+      "rejected_body": "Ish topdim faqat ish va ishchi qidirish e'lonlarini qabul qiladi. Matningizdagi ishga aloqasiz yoki taqiqlangan qismni o'zgartiring.",
+      "review_title": "E'lon qo'shimcha tekshiruvda",
+      "review_body": "«{title}» moderator tomonidan ko'rib chiqiladi. Natijasini bildiramiz.",
+      "verification_title": "E'lon tekshiruvdan o'tdi",
+      "verification_body": "Ish beruvchi sifatida tasdiqlanganingizdan so'ng «{title}» ommaga chiqadi.",
+      "payment_title": "E'lon tekshiruvdan o'tdi",
+      "payment_body": "«{title}» joylanishi uchun to'lovni amalga oshiring.",
+      "employer_verified_title": "Siz tasdiqlangan ish beruvchisiz",
+      "employer_verified_body": "Kutib turgan vakansiyalaringiz ommaga chiqdi.",
+      "employer_rejected_title": "Ish beruvchini tasdiqlash rad etildi",
+      "employer_suspended_title": "Ish beruvchi faoliyati to'xtatildi",
+      "employer_other_title": "Ish beruvchi holati o'zgardi"
+    },
+    "telegram": {
+      "link_ok": "✅ Telegram hisobingiz «Ish topdim»ga bog'landi.",
+      "link_used": "Bu havola allaqachon ishlatilgan. Ilovadan yangi havola oling.",
+      "link_expired": "Havola muddati tugagan. Ilovadan yangi havola oling.",
+      "link_invalid": "Havola noto'g'ri. Ilovadan qayta urinib ko'ring.",
+      "link_elsewhere": "Bu Telegram boshqa hisobga bog'langan. O'sha hisob orqali kiring yoki qo'llab-quvvatlashga yozing.",
+      "subscribed_worker": "🔔 Xabarnoma yoqildi: sizga mos ish chiqsa shu yerga yozamiz.",
+      "subscribed_employer": "🔔 Xabarnoma yoqildi: vakansiyangizga mos nomzod topilsa shu yerga yozamiz.",
+      "settings_button": "Xabar sozlamalari"
+    }
   }
 }

@@ -3,6 +3,7 @@ import "server-only";
 import { createClient } from "@/lib/supabase/server";
 import type { SessionContext } from "@/features/auth/session";
 import type { Enums } from "@/types/database.types";
+import { toListingStateInfo, type ListingStateInfo } from "@/features/post/types";
 
 export type WorkerListingStatus = "listed" | "payment_required" | "stopped";
 
@@ -16,6 +17,8 @@ export interface MyWorkerListing {
   districtName: { name_uz: string; name_ru: string; name_oz: string | null } | null;
   status: WorkerListingStatus;
   listedUntil: string | null;
+  /** haqiqiy holat (moderatsiya, to'lov) — my_listing_state */
+  moderation: ListingStateInfo;
 }
 
 export interface MyVacancy {
@@ -29,12 +32,13 @@ export interface MyVacancy {
   regionName: { name_uz: string; name_ru: string; name_en: string | null; name_oz: string | null } | null;
   districtId: string | null;
   isRemote: boolean;
+  moderation: ListingStateInfo;
 }
 
 /** Kabinet: foydalanuvchining o'z e'lonlari (ishchi e'loni + ish e'lonlari) */
 export async function getMyListings(session: SessionContext): Promise<{ worker: MyWorkerListing | null; vacancies: MyVacancy[]; paid: boolean }> {
   const supabase = await createClient();
-  const [workerRes, vacRes, paidRes] = await Promise.all([
+  const [workerRes, vacRes, paidRes, statesRes] = await Promise.all([
     session.workerId && session.workerOnboarded
       ? supabase
           .from("worker_profiles")
@@ -49,7 +53,9 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
       .order("created_at", { ascending: false })
       .limit(30),
     supabase.rpc("listings_paid"),
+    supabase.rpc("my_listing_states"),
   ]);
+  const states = new Map((statesRes.data ?? []).map((r) => [`${r.entity}:${r.id}`, toListingStateInfo(r.info)]));
   if ("error" in workerRes && workerRes.error) console.error("[cabinet] worker", workerRes.error.message);
   if (vacRes.error) console.error("[cabinet] vacancies", vacRes.error.message);
   const w = workerRes.data;
@@ -68,6 +74,7 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
       districtName: w.districts as MyWorkerListing["districtName"],
       status: listed ? "listed" : w.status === "not_looking" ? "stopped" : paid ? "payment_required" : "stopped",
       listedUntil: w.listed_until,
+      moderation: states.get(`worker:${w.id}`) ?? toListingStateInfo({ state: listed ? "listed" : "saved" }),
     };
   }
   const vacancies: MyVacancy[] = (vacRes.data ?? []).map((v) => {
@@ -83,6 +90,7 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
       regionName: region,
       districtId: v.district_id,
       isRemote: v.is_remote,
+      moderation: states.get(`vacancy:${v.id}`) ?? toListingStateInfo({ state: v.status === "active" ? "active" : "saved" }),
     };
   });
   return { worker, vacancies, paid };

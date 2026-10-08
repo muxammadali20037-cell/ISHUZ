@@ -105,5 +105,72 @@
     "listing_expiring_body": "Extend it so employers keep seeing you.",
     "listing_expired_title": "Your listing has expired",
     "listing_expired_body": "You're no longer visible in search. Tap to extend."
+  },
+  "notifications": {
+    "match": {
+      "worker_title": "We found a new job that matches you!",
+      "worker_title_many": "We found {count} jobs that match you!",
+      "employer_title": "We found a matching candidate for your vacancy!",
+      "employer_title_many": "We found {count} matching candidates for your vacancy!",
+      "for_vacancy": "Vacancy: {title}",
+      "salary": "Salary: {salary}",
+      "experience": "Experience: {experience}",
+      "score": "Match: {score}%",
+      "reason": "Why: {list} match.",
+      "more": "{count} more in the app",
+      "negotiable": "Negotiable",
+      "and": "and",
+      "reasons": {
+        "profession": "profession",
+        "location": "location",
+        "salary": "salary",
+        "experience": "experience",
+        "skills": "skills",
+        "schedule": "schedule",
+        "language": "language"
+      },
+      "btn_job": "View listing",
+      "btn_all": "View all",
+      "btn_candidate": "View candidate",
+      "btn_candidates": "View candidates",
+      "btn_settings": "Notification settings"
+    },
+    "types": {
+      "new_matching_vacancy": {
+        "title_many": "{count} jobs match you",
+        "body_many": "Best: {vacancy_title} · {score}%"
+      },
+      "new_matching_worker": {
+        "title_many": "{count} matching candidates",
+        "body_many": "For «{vacancy_title}» · best {score}%"
+      }
+    },
+    "moderation": {
+      "active_title": "Your listing is published",
+      "active_body": "«{title}» passed the review and is now public.",
+      "rejected_title": "Listing was not published",
+      "rejected_body": "Ish topdim accepts only job and job-seeker listings. Please change the unrelated or prohibited part of your text.",
+      "review_title": "Listing is under additional review",
+      "review_body": "A moderator will review «{title}». We will let you know the result.",
+      "verification_title": "Listing passed the review",
+      "verification_body": "«{title}» will go public once you are verified as an employer.",
+      "payment_title": "Listing passed the review",
+      "payment_body": "Pay for placement to publish «{title}».",
+      "employer_verified_title": "You are a verified employer",
+      "employer_verified_body": "Your waiting vacancies are now public.",
+      "employer_rejected_title": "Employer verification was declined",
+      "employer_suspended_title": "Employer activity is suspended",
+      "employer_other_title": "Employer status changed"
+    },
+    "telegram": {
+      "link_ok": "✅ Your Telegram is now linked to «Ish topdim».",
+      "link_used": "This link was already used. Get a new one in the app.",
+      "link_expired": "This link has expired. Get a new one in the app.",
+      "link_invalid": "The link is invalid. Please try again from the app.",
+      "link_elsewhere": "This Telegram is linked to another account. Sign in with that account or contact support.",
+      "subscribed_worker": "🔔 Notifications are on: we will message you here when a matching job appears.",
+      "subscribed_employer": "🔔 Notifications are on: we will message you here when a matching candidate appears.",
+      "settings_button": "Notification settings"
+    }
   }
 }

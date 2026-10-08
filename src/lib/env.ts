@@ -32,6 +32,10 @@ const serverSchema = z.object({
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().optional(),
+  /** Faqat sinov uchun: Gemini API o'rniga boshqa manzil (lokal soxta server) */
+  GEMINI_BASE_URL: z.string().url().optional(),
+  /** Admin panel alohida domeni, masalan admin.ishtopdim.uz (bo'lmasa /admin asosiy domenda) */
+  ADMIN_HOST: z.string().optional(),
   /** Kasb rasmlari generatsiyasi — matnli AI dan ALOHIDA kalit (alohida vakolat va xarajat nazorati). Bo'lmasa rasm yaratilmaydi, ikonka chiqadi */
   IMAGE_GEN_API_KEY: z.string().optional(),
   /** Google Gemini rasm modeli (standart: gemini-2.5-flash-image) */
@@ -82,6 +86,8 @@ export function getServerEnv() {
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
+    GEMINI_BASE_URL: process.env.GEMINI_BASE_URL || undefined,
+    ADMIN_HOST: process.env.ADMIN_HOST || undefined,
     IMAGE_GEN_API_KEY: process.env.IMAGE_GEN_API_KEY || undefined,
     IMAGE_GEN_MODEL: process.env.IMAGE_GEN_MODEL || undefined,
     IMAGE_GEN_BASE_URL: process.env.IMAGE_GEN_BASE_URL || undefined,

@@ -143,12 +143,18 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
     }
     case "new_matching_vacancy": {
       const score = num(p, "score");
-      const params = { vacancy_title: str(p, "vacancy_title"), score };
+      const count = num(p, "count") ?? 1;
+      const params = { vacancy_title: str(p, "vacancy_title"), score, count };
+      if (count > 1) return { title: t(`${k}.title_many`, params), body: t(`${k}.body_many`, params), icon: "match_vacancy" };
       return { title: t(`${k}.title`, params), body: score !== null ? t(`${k}.body`, params) : t(`${k}.body_noscore`, params), icon: "match_vacancy" };
     }
     case "new_matching_worker": {
-      const score = num(p, "score");
-      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: str(p, "worker_name"), score };
+      // 0051+: { vacancy_title, count, workers: [{ name, score }] }; eski: { worker_name, score }
+      const first = Array.isArray(p.workers) ? asRecord(p.workers[0] as Json) : {};
+      const score = num(p, "score") ?? num(first, "score");
+      const count = num(p, "count") ?? 1;
+      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: str(p, "worker_name") || str(first, "name"), score, count };
+      if (count > 1) return { title: t(`${k}.title_many`, params), body: t(`${k}.body_many`, params), icon: "match_worker" };
       return { title: t(`${k}.title`, params), body: score !== null ? t(`${k}.body`, params) : t(`${k}.body_noscore`, params), icon: "match_worker" };
     }
     case "verification_result": {
@@ -186,6 +192,17 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
           body: t("saved.ai_alerts.notify_body", { who: who || "—", region: str(p, "region") || "—", salary }),
           icon: "match_vacancy",
         };
+      }
+      if (str(p, "kind") === "moderation_result") {
+        const state = str(p, "state");
+        const key = state === "active" || state === "listed" ? "active" : state === "rejected" ? "rejected" : state === "verification_pending" ? "verification" : state === "payment_required" ? "payment" : "review";
+        const message = str(p, "message");
+        return { title: t(`notifications.moderation.${key}_title`), body: key === "rejected" && message ? message : t(`notifications.moderation.${key}_body`, { title: str(p, "title") || "—" }), icon: "verification" };
+      }
+      if (str(p, "kind") === "employer_status") {
+        const status = str(p, "status");
+        const key = status === "verified" ? "employer_verified" : status === "rejected" ? "employer_rejected" : status === "suspended" ? "employer_suspended" : "employer_other";
+        return { title: t(`notifications.moderation.${key}_title`), body: status === "verified" ? t("notifications.moderation.employer_verified_body") : str(p, "note"), icon: "verification" };
       }
       if (str(p, "kind") === "payment_success") {
         return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : str(p, "purpose") === "ai_alerts" ? "billing.return.paid_ai_alerts" : str(p, "purpose") === "worker_listing" ? "billing.return.paid_listing" : "billing.return.paid_promotion"), icon: "system" };

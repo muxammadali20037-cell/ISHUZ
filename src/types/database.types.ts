@@ -208,6 +208,83 @@ export type Database = {
           },
         ];
       };
+      ai_usage_log: {
+        Row: {
+          created_at: string;
+          error: string | null;
+          feature: string;
+          id: number;
+          images: number;
+          input_tokens: number | null;
+          latency_ms: number | null;
+          model: string | null;
+          ok: boolean;
+          output_tokens: number | null;
+          provider: string;
+        };
+        Insert: {
+          created_at?: string;
+          error?: string | null;
+          feature: string;
+          id?: number;
+          images?: number;
+          input_tokens?: number | null;
+          latency_ms?: number | null;
+          model?: string | null;
+          ok: boolean;
+          output_tokens?: number | null;
+          provider: string;
+        };
+        Update: {
+          created_at?: string;
+          error?: string | null;
+          feature?: string;
+          id?: number;
+          images?: number;
+          input_tokens?: number | null;
+          latency_ms?: number | null;
+          model?: string | null;
+          ok?: boolean;
+          output_tokens?: number | null;
+          provider?: string;
+        };
+        Relationships: [];
+      };
+      analytics_events: {
+        Row: {
+          anon_id: string | null;
+          created_at: string;
+          id: number;
+          name: string;
+          profile_id: string | null;
+          props: NonNullable<Json>;
+        };
+        Insert: {
+          anon_id?: string | null;
+          created_at?: string;
+          id?: number;
+          name: string;
+          profile_id?: string | null;
+          props?: NonNullable<Json>;
+        };
+        Update: {
+          anon_id?: string | null;
+          created_at?: string;
+          id?: number;
+          name?: string;
+          profile_id?: string | null;
+          props?: NonNullable<Json>;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       app_settings: {
         Row: {
           is_public: boolean;
@@ -1165,11 +1242,15 @@ export type Database = {
           employer_type: Database["public"]["Enums"]["employer_type"];
           employer_type_note: string | null;
           id: string;
+          identity_number: string | null;
           onboarding_completed_at: string | null;
           profile_id: string;
           region_id: string | null;
           updated_at: string;
+          verification_checks: string[];
+          verification_note: string | null;
           verification_status: Database["public"]["Enums"]["verification_status"];
+          verified_at: string | null;
         };
         Insert: {
           about?: string | null;
@@ -1181,11 +1262,15 @@ export type Database = {
           employer_type?: Database["public"]["Enums"]["employer_type"];
           employer_type_note?: string | null;
           id?: string;
+          identity_number?: string | null;
           onboarding_completed_at?: string | null;
           profile_id: string;
           region_id?: string | null;
           updated_at?: string;
+          verification_checks?: string[];
+          verification_note?: string | null;
           verification_status?: Database["public"]["Enums"]["verification_status"];
+          verified_at?: string | null;
         };
         Update: {
           about?: string | null;
@@ -1197,11 +1282,15 @@ export type Database = {
           employer_type?: Database["public"]["Enums"]["employer_type"];
           employer_type_note?: string | null;
           id?: string;
+          identity_number?: string | null;
           onboarding_completed_at?: string | null;
           profile_id?: string;
           region_id?: string | null;
           updated_at?: string;
+          verification_checks?: string[];
+          verification_note?: string | null;
           verification_status?: Database["public"]["Enums"]["verification_status"];
+          verified_at?: string | null;
         };
         Relationships: [
           {
@@ -1385,24 +1474,203 @@ export type Database = {
           },
         ];
       };
+      match_jobs: {
+        Row: {
+          attempts: number;
+          created_at: string;
+          entity_id: string;
+          entity_type: string;
+          finished_at: string | null;
+          id: number;
+          last_error: string | null;
+          reason: string;
+          result: Json | null;
+          started_at: string | null;
+          status: string;
+        };
+        Insert: {
+          attempts?: number;
+          created_at?: string;
+          entity_id: string;
+          entity_type: string;
+          finished_at?: string | null;
+          id?: number;
+          last_error?: string | null;
+          reason?: string;
+          result?: Json | null;
+          started_at?: string | null;
+          status?: string;
+        };
+        Update: {
+          attempts?: number;
+          created_at?: string;
+          entity_id?: string;
+          entity_type?: string;
+          finished_at?: string | null;
+          id?: number;
+          last_error?: string | null;
+          reason?: string;
+          result?: Json | null;
+          started_at?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
+      match_notifications: {
+        Row: {
+          created_at: string;
+          notification_id: number | null;
+          recipient_id: string;
+          rules_version: number;
+          score: number;
+          side: string;
+          vacancy_id: string;
+          worker_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          notification_id?: number | null;
+          recipient_id: string;
+          rules_version: number;
+          score: number;
+          side: string;
+          vacancy_id: string;
+          worker_id: string;
+        };
+        Update: {
+          created_at?: string;
+          notification_id?: number | null;
+          recipient_id?: string;
+          rules_version?: number;
+          score?: number;
+          side?: string;
+          vacancy_id?: string;
+          worker_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "match_notifications_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_notifications_vacancy_id_fkey";
+            columns: ["vacancy_id"];
+            isOneToOne: false;
+            referencedRelation: "vacancies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_notifications_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: false;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      match_subscriptions: {
+        Row: {
+          created_at: string;
+          enabled: boolean;
+          mode: string;
+          paused_reason: string | null;
+          profession_node_id: string | null;
+          profile_id: string;
+          region_id: string | null;
+          role: string;
+          salary_min: number | null;
+          schedules: Database["public"]["Enums"]["work_schedule"][];
+          telegram_confirmed_at: string | null;
+          updated_at: string;
+          vacancy_ids: string[];
+        };
+        Insert: {
+          created_at?: string;
+          enabled?: boolean;
+          mode?: string;
+          paused_reason?: string | null;
+          profession_node_id?: string | null;
+          profile_id: string;
+          region_id?: string | null;
+          role: string;
+          salary_min?: number | null;
+          schedules?: Database["public"]["Enums"]["work_schedule"][];
+          telegram_confirmed_at?: string | null;
+          updated_at?: string;
+          vacancy_ids?: string[];
+        };
+        Update: {
+          created_at?: string;
+          enabled?: boolean;
+          mode?: string;
+          paused_reason?: string | null;
+          profession_node_id?: string | null;
+          profile_id?: string;
+          region_id?: string | null;
+          role?: string;
+          salary_min?: number | null;
+          schedules?: Database["public"]["Enums"]["work_schedule"][];
+          telegram_confirmed_at?: string | null;
+          updated_at?: string;
+          vacancy_ids?: string[];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "match_subscriptions_profession_node_id_fkey";
+            columns: ["profession_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_subscriptions_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "match_subscriptions_region_id_fkey";
+            columns: ["region_id"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       matches: {
         Row: {
+          complete: boolean;
           computed_at: string;
+          hard_fail: boolean;
+          missing: string[];
           reasons: NonNullable<Json>;
+          rules_version: number;
           score: number;
           vacancy_id: string;
           worker_id: string;
         };
         Insert: {
+          complete?: boolean;
           computed_at?: string;
+          hard_fail?: boolean;
+          missing?: string[];
           reasons?: NonNullable<Json>;
+          rules_version?: number;
           score: number;
           vacancy_id: string;
           worker_id: string;
         };
         Update: {
+          complete?: boolean;
           computed_at?: string;
+          hard_fail?: boolean;
+          missing?: string[];
           reasons?: NonNullable<Json>;
+          rules_version?: number;
           score?: number;
           vacancy_id?: string;
           worker_id?: string;
@@ -1481,38 +1749,124 @@ export type Database = {
           },
         ];
       };
+      moderation_checks: {
+        Row: {
+          actor_id: string | null;
+          category: string | null;
+          created_at: string;
+          decision: string;
+          entity_id: string;
+          entity_type: string;
+          error: string | null;
+          flagged_fields: string[];
+          id: number;
+          latency_ms: number | null;
+          model: string | null;
+          reason_code: string | null;
+          signals: string[];
+          source: string;
+          user_message: string | null;
+          version: number;
+        };
+        Insert: {
+          actor_id?: string | null;
+          category?: string | null;
+          created_at?: string;
+          decision: string;
+          entity_id: string;
+          entity_type: string;
+          error?: string | null;
+          flagged_fields?: string[];
+          id?: number;
+          latency_ms?: number | null;
+          model?: string | null;
+          reason_code?: string | null;
+          signals?: string[];
+          source: string;
+          user_message?: string | null;
+          version: number;
+        };
+        Update: {
+          actor_id?: string | null;
+          category?: string | null;
+          created_at?: string;
+          decision?: string;
+          entity_id?: string;
+          entity_type?: string;
+          error?: string | null;
+          flagged_fields?: string[];
+          id?: number;
+          latency_ms?: number | null;
+          model?: string | null;
+          reason_code?: string | null;
+          signals?: string[];
+          source?: string;
+          user_message?: string | null;
+          version?: number;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "moderation_checks_actor_id_fkey";
+            columns: ["actor_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       notifications: {
         Row: {
           created_at: string;
+          dedupe_key: string | null;
           id: number;
           link: string | null;
+          open_token: string;
+          opened_at: string | null;
           payload: NonNullable<Json>;
           profile_id: string;
           push_sent_at: string | null;
           read_at: string | null;
           telegram_sent_at: string | null;
+          tg_attempts: number;
+          tg_error: string | null;
+          tg_next_at: string;
+          tg_status: string;
           type: Database["public"]["Enums"]["notification_type"];
         };
         Insert: {
           created_at?: string;
+          dedupe_key?: string | null;
           id?: never;
           link?: string | null;
+          open_token?: string;
+          opened_at?: string | null;
           payload?: NonNullable<Json>;
           profile_id: string;
           push_sent_at?: string | null;
           read_at?: string | null;
           telegram_sent_at?: string | null;
+          tg_attempts?: number;
+          tg_error?: string | null;
+          tg_next_at?: string;
+          tg_status?: string;
           type: Database["public"]["Enums"]["notification_type"];
         };
         Update: {
           created_at?: string;
+          dedupe_key?: string | null;
           id?: never;
           link?: string | null;
+          open_token?: string;
+          opened_at?: string | null;
           payload?: NonNullable<Json>;
           profile_id?: string;
           push_sent_at?: string | null;
           read_at?: string | null;
           telegram_sent_at?: string | null;
+          tg_attempts?: number;
+          tg_error?: string | null;
+          tg_next_at?: string;
+          tg_status?: string;
           type?: Database["public"]["Enums"]["notification_type"];
         };
         Relationships: [
@@ -2351,6 +2705,7 @@ export type Database = {
           id: string;
           is_approved: boolean;
           is_custom: boolean;
+          is_license: boolean;
           name_en: string | null;
           name_ru: string;
           name_uz: string;
@@ -2364,6 +2719,7 @@ export type Database = {
           id?: string;
           is_approved?: boolean;
           is_custom?: boolean;
+          is_license?: boolean;
           name_en?: string | null;
           name_ru: string;
           name_uz: string;
@@ -2377,6 +2733,7 @@ export type Database = {
           id?: string;
           is_approved?: boolean;
           is_custom?: boolean;
+          is_license?: boolean;
           name_en?: string | null;
           name_ru?: string;
           name_uz?: string;
@@ -2453,6 +2810,7 @@ export type Database = {
       telegram_accounts: {
         Row: {
           bot_started: boolean;
+          chat_verified_at: string | null;
           first_name: string | null;
           language_code: string | null;
           last_name: string | null;
@@ -2467,6 +2825,7 @@ export type Database = {
         };
         Insert: {
           bot_started?: boolean;
+          chat_verified_at?: string | null;
           first_name?: string | null;
           language_code?: string | null;
           last_name?: string | null;
@@ -2481,6 +2840,7 @@ export type Database = {
         };
         Update: {
           bot_started?: boolean;
+          chat_verified_at?: string | null;
           first_name?: string | null;
           language_code?: string | null;
           last_name?: string | null;
@@ -2498,6 +2858,44 @@ export type Database = {
             foreignKeyName: "telegram_accounts_profile_id_fkey";
             columns: ["profile_id"];
             isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      telegram_link_tokens: {
+        Row: {
+          created_at: string;
+          expires_at: string;
+          profile_id: string;
+          role: string | null;
+          token_hash: string;
+          used_at: string | null;
+          used_by: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          expires_at: string;
+          profile_id: string;
+          role?: string | null;
+          token_hash: string;
+          used_at?: string | null;
+          used_by?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          expires_at?: string;
+          profile_id?: string;
+          role?: string | null;
+          token_hash?: string;
+          used_at?: string | null;
+          used_by?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "telegram_link_tokens_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },
@@ -2555,11 +2953,23 @@ export type Database = {
           is_remote: boolean;
           lat: number | null;
           lng: number | null;
+          moderated_at: string | null;
+          moderated_version: number | null;
+          moderation_appeal_at: string | null;
+          moderation_attempts: number;
+          moderation_category: string | null;
+          moderation_fields: string[];
+          moderation_message: string | null;
+          moderation_next_at: string | null;
           moderation_note: string | null;
+          moderation_requested_at: string | null;
+          moderation_state: string;
+          moderation_version: number;
           official_terms: string[];
           opportunity_type: Database["public"]["Enums"]["opportunity_type"];
           owner_profile_id: string | null;
           paid_until: string | null;
+          photo_path: string | null;
           positions_count: number;
           profession_node_id: string | null;
           published_at: string | null;
@@ -2607,11 +3017,23 @@ export type Database = {
           is_remote?: boolean;
           lat?: number | null;
           lng?: number | null;
+          moderated_at?: string | null;
+          moderated_version?: number | null;
+          moderation_appeal_at?: string | null;
+          moderation_attempts?: number;
+          moderation_category?: string | null;
+          moderation_fields?: string[];
+          moderation_message?: string | null;
+          moderation_next_at?: string | null;
           moderation_note?: string | null;
+          moderation_requested_at?: string | null;
+          moderation_state?: string;
+          moderation_version?: number;
           official_terms?: string[];
           opportunity_type?: Database["public"]["Enums"]["opportunity_type"];
           owner_profile_id?: string | null;
           paid_until?: string | null;
+          photo_path?: string | null;
           positions_count?: number;
           profession_node_id?: string | null;
           published_at?: string | null;
@@ -2659,11 +3081,23 @@ export type Database = {
           is_remote?: boolean;
           lat?: number | null;
           lng?: number | null;
+          moderated_at?: string | null;
+          moderated_version?: number | null;
+          moderation_appeal_at?: string | null;
+          moderation_attempts?: number;
+          moderation_category?: string | null;
+          moderation_fields?: string[];
+          moderation_message?: string | null;
+          moderation_next_at?: string | null;
           moderation_note?: string | null;
+          moderation_requested_at?: string | null;
+          moderation_state?: string;
+          moderation_version?: number;
           official_terms?: string[];
           opportunity_type?: Database["public"]["Enums"]["opportunity_type"];
           owner_profile_id?: string | null;
           paid_until?: string | null;
+          photo_path?: string | null;
           positions_count?: number;
           profession_node_id?: string | null;
           published_at?: string | null;
@@ -2865,6 +3299,7 @@ export type Database = {
       };
       verification_requests: {
         Row: {
+          ai_review: Json | null;
           company_id: string | null;
           created_at: string;
           document_paths: string[];
@@ -2875,9 +3310,11 @@ export type Database = {
           reviewed_at: string | null;
           reviewed_by: string | null;
           status: Database["public"]["Enums"]["verification_status"];
+          submitted_data: NonNullable<Json>;
           type: Database["public"]["Enums"]["verification_type"];
         };
         Insert: {
+          ai_review?: Json | null;
           company_id?: string | null;
           created_at?: string;
           document_paths?: string[];
@@ -2888,9 +3325,11 @@ export type Database = {
           reviewed_at?: string | null;
           reviewed_by?: string | null;
           status?: Database["public"]["Enums"]["verification_status"];
+          submitted_data?: NonNullable<Json>;
           type: Database["public"]["Enums"]["verification_type"];
         };
         Update: {
+          ai_review?: Json | null;
           company_id?: string | null;
           created_at?: string;
           document_paths?: string[];
@@ -2901,6 +3340,7 @@ export type Database = {
           reviewed_at?: string | null;
           reviewed_by?: string | null;
           status?: Database["public"]["Enums"]["verification_status"];
+          submitted_data?: NonNullable<Json>;
           type?: Database["public"]["Enums"]["verification_type"];
         };
         Relationships: [
@@ -3292,11 +3732,22 @@ export type Database = {
           last_active_at: string;
           listed_until: string | null;
           listing_warned_at: string | null;
+          moderated_at: string | null;
+          moderated_version: number | null;
+          moderation_appeal_at: string | null;
+          moderation_attempts: number;
+          moderation_category: string | null;
+          moderation_fields: string[];
+          moderation_message: string | null;
+          moderation_next_at: string | null;
+          moderation_state: string;
+          moderation_version: number;
           onboarding_completed_at: string | null;
           onboarding_step: number;
           profession_node_id: string | null;
           profile_id: string;
           promoted_until: string | null;
+          publish_requested: boolean;
           region_id: string | null;
           remote_preference: Database["public"]["Enums"]["remote_preference"];
           status: Database["public"]["Enums"]["worker_status"];
@@ -3320,11 +3771,22 @@ export type Database = {
           last_active_at?: string;
           listed_until?: string | null;
           listing_warned_at?: string | null;
+          moderated_at?: string | null;
+          moderated_version?: number | null;
+          moderation_appeal_at?: string | null;
+          moderation_attempts?: number;
+          moderation_category?: string | null;
+          moderation_fields?: string[];
+          moderation_message?: string | null;
+          moderation_next_at?: string | null;
+          moderation_state?: string;
+          moderation_version?: number;
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
           profession_node_id?: string | null;
           profile_id: string;
           promoted_until?: string | null;
+          publish_requested?: boolean;
           region_id?: string | null;
           remote_preference?: Database["public"]["Enums"]["remote_preference"];
           status?: Database["public"]["Enums"]["worker_status"];
@@ -3348,11 +3810,22 @@ export type Database = {
           last_active_at?: string;
           listed_until?: string | null;
           listing_warned_at?: string | null;
+          moderated_at?: string | null;
+          moderated_version?: number | null;
+          moderation_appeal_at?: string | null;
+          moderation_attempts?: number;
+          moderation_category?: string | null;
+          moderation_fields?: string[];
+          moderation_message?: string | null;
+          moderation_next_at?: string | null;
+          moderation_state?: string;
+          moderation_version?: number;
           onboarding_completed_at?: string | null;
           onboarding_step?: number;
           profession_node_id?: string | null;
           profile_id?: string;
           promoted_until?: string | null;
+          publish_requested?: boolean;
           region_id?: string | null;
           remote_preference?: Database["public"]["Enums"]["remote_preference"];
           status?: Database["public"]["Enums"]["worker_status"];
@@ -3449,6 +3922,7 @@ export type Database = {
         Args: { p_vacancy_id: string; p_window_end: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
       };
+      admin_aal_ok: { Args: Record<PropertyKey, never>; Returns: boolean };
       admin_broadcast: {
         Args: {
           p_body: string;
@@ -3490,6 +3964,16 @@ export type Database = {
         };
         Returns: undefined;
       };
+      admin_moderation_decide: {
+        Args: {
+          p_category?: string;
+          p_decision: string;
+          p_entity: string;
+          p_id: string;
+          p_message?: string;
+        };
+        Returns: string;
+      };
       admin_profession_node_stats: {
         Args: { p_category_id?: string; p_parent_id?: string };
         Returns: {
@@ -3498,6 +3982,7 @@ export type Database = {
           vacancies: number;
         }[];
       };
+      admin_queue_status: { Args: Record<PropertyKey, never>; Returns: Json };
       admin_resolve_report: {
         Args: {
           p_note?: string;
@@ -3506,6 +3991,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      admin_retry_queue: { Args: { p_kind: string }; Returns: number };
       admin_review_verification: {
         Args: {
           p_note?: string;
@@ -3524,6 +4010,15 @@ export type Database = {
           zero_results: number;
         }[];
       };
+      admin_set_employer_status: {
+        Args: {
+          p_checks?: string[];
+          p_note?: string;
+          p_profile_id: string;
+          p_status: Database["public"]["Enums"]["verification_status"];
+        };
+        Returns: number;
+      };
       admin_set_user_block: {
         Args: { p_block: boolean; p_profile_id: string; p_reason?: string };
         Returns: undefined;
@@ -3537,6 +4032,27 @@ export type Database = {
         Returns: undefined;
       };
       admin_stats: { Args: Record<PropertyKey, never>; Returns: Json };
+      admin_stats_series: {
+        Args: { p_from: string; p_to: string };
+        Returns: {
+          ai_requests: number;
+          contact_clicks: number;
+          day: string;
+          outcomes: number;
+          published: number;
+          rejected: number;
+          searches: number;
+          searches_zero: number;
+          tg_failed: number;
+          tg_sent: number;
+          users_new: number;
+        }[];
+      };
+      admin_stats_v2: { Args: { p_from: string; p_to: string }; Returns: Json };
+      admin_update_matching: {
+        Args: { p_threshold: number; p_weights: Json };
+        Returns: number;
+      };
       ai_alerts_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
       application_stage_rank: {
         Args: { s: Database["public"]["Enums"]["application_status"] };
@@ -3625,6 +4141,25 @@ export type Database = {
           score: number;
         }[];
       };
+      compute_match_v2: {
+        Args: { p_vacancy_id: string; p_worker_id: string };
+        Returns: Json;
+      };
+      confirm_match_subscription: {
+        Args: { p_profile_id: string; p_role: string };
+        Returns: undefined;
+      };
+      consume_telegram_link_token: {
+        Args: {
+          p_first_name?: string;
+          p_language?: string;
+          p_last_name?: string;
+          p_telegram_user_id: number;
+          p_token_hash: string;
+          p_username?: string;
+        };
+        Returns: Json;
+      };
       contact_status_for: { Args: { p_owner: string }; Returns: string };
       create_payment: {
         Args: {
@@ -3642,6 +4177,10 @@ export type Database = {
         };
         Returns: string;
       };
+      create_telegram_link_token: {
+        Args: { p_role?: string; p_token_hash: string };
+        Returns: string;
+      };
       current_employer_id: {
         Args: Record<PropertyKey, never>;
         Returns: string;
@@ -3650,6 +4189,10 @@ export type Database = {
       current_worker_id: { Args: Record<PropertyKey, never>; Returns: string };
       delete_message: { Args: { p_message_id: number }; Returns: undefined };
       dispatch_app_cron: { Args: { p_path: string }; Returns: number };
+      dispatch_profession_images_cron: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       distance_km: {
         Args: { lat1: number; lat2: number; lng1: number; lng2: number };
         Returns: number;
@@ -3658,9 +4201,21 @@ export type Database = {
         Args: { level: Database["public"]["Enums"]["education_level"] };
         Returns: number;
       };
+      employer_can_publish: {
+        Args: { p_company: string; p_owner: string };
+        Returns: boolean;
+      };
       employer_dashboard_stats: {
         Args: Record<PropertyKey, never>;
         Returns: Json;
+      };
+      enqueue_match_job: {
+        Args: { p_entity: string; p_id: string; p_reason: string };
+        Returns: undefined;
+      };
+      ensure_employer_verification_request: {
+        Args: { p_company: string; p_owner: string };
+        Returns: undefined;
       };
       experience_level_months: {
         Args: { level: Database["public"]["Enums"]["experience_level"] };
@@ -3736,6 +4291,91 @@ export type Database = {
         Args: { p_search_id: string };
         Returns: undefined;
       };
+      match_explain: {
+        Args: { p_vacancy_id: string; p_worker_id: string };
+        Returns: Json;
+      };
+      match_rules_version: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+      match_tg_plan: {
+        Args: { p_profile_id: string; p_role: string; p_vacancy_id: string };
+        Returns: {
+          o_next_at: string;
+          o_status: string;
+        }[];
+      };
+      match_weights: { Args: Record<PropertyKey, never>; Returns: Json };
+      moderation_apply: {
+        Args: {
+          p_actor?: string;
+          p_category: string;
+          p_decision: string;
+          p_entity: string;
+          p_flagged_fields: string[];
+          p_id: string;
+          p_latency_ms?: number;
+          p_model?: string;
+          p_notify?: boolean;
+          p_reason_code: string;
+          p_signals?: string[];
+          p_source?: string;
+          p_user_message: string;
+          p_version: number;
+        };
+        Returns: string;
+      };
+      moderation_bump_vacancies: {
+        Args: { p_company: string; p_owner: string };
+        Returns: undefined;
+      };
+      moderation_bump_worker: {
+        Args: { p_profile_id: string; p_worker_id: string };
+        Returns: undefined;
+      };
+      moderation_claim: {
+        Args: { p_limit?: number };
+        Returns: {
+          o_entity: string;
+          o_id: string;
+          o_version: number;
+        }[];
+      };
+      moderation_enabled: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      moderation_fail: {
+        Args: {
+          p_entity: string;
+          p_error: string;
+          p_id: string;
+          p_version: number;
+        };
+        Returns: undefined;
+      };
+      moderation_internal: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      moderation_lease: {
+        Args: { p_entity: string; p_id: string };
+        Returns: number;
+      };
+      moderation_snapshot: {
+        Args: { p_entity: string; p_id: string };
+        Returns: Json;
+      };
+      moderation_try_activate_vacancy: {
+        Args: { p_vacancy_id: string };
+        Returns: string;
+      };
+      moderation_try_list_worker: {
+        Args: { p_worker_id: string };
+        Returns: string;
+      };
+      my_admin_status: { Args: Record<PropertyKey, never>; Returns: Json };
       my_contact_requests: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -3763,6 +4403,18 @@ export type Database = {
           unread_count: number;
         }[];
       };
+      my_listing_state: {
+        Args: { p_entity: string; p_id: string };
+        Returns: Json;
+      };
+      my_listing_states: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          entity: string;
+          id: string;
+          info: Json;
+        }[];
+      };
       my_saved_searches: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -3775,6 +4427,7 @@ export type Database = {
         }[];
       };
       normalize_search_text: { Args: { p: string }; Returns: string };
+      notification_open: { Args: { p_token: string }; Returns: string };
       notify: {
         Args: {
           p_link?: string;
@@ -3833,6 +4486,8 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      process_match_job: { Args: { p_job_id: number }; Returns: Json };
+      process_match_jobs: { Args: { p_limit?: number }; Returns: number };
       profession_direction_counts: {
         Args: { p_category_id: string; p_parent_id?: string };
         Returns: {
@@ -3892,6 +4547,7 @@ export type Database = {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
       };
+      purge_analytics: { Args: Record<PropertyKey, never>; Returns: undefined };
       purge_old_notifications: {
         Args: Record<PropertyKey, never>;
         Returns: number;
@@ -3934,6 +4590,14 @@ export type Database = {
         Returns: number;
       };
       request_contact: { Args: { p_owner: string }; Returns: string };
+      request_moderation_appeal: {
+        Args: { p_entity: string; p_id: string; p_note?: string };
+        Returns: undefined;
+      };
+      request_vacancy_moderation: {
+        Args: { p_vacancy_id: string };
+        Returns: undefined;
+      };
       respond_contact_request: {
         Args: { p_approve: boolean; p_request_id: string };
         Returns: Database["public"]["Enums"]["contact_request_status"];
@@ -4310,12 +4974,29 @@ export type Database = {
         Args: { p_blocked: boolean; p_conversation_id: string };
         Returns: undefined;
       };
+      set_match_subscription: {
+        Args: {
+          p_enabled: boolean;
+          p_mode?: string;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_role: string;
+          p_salary_min?: number;
+          p_schedules?: Database["public"]["Enums"]["work_schedule"][];
+          p_vacancy_ids?: string[];
+        };
+        Returns: Json;
+      };
       set_vacancy_status: {
         Args: {
           p_status: Database["public"]["Enums"]["vacancy_status"];
           p_vacancy_id: string;
         };
         Returns: undefined;
+      };
+      setting_bool: {
+        Args: { p_default: boolean; p_key: string };
+        Returns: boolean;
       };
       setting_int: {
         Args: { p_default: number; p_key: string };
@@ -4457,6 +5138,14 @@ export type Database = {
         }[];
       };
       slugify: { Args: { input: string }; Returns: string };
+      submit_employer_verification: {
+        Args: {
+          p_document_paths?: string[];
+          p_identity_number?: string;
+          p_note?: string;
+        };
+        Returns: undefined;
+      };
       submit_report: {
         Args: {
           p_details?: string;
@@ -4465,6 +5154,34 @@ export type Database = {
           p_target_type: Database["public"]["Enums"]["report_target"];
         };
         Returns: string;
+      };
+      telegram_blocked: { Args: { p_profile_id: string }; Returns: undefined };
+      telegram_outbox_claim: {
+        Args: { p_limit?: number };
+        Returns: {
+          created_at: string;
+          dedupe_key: string | null;
+          id: number;
+          link: string | null;
+          open_token: string;
+          opened_at: string | null;
+          payload: NonNullable<Json>;
+          profile_id: string;
+          push_sent_at: string | null;
+          read_at: string | null;
+          telegram_sent_at: string | null;
+          tg_attempts: number;
+          tg_error: string | null;
+          tg_next_at: string;
+          tg_status: string;
+          type: Database["public"]["Enums"]["notification_type"];
+        }[];
+        SetofOptions: {
+          from: "*";
+          to: "notifications";
+          isOneToOne: false;
+          isSetofReturn: true;
+        };
       };
       touch_last_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
       unread_counts: {
@@ -4520,7 +5237,7 @@ export type Database = {
       };
     };
     Enums: {
-      admin_role: "super_admin" | "admin" | "moderator" | "support";
+      admin_role: "super_admin" | "admin" | "moderator" | "support" | "analyst";
       app_locale: "uz" | "oz" | "ru" | "en";
       app_role: "worker" | "employer";
       application_status:
@@ -4614,7 +5331,8 @@ export type Database = {
         | "expired"
         | "hidden"
         | "rejected";
-      verification_status: "unverified" | "pending" | "verified" | "rejected";
+      verification_status:
+        "unverified" | "pending" | "verified" | "rejected" | "suspended";
       verification_type:
         | "phone"
         | "telegram"
@@ -4754,7 +5472,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      admin_role: ["super_admin", "admin", "moderator", "support"],
+      admin_role: ["super_admin", "admin", "moderator", "support", "analyst"],
       app_locale: ["uz", "oz", "ru", "en"],
       app_role: ["worker", "employer"],
       application_status: [
@@ -4888,7 +5606,13 @@ export const Constants = {
         "hidden",
         "rejected",
       ],
-      verification_status: ["unverified", "pending", "verified", "rejected"],
+      verification_status: [
+        "unverified",
+        "pending",
+        "verified",
+        "rejected",
+        "suspended",
+      ],
       verification_type: [
         "phone",
         "telegram",

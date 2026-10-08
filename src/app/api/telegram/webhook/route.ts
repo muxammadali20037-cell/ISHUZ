@@ -1,4 +1,4 @@
-import { timingSafeEqual } from "node:crypto";
+import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -6,6 +6,8 @@ import { escapeHtml, removeKeyboard, sendTelegramMessage, shareContactKeyboard, 
 import { makeT } from "@/lib/i18n/translate";
 import { formatPhone } from "@/lib/format";
 import { parseBotCommand, resolveTelegramLocale, telegramUpdateSchema } from "@/features/notifications/telegram";
+import { sendTelegramHtml } from "@/features/notifications/telegram-dispatch";
+import { miniAppBaseUrl } from "@/lib/telegram/bot";
 import { ensureTelegramProfile, normalizeContactPhone } from "@/features/auth/telegram-session";
 import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendLanguagePicker, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
 
@@ -83,6 +85,31 @@ export async function POST(req: NextRequest) {
         .from("telegram_accounts")
         .update({ bot_started: true, last_seen_at: new Date().toISOString(), language_code: from.language_code ?? account.language_code, username: from.username ?? null })
         .eq("telegram_user_id", from.id);
+    }
+
+    // ---------- /start sub_<token>: xabarnomalar uchun hisobni xavfsiz bog'lash ----------
+    // Token bir martalik va 15 daqiqa amal qiladi (faqat xeshi saqlanadi); chat_id tekshirilgan holda bog'lanadi,
+    // username orqali emas. Obuna faqat bot shu chatga xabar yetkaza olgandan keyin faollashadi.
+    if (command?.name === "start" && command.param?.startsWith("sub_")) {
+      const hash = createHash("sha256").update(command.param.slice(4)).digest("hex");
+      const { data: res } = await admin.rpc("consume_telegram_link_token", {
+        p_token_hash: hash, p_telegram_user_id: from.id, p_username: from.username ?? undefined,
+        p_first_name: from.first_name ?? undefined, p_last_name: from.last_name ?? undefined, p_language: from.language_code ?? undefined,
+      });
+      const r = (res ?? {}) as { status?: string; profile_id?: string; role?: string | null };
+      if (r.status === "linked" && r.profile_id) {
+        const { data: prof } = await admin.from("profiles").select("locale").eq("id", r.profile_id).maybeSingle();
+        const t2 = makeT(resolveTelegramLocale([prof?.locale, from.language_code]));
+        const text = escapeHtml(t2("notifications.telegram.link_ok")) + (r.role ? `\n${escapeHtml(t2(`notifications.telegram.subscribed_${r.role}`))}` : "");
+        const sent = await sendTelegramHtml(chatId, text, {
+          inline_keyboard: [[{ text: t2("notifications.telegram.settings_button"), web_app: { url: `${miniAppBaseUrl()}/cabinet/alerts` } }]],
+        });
+        if (sent.ok) await admin.rpc("confirm_match_subscription", { p_profile_id: r.profile_id, p_role: r.role ?? "" });
+      } else {
+        const key = r.status === "used" ? "link_used" : r.status === "expired" ? "link_expired" : r.status === "linked_elsewhere" ? "link_elsewhere" : "link_invalid";
+        await sendTelegramMessage(chatId, tt(key));
+      }
+      return NextResponse.json({ ok: true, start: "sub" });
     }
 
     // ---------- kontakt: raqamni ulash ----------

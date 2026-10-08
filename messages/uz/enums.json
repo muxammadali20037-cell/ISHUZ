@@ -126,7 +126,8 @@
     "unverified": "Tasdiqlanmagan",
     "pending": "Tekshirilmoqda",
     "verified": "Tasdiqlangan",
-    "rejected": "Rad etilgan"
+    "rejected": "Rad etilgan",
+    "suspended": "To'xtatilgan"
   },
   "verification_type": {
     "phone": "Telefon",
@@ -202,7 +203,8 @@
     "super_admin": "Super admin",
     "admin": "Admin",
     "moderator": "Moderator",
-    "support": "Qo'llab-quvvatlash"
+    "support": "Qo'llab-quvvatlash",
+    "analyst": "Tahlilchi"
   },
   "notification_type": {
     "application_received": "Yangi ariza",
@@ -226,7 +228,7 @@
     "district_match": "Siz tanlagan hudud",
     "distance_near": "Sizdan {km} km",
     "distance_ok": "Sizdan {km} km",
-    "region_match": "Viloyat mos, tuman farq qiladi",
+    "region_match": "Hudud mos",
     "location_far": "Hudud mos emas",
     "salary_ok": "Maosh talabingiz mos",
     "salary_min_ok": "Maosh minimal talabingizga mos",
@@ -256,7 +258,18 @@
     "profession_specialist": "Siz shu kasbning aniq mutaxassisisiz",
     "profession_general": "Kasbingiz yaqin, lekin bu yerda torroq mutaxassis kerak",
     "profession_related": "O'xshash yo'nalish",
-    "profession_other_branch": "Soha bir xil, kasb boshqa"
+    "profession_other_branch": "Soha bir xil, kasb boshqa",
+    "region_other_district": "Viloyat mos, tuman farq qiladi",
+    "profession_unknown": "Kasb ko'rsatilmagan",
+    "location_unknown": "Hudud ko'rsatilmagan",
+    "remote_not_preferred": "Masofaviy ish, siz joyida ishlashni xohlaysiz",
+    "salary_not_required": "Maosh talabi qo'yilmagan",
+    "salary_close": "Maosh kutilganidan biroz past",
+    "experience_not_required": "Tajriba talab qilinmaydi",
+    "experience_unknown": "Tajriba ko'rsatilmagan",
+    "skills_unknown": "Ko'nikmalar ko'rsatilmagan",
+    "license_missing": "Majburiy guvohnoma yoki sertifikat yo'q",
+    "languages_unknown": "Tillar ko'rsatilmagan"
   },
   "language_code": {
     "uz": "O'zbek",

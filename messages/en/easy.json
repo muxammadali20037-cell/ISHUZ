@@ -53,8 +53,11 @@
       "paused": "Paused",
       "closed": "Closed",
       "expired": "Expired",
-      "rejected": "Rejected",
-      "hidden": "Hidden by a moderator"
+      "rejected": "Not published — needs changes",
+      "hidden": "Hidden by a moderator",
+      "moderation_pending": "Being checked",
+      "review": "Moderator is reviewing",
+      "verification_pending": "Waiting for employer verification"
     },
     "more": "Other sections",
     "links": {
@@ -65,7 +68,10 @@
       "notifications": "Notifications",
       "profile": "My profile (full)",
       "settings": "Settings",
-      "logout": "Sign out"
+      "logout": "Sign out",
+      "matches": "Matching jobs and candidates",
+      "alerts": "Telegram notifications",
+      "verification": "Employer verification"
     }
   },
   "wizard": {
@@ -313,10 +319,126 @@
     "rate_limited": "Too many attempts. Please wait a little and try again",
     "forbidden": "You are not allowed to edit this listing",
     "vacancy_locked": "This listing was hidden by a moderator",
-    "generic": "Could not save. Check your internet and try again — your answers are kept"
+    "generic": "Could not save. Check your internet and try again — your answers are kept",
+    "appeal_not_allowed": "Another review was already requested."
   },
   "nav": {
     "search": "Search",
     "cabinet": "My account"
+  },
+  "moderation": {
+    "pending_title": "Your listing is saved",
+    "pending_desc": "We will let you know when the review is finished. It usually takes a few minutes.",
+    "review_title": "Your listing is under additional review",
+    "review_desc": "A moderator will review it and let you know. Until then the listing is not visible to others.",
+    "rejected_title": "The listing was not published",
+    "rejected_desc": "Ish topdim accepts only job and job-seeker listings. Please change the unrelated or prohibited part of your text.",
+    "verification_title": "The listing passed the review",
+    "verification_desc": "Your first vacancy goes public once you are verified as an employer. This usually takes one working day.",
+    "fix_fields": "Please fix: {fields}",
+    "edit": "Edit",
+    "edit_hint": "Change the marked field and publish again. Your other answers are kept.",
+    "field_flagged": "Change this part: it contains unrelated or prohibited content.",
+    "appeal": "Request another review",
+    "verify_cta": "Send verification details",
+    "photo": "Photo",
+    "logo": "Logo"
+  },
+  "alerts": {
+    "title": "Telegram notifications",
+    "intro": "You post a listing — the system finds a matching job or worker and tells you in Telegram. Only with your consent.",
+    "worker_cta": "Notify me about matching jobs",
+    "employer_cta": "Notify me about matching workers",
+    "hint": "Via Telegram. You can stop any time.",
+    "on_title": "Notifications are on",
+    "on_desc_worker": "We will message you in Telegram when a new job matches you by 90% or more.",
+    "on_desc_employer": "We will message you in Telegram when a candidate matches your vacancy by 90% or more.",
+    "needs_bot_title": "Open the Telegram bot",
+    "needs_bot_desc": "Tap the button, then press «Start» in Telegram. Notifications turn on once the bot can message you.",
+    "open_bot": "Open the bot",
+    "get_link": "Get a new link",
+    "waiting": "Waiting for you to press «Start» in the bot…",
+    "cancel": "Cancel",
+    "stop": "Stop notifications",
+    "settings": "Settings",
+    "bot_missing": "The Telegram bot is not configured yet. Please try later.",
+    "worker_section": "Matching jobs",
+    "employer_section": "Matching workers",
+    "mode": "When to send?",
+    "mode_instant": "Right away",
+    "mode_digest": "Once a day (09:00)",
+    "profession": "Which profession?",
+    "profession_own": "My profession: {name}",
+    "profession_any": "Any job that matches my listing",
+    "salary_min": "Minimum salary (UZS per month)",
+    "salary_any": "Doesn't matter",
+    "schedules": "Work schedule",
+    "schedules_hint": "If none is selected — any schedule.",
+    "vacancies": "Which vacancies?",
+    "vacancies_all": "All my vacancies",
+    "region": "Region",
+    "region_any": "All of Uzbekistan",
+    "save": "Save",
+    "saved": "Saved",
+    "enable_first": "Turn notifications on first.",
+    "privacy": "Messages never include phone numbers. Contacts open in the app only with the owner's consent."
+  },
+  "matches": {
+    "title": "Matching jobs and candidates",
+    "explain": "The percentage is a calculated match between the listing and the profile (not a hiring probability). We notify in Telegram about pairs of {threshold}% or more with no hard mismatches.",
+    "jobs_title": "Jobs that match you",
+    "jobs_empty": "No matching jobs yet. We will tell you when one appears.",
+    "candidates_title": "Candidates for your vacancy",
+    "candidates_empty": "No matching candidates yet. We will tell you when they appear.",
+    "hard_fail": "A mandatory requirement is not met — not recommended automatically.",
+    "incomplete_worker": "Some of your details are missing — complete your profile for a more accurate match.",
+    "incomplete_candidate": "The candidate has not provided some details.",
+    "view_job": "View listing",
+    "view_candidate": "View candidate",
+    "none": "Post a listing first to see matches."
+  },
+  "verification": {
+    "title": "Employer verification",
+    "intro": "Your first vacancy goes public once you are verified. Later vacancies go through the regular review.",
+    "no_employer": "Post a vacancy first — a verification request is created automatically.",
+    "status": {
+      "unverified": "Not verified",
+      "pending": "Under review",
+      "verified": "Verified employer",
+      "rejected": "Declined",
+      "suspended": "Suspended"
+    },
+    "status_desc": {
+      "unverified": "Send your details — an administrator will check them.",
+      "pending": "An administrator is checking your details. Usually one working day.",
+      "verified": "Below is exactly what was checked.",
+      "rejected": "Read the reason and send your details again.",
+      "suspended": "Your vacancies are temporarily hidden. Please contact support."
+    },
+    "check": {
+      "phone": "Phone number confirmed",
+      "phone_missing": "Phone number is not confirmed yet",
+      "name": "Name or organization name checked",
+      "region": "Region checked",
+      "identity": "Tax ID / personal ID checked",
+      "documents": "Documents checked"
+    },
+    "verified_on": "Verified on {date}",
+    "id_label": "Tax ID (STIR) or personal ID (JShShIR)",
+    "id_label_optional": "Tax ID or personal ID (optional)",
+    "id_hint": "Organization tax ID — 9 digits, personal ID — 14 digits.",
+    "id_required": "For an organization or sole proprietor enter a 9-digit tax ID or a 14-digit personal ID.",
+    "note_label": "Comment (optional)",
+    "note_placeholder": "For example: a cafe in Chilonzor",
+    "docs_label": "Supporting document (optional)",
+    "docs_hint": "A photo of a certificate or license. Documents are stored privately and seen only by authorized staff.",
+    "submit": "Send for verification",
+    "errors": {
+      "invalid_identity_number": "Invalid number: it must have 9 or 14 digits.",
+      "identity_number_required": "A tax ID is required for an organization.",
+      "invalid_status": "Details cannot be sent in the current status.",
+      "rate_limited": "Too many attempts today. Please try tomorrow.",
+      "invalid_documents": "Please upload the document again."
+    }
   }
 }

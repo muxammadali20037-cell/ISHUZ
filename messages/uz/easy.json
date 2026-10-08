@@ -53,8 +53,11 @@
       "paused": "To'xtatilgan",
       "closed": "Yopilgan",
       "expired": "Muddati tugagan",
-      "rejected": "Rad etilgan",
-      "hidden": "Moderator yashirgan"
+      "rejected": "Joylanmadi — o'zgartirish kerak",
+      "hidden": "Moderator yashirgan",
+      "moderation_pending": "Tekshiruvda",
+      "review": "Moderator ko'rib chiqmoqda",
+      "verification_pending": "Ish beruvchi tasdiqlanishi kutilmoqda"
     },
     "more": "Boshqa bo'limlar",
     "links": {
@@ -65,7 +68,10 @@
       "notifications": "Bildirishnomalar",
       "profile": "Profilim (batafsil)",
       "settings": "Sozlamalar",
-      "logout": "Hisobdan chiqish"
+      "logout": "Hisobdan chiqish",
+      "matches": "Mos e'lonlar va nomzodlar",
+      "alerts": "Telegram xabarnomalari",
+      "verification": "Ish beruvchini tasdiqlash"
     }
   },
   "wizard": {
@@ -313,10 +319,126 @@
     "rate_limited": "Juda ko'p urinish. Biroz kutib, qayta urinib ko'ring",
     "forbidden": "Bu e'lonni o'zgartirishga ruxsatingiz yo'q",
     "vacancy_locked": "Bu e'lon moderator tomonidan yashirilgan",
-    "generic": "Saqlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring — javoblaringiz saqlanib qoldi"
+    "generic": "Saqlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring — javoblaringiz saqlanib qoldi",
+    "appeal_not_allowed": "Qayta ko'rib chiqish allaqachon so'ralgan."
   },
   "nav": {
     "search": "Qidirish",
     "cabinet": "Kabinetim"
+  },
+  "moderation": {
+    "pending_title": "E'loningiz saqlandi",
+    "pending_desc": "Tekshiruv tugagach natijasini bildiramiz. Odatda bir necha daqiqa oladi.",
+    "review_title": "E'lon qo'shimcha tekshiruvda",
+    "review_desc": "Moderator ko'rib chiqadi va natijasini bildiramiz. Qaror chiqmaguncha e'lon boshqalarga ko'rinmaydi.",
+    "rejected_title": "E'lon joylanmadi",
+    "rejected_desc": "Ish topdim faqat ish va ishchi qidirish e'lonlarini qabul qiladi. Matningizdagi ishga aloqasiz yoki taqiqlangan qismni o'zgartiring.",
+    "verification_title": "E'lon tekshiruvdan o'tdi",
+    "verification_desc": "Birinchi vakansiyangiz ish beruvchi sifatida tasdiqlanganingizdan so'ng ommaga chiqadi. Tasdiqlash odatda bir ish kunida bo'ladi.",
+    "fix_fields": "Tuzatish kerak: {fields}",
+    "edit": "O'zgartirish",
+    "edit_hint": "Belgilangan maydonni o'zgartiring va qayta joylang. Qolgan ma'lumotlaringiz saqlangan.",
+    "field_flagged": "Shu qismni o'zgartiring: unda ishga aloqasiz yoki taqiqlangan mazmun bor.",
+    "appeal": "Qayta ko'rib chiqishni so'rash",
+    "verify_cta": "Tasdiqlash ma'lumotlarini yuborish",
+    "photo": "Rasm",
+    "logo": "Logotip"
+  },
+  "alerts": {
+    "title": "Telegram xabarnomalari",
+    "intro": "Siz e'lon berasiz — tizim sizga mos ish yoki ishchini topib, Telegramda xabar beradi. Faqat roziligingiz bilan.",
+    "worker_cta": "Menga mos ish chiqsa xabar bering",
+    "employer_cta": "Menga mos ishchi topilsa xabar bering",
+    "hint": "Telegram orqali. Istalgan vaqtda to'xtatish mumkin.",
+    "on_title": "Obuna yoqildi",
+    "on_desc_worker": "Sizga 90% va undan ko'p mos yangi ish chiqsa, Telegramda xabar beramiz.",
+    "on_desc_employer": "Vakansiyangizga 90% va undan ko'p mos nomzod topilsa, Telegramda xabar beramiz.",
+    "needs_bot_title": "Telegram botini oching",
+    "needs_bot_desc": "Tugmani bosing, Telegramda «Start» ni bosing. Bot sizga yoza olgach obuna yoqiladi.",
+    "open_bot": "Botni ochish",
+    "get_link": "Yangi havola olish",
+    "waiting": "Botda «Start» bosilishini kutyapmiz…",
+    "cancel": "Bekor qilish",
+    "stop": "Xabarlarni to'xtatish",
+    "settings": "Sozlamalar",
+    "bot_missing": "Telegram bot hali sozlanmagan. Keyinroq urinib ko'ring.",
+    "worker_section": "Mos ish haqida",
+    "employer_section": "Mos ishchi haqida",
+    "mode": "Qachon yuborilsin?",
+    "mode_instant": "Darhol",
+    "mode_digest": "Kuniga bir marta (09:00)",
+    "profession": "Qaysi kasb bo'yicha?",
+    "profession_own": "Mening kasbim: {name}",
+    "profession_any": "E'lonimga mos har qanday ish",
+    "salary_min": "Maosh kamida (so'm, oyiga)",
+    "salary_any": "Muhim emas",
+    "schedules": "Ish jadvali",
+    "schedules_hint": "Hech biri tanlanmasa — har qanday jadval.",
+    "vacancies": "Qaysi vakansiyalar bo'yicha?",
+    "vacancies_all": "Barcha vakansiyalarim",
+    "region": "Hudud",
+    "region_any": "Butun O'zbekiston",
+    "save": "Saqlash",
+    "saved": "Saqlandi",
+    "enable_first": "Avval xabarnomani yoqing.",
+    "privacy": "Xabarlarda telefon raqamlari ko'rsatilmaydi. Kontaktlar faqat egasining roziligi bilan ilovada ochiladi."
+  },
+  "matches": {
+    "title": "Mos e'lonlar va nomzodlar",
+    "explain": "Foiz — e'lon shartlari va profilingizning hisoblangan mosligi (ishga olinish ehtimoli emas). {threshold}% va undan yuqori, qat'iy talablari mos juftliklar haqida Telegramda xabar beramiz.",
+    "jobs_title": "Sizga mos ishlar",
+    "jobs_empty": "Hozircha mos ish yo'q. Yangi mos ish chiqsa xabar beramiz.",
+    "candidates_title": "Vakansiyangizga mos nomzodlar",
+    "candidates_empty": "Hozircha mos nomzod yo'q. Topilsa xabar beramiz.",
+    "hard_fail": "Majburiy talab mos kelmaydi — avtomatik tavsiya qilinmaydi.",
+    "incomplete_worker": "Ba'zi ma'lumotlaringiz yetishmaydi — profilingizni to'ldirsangiz moslik aniqroq bo'ladi.",
+    "incomplete_candidate": "Nomzod ba'zi ma'lumotlarni ko'rsatmagan.",
+    "view_job": "E'lonni ko'rish",
+    "view_candidate": "Nomzodni ko'rish",
+    "none": "Moslik ko'rish uchun avval e'lon joylang."
+  },
+  "verification": {
+    "title": "Ish beruvchini tasdiqlash",
+    "intro": "Birinchi vakansiyangiz ish beruvchi tasdiqlangach ommaga chiqadi. Keyingi vakansiyalar odatiy tekshiruvdan o'tadi.",
+    "no_employer": "Avval vakansiya joylang — tasdiqlash so'rovi avtomatik yaratiladi.",
+    "status": {
+      "unverified": "Tekshirilmagan",
+      "pending": "Tekshiruvda",
+      "verified": "Tasdiqlangan ish beruvchi",
+      "rejected": "Rad etilgan",
+      "suspended": "To'xtatilgan"
+    },
+    "status_desc": {
+      "unverified": "Ma'lumotlaringizni yuboring — admin tekshiradi.",
+      "pending": "Admin ma'lumotlaringizni tekshirmoqda. Odatda bir ish kuni.",
+      "verified": "Quyida aynan nima tekshirilgani ko'rsatilgan.",
+      "rejected": "Sababni o'qing va ma'lumotlarni qayta yuboring.",
+      "suspended": "Vakansiyalaringiz vaqtincha yashirilgan. Qo'llab-quvvatlashga yozing."
+    },
+    "check": {
+      "phone": "Telefon raqami tasdiqlangan",
+      "phone_missing": "Telefon raqami hali tasdiqlanmagan",
+      "name": "Ism yoki tashkilot nomi tekshirilgan",
+      "region": "Hudud tekshirilgan",
+      "identity": "STIR / JShShIR tekshirilgan",
+      "documents": "Hujjatlar tekshirilgan"
+    },
+    "verified_on": "Tasdiqlangan sana: {date}",
+    "id_label": "STIR yoki JShShIR",
+    "id_label_optional": "STIR yoki JShShIR (ixtiyoriy)",
+    "id_hint": "Tashkilot STIR — 9 raqam, JShShIR — 14 raqam.",
+    "id_required": "Tashkilot yoki YATT uchun STIR (9 raqam) yoki JShShIR (14 raqam) kiriting.",
+    "note_label": "Izoh (ixtiyoriy)",
+    "note_placeholder": "Masalan: kafe Chilonzor 9-kvartalda",
+    "docs_label": "Tasdiqlovchi hujjat (ixtiyoriy)",
+    "docs_hint": "Guvohnoma yoki litsenziya surati. Hujjatlar yopiq saqlanadi va faqat vakolatli xodim ko'radi.",
+    "submit": "Tasdiqlashga yuborish",
+    "errors": {
+      "invalid_identity_number": "Raqam noto'g'ri: 9 yoki 14 ta raqam bo'lishi kerak.",
+      "identity_number_required": "Tashkilot uchun STIR majburiy.",
+      "invalid_status": "Hozirgi holatda ma'lumot yuborib bo'lmaydi.",
+      "rate_limited": "Bugun juda ko'p urinish bo'ldi. Ertaga qayta urinib ko'ring.",
+      "invalid_documents": "Hujjatni qayta yuklang."
+    }
   }
 }

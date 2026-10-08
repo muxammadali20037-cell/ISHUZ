@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { Bell, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, UserRound, UsersRound } from "lucide-react";
+import { Bell, BellRing, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
@@ -9,6 +9,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getMyListings, type MyVacancy } from "../queries";
 import { FoundButton, PayButton } from "./listing-actions";
+import { ModerationNotice } from "./moderation-notice";
+import { AlertToggle } from "@/features/alerts/components/alert-toggle";
+import { getAlertSubscriptions } from "@/features/alerts/queries";
+import type { ListingState } from "@/features/post/types";
+
+/** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
+function stateTone(s: ListingState): "ok" | "wait" | "off" {
+  return s === "listed" || s === "active" ? "ok" : s === "moderation_pending" || s === "review" || s === "verification_pending" || s === "payment_required" || s === "rejected" ? "wait" : "off";
+}
 
 function StatusPill({ tone, children }: { tone: "ok" | "wait" | "off"; children: ReactNode }) {
   return (
@@ -49,9 +58,12 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
     );
   }
 
-  const { worker, vacancies, paid } = await getMyListings(session);
+  const [{ worker, vacancies, paid }, alerts] = await Promise.all([getMyListings(session), getAlertSubscriptions(session)]);
   const firstName = session.profile.first_name?.trim();
   const links: { href: string; label: string; icon: typeof Bell; show: boolean }[] = [
+    { href: "/cabinet/matches", label: t("easy.cabinet.links.matches"), icon: Sparkles, show: !!(worker || vacancies.length) },
+    { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true },
+    { href: "/cabinet/verification", label: t("easy.cabinet.links.verification"), icon: ShieldCheck, show: !!session.employerId || vacancies.length > 0 },
     { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true },
     { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId },
     { href: "/offers", label: t("easy.cabinet.links.offers"), icon: Handshake, show: !!session.workerId },
@@ -85,15 +97,16 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
             {worker.regionName ? (
               <p className="text-muted-foreground">{[name(worker.regionName), worker.districtName ? name(worker.districtName) : t("easy.card.region_wide")].join(" · ")}</p>
             ) : null}
-            <StatusPill tone={worker.status === "listed" ? "ok" : worker.status === "payment_required" ? "wait" : "off"}>
-              {worker.status === "listed"
+            <StatusPill tone={stateTone(worker.moderation.state)}>
+              {worker.moderation.state === "listed"
                 ? worker.listedUntil && paid
                   ? t("easy.cabinet.status.listed_until", { date: formatDate(worker.listedUntil, locale) })
                   : t("easy.cabinet.status.listed")
-                : worker.status === "payment_required"
-                  ? t("easy.cabinet.status.payment_required")
+                : ["moderation_pending", "review", "rejected", "payment_required"].includes(worker.moderation.state)
+                  ? t(`easy.cabinet.status.${worker.moderation.state}`)
                   : t("easy.cabinet.status.stopped")}
             </StatusPill>
+            <ModerationNotice entity="worker" id={worker.id} info={worker.moderation} editHref="/post/worker?step=3" />
             <div className="flex flex-wrap gap-2 pt-1">
               {worker.status === "payment_required" ? <PayButton purpose="worker_listing" targetId={worker.id} /> : null}
               {worker.status === "listed" ? <FoundButton kind="job" /> : null}
@@ -109,12 +122,13 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
               </Button>
               {workerSearch ? (
                 <Button asChild variant="soft" className="h-12 px-4 text-base">
-                  <Link href={workerSearch}>
+                  <Link href={worker.moderation.state === "listed" ? "/cabinet/matches" : workerSearch}>
                     <Search className="size-5" aria-hidden /> {t("easy.cabinet.matches_jobs")}
                   </Link>
                 </Button>
               ) : null}
             </div>
+            <AlertToggle role="worker" initialStatus={alerts.subs.worker.status} defaults={{ professionNodeId: worker.professionNodeId, regionId: null }} compact />
           </article>
         ) : null}
 
@@ -125,14 +139,18 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
               const editable = v.status !== "hidden";
               const open = v.status === "active" || v.status === "paused" || v.status === "pending_review";
               const needsPay = paid && (v.status === "draft" || v.status === "expired");
-              const matches = `/search?${new URLSearchParams({ mode: "workers", ...(v.professionNodeId ? { p: v.professionNodeId } : {}), ...(v.isRemote ? { region: "remote" } : v.regionSlug ? { region: v.regionSlug, district: v.districtId ?? "all" } : {}) }).toString()}`;
               return (
                 <article key={v.id} className="space-y-3 rounded-3xl border border-border bg-card p-5">
                   <h3 className="text-xl font-bold">{v.title}</h3>
                   {v.regionName ? <p className="text-muted-foreground">{name(v.regionName)}</p> : v.isRemote ? <p className="text-muted-foreground">{t("easy.location.remote")}</p> : null}
-                  <StatusPill tone={vacancyTone(v.status)}>
-                    {v.status === "active" && v.expiresAt ? `${t("easy.cabinet.status.active")} · ${formatDate(v.expiresAt, locale)}` : t(`easy.cabinet.status.${v.status}`)}
+                  <StatusPill tone={["moderation_pending", "review", "rejected", "verification_pending"].includes(v.moderation.state) ? stateTone(v.moderation.state) : vacancyTone(v.status)}>
+                    {v.status === "active" && v.expiresAt
+                      ? `${t("easy.cabinet.status.active")} · ${formatDate(v.expiresAt, locale)}`
+                      : ["moderation_pending", "review", "rejected", "verification_pending", "payment_required"].includes(v.moderation.state)
+                        ? t(`easy.cabinet.status.${v.moderation.state}`)
+                        : t(`easy.cabinet.status.${v.status}`)}
                   </StatusPill>
+                  <ModerationNotice entity="vacancy" id={v.id} info={v.moderation} editHref={`/post/vacancy?edit=${v.id}`} />
                   <div className="flex flex-wrap gap-2 pt-1">
                     {needsPay ? <PayButton purpose="vacancy_publish" targetId={v.id} /> : null}
                     {open ? <FoundButton kind="worker" vacancyId={v.id} /> : null}
@@ -150,7 +168,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
                     </Button>
                     {v.status === "active" ? (
                       <Button asChild variant="soft" className="h-12 px-4 text-base">
-                        <Link href={matches}>
+                        <Link href={`/cabinet/matches?vacancy=${v.id}`} prefetch={false}>
                           <Search className="size-5" aria-hidden /> {t("easy.cabinet.matches_workers")}
                         </Link>
                       </Button>
@@ -159,6 +177,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
                 </article>
               );
             })}
+            <AlertToggle role="employer" initialStatus={alerts.subs.employer.status} compact />
           </div>
         ) : null}
       </section>

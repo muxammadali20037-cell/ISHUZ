@@ -4,7 +4,7 @@
 
 create or replace function pg_temp.login(p_user uuid) returns void language plpgsql as $$
 begin
-  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated')::text, false);
+  perform set_config('request.jwt.claims', json_build_object('sub', p_user, 'role', 'authenticated', 'aal', 'aal2')::text, false);
   execute 'set role authenticated';
 end $$;
 create or replace function pg_temp.service() returns void language plpgsql as $$
@@ -32,6 +32,8 @@ begin
 end $$;
 
 begin;
+-- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
+update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
 -- 0043 dan oldingi qoidalar bilan sinaladi (yangi 10 kunlik pullik e'lonlar — paid_listings.test.sql)
 update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
 update public.app_settings set value = '30'::jsonb where key = 'vacancy_lifetime_days';

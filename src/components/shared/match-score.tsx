@@ -1,11 +1,12 @@
 "use client";
 
-import { Check, AlertTriangle, X } from "lucide-react";
+import { Check, AlertTriangle, CircleHelp, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { matchLevel } from "@/features/matching/level";
 
-export type MatchReason = { key: string; ok: boolean | "warn"; [param: string]: unknown };
+/** ok: true — mos; "warn" — qisman; false — mos emas; "unknown" — talab bor, lekin ma'lumot yo'q (mos deb hisoblanmaydi) */
+export type MatchReason = { key: string; ok: boolean | "warn" | "unknown"; [param: string]: unknown };
 
 function tone(score: number) {
   if (score >= 75) return { text: "text-success", bg: "bg-success-soft", ring: "stroke-success" };
@@ -71,8 +72,8 @@ export function MatchReasons({ reasons, className, compact }: { reasons: MatchRe
           else if (k === "level" && typeof v === "string") params[k] = r.key === "education_required" ? tEnum("education_level", v) : tEnum("language_level", v);
           else if (typeof v === "string" || typeof v === "number") params[k] = v;
         }
-        const Icon = r.ok === true ? Check : r.ok === "warn" ? AlertTriangle : X;
-        const color = r.ok === true ? "text-success" : r.ok === "warn" ? "text-warning" : "text-destructive";
+        const Icon = r.ok === true ? Check : r.ok === "warn" ? AlertTriangle : r.ok === "unknown" ? CircleHelp : X;
+        const color = r.ok === true ? "text-success" : r.ok === "warn" ? "text-warning" : r.ok === "unknown" ? "text-muted-foreground" : "text-destructive";
         return (
           <li key={`${r.key}-${i}`} className="flex items-start gap-2 text-sm">
             <Icon className={cn("mt-0.5 size-4 shrink-0", color)} strokeWidth={2.5} />
