@@ -118,7 +118,7 @@ export async function aiDraftListing(input: unknown): Promise<ActionResult<AiDra
 
   try {
     if (kind === "worker") {
-      const ai = await aiJson(workerSchema, system("worker", locale), text, { feature: "draft_worker", timeoutMs: 30_000, maxOutputTokens: 2048 });
+      const ai = await aiJson(workerSchema, system("worker", locale), text, { feature: "draft_worker", timeoutMs: 45_000, maxOutputTokens: 2048 });
       const nodeId = (await resolveFindQuery(ai.profession || text)).nodeId ?? (ai.profession ? (await resolveFindQuery(text)).nodeId : null);
       const profession = await picked(nodeId);
       const p = await place(text, ai.region, ai.district, false);
@@ -142,7 +142,7 @@ export async function aiDraftListing(input: unknown): Promise<ActionResult<AiDra
       return { ok: true, data: { worker: draft, missing } };
     }
 
-    const ai = await aiJson(vacancySchema, system("vacancy", locale), text, { feature: "draft_vacancy", timeoutMs: 30_000, maxOutputTokens: 3072 });
+    const ai = await aiJson(vacancySchema, system("vacancy", locale), text, { feature: "draft_vacancy", timeoutMs: 45_000, maxOutputTokens: 3072 });
     const nodeId = (await resolveFindQuery(ai.profession || ai.title || text)).nodeId ?? (await resolveFindQuery(text)).nodeId;
     const profession = await picked(nodeId);
     const remote = ai.remote === true;
