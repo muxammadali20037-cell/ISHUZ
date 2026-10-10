@@ -53,6 +53,15 @@ Kalitlarni hech qachon chatga yoki kodga yozmang — faqat Vercel → Settings �
 4. **Supabase Auth → MFA**: TOTP yoqilgan bo'lsin (standart yoqilgan). Admin birinchi kirishda QR kodni
    autentifikator ilovaga qo'shadi. `app_settings.admin_mfa_required = true` (standart).
 5. **Admin qo'shish**: faqat `super_admin` `/admin/settings` → Adminlar bo'limidan; ommaviy ro'yxatdan o'tish yo'q.
+6. **Birinchi super_admin (egasi)** — SQL yozmasdan:
+   1. Vercel → Settings → Environment Variables: `SUPER_ADMIN_PHONES=+998XXXXXXXXX` (o'z raqamingiz).
+   2. Admin manzili: Vercel → Project → Domains → `ishuz-admin.vercel.app` (bepul) qo'shing va
+      `ADMIN_HOST=ishuz-admin.vercel.app` qiling. Yoki `ADMIN_HOST` ni bo'sh qoldiring — panel `ishuz.vercel.app/admin` da.
+   3. Redeploy. Saytga shu raqam bilan kiring (SMS kod yoki Telegram'da «📱 Raqamni yuborish»), admin manzilini oching —
+      tizim sizni super_admin qiladi va ikki bosqichli kirishni (TOTP: Google Authenticator) sozlashni so'raydi.
+7. **Admin bosh sahifasi**: «Tezkor boshqaruv» (AI yordamchi PRO pullik/bepul, narx, e'lonlar pullik, ish beruvchini
+   tasdiqlash) va «AI holati» (kalitlar, 24 soatdagi so'rov/xato, oxirgi xatolar oddiy maslahat bilan, «AI'ni sinash»
+   tugmasi — har bir Gemini modeliga kichik so'rov).
 
 ## 5. Sinovlar
 

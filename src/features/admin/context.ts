@@ -5,6 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getSession, requireSession, type SessionContext } from "@/features/auth/session";
 import { hasPermission, type AdminRole, type Permission } from "./permissions";
+import { ensureOwnerAdmin } from "./bootstrap";
 
 export interface AdminContext {
   session: SessionContext;
@@ -41,7 +42,9 @@ function build(session: SessionContext, row: { role: AdminRole; permissions: str
  */
 export const getAdminContext = cache(async (): Promise<AdminContext> => {
   const session = await requireSession("/admin");
-  if (!session.isAdmin || session.profile.is_blocked) notFound();
+  if (session.profile.is_blocked) notFound();
+  // egasi (SUPER_ADMIN_PHONES dagi tasdiqlangan raqam) birinchi kirishda super_admin bo'ladi
+  if (!session.isAdmin && !(await ensureOwnerAdmin(session.userId))) notFound();
   const row = await loadAdminRow(session.userId);
   if (!row?.is_active) notFound();
   if (!row.aalOk) redirect("/admin/mfa");

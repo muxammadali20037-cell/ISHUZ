@@ -84,12 +84,24 @@ type Attempt<T> =
   | { kind: "ok"; value: T | null }
   | { kind: "busy"; error: string }
   | { kind: "no_thinking" }
-  | { kind: "skip"; error: string }
-  | { kind: "fatal"; error: Error };
+  | { kind: "skip"; error: string };
+
+/** Gemini xato javobidan qisqa matn (kalit javobda qaytmaydi) — jurnal va admin uchun */
+export function geminiErrorText(status: number, body: string): string {
+  let msg = body;
+  try {
+    msg = (JSON.parse(body) as { error?: { message?: string } }).error?.message ?? body;
+  } catch {
+    /* matn o'zi */
+  }
+  return `http_${status}: ${msg.replace(/\s+/g, " ").trim()}`.slice(0, 200);
+}
 
 /**
  * Qat'iy sxemali Gemini chaqiruvi. Umumiy vaqt — opts.timeoutMs (sukut 90 s), modellar o'rtasida taqsimlanadi.
- * Tezlik uchun "fikrlash" o'chiriladi (model qo'llamasa — usiz qayta so'raladi). Hamma model band bo'lsa — AiBusyError.
+ * Tezlik uchun "fikrlash" o'chiriladi (model 400 qaytarsa — usiz qayta so'raladi). 429/5xx/tarmoq/vaqt — band:
+ * keyingi model. Boshqa 4xx (model yo'q, ruxsat yo'q, so'rov xato) — ham keyingi model; hech biri ishlamasa:
+ * hech bo'lmasa bittasi band bo'lgan bo'lsa AiBusyError, aks holda oxirgi xato matni bilan Error.
  * Javob sxemaga mos kelmasa — null (boshqa modelda qayta urinilmaydi).
  */
 export async function geminiJson<T extends z.ZodType>(schema: T, system: string, userText: string, opts: AiCallOptions = {}): Promise<z.infer<T> | null> {
@@ -135,19 +147,16 @@ export async function geminiJson<T extends z.ZodType>(schema: T, system: string,
       return { kind: "busy", error: msg };
     }
     if (res.status === 429 || res.status >= 500) {
-      await log(false, undefined, `http_${res.status}`);
-      return { kind: "busy", error: `http_${res.status}` };
+      const error = geminiErrorText(res.status, (await res.text().catch(() => "")).slice(0, 600));
+      await log(false, undefined, error);
+      return { kind: "busy", error };
     }
     if (!res.ok) {
-      const body = (await res.text()).slice(0, 300);
-      if (thinkingOff && res.status === 400 && /thinking/i.test(body)) {
-        await log(false, undefined, "thinking_unsupported");
-        return { kind: "no_thinking" };
-      }
-      await log(false, undefined, `http_${res.status}`);
-      // model topilmadi / bu kalitga yopiq — keyingi model; boshqa xato (kalit noto'g'ri, so'rov xato) — darhol
-      if (res.status === 404) return { kind: "skip", error: `http_404` };
-      return { kind: "fatal", error: new Error(`gemini ${res.status}: ${body}`) };
+      const error = geminiErrorText(res.status, (await res.text()).slice(0, 600));
+      await log(false, undefined, error);
+      // "fikrlash"ni o'chirish bu modelda qo'llanmasa — o'sha model usiz
+      if (thinkingOff && res.status === 400) return { kind: "no_thinking" };
+      return { kind: "skip", error };
     }
     const data = (await res.json()) as {
       candidates?: { content?: { parts?: { text?: string; thought?: boolean }[] } }[];
@@ -164,17 +173,72 @@ export async function geminiJson<T extends z.ZodType>(schema: T, system: string,
     }
   };
 
-  let lastError = "busy";
+  let busy = false;
+  let lastError = "timeout";
   for (let i = 0; i < models.length; i += 1) {
     const remaining = deadline - Date.now();
-    if (remaining < 1_500) break;
+    if (remaining < 1_500) {
+      busy = true;
+      break;
+    }
     // oxirgi modelga qolgan hamma vaqt; oldingilariga — ko'pi bilan 60% (zaxira uchun vaqt qolsin)
     const slice = i === models.length - 1 ? remaining : Math.min(remaining, Math.max(4_000, Math.floor(remaining * 0.6)));
     let r = await attempt(models[i]!, slice, true);
     if (r.kind === "no_thinking") r = await attempt(models[i]!, Math.max(1_500, Math.min(slice, deadline - Date.now())), false);
     if (r.kind === "ok") return r.value;
-    if (r.kind === "fatal") throw r.error;
+    if (r.kind === "busy") busy = true;
     if (r.kind === "busy" || r.kind === "skip") lastError = r.error;
   }
-  throw new AiBusyError(`gemini ${lastError}`);
+  if (busy) throw new AiBusyError(`gemini ${lastError}`);
+  throw new Error(`gemini ${lastError}`);
+}
+
+export interface GeminiProbeResult {
+  model: string;
+  ok: boolean;
+  latencyMs: number;
+  /** Qisqa xato matni (http_403: ..., timeout) */
+  error: string | null;
+}
+
+/**
+ * Admin uchun tekshiruv: har bir modelga kichik so'rov — kalit, kvota, model mavjudligi va tezlik ko'rinadi.
+ * Kalit sozlanmagan bo'lsa — bo'sh ro'yxat.
+ */
+export async function geminiProbe(): Promise<GeminiProbeResult[]> {
+  const env = getServerEnv();
+  if (!env.GEMINI_API_KEY) return [];
+  const apiKey = env.GEMINI_API_KEY;
+  const models = [...new Set([env.GEMINI_MODEL || GEMINI_DEFAULT_MODEL, ...GEMINI_FALLBACK_MODELS])];
+  const base = (env.GEMINI_BASE_URL ?? "https://generativelanguage.googleapis.com").replace(/\/$/, "");
+  const call = async (model: string, thinkingOff: boolean) =>
+    fetch(`${base}/v1beta/models/${encodeURIComponent(model)}:generateContent`, {
+      method: "POST",
+      headers: { "content-type": "application/json", "x-goog-api-key": apiKey },
+      body: JSON.stringify({
+        contents: [{ role: "user", parts: [{ text: 'Reply with JSON {"ok": true}' }] }],
+        generationConfig: {
+          temperature: 0, maxOutputTokens: 64, responseMimeType: "application/json",
+          responseSchema: { type: "OBJECT", properties: { ok: { type: "BOOLEAN" } }, required: ["ok"] },
+          ...(thinkingOff ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+        },
+      }),
+      signal: AbortSignal.timeout(20_000),
+    });
+  return Promise.all(
+    models.map(async (model) => {
+      const started = Date.now();
+      let error: string | null = null;
+      try {
+        let res = await call(model, true);
+        if (res.status === 400) res = await call(model, false);
+        if (!res.ok) error = geminiErrorText(res.status, (await res.text()).slice(0, 600));
+      } catch (e) {
+        error = e instanceof Error ? e.message : "network";
+      }
+      const latencyMs = Date.now() - started;
+      await logAiUsage({ feature: "ai_probe", provider: "gemini", model, ok: !error, latencyMs, error: error ?? undefined });
+      return { model, ok: !error, latencyMs, error };
+    }),
+  );
 }

@@ -159,9 +159,13 @@ const WORKER_ALERT_TASK = `Bu — ISH BERUVCHI qanday ishchi kerakligini yozgan 
 - salary_max — ish beruvchi to'lashga tayyor eng ko'p oylik ("6 mln gacha" = 6000000).`;
 
 async function run<T extends z.ZodType>(schema: T, task: string, catalog: AiCatalog, text: string, locale: Locale, feature: string): Promise<z.infer<T> | null> {
-  // Gemini kaliti bo'lsa — u (bepul limit), aks holda Claude
+  // Gemini kaliti bo'lsa — u (bepul limit); u ishlamasa va Claude kaliti bo'lsa — Claude
   if (getServerEnv().GEMINI_API_KEY) {
-    return geminiJson(schema, `${COMMON}\n\n# Ma'lumotnoma\n${catalog.text}\n\n${task}\nMatnlarni ${localeName(locale)} yoz.`, text, { feature });
+    try {
+      return await geminiJson(schema, `${COMMON}\n\n# Ma'lumotnoma\n${catalog.text}\n\n${task}\nMatnlarni ${localeName(locale)} yoz.`, text, { feature });
+    } catch (e) {
+      if (!getAiClient()) throw e;
+    }
   }
   const client = getAiClient();
   if (!client) return null;

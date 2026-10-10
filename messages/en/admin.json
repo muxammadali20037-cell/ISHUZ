@@ -751,5 +751,51 @@
     "extracted": "From document",
     "ai_unavailable": "AI check not performed",
     "disclaimer": "This is only a hint — the admin decides."
+  },
+  "quick": {
+    "title": "Quick controls",
+    "subtitle": "The most needed settings. Changes apply immediately and are written to the audit log.",
+    "ai_paid": "AI assistant (PRO) is paid",
+    "ai_paid_hint": "Turn off to make the AI assistant free for everyone (alerts are sent without payment).",
+    "ai_price": "AI assistant price",
+    "ai_price_hint": "Monthly subscription price.",
+    "sum_month": "UZS / month",
+    "listings_paid": "Posting listings is paid",
+    "listings_paid_hint": "Turn off to let job seekers post listings for free.",
+    "employer_check": "Employer verification required",
+    "employer_check_hint": "When on, the first vacancy stays hidden until an admin verifies the employer.",
+    "paid": "Paid",
+    "free": "Free",
+    "on": "On",
+    "off": "Off"
+  },
+  "ai": {
+    "title": "AI status",
+    "state_ok": "Working",
+    "state_warn": "Some failures",
+    "state_bad": "Not working",
+    "state_off": "Not configured",
+    "gemini_key": "Gemini key",
+    "claude_key": "Claude key (backup)",
+    "set": "Set",
+    "missing": "Missing — add GEMINI_API_KEY in Vercel",
+    "missing_optional": "Not set (optional)",
+    "models": "Model order",
+    "day": "Last 24 hours",
+    "day_value": "{requests} requests, {errors} errors",
+    "test": "Test AI",
+    "ms": "{ms} ms",
+    "recent": "Recent requests",
+    "none": "No AI requests yet.",
+    "hint": {
+      "key": "The Gemini key is invalid or expired. Create a new key in Google AI Studio, set it in Vercel → Environment Variables → GEMINI_API_KEY, then Redeploy.",
+      "quota": "The free quota is used up (per day/minute). Wait or enable billing in Google AI Studio.",
+      "busy": "Google's server is overloaded (temporary). The system switches to a backup model automatically; try again in a few minutes.",
+      "model": "Model not found. Remove GEMINI_MODEL in Vercel or set a valid name.",
+      "permission": "The Gemini API is not enabled for this key or access is denied. Recreate the key in Google AI Studio.",
+      "region": "Gemini is not available in the server's region. Change the function Region in Vercel to the US or Europe.",
+      "timeout": "No response (network or timeout). Try again.",
+      "server_key": "SUPABASE_SERVICE_ROLE_KEY is missing on the server — the log can't be read. Add it in Vercel."
+    }
   }
 }

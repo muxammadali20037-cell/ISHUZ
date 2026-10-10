@@ -4,7 +4,7 @@ import { z } from "zod";
 vi.mock("server-only", () => ({}));
 vi.mock("@/lib/env", () => ({ getServerEnv: () => ({ GEMINI_API_KEY: "g-key", GEMINI_MODEL: undefined }) }));
 
-const { AiBusyError, geminiJson, toGeminiSchema } = await import("./gemini");
+const { AiBusyError, geminiJson, geminiProbe, toGeminiSchema } = await import("./gemini");
 const { workerExtractSchema, vacancyExtractSchema } = await import("@/features/ai/extract");
 
 const schema = z.object({ name: z.string().nullable().describe("ism"), kind: z.enum(["a", "b"]).nullable(), tags: z.array(z.object({ n: z.number().int() })) });
@@ -97,13 +97,35 @@ describe("geminiJson: band bo'lsa zaxira model, tez rejim", () => {
     expect(String(fetchMock.mock.calls[1]![0])).toContain("/models/gemini-flash-latest:");
   });
 
-  it("kalit noto'g'ri (403) — zaxiraga o'tmaydi, darhol xato (band emas)", async () => {
-    const fetchMock = vi.fn(async () => new Response("forbidden", { status: 403 }));
+  it("ruxsat yo'q (403) — boshqa modellar ham sinaladi; hammasi 4xx bo'lsa xato matni bilan (band emas)", async () => {
+    const fetchMock = vi.fn(async () => new Response('{"error":{"message":"Permission denied"}}', { status: 403 }));
     vi.stubGlobal("fetch", fetchMock);
     const err = await geminiJson(schema, "s", "t").catch((e) => e);
     expect(err).toBeInstanceOf(Error);
     expect(err).not.toBeInstanceOf(AiBusyError);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(err.message)).toContain("http_403: Permission denied");
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("noto'g'ri kalit (400) — fikrlashsiz ham sinab, keyin xato matni", async () => {
+    const fetchMock = vi.fn(async () => new Response('{"error":{"code":400,"message":"API key not valid. Please pass a valid API key."}}', { status: 400 }));
+    vi.stubGlobal("fetch", fetchMock);
+    const err = await geminiJson(schema, "s", "t").catch((e) => e);
+    expect(err).not.toBeInstanceOf(AiBusyError);
+    expect(String(err.message)).toContain("API key not valid");
+    expect(fetchMock).toHaveBeenCalledTimes(6);
   });
 });
 
+describe("geminiProbe (admin tekshiruvi)", () => {
+  it("har bir model uchun natija: ishladi / xato matni", async () => {
+    vi.stubGlobal("fetch", vi.fn(async (url: string) =>
+      url.includes("gemini-flash-latest:") ? new Response('{"error":{"message":"Quota exceeded for metric"}}', { status: 429 }) : new Response(JSON.stringify({ candidates: [{ content: { parts: [{ text: '{"ok":true}' }] } }] })),
+    ));
+    const res = await geminiProbe();
+    expect(res.map((r) => r.model)).toEqual(["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.5-flash"]);
+    expect(res[0]).toMatchObject({ ok: false });
+    expect(res[0]!.error).toContain("http_429: Quota exceeded");
+    expect(res[1]).toMatchObject({ ok: true, error: null });
+  });
+});

@@ -9,6 +9,10 @@ import { StatTile } from "@/features/admin/components/stat-tile";
 import { DailyCharts, DaysToggle } from "@/features/admin/components/daily-charts";
 import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 import { Button } from "@/components/ui/button";
+import { listSettings } from "@/features/admin/queries/settings";
+import { getAiStatus } from "@/features/admin/queries/ai-status";
+import { QuickControls, type QuickControl } from "@/features/admin/components/quick-controls";
+import { AiStatusCard } from "@/features/admin/components/ai-status-card";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -21,8 +25,21 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
   if (!ctx.can("analytics.view")) return <Forbidden perm="analytics.view" />;
   const sp = await searchParams;
   const days = parseDays(sp, 30);
-  const [{ stats, error }, daily, counts] = await Promise.all([getAdminStats(), getDailyStats(days), getSidebarCounts()]);
+  const [{ stats, error }, daily, counts, settings, ai] = await Promise.all([getAdminStats(), getDailyStats(days), getSidebarCounts(), listSettings(), getAiStatus()]);
   const totals = sumDaily(daily.rows);
+
+  // Tezkor boshqaruv: eng kerakli sozlamalar oddiy tilda (qolganlari — Sozlamalar sahifasida)
+  const setting = (key: string) => settings.rows.find((r) => r.key === key);
+  const quick: QuickControl[] = [
+    { key: "ai_alerts_paid", kind: "boolean" as const, label: t("admin.quick.ai_paid"), hint: t("admin.quick.ai_paid_hint"), onText: t("admin.quick.paid"), offText: t("admin.quick.free") },
+    { key: "price_ai_alerts", kind: "number" as const, label: t("admin.quick.ai_price"), hint: t("admin.quick.ai_price_hint"), suffix: t("admin.quick.sum_month") },
+    { key: "listings_paid", kind: "boolean" as const, label: t("admin.quick.listings_paid"), hint: t("admin.quick.listings_paid_hint"), onText: t("admin.quick.paid"), offText: t("admin.quick.free") },
+    { key: "employer_verification_required", kind: "boolean" as const, label: t("admin.quick.employer_check"), hint: t("admin.quick.employer_check_hint") },
+  ].flatMap((c) => {
+    const row = setting(c.key);
+    if (!row || (c.kind === "boolean" ? typeof row.value !== "boolean" : typeof row.value !== "number")) return [];
+    return [{ ...c, value: row.value as boolean | number, isPublic: row.is_public }];
+  });
 
   const queues = [
     { href: "/admin/vacancies?status=pending_review", label: t("admin.dashboard.queue_vacancies"), count: counts.vacancies, perm: ctx.can("vacancies.view") },
@@ -34,6 +51,10 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
   return (
     <div>
       <AdminPageHeader title={t("admin.dashboard.title")} subtitle={t("admin.dashboard.subtitle")} />
+      <div className="mb-6 grid gap-4 lg:grid-cols-2">
+        {quick.length ? <QuickControls items={quick} canManage={ctx.can("settings.manage")} /> : <QueryError message={settings.error} />}
+        <AiStatusCard status={ai} canTest={ctx.can("settings.manage")} />
+      </div>
       <QueryError message={error} />
       {stats ? (
         <>

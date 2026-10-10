@@ -23,16 +23,21 @@ export function isAiBusy(error: unknown): boolean {
 }
 
 /**
- * Qat'iy sxemali AI chaqiruvi (Gemini bo'lsa u, aks holda Claude). Natija zod bilan tekshiriladi;
+ * Qat'iy sxemali AI chaqiruvi (Gemini bo'lsa u; u ishlamasa yoki kaliti yo'q bo'lsa — Claude). Natija zod bilan tekshiriladi;
  * mos kelmasa AiInvalidOutputError — chaqiruvchi natijani "ruxsat" deb QABUL QILMAYDI.
  * Rasm (vision) qo'llab-quvvatlanadi. Har chaqiruv ai_usage_log ga yoziladi.
  */
 export async function aiJson<T extends z.ZodType>(schema: T, system: string, user: string, opts: AiCallOptions = {}): Promise<z.infer<T>> {
   const env = getServerEnv();
   if (env.GEMINI_API_KEY) {
-    const out = await geminiJson(schema, system, user, opts);
-    if (out == null) throw new AiInvalidOutputError("invalid_output");
-    return out;
+    try {
+      const out = await geminiJson(schema, system, user, opts);
+      if (out == null) throw new AiInvalidOutputError("invalid_output");
+      return out;
+    } catch (e) {
+      // Gemini band yoki ishlamadi — Claude kaliti bo'lsa, unga o'tiladi (noto'g'ri javob esa qabul qilinmaydi)
+      if (e instanceof AiInvalidOutputError || !getAiClient()) throw e;
+    }
   }
   const client = getAiClient();
   if (!client) throw new AiUnavailableError("ai_disabled");

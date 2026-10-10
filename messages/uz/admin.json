@@ -751,5 +751,51 @@
     "extracted": "Hujjatdan",
     "ai_unavailable": "AI tekshiruvi bajarilmadi",
     "disclaimer": "Bu faqat yordamchi eslatma — yakuniy qaror adminniki."
+  },
+  "quick": {
+    "title": "Tezkor boshqaruv",
+    "subtitle": "Eng kerakli sozlamalar. O'zgarish darhol kuchga kiradi va auditga yoziladi.",
+    "ai_paid": "AI yordamchi (PRO) pullik",
+    "ai_paid_hint": "O'chirsangiz — AI yordamchi hamma uchun bepul ishlaydi (to'lovsiz xabar yuboriladi).",
+    "ai_price": "AI yordamchi narxi",
+    "ai_price_hint": "Bir oylik obuna narxi.",
+    "sum_month": "so'm / oy",
+    "listings_paid": "E'lon joylash pullik",
+    "listings_paid_hint": "O'chirsangiz — ishchi e'lonlari bepul joylanadi.",
+    "employer_check": "Ish beruvchini tasdiqlash majburiy",
+    "employer_check_hint": "Yoqilgan bo'lsa — birinchi vakansiya admin tasdiqlaguncha ommaga chiqmaydi.",
+    "paid": "Pullik",
+    "free": "Bepul",
+    "on": "Yoqilgan",
+    "off": "O'chirilgan"
+  },
+  "ai": {
+    "title": "AI holati",
+    "state_ok": "Ishlayapti",
+    "state_warn": "Uzilishlar bor",
+    "state_bad": "Ishlamayapti",
+    "state_off": "Sozlanmagan",
+    "gemini_key": "Gemini kaliti",
+    "claude_key": "Claude kaliti (zaxira)",
+    "set": "Bor",
+    "missing": "Yo'q — Vercel'da GEMINI_API_KEY qo'ying",
+    "missing_optional": "Yo'q (ixtiyoriy)",
+    "models": "Modellar navbati",
+    "day": "Oxirgi 24 soat",
+    "day_value": "{requests} ta so'rov, {errors} ta xato",
+    "test": "AI'ni sinash",
+    "ms": "{ms} ms",
+    "recent": "Oxirgi so'rovlar",
+    "none": "Hali AI so'rovi bo'lmagan.",
+    "hint": {
+      "key": "Gemini kaliti noto'g'ri yoki eskirgan. Google AI Studio'da yangi kalit oling va Vercel → Environment Variables → GEMINI_API_KEY ga qo'ying, keyin Redeploy.",
+      "quota": "Bepul limit tugagan (kunlik/daqiqalik). Biroz kuting yoki Google AI Studio'da to'lovni yoqing.",
+      "busy": "Google serveri band (vaqtinchalik). Tizim o'zi zaxira modelga o'tadi; bir necha daqiqadan keyin qayta sinang.",
+      "model": "Model topilmadi. Vercel'dagi GEMINI_MODEL ni o'chiring yoki to'g'ri nom yozing.",
+      "permission": "Bu kalit uchun Gemini API yoqilmagan yoki ruxsat yo'q. Kalitni Google AI Studio'da qayta yarating.",
+      "region": "Gemini bu server joylashuvida ishlamaydi. Vercel'da funksiya hududini (Region) AQSh yoki Yevropaga o'zgartiring.",
+      "timeout": "Javob kelmadi (tarmoq yoki vaqt tugadi). Qayta sinang.",
+      "server_key": "Serverda SUPABASE_SERVICE_ROLE_KEY yo'q — jurnalni o'qib bo'lmaydi. Vercel'da qo'ying."
+    }
   }
 }

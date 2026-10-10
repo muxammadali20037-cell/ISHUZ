@@ -36,6 +36,8 @@ const serverSchema = z.object({
   GEMINI_BASE_URL: z.string().url().optional(),
   /** Admin panel alohida domeni, masalan admin.ishtopdim.uz (bo'lmasa /admin asosiy domenda) */
   ADMIN_HOST: z.string().optional(),
+  /** Loyiha egasi(lar)ning telefon raqami: shu raqam bilan (tasdiqlangan holda) kirgan foydalanuvchi /admin da super_admin bo'ladi */
+  SUPER_ADMIN_PHONES: z.string().optional(),
   /** Kasb rasmlari generatsiyasi — matnli AI dan ALOHIDA kalit (alohida vakolat va xarajat nazorati). Bo'lmasa rasm yaratilmaydi, ikonka chiqadi */
   IMAGE_GEN_API_KEY: z.string().optional(),
   /** Google Gemini rasm modeli (standart: gemini-2.5-flash-image) */
@@ -88,6 +90,7 @@ export function getServerEnv() {
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
     GEMINI_BASE_URL: process.env.GEMINI_BASE_URL || undefined,
     ADMIN_HOST: process.env.ADMIN_HOST || undefined,
+    SUPER_ADMIN_PHONES: process.env.SUPER_ADMIN_PHONES || undefined,
     IMAGE_GEN_API_KEY: process.env.IMAGE_GEN_API_KEY || undefined,
     IMAGE_GEN_MODEL: process.env.IMAGE_GEN_MODEL || undefined,
     IMAGE_GEN_BASE_URL: process.env.IMAGE_GEN_BASE_URL || undefined,
