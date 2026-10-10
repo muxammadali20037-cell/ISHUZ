@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
-import { getT } from "@/lib/i18n/server";
+import { getLocale, getT } from "@/lib/i18n/server";
+import { I18nProvider } from "@/lib/i18n/client";
+import { clientMessages } from "@/lib/i18n/translate";
 import { adminUiEnabled } from "@/lib/features";
 import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/features/auth/session";
@@ -24,9 +26,12 @@ export default async function AdminMfaPage() {
   // admin bo'lmaganlarga sahifa borligini ham bildirmaymiz
   if (!status.is_staff || session.profile.is_blocked) notFound();
   if (status.aal_ok) redirect("/admin");
+  const locale = await getLocale();
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4 py-10">
-      <MfaForm />
-    </main>
+    <I18nProvider locale={locale} messages={clientMessages(locale, { admin: true })}>
+      <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4 py-10">
+        <MfaForm />
+      </main>
+    </I18nProvider>
   );
 }

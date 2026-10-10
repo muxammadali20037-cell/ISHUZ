@@ -12,7 +12,7 @@ import { ProfessionImage } from "@/components/shared/profession-image";
 import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { publishVacancyListing } from "../actions";
-import { formatMoneyInput, parseMoney } from "../schema";
+import { formatMoneyInput, parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type ListingStateInfo, type PostViewer, type VacancyDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
 import { track } from "@/features/analytics/client";

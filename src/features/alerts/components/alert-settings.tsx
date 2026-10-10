@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
-import { formatMoneyInput, parseMoney } from "@/features/post/schema";
+import { formatMoneyInput, parseMoney } from "@/features/post/money";
 import { saveAlertSubscription } from "../actions";
 import type { AlertSubscription } from "../types";
 import { AlertToggle } from "./alert-toggle";

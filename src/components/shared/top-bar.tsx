@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import Link from "next/link";
 import { Bell, Bookmark, MessageCircle } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -7,6 +8,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
 import { LanguageSelect } from "./language-switcher";
+import { SoundToggle } from "./sound-toggle";
 import { DesktopNavLinks, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
 import { LoginLink } from "./login-link";
@@ -29,6 +31,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
           <DesktopNavLinks role={role} counts={counts} />
         </div>
         <div className="flex items-center gap-1.5">
+          <SoundToggle />
           <LanguageSelect />
           {session ? (
             <>
@@ -76,8 +79,9 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
 }
 
 export async function unreadCounts() {
-  const session = await getSession();
-  if (!session) return undefined;
+  // sessiya bilan parallel chaqirish uchun: kirish cookie'si bo'lmasa — so'rov yo'q
+  const jar = await cookies();
+  if (!jar.getAll().some((c) => /^sb-.+-auth-token/.test(c.name))) return undefined;
   const supabase = await createClient();
   const { data } = await supabase.rpc("unread_counts").maybeSingle();
   if (!data) return undefined;

@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { REFERENCE_TAG } from "@/lib/supabase/public";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
@@ -16,6 +17,8 @@ import { logAdmin, requirePerm, snapshot } from "./guard";
 const idSchema = z.object({ id: uuid });
 
 function revalidateRef() {
+  // ochiq ma'lumotnoma keshi (kategoriya, hudud, ko'nikma) — darhol yangilanadi
+  updateTag(REFERENCE_TAG);
   revalidatePath("/admin/categories");
   revalidatePath("/admin/skills");
   revalidatePath("/admin/regions");

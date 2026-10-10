@@ -2,7 +2,8 @@
 
 import { createContext, useContext, useMemo, type ReactNode } from "react";
 import type { Locale } from "./config";
-import { makeT, makeTEnum, localizedName, type TFunction } from "./translate";
+import { createT, makeTEnum, localizedName, type Dict } from "./core";
+import type { TFunction } from "./translate";
 
 type I18nContextValue = {
   locale: Locale;
@@ -13,11 +14,15 @@ type I18nContextValue = {
 
 const I18nContext = createContext<I18nContextValue | null>(null);
 
-export function I18nProvider({ locale, children }: { locale: Locale; children: ReactNode }) {
+/**
+ * Tarjimalar: serverdan faqat joriy til lug'ati keladi (barcha tillar client bundle'ga tushmaydi).
+ * Admin panel o'z bo'limi bilan ichki provider qo'yadi.
+ */
+export function I18nProvider({ locale, messages, children }: { locale: Locale; messages: Dict; children: ReactNode }) {
   const value = useMemo<I18nContextValue>(() => {
-    const t = makeT(locale);
+    const t = createT(messages) as TFunction;
     return { locale, t, tEnum: makeTEnum(t), name: (row) => localizedName(locale, row) };
-  }, [locale]);
+  }, [locale, messages]);
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
 }
 

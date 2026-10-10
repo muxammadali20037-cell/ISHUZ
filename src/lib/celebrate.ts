@@ -2,6 +2,8 @@
  * Muvaffaqiyatdan keyin "pushka otilgandek" konfetti: ekran tepasining ikki burchagidan rangli qog'ozchalar otiladi.
  * Kutubxonasiz, bitta vaqtinchalik <canvas>; 3 soniyada o'zi yo'qoladi. "Harakatni kamaytirish" yoqilgan bo'lsa — ko'rsatilmaydi.
  */
+import { playSfx } from "./sfx";
+
 const COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#facc15"];
 
 interface Piece {
@@ -18,6 +20,7 @@ interface Piece {
 
 export function celebrate(): void {
   if (typeof window === "undefined" || typeof document === "undefined") return;
+  playSfx("success");
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
   const canvas = document.createElement("canvas");

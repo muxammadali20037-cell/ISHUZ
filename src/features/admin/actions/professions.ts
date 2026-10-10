@@ -1,6 +1,7 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
+import { REFERENCE_TAG } from "@/lib/supabase/public";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
@@ -47,6 +48,8 @@ function slugify(s: string): string {
 }
 
 function revalidate() {
+  // kasblar daraxti keshi — darhol yangilanadi
+  updateTag(REFERENCE_TAG);
   revalidatePath("/admin/professions");
   revalidatePath("/admin/audit");
 }

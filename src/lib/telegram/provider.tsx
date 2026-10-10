@@ -44,7 +44,11 @@ const TelegramContext = createContext<TelegramContextValue>({ isTelegram: false,
 
 const ROOT_PATHS = new Set(["/", "/jobs", "/workers", "/applications", "/messages", "/profile", "/employer", "/employer/candidates", "/employer/vacancies"]);
 
-const noopSubscribe = () => () => {};
+/** SDK odatda gidratsiyadan oldin tayyor; tarmoq sekin bo'lib keyinroq yuklansa — "tg-sdk" hodisasi (layout.tsx) */
+function subscribeSdk(cb: () => void) {
+  window.addEventListener("tg-sdk", cb);
+  return () => window.removeEventListener("tg-sdk", cb);
+}
 /** Telegram SDK tashqi tizim: initData bo'lsa — Mini App ichidamiz */
 function getWebAppSnapshot(): TelegramWebApp | null {
   const wa = window.Telegram?.WebApp;
@@ -52,7 +56,7 @@ function getWebAppSnapshot(): TelegramWebApp | null {
 }
 
 export function TelegramProvider({ children }: { children: ReactNode }) {
-  const webApp = useSyncExternalStore(noopSubscribe, getWebAppSnapshot, () => null);
+  const webApp = useSyncExternalStore(subscribeSdk, getWebAppSnapshot, () => null);
   const router = useRouter();
   const pathname = usePathname();
 

@@ -1,53 +1,23 @@
-import { latinToCyrillic } from "./translit";
 import { messages, type MessageKey } from "./messages";
 import type { Locale } from "./config";
+import { createT, type Dict, type TranslateParams } from "./core";
 
-export type TranslateParams = Record<string, string | number | null | undefined>;
+export { makeTEnum, localizedName } from "./core";
+export type { TranslateParams } from "./core";
 
-function lookup(locale: Locale, key: string): string | undefined {
-  const parts = key.split(".");
-  let node: unknown = messages[locale];
-  for (const p of parts) {
-    if (node && typeof node === "object" && p in (node as Record<string, unknown>)) {
-      node = (node as Record<string, unknown>)[p];
-    } else {
-      return undefined;
-    }
-  }
-  return typeof node === "string" ? node : undefined;
-}
-
-function interpolate(template: string, params?: TranslateParams) {
-  if (!params) return template;
-  return template.replace(/\{(\w+)\}/g, (_, name: string) => {
-    const v = params[name];
-    return v === null || v === undefined ? "" : String(v);
-  });
-}
-
-/** Tarjima funksiyasini yaratadi. Kalit topilmasa: uz → kalitning o'zi (dev'da ko'rinib qoladi). */
+/** Tarjima funksiyasini yaratadi (server: barcha lug'atlar). Kalit topilmasa: uz → kalitning o'zi. */
 export function makeT(locale: Locale) {
-  return function t(key: MessageKey | (string & {}), params?: TranslateParams): string {
-    const value = lookup(locale, key) ?? lookup("uz", key) ?? key;
-    return interpolate(value, params);
+  const t = createT(messages[locale] as Dict, messages.uz as Dict);
+  return function translate(key: MessageKey | (string & {}), params?: TranslateParams): string {
+    return t(key, params);
   };
 }
 
 export type TFunction = ReturnType<typeof makeT>;
 
-/** Enum qiymatini tarjima qiladi: tEnum('employment_type', 'full_time') */
-export function makeTEnum(t: TFunction) {
-  return function tEnum(group: string, value: string | null | undefined): string {
-    if (value === null || value === undefined || value === "") return "";
-    return t(`enums.${group}.${value}`);
-  };
-}
-
-/** Ma'lumotnoma yozuvlaridagi name_uz / name_ru / name_en dan tilga mos nomni oladi (ingliz nomi bo'lmasa — o'zbekcha) */
-export function localizedName(locale: Locale, row: { name_uz: string; name_ru: string; name_en?: string | null; name_oz?: string | null } | null | undefined): string {
-  if (!row) return "";
-  if (locale === "ru") return row.name_ru;
-  if (locale === "en") return row.name_en || row.name_uz;
-  if (locale === "oz") return row.name_oz || latinToCyrillic(row.name_uz);
-  return row.name_uz;
+/** Brauzerga yuboriladigan lug'at: faqat joriy til; server/admin bo'limlarisiz (admin panel o'zinikini qo'shadi) */
+const SERVER_ONLY_NAMESPACES = new Set(["admin", "legal", "bot", "cv"]);
+export function clientMessages(locale: Locale, opts: { admin?: boolean } = {}): Dict {
+  const all = messages[locale] as Dict;
+  return Object.fromEntries(Object.entries(all).filter(([ns]) => !SERVER_ONLY_NAMESPACES.has(ns) || (opts.admin && ns === "admin")));
 }

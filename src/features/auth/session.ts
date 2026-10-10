@@ -28,10 +28,11 @@ export interface SessionContext {
  */
 export const getSession = cache(async (): Promise<SessionContext | null> => {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) return null;
+  // JWT imzosi tekshiriladi (asimmetrik kalitda lokal — har sahifada Auth serveriga so'rov yo'q)
+  const { data: claims } = await supabase.auth.getClaims();
+  const sub = claims?.claims?.sub;
+  if (!sub) return null;
+  const user = { id: sub };
 
   const [profileRes, rolesRes, workerRes, employerRes, adminRes] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),

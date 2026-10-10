@@ -1,21 +1,14 @@
 import "server-only";
 
 import { cache } from "react";
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getCategories, getDistricts, getRegions } from "@/lib/reference";
+import { getCategories, getDistricts, getRegions, getSubcategoryAliases } from "@/lib/reference";
 import { buildDictionary, normalizeText, type SearchDictionary, type Understood } from "./understand";
 
 /** Kasb/joy lug'ati (sinonimlar bilan). So'rov davomida keshlanadi. */
 export const getSearchDictionary = cache(async (): Promise<SearchDictionary> => {
-  const supabase = await createClient();
-  const [categories, regions, districts, subs] = await Promise.all([
-    getCategories(),
-    getRegions(),
-    getDistricts(),
-    supabase.from("subcategories").select("id, slug, name_uz, name_ru, category_id, aliases").eq("is_active", true).order("sort_order"),
-  ]);
-  return buildDictionary({ categories, regions, districts, subcategories: subs.data ?? [] });
+  const [categories, regions, districts, subcategories] = await Promise.all([getCategories(), getRegions(), getDistricts(), getSubcategoryAliases()]);
+  return buildDictionary({ categories, regions, districts, subcategories });
 });
 
 /**

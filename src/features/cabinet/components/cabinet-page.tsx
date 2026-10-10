@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { Bell, BellRing, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
@@ -183,7 +183,9 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
         ) : null}
       </section>
 
-      <AiProCard userId={session.userId} />
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-3xl bg-secondary" aria-hidden />}>
+        <AiProCard userId={session.userId} />
+      </Suspense>
 
       <section className="space-y-3" aria-labelledby="new-listing">
         <h2 id="new-listing" className="text-2xl font-bold">

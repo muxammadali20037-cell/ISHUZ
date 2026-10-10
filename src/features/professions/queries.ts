@@ -1,8 +1,7 @@
 import "server-only";
 
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
-import type { Database } from "@/types/database.types";
-import { publicEnv } from "@/lib/env";
+import { unstable_cache } from "next/cache";
+import { createPublicClient, REFERENCE_CACHE } from "@/lib/supabase/public";
 import type { ProfessionNode, ProfessionSearchHit, TrailItem } from "./types";
 
 /**
@@ -10,24 +9,39 @@ import type { ProfessionNode, ProfessionSearchHit, TrailItem } from "./types";
  * Butun daraxt hech qachon bir martada yuklanmaydi — faqat kerakli daraja.
  */
 function anon() {
-  return createSupabaseClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+  return createPublicClient();
 }
 
 const NODE_COLUMNS = "id, parent_id, category_id, name_uz, name_ru, name_en, icon, selectable, is_popular";
 
-/** Bir daraja: soha ildizlari (parentId yo'q) yoki tugunning bolalari */
+/** Bir daraja: soha ildizlari (parentId yo'q) yoki tugunning bolalari. So'rovlar orasida keshlanadi (tag "reference") */
+const loadProfessionChildren = unstable_cache(
+  async (parentId: string | null, categoryId: string | null): Promise<ProfessionNode[]> => {
+    const db = anon();
+    let q = db.from("profession_nodes").select(NODE_COLUMNS).eq("is_active", true).order("sort_order").order("name_uz").limit(500);
+    if (parentId) q = q.eq("parent_id", parentId);
+    else if (categoryId) q = q.is("parent_id", null).eq("category_id", categoryId);
+    else return [];
+    const { data, error } = await q;
+    if (error) throw new Error(error.message); // xato keshlanmasin
+    if (!data?.length) return [];
+    const ids = data.map((n) => n.id);
+    const { data: kids, error: kidsError } = await db.from("profession_nodes").select("parent_id").eq("is_active", true).in("parent_id", ids);
+    if (kidsError) throw new Error(kidsError.message);
+    const withKids = new Set((kids ?? []).map((k) => k.parent_id));
+    return data.map((n) => ({ ...n, has_children: withKids.has(n.id) }));
+  },
+  ["ref:profession_children"],
+  REFERENCE_CACHE,
+);
+
 export async function getProfessionChildren(opts: { categoryId?: string | null; parentId?: string | null }): Promise<ProfessionNode[]> {
-  const db = anon();
-  let q = db.from("profession_nodes").select(NODE_COLUMNS).eq("is_active", true).order("sort_order").order("name_uz").limit(500);
-  if (opts.parentId) q = q.eq("parent_id", opts.parentId);
-  else if (opts.categoryId) q = q.is("parent_id", null).eq("category_id", opts.categoryId);
-  else return [];
-  const { data, error } = await q;
-  if (error || !data?.length) return [];
-  const ids = data.map((n) => n.id);
-  const { data: kids } = await db.from("profession_nodes").select("parent_id").eq("is_active", true).in("parent_id", ids);
-  const withKids = new Set((kids ?? []).map((k) => k.parent_id));
-  return data.map((n) => ({ ...n, has_children: withKids.has(n.id) }));
+  try {
+    return await loadProfessionChildren(opts.parentId ?? null, opts.parentId ? null : (opts.categoryId ?? null));
+  } catch (e) {
+    console.error("[professions] children", e instanceof Error ? e.message : e);
+    return [];
+  }
 }
 
 export async function searchProfessions(query: string, categoryId?: string | null, limit = 20): Promise<ProfessionSearchHit[]> {
@@ -53,10 +67,24 @@ export async function searchProfessions(query: string, categoryId?: string | nul
 }
 
 /** Tugunning to'liq yo'li (o'zi ham) */
+const loadProfessionTrail = unstable_cache(
+  async (nodeId: string): Promise<TrailItem[]> => {
+    const { data, error } = await anon().rpc("profession_node_trail", { p_node_id: nodeId });
+    if (error) throw new Error(error.message);
+    return (data ?? []).map((t) => ({ id: t.id, name_uz: t.name_uz, name_ru: t.name_ru, name_en: t.name_en }));
+  },
+  ["ref:profession_trail"],
+  REFERENCE_CACHE,
+);
+
 export async function getProfessionTrail(nodeId: string | null | undefined): Promise<TrailItem[]> {
   if (!nodeId) return [];
-  const { data } = await anon().rpc("profession_node_trail", { p_node_id: nodeId });
-  return (data ?? []).map((t) => ({ id: t.id, name_uz: t.name_uz, name_ru: t.name_ru, name_en: t.name_en }));
+  try {
+    return await loadProfessionTrail(nodeId);
+  } catch (e) {
+    console.error("[professions] trail", e instanceof Error ? e.message : e);
+    return [];
+  }
 }
 
 /**

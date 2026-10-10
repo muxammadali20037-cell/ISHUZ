@@ -13,7 +13,7 @@ import { ProfessionImage } from "@/components/shared/profession-image";
 import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { publishWorkerListing } from "../actions";
-import { parseMoney } from "../schema";
+import { parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type ListingStateInfo, type PostViewer, type WorkerDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
 import { track } from "@/features/analytics/client";

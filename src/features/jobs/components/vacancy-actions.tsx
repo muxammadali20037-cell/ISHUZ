@@ -14,7 +14,7 @@ import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
 import { applyToVacancy } from "../actions";
 import { errorMessage } from "../i18n-helpers";
-import { APPLY_MESSAGE_MAX } from "../schema";
+import { APPLY_MESSAGE_MAX } from "../limits";
 import type { VacancyViewerState } from "../types";
 import { useSaveVacancy } from "./use-save-vacancy";
 import { celebrate } from "@/lib/celebrate";

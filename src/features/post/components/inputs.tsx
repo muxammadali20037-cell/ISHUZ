@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n/client";
 import { formatPhone, formatPhoneAsYouType } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { formatMoneyInput } from "../schema";
+import { formatMoneyInput } from "../money";
 
 const big = "h-14 rounded-2xl text-lg";
 

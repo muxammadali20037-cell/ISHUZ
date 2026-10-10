@@ -65,7 +65,8 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
             transitionTypes={["nav-forward"]}
             data-track="direction_select"
             data-track-to={w.track}
-            className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-center text-lg font-bold text-primary shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:ring-4 focus-visible:ring-white/60 active:scale-[0.99]"
+            data-sfx="pop"
+            className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-white px-4 py-3 text-center text-lg font-bold text-primary shadow-sm transition-[translate,scale] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 focus-visible:ring-4 focus-visible:ring-white/60 active:scale-[0.97] active:duration-75"
           >
             <w.icon className="size-6 shrink-0" aria-hidden /> {w.label}
           </Link>

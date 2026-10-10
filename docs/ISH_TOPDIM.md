@@ -2,7 +2,7 @@
 
 > «Siz e'lon berasiz. Tizim sizga mos ish yoki ishchini topib, xabar beradi.»
 
-Bu hujjat 0048–0054 migratsiyalari va ular bilan bog'liq kodni, tashqi sozlamalarni va hali kalit
+Bu hujjat 0048–0055 migratsiyalari va ular bilan bog'liq kodni, tashqi sozlamalarni va hali kalit
 kerak bo'lgan joylarni tushuntiradi.
 
 ## 1. Imkoniyatlar
@@ -20,12 +20,14 @@ kerak bo'lgan joylarni tushuntiradi.
 | Admin panel | Alohida host, TOTP (aal2), rollar (super_admin, admin, moderator, support, analyst), moderatsiya navbati, ish beruvchilar, moslik qoidalari, navbatlar monitoringi, statistika (Toshkent vaqti) + CSV. | `src/app/admin/*`, `src/proxy.ts`, `0052`, `0053` |
 | Statistika | Faqat haqiqiy hodisalar. «Qo'ng'iroq» bosilishi ishga olish emas; Telegram'da yetkazilgan xabar «o'qilgan» emas (ochilish faqat havola orqali). | `admin_stats_v2`, `/api/e` |
 | Brend | «Ish topdim», yangi belgi (portfel + belgi), sahifalar orasida yo'nalishli o'tishlar. | `public/icon.svg`, `src/app/template.tsx` |
+| Tezlik va 1 mln foydalanuvchi | Brauzerga faqat joriy til; Telegram SDK faqat Telegram ichida; ma'lumotnomalar keshda; RLS qoidalarida `(select auth.uid())`; qidiruv kasb indeksidan foydalanadi. 1 mln ma'lumotda o'lchovlar va qoidalar — `docs/SCALE.md`. | `0055_scale_rls_initplan.sql`, `npm run db:load` |
+| Harakat va ovoz | Ro'yxatlar birin-ketin «sakrab» chiqadi va «tiq-tiq» chaladi (kasb qidiruvi, hududlar, natijalar), asosiy tugmalarda «voup», bosilganda «prujina» va Telegram'da tebranish; havola bosilishi bilan tepada «yuklanmoqda» chizig'i. Ovozlar fayl emas — Web Audio bilan sintez qilinadi; yuqori paneldagi tugma bilan o'chiriladi; «harakatni kamaytirish» sozlamasida animatsiya yo'q. | `src/lib/sfx.ts`, `src/components/shared/{sfx-listener,pop-sounds,sound-toggle,nav-progress}.tsx`, `globals.css` (`.pop-list`, `.press`) |
 | AI yordamchi · PRO (pullik) | Ikkala rol uchun: «Menga ish topsin» (mos vakansiya) va «Menga ishchi topsin» (mos ishchi e'loni). O'z so'zi bilan yoziladi, AI kasb/hudud/tajriba/maosh mezonlarini ajratadi; mos e'lon ochilishi (moderatsiyadan o'tishi) bilan Telegram'ga darhol xabar. Bitta obuna (`price_ai_alerts`, sukut 15 000 so'm / `ai_alerts_days` 30 kun) ikkala yo'lni qamraydi; `ai_alerts_paid=false` — bepul. Bosh sahifa va Kabinetimda ko'zga tashlanadigan karta. Ish beruvchiga ishchining telefoni yuborilmaydi. Har biriga 3 tadan kuzatuv. | `0054_ai_worker_alerts.sql`, `src/features/ai-alerts/*`, `/ai-alerts?role=worker|employer` |
 
 ## 2. Migratsiyalar
 
 `0048_trust_enum_values` · `0049_moderation` · `0050_matching_v2` · `0051_match_notifications` ·
-`0052_admin_analytics` · `0053_admin_panel` · `0054_ai_worker_alerts` — tartib bilan qo'llanadi. Mavjud e'lonlar 0049 dan keyin
+`0052_admin_analytics` · `0053_admin_panel` · `0054_ai_worker_alerts` · `0055_scale_rls_initplan` — tartib bilan qo'llanadi. Mavjud e'lonlar 0049 dan keyin
 qayta tekshiruvga tushadi (natija chiqquncha yashirin) — AI kaliti va cron ishlayotgan bo'lishi kerak.
 
 ## 3. Muhit o'zgaruvchilari (Vercel)
@@ -65,10 +67,12 @@ Kalitlarni hech qachon chatga yoki kodga yozmang — faqat Vercel → Settings �
 
 ## 5. Sinovlar
 
-- SQL: `supabase/tests/*.test.sql` (20 to'plam, 551 tekshiruv), shu jumladan `moderation.test.sql` (90) va
-  `ai_worker_alerts.test.sql` (27: RLS, limit, kasb/tuman/tajriba/byudjet filtrlari, takrorsiz, pullik rejim).
-- Unit: `npm test` (401 test) — qoidalar, normalizatsiya, AI hukmi, AI guard, aqlli qidiruv, davr (Toshkent),
-  admin host yo'naltirishi, tarjima kalitlari.
+- SQL: `supabase/tests/*.test.sql` (21 to'plam, 565 tekshiruv), shu jumladan `moderation.test.sql` (90) va
+  `ai_worker_alerts.test.sql` (27: RLS, limit, kasb/tuman/tajriba/byudjet filtrlari, takrorsiz, pullik rejim),
+  `scale_rls.test.sql` (14: qoidalar bir marta hisoblanishi, rekursiyasiz tahrir, qidiruv natijalari va sahifalash).
+- Yuklama: `npm run db:load` — lokal bazada 1 mln profil, 600 ming vakansiya, 3 mln bildirishnoma; asosiy so'rovlar vaqti.
+- Unit: `npm test` (414 test) — qoidalar, normalizatsiya, AI hukmi, AI guard, aqlli qidiruv, davr (Toshkent),
+  admin host yo'naltirishi, tarjima kalitlari, brauzerga faqat kerakli tarjimalar.
 - E2E (soxta Gemini va Telegram bilan, 360/390/1280 px): AI e'lon (ishchi/vakansiya), taqiqlangan matn
   (lotin, kirill, raqamli yashirish), rad etish → tahrir → qayta tekshiruv, AI uzilishi va noto'g'ri format,
   rasm ichidagi yozuv, aqlli qidiruv, admin MFA/navbat/tasdiqlash/CSV, REST orqali chetlab o'tish urinishlari,

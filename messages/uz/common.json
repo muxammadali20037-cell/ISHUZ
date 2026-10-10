@@ -206,5 +206,9 @@
     "privacy": "Faqat viloyat va tumaningizni topish uchun. Aniq manzilingiz hech kimga ko'rsatilmaydi.",
     "failed": "Joylashuvni aniqlab bo'lmadi. Hech qisi yo'q — ro'yxatdan tanlang.",
     "confirm_hint": "Joylashuvingiz bo'yicha belgilandi. To'g'ri bo'lsa, bosing."
+  },
+  "sound": {
+    "on": "Ovozni yoqish",
+    "off": "Ovozni o'chirish"
   }
 }

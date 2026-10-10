@@ -1,6 +1,7 @@
 import { z } from "zod";
+import { APPLY_MESSAGE_MAX } from "./limits";
 
-export const APPLY_MESSAGE_MAX = 1000;
+export { APPLY_MESSAGE_MAX };
 
 export const toggleSaveSchema = z.object({
   vacancyId: z.uuid(),

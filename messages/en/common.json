@@ -206,5 +206,9 @@
     "privacy": "Only to find your region and district. Your exact address is never shown.",
     "failed": "Couldn't detect your location. No problem — pick from the list.",
     "confirm_hint": "Pre-selected from your location. Tap if correct."
+  },
+  "sound": {
+    "on": "Turn sound on",
+    "off": "Turn sound off"
   }
 }

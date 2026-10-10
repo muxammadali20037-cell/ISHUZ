@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { Database } from "@/types/database.types";
 
 /**
- * Har so'rovda sessiyani yangilaydi (refresh token) va foydalanuvchini qaytaradi.
+ * Har so'rovda sessiyani yangilaydi (refresh token) va foydalanuvchini (faqat id) qaytaradi.
  * proxy.ts dan chaqiriladi.
  */
 export async function updateSession(request: NextRequest) {
@@ -26,10 +26,10 @@ export async function updateSession(request: NextRequest) {
     },
   );
 
-  // getUser() — JWT ni Supabase serverida tekshiradi (getSession ga ishonmaymiz)
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // getClaims() — JWT imzosini tekshiradi (asimmetrik kalit bo'lsa lokal, tarmoqsiz; aks holda Auth serverida),
+  // muddati tugayotgan sessiyani yangilaydi. getSession() ga ishonmaymiz.
+  const { data } = await supabase.auth.getClaims();
+  const user = data?.claims?.sub ? { id: data.claims.sub } : null;
 
   return { response, user };
 }

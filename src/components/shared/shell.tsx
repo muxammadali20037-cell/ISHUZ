@@ -9,9 +9,10 @@ import { LastSeenPing } from "./last-seen-ping";
  * Rol: sessiyadagi active_role; kirmagan bo'lsa guest.
  */
 export async function Shell({ children, forceRole, hideNav }: { children: ReactNode; forceRole?: NavRole; hideNav?: boolean }) {
-  const session = await getSession();
+  // sessiya va o'qilmaganlar soni parallel (ketma-ket ikki so'rov emas)
+  const [session, unread] = await Promise.all([getSession(), unreadCounts()]);
   const role: NavRole = forceRole ?? (session?.activeRole === "employer" ? "employer" : session ? "worker" : "guest");
-  const counts = session ? await unreadCounts() : undefined;
+  const counts = session ? unread : undefined;
   return (
     <div className="flex min-h-dvh flex-col">
       <TopBar role={role} counts={counts} />

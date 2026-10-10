@@ -1,12 +1,19 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
-import Script from "next/script";
 import { cookies } from "next/headers";
 import { getLocale, getT } from "@/lib/i18n/server";
+import { clientMessages } from "@/lib/i18n/translate";
 import { getServerEnv } from "@/lib/env";
 import { CelebrationListener } from "@/components/shared/celebration-listener";
 import { Providers } from "./providers";
 import "./globals.css";
+
+/**
+ * Telegram ichidamizmi: ishga tushirish manzilida #tgWebAppData..., keyingi sahifalarda SDK saqlagan
+ * sessionStorage "__telegram__initParams" yoki Telegram webview obyekti. Shunda SDK parser-bloklovchi yuklanadi
+ * (window.Telegram.WebApp gidratsiyadan oldin tayyor). Yuklanmasa — qayta urinadi; "tg-sdk" hodisasi TelegramProvider'ga.
+ */
+const TELEGRAM_SDK_LOADER = `(function(){try{var u="https://telegram.org/js/telegram-web-app.js",tg=/tgWebApp/.test(location.hash+location.search)||!!window.TelegramWebviewProxy;try{tg=tg||/tgWebApp/.test(sessionStorage.getItem("__telegram__initParams")||"")}catch(e){}if(!tg)return;window.__tgSdkRetry=function(){var s=document.createElement("script");s.src=u;s.onload=function(){dispatchEvent(new Event("tg-sdk"))};document.head.appendChild(s)};document.write('<script src="'+u+'" onload="dispatchEvent(new Event(\\'tg-sdk\\'))" onerror="__tgSdkRetry()"><\\/script>')}catch(e){}})();`;
 
 const manrope = Manrope({
   subsets: ["latin", "cyrillic"],
@@ -52,8 +59,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
       <head>
-        {/* Telegram Mini App SDK: window.Telegram.WebApp (initData) gidratsiyadan oldin mavjud bo'lishi kerak */}
-        <Script src="https://telegram.org/js/telegram-web-app.js" strategy="beforeInteractive" />
+        {/* Telegram Mini App SDK faqat Telegram ichida (gidratsiyadan oldin, avvalgidek). Oddiy brauzerda yuklanmaydi —
+            tashqi skript kutilmagani uchun sahifa darhol "jonlanadi" (bosishlar kechikmaydi) */}
+        <script dangerouslySetInnerHTML={{ __html: TELEGRAM_SDK_LOADER }} />
         {/* Mavzu: cookie yo'q ("system") bo'lsa — qurilma sozlamasiga qarab, gidratsiyadan oldin (miltillashsiz) */}
         <script
           dangerouslySetInnerHTML={{
@@ -62,7 +70,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="font-sans">
-        <Providers locale={locale}>
+        <Providers locale={locale} messages={clientMessages(locale)}>
           {children}
           <CelebrationListener />
         </Providers>

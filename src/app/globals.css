@@ -231,6 +231,50 @@
 .step-forward { --step-offset: 24px; animation: step-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 .step-back { --step-offset: -24px; animation: step-in 260ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+/* ---------- "Tiq-tiq-tiq": ro'yxat elementlari birin-ketin sakrab chiqadi (PopSounds bilan bir vaqtda) ----------
+ * Faqat CSS (JS kutilmaydi). fill-mode "backwards": tugagach element o'z holatiga qaytadi — hover/active effektlari buzilmaydi. */
+@keyframes pop-in {
+  0% { opacity: 0; transform: translateY(12px) scale(0.9); }
+  55% { opacity: 1; transform: translateY(-3px) scale(1.025); }
+  80% { transform: translateY(1px) scale(0.995); }
+  100% { opacity: 1; transform: none; }
+}
+.pop-list > * { animation: pop-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards; }
+.pop-list > :nth-child(1) { animation-delay: 40ms; }
+.pop-list > :nth-child(2) { animation-delay: 90ms; }
+.pop-list > :nth-child(3) { animation-delay: 140ms; }
+.pop-list > :nth-child(4) { animation-delay: 190ms; }
+.pop-list > :nth-child(5) { animation-delay: 240ms; }
+.pop-list > :nth-child(6) { animation-delay: 290ms; }
+.pop-list > :nth-child(7) { animation-delay: 340ms; }
+.pop-list > :nth-child(8) { animation-delay: 390ms; }
+.pop-list > :nth-child(9) { animation-delay: 430ms; }
+.pop-list > :nth-child(10) { animation-delay: 470ms; }
+.pop-list > :nth-child(11) { animation-delay: 500ms; }
+.pop-list > :nth-child(12) { animation-delay: 530ms; }
+.pop-list > :nth-child(n + 13) { animation-delay: 560ms; }
+
+/* Havola bosilganda tepadagi ingichka "yuklanmoqda" chizig'i (NavProgress) */
+.nav-progress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 70; pointer-events: none; }
+.nav-progress > span {
+  display: block; height: 100%; transform-origin: left center;
+  background: linear-gradient(90deg, var(--primary), color-mix(in oklab, var(--primary) 55%, white));
+  box-shadow: 0 0 8px color-mix(in oklab, var(--primary) 60%, transparent);
+}
+@keyframes nav-grow { from { transform: scaleX(0); } to { transform: scaleX(0.85); } }
+@keyframes nav-done { from { transform: scaleX(0.85); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }
+.nav-progress[data-state="loading"] > span { animation: nav-grow 2.4s cubic-bezier(0.1, 0.7, 0.2, 1) forwards; }
+.nav-progress[data-state="done"] > span { animation: nav-done 380ms ease-out forwards; }
+
+/* Bosilganda "prujina": barmoq ostida biroz kichrayadi, qo'yib yuborilganda sakrab qaytadi.
+ * components qatlamida — sahifadagi transition va scale utilitalari kerak bo'lsa ustun keladi. */
+@layer components {
+  .press {
+    transition: scale 260ms cubic-bezier(0.34, 1.56, 0.64, 1), color 150ms ease, background-color 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
+  }
+  .press:active { scale: 0.96; transition-duration: 80ms; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(.page-out),
   ::view-transition-new(.page-in),
@@ -241,7 +285,9 @@
     animation: none;
   }
   .step-forward,
-  .step-back {
+  .step-back,
+  .pop-list > * {
     animation: none;
   }
+  .press:active { scale: none; }
 }
