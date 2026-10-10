@@ -11,6 +11,7 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 | Unit (vitest) | 482 PASS, 18 skip (mavjud), 0 FAIL — shu jumladan `safe-path` 14, `request` 9, `headers` 8, `rules` 7, `safe-fetch` 7, `file-signature` 6, `verify` 5, `ai/json` 5, `rate-limit` 4, `postgrest` 2 |
 | SQL (`scripts/db-test.sh`, 22 fayl) | PASS — `security_hardening.test.sql` da 100 ta tekshiruv |
 | E2E s1–s10 (mavjud funksiyalar regressiyasi) | 12/12, 17/17, 23/23, 20/20, 12/12, 38/38, 4/4, 16/16, 4/4, 25/25 — hammasi PASS |
+| E2E s1–s11 (fayl mazmuni tekshiruvidan keyin qayta, 2026-10-10) | Hammasi PASS. Izoh: ikkinchi to'liq yugurishda s4 da bir marta brauzerning «Transition was aborted because of timeout in DOM update» xabari (yuklama ostida sahifa almashish animatsiyasi vaqti; ilova kodida `startViewTransition` yo'q) — s4 alohida qayta: 20/20 |
 | E2E s11 (xavfsizlik) | 35/35 PASS |
 | Moderatsiya rasmi mazmuni (E2E, tasodifiy dalil) | PASS — lokal Storage emulyatori PNG o'rniga multipart so'rov tanasini saqlaganda, moderatsiya rasmni AI'ga yubormadi va `review` / `image_content_mismatch` qaydini yozdi. Emulyator tuzatilgach (faqat fayl qismi saqlanadi) haqiqiy PNG odatdagidek AI tekshiruvidan o'tdi (s4) |
 | Yangi ilova + 0056'siz baza (deploy oynasi) | 6/6 PASS — kod yuborish/tekshirish eski limit funksiyasiga qaytadi, bot bog'lash bir bosqichli rejimga qaytadi, kompaniya sahifasi ishlaydi |
