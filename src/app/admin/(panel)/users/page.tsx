@@ -15,6 +15,7 @@ import { StatusBadge, BoolBadge } from "@/features/admin/components/status-badge
 import { UrlSheet } from "@/features/admin/components/url-sheet";
 import { DetailRow, DetailSection } from "@/features/admin/components/detail-sheet";
 import { UserBlockButton } from "@/features/admin/components/user-actions";
+import { RevokeSessionsButton } from "@/features/admin/components/security-actions";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -136,7 +137,14 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
           title={detail ? fullName(detail.first_name, detail.last_name) || t("common.labels.not_specified") : t("common.errors.not_found")}
           description={detail ? detail.id : undefined}
           closeHref={closeHref(BASE, sp)}
-          footer={detail ? <UserBlockButton profileId={detail.id} isBlocked={detail.is_blocked} name={fullName(detail.first_name, detail.last_name)} canBlock={canBlock && detail.id !== ctx.session.userId} size="default" fullWidth /> : undefined}
+          footer={
+            detail ? (
+              <div className="flex w-full flex-col gap-2">
+                <RevokeSessionsButton profileId={detail.id} name={fullName(detail.first_name, detail.last_name)} canBlock={canBlock && detail.id !== ctx.session.userId && !detail.is_blocked} size="default" fullWidth />
+                <UserBlockButton profileId={detail.id} isBlocked={detail.is_blocked} name={fullName(detail.first_name, detail.last_name)} canBlock={canBlock && detail.id !== ctx.session.userId} size="default" fullWidth />
+              </div>
+            ) : undefined
+          }
         >
           {detail ? (
             <>

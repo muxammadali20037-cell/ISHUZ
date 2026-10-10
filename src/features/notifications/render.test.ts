@@ -113,6 +113,13 @@ describe("renderNotification", () => {
     expect(renderNotification("system", { kind: "contact_request", name: "Kafe" }, uz, "uz").title).toBe("Telefon raqamingizni so'rashdi");
   });
 
+  it("system/security_alert va telegram_relinked", () => {
+    const a = renderNotification("system", { kind: "security_alert", event_type: "auth.otp_bruteforce", severity: "high", action: "restricted" }, uz, "uz");
+    expect(a.title).toBe("Xavfsizlik ogohlantirishi");
+    expect(a.body).toBe("auth.otp_bruteforce · daraja: high · chora: restricted");
+    expect(renderNotification("system", { kind: "telegram_relinked" }, ru, "ru").title).toBe("Telegram изменён");
+  });
+
   it("system/ai_worker_alert: ish beruvchiga mos nomzod (telefonsiz), ru — ruscha nomlar", () => {
     const payload = {
       kind: "ai_worker_alert", name: "Ali V.", profession: "Oshpaz", profession_ru: "Повар",

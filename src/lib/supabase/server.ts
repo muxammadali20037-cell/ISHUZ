@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
+import { SUPABASE_COOKIE_OPTIONS } from "@/lib/security/cookies";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database.types";
 import { publicEnv } from "@/lib/env";
@@ -12,6 +13,7 @@ import { publicEnv } from "@/lib/env";
 export async function createClient() {
   const cookieStore = await cookies();
   return createServerClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, {
+    cookieOptions: SUPABASE_COOKIE_OPTIONS,
     cookies: {
       getAll() {
         return cookieStore.getAll();
@@ -29,11 +31,3 @@ export async function createClient() {
 
 export type SupabaseServerClient = Awaited<ReturnType<typeof createClient>>;
 
-/** Joriy foydalanuvchi (yo'q bo'lsa null). `getUser` serverda JWT ni tekshiradi. */
-export async function getCurrentUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
-}

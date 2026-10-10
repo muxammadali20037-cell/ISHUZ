@@ -211,6 +211,16 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
         const message = str(p, "message");
         return { title: t(`notifications.moderation.${key}_title`), body: key === "rejected" && message ? message : t(`notifications.moderation.${key}_body`, { title: str(p, "title") || "—" }), icon: "verification" };
       }
+      if (str(p, "kind") === "security_alert") {
+        return {
+          title: t("notifications.security.alert_title"),
+          body: t("notifications.security.alert_body", { event: str(p, "event_type") || "—", severity: str(p, "severity") || "—", action: str(p, "action") || "—" }),
+          icon: "system",
+        };
+      }
+      if (str(p, "kind") === "telegram_relinked") {
+        return { title: t("notifications.security.relinked_title"), body: t("notifications.security.relinked_body"), icon: "system" };
+      }
       if (str(p, "kind") === "employer_status") {
         const status = str(p, "status");
         const key = status === "verified" ? "employer_verified" : status === "rejected" ? "employer_rejected" : status === "suspended" ? "employer_suspended" : "employer_other";

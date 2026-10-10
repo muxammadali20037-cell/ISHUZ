@@ -7,6 +7,8 @@ import { getServerEnv } from "@/lib/env";
 import { AI_MODEL, getAiClient } from "./client";
 import { AiBusyError, geminiJson, type AiCallOptions } from "./gemini";
 import { logAiUsage } from "./usage";
+import { hitRate } from "@/lib/rate-limit";
+import { logSecurityEvent } from "@/lib/security/events";
 
 /** AI sozlanmagan (kalit yo'q) */
 export class AiUnavailableError extends Error {}
@@ -16,6 +18,32 @@ export class AiInvalidOutputError extends Error {}
 export function aiProviderConfigured(): boolean {
   const env = getServerEnv();
   return !!(env.GEMINI_API_KEY || env.ANTHROPIC_API_KEY);
+}
+
+/**
+ * Kunlik umumiy AI byudjeti (xarajat hujumi / bot spam): foydalanuvchi boshlaydigan funksiyalar uchun.
+ * Moderatsiya va rasm generatsiyasi — o'z kunlik limitlari bilan. Fail-closed: hisoblagich ishlamasa AI chaqirilmaydi.
+ */
+const AI_DAILY_BUDGET: Record<string, number> = {
+  draft_vacancy: 3000,
+  draft_worker: 3000,
+  search_parse: 8000,
+  verification_review: 500,
+  other: 2000,
+};
+const AI_DAILY_BUDGET_TOTAL = 12000;
+const BUDGET_EXEMPT = new Set(["moderation_text", "moderation_image", "moderation_generated_image", "profession_image", "ai_probe"]);
+
+async function withinDailyBudget(feature: string): Promise<boolean> {
+  if (BUDGET_EXEMPT.has(feature)) return true;
+  const limit = AI_DAILY_BUDGET[feature] ?? AI_DAILY_BUDGET.other!;
+  const [one, all] = await Promise.all([hitRate(`ai:day:${feature}`, limit, 86400), hitRate("ai:day:user_total", AI_DAILY_BUDGET_TOTAL, 86400)]);
+  for (const [r, lim] of [[one, limit], [all, AI_DAILY_BUDGET_TOTAL]] as const) {
+    if (!r.ok && r.reason === "limited" && r.count === lim + 1) {
+      await logSecurityEvent({ type: "cost.ai_budget_exhausted", severity: "high", reason: feature, action: "throttled", details: { limit: lim } });
+    }
+  }
+  return one.ok && all.ok;
 }
 
 export function isAiBusy(error: unknown): boolean {
@@ -29,6 +57,7 @@ export function isAiBusy(error: unknown): boolean {
  */
 export async function aiJson<T extends z.ZodType>(schema: T, system: string, user: string, opts: AiCallOptions = {}): Promise<z.infer<T>> {
   const env = getServerEnv();
+  if (!(await withinDailyBudget(opts.feature ?? "other"))) throw new AiUnavailableError("ai_budget_exhausted");
   if (env.GEMINI_API_KEY) {
     try {
       const out = await geminiJson(schema, system, user, opts);

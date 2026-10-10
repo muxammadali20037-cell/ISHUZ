@@ -1,6 +1,6 @@
 import "server-only";
 
-import { getServerEnv } from "@/lib/env";
+import { getServerEnv, testOnlyOverride } from "@/lib/env";
 import { escapeHtml, miniAppBaseUrl, type ReplyMarkup } from "@/lib/telegram/bot";
 import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
 import { formatSalaryRange } from "@/lib/format";
@@ -30,7 +30,7 @@ export interface TelegramSendResult {
 export async function sendTelegramHtml(chatId: number, html: string, keyboard?: ReplyMarkup): Promise<TelegramSendResult> {
   const { TELEGRAM_BOT_TOKEN } = getServerEnv();
   if (!TELEGRAM_BOT_TOKEN) return { ok: false, code: 0, description: "telegram_not_configured", transient: false };
-  const base = (process.env.TELEGRAM_API_BASE ?? "https://api.telegram.org").replace(/\/$/, "");
+  const base = (testOnlyOverride(process.env.TELEGRAM_API_BASE) ?? "https://api.telegram.org").replace(/\/$/, "");
   try {
     const res = await fetch(`${base}/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
       method: "POST",

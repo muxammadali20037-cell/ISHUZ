@@ -1202,63 +1202,6 @@ export type Database = {
           },
         ];
       };
-      demo_vv: {
-        Row: {
-          cat: string | null;
-          co: string | null;
-          descr: string | null;
-          descr_ru: string | null;
-          dist: string | null;
-          emp: Database["public"]["Enums"]["employment_type"] | null;
-          exp: number | null;
-          hours: number | null;
-          remote: boolean | null;
-          sched: Database["public"]["Enums"]["work_schedule"] | null;
-          sf: number | null;
-          st: number | null;
-          stype: Database["public"]["Enums"]["salary_type"] | null;
-          sub: string | null;
-          title: string | null;
-          title_ru: string | null;
-        };
-        Insert: {
-          cat?: string | null;
-          co?: string | null;
-          descr?: string | null;
-          descr_ru?: string | null;
-          dist?: string | null;
-          emp?: Database["public"]["Enums"]["employment_type"] | null;
-          exp?: number | null;
-          hours?: number | null;
-          remote?: boolean | null;
-          sched?: Database["public"]["Enums"]["work_schedule"] | null;
-          sf?: number | null;
-          st?: number | null;
-          stype?: Database["public"]["Enums"]["salary_type"] | null;
-          sub?: string | null;
-          title?: string | null;
-          title_ru?: string | null;
-        };
-        Update: {
-          cat?: string | null;
-          co?: string | null;
-          descr?: string | null;
-          descr_ru?: string | null;
-          dist?: string | null;
-          emp?: Database["public"]["Enums"]["employment_type"] | null;
-          exp?: number | null;
-          hours?: number | null;
-          remote?: boolean | null;
-          sched?: Database["public"]["Enums"]["work_schedule"] | null;
-          sf?: number | null;
-          st?: number | null;
-          stype?: Database["public"]["Enums"]["salary_type"] | null;
-          sub?: string | null;
-          title?: string | null;
-          title_ru?: string | null;
-        };
-        Relationships: [];
-      };
       device_tokens: {
         Row: {
           created_at: string;
@@ -2293,6 +2236,7 @@ export type Database = {
           last_name: string;
           last_seen_at: string | null;
           locale: Database["public"]["Enums"]["app_locale"];
+          sessions_revoked_at: string | null;
           updated_at: string;
         };
         Insert: {
@@ -2309,6 +2253,7 @@ export type Database = {
           last_name?: string;
           last_seen_at?: string | null;
           locale?: Database["public"]["Enums"]["app_locale"];
+          sessions_revoked_at?: string | null;
           updated_at?: string;
         };
         Update: {
@@ -2325,6 +2270,7 @@ export type Database = {
           last_name?: string;
           last_seen_at?: string | null;
           locale?: Database["public"]["Enums"]["app_locale"];
+          sessions_revoked_at?: string | null;
           updated_at?: string;
         };
         Relationships: [];
@@ -2729,6 +2675,107 @@ export type Database = {
           },
         ];
       };
+      security_events: {
+        Row: {
+          action_taken: string;
+          actor_id: string | null;
+          created_at: string;
+          details: Json;
+          event_type: string;
+          id: string;
+          reason_code: string;
+          request_id: string | null;
+          route: string | null;
+          rule_version: string | null;
+          session_ref: string | null;
+          severity: string;
+          subject_hash: string | null;
+        };
+        Insert: {
+          action_taken?: string;
+          actor_id?: string | null;
+          created_at?: string;
+          details?: Json;
+          event_type: string;
+          id?: string;
+          reason_code: string;
+          request_id?: string | null;
+          route?: string | null;
+          rule_version?: string | null;
+          session_ref?: string | null;
+          severity: string;
+          subject_hash?: string | null;
+        };
+        Update: {
+          action_taken?: string;
+          actor_id?: string | null;
+          created_at?: string;
+          details?: Json;
+          event_type?: string;
+          id?: string;
+          reason_code?: string;
+          request_id?: string | null;
+          route?: string | null;
+          rule_version?: string | null;
+          session_ref?: string | null;
+          severity?: string;
+          subject_hash?: string | null;
+        };
+        Relationships: [];
+      };
+      security_restrictions: {
+        Row: {
+          created_at: string;
+          enforced: boolean;
+          event_id: string | null;
+          expires_at: string;
+          id: number;
+          lifted_at: string | null;
+          lifted_by: string | null;
+          reason_code: string;
+          rule_version: string;
+          scope: string;
+          state: string;
+          subject: string;
+        };
+        Insert: {
+          created_at?: string;
+          enforced?: boolean;
+          event_id?: string | null;
+          expires_at: string;
+          id?: number;
+          lifted_at?: string | null;
+          lifted_by?: string | null;
+          reason_code: string;
+          rule_version: string;
+          scope: string;
+          state: string;
+          subject: string;
+        };
+        Update: {
+          created_at?: string;
+          enforced?: boolean;
+          event_id?: string | null;
+          expires_at?: string;
+          id?: number;
+          lifted_at?: string | null;
+          lifted_by?: string | null;
+          reason_code?: string;
+          rule_version?: string;
+          scope?: string;
+          state?: string;
+          subject?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "security_restrictions_event_id_fkey";
+            columns: ["event_id"];
+            isOneToOne: false;
+            referencedRelation: "security_events";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       skill_question_options: {
         Row: {
           question_id: string;
@@ -3025,6 +3072,21 @@ export type Database = {
             referencedColumns: ["id"];
           },
         ];
+      };
+      telegram_updates: {
+        Row: {
+          received_at: string;
+          update_id: number;
+        };
+        Insert: {
+          received_at?: string;
+          update_id: number;
+        };
+        Update: {
+          received_at?: string;
+          update_id?: number;
+        };
+        Relationships: [];
       };
       user_roles: {
         Row: {
@@ -4067,6 +4129,7 @@ export type Database = {
           vacancies: number;
         }[];
       };
+      admin_lift_restriction: { Args: { p_id: number }; Returns: undefined };
       admin_log: {
         Args: {
           p_action: string;
@@ -4129,6 +4192,7 @@ export type Database = {
         };
         Returns: undefined;
       };
+      admin_revoke_user_sessions: { Args: { p_profile_id: string }; Returns: number };
       admin_search_insights: {
         Args: { p_days?: number; p_limit?: number };
         Returns: {
@@ -4139,6 +4203,7 @@ export type Database = {
           zero_results: number;
         }[];
       };
+      admin_security_overview: { Args: { p_hours?: number }; Returns: Json };
       admin_set_employer_status: {
         Args: {
           p_checks?: string[];
@@ -4148,6 +4213,7 @@ export type Database = {
         };
         Returns: number;
       };
+      admin_set_security_enforce: { Args: { p_enforce: boolean }; Returns: undefined };
       admin_set_user_block: {
         Args: { p_block: boolean; p_profile_id: string; p_reason?: string };
         Returns: undefined;
@@ -4183,6 +4249,7 @@ export type Database = {
         Returns: number;
       };
       ai_alerts_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
+      api_pre_request: { Args: Record<PropertyKey, never>; Returns: undefined };
       application_stage_rank: {
         Args: { s: Database["public"]["Enums"]["application_status"] };
         Returns: number;
@@ -4338,6 +4405,13 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      employer_public_names: {
+        Args: { p_profile_ids: string[] };
+        Returns: {
+          display_name: string;
+          profile_id: string;
+        }[];
+      };
       enqueue_match_job: {
         Args: { p_entity: string; p_id: string; p_reason: string };
         Returns: undefined;
@@ -4380,7 +4454,9 @@ export type Database = {
       has_admin_permission: { Args: { perm: string }; Returns: boolean };
       is_active_user: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
+      is_allowed_media_url: { Args: { p_bucket: string; p_owner: string; p_url: string }; Returns: boolean };
       is_blocked: { Args: { pid: string }; Returns: boolean };
+      is_client_write: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_company_admin: { Args: { p_company_id: string }; Returns: boolean };
       is_company_member: { Args: { p_company_id: string }; Returns: boolean };
       is_conversation_member: {
@@ -4615,6 +4691,7 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      preview_telegram_link_token: { Args: { p_telegram_user_id: number; p_token_hash: string }; Returns: Json };
       process_match_job: { Args: { p_job_id: number }; Returns: Json };
       process_match_jobs: { Args: { p_limit?: number }; Returns: number };
       profession_direction_counts: {
@@ -5068,6 +5145,42 @@ export type Database = {
           work_format: Database["public"]["Enums"]["work_format"];
         }[];
       };
+      security_account_restricted: { Args: { p_profile_id: string }; Returns: boolean };
+      security_active_restriction: { Args: { p_scope: string; p_subject: string }; Returns: Json };
+      security_alert_admins: { Args: { p_event_id: string }; Returns: number };
+      security_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: number };
+      security_log_event: {
+        Args: {
+          p_action_taken?: string;
+          p_actor_id?: string;
+          p_details?: Json;
+          p_event_type: string;
+          p_reason_code: string;
+          p_request_id?: string;
+          p_route?: string;
+          p_rule_version?: string;
+          p_session_ref?: string;
+          p_severity: string;
+          p_subject_hash?: string;
+        };
+        Returns: string;
+      };
+      security_maintenance: { Args: Record<PropertyKey, never>; Returns: Json };
+      security_restrict: {
+        Args: {
+          p_enforce?: boolean;
+          p_event_id?: string;
+          p_reason_code: string;
+          p_rule_version: string;
+          p_scope: string;
+          p_state: string;
+          p_subject: string;
+          p_ttl_seconds: number;
+        };
+        Returns: Json;
+      };
+      security_revoke_sessions: { Args: { p_profile_id: string; p_reason_code: string; p_request_id?: string }; Returns: Json };
+      security_revoke_sessions_internal: { Args: { p_profile_id: string }; Returns: number };
       send_message: {
         Args: {
           p_attachment_meta?: Json;
@@ -5284,6 +5397,7 @@ export type Database = {
         };
         Returns: string;
       };
+      telegram_auth_lookup: { Args: { p_telegram_user_id: number }; Returns: Json };
       telegram_blocked: { Args: { p_profile_id: string }; Returns: undefined };
       telegram_outbox_claim: {
         Args: { p_limit?: number };
@@ -5312,6 +5426,7 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      telegram_update_first_seen: { Args: { p_update_id: number }; Returns: boolean };
       touch_last_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
       unread_counts: {
         Args: Record<PropertyKey, never>;
@@ -5330,6 +5445,7 @@ export type Database = {
         Returns: string[];
       };
       withdraw_offer: { Args: { p_offer_id: string }; Returns: undefined };
+      worker_access_ok: { Args: { p_worker_id: string }; Returns: boolean };
       worker_completeness: {
         Args: { p_worker_id: string };
         Returns: {

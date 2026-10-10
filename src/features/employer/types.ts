@@ -41,7 +41,8 @@ export interface NamedRef {
   name_ru: string;
 }
 
-export interface CompanyPublic extends CompanyRow {
+/** Ochiq sahifa: STIR (tin) anon uchun ochiq emas (0056 ustun huquqlari) */
+export interface CompanyPublic extends Omit<CompanyRow, "tin"> {
   region: NamedRef | null;
   district: NamedRef | null;
   industry: (NamedRef & { slug: string; icon: string | null }) | null;

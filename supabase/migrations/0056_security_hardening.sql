@@ -7,7 +7,7 @@
 --  4. Bloklangan foydalanuvchi hech qaysi jadvalga yoza olmaydi (RESTRICTIVE siyosatlar, storage ham)
 --  5. PostgREST pre-request: bloklangan/cheklangan hisobning barcha yozish so'rovlari markazda to'xtatiladi
 --  6. Telegram: auth foydalanuvchini app_metadata.tg_id bilan bog'lash, bog'lashni oldindan ko'rish, update_id dedupe
---  7. Shaxsiy ma'lumot: employer_profiles faqat egasi/kompaniya a'zosi/admin; anon companies.tin/created_by ko'rmaydi;
+--  7. Shaxsiy ma'lumot: employer_profiles faqat egasi/kompaniya a'zosi/admin; anon companies.tin ni ko'rmaydi;
 --     telefon yashirin bo'lsa kompaniya kartasiga ko'chirilmaydi
 --  8. Himoya triggerlari: vakansiya holati faqat RPC orqali; ish ko'rsatkichlari/admin maydonlari mijozdan o'zgarmaydi;
 --     tasdiqlangan kompaniya/ish beruvchi nomi o'zgarmaydi
@@ -173,6 +173,21 @@ begin
     returning * into r;
   end if;
   return jsonb_build_object('id', r.id, 'state', r.state, 'enforced', r.enforced, 'expires_at', r.expires_at);
+end $$;
+
+-- Atomik hisoblagich (soni bilan): server qoidalari chegarani aniqlashi uchun. Parallel so'rovlar ham to'g'ri sanaladi.
+create or replace function public.security_hit(p_key text, p_window_seconds integer)
+returns integer language plpgsql security definer set search_path = public as $$
+declare
+  w int := least(greatest(coalesce(p_window_seconds, 60), 1), 86400);
+  ws timestamptz := to_timestamp(floor(extract(epoch from now()) / w) * w);
+  c int;
+begin
+  if p_key is null or length(p_key) > 200 then raise exception 'invalid_key' using errcode = '22023'; end if;
+  insert into public.rate_limits (key, window_start, count) values (p_key, ws, 1)
+  on conflict (key, window_start) do update set count = public.rate_limits.count + 1
+  returning count into c;
+  return c;
 end $$;
 
 -- Eng kuchli faol cheklov (kuzatuvdagilar ham qaytadi — enforced maydoniga qarang). Yo'q bo'lsa null.
@@ -555,13 +570,13 @@ returns table (profile_id uuid, display_name text) language sql stable security 
   where auth.uid() is not null and e.profile_id = any(p_profile_ids[1:200]);
 $$;
 
--- companies: anon STIR (tin) va created_by ni ko'rmaydi (qolgan ustunlar ochiq sahifa uchun)
+-- companies: anon STIR (tin) ni ko'rmaydi (qolgan ustunlar ochiq sahifa uchun; created_by — reyting uchun kerak)
 do $$
 declare cols text;
 begin
   select string_agg(quote_ident(column_name), ', ' order by ordinal_position) into cols
   from information_schema.columns
-  where table_schema = 'public' and table_name = 'companies' and column_name not in ('tin', 'created_by');
+  where table_schema = 'public' and table_name = 'companies' and column_name <> 'tin';
   execute 'revoke select on public.companies from anon';
   execute format('grant select (%s) on public.companies to anon', cols);
 end $$;
@@ -766,7 +781,7 @@ begin
   foreach f in array array[
     'public.security_log_event(text,text,text,uuid,text,text,text,text,text,text,jsonb)',
     'public.security_restrict(text,text,text,text,integer,text,uuid,boolean)',
-    'public.security_active_restriction(text,text)', 'public.security_account_restricted(uuid)',
+    'public.security_active_restriction(text,text)', 'public.security_account_restricted(uuid)', 'public.security_hit(text,integer)',
     'public.security_revoke_sessions(uuid,text,text)', 'public.telegram_auth_lookup(bigint)',
     'public.preview_telegram_link_token(text,bigint)', 'public.consume_telegram_link_token(text,bigint,text,text,text,text)',
     'public.telegram_update_first_seen(bigint)'
@@ -863,6 +878,14 @@ begin
 end $$;
 revoke execute on function public.security_maintenance() from public, anon, authenticated;
 grant execute on function public.security_maintenance() to service_role;
+
+do $$
+begin
+  if exists (select 1 from pg_extension where extname = 'pg_cron') then
+    perform cron.unschedule(jobid) from cron.job where jobname = 'ishuz-security-maintenance';
+    perform cron.schedule('ishuz-security-maintenance', '41 21 * * *', 'select public.security_maintenance()');
+  end if;
+end $$;
 
 -- Admin: xavfsizlik paneli
 create or replace function public.admin_security_overview(p_hours integer default 24)

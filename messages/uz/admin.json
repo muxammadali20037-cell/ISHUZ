@@ -32,7 +32,8 @@
     "professions": "Kasblar daraxti",
     "moderation": "Moderatsiya navbati",
     "matching": "Moslik qoidalari",
-    "queues": "Navbatlar holati"
+    "queues": "Navbatlar holati",
+    "security": "Xavfsizlik"
   },
   "common": {
     "done": "Bajarildi",
@@ -797,5 +798,41 @@
       "timeout": "Javob kelmadi (tarmoq yoki vaqt tugadi). Qayta sinang.",
       "server_key": "Serverda SUPABASE_SERVICE_ROLE_KEY yo'q — jurnalni o'qib bo'lmaydi. Vercel'da qo'ying."
     }
+  },
+  "security": {
+    "title": "Xavfsizlik",
+    "subtitle": "Xavfsizlik hodisalari va vaqtinchalik cheklovlar (shaxsiy ma'lumotsiz)",
+    "mode": "Cheklov rejimi",
+    "mode_observe": "Kuzatuv",
+    "mode_enforce": "Majburiy",
+    "observe_desc": "Qoidalar faqat qayd qilinadi va adminlarga xabar beriladi; foydalanuvchilar to'xtatilmaydi (oddiy limitlar baribir ishlaydi).",
+    "enforce_desc": "Qoida chegarasiga yetgan telefon/IP vaqtincha cheklanadi (muddat ≤ 1 soat). Avval kuzatuv natijalarini ko'rib chiqing.",
+    "switch_enforce": "Majburiy rejimni yoqish",
+    "switch_observe": "Kuzatuv rejimiga qaytish",
+    "restrictions": "Faol cheklovlar",
+    "no_restrictions": "Faol cheklov yo'q",
+    "by_type": "Oxirgi {hours} soatdagi hodisalar",
+    "recent": "So'nggi hodisalar",
+    "no_events": "Hodisa yo'q",
+    "col_scope": "Doira",
+    "col_state": "Holat",
+    "col_reason": "Qoida",
+    "col_enforced": "Rejim",
+    "col_expires": "Tugaydi",
+    "col_event": "Hodisa",
+    "col_severity": "Daraja",
+    "col_count": "Soni",
+    "col_action": "Chora",
+    "col_route": "Yo'l",
+    "state_throttled": "Sekinlashtirilgan",
+    "state_challenge_required": "Tasdiq kerak",
+    "state_temporarily_restricted": "Vaqtincha cheklangan",
+    "state_compromise_suspected": "Buzilish gumoni",
+    "lift": "Olib tashlash",
+    "lift_title": "Cheklovni olib tashlash",
+    "lift_desc": "Cheklov darhol bekor qilinadi va auditga yoziladi.",
+    "revoke_sessions": "Barcha qurilmalardan chiqarish",
+    "revoke_title": "{name} — barcha qurilmalardan chiqarish",
+    "revoke_desc": "Barcha sessiyalar o'chiriladi; joriy token bilan yozish darhol to'xtaydi. Hisob bloklanmaydi — foydalanuvchi qayta kira oladi."
   }
 }

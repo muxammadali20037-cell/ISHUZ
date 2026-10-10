@@ -52,14 +52,56 @@ export function trustedImageUrl(entity: ModerationEntity, key: string, value: st
   return null;
 }
 
+/** Yuklab olish mumkin bo'lgan host: o'z storage yoki Telegram rasmlari (har bir yo'naltirishda qayta tekshiriladi) */
+function trustedFetchUrl(url: string): boolean {
+  if (url.startsWith(storageBase())) return true;
+  try {
+    const u = new URL(url);
+    return u.protocol === "https:" && (u.hostname === "t.me" || u.hostname === "telesco.pe" || u.hostname.endsWith(".telesco.pe"));
+  } catch {
+    return false;
+  }
+}
+
+/** Tanani oqim bilan o'qiydi: chegaradan oshsa darhol to'xtaydi (katta faylni xotiraga to'liq olmaydi) */
+async function readCapped(res: Response, maxBytes: number): Promise<Buffer> {
+  const reader = res.body?.getReader();
+  if (!reader) return Buffer.alloc(0);
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel().catch(() => undefined);
+      throw new Error("image_too_large");
+    }
+    chunks.push(value);
+  }
+  return Buffer.concat(chunks);
+}
+
 async function fetchImage(url: string): Promise<AiImage> {
-  const res = await fetch(url, { signal: AbortSignal.timeout(15_000), redirect: "follow" });
-  if (!res.ok) throw new Error(`image_${res.status}`);
-  const type = (res.headers.get("content-type") ?? "").split(";")[0]!.trim().toLowerCase();
-  if (!IMAGE_TYPES.has(type)) throw new Error("image_type");
-  const buf = Buffer.from(await res.arrayBuffer());
-  if (buf.byteLength > MAX_IMAGE_BYTES) throw new Error("image_too_large");
-  return { mimeType: type, data: buf.toString("base64") };
+  // SSRF: yo'naltirishlar qo'lda kuzatiladi — har bir manzil ishonchli ro'yxatda bo'lishi shart (ichki tarmoqqa burilmaydi)
+  let current = url;
+  for (let hop = 0; hop < 4; hop++) {
+    if (!trustedFetchUrl(current)) throw new Error("image_untrusted");
+    const res = await fetch(current, { signal: AbortSignal.timeout(15_000), redirect: "manual" });
+    if (res.status >= 300 && res.status < 400) {
+      const location = res.headers.get("location");
+      if (!location) throw new Error(`image_${res.status}`);
+      current = new URL(location, current).toString();
+      continue;
+    }
+    if (!res.ok) throw new Error(`image_${res.status}`);
+    const type = (res.headers.get("content-type") ?? "").split(";")[0]!.trim().toLowerCase();
+    if (!IMAGE_TYPES.has(type)) throw new Error("image_type");
+    if (Number(res.headers.get("content-length") ?? "0") > MAX_IMAGE_BYTES) throw new Error("image_too_large");
+    const buf = await readCapped(res, MAX_IMAGE_BYTES);
+    return { mimeType: type, data: buf.toString("base64") };
+  }
+  throw new Error("image_redirects");
 }
 
 async function settings(db: ReturnType<typeof createAdminClient>) {

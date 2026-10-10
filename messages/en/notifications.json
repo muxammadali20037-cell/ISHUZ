@@ -110,7 +110,13 @@
     "link_elsewhere": "This Telegram is linked to another account. Sign in with that account or contact support.",
     "subscribed_worker": "🔔 Notifications are on: we will message you here when a matching job appears.",
     "subscribed_employer": "🔔 Notifications are on: we will message you here when a matching candidate appears.",
-    "settings_button": "Notification settings"
+    "settings_button": "Notification settings",
+    "link_confirm": "🔗 This Telegram will be linked to the <b>{name}</b> account on Ish topdim and can be used to sign in. If this is you, please confirm.",
+    "link_confirm_replace": "The previously linked Telegram will be unlinked and notified.",
+    "link_confirm_button": "Yes, link",
+    "link_cancel_button": "Cancel",
+    "link_cancelled": "Cancelled. Nothing was changed.",
+    "relinked_old": "Your Ish topdim account was linked to a different Telegram account. If this wasn't you, contact support right away."
   },
   "listing": {
     "listing_expiring_title": "Your listing ends tomorrow",
@@ -162,5 +168,11 @@
     "employer_rejected_title": "Employer verification was declined",
     "employer_suspended_title": "Employer activity is suspended",
     "employer_other_title": "Employer status changed"
+  },
+  "security": {
+    "alert_title": "Security alert",
+    "alert_body": "{event} · severity: {severity} · action: {action}",
+    "relinked_title": "Telegram changed",
+    "relinked_body": "Your account was linked to a new Telegram. If this wasn't you, contact support."
   }
 }

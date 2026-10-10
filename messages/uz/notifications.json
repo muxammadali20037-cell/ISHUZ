@@ -110,7 +110,13 @@
     "link_elsewhere": "Bu Telegram boshqa hisobga bog'langan. O'sha hisob orqali kiring yoki qo'llab-quvvatlashga yozing.",
     "subscribed_worker": "🔔 Xabarnoma yoqildi: sizga mos ish chiqsa shu yerga yozamiz.",
     "subscribed_employer": "🔔 Xabarnoma yoqildi: vakansiyangizga mos nomzod topilsa shu yerga yozamiz.",
-    "settings_button": "Xabar sozlamalari"
+    "settings_button": "Xabar sozlamalari",
+    "link_confirm": "🔗 Bu Telegram «Ish topdim»dagi <b>{name}</b> hisobiga ulanadi va shu hisob bilan kirish mumkin bo'ladi. Bu siz bo'lsangiz — tasdiqlang.",
+    "link_confirm_replace": "Hisobga ulangan avvalgi Telegram uziladi va unga ogohlantirish yuboriladi.",
+    "link_confirm_button": "Ha, ulash",
+    "link_cancel_button": "Bekor qilish",
+    "link_cancelled": "Bekor qilindi. Hech narsa o'zgarmadi.",
+    "relinked_old": "«Ish topdim» hisobingiz boshqa Telegram hisobiga ulandi. Agar bu siz bo'lmasangiz — darhol qo'llab-quvvatlash xizmatiga yozing."
   },
   "listing": {
     "listing_expiring_title": "E'loningiz ertaga tugaydi",
@@ -162,5 +168,11 @@
     "employer_rejected_title": "Ish beruvchini tasdiqlash rad etildi",
     "employer_suspended_title": "Ish beruvchi faoliyati to'xtatildi",
     "employer_other_title": "Ish beruvchi holati o'zgardi"
+  },
+  "security": {
+    "alert_title": "Xavfsizlik ogohlantirishi",
+    "alert_body": "{event} · daraja: {severity} · chora: {action}",
+    "relinked_title": "Telegram almashtirildi",
+    "relinked_body": "Hisobingiz yangi Telegram hisobiga ulandi. Bu siz bo'lmasangiz — qo'llab-quvvatlashga yozing."
   }
 }

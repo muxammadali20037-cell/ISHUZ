@@ -90,7 +90,8 @@ async function getDisplayNames(profileIds: string[]): Promise<Map<string, string
   const ids = [...new Set(profileIds)];
   if (!ids.length) return map;
   const supabase = await createClient();
-  const { data } = await supabase.from("employer_profiles").select("profile_id, display_name").in("profile_id", ids);
+  // employer_profiles boshqalarga yopiq (telefon/STIR) — faqat ko'rinadigan nom RPC orqali. Xato bo'lsa — ism familiyaga qaytiladi.
+  const { data } = await supabase.rpc("employer_public_names", { p_profile_ids: ids });
   for (const row of data ?? []) map.set(row.profile_id, row.display_name);
   return map;
 }

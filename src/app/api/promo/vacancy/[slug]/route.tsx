@@ -1,5 +1,7 @@
 import { ImageResponse } from "next/og";
 import { getT } from "@/lib/i18n/server";
+import { allowRate } from "@/lib/rate-limit";
+import { clientIp, ipBucket, subjectHash } from "@/lib/security/request";
 import { getVacancyBySlug } from "@/features/jobs/queries";
 import { PROMO_SIZES, PromoCard, promoTheme, twemojiCode, type PromoFormat } from "@/features/promo/card";
 import { buildPromoData } from "@/features/promo/data";
@@ -33,6 +35,17 @@ async function loadSticker(emoji: string): Promise<string | null> {
  */
 export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  // slugify: lotin, raqam, kirill (o'zbek harflari bilan) va chiziqcha
+  let plain = slug;
+  try {
+    plain = decodeURIComponent(slug);
+  } catch {
+    return new Response("Not found", { status: 404 });
+  }
+  if (!/^[a-z0-9а-яёўқғҳ-]{1,160}$/i.test(plain)) return new Response("Not found", { status: 404 });
+  // rasm chizish CPU talab qiladi: IP (/64) bo'yicha yumshoq limit (ijtimoiy tarmoq botlari keshdan oladi)
+  const ipHash = subjectHash("ip", ipBucket(clientIp(req.headers)));
+  if (!(await allowRate(`promo:ip:${ipHash}`, 120, 600))) return new Response("Too many requests", { status: 429, headers: { "Retry-After": "600" } });
   const vacancy = await getVacancyBySlug(slug);
   if (!vacancy) return new Response("Not found", { status: 404 });
 

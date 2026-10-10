@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/features/auth/session";
+import { allowRate } from "@/lib/rate-limit";
 import { getLocale } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { buildCvData, cvFileName } from "@/features/cv/data";
@@ -12,6 +13,7 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   const session = await getSession();
   if (!session?.workerId) return NextResponse.json({ error: "not_found" }, { status: 404 });
+  if (!(await allowRate(`cvpdf:${session.userId}`, 30, 3600))) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   const [supabase, locale] = await Promise.all([createClient(), getLocale()]);
   const data = await buildCvData(supabase, session.workerId, locale, { includePhone: true });
   if (!data) return NextResponse.json({ error: "not_found" }, { status: 404 });

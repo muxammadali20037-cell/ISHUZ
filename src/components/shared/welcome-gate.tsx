@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useTransition } from "react";
+import { DOCUMENT_COOKIE_ATTRS } from "@/lib/security/cookies";
 import { useRouter } from "next/navigation";
 import { ArrowRight, Building2, Search } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -33,7 +34,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
   }, []);
 
   const finish = () => {
-    document.cookie = `${WELCOME_COOKIE}=1; path=/; max-age=${60 * 60 * 24 * 365}; samesite=lax`;
+    document.cookie = `${WELCOME_COOKIE}=1; max-age=${60 * 60 * 24 * 365}${DOCUMENT_COOKIE_ATTRS}`;
     setOpen(false);
   };
 

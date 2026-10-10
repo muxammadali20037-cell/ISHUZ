@@ -32,7 +32,8 @@
     "professions": "Profession tree",
     "moderation": "Moderation queue",
     "matching": "Matching rules",
-    "queues": "Queues"
+    "queues": "Queues",
+    "security": "Security"
   },
   "common": {
     "done": "Done",
@@ -797,5 +798,41 @@
       "timeout": "No response (network or timeout). Try again.",
       "server_key": "SUPABASE_SERVICE_ROLE_KEY is missing on the server — the log can't be read. Add it in Vercel."
     }
+  },
+  "security": {
+    "title": "Security",
+    "subtitle": "Security events and temporary restrictions (no personal data)",
+    "mode": "Restriction mode",
+    "mode_observe": "Observe",
+    "mode_enforce": "Enforce",
+    "observe_desc": "Rules are only logged and admins are alerted; users are not stopped (regular limits still apply).",
+    "enforce_desc": "Phones/IPs that hit a rule threshold are temporarily restricted (≤ 1 hour). Review observe-mode results first.",
+    "switch_enforce": "Switch to enforce",
+    "switch_observe": "Back to observe",
+    "restrictions": "Active restrictions",
+    "no_restrictions": "No active restrictions",
+    "by_type": "Events in the last {hours} hours",
+    "recent": "Recent events",
+    "no_events": "No events",
+    "col_scope": "Scope",
+    "col_state": "State",
+    "col_reason": "Rule",
+    "col_enforced": "Mode",
+    "col_expires": "Expires",
+    "col_event": "Event",
+    "col_severity": "Severity",
+    "col_count": "Count",
+    "col_action": "Action",
+    "col_route": "Route",
+    "state_throttled": "Throttled",
+    "state_challenge_required": "Challenge required",
+    "state_temporarily_restricted": "Temporarily restricted",
+    "state_compromise_suspected": "Compromise suspected",
+    "lift": "Lift",
+    "lift_title": "Lift restriction",
+    "lift_desc": "The restriction is lifted immediately and logged.",
+    "revoke_sessions": "Sign out everywhere",
+    "revoke_title": "{name} — sign out everywhere",
+    "revoke_desc": "All sessions are deleted; writes with current tokens stop immediately. The account isn't blocked — the user can sign in again."
   }
 }

@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { clientIp as requestIp, ipBucket, subjectHash } from "@/lib/security/request";
 import { after } from "next/server";
 import { z } from "zod";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
@@ -69,9 +70,9 @@ export interface AiDraftResult {
   missing: string[];
 }
 
+/** Limit kaliti: IP (/64) ning HMAC'i — ochiq IP bazaga yozilmaydi */
 async function clientIp(): Promise<string> {
-  const h = await headers();
-  return (h.get("x-forwarded-for") ?? h.get("x-real-ip") ?? "local").split(",")[0]!.trim().slice(0, 64);
+  return subjectHash("ip", ipBucket(requestIp(await headers())));
 }
 
 async function picked(nodeId: string | null): Promise<PickedProfession | null> {

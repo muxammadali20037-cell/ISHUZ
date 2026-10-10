@@ -14,6 +14,8 @@ describe("hasPermission — has_admin_permission(perm) nusxasi", () => {
     expect(hasPermission("admin", [], "categories.manage")).toBe(true);
     expect(hasPermission("admin", [], "chat.moderate")).toBe(true);
     expect(hasPermission("admin", [], "audit.view")).toBe(true);
+    expect(hasPermission("admin", [], "security.view")).toBe(true);
+    expect(hasPermission("admin", [], "security.manage")).toBe(true);
     expect(hasPermission("admin", [], "settings.manage")).toBe(false);
     expect(hasPermission("admin", [], "admins.manage")).toBe(false);
   });
@@ -28,6 +30,7 @@ describe("hasPermission — has_admin_permission(perm) nusxasi", () => {
     expect(hasPermission("moderator", [], "categories.manage")).toBe(false);
     expect(hasPermission("moderator", [], "audit.view")).toBe(false);
     expect(hasPermission("moderator", [], "notifications.broadcast")).toBe(false);
+    expect(hasPermission("moderator", [], "security.view")).toBe(false);
   });
 
   it("support: faqat o'qish + hisobotlar", () => {

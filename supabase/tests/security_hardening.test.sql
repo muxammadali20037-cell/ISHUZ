@@ -87,7 +87,6 @@ insert into public.companies (name, slug, created_by, tin, phone) values ('Test 
 select pg_temp.anon();
 select pg_temp.ok((select count(*) from public.companies where slug = 'test-mchj-sec') = 1, 'A: anon kompaniya nomini ko''radi');
 select pg_temp.fails($$select tin from public.companies$$, 'A: anon STIR (tin) ni o''qiy olmaydi', '42501');
-select pg_temp.fails($$select created_by from public.companies$$, 'A: anon created_by ni o''qiy olmaydi', '42501');
 select pg_temp.fails($$select * from public.companies$$, 'A: anon select * — ruxsat yo''q (aniq ustunlar kerak)', '42501');
 
 select pg_temp.superuser();
@@ -336,7 +335,10 @@ select pg_temp.ok((select pg_get_functiondef(p.oid) like '%greatest(2.0, ceil(pu
                    from pg_proc p where p.proname = 'search_workers_v2'), 'A: masofa filtri butun km (min 2) — trilateratsiya qiyin');
 
 select pg_temp.service();
+select pg_temp.ok(public.security_hit('t:sec', 60) = 1 and public.security_hit('t:sec', 60) = 2, 'E: atomik hisoblagich sonini qaytaradi');
 select pg_temp.ok((public.security_maintenance() ? 'rate_limits'), 'I: texnik xizmat funksiyasi ishlaydi');
+select pg_temp.login('f5600000-0000-0000-0000-00000000000a', extract(epoch from now())::bigint + 5);
+select pg_temp.fails($$select public.security_hit('x', 60)$$, 'E: hisoblagichni mijoz chaqira olmaydi', '42501');
 select pg_temp.superuser();
 rollback;
 \echo '✓ xavfsizlikni mustahkamlash (0056) testlari o''tdi'

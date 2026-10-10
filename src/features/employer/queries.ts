@@ -149,11 +149,15 @@ export async function searchCandidates(params: CandidateSearch): Promise<WorkerC
 
 // ---------- ochiq kompaniya sahifasi ----------
 
+/** anon uchun ruxsat etilgan ustunlar (tin yo'q — select("*") anon'da rad etiladi) */
+const COMPANY_PUBLIC_COLUMNS =
+  "id, name, slug, logo_url, phone, telegram, website, instagram, address, region_id, district_id, industry_category_id, about, size, verification_status, verified_at, is_blocked, created_by, created_at, updated_at, is_government";
+
 export const getCompanyBySlug = cache(async (slug: string): Promise<CompanyPublic | null> => {
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("companies")
-    .select("*, region:regions(name_uz, name_ru), district:districts(name_uz, name_ru), industry:categories(name_uz, name_ru, slug, icon)")
+    .select(`${COMPANY_PUBLIC_COLUMNS}, region:regions(name_uz, name_ru), district:districts(name_uz, name_ru), industry:categories(name_uz, name_ru, slug, icon)`)
     .eq("slug", slug)
     .maybeSingle();
   if (error) {

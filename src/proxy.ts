@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
+import { prefCookie } from "@/lib/security/cookies";
 import { LOCALE_COOKIE, isLocale } from "@/lib/i18n/config";
 import { ANDROID_APP, APP_COOKIE, isAndroidAppLaunch } from "@/lib/app-platform";
 import { adminHostRoute } from "@/lib/admin-host";
@@ -50,11 +51,11 @@ export async function proxy(request: NextRequest) {
   if (adminArea) response.headers.set("X-Robots-Tag", NOINDEX);
 
   if (lang && isLocale(lang)) {
-    response.cookies.set(LOCALE_COOKIE, lang, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+    response.cookies.set(LOCALE_COOKIE, lang, prefCookie(60 * 60 * 24 * 365));
   }
 
   if (androidLaunch) {
-    response.cookies.set(APP_COOKIE, ANDROID_APP, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+    response.cookies.set(APP_COOKIE, ANDROID_APP, prefCookie(60 * 60 * 24 * 365));
   }
 
   const needsAuth = PROTECTED_PREFIXES.some((p) => pathname === p || pathname.startsWith(p + "/"));

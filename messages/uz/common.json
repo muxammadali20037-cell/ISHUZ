@@ -125,7 +125,7 @@
     "not_found_desc": "Siz qidirgan sahifa mavjud emas yoki o'chirilgan.",
     "forbidden": "Bu amalga ruxsatingiz yo'q",
     "not_authenticated": "Davom etish uchun tizimga kiring",
-    "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring.",
+    "rate_limited": "So'rovlar soni vaqtincha cheklangan. Birozdan keyin qayta urinib ko'ring.",
     "blocked": "Hisobingiz bloklangan. Qo'llab-quvvatlash xizmatiga murojaat qiling.",
     "validation": "Ma'lumotlarni tekshiring",
     "required": "Bu maydon majburiy",
@@ -136,7 +136,15 @@
     "file_too_large": "Fayl juda katta (maks. {max} MB)",
     "file_type": "Bu fayl turi qo'llab-quvvatlanmaydi",
     "try_again": "Qayta urinib ko'ring",
-    "phone_required": "Telefon raqamingizni kiriting — u bilan siz bilan bog'lanishadi"
+    "phone_required": "Telefon raqamingizni kiriting — u bilan siz bilan bog'lanishadi",
+    "temporarily_restricted": "Xavfsizlik sababli ushbu amal vaqtincha cheklangan. Davom etish uchun qo'shimcha tasdiqlash kerak.",
+    "account_restricted": "Sessiya muddati tugagan yoki hisob cheklangan. Qayta kiring.",
+    "temporarily_unavailable": "Xizmat vaqtincha ishlamayapti. Birozdan keyin qayta urinib ko'ring.",
+    "status_via_rpc": "Holatni bu yerda o'zgartirib bo'lmaydi. Tugmalardan foydalaning.",
+    "invalid_media_url": "Rasm manzili qabul qilinmadi. Rasmni ilova orqali yuklang.",
+    "cannot_block_self": "O'zingizni bloklay olmaysiz",
+    "forbidden_hierarchy": "Adminni faqat bosh admin bloklay oladi",
+    "cross_site": "So'rov rad etildi. Sahifani yangilab qayta urinib ko'ring."
   },
   "empty": {
     "nothing_here": "Hozircha bu yerda hech narsa yo'q",

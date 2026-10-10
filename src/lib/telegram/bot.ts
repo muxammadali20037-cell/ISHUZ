@@ -12,12 +12,20 @@ export type ReplyMarkup = InlineKeyboard | ReplyKeyboard | RemoveKeyboard;
 async function callBot<T = unknown>(method: string, payload: Record<string, unknown>): Promise<T | null> {
   const { TELEGRAM_BOT_TOKEN } = getServerEnv();
   if (!TELEGRAM_BOT_TOKEN) return null;
-  const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${method}`, {
-    method: "POST",
-    headers: { "content-type": "application/json" },
-    body: JSON.stringify(payload),
-    cache: "no-store",
-  });
+  let res: Response;
+  try {
+    res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/${method}`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(payload),
+      cache: "no-store",
+      // Telegram javob bermasa funksiya osilib qolmasin (serverless vaqt/pul)
+      signal: AbortSignal.timeout(10_000),
+    });
+  } catch (e) {
+    console.warn(`[telegram] ${method}: ${e instanceof Error ? e.name : "network"}`);
+    return null;
+  }
   const data = (await res.json().catch(() => null)) as { ok: boolean; result?: T; description?: string } | null;
   if (!data?.ok) {
     console.warn(`[telegram] ${method}: ${data?.description ?? res.status}`);

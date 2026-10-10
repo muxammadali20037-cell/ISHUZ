@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createHash, createHmac, timingSafeEqual } from "node:crypto";
+import { createHmac, timingSafeEqual } from "node:crypto";
 
 export interface TelegramInitUser {
   id: number;
@@ -12,7 +12,10 @@ export interface TelegramInitUser {
   is_premium?: boolean;
 }
 
-const MAX_AGE_SECONDS = 24 * 60 * 60;
+/** initData yoshi: Mini App ochilgandan 1 soat ichida (qayta ishlatish oynasi qisqa) */
+export const INIT_DATA_MAX_AGE_SECONDS = 60 * 60;
+/** soat farqi uchun kichik zaxira (kelajakdagi auth_date) */
+const CLOCK_SKEW_SECONDS = 60;
 
 function safeEqualHex(expectedHex: string, actualHex: string) {
   const a = Buffer.from(expectedHex, "hex");
@@ -42,7 +45,8 @@ export function verifyTelegramInitData(initData: string, botToken: string, now =
   if (!safeEqualHex(expected, hash)) return null;
 
   const authDate = Number(params.get("auth_date"));
-  if (!authDate || now / 1000 - authDate > MAX_AGE_SECONDS) return null;
+  const age = now / 1000 - authDate;
+  if (!authDate || age > INIT_DATA_MAX_AGE_SECONDS || age < -CLOCK_SKEW_SECONDS) return null;
 
   try {
     const user = JSON.parse(params.get("user") ?? "null") as TelegramInitUser | null;
@@ -50,26 +54,4 @@ export function verifyTelegramInitData(initData: string, botToken: string, now =
   } catch {
     return null;
   }
-}
-
-/**
- * Telegram Login Widget ma'lumotlarini tekshiradi (sayt uchun).
- * https://core.telegram.org/widgets/login#checking-authorization
- * secret_key = SHA256(bot_token)
- */
-export function verifyTelegramLoginWidget(data: Record<string, string>, botToken: string, now = Date.now()): TelegramInitUser | null {
-  const { hash, ...rest } = data;
-  if (!hash) return null;
-  const dataCheckString = Object.keys(rest)
-    .sort()
-    .map((k) => `${k}=${rest[k]}`)
-    .join("\n");
-  const secretKey = createHash("sha256").update(botToken).digest();
-  const expected = createHmac("sha256", secretKey).update(dataCheckString).digest("hex");
-  if (!safeEqualHex(expected, hash)) return null;
-  const authDate = Number(rest.auth_date);
-  if (!authDate || now / 1000 - authDate > MAX_AGE_SECONDS) return null;
-  const id = Number(rest.id);
-  if (!Number.isFinite(id)) return null;
-  return { id, first_name: rest.first_name ?? "", last_name: rest.last_name, username: rest.username, photo_url: rest.photo_url };
 }

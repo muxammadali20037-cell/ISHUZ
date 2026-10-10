@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { safeFilterValue } from "@/lib/security/postgrest";
 import { revalidatePath } from "next/cache";
 import { after } from "next/server";
 import type { ActionResult } from "@/features/auth/actions";
@@ -438,9 +439,6 @@ function slugifyLatin(input: string): string {
 }
 
 /** PostgREST filtr qiymatlaridagi maxsus belgilarni olib tashlash */
-function safeFilterValue(value: string): string {
-  return value.replace(/[,()%*\\"]/g, " ").trim();
-}
 
 export interface CustomSkillResult {
   id: string;

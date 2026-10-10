@@ -1,6 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { safeFilterValue } from "@/lib/security/postgrest";
+import { prefCookie } from "@/lib/security/cookies";
 import { after } from "next/server";
 import { runBackgroundTickSafe } from "@/features/notifications/tick";
 import { cookies } from "next/headers";
@@ -289,7 +291,7 @@ export async function createCustomSkill(input: unknown): Promise<ActionResult<{ 
   const { data: existing } = await c.supabase
     .from("skills")
     .select("id, name_uz, name_ru, slug")
-    .or(`name_uz.ilike.${name.replace(/[%,()]/g, "")},name_ru.ilike.${name.replace(/[%,()]/g, "")}`)
+    .or(`name_uz.ilike.${safeFilterValue(name)},name_ru.ilike.${safeFilterValue(name)}`)
     .limit(1)
     .maybeSingle();
   if (existing) return { ok: true, data: existing };
@@ -506,6 +508,6 @@ export async function setTheme(input: unknown): Promise<ActionResult> {
   if (!parsed.success) return { ok: false, error: "validation" };
   const store = await cookies();
   if (parsed.data.theme === "system") store.delete(THEME_COOKIE);
-  else store.set(THEME_COOKIE, parsed.data.theme, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax" });
+  else store.set(THEME_COOKIE, parsed.data.theme, prefCookie(60 * 60 * 24 * 365));
   return { ok: true };
 }

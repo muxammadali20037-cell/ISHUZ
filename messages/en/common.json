@@ -125,7 +125,7 @@
     "not_found_desc": "The page you're looking for doesn't exist or has been removed.",
     "forbidden": "You don't have permission to do this",
     "not_authenticated": "Log in to continue",
-    "rate_limited": "Too many attempts. Please try again later.",
+    "rate_limited": "Too many requests for now. Please try again a little later.",
     "blocked": "Your account has been blocked. Please contact support.",
     "validation": "Please check your details",
     "required": "This field is required",
@@ -136,7 +136,15 @@
     "file_too_large": "File is too large (max {max} MB)",
     "file_type": "This file type is not supported",
     "try_again": "Please try again",
-    "phone_required": "Enter your phone number — it's how people will reach you"
+    "phone_required": "Enter your phone number — it's how people will reach you",
+    "temporarily_restricted": "For security reasons this action is temporarily restricted. Additional verification is required to continue.",
+    "account_restricted": "Your session has expired or the account is restricted. Please sign in again.",
+    "temporarily_unavailable": "The service is temporarily unavailable. Please try again later.",
+    "status_via_rpc": "The status can't be changed here. Use the buttons.",
+    "invalid_media_url": "The image address was rejected. Please upload the image in the app.",
+    "cannot_block_self": "You can't block yourself",
+    "forbidden_hierarchy": "Only a super admin can block an admin",
+    "cross_site": "The request was rejected. Refresh the page and try again."
   },
   "empty": {
     "nothing_here": "Nothing here yet",

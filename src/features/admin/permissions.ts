@@ -2,7 +2,7 @@ import type { Enums } from "@/types/database.types";
 
 /**
  * Admin ruxsatlari — public.has_admin_permission(perm) SQL funksiyasining aynan nusxasi
- * (oxirgi ta'rif: supabase/migrations/0052_admin_analytics.sql). SQL o'zgarsa bu fayl ham o'zgarishi shart.
+ * (oxirgi ta'rif: supabase/migrations/0056_security_hardening.sql). SQL o'zgarsa bu fayl ham o'zgarishi shart.
  * Barcha admin huquqlari faqat ikki bosqichli kirish (aal2) bilan ishlaydi — buni SQL tekshiradi.
  *
  * Qoida: super_admin → hammasi; admin_users.permissions ichida bo'lsa → ha; aks holda rolga qarab.
@@ -32,6 +32,8 @@ export const PERMISSIONS = [
   "audit.view",
   "settings.manage",
   "admins.manage",
+  "security.view",
+  "security.manage",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
@@ -55,6 +57,8 @@ const ADMIN_PERMS: readonly Permission[] = [
   "notifications.broadcast",
   "analytics.view",
   "audit.view",
+  "security.view",
+  "security.manage",
 ];
 
 const MODERATOR_PERMS: readonly Permission[] = [

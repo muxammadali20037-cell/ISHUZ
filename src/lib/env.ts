@@ -71,6 +71,15 @@ function readPublic() {
 
 export const publicEnv = readPublic();
 
+/**
+ * Sinov uchun tashqi API manzilini almashtirish (mock serverlar). Vercel production'da e'tiborsiz —
+ * env o'zgaruvchisi tasodifan/qasddan qo'yilsa ham kalitlar (bot tokeni, AI kaliti) begona serverga ketmaydi.
+ */
+export function testOnlyOverride(value: string | undefined): string | undefined {
+  if (!value || process.env.VERCEL_ENV === "production") return undefined;
+  return value;
+}
+
 export function getServerEnv() {
   return serverSchema.parse({
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
@@ -88,12 +97,12 @@ export function getServerEnv() {
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
-    GEMINI_BASE_URL: process.env.GEMINI_BASE_URL || undefined,
+    GEMINI_BASE_URL: testOnlyOverride(process.env.GEMINI_BASE_URL),
     ADMIN_HOST: process.env.ADMIN_HOST || undefined,
     SUPER_ADMIN_PHONES: process.env.SUPER_ADMIN_PHONES || undefined,
     IMAGE_GEN_API_KEY: process.env.IMAGE_GEN_API_KEY || undefined,
     IMAGE_GEN_MODEL: process.env.IMAGE_GEN_MODEL || undefined,
-    IMAGE_GEN_BASE_URL: process.env.IMAGE_GEN_BASE_URL || undefined,
+    IMAGE_GEN_BASE_URL: testOnlyOverride(process.env.IMAGE_GEN_BASE_URL),
     PAYME_MERCHANT_ID: process.env.PAYME_MERCHANT_ID || undefined,
     PAYME_KEY: process.env.PAYME_KEY || undefined,
     PAYME_TEST: process.env.PAYME_TEST || undefined,
