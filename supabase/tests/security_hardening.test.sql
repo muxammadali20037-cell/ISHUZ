@@ -84,6 +84,17 @@ select pg_temp.ok((select count(*) from public.employer_profiles where profile_i
 
 select pg_temp.superuser();
 insert into public.companies (name, slug, created_by, tin, phone) values ('Test MChJ', 'test-mchj-sec', 'f5600000-0000-0000-0000-00000000000a', '301234567', '+998712000000');
+-- tasdiqlangan kompaniya va ish beruvchi: nom/STIR ni almashtirib nishonni saqlab bo'lmaydi
+insert into public.company_members (company_id, profile_id, role) select id, 'f5600000-0000-0000-0000-00000000000a', 'owner' from public.companies where slug = 'test-mchj-sec' on conflict do nothing;
+update public.companies set verification_status = 'verified', verified_at = now() where slug = 'test-mchj-sec';
+update public.employer_profiles set verification_status = 'verified', verified_at = now() where profile_id = 'f5600000-0000-0000-0000-00000000000a';
+select pg_temp.login('f5600000-0000-0000-0000-00000000000a');
+update public.companies set name = 'Soliq qo''mitasi', tin = '999999999', about = 'yangi' where slug = 'test-mchj-sec';
+update public.employer_profiles set display_name = 'Davlat organi', about = 'yangi' where profile_id = auth.uid();
+select pg_temp.superuser();
+select pg_temp.ok((select name = 'Test MChJ' and tin = '301234567' and about = 'yangi' from public.companies where slug = 'test-mchj-sec'), 'B: tasdiqlangan kompaniya nomi/STIR mijozdan o''zgarmaydi (boshqa maydonlar o''zgaradi)');
+select pg_temp.ok((select display_name = 'Ali usta' and about = 'yangi' from public.employer_profiles where profile_id = 'f5600000-0000-0000-0000-00000000000a'), 'B: tasdiqlangan ish beruvchi nomi o''zgarmaydi');
+update public.employer_profiles set verification_status = 'unverified', verified_at = null where profile_id = 'f5600000-0000-0000-0000-00000000000a';
 select pg_temp.anon();
 select pg_temp.ok((select count(*) from public.companies where slug = 'test-mchj-sec') = 1, 'A: anon kompaniya nomini ko''radi');
 select pg_temp.fails($$select tin from public.companies$$, 'A: anon STIR (tin) ni o''qiy olmaydi', '42501');
