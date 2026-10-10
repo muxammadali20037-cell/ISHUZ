@@ -3,6 +3,7 @@ import { updateSession } from "@/lib/supabase/middleware";
 import { LOCALE_COOKIE, isLocale } from "@/lib/i18n/config";
 import { ANDROID_APP, APP_COOKIE, isAndroidAppLaunch } from "@/lib/app-platform";
 import { adminHostRoute } from "@/lib/admin-host";
+import { safeInternalPath } from "@/lib/security/safe-path";
 
 /** Login talab qiladigan yo'llar */
 const PROTECTED_PREFIXES = [
@@ -71,7 +72,7 @@ export async function proxy(request: NextRequest) {
     const next = request.nextUrl.searchParams.get("next");
     const url = request.nextUrl.clone();
     // faqat shu saytdagi manzil; so'rov qismi (?step=4) saqlanadi — kirgandan keyin aynan to'xtagan qadamga qaytiladi
-    const safe = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : adminArea ? "/admin" : "/";
+    const safe = safeInternalPath(next, adminArea ? "/admin" : "/");
     const [path, query] = safe.split("?");
     url.pathname = path || "/";
     url.search = query ? `?${query}` : "";

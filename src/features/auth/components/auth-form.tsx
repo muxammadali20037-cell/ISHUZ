@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { Spinner } from "@/components/ui/misc";
+import { safeInternalPath } from "@/lib/security/safe-path";
 
 type Step = "phone" | "link" | "code";
 
@@ -69,7 +70,7 @@ export function AuthForm({ next, botUsername, initialPhone }: { next: string; bo
     })
       .then(async (r) => {
         if (!r.ok) throw new Error(String(r.status));
-        router.replace(next);
+        router.replace(safeInternalPath(next));
         router.refresh();
       })
       .catch(() => setTgFailed(true));
@@ -115,7 +116,7 @@ export function AuthForm({ next, botUsername, initialPhone }: { next: string; bo
         setError(errorText(res.error));
         return;
       }
-      router.replace(next);
+      router.replace(safeInternalPath(next));
       router.refresh();
     });
   };

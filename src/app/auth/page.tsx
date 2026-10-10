@@ -5,6 +5,7 @@ import { LanguageSwitcher } from "@/components/shared/language-switcher";
 import { AuthForm } from "@/features/auth/components/auth-form";
 import { getServerEnv } from "@/lib/env";
 import { BrandMark } from "@/components/shared/brand-mark";
+import { safeInternalPath } from "@/lib/security/safe-path";
 
 export const metadata: Metadata = { title: "Kirish" };
 
@@ -14,7 +15,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
   // e'lon formasida yozilgan raqam — qayta yozdirmaslik uchun oldindan to'ldiriladi
   const initialPhone = phone && /^\+998\d{9}$/.test(phone) ? phone : null;
   const botUsername = getServerEnv().TELEGRAM_BOT_USERNAME?.replace(/^@/, "") || null;
-  const safeNext = next && next.startsWith("/") && !next.startsWith("//") && !next.startsWith("/\\") ? next : "/";
+  const safeNext = safeInternalPath(next);
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="container-narrow flex h-14 items-center justify-between">

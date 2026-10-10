@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { isSafeInternalPath } from "@/lib/security/safe-path";
 
 /** Admin formalar uchun zod sxemalar (client va server bir xil) */
 
@@ -65,6 +66,7 @@ export const broadcastSchema = z.object({
     .trim()
     .max(300)
     .regex(/^(\/[^\s]*)?$/, "link")
+    .refine((v) => v === "" || isSafeInternalPath(v), "link")
     .optional(),
 });
 export type BroadcastInput = z.infer<typeof broadcastSchema>;
