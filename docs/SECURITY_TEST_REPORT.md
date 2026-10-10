@@ -8,7 +8,7 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 
 | To'plam | Natija |
 |---|---|
-| Unit (vitest) | 464 PASS, 18 skip (mavjud), 0 FAIL — shu jumladan `safe-path` 14, `request` 9, `headers` 8, `rules` 7, `verify` 5, `rate-limit` 4, `postgrest` 2 |
+| Unit (vitest) | 482 PASS, 18 skip (mavjud), 0 FAIL — shu jumladan `safe-path` 14, `request` 9, `headers` 8, `rules` 7, `safe-fetch` 7, `file-signature` 6, `verify` 5, `ai/json` 5, `rate-limit` 4, `postgrest` 2 |
 | SQL (`scripts/db-test.sh`, 22 fayl) | PASS — `security_hardening.test.sql` da 100 ta tekshiruv |
 | E2E s1–s10 (mavjud funksiyalar regressiyasi) | 12/12, 17/17, 23/23, 20/20, 12/12, 38/38, 4/4, 16/16, 4/4, 25/25 — hammasi PASS |
 | E2E s11 (xavfsizlik) | 35/35 PASS |
@@ -28,7 +28,7 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 | E | Parallel so'rovlar limitni chetlab o'tmaydi | **PASS** | E2E s11: 20 ta parallel kod so'rovidan ≤ 6 tasi o'tdi (atomik `security_hit`); SQL: hisoblagich ketma-ket qiymat qaytaradi |
 | F | Begona odam jabrlanuvchini doimiy bloklay olmaydi | **PASS** | SQL: telefon cheklovi ≤ 1 soat (999999 s so'ralsa ham), hisob ≤ 7 kun, takroriy hujum muddatni uzaytirmaydi, jadval CHECK ≤ 7 kun, standart kuzatuv rejimi, `compromise_suspected` kirishni to'xtatmaydi, admin olib tashlaydi; unit `rules.test.ts`; E2E s11: kod yo'q telefon uchun urinish limitni "yemaydi" |
 | G | Webhook imzosiz rad; takror idempotent | **PASS** | E2E s5: noto'g'ri secret 401/403, ishlatilgan token qayta bog'lamaydi, tasdiq qadami; E2E s11: bir xil `update_id` ikkinchi marta `duplicate`; SQL: `telegram_update_first_seen` true→false |
-| H | Noto'g'ri fayl/manzil rad, yopiq fayllar himoyalangan | **PASS** (qisman qamrov) | SQL: hujjat yo'lida `..`/qo'shimcha papka rad, vakansiya rasm yo'lida `..` rad, tashqi/begona papka avatar rad, ro'yxatdan o'tishda ruxsatsiz avatar tashlanadi; E2E s11: REST orqali tashqi avatar 400. **Magic-byte tekshiruvi yo'q (R-03) — NOT_RUN** |
+| H | Noto'g'ri fayl/manzil rad, yopiq fayllar himoyalangan | **PASS** (qisman qamrov) | SQL: hujjat yo'lida `..`/qo'shimcha papka rad, vakansiya rasm yo'lida `..` rad, tashqi/begona papka avatar rad, ro'yxatdan o'tishda ruxsatsiz avatar tashlanadi; E2E s11: REST orqali tashqi avatar 400; unit `file-signature`/`safe-fetch`: «image/png» deb kelgan HTML/SVG, «jpeg» deb PNG, «pdf» deb rasm rad etiladi (moderatsiya va tasdiqlash shu tekshiruvdan foydalanadi). **Yuklash paytidagi mazmun tekshiruvi yo'q (R-03) — NOT_RUN** |
 | I | Loglarda sir/PII yo'q; ogohlantirish test kanaliga yetadi | **PASS** | E2E s11: yuqori hodisa → adminga 1 ta (dedupe) → tg-mock'da adminning chatiga «Xavfsizlik ogohlantirishi», telefon yo'q; limit kalitlarida ochiq raqam yo'q; SQL: ochiq telefon `subject_hash` ga yozilmaydi, `details` ≤ 4 KB, jurnal append-only |
 | J | Boshqa domen/origin orqali chetlab o'tib bo'lmaydi | **PASS** | E2E s11: begona Origin 403, `Origin: null` 403, text/plain 415, admin host `frame-ancestors 'none'` + XFO DENY, asosiy hostda `/admin` 404, CSP buzilishlari 0 (ommaviy, kabinet, admin sahifalar); `probe.mjs` |
 | K | Zaxiradan tiklash va ilova ishlashi | **PASS (lokal)** / **NOT_RUN (production)** | `restore-check.sh` lokal mashqi: nazorat yig'indisi, 8 jadval sonlari mos. Production zaxirasi GitHub sirlari qo'yilgach (RUNBOOK §6) ishlaydi |
@@ -38,10 +38,9 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 | Nima | Sabab | Qanday tekshirish |
 |---|---|---|
 | To'liq Telegram kirish oqimi (createUser → magic link → sessiya) | Lokal GoTrue emulyatsiyasida `generateLink/verifyOtp` yo'q | Staging Supabase loyihasida: oldindan `tg_<id>@telegram.ishuz.local` bilan signUp → Mini App kirish → yangi hisob yaratilishi va `auth.telegram_email_preclaimed` hodisasi |
-| SSRF (moderatsiya yo'naltirishi) | Alohida test yozilmagan | Ichki manzilga 302 qaytaruvchi test server bilan |
-| AI kunlik byudjeti | Alohida test yozilmagan | `ai:day:*` hisoblagichini chegaraga qo'yib AI chaqiruvi |
+| Moderatsiya/tasdiqlash xizmatlaridagi ulanish (`moderation/service.ts`, `verification/ai-review.ts`) | Modullar unit bilan tekshirilgan (`safe-fetch`, `file-signature`); xizmatning o'zi tashqi AI/Storage'ga bog'liq, integratsion test yo'q | Staging'da «.png» nomli HTML faylni vakansiya rasmi qilib joylash → moderatsiya `review`, sabab `image_content_mismatch` |
 | `Secure` cookie va HSTS | Lokal http | Production `probe.mjs` (HSTS) va brauzer DevTools (Secure) |
-| Fayl turining haqiqiy tekshiruvi | Funksiya yo'q (R-03) | 4-bosqich |
+| Yuklash paytidagi mazmun tekshiruvi / qayta kodlash | Funksiya yo'q (R-03) | 4b-bosqich (SECURITY_PLAN) |
 
 ## Qayta ishga tushirish
 
@@ -57,5 +56,5 @@ E2E to'plami lokal staging stend (PostgREST + GoTrue emulyatori + mock'lar) tala
 | Qadam | Holat |
 |---|---|
 | 0056 ni rollback bilan quruq sinash (barcha funksiya yamoqlari, `alter role authenticator`, storage siyosatlari, auth.users yozish huquqi) | **PASS** — hech narsa saqlanmadi (tekshirildi) |
-| 0056 ni qo'llash | **NOT_RUN** — `apply_migration` chaqiruvi tasdiqlanmadi (bekor qilindi). Ilova kodi 0056'siz ham ishlaydi; xavfsizlik funksiyalarining DB qismi qo'llangach yoqiladi |
+| 0056 ni qo'llash | **NOT_RUN** — 1-urinish: chaqiruv bekor qilindi; 2- va 3-urinish: Supabase MCP 60 soniyada javob bermadi (bazada hech qanday tranzaksiya boshlanmagan, o'zgarish yo'q — tekshirildi); bo'laklab qo'llash avtomatik ruxsat tizimi tomonidan rad etildi. Egasining aniq ruxsati yoki SQL Editor orqali qo'llash kerak (RUNBOOK §9). Ilova kodi 0056'siz ham ishlaydi |
 | Production `probe.mjs` | Deploy'dan keyin ishga tushiriladi (RUNBOOK §0) |

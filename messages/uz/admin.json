@@ -744,7 +744,8 @@
       "tin_length_org": "STIR 9 xonali bo'lishi kerak",
       "pinfl_length": "JShShIR 14 xonali bo'lishi kerak",
       "no_documents": "Hujjat ilova qilinmagan",
-      "document_tin_mismatch": "Hujjatdagi STIR yozilganiga mos emas"
+      "document_tin_mismatch": "Hujjatdagi STIR yozilganiga mos emas",
+      "document_content_mismatch": "Hujjat mazmuni fayl turiga mos emas (niqoblangan fayl bo'lishi mumkin)"
     },
     "consistent": "AI: jiddiy nomuvofiqlik topilmadi",
     "inconsistent": "AI: nomuvofiqlik bor",

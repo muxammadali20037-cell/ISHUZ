@@ -744,7 +744,8 @@
       "tin_length_org": "TIN should have 9 digits",
       "pinfl_length": "PINFL should have 14 digits",
       "no_documents": "No documents attached",
-      "document_tin_mismatch": "TIN in the document does not match"
+      "document_tin_mismatch": "TIN in the document does not match",
+      "document_content_mismatch": "Document content does not match its file type (possibly disguised)"
     },
     "consistent": "AI: no serious mismatch found",
     "inconsistent": "AI: mismatches found",

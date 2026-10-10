@@ -7,6 +7,7 @@ import { publicEnv } from "@/lib/env";
 import { runModerationEngine, type ModerationImage } from "./engine";
 import { imageSystemPrompt, imageVerdictSchema, moderationSystemPrompt, moderationUserPrompt, textVerdictSchema } from "./verdict";
 import { isTelegramGeneratedAvatar } from "./images";
+import { ContentMismatchError, fetchTrustedImage } from "@/lib/security/safe-fetch";
 
 /**
  * Moderatsiya xizmati (faqat serverda, service role): bazadan aynan tekshiriladigan versiyani oladi,
@@ -63,45 +64,10 @@ function trustedFetchUrl(url: string): boolean {
   }
 }
 
-/** Tanani oqim bilan o'qiydi: chegaradan oshsa darhol to'xtaydi (katta faylni xotiraga to'liq olmaydi) */
-async function readCapped(res: Response, maxBytes: number): Promise<Buffer> {
-  const reader = res.body?.getReader();
-  if (!reader) return Buffer.alloc(0);
-  const chunks: Uint8Array[] = [];
-  let total = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > maxBytes) {
-      await reader.cancel().catch(() => undefined);
-      throw new Error("image_too_large");
-    }
-    chunks.push(value);
-  }
-  return Buffer.concat(chunks);
-}
-
 async function fetchImage(url: string): Promise<AiImage> {
-  // SSRF: yo'naltirishlar qo'lda kuzatiladi — har bir manzil ishonchli ro'yxatda bo'lishi shart (ichki tarmoqqa burilmaydi)
-  let current = url;
-  for (let hop = 0; hop < 4; hop++) {
-    if (!trustedFetchUrl(current)) throw new Error("image_untrusted");
-    const res = await fetch(current, { signal: AbortSignal.timeout(15_000), redirect: "manual" });
-    if (res.status >= 300 && res.status < 400) {
-      const location = res.headers.get("location");
-      if (!location) throw new Error(`image_${res.status}`);
-      current = new URL(location, current).toString();
-      continue;
-    }
-    if (!res.ok) throw new Error(`image_${res.status}`);
-    const type = (res.headers.get("content-type") ?? "").split(";")[0]!.trim().toLowerCase();
-    if (!IMAGE_TYPES.has(type)) throw new Error("image_type");
-    if (Number(res.headers.get("content-length") ?? "0") > MAX_IMAGE_BYTES) throw new Error("image_too_large");
-    const buf = await readCapped(res, MAX_IMAGE_BYTES);
-    return { mimeType: type, data: buf.toString("base64") };
-  }
-  throw new Error("image_redirects");
+  // SSRF: yo'naltirishlar qo'lda kuzatiladi — har bir manzil ishonchli ro'yxatda bo'lishi shart; mazmun turi baytlar bo'yicha
+  const img = await fetchTrustedImage(url, { isTrusted: trustedFetchUrl, maxBytes: MAX_IMAGE_BYTES, types: IMAGE_TYPES });
+  return { mimeType: img.mimeType, data: img.bytes.toString("base64") };
 }
 
 async function settings(db: ReturnType<typeof createAdminClient>) {
@@ -146,7 +112,17 @@ export async function moderateEntity(entity: ModerationEntity, id: string, opts:
             feature: "moderation_text", timeoutMs: 25_000, temperature: 0, maxOutputTokens: 1024,
           }),
         imageVerdict: async (image, loc) => {
-          const img = await fetchImage(image.url);
+          const img = await fetchImage(image.url).catch((e: unknown) => {
+            if (e instanceof ContentMismatchError) return null;
+            throw e;
+          });
+          // niqoblangan fayl (masalan, rasm deb yuklangan boshqa tur): AI'ga yuborilmaydi, admin ko'radi (qayta urinish foydasiz)
+          if (!img) {
+            return {
+              verdict: { decision: "review", category: "uncertain", reason_code: "image_content_mismatch", user_message: "", flagged_fields: [image.key] },
+              extractedText: "",
+            };
+          }
           const out = await aiJson(imageVerdictSchema, imageSystemPrompt(loc), "Check this image.", {
             feature: "moderation_image", images: [img], timeoutMs: 30_000, temperature: 0, maxOutputTokens: 1500,
           });

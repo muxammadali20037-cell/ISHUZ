@@ -10,7 +10,7 @@ Bu reja nima qilinganini, nima qolganini va qaysi tartibda yoqilishini ko'rsatad
 | V2 Validation & Business Logic | Server tomonda validatsiya, biznes oqim tartibi, limitlar | Bajarilgan | zod; holat faqat RPC orqali (S-03); atomik limitlar; AI byudjeti |
 | V3 Web Frontend Security | CSP, ramka, cookie, ochiq yo'naltirish | Qisman (CSP 1-bosqich) | `headers.ts`, `safe-path.ts`; 2-bosqich pastda |
 | V4 API & Web Service | Content-Type, CSRF, metodlar | Bajarilgan | `rejectUnsafeRequest`, webhook secret, cron secret |
-| V5 File Handling | Tur, hajm, joylashuv, imzoli URL | Qisman | Bucket MIME/hajm, papka siyosatlari, yo'l regex; magic-byte — R-03 |
+| V5 File Handling | Tur, hajm, joylashuv, imzoli URL | Qisman | Bucket MIME/hajm, papka siyosatlari, yo'l regex; magic bytes moderatsiya/tasdiqlashda (`file-signature.ts`); yuklash paytida — R-03 |
 | V6 Authentication | Kod limitlari, enumeratsiya, admin MFA | Bajarilgan (L2), admin L3 | OTP qoidalari; admin aal2 DB'da; TOFU — R-08 |
 | V7 Session Management | Bekor qilish, bloklash, logout, cookie | Bajarilgan (yozish), o'qish — R-01 | `sessions_revoked_at`, pre-request, auth.sessions o'chirish, Secure cookie |
 | V8 Authorization | Deny-by-default, RLS har amalda, service role yo'llarida tekshiruv | Bajarilgan | RLS hamma jadvalda; RESTRICTIVE siyosat; anon funksiyalar ro'yxati testi |
@@ -49,7 +49,7 @@ Foydalanuvchiga xabarlar: `rate_limited` — «So'rovlar soni vaqtincha cheklang
 | 1 — kuzatuv (1–2 hafta) | `security_restrictions_enforce = false`: qoidalar faqat qayd va ogohlantirish | `/admin/security` da noto'g'ri ijobiy ulushi kuzatiladi |
 | 2 — majburiy | Admin panelda «Majburiy rejimni yoqish» | Kuzatuvda haqiqiy foydalanuvchiga tushgan cheklovlar < 1%; chegaralar kerak bo'lsa `rules.ts` da versiya oshiriladi |
 | 3 — CSP 2-bosqich | nonce + `'strict-dynamic'` (Report-Only bilan boshlab), Telegram SDK yuklovchisini nonce'li qilish | Sahifa tezligi ta'sirini o'lchab |
-| 4 — fayllar | Yuklashdan keyin Edge Function: magic bytes, qayta kodlash, EXIF olib tashlash | R-03 |
+| 4 — fayllar | (a) **bajarildi**: magic bytes server iste'mol qiladigan joyda (moderatsiya rasmlari, tasdiqlash hujjatlari). (b) qoldi: yuklashdan keyin Edge Function — qayta kodlash, EXIF olib tashlash, mijoz yozadigan papkadan alohida joyga ko'chirish | R-03 |
 | 5 — sessiya oynasi | JWT expiry 15–30 daq (panel), kerak bo'lsa o'qish siyosatlariga `is_active_user()` | R-01 |
 
 ## 4. Doimiy amaliyot

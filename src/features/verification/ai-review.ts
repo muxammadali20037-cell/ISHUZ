@@ -5,6 +5,7 @@ import type { Json } from "@/types/database.types";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { aiJson, aiProviderConfigured } from "@/lib/ai/json";
 import type { AiImage } from "@/lib/ai/gemini";
+import { contentMatches, mimeFromPath, SNIFF_BYTES } from "@/lib/security/file-signature";
 
 /**
  * Tasdiqlash so'rovi uchun yordamchi tekshiruv: e'lon qilingan ma'lumot (tur, nom, STIR, hudud) va
@@ -46,6 +47,17 @@ export async function reviewVerificationRequest(requestId: string): Promise<void
   const s = (req.submitted_data ?? {}) as { employer_type?: string; name?: string; phone?: string; region_id?: string; identity_number?: string };
   const notes = ruleNotes({ type: s.employer_type ?? null, tin: s.identity_number ?? null, phone: s.phone ?? null, region: s.region_id ?? null, name: s.name ?? null, docs: req.document_paths.length });
 
+  // hujjat mazmuni kengaytmasiga mos kelishi (masalan, "pdf" deb yuklangan boshqa fayl) — adminga belgi; mos kelmagani AI'ga yuborilmaydi
+  const docs = new Map<string, Blob>();
+  for (const path of req.document_paths.slice(0, 5)) {
+    const { data: blob } = await db.storage.from("documents").download(path);
+    if (!blob) continue;
+    const declared = mimeFromPath(path);
+    const head = new Uint8Array(await blob.slice(0, SNIFF_BYTES).arrayBuffer());
+    if (declared && contentMatches(declared, head)) docs.set(path, blob);
+    else if (!notes.includes("document_content_mismatch")) notes.push("document_content_mismatch");
+  }
+
   let ai: z.infer<typeof aiSchema> | null = null;
   let aiError: string | null = null;
   if (aiProviderConfigured()) {
@@ -55,7 +67,7 @@ export async function reviewVerificationRequest(requestId: string): Promise<void
       for (const path of req.document_paths.slice(0, 3)) {
         const mime = IMAGE_EXT[path.split(".").pop()?.toLowerCase() ?? ""];
         if (!mime) continue;
-        const { data: blob } = await db.storage.from("documents").download(path);
+        const blob = docs.get(path);
         if (!blob || blob.size > 4 * 1024 * 1024) continue;
         images.push({ mimeType: mime, data: Buffer.from(await blob.arrayBuffer()).toString("base64") });
       }

@@ -115,3 +115,22 @@ Funksiyalarning oldingi matni 0049–0055 migratsiyalarida. Har qaytarishdan key
 | GitHub → Secrets | `SUPABASE_DB_URL`, `BACKUP_AGE_RECIPIENT` | Zaxira (6-bo'lim) |
 | Vercel → Domains / `headers.ts` (ixtiyoriy) | Barcha subdomenlar https ekani tasdiqlansa — HSTS'ga `includeSubDomains` (keyin preload) | Hozir faqat asosiy host (2 yil) |
 | app_settings | `storage_public_origin` = `"https://<ref>.supabase.co"` | Rasm manzili hosti qat'iy tekshiriladi |
+
+## 9. 0056 ni production'ga qo'lda qo'llash (SQL Editor)
+
+Agar migratsiyani avtomatik qo'llab bo'lmasa (masalan, tasdiq oynasi vaqtida tasdiqlanmasa):
+1. GitHub → `supabase/migrations/0056_security_hardening.sql` → **Raw** → hammasini nusxalash.
+2. Supabase → SQL Editor → New query → joylash → **Run**. Bitta so'rovdagi barcha buyruqlar bitta tranzaksiyada bajariladi: xato bo'lsa, hech narsa o'zgarmaydi.
+3. Tekshirish:
+   ```sql
+   select to_regclass('public.security_events') is not null as tables_ok,
+          (select count(*) from pg_policies where policyname = 'sec_active_insert') as write_policies,
+          (select setconfig from pg_db_role_setting s join pg_roles r on r.oid = s.setrole where r.rolname = 'authenticator') as authenticator_cfg;
+   -- kutilgan: tables_ok = true, write_policies ≥ 40, authenticator_cfg ichida pgrst.db_pre_request=public.api_pre_request
+   ```
+4. 5-bo'limdagi `x-ishuz-preflight` so'rovi `PT418` qaytarishi kerak.
+5. Rasm manzili hostini qat'iy qilish (qiymat `NEXT_PUBLIC_SUPABASE_URL` bilan aynan bir xil, oxirida `/` siz):
+   ```sql
+   update app_settings set value = '"https://<ref>.supabase.co"'::jsonb where key = 'storage_public_origin';
+   ```
+6. Sayt: kirish, e'lon joylash, profil rasmi, admin panel → **Xavfsizlik** sahifasi ochilishini tekshiring. Muammo bo'lsa — 7-bo'lim (qisman orqaga qaytarish).

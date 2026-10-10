@@ -56,11 +56,11 @@ Ishonch chegaralari: (1) mijoz ↔ Vercel; (2) Vercel ↔ Supabase (service role
 | E5 | SECURITY DEFINER RPC'lar | Huquqsiz chaqiruv, ichki funksiya oracle'lari (I/E) | Ma'lumot sizishi | Har RPC ichida tekshiruv, anon uchun ochiq funksiyalar **aniq ro'yxat** (test), ichki funksiyalar yopiq | SQL B (allowlist) |
 | E6 | Server actions | CSRF (Next.js Origin tekshiruvi), validatsiya | — | Next.js o'rnatilgan Origin tekshiruvi, zod | mavjud unit testlar |
 | E7 | `POST /api/telegram/webhook` | Soxta update (S), takror (R), bog'lash havolasini o'g'irlash (E) | Hisobni Telegram'ga ulab olish | Secret header (doimiy vaqt), update_id dedupe, bog'lashda **tasdiq qadami**, eski Telegram'ga xabar, bloklangan hisob yozmaydi | E2E s5, s11 G |
-| E8 | Storage | Ro'yxatni olish (I), begona papkaga yozish (T), noto'g'ri tur | PII, zararli fayl | Bucket MIME/hajm, papka = uid siyosatlari, ommaviy bucket list faqat o'z papkasi, hujjatlar yopiq + imzoli URL | SQL A |
+| E8 | Storage | Ro'yxatni olish (I), begona papkaga yozish (T), noto'g'ri tur | PII, zararli fayl | Bucket MIME/hajm, papka = uid siyosatlari, ommaviy bucket list faqat o'z papkasi, hujjatlar yopiq + imzoli URL, mazmun turi (magic bytes) moderatsiya va tasdiqlashda | SQL A, unit `file-signature.test.ts` |
 | E9 | `/admin` va admin host | Clickjacking, huquqni oshirish, sessiya | Platforma nazorati | Alohida host, aal2 (TOTP) DB'da, `frame-ancestors 'none'` + XFO DENY, bloklangan admin huquqsiz, ierarxiya | E2E s3, s8, s11 J |
 | E10 | `/r/[token]`, `?next=` | Ochiq yo'naltirish (S) | Fishing | `safeInternalPath` hamma joyda | unit 14 ta, probe |
-| E11 | AI funksiyalari | Xarajat hujumi (D), prompt injection (T) | Pul, noto'g'ri moderatsiya | Kunlik byudjet (fail-closed), IP/foydalanuvchi limitlari, AI faqat maslahatchi (sxema + qoidalar), moderatsiyada inson | `gemini.test.ts`, E2E s1/s7 |
-| E12 | Moderatsiya rasm yuklash | SSRF (I) | Ichki tarmoq | Ishonchli host ro'yxati, har yo'naltirishda qayta tekshirish, oqim bilan hajm chegarasi | kod ko'rib chiqish (test: NOT_RUN) |
+| E11 | AI funksiyalari | Xarajat hujumi (D), prompt injection (T) | Pul, noto'g'ri moderatsiya | Kunlik byudjet (fail-closed), IP/foydalanuvchi limitlari, AI faqat maslahatchi (sxema + qoidalar), moderatsiyada inson | `ai/json.test.ts`, `gemini.test.ts`, E2E s1/s7 |
+| E12 | Moderatsiya rasm yuklash | SSRF (I) | Ichki tarmoq | Ishonchli host ro'yxati, har yo'naltirishda qayta tekshirish, oqim bilan hajm chegarasi, mazmun turi magic bytes bo'yicha | unit `safe-fetch.test.ts` |
 | E13 | Cron / zaxira / CI | Kalit sizishi, ruxsatsiz ishga tushirish | — | CRON_SECRET, CI `permissions: contents: read`, secret-scan, age (yopiq kalit oflayn) | CI, probe |
 | E14 | Brauzer (XSS) | Skript in'ektsiyasi | Sessiya o'g'irlash | React escaping, CSP (object/base/form/frame cheklangan, tashqi skript faqat telegram.org), rasm manzili allowlist | E2E s11 CSP |
 
