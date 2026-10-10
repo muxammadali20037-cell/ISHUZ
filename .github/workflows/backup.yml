@@ -1,0 +1,59 @@
+name: DB backup (encrypted)
+
+# Har kuni ma'lumotlar bazasining shifrlangan zaxira nusxasi (pg_dump → age, ochiq kalit bilan).
+# Sirlar qo'yilmaguncha hech narsa qilmaydi. Sozlash: docs/SECURITY_RUNBOOK.md → "Zaxira nusxa".
+#   SUPABASE_DB_URL       — Session pooler ulanish satri (parol bilan). Faqat GitHub Secrets'da.
+#   BACKUP_AGE_RECIPIENT  — age OCHIQ kaliti (age1...). Yopiq kalit GitHub'da emas, egasida oflayn.
+on:
+  schedule:
+    - cron: "17 21 * * *" # 02:17 Toshkent
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: db-backup
+  cancel-in-progress: false
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      BACKUP_AGE_RECIPIENT: ${{ secrets.BACKUP_AGE_RECIPIENT }}
+    steps:
+      - name: Sozlama tekshiruvi
+        id: cfg
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_AGE_RECIPIENT" ]; then
+            echo "::notice::Zaxira o'chiq: SUPABASE_DB_URL va BACKUP_AGE_RECIPIENT sirlari qo'yilmagan"
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.cfg.outputs.enabled == 'true'
+
+      - name: pg_dump 17 va age
+        if: steps.cfg.outputs.enabled == 'true'
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17 age
+
+      - name: Shifrlangan zaxira
+        if: steps.cfg.outputs.enabled == 'true'
+        run: PATH="/usr/lib/postgresql/17/bin:$PATH" bash scripts/backup/db-backup.sh backups
+
+      - uses: actions/upload-artifact@v4
+        if: steps.cfg.outputs.enabled == 'true'
+        with:
+          name: db-backup-${{ github.run_id }}
+          path: backups/
+          retention-days: 14
+          if-no-files-found: error
