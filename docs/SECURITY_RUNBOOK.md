@@ -113,5 +113,5 @@ Funksiyalarning oldingi matni 0049–0055 migratsiyalarida. Har qaytarishdan key
 | Vercel → Environment | `SECURITY_PEPPER`, `LOGIN_CODE_SECRET` (har biri `openssl rand -hex 32`) | HMAC kalitlari service kalitidan ajratiladi |
 | GitHub / Vercel / Supabase / domen registratori | Barcha egalarida MFA (TOTP yoki kalit) | Ta'minot zanjiri |
 | GitHub → Secrets | `SUPABASE_DB_URL`, `BACKUP_AGE_RECIPIENT` | Zaxira (6-bo'lim) |
-| Vercel → Domains (ixtiyoriy) | HSTS preload faqat barcha subdomenlar https bo'lsa | — |
+| Vercel → Domains / `headers.ts` (ixtiyoriy) | Barcha subdomenlar https ekani tasdiqlansa — HSTS'ga `includeSubDomains` (keyin preload) | Hozir faqat asosiy host (2 yil) |
 | app_settings | `storage_public_origin` = `"https://<ref>.supabase.co"` | Rasm manzili hosti qat'iy tekshiriladi |

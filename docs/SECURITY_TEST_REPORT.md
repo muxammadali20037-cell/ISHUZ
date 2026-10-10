@@ -8,10 +8,11 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 
 | To'plam | Natija |
 |---|---|
-| Unit (vitest) | 460 PASS, 18 skip (mavjud), 0 FAIL — shu jumladan `safe-path` 14, `request` 9, `headers` 8, `rules` 7, `verify` 5, `postgrest` 2 |
+| Unit (vitest) | 464 PASS, 18 skip (mavjud), 0 FAIL — shu jumladan `safe-path` 14, `request` 9, `headers` 8, `rules` 7, `verify` 5, `rate-limit` 4, `postgrest` 2 |
 | SQL (`scripts/db-test.sh`, 22 fayl) | PASS — `security_hardening.test.sql` da 100 ta tekshiruv |
 | E2E s1–s10 (mavjud funksiyalar regressiyasi) | 12/12, 17/17, 23/23, 20/20, 12/12, 38/38, 4/4, 16/16, 4/4, 25/25 — hammasi PASS |
 | E2E s11 (xavfsizlik) | 35/35 PASS |
+| Yangi ilova + 0056'siz baza (deploy oynasi) | 6/6 PASS — kod yuborish/tekshirish eski limit funksiyasiga qaytadi, bot bog'lash bir bosqichli rejimga qaytadi, kompaniya sahifasi ishlaydi |
 | `probe.mjs` (lokal) | 11/11 PASS |
 | TypeScript / ESLint | 0 xato (3 ta eski ogohlantirish, bu ishga aloqasiz) |
 | Production build | PASS |
@@ -50,3 +51,11 @@ bash scripts/db-test.sh                         # lokal Postgres kerak
 node scripts/security/probe.mjs https://<sayt> https://<admin-host>
 ```
 E2E to'plami lokal staging stend (PostgREST + GoTrue emulyatori + mock'lar) talab qiladi.
+
+## Masofaviy (production) holat
+
+| Qadam | Holat |
+|---|---|
+| 0056 ni rollback bilan quruq sinash (barcha funksiya yamoqlari, `alter role authenticator`, storage siyosatlari, auth.users yozish huquqi) | **PASS** — hech narsa saqlanmadi (tekshirildi) |
+| 0056 ni qo'llash | **NOT_RUN** — `apply_migration` chaqiruvi tasdiqlanmadi (bekor qilindi). Ilova kodi 0056'siz ham ishlaydi; xavfsizlik funksiyalarining DB qismi qo'llangach yoqiladi |
+| Production `probe.mjs` | Deploy'dan keyin ishga tushiriladi (RUNBOOK §0) |

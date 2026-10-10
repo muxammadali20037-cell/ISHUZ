@@ -42,7 +42,9 @@ function linkHash(token: string) {
 async function handleLink(admin: Admin, chatId: number, from: { id: number; username?: string; first_name?: string; last_name?: string; language_code?: string }, token: string, confirm: boolean, tt: TT) {
   const hash = linkHash(token);
   if (!confirm) {
-    const { data: pv } = await admin.rpc("preview_telegram_link_token", { p_token_hash: hash, p_telegram_user_id: from.id });
+    const { data: pv, error: pvErr } = await admin.rpc("preview_telegram_link_token", { p_token_hash: hash, p_telegram_user_id: from.id });
+    // 0056 qo'llanmagan baza: eski bir bosqichli bog'lash (tasdiqsiz)
+    if (pvErr?.code === "PGRST202" || pvErr?.code === "42883") return handleLink(admin, chatId, from, token, true, tt);
     const r = (pv ?? {}) as { status?: string; name?: string; replaces_other?: boolean };
     if (r.status === "ok" || r.status === "already_linked") {
       const text = `${tt("link_confirm", { name: escapeHtml(r.name ?? "—") })}${r.replaces_other ? `\n\n${tt("link_confirm_replace")}` : ""}`;

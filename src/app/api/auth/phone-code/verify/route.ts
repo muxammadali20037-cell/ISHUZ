@@ -60,10 +60,11 @@ export async function POST(req: NextRequest) {
         hitRate(`otp:fail:phone:${phoneHash}`, Number.MAX_SAFE_INTEGER, RULES.otpVerifyFailuresPerPhone.windowSeconds),
         hitRate(`otp:fail:ip:${ipHash}`, Number.MAX_SAFE_INTEGER, RULES.otpVerifyFailuresPerIp.windowSeconds),
       ]);
-      const failCount = "count" in byPhoneFail ? byPhoneFail.count : LOGIN_CODE_MAX_ATTEMPTS;
+      const newest = active[0]!;
+      // hisoblagich noma'lum bo'lsa (-1 yoki DB xatosi) — eng yangi kodning urinishlari bo'yicha
+      const failCount = "count" in byPhoneFail && byPhoneFail.count > 0 ? byPhoneFail.count : newest.attempts + 1;
       if ("count" in byPhoneFail) await applyRuleHit(RULES.otpVerifyFailuresPerPhone, byPhoneFail.count, { subject: phoneHash, subjectHash: phoneHash, route: ROUTE, requestId });
       if ("count" in byIpFail) await applyRuleHit(RULES.otpVerifyFailuresPerIp, byIpFail.count, { subject: ipHash, subjectHash: ipHash, route: ROUTE, requestId });
-      const newest = active[0]!;
       await admin.from("login_codes").update({ attempts: newest.attempts + 1 }).eq("id", newest.id);
       // har N xatoda faol kodlar yopiladi (DB hisoblagichi atomik — parallel urinishlar ham sanaladi)
       if (failCount % LOGIN_CODE_MAX_ATTEMPTS === 0) {

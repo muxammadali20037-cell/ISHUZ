@@ -19,6 +19,7 @@ export async function allowRate(key: string, limit: number, windowSeconds: numbe
   }
 }
 
+/** count: hisoblagich qiymati; -1 — noma'lum (eski limit funksiyasi) */
 export type RateHit = { ok: true; count: number } | { ok: false; reason: "limited"; count: number } | { ok: false; reason: "unavailable" };
 
 /**
@@ -29,10 +30,22 @@ export type RateHit = { ok: true; count: number } | { ok: false; reason: "limite
 export async function hitRate(key: string, limit: number, windowSeconds: number): Promise<RateHit> {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return { ok: true, count: 0 };
   try {
-    const { data, error } = await createAdminClient().rpc("security_hit", { p_key: key, p_window_seconds: windowSeconds });
+    const admin = createAdminClient();
+    const { data, error } = await admin.rpc("security_hit", { p_key: key, p_window_seconds: windowSeconds });
+    if (error && isMissingFunction(error)) {
+      // 0056 hali qo'llanmagan baza (deploy oynasi): eski atomik limit — chegara ishlaydi, soni noma'lum (-1)
+      const old = await admin.rpc("check_rate_limit", { p_key: key, p_limit: Math.min(limit, 2_000_000_000), p_window_seconds: windowSeconds });
+      if (old.error || typeof old.data !== "boolean") return { ok: false, reason: "unavailable" };
+      return old.data ? { ok: true, count: -1 } : { ok: false, reason: "limited", count: limit + 1 };
+    }
     if (error || typeof data !== "number") return { ok: false, reason: "unavailable" };
     return data <= limit ? { ok: true, count: data } : { ok: false, reason: "limited", count: data };
   } catch {
     return { ok: false, reason: "unavailable" };
   }
+}
+
+/** PostgREST: funksiya topilmadi (PGRST202) yoki Postgres 42883 */
+function isMissingFunction(error: { code?: string }): boolean {
+  return error.code === "PGRST202" || error.code === "42883";
 }

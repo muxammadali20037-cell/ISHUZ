@@ -68,7 +68,8 @@ export function baseSecurityHeaders(opts: CspOptions): HeaderPair[] {
     { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
     { key: "Content-Security-Policy", value: buildCsp(opts) },
   ];
-  if (opts.https ?? !opts.dev) h.push({ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" });
+  // includeSubDomains/preload — barcha subdomenlar https ekani tasdiqlangach (2 yilga qaytarib bo'lmaydi): SECURITY_RUNBOOK §8
+  if (opts.https ?? !opts.dev) h.push({ key: "Strict-Transport-Security", value: "max-age=63072000" });
   return h;
 }
 
