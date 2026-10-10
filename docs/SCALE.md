@@ -112,10 +112,18 @@ beradi — u HTTP holatiga ta'sir qilmaydi.
 
 ## 6. Egasi qiladigan sozlamalar (ixtiyoriy, tavsiya)
 
-- **JWT kalitlari:** Supabase Dashboard → Project Settings → JWT Keys. Loyiha hali eski umumiy (HS256) kalitda
-  bo'lsa, yangi assimetrik kalitga (ECC P-256) o'tkazing. Shunda `getClaims()` har so'rovda Auth serveriga
-  bormaydi — imzoni lokal tekshiradi (hozir HS256 bo'lsa, avvalgidek `getUser()` so'roviga qaytadi; xato emas,
-  faqat sekinroq). O'tishda mavjud sessiyalar uzilmaydi.
+- **JWT kalitlari — tayyor.** Joriy imzo kaliti ECC P-256 (ES256; loyihaning ochiq JWKS'ida tekshirildi), shuning
+  uchun `getClaims()` imzoni lokal tekshiradi — har so'rovda Auth serveriga bormaydi. Eski "Legacy HS256" kalit
+  "Previously used" bo'limida turibdi: faqat eski tokenlarni tekshirish uchun.
+- **Eski kalitni bekor qilish (xavfsizlik, tezlikka ta'siri yo'q).** Legacy HS256 bekor qilinsa, eski `eyJ...`
+  (JWT) anon/service_role API kalitlari ham ishlamay qoladi. Shuning uchun tartib bilan:
+  1. Supabase → Project Settings → API Keys: `sb_publishable_…` bor; "Secret keys"da yangi `sb_secret_…` yarating.
+  2. Vercel → Settings → Environment Variables: `NEXT_PUBLIC_SUPABASE_ANON_KEY` = `sb_publishable_…`,
+     `SUPABASE_SERVICE_ROLE_KEY` = `sb_secret_…` (faqat Vercel'ga), so'ng Redeploy.
+  3. Saytni tekshiring: kirish, e'lon joylash, admin panel, Telegram xabarlari (kirish kodlari shu kalitdan hosil
+     qilinadi — almashtirish paytida yuborilgan 5 daqiqalik kodlar bekor bo'ladi, qayta so'raladi).
+  4. API Keys → Legacy API Keys → "Disable JWT-based API keys".
+  5. JWT Keys → "Legacy HS256" qatoridagi ⋮ → Revoke.
 - **Hisoblash quvvati:** 4-bo'limga qarang.
 
 ## 7. Advisor'da qolganlar (ataylab)
