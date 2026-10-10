@@ -12,6 +12,7 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 | SQL (`scripts/db-test.sh`, 22 fayl) | PASS — `security_hardening.test.sql` da 100 ta tekshiruv |
 | E2E s1–s10 (mavjud funksiyalar regressiyasi) | 12/12, 17/17, 23/23, 20/20, 12/12, 38/38, 4/4, 16/16, 4/4, 25/25 — hammasi PASS |
 | E2E s11 (xavfsizlik) | 35/35 PASS |
+| Moderatsiya rasmi mazmuni (E2E, tasodifiy dalil) | PASS — lokal Storage emulyatori PNG o'rniga multipart so'rov tanasini saqlaganda, moderatsiya rasmni AI'ga yubormadi va `review` / `image_content_mismatch` qaydini yozdi. Emulyator tuzatilgach (faqat fayl qismi saqlanadi) haqiqiy PNG odatdagidek AI tekshiruvidan o'tdi (s4) |
 | Yangi ilova + 0056'siz baza (deploy oynasi) | 6/6 PASS — kod yuborish/tekshirish eski limit funksiyasiga qaytadi, bot bog'lash bir bosqichli rejimga qaytadi, kompaniya sahifasi ishlaydi |
 | `probe.mjs` (lokal) | 11/11 PASS |
 | TypeScript / ESLint | 0 xato (3 ta eski ogohlantirish, bu ishga aloqasiz) |
@@ -38,7 +39,7 @@ Natija belgilari: **PASS** — avtomatik test o'tdi · **FAIL** · **NOT_RUN** �
 | Nima | Sabab | Qanday tekshirish |
 |---|---|---|
 | To'liq Telegram kirish oqimi (createUser → magic link → sessiya) | Lokal GoTrue emulyatsiyasida `generateLink/verifyOtp` yo'q | Staging Supabase loyihasida: oldindan `tg_<id>@telegram.ishuz.local` bilan signUp → Mini App kirish → yangi hisob yaratilishi va `auth.telegram_email_preclaimed` hodisasi |
-| Moderatsiya/tasdiqlash xizmatlaridagi ulanish (`moderation/service.ts`, `verification/ai-review.ts`) | Modullar unit bilan tekshirilgan (`safe-fetch`, `file-signature`); xizmatning o'zi tashqi AI/Storage'ga bog'liq, integratsion test yo'q | Staging'da «.png» nomli HTML faylni vakansiya rasmi qilib joylash → moderatsiya `review`, sabab `image_content_mismatch` |
+| Tasdiqlash hujjati ulanishi (`verification/ai-review.ts`) | Modul unit bilan tekshirilgan (`file-signature`); xizmat oqimi uchun integratsion test yo'q. (Moderatsiya ulanishi E2E'da tasdiqlandi — pastga qarang) | Staging'da «.pdf» nomli boshqa faylni hujjat qilib yuborish → admin kartasida «Hujjat mazmuni fayl turiga mos emas» |
 | `Secure` cookie va HSTS | Lokal http | Production `probe.mjs` (HSTS) va brauzer DevTools (Secure) |
 | Yuklash paytidagi mazmun tekshiruvi / qayta kodlash | Funksiya yo'q (R-03) | 4b-bosqich (SECURITY_PLAN) |
 
