@@ -35,6 +35,11 @@ describe("buildCsp", () => {
     expect(dir(dev, "upgrade-insecure-requests")).toBeNull();
   });
 
+  it("lokal http (E2E): upgrade-insecure-requests va HSTS yo'q", () => {
+    expect(dir(buildCsp({ supabaseUrl: "http://localhost:54321", https: false }), "upgrade-insecure-requests")).toBeNull();
+    expect(baseSecurityHeaders({ supabaseUrl: SB, https: false }).map((h) => h.key)).not.toContain("Strict-Transport-Security");
+  });
+
   it("noto'g'ri Supabase URL — e'tiborsiz (CSP buzilmaydi)", () => {
     expect(dir(buildCsp({ supabaseUrl: "javascript:alert(1)" }), "connect-src")).toBe("connect-src 'self'");
   });

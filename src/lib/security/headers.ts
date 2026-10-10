@@ -11,7 +11,10 @@ export interface CspOptions {
   supabaseUrl?: string | null;
   /** admin panel: ramkaga olish butunlay taqiqlanadi */
   admin?: boolean;
+  /** next dev: React uchun eval va HMR websocket */
   dev?: boolean;
+  /** sayt https orqali (production): http so'rovlar https ga ko'tariladi, HSTS. Lokal http da — yo'q */
+  https?: boolean;
 }
 
 /** Telegram Web (brauzer) Mini App'ni iframe ichida ochadi; mobil/desktop ilovalar — o'z webview'i */
@@ -27,7 +30,7 @@ function originOf(url: string | null | undefined): string | null {
   }
 }
 
-export function buildCsp({ supabaseUrl, admin = false, dev = false }: CspOptions): string {
+export function buildCsp({ supabaseUrl, admin = false, dev = false, https = !dev }: CspOptions): string {
   const sb = originOf(supabaseUrl);
   const sbWs = sb ? sb.replace(/^http/, "ws") : null;
   const list = (...xs: (string | null | false | undefined)[]) => xs.filter(Boolean).join(" ");
@@ -47,7 +50,7 @@ export function buildCsp({ supabaseUrl, admin = false, dev = false }: CspOptions
     ["worker-src", "'self' blob:"],
     ["manifest-src", "'self'"],
   ];
-  if (!dev) directives.push(["upgrade-insecure-requests", ""]);
+  if (https) directives.push(["upgrade-insecure-requests", ""]);
   return directives.map(([k, v]) => (v ? `${k} ${v}` : k)).join("; ");
 }
 
@@ -65,7 +68,7 @@ export function baseSecurityHeaders(opts: CspOptions): HeaderPair[] {
     { key: "Cross-Origin-Opener-Policy", value: "same-origin-allow-popups" },
     { key: "Content-Security-Policy", value: buildCsp(opts) },
   ];
-  if (!opts.dev) h.push({ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" });
+  if (opts.https ?? !opts.dev) h.push({ key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains" });
   return h;
 }
 

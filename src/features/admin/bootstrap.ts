@@ -9,7 +9,8 @@ import { isOwnerPhone, parseOwnerPhones } from "./owner";
 /**
  * Loyiha egasi: Vercel'dagi SUPER_ADMIN_PHONES ro'yxatidagi raqam bilan kirgan foydalanuvchi /admin ni ochganda
  * super_admin bo'ladi (SQL yozish shart emas) — faqat BIRINCHI marta (faol super_admin hali yo'q bo'lsa).
- * Raqam faqat Telegram orqali yuborilgan o'z kontakti bo'yicha (bot contact.user_id === from.id ni tekshiradi).
+ * Raqam faqat server tasdiqlagan manbadan: Telegram orqali yuborilgan o'z kontakti (bot contact.user_id === from.id ni
+ * tekshiradi) yoki profile_contacts.phone_verified_at (mijoz o'zgartira olmaydi — RLS).
  * Faol super_admin bor bo'lsa — yangi hisob avtomatik ko'tarilmaydi (SIM almashtirish xavfi), adminlarga ogohlantirish.
  * O'chirilgan (is_active=false) admin avtomatik qayta yoqilmaydi. Bloklangan profil — yo'q. Har tayinlash auditga yoziladi.
  * Panelga kirish baribir ikki bosqichli (TOTP) bo'ladi.
@@ -21,8 +22,9 @@ export async function ensureOwnerAdmin(userId: string): Promise<boolean> {
   try {
     const supabase = await createClient();
     const admin = createAdminClient();
-    const [{ data: auth }, { data: tg }, { data: profile }, { data: existing }] = await Promise.all([
+    const [{ data: auth }, { data: contact }, { data: tg }, { data: profile }, { data: existing }] = await Promise.all([
       supabase.auth.getUser(),
+      admin.from("profile_contacts").select("phone, phone_verified_at").eq("profile_id", userId).maybeSingle(),
       admin.from("telegram_accounts").select("phone").eq("profile_id", userId).maybeSingle(),
       admin.from("profiles").select("is_blocked").eq("id", userId).maybeSingle(),
       admin.from("admin_users").select("role, is_active").eq("profile_id", userId).maybeSingle(),
@@ -30,7 +32,7 @@ export async function ensureOwnerAdmin(userId: string): Promise<boolean> {
     if (!profile || profile.is_blocked || auth.user?.id !== userId) return false;
     if (existing?.is_active && existing.role === "super_admin") return true;
     if (existing && !existing.is_active) return false;
-    if (!isOwnerPhone(owners, [tg?.phone ?? null])) return false;
+    if (!isOwnerPhone(owners, [contact?.phone_verified_at ? contact.phone : null, tg?.phone ?? null])) return false;
     const { count: superAdmins } = await admin
       .from("admin_users")
       .select("profile_id", { count: "exact", head: true })

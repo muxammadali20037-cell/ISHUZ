@@ -25,8 +25,13 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
-    const csp = { supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL, dev: process.env.NODE_ENV !== "production" };
-    const adminHost = process.env.ADMIN_HOST?.trim();
+    const csp = {
+      supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      dev: process.env.NODE_ENV !== "production",
+      https: (process.env.NEXT_PUBLIC_APP_URL ?? "").startsWith("https://"),
+    };
+    // `has` host — portsiz hostname, regex sifatida (nuqtalar ekranlanadi)
+    const adminHost = process.env.ADMIN_HOST?.trim().toLowerCase().split(":")[0]?.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
     return [
       {
         source: "/sw.js",
