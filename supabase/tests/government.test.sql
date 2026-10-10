@@ -54,7 +54,9 @@ select pg_temp.ok((select not is_government from public.vacancies where title = 
 select pg_temp.ok((select count(*) from public.search_vacancies(p_government_only => true)) = 0, 'tasdiqlanmagan: davlat filtrida chiqmaydi');
 update public.vacancies set is_government = true where title = 'Bosh mutaxassis';
 select pg_temp.ok((select not is_government from public.vacancies where title = 'Bosh mutaxassis'), 'is_government ni qo''lda qo''yib bo''lmaydi (trigger qayta hisoblaydi)');
-insert into public.verification_requests (profile_id, company_id, type) select auth.uid(), company_id, 'company' from g;
+-- 0056: to'g'ridan-to'g'ri INSERT taqiqlangan — faqat RPC orqali
+select pg_temp.fails($$insert into public.verification_requests (profile_id, company_id, type) select auth.uid(), company_id, 'company' from g$$, 'verification_requests ga to''g''ridan-to''g''ri yozib bo''lmaydi', '42501');
+select public.submit_employer_verification('123456789');
 
 -- oddiy firma o'zini davlat tashkiloti qilib o'zgartira olmaydi
 select pg_temp.login('b1000000-0000-0000-0000-000000000002');

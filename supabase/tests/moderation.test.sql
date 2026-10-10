@@ -168,7 +168,8 @@ select pg_temp.superuser();
 create temp table vid on commit drop as select id, moderation_version as ver from public.vacancies where client_ref = '7b000000-0000-4000-8000-000000000001';
 grant select on vid to anon, authenticated, service_role;
 select pg_temp.login('6a000000-0000-0000-0000-000000000002');
-update public.vacancies set status = 'active' where id = (select id from vid);
+-- 0056: holatni to'g'ridan-to'g'ri o'zgartirish rad etiladi (faqat publish_vacancy / set_vacancy_status)
+select pg_temp.fails($$update public.vacancies set status = 'active' where id = (select id from vid)$$, 'holat faqat RPC orqali', 'status_via_rpc');
 select pg_temp.ok((select status = 'pending_review' from public.vacancies where id = (select id from vid)), 'to''g''ridan-to''g''ri active qilib bo''lmaydi');
 select pg_temp.anon();
 select pg_temp.ok((select count(*) from public.simple_search_vacancies((select node from fx), (select region from fx))) = 0, 'tekshirilmagan vakansiya qidiruvda yo''q');
