@@ -6,6 +6,7 @@ import type { AiImage } from "@/lib/ai/gemini";
 import { publicEnv } from "@/lib/env";
 import { runModerationEngine, type ModerationImage } from "./engine";
 import { imageSystemPrompt, imageVerdictSchema, moderationSystemPrompt, moderationUserPrompt, textVerdictSchema } from "./verdict";
+import { isTelegramGeneratedAvatar } from "./images";
 
 /**
  * Moderatsiya xizmati (faqat serverda, service role): bazadan aynan tekshiriladigan versiyani oladi,
@@ -86,6 +87,8 @@ export async function moderateEntity(entity: ModerationEntity, id: string, opts:
     const untrusted: string[] = [];
     for (const [key, value] of Object.entries(snap.images ?? {})) {
       if (!value) continue;
+      // Telegram'ning avtomatik avatari (ism harflari, SVG) — foydalanuvchi rasmi emas, tekshirilmaydi
+      if (isTelegramGeneratedAvatar(value)) continue;
       const url = trustedImageUrl(entity, key, value);
       if (url) images.push({ key, url });
       else untrusted.push(`image_untrusted@${key}`);
