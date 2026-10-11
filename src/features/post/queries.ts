@@ -127,21 +127,29 @@ export async function getListingDays(): Promise<{ worker: number; vacancy: numbe
   return { worker: get("listing_days", 10), vacancy: get("vacancy_lifetime_days", 10) };
 }
 
+export interface SimpleListingFeatures {
+  customProfession: boolean;
+  /** 0058: yopiq karantin bucket (vacancy-uploads) mavjud */
+  photoQuarantine: boolean;
+}
+const NO_FEATURES: SimpleListingFeatures = { customProfession: false, photoQuarantine: false };
+let featuresCache: { at: number; value: SimpleListingFeatures } | null = null;
 /**
- * Bazadagi sodda e'lon imkoniyatlari (0057+): eski bazada "Kasbim topilmadi" ko'rsatilmaydi (saqlab bo'lmaydigan yo'l yo'q).
+ * Bazadagi sodda e'lon imkoniyatlari (0057+): eski bazada "Kasbim topilmadi" ko'rsatilmaydi (saqlab bo'lmaydigan yo'l yo'q),
+ * 0058 bo'lmasa rasm eski (ommaviy) bucket'ga yuklanadi va baribir serverda tekshiriladi.
  * Natija 10 daqiqa server xotirasida (har so'rovda qo'shimcha chaqiruv bo'lmasin); xato bo'lsa keshlanmaydi.
  */
-let featuresCache: { at: number; customProfession: boolean } | null = null;
-export async function getSimpleListingFeatures(): Promise<{ customProfession: boolean }> {
-  if (featuresCache && Date.now() - featuresCache.at < 10 * 60_000) return { customProfession: featuresCache.customProfession };
+export async function getSimpleListingFeatures(): Promise<SimpleListingFeatures> {
+  if (featuresCache && Date.now() - featuresCache.at < 10 * 60_000) return featuresCache.value;
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("simple_listing_features");
   if (error) {
     const missing = error.code === "PGRST202" || error.code === "42883";
-    if (missing) featuresCache = { at: Date.now(), customProfession: false };
-    return { customProfession: false };
+    if (missing) featuresCache = { at: Date.now(), value: NO_FEATURES };
+    return NO_FEATURES;
   }
-  const customProfession = !!(data && typeof data === "object" && !Array.isArray(data) && (data as Record<string, unknown>).custom_profession === true);
-  featuresCache = { at: Date.now(), customProfession };
-  return { customProfession };
+  const flags = data && typeof data === "object" && !Array.isArray(data) ? (data as Record<string, unknown>) : {};
+  const value = { customProfession: flags.custom_profession === true, photoQuarantine: flags.photo_quarantine === true };
+  featuresCache = { at: Date.now(), value };
+  return value;
 }

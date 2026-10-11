@@ -71,6 +71,7 @@ export function VacancyPost({
   pricedDays,
   aiEnabled = false,
   customAllowed = false,
+  photoQuarantine = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -82,6 +83,8 @@ export function VacancyPost({
   aiEnabled?: boolean;
   /** baza "Kasbim topilmadi" ni qo'llaydimi (0057) */
   customAllowed?: boolean;
+  /** rasm yopiq karantin bucket'ga yuklanadimi (0058) */
+  photoQuarantine?: boolean;
 }) {
   const { t, name, tEnum } = useT();
   const router = useRouter();
@@ -522,7 +525,7 @@ export function VacancyPost({
                     options={VACANCY_EXPERIENCE.map((m) => ({ value: m, label: t(`easy.vacancy.exp.${m}`) }))}
                   />
                 </div>
-                {viewer.userId ? <PhotoUpload userId={viewer.userId} value={draft.photoPath ?? null} onChange={(photoPath) => update({ photoPath })} /> : null}
+                {viewer.userId ? <PhotoUpload userId={viewer.userId} value={draft.photoPath ?? null} onChange={(photoPath) => update({ photoPath })} quarantine={photoQuarantine} /> : null}
               </div>
             ) : null}
           </div>

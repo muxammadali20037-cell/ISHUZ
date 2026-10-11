@@ -6,15 +6,17 @@ import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { vacancyPhotoUrl } from "../photo";
 import { useT } from "@/lib/i18n/client";
+import { verifyVacancyPhoto } from "../actions";
 
 const TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 const MAX = 5 * 1024 * 1024;
 
 /**
- * Haqiqiy ish joyi surati (ixtiyoriy). Faqat egasining papkasiga (vacancy-photos/<uid>/...) yuklanadi;
- * e'lon bilan birga moderatsiyadan o'tadi (rasm va undagi yozuv). AI kasb tasviri bilan adashtirilmaydi.
+ * Haqiqiy ish joyi surati (ixtiyoriy). Xom fayl egasining papkasiga — yopiq karantinga (vacancy-uploads, 0058; eski bazada
+ * vacancy-photos) — yuklanadi, so'ng server uni tekshirib, metama'lumotsiz qayta kodlaydi; qoralamaga faqat tekshirilgan
+ * yo'l yoziladi. E'lon bilan birga moderatsiyadan o'tadi. AI kasb tasviri bilan adashtirilmaydi.
  */
-export function PhotoUpload({ userId, value, onChange }: { userId: string; value: string | null; onChange: (path: string | null) => void }) {
+export function PhotoUpload({ userId, value, onChange, quarantine }: { userId: string; value: string | null; onChange: (path: string | null) => void; quarantine: boolean }) {
   const { t } = useT();
   const input = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
@@ -28,10 +30,16 @@ export function PhotoUpload({ userId, value, onChange }: { userId: string; value
     if (file.size > MAX) return setError(t("easy.photo.too_large"));
     setBusy(true);
     const path = `${userId}/${crypto.randomUUID()}.${ext}`;
-    const { error: upErr } = await createClient().storage.from("vacancy-photos").upload(path, file, { contentType: file.type, cacheControl: "31536000", upsert: false });
+    const bucket = quarantine ? "vacancy-uploads" : "vacancy-photos";
+    const { error: upErr } = await createClient().storage.from(bucket).upload(path, file, { contentType: file.type, upsert: false });
+    if (upErr) {
+      setBusy(false);
+      return setError(t("easy.photo.failed"));
+    }
+    const res = await verifyVacancyPhoto({ path }).catch(() => null);
     setBusy(false);
-    if (upErr) return setError(t("easy.photo.failed"));
-    onChange(path);
+    if (!res?.ok || !res.data) return setError(t(res && !res.ok && res.error === "photo_invalid" ? "easy.photo.invalid" : "easy.photo.failed"));
+    onChange(res.data.path);
   };
 
   const url = vacancyPhotoUrl(value);
@@ -48,11 +56,20 @@ export function PhotoUpload({ userId, value, onChange }: { userId: string; value
           </Button>
         </div>
       ) : (
-        <Button type="button" variant="outline" className="min-h-12 text-base" disabled={busy} onClick={() => input.current?.click()}>
-          <ImagePlus className="size-5" aria-hidden /> {busy ? t("easy.wizard.saving") : t("easy.photo.add")}
+        <Button type="button" variant="outline" className="min-h-12 text-base" disabled={busy} aria-busy={busy} onClick={() => input.current?.click()}>
+          <ImagePlus className="size-5" aria-hidden /> {busy ? t("easy.photo.checking") : t("easy.photo.add")}
         </Button>
       )}
-      <input ref={input} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => void pick(e.target.files?.[0])} />
+      <input
+        ref={input}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="sr-only"
+        onChange={(e) => {
+          void pick(e.target.files?.[0]);
+          e.target.value = ""; // o'sha faylni qayta tanlash ham ishlasin
+        }}
+      />
       {error ? <p className="text-base font-semibold text-destructive" role="alert">{error}</p> : null}
     </div>
   );

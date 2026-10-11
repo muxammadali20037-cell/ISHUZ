@@ -55,7 +55,7 @@ export const vacancyListingSchema = z
     experienceMonths: z.union([z.literal(0), z.literal(12), z.literal(36)]),
     showPhone: z.boolean(),
     source: z.enum(["manual", "ai"]).optional(),
-    photoPath: z.string().regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/).nullable().optional(),
+    photoPath: z.string().regex(/^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/).nullable().optional(),
   })
   .refine(oneProfession, { path: ["professionNodeId"] })
   .refine((v) => v.remote || !!v.regionId, { path: ["regionId"] })

@@ -340,7 +340,10 @@
     "generic": "Saqlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring — javoblaringiz saqlanib qoldi",
     "appeal_not_allowed": "Qayta ko'rib chiqish allaqachon so'ralgan.",
     "invalid_custom_profession": "Kasb nomini 2–120 belgida yozing",
-    "invalid_category": "Kasbga eng yaqin sohani tanlang"
+    "invalid_category": "Kasbga eng yaqin sohani tanlang",
+    "photo_invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa JPG, PNG yoki WEBP surat tanlang",
+    "photo_unavailable": "Rasmni hozir tekshirib bo'lmadi. Uni qayta yuklang yoki rasmsiz davom eting",
+    "photo_not_verified": "Rasm tekshirilmagan. Uni qayta yuklang"
   },
   "nav": {
     "search": "Qidirish",
@@ -472,7 +475,9 @@
     "label": "Ish joyi surati",
     "bad_type": "Faqat JPG, PNG yoki WEBP rasm.",
     "too_large": "Rasm 5 MB dan katta bo'lmasin.",
-    "failed": "Rasmni yuklab bo'lmadi. Qayta urinib ko'ring."
+    "failed": "Rasmni yuklab bo'lmadi. Qayta urinib ko'ring.",
+    "checking": "Rasm tekshirilmoqda…",
+    "invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa surat tanlang."
   },
   "ai": {
     "choose": "E'lonni qanday tayyorlaysiz?",

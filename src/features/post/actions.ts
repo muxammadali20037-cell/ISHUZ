@@ -15,6 +15,7 @@ import { trackServer } from "@/features/analytics/server";
 import { toListingStateInfo, type ListingStateInfo } from "./types";
 import { keptWorkerFields, type ExistingWorker } from "./keep";
 import { vacancyListingSchema, workerListingSchema } from "./schema";
+import { finalizeVacancyPhoto } from "./photo-finalize";
 
 type Entity = "vacancy" | "worker";
 
@@ -94,6 +95,26 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
   return { ok: true, data: { ...info, workerId: res.worker_id } };
 }
 
+async function currentVacancyPhoto(supabase: Awaited<ReturnType<typeof createClient>>, vacancyId: string): Promise<string | null> {
+  const { data } = await supabase.from("vacancies").select("photo_path").eq("id", vacancyId).maybeSingle();
+  return data?.photo_path ?? null;
+}
+
+/**
+ * Yuklangan ish joyi surati darhol serverda tekshiriladi va qayta kodlanadi (F-06); qoralamaga faqat tekshirilgan
+ * yo'l (<uid>/v-<sha256>.webp) yoziladi — ko'rinadigan rasm ham, saqlanadigan rasm ham shu.
+ */
+export async function verifyVacancyPhoto(input: unknown): Promise<ActionResult<{ path: string }>> {
+  const parsed = z.object({ path: z.string().max(200) }).safeParse(input);
+  if (!parsed.success) return { ok: false, error: "photo_invalid" };
+  const session = await getSession();
+  if (!session) return { ok: false, error: "not_authenticated" };
+  if (session.profile.is_blocked) return { ok: false, error: "blocked" };
+  if (!(await allowRate(`photo:${session.userId}`, 30, 3600))) return { ok: false, error: "rate_limited" };
+  const res = await finalizeVacancyPhoto(session.userId, parsed.data.path);
+  return res.ok ? { ok: true, data: { path: res.path } } : { ok: false, error: res.error };
+}
+
 /**
  * Ish beruvchi e'lonini saqlash va joylash (`save_simple_vacancy`). clientRef bir xil bo'lsa — o'sha e'lon yangilanadi
  * (ikki marta bosish yoki tarmoqda qayta yuborish ikkinchi e'lon yaratmaydi). So'ng majburiy moderatsiya va
@@ -108,6 +129,13 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
   if (!(await allowRate(`publish:${session.userId}`, 20, 3600))) return { ok: false, error: "rate_limited" };
   const v = parsed.data;
   const supabase = await createClient();
+  let photoPath = v.photoPath ?? null;
+  if (photoPath) {
+    const photo = await finalizeVacancyPhoto(session.userId, photoPath);
+    if (photo.ok) photoPath = photo.path;
+    // e'londagi mavjud rasm (boshqa a'zo yuklagan yoki eski fayl) o'zgarmasa — tahrir to'xtamaydi, rasm joyida qoladi
+    else if (!v.vacancyId || photoPath !== (await currentVacancyPhoto(supabase, v.vacancyId))) return { ok: false, error: photo.error };
+  }
   const { data, error } = await supabase.rpc("save_simple_vacancy", {
     p: {
       vacancy_id: v.vacancyId,
@@ -129,7 +157,7 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
       salary_to: v.salaryTo,
       schedule: v.schedule,
       experience_min_months: v.experienceMonths,
-      photo_path: v.photoPath ?? null,
+      photo_path: photoPath,
     },
   });
   if (error || !data) return { ok: false, error: errorCode(error) };

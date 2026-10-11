@@ -2,23 +2,29 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { processModerationQueue } from "@/features/moderation/service";
+import { cleanupRawVacancyPhotos } from "@/features/post/photo-finalize";
 import { dispatchTelegramNotifications, type DispatchCounts } from "./telegram-dispatch";
 
 export interface TickResult {
   moderated: number;
   matchJobs: number;
   telegram: DispatchCounts | null;
+  photosRemoved: number;
 }
 
+const PHOTO_CLEANUP_EVERY_MS = 60 * 60_000;
+let lastPhotoCleanup = 0;
+
 /**
- * Fon ishlari bir joyda: moderatsiya navbati → moslik hodisalari (nashr / muhim yangilanish) → Telegram outbox.
+ * Fon ishlari bir joyda: moderatsiya navbati → moslik hodisalari (nashr / muhim yangilanish) → Telegram outbox
+ * → (soatiga ko'pi bilan 1 marta, har bir server nusxasida) tashlab ketilgan ish joyi rasmlarini tozalash.
  * E'lon joylash ekrani buni kutmaydi (after() yoki cron chaqiradi). Har bosqich xatosi keyingisini to'xtatmaydi.
  */
 export async function runBackgroundTick(opts: { moderation?: number; matchJobs?: number; telegram?: number; budgetMs?: number } = {}): Promise<TickResult> {
   const started = Date.now();
   const budget = opts.budgetMs ?? 50_000;
   const admin = createAdminClient();
-  const result: TickResult = { moderated: 0, matchJobs: 0, telegram: null };
+  const result: TickResult = { moderated: 0, matchJobs: 0, telegram: null, photosRemoved: 0 };
   try {
     result.moderated = await processModerationQueue(opts.moderation ?? 8, Math.min(25_000, budget / 2));
   } catch (e) {
@@ -35,6 +41,14 @@ export async function runBackgroundTick(opts: { moderation?: number; matchJobs?:
     result.telegram = await dispatchTelegramNotifications(admin, { limit: opts.telegram ?? 200, budgetMs: left });
   } catch (e) {
     console.error("[tick] telegram", e instanceof Error ? e.message : e);
+  }
+  if (Date.now() - lastPhotoCleanup > PHOTO_CLEANUP_EVERY_MS && Date.now() - started < budget) {
+    lastPhotoCleanup = Date.now();
+    try {
+      result.photosRemoved = await cleanupRawVacancyPhotos(100);
+    } catch (e) {
+      console.error("[tick] photo cleanup", e instanceof Error ? e.message : e);
+    }
   }
   return result;
 }

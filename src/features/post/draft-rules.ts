@@ -5,7 +5,7 @@ import { isBool, isCustomProfession, isId, isPickedProfession, isPlace, isStep, 
 
 const isSchedule = (v: unknown) => v === "" || (SCHEDULES as unknown[]).includes(v);
 const isSource = (v: unknown) => v === undefined || v === "manual" || v === "ai";
-const PHOTO_PATH = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
+const PHOTO_PATH = /^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/;
 
 export const WORKER_DRAFT_RULES: DraftRules<WorkerDraft> = {
   v: (x) => x === 1,

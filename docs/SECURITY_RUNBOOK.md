@@ -134,3 +134,20 @@ Agar migratsiyani avtomatik qo'llab bo'lmasa (masalan, tasdiq oynasi vaqtida tas
    update app_settings set value = '"https://<ref>.supabase.co"'::jsonb where key = 'storage_public_origin';
    ```
 6. Sayt: kirish, e'lon joylash, profil rasmi, admin panel → **Xavfsizlik** sahifasi ochilishini tekshiring. Muammo bo'lsa — 7-bo'lim (qisman orqaga qaytarish).
+
+### 9.1. Keyingi migratsiyalar: 0057 → 0058 (0056 dan keyin, shu tartibda)
+
+Har birini xuddi 1–2-qadamdagidek alohida so'rovda qo'llang (har biri bitta tranzaksiya; DROP/DELETE yo'q).
+
+| Fayl | Nima beradi | Qo'llanmaguncha ilova qanday ishlaydi |
+|---|---|---|
+| `0057_simple_custom_profession.sql` | sodda formalarda "Kasbim topilmadi" (F-05) | tugma ko'rinmaydi (bayroq `simple_listing_features()` yo'q) |
+| `0058_vacancy_photo_quarantine.sql` | yopiq karantin bucket, "v-" fayllarni himoya, vakansiyaga faqat tekshirilgan rasm (F-06) | rasm eski bucket'ga yuklanadi, lekin baribir serverda qayta kodlanadi |
+
+Tekshirish:
+```sql
+select public.simple_listing_features();                                   -- {"custom_profession": true, "photo_quarantine": true}
+select public from storage.buckets where id = 'vacancy-uploads';           -- false
+select count(*) from pg_trigger where tgname = 'trg_vacancy_a_photo_verified'; -- 1
+```
+Ilova bayroqni 10 daqiqagacha keshlaydi — qo'llangandan keyin "Kasbim topilmadi" va karantin shu vaqt ichida yoqiladi.

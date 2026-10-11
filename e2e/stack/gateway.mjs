@@ -16,6 +16,17 @@ const PORT = Number(process.env.GATEWAY_PORT || 54331);
 const PGRST_PORT = Number(process.env.PGRST_PORT || 3401);
 const STORAGE_DIR = process.env.STORAGE_DIR || path.resolve("e2e/.stack/storage");
 
+const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos"]);
+const RAW_PHOTO = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
+
+/** Mijoz yozuvi uchun Storage RLS siyosatlarining (0049, 0058) qisqa nusxasi; null — ruxsat */
+function clientWriteDenied(bucket, name, sub) {
+  if (!sub || name.split("/")[0] !== sub) return "own_folder";
+  if (bucket === "vacancy-uploads" && !RAW_PHOTO.test(name)) return "raw_name";
+  if (bucket === "vacancy-photos" && /\/v-[^/]*$/.test(name)) return "verified_server_only";
+  return null;
+}
+
 /** HS256 tekshiruvi: imzosi noto'g'ri yoki muddati o'tgan token — foydalanuvchi yo'q */
 function verify(token) {
   const [h, p, s] = (token || "").split(".");
@@ -85,29 +96,65 @@ http
       });
     }
 
+    // DELETE /storage/v1/object/<bucket> {prefixes: [...]} — faqat service role (Supabase'da mijoz uchun siyosat hal qiladi)
+    const rm = /^\/storage\/v1\/object\/([^/?]+)\/?$/.exec(url);
+    if (rm && req.method === "DELETE") {
+      const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+      if (c?.role !== "service_role") return json(res, 403, { statusCode: "403", error: "Unauthorized", message: "forbidden" });
+      const chunks = [];
+      req.on("data", (d) => chunks.push(d));
+      req.on("end", () => {
+        let prefixes = [];
+        try {
+          prefixes = JSON.parse(Buffer.concat(chunks).toString() || "{}").prefixes || [];
+        } catch {
+          return json(res, 400, { message: "bad json" });
+        }
+        const gone = [];
+        for (const name of prefixes) {
+          const f = path.join(STORAGE_DIR, rm[1], name);
+          if (f.startsWith(STORAGE_DIR + path.sep) && fs.existsSync(f)) {
+            fs.unlinkSync(f);
+            gone.push({ name, bucket_id: rm[1] });
+          }
+        }
+        json(res, 200, gone);
+      });
+      return;
+    }
+
     const st = /^\/storage\/v1\/object\/(public\/)?([^/?]+)\/([^?]+)/.exec(url);
     if (st) {
-      const file = path.join(STORAGE_DIR, st[2], decodeURIComponent(st[3]));
+      const bucket = st[2];
+      const name = decodeURIComponent(st[3]);
+      const file = path.join(STORAGE_DIR, bucket, name);
       if (!file.startsWith(STORAGE_DIR + path.sep)) return json(res, 400, { message: "bad path" });
+      const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
       if (!st[1] && (req.method === "POST" || req.method === "PUT")) {
-        const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
         if (!c) return json(res, 401, { message: "unauthorized" });
+        if (c.role !== "service_role") {
+          const denied = clientWriteDenied(bucket, name, c.sub);
+          if (denied) return json(res, 403, { statusCode: "403", error: "Unauthorized", message: `new row violates row-level security policy (${denied})` });
+          if (fs.existsSync(file) && req.headers["x-upsert"] !== "true") return json(res, 409, { statusCode: "409", error: "Duplicate", message: "The resource already exists" });
+        }
         const chunks = [];
         req.on("data", (d) => chunks.push(d));
         req.on("end", () => {
           fs.mkdirSync(path.dirname(file), { recursive: true });
           fs.writeFileSync(file, fileFromMultipart(Buffer.concat(chunks), req.headers["content-type"]));
-          json(res, 200, { Key: `${st[2]}/${st[3]}`, Id: crypto.randomUUID() });
+          json(res, 200, { Key: `${bucket}/${name}`, Id: crypto.randomUUID() });
         });
         return;
       }
-      if (req.method === "GET" && fs.existsSync(file)) {
+      // ommaviy havola — faqat ommaviy bucket; yopiq bucket'dan o'qish — faqat service role
+      const readable = PUBLIC_BUCKETS.has(bucket) || (!st[1] && c?.role === "service_role");
+      if (req.method === "GET" && readable && fs.existsSync(file)) {
         const ext = path.extname(file).toLowerCase();
         const type = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".pdf": "application/pdf" }[ext] || "application/octet-stream";
         res.writeHead(200, { "content-type": type, "x-content-type-options": "nosniff" });
         return res.end(fs.readFileSync(file));
       }
-      return json(res, 404, { message: "not found" });
+      return json(res, 404, { statusCode: "404", error: "not_found", message: "Object not found" });
     }
 
     if (url.startsWith("/rest/v1")) {

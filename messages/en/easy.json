@@ -340,7 +340,10 @@
     "generic": "Could not save. Check your internet and try again — your answers are kept",
     "appeal_not_allowed": "Another review was already requested.",
     "invalid_custom_profession": "Write the profession name (2–120 characters)",
-    "invalid_category": "Choose the closest field"
+    "invalid_category": "Choose the closest field",
+    "photo_invalid": "We couldn't read this image, or it isn't a photo. Choose another JPG, PNG or WEBP photo",
+    "photo_unavailable": "The photo couldn't be checked right now. Upload it again or continue without a photo",
+    "photo_not_verified": "The photo hasn't been checked. Please upload it again"
   },
   "nav": {
     "search": "Search",
@@ -472,7 +475,9 @@
     "label": "Workplace photo",
     "bad_type": "Only JPG, PNG or WEBP images.",
     "too_large": "The image must be under 5 MB.",
-    "failed": "Could not upload the photo. Please try again."
+    "failed": "Could not upload the photo. Please try again.",
+    "checking": "Checking the photo…",
+    "invalid": "We couldn't read this image, or it isn't a photo. Choose another photo."
   },
   "ai": {
     "choose": "How do you want to prepare the listing?",

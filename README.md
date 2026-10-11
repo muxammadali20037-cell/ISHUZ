@@ -36,7 +36,7 @@ npx supabase db push              # supabase/migrations/*.sql tartib bilan
 npm run db:types                  # src/types/database.types.ts ni yangilash (lokal DB dan)
 ```
 
-Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0057` fayllarini tartib bilan ishga tushiring (har biri bitta tranzaksiya).
+Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0058` fayllarini tartib bilan ishga tushiring (har biri bitta tranzaksiya).
 
 > Production/staging/lokal holati (qaysi migratsiya qo'llangan, nima tashqi sozlama kutyapti) — [`docs/PROFESSIONALIZATION_REPORT.md`](docs/PROFESSIONALIZATION_REPORT.md) → "Reliz holati". Eski hisobotlar (`MASTER_SPEC_STATUS.md` va boshq.) sanasi bilan tarix sifatida qoladi.
 
