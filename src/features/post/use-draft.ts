@@ -50,6 +50,8 @@ export function useDraft<T extends { v: number; step: number }>({
   const ownerRef = useRef<string | null>(null);
   // faqat foydalanuvchi o'zgartirganidan keyin yoziladi: tozalangan qoralama avtomatik "tirilmaydi"
   const dirty = useRef(false);
+  // mehmon "kirish"ga ketgan vaqt: keyingi avtosaqlash ham shu belgini saqlaydi (aks holda o'tkazish yo'qolardi)
+  const handoffAt = useRef<number | undefined>(undefined);
 
   useEffect(() => {
     const id = window.setTimeout(() => {
@@ -85,7 +87,13 @@ export function useDraft<T extends { v: number; step: number }>({
   useEffect(() => {
     if (!ready || !dirty.current || !keyRef.current || !ownerRef.current) return;
     try {
-      writeEnvelope(window.localStorage, keyRef.current, { schema: 2, owner: ownerRef.current, updatedAt: Date.now(), data: draft as unknown as Record<string, unknown> });
+      writeEnvelope(window.localStorage, keyRef.current, {
+        schema: 2,
+        owner: ownerRef.current,
+        updatedAt: Date.now(),
+        handoffAt: handoffAt.current,
+        data: draft as unknown as Record<string, unknown>,
+      });
     } catch {
       // xotira to'la/yopiq — forma ishlashda davom etadi
     }
@@ -113,6 +121,7 @@ export function useDraft<T extends { v: number; step: number }>({
   /** Qoralamani o'chirish (muvaffaqiyatli yuborilgandan keyin): keyingi o'zgarishgacha qayta yozilmaydi */
   const clear = useCallback(() => {
     dirty.current = false;
+    handoffAt.current = undefined;
     setRestored(false);
     try {
       if (keyRef.current) window.localStorage.removeItem(keyRef.current);
@@ -130,10 +139,12 @@ export function useDraft<T extends { v: number; step: number }>({
   const prepareAuthHandoff = useCallback(
     (patch?: Partial<T>) => {
       const next = { ...draft, ...patch };
-      setDraft(next);
+      if (patch) setDraft(next);
       if (userId || !keyRef.current || !ownerRef.current) return;
       try {
         const now = Date.now();
+        handoffAt.current = now;
+        dirty.current = true;
         writeEnvelope(window.localStorage, keyRef.current, { schema: 2, owner: ownerRef.current, updatedAt: now, handoffAt: now, data: next as unknown as Record<string, unknown> });
       } catch {
         // xotira yopiq — kirgandan keyin forma yangidan to'ldiriladi

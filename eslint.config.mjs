@@ -11,6 +11,8 @@ const eslintConfig = defineConfig([
     "src/types/database.types.ts",
     // Default ignores of eslint-config-next:
     ".next/**",
+    ".next-e2e/**",
+    "e2e/.stack/**",
     "out/**",
     "build/**",
     "next-env.d.ts",

@@ -10,6 +10,8 @@ const supabaseHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  // E2E stendi o'z build'ini alohida papkada saqlaydi (oddiy build'ni ustidan yozmaydi); odatda .next
+  ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   reactStrictMode: true,
   poweredByHeader: false,
   // PDF CV shriftlari serverless funksiyaga qo'shiladi (fs orqali o'qiladi)

@@ -63,3 +63,49 @@ jobs:
       - uses: actions/checkout@v4
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
       - run: bash scripts/db-test.sh
+
+  e2e:
+    name: Browser E2E (izolyatsiyalangan lokal stend)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      E2E_PG: postgres://postgres:postgres@127.0.0.1:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+      - name: PostgREST 12.2.3 (nazorat yig'indisi bilan)
+        run: |
+          curl -fsSL -o /tmp/pgrst.tar.xz https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz
+          echo "9f71269e61ac3a940281e93ff415760f5957e430e475ba4c3889f3ede7d5527c  /tmp/pgrst.tar.xz" | sha256sum -c -
+          tar -xJf /tmp/pgrst.tar.xz -C /tmp && sudo install /tmp/postgrest /usr/local/bin/postgrest
+      - run: npx playwright install --with-deps chromium
+      - name: Stend (toza baza + barcha migratsiyalar + build)
+        run: bash e2e/stack/up.sh
+      - name: Playwright
+        run: npx playwright test -c e2e
+      - name: Xato bo'lsa — hisobot, trace, skrinshot va loglar
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report-${{ github.run_id }}
+          path: |
+            e2e/.stack/report
+            e2e/.stack/results
+            e2e/.stack/*.log
+          retention-days: 7

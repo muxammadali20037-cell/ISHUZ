@@ -18,6 +18,8 @@
 .DS_Store
 .env
 .env*
+# sirlarsiz namuna repoda saqlanadi
+!.env.example
 .pnp.*
 .pnpm-debug.log*
 .vercel
@@ -35,3 +37,6 @@ npm-debug.log*
 uploads/
 yarn-debug.log*
 yarn-error.log*
+# e2e stendi
+/.next-e2e/
+/e2e/.stack/
