@@ -16,6 +16,7 @@ import { publishWorkerListing } from "../actions";
 import { parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type ListingStateInfo, type PostViewer, type WorkerDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
+import { WORKER_DRAFT_RULES } from "../draft-rules";
 import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, VerifiedPhone, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
@@ -23,9 +24,8 @@ import { ModerationOutcome } from "./moderation-outcome";
 import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
 import { AvatarUpload } from "@/features/profile/components/edit/avatar-upload";
 import { RegionPicker, placeLabel } from "./region-picker";
-import { ChoiceButtons, ChosenLine, FieldError, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
+import { ChoiceButtons, ChosenLine, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
 
-const KEY = "ib_post_worker_v1";
 const TOTAL = 4;
 const PATH = "/post/worker";
 
@@ -72,7 +72,12 @@ export function WorkerPost({
 }) {
   const { t, name, tEnum, locale } = useT();
   const router = useRouter();
-  const { draft, update, ready, clear, reset } = useDraft<WorkerDraft>(KEY, () => ({ ...emptyDraft(), ...prefill }));
+  const { draft, update, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<WorkerDraft>({
+    entity: "worker",
+    userId: viewer.userId,
+    makeInitial: () => ({ ...emptyDraft(), ...prefill }),
+    rules: WORKER_DRAFT_RULES,
+  });
   const { step, go } = useStep(TOTAL, draft.step);
   const [errors, setErrors] = useState<Errors>({});
   const [pending, start] = useTransition();
@@ -157,7 +162,7 @@ export function WorkerPost({
       return;
     }
     if (!viewer.loggedIn) {
-      update({ step: TOTAL });
+      prepareAuthHandoff({ step: TOTAL });
       const q = new URLSearchParams({ next: `${PATH}?step=${TOTAL}` });
       if (phone) q.set("phone", phone);
       router.push(`/auth?${q.toString()}`);
@@ -294,6 +299,7 @@ export function WorkerPost({
       stepName={stepNames[step - 1]!}
       loggedIn={viewer.loggedIn}
       loginHref={loginHref}
+      onLogin={() => prepareAuthHandoff()}
       onBack={step > 1 ? () => goTo(step - 1) : undefined}
       backHref="/"
       onNext={step < TOTAL ? next : publish}
@@ -301,6 +307,7 @@ export function WorkerPost({
       nextIcon={step < TOTAL}
       pending={pending}
     >
+      {restored && existing ? <LocalChangesNotice onKeep={dismissRestored} onDiscard={() => (reset(), setErrors({}), go(1, true))} /> : null}
       {step > 1 && step < TOTAL && draft.profession ? <ChosenLine label={t("easy.wizard.steps.profession")} value={professionTrail} /> : null}
 
       {step === 1 ? (

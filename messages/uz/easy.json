@@ -99,7 +99,11 @@
     },
     "optional": "ixtiyoriy",
     "image_note": "Kasb tasviri — e'loningizda ko'rinadi. Bu sizning suratingiz emas.",
-    "saving": "Saqlanmoqda…"
+    "saving": "Saqlanmoqda…",
+    "local_changes_title": "Bu qurilmada saqlanmagan o'zgarishlar bor",
+    "local_changes_desc": "Oldin boshlagan, lekin hali saqlanmagan tahrirlaringiz tiklandi.",
+    "local_changes_keep": "Davom ettirish",
+    "local_changes_discard": "Saqlangan holatni ochish"
   },
   "location": {
     "worker_title": "Qayerda ishlamoqchisiz?",

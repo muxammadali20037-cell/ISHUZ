@@ -3,6 +3,7 @@ import { getSession } from "@/features/auth/session";
 import { TopBar, unreadCounts } from "./top-bar";
 import { BottomNav, type NavRole } from "./app-shell";
 import { LastSeenPing } from "./last-seen-ping";
+import { DraftGuard } from "./draft-guard";
 
 /**
  * Umumiy sahifa qobig'i: yuqori panel + (mobil) pastki navigatsiya.
@@ -19,6 +20,7 @@ export async function Shell({ children, forceRole, hideNav }: { children: ReactN
       <main className={hideNav ? "flex-1" : "flex-1 page-with-tabbar md:pb-8"}>{children}</main>
       {!hideNav ? <BottomNav role={role} counts={counts} /> : null}
       {session ? <LastSeenPing /> : null}
+      <DraftGuard userId={session?.userId ?? null} />
     </div>
   );
 }

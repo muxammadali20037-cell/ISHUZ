@@ -99,7 +99,11 @@
     },
     "optional": "optional",
     "image_note": "Profession image — shown on your listing. It is not your photo.",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "local_changes_title": "There are unsaved changes on this device",
+    "local_changes_desc": "Edits you started earlier but did not save were restored.",
+    "local_changes_keep": "Continue",
+    "local_changes_discard": "Open the saved version"
   },
   "location": {
     "worker_title": "Where do you want to work?",

@@ -15,6 +15,7 @@ import { publishVacancyListing } from "../actions";
 import { formatMoneyInput, parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type ListingStateInfo, type PostViewer, type VacancyDraft } from "../types";
 import { useDraft, useStep } from "../use-draft";
+import { vacancyDraftRules } from "../draft-rules";
 import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
@@ -22,7 +23,7 @@ import { ModerationOutcome } from "./moderation-outcome";
 import { PhotoUpload } from "./photo-upload";
 import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
 import { RegionPicker, placeLabel } from "./region-picker";
-import { ChoiceButtons, ChosenLine, FieldError, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
+import { ChoiceButtons, ChosenLine, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
 
 const TOTAL = 4;
 const PATH = "/post/vacancy";
@@ -80,8 +81,15 @@ export function VacancyPost({
 }) {
   const { t, name, tEnum } = useT();
   const router = useRouter();
-  const storageKey = editId ? `ib_post_vacancy_edit_${editId}` : "ib_post_vacancy_v1";
-  const { draft, update, ready, clear, reset } = useDraft<VacancyDraft>(storageKey, () => ({ ...emptyDraft(), ...prefill }));
+  const rules = useMemo(() => vacancyDraftRules(editId), [editId]);
+  const { draft, update, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<VacancyDraft>({
+    entity: "vacancy",
+    editId,
+    userId: viewer.userId,
+    makeInitial: () => ({ ...emptyDraft(), ...prefill }),
+    rules,
+    compareIgnore: ["step", "clientRef"],
+  });
   const { step, go } = useStep(TOTAL, draft.step);
   const [errors, setErrors] = useState<Errors>({});
   const [pending, start] = useTransition();
@@ -169,7 +177,7 @@ export function VacancyPost({
       return;
     }
     if (!viewer.loggedIn) {
-      update({ step: TOTAL });
+      prepareAuthHandoff({ step: TOTAL });
       const q = new URLSearchParams({ next: `${PATH}?step=${TOTAL}` });
       if (phone) q.set("phone", phone);
       router.push(`/auth?${q.toString()}`);
@@ -336,6 +344,7 @@ export function VacancyPost({
       stepName={stepNames[step - 1]!}
       loggedIn={viewer.loggedIn}
       loginHref={loginHref}
+      onLogin={() => prepareAuthHandoff()}
       onBack={step > 1 ? () => goTo(step - 1) : undefined}
       backHref={editId ? "/cabinet" : "/"}
       onNext={step < TOTAL ? next : publish}
@@ -343,6 +352,7 @@ export function VacancyPost({
       nextIcon={step < TOTAL}
       pending={pending}
     >
+      {restored && editId ? <LocalChangesNotice onKeep={dismissRestored} onDiscard={() => (reset(), setErrors({}), go(1, true))} /> : null}
       {step > 1 && step < TOTAL && draft.profession ? <ChosenLine label={t("easy.wizard.steps.specialist")} value={professionTrail} /> : null}
 
       {step === 1 ? (

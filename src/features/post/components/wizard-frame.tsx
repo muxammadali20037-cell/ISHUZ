@@ -18,6 +18,7 @@ export function WizardFrame({
   stepName,
   loggedIn,
   loginHref,
+  onLogin,
   onBack,
   backHref,
   onNext,
@@ -33,6 +34,8 @@ export function WizardFrame({
   stepName: string;
   loggedIn: boolean;
   loginHref: string;
+  /** mehmon kirishga ketyapti — qoralama kirgandan keyin shu hisobga o'tishi uchun belgilanadi */
+  onLogin?: () => void;
   onBack?: () => void;
   backHref?: string;
   onNext?: () => void;
@@ -56,7 +59,7 @@ export function WizardFrame({
         <div className="flex items-center justify-between gap-3">
           <p className="text-base font-bold uppercase tracking-wide text-primary">{title}</p>
           {!loggedIn ? (
-            <Link href={loginHref} className="inline-flex min-h-12 items-center gap-1.5 rounded-xl px-3 text-base font-semibold text-primary hover:bg-primary-soft">
+            <Link href={loginHref} onClick={onLogin} className="inline-flex min-h-12 items-center gap-1.5 rounded-xl px-3 text-base font-semibold text-primary hover:bg-primary-soft">
               <LogIn className="size-5" aria-hidden /> {t("easy.wizard.login")}
             </Link>
           ) : null}
@@ -176,6 +179,28 @@ export function ReviewRow({ label, children, onChange, changeLabel }: { label: s
       <Button type="button" variant="outline" className="h-12 shrink-0 px-3 text-base" onClick={onChange}>
         {changeLabel}
       </Button>
+    </div>
+  );
+}
+
+/**
+ * Tahrirlashda shu qurilmada saqlanmagan o'zgarishlar topildi: foydalanuvchi ongli tanlaydi —
+ * davom ettirish yoki serverdagi (joylangan) holatni ochish. Eski qoralama jim ustidan yozilmaydi.
+ */
+export function LocalChangesNotice({ onKeep, onDiscard }: { onKeep: () => void; onDiscard: () => void }) {
+  const { t } = useT();
+  return (
+    <div role="status" className="mb-5 rounded-2xl border border-warning/40 bg-warning-soft px-4 py-3">
+      <p className="text-base font-semibold">{t("easy.wizard.local_changes_title")}</p>
+      <p className="mt-1 text-sm text-muted-foreground">{t("easy.wizard.local_changes_desc")}</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button type="button" size="lg" onClick={onKeep}>
+          {t("easy.wizard.local_changes_keep")}
+        </Button>
+        <Button type="button" size="lg" variant="outline" onClick={onDiscard}>
+          {t("easy.wizard.local_changes_discard")}
+        </Button>
+      </div>
     </div>
   );
 }
