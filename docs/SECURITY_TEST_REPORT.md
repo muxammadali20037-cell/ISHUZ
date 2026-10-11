@@ -71,4 +71,4 @@ To'liq va joriy holat: [PROFESSIONALIZATION_REPORT.md](PROFESSIONALIZATION_REPOR
 | Storage: yopiq karantin, begona papka, "v-" fayl yaratish/almashtirish/o'chirish taqiqi; vakansiyaga tekshirilmagan yo'l (mijoz va RPC); tozalash ro'yxati faqat service role (`vacancy_photo_quarantine.test.sql`) | PASS (21) |
 | Brauzer: rasm yuklash → toza WebP, rad etilgan fayl karantinda qolmaydi, eski rasmli e'lon tahriri (`vacancy-photo.spec.ts`) | PASS (4) |
 | Qoralamalar hisoblar orasida aralashmaydi (`drafts.spec.ts`) | PASS (4) |
-| Production holati (read-only): 0056/0057/0058 qo'llanmagan — yuqoridagi DB darajasidagi tuzatishlar production'da hali **amalda emas** | BLOCKED (egasi, RUNBOOK §9) |
+| Production holati (read-only, 2026-10-11): 0056/0057/0058 qo'llangan; yozuv siyosatlari 44, preflight `PT418`, karantin bucket yopiq, tozalash funksiyasi faqat service role | PASS |

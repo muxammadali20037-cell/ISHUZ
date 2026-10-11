@@ -12,11 +12,10 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
 | Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0058 toza bazaga | ✅ lint, typecheck, unit, SQL, build, 24 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0055 gacha** (read-only tekshiruv: `security_events` yo'q, `simple_listing_features()` yo'q, `vacancy-uploads` yo'q) | ⚠️ kod 0056–0058 siz ham ishlaydi (imkoniyat bayroqlari), lekin xavfsizlik va yangi funksiyalar **0056→0057→0058** qo'llangandan keyin to'liq |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0058** (egasi SQL Editor'da qo'lladi, 2026-10-11; read-only tekshirildi — §2 F-02) | ✅ xavfsizlik qatlami, "Kasbim topilmadi" va rasm karantini yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
-Production'ga to'sqinlik qilayotganlar (egasi bajaradi, kod tayyor): 0056/0057/0058 ni SQL Editor'da qo'llash
-([SECURITY_RUNBOOK §9–9.1](SECURITY_RUNBOOK.md)); zaxira sirlari (GitHub Secrets); staging muhit.
+Qolgan to'siqlar (egasi): zaxira sirlari (GitHub Secrets) — UNKNOWN; staging muhit (yuklama testi, haqiqiy Telegram oqimi).
 
 ## 2. Topilmalar: muammo → sabab → fayl → yechim → tekshiruv → qolgan cheklov
 
@@ -32,11 +31,20 @@ Production'ga to'sqinlik qilayotganlar (egasi bajaradi, kod tayyor): 0056/0057/0
   keyingi tungi run yoki qo'lda "Run workflow" aniq ko'rsatadi. Provayder (Supabase) backup'i — tarif bo'yicha, Storage baytlari pg_dump'ga **kirmaydi** (alohida reja kerak).
   Taklif: RPO ≤ 24 soat (kunlik), RTO — o'lchangan tiklash 4 s (kichik baza) + deploy; bu **kafolat emas**, haqiqiy hajmda qayta o'lchansin.
 
-### F-02 · P0 · 0056 production holati — ⏳ BLOCKED (egasi)
-- **Holat (read-only, 2026-10-11):** 0056, 0057, 0058 **qo'llanmagan**; oxirgi qayd — 0055.
-- **Sabab:** MCP `apply_migration` tasdiq oynasida bekor bo'ldi; avtomatik qayta urinish qilinmadi.
-- **Yechim:** qo'lda qo'llash yo'riqnomasi va tekshiruv so'rovlari — [SECURITY_RUNBOOK §9, §9.1](SECURITY_RUNBOOK.md). Har biri bitta tranzaksiya, DROP/DELETE yo'q.
-- **Moslik:** joriy kod 0056/0057/0058 siz ham ishlaydi (bayroq `simple_listing_features()` topilmasa — "Kasbim topilmadi" yashirin, rasm eski bucket orqali, baribir qayta kodlanadi).
+### F-02 · P0 · 0056 production holati — ✅ qo'llandi va tekshirildi (2026-10-11)
+- **Avval:** 0056/0057/0058 qo'llanmagan edi (MCP `apply_migration` tasdiq oynasida bekor bo'lgan).
+- **Birinchi qo'lda urinishdagi xato:** SQL Editor `patch_fn … naqsh 0 marta uchradi` — muharrir skriptni CRLF qatorlar bilan yuboradi, ko'p qatorli
+  yamoq naqshi LF bilan saqlangan funksiyaga mos kelmadi. Butun skript bitta tranzaksiya edi — hech narsa o'zgarmagani read-only tasdiqlandi.
+  Tuzatish (`2f73f5c`): `patch_fn` solishtirishdan oldin `\r` ni olib tashlaydi; CRLF nusxalari 0055 holatidagi bazada sinaldi, yamoqlanadigan 8 funksiya
+  production bilan solishtirildi (6 tasi baytma-bayt bir xil, 2 tasida yamoq joyi aynan 1 marta).
+- **Egasi qo'lladi:** 0056 → `storage_public_origin` → 0057 → 0058 (SQL Editor).
+- **Read-only tekshiruv (PASS):** `security_events` bor; `sec_active_*` yozuv siyosatlari — 44; `refresh_worker_completeness` va `worker_completeness` da qo'riqchi;
+  `authenticator` → `pgrst.db_pre_request=public.api_pre_request`, preflight → `PT418 pre_request_active`; `storage_public_origin` o'rnatilgan;
+  `simple_listing_features()` → `{custom_profession: true, photo_quarantine: true}`; `vacancy-uploads` yopiq; trigger, yuklash siyosati va 3 ta toraytirilgan
+  `vacancy_photos_*` siyosati bor; `stale_raw_vacancy_photos` faqat service role uchun (anon/authenticated — yo'q).
+  Supabase security advisors: ERROR yo'q; WARN'lar avvaldan bor (SECURITY DEFINER RPC'lar ichki tekshiruv bilan; `api_pre_request` PostgREST uchun anon'ga ochiq bo'lishi shart).
+  Generatsiya qilingan tiplar lokal `database.types.ts` bilan mos (78 jadval, 214 funksiya, 22 enum).
+- **Tekshirilmadi:** sayt va REST API'ga HTTP so'rov (bu muhitning tarmoq siyosati `ishtopdim.uz` va `*.supabase.co` ni bloklaydi) — egasi brauzerda tekshiradi.
 
 ### F-03 · P1 · Qoralamalar hisobga ajratilmagan — ✅ tuzatildi
 - **Sabab:** bitta umumiy `localStorage` kaliti; chiqish/hisob almashganda boshqa odam ko'rardi; JSON tekshirilmasdi.
@@ -56,13 +64,13 @@ Production'ga to'sqinlik qilayotganlar (egasi bajaradi, kod tayyor): 0056/0057/0
 - **Fayllar:** `src/features/find/{queries.ts,components/find-page.tsx,components/find-client.tsx}`, `src/app/search/page.tsx`.
 - **Tekshiruv:** 5 unit, 3 E2E (`search.spec.ts`: haqiqiy RPC xatosi PostgREST'da funksiya nomini vaqtincha o'zgartirib) — PASS.
 
-### F-05 · P1 · Sodda formalarda katalogdan tashqari kasb — ✅ kod · ⏳ production 0057
+### F-05 · P1 · Sodda formalarda katalogdan tashqari kasb — ✅ (0057 production'da)
 - **Yechim:** "Kasbim topilmadi" → asl nom → eng yaqin soha; Zod (2–120 belgi, aniq bitta: tugun yoki custom) → server action →
   0057 RPC yamoqlari → `custom_occupation_requests` (dublikatsiz) → moderatsiya snapshot; custom kasb katalog tuguni sifatida ko'rsatilmaydi ("Qo'lda yozilgan").
   Qisqa formadan tahrir batafsil qiymatlarni yo'qotmaydi (aniq tajriba darajasi, sarlavha, qo'shimcha jadval, masofaviy "any", maosh davri).
 - **Tekshiruv:** 19 SQL, 4 unit (`keep.test.ts`), 1 E2E (ishchi) — PASS. Vakansiya uchun custom — SQL'da PASS, E2E — NOT_RUN.
 
-### F-06 · P1 · Fayl tekshiruvi yuklashdan keyin — ✅ vakansiya rasmi · ⏳ 0058 · avatar/logo ochiq
+### F-06 · P1 · Fayl tekshiruvi yuklashdan keyin — ✅ vakansiya rasmi (0058 production'da) · avatar/logo ochiq
 - **Yechim:** xom fayl yopiq karantinga (`vacancy-uploads`) → server darhol: hajm ≤5 MB, magic bytes, piksel ≤40 MP, xavfsiz dekoder →
   EXIF/GPS'siz WebP ≤1600 px → `<egasi>/v-<sha256>.webp` (o'zgarmas, mijoz yoza/almashtira/o'chira olmaydi); vakansiyaga faqat shu yo'l (trigger);
   karantindagi xom fayl natijadan qat'i nazar darhol o'chadi; tashlab ketilgan fayllar soatiga tozalanadi (ishlatilayotgani tegilmaydi).
@@ -141,7 +149,7 @@ Metodika tuzatishi: dastlabki o'lchovda ~700 ms "bosish" ko'rindi — bu yuklani
 ### Xavfsizlik
 Avvalgi tekshiruvlar ([SECURITY_TEST_REPORT.md](SECURITY_TEST_REPORT.md)) saqlandi. Shu sessiyada qo'shilgan: Storage karantin siyosatlari va "v-" fayl himoyasi (SQL),
 vakansiya rasm yo'li triggeri (mijoz va SECURITY DEFINER RPC orqali ham), service-only tozalash funksiyasi, server action'da rate limit.
-Production'da 0056 qo'llanmaguncha [SECURITY_AUDIT.md](SECURITY_AUDIT.md) dagi tuzatishlarning DB qismi **amalda emas**.
+0056 production'da 2026-10-11 qo'llandi — [SECURITY_AUDIT.md](SECURITY_AUDIT.md) dagi tuzatishlarning DB qismi endi amalda (F-02 dagi tekshiruv).
 
 ## 5. E bosqichi — test va qabul mezonlari (24 band)
 
@@ -160,7 +168,7 @@ Yig'indi: unit **515 PASS / 18 skip** · SQL **24 fayl PASS** · brauzer E2E **2
 | 9 | Muvaffaqiyatdan keyin tozalangan qoralama qaytmaydi | PASS (unit) | `draft-store.test.ts` |
 | 10 | Parallel bosish → bitta e'lon | PASS | `flows.spec.ts`, `flows.test.sql` (client_ref) |
 | 11 | Batafsil profil qisqa formada tahrir — ma'lumot saqlanadi | PASS | `keep.test.ts`, `simple_custom_profession.test.sql`, `vacancy-photo.spec.ts` |
-| 12 | Telefon ko'rinishi karta/detail/REST'da mos | PASS (lokal SQL) · production 0056 kutilmoqda | `security*.test.sql`, `contact_requests.test.sql` |
+| 12 | Telefon ko'rinishi karta/detail/REST'da mos | PASS (lokal SQL) · production'da 0056 qo'llangan (read-only) | `security*.test.sql`, `contact_requests.test.sql` |
 | 13 | Begona ID bilan draft/telefon/CV/KYC/chat | PASS (lokal SQL) | `security*.test.sql` |
 | 14 | Moderatsiya approve/review/reject, appeal, timeout, retry | PASS (SQL) · E2E NOT_RUN | `moderation.test.sql` |
 | 15 | Zararli/soxta upload, begona yo'l, EXIF, almashtirish | PASS | `photo-finalize.test.ts`, `vacancy_photo_quarantine.test.sql`, `vacancy-photo.spec.ts` |
@@ -172,7 +180,7 @@ Yig'indi: unit **515 PASS / 18 skip** · SQL **24 fayl PASS** · brauzer E2E **2
 | 21 | Ariza → javob → taklif/chat → natija | PASS (SQL) · E2E NOT_RUN | `pipeline.test.sql`, `flows.test.sql` |
 | 22 | Til, 360–1440, 200% zoom, klaviatura, reduced-motion | PASS (uz/ru/en; oz — unit tarjima tekshiruvi) | `a11y.spec.ts`, `flows.spec.ts` |
 | 23 | Backup disabled/success/failure; artifact; restore | Lokal PASS · GitHub sirlari UNKNOWN | `scripts/backup/*`, workflow'lar |
-| 24 | Barcha migratsiyalar toza bazada; destructive yo'q | PASS (toza baza, CI) · production qo'llanmagan | `scripts/db-test.sh` |
+| 24 | Barcha migratsiyalar toza bazada; destructive yo'q | PASS (toza baza, CI; CRLF nusxa 0055 ustiga) · production 0056–0058 qo'llangan | `scripts/db-test.sh`, F-02 |
 
 **18 ta skip (yashirilmaydi):** hammasi `src/features/matching/engine.parity.test.ts` — TS `computeMatch` ↔ SQL `compute_match` paritet testi.
 Sabab topildi: suite `compute_match` tanasini faqat `0008` fayli bilan solishtiradi, funksiya esa 0013/0028/**0050** da qayta yozilgan —
@@ -195,16 +203,16 @@ ta'sir yo'q, lekin README'dagi "bir xil natija" da'vosi noto'g'ri edi (tuzatildi
 | `employer_verification_required` | `app_settings` | true | true | birinchi vakansiya admin tasdig'idan keyin |
 | `admin_mfa_required` | `app_settings` | true | true | admin amallari uchun MFA |
 | `profession_images_enabled` | `app_settings` | true | true | AI kasb tasvirlari |
-| `security_alerts_enabled`, `security_restrictions_enforce` | `app_settings` (0056) | true / false | **yo'q** (0056 qo'llanmagan) | xavfsizlik hodisalari va cheklovlar |
-| `simple_listing_features().custom_profession` | DB funksiya (0057) | true | **yo'q** → UI'da yashirin | "Kasbim topilmadi" |
-| `simple_listing_features().photo_quarantine` | DB funksiya (0058) | true | **yo'q** → eski bucket | yopiq karantin bucket |
+| `security_alerts_enabled`, `security_restrictions_enforce` | `app_settings` (0056) | true / false | 0056 bilan qo'shildi (sukut) | xavfsizlik hodisalari va cheklovlar |
+| `simple_listing_features().custom_profession` | DB funksiya (0057) | true | **true** | "Kasbim topilmadi" |
+| `simple_listing_features().photo_quarantine` | DB funksiya (0058) | true | **true** | yopiq karantin bucket |
 | AI kalitlari (`GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `IMAGE_GEN_API_KEY`) | env | bo'sh | env — ko'rinmaydi | bo'sh → AI tugmalari ko'rinmaydi, asosiy xizmat ishlaydi |
 
 ## 7. Tashqi sozlamalar (sir qiymatlari bu yerda yo'q)
 
 | Nomi | Qayerga | Vazifasi | Qanday tekshiriladi |
 |---|---|---|---|
-| 0056 → 0057 → 0058 | Supabase → SQL Editor | xavfsizlik, custom kasb, rasm karantini | SECURITY_RUNBOOK §9.1 dagi so'rovlar |
+| ~~0056 → 0057 → 0058~~ | Supabase → SQL Editor | ✅ 2026-10-11 qo'llandi | F-02 |
 | `SUPABASE_DB_URL` | GitHub → Settings → Secrets → Actions | kunlik shifrlangan zaxira (Session pooler satri) | Actions → "DB backup" → Run → summary'dagi manifest |
 | `BACKUP_AGE_RECIPIENT` | GitHub Secrets | age **ochiq** kaliti (yopiq kalit egasida oflayn) | o'sha run |
 | `BACKUP_DISABLED` (ixtiyoriy) | GitHub → Variables | zaxirani ataylab o'chirish (run sariq, qizil emas) | — |
