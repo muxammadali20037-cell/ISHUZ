@@ -5254,6 +5254,7 @@ export type Database = {
           title: string;
         }[];
       };
+      simple_listing_features: { Args: Record<PropertyKey, never>; Returns: Json };
       simple_search_vacancies: {
         Args: {
           p_district_id?: string;

@@ -45,10 +45,18 @@ export interface PlaceChoice {
 
 export const EMPTY_PLACE: PlaceChoice = { regionId: null, districtId: null, districtChosen: false, remote: false };
 
+/** Katalogda yo'q kasb: asl nom + eng yaqin soha (katalog tuguni emas — tekshiruvdan keyin qo'shilishi mumkin) */
+export interface CustomProfession {
+  text: string;
+  categoryId: string;
+}
+
 export interface WorkerDraft {
   v: 1;
   step: number;
   profession: PickedProfession | null;
+  /** "Kasbim topilmadi" — profession bilan bir vaqtda bo'lmaydi */
+  custom?: CustomProfession | null;
   place: PlaceChoice;
   /** ishchi: viloyat tanlanadi + "masofadan ham ishlay olaman" belgisi */
   remoteOk: boolean;
@@ -72,6 +80,7 @@ export interface VacancyDraft {
   /** tahrirlanayotgan vakansiya */
   editId: string | null;
   profession: PickedProfession | null;
+  custom?: CustomProfession | null;
   place: PlaceChoice;
   employerType: SimpleEmployerType | null;
   orgName: string;
@@ -83,6 +92,8 @@ export interface VacancyDraft {
   title: string;
   schedule: Enums<"work_schedule"> | "";
   experienceMonths: VacancyExperience;
+  /** mavjud vakansiyaning maosh davri (qisqa formada o'zgartirilmaydi; yangi e'lon — oylik) */
+  salaryType?: Enums<"salary_type">;
   showPhone: boolean;
   /** haqiqiy ish joyi surati (vacancy-photos bucket yo'li), ixtiyoriy */
   photoPath?: string | null;

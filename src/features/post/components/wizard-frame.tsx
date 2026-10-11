@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, type ReactNode } from "react";
-import { ArrowLeft, ArrowRight, LogIn } from "lucide-react";
+import { ArrowLeft, ArrowRight, LogIn, PenLine } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -215,3 +215,38 @@ export function ChosenLine({ label, value }: { label: string; value: string }) {
   );
 }
 
+
+/** Tanlangan kasb nomi va yo'li: katalog kasbi yoki "Kasbim topilmadi" (custom — katalog tuguni sifatida ko'rsatilmaydi) */
+export function professionLabels<C extends { id: string }>(
+  draft: { profession: { categoryId: string; trail: { name_uz: string; name_ru: string; name_en: string | null }[] } | null; custom?: { text: string; categoryId: string } | null },
+  categories: C[],
+  name: (x: C | { name_uz: string; name_ru: string; name_en: string | null }) => string,
+  customBadge: string,
+) {
+  const categoryId = draft.profession?.categoryId ?? draft.custom?.categoryId ?? null;
+  const category = categories.find((c) => c.id === categoryId) ?? null;
+  if (draft.profession) {
+    const professionName = name(draft.profession.trail.at(-1)!);
+    const professionTrail = [category ? name(category) : null, ...draft.profession.trail.map((x) => name(x))].filter(Boolean).join(" › ");
+    return { category, professionName, professionTrail };
+  }
+  if (draft.custom) {
+    const professionTrail = [category ? name(category) : null, `${draft.custom.text} (${customBadge})`].filter(Boolean).join(" › ");
+    return { category, professionName: draft.custom.text, professionTrail };
+  }
+  return { category, professionName: "", professionTrail: "" };
+}
+
+/** "Kasbim topilmadi" bilan yozilgan kasb: aniq belgilangan, katalog kasbi bilan almashtirish mumkin */
+export function CustomProfessionCard({ text, sector, badge, hint }: { text: string; sector: string | null; badge: string; hint: string }) {
+  return (
+    <div className="rounded-2xl border border-primary bg-primary-soft p-4">
+      <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+        <PenLine className="size-4" aria-hidden /> {badge}
+      </span>
+      <span className="mt-1 block text-lg font-semibold [overflow-wrap:anywhere]">{text}</span>
+      {sector ? <span className="block text-base text-muted-foreground">{sector}</span> : null}
+      <span className="mt-2 block text-sm text-muted-foreground">{hint}</span>
+    </div>
+  );
+}

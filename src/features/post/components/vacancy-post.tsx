@@ -23,7 +23,7 @@ import { ModerationOutcome } from "./moderation-outcome";
 import { PhotoUpload } from "./photo-upload";
 import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
 import { RegionPicker, placeLabel } from "./region-picker";
-import { ChoiceButtons, ChosenLine, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
+import { ChoiceButtons, ChosenLine, CustomProfessionCard, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, professionLabels, scrollToError } from "./wizard-frame";
 
 const TOTAL = 4;
 const PATH = "/post/vacancy";
@@ -40,6 +40,7 @@ const emptyDraft = (): VacancyDraft => ({
   clientRef: newRef(),
   editId: null,
   profession: null,
+  custom: null,
   place: EMPTY_PLACE,
   employerType: null,
   orgName: "",
@@ -69,6 +70,7 @@ export function VacancyPost({
   editId,
   pricedDays,
   aiEnabled = false,
+  customAllowed = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -78,6 +80,8 @@ export function VacancyPost({
   editId: string | null;
   pricedDays: number;
   aiEnabled?: boolean;
+  /** baza "Kasbim topilmadi" ni qo'llaydimi (0057) */
+  customAllowed?: boolean;
 }) {
   const { t, name, tEnum } = useT();
   const router = useRouter();
@@ -97,9 +101,9 @@ export function VacancyPost({
   const [moreOpen, setMoreOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  const category = categories.find((c) => c.id === draft.profession?.categoryId) ?? null;
-  const professionName = draft.profession ? name(draft.profession.trail.at(-1)!) : "";
-  const professionTrail = draft.profession ? [category ? name(category) : null, ...draft.profession.trail.map((x) => name(x))].filter(Boolean).join(" › ") : "";
+  const { category, professionName, professionTrail } = professionLabels(draft, categories, name, t("professions.custom_badge"));
+  // mavjud vakansiyaning maosh davri (kunlik/soatlik raqam oylik deb ko'rsatilmaydi)
+  const salaryPeriod = draft.salaryType && draft.salaryType !== "monthly" ? draft.salaryType : null;
   const phone = normalizePhone(draft.phone);
   const isPerson = draft.employerType === "person";
 
@@ -138,7 +142,7 @@ export function VacancyPost({
 
   const validate = (s: number): Errors => {
     const e: Errors = {};
-    if (s >= 1 && !draft.profession) e.profession = t("easy.fields.profession");
+    if (s >= 1 && !draft.profession && !draft.custom) e.profession = t("easy.fields.profession");
     if (s >= 2 && !draft.place.remote && (!draft.place.regionId || !draft.place.districtChosen)) e.place = draft.place.regionId ? t("easy.fields.district") : t("easy.fields.region");
     if (s >= 3) {
       if (!draft.employerType) e.employerType = t("easy.fields.employer_type");
@@ -187,7 +191,8 @@ export function VacancyPost({
       const res = await publishVacancyListing({
         vacancyId: draft.editId,
         clientRef: draft.clientRef,
-        professionNodeId: draft.profession!.id,
+        professionNodeId: draft.profession?.id ?? null,
+        customProfession: draft.profession ? null : (draft.custom ?? null),
         title: draft.title.trim() || professionName,
         regionId: draft.place.remote ? null : draft.place.regionId,
         districtId: draft.place.remote ? null : draft.place.districtId,
@@ -329,7 +334,7 @@ export function VacancyPost({
 
   const stepNames = [t("easy.wizard.steps.specialist"), t("easy.wizard.steps.location"), t("easy.wizard.steps.job"), t("easy.wizard.steps.review")];
   const loginHref = `/auth?${new URLSearchParams({ next: `${editId ? `${PATH}?edit=${editId}&` : `${PATH}?`}step=${step}` }).toString()}`;
-  const hasAnswers = !editId && !!(draft.profession || draft.place.regionId || draft.description);
+  const hasAnswers = !editId && !!(draft.profession || draft.custom || draft.place.regionId || draft.description);
   const salaryText = draft.negotiable
     ? t("easy.vacancy.negotiable")
     : [parseMoney(draft.salaryFrom) !== null ? `${formatMoneyInput(draft.salaryFrom)} ${t("easy.vacancy.salary_from")}` : null, parseMoney(draft.salaryTo) !== null ? `${formatMoneyInput(draft.salaryTo)} ${t("easy.vacancy.salary_to")}` : null]
@@ -353,7 +358,7 @@ export function VacancyPost({
       pending={pending}
     >
       {restored && editId ? <LocalChangesNotice onKeep={dismissRestored} onDiscard={() => (reset(), setErrors({}), go(1, true))} /> : null}
-      {step > 1 && step < TOTAL && draft.profession ? <ChosenLine label={t("easy.wizard.steps.specialist")} value={professionTrail} /> : null}
+      {step > 1 && step < TOTAL && (draft.profession || draft.custom) ? <ChosenLine label={t("easy.wizard.steps.specialist")} value={professionTrail} /> : null}
 
       {step === 1 ? (
         <section className="space-y-3">
@@ -367,13 +372,25 @@ export function VacancyPost({
               }}
             />
           ) : null}
+          {!draft.profession && draft.custom ? (
+            <CustomProfessionCard text={draft.custom.text} sector={category ? name(category) : null} badge={t("professions.custom_badge")} hint={t("easy.wizard.custom_note")} />
+          ) : null}
           <ProfessionPicker
             categories={categories}
             value={draft.profession}
             onChange={(p) => {
-              update({ profession: p });
+              update({ profession: p, custom: null });
               setErrors({});
             }}
+            onCustom={
+              customAllowed
+                ? (text, categoryId) => {
+                    update({ profession: null, custom: { text: text.trim().replace(/\s+/g, " ").slice(0, 120), categoryId } });
+                    setErrors({});
+                    goTo(2);
+                  }
+                : undefined
+            }
             title={t("easy.vacancy.profession_title")}
             subtitle={t("easy.vacancy.profession_subtitle")}
           />
@@ -445,7 +462,15 @@ export function VacancyPost({
             <FieldError message={errors.description} />
           </div>
           <fieldset>
-            <legend className="mb-2 text-lg font-semibold">{t("easy.vacancy.salary")}</legend>
+            <legend className="mb-2 text-lg font-semibold">{salaryPeriod ? t(`easy.vacancy.salary_period_${salaryPeriod}`) : t("easy.vacancy.salary")}</legend>
+            {salaryPeriod && editId ? (
+              <p className="mb-3 text-base text-muted-foreground">
+                {t("easy.vacancy.salary_period_note")}{" "}
+                <a href={`/employer/vacancies/${editId}/edit`} className="font-semibold text-primary underline underline-offset-4">
+                  {t("easy.vacancy.detailed_edit")}
+                </a>
+              </p>
+            ) : null}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <MoneyInput id="salary-from" value={draft.salaryFrom} onChange={(v) => update({ salaryFrom: v })} placeholder="3 000 000" disabled={draft.negotiable} invalid={!!errors.salary} label={t("easy.vacancy.salary_from")} />
@@ -529,7 +554,7 @@ export function VacancyPost({
             <ReviewRow label={t("easy.vacancy.phone")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
               <span className="tabular">{phone ? formatPhone(phone) : "—"}</span>
             </ReviewRow>
-            <ReviewRow label={t("easy.vacancy.salary")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
+            <ReviewRow label={salaryPeriod ? t(`easy.vacancy.salary_period_${salaryPeriod}`) : t("easy.vacancy.salary")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
               {salaryText}
             </ReviewRow>
             <ReviewRow label={t("easy.vacancy.description")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>

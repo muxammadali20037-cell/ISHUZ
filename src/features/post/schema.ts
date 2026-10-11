@@ -1,11 +1,21 @@
 import { z } from "zod";
 
 const schedule = z.enum(["5_2", "6_1", "2_2", "shift", "flexible", "negotiable"]);
+/** "Kasbim topilmadi": asl nom (bo'shliqlar ixchamlanadi) + eng yaqin soha */
+const customProfession = z
+  .object({ text: z.string().trim().transform((s) => s.replace(/\s+/g, " ")).pipe(z.string().min(2).max(120)), categoryId: z.uuid() })
+  .nullable()
+  .optional();
+/** katalog kasbi YOKI custom kasb — aynan bittasi */
+const oneProfession = (v: { professionNodeId: string | null; customProfession?: { text: string; categoryId: string } | null }) =>
+  (v.professionNodeId === null) !== !v.customProfession;
 const phone = z.string().regex(/^\+998\d{9}$/);
 
 /** Ishchi e'loni (server ham, mijoz ham shu bilan tekshiradi) */
-export const workerListingSchema = z.object({
-  professionNodeId: z.uuid(),
+export const workerListingSchema = z
+  .object({
+  professionNodeId: z.uuid().nullable(),
+  customProfession,
   headline: z.string().trim().max(80).optional(),
   regionId: z.uuid(),
   districtId: z.uuid().nullable(),
@@ -19,7 +29,8 @@ export const workerListingSchema = z.object({
   showPhone: z.boolean(),
   /** "ai" — AI bilan tez tayyorlangan (statistika uchun) */
   source: z.enum(["manual", "ai"]).optional(),
-});
+  })
+  .refine(oneProfession, { path: ["professionNodeId"] });
 export type WorkerListingInput = z.infer<typeof workerListingSchema>;
 
 /** Ish beruvchi e'loni */
@@ -27,7 +38,8 @@ export const vacancyListingSchema = z
   .object({
     vacancyId: z.uuid().nullable(),
     clientRef: z.uuid(),
-    professionNodeId: z.uuid(),
+    professionNodeId: z.uuid().nullable(),
+    customProfession,
     title: z.string().trim().max(120),
     regionId: z.uuid().nullable(),
     districtId: z.uuid().nullable(),
@@ -45,6 +57,7 @@ export const vacancyListingSchema = z
     source: z.enum(["manual", "ai"]).optional(),
     photoPath: z.string().regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/).nullable().optional(),
   })
+  .refine(oneProfession, { path: ["professionNodeId"] })
   .refine((v) => v.remote || !!v.regionId, { path: ["regionId"] })
   .refine((v) => v.negotiable || v.salaryFrom !== null || v.salaryTo !== null, { path: ["salaryFrom"] })
   .refine((v) => v.salaryFrom === null || v.salaryTo === null || v.salaryTo >= v.salaryFrom, { path: ["salaryTo"] });

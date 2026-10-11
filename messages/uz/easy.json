@@ -103,7 +103,8 @@
     "local_changes_title": "Bu qurilmada saqlanmagan o'zgarishlar bor",
     "local_changes_desc": "Oldin boshlagan, lekin hali saqlanmagan tahrirlaringiz tiklandi.",
     "local_changes_keep": "Davom ettirish",
-    "local_changes_discard": "Saqlangan holatni ochish"
+    "local_changes_discard": "Saqlangan holatni ochish",
+    "custom_note": "Katalogda yo'q kasb sifatida tekshiruvdan o'tadi. Ro'yxatdan mos kasb topsangiz, uni tanlashingiz mumkin."
   },
   "location": {
     "worker_title": "Qayerda ishlamoqchisiz?",
@@ -204,7 +205,12 @@
     "review_state_desc": "Hali qidiruvda ko'rinmaydi. Moderator tekshirgach e'lon joylanadi va sizga xabar keladi.",
     "pay_title": "E'loningiz saqlandi, lekin hali joylanmadi",
     "pay_desc": "Qidiruvda ko'rinishi uchun to'lov kerak. To'lovdan keyin e'lon {days} kun faol bo'ladi.",
-    "edit_title": "E'lonni o'zgartirish"
+    "edit_title": "E'lonni o'zgartirish",
+    "salary_period_daily": "Maosh (so'm, kuniga)",
+    "salary_period_hourly": "Maosh (so'm, soatiga)",
+    "salary_period_piecework": "Maosh (so'm, ishbay)",
+    "salary_period_note": "Maosh davri bu formada o'zgartirilmaydi.",
+    "detailed_edit": "Batafsil tahrirlash"
   },
   "search": {
     "page_title": "Qidirish",
@@ -332,7 +338,9 @@
     "forbidden": "Bu e'lonni o'zgartirishga ruxsatingiz yo'q",
     "vacancy_locked": "Bu e'lon moderator tomonidan yashirilgan",
     "generic": "Saqlab bo'lmadi. Internetni tekshirib, qayta urinib ko'ring — javoblaringiz saqlanib qoldi",
-    "appeal_not_allowed": "Qayta ko'rib chiqish allaqachon so'ralgan."
+    "appeal_not_allowed": "Qayta ko'rib chiqish allaqachon so'ralgan.",
+    "invalid_custom_profession": "Kasb nomini 2–120 belgida yozing",
+    "invalid_category": "Kasbga eng yaqin sohani tanlang"
   },
   "nav": {
     "search": "Qidirish",

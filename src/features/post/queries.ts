@@ -36,7 +36,7 @@ export async function getWorkerPrefill(session: SessionContext | null): Promise<
   const [{ data: w }, { data: pref }, { data: contact }] = await Promise.all([
     supabase
       .from("worker_profiles")
-      .select("profession_node_id, category_id, region_id, district_id, about, experience_level, remote_preference, onboarding_completed_at")
+      .select("profession_node_id, custom_profession, category_id, region_id, district_id, about, experience_level, remote_preference, onboarding_completed_at")
       .eq("id", session.workerId)
       .maybeSingle(),
     supabase.from("worker_preferences").select("salary_expected, schedules").eq("worker_id", session.workerId).maybeSingle(),
@@ -50,8 +50,10 @@ export async function getWorkerPrefill(session: SessionContext | null): Promise<
     draft: {
       ...base,
       profession,
+      // katalogda yo'q kasb (batafsil profil yoki "Kasbim topilmadi") — tahrirlashda yo'qolmaydi
+      custom: !profession && w.custom_profession && w.category_id ? { text: w.custom_profession, categoryId: w.category_id } : null,
       place: { regionId: w.region_id, districtId: w.district_id, districtChosen: !!w.region_id, remote: false },
-      remoteOk: w.remote_preference === "yes",
+      remoteOk: w.remote_preference === "yes" || w.remote_preference === "any",
       about: w.about ?? "",
       experience: w.onboarding_completed_at ? levelToExperience(w.experience_level) : null,
       salary: pref?.salary_expected ? String(pref.salary_expected) : "",
@@ -86,7 +88,7 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
   const [{ data: v }, { data: contact }, defaults] = await Promise.all([
     supabase
       .from("vacancies")
-      .select("id, title, profession_node_id, category_id, region_id, district_id, is_remote, description, salary_from, salary_to, salary_negotiable, schedule, experience_min_months, status, client_ref, photo_path")
+      .select("id, title, profession_node_id, custom_profession, category_id, region_id, district_id, is_remote, description, salary_from, salary_to, salary_negotiable, salary_type, schedule, experience_min_months, status, client_ref, photo_path")
       .eq("id", vacancyId)
       .maybeSingle(),
     supabase.from("vacancy_contacts").select("phone, show_phone").eq("vacancy_id", vacancyId).maybeSingle(),
@@ -100,7 +102,10 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
     editId: v.id,
     clientRef: v.client_ref ?? crypto.randomUUID(),
     profession,
-    title: profession && profession.trail.at(-1)?.name_uz === v.title ? "" : v.title,
+    custom: !profession && v.custom_profession && v.category_id ? { text: v.custom_profession, categoryId: v.category_id } : null,
+    title: (profession && profession.trail.at(-1)?.name_uz === v.title) || (!profession && v.custom_profession === v.title) ? "" : v.title,
+    // maosh davri qisqa formada o'zgartirilmaydi — to'g'ri ko'rsatiladi (kunlik raqam oylik deb ko'rinmasin)
+    salaryType: v.salary_type === "negotiable" ? "monthly" : v.salary_type,
     place: { regionId: v.region_id, districtId: v.district_id, districtChosen: v.is_remote || !!v.region_id, remote: v.is_remote },
     description: v.description ?? "",
     photoPath: v.photo_path ?? null,
@@ -120,4 +125,23 @@ export async function getListingDays(): Promise<{ worker: number; vacancy: numbe
   const { data } = await supabase.from("app_settings").select("key, value").in("key", ["listing_days", "vacancy_lifetime_days"]);
   const get = (k: string, d: number) => Number(data?.find((r) => r.key === k)?.value ?? d) || d;
   return { worker: get("listing_days", 10), vacancy: get("vacancy_lifetime_days", 10) };
+}
+
+/**
+ * Bazadagi sodda e'lon imkoniyatlari (0057+): eski bazada "Kasbim topilmadi" ko'rsatilmaydi (saqlab bo'lmaydigan yo'l yo'q).
+ * Natija 10 daqiqa server xotirasida (har so'rovda qo'shimcha chaqiruv bo'lmasin); xato bo'lsa keshlanmaydi.
+ */
+let featuresCache: { at: number; customProfession: boolean } | null = null;
+export async function getSimpleListingFeatures(): Promise<{ customProfession: boolean }> {
+  if (featuresCache && Date.now() - featuresCache.at < 10 * 60_000) return { customProfession: featuresCache.customProfession };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("simple_listing_features");
+  if (error) {
+    const missing = error.code === "PGRST202" || error.code === "42883";
+    if (missing) featuresCache = { at: Date.now(), customProfession: false };
+    return { customProfession: false };
+  }
+  const customProfession = !!(data && typeof data === "object" && !Array.isArray(data) && (data as Record<string, unknown>).custom_profession === true);
+  featuresCache = { at: Date.now(), customProfession };
+  return { customProfession };
 }

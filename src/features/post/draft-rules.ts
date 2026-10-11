@@ -1,5 +1,5 @@
 import { SCHEDULES, SIMPLE_EMPLOYER_TYPES, SIMPLE_EXPERIENCE, VACANCY_EXPERIENCE, type VacancyDraft, type WorkerDraft } from "./types";
-import { isBool, isId, isPickedProfession, isPlace, isStep, isStr, oneOf, type DraftRules } from "./draft-store";
+import { isBool, isCustomProfession, isId, isPickedProfession, isPlace, isStep, isStr, oneOf, type DraftRules } from "./draft-store";
 
 /** Qurilmada saqlangan qoralama maydonlarini tekshirish (zod'siz — forma brauzerga yengil yuklansin) */
 
@@ -11,6 +11,7 @@ export const WORKER_DRAFT_RULES: DraftRules<WorkerDraft> = {
   v: (x) => x === 1,
   step: isStep(4),
   profession: isPickedProfession,
+  custom: (x) => x === undefined || isCustomProfession(x),
   place: isPlace,
   remoteOk: isBool,
   firstName: isStr(60),
@@ -32,6 +33,7 @@ export function vacancyDraftRules(editId: string | null): DraftRules<VacancyDraf
     clientRef: isId,
     editId: (x) => x === editId,
     profession: isPickedProfession,
+    custom: (x) => x === undefined || isCustomProfession(x),
     place: isPlace,
     employerType: (x) => x === null || (SIMPLE_EMPLOYER_TYPES as unknown[]).includes(x),
     orgName: isStr(120),
@@ -43,6 +45,7 @@ export function vacancyDraftRules(editId: string | null): DraftRules<VacancyDraf
     title: isStr(120),
     schedule: isSchedule,
     experienceMonths: oneOf(VACANCY_EXPERIENCE),
+    salaryType: (x) => x === undefined || oneOf(["monthly", "daily", "hourly", "piecework"])(x),
     showPhone: isBool,
     photoPath: (x) => x === undefined || x === null || (typeof x === "string" && PHOTO_PATH.test(x)),
     source: isSource,

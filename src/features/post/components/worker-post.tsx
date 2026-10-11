@@ -24,7 +24,7 @@ import { ModerationOutcome } from "./moderation-outcome";
 import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
 import { AvatarUpload } from "@/features/profile/components/edit/avatar-upload";
 import { RegionPicker, placeLabel } from "./region-picker";
-import { ChoiceButtons, ChosenLine, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, scrollToError } from "./wizard-frame";
+import { ChoiceButtons, ChosenLine, CustomProfessionCard, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, professionLabels, scrollToError } from "./wizard-frame";
 
 const TOTAL = 4;
 const PATH = "/post/worker";
@@ -33,6 +33,7 @@ const emptyDraft = (): WorkerDraft => ({
   v: 1,
   step: 1,
   profession: null,
+  custom: null,
   place: EMPTY_PLACE,
   remoteOk: false,
   firstName: "",
@@ -60,6 +61,7 @@ export function WorkerPost({
   existing,
   pricedDays,
   aiEnabled = false,
+  customAllowed = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -69,6 +71,8 @@ export function WorkerPost({
   existing: boolean;
   pricedDays: number;
   aiEnabled?: boolean;
+  /** baza "Kasbim topilmadi" ni qo'llaydimi (0057) */
+  customAllowed?: boolean;
 }) {
   const { t, name, tEnum, locale } = useT();
   const router = useRouter();
@@ -85,9 +89,7 @@ export function WorkerPost({
   const [moreOpen, setMoreOpen] = useState(!!(draft.salary || draft.schedule));
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  const category = categories.find((c) => c.id === draft.profession?.categoryId) ?? null;
-  const professionName = draft.profession ? name(draft.profession.trail.at(-1)!) : "";
-  const professionTrail = draft.profession ? [category ? name(category) : null, ...draft.profession.trail.map((x) => name(x))].filter(Boolean).join(" › ") : "";
+  const { category, professionName, professionTrail } = professionLabels(draft, categories, name, t("professions.custom_badge"));
   const phone = viewer.loggedIn ? viewer.phone : normalizePhone(draft.phone);
 
   // tanlangan kasb rasmi (bo'lsa) — tekshirish sahifasida ko'rsatiladi
@@ -126,7 +128,7 @@ export function WorkerPost({
 
   const validate = (s: number): Errors => {
     const e: Errors = {};
-    if (s >= 1 && !draft.profession) e.profession = t("easy.fields.profession");
+    if (s >= 1 && !draft.profession && !draft.custom) e.profession = t("easy.fields.profession");
     if (s >= 2 && (!draft.place.regionId || !draft.place.districtChosen)) e.place = draft.place.regionId ? t("easy.fields.district") : t("easy.fields.region");
     if (s >= 3) {
       if (draft.firstName.trim().length < 2) e.firstName = t("easy.fields.first_name");
@@ -170,7 +172,8 @@ export function WorkerPost({
     }
     start(async () => {
       const res = await publishWorkerListing({
-        professionNodeId: draft.profession!.id,
+        professionNodeId: draft.profession?.id ?? null,
+        customProfession: draft.profession ? null : (draft.custom ?? null),
         headline: professionName,
         regionId: draft.place.regionId!,
         districtId: draft.place.districtId,
@@ -289,7 +292,7 @@ export function WorkerPost({
 
   const stepNames = [t("easy.wizard.steps.profession"), t("easy.wizard.steps.location"), t("easy.wizard.steps.about"), t("easy.wizard.steps.review")];
   const loginHref = `/auth?${new URLSearchParams({ next: `${PATH}?step=${step}` }).toString()}`;
-  const hasAnswers = !!(draft.profession || draft.place.regionId || draft.about);
+  const hasAnswers = !!(draft.profession || draft.custom || draft.place.regionId || draft.about);
 
   return (
     <WizardFrame
@@ -308,7 +311,7 @@ export function WorkerPost({
       pending={pending}
     >
       {restored && existing ? <LocalChangesNotice onKeep={dismissRestored} onDiscard={() => (reset(), setErrors({}), go(1, true))} /> : null}
-      {step > 1 && step < TOTAL && draft.profession ? <ChosenLine label={t("easy.wizard.steps.profession")} value={professionTrail} /> : null}
+      {step > 1 && step < TOTAL && (draft.profession || draft.custom) ? <ChosenLine label={t("easy.wizard.steps.profession")} value={professionTrail} /> : null}
 
       {step === 1 ? (
         <section className="space-y-3">
@@ -322,13 +325,25 @@ export function WorkerPost({
               }}
             />
           ) : null}
+          {!draft.profession && draft.custom ? (
+            <CustomProfessionCard text={draft.custom.text} sector={category ? name(category) : null} badge={t("professions.custom_badge")} hint={t("easy.wizard.custom_note")} />
+          ) : null}
           <ProfessionPicker
             categories={categories}
             value={draft.profession}
             onChange={(p) => {
-              update({ profession: p });
+              update({ profession: p, custom: null });
               setErrors({});
             }}
+            onCustom={
+              customAllowed
+                ? (text, categoryId) => {
+                    update({ profession: null, custom: { text: text.trim().replace(/\s+/g, " ").slice(0, 120), categoryId } });
+                    setErrors({});
+                    goTo(2);
+                  }
+                : undefined
+            }
             title={t("easy.worker.profession_title")}
             subtitle={t("easy.worker.profession_subtitle")}
           />

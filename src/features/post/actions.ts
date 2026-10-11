@@ -12,7 +12,8 @@ import { allowRate } from "@/lib/rate-limit";
 import { moderateNow } from "@/features/moderation/service";
 import { runBackgroundTickSafe } from "@/features/notifications/tick";
 import { trackServer } from "@/features/analytics/server";
-import { experienceToLevel, toListingStateInfo, type ListingStateInfo } from "./types";
+import { toListingStateInfo, type ListingStateInfo } from "./types";
+import { keptWorkerFields, type ExistingWorker } from "./keep";
 import { vacancyListingSchema, workerListingSchema } from "./schema";
 
 type Entity = "vacancy" | "worker";
@@ -30,6 +31,15 @@ async function settle(entity: Entity, id: string, state: string): Promise<Listin
   return data ? toListingStateInfo(data) : toListingStateInfo({ state });
 }
 
+/** Mavjud ishchi e'lonining batafsil qiymatlari (qisqa forma ularni jim almashtirmasligi uchun) */
+async function loadExistingWorker(supabase: Awaited<ReturnType<typeof createClient>>, workerId: string): Promise<ExistingWorker | null> {
+  const [{ data: w }, { data: pref }] = await Promise.all([
+    supabase.from("worker_profiles").select("profession_node_id, custom_profession, headline, experience_level, remote_preference").eq("id", workerId).maybeSingle(),
+    supabase.from("worker_preferences").select("schedules").eq("worker_id", workerId).maybeSingle(),
+  ]);
+  return w ? { ...w, schedules: pref?.schedules ?? null } : null;
+}
+
 /**
  * Ishchi e'lonini saqlash va joylash (bitta tranzaksiya — `save_simple_worker_listing`), so'ng majburiy moderatsiya.
  * Natija haqiqiy holat bilan qaytadi: listed / moderation_pending / review / rejected (sabab va maydon) / payment_required.
@@ -43,19 +53,32 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
   if (!(await allowRate(`publish:${session.userId}`, 20, 3600))) return { ok: false, error: "rate_limited" };
   const v = parsed.data;
   const supabase = await createClient();
+  // qisqa forma o'zgartirmagan batafsil qiymatlar (aniq tajriba, sarlavha, jadvallar, "any") saqlanadi
+  const existing = session.workerId ? await loadExistingWorker(supabase, session.workerId) : null;
+  const kept = keptWorkerFields(existing, {
+    professionNodeId: v.professionNodeId,
+    customText: v.customProfession?.text ?? null,
+    headline: v.headline ?? v.customProfession?.text ?? null,
+    experience: v.experience,
+    schedule: v.schedule,
+    remoteOk: v.remoteOk,
+  });
   const { data, error } = await supabase.rpc("save_simple_worker_listing", {
     p: {
       profession_node_id: v.professionNodeId,
-      headline: v.headline ?? null,
+      custom_profession: v.customProfession?.text ?? null,
+      category_id: v.customProfession?.categoryId ?? null,
+      headline: kept.headline,
+      remote_preference: kept.remote_preference,
       region_id: v.regionId,
       district_id: v.districtId,
       remote: v.remoteOk,
       first_name: v.firstName,
       last_name: v.lastName,
       about: v.about,
-      experience_level: experienceToLevel(v.experience),
+      experience_level: kept.experience_level,
       salary_expected: v.salary,
-      schedule: v.schedule,
+      schedule: kept.schedule,
       show_phone: v.showPhone,
     },
   });
@@ -64,7 +87,7 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
   const info = await settle("worker", res.worker_id, res.state);
   after(async () => {
     await trackServer("post_publish", session.userId, { entity: "worker", source: v.source ?? "manual", state: info.state });
-    await ensureProfessionImagesSafe([v.professionNodeId], 1);
+    if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
     await runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 });
   });
   revalidatePath("/", "layout");
@@ -90,6 +113,8 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
       vacancy_id: v.vacancyId,
       client_ref: v.clientRef,
       profession_node_id: v.professionNodeId,
+      custom_profession: v.customProfession?.text ?? null,
+      category_id: v.customProfession?.categoryId ?? null,
       title: v.title,
       region_id: v.regionId,
       district_id: v.districtId,
@@ -112,7 +137,7 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
   const info = await settle("vacancy", res.vacancy_id, res.state);
   after(async () => {
     await trackServer("post_publish", session.userId, { entity: "vacancy", source: v.source ?? "manual", state: info.state });
-    await ensureProfessionImagesSafe([v.professionNodeId], 1);
+    if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
     await runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 });
   });
   revalidatePath("/", "layout");

@@ -103,7 +103,8 @@
     "local_changes_title": "There are unsaved changes on this device",
     "local_changes_desc": "Edits you started earlier but did not save were restored.",
     "local_changes_keep": "Continue",
-    "local_changes_discard": "Open the saved version"
+    "local_changes_discard": "Open the saved version",
+    "custom_note": "It is reviewed as a profession not in the catalog. If you find a matching one in the list, you can pick it."
   },
   "location": {
     "worker_title": "Where do you want to work?",
@@ -204,7 +205,12 @@
     "review_state_desc": "It is not visible in search yet. Once a moderator checks it, it will be published and you will be notified.",
     "pay_title": "Your listing is saved but not published yet",
     "pay_desc": "Payment is needed for it to appear in search. After payment the listing is active for {days} days.",
-    "edit_title": "Edit listing"
+    "edit_title": "Edit listing",
+    "salary_period_daily": "Salary (sum, per day)",
+    "salary_period_hourly": "Salary (sum, per hour)",
+    "salary_period_piecework": "Salary (sum, piecework)",
+    "salary_period_note": "The salary period is not changed in this form.",
+    "detailed_edit": "Detailed edit"
   },
   "search": {
     "page_title": "Search",
@@ -332,7 +338,9 @@
     "forbidden": "You are not allowed to edit this listing",
     "vacancy_locked": "This listing was hidden by a moderator",
     "generic": "Could not save. Check your internet and try again — your answers are kept",
-    "appeal_not_allowed": "Another review was already requested."
+    "appeal_not_allowed": "Another review was already requested.",
+    "invalid_custom_profession": "Write the profession name (2–120 characters)",
+    "invalid_category": "Choose the closest field"
   },
   "nav": {
     "search": "Search",
