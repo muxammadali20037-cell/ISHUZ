@@ -12,18 +12,18 @@ O'zbekiston bozori uchun ish topish va ishchi topish platformasi: **Telegram Min
 | Qatlam | Stack |
 |---|---|
 | Frontend | Next.js 16 (App Router, RSC, Server Actions), TypeScript strict, Tailwind v4, radix-ui + cva (shadcn uslubi), TanStack Query, react-hook-form + zod, lucide, framer-motion |
-| Backend | Supabase: PostgreSQL 17, Auth (telefon OTP + Telegram), Storage, Realtime, RLS, SQL RPC funksiyalar |
+| Backend | Supabase: PostgreSQL 17, Auth (veb: kod Telegram bot orqali; Mini App: Telegram initData), Storage, Realtime, RLS, SQL RPC funksiyalar |
 | Telegram | Mini App (initData server tomonda tekshiriladi), bot xabarnomalari, webhook |
 | Mobil | PWA (hozir), arxitektura Expo React Native uchun tayyor (bir xil backend, API va tiplar) |
-| i18n | O'zbek (lotin) va rus tili — `messages/{uz,ru}/*.json`, `t()` |
+| i18n | O'zbek lotin, o'zbek kirill, rus, ingliz — `messages/{uz,oz,ru,en}/*.json` (`oz` — `scripts/gen-oz-messages.mjs`), `t()` |
 
 Hujjatlar: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) (platformalar, ERD, xavfsizlik modeli), [docs/CONVENTIONS.md](docs/CONVENTIONS.md) (kod qoidalari, RPC ro'yxati).
 
 ## Tez boshlash (lokal)
 
 ```bash
-npm install
-cp .env.example .env.local        # Supabase URL/kalitlar, Telegram token
+npm ci
+cp .env.example .env.local        # [MAJBURIY]/[IXTIYORIY], [PUBLIC]/[SERVER] belgilari bilan
 npm run dev                       # http://localhost:3000
 ```
 
@@ -36,27 +36,36 @@ npx supabase db push              # supabase/migrations/*.sql tartib bilan
 npm run db:types                  # src/types/database.types.ts ni yangilash (lokal DB dan)
 ```
 
-Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0014` fayllarini tartib bilan ishga tushiring.
+Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0057` fayllarini tartib bilan ishga tushiring (har biri bitta tranzaksiya).
 
-> Ishlab chiqarish loyihasi `ISHUZ` (ref `oquqqubmicldvreeqgsg`, ap-south-1) ga 0001–0014 migratsiyalar qo'llangan (0012 seed to'rt qismga bo'lib: 0012a–0012d). `NEXT_PUBLIC_SUPABASE_URL=https://oquqqubmicldvreeqgsg.supabase.co`.
+> Production/staging/lokal holati (qaysi migratsiya qo'llangan, nima tashqi sozlama kutyapti) — [`docs/PROFESSIONALIZATION_REPORT.md`](docs/PROFESSIONALIZATION_REPORT.md) → "Reliz holati". Eski hisobotlar (`MASTER_SPEC_STATUS.md` va boshq.) sanasi bilan tarix sifatida qoladi.
 
 Lokal PostgreSQL bilan sxema/RLS testlari (Supabase stub bilan, Docker shart emas):
 
 ```bash
 npm run db:local                  # ishuz_dev bazasini qayta yaratib migratsiyalarni qo'llaydi
-npm run db:test                   # 140+ SQL test: RLS, moslik, ariza/taklif/chat oqimlari, admin
-npm test                          # vitest (moslik dvigateli, sof mantiq)
+npm run db:test                   # 23 fayl SQL test: RLS, xavfsizlik, moslik, ariza/taklif/chat, custom kasb, admin
+npm test                          # vitest (sof mantiq, server modullari)
 npm run lint && npm run typecheck && npm run build
 ```
 
+Brauzer E2E (izolyatsiyalangan stend: toza baza + PostgREST + Auth/Storage emulyatori; tashqi xizmatlarga murojaat yo'q):
+
+```bash
+bash e2e/stack/up.sh              # PostgreSQL 16 va postgrest binari kerak (POSTGREST_BIN)
+npx playwright test -c e2e        # qoralamalar, qidiruv xatosi/bo'sh natija, "Kasbim topilmadi"
+bash e2e/stack/down.sh
+```
+CI'da `e2e` job shu stendni ko'taradi; xato bo'lsa trace, skrinshot va loglar artefakt sifatida yuklanadi.
+
 ## Muhit o'zgaruvchilari
 
-`.env.example` ga qarang. Asosiylari: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY` (faqat server),
-`TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET`, `APP_URL`, `NEXT_PUBLIC_APP_URL`, `CRON_SECRET`.
+`.env.example` — har bir o'zgaruvchi majburiy/ixtiyoriy va public/server belgisi bilan (qiymatlarsiz). Funksiya bayroqlari
+(to'lov, AI, admin, moderatsiya) matritsasi: `docs/PROFESSIONALIZATION_REPORT.md`.
 
 ## Supabase sozlamalari
 
-1. **Auth → Providers → Phone**: SMS provayder (Twilio / MessageBird / Vonage yoki [custom SMS hook](https://supabase.com/docs/guides/auth/auth-hooks/send-sms-hook) orqali Eskiz/Playmobile). Telefon OTP shu orqali ishlaydi.
+1. **Kirish**: veb-saytda bir martalik kod **Telegram bot orqali** yuboriladi (`/api/auth/phone-code/*`, SMS provayder ishlatilmaydi); Mini App ichida — Telegram initData. Supabase'ning Phone provayderi va ochiq ro'yxatdan o'tish kerak emas — o'chirib qo'ying (`docs/SECURITY_RUNBOOK.md` §8). Telegram ulanmagan foydalanuvchi uchun SMS kerak bo'lsa — provayder va xarajat alohida qaror.
 2. **Auth → URL Configuration**: Site URL = ilova manzili.
 3. **Storage**: bucket'lar migratsiya bilan yaratiladi (`avatars`, `company-logos`, `portfolio` — public; `chat`, `documents` — private).
 4. **Realtime**: `messages`, `notifications`, `applications`, `job_offers`, `conversations` jadvallari publikatsiyaga qo'shilgan (migratsiyada).
@@ -65,7 +74,7 @@ npm run lint && npm run typecheck && npm run build
    select vault.create_secret('https://<domen>', 'ishuz_app_url');
    select vault.create_secret('<CRON_SECRET qiymati>', 'ishuz_cron_secret');
    ```
-6. Birinchi adminni tayinlash: `insert into public.admin_users (profile_id, role) values ('<auth.users.id>', 'super_admin');`
+6. Birinchi admin: `SUPER_ADMIN_PHONES` (tasdiqlangan telefon bilan kirgan egasi avtomatik super_admin bo'ladi) yoki SQL: `insert into public.admin_users (profile_id, role) values ('<auth.users.id>', 'super_admin');`
 
 ## Telegram
 

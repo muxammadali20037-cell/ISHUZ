@@ -21,16 +21,38 @@ args=(--format=custom --no-owner --no-privileges --compress=9)
 for s in $schemas; do args+=("--schema=$s"); done
 
 base="$out_dir/ishuz-$stamp.dump"
+toc="$out_dir/.toc-$stamp"
+started=$(date +%s)
 if [[ -n "${BACKUP_AGE_RECIPIENT:-}" ]]; then
-  # dump diskka shifrlanmagan holda tushmaydi: to'g'ridan-to'g'ri age'ga uzatiladi
-  pg_dump "${args[@]}" "$SUPABASE_DB_URL" | age -r "$BACKUP_AGE_RECIPIENT" -o "$base.age"
+  # dump diskka shifrlanmagan holda tushmaydi: to'g'ridan-to'g'ri age'ga uzatiladi; parallel ravishda mundarija (TOC) o'qiladi
+  # (TOC o'qilgach qolgan oqim ham o'qib tugatiladi — aks holda tee SIGPIPE olib, zaxira yarim qolardi)
+  pg_dump "${args[@]}" "$SUPABASE_DB_URL" | tee >(pg_restore --list > "$toc"; cat > /dev/null) | age -r "$BACKUP_AGE_RECIPIENT" -o "$base.age"
   file="$base.age"
 elif [[ "${ALLOW_PLAINTEXT:-}" == "1" ]]; then
   pg_dump "${args[@]}" -f "$base" "$SUPABASE_DB_URL"
+  pg_restore --list "$base" > "$toc"
   file="$base"
 else
   echo "BACKUP_AGE_RECIPIENT yo'q: shifrlanmagan zaxira yozilmaydi (lokal sinov uchun ALLOW_PLAINTEXT=1)" >&2
   exit 1
 fi
+sleep 1 # tee'ning process substitution'i yozib bo'lishi uchun
+
+# Yaxlitlik: fayl bo'sh emas, mundarija o'qildi va asosiy jadvallarning ma'lumoti nusxada bor
+[[ -s "$file" ]] || { echo "✗ zaxira fayli bo'sh" >&2; exit 1; }
+[[ -s "$toc" ]] || { echo "✗ zaxira mundarijasi (pg_restore --list) o'qilmadi" >&2; exit 1; }
+missing=""
+for t in profiles worker_profiles vacancies applications; do
+  grep -Eq "TABLE DATA public $t " "$toc" || missing+="$t "
+done
+[[ -z "$missing" ]] || { echo "✗ nusxada jadval ma'lumoti yo'q: $missing" >&2; exit 1; }
+entries=$(grep -cv '^;' "$toc" || true)
+data_tables=$(grep -c "TABLE DATA" "$toc" || true)
+rm -f "$toc"
+
 sha256sum "$file" > "$file.sha256"
-echo "✓ $file ($(du -h "$file" | cut -f1)), sha256: $(cut -c1-16 "$file.sha256")…"
+size=$(stat -c %s "$file")
+cat > "$file.manifest.json" <<JSON
+{"file":"$(basename "$file")","created_at":"$stamp","bytes":$size,"sha256":"$(cut -d' ' -f1 "$file.sha256")","toc_entries":$entries,"tables_with_data":$data_tables,"schemas":"$schemas","encrypted":$([[ "$file" == *.age ]] && echo true || echo false),"seconds":$(( $(date +%s) - started ))}
+JSON
+echo "✓ $file ($(du -h "$file" | cut -f1)), jadval ma'lumoti: $data_tables, sha256: $(cut -c1-16 "$file.sha256")…"

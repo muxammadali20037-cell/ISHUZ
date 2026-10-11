@@ -1,0 +1,37 @@
+name: DB backup freshness
+
+# Zaxira yoshi nazorati: oxirgi muvaffaqiyatli zaxira artefakti MAX_AGE_HOURS (sukut 26) soatdan eski yoki yo'q bo'lsa — xato.
+# Kunlik zaxira jim to'xtab qolsa (sozlama o'chgan, jadval o'chirilgan, run yiqilgan) shu yerda ko'rinadi.
+on:
+  schedule:
+    - cron: "47 1 * * *" # 06:47 Toshkent
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  freshness:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Oxirgi zaxira yoshi
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BACKUP_DISABLED: ${{ vars.BACKUP_DISABLED }}
+          MAX_AGE_HOURS: ${{ vars.BACKUP_MAX_AGE_HOURS || '26' }}
+        run: |
+          latest="$(gh api "repos/${{ github.repository }}/actions/artifacts?per_page=100" \
+            --jq '[.artifacts[] | select(.name | startswith("db-backup-")) | select(.expired | not)] | sort_by(.created_at) | last | .created_at // empty')"
+          if [ "$BACKUP_DISABLED" = "true" ]; then
+            echo "### Zaxira o'chiq (BACKUP_DISABLED=true); oxirgi artefakt: ${latest:-yo'q}" >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Zaxira o'chiq"; exit 0
+          fi
+          if [ -z "$latest" ]; then
+            echo "### ✗ Zaxira artefakti topilmadi" >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Saqlanayotgan zaxira artefakti yo'q"; exit 1
+          fi
+          age_h=$(( ( $(date +%s) - $(date -d "$latest" +%s) ) / 3600 ))
+          echo "### Oxirgi zaxira: $latest ($age_h soat oldin; chegara $MAX_AGE_HOURS)" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$age_h" -gt "$MAX_AGE_HOURS" ]; then echo "::error::Oxirgi zaxira $age_h soat oldin (chegara $MAX_AGE_HOURS)"; exit 1; fi
+          echo "✓ zaxira yangi ($age_h soat)"

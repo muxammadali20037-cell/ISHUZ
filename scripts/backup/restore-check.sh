@@ -40,9 +40,9 @@ psql "$RESTORE_URL" -v ON_ERROR_STOP=1 -q -c "do \$\$ begin
   if not exists (select 1 from pg_roles where rolname = 'authenticated') then create role authenticated nologin; end if;
   if not exists (select 1 from pg_roles where rolname = 'service_role') then create role service_role nologin bypassrls; end if;
 end \$\$;"
+started=$(date +%s)
 pg_restore --no-owner --no-privileges --exit-on-error -d "$RESTORE_URL" "$plain"
-
-echo "✓ tiklandi: $db"
+echo "✓ tiklandi: $db ($(( $(date +%s) - started )) s — RTO o'lchovi uchun)"
 psql "$RESTORE_URL" -Atc "select 'jadvallar: ' || count(*) || ', RLS yoqilgan: ' || count(*) filter (where c.relrowsecurity) from pg_class c join pg_namespace n on n.oid = c.relnamespace where n.nspname = 'public' and c.relkind = 'r'"
 summary=""
 for t in profiles worker_profiles employer_profiles vacancies applications notifications telegram_accounts audit_logs; do
@@ -56,3 +56,15 @@ if [[ -n "${EXPECT_COUNTS:-}" ]]; then
   done
   echo "✓ qatorlar soni manba bilan mos"
 fi
+
+# Funksional tekshiruv: tiklangan baza ilovadek ishlay oladimi (faqat o'qish so'rovlari)
+fail=0
+check() { if psql "$RESTORE_URL" -v ON_ERROR_STOP=1 -Atc "$2" > /dev/null 2>&1; then echo "✓ $1"; else echo "✗ $1" >&2; fail=1; fi; }
+check "ish qidiruvi (simple_search_vacancies)" "select count(*) from public.simple_search_vacancies()"
+check "ishchi qidiruvi (simple_search_workers)" "select count(*) from public.simple_search_workers()"
+check "kasblar daraxti qidiruvi" "select count(*) from public.search_profession_nodes(p_query => 'buxgalter', p_limit => 3)"
+check "profil ↔ hisob bog'lanishi (auth.users)" "select count(*) from public.profiles p left join auth.users u on u.id = p.id where to_regclass('auth.users') is not null"
+check "RLS yoqilgan (profiles, vacancies)" "select 1 where (select bool_and(relrowsecurity) from pg_class where oid in ('public.profiles'::regclass, 'public.vacancies'::regclass))"
+[[ $fail -eq 0 ]] || { echo "✗ funksional tekshiruv o'tmadi" >&2; exit 1; }
+echo "✓ funksional tekshiruv o'tdi"
+

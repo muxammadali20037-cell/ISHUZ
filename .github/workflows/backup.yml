@@ -1,7 +1,8 @@
 name: DB backup (encrypted)
 
 # Har kuni ma'lumotlar bazasining shifrlangan zaxira nusxasi (pg_dump → age, ochiq kalit bilan).
-# Sirlar qo'yilmaguncha hech narsa qilmaydi. Sozlash: docs/SECURITY_RUNBOOK.md → "Zaxira nusxa".
+# Sirlar qo'yilmagan bo'lsa run XATO bilan tugaydi (nusxa yo'qligi yashirilmaydi); ataylab o'chirish — vars.BACKUP_DISABLED=true.
+# Muvaffaqiyat = nusxa yaratildi + mundarija/jadval ma'lumoti tekshirildi + artefakt yuklandi. Sozlash: docs/SECURITY_RUNBOOK.md §6.
 #   SUPABASE_DB_URL       — Session pooler ulanish satri (parol bilan). Faqat GitHub Secrets'da.
 #   BACKUP_AGE_RECIPIENT  — age OCHIQ kaliti (age1...). Yopiq kalit GitHub'da emas, egasida oflayn.
 on:
@@ -26,13 +27,23 @@ jobs:
     steps:
       - name: Sozlama tekshiruvi
         id: cfg
+        env:
+          BACKUP_DISABLED: ${{ vars.BACKUP_DISABLED }}
         run: |
-          if [ -z "$SUPABASE_DB_URL" ] || [ -z "$BACKUP_AGE_RECIPIENT" ]; then
-            echo "::notice::Zaxira o'chiq: SUPABASE_DB_URL va BACKUP_AGE_RECIPIENT sirlari qo'yilmagan"
-            echo "enabled=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          # Holat aniq: sirlar yo'q bo'lsa run "muvaffaqiyatli" ko'rinmaydi (nusxa yaratilmagan). Qiymatlar chiqarilmaydi.
+          missing=""
+          [ -n "$SUPABASE_DB_URL" ] || missing="$missing SUPABASE_DB_URL"
+          [ -n "$BACKUP_AGE_RECIPIENT" ] || missing="$missing BACKUP_AGE_RECIPIENT"
+          if [ -z "$missing" ]; then echo "enabled=true" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "enabled=false" >> "$GITHUB_OUTPUT"
+          if [ "$BACKUP_DISABLED" = "true" ]; then
+            { echo "### Zaxira: O'CHIQ (egasi BACKUP_DISABLED=true qo'ygan)"; echo "Nusxa yaratilmadi. Yetishmayotgan sirlar:$missing"; } >> "$GITHUB_STEP_SUMMARY"
+            echo "::warning::Zaxira o'chiq (BACKUP_DISABLED=true): nusxa yaratilmadi"
+            exit 0
           fi
+          { echo "### Zaxira: SOZLANMAGAN — nusxa yaratilmadi"; echo "Yetishmayotgan GitHub Secrets:$missing. Sozlash: docs/SECURITY_RUNBOOK.md §6"; } >> "$GITHUB_STEP_SUMMARY"
+          echo "::error::Zaxira nusxa yaratilmadi — yetishmayotgan sirlar:$missing"
+          exit 1
 
       - uses: actions/checkout@v4
         if: steps.cfg.outputs.enabled == 'true'
@@ -46,9 +57,15 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq postgresql-client-17 age
 
-      - name: Shifrlangan zaxira
+      - name: Shifrlangan zaxira (yaxlitlik tekshiruvi bilan)
         if: steps.cfg.outputs.enabled == 'true'
         run: PATH="/usr/lib/postgresql/17/bin:$PATH" bash scripts/backup/db-backup.sh backups
+
+      - name: Natija
+        if: steps.cfg.outputs.enabled == 'true'
+        run: |
+          m="$(ls backups/*.manifest.json)"
+          { echo "### Zaxira: YARATILDI"; echo '```json'; cat "$m"; echo; echo '```'; echo "Artefakt: db-backup-${{ github.run_id }} (14 kun saqlanadi). Storage fayllari bu nusxaga kirmaydi."; } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         if: steps.cfg.outputs.enabled == 'true'
