@@ -121,6 +121,9 @@ Funksiyalarning oldingi matni 0049–0055 migratsiyalarida. Har qaytarishdan key
 Agar migratsiyani avtomatik qo'llab bo'lmasa (masalan, tasdiq oynasi vaqtida tasdiqlanmasa):
 1. GitHub → `supabase/migrations/0056_security_hardening.sql` → **Raw** → hammasini nusxalash.
 2. Supabase → SQL Editor → New query → joylash → **Run**. Bitta so'rovdagi barcha buyruqlar bitta tranzaksiyada bajariladi: xato bo'lsa, hech narsa o'zgarmaydi.
+   - "destructive operation" ogohlantirishi chiqsa — **Run this query** (faylda faqat qayta yaratiladigan triggerlar uchun `drop trigger if exists` bor, ma'lumot o'chmaydi).
+   - `patch_fn …: naqsh 0 marta uchradi` xatosi — 2026-10-11 dan oldingi fayl nusxasi (SQL Editor qatorlarni CRLF qilib yuboradi).
+     GitHub'dagi **joriy** faylni qayta nusxalang: hozirgi `patch_fn` qator oxiri farqiga bog'liq emas. Xatodan keyin baza o'zgarmagan bo'ladi.
 3. Tekshirish:
    ```sql
    select to_regclass('public.security_events') is not null as tables_ok,

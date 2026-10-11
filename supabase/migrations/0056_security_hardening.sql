@@ -25,11 +25,16 @@
 -- Funksiya matnida aniq bir joyni almashtirish: naqsh aniq 1 marta uchramasa — migratsiya to'xtaydi (jim drift bo'lmaydi)
 create or replace function pg_temp.patch_fn(p_fn regprocedure, p_old text, p_new text) returns void
 language plpgsql as $$
-declare def text := pg_get_functiondef(p_fn); n int;
+-- SQL Editor (Windows) matnni CRLF qatorlar bilan yuborishi mumkin, bazadagi funksiya esa LF bilan: solishtirish faqat LF bilan
+declare
+  def text := replace(pg_get_functiondef(p_fn), E'\r', '');
+  o text := replace(p_old, E'\r', '');
+  r text := replace(p_new, E'\r', '');
+  n int;
 begin
-  n := (length(def) - length(replace(def, p_old, ''))) / greatest(length(p_old), 1);
+  n := (length(def) - length(replace(def, o, ''))) / greatest(length(o), 1);
   if n <> 1 then raise exception 'patch_fn %: naqsh % marta uchradi (1 kutilgan)', p_fn, n; end if;
-  execute replace(def, p_old, p_new);
+  execute replace(def, o, r);
 end $$;
 
 -- =====================================================================================================
@@ -823,6 +828,7 @@ declare def text := pg_get_functiondef('public.worker_completeness(uuid)'::regpr
 begin
   -- plpgsql: begin'dan keyin qo'riqchi; sql: o'rab olinadi
   if def ~* 'language plpgsql' then
+    if def !~ '\nbegin\n' then raise exception '0056: worker_completeness — begin qatori topilmadi'; end if;
     execute regexp_replace(def, '\nbegin\n', E'\nbegin\n  if not public.worker_access_ok(p_worker_id) then raise exception ''forbidden'' using errcode = ''42501''; end if;\n');
   else
     raise exception '0056: worker_completeness kutilmagan til';

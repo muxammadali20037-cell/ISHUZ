@@ -12,11 +12,16 @@
 
 create or replace function pg_temp.patch_fn(p_fn regprocedure, p_old text, p_new text) returns void
 language plpgsql as $$
-declare def text := pg_get_functiondef(p_fn); n int;
+-- SQL Editor (Windows) matnni CRLF qatorlar bilan yuborishi mumkin, bazadagi funksiya esa LF bilan: solishtirish faqat LF bilan
+declare
+  def text := replace(pg_get_functiondef(p_fn), E'\r', '');
+  o text := replace(p_old, E'\r', '');
+  r text := replace(p_new, E'\r', '');
+  n int;
 begin
-  n := (length(def) - length(replace(def, p_old, ''))) / greatest(length(p_old), 1);
+  n := (length(def) - length(replace(def, o, ''))) / greatest(length(o), 1);
   if n <> 1 then raise exception 'patch_fn %: naqsh % marta uchradi (1 kutilgan)', p_fn, n; end if;
-  execute replace(def, p_old, p_new);
+  execute replace(def, o, r);
 end $$;
 
 -- ---------------------------------------------------------------------------------------------------
