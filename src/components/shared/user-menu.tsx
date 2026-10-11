@@ -24,7 +24,7 @@ export function UserMenu({ name, roles, activeRole, avatar }: { name: string; ro
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-1 rounded-xl p-1 hover:bg-secondary" aria-label={name}>
+      <DropdownMenuTrigger className="flex min-h-11 items-center gap-1 rounded-xl p-1.5 hover:bg-secondary" aria-label={name}>
         {avatar}
         <ChevronDown className="hidden size-4 text-muted-foreground sm:block" />
       </DropdownMenuTrigger>

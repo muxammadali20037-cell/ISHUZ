@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { asGuest, sql } from "../support";
+import { USERS, asGuest, sql } from "../support";
 
 /** F-04: texnik xato "natija yo'q" emas; bo'sh natija statistikasi buzilmaydi; sahifa chegarasi */
 
@@ -23,6 +23,11 @@ async function setSearchBroken(broken: boolean) {
   await sql("notify pgrst, 'reload schema'");
   await new Promise((r) => setTimeout(r, 1500));
 }
+
+// "Buxgalter" bo'yicha bo'sh natija sinovi: boshqa spec'lar qoldirgan sinov e'lonlari aralashmasin
+test.beforeEach(async () => {
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+});
 
 test.afterEach(async () => {
   const [r] = await sql<{ n: string }>("select count(*) as n from pg_proc where proname = 'simple_search_vacancies_e2e_off'");

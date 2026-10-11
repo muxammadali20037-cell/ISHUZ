@@ -69,7 +69,7 @@ export function MessageBubble({ message, mine, onDelete }: { message: ChatMessag
         )}
       >
         {deleted ? (
-          <span className={cn("flex items-center gap-1.5 text-sm italic", mine ? "text-white/85" : "text-muted-foreground")}>
+          <span className={cn("flex items-center gap-1.5 text-sm italic", mine ? "text-white/90" : "text-muted-foreground")}>
             <Ban className="size-3.5" /> {t("chat.room.deleted")}
           </span>
         ) : message.type === "text" ? (
@@ -88,7 +88,7 @@ export function MessageBubble({ message, mine, onDelete }: { message: ChatMessag
         <span
           className={cn(
             "mt-1 flex items-center justify-end gap-1 text-[11px] leading-none tabular",
-            mine ? "text-white/75" : "text-muted-foreground",
+            mine ? "text-white/90" : "text-muted-foreground",
             bubbleIsCard && "px-2 pb-1",
           )}
         >

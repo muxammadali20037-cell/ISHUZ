@@ -50,7 +50,7 @@ export async function LandingPage() {
             <UserRound className="size-7" />
           </span>
           <span className="mt-5 text-2xl font-bold">{t("common.landing.worker_card_title")}</span>
-          <span className="mt-1 text-primary-foreground/80">{t("common.landing.worker_card_subtitle")}</span>
+          <span className="mt-1 text-primary-foreground">{t("common.landing.worker_card_subtitle")}</span>
           <span className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 font-semibold text-primary">
             {t("common.landing.worker_card_cta")} <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
           </span>

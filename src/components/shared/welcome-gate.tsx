@@ -146,7 +146,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
               </span>
               <span>
                 <span className="block text-xl font-bold">{t("welcome.role.worker")}</span>
-                <span className="block text-sm text-primary-foreground/85">{t("welcome.role.worker_desc")}</span>
+                <span className="block text-sm text-primary-foreground">{t("welcome.role.worker_desc")}</span>
               </span>
             </button>
             <button
@@ -159,7 +159,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
               </span>
               <span>
                 <span className="block text-xl font-bold">{t("welcome.role.employer")}</span>
-                <span className="block text-sm text-success-foreground/85">{t("welcome.role.employer_desc")}</span>
+                <span className="block text-sm text-success-foreground">{t("welcome.role.employer_desc")}</span>
               </span>
             </button>
           </div>

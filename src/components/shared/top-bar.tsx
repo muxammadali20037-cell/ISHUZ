@@ -21,7 +21,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
       <div className="container-app flex h-14 items-center gap-3">
-        <Link href="/" className="flex min-h-11 items-center gap-2 font-extrabold tracking-tight" aria-label="Ish topdim">
+        <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label="Ish topdim">
           <BrandMark />
           <span className="hidden text-lg min-[400px]:inline">
             Ish <span className="text-primary">topdim</span>
@@ -30,12 +30,12 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
         <div className="ml-4 flex-1">
           <DesktopNavLinks role={role} counts={counts} />
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           <SoundToggle />
           <LanguageSelect />
           {session ? (
             <>
-              <Button asChild variant="ghost" size="icon-sm" className="relative" aria-label={t("common.nav.messages")}>
+              <Button asChild variant="ghost" size="icon" className="relative" aria-label={t("common.nav.messages")}>
                 <Link href="/messages">
                   <MessageCircle className="size-5" />
                   {counts?.messages ? (
@@ -46,13 +46,13 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
                 </Link>
               </Button>
               {role === "employer" ? (
-                <Button asChild variant="ghost" size="icon-sm" className="relative hidden sm:inline-flex" aria-label={t("common.nav.saved")}>
+                <Button asChild variant="ghost" size="icon" className="relative hidden sm:inline-flex" aria-label={t("common.nav.saved")}>
                   <Link href="/employer/saved">
                     <Bookmark className="size-5" />
                   </Link>
                 </Button>
               ) : null}
-              <Button asChild variant="ghost" size="icon-sm" className="relative" aria-label={t("common.nav.notifications")}>
+              <Button asChild variant="ghost" size="icon" className="relative" aria-label={t("common.nav.notifications")}>
                 <Link href="/notifications">
                   <Bell className="size-5" />
                   {counts?.notifications ? <span className="absolute right-1 top-1 size-2 rounded-full bg-destructive" /> : null}

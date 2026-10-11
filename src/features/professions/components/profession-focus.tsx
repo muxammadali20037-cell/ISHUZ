@@ -25,7 +25,7 @@ export async function ProfessionFocus({ workerId, categorySlug }: { workerId: st
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-lg font-extrabold">{t("professions.focus_pick_title")}</span>
-          <span className="mt-0.5 block text-sm text-primary-foreground/85">{t("professions.focus_pick_desc")}</span>
+          <span className="mt-0.5 block text-sm text-primary-foreground">{t("professions.focus_pick_desc")}</span>
         </span>
         <ArrowRight className="size-6 shrink-0 transition-transform group-hover:translate-x-1" />
       </Link>

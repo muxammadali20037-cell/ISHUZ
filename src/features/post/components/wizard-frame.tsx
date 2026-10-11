@@ -26,6 +26,7 @@ export function WizardFrame({
   nextIcon = true,
   pending,
   hideFooter,
+  busy,
   children,
 }: {
   title: string;
@@ -43,6 +44,8 @@ export function WizardFrame({
   nextIcon?: boolean;
   pending?: boolean;
   hideFooter?: boolean;
+  /** qurilmadagi qoralama hali o'qilmagan: forma ko'rinadi (tez birinchi chizish), lekin bir lahzaga bosilmaydi */
+  busy?: boolean;
   children: ReactNode;
 }) {
   const { t } = useT();
@@ -54,7 +57,7 @@ export function WizardFrame({
     setDir(step > prevStep ? "forward" : "back");
   }
   return (
-    <div className="container-narrow overflow-x-clip pb-44 pt-4 text-lg sm:pt-8">
+    <div className="container-narrow overflow-x-clip pb-44 pt-4 text-lg sm:pt-8" inert={busy || undefined} aria-busy={busy || undefined}>
       <header className="mb-6 space-y-3">
         <div className="flex items-center justify-between gap-3">
           <p className="text-base font-bold uppercase tracking-wide text-primary">{title}</p>

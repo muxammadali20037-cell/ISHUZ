@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /** F-06: ish joyi surati karantin → serverda qayta kodlash (EXIF yo'q) → o'zgarmas v-<sha256>.webp → e'lon */
 
@@ -93,6 +93,7 @@ async function legacyVacancy(page: Page, withFile: boolean) {
 
 async function editDescription(page: Page, id: string, text: string) {
   await page.goto(`/post/vacancy?edit=${id}&step=3`);
+  await formReady(page);
   await page.locator("#desc").fill(text);
   await next(page);
   await page.getByRole("button", { name: /O'zgarishlarni saqlash|E'lonni joylash/ }).click();

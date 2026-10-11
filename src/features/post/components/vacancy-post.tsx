@@ -320,10 +320,6 @@ export function VacancyPost({
     );
   }
 
-  if (!ready) {
-    return <div className="container-narrow py-10 text-lg text-muted-foreground">{t("easy.wizard.loading")}</div>;
-  }
-
   // AI qoralamasi: yetishmayotgan majburiy maydonlar → qisqa savollar
   const aiQuestions = (() => {
     if (draft.source !== "ai") return [];
@@ -346,6 +342,7 @@ export function VacancyPost({
 
   return (
     <WizardFrame
+      busy={!ready}
       title={editId ? t("easy.vacancy.edit_title") : t("easy.vacancy.page_title")}
       step={step}
       total={TOTAL}

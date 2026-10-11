@@ -275,10 +275,6 @@ export function WorkerPost({
     );
   }
 
-  if (!ready) {
-    return <div className="container-narrow py-10 text-lg text-muted-foreground">{t("easy.wizard.loading")}</div>;
-  }
-
   // AI qoralamasi: yetishmayotgan majburiy maydonlar → qisqa savollar (bosilsa o'sha qadamga o'tadi)
   const aiQuestions = (() => {
     if (draft.source !== "ai") return [];
@@ -296,6 +292,7 @@ export function WorkerPost({
 
   return (
     <WizardFrame
+      busy={!ready}
       title={existing ? t("easy.worker.edit_title") : t("easy.worker.page_title")}
       step={step}
       total={TOTAL}

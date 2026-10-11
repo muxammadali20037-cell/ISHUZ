@@ -53,14 +53,14 @@ export async function FindStart({ params }: { params: FindParams }) {
           <BriefcaseBusiness className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.jobs")}</span>
-            <span className="block text-base text-primary-foreground/85">{t("easy.search.jobs_desc")}</span>
+            <span className="block text-base text-primary-foreground">{t("easy.search.jobs_desc")}</span>
           </span>
         </Link>
         <Link transitionTypes={["nav-forward"]} data-sfx="pop" href={findHref(params, { mode: "workers", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-success p-5 text-success-foreground shadow-md">
           <UsersRound className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.workers")}</span>
-            <span className="block text-base text-success-foreground/85">{t("easy.search.workers_desc")}</span>
+            <span className="block text-base text-success-foreground">{t("easy.search.workers_desc")}</span>
           </span>
         </Link>
       </div>

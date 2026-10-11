@@ -30,8 +30,8 @@ export function LanguageSwitcher({ className, size = "sm" }: { className?: strin
           type="button"
           onClick={() => change(l)}
           className={cn(
-            "rounded-md font-semibold transition-colors",
-            size === "sm" ? "px-2.5 py-1 text-xs" : "px-3.5 py-1.5 text-sm",
+            "inline-flex min-h-11 min-w-11 items-center justify-center rounded-md font-semibold transition-colors",
+            size === "sm" ? "px-2.5 text-sm" : "px-3.5 text-sm",
             l === locale ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
           )}
           aria-pressed={l === locale}
@@ -52,7 +52,7 @@ export function LanguageSelect({ className }: { className?: string }) {
   const [pending, startTransition] = useTransition();
   return (
     <label className={cn("relative inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-card pl-2.5 pr-2 text-sm font-bold", pending && "opacity-60", className)}>
-      <Globe className="size-4 text-muted-foreground" aria-hidden />
+      <Globe className="hidden size-4 text-muted-foreground min-[400px]:block" aria-hidden />
       <span aria-hidden>{LOCALE_LABELS[locale]}</span>
       <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
       <select
@@ -65,7 +65,7 @@ export function LanguageSelect({ className }: { className?: string }) {
             router.refresh();
           });
         }}
-        className="absolute inset-0 cursor-pointer opacity-0"
+        className="absolute -inset-px cursor-pointer opacity-0"
       >
         {LOCALES.map((l) => (
           <option key={l} value={l} lang={l === "oz" ? "uz-Cyrl" : l}>

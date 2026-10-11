@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, draftData, draftKeys, loginAs, pickProfession } from "../support";
+import { USERS, asGuest, draftData, draftKeys, formReady, loginAs, pickProfession } from "../support";
 
 /** F-03: qoralama hisobga bog'langan; chiqish/hisob almashishida boshqa hisobga ko'rinmaydi; buzilgan qoralama formani buzmaydi */
 
@@ -17,6 +17,7 @@ test("A hisobining qoralamasi chiqishdan keyin B hisobida ko'rinmaydi", async ({
 
   await loginAs(context, USERS.workerB);
   await page.goto("/post/worker");
+  await formReady(page);
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
   expect(await draftKeys(page)).toEqual([]);
   await expect(page.getByText(/^Kasb:/)).toHaveCount(0);
@@ -57,6 +58,7 @@ test("buzilgan va boshqa egaga ko'chirilgan qoralama e'tiborsiz qoladi", async (
     localStorage.setItem("ib_post_worker_v1", JSON.stringify({ v: 1, firstName: "Eski egasiz" }));
   }, USERS.workerA);
   await page.goto("/post/worker");
+  await formReady(page);
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
   expect(await draftKeys(page)).toEqual([]);
   expect(await page.evaluate(() => localStorage.getItem("ib_post_worker_v1"))).toBeNull();

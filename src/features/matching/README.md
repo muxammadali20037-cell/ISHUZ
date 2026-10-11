@@ -2,7 +2,13 @@
 
 `public.compute_match(worker_id, vacancy_id)` (SQL) ning sof TypeScript nusxasi + almashtiriladigan `MatchEngine` interfeysi.
 SQL ro'yxatlarni saralash/kesh (`matches`, `search_*`, `recommended_*`) uchun, TS esa UI tushuntirishlari, testlar va kelajakdagi
-AI dvigatel uchun ishlatiladi. Ikkalasi **bir xil natija** beradi — buni paritet testi kafolatlaydi.
+AI dvigatel uchun mo'ljallangan.
+
+> **Holat (2026-10-11):** TS nusxa `compute_match`ning v1 (0008/0028) mantiqiga mos. 0050 (matching v2: og'irliklar, qat'iy
+> shartlar) SQL'ni o'zgartirgan, TS esa ko'chirilmagan — ballar farq qiladi (paritet suite migratsiyalardagi oxirgi ta'rif bilan
+> ishga tushirilganda 15/18 holat mos kelmadi). Paritet testi faqat `0008` fayli bilan solishtirgani uchun shu vaqtgacha doim
+> o'tkazib yuborilgan (18 skip). Ilova runtime'da TS dvigatelni ishlatmaydi — foydalanuvchi ko'radigan ball va sabablar SQL v2 dan.
+> TS'ni v2 ga ko'chirish yoki olib tashlash — ochiq vazifa (docs/PROFESSIONALIZATION_REPORT.md).
 
 ## Foydalanish
 

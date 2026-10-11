@@ -19,7 +19,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="container-narrow flex h-14 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 font-extrabold tracking-tight">
+        <Link href="/" className="flex min-h-11 items-center gap-2 font-extrabold tracking-tight">
           <BrandMark />
           <span className="text-lg">
             Ish <span className="text-primary">topdim</span>

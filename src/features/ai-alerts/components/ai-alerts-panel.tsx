@@ -76,12 +76,12 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
   return (
     <div className="space-y-6">
       {/* PRO: narx va obuna holati */}
-      <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 to-orange-500 p-5 text-white shadow-md">
+      <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700 to-orange-700 p-5 text-white shadow-md">
         <div className="flex items-center gap-3">
           <Crown className="size-8 shrink-0" />
           <div className="min-w-0">
             <p className="text-lg font-extrabold">{t("saved.ai_alerts.pro")}</p>
-            <p className="text-sm text-white/90">
+            <p className="text-sm text-white">
               {data.free
                 ? t("saved.ai_alerts.free_now")
                 : data.paidUntil
@@ -92,7 +92,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
             </p>
           </div>
         </div>
-        <ol className="mt-3 grid gap-1 text-sm text-white/95">
+        <ol className="mt-3 grid gap-1 text-sm text-white">
           {[t("saved.ai_alerts.how_1"), t("saved.ai_alerts.how_2"), t("saved.ai_alerts.how_3")].map((step, i) => (
             <li key={step} className="flex items-start gap-2">
               <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/25 text-xs font-bold">{i + 1}</span>

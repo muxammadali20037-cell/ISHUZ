@@ -93,10 +93,16 @@ export function DesktopNavLinks({ counts }: { role: NavRole; counts?: Partial<Re
           <li key={item.href}>
             <Link
               href={item.href}
-              className={cn("relative flex min-h-11 items-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors lg:px-4", active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground")}
+              aria-current={active ? "page" : undefined}
+              title={t(item.labelKey)}
+              className={cn(
+                "relative flex min-h-11 min-w-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors lg:px-4",
+                active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+              )}
             >
-              <item.icon className="size-4.5" />
-              {t(item.labelKey)}
+              <item.icon className="size-4.5" aria-hidden />
+              {/* planshetda (md) faqat belgi — sarlavha ekrandan chiqib ketmasin; nom ekran o'quvchisi uchun saqlanadi */}
+              <span className="sr-only lg:not-sr-only">{t(item.labelKey)}</span>
               {badge ? <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white">{badge > 99 ? "99+" : badge}</span> : null}
             </Link>
           </li>

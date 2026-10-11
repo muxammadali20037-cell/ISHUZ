@@ -42,7 +42,7 @@ export default async function OnboardingPage() {
               <UserRound className="size-7" />
             </span>
             <span className="mt-5 text-xl font-bold sm:text-2xl">{t("onboarding.role.worker_title")}</span>
-            <span className="mt-1 text-sm text-primary-foreground/80">{t("onboarding.role.worker_desc")}</span>
+            <span className="mt-1 text-sm text-primary-foreground">{t("onboarding.role.worker_desc")}</span>
             <span className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 font-semibold text-primary">
               {t("onboarding.role.worker_cta")} <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
             </span>

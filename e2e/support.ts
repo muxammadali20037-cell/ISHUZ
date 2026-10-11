@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Client } from "pg";
-import type { BrowserContext, Page } from "@playwright/test";
+import { expect, type BrowserContext, type Page } from "@playwright/test";
 import { sessionCookie } from "./stack/jwt.mjs";
 
 /** up.sh yozgan stend ma'lumoti (tasodifiy JWT kaliti, baza, ilova manzili) */
@@ -46,8 +46,14 @@ export async function draftKeys(page: Page): Promise<string[]> {
   return page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("ib_draft:")));
 }
 
+/** Forma serverda darhol chiziladi, lekin qurilmadagi qoralama o'qilguncha (inert, aria-busy) bosilmaydi — foydalanuvchi kabi kutamiz */
+export async function formReady(page: Page) {
+  await expect(page.locator('[aria-busy="true"][inert]')).toHaveCount(0);
+}
+
 /** Kasb tanlagichda qidirib, aynan shu nomli tanlanadigan kasbni ("Tanlash") tanlash — "Buxgalteriya" sohasini emas */
 export async function pickProfession(page: Page, query: string, exact: string) {
+  await formReady(page);
   await page.getByLabel("Kasb yoki sohani qidiring").fill(query);
   await page
     .getByRole("button")

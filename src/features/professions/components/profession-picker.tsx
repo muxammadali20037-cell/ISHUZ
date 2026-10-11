@@ -440,7 +440,7 @@ export function ProfessionPicker({
         </>
       )}
       {onCustom && hits === null ? (
-        <button type="button" onClick={() => setCustom(query.trim())} className="text-sm font-medium text-primary hover:underline">
+        <button type="button" onClick={() => setCustom(query.trim())} className="inline-flex min-h-11 items-center text-base font-medium text-primary underline-offset-4 hover:underline">
           {t("professions.custom_link")}
         </button>
       ) : null}

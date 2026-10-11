@@ -33,7 +33,7 @@ export async function WorkerMainCards({ workerId }: { workerId: string }) {
             <span className="flex items-center gap-2 text-xl font-extrabold">
               {t("jobs.worker_home.browse_title")} <ChevronRight className="size-5 transition-transform group-hover:translate-x-1" />
             </span>
-            <span className="mt-1 block text-[15px] text-primary-foreground/85">{t("jobs.worker_home.browse_desc")}</span>
+            <span className="mt-1 block text-[15px] text-primary-foreground">{t("jobs.worker_home.browse_desc")}</span>
           </span>
         </Link>
         <Link

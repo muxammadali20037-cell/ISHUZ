@@ -22,13 +22,13 @@
   --secondary: #eef2f7;
   --secondary-foreground: #1e293b;
   --muted: #eef2f7;
-  --muted-foreground: #64748b;
+  --muted-foreground: #5b687c; /* WCAG AA: och fonlarda ≥ 4.9:1 */
   --accent: #e8effc;
   --accent-foreground: #1d5fe0;
-  --success: #16a34a;
+  --success: #15803d; /* oq matn bilan 5:1 */
   --success-soft: #e6f7ec;
   --success-foreground: #ffffff;
-  --warning: #d97706;
+  --warning: #b45309; /* oq matn bilan 5:1 */
   --warning-soft: #fef3e0;
   --warning-foreground: #ffffff;
   --destructive: #dc2626;
@@ -169,6 +169,11 @@
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
   }
+}
+
+/* forma serverda chizilgan, qurilmadagi qoralama hali o'qilmoqda (bir lahza) — bosish hali qabul qilinmaydi */
+[inert][aria-busy="true"] {
+  cursor: progress;
 }
 
 @layer utilities {

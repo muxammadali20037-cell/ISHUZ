@@ -29,7 +29,7 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
   return (
     <section
       aria-labelledby="ai-pro-title"
-      className={cn("relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-primary to-sky-500 p-5 text-white shadow-lg sm:p-7", className)}
+      className={cn("relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-primary to-sky-700 p-5 text-white shadow-lg sm:p-7", className)}
     >
       <span className="pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-white/10 blur-2xl" aria-hidden />
       <div className="relative flex flex-wrap items-start gap-4">
@@ -47,7 +47,7 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
             {t("saved.ai_alerts.card_title")}
           </h2>
           <p className="mt-1 text-lg leading-snug text-white/90">{t("saved.ai_alerts.card_desc")}</p>
-          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-white/85">
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-white/90">
             <span className="inline-flex items-center gap-1.5">
               <Sparkles className="size-4" aria-hidden /> {t("saved.ai_alerts.card_point_ai")}
             </span>

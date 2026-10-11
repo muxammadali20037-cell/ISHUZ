@@ -1,13 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { USERS, loginAs, next, pickWholeRegion, sql } from "../support";
+import { USERS, formReady, loginAs, next, pickWholeRegion, sql } from "../support";
 
 /** F-05: sodda ishchi formasida katalogda yo'q kasb yoziladi, saqlanadi va katalog tuguni sifatida ko'rsatilmaydi */
 
 test("ishchi: 'Kasbim topilmadi' → asl nom + soha → joylandi, bazada custom sifatida", async ({ page, context }) => {
   const NAME = "Kaktus parvarishchisi";
+  // takroriy ishga tushirishda ham bir xil boshlang'ich holat: oldingi run'dan qolgan e'lon va so'rov o'chiriladi
   await sql("delete from public.custom_occupation_requests where created_by = $1", [USERS.workerA]);
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerA]);
   await loginAs(context, USERS.workerA);
   await page.goto("/post/worker");
+  await formReady(page);
 
   await page.getByLabel("Kasb yoki sohani qidiring").fill(NAME);
   await page.getByRole("button", { name: new RegExp(`Topilmadimi\\? «${NAME}»`) }).click();
@@ -42,5 +45,6 @@ test("ishchi: 'Kasbim topilmadi' → asl nom + soha → joylandi, bazada custom 
 
   // qayta ochilganda (tahrirlash) custom nom yo'qolmaydi
   await page.goto("/post/worker?step=1");
+  await formReady(page);
   await expect(page.getByText(NAME).first()).toBeVisible();
 });

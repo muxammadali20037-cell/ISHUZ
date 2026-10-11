@@ -85,7 +85,7 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
         </span>
         <span className="min-w-0 flex-1">
           <span className="block text-xl font-extrabold uppercase tracking-tight sm:text-2xl">{t("employer.dashboard.post_vacancy_big")}</span>
-          <span className="mt-1 block text-sm text-primary-foreground/80 sm:text-base">{t("employer.dashboard.post_vacancy_hint")}</span>
+          <span className="mt-1 block text-sm text-primary-foreground sm:text-base">{t("employer.dashboard.post_vacancy_hint")}</span>
         </span>
         <ChevronRight className="size-7 shrink-0 transition-transform group-hover:translate-x-1" />
       </Link>
