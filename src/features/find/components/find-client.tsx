@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Pencil, SlidersHorizontal, Users } from "lucide-react";
+import { Loader2, MapPin, Pencil, RotateCw, SlidersHorizontal, Users } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import type { Category } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
@@ -150,5 +150,16 @@ export function FilterSheet({
         </div>
       </Sheet>
     </Dialog>
+  );
+}
+
+/** Natijalarni qayta yuklash: URL (kasb, hudud, filtr, sahifa) o'zgarmaydi — faqat server qayta so'raladi */
+export function RetryButton({ label }: { label: string }) {
+  const router = useRouter();
+  const [pending, start] = useTransition();
+  return (
+    <Button size="xl" className="h-14 text-lg" disabled={pending} onClick={() => start(() => router.refresh())}>
+      {pending ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <RotateCw className="size-5" aria-hidden />} {label}
+    </Button>
   );
 }

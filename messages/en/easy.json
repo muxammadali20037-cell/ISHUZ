@@ -256,7 +256,13 @@
     "remote": "Remote",
     "post_jobs": "No worker found? Post a job",
     "post_workers": "No suitable job? Post a listing about yourself",
-    "salary_over": "from {amount} UZS"
+    "salary_over": "from {amount} UZS",
+    "error_title": "Could not load results",
+    "error_desc": "A temporary internet or server problem. Your profession, region and filters are kept.",
+    "retry": "Try again",
+    "error_code": "Error code: {code}",
+    "page_empty_title": "No more results on this page",
+    "page_empty_first": "Back to the first page"
   },
   "card": {
     "call": "Call",

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { randomBytes } from "node:crypto";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { publicEnv } from "@/lib/env";
@@ -74,10 +75,13 @@ export interface NodeInfo {
   categoryIcon: string | null;
 }
 
+/** Kasb tuguni. null — bunday tugun yo'q; texnik xato — istisno (xato sahifasi "Qayta urinish" bilan, URL saqlanadi) */
 export async function getNodeInfo(nodeId: string): Promise<NodeInfo | null> {
   const db = anon();
-  const [trail, { data: node }] = await Promise.all([getProfessionTrail(nodeId), db.from("profession_nodes").select("id, categories(slug, icon)").eq("id", nodeId).maybeSingle()]);
-  if (!trail.length || !node) return null;
+  const [trail, { data: node, error }] = await Promise.all([getProfessionTrail(nodeId), db.from("profession_nodes").select("id, categories(slug, icon)").eq("id", nodeId).maybeSingle()]);
+  if (error) throw new Error(`node_lookup_failed:${error.code ?? ""}`);
+  if (node && !trail.length) throw new Error("node_trail_failed");
+  if (!node) return null;
   const cat = node.categories as { slug: string; icon: string | null } | null;
   return { id: nodeId, trail, categorySlug: cat?.slug ?? null, categoryIcon: cat?.icon ?? null };
 }
@@ -93,13 +97,26 @@ export interface FindResults<T> {
   photos?: Record<string, string>;
 }
 
+/**
+ * Qidiruv natijasi: muvaffaqiyat (0 ta ham bo'lishi mumkin) yoki texnik xato — ular aralashmaydi.
+ * Xato "natija yo'q" deb ko'rsatilmaydi va bo'sh qidiruv statistikasiga yozilmaydi; errorId — logdagi yozuvni topish uchun.
+ */
+export type FindOutcome<T> = ({ ok: true } & FindResults<T>) | { ok: false; errorId: string };
+
+function searchFailure(scope: "jobs" | "workers", error: { code?: string; message: string }): { ok: false; errorId: string } {
+  const errorId = randomBytes(4).toString("hex");
+  // shaxsiy ma'lumotsiz: so'rov matni yozilmaydi
+  console.error(JSON.stringify({ find_error: scope, id: errorId, code: error.code ?? null, message: error.message.slice(0, 160) }));
+  return { ok: false, errorId };
+}
+
 interface Place {
   regionId: string | null;
   districtId: string | null;
   remote: boolean;
 }
 
-export async function findJobs(params: FindParams, place: Place): Promise<FindResults<JobRow>> {
+export async function findJobs(params: FindParams, place: Place): Promise<FindOutcome<JobRow>> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("simple_search_vacancies", {
     p_profession_node_id: params.p ?? undefined,
@@ -112,17 +129,17 @@ export async function findJobs(params: FindParams, place: Place): Promise<FindRe
     p_limit: PAGE_SIZE,
     p_offset: (params.page - 1) * PAGE_SIZE,
   });
-  if (error) console.error("[find] jobs", error.message);
+  if (error) return searchFailure("jobs", error);
   const items = data ?? [];
   const [images, photoRows] = await Promise.all([
     getProfessionImages(items.map((r) => r.profession_node_id)),
     items.length ? supabase.from("vacancies").select("id, photo_path").in("id", items.map((r) => r.id)).not("photo_path", "is", null) : Promise.resolve({ data: [] }),
   ]);
   const photos = Object.fromEntries((photoRows.data ?? []).filter((r) => r.photo_path).map((r) => [r.id, r.photo_path as string]));
-  return { items, total: Number(items[0]?.total_count ?? 0), images, photos };
+  return { ok: true, items, total: Number(items[0]?.total_count ?? 0), images, photos };
 }
 
-export async function findWorkers(params: FindParams, place: Place): Promise<FindResults<WorkerRow>> {
+export async function findWorkers(params: FindParams, place: Place): Promise<FindOutcome<WorkerRow>> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("simple_search_workers", {
     p_profession_node_id: params.p ?? undefined,
@@ -133,10 +150,10 @@ export async function findWorkers(params: FindParams, place: Place): Promise<Fin
     p_limit: PAGE_SIZE,
     p_offset: (params.page - 1) * PAGE_SIZE,
   });
-  if (error) console.error("[find] workers", error.message);
+  if (error) return searchFailure("workers", error);
   const items = data ?? [];
   const images = await getProfessionImages(items.map((r) => r.profession_node_id));
-  return { items, total: Number(items[0]?.total_count ?? 0), images };
+  return { ok: true, items, total: Number(items[0]?.total_count ?? 0), images };
 }
 
 export type { JobRow, WorkerRow };

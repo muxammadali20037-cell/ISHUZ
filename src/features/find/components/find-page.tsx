@@ -5,6 +5,7 @@ import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { formatMoneyShort } from "@/lib/format";
 import { getSession } from "@/features/auth/session";
+import { trackServer } from "@/features/analytics/server";
 import type { Category, District, Region } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import { cn } from "@/lib/utils";
 import { activeFilterCount, findHref, type FindParams } from "../params";
 import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
 import { PopSounds } from "@/components/shared/pop-sounds";
-import { ChangeSheet, FilterSheet, FindProfessionStep } from "./find-client";
+import { ChangeSheet, FilterSheet, FindProfessionStep, RetryButton } from "./find-client";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 
 const bigLink = "press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left text-lg font-semibold hover:border-primary/50";
@@ -212,7 +213,8 @@ export async function FindResultsView({ params, node, region, district }: { para
   const place = { regionId: region?.id ?? null, districtId: district?.id ?? null, remote };
   const isJobs = params.mode === "jobs";
   const res = isJobs ? await findJobs(params, place) : await findWorkers(params, place);
-  const pages = Math.max(1, Math.ceil(Math.min(res.total, 5000) / PAGE_SIZE));
+  const total = res.ok ? res.total : 0;
+  const pages = Math.max(1, Math.ceil(Math.min(total, 5000) / PAGE_SIZE));
   const prof = node ? name(node.trail.at(-1)!) : "";
   const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t("easy.location.whole_region")}` : t("easy.location.whole_country");
   const backHref = region ? findHref(params, { district: null, page: 1 }) : findHref(params, { region: null, district: null, page: 1 });
@@ -223,9 +225,12 @@ export async function FindResultsView({ params, node, region, district }: { para
     isJobs && params.noexp ? t("easy.search.no_experience") : null,
     !isJobs && params.exp ? t("easy.search.experienced") : null,
   ].filter((x): x is string => !!x);
-  // qidiruv statistikasi (kasb/hudud ID bilan; birinchi sahifa) — talab, bo'sh natijali qidiruvlar uchun
-  if (params.page === 1) {
-    const total = res.total;
+  // qidiruv statistikasi (kasb/hudud ID bilan; birinchi sahifa) — talab, bo'sh natijali qidiruvlar uchun.
+  // Texnik xato bo'sh natija sifatida yozilmaydi: alohida "search_error" hodisasi (shaxsiy ma'lumotsiz).
+  if (!res.ok) {
+    const profileId = (await getSession())?.userId ?? null;
+    after(() => trackServer("search_error", profileId, { scope: isJobs ? "jobs" : "workers", page: params.page }));
+  } else if (params.page === 1) {
     // after() ichida cookies o'qilmaydi — sessiya oldindan olinadi
     const profileId = (await getSession())?.userId ?? null;
     after(() =>
@@ -258,15 +263,33 @@ export async function FindResultsView({ params, node, region, district }: { para
           regionHref={findHref(params, { region: null, district: null, page: 1 })}
         />
         <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} count={activeFilterCount(params)} />
-        {res.total ? (
+        {total ? (
           <p className="text-base font-semibold text-muted-foreground" aria-live="polite">
-            {t("easy.search.found", { count: res.total >= 5000 ? "5 000+" : res.total })}
+            {t("easy.search.found", { count: total >= 5000 ? "5 000+" : total })}
           </p>
         ) : null}
       </div>
 
-      {res.items.length ? <PopSounds key={`${params.page}:${res.items[0]?.id ?? ""}`} count={res.items.length} /> : null}
-      {res.items.length ? (
+      {!res.ok ? (
+        <section role="alert" className="space-y-4 rounded-3xl border-2 border-warning/40 bg-warning-soft p-6 text-center">
+          <h2 className="text-2xl font-bold">{t("easy.search.error_title")}</h2>
+          <p className="text-muted-foreground">{t("easy.search.error_desc")}</p>
+          <div className="mx-auto grid max-w-md gap-3">
+            <RetryButton label={t("easy.search.retry")} />
+          </div>
+          <p className="text-sm text-muted-foreground">{t("easy.search.error_code", { code: res.errorId })}</p>
+        </section>
+      ) : !res.items.length && params.page > 1 ? (
+        <section className="space-y-4 rounded-3xl border-2 border-dashed border-border bg-card p-6 text-center">
+          <h2 className="text-2xl font-bold">{t("easy.search.page_empty_title")}</h2>
+          <div className="mx-auto grid max-w-md gap-3">
+            <Button asChild size="xl" className="h-14 text-lg">
+              <Link href={findHref(params, { page: 1 })}>{t("easy.search.page_empty_first")}</Link>
+            </Button>
+          </div>
+        </section>
+      ) : res.items.length ? <PopSounds key={`${params.page}:${res.items[0]?.id ?? ""}`} count={res.items.length} /> : null}
+      {!res.ok || (!res.items.length && params.page > 1) ? null : res.items.length ? (
         <ul className="pop-list grid gap-4 lg:grid-cols-2">
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (

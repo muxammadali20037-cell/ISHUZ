@@ -12,6 +12,7 @@ export const ANALYTICS_EVENTS = [
   "ai_draft_started",
   "ai_draft_prepared",
   "search_submit",
+  "search_error",
   "subscription_on",
   "subscription_off",
 ] as const;

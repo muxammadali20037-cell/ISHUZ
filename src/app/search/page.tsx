@@ -55,6 +55,10 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
 
   // maqsad aniqlanmagan, lekin kasb (yoki matn) bor — bitta savol: "Ish qidiryapsizmi yoki ishchi?"
   const stepKey = !params.mode ? "intent" : !params.p || !node ? "profession" : !regionKnown ? "region" : region && !districtKnown ? "district" : "results";
+  // ma'lumotnoma o'qilmadi (texnik xato) — bo'sh ro'yxat "hech narsa yo'q" deb ko'rsatilmaydi: xato sahifasi, URL saqlanadi
+  if ((stepKey === "profession" && !categories.length) || (stepKey === "region" && !regions.length) || (stepKey === "district" && !districts.length)) {
+    throw new Error(`reference_unavailable:${stepKey}`);
+  }
   const view =
     stepKey === "intent" ? (
       params.q || node ? <FindAskIntent params={params} node={node} /> : <FindStart params={params} />

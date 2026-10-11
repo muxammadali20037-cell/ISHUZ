@@ -256,7 +256,13 @@
     "remote": "Masofadan",
     "post_jobs": "Ishchi topilmadimi? O'zingiz e'lon bering",
     "post_workers": "Mos ish topilmadimi? O'zingiz haqingizda e'lon bering",
-    "salary_over": "{amount} so'mdan yuqori"
+    "salary_over": "{amount} so'mdan yuqori",
+    "error_title": "Natijalarni yuklab bo'lmadi",
+    "error_desc": "Internet yoki serverda vaqtinchalik nosozlik. Tanlagan kasb, hudud va filtrlaringiz saqlanib qoldi.",
+    "retry": "Qayta urinish",
+    "error_code": "Xato kodi: {code}",
+    "page_empty_title": "Bu sahifada natija qolmadi",
+    "page_empty_first": "Birinchi sahifaga qaytish"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
