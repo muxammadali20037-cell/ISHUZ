@@ -60,3 +60,15 @@ E2E to'plami lokal staging stend (PostgREST + GoTrue emulyatori + mock'lar) tala
 | 0056 ni rollback bilan quruq sinash (barcha funksiya yamoqlari, `alter role authenticator`, storage siyosatlari, auth.users yozish huquqi) | **PASS** — hech narsa saqlanmadi (tekshirildi) |
 | 0056 ni qo'llash | **NOT_RUN** — 1-urinish: chaqiruv bekor qilindi; 2- va 3-urinish: Supabase MCP 60 soniyada javob bermadi (bazada hech qanday tranzaksiya boshlanmagan, o'zgarish yo'q — tekshirildi); bo'laklab qo'llash avtomatik ruxsat tizimi tomonidan rad etildi. Egasining aniq ruxsati yoki SQL Editor orqali qo'llash kerak (RUNBOOK §9). Ilova kodi 0056'siz ham ishlaydi |
 | Production `probe.mjs` | Deploy'dan keyin ishga tushiriladi (RUNBOOK §0) |
+
+## Qo'shimcha — 2026-10-11 (professionallashtirish bosqichi)
+
+To'liq va joriy holat: [PROFESSIONALIZATION_REPORT.md](PROFESSIONALIZATION_REPORT.md). Bu bo'limdagi yangi tekshiruvlar:
+
+| Tekshiruv | Natija |
+|---|---|
+| Vakansiya rasmi: soxta tur (HTML `.jpg`), buzilgan JPEG, 45 MP piksel bombasi, >5 MB, EXIF/GPS olib tashlanishi (unit, `photo-finalize.test.ts`) | PASS (11) |
+| Storage: yopiq karantin, begona papka, "v-" fayl yaratish/almashtirish/o'chirish taqiqi; vakansiyaga tekshirilmagan yo'l (mijoz va RPC); tozalash ro'yxati faqat service role (`vacancy_photo_quarantine.test.sql`) | PASS (21) |
+| Brauzer: rasm yuklash → toza WebP, rad etilgan fayl karantinda qolmaydi, eski rasmli e'lon tahriri (`vacancy-photo.spec.ts`) | PASS (4) |
+| Qoralamalar hisoblar orasida aralashmaydi (`drafts.spec.ts`) | PASS (4) |
+| Production holati (read-only): 0056/0057/0058 qo'llanmagan — yuqoridagi DB darajasidagi tuzatishlar production'da hali **amalda emas** | BLOCKED (egasi, RUNBOOK §9) |
