@@ -16,7 +16,7 @@ export function ProfessionImage({
   url?: string | null;
   icon?: string | null;
   name: string;
-  /** masalan "Kasb tasviri" — rasm burchagida kichik yozuv (tafsilot sahifalarida) */
+  /** masalan "Kasb tasviri" — rasm burchagida kichik yozuv (tafsilot sahifalarida); faqat rasm bo'lsa, ikonka plitasida emas */
   label?: string;
   className?: string;
   iconClassName?: string;
@@ -32,7 +32,7 @@ export function ProfessionImage({
           <CategoryIcon name={icon} className={cn("size-1/2 max-h-16 max-w-16 text-primary", iconClassName)} />
         </div>
       )}
-      {label ? (
+      {label && url ? (
         <figcaption className="absolute bottom-1.5 left-1.5 rounded-md bg-foreground/70 px-1.5 py-0.5 text-2xs font-medium leading-tight text-background">{label}</figcaption>
       ) : null}
     </figure>

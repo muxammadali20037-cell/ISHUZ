@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { Photo } from "@/components/shared/photo";
 import { CallBlock } from "@/features/find/components/result-cards";
+import { StatusPill } from "@/features/cabinet/components/status-pill";
 import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
 
@@ -54,9 +55,9 @@ export default async function ListingPage({ params }: Params) {
         </Button>
 
         {w.is_owner ? (
-          <div className={w.is_listed ? "rounded-2xl border-2 border-success bg-success-soft p-4" : "rounded-2xl border-2 border-warning bg-warning-soft p-4"}>
-            <p className="font-bold">{w.is_listed ? t("easy.cabinet.status.listed") : t("easy.cabinet.status.payment_required")}</p>
-            <Button asChild variant="outline" className="mt-3 h-12 bg-card px-4 text-base">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
+            <StatusPill tone={w.is_listed ? "ok" : "wait"}>{w.is_listed ? t("easy.cabinet.status.listed") : t("easy.cabinet.status.payment_required")}</StatusPill>
+            <Button asChild variant="outline" className="h-12 px-4 text-base">
               <Link href="/post/worker">
                 <Pencil className="size-5" aria-hidden /> {t("easy.cabinet.edit")}
               </Link>

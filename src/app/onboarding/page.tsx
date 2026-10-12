@@ -33,36 +33,26 @@ export default async function OnboardingPage() {
           <p className="mt-1.5 text-md text-muted-foreground">{t("auth.choose_role_subtitle")}</p>
         </div>
 
+        {/* ikki teng tanlov — bir xil neytral kartalar (biri to'liq ko'k bo'lmaydi); "ikkala rejim" izohi sarlavha ostida bir marta */}
         <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <Link
-            href="/onboarding/worker"
-            className="group flex flex-col rounded-2xl bg-primary p-6 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-7"
-          >
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-foreground/15">
-              <UserRound className="size-7" />
-            </span>
-            <span className="mt-5 text-xl font-bold sm:text-2xl">{t("onboarding.role.worker_title")}</span>
-            <span className="mt-1 text-sm text-primary-foreground">{t("onboarding.role.worker_desc")}</span>
-            <span className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-foreground px-5 font-semibold text-primary">
-              {t("onboarding.role.worker_cta")} <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </Link>
-          <Link
-            href="/onboarding/employer"
-            className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-transform hover:-translate-y-0.5 sm:p-7"
-          >
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
-              <Building2 className="size-7" />
-            </span>
-            <span className="mt-5 text-xl font-bold sm:text-2xl">{t("onboarding.role.employer_title")}</span>
-            <span className="mt-1 text-sm text-muted-foreground">{t("onboarding.role.employer_desc")}</span>
-            <span className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 font-semibold text-primary-foreground">
-              {t("onboarding.role.employer_cta")} <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
-            </span>
-          </Link>
+          {(
+            [
+              { href: "/onboarding/worker", icon: UserRound, title: t("onboarding.role.worker_title"), desc: t("onboarding.role.worker_desc"), cta: t("onboarding.role.worker_cta") },
+              { href: "/onboarding/employer", icon: Building2, title: t("onboarding.role.employer_title"), desc: t("onboarding.role.employer_desc"), cta: t("onboarding.role.employer_cta") },
+            ] as const
+          ).map((c) => (
+            <Link key={c.href} href={c.href} className="press group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm hover:border-primary/50 active:scale-[0.98] sm:p-7">
+              <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+                <c.icon className="size-7" />
+              </span>
+              <span className="mt-5 text-xl font-bold sm:text-2xl">{c.title}</span>
+              <span className="mt-1 flex-1 text-base text-muted-foreground">{c.desc}</span>
+              <span className="mt-6 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 font-semibold text-primary-foreground group-hover:bg-primary-hover">
+                {c.cta} <ArrowRight className="size-5" aria-hidden />
+              </span>
+            </Link>
+          ))}
         </div>
-
-        <p className="mt-6 text-center text-xs text-muted-foreground">{t("onboarding.role.note")}</p>
       </div>
     </Shell>
   );

@@ -92,10 +92,15 @@ export function phoneInputChange(raw: string, prev: string): string {
 
 const dateLocales = { uz: uzLocale, oz: ozLocale, ru: ruLocale, en: enLocale };
 
-/** ISO → "26 sentabr 2026" (Toshkent vaqti) */
+/**
+ * ISO → "26-sentabr 2026" (Toshkent vaqti). O'zbek imlosida kun va oy chiziqcha bilan, oy nomi kichik harf bilan yoziladi
+ * (date-fns lotin lokali "26 Sentabr" beradi).
+ */
 export function formatDate(iso: string | Date | null | undefined, locale: Locale = "uz", pattern = "d MMMM yyyy"): string {
   if (!iso) return "";
-  return formatInTimeZone(new Date(iso), TASHKENT_TZ, pattern, { locale: dateLocales[locale] });
+  const out = formatInTimeZone(new Date(iso), TASHKENT_TZ, pattern, { locale: dateLocales[locale] });
+  if ((locale === "uz" || locale === "oz") && /^d MMM/.test(pattern)) return out.replace(/^(\d{1,2}) (\p{L}+)/u, (_, d: string, m: string) => `${d}-${m.toLowerCase()}`);
+  return out;
 }
 
 export function formatDateTime(iso: string | Date | null | undefined, locale: Locale = "uz"): string {
@@ -106,10 +111,14 @@ export function formatTime(iso: string | Date | null | undefined): string {
   return formatDate(iso, "uz", "HH:mm");
 }
 
-/** "3 soat oldin" / "3 часа назад" */
+const JUST_NOW: Record<Locale, string> = { uz: "hozirgina", oz: "ҳозиргина", ru: "только что", en: "just now" };
+
+/** "3 soat oldin" / "3 часа назад"; bir daqiqagacha — "hozirgina" ("0 sekund oldin" emas) */
 export function formatRelative(iso: string | Date | null | undefined, locale: Locale = "uz"): string {
   if (!iso) return "";
-  return formatDistanceToNowStrict(new Date(iso), { addSuffix: true, locale: dateLocales[locale] });
+  const d = new Date(iso);
+  if (Math.abs(Date.now() - d.getTime()) < 60_000) return JUST_NOW[locale];
+  return formatDistanceToNowStrict(d, { addSuffix: true, locale: dateLocales[locale] });
 }
 
 /** "08:00:00" (Postgres time) → "08:00" */

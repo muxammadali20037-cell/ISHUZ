@@ -41,11 +41,11 @@
   "employment_type": {
     "permanent": "Доимий",
     "temporary": "Вақтинчалик",
-    "part_time": "Part-time",
-    "full_time": "Full-time",
+    "part_time": "Ярим кун",
+    "full_time": "Тўлиқ кун",
     "shift": "Сменали",
     "remote": "Масофавий",
-    "freelance": "Freelance",
+    "freelance": "Фриланс",
     "internship": "Стажировка"
   },
   "work_schedule": {

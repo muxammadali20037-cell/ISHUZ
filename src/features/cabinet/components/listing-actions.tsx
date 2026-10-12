@@ -12,7 +12,10 @@ import { useAndroidApp } from "@/lib/use-android-app";
 import { celebrate } from "@/lib/celebrate";
 import { markFoundJob, markFoundWorker } from "@/features/post/actions";
 
-/** "Ish topdim" / "Ishchi topdim" — tasdiqlash bilan; e'lon qidiruvdan chiqadi */
+/**
+ * "Ishga joylashdim" / "Ishchi topdim" — tasdiqlash bilan; e'lon qidiruvdan chiqadi.
+ * Yopuvchi amal — kartaning eng yorqin tugmasi emas (outline); natija rangi faqat belgida.
+ */
 export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacancyId?: string }) {
   const { t } = useT();
   const router = useRouter();
@@ -34,8 +37,8 @@ export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacan
     });
   return (
     <>
-      <Button type="button" variant="success" className="h-12 px-4 text-base" onClick={() => setOpen(true)}>
-        <CheckCircle2 className="size-5" aria-hidden /> {kind === "job" ? t("easy.cabinet.found_job") : t("easy.cabinet.found_worker")}
+      <Button type="button" variant="outline" className="h-12 px-4 text-base" onClick={() => setOpen(true)}>
+        <CheckCircle2 className="size-5 text-success" aria-hidden /> {kind === "job" ? t("easy.cabinet.found_job") : t("easy.cabinet.found_worker")}
       </Button>
       <ConfirmDialog
         open={open}

@@ -41,11 +41,11 @@
   "employment_type": {
     "permanent": "Doimiy",
     "temporary": "Vaqtinchalik",
-    "part_time": "Part-time",
-    "full_time": "Full-time",
+    "part_time": "Yarim kun",
+    "full_time": "To'liq kun",
     "shift": "Smenali",
     "remote": "Masofaviy",
-    "freelance": "Freelance",
+    "freelance": "Frilans",
     "internship": "Stajirovka"
   },
   "work_schedule": {

@@ -58,7 +58,8 @@
       "hidden": "Moderator yashirgan",
       "moderation_pending": "Tekshiruvda",
       "review": "Moderator ko'rib chiqmoqda",
-      "verification_pending": "Ish beruvchi tasdiqlanishi kutilmoqda"
+      "verification_pending": "Ish beruvchi tasdiqlanishi kutilmoqda",
+      "active_until": "Faol — qidiruvda ko'rinadi · {date} gacha"
     },
     "more": "Boshqa bo'limlar",
     "links": {

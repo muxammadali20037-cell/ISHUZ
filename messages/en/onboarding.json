@@ -6,8 +6,7 @@
     "worker_cta": "Create profile",
     "employer_title": "I'm hiring",
     "employer_desc": "Post a vacancy — matching candidates arrive already sorted",
-    "employer_cta": "Get started",
-    "note": "You can turn on both modes later"
+    "employer_cta": "Get started"
   },
   "worker": {
     "title": "Create profile",

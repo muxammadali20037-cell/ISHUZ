@@ -58,7 +58,8 @@
       "hidden": "Hidden by a moderator",
       "moderation_pending": "Being checked",
       "review": "Moderator is reviewing",
-      "verification_pending": "Waiting for employer verification"
+      "verification_pending": "Waiting for employer verification",
+      "active_until": "Active — visible in search · until {date}"
     },
     "more": "Other sections",
     "links": {

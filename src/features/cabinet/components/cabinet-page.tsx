@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { Suspense, type ReactNode } from "react";
+import { Suspense } from "react";
 import { Bell, BellRing, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
 import { signOut } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { getMyListings, type MyVacancy } from "../queries";
 import { FoundButton, PayButton } from "./listing-actions";
 import { ModerationNotice } from "./moderation-notice";
@@ -14,24 +13,11 @@ import { AlertToggle } from "@/features/alerts/components/alert-toggle";
 import { getAlertSubscriptions } from "@/features/alerts/queries";
 import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import type { ListingState } from "@/features/post/types";
+import { StatusPill } from "./status-pill";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
   return s === "listed" || s === "active" ? "ok" : s === "moderation_pending" || s === "review" || s === "verification_pending" || s === "payment_required" || s === "rejected" ? "wait" : "off";
-}
-
-function StatusPill({ tone, children }: { tone: "ok" | "wait" | "off"; children: ReactNode }) {
-  return (
-    <p
-      className={cn(
-        "inline-flex items-center gap-2 rounded-xl px-3 py-1.5 text-base font-semibold",
-        tone === "ok" ? "bg-success-soft text-success" : tone === "wait" ? "bg-warning-soft text-warning" : "bg-secondary text-muted-foreground",
-      )}
-    >
-      <span className={cn("size-2.5 rounded-full", tone === "ok" ? "bg-success" : tone === "wait" ? "bg-warning" : "bg-muted-foreground")} aria-hidden />
-      {children}
-    </p>
-  );
 }
 
 function vacancyTone(s: MyVacancy["status"]): "ok" | "wait" | "off" {
@@ -146,7 +132,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
                   {v.regionName ? <p className="text-muted-foreground">{name(v.regionName)}</p> : v.isRemote ? <p className="text-muted-foreground">{t("easy.location.remote")}</p> : null}
                   <StatusPill tone={["moderation_pending", "review", "rejected", "verification_pending"].includes(v.moderation.state) ? stateTone(v.moderation.state) : vacancyTone(v.status)}>
                     {v.status === "active" && v.expiresAt
-                      ? `${t("easy.cabinet.status.active")} · ${formatDate(v.expiresAt, locale)}`
+                      ? t("easy.cabinet.status.active_until", { date: formatDate(v.expiresAt, locale) })
                       : ["moderation_pending", "review", "rejected", "verification_pending", "payment_required"].includes(v.moderation.state)
                         ? t(`easy.cabinet.status.${v.moderation.state}`)
                         : t(`easy.cabinet.status.${v.status}`)}
@@ -192,12 +178,20 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
           {t("easy.cabinet.new_listing")}
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          <Link href="/post/worker" className="flex min-h-14 items-center gap-3 rounded-2xl border-2 border-primary/40 bg-card px-4 py-3 font-semibold hover:bg-primary-soft/50">
-            <BriefcaseBusiness className="size-6 shrink-0 text-primary" aria-hidden /> {t("easy.home.worker_cta")}
-          </Link>
-          <Link href="/post/vacancy" className="flex min-h-14 items-center gap-3 rounded-2xl border-2 border-success/40 bg-card px-4 py-3 font-semibold hover:bg-success-soft/50">
-            <UsersRound className="size-6 shrink-0 text-success" aria-hidden /> {t("easy.home.employer_cta")}
-          </Link>
+          {/* ikki teng yo'l — bir xil neytral ko'rinish (ko'k va yashil ramka emas) */}
+          {(
+            [
+              { href: "/post/worker", icon: BriefcaseBusiness, label: t("easy.home.worker_cta") },
+              { href: "/post/vacancy", icon: UsersRound, label: t("easy.home.employer_cta") },
+            ] as const
+          ).map((l) => (
+            <Link key={l.href} href={l.href} className="press flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 font-semibold hover:border-primary/50">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+                <l.icon className="size-5" />
+              </span>
+              {l.label}
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -263,9 +263,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.3 | Qidiruv, filtr, kartalar | ✅ | `b595af3` |
 | C8.4 | Ishchi e'loni | ✅ | `48c53fe` |
 | C8.5 | Vakansiya e'loni | ✅ | `8eea94f` |
-| C8.6 | Kirish va hisob | ✅ (haqiqiy Telegram yetkazish — BLOCKED) | shu bosqich |
-| C8.7 | Kabinet, e'lon, profil | ⏳ keyingi | — |
-| C8.8–C8.10 | … | ⏳ | — |
+| C8.6 | Kirish va hisob | ✅ (haqiqiy Telegram yetkazish — BLOCKED) | `e705ab0` |
+| C8.7 | Kabinet, e'lon, profil | ✅ | shu bosqich |
+| C8.8 | Arizalar, takliflar, chat, bildirishnomalar | ⏳ keyingi | — |
+| C8.9–C8.10 | … | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -552,3 +553,63 @@ Qaytish yo'li (`next`) va mehmon qoralamasini o'tkazish C8.4 da tekshirildi.
 
 **BLOCKED / NOT_RUN:** haqiqiy Telegram bot orqali kod yetkazish, kod kechikishi va bot bloklangan holat (`telegram_blocked`) —
 staging'da haqiqiy bot tokeni bilan tekshirilishi kerak. Muqobil kirish (SMS) — provayder va narx qarori kerak (soxta SMS yo'q).
+
+### C8.7 · Kabinet, e'lon sahifasi, profil
+
+Kabinet ikkala rol uchun bitta sahifa: "Mening e'lonlarim" (holat + keyingi amal), AI PRO kartasi, "Yangi e'lon berish",
+"Boshqa bo'limlar". E'lon sahifasi (`/jobs/[slug]`, `/listing/[id]`) va `/profile` (oddiy e'lon bergan foydalanuvchi uchun —
+profil turini tanlash) shu bosqichda.
+
+**OLDIN** (dd39e27):
+
+- **Yopuvchi amal eng yorqin:** "Ishchi topdim" / "Ishga joylashdim" — to'q yashil to'ldirilgan tugma, kartadagi eng ko'zga
+  tashlanadigan element. Bu e'lonni *yopadi*; asosiy amal emas, tasodifan bosilishi oson.
+- Muddat: "Faol — qidiruvda ko'rinadi · 22 Oktabr 2026" — nima ekanligi aytilmagan ("gacha" yo'q), oy bosh harf bilan.
+- "Yangi e'lon berish": ikki teng yo'l — biri ko'k, biri yashil chegarali (ikki aksent rang).
+- Vakansiya sahifasi: "Bandlik turi: **Full-time**" (inglizcha; "Part-time", "Freelance" ham). Kasb yo'li mobil'da yangi qator
+  boshida yolg'iz "·" bilan boshlanardi. Yangi e'lon: "**0 sekund oldin** joylangan".
+- `/profile` → tanlov ekrani: "Ish qidiryapman" — to'liq ko'k karta (oq tugma bilan), "Ishchi qidiryapman" — oq karta: teng
+  tanlovlardan biri ustun ko'rinardi. "Ikkala rejimdan foydalanish mumkin" izohi sarlavha ostida ham, pastda ham takrorlanardi.
+- Ishchi e'loni (`/listing/[id]`, egasi): holat — qalin yashil chegarali katta blok; surat ham, kasb rasmi ham bo'lmasa, ikonka
+  plitasi ustida "Kasb tasviri" yozuvi (rasm yo'q joyda "tasvir" deyilardi).
+
+**KEYIN:**
+
+- "Ishchi topdim" / "Ishga joylashdim" — `outline` tugma, yashil faqat belgida (`CheckCircle2`); asosiy aksent qolmadi.
+  Tasdiqlash oynasi avvalgidek.
+- Muddat: "Faol — qidiruvda ko'rinadi · 22-oktabr 2026 gacha" (`easy.cabinet.status.active_until`, 4 tilda). `formatDate`
+  o'zbek imlosiga mos: "22-oktabr 2026", "22-okt 2026, 12:00" (lotin va kirill; rus/ingliz o'zgarmaydi) — butun ilovada.
+- "Yangi e'lon berish": ikki bir xil neytral karta, belgi `primary-soft` plitkada.
+- Bandlik turi: "To'liq kun", "Yarim kun", "Frilans" (uz/oz). Kasb yo'li o'z qatorida, ajratuvchi nuqtasiz.
+- Nisbiy vaqt: bir daqiqagacha "hozirgina" / "ҳозиргина" / "только что" / "just now" (`formatRelative`, 54 joyda ishlatiladi).
+- Profil tanlovi: ikki teng neytral karta, ikkalasida bir xil asosiy tugma; takrorlangan pastki izoh olib tashlandi.
+- Ishchi e'loni: neytral karta + kabinetdagi bilan bir xil holat yozuvi (`StatusPill`, endi umumiy komponent). "Kasb tasviri"
+  yozuvi faqat haqiqiy kasb rasmi ustida (`ProfessionImage` — qidiruv kartalari, e'lon sahifasi, formalar).
+
+**Fayllar:** `src/features/cabinet/components/{cabinet-page,listing-actions,status-pill}.tsx`, `src/app/onboarding/page.tsx`,
+`src/app/listing/[id]/page.tsx`, `src/components/shared/profession-image.tsx`,
+`src/features/jobs/components/vacancy-detail.tsx`, `src/lib/format/index.ts` (+ `date.test.ts`),
+`messages/*/{easy,onboarding}.json`, `messages/{uz,oz}/enums.json`. Test: `e2e/specs/cabinet.spec.ts` (yangi, 4 test).
+
+**Skrinshotlar** (chap — dd39e27, o'ng — keyin): [kabinet, ish beruvchi](screenshots/c8/c8-7-cabinet-employer-m.jpg) ·
+[vakansiya sahifasi](screenshots/c8/c8-7-job-detail-m.jpg) · [profil tanlovi](screenshots/c8/c8-7-profile-choice-m.jpg) ·
+[ishchi e'loni, egasi](screenshots/c8/c8-7-listing-owner-m.jpg).
+
+**Testlar:**
+
+| Test | Eski build (dd39e27) | Keyin |
+|---|---|---|
+| `cabinet.spec.ts` — muddat "22-oktabr 2026 gacha"; "Ishchi topdim" foni `--success` emas; ikki "yangi e'lon" havolasi bir xil chegara | ❌ | ✅ |
+| — vakansiya: "To'liq kun", "Full-time" yo'q; qator boshida yolg'iz "·" yo'q | ❌ | ✅ |
+| — `/profile` → tanlov: ≥80 px brend rangli sirt 0 ta, "ikkala rejim" izohi 1 marta | ❌ | ✅ |
+| — ishchi e'loni (egasi): yashil chegarali element 0 ta, "Kasb tasviri" ikonka ustida yo'q | ❌ | ✅ |
+| `date.test.ts` — o'zbek sana imlosi (lotin/kirill), rus/ingliz o'zgarmaydi, "hozirgina" | — | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 65/65 · 552 / 18 skip · ✅ · ✅ |
+
+**Ochiq masalalar:**
+
+- "Toshkent shahri · **Butun viloyat**" — shahar uchun "viloyat" so'zi noto'g'ri (kartalar va e'lon sahifasi; RPC hudud turini
+  qaytarmaydi). C8.10 regressiyada hudud turi bilan tuzatiladi.
+- `eslint-disable` izohlari 12 joyda qolgan (`<img>`: imzolangan vaqtinchalik URL, satori, SVG data URI va h.k.) — barchasi C8 dan
+  oldingi, sababi yozilgan; yangi kodda yo'q. C8.10 da har biri `Photo`/`next/image`ga o'tkazish yoki asos bilan qoldirish
+  sifatida ko'rib chiqiladi.

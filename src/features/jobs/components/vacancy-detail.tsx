@@ -165,8 +165,7 @@ export async function VacancyDetail({
                     <span className="text-muted-foreground">{companyName}</span>
                   )}
                   {v.category ? (
-                    <span className="inline-flex items-center gap-1 text-muted-foreground">
-                      <span aria-hidden>·</span>
+                    <span className="inline-flex w-full flex-wrap items-center gap-1 text-muted-foreground">
                       <Link href={`/jobs?category=${v.category.slug}`} className="hover:underline">
                         {name(v.category)}
                       </Link>

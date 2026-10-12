@@ -6,8 +6,7 @@
     "worker_cta": "Profil yaratish",
     "employer_title": "Ishchi qidiryapman",
     "employer_desc": "Vakansiya joylang — mos nomzodlar saralangan holda keladi",
-    "employer_cta": "Boshlash",
-    "note": "Keyinchalik ikkala rejimni ham yoqishingiz mumkin"
+    "employer_cta": "Boshlash"
   },
   "worker": {
     "title": "Profil yaratish",
