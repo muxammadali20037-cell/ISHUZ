@@ -15,7 +15,7 @@ Oxirgi yangilanish: 2026-10-11 · branch `claude/gallant-thompson-q70fo3` (main 
 | B2 — qidiruv xato/bo'sh (F-04) | ✅ | `8366626` |
 | B3 — katalogda yo'q kasb (F-05) | ✅ (0057 production'da) | `ffe7556` |
 | B4 — ishonchli upload (F-06) | ✅ vakansiya rasmi (0058 production'da) · avatar/logo — ochiq | `1236594` |
-| B5 — zaxira (F-01) va 0056 (F-02) | ✅ kod/workflow · ✅ 0056 production'da · ⏳ zaxira sirlari | `8bb81da`, `2f73f5c` |
+| B5 — zaxira (F-01) va 0056 (F-02) | ✅ zaxira production'da ishlayapti (2026-10-12) · ✅ 0056 production'da | `8bb81da`, `2f73f5c` |
 | C — UX/a11y | ✅ o'lchangan tuzatishlar (kontrast, nishon o'lchami, planshet sarlavhasi, tez birinchi chizish) | shu sessiya oxirgi commit |
 | D — o'lchov | ✅ lab o'lchovi · ❌ staging yuklama testi va field web-vitals — NOT_RUN | — |
 | E — E2E + CI | ✅ 24 spec CI'da (izolyatsiyalangan stend) | `5abef32` va keyingilar |
@@ -23,7 +23,7 @@ Oxirgi yangilanish: 2026-10-11 · branch `claude/gallant-thompson-q70fo3` (main 
 ## Keyingi sessiya uchun
 
 1. ✅ 0056 → 0057 → 0058 production'da (2026-10-11, read-only tekshirildi). Saytni brauzerda tekshirish: "Kasbim topilmadi", rasm yuklash.
-2. Egasi: GitHub Secrets `SUPABASE_DB_URL`, `BACKUP_AGE_RECIPIENT`; Actions → "DB backup" → Run workflow; manifest'ni tekshirish.
+2. ✅ Zaxira sirlari sozlandi, birinchi shifrlangan nusxa yaratildi (run `38207925133`). Egasi: bir marta yopiq kalit bilan ochib ko'rsin (`age -d`).
 3. Ochiq: avatar va kompaniya logotipi uchun ham karantin + qayta kodlash (F-06 qolgan qismi).
 4. Ochiq: TS matching dvigatelini SQL v2 ga ko'chirish yoki olib tashlash (paritet suite — 18 skip; sababi hisobotda).
 5. Ochiq: staging'da aralash HTTP yuklama testi (F-09) va real qurilmada web-vitals.

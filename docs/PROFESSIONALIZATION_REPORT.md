@@ -15,11 +15,11 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0058** (egasi SQL Editor'da qo'lladi, 2026-10-11; read-only tekshirildi — §2 F-02) | ✅ xavfsizlik qatlami, "Kasbim topilmadi" va rasm karantini yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
-Qolgan to'siqlar (egasi): zaxira sirlari (GitHub Secrets) — UNKNOWN; staging muhit (yuklama testi, haqiqiy Telegram oqimi).
+Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
 
 ## 2. Topilmalar: muammo → sabab → fayl → yechim → tekshiruv → qolgan cheklov
 
-### F-01 · P0 · Zaxira nusxa yaratmagan — ✅ kod tuzatildi · ⏳ sirlar UNKNOWN
+### F-01 · P0 · Zaxira nusxa yaratmagan — ✅ tuzatildi, production'da birinchi shifrlangan nusxa yaratildi (2026-10-12)
 - **Sabab:** `backup.yml` sir yo'q bo'lsa qadamlarni jim o'tkazib yuborardi → run "yashil", artifact 0 (run `38097724597`).
 - **Yechim:** sir yo'q → `::error` va qizil run (faqat `vars.BACKUP_DISABLED=true` bo'lsa ataylab o'chiq, sariq ogohlantirish);
   dump bir oqimda TOC bilan o'qiladi; yaxlitlik: fayl bo'sh emas, TOC bor, `profiles/worker_profiles/vacancies/applications`
@@ -27,9 +27,12 @@ Qolgan to'siqlar (egasi): zaxira sirlari (GitHub Secrets) — UNKNOWN; staging m
   `restore-check.sh`: tiklash vaqti + funksional tekshiruv (qidiruv RPC'lari, kasb qidiruvi, profiles↔auth.users, RLS).
 - **Fayllar:** `.github/workflows/backup.yml`, `.github/workflows/backup-freshness.yml`, `scripts/backup/db-backup.sh`, `scripts/backup/restore-check.sh`.
 - **Tekshiruv (PASS, lokal):** shifrlangan dump 1.2 MB, 84 jadval ma'lumoti, 1353 TOC yozuvi; izolyatsiyalangan bazaga tiklash **4 s**, funksional tekshiruvlar o'tdi.
-- **Qolgan:** GitHub Secrets (`SUPABASE_DB_URL`, `BACKUP_AGE_RECIPIENT`) sozlanganini bu muhitdan ko'rib bo'lmadi (proxy 403) — **UNKNOWN**;
-  keyingi tungi run yoki qo'lda "Run workflow" aniq ko'rsatadi. Provayder (Supabase) backup'i — tarif bo'yicha, Storage baytlari pg_dump'ga **kirmaydi** (alohida reja kerak).
-  Taklif: RPO ≤ 24 soat (kunlik), RTO — o'lchangan tiklash 4 s (kichik baza) + deploy; bu **kafolat emas**, haqiqiy hajmda qayta o'lchansin.
+- **Production (2026-10-12):** tungi run `38188329869` sir yetishmaganda (`BACKUP_AGE_RECIPIENT`) **qizil** bo'ldi va sababini aytdi — tuzatish
+  kutilgandek ishladi. Egasi ikkala sirni qo'shgach qo'lda run `38207925133` — **PASS**: `ishuz-20261012T052634Z.dump.age` 1.4 MB, 113 jadval ma'lumoti,
+  yaxlitlik tekshiruvlari o'tdi, artefakt `db-backup-38207925133` (14 kun). Dump vaqti ~2.5 daqiqa.
+- **Qolgan:** production nusxasini ochib tiklash — faqat egasida bo'lgan yopiq kalit bilan (NOT_RUN bu muhitda; `age -d` + `restore-check.sh`).
+  Provayder (Supabase) backup'i — tarif bo'yicha; Storage baytlari pg_dump'ga **kirmaydi** (alohida reja kerak).
+  Taklif: RPO ≤ 24 soat (kunlik), RTO — o'lchangan tiklash 4 s (lokal kichik baza) + deploy; bu **kafolat emas**, haqiqiy hajmda qayta o'lchansin.
 
 ### F-02 · P0 · 0056 production holati — ✅ qo'llandi va tekshirildi (2026-10-11)
 - **Avval:** 0056/0057/0058 qo'llanmagan edi (MCP `apply_migration` tasdiq oynasida bekor bo'lgan).
@@ -179,7 +182,7 @@ Yig'indi: unit **515 PASS / 18 skip** · SQL **24 fayl PASS** · brauzer E2E **2
 | 20 | Billing yoqilgan/o'chiq, callback takrori/bekor | PASS (unit/SQL) · test provayder bilan NOT_RUN | `providers.test.ts`, `billing*.test.sql` |
 | 21 | Ariza → javob → taklif/chat → natija | PASS (SQL) · E2E NOT_RUN | `pipeline.test.sql`, `flows.test.sql` |
 | 22 | Til, 360–1440, 200% zoom, klaviatura, reduced-motion | PASS (uz/ru/en; oz — unit tarjima tekshiruvi) | `a11y.spec.ts`, `flows.spec.ts` |
-| 23 | Backup disabled/success/failure; artifact; restore | Lokal PASS · GitHub sirlari UNKNOWN | `scripts/backup/*`, workflow'lar |
+| 23 | Backup disabled/success/failure; artifact; restore | failure (sir yo'q) va success (artefakt) production'da PASS · tiklash lokal PASS, production nusxasi NOT_RUN (yopiq kalit egasida) | runs `38188329869`, `38207925133` |
 | 24 | Barcha migratsiyalar toza bazada; destructive yo'q | PASS (toza baza, CI; CRLF nusxa 0055 ustiga) · production 0056–0058 qo'llangan | `scripts/db-test.sh`, F-02 |
 
 **18 ta skip (yashirilmaydi):** hammasi `src/features/matching/engine.parity.test.ts` — TS `computeMatch` ↔ SQL `compute_match` paritet testi.
