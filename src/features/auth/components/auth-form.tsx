@@ -26,6 +26,14 @@ const KNOWN_ERRORS = new Set([
   "telegram_blocked",
   "wait_before_resend",
   "auth_failed",
+  // serverning aniq javoblari (avval umumiy "Kirib bo'lmadi" ko'rinardi)
+  "temporarily_restricted",
+  "temporarily_unavailable",
+  "blocked",
+  "cross_site",
+  // brauzer tomoni: so'rov serverga yetmadi
+  "offline",
+  "network",
 ]);
 
 async function postJson(url: string, body: unknown): Promise<{ ok: boolean; error?: string }> {
@@ -34,7 +42,7 @@ async function postJson(url: string, body: unknown): Promise<{ ok: boolean; erro
     const data = (await r.json().catch(() => ({}))) as { error?: string };
     return r.ok ? { ok: true } : { ok: false, error: data.error ?? "auth_failed" };
   } catch {
-    return { ok: false, error: "auth_failed" };
+    return { ok: false, error: typeof navigator !== "undefined" && navigator.onLine === false ? "offline" : "network" };
   }
 }
 
@@ -185,7 +193,7 @@ export function AuthForm({ next, botUsername, initialPhone }: { next: string; bo
               {t("auth.retry")}
             </Button>
           </div>
-          <button type="button" className="text-sm text-muted-foreground hover:text-foreground" onClick={() => { setStep("phone"); setError(null); }}>
+          <button type="button" className="inline-flex min-h-11 items-center px-1 text-sm text-muted-foreground hover:text-foreground" onClick={() => { setStep("phone"); setError(null); }}>
             {t("auth.change_phone")}
           </button>
         </div>
@@ -220,13 +228,13 @@ export function AuthForm({ next, botUsername, initialPhone }: { next: string; bo
             </Button>
           ) : null}
           <div className="flex items-center justify-between text-sm">
-            <button type="button" className="text-muted-foreground hover:text-foreground" onClick={() => { setStep("phone"); setCode(""); setError(null); }}>
+            <button type="button" className="inline-flex min-h-11 items-center px-1 text-muted-foreground hover:text-foreground" onClick={() => { setStep("phone"); setCode(""); setError(null); }}>
               {t("auth.change_phone")}
             </button>
             {countdown > 0 ? (
               <span className="tabular text-muted-foreground">{t("auth.resend_in", { seconds: countdown })}</span>
             ) : (
-              <button type="button" className="font-medium text-primary" onClick={() => sendCode()} disabled={pending}>
+              <button type="button" className="inline-flex min-h-11 items-center px-1 font-medium text-primary" onClick={() => sendCode()} disabled={pending}>
                 {t("auth.resend")}
               </button>
             )}

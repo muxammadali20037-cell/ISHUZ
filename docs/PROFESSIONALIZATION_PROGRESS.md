@@ -25,12 +25,13 @@ Oxirgi yangilanish: 2026-10-12 · branch `claude/gallant-thompson-q70fo3` (main 
 | C8.2 — bosh sahifa, navigatsiya | ✅ aniq yo'llar, neytral kartalar, tur olib tashlandi, prefetch qotishi (Q8) | `8f5baca` |
 | C8.3 — qidiruv, filtr, kartalar | ✅ rasm zaxirasi, filtr sinxroni, bo'sh natija, kirill "ёъ" xatosi | `b595af3` |
 | C8.4 — ishchi e'loni | ✅ telefon formati (3 forma + login), sarlavha "Kirish" javoblarni saqlaydi, to'liq yo'l E2E | `48c53fe` |
-| C8.5 — vakansiya e'loni | ✅ eskirgan xatolar tozalanadi (ikkala forma), ish beruvchi to'liq yo'li E2E | shu bosqich |
-| C8.6–C8.10 — ekranlar | ⏳ keyingisi C8.6 (kirish va hisob); jadval — hisobot §10 | — |
+| C8.5 — vakansiya e'loni | ✅ eskirgan xatolar tozalanadi (ikkala forma), ish beruvchi to'liq yo'li E2E | `8eea94f` |
+| C8.6 — kirish va hisob | ✅ to'g'ri sarlavha, oflayn/server xatolari, 44 px; haqiqiy Telegram — BLOCKED | shu bosqich |
+| C8.7–C8.10 — ekranlar | ⏳ keyingisi C8.7 (kabinet, e'lon, profil); jadval — hisobot §10 | — |
 
 ## Keyingi sessiya uchun
 
-0. C8.6 dan davom eting (hisobot §10 dagi "Ochiq" ro'yxati). Har ekran: OLDIN/KEYIN/fayllar/skrinshot/test/ochiq masala.
+0. C8.7 dan davom eting (hisobot §10 dagi "Ochiq" ro'yxati). Har ekran: OLDIN/KEYIN/fayllar/skrinshot/test/ochiq masala.
    "Oldin" skrinshoti: `bash e2e/screens/old-build.sh <commit>` (:3301, o'sha stend bazasi), oxirida `… <commit> stop`.
 1. ✅ 0056 → 0057 → 0058 production'da (2026-10-11, read-only tekshirildi). Saytni brauzerda tekshirish: "Kasbim topilmadi", rasm yuklash.
 2. ✅ Zaxira sirlari sozlandi, birinchi shifrlangan nusxa yaratildi (run `38207925133`). Egasi: bir marta yopiq kalit bilan ochib ko'rsin (`age -d`).

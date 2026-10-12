@@ -262,9 +262,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.2 | Bosh sahifa va navigatsiya | ✅ | `8f5baca` |
 | C8.3 | Qidiruv, filtr, kartalar | ✅ | `b595af3` |
 | C8.4 | Ishchi e'loni | ✅ | `48c53fe` |
-| C8.5 | Vakansiya e'loni | ✅ | shu bosqich |
-| C8.6 | Kirish va hisob | ⏳ keyingi | — |
-| C8.7–C8.10 | … | ⏳ | — |
+| C8.5 | Vakansiya e'loni | ✅ | `8eea94f` |
+| C8.6 | Kirish va hisob | ✅ (haqiqiy Telegram yetkazish — BLOCKED) | shu bosqich |
+| C8.7 | Kabinet, e'lon, profil | ⏳ keyingi | — |
+| C8.8–C8.10 | … | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -509,3 +510,45 @@ Testlar: `e2e/specs/post-forms.spec.ts` (yangi), `e2e/specs/journeys.spec.ts` (+
 | `journeys.spec.ts` — ish beruvchi: bosh sahifa → e'lon → kirish → joylash (`monthly`, 4–6 mln) → kabinet → mehmon qidiruvida, mobil + desktop | — | ✅ |
 | `field-errors.test.ts` — 4 holat | — | ✅ |
 | To'liq E2E · unit · tsc · eslint | — | ✅ 55/55 · 546 / 18 skip · ✅ · ✅ |
+
+### C8.6 · Kirish va hisob
+
+Veb'da kirish: telefon raqam → kod Telegram bot orqali → tasdiqlash; Telegram Mini App ichida — `initData` bilan avtomatik.
+Qaytish yo'li (`next`) va mehmon qoralamasini o'tkazish C8.4 da tekshirildi.
+
+**OLDIN** (8eea94f):
+
+- **Noto'g'ri va'da:** kirish sahifasi "Telegram orqali bir bosishda kiring — parol ham, **kod ham kerak emas**" derdi, keyin esa
+  aynan kod so'rardi (4 tilda).
+- **Internet uzilsa** — umumiy "Kirib bo'lmadi. Qayta urinib ko'ring." (oflayn ekanligi aytilmasdi).
+- Serverning 4 ta aniq javobi (`temporarily_unavailable`, `temporarily_restricted`, `blocked`, `cross_site`) uchun matn bor
+  edi, lekin forma ularni tanimas va umumiy xato ko'rsatardi (masalan, bloklangan foydalanuvchi sababini bilmasdi).
+- Kod qadamida "Raqamni o'zgartirish" va "Kodni qayta yuborish" — 20 px balandlikdagi matnli tugmalar.
+- Telefon maydonidagi "+90…" xatosi — C8.4 da tuzatildi (kirish formasi ham).
+
+**KEYIN:**
+
+- Sarlavha: "Telefon raqamingizni yozing — kirish kodini Telegram orqali yuboramiz. Parol kerak emas." (4 tilda).
+- `offline` / `network` xatolari: "Internet aloqasi yo'q. Ulanishni tekshirib, qayta urinib ko'ring." / "Serverga ulanib bo'lmadi…".
+- Server javoblari aniq matn bilan; kichik matnli tugmalar 44 px.
+- Bot sozlanmagan bo'lsa — "Telegram orqali kirish hozircha o'chirilgan", **soxta "kod yuborildi" yo'q** (E2E tasdiqlaydi).
+
+**Fayllar:** `src/features/auth/components/auth-form.tsx`, `messages/*/auth.json`. Test: `e2e/specs/auth.spec.ts` (yangi, 6 test).
+
+**Skrinshotlar** (chap — 8eea94f, o'ng — keyin): [internet yo'q](screenshots/c8/c8-6-auth-offline-m.jpg) ·
+[server vaqtincha ishlamayapti](screenshots/c8/c8-6-auth-503-m.jpg).
+
+**Testlar** (Telegram stendda yo'q: "bot sozlanmagan" — haqiqiy server; qolgan server javoblari `page.route` bilan):
+
+| Test | Eski build | Keyin |
+|---|---|---|
+| bot sozlanmagan — aniq xabar, "yuborildi" yo'q, tugma ishlaydi; sarlavha kod haqida to'g'ri aytadi | ✅ (sarlavhasiz) | ✅ |
+| internet yo'q → "Internet aloqasi yo'q" | ❌ | ✅ |
+| 503 → "Xizmat vaqtincha ishlamayapti", umumiy xato emas | ❌ | ✅ |
+| raqam Telegram'ga ulanmagan → 3 qadamli yo'riqnoma | ✅ | ✅ |
+| kod: noto'g'ri → eskirgan → 60 s hisoblagich → qayta yuborish (Playwright soati) | ✅ | ✅ |
+| chiqish → sarlavhada "Kirish"; kabinet "Hisobga kiring" + qaytish havolasi | ✅ | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 61/61 · 546 / 18 skip · ✅ · ✅ |
+
+**BLOCKED / NOT_RUN:** haqiqiy Telegram bot orqali kod yetkazish, kod kechikishi va bot bloklangan holat (`telegram_blocked`) —
+staging'da haqiqiy bot tokeni bilan tekshirilishi kerak. Muqobil kirish (SMS) — provayder va narx qarori kerak (soxta SMS yo'q).
