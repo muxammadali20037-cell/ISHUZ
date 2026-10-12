@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { activeFilterCount, findHref, type FindParams } from "../params";
 import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
-import { PopSounds } from "@/components/shared/pop-sounds";
 import { ChangeSheet, FilterSheet, FindProfessionStep, RetryButton } from "./find-client";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 
@@ -49,14 +48,14 @@ export async function FindStart({ params }: { params: FindParams }) {
   return (
     <StepShell back="/" title={t("easy.search.choose_title")}>
       <div className="pop-list grid gap-4 sm:grid-cols-2">
-        <Link transitionTypes={["nav-forward"]} data-sfx="pop" href={findHref(params, { mode: "jobs", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md">
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "jobs", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md">
           <BriefcaseBusiness className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.jobs")}</span>
             <span className="block text-base text-primary-foreground">{t("easy.search.jobs_desc")}</span>
           </span>
         </Link>
-        <Link transitionTypes={["nav-forward"]} data-sfx="pop" href={findHref(params, { mode: "workers", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-success p-5 text-success-foreground shadow-md">
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "workers", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-success p-5 text-success-foreground shadow-md">
           <UsersRound className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.workers")}</span>
@@ -97,14 +96,14 @@ export async function FindAskIntent({ params, node }: { params: FindParams; node
     <StepShell back="/search" title={t("easy.search.ask_intent")}>
       {said ? <p className="rounded-2xl bg-secondary px-4 py-3 text-lg">{t("easy.search.ask_intent_hint", { q: said })}</p> : null}
       <div className="pop-list grid gap-4 sm:grid-cols-2">
-        <Link transitionTypes={["nav-forward"]} data-sfx="pop" href={findHref(params, { mode: "jobs" })} className={cn(bigLink, "min-h-20 border-primary/40")}>
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "jobs" })} className={cn(bigLink, "min-h-20 border-primary/40")}>
           <BriefcaseBusiness className="size-7 shrink-0 text-primary" aria-hidden />
           <span>
             <span className="block text-xl font-bold">{t("easy.search.jobs")}</span>
             <span className="block text-base font-normal text-muted-foreground">{t("easy.search.jobs_desc")}</span>
           </span>
         </Link>
-        <Link transitionTypes={["nav-forward"]} data-sfx="pop" href={findHref(params, { mode: "workers" })} className={cn(bigLink, "min-h-20 border-success/40")}>
+        <Link transitionTypes={["nav-forward"]} href={findHref(params, { mode: "workers" })} className={cn(bigLink, "min-h-20 border-success/40")}>
           <UsersRound className="size-7 shrink-0 text-success" aria-hidden />
           <span>
             <span className="block text-xl font-bold">{t("easy.search.workers")}</span>
@@ -140,7 +139,6 @@ export async function FindRegion({ params, regions, node }: { params: FindParams
       title={t("easy.search.region_title")}
       summary={<ChosenSummary items={[params.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs"), prof]} />}
     >
-      <PopSounds count={regions.length + 2} />
       <ul className="pop-list grid gap-2 sm:grid-cols-2">
         <li className="sm:col-span-2">
           <Link transitionTypes={["nav-forward"]} href={findHref(params, { region: "all", district: null, page: 1 })} className={cn(bigLink, "border-primary/40")}>
@@ -182,7 +180,6 @@ export async function FindDistrict({ params, region, districts, node }: { params
       title={t("easy.location.pick_district", { region: name(region) })}
       summary={<ChosenSummary items={[params.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs"), prof, name(region)]} />}
     >
-      <PopSounds count={districts.length + 1} />
       <ul className="pop-list grid gap-2 sm:grid-cols-2">
         <li className="sm:col-span-2">
           <Link transitionTypes={["nav-forward"]} href={findHref(params, { district: "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
@@ -288,7 +285,7 @@ export async function FindResultsView({ params, node, region, district }: { para
             </Button>
           </div>
         </section>
-      ) : res.items.length ? <PopSounds key={`${params.page}:${res.items[0]?.id ?? ""}`} count={res.items.length} /> : null}
+      ) : null}
       {!res.ok || (!res.items.length && params.page > 1) ? null : res.items.length ? (
         <ul className="pop-list grid gap-4 lg:grid-cols-2">
           {isJobs

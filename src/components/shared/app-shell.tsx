@@ -5,7 +5,6 @@ import { usePathname } from "next/navigation";
 import { Home, Search, User, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
-import { useTelegram } from "@/lib/telegram/provider";
 
 export type NavRole = "worker" | "employer" | "guest";
 
@@ -42,7 +41,6 @@ const MAIN_NAV: NavItem[] = [
 export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
-  const { haptic } = useTelegram();
   const items = MAIN_NAV;
   return (
     <nav
@@ -59,7 +57,6 @@ export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<N
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
-                onClick={() => haptic("light")}
                 className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-[13px] font-semibold transition-colors", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >

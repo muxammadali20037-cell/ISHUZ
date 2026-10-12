@@ -10,7 +10,6 @@ import { TelegramProvider } from "@/lib/telegram/provider";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { PaymentDialogHost } from "@/features/billing/components/payment-dialog";
 import { AnalyticsListener } from "@/features/analytics/listener";
-import { SfxListener } from "@/components/shared/sfx-listener";
 import { NavProgress } from "@/components/shared/nav-progress";
 
 export function Providers({ locale, messages, children }: { locale: Locale; messages: Dict; children: ReactNode }) {
@@ -31,7 +30,6 @@ export function Providers({ locale, messages, children }: { locale: Locale; mess
           <ServiceWorkerRegistrar />
           <PaymentDialogHost />
           <AnalyticsListener />
-          <SfxListener />
           <NavProgress />
         </TelegramProvider>
       </I18nProvider>

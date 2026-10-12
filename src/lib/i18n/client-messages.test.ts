@@ -25,7 +25,7 @@ describe("clientMessages", () => {
     const ru = clientMessages("ru");
     for (const ns of SERVER_ONLY) expect(ru).not.toHaveProperty(ns);
     expect(ru).toHaveProperty("common");
-    expect(createT(ru)("common.sound.on")).toBe(makeT("ru")("common.sound.on"));
+    expect(createT(ru)("common.actions.save")).toBe(makeT("ru")("common.actions.save"));
   });
 
   it("admin panel o'z bo'limini oladi", () => {

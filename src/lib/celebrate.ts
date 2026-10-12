@@ -1,9 +1,8 @@
 /**
  * Muvaffaqiyatdan keyin "pushka otilgandek" konfetti: ekran tepasining ikki burchagidan rangli qog'ozchalar otiladi.
  * Kutubxonasiz, bitta vaqtinchalik <canvas>; 3 soniyada o'zi yo'qoladi. "Harakatni kamaytirish" yoqilgan bo'lsa — ko'rsatilmaydi.
+ * Ovoz va tebranish yo'q — faqat ko'rinish.
  */
-import { playSfx } from "./sfx";
-
 const COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#facc15"];
 
 interface Piece {
@@ -20,7 +19,6 @@ interface Piece {
 
 export function celebrate(): void {
   if (typeof window === "undefined" || typeof document === "undefined") return;
-  playSfx("success");
   if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
 
   const canvas = document.createElement("canvas");
@@ -60,12 +58,6 @@ export function celebrate(): void {
   burst(0, 1);
   burst(w, -1);
 
-  // Qisqa tebranish (Telegram ichida) — "otildi" hissi
-  try {
-    (window as unknown as { Telegram?: { WebApp?: { HapticFeedback?: { notificationOccurred?: (t: string) => void } } } }).Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.("success");
-  } catch {
-    /* ixtiyoriy */
-  }
 
   const start = performance.now();
   const frame = (now: number) => {

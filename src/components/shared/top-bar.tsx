@@ -8,7 +8,6 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
 import { LanguageSelect } from "./language-switcher";
-import { SoundToggle } from "./sound-toggle";
 import { DesktopNavLinks, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
 import { LoginLink } from "./login-link";
@@ -31,7 +30,6 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
           <DesktopNavLinks role={role} counts={counts} />
         </div>
         <div className="flex items-center gap-1">
-          <SoundToggle />
           <LanguageSelect />
           {session ? (
             <>

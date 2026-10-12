@@ -36,11 +36,11 @@ type TelegramContextValue = {
   /** Telegram ichida ochilganmi */
   isTelegram: boolean;
   webApp: TelegramWebApp | null;
-  haptic: (style?: "light" | "medium" | "heavy") => void;
+  /** natija haqida qisqa tebranish (faqat foydalanuvchi amalining natijasida; bezak uchun emas) */
   notify: (type: "success" | "error" | "warning") => void;
 };
 
-const TelegramContext = createContext<TelegramContextValue>({ isTelegram: false, webApp: null, haptic: () => {}, notify: () => {} });
+const TelegramContext = createContext<TelegramContextValue>({ isTelegram: false, webApp: null, notify: () => {} });
 
 const ROOT_PATHS = new Set(["/", "/jobs", "/workers", "/applications", "/messages", "/profile", "/employer", "/employer/candidates", "/employer/vacancies"]);
 
@@ -85,7 +85,6 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
     () => ({
       isTelegram: !!webApp,
       webApp,
-      haptic: (style = "light") => webApp?.HapticFeedback?.impactOccurred(style),
       notify: (type) => webApp?.HapticFeedback?.notificationOccurred(type),
     }),
     [webApp],

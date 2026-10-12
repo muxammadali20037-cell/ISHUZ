@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { ambiguousTerm } from "../ambiguous";
 import { CategoryIcon } from "@/components/shared/category-icon";
 import type { PickedProfession, ProfessionNode, ProfessionSearchHit, TrailItem } from "../types";
-import { PopSounds } from "@/components/shared/pop-sounds";
 
 const RECENT_KEY = "ishuz_recent_professions";
 
@@ -280,7 +279,6 @@ export function ProfessionPicker({
           <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{t("professions.search_results")}</p>
           {hits.length ? (
             <ul key={hits.map((h) => h.id).join(",")} className="pop-list space-y-2">
-              <PopSounds count={hits.length} />
               {hits.map((h) => {
                 const sec = categories.find((c) => c.id === h.category_id);
                 const trailText = [sec ? name(sec) : null, ...h.trail.map((x) => name(x))].filter(Boolean).join(" › ");
@@ -363,7 +361,6 @@ export function ProfessionPicker({
                   </div>
                 </section>
               ) : null}
-              <PopSounds count={categories.length} />
               <div className="pop-list grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {categories.map((c) => (
                   <button
@@ -414,7 +411,6 @@ export function ProfessionPicker({
                 )
               ) : (
                 <>
-                  <PopSounds count={popular.length || nodes.length} />
                   {popular.length ? (
                     <section>
                       <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
