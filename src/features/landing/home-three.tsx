@@ -6,13 +6,13 @@ import { publicEnv } from "@/lib/env";
 import type { SessionContext } from "@/features/auth/session";
 import { countMyListings } from "@/features/cabinet/queries";
 import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
-import { cn } from "@/lib/utils";
 
 /**
- * Bosh sahifa — uchta katta karta: "Ish qidiryapman", "Ishchi qidiryapman", "Qidirish".
- * Har kartaning butun yuzasi bosiladi. Statistikalar, bannerlar va ko'p menyular yo'q.
- * Ostida — pullik bonus "AI yordamchi · PRO" (mos ish yoki ishchi chiqishi bilan Telegram'ga xabar).
- * "Kabinetim" — pastda ixcham qator, kartalardan kuchsizroq ko'rinadi.
+ * Bosh sahifa — uchta yo'l, har biri qayerga olib borishini aytadi:
+ *  1) "Ish qidiryapsizmi?" → o'zingiz haqingizda e'lon berish (/post/worker);
+ *  2) "Ishchi kerakmi?" → ish e'loni berish (/post/vacancy);
+ *  3) "E'lonlarni ko'rish" → ro'yxatdan o'tmasdan qidiruv: ish e'lonlari yoki ishchilar (qidiruvning birinchi savoli o'tkazib yuboriladi).
+ * Kartalar neytral, bitta aksent rang (tugmalar). Ostida — pullik bonus "AI yordamchi · PRO", pastda ixcham "Kabinetim".
  */
 export async function HomeThree({ session }: { session: SessionContext | null }) {
   const { t } = await getT();
@@ -30,74 +30,72 @@ export async function HomeThree({ session }: { session: SessionContext | null })
     },
   ]).replace(/</g, "\\u003c");
 
-  const cards = [
-    {
-      href: "/post/worker",
-      icon: BriefcaseBusiness,
-      title: t("easy.home.worker_title"),
-      desc: t("easy.home.worker_desc"),
-      cta: t("easy.home.worker_cta"),
-      box: "bg-primary text-primary-foreground",
-      sub: "text-primary-foreground",
-      iconBox: "bg-primary-foreground/20",
-      pill: "bg-primary-foreground text-primary",
-    },
-    {
-      href: "/post/vacancy",
-      icon: UsersRound,
-      title: t("easy.home.employer_title"),
-      desc: t("easy.home.employer_desc"),
-      cta: t("easy.home.employer_cta"),
-      box: "bg-success text-success-foreground",
-      sub: "text-success-foreground",
-      iconBox: "bg-success-foreground/20",
-      pill: "bg-success-foreground text-success",
-    },
-    {
-      href: "/search",
-      icon: Search,
-      title: t("easy.home.search_title"),
-      desc: t("easy.home.search_desc"),
-      cta: t("easy.home.search_cta"),
-      box: "border-2 border-border bg-card text-foreground",
-      sub: "text-muted-foreground",
-      iconBox: "bg-primary-soft text-primary",
-      pill: "bg-primary text-primary-foreground",
-    },
+  // Ikki rol uchun e'lon berish (karta butunlay bosiladi) va ro'yxatdan o'tmasdan ko'rib chiqish — har tugma qayerga olib borishini aytadi
+  const posts = [
+    { href: "/post/worker", icon: BriefcaseBusiness, title: t("easy.home.worker_title"), desc: t("easy.home.worker_desc"), cta: t("easy.home.worker_cta") },
+    { href: "/post/vacancy", icon: UsersRound, title: t("easy.home.employer_title"), desc: t("easy.home.employer_desc"), cta: t("easy.home.employer_cta") },
+  ];
+  const browse = [
+    { href: "/search?mode=jobs", icon: BriefcaseBusiness, label: t("easy.home.search_jobs") },
+    { href: "/search?mode=workers", icon: UsersRound, label: t("easy.home.search_workers") },
   ];
 
   return (
-    <div className="container-app py-6 text-lg sm:py-10">
+    <div className="container-app py-6 sm:py-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
       <header className="text-center">
-        <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">{t("easy.home.title")}</h1>
-        <p className="mt-2 text-xl text-muted-foreground sm:text-2xl">{t("easy.home.subtitle")}</p>
+        <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("easy.home.title")}</h1>
+        <p className="mt-1 text-lg text-muted-foreground sm:text-xl">{t("easy.home.subtitle")}</p>
       </header>
 
-      <ul className="pop-list mx-auto mt-8 grid max-w-5xl gap-4 md:grid-cols-3">
-        {cards.map((c) => (
+      <ul className="pop-list mx-auto mt-6 grid max-w-5xl gap-4 sm:mt-8 md:grid-cols-2 lg:grid-cols-3">
+        {posts.map((c) => (
           <li key={c.href} className="flex">
             <Link
               href={c.href}
               data-track="direction_select"
-             
-              data-track-to={c.href.replace(/[^a-z/]/g, "").slice(0, 40)}
-              className={cn(
-                "group flex w-full flex-col rounded-2xl p-6 shadow-md transition-[translate,scale] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 focus-visible:ring-4 active:scale-[0.97] active:duration-75 sm:p-7",
-                c.box,
-              )}
+              data-track-to={c.href}
+              className="press group flex w-full flex-col rounded-2xl border border-border bg-card p-5 shadow-sm hover:border-primary/50 active:scale-[0.98] sm:p-6"
             >
-              <span className={cn("flex size-14 items-center justify-center rounded-2xl", c.iconBox)} aria-hidden>
-                <c.icon className="size-8" />
+              <span className="flex items-center gap-3">
+                <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+                  <c.icon className="size-7" />
+                </span>
+                <span className="min-w-0 break-words text-xl font-bold leading-tight lg:text-2xl">{c.title}</span>
               </span>
-              <span className="mt-5 block break-words text-2xl font-extrabold leading-tight sm:text-[1.7rem]">{c.title}</span>
-              <span className={cn("mt-2 block flex-1 text-lg leading-snug", c.sub)}>{c.desc}</span>
-              <span className={cn("mt-6 inline-flex min-h-14 items-center justify-center gap-2 rounded-2xl px-5 text-lg font-bold", c.pill)}>
-                {c.cta} <ArrowRight className="size-5 shrink-0 transition-transform group-hover:translate-x-0.5" aria-hidden />
+              <span className="mt-3 block flex-1 text-base leading-snug text-muted-foreground">{c.desc}</span>
+              <span className="mt-5 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-center text-base font-bold leading-tight text-primary-foreground group-hover:bg-primary-hover">
+                {c.cta} <ArrowRight className="size-5 shrink-0" aria-hidden />
               </span>
             </Link>
           </li>
         ))}
+        <li className="flex md:col-span-2 lg:col-span-1">
+          <section aria-labelledby="home-browse" className="flex w-full flex-col rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
+            <span className="flex items-center gap-3">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+                <Search className="size-7" />
+              </span>
+              <h2 id="home-browse" className="min-w-0 break-words text-xl font-bold leading-tight lg:text-2xl">
+                {t("easy.home.search_title")}
+              </h2>
+            </span>
+            <p className="mt-3 flex-1 text-base leading-snug text-muted-foreground">{t("easy.home.search_desc")}</p>
+            <div className="mt-5 grid grid-cols-2 gap-2 lg:grid-cols-1">
+              {browse.map((b) => (
+                <Link
+                  key={b.href}
+                  href={b.href}
+                  data-track="direction_select"
+                  data-track-to={b.href}
+                  className="press inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-3 text-base font-semibold text-primary hover:border-primary/50 hover:bg-primary-soft/50 active:scale-[0.98]"
+                >
+                  <b.icon className="size-5 shrink-0" aria-hidden /> {b.label}
+                </Link>
+              ))}
+            </div>
+          </section>
+        </li>
       </ul>
 
       {/* Pullik bonus: AI yordamchi — ko'zga tashlanib turadi */}

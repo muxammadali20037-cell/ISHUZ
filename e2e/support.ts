@@ -15,11 +15,10 @@ export const USERS = {
 
 const host = new URL(stack.app).hostname;
 
-/** Birinchi tashrif oynasi va til tanlovi o'tkazib yuboriladi (o'zbek lotin) */
+/** Mehmon: cookie'lar tozalanadi, til — o'zbek lotin */
 export async function asGuest(ctx: BrowserContext) {
   await ctx.clearCookies();
   await ctx.addCookies([
-    { name: "ishuz_welcome", value: "1", domain: host, path: "/" },
     { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
   ]);
 }

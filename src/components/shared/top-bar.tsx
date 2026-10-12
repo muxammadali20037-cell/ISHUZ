@@ -22,7 +22,8 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
       <div className="container-app flex h-14 items-center gap-3">
         <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label="Ish topdim">
           <BrandMark />
-          <span className="hidden text-lg min-[400px]:inline">
+          {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
+          <span className={session ? "hidden text-lg min-[400px]:inline" : "text-lg"}>
             Ish <span className="text-primary">topdim</span>
           </span>
         </Link>
@@ -66,7 +67,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
               />
             </>
           ) : (
-            <Button asChild className="h-11 px-4 text-base">
+            <Button asChild variant="soft" className="h-11 px-4 text-base">
               <LoginLink>{t("common.nav.login")}</LoginLink>
             </Button>
           )}

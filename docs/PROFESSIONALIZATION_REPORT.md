@@ -258,9 +258,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 |---|---|---|---|
 | C8.1a | UI ovozlari | ✅ to'liq olib tashlandi | `6493eb6` |
 | C8.1b | Qotishlar (C7) | ✅ 4 ta o'lchangan qotish tuzatildi — [PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md) | `3581aa0` |
-| C8.1c | Yagona brend tizimi | ✅ — [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | shu bosqich |
-| C8.2 | Bosh sahifa va navigatsiya | ⏳ keyingi | — |
-| C8.3–C8.10 | … | ⏳ | — |
+| C8.1c | Yagona brend tizimi | ✅ — [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | `c48c5ab` |
+| C8.2 | Bosh sahifa va navigatsiya | ✅ | shu bosqich |
+| C8.3 | Qidiruv, filtr, kartalar | ⏳ keyingi | — |
+| C8.4–C8.10 | … | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -313,5 +314,66 @@ UI kit: [mobil](screenshots/c8/c8-1-ui-kit-m.jpg), [desktop](screenshots/c8/c8-1
 - Qidiruv kartasida ish joyi rasmi yuklanmasa alt-matn chiqadi (buzilgan rasm) → C8.3.
 - Kabinet: yashil "Ishga joylashdim" tugmasi `success`ni aksent sifatida ishlatadi; tugma uslublari aralash → C8.7.
 - Qorong'i mavzu kontrasti E2E da 6 sahifada tekshiriladi; qolgan sahifalar o'z bosqichida qo'shiladi.
-- Bir E2E yugurishida qorong'i mavzu testi `networkidle` ni kutib qoldi (1 marta, keyin 4 yugurishda takrorlanmadi;
-  sahifalar alohida tekshirilganda 0.65–1 s da tinchlanadi). Sababi aniqlanmagan — kuzatilmoqda.
+- ~~Bir E2E yugurishida qorong'i mavzu testi `networkidle` ni kutib qoldi~~ — sababi C8.2 da topildi va tuzatildi (Q8).
+
+### C8.2 · Bosh sahifa va navigatsiya
+
+**OLDIN** (c48c5ab):
+
+- **Chalkash CTA:** "Siz ish qidiryapsizmi? → **Ish qidiryapman**" tugmasi ish e'lonlari ro'yxatini emas, **o'zingiz haqingizda
+  e'lon berish formasini** ochardi; "Ishchi qidiryapman" — vakansiya formasini. Ro'yxatni ko'rish alohida 3-kartada edi.
+  Xuddi shu yorliqlar kabinet ("Yangi e'lon"), "Menga mos ishlar" va tasdiqlash sahifalarida ham shu formalarga olib borardi.
+- **Uchta dominant rangli sirt:** ko'k karta + yashil karta + to'liq ko'k AI PRO kartasi; qorong'i mavzuda — juda yorqin.
+  AI kartasida doimiy miltillovchi qo'ng'iroq, kartalarda sakrovchi hover (`cubic-bezier(…1.56…)`); "🔍" emoji + ikonka takrori.
+- **Planshet (768 px):** 3 ustun juda tor — sarlavhalar so'z o'rtasida bo'linardi ("qidiryapsizm / i?").
+- Mehmon 390 px da faqat belgini ko'rardi (brend nomi yo'q); "Kirish" — to'liq ko'k tugma, kartalar bilan raqobat.
+- Navigatsiya landmark'i inglizcha `aria-label="Main"`; desktop havolalari `<nav>` siz.
+- **Ishlamaydigan tugma:** Yordam → "Qisqa turni qayta ko'rish" cookie'ni o'chirib bosh sahifaga o'tkazardi, u yerda tur yo'q —
+  hech narsa bo'lmasdi. Tur faqat ulanmagan `WelcomeGate` qo'yadigan cookie bilan boshlanardi, ya'ni yangi foydalanuvchilarda
+  hech qachon chiqmasdi. O'lik kod: `WelcomeGate`, `LandingPage`, `WorkerHome` (+ unga bog'liq 5 komponent) hech qayerga ulanmagan.
+
+**KEYIN:**
+
+- Uchta yo'l saqlandi, lekin har biri **qayerga olib borishini aytadi**: "Ish qidiryapsizmi? → **O'zim haqimda e'lon berish**",
+  "Ishchi kerakmi? → **Ish e'loni berish**", "E'lonlarni ko'rish → **Ish e'lonlari** / **Ishchilar**" (ro'yxatdan o'tmasdan;
+  qidiruvning birinchi savoli o'tkazib yuboriladi — bitta bosish kam). Tavsif "keyin nima bo'ladi"ni aytadi
+  ("ish beruvchilar sizni qidiruvda topib, bog'lanadi"). 4 tilda.
+- Neytral kartalar, rang faqat tugmalarda; AI PRO — yumshoq brend sirti, asosiy yo'llardan keyin; miltillash/sakrash yo'q.
+- Joylashuv: telefon 1 ustun · planshet 2 + 1 · 1024 px dan 3 ustun.
+- Mehmon: brend nomi har kenglikda; "Kirish" — `soft`. Navigatsiya: `<nav aria-label="Asosiy bo'limlar">` (mobil va desktop).
+- Tur va "turni qayta ko'rish" tugmasi olib tashlandi (master prompt C9: majburiy tanishtiruv yo'q); 9 ta o'lik fayl va
+  ishlatilmaydigan `welcome.*` matnlari o'chirildi (−280 qator JSON, client bundle kichraydi).
+- **Qotish Q8 (topildi va tuzatildi):** kirgan foydalanuvchida `/search` ochilganda namunaviy so'rov havolalari
+  (`/search?q=Buxgalter kerak` …) oldindan yuklanadi (prefetch). Bu manzillar serverda boshqa URL'ga yo'naltiriladi.
+  Dalil (log-proksi): server ikkala so'rovga 24–29 ms da to'liq javob bergan, lekin brauzerda ular 15 s+ ochiq qolgan —
+  Next router yo'naltirilgan prefetch javobini yopmay ushlab turadi. HTTP/1.1 da xostga 6 ta ulanish bor: bir necha
+  marta ochilsa, keyingi so'rovlar navbatda qoladi (sahifa "qotadi"). Shu sabab E2E (qorong'i mavzu) va CI (`main`,
+  c48c5ab) vaqti-vaqti bilan yiqilgan. Tuzatish: shu havolalarda `prefetch={false}` (yo'naltiriladigan sahifani oldindan
+  yuklash foydasiz). Takrorlash sinovi: kirgan foydalanuvchi bilan bosh sahifa → `/search` 20 marta — **oldin**
+  3 ta sinovda 1–2-urinishdayoq osilgan, **keyin 0/20**; to'liq E2E 42/42.
+- CI: E2E artefaktlari endi yuklanadi (`include-hidden-files: true` — avval `e2e/.stack` yashirin papka sifatida
+  o'tkazib yuborilardi, CI yiqilishi dalilsiz qolardi); CI'da Playwright `github` reporter (yiqilish annotatsiyada).
+
+**Fayllar:** `src/features/landing/home-three.tsx`, `src/features/ai-alerts/components/ai-pro-card.tsx`,
+`src/components/shared/{top-bar,app-shell,welcome-cookie}.tsx`, `src/app/help/page.tsx`,
+`src/features/employer/components/dashboard/{employer-dashboard,employer-sections}.tsx`, `messages/*/{easy,common,welcome}.json`;
+o'chirildi: `welcome-gate`, `coach-tour`, `replay-tour-button`, `landing-page`, `worker-home`, `worker-main-cards`,
+`ai-alerts-card`, `profession-focus`, `worker-stats`. Testlar: `e2e/specs/home.spec.ts` (yangi), `no-ui-sound`, `responsiveness`.
+
+**Skrinshotlar** (chap — c48c5ab, o'ng — keyin): [mobil](screenshots/c8/c8-2-home-full-m.jpg) ·
+[planshet](screenshots/c8/c8-2-home-t.jpg) · [desktop](screenshots/c8/c8-2-home-d.jpg) ·
+[qorong'i](screenshots/c8/c8-2-home-dark-m.jpg) · [kabinet (AI kartasi)](screenshots/c8/c8-2-cabinet-full-m.jpg).
+
+**Testlar:**
+
+| Test | Natija |
+|---|---|
+| `home.spec.ts`: 4 yo'l × "tugma → kutilgan sahifa va sarlavha" | ✅ 4/4 |
+| `home.spec.ts`: bitta h1; ≥ 80 px rangli sirt yo'q; AI bonusi asosiy yo'llardan pastda | ✅ |
+| `home.spec.ts`: mehmonda brend nomi va "Kirish"; `aria-current` bo'lim almashganda ko'chadi | ✅ |
+| `home.spec.ts`: kirgan foydalanuvchi 360/390 px — gorizontal siljish yo'q, chat/bildirishnoma ko'rinadi | ✅ |
+| `home.spec.ts`: 360/768/1024/1440 px — karta matni chetdan chiqmaydi | ✅ |
+| a11y (8 sahifa × 5 kenglik, qorong'i mavzu — endi tinchlanmasa tugamagan so'rovlarni ko'rsatib yiqiladi), `no-ui-sound`, `responsiveness` (20 o'tishda tinglovchi 429 → 429) | ✅ |
+| Q8 takrorlash: kirgan foydalanuvchi, bosh sahifa → `/search` × 20 | ✅ 0/20 osilish (oldin 1–2-urinishda) |
+| To'liq E2E (`npx playwright test -c e2e`) | ✅ 42/42 |
+| Unit 534 ✅ / 18 skip · `tsc` ✅ · `eslint` ✅ | ✅ |

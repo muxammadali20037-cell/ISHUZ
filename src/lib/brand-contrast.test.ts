@@ -42,6 +42,8 @@ const PAIRS: [string, string][] = [
   ["primary", "background"],
   ["primary-foreground", "primary"],
   ["primary", "primary-soft"],
+  ["muted-foreground", "primary-soft"],
+  ["foreground", "primary-soft"],
   ["success-foreground", "success"],
   ["success", "success-soft"],
   ["success", "card"],

@@ -143,10 +143,17 @@ test("qorong'i mavzu: asosiy sahifalarda rang kontrasti buzilmaydi", async ({ pa
   await loginAs(context, USERS.workerA);
   await context.addCookies([{ name: "ishuz_theme", value: "dark", url: test.info().project.use.baseURL ?? "http://localhost:3300" }]);
   await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "dark" });
+  // tugamagan so'rovlar: networkidle kelmasa — qaysi so'rov osilib qolganini ko'rsatib yiqiladi (taxmin emas, dalil)
+  const inflight = new Map<string, number>();
+  page.on("request", (r) => inflight.set(`${r.method()} ${r.url()}`, Date.now()));
+  page.on("requestfinished", (r) => inflight.delete(`${r.method()} ${r.url()}`));
+  page.on("requestfailed", (r) => inflight.delete(`${r.method()} ${r.url()}`));
   const bad: string[] = [];
   for (const url of ["/", "/search", `/search?mode=jobs&p=${await buxgalter()}&region=all`, "/post/worker", "/cabinet", "/dev/ui"]) {
     await page.goto(url);
-    await page.waitForLoadState("networkidle");
+    const idle = await page.waitForLoadState("networkidle", { timeout: 15_000 }).then(() => true, () => false);
+    const pending = [...inflight.entries()].map(([k, t]) => `${k} (${Date.now() - t} ms)`);
+    expect(idle, `${url}: tarmoq tinchlanmadi; tugamagan so'rovlar: ${pending.join(" | ") || "yo'q"}`).toBe(true);
     expect(await page.evaluate(() => document.documentElement.classList.contains("dark")), url).toBe(true);
     const axe = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
     for (const v of axe.violations) for (const n of v.nodes.slice(0, 3)) bad.push(`${url}: ${n.html.slice(0, 100)} ${JSON.stringify(n.any[0]?.data ?? "")}`);

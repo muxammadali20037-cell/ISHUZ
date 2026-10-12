@@ -25,7 +25,8 @@
     "switch_to_employer": "Ish beruvchi rejimi",
     "switch_to_worker": "Ish qidiruvchi rejimi",
     "candidates": "Nomzodlar",
-    "vacancies": "Vakansiyalar"
+    "vacancies": "Vakansiyalar",
+    "main_label": "Asosiy bo'limlar"
   },
   "actions": {
     "save": "Saqlash",

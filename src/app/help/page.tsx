@@ -4,7 +4,6 @@ import { Building2, Flag, LifeBuoy, ShieldCheck, UserSearch } from "lucide-react
 import { getT } from "@/lib/i18n/server";
 import { Shell } from "@/components/shared/shell";
 import { localeAlternates } from "@/lib/seo";
-import { ReplayTourButton } from "@/features/legal/replay-tour-button";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t, locale } = await getT();
@@ -30,8 +29,6 @@ export default async function HelpPage() {
             <p className="mt-1 text-muted-foreground">{t("welcome.help.subtitle")}</p>
           </div>
         </header>
-
-        <ReplayTourButton />
 
         {guides.map((g) => (
           <section key={g.title} className="rounded-2xl border border-border bg-card p-5">

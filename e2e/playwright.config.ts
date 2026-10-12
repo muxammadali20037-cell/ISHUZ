@@ -19,7 +19,8 @@ export default defineConfig({
   retries: 0,
   timeout: 60_000,
   expect: { timeout: 15_000 },
-  reporter: [["list"], ["html", { outputFolder: path.join(__dirname, ".stack/report"), open: "never" }]],
+  // CI'da yiqilgan test GitHub annotatsiyasi sifatida ham ko'rinadi (loglarni yuklab olmasdan)
+  reporter: [["list"], ["html", { outputFolder: path.join(__dirname, ".stack/report"), open: "never" }], ...(process.env.CI ? [["github"] as ["github"]] : [])],
   use: {
     baseURL: app,
     locale: "uz-UZ",

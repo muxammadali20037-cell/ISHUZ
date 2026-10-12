@@ -25,7 +25,8 @@
     "switch_to_employer": "Employer mode",
     "switch_to_worker": "Job seeker mode",
     "candidates": "Candidates",
-    "vacancies": "Jobs posted"
+    "vacancies": "Jobs posted",
+    "main_label": "Main sections"
   },
   "actions": {
     "save": "Save",

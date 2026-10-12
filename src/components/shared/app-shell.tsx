@@ -46,8 +46,7 @@ export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<N
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
-      aria-label="Main"
-      data-tour="bottom-nav"
+      aria-label={t("common.nav.main_label")}
     >
       <ul className="flex h-[var(--tabbar-height)] items-stretch">
         {items.map((item) => {
@@ -82,7 +81,8 @@ export function DesktopNavLinks({ counts }: { role: NavRole; counts?: Partial<Re
   const { t } = useT();
   const items = MAIN_NAV;
   return (
-    <ul className="hidden items-center gap-1 md:flex">
+    <nav aria-label={t("common.nav.main_label")} className="hidden md:block">
+    <ul className="flex items-center gap-1">
       {items.map((item) => {
         const active = item.match ? item.match(pathname) : pathname === item.href;
         const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
@@ -106,5 +106,6 @@ export function DesktopNavLinks({ counts }: { role: NavRole; counts?: Partial<Re
         );
       })}
     </ul>
+    </nav>
   );
 }

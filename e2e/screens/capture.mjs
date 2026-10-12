@@ -54,7 +54,6 @@ try {
       for (const v of WIDTHS) {
         const ctx = await browser.newContext({ viewport: { width: v.w, height: v.h }, deviceScaleFactor: 1, reducedMotion: "reduce", colorScheme: s.theme === "dark" ? "dark" : "light" });
         await ctx.addCookies([
-          { name: "ishuz_welcome", value: "1", domain: host, path: "/" },
           { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
           ...(s.user ? [{ ...sessionCookie(s.user, stack.secret), domain: host, path: "/" }] : []),
           ...(s.theme ? [{ name: "ishuz_theme", value: s.theme, domain: host, path: "/" }] : []),

@@ -2,15 +2,16 @@
   "home": {
     "title": "Ish topdim",
     "subtitle": "Ish toping yoki ishchi toping",
-    "worker_title": "Siz ish qidiryapsizmi?",
-    "worker_desc": "Sohangizni tanlang va o'zingiz haqingizda e'lon joylang.",
-    "worker_cta": "Ish qidiryapman",
-    "employer_title": "Siz ishchi qidiryapsizmi?",
-    "employer_desc": "Kerakli mutaxassisni tanlang va ish e'loni joylang.",
-    "employer_cta": "Ishchi qidiryapman",
-    "search_title": "🔍 Qidirish",
-    "search_desc": "Kasb va hudud bo'yicha ish yoki ishchi toping.",
-    "search_cta": "Qidirish"
+    "worker_title": "Ish qidiryapsizmi?",
+    "worker_desc": "O'zingiz haqingizda e'lon bering — ish beruvchilar sizni qidiruvda topib, bog'lanadi.",
+    "worker_cta": "O'zim haqimda e'lon berish",
+    "employer_title": "Ishchi kerakmi?",
+    "employer_desc": "Ish e'loni bering — mos ishchilar uni ko'rib, siz bilan bog'lanadi.",
+    "employer_cta": "Ish e'loni berish",
+    "search_title": "E'lonlarni ko'rish",
+    "search_desc": "Kasb va hudud bo'yicha qidiring. Ko'rish uchun ro'yxatdan o'tish shart emas.",
+    "search_jobs": "Ish e'lonlari",
+    "search_workers": "Ishchilar"
   },
   "cabinet": {
     "title": "Kabinetim",

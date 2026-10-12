@@ -121,7 +121,9 @@ Qoidalar:
 ### Karta, oyna, bo'sh holat, yuklanish
 
 - Karta: `rounded-2xl border bg-card shadow-sm`, ichki chegara 16–24. Ikonka plitasi — `bg-primary-soft text-primary`.
-- Brend sirti (`bg-primary`) faqat bitta asosiy taklif uchun (masalan, AI yordamchi); ichida oq "PRO" belgisi.
+- Katta to'liq rangli karta (`bg-primary`, `bg-success` yuzali) ishlatilmaydi — to'liq rang faqat **tugmada**. Ta'kidlangan
+  bonus (AI yordamchi) — `bg-primary-soft` + `border-primary/25`, "PRO" belgisi `bg-primary`. Bosh sahifa testi buni tekshiradi.
+- Bir nechta teng yo'l (bosh sahifa) — bir xil neytral kartalar; har kartada bitta aniq fe'lli tugma ("Ish e'loni berish").
 - Oyna (`Dialog`/`ConfirmDialog`): sarlavha + bir jumla izoh + "Bekor qilish" (outline) va amal tugmasi.
 - Bo'sh holat (`EmptyState`): ikonka + nima uchun bo'sh + keyingi qadam tugmasi.
 - Yuklanish: joyni egallaydigan `Skeleton` (sahifa sakramaydi); 30 s dan uzoq kutilmaydi (`callAction` → "Javob kechikdi").
@@ -132,6 +134,7 @@ Qoidalar:
 - Sahifa o'tishida animatsiya yo'q (C8.1b: View Transition bosishni 0.5 s bloklardi).
 - `prefers-reduced-motion` — barcha animatsiya va konfetti o'chadi.
 - Klaviatura fokusi har elementda ko'rinadi (2 px `ring` + 2 px oraliq) — E2E tekshiradi.
+- Avtomatik modal, majburiy tanishtiruv (tour) va ketma-ket toast yo'q — asosiy yo'l to'silmaydi (C8.2 da eski tur olib tashlandi).
 - **UI ovozi yo'q** (C8.1a). Telegram ichida tebranish faqat natijada (muvaffaqiyat/xato), har bosishda emas.
 - Konfetti — faqat muhim natijada, brend ranglarida (`primary`, `success`, `warning`), kamalak emas.
 

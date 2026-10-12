@@ -8,7 +8,8 @@ import { getAiProTeaser } from "../queries";
 const money = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
 
 /**
- * "AI yordamchi · PRO" — pullik bonus, ko'zga tashlanib turadi (bosh sahifa va Kabinetim).
+ * "AI yordamchi · PRO" — pullik bonus (bosh sahifa va Kabinetim). Yumshoq brend sirti: ko'rinadi, lekin asosiy yo'llardan
+ * (e'lon berish, qidirish) kuchli emas. Miltillash va sakrash yo'q.
  * Ikki yo'l: "Menga ish topsin" va "Menga ishchi topsin" — o'z so'zi bilan yozadi, mos e'lon chiqishi bilan Telegram'ga xabar.
  * Google Play ilovasi ichida narx ko'rsatilmaydi (to'lov u yerda sotilmaydi).
  */
@@ -29,24 +30,24 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
   return (
     <section
       aria-labelledby="ai-pro-title"
-      className={cn("relative overflow-hidden rounded-2xl bg-primary p-5 text-primary-foreground shadow-sm sm:p-7", className)}
+      className={cn("rounded-2xl border border-primary/25 bg-primary-soft p-5 text-foreground sm:p-6", className)}
     >
-      <div className="relative flex flex-wrap items-start gap-4">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-foreground/15" aria-hidden>
-          <BellRing className="size-8 motion-safe:animate-pulse" />
+      <div className="flex flex-wrap items-start gap-4">
+        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-hidden>
+          <BellRing className="size-7" />
         </span>
         <div className="min-w-0 flex-1">
           <p className="flex flex-wrap items-center gap-2">
-            <span className="inline-flex items-center gap-1 rounded-full bg-primary-foreground px-2.5 py-0.5 text-sm font-extrabold uppercase tracking-wide text-primary">
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2.5 py-0.5 text-sm font-extrabold uppercase tracking-wide text-primary-foreground">
               <Crown className="size-4" aria-hidden /> PRO
             </span>
-            {badge ? <span className="rounded-full border border-primary-foreground/70 px-3 py-0.5 text-sm font-bold">{badge}</span> : null}
+            {badge ? <span className="rounded-full border border-primary/40 px-3 py-0.5 text-sm font-bold text-primary">{badge}</span> : null}
           </p>
-          <h2 id="ai-pro-title" className="mt-2 text-2xl font-extrabold leading-tight sm:text-[1.7rem]">
+          <h2 id="ai-pro-title" className="mt-2 text-xl font-bold leading-tight sm:text-2xl">
             {t("saved.ai_alerts.card_title")}
           </h2>
-          <p className="mt-1 text-lg leading-snug text-primary-foreground/90">{t("saved.ai_alerts.card_desc")}</p>
-          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-base text-primary-foreground/90">
+          <p className="mt-1 text-base leading-snug text-muted-foreground">{t("saved.ai_alerts.card_desc")}</p>
+          <p className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm font-medium text-primary">
             <span className="inline-flex items-center gap-1.5">
               <Sparkles className="size-4" aria-hidden /> {t("saved.ai_alerts.card_point_ai")}
             </span>
@@ -56,16 +57,16 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
           </p>
         </div>
       </div>
-      <div className="relative mt-5 grid gap-3 sm:grid-cols-2">
+      <div className="mt-5 grid gap-2 sm:grid-cols-2">
         {ways.map((w) => (
           <Link
             key={w.href}
             href={w.href}
             data-track="direction_select"
             data-track-to={w.track}
-            className="group inline-flex min-h-14 items-center justify-center gap-2 rounded-xl bg-primary-foreground px-4 py-3 text-center text-lg font-bold text-primary shadow-sm transition-[translate,scale] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 focus-visible:ring-4 focus-visible:ring-white/60 active:scale-[0.97] active:duration-75"
+            className="press inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-center text-base font-semibold text-primary hover:border-primary/50 active:scale-[0.98]"
           >
-            <w.icon className="size-6 shrink-0" aria-hidden /> {w.label}
+            <w.icon className="size-5 shrink-0" aria-hidden /> {w.label}
           </Link>
         ))}
       </div>

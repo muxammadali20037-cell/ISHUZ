@@ -44,8 +44,8 @@ test("navigatsiya: sahifa almashganda bosish bloklangan vaqt (View Transition)",
   await page.waitForLoadState("networkidle");
   const lost: number[] = [];
   for (const [from, to] of [
-    ["main a[href^='/search']", /\/search/],
-    ["main a[href*='mode=jobs']", /mode=jobs/],
+    ["main a[href='/search?mode=jobs']", /mode=jobs/],
+    ["header a[href='/']", (u: URL) => u.pathname === "/"],
   ] as const) {
     const t0 = Date.now();
     await page.locator(from).first().click();
@@ -154,9 +154,9 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   await page.waitForLoadState("networkidle");
   const samples: { round: number; listeners: number; nodes: number }[] = [];
   for (let i = 1; i <= 20; i++) {
-    await page.locator("main a[href^='/search']").first().click();
+    await page.locator("main a[href='/search?mode=jobs']").click();
     await page.waitForURL(/\/search/);
-    await page.getByRole("link", { name: /Orqaga|Bosh sahifa/ }).first().click().catch(async () => page.goBack());
+    await page.locator("header a[href='/']").first().click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");
     if (i === 1 || i === 10 || i === 20) samples.push({ round: i, ...(await metric()) });
   }

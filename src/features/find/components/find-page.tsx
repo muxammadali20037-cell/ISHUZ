@@ -77,7 +77,9 @@ export async function FindStart({ params }: { params: FindParams }) {
           <p className="text-base text-muted-foreground">{t("easy.search.examples")}</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {examples.map((ex) => (
-              <Link key={ex} href={`/search?q=${encodeURIComponent(ex)}`} className="inline-flex min-h-12 items-center rounded-full border border-primary/40 bg-primary-soft/50 px-4 text-base font-semibold text-primary hover:bg-primary-soft">
+              // prefetch yo'q: bu manzil serverda boshqa URL'ga yo'naltiriladi — oldindan yuklash foydasiz, Next router esa
+              // bunday javobni ochiq ushlab turadi (HTTP/1.1 da xostga 6 ta ulanish — to'lsa, sahifa qotadi; e2e: a11y "qorong'i mavzu")
+              <Link key={ex} href={`/search?q=${encodeURIComponent(ex)}`} prefetch={false} className="inline-flex min-h-12 items-center rounded-full border border-primary/40 bg-primary-soft/50 px-4 text-base font-semibold text-primary hover:bg-primary-soft">
                 «{ex}»
               </Link>
             ))}

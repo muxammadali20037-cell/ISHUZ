@@ -24,6 +24,8 @@ ekran → amal → muhit → dalil → avval → keyin. Reproduksiya qilinmagan 
 | Q6 | 20 marta bosh ↔ qidiruv o'tish | Listener/DOM sizib chiqishi | CDP `JSEventListeners`, `Nodes` (1-, 10-, 20-aylana) | 393 → 395; 1230 → 1283 | 395 → 395; 1381 → 1381 | ✅ sizib chiqish **yo'q** (avval ham yo'q edi) |
 | Q7 | E'lon formasi: kasb yozish, "Tanlash", "Davom etish" | Main thread | Event Timing (faqat `interactionId > 0`), 3 run | ovozli build: harf maks 40–64 ms; bosish maks 96–120 ms | harf maks 56–72 ms; bosish maks 88–144 ms (bir run 216 ms) | ➖ farq **yo'q**; eng sekini — "Davom etish" (keyingi qadamni chizish, klik ishlovi 47–67 ms). 200 ms maqsad ichida |
 
+| Q8 | Kirgan foydalanuvchi: bosh sahifa → `/search` | Network: ochiq qolgan prefetch (ulanish band) | Log-proksi: server javobi tugash vaqti; brauzerdagi tugamagan so'rovlar; 20 marta takrorlash | Server 24–29 ms da javob bergan, brauzerda 2 ta `?q=` prefetch **15 s+ ochiq**; 1–2-urinishda takrorlanadi | `prefetch={false}` (yo'naltiriladigan namunaviy havolalar) — **0/20** | ✅ (C8.2) |
+
 Ovoz olib tashlanishi (6493eb6) **bosish kechikishini sezilarli o'zgartirmadi** (Q7). U mahsulot talabi sifatida bajarildi, tezlik
 yaxshilanishi deb hisoblanmaydi.
 

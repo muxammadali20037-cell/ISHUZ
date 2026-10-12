@@ -1,5 +1,4 @@
 import { Suspense } from "react";
-import { CoachTour } from "@/components/shared/coach-tour";
 import Link from "next/link";
 import { Building2, ChevronRight, Plus, PlusCircle, Search, ShieldCheck } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -48,7 +47,6 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
 
   return (
     <div className="container-app space-y-6 py-5 sm:py-8">
-      <CoachTour role="employer" />
       {/* Salomlashuv */}
       <header className="flex items-center gap-3">
         {company ? (
@@ -77,7 +75,6 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
       {/* Asosiy harakat — bitta, katta */}
       <Link
         href="/employer/vacancies/new"
-        data-tour="employer-post"
         className="group flex items-center gap-4 rounded-2xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-7"
       >
         <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15 sm:size-20">
@@ -90,7 +87,7 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
         <ChevronRight className="size-7 shrink-0 transition-transform group-hover:translate-x-1" />
       </Link>
 
-      <div data-tour="employer-stats">
+      <div>
         <Suspense fallback={<StatsSkeleton />}>
           <KeyTiles candidatesHref={candidatesHref} />
         </Suspense>

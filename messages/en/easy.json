@@ -2,15 +2,16 @@
   "home": {
     "title": "Ish topdim",
     "subtitle": "Find a job or find a worker",
-    "worker_title": "Are you looking for a job?",
-    "worker_desc": "Choose your field and post a listing about yourself.",
-    "worker_cta": "I'm looking for a job",
-    "employer_title": "Are you looking for a worker?",
-    "employer_desc": "Choose the specialist you need and post a job.",
-    "employer_cta": "I'm looking for a worker",
-    "search_title": "🔍 Search",
-    "search_desc": "Find a job or a worker by profession and area.",
-    "search_cta": "Search"
+    "worker_title": "Looking for a job?",
+    "worker_desc": "Post a listing about yourself — employers will find you in search and get in touch.",
+    "worker_cta": "Post about myself",
+    "employer_title": "Need a worker?",
+    "employer_desc": "Post a job — suitable workers will see it and contact you.",
+    "employer_cta": "Post a job",
+    "search_title": "Browse listings",
+    "search_desc": "Search by profession and area. No sign-up needed to browse.",
+    "search_jobs": "Jobs",
+    "search_workers": "Workers"
   },
   "cabinet": {
     "title": "My account",

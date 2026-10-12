@@ -1,27 +1,4 @@
 {
-  "choose_language": "Tilni tanlang",
-  "choose_language_sub": "Выберите язык",
-  "skip": "O'tkazib yuborish",
-  "next": "Keyingi",
-  "start": "Boshlash",
-  "slides": {
-    "jobs": {
-      "title": "Ish toping",
-      "text": "«Ishlar» tugmasi — barcha vakansiyalar. Hudud, maosh va jadval bo'yicha saralang, bir bosishda ariza yuboring."
-    },
-    "workers": {
-      "title": "Ishchi toping",
-      "text": "«Nomzodlar» tugmasi — tayyor nomzodlar. Har birida vakansiyangizga nima jihatdan mos ekani ko'rsatiladi."
-    },
-    "post": {
-      "title": "E'lonni AI yozadi",
-      "text": "«E'lon» tugmasi — o'z so'zingiz bilan yozing. AI bo'limlarga ajratadi, chiroyli matn va reklama rasmi tayyorlaydi."
-    },
-    "chat": {
-      "title": "Chat va xabarlar",
-      "text": "Arizalar, takliflar va javoblar «Chat» va 🔔 da. Muhim xabarlar Telegram'ga ham keladi."
-    }
-  },
   "quick": {
     "title": "Nima qilmoqchisiz?",
     "jobs": "Ish topish",
@@ -41,7 +18,6 @@
   "help": {
     "title": "Yordam",
     "subtitle": "Ilovadan qanday foydalanish — qisqa va oddiy.",
-    "replay_tour": "Qisqacha ko'rsatib bering (tur)",
     "worker_title": "Ish qidiryapman",
     "worker_1": "Bosh sahifada «Bo'sh ish o'rinlarini ko'rish» ni bosing.",
     "worker_2": "Yuqoridagi qidiruvga kasbingizni yozing yoki hudud va filtrlarni tanlang.",
@@ -61,51 +37,5 @@
     "report_hint": "Har bir vakansiya va profil sahifasida «Shikoyat qilish» bor.",
     "more": "Shaxsiy ma'lumotlar haqida:",
     "version": "Ilova versiyasi: {v}"
-  },
-  "coach": {
-    "skip": "O'tkazib yuborish",
-    "done": "Tushunarli",
-    "worker-jobs": {
-      "title": "Bo'sh ish o'rinlari",
-      "desc": "Shu yerni bosing — sizga mos va yaqin ishlar ro'yxati ochiladi. Qidiruvda kasbni xato yozsangiz ham topiladi."
-    },
-    "worker-listing": {
-      "title": "Ish qidirish e'loningiz",
-      "desc": "Bu sizning e'loningiz. To'ldirsangiz, ish beruvchilar sizni o'zlari topib, taklif yuboradi."
-    },
-    "worker-more": {
-      "title": "Tezkor havolalar",
-      "desc": "Yuborgan arizalaringiz, saqlangan ishlar va kelgan takliflar shu yerda."
-    },
-    "bottom-nav": {
-      "title": "Pastki menyu",
-      "desc": "Istalgan vaqtda shu tugmalar orqali asosiy bo'limlarga qaytasiz."
-    },
-    "employer-post": {
-      "title": "Vakansiya joylashtirish",
-      "desc": "Eng asosiy tugma. Bosing — ilova savollarni birma-bir so'raydi, 3 daqiqada e'lon tayyor."
-    },
-    "employer-stats": {
-      "title": "Qisqa hisobot",
-      "desc": "Faol e'lonlaringiz, yangi arizalar va mos nomzodlar soni. Raqamni bossangiz — ro'yxat ochiladi."
-    },
-    "employer-sections": {
-      "title": "Barcha bo'limlar",
-      "desc": "E'lonlaringiz, kelgan arizalar, nomzodlar, tarix, xabarlar va kompaniya sozlamalari shu yerda."
-    }
-  },
-  "later": "Keyinroq",
-  "hello": {
-    "title": "Assalomu alaykum!",
-    "ask": "Ismingiz nima?",
-    "placeholder": "Masalan: Aziz"
-  },
-  "role": {
-    "title": "Tanishganimdan xursandman, {name}!",
-    "ask": "Nima qilmoqchisiz?",
-    "worker": "Ish qidiryapman",
-    "worker_desc": "Menga mos ish topib bering",
-    "employer": "Xodim qidiryapman",
-    "employer_desc": "Vakansiya joylab, ishchi topaman"
   }
 }

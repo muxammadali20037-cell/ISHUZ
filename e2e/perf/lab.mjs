@@ -41,7 +41,6 @@ for (const r of ROUTES) {
   for (let i = 0; i < RUNS; i++) {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: "uz-UZ" });
     await ctx.addCookies([
-      { name: "ishuz_welcome", value: "1", domain: host, path: "/" },
       { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
       ...(r.user ? [{ ...sessionCookie(r.user, stack.secret), domain: host, path: "/" }] : []),
     ]);

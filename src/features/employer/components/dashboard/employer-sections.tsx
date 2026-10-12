@@ -14,7 +14,7 @@ export async function EmployerSections() {
     { href: "/company/settings", icon: Building2, key: "company" },
   ] as const;
   return (
-    <nav aria-label={t("employer.sections.title")} data-tour="employer-sections">
+    <nav aria-label={t("employer.sections.title")}>
       <h2 className="mb-3 text-lg font-bold">{t("employer.sections.title")}</h2>
       <ul className="grid gap-2 sm:grid-cols-2">
         {items.map(({ href, icon: Icon, key }) => (

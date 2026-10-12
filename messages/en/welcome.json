@@ -1,27 +1,4 @@
 {
-  "choose_language": "Choose a language",
-  "choose_language_sub": "Tilni tanlang · Выберите язык",
-  "skip": "Skip",
-  "next": "Next",
-  "start": "Get started",
-  "slides": {
-    "jobs": {
-      "title": "Find a job",
-      "text": "The «Jobs» tab shows all vacancies. Filter by area, salary and schedule, and apply in one tap."
-    },
-    "workers": {
-      "title": "Find workers",
-      "text": "The «Candidates» tab shows ready candidates, with what makes each one fit your vacancy."
-    },
-    "post": {
-      "title": "AI writes your job post",
-      "text": "The «Post» tab — describe it in your own words. AI organizes it into sections and creates polished text and a promo image."
-    },
-    "chat": {
-      "title": "Chat and notifications",
-      "text": "Applications, offers and replies are in «Chat» and 🔔. Important messages also arrive on Telegram."
-    }
-  },
   "quick": {
     "title": "What would you like to do?",
     "jobs": "Find a job",
@@ -41,7 +18,6 @@
   "help": {
     "title": "Help",
     "subtitle": "How to use the app — short and simple.",
-    "replay_tour": "Show the quick tour",
     "worker_title": "I'm looking for a job",
     "worker_1": "On the home screen tap “Browse open jobs”.",
     "worker_2": "Type your profession in search or pick an area and filters.",
@@ -61,51 +37,5 @@
     "report_hint": "Every job and profile page has a “Report” button.",
     "more": "About personal data:",
     "version": "App version: {v}"
-  },
-  "coach": {
-    "skip": "Skip",
-    "done": "Got it",
-    "worker-jobs": {
-      "title": "Job openings",
-      "desc": "Tap here to see jobs that fit you and are near you. Search understands typos too."
-    },
-    "worker-listing": {
-      "title": "Your job-seeker listing",
-      "desc": "Fill it in and employers will find you and send offers."
-    },
-    "worker-more": {
-      "title": "Quick links",
-      "desc": "Your applications, saved jobs and offers are here."
-    },
-    "bottom-nav": {
-      "title": "Bottom menu",
-      "desc": "Use these buttons to get back to the main sections anytime."
-    },
-    "employer-post": {
-      "title": "Post a vacancy",
-      "desc": "The main button. The app asks one question at a time — your post is ready in 3 minutes."
-    },
-    "employer-stats": {
-      "title": "Quick summary",
-      "desc": "Active vacancies, new applications and matching candidates. Tap a number to open the list."
-    },
-    "employer-sections": {
-      "title": "All sections",
-      "desc": "Your vacancies, applications, candidates, history, messages and company settings."
-    }
-  },
-  "later": "Later",
-  "hello": {
-    "title": "Hello!",
-    "ask": "What's your name?",
-    "placeholder": "e.g. Aziz"
-  },
-  "role": {
-    "title": "Nice to meet you, {name}!",
-    "ask": "What would you like to do?",
-    "worker": "I'm looking for a job",
-    "worker_desc": "Find me a job that fits",
-    "employer": "I'm hiring",
-    "employer_desc": "Post a vacancy and find a worker"
   }
 }
