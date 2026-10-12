@@ -48,14 +48,14 @@ export async function FindStart({ params }: { params: FindParams }) {
   return (
     <StepShell back="/" title={t("easy.search.choose_title")}>
       <div className="pop-list grid gap-4 sm:grid-cols-2">
-        <Link href={findHref(params, { mode: "jobs", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md">
+        <Link href={findHref(params, { mode: "jobs", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-2xl bg-primary p-5 text-primary-foreground shadow-md">
           <BriefcaseBusiness className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.jobs")}</span>
             <span className="block text-base text-primary-foreground">{t("easy.search.jobs_desc")}</span>
           </span>
         </Link>
-        <Link href={findHref(params, { mode: "workers", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-3xl bg-success p-5 text-success-foreground shadow-md">
+        <Link href={findHref(params, { mode: "workers", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-2xl bg-success p-5 text-success-foreground shadow-md">
           <UsersRound className="size-9" aria-hidden />
           <span>
             <span className="block text-2xl font-extrabold">{t("easy.search.workers")}</span>
@@ -64,7 +64,7 @@ export async function FindStart({ params }: { params: FindParams }) {
         </Link>
       </div>
 
-      <form action="/search" method="get" className="space-y-3 rounded-3xl border border-border bg-card p-4 sm:p-5">
+      <form action="/search" method="get" className="space-y-3 rounded-2xl border border-border bg-card p-4 sm:p-5">
         <p className="text-base font-semibold text-muted-foreground">{t("easy.search.or_type")}</p>
         <label htmlFor="find-q" className="block text-xl font-bold">
           {t("easy.search.query_label")}
@@ -268,7 +268,7 @@ export async function FindResultsView({ params, node, region, district }: { para
       </div>
 
       {!res.ok ? (
-        <section role="alert" className="space-y-4 rounded-3xl border-2 border-warning/40 bg-warning-soft p-6 text-center">
+        <section role="alert" className="space-y-4 rounded-2xl border-2 border-warning/40 bg-warning-soft p-6 text-center">
           <h2 className="text-2xl font-bold">{t("easy.search.error_title")}</h2>
           <p className="text-muted-foreground">{t("easy.search.error_desc")}</p>
           <div className="mx-auto grid max-w-md gap-3">
@@ -277,7 +277,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           <p className="text-sm text-muted-foreground">{t("easy.search.error_code", { code: res.errorId })}</p>
         </section>
       ) : !res.items.length && params.page > 1 ? (
-        <section className="space-y-4 rounded-3xl border-2 border-dashed border-border bg-card p-6 text-center">
+        <section className="space-y-4 rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center">
           <h2 className="text-2xl font-bold">{t("easy.search.page_empty_title")}</h2>
           <div className="mx-auto grid max-w-md gap-3">
             <Button asChild size="xl" className="h-14 text-lg">
@@ -301,7 +301,7 @@ export async function FindResultsView({ params, node, region, district }: { para
               ))}
         </ul>
       ) : (
-        <section className="space-y-4 rounded-3xl border-2 border-dashed border-border bg-card p-6 text-center">
+        <section className="space-y-4 rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center">
           <h2 className="text-2xl font-bold">{t("easy.search.empty_title")}</h2>
           <p className="text-muted-foreground">{t("easy.search.empty_desc")}</p>
           <div className="mx-auto grid max-w-md gap-3">

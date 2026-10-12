@@ -66,7 +66,7 @@ export function AiWorkerAlertsSection({ data }: { data: AiAlertsData }) {
   return (
     <>
       {/* 1-qadam: o'z so'zi bilan */}
-      <section className="rounded-3xl border-2 border-success/40 bg-card p-5 shadow-sm">
+      <section className="rounded-2xl border-2 border-success/40 bg-card p-5 shadow-sm">
         <div className="flex items-center gap-2">
           <span className="flex size-9 items-center justify-center rounded-xl bg-success text-success-foreground">
             <Sparkles className="size-5" />

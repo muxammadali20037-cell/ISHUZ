@@ -25,21 +25,21 @@ export async function WorkerMainCards({ workerId }: { workerId: string }) {
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2">
-        <Link href="/jobs" data-tour="worker-jobs" className="group flex min-h-36 flex-col justify-between rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-6">
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-white/15">
+        <Link href="/jobs" data-tour="worker-jobs" className="group flex min-h-36 flex-col justify-between rounded-2xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-6">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-foreground/15">
             <Search className="size-7" />
           </span>
           <span className="mt-4 block">
             <span className="flex items-center gap-2 text-xl font-extrabold">
               {t("jobs.worker_home.browse_title")} <ChevronRight className="size-5 transition-transform group-hover:translate-x-1" />
             </span>
-            <span className="mt-1 block text-[15px] text-primary-foreground">{t("jobs.worker_home.browse_desc")}</span>
+            <span className="mt-1 block text-md text-primary-foreground">{t("jobs.worker_home.browse_desc")}</span>
           </span>
         </Link>
         <Link
           href="/profile/listing"
           data-tour="worker-listing"
-          className="group flex min-h-36 flex-col justify-between rounded-3xl border-2 border-primary/30 bg-card p-5 shadow-sm transition-transform hover:-translate-y-0.5 hover:border-primary sm:p-6"
+          className="group flex min-h-36 flex-col justify-between rounded-2xl border-2 border-primary/30 bg-card p-5 shadow-sm transition-transform hover:-translate-y-0.5 hover:border-primary sm:p-6"
         >
           <span className="flex items-center justify-between">
             <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
@@ -55,7 +55,7 @@ export async function WorkerMainCards({ workerId }: { workerId: string }) {
             <span className="flex items-center gap-2 text-xl font-extrabold">
               {listed ? t("jobs.worker_home.listing_mine") : t("jobs.worker_home.listing_title")} <ChevronRight className="size-5 text-primary transition-transform group-hover:translate-x-1" />
             </span>
-            <span className="mt-1 block text-[15px] text-muted-foreground">{t("jobs.worker_home.listing_desc")}</span>
+            <span className="mt-1 block text-md text-muted-foreground">{t("jobs.worker_home.listing_desc")}</span>
           </span>
         </Link>
       </div>

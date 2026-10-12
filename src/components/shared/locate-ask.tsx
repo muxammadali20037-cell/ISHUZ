@@ -81,7 +81,7 @@ export function LocateAsk<D extends GeoDistrict>({
         <h2 className="text-2xl font-extrabold leading-tight tracking-tight">{title}</h2>
         {subtitle ? <p className="mt-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
-      <div className="flex flex-col items-center rounded-3xl border border-border bg-card px-5 py-8 text-center">
+      <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-5 py-8 text-center">
         <span className="flex size-16 items-center justify-center rounded-2xl bg-primary-soft text-primary">
           <MapPin className="size-8" />
         </span>

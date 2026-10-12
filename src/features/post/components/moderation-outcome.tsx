@@ -57,7 +57,7 @@ export function ModerationOutcome({
 
   return (
     <div className="container-narrow py-8 text-lg sm:py-12" role="status" aria-live="polite">
-      <div className={cn("rounded-3xl border-2 p-6 text-center sm:p-8", rejected ? "border-destructive/60 bg-destructive/5" : "border-primary/40 bg-primary-soft/60")}>
+      <div className={cn("rounded-2xl border-2 p-6 text-center sm:p-8", rejected ? "border-destructive/60 bg-destructive/5" : "border-primary/40 bg-primary-soft/60")}>
         <Icon className={cn("mx-auto size-16", rejected ? "text-destructive" : "text-primary")} aria-hidden />
         <h1 className="mt-4 text-2xl font-extrabold leading-tight sm:text-3xl">{t(`easy.moderation.${key}_title`)}</h1>
         <p className="mx-auto mt-2 max-w-md text-lg text-foreground/80">{t(`easy.moderation.${key}_desc`)}</p>

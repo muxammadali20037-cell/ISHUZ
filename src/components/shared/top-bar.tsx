@@ -18,7 +18,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
   const { t } = await getT();
   const session = await getSession();
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-card/90 backdrop-blur supports-[backdrop-filter]:bg-card/80" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+    <header className="sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
       <div className="container-app flex h-14 items-center gap-3">
         <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label="Ish topdim">
           <BrandMark />
@@ -37,7 +37,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
                 <Link href="/messages">
                   <MessageCircle className="size-5" />
                   {counts?.messages ? (
-                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
+                    <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-2xs font-bold text-destructive-foreground">
                       {counts.messages > 99 ? "99+" : counts.messages}
                     </span>
                   ) : null}

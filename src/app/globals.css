@@ -31,7 +31,7 @@
   --warning: #b45309; /* oq matn bilan 5:1 */
   --warning-soft: #fef3e0;
   --warning-foreground: #ffffff;
-  --destructive: #dc2626;
+  --destructive: #d12020; /* oq matn 5.3:1, yumshoq fonda 4.7:1 */
   --destructive-soft: #fdecec;
   --destructive-foreground: #ffffff;
   --border: #e2e8f0;
@@ -52,8 +52,8 @@
   --card-foreground: #e6ebf3;
   --popover: #111a2b;
   --popover-foreground: #e6ebf3;
-  --primary: #4f86f7;
-  --primary-hover: #6a98f8;
+  --primary: #5a8ef8;
+  --primary-hover: #74a0f9;
   --primary-foreground: #0b1220;
   --primary-soft: #16274a;
   --secondary: #1a2438;
@@ -63,14 +63,17 @@
   --accent: #16274a;
   --accent-foreground: #8fb2ff;
   --success: #22c55e;
+  --success-foreground: #0b1220; /* yorqin yashil ustida oq matn 2.3:1 edi */
   --success-soft: #0f2e1d;
   --warning: #f59e0b;
+  --warning-foreground: #0b1220;
   --warning-soft: #33230a;
-  --destructive: #ef4444;
+  --destructive: #f05252;
+  --destructive-foreground: #0b1220;
   --destructive-soft: #3a1414;
   --border: #223047;
   --input: #223047;
-  --ring: #4f86f7;
+  --ring: #5a8ef8;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 2px 8px rgb(0 0 0 / 0.35);
   --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.4);
@@ -107,6 +110,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --radius-xs: calc(var(--radius) - 9px);
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -115,6 +119,11 @@
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  /* Shrift shkalasi (BRAND_UI_GUIDE): 2xs faqat hisoblagich/vaqt belgisi; md — kiritish maydonlari va ixcham matn */
+  --text-2xs: 0.6875rem;
+  --text-2xs--line-height: 1rem;
+  --text-md: 0.9375rem;
+  --text-md--line-height: 1.375rem;
   --animate-fade-in: fade-in 0.2s ease-out;
   --animate-slide-up: slide-up 0.25s ease-out;
 }
@@ -205,12 +214,25 @@
 }
 .pop-list > * { animation: list-in 150ms ease-out backwards; }
 
+/* Ko'rinishi kichik (h-8/h-9) tugma va chiplar uchun barmoq maydoni kamida 44×44 px — tashqi ko'rinish o'zgarmaydi.
+ * Elementning o'zida `relative` (yoki boshqa position) bo'lishi kerak; tugma va chip komponentlari buni o'zi qo'yadi. */
+@utility tap-target {
+  &::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: max(100%, 44px);
+    height: max(100%, 44px);
+    transform: translate(-50%, -50%);
+  }
+}
+
 /* Havola bosilganda tepadagi ingichka "yuklanmoqda" chizig'i (NavProgress) */
 .nav-progress { position: fixed; inset: 0 0 auto 0; height: 3px; z-index: 70; pointer-events: none; }
 .nav-progress > span {
   display: block; height: 100%; transform-origin: left center;
-  background: linear-gradient(90deg, var(--primary), color-mix(in oklab, var(--primary) 55%, white));
-  box-shadow: 0 0 8px color-mix(in oklab, var(--primary) 60%, transparent);
+  background: var(--primary);
 }
 @keyframes nav-grow { from { transform: scaleX(0); } to { transform: scaleX(0.85); } }
 @keyframes nav-done { from { transform: scaleX(0.85); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }

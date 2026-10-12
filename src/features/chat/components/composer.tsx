@@ -139,7 +139,7 @@ export function Composer({ disabled, disabledNotice, disabledAction, onSendText,
   const hasText = text.trim().length > 0;
 
   return (
-    <div className="border-t border-border bg-card/95 px-2 pt-2 pb-2 backdrop-blur supports-[backdrop-filter]:bg-card/85 sm:px-3">
+    <div className="border-t border-border bg-card px-2 pt-2 pb-2 sm:px-3">
       <div className="mx-auto w-full max-w-3xl pb-safe">
         {recording && voiceMime ? (
           <VoiceRecorder mimeType={voiceMime} onCancel={() => setRecording(false)} onFinish={finishVoice} />
@@ -184,7 +184,7 @@ export function Composer({ disabled, disabledNotice, disabledAction, onSendText,
               aria-label={t("chat.composer.placeholder")}
               enterKeyHint={isTouch ? "enter" : "send"}
               className={cn(
-                "min-h-11 flex-1 resize-none rounded-2xl border border-transparent bg-secondary px-4 py-2.5 text-[15px] leading-snug text-foreground placeholder:text-muted-foreground",
+                "min-h-11 flex-1 resize-none rounded-2xl border border-transparent bg-secondary px-4 py-2.5 text-md leading-snug text-foreground placeholder:text-muted-foreground",
                 "focus-visible:border-primary focus-visible:bg-card focus-visible:ring-2 focus-visible:ring-primary/20",
               )}
             />
@@ -212,7 +212,7 @@ export function Composer({ disabled, disabledNotice, disabledAction, onSendText,
             )}
           </div>
         )}
-        {!isTouch && !recording ? <p className="mt-1 hidden px-1 text-[11px] text-muted-foreground md:block">{t("chat.composer.hint_enter")}</p> : null}
+        {!isTouch && !recording ? <p className="mt-1 hidden px-1 text-2xs text-muted-foreground md:block">{t("chat.composer.hint_enter")}</p> : null}
       </div>
 
       <ConfirmDialog

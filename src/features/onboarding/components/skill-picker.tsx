@@ -149,7 +149,7 @@ export function SkillPicker({
             {value.map((v) => (
               <li key={v.skill_id} className="space-y-2 px-4 py-3">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-[15px] font-medium">{label(v.skill_id)}</span>
+                  <span className="text-md font-medium">{label(v.skill_id)}</span>
                   <button
                     type="button"
                     onClick={() => toggle(v.skill_id)}
@@ -214,7 +214,7 @@ export function LanguagePicker({
             const lang = languages.find((l) => l.code === v.language_code);
             return (
               <li key={v.language_code} className="flex items-center gap-3 rounded-xl border border-border bg-card px-3 py-2">
-                <span className="min-w-0 flex-1 truncate text-[15px] font-medium">{lang ? name(lang) : v.language_code}</span>
+                <span className="min-w-0 flex-1 truncate text-md font-medium">{lang ? name(lang) : v.language_code}</span>
                 <div className="w-44 shrink-0">
                   <Select
                     aria-label={t("onboarding.worker.skills.level")}

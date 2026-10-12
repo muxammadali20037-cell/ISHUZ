@@ -19,7 +19,7 @@ function Row({ icon: Icon, label, children }: { icon: React.ComponentType<{ clas
       </span>
       <div className="min-w-0">
         <div className="text-xs text-muted-foreground">{label}</div>
-        <div className="text-[15px] font-medium">{children}</div>
+        <div className="text-md font-medium">{children}</div>
       </div>
     </div>
   );

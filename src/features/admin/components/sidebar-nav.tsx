@@ -41,7 +41,7 @@ export function SidebarNav({ groups, counts, onNavigate }: { groups: NavGroup[];
     <nav className="space-y-5" aria-label="Admin">
       {groups.map((g) => (
         <div key={g.key}>
-          <p className="mb-1.5 px-3 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{t(`admin.nav_groups.${g.key}`)}</p>
+          <p className="mb-1.5 px-3 text-2xs font-semibold uppercase tracking-wider text-muted-foreground">{t(`admin.nav_groups.${g.key}`)}</p>
           <ul className="space-y-0.5">
             {g.items.map((item) => {
               const Icon = ICONS[item.icon];
@@ -61,7 +61,7 @@ export function SidebarNav({ groups, counts, onNavigate }: { groups: NavGroup[];
                     <Icon className="size-4.5 shrink-0" strokeWidth={active ? 2.25 : 1.9} />
                     <span className="flex-1 truncate">{t(`admin.nav.${item.key}`)}</span>
                     {badge ? (
-                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white tabular">{badge > 99 ? "99+" : badge}</span>
+                      <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground tabular">{badge > 99 ? "99+" : badge}</span>
                     ) : null}
                   </Link>
                 </li>

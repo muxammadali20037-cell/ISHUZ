@@ -53,7 +53,7 @@ export default async function Page() {
           <h1 className="text-3xl font-extrabold">{t("easy.verification.title")}</h1>
           <p className="mt-2 text-muted-foreground">{t("easy.verification.intro")}</p>
         </div>
-        <div className="space-y-3 rounded-3xl border-2 border-border bg-card p-5">
+        <div className="space-y-3 rounded-2xl border-2 border-border bg-card p-5">
           <p className="flex items-center gap-2 text-xl font-bold">
             <Icon className={status === "verified" ? "size-7 text-success" : status === "rejected" || status === "suspended" ? "size-7 text-destructive" : "size-7 text-warning"} aria-hidden />
             {t(`easy.verification.status.${status}`)}

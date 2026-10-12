@@ -34,7 +34,7 @@ export async function CandidateHeader({ candidate, phoneVerified }: { candidate:
             ) : null}
             {age !== null ? <span className="text-sm text-muted-foreground">· {t("workers.candidate.age", { age })}</span> : null}
           </div>
-          <p className="mt-0.5 text-[15px] text-foreground/90">{c.headline ?? (c.category ? name(c.category) : "")}</p>
+          <p className="mt-0.5 text-md text-foreground/90">{c.headline ?? (c.category ? name(c.category) : "")}</p>
           <div className="mt-2 flex flex-wrap items-center gap-2">
             {c.category ? (
               <Badge variant="primary" size="lg">

@@ -193,7 +193,7 @@ export function FileUpload({
               ) : (
                 <div className="flex size-full flex-col items-center justify-center gap-1 p-2 text-center text-muted-foreground">
                   {ext === "mp4" ? <Film className="size-7" /> : <FileText className="size-7" />}
-                  <span className="w-full truncate text-[11px]">{fileNameOf(path)}</span>
+                  <span className="w-full truncate text-2xs">{fileNameOf(path)}</span>
                 </div>
               )}
               <button

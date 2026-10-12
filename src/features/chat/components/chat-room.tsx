@@ -349,14 +349,14 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
           {groups.map((g) => (
             <Fragment key={g.key}>
               <div className="sticky top-0 z-10 my-2 flex justify-center">
-                <span className="rounded-full border border-border/70 bg-card/90 px-3 py-1 text-[11px] font-semibold text-muted-foreground shadow-sm backdrop-blur">
+                <span className="rounded-full border border-border/70 bg-card px-3 py-1 text-2xs font-semibold text-muted-foreground shadow-sm">
                   {dayLabel(g.key, g.items[0]?.created_at ?? new Date().toISOString())}
                 </span>
               </div>
               {g.items.map((m) => (
                 <Fragment key={m.client_id ?? m.id}>
                   {firstUnreadId !== null && m.id === firstUnreadId ? (
-                    <div className="my-2 flex items-center gap-3 text-[11px] font-semibold uppercase tracking-wide text-primary">
+                    <div className="my-2 flex items-center gap-3 text-2xs font-semibold uppercase tracking-wide text-primary">
                       <span className="h-px flex-1 bg-primary/30" />
                       {t("chat.room.new_messages")}
                       <span className="h-px flex-1 bg-primary/30" />

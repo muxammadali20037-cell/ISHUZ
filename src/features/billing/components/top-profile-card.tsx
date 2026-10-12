@@ -44,7 +44,7 @@ export function TopProfileCard({ workerId, promotedUntil }: { workerId: string; 
     });
 
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-warning/40 bg-gradient-to-br from-warning-soft to-card p-4 sm:flex-row sm:items-center">
+    <section className="flex flex-col gap-3 rounded-2xl border border-warning/40 bg-warning-soft p-4 sm:flex-row sm:items-center">
       <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-warning text-warning-foreground shadow-sm">
         <Crown className="size-5" />
       </span>

@@ -43,7 +43,7 @@ export function PipelineFilters({ counts, status, sort }: { counts: PipelineCoun
           return (
             <Chip key={s} size="sm" selected={selected} onClick={() => update({ status: s })} className="shrink-0">
               {label}
-              <span className={cn("rounded-full px-1.5 text-[11px] font-bold tabular", selected ? "bg-white/20" : "bg-secondary text-muted-foreground")}>{counts[s]}</span>
+              <span className={cn("rounded-full px-1.5 text-2xs font-bold tabular", selected ? "bg-primary-foreground/20" : "bg-secondary text-muted-foreground")}>{counts[s]}</span>
             </Chip>
           );
         })}

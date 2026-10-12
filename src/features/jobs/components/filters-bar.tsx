@@ -37,7 +37,7 @@ function QuickChip({
       {icon}
       <span className="max-w-[11rem] truncate">{children}</span>
       {badge ? (
-        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[11px] font-bold text-primary-foreground">{badge}</span>
+        <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-2xs font-bold text-primary-foreground">{badge}</span>
       ) : null}
       {!icon ? <ChevronDown className="opacity-60" /> : null}
     </button>

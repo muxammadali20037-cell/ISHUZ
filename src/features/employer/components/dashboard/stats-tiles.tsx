@@ -84,7 +84,7 @@ export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
             <x.icon className="size-6" />
           </span>
           <span className="min-w-0 flex-1">
-            <span className="block text-[15px] font-semibold">{x.label}</span>
+            <span className="block text-md font-semibold">{x.label}</span>
             {x.value !== null ? <span className={cn("block text-2xl font-extrabold tabular leading-tight", x.hot && "text-primary")}>{fmt.format(x.value)}</span> : null}
           </span>
           <ChevronRight className="size-5 shrink-0 text-muted-foreground" />

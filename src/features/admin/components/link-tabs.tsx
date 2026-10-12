@@ -25,7 +25,7 @@ export function LinkTabs({ tabs, className }: { tabs: LinkTab[]; className?: str
         >
           {tab.label}
           {tab.count !== undefined ? (
-            <span className={cn("rounded-full px-1.5 text-[11px] font-semibold tabular", tab.active ? "bg-primary-soft text-primary" : "bg-card/70 text-muted-foreground")}>{tab.count}</span>
+            <span className={cn("rounded-full px-1.5 text-2xs font-semibold tabular", tab.active ? "bg-primary-soft text-primary" : "bg-card/70 text-muted-foreground")}>{tab.count}</span>
           ) : null}
         </Link>
       ))}

@@ -73,7 +73,7 @@ export default async function AdminReportsPage({ searchParams }: { searchParams:
                       {r.target.message ? (
                         <p className="mt-1 rounded-lg bg-secondary/70 p-2 text-foreground">
                           <span className="font-medium">{r.target.label}:</span> {r.target.message.body ?? tEnum("notification_type", "new_message")}
-                          <span className="block text-[11px] text-muted-foreground">{t("admin.reports.conversation")} {r.target.message.conversation_id.slice(0, 8)} · {formatDateTime(r.target.message.created_at, locale)}</span>
+                          <span className="block text-2xs text-muted-foreground">{t("admin.reports.conversation")} {r.target.message.conversation_id.slice(0, 8)} · {formatDateTime(r.target.message.created_at, locale)}</span>
                         </p>
                       ) : (
                         <p className="mt-0.5 text-muted-foreground">{t("admin.reports.message_hidden")}</p>

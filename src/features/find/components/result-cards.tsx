@@ -111,17 +111,17 @@ export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; 
   const place = usePlace();
   const profession = job.profession_name_uz ? name({ name_uz: job.profession_name_uz, name_ru: job.profession_name_ru ?? job.profession_name_uz, name_en: job.profession_name_en }) : job.title;
   return (
-    <article className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-5">
+    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="flex gap-4">
         {photoPath ? (
           <figure className="relative w-24 shrink-0 sm:w-32">
             {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan) */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={vacancyPhotoUrl(photoPath) ?? ""} alt={t("easy.photo.alt")} loading="lazy" className="aspect-[4/3] w-full rounded-2xl object-cover" />
-            <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-[11px] font-semibold text-white">{t("easy.photo.label")}</figcaption>
+            <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-2xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
           </figure>
         ) : (
-          <ProfessionImage url={imageUrl} categorySlug={job.category_slug} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
+          <ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
         )}
         <div className="min-w-0 flex-1">
           {job.is_featured ? <span className="mb-1 inline-block rounded-md bg-warning px-1.5 py-0.5 text-xs font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
@@ -160,14 +160,14 @@ export function WorkerResultCard({ worker, imageUrl }: { worker: WorkerCardData;
   const exp = levelToExperience(worker.experience_level);
   const fullName = `${worker.first_name}${worker.last_initial ? ` ${worker.last_initial}.` : ""}`;
   return (
-    <article className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-4 shadow-sm sm:p-5">
+    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="flex gap-4">
         {worker.avatar_url ? (
           // haqiqiy surat (egasi yuklagan)
           // eslint-disable-next-line @next/next/no-img-element
           <img src={worker.avatar_url} alt={fullName} loading="lazy" className="aspect-[4/3] w-24 shrink-0 rounded-2xl object-cover sm:w-32" />
         ) : (
-          <ProfessionImage url={imageUrl} categorySlug={worker.category_slug} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
+          <ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
         )}
         <div className="min-w-0 flex-1">
           <h3 className="break-words text-xl font-bold leading-snug">{fullName}</h3>

@@ -36,7 +36,7 @@ export function VerificationForm({ userId, needsId, initialId }: { userId: strin
     });
 
   return (
-    <div className="space-y-4 rounded-3xl border border-border bg-card p-5">
+    <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
       <label className="block space-y-2">
         <span className="font-bold">{t(needsId ? "easy.verification.id_label" : "easy.verification.id_label_optional")}</span>
         <input

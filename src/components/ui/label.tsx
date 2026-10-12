@@ -1,5 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
+import { Input, Textarea } from "./input";
+import { Select } from "./select";
 
 const Label = React.forwardRef<HTMLLabelElement, React.LabelHTMLAttributes<HTMLLabelElement> & { required?: boolean; hint?: string }>(
   ({ className, required, hint, children, ...props }, ref) => (
@@ -11,6 +13,9 @@ const Label = React.forwardRef<HTMLLabelElement, React.LabelHTMLAttributes<HTMLL
   ),
 );
 Label.displayName = "Label";
+
+/** Field ichidagi bevosita boshqaruv elementlari — ularga aria-describedby / aria-invalid avtomatik qo'yiladi */
+const FORM_CONTROLS = new Set<unknown>([Input, Textarea, Select]);
 
 /** Forma maydoni: label + input + xato matni */
 function Field({
@@ -35,6 +40,16 @@ function Field({
   /** "lg" — bitta-savol rejimi uchun katta sarlavha */
   size?: "md" | "lg";
 }) {
+  // Xato yoki izoh matni maydonga dasturiy bog'lanadi (ekran o'quvchi xatoni maydon bilan birga o'qiydi)
+  const messageId = htmlFor && (error || description) ? `${htmlFor}-${error ? "error" : "desc"}` : undefined;
+  let control = children;
+  if (messageId && React.isValidElement<React.AriaAttributes>(children) && FORM_CONTROLS.has(children.type)) {
+    const own = children.props["aria-describedby"];
+    control = React.cloneElement(children, {
+      "aria-describedby": own ? `${own} ${messageId}` : messageId,
+      ...(error ? { "aria-invalid": true } : {}),
+    });
+  }
   return (
     <div className={cn("space-y-1", className)}>
       {label ? (
@@ -42,13 +57,15 @@ function Field({
           {label}
         </Label>
       ) : null}
-      {children}
+      {control}
       {error ? (
-        <p className="text-sm text-destructive" role="alert">
+        <p id={messageId} className="text-sm text-destructive" role="alert">
           {error}
         </p>
       ) : description ? (
-        <p className="text-xs text-muted-foreground">{description}</p>
+        <p id={messageId} className="text-xs text-muted-foreground">
+          {description}
+        </p>
       ) : null}
     </div>
   );

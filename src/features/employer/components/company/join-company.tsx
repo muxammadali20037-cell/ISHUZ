@@ -48,7 +48,7 @@ export function JoinCompany({ token }: { token: string | null }) {
   };
 
   return (
-    <div className="rounded-3xl border border-border/70 bg-card p-6 text-center shadow-sm sm:p-8">
+    <div className="rounded-2xl border border-border/70 bg-card p-6 text-center shadow-sm sm:p-8">
       <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
         <Building2 className="size-7" />
       </div>

@@ -3,7 +3,13 @@
  * Kutubxonasiz, bitta vaqtinchalik <canvas>; 3 soniyada o'zi yo'qoladi. "Harakatni kamaytirish" yoqilgan bo'lsa — ko'rsatilmaydi.
  * Ovoz va tebranish yo'q — faqat ko'rinish.
  */
-const COLORS = ["#2563eb", "#16a34a", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#facc15"];
+/** Brend ranglari (globals.css tokenlari): asosiy aksent ko'p, natija rangi va yumshoq fon — kamalak emas */
+const TOKENS = ["--primary", "--primary", "--primary", "--success", "--primary-soft", "--warning"] as const;
+
+function brandColors(): string[] {
+  const cs = getComputedStyle(document.documentElement);
+  return TOKENS.map((t) => cs.getPropertyValue(t).trim()).filter(Boolean);
+}
 
 interface Piece {
   x: number;
@@ -37,6 +43,7 @@ export function celebrate(): void {
   }
   ctx.scale(dpr, dpr);
 
+  const colors = brandColors();
   const pieces: Piece[] = [];
   const burst = (x: number, dir: 1 | -1) => {
     for (let i = 0; i < 70; i++) {
@@ -50,7 +57,7 @@ export function celebrate(): void {
         size: 6 + Math.random() * 6,
         rot: Math.random() * Math.PI,
         vr: (Math.random() - 0.5) * 0.3,
-        color: COLORS[(Math.random() * COLORS.length) | 0] ?? "#2563eb",
+        color: colors[(Math.random() * colors.length) | 0] ?? "currentColor",
         shape: Math.random() < 0.5 ? 0 : 1,
       });
     }

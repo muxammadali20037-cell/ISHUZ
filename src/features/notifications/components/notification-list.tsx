@@ -125,7 +125,7 @@ export function NotificationList({
                     <NotificationIcon kind={r.icon} />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-start justify-between gap-2">
-                        <span className={cn("line-clamp-2 text-[15px] leading-snug", isUnread ? "font-bold" : "font-semibold")}>{r.title}</span>
+                        <span className={cn("line-clamp-2 text-md leading-snug", isUnread ? "font-bold" : "font-semibold")}>{r.title}</span>
                         <span className="shrink-0 text-xs text-muted-foreground tabular">{formatTime(n.created_at)}</span>
                       </span>
                       {r.body ? <span className="mt-0.5 line-clamp-2 block text-sm text-muted-foreground">{r.body}</span> : null}

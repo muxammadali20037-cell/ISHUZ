@@ -164,7 +164,7 @@ function Section({ step, title, editLabel, children }: { step: number; title: st
     <section className="rounded-2xl border border-border bg-card">
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <h2 className="text-sm font-semibold">
-          <span className="mr-2 inline-flex size-5 items-center justify-center rounded-full bg-primary-soft text-[11px] font-bold text-primary">{step}</span>
+          <span className="mr-2 inline-flex size-5 items-center justify-center rounded-full bg-primary-soft text-2xs font-bold text-primary">{step}</span>
           {title}
         </h2>
         <Link href={stepHref(step)} className="inline-flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-medium text-primary hover:bg-primary-soft">

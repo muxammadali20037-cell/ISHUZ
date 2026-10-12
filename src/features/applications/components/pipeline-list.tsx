@@ -89,7 +89,7 @@ export function PipelineList({ items, canAct, vacancyId }: { items: EmployerAppl
       </div>
 
       {selecting && selected.size ? (
-        <div className="sticky bottom-20 z-30 mt-4 flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card/95 p-3 shadow-lg backdrop-blur md:bottom-4">
+        <div className="sticky bottom-20 z-30 mt-4 flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-lg md:bottom-4">
           <span className="mr-auto text-sm font-semibold">{t("applications.bulk.selected", { count: selected.size })}</span>
           <Button type="button" size="sm" onClick={() => void apply("shortlisted")} loading={pending}>
             <ListChecks className="size-4" /> {t("applications.bulk.shortlist")}

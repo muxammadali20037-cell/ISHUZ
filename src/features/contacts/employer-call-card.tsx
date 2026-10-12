@@ -23,7 +23,7 @@ export async function EmployerCallCard({ phone, companyTelegram, ownerProfileId 
         <Phone className="size-5" /> {t("contacts.call")}
       </a>
       <div className="flex items-center justify-between gap-2">
-        <span className="tabular text-[15px] font-semibold">{formatPhone(phone)}</span>
+        <span className="tabular text-md font-semibold">{formatPhone(phone)}</span>
         <CopyButton value={phone} />
       </div>
       {tg ? (
@@ -31,7 +31,7 @@ export async function EmployerCallCard({ phone, companyTelegram, ownerProfileId 
           href={`https://t.me/${tg}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-[15px] font-semibold text-primary hover:bg-primary-soft/40"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary hover:bg-primary-soft/40"
         >
           <Send className="size-4" /> {t("contacts.write_telegram")}
         </a>

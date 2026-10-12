@@ -41,7 +41,7 @@ export default async function ManageVacancyPage({ params, searchParams }: { para
     <Shell>
       <div className="container-app py-5 sm:py-8">
         {justPublished ? (
-          <a href="#matching" className="mb-5 flex items-center gap-4 rounded-3xl bg-success p-5 text-success-foreground shadow-md">
+          <a href="#matching" className="mb-5 flex items-center gap-4 rounded-2xl bg-success p-5 text-success-foreground shadow-md">
             <PartyPopper className="size-9 shrink-0" />
             <span className="min-w-0 flex-1">
               <span className="block text-lg font-extrabold">{tt.t("vacancies.published_banner.title")}</span>

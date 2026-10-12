@@ -27,7 +27,7 @@ export async function CompanyPage({ company, vacancies, rating, canManage }: { c
   return (
     <div className="container-app py-6">
       {/* Sarlavha kartasi */}
-      <section className="rounded-3xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
+      <section className="rounded-2xl border border-border/70 bg-card p-5 shadow-sm sm:p-7">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
           <Avatar src={company.logo_url} fallback={initials(company.name)} square size="2xl" alt={company.name} className="border border-border/70" />
           <div className="min-w-0 flex-1">
@@ -125,7 +125,7 @@ export async function CompanyPage({ company, vacancies, rating, canManage }: { c
           <section className="lg:order-2">
             <h2 className="mb-3 text-lg font-bold">{t("employer.company.about")}</h2>
             <div className="rounded-2xl border border-border/70 bg-card p-5 shadow-sm">
-              <p className="whitespace-pre-line text-[15px] leading-relaxed text-foreground/90">{company.about}</p>
+              <p className="whitespace-pre-line text-md leading-relaxed text-foreground/90">{company.about}</p>
             </div>
           </section>
         ) : null}

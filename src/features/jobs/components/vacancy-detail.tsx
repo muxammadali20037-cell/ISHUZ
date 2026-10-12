@@ -64,7 +64,7 @@ function InfoItem({ icon: Icon, label, children }: { icon: LucideIcon; label: st
       </span>
       <div className="min-w-0">
         <p className="text-xs text-muted-foreground">{label}</p>
-        <div className="text-[15px] font-medium leading-snug">{children}</div>
+        <div className="text-md font-medium leading-snug">{children}</div>
       </div>
     </div>
   );

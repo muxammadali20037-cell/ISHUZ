@@ -138,7 +138,7 @@ function Review({
           {t("ai.badge")}
         </span>
         <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{t("ai.worker.review_title")}</h1>
-        <p className="mt-1.5 text-[15px] text-muted-foreground">{t("ai.worker.review_subtitle")}</p>
+        <p className="mt-1.5 text-md text-muted-foreground">{t("ai.worker.review_subtitle")}</p>
       </div>
 
       {needNames || needBirth || needGender ? (
@@ -246,7 +246,7 @@ function Review({
         </p>
       ) : null}
 
-      <div className="sticky bottom-0 z-30 -mx-4 border-t border-border/70 bg-background/95 px-4 pb-safe pt-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0">
+      <div className="sticky bottom-0 z-30 -mx-4 border-t border-border/70 bg-background px-4 pb-safe pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0">
         <Button size="lg" fullWidth loading={pending} onClick={onSave}>
           {t("ai.worker.save")}
           {!pending ? <ArrowRight className="size-5" /> : null}

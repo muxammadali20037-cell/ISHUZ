@@ -82,6 +82,8 @@ export GEMINI_API_KEY="" ANTHROPIC_API_KEY="" IMAGE_GEN_API_KEY="" TELEGRAM_BOT_
 export PAYME_KEY="" PAYME_MERCHANT_ID="" CLICK_SECRET_KEY="" CLICK_SERVICE_ID="" CLICK_MERCHANT_ID="" SUPER_ADMIN_PHONES="" ADMIN_HOST=""
 export NEXT_DIST_DIR=".next-e2e"
 export NEXT_TELEMETRY_DISABLED=1
+# brend UI to'plami (/dev/ui) — faqat shu stendda: skrinshot va a11y tekshiruvi uchun (production'da 404)
+export UI_KIT_PREVIEW=1
 
 if [ "$BUILD" = "1" ]; then
   echo "→ build (.next-e2e)"

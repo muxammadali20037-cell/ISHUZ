@@ -43,7 +43,7 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
           <h2 id="job-matches" className="text-2xl font-bold">{t("easy.matches.jobs_title")}</h2>
           {!jobs.length ? <p className="rounded-2xl bg-secondary p-4 text-muted-foreground">{t("easy.matches.jobs_empty")}</p> : null}
           {jobs.map((m) => (
-            <article key={m.vacancyId} className="space-y-3 rounded-3xl border border-border bg-card p-5">
+            <article key={m.vacancyId} className="space-y-3 rounded-2xl border border-border bg-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="text-xl font-bold [overflow-wrap:anywhere]">{m.title}</h3>
@@ -85,7 +85,7 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
           ) : null}
           {!candidates.length ? <p className="rounded-2xl bg-secondary p-4 text-muted-foreground">{t("easy.matches.candidates_empty")}</p> : null}
           {candidates.map((m) => (
-            <article key={m.workerId} className="space-y-3 rounded-3xl border border-border bg-card p-5">
+            <article key={m.workerId} className="space-y-3 rounded-2xl border border-border bg-card p-5">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <h3 className="text-xl font-bold">{m.name || "—"}</h3>
@@ -111,7 +111,7 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
       ) : null}
 
       {!session.workerId && !vacancies.length ? (
-        <div className="space-y-3 rounded-3xl border border-border bg-card p-5">
+        <div className="space-y-3 rounded-2xl border border-border bg-card p-5">
           <p>{t("easy.matches.none")}</p>
           <div className="grid gap-3 sm:grid-cols-2">
             <Button asChild size="xl" className="h-14 text-lg"><Link href="/post/worker">{t("easy.home.worker_cta")}</Link></Button>

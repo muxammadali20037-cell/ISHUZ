@@ -7,18 +7,18 @@ import { aiEnabled } from "@/lib/ai/client";
 export async function QuickActions() {
   const { t } = await getT();
   const items = [
-    { href: "/jobs", icon: Search, label: t("welcome.quick.jobs"), tone: "bg-primary text-primary-foreground" },
-    { href: "/auth?next=%2Fworkers", icon: Users, label: t("welcome.quick.workers"), tone: "bg-success text-success-foreground" },
-    { href: aiEnabled() ? "/auth?next=%2Femployer%2Fvacancies%2Fnew%2Fai" : "/auth?next=%2Femployer%2Fvacancies%2Fnew", icon: Megaphone, label: t("welcome.quick.post"), tone: "bg-warning text-warning-foreground" },
-    { href: "/auth?next=%2Fonboarding%2Fworker", icon: FileUser, label: t("welcome.quick.resume"), tone: "bg-[#7c3aed] text-white" },
+    { href: "/jobs", icon: Search, label: t("welcome.quick.jobs"), },
+    { href: "/auth?next=%2Fworkers", icon: Users, label: t("welcome.quick.workers"), },
+    { href: aiEnabled() ? "/auth?next=%2Femployer%2Fvacancies%2Fnew%2Fai" : "/auth?next=%2Femployer%2Fvacancies%2Fnew", icon: Megaphone, label: t("welcome.quick.post"), },
+    { href: "/auth?next=%2Fonboarding%2Fworker", icon: FileUser, label: t("welcome.quick.resume"), },
   ];
   return (
     <section className="mx-auto mt-7 max-w-3xl" aria-label={t("welcome.quick.title")}>
       <h2 className="mb-3 text-center text-sm font-semibold uppercase tracking-wide text-muted-foreground">{t("welcome.quick.title")}</h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {items.map((i) => (
-          <Link key={i.href} href={i.href} className="flex flex-col items-center gap-2.5 rounded-2xl border border-border bg-card p-4 text-center shadow-sm transition-transform hover:-translate-y-0.5">
-            <span className={`flex size-12 items-center justify-center rounded-2xl ${i.tone}`}>
+          <Link key={i.href} href={i.href} className="flex flex-col items-center gap-2.5 rounded-2xl border border-border bg-card p-4 text-center shadow-sm transition-colors hover:border-primary/40">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary">
               <i.icon className="size-6" />
             </span>
             <span className="text-sm font-semibold leading-tight">{i.label}</span>

@@ -141,8 +141,8 @@ export function DiscountBadge({ percent, until }: { percent: number; until: stri
   // aksiya Toshkent vaqti bilan 1-yanvar 00:00 da tugaydi — sanani shu vaqt zonasida ko'rsatamiz
   const date = until ? new Date(until).toLocaleDateString(locale === "en" ? "en-GB" : "ru-RU", { timeZone: "Asia/Tashkent" }) : "";
   return (
-    <p className="flex items-center gap-2 rounded-2xl bg-gradient-to-r from-rose-700 to-orange-700 px-4 py-3 text-sm font-semibold text-white shadow-sm">
-      <span className="rounded-lg bg-white/25 px-2 py-0.5 text-base font-extrabold">−{percent}%</span>
+    <p className="flex items-center gap-2 rounded-2xl border border-warning/30 bg-warning-soft px-4 py-3 text-sm font-semibold text-warning">
+      <span className="rounded-lg bg-warning px-2 py-0.5 text-base font-extrabold text-warning-foreground">−{percent}%</span>
       <span className="min-w-0">{t("billing.discount", { percent, date })}</span>
     </p>
   );

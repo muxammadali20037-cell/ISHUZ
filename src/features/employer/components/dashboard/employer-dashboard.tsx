@@ -78,9 +78,9 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
       <Link
         href="/employer/vacancies/new"
         data-tour="employer-post"
-        className="group flex items-center gap-4 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-7"
+        className="group flex items-center gap-4 rounded-2xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-7"
       >
-        <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-white/15 sm:size-20">
+        <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15 sm:size-20">
           <Plus className="size-9 sm:size-11" strokeWidth={2.5} />
         </span>
         <span className="min-w-0 flex-1">

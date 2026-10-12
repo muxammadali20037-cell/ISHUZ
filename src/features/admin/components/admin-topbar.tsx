@@ -32,7 +32,7 @@ export function AdminTopbar({
   const [open, setOpen] = useState(false);
   const [, startTransition] = useTransition();
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border/70 bg-card/90 px-4 backdrop-blur supports-[backdrop-filter]:bg-card/80 sm:px-6">
+    <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b border-border/70 bg-card px-4 sm:px-6">
       <Dialog open={open} onOpenChange={setOpen}>
         <Button variant="ghost" size="icon-sm" className="lg:hidden" aria-label={t("admin.shell.menu")} onClick={() => setOpen(true)}>
           <Menu className="size-5" />

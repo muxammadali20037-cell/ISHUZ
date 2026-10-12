@@ -63,14 +63,14 @@ export default async function ListingPage({ params }: Params) {
           </div>
         ) : null}
 
-        <article className="space-y-5 rounded-3xl border border-border bg-card p-5 shadow-sm sm:p-6">
+        <article className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
           <p className="text-base font-bold uppercase tracking-wide text-primary">{t("easy.listing.title")}</p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
             {w.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={w.avatar_url} alt={fullName} className="aspect-[4/3] w-full rounded-2xl object-cover sm:w-56" />
             ) : (
-              <ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} categorySlug={w.category_slug} icon={w.category_icon} name={profession} label={t("easy.image.label")} className="aspect-[4/3] w-full sm:w-56" />
+              <ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} icon={w.category_icon} name={profession} label={t("easy.image.label")} className="aspect-[4/3] w-full sm:w-56" />
             )}
             <div className="min-w-0">
               <h1 className="text-3xl font-extrabold leading-tight">{fullName}</h1>
@@ -111,7 +111,7 @@ export default async function ListingPage({ params }: Params) {
         </article>
 
         {!w.is_owner ? (
-          <section className="space-y-3 rounded-3xl border border-success/30 bg-success-soft/40 p-5">
+          <section className="space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-5">
             <h2 className="text-xl font-bold">{t("easy.listing.contact")}</h2>
             {w.phone ? (
               <>

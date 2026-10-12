@@ -42,7 +42,7 @@ export async function WorkerApplicationDetail({ app, userId }: { app: Detail; us
                     {v.company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("common.labels.verified")} /> : null}
                   </p>
                 ) : null}
-                {v ? <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="mt-2 block text-[15px]" /> : null}
+                {v ? <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="mt-2 block text-md" /> : null}
               </div>
             </div>
             {v ? (

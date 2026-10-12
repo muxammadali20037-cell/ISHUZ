@@ -51,7 +51,7 @@ export function WizardShell({ step, title, subtitle, children }: { step: number;
       <Stepper current={step <= QUICK_STEPS ? step : Math.min(step, TOTAL_STEPS)} total={step <= QUICK_STEPS ? QUICK_STEPS : TOTAL_STEPS} label={t("onboarding.worker.step_label")} />
       <div className="mt-5 sm:mt-7">
         <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-        {subtitle ? <p className="mt-1.5 text-[15px] text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-1.5 text-md text-muted-foreground">{subtitle}</p> : null}
       </div>
       <div className="mt-6 animate-fade-in">{children}</div>
     </div>
@@ -112,7 +112,7 @@ export function WizardFooter({
 }) {
   const { t } = useT();
   return (
-    <div className="sticky bottom-0 z-30 -mx-4 mt-8 border-t border-border/70 bg-background/95 px-4 pt-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-2 sm:backdrop-blur-none">
+    <div className="sticky bottom-0 z-30 -mx-4 mt-8 border-t border-border/70 bg-background px-4 pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:pt-2">
       <div className="flex gap-3">
         {onBack ? (
           <Button type="button" variant="outline" size="lg" className="shrink-0 px-4" aria-label={t("common.actions.back")} onClick={onBack} disabled={pending}>

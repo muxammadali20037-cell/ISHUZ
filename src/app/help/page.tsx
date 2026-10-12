@@ -40,7 +40,7 @@ export default async function HelpPage() {
             </h2>
             <ol className="mt-3 space-y-2.5">
               {g.steps.map((s, i) => (
-                <li key={i} className="flex gap-3 text-[15px]">
+                <li key={i} className="flex gap-3 text-md">
                   <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">{i + 1}</span>
                   <span className="pt-0.5">{s}</span>
                 </li>
@@ -53,7 +53,7 @@ export default async function HelpPage() {
           <h2 className="flex items-center gap-2 text-lg font-bold">
             <ShieldCheck className="size-5 text-primary" /> {t("welcome.help.safety_title")}
           </h2>
-          <ul className="mt-3 list-disc space-y-2 pl-5 text-[15px]">
+          <ul className="mt-3 list-disc space-y-2 pl-5 text-md">
             <li>{t("welcome.help.safety_1")}</li>
             <li>{t("welcome.help.safety_2")}</li>
             <li>{t("welcome.help.safety_3")}</li>

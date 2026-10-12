@@ -143,7 +143,7 @@ function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUnt
   }, [listedUntil]);
   if (!q || q.mode !== "payment_required" || listedUntil) return null;
   return (
-    <div className="space-y-3 rounded-3xl border-2 border-primary bg-primary-soft/60 p-5 shadow-sm">
+    <div className="space-y-3 rounded-2xl border-2 border-primary bg-primary-soft/60 p-5 shadow-sm">
       <div className="flex items-start gap-3">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
           <Megaphone className="size-5" />

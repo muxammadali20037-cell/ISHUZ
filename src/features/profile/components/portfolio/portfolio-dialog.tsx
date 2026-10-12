@@ -162,7 +162,7 @@ export function PortfolioDialog({ item, userId, onClose }: { item: WorkerPortfol
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={f.preview} alt="" className="size-full object-cover" />
                       ) : (
-                        <span className="flex size-full items-center justify-center px-1 text-center text-[11px] text-muted-foreground">{f.file.name}</span>
+                        <span className="flex size-full items-center justify-center px-1 text-center text-2xs text-muted-foreground">{f.file.name}</span>
                       )}
                     </FileTile>
                   ))}

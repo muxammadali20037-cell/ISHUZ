@@ -43,7 +43,7 @@ export function TelegramConnect({ connected, botConfigured }: { connected: boole
         {botConfigured ? (
           url ? (
             <>
-              <Button asChild size="sm" className="mt-3 bg-[#229ED9] text-white hover:bg-[#229ED9]/90">
+              <Button asChild size="sm" className="mt-3">
                 <a href={url} target="_blank" rel="noopener noreferrer">
                   <Send className="size-4" /> {t("saved.ai_alerts.tg_open")}
                 </a>
@@ -51,7 +51,7 @@ export function TelegramConnect({ connected, botConfigured }: { connected: boole
               <p className="mt-2 text-xs text-muted-foreground">{t("saved.ai_alerts.tg_hint")}</p>
             </>
           ) : (
-            <Button size="sm" className="mt-3 bg-[#229ED9] text-white hover:bg-[#229ED9]/90" loading={pending} onClick={link}>
+            <Button size="sm" className="mt-3" loading={pending} onClick={link}>
               <Send className="size-4" /> {t("saved.ai_alerts.tg_connect")}
             </Button>
           )

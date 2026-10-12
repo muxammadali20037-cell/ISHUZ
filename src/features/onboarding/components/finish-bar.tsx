@@ -37,7 +37,7 @@ export function FinishBar() {
   };
 
   return (
-    <div className="sticky bottom-0 z-30 -mx-4 mt-6 border-t border-border/70 bg-background/95 px-4 pt-3 backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:backdrop-blur-none">
+    <div className="sticky bottom-0 z-30 -mx-4 mt-6 border-t border-border/70 bg-background px-4 pt-3 sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0">
       <div className="flex gap-3">
         <Button asChild variant="outline" size="lg" className="shrink-0 px-4" aria-label={t("common.actions.back")}>
           <Link href={stepHref(TOTAL_STEPS)}>

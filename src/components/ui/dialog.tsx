@@ -14,7 +14,7 @@ const DialogOverlay = React.forwardRef<React.ComponentRef<typeof DialogPrimitive
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Overlay
       ref={ref}
-      className={cn("fixed inset-0 z-50 bg-black/45 backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className)}
+      className={cn("fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className)}
       {...props}
     />
   ),
@@ -62,7 +62,7 @@ const Sheet = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-3xl bg-card shadow-lg",
+        "fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-2xl bg-card shadow-lg",
         "sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0 sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=open]:slide-in-from-bottom-0",
         className,
@@ -121,7 +121,7 @@ function ConfirmDialog({
             type="button"
             disabled={loading}
             onClick={() => void onConfirm()}
-            className={cn("h-11 rounded-xl px-5 font-semibold text-white disabled:opacity-50", destructive ? "bg-destructive" : "bg-primary")}
+            className={cn("h-11 rounded-xl px-5 font-semibold disabled:opacity-50", destructive ? "bg-destructive text-destructive-foreground" : "bg-primary text-primary-foreground")}
           >
             {confirmLabel}
           </button>

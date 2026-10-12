@@ -19,7 +19,7 @@ export function OfferCard({ offer, className }: { offer: ReceivedOffer; classNam
   const avatarSrc = offer.company?.logo_url ?? offer.employer?.avatar_url ?? null;
   const fallback = offer.company ? offer.company.name.slice(0, 2) : initials(offer.employer?.first_name, offer.employer?.last_name);
   return (
-    <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", offer.status === "sent" && "border-sky-300/70 dark:border-sky-800", className)}>
+    <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", offer.status === "sent" && "border-primary/40", className)}>
       <Link href={`/offers/${offer.id}`} className="absolute inset-0 rounded-2xl" aria-label={title} />
       <div className="flex items-start gap-3">
         <Avatar src={avatarSrc} fallback={fallback} square={!!offer.company} size="lg" alt="" />
@@ -32,7 +32,7 @@ export function OfferCard({ offer, className }: { offer: ReceivedOffer; classNam
         </div>
       </div>
       <div className="mt-3">
-        <SalaryText from={offer.salary_from} to={offer.salary_to} className="text-[15px]" />
+        <SalaryText from={offer.salary_from} to={offer.salary_to} className="text-md" />
       </div>
       {offer.message ? <p className="mt-2 line-clamp-2 text-sm text-foreground/80">{offer.message}</p> : null}
       <div className="mt-3 flex flex-wrap items-center gap-2">

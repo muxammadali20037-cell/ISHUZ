@@ -98,7 +98,7 @@ export async function DirectionBrowser({
   };
 
   return (
-    <section className="mt-4 rounded-3xl border border-border bg-secondary/40 p-4 sm:p-5" aria-label={t("jobs.directions.title")}>
+    <section className="mt-4 rounded-2xl border border-border bg-secondary/40 p-4 sm:p-5" aria-label={t("jobs.directions.title")}>
       {/* Yo'l: Tibbiyot › Shifokorlar › ... */}
       <nav className="mb-3 flex flex-wrap items-center gap-1 text-sm" aria-label={t("jobs.directions.path")}>
         <Link href={hrefFor(null)} className={cn("inline-flex items-center gap-1.5 font-bold", currentSlug ? "text-primary hover:underline" : "text-foreground")}>

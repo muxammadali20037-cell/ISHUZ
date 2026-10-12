@@ -8,7 +8,7 @@ import type { OffersTab } from "../types";
 
 function Count({ n, accent }: { n: number; accent?: boolean }) {
   if (!n) return null;
-  return <span className={cn("ml-1.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold tabular", accent ? "bg-destructive text-white" : "bg-secondary text-muted-foreground")}>{n > 99 ? "99+" : n}</span>;
+  return <span className={cn("ml-1.5 rounded-full px-1.5 py-0.5 text-2xs font-bold tabular", accent ? "bg-destructive text-destructive-foreground" : "bg-secondary text-muted-foreground")}>{n > 99 ? "99+" : n}</span>;
 }
 
 /** Yangi / Javob berilgan (URL ?tab=) + Arizalar havolasi */

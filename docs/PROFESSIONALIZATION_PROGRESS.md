@@ -4,7 +4,7 @@ Manba: `ISHUZ_Professional_Audit_va_Prompt_2026-10-11_1.md` (audit tayanch commi
 To'liq natija va dalillar: [PROFESSIONALIZATION_REPORT.md](PROFESSIONALIZATION_REPORT.md). Bu fayl — keyingi sessiya qayerdan
 davom etishini ko'rsatadigan qisqa holat. Bir xil auditni qaytadan boshlamang.
 
-Oxirgi yangilanish: 2026-10-11 · branch `claude/gallant-thompson-q70fo3` (main bilan bir xil, fast-forward).
+Oxirgi yangilanish: 2026-10-12 · branch `claude/gallant-thompson-q70fo3` (main bilan bir xil, fast-forward).
 
 ## Bosqichlar
 
@@ -19,9 +19,15 @@ Oxirgi yangilanish: 2026-10-11 · branch `claude/gallant-thompson-q70fo3` (main 
 | C — UX/a11y | ✅ o'lchangan tuzatishlar (kontrast, nishon o'lchami, planshet sarlavhasi, tez birinchi chizish) | shu sessiya oxirgi commit |
 | D — o'lchov | ✅ lab o'lchovi · ❌ staging yuklama testi va field web-vitals — NOT_RUN | — |
 | E — E2E + CI | ✅ 24 spec CI'da (izolyatsiyalangan stend) | `5abef32` va keyingilar |
+| C8.1a — UI ovozlari | ✅ olib tashlandi | `6493eb6` |
+| C8.1b — qotishlar | ✅ 4 ta o'lchangan qotish ([PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md)) | `3581aa0` |
+| C8.1c — brend tizimi | ✅ tokenlar, shkalalar, qorong'i mavzu kontrasti, UI kit `/dev/ui`, [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | shu bosqich |
+| C8.2–C8.10 — ekranlar | ⏳ keyingisi C8.2 (bosh sahifa va navigatsiya); jadval — hisobot §10 | — |
 
 ## Keyingi sessiya uchun
 
+0. C8.2 dan davom eting (hisobot §10 dagi "Ochiq" ro'yxati). Har ekran: OLDIN/KEYIN/fayllar/skrinshot/test/ochiq masala.
+   "Oldin" skrinshoti: `bash e2e/screens/old-build.sh <commit>` (:3301, o'sha stend bazasi), oxirida `… <commit> stop`.
 1. ✅ 0056 → 0057 → 0058 production'da (2026-10-11, read-only tekshirildi). Saytni brauzerda tekshirish: "Kasbim topilmadi", rasm yuklash.
 2. ✅ Zaxira sirlari sozlandi, birinchi shifrlangan nusxa yaratildi (run `38207925133`). Egasi: bir marta yopiq kalit bilan ochib ko'rsin (`age -d`).
 3. Ochiq: avatar va kompaniya logotipi uchun ham karantin + qayta kodlash (F-06 qolgan qismi).
@@ -37,4 +43,5 @@ bash scripts/db-test.sh                                  # SQL (lokal PostgreSQL
 bash e2e/stack/up.sh && npx playwright test -c e2e       # brauzer E2E (lokal stend)
 node e2e/perf/lab.mjs 3                                  # lab tezlik o'lchovi → e2e/.stack/perf.json
 node e2e/screens/capture.mjs http://localhost:3300 after # ekranlar → docs/screenshots/
+node e2e/screens/capture.mjs http://localhost:3300 x home-full,ui-kit /tmp/x  # tanlangan ekranlar, boshqa papka
 ```

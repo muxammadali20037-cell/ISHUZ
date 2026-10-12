@@ -36,7 +36,7 @@ export function EditTabs() {
   }, [active]);
 
   return (
-    <nav className="sticky top-14 z-30 -mx-4 border-b border-border/70 bg-background/95 backdrop-blur sm:-mx-6" aria-label={t("profile.edit.sections_nav")}>
+    <nav className="sticky top-14 z-30 -mx-4 border-b border-border/70 bg-background sm:-mx-6" aria-label={t("profile.edit.sections_nav")}>
       <ul className="flex gap-1.5 overflow-x-auto px-4 py-2 scrollbar-none sm:px-6">
         {EDIT_SECTIONS.map((id) => (
           <li key={id}>

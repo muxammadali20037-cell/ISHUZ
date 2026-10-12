@@ -39,8 +39,8 @@ export async function HomeThree({ session }: { session: SessionContext | null })
       cta: t("easy.home.worker_cta"),
       box: "bg-primary text-primary-foreground",
       sub: "text-primary-foreground",
-      iconBox: "bg-white/20",
-      pill: "bg-white text-primary",
+      iconBox: "bg-primary-foreground/20",
+      pill: "bg-primary-foreground text-primary",
     },
     {
       href: "/post/vacancy",
@@ -50,8 +50,8 @@ export async function HomeThree({ session }: { session: SessionContext | null })
       cta: t("easy.home.employer_cta"),
       box: "bg-success text-success-foreground",
       sub: "text-success-foreground",
-      iconBox: "bg-white/20",
-      pill: "bg-white text-success",
+      iconBox: "bg-success-foreground/20",
+      pill: "bg-success-foreground text-success",
     },
     {
       href: "/search",
@@ -83,7 +83,7 @@ export async function HomeThree({ session }: { session: SessionContext | null })
              
               data-track-to={c.href.replace(/[^a-z/]/g, "").slice(0, 40)}
               className={cn(
-                "group flex w-full flex-col rounded-3xl p-6 shadow-md transition-[translate,scale] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 focus-visible:ring-4 active:scale-[0.97] active:duration-75 sm:p-7",
+                "group flex w-full flex-col rounded-2xl p-6 shadow-md transition-[translate,scale] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-0.5 focus-visible:ring-4 active:scale-[0.97] active:duration-75 sm:p-7",
                 c.box,
               )}
             >
@@ -101,7 +101,7 @@ export async function HomeThree({ session }: { session: SessionContext | null })
       </ul>
 
       {/* Pullik bonus: AI yordamchi — ko'zga tashlanib turadi */}
-      <Suspense fallback={<div className="mx-auto mt-6 h-64 max-w-5xl animate-pulse rounded-3xl bg-secondary" aria-hidden />}>
+      <Suspense fallback={<div className="mx-auto mt-6 h-64 max-w-5xl animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
         <AiProCard userId={session?.userId ?? null} className="mx-auto mt-6 max-w-5xl" />
       </Suspense>
 

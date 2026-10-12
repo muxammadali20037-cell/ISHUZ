@@ -16,9 +16,9 @@ export function JsonViewer({ value, label, defaultOpen = false, className }: { v
       <button type="button" onClick={() => setOpen((o) => !o)} className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline" aria-expanded={open}>
         {open ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
         {label}
-        {!open && short ? <code className="ml-1 rounded bg-secondary px-1 py-0.5 text-[11px] text-muted-foreground">{text}</code> : null}
+        {!open && short ? <code className="ml-1 rounded bg-secondary px-1 py-0.5 text-2xs text-muted-foreground">{text}</code> : null}
       </button>
-      {open ? <pre className="mt-1.5 max-h-72 max-w-full overflow-auto rounded-lg bg-secondary/70 p-3 text-[11px] leading-relaxed text-foreground">{text}</pre> : null}
+      {open ? <pre className="mt-1.5 max-h-72 max-w-full overflow-auto rounded-lg bg-secondary/70 p-3 text-2xs leading-relaxed text-foreground">{text}</pre> : null}
     </div>
   );
 }

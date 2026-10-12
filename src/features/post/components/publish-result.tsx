@@ -35,7 +35,7 @@ export function PublishResult({
   const Icon = tone === "success" ? CheckCircle2 : tone === "review" ? Clock3 : CreditCard;
   return (
     <div className="container-narrow py-8 text-lg sm:py-12" role="status" aria-live="polite">
-      <div className={cn("rounded-3xl border-2 p-6 text-center sm:p-8", tone === "success" ? "border-success bg-success-soft" : tone === "review" ? "border-primary/40 bg-primary-soft/60" : "border-warning bg-warning-soft")}>
+      <div className={cn("rounded-2xl border-2 p-6 text-center sm:p-8", tone === "success" ? "border-success bg-success-soft" : tone === "review" ? "border-primary/40 bg-primary-soft/60" : "border-warning bg-warning-soft")}>
         <Icon className={cn("mx-auto size-16", tone === "success" ? "text-success" : tone === "review" ? "text-primary" : "text-warning")} aria-hidden />
         <h1 className="mt-4 text-2xl font-extrabold leading-tight sm:text-3xl">{title}</h1>
         <p className="mx-auto mt-2 max-w-md text-lg text-foreground/80">{description}</p>

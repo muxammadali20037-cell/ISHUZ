@@ -100,7 +100,7 @@ export function Description({ text, className }: { text: string | null | undefin
   const blocks = parseDescription(text);
   if (!blocks.length) return null;
   return (
-    <div className={["space-y-3 text-[15px] leading-relaxed", className].filter(Boolean).join(" ")}>
+    <div className={["space-y-3 text-md leading-relaxed", className].filter(Boolean).join(" ")}>
       {blocks.map((b, i) =>
         b.type === "paragraph" ? (
           <p key={i}>

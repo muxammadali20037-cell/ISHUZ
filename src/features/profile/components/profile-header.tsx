@@ -25,7 +25,7 @@ export async function ProfileHeader({ session, data }: { session: SessionContext
           <Avatar src={p.avatar_url} fallback={initials(p.first_name, p.last_name)} size="xl" className="ring-4 ring-primary-soft" />
           <div className="min-w-0 flex-1">
             <h1 className="truncate text-xl font-bold sm:text-2xl">{fullName(p.first_name, p.last_name) || t("profile.completeness.suggestions.add_name")}</h1>
-            <p className={worker.headline ? "mt-0.5 text-[15px] text-foreground" : "mt-0.5 text-sm text-muted-foreground"}>{worker.headline ?? t("profile.view.no_headline")}</p>
+            <p className={worker.headline ? "mt-0.5 text-md text-foreground" : "mt-0.5 text-sm text-muted-foreground"}>{worker.headline ?? t("profile.view.no_headline")}</p>
             <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-1.5">
                 <CategoryIcon name={worker.category?.icon} className="size-4" />

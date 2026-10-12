@@ -66,7 +66,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
     return (
       <div className="fixed inset-0 z-[60] flex flex-col items-center justify-center overflow-y-auto bg-background px-5 py-10" role="dialog" aria-modal="true" aria-labelledby="welcome-lang-title">
         <div className="w-full max-w-sm animate-fade-in text-center">
-          <BrandMark className="mx-auto size-20 rounded-3xl shadow-lg" />
+          <BrandMark className="mx-auto size-20 rounded-2xl shadow-md" />
           <h1 id="welcome-lang-title" className="mt-6 text-3xl font-extrabold tracking-tight">
             Tilni tanlang
           </h1>
@@ -85,7 +85,7 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
                 lang={code === "oz" ? "uz-Cyrl" : code}
                 disabled={pending}
                 onClick={() => pickLanguage(code)}
-                className="flex min-h-20 flex-col items-start justify-center rounded-3xl border-2 border-border bg-card px-6 py-3 text-left shadow-sm transition-all hover:border-primary hover:bg-primary-soft active:scale-[0.98] disabled:opacity-60"
+                className="flex min-h-20 flex-col items-start justify-center rounded-2xl border-2 border-border bg-card px-6 py-3 text-left shadow-sm transition-all hover:border-primary hover:bg-primary-soft active:scale-[0.98] disabled:opacity-60"
               >
                 <span className="text-xl font-bold">{label}</span>
                 <span className="text-sm text-muted-foreground">{hint}</span>
@@ -139,31 +139,31 @@ export function WelcomeGate({ needLanguage }: { needLanguage: boolean }) {
             <button
               type="button"
               onClick={() => choose("/onboarding/worker")}
-              className="flex items-center gap-4 rounded-3xl bg-primary p-5 text-left text-primary-foreground shadow-lg transition-transform active:scale-[0.98]"
+              className="flex items-center gap-4 press rounded-2xl border-2 border-border bg-card p-5 text-left text-foreground shadow-sm hover:border-primary active:scale-[0.98]"
             >
-              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
                 <Search className="size-7" />
               </span>
               <span>
                 <span className="block text-xl font-bold">{t("welcome.role.worker")}</span>
-                <span className="block text-sm text-primary-foreground">{t("welcome.role.worker_desc")}</span>
+                <span className="block text-sm text-muted-foreground">{t("welcome.role.worker_desc")}</span>
               </span>
             </button>
             <button
               type="button"
               onClick={() => choose("/onboarding/employer")}
-              className="flex items-center gap-4 rounded-3xl bg-success p-5 text-left text-success-foreground shadow-lg transition-transform active:scale-[0.98]"
+              className="flex items-center gap-4 press rounded-2xl border-2 border-border bg-card p-5 text-left text-foreground shadow-sm hover:border-primary active:scale-[0.98]"
             >
-              <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+              <span className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
                 <Building2 className="size-7" />
               </span>
               <span>
                 <span className="block text-xl font-bold">{t("welcome.role.employer")}</span>
-                <span className="block text-sm text-success-foreground">{t("welcome.role.employer_desc")}</span>
+                <span className="block text-sm text-muted-foreground">{t("welcome.role.employer_desc")}</span>
               </span>
             </button>
           </div>
-          <button type="button" onClick={finish} className="mt-6 text-sm font-medium text-muted-foreground hover:text-foreground">
+          <button type="button" onClick={finish} className="mt-4 min-h-11 px-4 text-sm font-medium text-muted-foreground hover:text-foreground">
             {t("welcome.later")}
           </button>
         </div>

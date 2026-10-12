@@ -44,20 +44,20 @@ export async function LandingPage() {
       <section className="mx-auto mt-8 grid max-w-3xl gap-4 sm:grid-cols-2">
         <Link
           href="/auth?next=%2Fonboarding%2Fworker"
-          className="group flex flex-col rounded-3xl bg-primary p-6 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-8"
+          className="group flex flex-col rounded-2xl bg-primary p-6 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-8"
         >
-          <span className="flex size-14 items-center justify-center rounded-2xl bg-white/15">
+          <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-foreground/15">
             <UserRound className="size-7" />
           </span>
           <span className="mt-5 text-2xl font-bold">{t("common.landing.worker_card_title")}</span>
           <span className="mt-1 text-primary-foreground">{t("common.landing.worker_card_subtitle")}</span>
-          <span className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-white px-5 font-semibold text-primary">
+          <span className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-primary-foreground px-5 font-semibold text-primary">
             {t("common.landing.worker_card_cta")} <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
           </span>
         </Link>
         <Link
           href="/auth?next=%2Fonboarding%2Femployer"
-          className="group flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm transition-transform hover:-translate-y-0.5 sm:p-8"
+          className="group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm transition-transform hover:-translate-y-0.5 sm:p-8"
         >
           <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
             <Building2 className="size-7" />
@@ -108,7 +108,7 @@ export async function LandingPage() {
         </div>
       </section>
 
-      <section className="mt-12 flex flex-col items-start gap-4 rounded-3xl bg-secondary p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
+      <section className="mt-12 flex flex-col items-start gap-4 rounded-2xl bg-secondary p-6 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
           <p className="text-sm font-semibold uppercase tracking-wide text-primary">{t("common.landing.for_employers")}</p>
           <h2 className="mt-1 text-xl font-bold">{t("common.app.tagline_employer")}</h2>

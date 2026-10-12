@@ -26,6 +26,8 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string }[] = [
   { name: "post-vacancy", url: async () => "/post/vacancy" },
   { name: "auth", url: async () => "/auth" },
   { name: "cabinet", url: async () => "/cabinet", user: USERS.workerA },
+  // brend UI to'plami (faqat UI_KIT_PREVIEW=1 bilan) — barcha komponent holatlari bir sahifada
+  { name: "ui-kit", url: async () => "/dev/ui" },
 ];
 
 type Row = {
@@ -45,14 +47,20 @@ async function measure(page: Page) {
     const tiny: string[] = [];
     let under44 = 0;
     for (const el of els) {
-      const r = el.getBoundingClientRect();
+      const own = el.getBoundingClientRect();
       const style = getComputedStyle(el);
-      if (!r.width || !r.height || style.visibility === "hidden" || el.closest("[aria-hidden=true]") || el.classList.contains("sr-only")) continue;
+      // haqiqiy bosish maydoni: o'rab turgan <label> (bosilsa shu elementni boshqaradi) yoki .tap-target ::after kengaytmasi
+      const label = el.closest("label");
+      const after = getComputedStyle(el, "::after");
+      const hit = after.content !== "none" && after.position === "absolute" ? { w: parseFloat(after.width) || 0, h: parseFloat(after.height) || 0 } : { w: 0, h: 0 };
+      const box = label && label !== el ? label.getBoundingClientRect() : own;
+      const r = { width: Math.max(box.width, hit.w), height: Math.max(box.height, hit.h) };
+      if (!own.width || !own.height || style.visibility === "hidden" || el.closest("[aria-hidden=true]") || el.classList.contains("sr-only")) continue;
       // matn ichidagi havola (paragraf ichida) — 2.5.8 istisno
       const inline = el.tagName === "A" && style.display === "inline" && el.parentElement && /^(P|SPAN|LI|SMALL)$/.test(el.parentElement.tagName);
       if (inline) continue;
-      const label = (el.getAttribute("aria-label") || el.textContent || el.getAttribute("name") || el.tagName).trim().replace(/\s+/g, " ").slice(0, 40);
-      if (r.width < 24 || r.height < 24) tiny.push(`${label} ${Math.round(r.width)}×${Math.round(r.height)}`);
+      const name = (el.getAttribute("aria-label") || el.textContent || el.getAttribute("name") || el.tagName).trim().replace(/\s+/g, " ").slice(0, 40);
+      if (r.width < 24 || r.height < 24) tiny.push(`${name} ${Math.round(r.width)}×${Math.round(r.height)}`);
       if (r.width < 44 || r.height < 44) under44++;
     }
     return { overflow, tiny, under44 };
@@ -128,4 +136,20 @@ test("reduced-motion: animatsiya va o'tishlar o'chadi", async ({ page, context }
       .filter((cs) => parseFloat(cs.animationDuration) > 0.01 || parseFloat(cs.transitionDuration) > 0.01).length,
   );
   expect(slow).toBe(0);
+});
+
+test("qorong'i mavzu: asosiy sahifalarda rang kontrasti buzilmaydi", async ({ page, context }) => {
+  test.setTimeout(120_000);
+  await loginAs(context, USERS.workerA);
+  await context.addCookies([{ name: "ishuz_theme", value: "dark", url: test.info().project.use.baseURL ?? "http://localhost:3300" }]);
+  await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "dark" });
+  const bad: string[] = [];
+  for (const url of ["/", "/search", `/search?mode=jobs&p=${await buxgalter()}&region=all`, "/post/worker", "/cabinet", "/dev/ui"]) {
+    await page.goto(url);
+    await page.waitForLoadState("networkidle");
+    expect(await page.evaluate(() => document.documentElement.classList.contains("dark")), url).toBe(true);
+    const axe = await new AxeBuilder({ page }).withRules(["color-contrast"]).analyze();
+    for (const v of axe.violations) for (const n of v.nodes.slice(0, 3)) bad.push(`${url}: ${n.html.slice(0, 100)} ${JSON.stringify(n.any[0]?.data ?? "")}`);
+  }
+  expect(bad, "qorong'i mavzuda AA dan past kontrast").toEqual([]);
 });

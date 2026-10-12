@@ -62,14 +62,14 @@ export function MessageBubble({ message, mine, onDelete }: { message: ChatMessag
       ) : null}
       <div
         className={cn(
-          "relative max-w-[82%] rounded-2xl text-[15px] leading-snug shadow-sm md:max-w-[70%]",
+          "relative max-w-[82%] rounded-2xl text-md leading-snug shadow-sm md:max-w-[70%]",
           bubbleIsCard ? "p-1" : "px-3.5 py-2",
           mine ? "rounded-br-md bg-primary text-primary-foreground" : "rounded-bl-md border border-border/70 bg-card text-card-foreground",
           (sending || failed) && "opacity-80",
         )}
       >
         {deleted ? (
-          <span className={cn("flex items-center gap-1.5 text-sm italic", mine ? "text-white/90" : "text-muted-foreground")}>
+          <span className={cn("flex items-center gap-1.5 text-sm italic", mine ? "text-primary-foreground/90" : "text-muted-foreground")}>
             <Ban className="size-3.5" /> {t("chat.room.deleted")}
           </span>
         ) : message.type === "text" ? (
@@ -87,8 +87,8 @@ export function MessageBubble({ message, mine, onDelete }: { message: ChatMessag
         )}
         <span
           className={cn(
-            "mt-1 flex items-center justify-end gap-1 text-[11px] leading-none tabular",
-            mine ? "text-white/90" : "text-muted-foreground",
+            "mt-1 flex items-center justify-end gap-1 text-2xs leading-none tabular",
+            mine ? "text-primary-foreground/90" : "text-muted-foreground",
             bubbleIsCard && "px-2 pb-1",
           )}
         >

@@ -33,7 +33,7 @@ export function ChatHeader({
   const contextLabel = view.context.kind === "application" ? t("chat.room.context_application") : t("chat.room.context_offer");
 
   return (
-    <header className="shrink-0 border-b border-border/70 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
+    <header className="shrink-0 border-b border-border/70 bg-card">
       <div className="mx-auto flex w-full max-w-3xl items-center gap-2 px-2 py-2 sm:px-4">
         <Link href="/messages" className="flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-secondary" aria-label={t("chat.room.back")}>
           <ChevronLeft className="size-6" />
@@ -48,11 +48,11 @@ export function ChatHeader({
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-1.5">
             {view.otherHref ? (
-              <Link href={view.otherHref} className="truncate text-[15px] font-bold hover:underline">
+              <Link href={view.otherHref} className="truncate text-md font-bold hover:underline">
                 {view.other.name}
               </Link>
             ) : (
-              <p className="truncate text-[15px] font-bold">{view.other.name}</p>
+              <p className="truncate text-md font-bold">{view.other.name}</p>
             )}
             {muted ? (
               <Badge size="sm" className="shrink-0">

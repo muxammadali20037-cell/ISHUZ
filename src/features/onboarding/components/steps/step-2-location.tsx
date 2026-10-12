@@ -147,7 +147,7 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
             return (
               <Chip key={r.id} size="sm" selected={browseRegion === r.id} onClick={() => setBrowseRegion(r.id)} className="shrink-0">
                 {name(r)}
-                {count ? <span className={cn("rounded-full px-1.5 text-[11px]", browseRegion === r.id ? "bg-white/20" : "bg-primary-soft text-primary")}>{count}</span> : null}
+                {count ? <span className={cn("rounded-full px-1.5 text-2xs", browseRegion === r.id ? "bg-primary-foreground/20" : "bg-primary-soft text-primary")}>{count}</span> : null}
               </Chip>
             );
           })}

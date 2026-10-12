@@ -73,7 +73,7 @@ export function AlertSettings({
   const toggle = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
   return (
-    <section className="space-y-4 rounded-3xl border border-border bg-card p-5" aria-labelledby={`alerts-${sub.role}`}>
+    <section className="space-y-4 rounded-2xl border border-border bg-card p-5" aria-labelledby={`alerts-${sub.role}`}>
       <h2 id={`alerts-${sub.role}`} className="text-2xl font-bold">{t(sub.role === "worker" ? "easy.alerts.worker_section" : "easy.alerts.employer_section")}</h2>
       <AlertToggle role={sub.role} initialStatus={sub.status} defaults={{ professionNodeId: sub.role === "worker" ? (profession?.id ?? null) : null }} compact />
 

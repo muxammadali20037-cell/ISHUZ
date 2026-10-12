@@ -30,7 +30,7 @@ function Chip({
       aria-pressed={selected}
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full border font-medium transition-colors disabled:opacity-50 [&_svg]:size-4",
-        size === "sm" ? "h-8 px-3 text-sm" : size === "lg" ? "h-12 px-5 text-[15px]" : "h-10 px-4 text-sm",
+        size === "sm" ? "tap-target relative h-8 px-3 text-sm" : size === "lg" ? "h-12 px-5 text-md" : "tap-target relative h-10 px-4 text-sm",
         selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-secondary",
         className,
       )}

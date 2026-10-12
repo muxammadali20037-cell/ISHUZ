@@ -24,7 +24,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="flex flex-col gap-0.5 py-2 sm:flex-row sm:items-start sm:gap-4">
       <dt className="shrink-0 text-sm text-muted-foreground sm:w-44">{label}</dt>
-      <dd className="text-[15px] font-medium">{children}</dd>
+      <dd className="text-md font-medium">{children}</dd>
     </div>
   );
 }
@@ -34,7 +34,7 @@ export async function AboutSection({ about }: { about: string | null }) {
   if (!about?.trim()) return null;
   return (
     <Section title={t("workers.candidate.about")}>
-      <p className="whitespace-pre-line text-[15px] leading-relaxed">{about}</p>
+      <p className="whitespace-pre-line text-md leading-relaxed">{about}</p>
     </Section>
   );
 }
@@ -46,7 +46,7 @@ export async function LocationSection({ region, district, workDistricts, remoteP
   if (!location && !workDistricts.length) return null;
   return (
     <Section title={t("workers.candidate.location")} icon={MapPin}>
-      {location ? <p className="text-[15px] font-medium">{location}</p> : null}
+      {location ? <p className="text-md font-medium">{location}</p> : null}
       {workDistricts.length ? (
         <div className="mt-3">
           <p className="mb-1.5 text-sm text-muted-foreground">{t("workers.candidate.can_work_in")}</p>
@@ -77,7 +77,7 @@ export async function ExperienceSection({ items }: { items: CandidateProfile["ex
           {items.map((e) => (
             <li key={e.id} className="relative">
               <span className={cn("absolute -left-[27px] top-1.5 size-3 rounded-full border-2 border-card", e.is_current ? "bg-success" : "bg-primary")} aria-hidden />
-              <p className="text-[15px] font-semibold">{e.position}</p>
+              <p className="text-md font-semibold">{e.position}</p>
               <p className="text-sm text-foreground/80">{e.company_name}</p>
               <p className="mt-0.5 text-xs text-muted-foreground tabular">
                 {formatDate(e.started_on, locale, "LLL yyyy")} — {e.is_current || !e.ended_on ? t("workers.candidate.present") : formatDate(e.ended_on, locale, "LLL yyyy")}
@@ -129,7 +129,7 @@ export async function LanguagesSection({ languages }: { languages: CandidateProf
     <Section title={t("workers.candidate.languages")} icon={Languages}>
       <ul className="divide-y divide-border">
         {languages.map((l) => (
-          <li key={l.code} className="flex items-center justify-between py-2 text-[15px]">
+          <li key={l.code} className="flex items-center justify-between py-2 text-md">
             <span className="font-medium">{tEnum("language_code", l.code)}</span>
             <span className="text-sm text-muted-foreground">{tEnum("language_level", l.level)}</span>
           </li>
@@ -147,7 +147,7 @@ export async function EducationSection({ items }: { items: CandidateProfile["edu
       <ul className="space-y-3">
         {items.map((e) => (
           <li key={e.id}>
-            <p className="text-[15px] font-semibold">{tEnum("education_level", e.level)}</p>
+            <p className="text-md font-semibold">{tEnum("education_level", e.level)}</p>
             {e.institution || e.field ? <p className="text-sm text-foreground/80">{[e.institution, e.field].filter(Boolean).join(" · ")}</p> : null}
             {e.started_year || e.ended_year ? (
               <p className="text-xs text-muted-foreground tabular">

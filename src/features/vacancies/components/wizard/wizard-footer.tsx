@@ -29,7 +29,7 @@ export function WizardFooter({
   const canBack = mode === "create" && prevStep(step) !== null && !!onBack;
   const canSkip = mode === "create" && isOptionalStep(step) && !!onSkip;
   return (
-    <div className="sticky bottom-0 z-20 -mx-4 mt-8 border-t border-border bg-card/95 px-4 py-3 pb-safe backdrop-blur sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0 sm:backdrop-blur-none">
+    <div className="sticky bottom-0 z-20 -mx-4 mt-8 border-t border-border bg-card px-4 py-3 pb-safe sm:static sm:mx-0 sm:border-0 sm:bg-transparent sm:px-0 sm:py-0">
       <div className="flex items-center gap-2">
         {canBack ? (
           <Button type="button" variant="ghost" onClick={onBack} disabled={pending}>

@@ -125,7 +125,7 @@ function StepTabs({ vacancy, current }: { vacancy: VacancyFull; current: WizardS
                 active ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-muted-foreground hover:border-primary/40 hover:text-foreground",
               )}
             >
-              <span className={cn("flex size-5 items-center justify-center rounded-full text-[11px] font-bold", active ? "bg-primary-foreground/20" : isDone ? "bg-success-soft text-success" : "bg-secondary")}>
+              <span className={cn("flex size-5 items-center justify-center rounded-full text-2xs font-bold", active ? "bg-primary-foreground/20" : isDone ? "bg-success-soft text-success" : "bg-secondary")}>
                 {isDone && !active ? <Check className="size-3" strokeWidth={3} /> : i + 1}
               </span>
               {t(`vacancies.wizard.steps.${s}.name`)}

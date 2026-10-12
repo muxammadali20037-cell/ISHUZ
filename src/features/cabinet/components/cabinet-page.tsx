@@ -46,7 +46,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
     return (
       <div className="container-narrow space-y-5 py-8 text-lg">
         <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
-        <div className="space-y-4 rounded-3xl border border-border bg-card p-6">
+        <div className="space-y-4 rounded-2xl border border-border bg-card p-6">
           <h2 className="text-2xl font-bold">{t("easy.cabinet.guest_title")}</h2>
           <p className="text-muted-foreground">{t("easy.cabinet.guest_desc")}</p>
           <Button asChild size="xl" className="h-14 w-full text-lg">
@@ -92,7 +92,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
         {!worker && !vacancies.length ? <p className="rounded-2xl bg-secondary p-4 text-muted-foreground">{t("easy.cabinet.no_listings")}</p> : null}
 
         {worker ? (
-          <article className="space-y-3 rounded-3xl border border-border bg-card p-5">
+          <article className="space-y-3 rounded-2xl border border-border bg-card p-5">
             <p className="text-base font-bold uppercase tracking-wide text-primary">{t("easy.cabinet.worker_listing")}</p>
             <h3 className="text-xl font-bold">{worker.headline || "—"}</h3>
             {worker.regionName ? (
@@ -141,7 +141,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
               const open = v.status === "active" || v.status === "paused" || v.status === "pending_review";
               const needsPay = paid && (v.status === "draft" || v.status === "expired");
               return (
-                <article key={v.id} className="space-y-3 rounded-3xl border border-border bg-card p-5">
+                <article key={v.id} className="space-y-3 rounded-2xl border border-border bg-card p-5">
                   <h3 className="text-xl font-bold">{v.title}</h3>
                   {v.regionName ? <p className="text-muted-foreground">{name(v.regionName)}</p> : v.isRemote ? <p className="text-muted-foreground">{t("easy.location.remote")}</p> : null}
                   <StatusPill tone={["moderation_pending", "review", "rejected", "verification_pending"].includes(v.moderation.state) ? stateTone(v.moderation.state) : vacancyTone(v.status)}>
@@ -183,7 +183,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
         ) : null}
       </section>
 
-      <Suspense fallback={<div className="h-64 animate-pulse rounded-3xl bg-secondary" aria-hidden />}>
+      <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
         <AiProCard userId={session.userId} />
       </Suspense>
 
@@ -205,7 +205,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
         <h2 id="more-links" className="text-2xl font-bold">
           {t("easy.cabinet.more")}
         </h2>
-        <ul className="divide-y divide-border overflow-hidden rounded-3xl border border-border bg-card">
+        <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
           {links
             .filter((l) => l.show)
             .map((l) => (

@@ -119,7 +119,7 @@ export function StepSkills({ mode, vacancy, suggestedSkills }: SkillsStepProps) 
                 <button type="button" onClick={() => toggleRequired(s.id)} className="inline-flex h-9 items-center gap-1.5 rounded-full px-3" title={t(s.isRequired ? "vacancies.wizard.skills.required" : "vacancies.wizard.skills.preferred")}>
                   {s.isRequired ? null : <Star className="size-3.5" />}
                   {name(s)}
-                  <span className={cn("rounded-md px-1.5 text-[10px] uppercase", s.isRequired ? "bg-primary-foreground/20" : "bg-primary/10")}>{t(s.isRequired ? "vacancies.wizard.skills.required" : "vacancies.wizard.skills.preferred")}</span>
+                  <span className={cn("rounded-md px-1.5 text-2xs uppercase", s.isRequired ? "bg-primary-foreground/20" : "bg-primary/10")}>{t(s.isRequired ? "vacancies.wizard.skills.required" : "vacancies.wizard.skills.preferred")}</span>
                 </button>
                 <button type="button" onClick={() => remove(s.id)} className="flex size-8 items-center justify-center rounded-full hover:bg-black/10" aria-label={t("vacancies.actions.remove")}>
                   <X className="size-4" />

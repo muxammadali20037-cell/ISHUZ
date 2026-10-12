@@ -1,5 +1,6 @@
-// Avval/keyin ekranlari (faqat E2E stendidagi test ma'lumotlari): node e2e/screens/capture.mjs <app-url> <prefiks>
+// Avval/keyin ekranlari (faqat E2E stendidagi test ma'lumotlari): node e2e/screens/capture.mjs <app-url> <prefiks> [ekranlar] [papka]
 // Masalan: node e2e/screens/capture.mjs http://localhost:3300 after → docs/screenshots/after-*.jpg
+//          node e2e/screens/capture.mjs http://localhost:3300 after home-full,ui-kit /tmp/shots — faqat shu ekranlar, boshqa papkaga
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -9,10 +10,10 @@ import { sessionCookie } from "../stack/jwt.mjs";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const stack = JSON.parse(fs.readFileSync(path.join(dir, "../.stack/env.json"), "utf8"));
-const [app, prefix] = process.argv.slice(2);
+const [app, prefix, only, outDir] = process.argv.slice(2);
 if (!app || !prefix) throw new Error("ishlatish: capture.mjs <app-url> <prefiks>");
 const host = new URL(app).hostname;
-const OUT = path.join(dir, "../../docs/screenshots");
+const OUT = outDir ? path.resolve(outDir) : path.join(dir, "../../docs/screenshots");
 fs.mkdirSync(OUT, { recursive: true });
 
 const db = new pg.Client({ connectionString: stack.db });
@@ -33,6 +34,11 @@ const SHOTS = [
   { name: "search-error", url: `/search?mode=jobs&p=${node}&region=all`, broken: true },
   { name: "post-worker-custom", url: "/post/worker", user: "7e2e0000-0000-4000-8000-000000000001", type: "Kaktus parvarishchisi" },
   { name: "cabinet", url: "/cabinet", user: "7e2e0000-0000-4000-8000-000000000001" },
+  // to'liq sahifa (brend tizimi: kartalar, AI PRO, pastki qism) va qorong'i mavzu
+  { name: "home-full", url: "/", full: true },
+  { name: "home-dark", url: "/", full: true, theme: "dark", user: "7e2e0000-0000-4000-8000-000000000001" },
+  { name: "cabinet-full", url: "/cabinet", full: true, user: "7e2e0000-0000-4000-8000-000000000001" },
+  { name: "ui-kit", url: "/dev/ui", full: true },
 ];
 const WIDTHS = [
   { w: 390, h: 844, tag: "m" },
@@ -42,15 +48,16 @@ const WIDTHS = [
 
 const browser = await chromium.launch();
 try {
-  for (const s of SHOTS) {
+  for (const s of SHOTS.filter((x) => !only || only.split(",").includes(x.name))) {
     if (s.broken) await searchBroken(true);
     try {
       for (const v of WIDTHS) {
-        const ctx = await browser.newContext({ viewport: { width: v.w, height: v.h }, deviceScaleFactor: 1, reducedMotion: "reduce" });
+        const ctx = await browser.newContext({ viewport: { width: v.w, height: v.h }, deviceScaleFactor: 1, reducedMotion: "reduce", colorScheme: s.theme === "dark" ? "dark" : "light" });
         await ctx.addCookies([
           { name: "ishuz_welcome", value: "1", domain: host, path: "/" },
           { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
           ...(s.user ? [{ ...sessionCookie(s.user, stack.secret), domain: host, path: "/" }] : []),
+          ...(s.theme ? [{ name: "ishuz_theme", value: s.theme, domain: host, path: "/" }] : []),
         ]);
         const page = await ctx.newPage();
         await page.goto(app + s.url, { waitUntil: "networkidle" });
@@ -59,7 +66,7 @@ try {
           await page.getByLabel("Kasb yoki sohani qidiring").fill(s.type);
           await page.waitForTimeout(1500);
         }
-        await page.screenshot({ path: path.join(OUT, `${prefix}-${s.name}-${v.tag}.jpg`), type: "jpeg", quality: 70, fullPage: false });
+        await page.screenshot({ path: path.join(OUT, `${prefix}-${s.name}-${v.tag}.jpg`), type: "jpeg", quality: 70, fullPage: Boolean(s.full) });
         await ctx.close();
       }
     } finally {

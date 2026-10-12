@@ -134,14 +134,14 @@ export function CoachTour({ role }: { role: Role }) {
           boxShadow: "0 0 0 9999px rgba(15, 23, 42, 0.68)",
         }}
       />
-      <div className="absolute inset-x-4 mx-auto max-w-sm rounded-2xl bg-card p-5 text-card-foreground shadow-xl" style={{ top: cardTop, bottom: cardBottom }}>
+      <div className="absolute inset-x-4 mx-auto max-w-sm rounded-2xl bg-card p-5 text-card-foreground shadow-lg" style={{ top: cardTop, bottom: cardBottom }}>
         <p className="text-xs font-semibold text-muted-foreground">
           {index + 1} / {steps.length}
         </p>
         <h2 id="coach-title" className="mt-1 text-lg font-bold">
           {t(`welcome.coach.${current}.title`)}
         </h2>
-        <p className="mt-1 text-[15px] text-muted-foreground">{t(`welcome.coach.${current}.desc`)}</p>
+        <p className="mt-1 text-md text-muted-foreground">{t(`welcome.coach.${current}.desc`)}</p>
         <div className="mt-4 flex items-center justify-between gap-2">
           <Button type="button" variant="ghost" onClick={finish}>
             {t("welcome.coach.skip")}

@@ -23,7 +23,7 @@ export function VisibilityForm({ isPublic }: { isPublic: boolean }) {
     <EditSectionCard id="visibility" title={t("profile.sections.visibility")}>
       <label className="flex cursor-pointer items-start justify-between gap-4">
         <span className="flex-1">
-          <span className="block text-[15px] font-medium">{t("profile.labels.is_public")}</span>
+          <span className="block text-md font-medium">{t("profile.labels.is_public")}</span>
           <span className="mt-0.5 block text-xs text-muted-foreground">{t("profile.labels.is_public_hint")}</span>
         </span>
         <Switch checked={value} onCheckedChange={toggle} disabled={pending} aria-label={t("profile.labels.is_public")} />

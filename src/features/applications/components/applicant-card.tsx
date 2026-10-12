@@ -39,7 +39,7 @@ export function ApplicantCard({
   const quick = (["shortlisted", "interview", "rejected"] as const).filter((s) => next.includes(s));
 
   return (
-    <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", item.status === "sent" && "border-sky-300/70 dark:border-sky-800", selection?.selected && "border-primary ring-2 ring-primary/30", className)}>
+    <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", item.status === "sent" && "border-primary/40", selection?.selected && "border-primary ring-2 ring-primary/30", className)}>
       {selection ? (
         <button type="button" onClick={selection.onToggle} className="absolute inset-0 z-20 rounded-2xl" aria-pressed={selection.selected} aria-label={name}>
           <span className={cn("absolute right-3 top-3 flex size-6 items-center justify-center rounded-md border-2 text-xs font-bold", selection.selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card")}>

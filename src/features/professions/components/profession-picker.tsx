@@ -373,12 +373,12 @@ export function ProfessionPicker({
                     key={c.id}
                     type="button"
                     onClick={() => openSector(c.id)}
-                    className="flex min-h-[112px] flex-col items-start justify-between gap-3 rounded-3xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-[0.98]"
+                    className="flex min-h-[112px] flex-col items-start justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-[0.98]"
                   >
                     <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                       <CategoryIcon name={c.icon} className="size-6" />
                     </span>
-                    <span className="text-[15px] font-semibold leading-snug">{name(c)}</span>
+                    <span className="text-md font-semibold leading-snug">{name(c)}</span>
                   </button>
                 ))}
               </div>
@@ -501,7 +501,7 @@ function SelectedCard({ value, categories, onChange, onEdit }: { value: PickedPr
 
   return (
     <div className="space-y-4">
-      <div className="rounded-3xl border-2 border-primary bg-primary-soft/40 p-5">
+      <div className="rounded-2xl border-2 border-primary bg-primary-soft/40 p-5">
         <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t("professions.selected")}</p>
         <div className="mt-2 flex items-start gap-3">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">

@@ -11,7 +11,7 @@ export function VacancyDescription({ text, className }: { text: string | null | 
   const blocks = parseDescription(text);
   if (!blocks.length) return null;
   return (
-    <div className={cn("space-y-3 text-[15px] leading-relaxed text-foreground/90", className)}>
+    <div className={cn("space-y-3 text-md leading-relaxed text-foreground/90", className)}>
       {blocks.map((b, i) => {
         if (b.type === "heading") {
           return (

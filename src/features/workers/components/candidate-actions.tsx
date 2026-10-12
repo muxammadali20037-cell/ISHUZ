@@ -118,7 +118,7 @@ export function CandidateActions(props: Props) {
 
       {/* Mobil: pastki panel (tab bar ustida) */}
       <div
-        className="fixed inset-x-0 z-30 border-t border-border bg-card/95 px-4 py-2.5 backdrop-blur supports-[backdrop-filter]:bg-card/85 md:hidden"
+        className="fixed inset-x-0 z-30 border-t border-border bg-card px-4 py-2.5 md:hidden"
         style={{ bottom: "calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px))" }}
       >
         <div className="mx-auto flex max-w-6xl items-center gap-2">

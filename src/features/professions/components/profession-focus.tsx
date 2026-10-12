@@ -19,8 +19,8 @@ export async function ProfessionFocus({ workerId, categorySlug }: { workerId: st
   if (!nodeId) {
     const { t } = await getT();
     return (
-      <Link href="/profile/profession" className="group flex items-center gap-4 rounded-3xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5">
-        <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-white/15">
+      <Link href="/profile/profession" className="group flex items-center gap-4 rounded-2xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5">
+        <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15">
           <Target className="size-7" />
         </span>
         <span className="min-w-0 flex-1">

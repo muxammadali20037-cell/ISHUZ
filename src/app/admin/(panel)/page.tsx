@@ -90,7 +90,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
                     <Link href={q.href} className="flex items-center justify-between gap-2 rounded-xl border border-border/70 bg-card px-4 py-3 text-sm font-medium shadow-sm transition-colors hover:bg-secondary/50">
                       <span>{q.label}</span>
                       <span className="flex items-center gap-2">
-                        <span className={q.count ? "rounded-full bg-destructive px-2 py-0.5 text-xs font-bold text-white tabular" : "text-xs text-muted-foreground"}>{q.count}</span>
+                        <span className={q.count ? "rounded-full bg-destructive px-2 py-0.5 text-xs font-bold text-destructive-foreground tabular" : "text-xs text-muted-foreground"}>{q.count}</span>
                         <ArrowRight className="size-4 text-muted-foreground" />
                       </span>
                     </Link>

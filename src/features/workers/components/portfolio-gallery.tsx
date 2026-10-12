@@ -37,7 +37,7 @@ export function PortfolioGallery({ items }: { items: CandidatePortfolioItem[] })
           <li key={item.id}>
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <p className="text-[15px] font-semibold">{item.title}</p>
+                <p className="text-md font-semibold">{item.title}</p>
                 {item.description ? <p className="mt-0.5 text-sm text-muted-foreground">{item.description}</p> : null}
               </div>
               <span className="shrink-0 rounded-lg bg-secondary px-2 py-0.5 text-xs text-muted-foreground">{tEnum("portfolio_type", item.type)}</span>

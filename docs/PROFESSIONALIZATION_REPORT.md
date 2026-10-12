@@ -247,3 +247,71 @@ bosh sahifa, qidiruv natijasi, qidiruv xatosi, "Kasbim topilmadi", kabinet. Yara
 | 0058 | yangi yopiq bucket, 3 siyosat `ALTER POLICY` bilan toraytirildi, trigger, indeks, tozalash funksiyasi | 0049 dagi siyosat ifodalarini `ALTER POLICY` bilan qaytarish; triggerni o'chirish; bayroqni 0057 holatiga |
 
 Hammasi qo'shimcha (DROP/DELETE yo'q), qayta qo'llash xavfsiz (0058) yoki xato bilan to'xtaydi (0057 — o'zgarishsiz).
+
+## 10. C8 — ekranlar birma-bir (yangilangan master prompt)
+
+Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar → 4 ishchi e'loni → 5 vakansiya e'loni →
+6 kirish va hisob → 7 kabinet/e'lon/profil → 8 arizalar/takliflar/chat/bildirishnomalar → 9 sozlamalar/yordam/huquqiy/admin →
+10 regressiya. Har bosqich: OLDIN · KEYIN · fayllar · skrinshot · test · ochiq masala.
+
+| # | Ekran | Holat | Commit |
+|---|---|---|---|
+| C8.1a | UI ovozlari | ✅ to'liq olib tashlandi | `6493eb6` |
+| C8.1b | Qotishlar (C7) | ✅ 4 ta o'lchangan qotish tuzatildi — [PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md) | `3581aa0` |
+| C8.1c | Yagona brend tizimi | ✅ — [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | shu bosqich |
+| C8.2 | Bosh sahifa va navigatsiya | ⏳ keyingi | — |
+| C8.3–C8.10 | … | ⏳ | — |
+
+### C8.1c · Yagona brend tizimi
+
+**OLDIN** (3581aa0, o'lchangan): 59 ta Tailwind palitra rangi, 6 ta bezak gradienti, 18 ta `backdrop-blur`, 80 ta ixtiyoriy
+px-shrift, 52 ta `rounded-3xl`; AI PRO kartalari binafsha→ko'k gradient + blur + sariq toj; to'lov paneli sariq→to'q sariq
+gradient; Telegram tugmalari `#229ED9`; tezkor amallar 4 xil rangda (ko'k, yashil, sariq, binafsha); kasb rasmi zaxirasi har
+soha uchun boshqa rangli gradient. Checkbox (20 px, radius 12) amalda **doira** bo'lib chizilib, radiodan farqlanmasdi.
+`Field` xato matni maydonga bog'lanmagan (90 ta xatoli maydon, ilovada atigi 5 ta `aria-describedby`).
+**Qorong'i mavzu** (tizim sozlamasidan avtomatik yoqiladi) — 6 ta token juftligi AA dan past: yashil/sariq/qizil tugmadagi
+oq matn 2.3 / 2.2 / 3.8:1, bosh sahifa oq tugmasidagi och-ko'k/yashil matn 3.15 / 2.27:1.
+
+**KEYIN:**
+
+- Bitta aksent (`primary`), semantik ranglar faqat ma'no uchun; barcha sirtlar tokenlarda (palitra/hex/gradient/blur — 0,
+  istisnolar sababi bilan ro'yxatda).
+- Shkalalar: shrift 2xs·xs·sm·md·base·lg·xl·2xl·3xl (yangi `text-2xs`, `text-md` tokenlari), radius xs…2xl, soya sm/md/lg.
+- Qorong'i mavzu tokenlari tuzatildi (`--*-foreground` qorong'i fonlarda to'q matn; `primary #5a8ef8`, `destructive #f05252`);
+  yorug' `destructive #d12020` (yumshoq fonda 4.23 → 4.67:1). Rangli fonda `text-white` → `*-foreground` (59 qator).
+- 44 px barmoq maydoni: `tap-target` (ko'rinish o'zgarmaydi) — kichik tugma, chip, checkbox, switch.
+- `Field` → `aria-describedby` + `aria-invalid` avtomatik.
+- Rol tanlash (welcome) — ikki teng karta (yashil "aksent" yo'q), "Keyinroq" tugmasi 44 px.
+- Konfetti — brend ranglarida; NavProgress — tekis `primary` (porlashsiz).
+- `/dev/ui` — UI kit (faqat dev/E2E; production'da 404, noindex). Qo'llanma — `docs/BRAND_UI_GUIDE.md`.
+
+**Fayllar:** `src/app/globals.css`, `src/components/ui/{button,chip,checkbox,dialog,label}.tsx`,
+`src/components/shared/{quick-actions,profession-image,welcome-gate,coach-tour}.tsx`, `src/features/ai-alerts/*`,
+`src/features/billing/components/{payment-dialog,top-profile-card}.tsx`, `src/lib/celebrate.ts`, `src/app/dev/ui/page.tsx`
+va 80+ faylda mexanik shkala almashtirish (ko'rinishi bir xil: `rounded-3xl` = `rounded-2xl` = 24 px).
+
+**Skrinshotlar** (bir xil E2E ma'lumotlari, chap — 3581aa0, o'ng — keyin; eski build `bash e2e/screens/old-build.sh 3581aa0` bilan :3301 da):
+[bosh sahifa](screenshots/c8/c8-1-home-full-m.jpg) · [bosh sahifa, qorong'i](screenshots/c8/c8-1-home-dark-m.jpg) ·
+[kabinet](screenshots/c8/c8-1-cabinet-full-m.jpg) · [qidiruv natijasi](screenshots/c8/c8-1-search-results-m.jpg) ·
+UI kit: [mobil](screenshots/c8/c8-1-ui-kit-m.jpg), [desktop](screenshots/c8/c8-1-ui-kit-d.jpg).
+
+**Testlar (PASS):**
+
+| Test | Natija |
+|---|---|
+| `src/lib/brand-guard.test.ts` — 8 qoida × 300+ fayl | ✅ 10/10; ataylab qo'yilgan buzilishli fayl 7 qoidada ushlandi (tekshirildi va o'chirildi) |
+| `src/lib/brand-contrast.test.ts` — 19 juftlik × 2 mavzu | ✅ (oldin: yorug' 1, qorong'i 5 juftlik AA dan past) |
+| `src/components/ui/field.test.tsx` | ✅ 3/3 |
+| Unit jami | ✅ 534 o'tdi, 18 skip (paritet suite — sababi §2 F-07 va README'da) |
+| E2E jami (`npx playwright test -c e2e`) | ✅ 34/34 (yangi: UI kit a11y × 5 kenglik, qorong'i mavzu kontrasti × 6 sahifa) |
+| `tsc`, `eslint` | ✅ |
+
+**Ochiq (keyingi ekranlarda):**
+
+- Bosh sahifa: ikki katta rangli karta (ko'k + yashil) — "bitta aksent" qoidasiga zid; qorong'i mavzuda juda yorqin.
+  Qidiruv kartasida emoji + ikonka takrori. Kartalarda sakrovchi (`cubic-bezier(…1.56…)`) hover → C8.2.
+- Qidiruv kartasida ish joyi rasmi yuklanmasa alt-matn chiqadi (buzilgan rasm) → C8.3.
+- Kabinet: yashil "Ishga joylashdim" tugmasi `success`ni aksent sifatida ishlatadi; tugma uslublari aralash → C8.7.
+- Qorong'i mavzu kontrasti E2E da 6 sahifada tekshiriladi; qolgan sahifalar o'z bosqichida qo'shiladi.
+- Bir E2E yugurishida qorong'i mavzu testi `networkidle` ni kutib qoldi (1 marta, keyin 4 yugurishda takrorlanmadi;
+  sahifalar alohida tekshirilganda 0.65–1 s da tinchlanadi). Sababi aniqlanmagan — kuzatilmoqda.

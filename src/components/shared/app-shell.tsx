@@ -44,7 +44,7 @@ export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<N
   const items = MAIN_NAV;
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 md:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label="Main"
       data-tour="bottom-nav"
@@ -57,13 +57,13 @@ export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<N
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
-                className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-[13px] font-semibold transition-colors", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+                className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
                 <item.icon className={cn("size-6", active && "fill-primary/10")} strokeWidth={active ? 2.25 : 1.75} />
                 <span>{t(item.labelKey)}</span>
                 {badge ? (
-                  <span className="absolute left-1/2 top-2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-[10px] font-bold text-white">
+                  <span className="absolute left-1/2 top-2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-2xs font-bold text-destructive-foreground">
                     {badge > 99 ? "99+" : badge}
                   </span>
                 ) : null}
@@ -100,7 +100,7 @@ export function DesktopNavLinks({ counts }: { role: NavRole; counts?: Partial<Re
               <item.icon className="size-4.5" aria-hidden />
               {/* planshetda (md) faqat belgi — sarlavha ekrandan chiqib ketmasin; nom ekran o'quvchisi uchun saqlanadi */}
               <span className="sr-only lg:not-sr-only">{t(item.labelKey)}</span>
-              {badge ? <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[11px] font-bold text-white">{badge > 99 ? "99+" : badge}</span> : null}
+              {badge ? <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span> : null}
             </Link>
           </li>
         );

@@ -76,12 +76,12 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
   return (
     <div className="space-y-6">
       {/* PRO: narx va obuna holati */}
-      <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-amber-700 to-orange-700 p-5 text-white shadow-md">
+      <div className="overflow-hidden rounded-2xl border border-primary/20 bg-primary-soft p-5 text-foreground">
         <div className="flex items-center gap-3">
           <Crown className="size-8 shrink-0" />
           <div className="min-w-0">
             <p className="text-lg font-extrabold">{t("saved.ai_alerts.pro")}</p>
-            <p className="text-sm text-white">
+            <p className="text-sm text-foreground">
               {data.free
                 ? t("saved.ai_alerts.free_now")
                 : data.paidUntil
@@ -92,10 +92,10 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
             </p>
           </div>
         </div>
-        <ol className="mt-3 grid gap-1 text-sm text-white">
+        <ol className="mt-3 grid gap-1 text-sm text-foreground">
           {[t("saved.ai_alerts.how_1"), t("saved.ai_alerts.how_2"), t("saved.ai_alerts.how_3")].map((step, i) => (
             <li key={step} className="flex items-start gap-2">
-              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-white/25 text-xs font-bold">{i + 1}</span>
+              <span className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">{i + 1}</span>
               {step}
             </li>
           ))}
@@ -104,18 +104,18 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
           data.providers.length ? (
             <div className="mt-4 grid min-w-0 gap-2">
               {data.providers.includes("payme") ? (
-                <Button size="lg" className="h-auto min-h-14 w-full whitespace-normal bg-white py-3 text-base font-bold text-[#00A6A6] hover:bg-white/90" loading={pending} onClick={() => pay("payme")}>
+                <Button size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-base font-bold" loading={pending} onClick={() => pay("payme")}>
                   <Wallet className="size-5" /> {data.paidUntil ? t("saved.ai_alerts.extend_payme", { amount: money(data.price) }) : t("saved.ai_alerts.pay_payme", { amount: money(data.price) })}
                 </Button>
               ) : null}
               {data.providers.includes("click") ? (
-                <Button size="lg" variant="outline" className="h-12 w-full border-white/60 bg-white/10 text-white hover:bg-white/20" loading={pending} onClick={() => pay("click")}>
+                <Button size="lg" variant="outline" className="h-12 w-full" loading={pending} onClick={() => pay("click")}>
                   {t("saved.ai_alerts.pay_click")}
                 </Button>
               ) : null}
             </div>
           ) : (
-            <p className="mt-3 rounded-xl bg-white/20 p-2 text-center text-sm">{t("saved.ai_alerts.pay_soon")}</p>
+            <p className="mt-3 rounded-xl bg-card p-2 text-center text-sm">{t("saved.ai_alerts.pay_soon")}</p>
           )
         ) : null}
       </div>
@@ -150,7 +150,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
       ) : (
         <>
           {/* 1-qadam: o'z so'zi bilan */}
-          <section className="rounded-3xl border-2 border-primary/30 bg-card p-5 shadow-sm">
+          <section className="rounded-2xl border-2 border-primary/30 bg-card p-5 shadow-sm">
             <div className="flex items-center gap-2">
               <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                 <Sparkles className="size-5" />

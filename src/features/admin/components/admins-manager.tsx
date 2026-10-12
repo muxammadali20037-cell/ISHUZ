@@ -69,7 +69,7 @@ export function AdminsManager({ admins, canManage, selfId }: { admins: AdminUser
                     <Avatar src={a.profile?.avatar_url} fallback={initials(a.profile?.first_name, a.profile?.last_name)} size="sm" />
                     <div className="min-w-0">
                       <p className="truncate font-medium">{fullName(a.profile?.first_name, a.profile?.last_name) || "—"}{a.profile_id === selfId ? <span className="ml-1 text-xs text-muted-foreground">({t("admin.admins.you")})</span> : null}</p>
-                      <code className="text-[11px] text-muted-foreground">{a.profile_id}</code>
+                      <code className="text-2xs text-muted-foreground">{a.profile_id}</code>
                     </div>
                   </div>
                 </Td>

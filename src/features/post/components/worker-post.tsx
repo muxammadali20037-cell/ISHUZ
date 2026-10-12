@@ -474,7 +474,7 @@ export function WorkerPost({
           <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.worker.review_title")}</h1>
           {draft.source === "ai" ? <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} /> : null}
           <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-            <ProfessionImage url={imageUrl} categorySlug={category?.slug} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
+            <ProfessionImage url={imageUrl} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
             <p className="text-base text-muted-foreground">{t("easy.wizard.image_note")}</p>
           </div>
           <div className="rounded-2xl border border-border bg-card px-4">

@@ -9,7 +9,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, invalid, leftIcon, rightSlot, ...props }, ref) => {
   const base = cn(
-    "flex h-12 w-full rounded-xl border bg-card px-4 text-[15px] text-foreground placeholder:text-muted-foreground transition-colors",
+    "flex h-12 w-full rounded-xl border bg-card px-4 text-md text-foreground placeholder:text-muted-foreground transition-colors",
     "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0",
     "disabled:cursor-not-allowed disabled:opacity-60",
     invalid ? "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" : "border-input",
@@ -34,7 +34,7 @@ const Textarea = React.forwardRef<HTMLTextAreaElement, React.TextareaHTMLAttribu
   ({ className, invalid, ...props }, ref) => (
     <textarea
       className={cn(
-        "flex min-h-[120px] w-full rounded-xl border bg-card px-4 py-3 text-[15px] text-foreground placeholder:text-muted-foreground transition-colors",
+        "flex min-h-[120px] w-full rounded-xl border bg-card px-4 py-3 text-md text-foreground placeholder:text-muted-foreground transition-colors",
         "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 disabled:opacity-60",
         invalid ? "border-destructive" : "border-input",
         className,

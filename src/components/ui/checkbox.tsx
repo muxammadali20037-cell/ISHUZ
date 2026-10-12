@@ -16,7 +16,7 @@ const Checkbox = React.forwardRef<
       ref={ref}
       id={inputId}
       className={cn(
-        "peer size-5 shrink-0 rounded-md border border-input bg-card transition-colors data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground disabled:opacity-50",
+        "tap-target relative peer size-5 shrink-0 rounded-xs border border-input bg-card transition-colors data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground disabled:opacity-50",
         className,
       )}
       {...props}
@@ -30,7 +30,7 @@ const Checkbox = React.forwardRef<
   return (
     <label htmlFor={inputId} className="flex cursor-pointer items-start gap-3 py-1">
       <span className="mt-0.5">{box}</span>
-      <span className="flex-1 text-[15px] leading-snug">
+      <span className="flex-1 text-md leading-snug">
         {label}
         {description ? <span className="block text-xs text-muted-foreground">{description}</span> : null}
       </span>
@@ -59,7 +59,7 @@ const RadioItem = React.forwardRef<
           <span className="size-2.5 rounded-full bg-primary" />
         </RadioGroupPrimitive.Indicator>
       </RadioGroupPrimitive.Item>
-      <span className="flex-1 text-[15px] leading-snug">
+      <span className="flex-1 text-md leading-snug">
         {label}
         {description ? <span className="block text-xs text-muted-foreground">{description}</span> : null}
       </span>
@@ -73,7 +73,7 @@ const Switch = React.forwardRef<React.ComponentRef<typeof SwitchPrimitive.Root>,
     <SwitchPrimitive.Root
       ref={ref}
       className={cn(
-        "inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-secondary transition-colors data-[state=checked]:bg-primary disabled:opacity-50",
+        "tap-target relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent bg-secondary transition-colors data-[state=checked]:bg-primary disabled:opacity-50",
         className,
       )}
       {...props}

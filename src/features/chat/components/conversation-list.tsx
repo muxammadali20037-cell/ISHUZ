@@ -87,7 +87,7 @@ export function ConversationList({ items, errorCode }: { items: ConversationList
               <Avatar src={c.other_avatar_url} fallback={nameInitials(c.other_name)} alt={c.other_name ?? ""} size="lg" />
               <div className="min-w-0 flex-1">
                 <div className="flex items-baseline justify-between gap-2">
-                  <p className={cn("truncate text-[15px]", unread ? "font-bold" : "font-semibold")}>{c.other_name}</p>
+                  <p className={cn("truncate text-md", unread ? "font-bold" : "font-semibold")}>{c.other_name}</p>
                   {c.last_message_at ? <span className="shrink-0 text-xs text-muted-foreground">{formatRelative(c.last_message_at, locale)}</span> : null}
                 </div>
                 {c.context_title ? (
@@ -106,7 +106,7 @@ export function ConversationList({ items, errorCode }: { items: ConversationList
                   </p>
                   {unread ? (
                     <span
-                      className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-[11px] font-bold text-primary-foreground"
+                      className="flex h-5 min-w-5 shrink-0 items-center justify-center rounded-full bg-primary px-1.5 text-2xs font-bold text-primary-foreground"
                       aria-label={t("chat.list.unread_aria", { count: unread })}
                     >
                       {unread > 99 ? "99+" : unread}

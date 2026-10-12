@@ -58,7 +58,7 @@ export async function AboutSection({ data }: { data: WorkerProfileFull }) {
   const { t } = await getT();
   return (
     <SectionCard title={t("profile.sections.about")} editHref="/profile/edit#about" isEmpty={!data.worker.about} empty={t("profile.empty.about")}>
-      <p className="whitespace-pre-line text-[15px] leading-relaxed">{data.worker.about}</p>
+      <p className="whitespace-pre-line text-md leading-relaxed">{data.worker.about}</p>
     </SectionCard>
   );
 }
