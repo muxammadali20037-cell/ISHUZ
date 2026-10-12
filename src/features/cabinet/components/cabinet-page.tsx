@@ -138,6 +138,18 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
                         : t(`easy.cabinet.status.${v.status}`)}
                   </StatusPill>
                   <ModerationNotice entity="vacancy" id={v.id} info={v.moderation} editHref={`/post/vacancy?edit=${v.id}`} />
+                  {v.applications.total ? (
+                    <Button asChild size="xl" className="h-12 w-full justify-between px-4 text-base sm:w-auto">
+                      <Link href={`/employer/vacancies/${v.id}/applications`}>
+                        <span className="inline-flex items-center gap-2">
+                          <UsersRound className="size-5" aria-hidden /> {t("easy.cabinet.applications", { count: v.applications.total })}
+                        </span>
+                        {v.applications.fresh ? (
+                          <span className="rounded-lg bg-primary-foreground/15 px-2 py-0.5 text-sm font-semibold">{t("easy.cabinet.applications_new", { count: v.applications.fresh })}</span>
+                        ) : null}
+                      </Link>
+                    </Button>
+                  ) : null}
                   <div className="flex flex-wrap gap-2 pt-1">
                     {needsPay ? <PayButton purpose="vacancy_publish" targetId={v.id} /> : null}
                     {open ? <FoundButton kind="worker" vacancyId={v.id} /> : null}

@@ -57,8 +57,10 @@ test("vakansiya sahifasi: bandlik turi o'zbekcha ('To'liq kun', 'Full-time' emas
   await expect(page.locator("main span[aria-hidden]").filter({ hasText: /^·$/ })).toHaveCount(0);
 });
 
-test("profil tanlovi (oddiy e'lon bergan foydalanuvchi): ikki teng neytral karta, takrorlangan izoh yo'q", async ({ page, context }) => {
-  await loginAs(context, USERS.employer);
+test("profil tanlovi (hali profili yo'q foydalanuvchi): ikki teng neytral karta, takrorlangan izoh yo'q", async ({ page, context }) => {
+  // ishchi ham, ish beruvchi ham profili yo'q — /profile tanlov ekraniga olib boradi (boshqa testlar qoldirgan holatga bog'liq emas)
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerA]);
+  await loginAs(context, USERS.workerA);
   await page.goto("/profile");
   await page.waitForURL(/\/onboarding/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

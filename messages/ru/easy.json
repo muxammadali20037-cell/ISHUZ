@@ -40,6 +40,8 @@
     "done_found_worker": "Поздравляем! Вакансия закрыта.",
     "republish": "Разместить снова",
     "view": "Подробнее",
+    "applications": "Отклики: {count}",
+    "applications_new": "новых: {count}",
     "pay": "Оплатить и разместить",
     "matches_jobs": "Подходящая мне работа",
     "matches_workers": "Подходящие работники",

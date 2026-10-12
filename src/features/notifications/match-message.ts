@@ -3,6 +3,7 @@
  * Barcha qiymatlar bazadan (yuborish paytida qayta o'qiladi); telefon va boshqa shaxsiy ma'lumot qo'shilmaydi.
  */
 import type { TFunction } from "@/lib/i18n/translate";
+import { matchLevel } from "@/features/matching/level";
 
 export interface MatchReasonLite {
   key: string;
@@ -64,7 +65,7 @@ export function workerMatchHtml(t: TFunction, items: VacancyMatchItem[], total: 
       `<b>${esc(v.title)}</b>${v.employer ? ` — ${esc(v.employer)}` : ""}` +
       line(esc(v.place)) +
       line(v.salary ? esc(t("notifications.match.salary", { salary: v.salary })) : "") +
-      line(esc(t("notifications.match.score", { score: v.score }))) +
+      line(esc(t("notifications.match.score", { level: t(`common.labels.match_level.${matchLevel(v.score)}`) }))) +
       line(reasons ? esc(t("notifications.match.reason", { list: reasons })) : "")
     );
   });
@@ -80,7 +81,7 @@ export function employerMatchHtml(t: TFunction, vacancyTitle: string, items: Wor
       `<b>${esc(w.profession || vacancyTitle)}</b>${w.name ? ` — ${esc(w.name)}` : ""}` +
       line(esc(w.place)) +
       line(w.experience ? esc(t("notifications.match.experience", { experience: w.experience })) : "") +
-      line(esc(t("notifications.match.score", { score: w.score }))) +
+      line(esc(t("notifications.match.score", { level: t(`common.labels.match_level.${matchLevel(w.score)}`) }))) +
       line(reasons ? esc(t("notifications.match.reason", { list: reasons })) : "")
     );
   });

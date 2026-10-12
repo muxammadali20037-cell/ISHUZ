@@ -23,7 +23,7 @@
     "application_received": {
       "title": "Новый отклик: {vacancy_title}",
       "body": "{worker_name} отправил(а) отклик",
-      "body_score": "{worker_name} отправил(а) отклик · совпадение {score}%"
+      "body_score": "{worker_name} отправил(а) отклик · {level}"
     },
     "application_status": {
       "title": "Статус отклика: {status}",
@@ -62,17 +62,17 @@
     },
     "new_matching_vacancy": {
       "title": "Подходящая вакансия: {vacancy_title}",
-      "body": "Совпадение {score}%. Посмотрите и откликнитесь.",
+      "body": "{level}. Посмотрите и откликнитесь.",
       "body_noscore": "Посмотрите и откликнитесь.",
       "title_many": "Найдено подходящих вакансий: {count}",
-      "body_many": "Лучшая: {vacancy_title} · {score}%"
+      "body_many": "Лучшая: {vacancy_title} · {level}"
     },
     "new_matching_worker": {
       "title": "Подходящий кандидат",
-      "body": "{worker_name} · совпадение {score}% для «{vacancy_title}»",
+      "body": "{worker_name} · «{vacancy_title}» · {level}",
       "body_noscore": "{worker_name} · «{vacancy_title}»",
       "title_many": "Подходящих кандидатов: {count}",
-      "body_many": "Для «{vacancy_title}» · лучший {score}%"
+      "body_many": "Для «{vacancy_title}» · лучший: {level}"
     },
     "verification_result": {
       "title": "Результат проверки",
@@ -132,7 +132,7 @@
     "for_vacancy": "Вакансия: {title}",
     "salary": "Зарплата: {salary}",
     "experience": "Опыт: {experience}",
-    "score": "Совпадение: {score}%",
+    "score": "Совпадение: {level}",
     "reason": "Почему: совпадают {list}.",
     "more": "Ещё {count} — в приложении",
     "negotiable": "Договорная",

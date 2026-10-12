@@ -5,6 +5,8 @@
     "empty_title": "No conversations yet",
     "empty_desc": "A chat opens here when you apply for a job or receive an offer",
     "empty_cta": "Browse jobs",
+    "empty_desc_employer": "To message a candidate, open their application and tap “Message”",
+    "empty_cta_employer": "Applications received",
     "no_messages": "No messages",
     "you": "You",
     "unread_aria": "{count} unread messages"

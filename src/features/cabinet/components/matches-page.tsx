@@ -101,7 +101,7 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
               ) : !m.complete ? (
                 <p className="text-base text-muted-foreground">{t("easy.matches.incomplete_candidate")}</p>
               ) : null}
-              <MatchReasons reasons={m.reasons} />
+              <MatchReasons reasons={m.reasons} perspective="employer" />
               <Button asChild size="xl" className="h-12 w-full text-base sm:w-auto">
                 <Link href={`/listing/${m.workerId}`}>{t("easy.matches.view_candidate")}</Link>
               </Button>

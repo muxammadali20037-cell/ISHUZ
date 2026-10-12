@@ -37,7 +37,7 @@ export function OfferRespondActions({ offerId, disabled }: { offerId: string; di
 
   return (
     <div className="grid grid-cols-2 gap-2">
-      <Button type="button" variant="success" onClick={() => setDialog("accept")} disabled={disabled || pending}>
+      <Button type="button" onClick={() => setDialog("accept")} disabled={disabled || pending}>
         <Check className="size-4" strokeWidth={2.75} />
         {t("offers.detail.accept")}
       </Button>

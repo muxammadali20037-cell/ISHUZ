@@ -33,6 +33,8 @@ export interface MyVacancy {
   districtId: string | null;
   isRemote: boolean;
   moderation: ListingStateInfo;
+  /** kelgan arizalar (qaytarib olinganlarsiz) va hali ko'rilmaganlari */
+  applications: { total: number; fresh: number };
 }
 
 /** Kabinet: foydalanuvchining o'z e'lonlari (ishchi e'loni + ish e'lonlari) */
@@ -56,6 +58,19 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
     supabase.rpc("my_listing_states"),
   ]);
   const states = new Map((statesRes.data ?? []).map((r) => [`${r.entity}:${r.id}`, toListingStateInfo(r.info)]));
+  // arizalar soni — ish beruvchining asosiy keyingi amali (RLS: faqat o'z vakansiyalarining arizalari)
+  const vacancyIds = (vacRes.data ?? []).map((v) => v.id);
+  const appsRes = vacancyIds.length
+    ? await supabase.from("applications").select("vacancy_id, status").in("vacancy_id", vacancyIds).neq("status", "withdrawn")
+    : { data: [], error: null };
+  if (appsRes.error) console.error("[cabinet] applications", appsRes.error.message);
+  const apps = new Map<string, { total: number; fresh: number }>();
+  for (const a of appsRes.data ?? []) {
+    const c = apps.get(a.vacancy_id) ?? { total: 0, fresh: 0 };
+    c.total += 1;
+    if (a.status === "sent") c.fresh += 1;
+    apps.set(a.vacancy_id, c);
+  }
   if ("error" in workerRes && workerRes.error) console.error("[cabinet] worker", workerRes.error.message);
   if (vacRes.error) console.error("[cabinet] vacancies", vacRes.error.message);
   const w = workerRes.data;
@@ -91,6 +106,7 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
       districtId: v.district_id,
       isRemote: v.is_remote,
       moderation: states.get(`vacancy:${v.id}`) ?? toListingStateInfo({ state: v.status === "active" ? "active" : "saved" }),
+      applications: apps.get(v.id) ?? { total: 0, fresh: 0 },
     };
   });
   return { worker, vacancies, paid };

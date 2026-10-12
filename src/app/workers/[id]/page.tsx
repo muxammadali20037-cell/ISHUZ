@@ -83,7 +83,7 @@ export default async function CandidatePage({ params, searchParams }: { params: 
         <div className="space-y-3">
           <MatchRing score={match.score} />
           <p className="text-sm text-muted-foreground">{t("workers.candidate.match_for", { title: vacancy.title })}</p>
-          <MatchReasons reasons={match.reasons} />
+          <MatchReasons reasons={match.reasons} perspective="employer" />
         </div>
       ) : null}
       {activeVacancies.length || vacancy ? (

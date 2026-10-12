@@ -31,8 +31,9 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
     <div className="container-narrow py-4 sm:py-8">
       <PageHeader title={t("applications.meta.candidate_title")} subtitle={vacancy.title} backHref={pipelineHref} actions={<ApplicationStatusBadge status={app.status} size="lg" />} />
 
+      {/* Mobil: sarlavha kartasi va holat → amallar (yozish, qo'ng'iroq) → qolgan tafsilotlar; desktop: amallar o'ng ustunda */}
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_320px] md:items-start">
-        <div className="space-y-4">
+        <div className="space-y-4 md:col-start-1 md:row-start-1">
           {/* Nomzod */}
           <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
             <div className="flex items-start gap-3">
@@ -72,7 +73,27 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
               </div>
             ) : null}
           </section>
+        </div>
 
+        <aside className="space-y-3 md:sticky md:top-20 md:col-start-2 md:row-span-2 md:row-start-1">
+          <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
+            <p className="mb-3 text-sm font-semibold">{t("applications.detail.actions")}</p>
+            <Button asChild fullWidth variant="outline">
+              <Link href={`/messages/new?application_id=${app.id}`}>
+                <MessageCircle className="size-4" />
+                {t("applications.detail.write")}
+              </Link>
+            </Button>
+          </div>
+          {c ? (
+            <div>
+              <p className="mb-2 text-sm font-semibold">{t("applications.candidate.contact")}</p>
+              <ContactCard profileId={c.profile_id} />
+            </div>
+          ) : null}
+        </aside>
+
+        <div className="space-y-4 md:col-start-1 md:row-start-2">
           {app.status === "interview" && app.interview_at ? (
             <InterviewCard at={app.interview_at} place={app.interview_place} manage={canAct ? { applicationId: app.id, vacancyId: vacancy.id } : undefined} />
           ) : null}
@@ -84,7 +105,7 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
             <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
               <SectionHeader title={t("applications.detail.match")} />
               <MatchRing score={app.match_score} />
-              <MatchReasons reasons={app.match_reasons} className="mt-4" />
+              <MatchReasons reasons={app.match_reasons} className="mt-4" perspective="employer" />
             </section>
           ) : null}
 
@@ -102,24 +123,6 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
             <ApplicationTimeline events={app.events} status={app.status} workerProfileId={c?.profile_id ?? null} viewer="employer" />
           </section>
         </div>
-
-        <aside className="space-y-3 md:sticky md:top-20">
-          <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
-            <p className="mb-3 text-sm font-semibold">{t("applications.detail.actions")}</p>
-            <Button asChild fullWidth>
-              <Link href={`/messages/new?application_id=${app.id}`}>
-                <MessageCircle className="size-4" />
-                {t("applications.detail.write")}
-              </Link>
-            </Button>
-          </div>
-          {c ? (
-            <div>
-              <p className="mb-2 text-sm font-semibold">{t("applications.candidate.contact")}</p>
-              <ContactCard profileId={c.profile_id} />
-            </div>
-          ) : null}
-        </aside>
       </div>
     </div>
   );

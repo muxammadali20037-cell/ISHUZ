@@ -23,7 +23,7 @@
     "application_received": {
       "title": "Yangi ariza: {vacancy_title}",
       "body": "{worker_name} ariza yubordi",
-      "body_score": "{worker_name} ariza yubordi · {score}% mos"
+      "body_score": "{worker_name} ariza yubordi · {level}"
     },
     "application_status": {
       "title": "Ariza holati: {status}",
@@ -62,17 +62,17 @@
     },
     "new_matching_vacancy": {
       "title": "Sizga mos ish: {vacancy_title}",
-      "body": "Moslik {score}%. Batafsil ko'ring va ariza yuboring.",
+      "body": "{level}. Batafsil ko'ring va ariza yuboring.",
       "body_noscore": "Batafsil ko'ring va ariza yuboring.",
       "title_many": "Sizga {count} ta mos ish topildi",
-      "body_many": "Eng mosi: {vacancy_title} · {score}%"
+      "body_many": "Eng mosi: {vacancy_title} · {level}"
     },
     "new_matching_worker": {
       "title": "Sizga mos nomzod",
-      "body": "{worker_name} · «{vacancy_title}» uchun {score}% mos",
+      "body": "{worker_name} · «{vacancy_title}» · {level}",
       "body_noscore": "{worker_name} · «{vacancy_title}»",
       "title_many": "Vakansiyangizga {count} ta mos nomzod",
-      "body_many": "«{vacancy_title}» uchun · eng mosi {score}%"
+      "body_many": "«{vacancy_title}» uchun · eng yaxshisi: {level}"
     },
     "verification_result": {
       "title": "Tasdiqlash natijasi",
@@ -132,7 +132,7 @@
     "for_vacancy": "Vakansiya: {title}",
     "salary": "Maosh: {salary}",
     "experience": "Tajriba: {experience}",
-    "score": "Moslik: {score}%",
+    "score": "Moslik: {level}",
     "reason": "Sabab: {list} mos.",
     "more": "Yana {count} ta — ilovada",
     "negotiable": "Kelishiladi",

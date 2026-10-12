@@ -23,7 +23,7 @@
     "application_received": {
       "title": "New application: {vacancy_title}",
       "body": "{worker_name} applied",
-      "body_score": "{worker_name} applied · {score}% match"
+      "body_score": "{worker_name} applied · {level}"
     },
     "application_status": {
       "title": "Application status: {status}",
@@ -62,17 +62,17 @@
     },
     "new_matching_vacancy": {
       "title": "A job for you: {vacancy_title}",
-      "body": "{score}% match. View the details and apply.",
+      "body": "{level}. View the details and apply.",
       "body_noscore": "View the details and apply.",
       "title_many": "{count} jobs match you",
-      "body_many": "Best: {vacancy_title} · {score}%"
+      "body_many": "Best: {vacancy_title} · {level}"
     },
     "new_matching_worker": {
       "title": "A matching candidate",
-      "body": "{worker_name} · {score}% match for “{vacancy_title}”",
+      "body": "{worker_name} · “{vacancy_title}” · {level}",
       "body_noscore": "{worker_name} · “{vacancy_title}”",
       "title_many": "{count} matching candidates",
-      "body_many": "For «{vacancy_title}» · best {score}%"
+      "body_many": "For “{vacancy_title}” · best: {level}"
     },
     "verification_result": {
       "title": "Verification result",
@@ -132,7 +132,7 @@
     "for_vacancy": "Vacancy: {title}",
     "salary": "Salary: {salary}",
     "experience": "Experience: {experience}",
-    "score": "Match: {score}%",
+    "score": "Match: {level}",
     "reason": "Why: {list} match.",
     "more": "{count} more in the app",
     "negotiable": "Negotiable",

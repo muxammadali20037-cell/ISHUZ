@@ -28,8 +28,9 @@ export async function WorkerApplicationDetail({ app, userId }: { app: Detail; us
     <div className="container-narrow py-4 sm:py-8">
       <PageHeader title={t("applications.meta.detail_title")} backHref="/applications" actions={<ApplicationStatusBadge status={app.status} size="lg" />} />
 
+      {/* Mobil: sarlavha kartasi va holat → amallar (yozish, qo'ng'iroq) → qolgan tafsilotlar; desktop: amallar o'ng ustunda */}
       <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_320px] md:items-start">
-        <div className="space-y-4">
+        <div className="space-y-4 md:col-start-1 md:row-start-1">
           {/* Vakansiya */}
           <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
             <div className="flex items-start gap-3">
@@ -77,7 +78,31 @@ export async function WorkerApplicationDetail({ app, userId }: { app: Detail; us
           {app.status === "interview" && app.interview_at ? <InterviewCard at={app.interview_at} place={app.interview_place} /> : null}
 
           {app.my_review ? <ReviewCard review={app.my_review} /> : null}
+        </div>
 
+        {/* Amallar */}
+        <aside className="space-y-3 md:sticky md:top-20 md:col-start-2 md:row-span-2 md:row-start-1">
+          <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
+            <p className="mb-3 text-sm font-semibold">{t("applications.detail.actions")}</p>
+            <div className="space-y-2">
+              <Button asChild fullWidth variant="outline">
+                <Link href={`/messages/new?application_id=${app.id}`}>
+                  <MessageCircle className="size-4" />
+                  {t("applications.detail.write")}
+                </Link>
+              </Button>
+              {!terminal ? <WithdrawButton applicationId={app.id} fullWidth /> : <p className="text-center text-xs text-muted-foreground">{t("applications.detail.closed_hint")}</p>}
+            </div>
+          </div>
+          {v?.owner_profile_id ? (
+            <div>
+              <p className="mb-2 text-sm font-semibold">{t("applications.detail.contact")}</p>
+              <ContactCard profileId={v.owner_profile_id} />
+            </div>
+          ) : null}
+        </aside>
+
+        <div className="space-y-4 md:col-start-1 md:row-start-2">
           {/* Moslik */}
           {app.match_score !== null ? (
             <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
@@ -99,28 +124,6 @@ export async function WorkerApplicationDetail({ app, userId }: { app: Detail; us
             <ApplicationTimeline events={app.events} status={app.status} workerProfileId={userId} viewer="worker" />
           </section>
         </div>
-
-        {/* Amallar */}
-        <aside className="space-y-3 md:sticky md:top-20">
-          <div className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
-            <p className="mb-3 text-sm font-semibold">{t("applications.detail.actions")}</p>
-            <div className="space-y-2">
-              <Button asChild fullWidth>
-                <Link href={`/messages/new?application_id=${app.id}`}>
-                  <MessageCircle className="size-4" />
-                  {t("applications.detail.write")}
-                </Link>
-              </Button>
-              {!terminal ? <WithdrawButton applicationId={app.id} fullWidth /> : <p className="text-center text-xs text-muted-foreground">{t("applications.detail.closed_hint")}</p>}
-            </div>
-          </div>
-          {v?.owner_profile_id ? (
-            <div>
-              <p className="mb-2 text-sm font-semibold">{t("applications.detail.contact")}</p>
-              <ContactCard profileId={v.owner_profile_id} />
-            </div>
-          ) : null}
-        </aside>
       </div>
     </div>
   );

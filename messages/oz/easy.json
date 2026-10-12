@@ -40,6 +40,8 @@
     "done_found_worker": "Табриклаймиз! Иш эълонингиз ёпилди.",
     "republish": "Қайта жойлаш",
     "view": "Батафсил",
+    "applications": "Аризалар: {count} та",
+    "applications_new": "{count} та янги",
     "pay": "Тўлаш ва жойлаш",
     "matches_jobs": "Менга мос ишлар",
     "matches_workers": "Мос ишчилар",

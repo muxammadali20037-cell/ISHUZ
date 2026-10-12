@@ -271,6 +271,24 @@
     "license_missing": "Majburiy guvohnoma yoki sertifikat yo'q",
     "languages_unknown": "Tillar ko'rsatilmagan"
   },
+  "match_reason_employer": {
+    "category_match": "Kasbi mos",
+    "district_match": "Tumani mos",
+    "distance_near": "Ish joyidan {km} km",
+    "distance_ok": "Ish joyidan {km} km",
+    "salary_ok": "Maosh kutilmasiga mos",
+    "salary_min_ok": "Maosh minimal kutilmasiga mos",
+    "salary_unspecified": "Maosh kutilmasini ko'rsatmagan",
+    "salary_below": "Maosh uning kutilmasidan past",
+    "salary_close": "Maosh uning kutilmasidan biroz past",
+    "experience_ok": "Tajribasi yetarli",
+    "schedule_ok": "Grafik unga mos",
+    "remote_preferred": "Masofaviy ishni xohlaydi, bu ish joyida",
+    "remote_not_preferred": "Masofaviy ish, u joyida ishlashni xohlaydi",
+    "profession_exact": "Kasbi aynan mos",
+    "profession_specialist": "Shu kasbning aniq mutaxassisi",
+    "profession_general": "Kasbi yaqin, lekin bu yerda torroq mutaxassis kerak"
+  },
   "language_code": {
     "uz": "O'zbek",
     "ru": "Rus",

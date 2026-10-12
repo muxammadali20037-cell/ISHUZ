@@ -40,6 +40,8 @@
     "done_found_worker": "Tabriklaymiz! Ish e'loningiz yopildi.",
     "republish": "Qayta joylash",
     "view": "Batafsil",
+    "applications": "Arizalar: {count} ta",
+    "applications_new": "{count} ta yangi",
     "pay": "To'lash va joylash",
     "matches_jobs": "Menga mos ishlar",
     "matches_workers": "Mos ishchilar",

@@ -29,14 +29,14 @@ export async function ContactCard({ profileId, hint }: { profileId: string; hint
     );
   }
   return (
-    <div className="space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-4">
+    <div className="space-y-3 rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
       <p className="text-sm font-semibold">{t("common.contact_title")}</p>
       {data.phone ? (
         <>
           {/* Asosiy harakat — bitta bosish bilan qo'ng'iroq */}
           <a
             href={`tel:${data.phone}`}
-            className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-success text-base font-semibold text-success-foreground shadow-sm transition-opacity hover:opacity-90"
+            className="press flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-sm hover:bg-primary-hover"
           >
             <Phone className="size-5" /> {t("contacts.call")}
           </a>

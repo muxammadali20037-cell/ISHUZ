@@ -6,11 +6,17 @@ const uz = makeT("uz");
 const ru = makeT("ru");
 
 describe("renderNotification", () => {
-  it("application_received: moslik foizi bilan", () => {
+  it("application_received: moslik darajasi bilan (foiz emas — ilovadagi kabi)", () => {
     const r = renderNotification("application_received", { vacancy_title: "Kassir", worker_name: "Ali V.", match_score: 95 }, uz, "uz");
     expect(r.title).toBe("Yangi ariza: Kassir");
-    expect(r.body).toBe("Ali V. ariza yubordi · 95% mos");
+    expect(r.body).toBe("Ali V. ariza yubordi · Juda mos");
     expect(r.icon).toBe("application");
+    expect(renderNotification("application_received", { vacancy_title: "Kassir", worker_name: "Ali V.", match_score: 60 }, ru, "ru").body).toBe("Ali V. отправил(а) отклик · Подходит");
+  });
+
+  it("application_received: familiyasi bo'sh — 'Botir .' emas, 'Botir'", () => {
+    const r = renderNotification("application_received", { vacancy_title: "Buxgalter", worker_name: "Botir .", match_score: 97 }, uz, "uz");
+    expect(r.body).toBe("Botir ariza yubordi · Juda mos");
   });
 
   it("application_received: foizsiz", () => {
@@ -67,10 +73,11 @@ describe("renderNotification", () => {
   });
 
   it("new_matching_vacancy / new_matching_worker", () => {
-    expect(renderNotification("new_matching_vacancy", { vacancy_title: "Kassir", score: 87 }, uz, "uz").body).toBe("Moslik 87%. Batafsil ko'ring va ariza yuboring.");
+    expect(renderNotification("new_matching_vacancy", { vacancy_title: "Kassir", score: 87 }, uz, "uz").body).toBe("Juda mos. Batafsil ko'ring va ariza yuboring.");
     expect(renderNotification("new_matching_vacancy", { vacancy_title: "Kassir" }, uz, "uz").body).toBe("Batafsil ko'ring va ariza yuboring.");
     const w = renderNotification("new_matching_worker", { vacancy_title: "Kassir", worker_name: "Ali V.", score: 91 }, uz, "uz");
-    expect(w.body).toBe("Ali V. · «Kassir» uchun 91% mos");
+    expect(w.body).toBe("Ali V. · «Kassir» · Juda mos");
+    expect(renderNotification("new_matching_worker", { vacancy_title: "Kassir", count: 3, workers: [{ name: "Ali V.", score: 55 }] }, uz, "uz").body).toBe("«Kassir» uchun · eng yaxshisi: Mos");
     expect(w.icon).toBe("match_worker");
   });
 

@@ -271,6 +271,24 @@
     "license_missing": "Мажбурий гувоҳнома ёки сертификат йўқ",
     "languages_unknown": "Тиллар кўрсатилмаган"
   },
+  "match_reason_employer": {
+    "category_match": "Касби мос",
+    "district_match": "Тумани мос",
+    "distance_near": "Иш жойидан {km} км",
+    "distance_ok": "Иш жойидан {km} км",
+    "salary_ok": "Маош кутилмасига мос",
+    "salary_min_ok": "Маош минимал кутилмасига мос",
+    "salary_unspecified": "Маош кутилмасини кўрсатмаган",
+    "salary_below": "Маош унинг кутилмасидан паст",
+    "salary_close": "Маош унинг кутилмасидан бироз паст",
+    "experience_ok": "Тажрибаси етарли",
+    "schedule_ok": "График унга мос",
+    "remote_preferred": "Масофавий ишни хоҳлайди, бу иш жойида",
+    "remote_not_preferred": "Масофавий иш, у жойида ишлашни хоҳлайди",
+    "profession_exact": "Касби айнан мос",
+    "profession_specialist": "Шу касбнинг аниқ мутахассиси",
+    "profession_general": "Касби яқин, лекин бу ерда торроқ мутахассис керак"
+  },
   "language_code": {
     "uz": "Ўзбек",
     "ru": "Рус",

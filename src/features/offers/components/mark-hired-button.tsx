@@ -32,7 +32,7 @@ export function MarkHiredButton({ offerId, vacancyId, fullWidth }: { offerId: st
 
   return (
     <>
-      <Button type="button" variant="success" fullWidth={fullWidth} onClick={() => setOpen(true)}>
+      <Button type="button" fullWidth={fullWidth} onClick={() => setOpen(true)}>
         <UserCheck className="size-4" />
         {t("offers.detail.mark_hired")}
       </Button>

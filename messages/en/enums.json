@@ -271,6 +271,24 @@
     "license_missing": "Required license or certificate is missing",
     "languages_unknown": "Languages are not specified"
   },
+  "match_reason_employer": {
+    "category_match": "Profession matches",
+    "district_match": "District matches",
+    "distance_near": "{km} km from the workplace",
+    "distance_ok": "{km} km from the workplace",
+    "salary_ok": "Salary meets their expectations",
+    "salary_min_ok": "Salary meets their minimum",
+    "salary_unspecified": "No salary expectations set",
+    "salary_below": "Salary is below their expectations",
+    "salary_close": "Salary is slightly below their expectations",
+    "experience_ok": "Enough experience",
+    "schedule_ok": "Schedule suits them",
+    "remote_preferred": "Prefers remote work; this job is on-site",
+    "remote_not_preferred": "Remote job, but they prefer on-site work",
+    "profession_exact": "Exact profession match",
+    "profession_specialist": "A specialist in this profession",
+    "profession_general": "Close profession, but a narrower specialist is needed"
+  },
   "language_code": {
     "uz": "Uzbek",
     "ru": "Russian",

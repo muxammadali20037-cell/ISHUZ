@@ -13,7 +13,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** /messages — suhbatlar ro'yxati (?error=<code> → toast) */
 export default async function MessagesPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  await requireSession("/messages");
+  const session = await requireSession("/messages");
+  // ish beruvchi (yoki ikkala rolda hozir ish beruvchi) — bo'sh holatda "arizani oching" yo'li
+  const audience = session.employerOnboarded && (session.activeRole === "employer" || !session.workerOnboarded) ? "employer" : "worker";
   const sp = await searchParams;
   const error = typeof sp.error === "string" ? sp.error : undefined;
   const [items, { t }] = await Promise.all([getMyConversations(), getT()]);
@@ -21,7 +23,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
     <Shell>
       <div className="container-narrow py-4 md:py-6">
         <PageHeader title={t("chat.title")} subtitle={t("chat.description")} />
-        <ConversationList items={items} errorCode={error} />
+        <ConversationList items={items} errorCode={error} audience={audience} />
       </div>
     </Shell>
   );

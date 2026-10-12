@@ -23,7 +23,7 @@
     "application_received": {
       "title": "Янги ариза: {vacancy_title}",
       "body": "{worker_name} ариза юборди",
-      "body_score": "{worker_name} ариза юборди · {score}% мос"
+      "body_score": "{worker_name} ариза юборди · {level}"
     },
     "application_status": {
       "title": "Ариза ҳолати: {status}",
@@ -62,17 +62,17 @@
     },
     "new_matching_vacancy": {
       "title": "Сизга мос иш: {vacancy_title}",
-      "body": "Мослик {score}%. Батафсил кўринг ва ариза юборинг.",
+      "body": "{level}. Батафсил кўринг ва ариза юборинг.",
       "body_noscore": "Батафсил кўринг ва ариза юборинг.",
       "title_many": "Сизга {count} та мос иш топилди",
-      "body_many": "Энг моси: {vacancy_title} · {score}%"
+      "body_many": "Энг моси: {vacancy_title} · {level}"
     },
     "new_matching_worker": {
       "title": "Сизга мос номзод",
-      "body": "{worker_name} · «{vacancy_title}» учун {score}% мос",
+      "body": "{worker_name} · «{vacancy_title}» · {level}",
       "body_noscore": "{worker_name} · «{vacancy_title}»",
       "title_many": "Вакансиянгизга {count} та мос номзод",
-      "body_many": "«{vacancy_title}» учун · энг моси {score}%"
+      "body_many": "«{vacancy_title}» учун · энг яхшиси: {level}"
     },
     "verification_result": {
       "title": "Тасдиқлаш натижаси",
@@ -132,7 +132,7 @@
     "for_vacancy": "Вакансия: {title}",
     "salary": "Маош: {salary}",
     "experience": "Тажриба: {experience}",
-    "score": "Мослик: {score}%",
+    "score": "Мослик: {level}",
     "reason": "Сабаб: {list} мос.",
     "more": "Яна {count} та — иловада",
     "negotiable": "Келишилади",

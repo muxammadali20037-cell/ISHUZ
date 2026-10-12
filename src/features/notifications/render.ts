@@ -7,6 +7,7 @@ import type { TFunction } from "@/lib/i18n/translate";
 import type { Locale } from "@/lib/i18n/config";
 import type { Enums, Json } from "@/types/database.types";
 import { isoToTashkent } from "@/features/applications/tashkent-time";
+import { matchLevel } from "@/features/matching/level";
 
 export type NotificationType = Enums<"notification_type">;
 
@@ -80,6 +81,16 @@ function dayText(iso: string, locale: Locale): string {
   }
 }
 
+/** Moslik darajasi matni ("Juda mos"); ilovadagi kabi foiz ko'rsatilmaydi */
+function levelText(t: TFunction, score: number | null): string {
+  return score === null ? "" : t(`common.labels.match_level.${matchLevel(score)}`);
+}
+
+/** "Botir ." (familiyasi bo'sh — eski trigger shunday yozgan) → "Botir"; "Ali V." o'zgarmaydi */
+function personName(p: PayloadRecord, key: string): string {
+  return str(p, key).replace(/\s+\.$/, "");
+}
+
 function tEnum(t: TFunction, group: string, value: string): string {
   if (!value) return "";
   const key = `enums.${group}.${value}`;
@@ -89,7 +100,7 @@ function tEnum(t: TFunction, group: string, value: string): string {
 
 /**
  * renderNotification('application_received', {vacancy_title, worker_name, match_score}, t, 'uz')
- *   → { title: "Yangi ariza: Kassir", body: "Ali V. ariza yubordi · 95% mos", icon: "application" }
+ *   → { title: "Yangi ariza: Kassir", body: "Ali V. ariza yubordi · Juda mos", icon: "application" }
  */
 export function renderNotification(type: NotificationType, payload: Json | PayloadRecord | null | undefined, t: TFunction, locale: Locale = "uz"): RenderedNotification {
   const p = asRecord(payload);
@@ -98,7 +109,7 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
   switch (type) {
     case "application_received": {
       const score = num(p, "match_score");
-      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: str(p, "worker_name"), score };
+      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: personName(p, "worker_name"), level: levelText(t, score) };
       return { title: t(`${k}.title`, params), body: score !== null ? t(`${k}.body_score`, params) : t(`${k}.body`, params), icon: "application" };
     }
     case "application_status": {
@@ -128,7 +139,7 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
     }
     case "offer_response": {
       const status = str(p, "status");
-      const params = { title: str(p, "title"), worker_name: str(p, "worker_name"), status: tEnum(t, "offer_status", status) };
+      const params = { title: str(p, "title"), worker_name: personName(p, "worker_name"), status: tEnum(t, "offer_status", status) };
       const title = status === "accepted" ? t(`${k}.title_accepted`, params) : status === "declined" ? t(`${k}.title_declined`, params) : t(`${k}.title`, params);
       return { title, body: t(`${k}.body`, params), icon: "offer_response" };
     }
@@ -144,7 +155,7 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
     case "new_matching_vacancy": {
       const score = num(p, "score");
       const count = num(p, "count") ?? 1;
-      const params = { vacancy_title: str(p, "vacancy_title"), score, count };
+      const params = { vacancy_title: str(p, "vacancy_title"), level: levelText(t, score), count };
       if (count > 1) return { title: t(`${k}.title_many`, params), body: t(`${k}.body_many`, params), icon: "match_vacancy" };
       return { title: t(`${k}.title`, params), body: score !== null ? t(`${k}.body`, params) : t(`${k}.body_noscore`, params), icon: "match_vacancy" };
     }
@@ -153,7 +164,7 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       const first = Array.isArray(p.workers) ? asRecord(p.workers[0] as Json) : {};
       const score = num(p, "score") ?? num(first, "score");
       const count = num(p, "count") ?? 1;
-      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: str(p, "worker_name") || str(first, "name"), score, count };
+      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: personName(p, "worker_name") || personName(first, "name"), level: levelText(t, score), count };
       if (count > 1) return { title: t(`${k}.title_many`, params), body: t(`${k}.body_many`, params), icon: "match_worker" };
       return { title: t(`${k}.title`, params), body: score !== null ? t(`${k}.body`, params) : t(`${k}.body_noscore`, params), icon: "match_worker" };
     }

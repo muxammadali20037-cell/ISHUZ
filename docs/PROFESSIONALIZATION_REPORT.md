@@ -264,9 +264,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.4 | Ishchi e'loni | ✅ | `48c53fe` |
 | C8.5 | Vakansiya e'loni | ✅ | `8eea94f` |
 | C8.6 | Kirish va hisob | ✅ (haqiqiy Telegram yetkazish — BLOCKED) | `e705ab0` |
-| C8.7 | Kabinet, e'lon, profil | ✅ | shu bosqich |
-| C8.8 | Arizalar, takliflar, chat, bildirishnomalar | ⏳ keyingi | — |
-| C8.9–C8.10 | … | ⏳ | — |
+| C8.7 | Kabinet, e'lon, profil | ✅ | `c3243f0` |
+| C8.8 | Arizalar, takliflar, chat, bildirishnomalar | ✅ (realtime va Telegram yetkazish — NOT_RUN) | shu bosqich |
+| C8.9 | Sozlamalar, yordam, huquqiy, admin | ⏳ keyingi | — |
+| C8.10 | To'liq regressiya | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -557,7 +558,7 @@ staging'da haqiqiy bot tokeni bilan tekshirilishi kerak. Muqobil kirish (SMS) �
 ### C8.7 · Kabinet, e'lon sahifasi, profil
 
 Kabinet ikkala rol uchun bitta sahifa: "Mening e'lonlarim" (holat + keyingi amal), AI PRO kartasi, "Yangi e'lon berish",
-"Boshqa bo'limlar". E'lon sahifasi (`/jobs/[slug]`, `/listing/[id]`) va `/profile` (oddiy e'lon bergan foydalanuvchi uchun —
+"Boshqa bo'limlar". E'lon sahifasi (`/jobs/[slug]`, `/listing/[id]`) va `/profile` (hali profili yo'q foydalanuvchi uchun —
 profil turini tanlash) shu bosqichda.
 
 **OLDIN** (dd39e27):
@@ -601,7 +602,7 @@ profil turini tanlash) shu bosqichda.
 |---|---|---|
 | `cabinet.spec.ts` — muddat "22-oktabr 2026 gacha"; "Ishchi topdim" foni `--success` emas; ikki "yangi e'lon" havolasi bir xil chegara | ❌ | ✅ |
 | — vakansiya: "To'liq kun", "Full-time" yo'q; qator boshida yolg'iz "·" yo'q | ❌ | ✅ |
-| — `/profile` → tanlov: ≥80 px brend rangli sirt 0 ta, "ikkala rejim" izohi 1 marta | ❌ | ✅ |
+| — `/profile` (profili yo'q) → tanlov: ≥80 px brend rangli sirt 0 ta, "ikkala rejim" izohi 1 marta | ❌ | ✅ |
 | — ishchi e'loni (egasi): yashil chegarali element 0 ta, "Kasb tasviri" ikonka ustida yo'q | ❌ | ✅ |
 | `date.test.ts` — o'zbek sana imlosi (lotin/kirill), rus/ingliz o'zgarmaydi, "hozirgina" | — | ✅ |
 | To'liq E2E · unit · tsc · eslint | — | ✅ 65/65 · 552 / 18 skip · ✅ · ✅ |
@@ -613,3 +614,78 @@ profil turini tanlash) shu bosqichda.
 - `eslint-disable` izohlari 12 joyda qolgan (`<img>`: imzolangan vaqtinchalik URL, satori, SVG data URI va h.k.) — barchasi C8 dan
   oldingi, sababi yozilgan; yangi kodda yo'q. C8.10 da har biri `Photo`/`next/image`ga o'tkazish yoki asos bilan qoldirish
   sifatida ko'rib chiqiladi.
+
+### C8.8 · Arizalar, takliflar, chat, bildirishnomalar (ikki rol bilan)
+
+Shu bosqichgacha bu yo'llar uchun E2E umuman yo'q edi. Ikki foydalanuvchi bilan oxirigacha yurildi (mobil 390 px):
+ishchi vakansiyaga ariza yuboradi → ish beruvchi kabinetdan arizani ochadi, holatni o'zgartiradi, chatda yozadi → ishchi
+bildirishnoma oladi va javob beradi → ish beruvchi javobni ko'radi; alohida — ish beruvchi nomzod sahifasidan taklif yuboradi
+→ ishchi qabul qiladi → ish beruvchiga bildirishnoma. Zanjir eski build'da ham ishlardi; topilganlar — tushunarlilik va
+izchillik xatolari.
+
+**OLDIN** (c3243f0):
+
+- **Kabinet:** vakansiya kartasida kelgan arizalar soni ham, havola ham yo'q — ish beruvchining asosiy keyingi amali faqat
+  qo'ng'iroqcha yoki "Batafsil → boshqaruv" orqali topilardi.
+- **Ish beruvchiga ishchi tilida:** ariza va nomzod sahifasida moslik sabablari "Kasbingiz aynan mos", "Grafik sizga mos",
+  "Maosh talabingiz…" — ish beruvchiga u o'zi haqida gapirilayotgandek.
+- **Bildirishnoma:** "Botir **.** ariza yubordi · **97% mos**" — familiyasi bo'sh foydalanuvchida (oddiy oqim faqat ism
+  so'raydi) ortiqcha nuqta; ilovaning boshqa joylarida ataylab olib tashlangan foiz ("soxta aniqlik") bildirishnomalarda va
+  Telegram moslik xabarida qolgan ("Moslik 87%", "Moslik: 92%").
+- "Ariza holati: Ko'rib chiqildi" — to'q sariq **ogohlantirish belgisi** (!) bilan: oddiy yangilanish xato kabi ko'rinardi.
+- **Chat bo'sh holati** ish beruvchiga ham "Ariza yuborganingizda… · Ishlarni ko'rish" derdi.
+- **Ariza sahifasi (mobil):** "Yozish" va "Qo'ng'iroq qilish" eng pastda — moslik, xabar, izohlar va holat tarixidan keyin.
+- **Rang:** taklifni "Qabul qilish" sahifada yashil, tasdiqlash oynasida ko'k; kontakt kartasida yashil qo'ng'iroq tugmasi
+  (qidiruv kartalarida C8.3 dan beri asosiy rang).
+
+**KEYIN:**
+
+- Kabinet kartasida "**Arizalar: 1 ta · 1 ta yangi**" — asosiy rangdagi bitta tugma, nomzodlar ro'yxatiga olib boradi
+  (qaytarib olinganlar sanalmaydi; "yangi" = hali ko'rilmagan).
+- `MatchReasons perspective="employer"`: 16 ta sabab uchun uchinchi shaxsdagi matn ("Kasbi aynan mos", "Grafik unga mos",
+  "Ish joyidan 3 km") — ariza, nomzod sahifasi va kabinetdagi "mos nomzodlar"da. Unit test: ishchiga murojaat qiluvchi
+  ("siz", "-ingiz") har bir sababning ish beruvchi varianti borligini va unda murojaat yo'qligini 4 tilda tekshiradi.
+- `renderNotification`: ism "Botir ." → "Botir" (eski yozuvlar ham, chunki matn ko'rsatishda yasaladi — migratsiya shart
+  emas); foiz o'rniga daraja ("Juda mos", "Mos"…) — UI, Telegram qisqa matni va Telegram moslik xabari (4 tilda).
+- Holat bildirishnomasi — neytral belgi (`ClipboardCheck`, asosiy rang yumshoq foni).
+- Chat bo'sh holati rolga mos: ish beruvchiga "Nomzod bilan yozishish uchun uning arizasini oching va «Yozish»ni bosing ·
+  Kelgan arizalar".
+- Ariza sahifalari (ish beruvchi va ishchi): mobil'da sarlavha kartasi va holat → **amallar va kontakt** → qolgan
+  tafsilotlar; desktop'da amallar avvalgidek o'ng ustunda (E2E tekshiradi). "Yozish" — `outline`, qo'ng'iroq — asosiy.
+- "Qabul qilish" va "Ishga oldim" — asosiy rang; kontakt kartasi neytral, qo'ng'iroq tugmasi asosiy rangda (barcha joyda).
+
+**Fayllar:** `src/components/shared/match-score.tsx`, `src/features/matching/reason-key.ts` (+ test),
+`src/features/notifications/{render,match-message}.ts` (+ testlar), `src/features/notifications/components/notification-icon.tsx`,
+`src/features/chat/components/conversation-list.tsx`, `src/app/messages/page.tsx`, `src/features/cabinet/{queries.ts,components/cabinet-page.tsx}`,
+`src/features/applications/components/{employer,worker}-application-detail.tsx`, `src/features/contacts/contact-card.tsx`,
+`src/features/offers/components/{offer-respond-actions,mark-hired-button}.tsx`, `src/app/workers/[id]/page.tsx`,
+`src/features/cabinet/components/matches-page.tsx`, `messages/*/{enums,notifications,chat,easy}.json`.
+Testlar: `e2e/specs/applications.spec.ts` (yangi, 4 test), `e2e/global-setup.ts` (yangi).
+
+**Skrinshotlar** (chap — c3243f0, o'ng — keyin): [kabinet: arizalar](screenshots/c8/c8-8-cabinet-applications-m.jpg) ·
+[ariza (ish beruvchi)](screenshots/c8/c8-8-application-employer-m.jpg) · [bildirishnomalar, ikki rol](screenshots/c8/c8-8-notifications-m.jpg) ·
+[chat bo'sh holati (ish beruvchi)](screenshots/c8/c8-8-chat-empty-employer-m.jpg) · [taklif (ishchi)](screenshots/c8/c8-8-offer-worker-m.jpg).
+
+**Testlar:**
+
+| Test | Eski build (c3243f0) | Keyin |
+|---|---|---|
+| `applications.spec.ts` — ariza → kabinetda "Arizalar: 1 ta · 1 ta yangi" → nomzod → "Kasbi aynan mos" (ishchi tili yo'q) → mobil'da "Yozish" moslikdan oldin → "Tanlovga olish" → chat → ish beruvchi bildirishnomasi "Botir ariza yubordi · Juda mos" → ishchi: "Ariza holati: Tanlovda", ogohlantirish rangi yo'q → javob → ish beruvchi javobni ko'radi | ❌ | ✅ |
+| — taklif: yuborish → ishchi "Qabul qilish" asosiy rangda → qabul → qo'ng'iroq tugmasi asosiy rangda → ish beruvchiga "Taklif qabul qilindi · Botir · Buxgalter" | ❌ | ✅ |
+| — chat bo'sh holati: ish beruvchiga "arizasini oching" + "Kelgan arizalar", ishchiga "Ishlarni ko'rish" | ❌ | ✅ |
+| — desktop 1280: ariza sahifasida amallar o'ng ustunda, sahifa boshida (mobil tartib desktop'ni buzmagan) | ✅ | ✅ |
+| `reason-key.test.ts` (3), `render.test.ts` (+2), `match-message.test.ts` (2, yangi) | — | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 69/69 · 558 / 18 skip · ✅ · ✅ |
+
+**E2E stendi:** `e2e/global-setup.ts` har ishga tushirishdan oldin `rate_limits` hisoblagichlarini tozalaydi. Sabab: bir
+stendda suite ko'p marta yurganda vakansiya joylash cheklovi ("Juda ko'p urinish") oldingi yurishlardan to'planib, 6 ta testni
+yiqitdi (yangi stendda va CI'da bunday bo'lmaydi). Cheklovning o'zi o'zgarmadi.
+
+**NOT_RUN / ochiq:**
+
+- Chat realtime (ikkinchi oynada xabar darhol paydo bo'lishi) — stendda Supabase Realtime yo'q; xabarlar sahifa ochilganda
+  serverdan ko'rinishi tekshirildi. Staging'da ikki qurilma bilan tekshirish kerak.
+- Telegram orqali bildirishnoma yetkazish — matn unit testda; haqiqiy yuborish staging + bot bilan (C8.6 dagi kabi).
+- Ish beruvchining `/profile` sahifasi oddiy "O'zim uchun" e'lon beruvchiga ham "Dashboard" va "Kompaniya sozlamalari"ni
+  ko'rsatadi — C8.9 (sozlamalar) da ko'rib chiqiladi.
+- Ariza holatlari palitrasi: "Yuborildi/Ko'rib chiqildi" uchun `sky` rangi (tokenlashtirilmagan) — C8.10 da tokenga o'tkaziladi.

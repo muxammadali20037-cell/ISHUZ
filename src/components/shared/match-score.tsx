@@ -4,6 +4,7 @@ import { Check, AlertTriangle, CircleHelp, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { matchLevel } from "@/features/matching/level";
+import { matchReasonKey, type ReasonPerspective } from "@/features/matching/reason-key";
 
 /** ok: true — mos; "warn" — qisman; false — mos emas; "unknown" — talab bor, lekin ma'lumot yo'q (mos deb hisoblanmaydi) */
 export type MatchReason = { key: string; ok: boolean | "warn" | "unknown"; [param: string]: unknown };
@@ -57,8 +58,18 @@ export function MatchRing({ score, className }: { score: number; className?: str
   );
 }
 
-/** Moslik sabablari ro'yxati: ✓ mos, ⚠ qisman, ✗ mos emas */
-export function MatchReasons({ reasons, className, compact }: { reasons: MatchReason[] | null | undefined; className?: string; compact?: boolean }) {
+/** Moslik sabablari ro'yxati: ✓ mos, ⚠ qisman, ✗ mos emas. `perspective="employer"` — nomzod haqida ("Kasbi mos"), ishchiga murojaat emas */
+export function MatchReasons({
+  reasons,
+  className,
+  compact,
+  perspective = "worker",
+}: {
+  reasons: MatchReason[] | null | undefined;
+  className?: string;
+  compact?: boolean;
+  perspective?: ReasonPerspective;
+}) {
   const { t, tEnum } = useT();
   if (!reasons?.length) return null;
   const items = compact ? reasons.filter((r) => r.ok !== true).slice(0, 3).concat(reasons.filter((r) => r.ok === true).slice(0, 2)) : reasons;
@@ -77,7 +88,7 @@ export function MatchReasons({ reasons, className, compact }: { reasons: MatchRe
         return (
           <li key={`${r.key}-${i}`} className="flex items-start gap-2 text-sm">
             <Icon className={cn("mt-0.5 size-4 shrink-0", color)} strokeWidth={2.5} />
-            <span>{t(`enums.match_reason.${r.key}`, params)}</span>
+            <span>{t(matchReasonKey(r.key, perspective), params)}</span>
           </li>
         );
       })}

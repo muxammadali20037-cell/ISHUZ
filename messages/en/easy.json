@@ -40,6 +40,8 @@
     "done_found_worker": "Congratulations! The job was closed.",
     "republish": "Post again",
     "view": "Details",
+    "applications": "Applications: {count}",
+    "applications_new": "{count} new",
     "pay": "Pay and publish",
     "matches_jobs": "Jobs for me",
     "matches_workers": "Matching workers",

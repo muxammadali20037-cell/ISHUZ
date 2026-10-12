@@ -1,7 +1,7 @@
 import {
   BadgeCheck,
   CalendarClock,
-  CircleAlert,
+  ClipboardCheck,
   FileText,
   Handshake,
   Hourglass,
@@ -18,7 +18,8 @@ import type { NotificationIcon as IconKey } from "../render";
 
 const ICONS: Record<IconKey, { icon: LucideIcon; tone: string }> = {
   application: { icon: FileText, tone: "bg-primary-soft text-primary" },
-  status: { icon: CircleAlert, tone: "bg-warning-soft text-warning" },
+  // holat yangilandi (ko'rildi, tanlovga olindi, rad etildi…) — xato emas, oddiy xabar
+  status: { icon: ClipboardCheck, tone: "bg-primary-soft text-primary" },
   offer: { icon: Handshake, tone: "bg-success-soft text-success" },
   offer_response: { icon: Reply, tone: "bg-success-soft text-success" },
   message: { icon: MessageCircle, tone: "bg-primary-soft text-primary" },

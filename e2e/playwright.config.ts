@@ -13,6 +13,7 @@ const app =
 
 export default defineConfig({
   testDir: path.join(__dirname, "specs"),
+  globalSetup: path.join(__dirname, "global-setup.ts"),
   outputDir: path.join(__dirname, ".stack/results"),
   fullyParallel: false,
   workers: 1,

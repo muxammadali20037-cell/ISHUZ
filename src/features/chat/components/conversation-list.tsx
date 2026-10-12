@@ -22,8 +22,8 @@ function nameInitials(name: string | null): string {
   return (a + b).toUpperCase() || "?";
 }
 
-/** Suhbatlar ro'yxati (client: realtime yangilanish + ?error= toast) */
-export function ConversationList({ items, errorCode }: { items: ConversationListItem[]; errorCode?: string }) {
+/** Suhbatlar ro'yxati (client: realtime yangilanish + ?error= toast). `audience` — bo'sh holat matni kimga (ish beruvchi arizadan yozadi) */
+export function ConversationList({ items, errorCode, audience = "worker" }: { items: ConversationListItem[]; errorCode?: string; audience?: "worker" | "employer" }) {
   const { t, locale } = useT();
   const router = useRouter();
 
@@ -57,8 +57,8 @@ export function ConversationList({ items, errorCode }: { items: ConversationList
       <EmptyState
         icon={MessageCircle}
         title={t("chat.list.empty_title")}
-        description={t("chat.list.empty_desc")}
-        action={{ label: t("chat.list.empty_cta"), href: "/jobs" }}
+        description={audience === "employer" ? t("chat.list.empty_desc_employer") : t("chat.list.empty_desc")}
+        action={audience === "employer" ? { label: t("chat.list.empty_cta_employer"), href: "/employer/applications" } : { label: t("chat.list.empty_cta"), href: "/jobs" }}
       />
     );
   }
