@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import { callAction } from "@/lib/action-call";
 import { normalizePhone, formatPhone } from "@/lib/format";
 import type { Category, District, Region } from "@/lib/reference";
 import { Input, Textarea } from "@/components/ui/input";
@@ -191,7 +192,7 @@ export function VacancyPost({
       return;
     }
     start(async () => {
-      const res = await publishVacancyListing({
+      const res = await callAction(() => publishVacancyListing({
         vacancyId: draft.editId,
         clientRef: draft.clientRef,
         professionNodeId: draft.profession?.id ?? null,
@@ -212,7 +213,7 @@ export function VacancyPost({
         showPhone: draft.showPhone,
         photoPath: draft.photoPath ?? null,
         source: draft.source ?? "manual",
-      });
+      }));
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
         const msg = t(key);

@@ -67,6 +67,7 @@ export function ProfessionPicker({
   const [query, setQuery] = useState(value ? "" : initialQuery.trim().slice(0, 80));
   const [hits, setHits] = useState<ProfessionSearchHit[] | null>(null);
   const [searching, setSearching] = useState(false);
+  const searchSeq = useRef(0);
   const [recent, setRecent] = useState<PickedProfession[]>([]);
   const topRef = useRef<HTMLDivElement>(null);
   const [custom, setCustom] = useState<string | null>(null);
@@ -110,28 +111,33 @@ export function ProfessionPicker({
     return () => window.clearTimeout(id);
   }, [browsing, levelKey, cache, load]);
 
-  // Qidiruv (250 ms kechikish bilan)
+  // Qidiruv (250 ms kechikish bilan). Har yangi matn eski so'rovni bekor qiladi (AbortController); javob faqat eng
+  // oxirgi so'rovga tegishli bo'lsa qabul qilinadi; "qidirilmoqda" belgisi har qanday holatda (bekor, xato, qisqa matn) o'chadi.
   useEffect(() => {
     const q = query.trim();
+    const seq = ++searchSeq.current;
     if (q.length < 2) {
-      const id = window.setTimeout(() => setHits(null), 0);
+      const id = window.setTimeout(() => {
+        setHits(null);
+        setSearching(false);
+      }, 0);
       return () => window.clearTimeout(id);
     }
-    let cancelled = false;
+    const ctrl = new AbortController();
     const id = window.setTimeout(async () => {
       setSearching(true);
       try {
-        const res = await fetch(`/api/professions/search?q=${encodeURIComponent(q)}`);
+        const res = await fetch(`/api/professions/search?q=${encodeURIComponent(q)}`, { signal: ctrl.signal });
         const { results } = (await res.json()) as { results: ProfessionSearchHit[] };
-        if (!cancelled) setHits(results ?? []);
+        if (seq === searchSeq.current) setHits(results ?? []);
       } catch {
-        if (!cancelled) setHits([]);
+        if (seq === searchSeq.current && !ctrl.signal.aborted) setHits([]);
       } finally {
-        if (!cancelled) setSearching(false);
+        if (seq === searchSeq.current) setSearching(false);
       }
     }, 250);
     return () => {
-      cancelled = true;
+      ctrl.abort();
       window.clearTimeout(id);
     };
   }, [query]);

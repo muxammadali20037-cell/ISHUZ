@@ -343,7 +343,10 @@
     "invalid_category": "Choose the closest field",
     "photo_invalid": "We couldn't read this image, or it isn't a photo. Choose another JPG, PNG or WEBP photo",
     "photo_unavailable": "The photo couldn't be checked right now. Upload it again or continue without a photo",
-    "photo_not_verified": "The photo hasn't been checked. Please upload it again"
+    "photo_not_verified": "The photo hasn't been checked. Please upload it again",
+    "offline": "You're offline. Your answers are saved on this device — tap again when you're back online.",
+    "network": "The connection dropped or the server didn't respond. Your answers are saved — tap again.",
+    "timeout": "The response is taking long. The listing may already be saved — tap again, it won't be posted twice."
   },
   "nav": {
     "search": "Search",

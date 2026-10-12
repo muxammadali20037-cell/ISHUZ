@@ -32,7 +32,7 @@ test("ishchi: 'Kasbim topilmadi' → asl nom + soha → joylandi, bazada custom 
   // 4-qadam: tekshirish — custom belgi bilan, katalog kasbi deb ko'rsatilmaydi
   await expect(page.getByText(`${NAME} (Qo'lda yozilgan)`).first()).toBeVisible();
   await page.getByRole("button", { name: /E'lonni joylash|O'zgarishlarni saqlash/ }).click();
-  await expect(page.getByText(/joylandi|saqlandi/i).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 1, name: /joylandi|saqlandi/i })).toBeVisible({ timeout: 30_000 });
 
   const [w] = await sql<{ profession_node_id: string | null; custom_profession: string; category_id: string | null }>(
     "select profession_node_id, custom_profession, category_id from public.worker_profiles where profile_id = $1",

@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { ViewTransition } from "react";
-import { PAGE_ENTER, PAGE_EXIT } from "@/app/template";
 import { redirect } from "next/navigation";
 import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
@@ -72,12 +70,6 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       <FindResultsView params={params} node={node} region={region} district={district} />
     );
 
-  // bir sahifa ichidagi qadamlar (URL parametrlari) ham o'tish animatsiyasi bilan almashadi
-  return (
-    <Shell>
-      <ViewTransition key={stepKey} enter={PAGE_ENTER} exit={PAGE_EXIT} default="none">
-        <div>{view}</div>
-      </ViewTransition>
-    </Shell>
-  );
+  // qadamlar darhol almashadi: o'tish animatsiyasi bosishni bloklamasin (C7)
+  return <Shell>{view}</Shell>;
 }

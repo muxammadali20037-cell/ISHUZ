@@ -343,7 +343,10 @@
     "invalid_category": "Kasbga eng yaqin sohani tanlang",
     "photo_invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa JPG, PNG yoki WEBP surat tanlang",
     "photo_unavailable": "Rasmni hozir tekshirib bo'lmadi. Uni qayta yuklang yoki rasmsiz davom eting",
-    "photo_not_verified": "Rasm tekshirilmagan. Uni qayta yuklang"
+    "photo_not_verified": "Rasm tekshirilmagan. Uni qayta yuklang",
+    "offline": "Internet yo'q. Javoblaringiz shu qurilmada saqlandi — internet qaytgach yana bosing.",
+    "network": "Internet aloqasi uzildi yoki server javob bermadi. Javoblaringiz saqlandi — yana bosing.",
+    "timeout": "Javob kechikdi. E'lon saqlangan bo'lishi mumkin — yana bosing, ikki marta joylanmaydi."
   },
   "nav": {
     "search": "Qidirish",

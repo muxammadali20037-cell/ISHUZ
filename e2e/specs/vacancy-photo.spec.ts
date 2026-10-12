@@ -60,7 +60,7 @@ test("surat tekshirilib, metama'lumotsiz nusxa e'longa yoziladi; xom fayl karant
 
   await next(page);
   await page.getByRole("button", { name: /E'lonni joylash|O'zgarishlarni saqlash/ }).click();
-  await expect(page.getByText(/joylandi|saqlandi/i).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 1, name: /joylandi|saqlandi/i })).toBeVisible({ timeout: 30_000 });
   const [v] = await sql<{ photo_path: string }>("select photo_path from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   expect(v!.photo_path).toBe(`${USERS.employer}/${pub[0]}`);
 });
@@ -81,7 +81,7 @@ async function legacyVacancy(page: Page, withFile: boolean) {
   await openPhotoStep(page);
   await next(page);
   await page.getByRole("button", { name: /E'lonni joylash/ }).click();
-  await expect(page.getByText(/joylandi|saqlandi/i).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 1, name: /joylandi|saqlandi/i })).toBeVisible({ timeout: 30_000 });
   const legacy = `${USERS.employer}/0b000000-0000-4000-8000-0000000000aa.jpg`;
   if (withFile) {
     fs.mkdirSync(path.join(STORAGE, "vacancy-photos", USERS.employer), { recursive: true });
@@ -97,7 +97,7 @@ async function editDescription(page: Page, id: string, text: string) {
   await page.locator("#desc").fill(text);
   await next(page);
   await page.getByRole("button", { name: /O'zgarishlarni saqlash|E'lonni joylash/ }).click();
-  await expect(page.getByText(/joylandi|saqlandi/i).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 1, name: /joylandi|saqlandi/i })).toBeVisible({ timeout: 30_000 });
 }
 
 test("eski e'lon: xom rasm tahrirda bir marta tekshirilgan nusxaga o'tadi", async ({ page, context }) => {

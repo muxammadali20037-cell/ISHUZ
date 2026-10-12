@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import { callAction } from "@/lib/action-call";
 import { normalizePhone, formatPhone, formatMoney } from "@/lib/format";
 import type { Category, District, Region } from "@/lib/reference";
 import { Input, Textarea } from "@/components/ui/input";
@@ -171,7 +172,7 @@ export function WorkerPost({
       return;
     }
     start(async () => {
-      const res = await publishWorkerListing({
+      const res = await callAction(() => publishWorkerListing({
         professionNodeId: draft.profession?.id ?? null,
         customProfession: draft.profession ? null : (draft.custom ?? null),
         headline: professionName,
@@ -186,7 +187,7 @@ export function WorkerPost({
         schedule: draft.schedule || null,
         showPhone: draft.showPhone,
         source: draft.source ?? "manual",
-      });
+      }));
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
         const msg = t(key);

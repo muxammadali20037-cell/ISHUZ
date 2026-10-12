@@ -79,7 +79,6 @@ export async function HomeThree({ session }: { session: SessionContext | null })
           <li key={c.href} className="flex">
             <Link
               href={c.href}
-              transitionTypes={["nav-forward"]}
               data-track="direction_select"
              
               data-track-to={c.href.replace(/[^a-z/]/g, "").slice(0, 40)}

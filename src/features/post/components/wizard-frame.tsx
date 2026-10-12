@@ -92,7 +92,7 @@ export function WizardFrame({
               </Button>
             ) : (
               <Button asChild variant="outline" size="xl" className="h-14 min-w-[7.5rem] px-4 text-lg">
-                <Link href={backHref ?? "/"} transitionTypes={["nav-back"]}>
+                <Link href={backHref ?? "/"}>
                   <ArrowLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
                 </Link>
               </Button>

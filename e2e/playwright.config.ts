@@ -7,7 +7,9 @@ import { defineConfig, devices } from "@playwright/test";
  * Natijalar: e2e/.stack/report (HTML), xato bo'lsa trace/screenshot — e2e/.stack/results.
  */
 const envFile = path.join(__dirname, ".stack/env.json");
-const app = fs.existsSync(envFile) ? (JSON.parse(fs.readFileSync(envFile, "utf8")) as { app: string }).app : "http://localhost:3300";
+const app =
+  // E2E_BASE_URL — o'sha stendga ulangan boshqa build (masalan, "avval/keyin" o'lchovi uchun eski commit) ustida ishga tushirish
+  process.env.E2E_BASE_URL ?? (fs.existsSync(envFile) ? (JSON.parse(fs.readFileSync(envFile, "utf8")) as { app: string }).app : "http://localhost:3300");
 
 export default defineConfig({
   testDir: path.join(__dirname, "specs"),

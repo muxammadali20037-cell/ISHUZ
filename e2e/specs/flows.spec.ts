@@ -47,7 +47,7 @@ test("e'lonni joylash tugmasini ikki marta bosish — bitta e'lon", async ({ pag
   await page.getByText("Kelishiladi", { exact: true }).first().click();
   await next(page);
   await page.getByRole("button", { name: /E'lonni joylash/ }).dblclick();
-  await expect(page.getByText(/joylandi|saqlandi/i).first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByRole("heading", { level: 1, name: /joylandi|saqlandi/i })).toBeVisible({ timeout: 30_000 });
   // fon jarayonlari ham tugashini kutib, qayta sanaymiz
   await page.waitForTimeout(1500);
   const [c] = await sql<{ n: string }>("select count(*) as n from public.vacancies where owner_profile_id = $1", [USERS.employer]);
