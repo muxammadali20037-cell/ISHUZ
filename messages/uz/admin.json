@@ -33,7 +33,8 @@
     "moderation": "Moderatsiya navbati",
     "matching": "Moslik qoidalari",
     "queues": "Navbatlar holati",
-    "security": "Xavfsizlik"
+    "security": "Xavfsizlik",
+    "home": "Bosh sahifa"
   },
   "common": {
     "done": "Bajarildi",
@@ -58,7 +59,8 @@
     "weights_must_sum_100": "Og'irliklar yig'indisi 100 bo'lishi kerak",
     "invalid_threshold": "Chegara 50 dan 100 gacha bo'lsin",
     "invalid_weights": "Har bir og'irlik 0–60 oralig'ida bo'lsin",
-    "use_matching_page": "Bu sozlama «Moslik qoidalari» sahifasida o'zgartiriladi"
+    "use_matching_page": "Bu sozlama «Moslik qoidalari» sahifasida o'zgartiriladi",
+    "needs_migration": "Avval bazaga 0060 migratsiyasini qo'llang"
   },
   "table": {
     "range": "{from}–{to} / {total}"
@@ -835,5 +837,36 @@
     "revoke_sessions": "Barcha qurilmalardan chiqarish",
     "revoke_title": "{name} — barcha qurilmalardan chiqarish",
     "revoke_desc": "Barcha sessiyalar o'chiriladi; joriy token bilan yozish darhol to'xtaydi. Hisob bloklanmaydi — foydalanuvchi qayta kira oladi."
+  },
+  "home": {
+    "title": "Bosh sahifa",
+    "subtitle": "Tepadagi rasmli oynalar va «O'zingizga mosini toping» lupa tugmasi",
+    "needs_migration": "Bu sozlamalarni saqlash uchun bazaga 0060 migratsiyasi qo'llanishi kerak. Hozircha saytda standart oynalar ko'rinadi.",
+    "ai_button": "«O'zingizga mosini toping» lupa tugmasi",
+    "ai_button_hint": "Har sahifada o'ng pastda turadi. O'chirsangiz — saytdan darhol yo'qoladi.",
+    "windows": "Rasmli oynalar",
+    "windows_hint": "Bosh sahifa tepasida, chapdan o'ngga shu tartibda. Matn yozilmagan tilda standart matn ko'rinadi.",
+    "window_n": "{n}-oyna",
+    "enabled": "Ko'rsatilsin",
+    "upload": "Rasm yuklash",
+    "replace": "Rasmni almashtirish",
+    "remove_image": "O'rnatilgan rasmga qaytish",
+    "art": "O'rnatilgan rasm",
+    "art_workers": "Xodim topish",
+    "art_jobs": "Mos ish",
+    "art_daily": "Kunlik ishlar",
+    "link": "Havola (sayt ichidagi sahifa)",
+    "link_hint": "Masalan: /search?mode=jobs yoki /post/vacancy",
+    "title_field": "Sarlavha",
+    "desc_field": "Qisqa izoh",
+    "default_text": "Standart matn",
+    "move_up": "Yuqoriga",
+    "move_down": "Pastga",
+    "remove": "Oynani o'chirish",
+    "add": "Oyna qo'shish",
+    "save": "Saqlash",
+    "reset": "Standartga qaytarish",
+    "reset_confirm": "Oynalar standart holatga qaytarilsinmi? Yuklangan rasmlar va yozilgan matnlar olib tashlanadi.",
+    "saved": "Bosh sahifa yangilandi"
   }
 }

@@ -19,7 +19,7 @@ const STORAGE_DIR = process.env.STORAGE_DIR || path.resolve("e2e/.stack/storage"
 const LATENCY_MS = Number(process.env.E2E_DB_LATENCY_MS || 0);
 const LOG_REQUESTS = process.env.E2E_GATEWAY_LOG === "1";
 
-const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos"]);
+const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos", "site-media"]);
 const RAW_PHOTO = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const RAW_MEDIA = new RegExp(`^(avatar|logo)/(${UUID})/${UUID}\\.(jpg|png|webp)$`);

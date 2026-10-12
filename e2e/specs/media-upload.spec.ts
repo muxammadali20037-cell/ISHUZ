@@ -23,9 +23,11 @@ const photoWithExif = () =>
 /** Foydalanuvchi kabi: tugma bosiladi → fayl tanlash oynasi; sahifa hali "jonlanmagan" bo'lsa (hydration), urinish takrorlanadi */
 async function chooseFile(page: Page, button: Locator, file: { name: string; mimeType: string; buffer: Buffer }) {
   await expect(async () => {
-    const chooser = page.waitForEvent("filechooser", { timeout: 2000 });
+    const chooser = page.waitForEvent("filechooser", { timeout: 2000 }).catch(() => null);
     await button.click();
-    await (await chooser).setFiles(file);
+    const c = await chooser;
+    if (!c) throw new Error("fayl tanlash oynasi ochilmadi");
+    await c.setFiles(file);
   }).toPass({ timeout: 15_000 });
 }
 
@@ -51,7 +53,8 @@ test("profil rasmi: EXIF'siz WebP, tekshirilgan nom; xom fayl karantindan o'chad
   await workerReady();
   await loginAs(context, USERS.workerB);
   await page.goto("/profile/edit");
-  const upload = page.getByRole("button", { name: /^Rasm(ni almashtirish| yuklash)$/ });
+  // avatar doirasi ham shu nomli tugma — matnli tugma (oxirgisi) bosiladi
+  const upload = page.getByRole("button", { name: /^Rasm(ni almashtirish| yuklash)$/ }).last();
 
   await chooseFile(page, upload, { name: "men.jpg", mimeType: "image/jpeg", buffer: await photoWithExif() });
   await expect(page.getByText("Yuklandi", { exact: true }).first()).toBeVisible({ timeout: 15_000 });

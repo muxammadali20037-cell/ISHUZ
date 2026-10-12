@@ -33,7 +33,8 @@
     "moderation": "Moderation queue",
     "matching": "Matching rules",
     "queues": "Queues",
-    "security": "Security"
+    "security": "Security",
+    "home": "Home page"
   },
   "common": {
     "done": "Done",
@@ -58,7 +59,8 @@
     "weights_must_sum_100": "Weights must sum to 100",
     "invalid_threshold": "Threshold must be 50–100",
     "invalid_weights": "Each weight must be 0–60",
-    "use_matching_page": "Change this on the Matching rules page"
+    "use_matching_page": "Change this on the Matching rules page",
+    "needs_migration": "Apply migration 0060 to the database first"
   },
   "table": {
     "range": "{from}–{to} / {total}"
@@ -835,5 +837,36 @@
     "revoke_sessions": "Sign out everywhere",
     "revoke_title": "{name} — sign out everywhere",
     "revoke_desc": "All sessions are deleted; writes with current tokens stop immediately. The account isn't blocked — the user can sign in again."
+  },
+  "home": {
+    "title": "Home page",
+    "subtitle": "Picture windows at the top and the “Find what fits you” magnifier button",
+    "needs_migration": "Migration 0060 must be applied to the database to save these settings. The site shows the default windows for now.",
+    "ai_button": "“Find what fits you” magnifier button",
+    "ai_button_hint": "Sits at the bottom right of every page. Turning it off removes it from the site immediately.",
+    "windows": "Picture windows",
+    "windows_hint": "At the top of the home page, left to right in this order. Where no text is set, the default text is shown.",
+    "window_n": "Window {n}",
+    "enabled": "Show",
+    "upload": "Upload picture",
+    "replace": "Replace picture",
+    "remove_image": "Back to built-in picture",
+    "art": "Built-in picture",
+    "art_workers": "Find staff",
+    "art_jobs": "Matching job",
+    "art_daily": "Day jobs",
+    "link": "Link (page on this site)",
+    "link_hint": "E.g. /search?mode=jobs or /post/vacancy",
+    "title_field": "Title",
+    "desc_field": "Short description",
+    "default_text": "Default text",
+    "move_up": "Move up",
+    "move_down": "Move down",
+    "remove": "Remove window",
+    "add": "Add window",
+    "save": "Save",
+    "reset": "Restore defaults",
+    "reset_confirm": "Restore the default windows? Uploaded pictures and texts will be removed.",
+    "saved": "Home page updated"
   }
 }
