@@ -1,18 +1,18 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowLeft, ArrowRight, BriefcaseBusiness, ChevronRight, Globe2, MapPin, Search, UsersRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, BriefcaseBusiness, ChevronRight, Search, UsersRound } from "lucide-react";
 import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { formatMoneyShort } from "@/lib/format";
 import { getSession } from "@/features/auth/session";
 import { trackServer } from "@/features/analytics/server";
-import type { Category, District, Region } from "@/lib/reference";
+import type { District, Region } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { activeFilterCount, findHref, type FindParams } from "../params";
 import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
-import { ChangeSheet, FilterSheet, FindProfessionStep, RetryButton } from "./find-client";
+import { ChangeSheet, FilterSheet, RetryButton } from "./find-client";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 import { isCityRegion } from "@/lib/geo/city";
 
@@ -121,94 +121,6 @@ export async function FindAskIntent({ params, node }: { params: FindParams; node
           </span>
         </Link>
       </div>
-    </StepShell>
-  );
-}
-
-export async function FindProfession({ params, categories }: { params: FindParams; categories: Category[] }) {
-  const { t } = await getT();
-  const title = params.mode === "workers" ? t("easy.search.profession_workers") : t("easy.search.profession_jobs");
-  return (
-    <StepShell back={findHref(params, { mode: null, p: null })} title={params.mode === "workers" ? t("easy.search.workers") : t("easy.search.jobs")}>
-      {params.q ? <p className="rounded-2xl border border-warning/40 bg-warning-soft px-4 py-3 text-lg">{t("easy.search.not_understood", { q: params.q })}</p> : null}
-      <FindProfessionStep categories={categories} title={title} initialQuery={params.q} hrefTemplate={findHref(params, { p: "__NODE__", page: 1 })} />
-    </StepShell>
-  );
-}
-
-function ChosenSummary({ items }: { items: string[] }) {
-  return <p className="rounded-2xl bg-secondary px-4 py-3 text-lg font-semibold">{items.filter(Boolean).join(" · ")}</p>;
-}
-
-export async function FindRegion({ params, regions, node }: { params: FindParams; regions: Region[]; node: NodeInfo | null }) {
-  const { t, name } = await getT();
-  const prof = node ? name(node.trail.at(-1)!) : "";
-  return (
-    <StepShell
-      back={findHref(params, { p: null, region: null, district: null })}
-      title={t("easy.search.region_title")}
-      summary={<ChosenSummary items={[params.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs"), prof]} />}
-    >
-      <ul className="pop-list grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <li className="sm:col-span-2">
-          <Link href={findHref(params, { region: "all", district: null, page: 1 })} className={cn(bigLink, "border-primary/40")}>
-            <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
-            <span className="flex-1">{t("easy.location.whole_country")}</span>
-            <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
-          </Link>
-        </li>
-        {regions.map((r) => (
-          <li key={r.id}>
-            <Link href={findHref(params, { region: r.slug, district: null, page: 1 })} className={bigLink}>
-              <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
-              <span className="flex-1">{name(r)}</span>
-              <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
-            </Link>
-          </li>
-        ))}
-        <li className="sm:col-span-2">
-          <Link href={findHref(params, { region: "remote", district: null, page: 1 })} className={bigLink}>
-            <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
-            <span className="flex-1">
-              <span className="block">{t("easy.location.remote")}</span>
-              <span className="block text-base font-normal text-muted-foreground">{t("easy.location.remote_desc")}</span>
-            </span>
-            <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
-          </Link>
-        </li>
-      </ul>
-    </StepShell>
-  );
-}
-
-export async function FindDistrict({ params, region, districts, node }: { params: FindParams; region: Region; districts: District[]; node: NodeInfo | null }) {
-  const { t, name } = await getT();
-  const prof = node ? name(node.trail.at(-1)!) : "";
-  return (
-    <StepShell
-      back={findHref(params, { region: null, district: null })}
-      title={t("easy.location.pick_district", { region: name(region) })}
-      summary={<ChosenSummary items={[params.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs"), prof, name(region)]} />}
-    >
-      <ul className="pop-list grid grid-cols-1 gap-2 sm:grid-cols-2">
-        <li className="sm:col-span-2">
-          <Link href={findHref(params, { district: "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
-            <span className="flex-1">
-              <span className="block">{t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}</span>
-              <span className="block text-base font-normal text-muted-foreground">{t(isCityRegion(region) ? "easy.location.whole_city_desc" : "easy.location.whole_region_desc")}</span>
-            </span>
-            <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
-          </Link>
-        </li>
-        {districts.map((d) => (
-          <li key={d.id}>
-            <Link href={findHref(params, { district: d.id, page: 1 })} className={bigLink}>
-              <span className="flex-1">{name(d)}</span>
-              <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
-            </Link>
-          </li>
-        ))}
-      </ul>
     </StepShell>
   );
 }

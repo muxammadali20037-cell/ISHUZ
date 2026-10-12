@@ -41,8 +41,47 @@ yaxshilanishi deb hisoblanmaydi.
 
 ## Qolganlar (o'lchanmagan yoki keyingi ekranlar bosqichida)
 
-- `callAction` hozircha faqat ikki e'lon formasida. Boshqa server amallari (ariza, taklif, chat, sozlamalar) C8 tartibida
-  har ekranni yakunlashda ko'chiriladi.
+- ~~`callAction` hozircha faqat ikki e'lon formasida~~ → C8.10 da barcha mijoz server amallari (98 chaqiruv) o'tkazildi.
 - 429/503: server action javobi xato bo'lsa, natija `network` bo'ladi (Q4 bilan bir xil yo'l). Alohida test — NOT_RUN.
 - Telegram ichidagi klaviatura va safe area (qabul #30) — haqiqiy qurilma kerak, NOT_RUN.
 - Real qurilmadagi field web-vitals — NOT_RUN (Vercel Speed Insights ulanishi kerak).
+
+## D1 · Qadamdan qadamga o'tish (2026-10-12)
+
+Foydalanuvchi: "qaysidir bosqichni bosganda sekin o'tyapti". O'lchov: `node e2e/perf/steps.mjs 3` (lab, field EMAS).
+
+**Sharoit:**
+- 390×844, CPU 4× sekin, 1,6 Mbit/s;
+- brauzer↔server RTT 150 ms ("Slow 4G") yoki 400 ms (O'zbekistondan uzoq server, kuchsiz tarmoq) — `STEPS_RTT_MS`;
+- har bir Supabase so'roviga +60 ms (shlyuz `E2E_DB_LATENCY_MS=60`, Vercel→Supabase masofasi taxmini).
+
+**Ko'rsatkichlar** (mediana, 3 o'tish). Vaqt sahifaning o'zida o'lchanadi — haqiqiy `click` hodisasidan:
+- **javob** — ekranda birinchi o'zgarish (kerakli qadam yoki kutish belgisi);
+- **tayyor** — kerakli qadam ko'rindi.
+
+| Qadam | Oldin (1a0a556) javob / tayyor, RTT 400 | Keyin javob / tayyor, RTT 400 | Keyin, RTT 150 | Server so'rovi (oldin → keyin) |
+|---|---|---|---|---|
+| Bosh sahifa → kasb qadami | 719 / 752 ms | **152** / 788 ms | 156 / 509 ms | 2 → 2 |
+| Kasb → viloyat | 551 / 572 ms | **129 / 134 ms** | 115 / 120 ms | 1 → **0** |
+| Viloyat → tuman | 526 / 536 ms | **74 / 84 ms** | 69 / 73 ms | 1 → **0** |
+| Tuman → natijalar | 526 / 533 ms | **42** / 526 ms | 42 / 277 ms | 3 → 3 |
+| E'lon formasi: 4 ta qadam | 60–125 ms | 50–115 ms (o'zgarmadi — mijozda edi) | — | 0 |
+
+**Sabab:** qidiruvning har qadami serverga to'liq so'rov edi. So'rov kelguncha ekranda eski qadam turib qolardi, faqat
+tepada ingichka chiziq ko'rinardi. Haqiqiy tarmoqda va server "uyg'onganda" (cold start) bu bir necha soniyagacha cho'ziladi.
+
+**Tuzatish:**
+- `src/features/find/components/find-steps.tsx` — kasb, viloyat va tuman qadamlari bitta mijoz komponentida.
+  - URL `history.pushState` bilan yangilanadi: Orqaga/Oldinga, sahifani yangilash va havolani ulashish o'zgarmadi.
+  - Viloyat va tumanlar ma'lumotnoma keshidan bir marta keladi.
+  - Natijaga olib boruvchi qatorda `useLinkStatus` aylanuvchi belgisi ko'rsatiladi.
+- `src/app/search/loading.tsx` — bosh sahifadan qidiruvga va qidiruv ichida server javobi kutilganda darhol skelet.
+- Test: `e2e/specs/step-speed.spec.ts`:
+  - kasb → viloyat → tuman uchun server so'rovi 0;
+  - Orqaga/Oldinga/«Orqaga» tugmasi va yangilash to'g'ri ishlaydi;
+  - natija 1,5 s kechiksa, 1 s ichida kutish belgisi chiqadi.
+
+**Qolgan:**
+- Natijalar va bosh sahifadan birinchi o'tish serverga bog'liq. Haqiqiy production vaqti (Vercel hududi, cold start)
+  bu muhitdan o'lchanmadi, chunki tarmoq siyosati production manziliga chiqishga ruxsat bermaydi — NOT_RUN.
+- Eng qisqa yo'l: Vercel Speed Insights yoki telefonda Telegram ichida bir marta yozib olish.

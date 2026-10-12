@@ -9,7 +9,8 @@ import { getNodeInfo } from "@/features/find/queries";
 import { smartResolveQuery } from "@/features/find/ai-search";
 import { getSession } from "@/features/auth/session";
 import { trackServer } from "@/features/analytics/server";
-import { FindAskIntent, FindDistrict, FindProfession, FindRegion, FindResultsView, FindStart } from "@/features/find/components/find-page";
+import { FindAskIntent, FindResultsView, FindStart } from "@/features/find/components/find-page";
+import { FindSteps } from "@/features/find/components/find-steps";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -43,10 +44,11 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     if (target !== findHref(params)) redirect(target);
   }
 
-  const [categories, regions] = await Promise.all([getCategories(), getRegions()]);
+  // ma'lumotnoma (kesh): kasb → viloyat → tuman qadamlari shu ma'lumot bilan telefonda almashadi
+  const [categories, regions, allDistricts] = await Promise.all([getCategories(), getRegions(), getDistricts()]);
   const region = params.region && params.region !== "all" && params.region !== "remote" ? (regions.find((r) => r.slug === params.region) ?? null) : null;
   const regionKnown = params.region === "all" || params.region === "remote" || !!region;
-  const districts = region ? await getDistricts(region.id) : [];
+  const districts = region ? allDistricts.filter((d) => d.region_id === region.id) : [];
   const district = region && params.district && params.district !== "all" ? (districts.find((d) => d.id === params.district) ?? null) : null;
   const districtKnown = params.district === "all" || !!district;
   const node = params.p ? await getNodeInfo(params.p) : null;
@@ -60,12 +62,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const view =
     stepKey === "intent" ? (
       params.q || node ? <FindAskIntent params={params} node={node} /> : <FindStart params={params} />
-    ) : stepKey === "profession" ? (
-      <FindProfession params={params} categories={categories} />
-    ) : stepKey === "region" ? (
-      <FindRegion params={params} regions={regions} node={node!} />
-    ) : stepKey === "district" ? (
-      <FindDistrict params={params} region={region!} districts={districts} node={node!} />
+    ) : stepKey === "profession" || stepKey === "region" || stepKey === "district" ? (
+      <FindSteps base={params} categories={categories} regions={regions} districts={allDistricts} initialNode={node ? { id: node.id, trail: node.trail } : null} />
     ) : (
       <FindResultsView params={params} node={node} region={region} district={district} />
     );

@@ -5,35 +5,13 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MapPin, Pencil, RotateCw, SlidersHorizontal, Users } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import type { Category } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
-import { ProfessionPicker } from "@/features/professions/components/profession-picker";
 import { ChoiceButtons } from "@/features/post/components/wizard-frame";
 import { MoneyInput } from "@/features/post/components/inputs";
 import { SCHEDULES } from "@/features/post/types";
 import type { Enums } from "@/types/database.types";
 import type { FindMode } from "../intent";
-
-/** Kasb qadami: tanlangan zahoti keyingi qadamga (URL'da __NODE__ o'rniga tugun id) */
-export function FindProfessionStep({ categories, title, initialQuery, hrefTemplate }: { categories: Category[]; title: string; initialQuery: string; hrefTemplate: string }) {
-  const router = useRouter();
-  const [busy, setBusy] = useState(false);
-  return (
-    <div aria-busy={busy || undefined}>
-      <ProfessionPicker
-        categories={categories}
-        value={null}
-        initialQuery={initialQuery}
-        title={title}
-        onChange={(p) => {
-          setBusy(true);
-          router.push(hrefTemplate.replace("__NODE__", p.id));
-        }}
-      />
-    </div>
-  );
-}
 
 /** "O'zgartirish": ish/ishchi, kasb yoki hudud — uchta katta tugma */
 export function ChangeSheet({ modeHref, professionHref, regionHref }: { modeHref: string; professionHref: string; regionHref: string }) {

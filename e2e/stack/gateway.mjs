@@ -15,6 +15,9 @@ if (!SECRET || SECRET.length < 32) {
 const PORT = Number(process.env.GATEWAY_PORT || 54331);
 const PGRST_PORT = Number(process.env.PGRST_PORT || 3401);
 const STORAGE_DIR = process.env.STORAGE_DIR || path.resolve("e2e/.stack/storage");
+// o'lchov uchun: har so'rovga sun'iy kechikish (Vercel → Supabase tarmog'i) va so'rovlar jurnali (e2e/perf/steps.mjs)
+const LATENCY_MS = Number(process.env.E2E_DB_LATENCY_MS || 0);
+const LOG_REQUESTS = process.env.E2E_GATEWAY_LOG === "1";
 
 const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos"]);
 const RAW_PHOTO = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
@@ -66,107 +69,113 @@ function fileFromMultipart(body, contentType) {
 
 http
   .createServer((req, res) => {
-    res.setHeader("access-control-allow-origin", req.headers.origin || "*");
-    res.setHeader("access-control-allow-credentials", "true");
-    res.setHeader("access-control-allow-headers", req.headers["access-control-request-headers"] || "*");
-    res.setHeader("access-control-allow-methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-    if (req.method === "OPTIONS") {
-      res.writeHead(204);
-      return res.end();
-    }
-    const url = req.url || "/";
+    if (LOG_REQUESTS) console.log(`${Date.now()} ${req.method} ${(req.url || "").split("?")[0]}`);
+    if (LATENCY_MS > 0) setTimeout(() => handle(req, res), LATENCY_MS);
+    else handle(req, res);
+  })
+  .listen(PORT, "127.0.0.1", () => console.log(`e2e gateway :${PORT} → postgrest :${PGRST_PORT}${LATENCY_MS ? ` (+${LATENCY_MS} ms)` : ""}`));
 
-    if (url.startsWith("/auth/v1/.well-known/jwks.json")) return json(res, 200, { keys: [] });
-    if (url.startsWith("/auth/v1/logout")) {
-      res.writeHead(204);
-      return res.end();
-    }
-    if (url.startsWith("/auth/v1/user")) {
-      const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
-      if (!c?.sub) return json(res, 401, { code: 401, msg: "invalid JWT" });
-      return json(res, 200, {
-        id: c.sub,
-        aud: "authenticated",
-        role: "authenticated",
-        email: c.email,
-        app_metadata: {},
-        user_metadata: {},
-        factors: [],
-        created_at: new Date().toISOString(),
-      });
-    }
+function handle(req, res) {
+  res.setHeader("access-control-allow-origin", req.headers.origin || "*");
+  res.setHeader("access-control-allow-credentials", "true");
+  res.setHeader("access-control-allow-headers", req.headers["access-control-request-headers"] || "*");
+  res.setHeader("access-control-allow-methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  if (req.method === "OPTIONS") {
+    res.writeHead(204);
+    return res.end();
+  }
+  const url = req.url || "/";
 
-    // DELETE /storage/v1/object/<bucket> {prefixes: [...]} — faqat service role (Supabase'da mijoz uchun siyosat hal qiladi)
-    const rm = /^\/storage\/v1\/object\/([^/?]+)\/?$/.exec(url);
-    if (rm && req.method === "DELETE") {
-      const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
-      if (c?.role !== "service_role") return json(res, 403, { statusCode: "403", error: "Unauthorized", message: "forbidden" });
+  if (url.startsWith("/auth/v1/.well-known/jwks.json")) return json(res, 200, { keys: [] });
+  if (url.startsWith("/auth/v1/logout")) {
+    res.writeHead(204);
+    return res.end();
+  }
+  if (url.startsWith("/auth/v1/user")) {
+    const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+    if (!c?.sub) return json(res, 401, { code: 401, msg: "invalid JWT" });
+    return json(res, 200, {
+      id: c.sub,
+      aud: "authenticated",
+      role: "authenticated",
+      email: c.email,
+      app_metadata: {},
+      user_metadata: {},
+      factors: [],
+      created_at: new Date().toISOString(),
+    });
+  }
+
+  // DELETE /storage/v1/object/<bucket> {prefixes: [...]} — faqat service role (Supabase'da mijoz uchun siyosat hal qiladi)
+  const rm = /^\/storage\/v1\/object\/([^/?]+)\/?$/.exec(url);
+  if (rm && req.method === "DELETE") {
+    const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+    if (c?.role !== "service_role") return json(res, 403, { statusCode: "403", error: "Unauthorized", message: "forbidden" });
+    const chunks = [];
+    req.on("data", (d) => chunks.push(d));
+    req.on("end", () => {
+      let prefixes = [];
+      try {
+        prefixes = JSON.parse(Buffer.concat(chunks).toString() || "{}").prefixes || [];
+      } catch {
+        return json(res, 400, { message: "bad json" });
+      }
+      const gone = [];
+      for (const name of prefixes) {
+        const f = path.join(STORAGE_DIR, rm[1], name);
+        if (f.startsWith(STORAGE_DIR + path.sep) && fs.existsSync(f)) {
+          fs.unlinkSync(f);
+          gone.push({ name, bucket_id: rm[1] });
+        }
+      }
+      json(res, 200, gone);
+    });
+    return;
+  }
+
+  const st = /^\/storage\/v1\/object\/(public\/)?([^/?]+)\/([^?]+)/.exec(url);
+  if (st) {
+    const bucket = st[2];
+    const name = decodeURIComponent(st[3]);
+    const file = path.join(STORAGE_DIR, bucket, name);
+    if (!file.startsWith(STORAGE_DIR + path.sep)) return json(res, 400, { message: "bad path" });
+    const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+    if (!st[1] && (req.method === "POST" || req.method === "PUT")) {
+      if (!c) return json(res, 401, { message: "unauthorized" });
+      if (c.role !== "service_role") {
+        const denied = clientWriteDenied(bucket, name, c.sub);
+        if (denied) return json(res, 403, { statusCode: "403", error: "Unauthorized", message: `new row violates row-level security policy (${denied})` });
+        if (fs.existsSync(file) && req.headers["x-upsert"] !== "true") return json(res, 409, { statusCode: "409", error: "Duplicate", message: "The resource already exists" });
+      }
       const chunks = [];
       req.on("data", (d) => chunks.push(d));
       req.on("end", () => {
-        let prefixes = [];
-        try {
-          prefixes = JSON.parse(Buffer.concat(chunks).toString() || "{}").prefixes || [];
-        } catch {
-          return json(res, 400, { message: "bad json" });
-        }
-        const gone = [];
-        for (const name of prefixes) {
-          const f = path.join(STORAGE_DIR, rm[1], name);
-          if (f.startsWith(STORAGE_DIR + path.sep) && fs.existsSync(f)) {
-            fs.unlinkSync(f);
-            gone.push({ name, bucket_id: rm[1] });
-          }
-        }
-        json(res, 200, gone);
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, fileFromMultipart(Buffer.concat(chunks), req.headers["content-type"]));
+        json(res, 200, { Key: `${bucket}/${name}`, Id: crypto.randomUUID() });
       });
       return;
     }
-
-    const st = /^\/storage\/v1\/object\/(public\/)?([^/?]+)\/([^?]+)/.exec(url);
-    if (st) {
-      const bucket = st[2];
-      const name = decodeURIComponent(st[3]);
-      const file = path.join(STORAGE_DIR, bucket, name);
-      if (!file.startsWith(STORAGE_DIR + path.sep)) return json(res, 400, { message: "bad path" });
-      const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
-      if (!st[1] && (req.method === "POST" || req.method === "PUT")) {
-        if (!c) return json(res, 401, { message: "unauthorized" });
-        if (c.role !== "service_role") {
-          const denied = clientWriteDenied(bucket, name, c.sub);
-          if (denied) return json(res, 403, { statusCode: "403", error: "Unauthorized", message: `new row violates row-level security policy (${denied})` });
-          if (fs.existsSync(file) && req.headers["x-upsert"] !== "true") return json(res, 409, { statusCode: "409", error: "Duplicate", message: "The resource already exists" });
-        }
-        const chunks = [];
-        req.on("data", (d) => chunks.push(d));
-        req.on("end", () => {
-          fs.mkdirSync(path.dirname(file), { recursive: true });
-          fs.writeFileSync(file, fileFromMultipart(Buffer.concat(chunks), req.headers["content-type"]));
-          json(res, 200, { Key: `${bucket}/${name}`, Id: crypto.randomUUID() });
-        });
-        return;
-      }
-      // ommaviy havola — faqat ommaviy bucket; yopiq bucket'dan o'qish — faqat service role
-      const readable = PUBLIC_BUCKETS.has(bucket) || (!st[1] && c?.role === "service_role");
-      if (req.method === "GET" && readable && fs.existsSync(file)) {
-        const ext = path.extname(file).toLowerCase();
-        const type = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".pdf": "application/pdf" }[ext] || "application/octet-stream";
-        res.writeHead(200, { "content-type": type, "x-content-type-options": "nosniff" });
-        return res.end(fs.readFileSync(file));
-      }
-      return json(res, 404, { statusCode: "404", error: "not_found", message: "Object not found" });
+    // ommaviy havola — faqat ommaviy bucket; yopiq bucket'dan o'qish — faqat service role
+    const readable = PUBLIC_BUCKETS.has(bucket) || (!st[1] && c?.role === "service_role");
+    if (req.method === "GET" && readable && fs.existsSync(file)) {
+      const ext = path.extname(file).toLowerCase();
+      const type = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".pdf": "application/pdf" }[ext] || "application/octet-stream";
+      res.writeHead(200, { "content-type": type, "x-content-type-options": "nosniff" });
+      return res.end(fs.readFileSync(file));
     }
+    return json(res, 404, { statusCode: "404", error: "not_found", message: "Object not found" });
+  }
 
-    if (url.startsWith("/rest/v1")) {
-      const target = url.replace(/^\/rest\/v1/, "") || "/";
-      const up = http.request({ host: "127.0.0.1", port: PGRST_PORT, path: target, method: req.method, headers: { ...req.headers, host: `127.0.0.1:${PGRST_PORT}` } }, (r) => {
-        res.writeHead(r.statusCode || 502, r.headers);
-        r.pipe(res);
-      });
-      req.pipe(up);
-      up.on("error", (e) => json(res, 502, { message: String(e) }));
-      return;
-    }
-    return json(res, 404, {});
-  })
-  .listen(PORT, "127.0.0.1", () => console.log(`e2e gateway :${PORT} → postgrest :${PGRST_PORT}`));
+  if (url.startsWith("/rest/v1")) {
+    const target = url.replace(/^\/rest\/v1/, "") || "/";
+    const up = http.request({ host: "127.0.0.1", port: PGRST_PORT, path: target, method: req.method, headers: { ...req.headers, host: `127.0.0.1:${PGRST_PORT}` } }, (r) => {
+      res.writeHead(r.statusCode || 502, r.headers);
+      r.pipe(res);
+    });
+    req.pipe(up);
+    up.on("error", (e) => json(res, 502, { message: String(e) }));
+    return;
+  }
+  return json(res, 404, {});
+}
