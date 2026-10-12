@@ -41,6 +41,8 @@ test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q, AI bonusi asosiy yo'
       .map((el) => `${el.tagName}.${el.className.toString().slice(0, 60)}`);
   });
   expect(big).toEqual([]);
+  // AI kartasi Suspense ichida oqim bilan keladi — o'lchashdan oldin joyiga tushishini kutamiz (CI'dagi poyga: top = 0)
+  await expect(page.locator("#ai-pro-title")).toBeVisible();
   const order = await page.evaluate(() => {
     const y = (sel: string) => document.querySelector(sel)?.getBoundingClientRect().top ?? -1;
     return { post: y("main a[href='/post/worker']"), ai: y("#ai-pro-title") };
