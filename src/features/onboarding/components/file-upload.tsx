@@ -1,123 +1,17 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Camera, FileText, Film, Loader2, Plus, Trash2, X } from "lucide-react";
+import { FileText, Film, Loader2, Plus, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
-import { Avatar } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
-import { saveAvatar } from "../actions";
-import { AVATAR_MAX_MB, AVATAR_MIME } from "../types";
-import { fileExtension, storagePathFromPublicUrl, validateFile } from "../utils";
-import { errorMessage } from "./wizard-shell";
-import { callAction } from "@/lib/action-call";
+import { fileExtension, validateFile } from "../utils";
 
 const IMAGE_EXT = new Set(["jpg", "jpeg", "png", "webp"]);
 
 function fileNameOf(path: string) {
   return path.split("/").pop() ?? path;
-}
-
-/**
- * Avatar: client → storage "avatars/<userId>/avatar.<ext>" (upsert) → public URL → profiles.avatar_url (server action).
- */
-export function AvatarUpload({ userId, url, fallback }: { userId: string; url: string | null; fallback: string }) {
-  const { t } = useT();
-  const router = useRouter();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [current, setCurrent] = useState<string | null>(url);
-  const [busy, setBusy] = useState(false);
-
-  const upload = async (file: File) => {
-    const invalid = validateFile(file, AVATAR_MIME, AVATAR_MAX_MB);
-    if (invalid) {
-      toast.error(t(invalid.key, invalid.params));
-      return;
-    }
-    setBusy(true);
-    try {
-      const supabase = createClient();
-      const path = `${userId}/avatar.${fileExtension(file)}`;
-      const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type, cacheControl: "3600" });
-      if (error) throw error;
-      const publicUrl = `${supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
-      const res = await callAction(() => saveAvatar({ url: publicUrl }));
-      if (!res.ok) {
-        toast.error(errorMessage(t, res.error));
-        return;
-      }
-      setCurrent(publicUrl);
-      toast.success(t("onboarding.worker.personal.avatar_saved"));
-      router.refresh();
-    } catch (e) {
-      console.error("[onboarding] avatar upload", e);
-      toast.error(t("onboarding.worker.errors.upload_failed"));
-    } finally {
-      setBusy(false);
-      if (inputRef.current) inputRef.current.value = "";
-    }
-  };
-
-  const remove = async () => {
-    if (!current) return;
-    setBusy(true);
-    try {
-      const res = await callAction(() => saveAvatar({ url: null }));
-      if (!res.ok) {
-        toast.error(errorMessage(t, res.error));
-        return;
-      }
-      const path = storagePathFromPublicUrl(current, "avatars");
-      if (path) await createClient().storage.from("avatars").remove([path]);
-      setCurrent(null);
-      router.refresh();
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-      <div className="relative shrink-0">
-        <Avatar src={current} fallback={fallback} size="xl" />
-        {busy ? (
-          <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 text-white">
-            <Loader2 className="size-6 animate-spin" />
-          </span>
-        ) : null}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold">{t("onboarding.worker.personal.avatar_title")}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">{t("onboarding.worker.personal.avatar_hint", { max: AVATAR_MAX_MB })}</p>
-        <div className="mt-3 flex flex-wrap gap-2">
-          <Button type="button" size="sm" variant="secondary" disabled={busy} onClick={() => inputRef.current?.click()}>
-            <Camera className="size-4" />
-            {current ? t("onboarding.worker.personal.avatar_change") : t("onboarding.worker.personal.avatar_upload")}
-          </Button>
-          {current ? (
-            <Button type="button" size="sm" variant="ghost" disabled={busy} onClick={remove}>
-              <Trash2 className="size-4" />
-              {t("common.actions.delete")}
-            </Button>
-          ) : null}
-        </div>
-        <input
-          ref={inputRef}
-          type="file"
-          accept={AVATAR_MIME.join(",")}
-          className="sr-only"
-          aria-label={t("onboarding.worker.personal.avatar_upload")}
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) void upload(file);
-          }}
-        />
-      </div>
-    </div>
-  );
 }
 
 /**

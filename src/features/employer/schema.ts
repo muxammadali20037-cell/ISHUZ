@@ -227,7 +227,7 @@ export type UpdateCompanyInput = z.input<typeof updateCompanySchema>;
 
 export const saveCompanyLogoSchema = z.object({
   companyId: z.uuid(),
-  /** storage yo'li: <companyId>/logo.<ext> yoki null (o'chirish) */
+  /** karantin yo'li logo/<companyId>/<uuid>.<ext>, eski nom <companyId>/logo.<ext> yoki null (o'chirish) */
   path: z.string().min(1).max(200).nullable(),
 });
 export type SaveCompanyLogoInput = z.infer<typeof saveCompanyLogoSchema>;

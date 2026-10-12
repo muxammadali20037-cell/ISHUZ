@@ -147,7 +147,9 @@
     "invalid_media_url": "Rasm manzili qabul qilinmadi. Rasmni ilova orqali yuklang.",
     "cannot_block_self": "O'zingizni bloklay olmaysiz",
     "forbidden_hierarchy": "Adminni faqat bosh admin bloklay oladi",
-    "cross_site": "So'rov rad etildi. Sahifani yangilab qayta urinib ko'ring."
+    "cross_site": "So'rov rad etildi. Sahifani yangilab qayta urinib ko'ring.",
+    "image_invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa JPG, PNG yoki WEBP surat tanlang.",
+    "image_unavailable": "Rasmni hozir saqlab bo'lmadi. Birozdan keyin qayta urinib ko'ring."
   },
   "empty": {
     "nothing_here": "Hozircha bu yerda hech narsa yo'q",

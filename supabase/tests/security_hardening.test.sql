@@ -289,7 +289,8 @@ select pg_temp.ok((select count(*) from public.verification_requests where profi
 
 select pg_temp.fails($$update public.profiles set avatar_url = 'https://evil.example/pixel.png' where id = auth.uid()$$, 'H: tashqi avatar URL rad', 'invalid_media_url');
 select pg_temp.fails($$update public.profiles set avatar_url = 'https://x.supabase.co/storage/v1/object/public/avatars/f5600000-0000-0000-0000-00000000000b/avatar.jpg' where id = auth.uid()$$, 'H: boshqaning papkasidagi avatar rad', 'invalid_media_url');
-update public.profiles set avatar_url = 'https://x.supabase.co/storage/v1/object/public/avatars/f5600000-0000-0000-0000-00000000000a/avatar.jpg?v=1712345678901' where id = auth.uid();
+-- 0059 dan keyin mijoz faqat server tekshirgan (v-<sha256>.webp) faylni yozadi; xom nom — media_quarantine.test.sql
+update public.profiles set avatar_url = 'https://x.supabase.co/storage/v1/object/public/avatars/f5600000-0000-0000-0000-00000000000a/v-abababababababababababababababababababababababababababababababab.webp' where id = auth.uid();
 update public.profiles set avatar_url = 'https://t.me/i/userpic/320/AbCdEfGh12345678.jpg' where id = auth.uid();
 select pg_temp.ok(true, 'H: o''z storage avatari va Telegram userpic qabul qilinadi');
 select pg_temp.superuser();

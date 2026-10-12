@@ -73,14 +73,22 @@ Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi).
   Qisqa formadan tahrir batafsil qiymatlarni yo'qotmaydi (aniq tajriba darajasi, sarlavha, qo'shimcha jadval, masofaviy "any", maosh davri).
 - **Tekshiruv:** 19 SQL, 4 unit (`keep.test.ts`), 1 E2E (ishchi) — PASS. Vakansiya uchun custom — SQL'da PASS, E2E — NOT_RUN.
 
-### F-06 · P1 · Fayl tekshiruvi yuklashdan keyin — ✅ vakansiya rasmi (0058 production'da) · avatar/logo ochiq
+### F-06 · P1 · Fayl tekshiruvi yuklashdan keyin — ✅ vakansiya rasmi (0058 production'da) · ✅ avatar/logo (kod; 0059 production'ga qo'llanishi kerak)
 - **Yechim:** xom fayl yopiq karantinga (`vacancy-uploads`) → server darhol: hajm ≤5 MB, magic bytes, piksel ≤40 MP, xavfsiz dekoder →
   EXIF/GPS'siz WebP ≤1600 px → `<egasi>/v-<sha256>.webp` (o'zgarmas, mijoz yoza/almashtira/o'chira olmaydi); vakansiyaga faqat shu yo'l (trigger);
   karantindagi xom fayl natijadan qat'i nazar darhol o'chadi; tashlab ketilgan fayllar soatiga tozalanadi (ishlatilayotgani tegilmaydi).
   Eski e'londagi rasm: o'zgarmasa tahrirni to'xtatmaydi, o'qib bo'lsa tekshirilgan nusxaga o'tadi.
 - **Tekshiruv:** 11 unit (EXIF, yo'nalish, o'lcham, soxta tur, buzilgan fayl, piksel bombasi, yo'llar), 21 SQL, 4 E2E — PASS.
-- **Qolgan:** avatar va kompaniya logotipi hali brauzerdan to'g'ridan-to'g'ri ommaviy bucket'ga (magic-byte tekshiruvi bor, qayta kodlash yo'q);
-  KYC hujjatlari yopiq bucket'da — AI'ga yuborish/saqlash muddati sozlamasi ochiq vazifa.
+- **Avatar va logotip (D2, 2026-10-12):**
+  - Oqim vakansiya rasmi bilan bir xil: yopiq `media-uploads` (`avatar/<o'zi>/…`, `logo/<kompaniya>/…` — faqat kompaniya admini) →
+    server → EXIF/GPS'siz WebP (avatar ≤640 px, logotip ≤512 px, shaffoflik saqlanadi) → `<egasi>/v-<sha256>.webp`.
+  - Eski rasm va xom fayl o'chadi; mijoz bazaga faqat tekshirilgan manzilni (yoki Telegram rasmini) yoza oladi (0059 trigger).
+  - Kod 0059 dan oldin ham ishlaydi: brauzer eski nom bilan yuklaydi, server baribir qayta kodlaydi.
+  - Ishlatilmagan, tekshiruvni chetlab o'tuvchi `saveAvatar` amali (onboarding) olib tashlandi.
+  - Logotip izohidagi eskirgan "yoki SVG" so'zi olib tashlandi (SVG 7bf79b1 da taqiqlangan).
+- **Avatar/logotip tekshiruvi:** 8 unit (`media.test.ts`), 30 SQL (`media_quarantine.test.sql`), 2 E2E (`media-upload.spec.ts`) — PASS.
+- **Qolgan:** 0059 production bazasiga qo'llanishi (egasi, SQL Editor) — qo'llanmaguncha xom fayl ommaviy bucket'da bir lahza
+  turadi va bazadagi qoida ishlamaydi. KYC hujjatlari: AI'ga yuborish/saqlash muddati sozlamasi — ochiq vazifa.
 
 ### F-07 · P1 · Qayta ishlatiladigan E2E/CI yo'q edi — ✅
 - **Yechim:** `e2e/stack` — toza baza (barcha migratsiyalar + seed), PostgREST v12.2.3 (checksum bilan), Auth/Storage shlyuz emulyatori

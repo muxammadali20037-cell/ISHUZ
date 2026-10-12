@@ -27,7 +27,7 @@
     "company_name": "Название компании",
     "company_name_placeholder": "Например: Anor Market",
     "logo": "Логотип",
-    "logo_hint": "JPG, PNG, WEBP или SVG, до 3 МБ",
+    "logo_hint": "JPG, PNG или WEBP, до 3 МБ",
     "logo_upload": "Загрузить логотип",
     "logo_change": "Заменить",
     "logo_remove": "Убрать",

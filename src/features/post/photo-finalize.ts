@@ -1,9 +1,9 @@
 import "server-only";
 
 import { createHash } from "node:crypto";
-import sharp from "sharp";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { contentMatches, mimeFromPath, SNIFF_BYTES } from "@/lib/security/file-signature";
+import { mimeFromPath } from "@/lib/security/file-signature";
+import { IMAGE_MAX_BYTES, reencodeImage } from "@/lib/security/image-reencode";
 import { logSecurityEvent } from "@/lib/security/events";
 
 /**
@@ -18,8 +18,7 @@ import { logSecurityEvent } from "@/lib/security/events";
 
 const PUBLIC_BUCKET = "vacancy-photos";
 const QUARANTINE_BUCKET = "vacancy-uploads";
-const MAX_BYTES = 5 * 1024 * 1024;
-const MAX_PIXELS = 40_000_000;
+const MAX_BYTES = IMAGE_MAX_BYTES;
 const MAX_SIDE = 1600;
 
 export type PhotoError = "photo_invalid" | "photo_unavailable";
@@ -34,18 +33,8 @@ function isRawPhotoPath(userId: string, path: string): boolean {
 }
 
 /** Rasm baytlarini tekshirish va metama'lumotsiz qayta kodlash (sof funksiya — testlanadi) */
-export async function reencodePhoto(input: Buffer, declaredMime: string): Promise<Buffer | null> {
-  if (input.length === 0 || input.length > MAX_BYTES) return null;
-  if (!contentMatches(declaredMime, input.subarray(0, SNIFF_BYTES))) return null;
-  try {
-    return await sharp(input, { limitInputPixels: MAX_PIXELS, failOn: "error" })
-      .rotate() // EXIF yo'nalishi qo'llanadi; chiqishda metama'lumot yozilmaydi (sharp sukut bo'yicha tashlaydi)
-      .resize({ width: MAX_SIDE, height: MAX_SIDE, fit: "inside", withoutEnlargement: true })
-      .webp({ quality: 82 })
-      .toBuffer();
-  } catch {
-    return null;
-  }
+export function reencodePhoto(input: Buffer, declaredMime: string): Promise<Buffer | null> {
+  return reencodeImage(input, declaredMime, { maxSide: MAX_SIDE, quality: 82 });
 }
 
 /**

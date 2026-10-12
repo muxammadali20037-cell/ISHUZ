@@ -11,6 +11,8 @@ import type { ActionResult } from "@/features/auth/actions";
 import { getSession, type SessionContext } from "@/features/auth/session";
 import { errorCode } from "@/lib/utils";
 import { AVATAR_MIME, customSkillSlug, reorderItems, THEME_COOKIE } from "./pure";
+import { finalizeMedia, mediaFinalizeAvailable, pruneMedia } from "@/features/media/finalize";
+import { isLegacyMediaPath, isRawMediaPath, MEDIA_BUCKET } from "@/features/media/paths";
 import {
   aboutSchema,
   avatarPathSchema,
@@ -108,22 +110,37 @@ export async function updatePersonal(input: unknown): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** Client storage'ga yuklagandan so'ng: yo'lni tekshirib profiles.avatar_url ga public URL yoziladi */
+/**
+ * Profil rasmi (F-06, 0059): brauzer xom faylni karantinga (yoki 0059 bo'lmasa — eski nom bilan) yuklaydi; server uni
+ * tekshirib, metama'lumotsiz WebP qilib <uid>/v-<sha256>.webp ga yozadi va profiles.avatar_url ga shu manzilni qo'yadi.
+ * Server kaliti yo'q (lokal) — eski xatti-harakat: yuklangan faylning manzili yoziladi.
+ */
 export async function setAvatar(input: unknown): Promise<ActionResult<{ url: string }>> {
   const parsed = avatarPathSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   const c = await ctx();
   if (!c.ok) return c;
+  const uid = c.session.userId;
   const path = parsed.data.path;
-  const m = new RegExp(`^${c.session.userId}/avatar\\.(${AVATAR_EXTS.join("|")})$`).exec(path);
-  if (!m) return { ok: false, error: "validation" };
-  const base = c.supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl;
-  const url = `${base}?v=${Date.now()}`;
-  const { error } = await c.supabase.from("profiles").update({ avatar_url: url }).eq("id", c.session.userId);
+  const raw = isRawMediaPath("avatar", uid, path);
+  if (!raw && !isLegacyMediaPath("avatar", uid, path)) return { ok: false, error: "validation" };
+  const avatars = c.supabase.storage.from(MEDIA_BUCKET.avatar);
+  let url: string;
+  let finalPath: string | null = null;
+  if (raw || mediaFinalizeAvailable()) {
+    const r = await finalizeMedia("avatar", uid, path, uid);
+    if (!r.ok) return { ok: false, error: r.error === "media_invalid" ? "image_invalid" : "image_unavailable" };
+    finalPath = r.path;
+    // nom = mazmun xeshi — keshni yangilash uchun ?v kerak emas
+    url = avatars.getPublicUrl(finalPath).data.publicUrl;
+  } else {
+    url = `${avatars.getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
+  }
+  const { error } = await c.supabase.from("profiles").update({ avatar_url: url }).eq("id", uid);
   if (error) return { ok: false, error: dbError(error) };
-  // eski kengaytmadagi rasmni tozalash (xato bo'lsa e'tiborsiz)
-  const stale = AVATAR_EXTS.filter((e) => e !== m[1]).map((e) => `${c.session.userId}/avatar.${e}`);
-  await c.supabase.storage.from("avatars").remove(stale);
+  // eski rasm(lar) va eski nomdagi fayllar tozalanadi (xato bo'lsa e'tiborsiz)
+  if (finalPath) await pruneMedia("avatar", uid, finalPath);
+  else await avatars.remove(AVATAR_EXTS.filter((e) => !path.endsWith(`.${e}`)).map((e) => `${uid}/avatar.${e}`));
   if (c.session.workerId) await afterWorkerSave(c.supabase, c.session.workerId);
   else revalidateProfile();
   return { ok: true, data: { url } };
@@ -134,7 +151,8 @@ export async function removeAvatar(): Promise<ActionResult> {
   if (!c.ok) return c;
   const { error } = await c.supabase.from("profiles").update({ avatar_url: null }).eq("id", c.session.userId);
   if (error) return { ok: false, error: dbError(error) };
-  await c.supabase.storage.from("avatars").remove(AVATAR_EXTS.map((e) => `${c.session.userId}/avatar.${e}`));
+  if (mediaFinalizeAvailable()) await pruneMedia("avatar", c.session.userId, null);
+  else await c.supabase.storage.from(MEDIA_BUCKET.avatar).remove(AVATAR_EXTS.map((e) => `${c.session.userId}/avatar.${e}`));
   if (c.session.workerId) await afterWorkerSave(c.supabase, c.session.workerId);
   else revalidateProfile();
   return { ok: true };

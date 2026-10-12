@@ -147,7 +147,9 @@
     "invalid_media_url": "The image address was rejected. Please upload the image in the app.",
     "cannot_block_self": "You can't block yourself",
     "forbidden_hierarchy": "Only a super admin can block an admin",
-    "cross_site": "The request was rejected. Refresh the page and try again."
+    "cross_site": "The request was rejected. Refresh the page and try again.",
+    "image_invalid": "We couldn't read this image or it isn't a photo. Choose another JPG, PNG or WEBP picture.",
+    "image_unavailable": "We couldn't save the image right now. Please try again in a moment."
   },
   "empty": {
     "nothing_here": "Nothing here yet",

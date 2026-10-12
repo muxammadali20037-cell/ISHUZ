@@ -3,6 +3,7 @@ import "server-only";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { processModerationQueue } from "@/features/moderation/service";
 import { cleanupRawVacancyPhotos } from "@/features/post/photo-finalize";
+import { cleanupRawMedia } from "@/features/media/finalize";
 import { dispatchTelegramNotifications, type DispatchCounts } from "./telegram-dispatch";
 
 export interface TickResult {
@@ -17,7 +18,7 @@ let lastPhotoCleanup = 0;
 
 /**
  * Fon ishlari bir joyda: moderatsiya navbati → moslik hodisalari (nashr / muhim yangilanish) → Telegram outbox
- * → (soatiga ko'pi bilan 1 marta, har bir server nusxasida) tashlab ketilgan ish joyi rasmlarini tozalash.
+ * → (soatiga ko'pi bilan 1 marta, har bir server nusxasida) tashlab ketilgan rasmlarni (ish joyi, profil, logotip) tozalash.
  * E'lon joylash ekrani buni kutmaydi (after() yoki cron chaqiradi). Har bosqich xatosi keyingisini to'xtatmaydi.
  */
 export async function runBackgroundTick(opts: { moderation?: number; matchJobs?: number; telegram?: number; budgetMs?: number } = {}): Promise<TickResult> {
@@ -45,7 +46,8 @@ export async function runBackgroundTick(opts: { moderation?: number; matchJobs?:
   if (Date.now() - lastPhotoCleanup > PHOTO_CLEANUP_EVERY_MS && Date.now() - started < budget) {
     lastPhotoCleanup = Date.now();
     try {
-      result.photosRemoved = await cleanupRawVacancyPhotos(100);
+      // ish joyi surati + profil rasmi / logotip karantini (0058, 0059)
+      result.photosRemoved = (await cleanupRawVacancyPhotos(100)) + (await cleanupRawMedia(100));
     } catch (e) {
       console.error("[tick] photo cleanup", e instanceof Error ? e.message : e);
     }

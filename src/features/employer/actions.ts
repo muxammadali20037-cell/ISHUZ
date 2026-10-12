@@ -5,6 +5,8 @@ import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import { publicEnv } from "@/lib/env";
 import { getSession, type SessionContext } from "@/features/auth/session";
+import { finalizeMedia, mediaFinalizeAvailable, pruneMedia } from "@/features/media/finalize";
+import { isLegacyMediaPath, isRawMediaPath, MEDIA_BUCKET } from "@/features/media/paths";
 import type { ActionResult } from "@/features/auth/actions";
 import type { TablesInsert, TablesUpdate } from "@/types/database.types";
 import {
@@ -17,7 +19,6 @@ import {
   employerTypeSchema,
   inviteLink,
   isValidDocumentPath,
-  isValidLogoPath,
   personOnboardingSchema,
   personSchema,
   removeMemberSchema,
@@ -182,27 +183,42 @@ export async function completePersonOnboarding(input: unknown): Promise<ActionRe
 
 // ---------- kompaniya ----------
 
-/** Logotip: client yuklagan yo'lni public URL ga aylantirib saqlash (null → o'chirish) */
+/**
+ * Logotip (F-06, 0059): brauzer xom faylni karantinga (yoki 0059 bo'lmasa — eski nom bilan) yuklaydi; server kompaniya
+ * adminligini tekshiradi, faylni metama'lumotsiz WebP qilib <companyId>/v-<sha256>.webp ga yozadi va logo_url ga qo'yadi.
+ * null → o'chirish. Server kaliti yo'q (lokal) — eski xatti-harakat.
+ */
 export async function saveCompanyLogo(input: unknown): Promise<ActionResult<{ logoUrl: string | null }>> {
   const parsed = saveCompanyLogoSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   const auth = await requireActionSession();
   if ("ok" in auth) return auth;
   const { companyId, path } = parsed.data;
-  if (path !== null && !isValidLogoPath(companyId, path)) return { ok: false, error: "invalid_path" };
+  const raw = path !== null && isRawMediaPath("logo", companyId, path);
+  if (path !== null && !raw && !isLegacyMediaPath("logo", companyId, path)) return { ok: false, error: "invalid_path" };
   const supabase = await createClient();
+  // service role faylni yozishidan oldin: faqat shu kompaniya admini (keyingi UPDATE ham RLS bilan tekshiriladi)
+  const { data: isAdmin } = await supabase.rpc("is_company_admin", { p_company_id: companyId });
+  if (!isAdmin) return { ok: false, error: "forbidden" };
+  const logos = supabase.storage.from(MEDIA_BUCKET.logo);
   let logoUrl: string | null = null;
-  if (path) {
-    const { data } = supabase.storage.from("company-logos").getPublicUrl(path);
-    logoUrl = `${data.publicUrl}?v=${Date.now()}`;
+  let finalPath: string | null = null;
+  if (path && (raw || mediaFinalizeAvailable())) {
+    const r = await finalizeMedia("logo", companyId, path, auth.session.userId);
+    if (!r.ok) return { ok: false, error: r.error === "media_invalid" ? "image_invalid" : "image_unavailable" };
+    finalPath = r.path;
+    logoUrl = logos.getPublicUrl(finalPath).data.publicUrl;
+  } else if (path) {
+    logoUrl = `${logos.getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
   }
   const { data, error } = await supabase.from("companies").update({ logo_url: logoUrl }).eq("id", companyId).select("slug").maybeSingle();
   if (error) return { ok: false, error: errorCode(error) };
   if (!data) return { ok: false, error: "forbidden" };
-  if (!path) {
-    // eski fayllarni tozalash (best-effort)
-    const { data: files } = await supabase.storage.from("company-logos").list(companyId);
-    if (files?.length) await supabase.storage.from("company-logos").remove(files.map((f) => `${companyId}/${f.name}`));
+  // eski logotip(lar) tozalanadi (best-effort)
+  if (mediaFinalizeAvailable()) await pruneMedia("logo", companyId, finalPath);
+  else if (!path) {
+    const { data: files } = await logos.list(companyId);
+    if (files?.length) await logos.remove(files.map((f) => `${companyId}/${f.name}`));
   }
   revalidateEmployer(data.slug);
   return { ok: true, data: { logoUrl } };

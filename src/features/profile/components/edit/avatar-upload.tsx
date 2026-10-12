@@ -10,8 +10,9 @@ import { toast } from "@/components/ui/toast";
 import { removeAvatar, setAvatar } from "../../actions";
 import { checkAvatarFile } from "../../pure";
 import { useAction } from "../use-action";
+import { legacyMediaPath, MEDIA_BUCKET, MEDIA_QUARANTINE, rawMediaPath } from "@/features/media/paths";
 
-/** Profil rasmi: avatars/<userId>/avatar.<ext> (≤3MB, jpeg/png/webp) → profiles.avatar_url */
+/** Profil rasmi (≤3MB, jpeg/png/webp): karantin → server tekshiruvi → avatars/<userId>/v-<sha256>.webp → profiles.avatar_url */
 export function AvatarUpload({ userId, avatarUrl, fallback }: { userId: string; avatarUrl: string | null; fallback: string }) {
   const { t } = useT();
   const inputRef = useRef<HTMLInputElement>(null);
@@ -28,8 +29,15 @@ export function AvatarUpload({ userId, avatarUrl, fallback }: { userId: string; 
       return;
     }
     setUploading(true);
-    const path = `${userId}/avatar.${check.ext}`;
-    const { error } = await createClient().storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type, cacheControl: "3600" });
+    // xom fayl yopiq karantinga; server tekshirib, metama'lumotsiz nusxasini ochadi (0059).
+    // Karantin hali yo'q (0059 qo'llanmagan) — eski nom bilan; server baribir qayta kodlaydi.
+    const supabase = createClient();
+    let path = rawMediaPath("avatar", userId, check.ext);
+    let { error } = await supabase.storage.from(MEDIA_QUARANTINE).upload(path, file, { upsert: false, contentType: file.type });
+    if (error) {
+      path = legacyMediaPath("avatar", userId, check.ext);
+      ({ error } = await supabase.storage.from(MEDIA_BUCKET.avatar).upload(path, file, { upsert: true, contentType: file.type, cacheControl: "3600" }));
+    }
     setUploading(false);
     if (error) {
       toast.error(t("profile.errors.upload_failed"));

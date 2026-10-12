@@ -8,10 +8,8 @@ import { getSession, type SessionContext } from "@/features/auth/session";
 import type { ActionResult } from "@/features/auth/actions";
 import { errorCode } from "@/lib/utils";
 import { normalizePhone } from "@/lib/format";
-import { publicEnv } from "@/lib/env";
 import type { Enums, TablesInsert, TablesUpdate } from "@/types/database.types";
 import {
-  avatarSchema,
   customSkillSchema,
   educationSchema,
   experienceSchema,
@@ -27,7 +25,7 @@ import {
   skipStepSchema,
 } from "./schema";
 import { REVIEW_STEP, WIZARD_PATH, type SkillOption } from "./types";
-import { customSkillSlug, isOwnPublicUrl, isOwnStoragePath, monthToDate, nextStepAfter, normalizeTelegramUsername } from "./utils";
+import { customSkillSlug, isOwnStoragePath, monthToDate, nextStepAfter, normalizeTelegramUsername } from "./utils";
 
 export type StepResult = ActionResult<{ nextStep: number }>;
 
@@ -97,21 +95,6 @@ export async function savePersonal(input: unknown): Promise<StepResult> {
 
   revalidatePath("/", "layout");
   return advance(res.ctx, 1);
-}
-
-/** Avatar: client "avatars/<userId>/avatar.<ext>" ga yuklaydi, bu yerda faqat URL saqlanadi */
-export async function saveAvatar(input: unknown): Promise<ActionResult<{ url: string | null }>> {
-  const parsed = avatarSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "validation" };
-  const session = await getSession();
-  if (!session) return { ok: false, error: "not_authenticated" };
-  const url = parsed.data.url;
-  if (url && !isOwnPublicUrl(url, publicEnv.NEXT_PUBLIC_SUPABASE_URL, "avatars", session.userId)) return { ok: false, error: "validation" };
-  const supabase = await createClient();
-  const { error } = await supabase.from("profiles").update({ avatar_url: url }).eq("id", session.userId);
-  if (error) return { ok: false, error: errorCode(error) };
-  revalidatePath("/", "layout");
-  return { ok: true, data: { url } };
 }
 
 /**

@@ -27,7 +27,7 @@
     "company_name": "Company name",
     "company_name_placeholder": "E.g. Anor Market",
     "logo": "Logo",
-    "logo_hint": "JPG, PNG, WEBP or SVG, up to 3 MB",
+    "logo_hint": "JPG, PNG or WEBP, up to 3 MB",
     "logo_upload": "Upload logo",
     "logo_change": "Replace",
     "logo_remove": "Remove",

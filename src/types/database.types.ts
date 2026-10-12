@@ -5381,6 +5381,7 @@ export type Database = {
         }[];
       };
       slugify: { Args: { input: string }; Returns: string };
+      stale_raw_media: { Args: { p_limit?: number }; Returns: { bucket_id: string; name: string }[] };
       stale_raw_vacancy_photos: { Args: { p_limit?: number }; Returns: { bucket_id: string; name: string }[] };
       submit_employer_verification: {
         Args: {
