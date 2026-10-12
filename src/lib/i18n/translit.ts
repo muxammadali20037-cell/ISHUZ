@@ -24,7 +24,8 @@ const PAIRS: [RegExp, string, string][] = [
   [new RegExp(`^g${APOS}`, "i"), "ғ", "Ғ"],
   [/^sh/i, "ш", "Ш"],
   [/^ch/i, "ч", "Ч"],
-  [/^yo/i, "ё", "Ё"],
+  // "yo'q", "yo'l", "yo'nalish": y + o' → "йў" (avval "ёъқ" bo'lib chiqardi); oddiy "yo" (yoz, yordam) → "ё"
+  [new RegExp(`^yo(?!${APOS})`, "i"), "ё", "Ё"],
   [/^yu/i, "ю", "Ю"],
   [/^ya/i, "я", "Я"],
   [/^ye/i, "е", "Е"],

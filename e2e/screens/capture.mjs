@@ -19,6 +19,7 @@ fs.mkdirSync(OUT, { recursive: true });
 const db = new pg.Client({ connectionString: stack.db });
 await db.connect();
 const node = (await db.query("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1")).rows[0].id;
+const driver = (await db.query("select id from public.profession_nodes where name_uz = 'Haydovchi' and selectable limit 1")).rows[0].id;
 const SIG = "public.simple_search_vacancies(uuid, uuid, uuid, boolean, integer, public.work_schedule, boolean, integer, integer)";
 async function searchBroken(on) {
   const has = (await db.query("select count(*)::int as n from pg_proc where proname = 'simple_search_vacancies_e2e_off'")).rows[0].n > 0;
@@ -39,6 +40,14 @@ const SHOTS = [
   { name: "home-dark", url: "/", full: true, theme: "dark", user: "7e2e0000-0000-4000-8000-000000000001" },
   { name: "cabinet-full", url: "/cabinet", full: true, user: "7e2e0000-0000-4000-8000-000000000001" },
   { name: "ui-kit", url: "/dev/ui", full: true },
+  // qidiruv oqimi (C8.3): maqsad → kasb → viloyat → tuman → natija / bo'sh natija / ishchilar
+  { name: "search-start", url: "/search" },
+  { name: "search-profession", url: "/search?mode=jobs" },
+  { name: "search-region", url: `/search?mode=jobs&p=${node}` },
+  { name: "search-district", url: `/search?mode=jobs&p=${node}&region=tashkent_city` },
+  { name: "search-results-full", url: `/search?mode=jobs&p=${node}&region=all`, full: true },
+  { name: "search-empty", url: `/search?mode=jobs&p=${driver}&region=all`, full: true },
+  { name: "search-workers", url: `/search?mode=workers&p=${node}&region=all`, full: true },
 ];
 const WIDTHS = [
   { w: 390, h: 844, tag: "m" },

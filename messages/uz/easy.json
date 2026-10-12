@@ -250,7 +250,6 @@
     "experienced": "Faqat tajribali ishchilar",
     "apply": "Natijalarni ko'rsatish",
     "reset": "Filtrni tozalash",
-    "empty_title": "Bu hududda hozircha e'lon topilmadi.",
     "empty_desc": "Qidiruvni kengaytirib ko'ring yoki keyinroq qayting.",
     "empty_region": "Butun viloyatda qidirish",
     "empty_country": "Butun O'zbekistonda qidirish",
@@ -269,7 +268,13 @@
     "retry": "Qayta urinish",
     "error_code": "Xato kodi: {code}",
     "page_empty_title": "Bu sahifada natija qolmadi",
-    "page_empty_first": "Birinchi sahifaga qaytish"
+    "page_empty_first": "Birinchi sahifaga qaytish",
+    "empty_title_jobs": "Bu hududda hozircha ish e'loni yo'q",
+    "empty_title_workers": "Bu hududda hozircha ishchi topilmadi",
+    "empty_title_jobs_all": "Hozircha «{name}» bo'yicha ish e'loni yo'q",
+    "empty_title_workers_all": "Hozircha «{name}» bo'yicha ishchi topilmadi",
+    "empty_desc_all": "Yangi e'lonlar har kuni qo'shiladi. Boshqa kasbni tanlang yoki keyinroq qayting.",
+    "empty_no_filters": "Filtrlarsiz qidirish"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",

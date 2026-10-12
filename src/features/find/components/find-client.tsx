@@ -86,6 +86,15 @@ export function FilterSheet({
   const [ne, setNe] = useState(noexp);
   const [ex, setEx] = useState(exp);
 
+  // oyna har ochilganda URL'dagi joriy filtrlar bilan boshlanadi ("Tozalash"dan keyin eski tanlov qolib ketmaydi)
+  const openSheet = () => {
+    setS(salary ? String(salary) : "");
+    setSch(schedule ?? "");
+    setNe(noexp);
+    setEx(exp);
+    setOpen(true);
+  };
+
   const apply = (reset = false) => {
     const url = new URL(window.location.href);
     for (const k of ["salary", "schedule", "noexp", "exp", "page"]) url.searchParams.delete(k);
@@ -102,7 +111,7 @@ export function FilterSheet({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button type="button" variant={count ? "soft" : "outline"} className="h-12 px-4 text-base" onClick={() => setOpen(true)}>
+      <Button type="button" variant={count ? "soft" : "outline"} className="h-12 px-4 text-base" onClick={openSheet}>
         <SlidersHorizontal className="size-5" aria-hidden /> {count ? t("easy.search.filter_count", { count }) : t("easy.search.filter")}
       </Button>
       <Sheet

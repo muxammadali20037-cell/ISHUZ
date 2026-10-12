@@ -48,20 +48,27 @@ export async function FindStart({ params }: { params: FindParams }) {
   return (
     <StepShell back="/" title={t("easy.search.choose_title")}>
       <div className="pop-list grid gap-4 sm:grid-cols-2">
-        <Link href={findHref(params, { mode: "jobs", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-2xl bg-primary p-5 text-primary-foreground shadow-md">
-          <BriefcaseBusiness className="size-9" aria-hidden />
-          <span>
-            <span className="block text-2xl font-extrabold">{t("easy.search.jobs")}</span>
-            <span className="block text-base text-primary-foreground">{t("easy.search.jobs_desc")}</span>
-          </span>
-        </Link>
-        <Link href={findHref(params, { mode: "workers", page: 1 })} className="press flex min-h-32 flex-col justify-between gap-3 rounded-2xl bg-success p-5 text-success-foreground shadow-md">
-          <UsersRound className="size-9" aria-hidden />
-          <span>
-            <span className="block text-2xl font-extrabold">{t("easy.search.workers")}</span>
-            <span className="block text-base text-success-foreground">{t("easy.search.workers_desc")}</span>
-          </span>
-        </Link>
+        {(
+          [
+            { mode: "jobs", icon: BriefcaseBusiness, title: t("easy.search.jobs"), desc: t("easy.search.jobs_desc") },
+            { mode: "workers", icon: UsersRound, title: t("easy.search.workers"), desc: t("easy.search.workers_desc") },
+          ] as const
+        ).map((c) => (
+          <Link
+            key={c.mode}
+            href={findHref(params, { mode: c.mode, page: 1 })}
+            className="press group flex min-h-24 items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm hover:border-primary/50 active:scale-[0.98]"
+          >
+            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+              <c.icon className="size-7" />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="block text-xl font-bold leading-tight">{c.title}</span>
+              <span className="mt-1 block text-base text-muted-foreground">{c.desc}</span>
+            </span>
+            <ChevronRight className="size-6 shrink-0 text-primary" aria-hidden />
+          </Link>
+        ))}
       </div>
 
       <form action="/search" method="get" className="space-y-3 rounded-2xl border border-border bg-card p-4 sm:p-5">
@@ -243,6 +250,9 @@ export async function FindResultsView({ params, node, region, district }: { para
     );
   }
 
+  // "Butun O'zbekiston" bo'yicha ham bo'sh — "bu hududda" deyilmaydi va hududni o'zgartirish taklif qilinmaydi
+  const wholeCountry = !region && !remote;
+
   return (
     <div className="container-app space-y-5 py-4 text-lg sm:py-8">
       <div className="space-y-3">
@@ -304,10 +314,18 @@ export async function FindResultsView({ params, node, region, district }: { para
         </ul>
       ) : (
         <section className="space-y-4 rounded-2xl border-2 border-dashed border-border bg-card p-6 text-center">
-          <h2 className="text-2xl font-bold">{t("easy.search.empty_title")}</h2>
-          <p className="text-muted-foreground">{t("easy.search.empty_desc")}</p>
+          <h2 className="text-2xl font-bold">
+            {wholeCountry
+              ? t(isJobs ? "easy.search.empty_title_jobs_all" : "easy.search.empty_title_workers_all", { name: prof })
+              : t(isJobs ? "easy.search.empty_title_jobs" : "easy.search.empty_title_workers")}
+          </h2>
+          <p className="text-muted-foreground">{t(wholeCountry ? "easy.search.empty_desc_all" : "easy.search.empty_desc")}</p>
           <div className="mx-auto grid max-w-md gap-3">
-            {district ? (
+            {activeFilterCount(params) ? (
+              <Button asChild size="xl" className="h-14 text-lg">
+                <Link href={findHref(params, { salary: null, schedule: null, noexp: false, exp: false, page: 1 })}>{t("easy.search.empty_no_filters")}</Link>
+              </Button>
+            ) : district ? (
               <Button asChild size="xl" className="h-14 text-lg">
                 <Link href={findHref(params, { district: "all", page: 1 })}>{t("easy.search.empty_region")}</Link>
               </Button>
@@ -316,9 +334,11 @@ export async function FindResultsView({ params, node, region, district }: { para
                 <Link href={findHref(params, { region: "all", district: null, page: 1 })}>{t("easy.search.empty_country")}</Link>
               </Button>
             ) : null}
-            <Button asChild size="xl" variant="outline" className="h-14 text-lg">
-              <Link href={findHref(params, { region: null, district: null, page: 1 })}>{t("easy.search.empty_change_region")}</Link>
-            </Button>
+            {wholeCountry ? null : (
+              <Button asChild size="xl" variant="outline" className="h-14 text-lg">
+                <Link href={findHref(params, { region: null, district: null, page: 1 })}>{t("easy.search.empty_change_region")}</Link>
+              </Button>
+            )}
             <Button asChild size="xl" variant="outline" className="h-14 text-lg">
               <Link href={findHref(params, { p: null, page: 1 })}>{t("easy.search.empty_change_profession")}</Link>
             </Button>

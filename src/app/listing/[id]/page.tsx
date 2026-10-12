@@ -10,6 +10,7 @@ import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
 import { ProfessionImage } from "@/components/shared/profession-image";
+import { Photo } from "@/components/shared/photo";
 import { CallBlock } from "@/features/find/components/result-cards";
 import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
@@ -66,12 +67,13 @@ export default async function ListingPage({ params }: Params) {
         <article className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
           <p className="text-base font-bold uppercase tracking-wide text-primary">{t("easy.listing.title")}</p>
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-            {w.avatar_url ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={w.avatar_url} alt={fullName} className="aspect-[4/3] w-full rounded-2xl object-cover sm:w-56" />
-            ) : (
-              <ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} icon={w.category_icon} name={profession} label={t("easy.image.label")} className="aspect-[4/3] w-full sm:w-56" />
-            )}
+            <Photo
+              src={w.avatar_url}
+              alt={fullName}
+              sizes="(min-width: 640px) 224px, 100vw"
+              className="aspect-[4/3] w-full shrink-0 rounded-2xl sm:w-56"
+              fallback={<ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} icon={w.category_icon} name={profession} label={t("easy.image.label")} className="aspect-[4/3] w-full sm:w-56" />}
+            />
             <div className="min-w-0">
               <h1 className="text-3xl font-extrabold leading-tight">{fullName}</h1>
               <p className="mt-1 text-xl font-semibold text-primary">{profession}</p>

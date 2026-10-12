@@ -250,7 +250,6 @@
     "experienced": "Only experienced workers",
     "apply": "Show results",
     "reset": "Clear filter",
-    "empty_title": "No listings in this area yet.",
     "empty_desc": "Try widening the search or come back later.",
     "empty_region": "Search the whole region",
     "empty_country": "Search all of Uzbekistan",
@@ -269,7 +268,13 @@
     "retry": "Try again",
     "error_code": "Error code: {code}",
     "page_empty_title": "No more results on this page",
-    "page_empty_first": "Back to the first page"
+    "page_empty_first": "Back to the first page",
+    "empty_title_jobs": "No jobs in this area yet",
+    "empty_title_workers": "No workers in this area yet",
+    "empty_title_jobs_all": "No “{name}” jobs yet",
+    "empty_title_workers_all": "No “{name}” workers yet",
+    "empty_desc_all": "New listings are added every day. Choose another profession or check back later.",
+    "empty_no_filters": "Search without filters"
   },
   "card": {
     "call": "Call",

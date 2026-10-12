@@ -5,6 +5,7 @@ import { BriefcaseBusiness, Clock, MapPin, Phone } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatMoney, formatPhone } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
+import { Photo } from "@/components/shared/photo";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import { SalaryText } from "@/components/shared/salary-text";
 import { levelToExperience } from "@/features/post/types";
@@ -79,7 +80,7 @@ function usePlace() {
   };
 }
 
-/** Katta yashil "Qo'ng'iroq qilish" (tel:) + raqam; raqam bo'lmasa — tushuntirish */
+/** Katta "Qo'ng'iroq qilish" (tel:, kartaning yagona asosiy amali — brend rangi) + raqam; raqam bo'lmasa — tushuntirish */
 export function CallBlock({ phone, detailsHref, className }: { phone: string | null; detailsHref?: string; className?: string }) {
   const { t } = useT();
   return (
@@ -88,7 +89,7 @@ export function CallBlock({ phone, detailsHref, className }: { phone: string | n
         <>
           <a
             href={`tel:${phone.replace(/[^\d+]/g, "")}`}
-            className="flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-success px-4 text-lg font-bold text-success-foreground shadow-sm transition-opacity hover:opacity-90"
+            className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
           >
             <Phone className="size-6" aria-hidden /> {t("easy.card.call")}
           </a>
@@ -98,7 +99,7 @@ export function CallBlock({ phone, detailsHref, className }: { phone: string | n
         detailsHref ? <p className="rounded-xl bg-secondary px-3 py-2 text-base text-muted-foreground">{t("easy.card.no_phone")}</p> : null
       )}
       {detailsHref ? (
-        <Link href={detailsHref} className="flex min-h-12 w-full items-center justify-center rounded-2xl border-2 border-primary/40 px-4 text-lg font-semibold text-primary hover:bg-primary-soft/50">
+        <Link href={detailsHref} className="press flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-card px-4 text-lg font-semibold text-primary hover:border-primary/50 hover:bg-primary-soft/50">
           {t("easy.card.details")}
         </Link>
       ) : null}
@@ -113,16 +114,16 @@ export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; 
   return (
     <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="flex gap-4">
-        {photoPath ? (
-          <figure className="relative w-24 shrink-0 sm:w-32">
-            {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan) */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={vacancyPhotoUrl(photoPath) ?? ""} alt={t("easy.photo.alt")} loading="lazy" className="aspect-[4/3] w-full rounded-2xl object-cover" />
-            <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-2xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
-          </figure>
-        ) : (
-          <ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
-        )}
+        {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan); ochilmasa — kasb tasviri */}
+        <Photo
+          src={photoPath ? vacancyPhotoUrl(photoPath) : null}
+          alt={t("easy.photo.alt")}
+          sizes="128px"
+          className="aspect-[4/3] w-24 shrink-0 rounded-2xl sm:w-32"
+          fallback={<ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />}
+        >
+          <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-2xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
+        </Photo>
         <div className="min-w-0 flex-1">
           {job.is_featured ? <span className="mb-1 inline-block rounded-md bg-warning px-1.5 py-0.5 text-xs font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
           <h3 className="break-words text-xl font-bold leading-snug">{job.title}</h3>
@@ -162,13 +163,14 @@ export function WorkerResultCard({ worker, imageUrl }: { worker: WorkerCardData;
   return (
     <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
       <div className="flex gap-4">
-        {worker.avatar_url ? (
-          // haqiqiy surat (egasi yuklagan)
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={worker.avatar_url} alt={fullName} loading="lazy" className="aspect-[4/3] w-24 shrink-0 rounded-2xl object-cover sm:w-32" />
-        ) : (
-          <ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />
-        )}
+        {/* haqiqiy surat (egasi yuklagan); ochilmasa — kasb tasviri */}
+        <Photo
+          src={worker.avatar_url}
+          alt={fullName}
+          sizes="128px"
+          className="aspect-[4/3] w-24 shrink-0 rounded-2xl sm:w-32"
+          fallback={<ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />}
+        />
         <div className="min-w-0 flex-1">
           <h3 className="break-words text-xl font-bold leading-snug">{fullName}</h3>
           <p className="mt-0.5 text-lg font-semibold text-primary">{profession}</p>

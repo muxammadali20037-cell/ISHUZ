@@ -259,9 +259,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.1a | UI ovozlari | ✅ to'liq olib tashlandi | `6493eb6` |
 | C8.1b | Qotishlar (C7) | ✅ 4 ta o'lchangan qotish tuzatildi — [PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md) | `3581aa0` |
 | C8.1c | Yagona brend tizimi | ✅ — [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | `c48c5ab` |
-| C8.2 | Bosh sahifa va navigatsiya | ✅ | shu bosqich |
-| C8.3 | Qidiruv, filtr, kartalar | ⏳ keyingi | — |
-| C8.4–C8.10 | … | ⏳ | — |
+| C8.2 | Bosh sahifa va navigatsiya | ✅ | `8f5baca` |
+| C8.3 | Qidiruv, filtr, kartalar | ✅ | shu bosqich |
+| C8.4 | Ishchi e'loni | ⏳ keyingi | — |
+| C8.5–C8.10 | … | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -377,3 +378,50 @@ o'chirildi: `welcome-gate`, `coach-tour`, `replay-tour-button`, `landing-page`, 
 | Q8 takrorlash: kirgan foydalanuvchi, bosh sahifa → `/search` × 20 | ✅ 0/20 osilish (oldin 1–2-urinishda) |
 | To'liq E2E (`npx playwright test -c e2e`) | ✅ 42/42 |
 | Unit 534 ✅ / 18 skip · `tsc` ✅ · `eslint` ✅ | ✅ |
+
+### C8.3 · Qidiruv, filtr, kartalar
+
+**OLDIN** (8f5baca):
+
+- **Buzilgan rasm:** ish joyi surati ochilmasa (fayl o'chirilgan/karantinda/tarmoq) kartada buzilgan belgi va kartadan
+  chiqib ketadigan "Ish joyi surati" alt-matni ko'rinardi (E2E stendida doim, production'da ham fayl yo'qolsa).
+- **Filtr xatosi:** "Filtrni tozalash" dan keyin oyna qayta ochilsa, eski tanlov belgilangan turardi va "Natijalarni
+  ko'rsatish" uni qayta yoqardi (oyna holati URL bilan sinxronlanmagan).
+- **Bo'sh natija:** "Butun O'zbekiston" bo'yicha ham "Bu hududda… topilmadi" va foydasiz "Hududni o'zgartirish" tugmasi;
+  ishchilar qidiruvida ham "e'lon topilmadi"; filtr sababli bo'sh bo'lsa — filtrni olib tashlash yo'li yo'q.
+- "Nimani qidiryapsiz?" — ko'k + yashil dominant kartalar; kartadagi "Qo'ng'iroq qilish" yashil (semantik rang aksent sifatida).
+- **Kirill (oz) imlo xatosi (butun ilova):** transliterator `yo'` ni "ёъ" ga o'girardi — 22 faylda **~110 joy**:
+  "Ёъқ" (yo'q), "Ёъналиш" (yo'nalish), "Ёъл" (yo'l) … Bazadagi kasb/hudud nomlari ham ko'rsatishda shu funksiyadan o'tadi.
+
+**KEYIN:**
+
+- `Photo` komponenti (`next/image`, `unoptimized`, `onError`): rasm ochilmasa — kasb tasviri; hydration'dan oldingi xato ham
+  ushlanadi. Qidiruv kartalari (ish va ishchi), e'lon sahifasi, vakansiya tafsiloti. 4 ta `eslint-disable` olib tashlandi.
+- Filtr oynasi har ochilishda URL'dagi joriy filtrlardan boshlanadi.
+- Bo'sh natija: mamlakat bo'yicha — "Hozircha «Haydovchi» bo'yicha ish e'loni yo'q" + "Kasbni o'zgartirish"; hudud bo'yicha —
+  "Bu hududda hozircha ish e'loni yo'q / ishchi topilmadi" + kengaytirish; filtr bo'lsa — "Filtrlarsiz qidirish". 4 tilda.
+- Maqsad kartalari neytral; "Qo'ng'iroq qilish" — kartaning yagona asosiy amali (`primary`), "Batafsil" — standart ikkinchi darajali.
+- Transliterator: `yo` dan keyin tutuq belgisi bo'lsa → "йў"; mavjud `oz` fayllarida faqat shu xato almashtirildi
+  (qo'lda yaxshilangan tarjimalar saqlandi); regressiya testi — `oz` da "ёъ" bo'lmasligi.
+
+**Fayllar:** `src/components/shared/photo.tsx` (yangi), `src/features/find/components/{find-page,find-client,result-cards}.tsx`,
+`src/features/jobs/components/vacancy-detail.tsx`, `src/app/listing/[id]/page.tsx`, `src/lib/i18n/translit.ts`,
+`messages/*/easy.json`, `messages/oz/*.json` (22 fayl, faqat "ёъ"→"йў"). Testlar: `e2e/specs/search-ui.spec.ts` (yangi),
+`src/lib/i18n/translit.test.ts`.
+
+**Skrinshotlar** (chap — 8f5baca, o'ng — keyin): [qidiruv boshi](screenshots/c8/c8-3-search-start-m.jpg) ·
+[natija (rasm ochilmaydi)](screenshots/c8/c8-3-search-results-full-m.jpg) · [bo'sh natija](screenshots/c8/c8-3-search-empty-m.jpg) ·
+[ishchilar, bo'sh](screenshots/c8/c8-3-search-workers-m.jpg).
+
+**Testlar:**
+
+| Test | Eski build (8f5baca) | Keyin |
+|---|---|---|
+| `search-ui.spec.ts` — rasm ochilmasa kasb tasviri, buzilgan `<img>` 0 | ❌ | ✅ |
+| — mamlakat bo'yicha bo'sh: kasb nomi, "Hududni o'zgartirish" yo'q | ❌ | ✅ |
+| — hudud bo'yicha bo'sh (ishchilar): "Bu hududda… ishchi topilmadi" → kengaytirish | ❌ | ✅ |
+| — filtr sababli bo'sh → "Filtrlarsiz qidirish" | ❌ | ✅ |
+| — "Filtrni tozalash" dan keyin oyna toza | ❌ (hali belgilangan) | ✅ |
+| — qidiruv boshi: ≥ 80 px rangli sirt yo'q | ❌ | ✅ |
+| `translit.test.ts` — yo'q/yo'l/yo'nalish; `oz` fayllarida "ёъ" yo'q | — | ✅ 15/15 |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 48/48 · 536 / 18 skip · ✅ · ✅ |

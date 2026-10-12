@@ -1,6 +1,6 @@
 {
   "experience_level": {
-    "none": "Тажриба ёъқ",
+    "none": "Тажриба йўқ",
     "lt_6m": "0–6 ой",
     "6_12m": "6–12 ой",
     "1_2y": "1–2 йил",
@@ -80,12 +80,12 @@
   "work_format": {
     "official": "Расмий",
     "unofficial": "Норасмий",
-    "any": "Фарқи ёъқ"
+    "any": "Фарқи йўқ"
   },
   "remote_preference": {
     "yes": "Ҳа",
-    "no": "Ёъқ",
-    "any": "Фарқи ёъқ"
+    "no": "Йўқ",
+    "any": "Фарқи йўқ"
   },
   "worker_status": {
     "active": "Фаол иш қидиряпман",
@@ -222,7 +222,7 @@
   },
   "match_reason": {
     "category_match": "Касбингиз мос",
-    "category_match_partial": "Соҳа мос, ёъналиш фарқ қилади",
+    "category_match_partial": "Соҳа мос, йўналиш фарқ қилади",
     "category_mismatch": "Касб мос эмас",
     "remote_ok": "Масофавий иш",
     "district_match": "Сиз танлаган ҳудуд",
@@ -257,7 +257,7 @@
     "profession_exact": "Касбингиз айнан мос",
     "profession_specialist": "Сиз шу касбнинг аниқ мутахассисисиз",
     "profession_general": "Касбингиз яқин, лекин бу ерда торроқ мутахассис керак",
-    "profession_related": "Ўхшаш ёъналиш",
+    "profession_related": "Ўхшаш йўналиш",
     "profession_other_branch": "Соҳа бир хил, касб бошқа",
     "region_other_district": "Вилоят мос, туман фарқ қилади",
     "profession_unknown": "Касб кўрсатилмаган",
@@ -268,7 +268,7 @@
     "experience_not_required": "Тажриба талаб қилинмайди",
     "experience_unknown": "Тажриба кўрсатилмаган",
     "skills_unknown": "Кўникмалар кўрсатилмаган",
-    "license_missing": "Мажбурий гувоҳнома ёки сертификат ёъқ",
+    "license_missing": "Мажбурий гувоҳнома ёки сертификат йўқ",
     "languages_unknown": "Тиллар кўрсатилмаган"
   },
   "language_code": {

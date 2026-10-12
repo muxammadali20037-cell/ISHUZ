@@ -10,6 +10,14 @@ describe("latinToCyrillic", () => {
     expect(c("Ish qidiryapman")).toBe("Иш қидиряпман");
     expect(c("Haydovchi")).toBe("Ҳайдовчи");
   });
+  it("yo + tutuq: y va o' alohida (йўқ, йўл), oddiy yo — ё", () => {
+    expect(c("yo'q")).toBe("йўқ");
+    expect(c("Yo'nalish")).toBe("Йўналиш");
+    expect(c("yo‘l")).toBe("йўл");
+    expect(c("bor-yo'qligi")).toBe("бор-йўқлиги");
+    expect(c("yoz yordam")).toBe("ёз ёрдам");
+  });
+
   it("e harfi: so'z boshida э, ichida е", () => {
     expect(c("E'lon")).toBe("Эълон");
     expect(c("ekskavator operatori")).toBe("экскаватор оператори");
@@ -26,5 +34,18 @@ describe("latinToCyrillic", () => {
     expect(c("Batafsil: https://ishtopdim.uz/jobs")).toBe("Батафсил: https://ishtopdim.uz/jobs");
     expect(c("Full-time ish")).toBe("Full-time иш");
     expect(c("Telegram'ga keladi")).toBe("Telegramга келади");
+  });
+});
+
+describe("kirill (oz) xabarlari", () => {
+  it("noto'g'ri \"ёъ\" yo'q (yo'q → йўқ, yo'l → йўл)", async () => {
+    const fs = await import("node:fs");
+    const path = await import("node:path");
+    const dir = path.join(__dirname, "../../../messages/oz");
+    const bad = fs
+      .readdirSync(dir)
+      .filter((f) => f.endsWith(".json"))
+      .flatMap((f) => (fs.readFileSync(path.join(dir, f), "utf8").match(/[^\s"]*[ёЁ][ъЪ][^\s",]*/g) ?? []).map((w) => `${f}: ${w}`));
+    expect(bad).toEqual([]);
   });
 });
