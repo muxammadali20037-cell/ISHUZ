@@ -2,6 +2,7 @@
   "updated": "Last updated: October 7, 2026",
   "contact_title": "Contact",
   "contact_body": "For questions or requests, write to:",
+  "contact_none": "A contact address has not been published yet. If you can sign in, delete your account yourself: “Settings” → “Delete account”.",
   "privacy": {
     "title": "Privacy Policy",
     "description": "What data Ish topdim collects, why, where it is stored and how you can control it.",

@@ -10,7 +10,7 @@ export default function Loading() {
           <Skeleton className="h-4 w-24" />
         </div>
       </div>
-      <div className="mb-4 flex gap-2">
+      <div className="mb-4 flex flex-wrap gap-2">
         {Array.from({ length: 4 }).map((_, i) => (
           <Skeleton key={i} className="h-8 w-24 rounded-full" />
         ))}

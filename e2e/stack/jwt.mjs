@@ -16,9 +16,9 @@ export function roleKey(role, secret) {
 }
 
 /** @supabase/ssr formatidagi cookie (sb-<host>-auth-token) — foydalanuvchi "kirgan" holat */
-export function sessionCookie(userId, secret) {
+export function sessionCookie(userId, secret, aal = "aal1") {
   const iat = Math.floor(Date.now() / 1000);
-  const access = sign({ role: "authenticated", sub: userId, email: `${userId}@e2e.local`, aud: "authenticated", aal: "aal1", iat, exp: FAR }, secret);
+  const access = sign({ role: "authenticated", sub: userId, email: `${userId}@e2e.local`, aud: "authenticated", aal, iat, exp: FAR }, secret);
   const session = {
     access_token: access,
     refresh_token: "e2e-refresh",

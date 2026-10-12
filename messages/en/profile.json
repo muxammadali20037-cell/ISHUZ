@@ -263,7 +263,7 @@
     "telegram_not_linked": "Telegram not linked",
     "telegram_link": "Link Telegram",
     "telegram_link_success": "Telegram linked",
-    "telegram_hint": "To get notifications in Telegram, open the bot and sign in via the Mini App.",
+    "telegram_hint": "To get notifications in Telegram, connect your account to the bot — one tap, no code.",
     "telegram_open_bot": "Open bot",
     "account": "Account",
     "phone": "Phone number",
@@ -296,6 +296,7 @@
     },
     "dashboard": "Dashboard",
     "company_settings": "Company settings",
+    "profile_settings": "Profile settings",
     "create_worker": "Create job seeker profile",
     "create_worker_hint": "Hire and look for work with a single profile"
   },

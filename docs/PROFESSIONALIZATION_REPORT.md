@@ -265,9 +265,9 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.5 | Vakansiya e'loni | ✅ | `8eea94f` |
 | C8.6 | Kirish va hisob | ✅ (haqiqiy Telegram yetkazish — BLOCKED) | `e705ab0` |
 | C8.7 | Kabinet, e'lon, profil | ✅ | `c3243f0` |
-| C8.8 | Arizalar, takliflar, chat, bildirishnomalar | ✅ (realtime va Telegram yetkazish — NOT_RUN) | shu bosqich |
-| C8.9 | Sozlamalar, yordam, huquqiy, admin | ⏳ keyingi | — |
-| C8.10 | To'liq regressiya | ⏳ | — |
+| C8.8 | Arizalar, takliflar, chat, bildirishnomalar | ✅ (realtime va Telegram yetkazish — NOT_RUN) | `9f600ca` |
+| C8.9 | Sozlamalar, yordam, huquqiy, admin | ✅ (admin MFA oqimi — NOT_RUN) | shu bosqich |
+| C8.10 | To'liq regressiya | ⏳ keyingi | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -689,3 +689,75 @@ yiqitdi (yangi stendda va CI'da bunday bo'lmaydi). Cheklovning o'zi o'zgarmadi.
 - Ish beruvchining `/profile` sahifasi oddiy "O'zim uchun" e'lon beruvchiga ham "Dashboard" va "Kompaniya sozlamalari"ni
   ko'rsatadi — C8.9 (sozlamalar) da ko'rib chiqiladi.
 - Ariza holatlari palitrasi: "Yuborildi/Ko'rib chiqildi" uchun `sky` rangi (tokenlashtirilmagan) — C8.10 da tokenga o'tkaziladi.
+
+### C8.9 · Sozlamalar, yordam, huquqiy sahifalar, admin
+
+Admin panel stendda ham yurildi: sinov sessiyasi `aal2` bilan imzolanadi (`loginAs(…, "aal2")`, faqat lokal stend kaliti;
+koddagi MFA talabi o'zgarmagan), foydalanuvchi `admin_users`ga test ichida qo'shilib, keyin o'chiriladi.
+
+**OLDIN** (9f600ca):
+
+- **Yordam eskirgan:** qadamlar interfeysda yo'q nomlarga ishora qilardi — «Bo'sh ish o'rinlarini ko'rish», «+ Vakansiya
+  joylashtirish», «Ish qidirish e'loni yaratish», «Nomzodlar» va «Vakansiyalar» bo'limlari (4 tilda).
+- **Kirill (oz) huquqiy sahifalar lotinda:** `messages/oz/legal.json` bor, lekin sahifa uni ulamagan — maxfiylik, oferta va
+  hisobni o'chirish kirill tanlagan foydalanuvchiga lotin yozuvida ko'rsatilardi.
+- **Hisobni o'chirish:** "Tizimga kira olmasangiz … quyidagi manzilga yozing" — `SUPPORT_EMAIL` va bot nomi sozlanmaganda
+  "Aloqa: … yozing:" ostida bo'sh ro'yxat (manzil yo'q).
+- **Sozlamalar → Telegram:** "botni oching va Mini App orqali kiring" — veb'dan tugmasiz boshi berk yo'l (xavfsiz ulash
+  "Telegram xabarnomalari" sahifasida bor edi, lekin unga havola yo'q).
+- **Ish beruvchi profili:** inglizcha "Dashboard"; "O'zim uchun" ish beruvchiga "Kompaniya sozlamalari" (kompaniyasi yo'q).
+  Kirillda "Дашбоард".
+- **Imlo:** "Ish Beruvchi" (rol nomi, vakansiya va arizalardagi zaxira nom, admin ro'yxati) — ikkinchi so'z bosh harf bilan.
+- **Admin, 390 px:** sarlavhadagi 4 tugmali til guruhi sig'mas — barcha admin sahifalari 415 px, yonga siljirdi;
+  "AI yordamchi narxi" yozuvi so'zma-so'z siqilib, kiritish maydoni bilan ustma-ust tushardi. Admin yuklanish skeleti va
+  arizalar skeleti ham 390 px'dan keng qator (o'ralmaydi).
+
+**KEYIN:**
+
+- Yordam qadamlari hozirgi nomlar bilan qayta yozildi (4 tilda): «Qidirish» → «Ish qidiraman», «O'zim haqimda e'lon
+  berish», «Ish e'loni berish», «Kabinetim» → «Yuborgan arizalarim», «Mos ishchilar», «Tanlovga olish», «Yozish».
+  Unit test: yordamdagi har bir «…» nomi shu tilning interfeys matnlarida aynan bor (eski matnda 4 tilda ham yiqiladi).
+- Huquqiy sahifalar `oz` uchun kirill matnni ishlatadi.
+- Aloqa manzili sozlanmagan bo'lsa: "Aloqa manzili hozircha e'lon qilinmagan. Hisobingizga kira olsangiz, «Sozlamalar» →
+  «Hisobni o'chirish» orqali uni o'zingiz darhol o'chirishingiz mumkin." (4 tilda). Haqiqiy manzil — `SUPPORT_EMAIL`
+  (Vercel), quyida BLOCKED.
+- Sozlamalar → Telegram: "Telegramni bog'lash" tugmasi xavfsiz bir martalik ulash sahifasiga (`/cabinet/alerts`); matn
+  to'g'rilandi.
+- "Boshqaruv paneli" (uz/oz/ru); kompaniyasiz ish beruvchiga "Profil sozlamalari".
+- "Ish beruvchi" (uz/oz, 5 joyda) + unit test: "Ish"dan keyin gap o'rtasida bosh harf yo'q.
+- Admin sarlavhasi telefonda ixcham til tanlagich (saytdagi kabi), sarlavha qisqaradi; tezkor boshqaruv yozuvi
+  `min-w-48` — maydon pastki qatorga o'tadi; skeletlar o'raladi.
+
+**Fayllar:** `messages/*/{welcome,legal,profile,common,vacancies,applications}.json`, `src/features/legal/legal-page.tsx`,
+`src/features/profile/components/{settings/telegram-card,employer-summary}.tsx`, `src/features/admin/components/{admin-topbar,quick-controls}.tsx`,
+`src/app/admin/(panel)/loading.tsx`, `src/app/employer/vacancies/[id]/applications/loading.tsx`. Testlar:
+`e2e/specs/settings-legal.spec.ts` (yangi, 6 test), `src/features/help/help-labels.test.ts`, `src/lib/i18n/orthography.test.ts`;
+`e2e/support.ts` + `e2e/stack/jwt.mjs` — `aal2` sinov sessiyasi.
+
+**Skrinshotlar** (chap — 9f600ca, o'ng — keyin): [yordam](screenshots/c8/c8-9-help-m.jpg) ·
+[hisobni o'chirish: aloqa](screenshots/c8/c8-9-account-deletion-m.jpg) · [sozlamalar: Telegram](screenshots/c8/c8-9-settings-telegram-m.jpg) ·
+[ish beruvchi profili](screenshots/c8/c8-9-employer-profile-m.jpg) · [admin, 390 px](screenshots/c8/c8-9-admin-m.jpg).
+
+**Testlar:**
+
+| Test | Eski build (9f600ca) | Keyin |
+|---|---|---|
+| `settings-legal.spec.ts` — yordam: «Ish e'loni berish», «O'zim haqimda e'lon berish»; eskirgan nomlar yo'q | ❌ | ✅ |
+| — oz: /privacy va /account-deletion sarlavhasi kirillda | ❌ | ✅ |
+| — aloqa sozlanmagan: zaxira matn, bo'sh "yozing:" yo'q | ❌ | ✅ |
+| — sozlamalar: "Telegramni bog'lash" → `/cabinet/alerts`, "Mini App orqali kiring" yo'q | ❌ | ✅ |
+| — ish beruvchi profili: "Boshqaruv paneli", "Profil sozlamalari", "Dashboard" yo'q; "Ish Beruvchi" yo'q | ❌ | ✅ |
+| — admin 390 px: 5 sahifada yonga siljish yo'q (yakuniy holat); narx yozuvi ≥120 px va maydon bilan ustma-ust emas | ❌ | ✅ |
+| `help-labels.test.ts` (4 til), `orthography.test.ts` (uz, oz) | ❌ (eski matnda) | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 75/75 · 564 / 18 skip · ✅ · ✅ |
+
+**BLOCKED / NOT_RUN / ochiq:**
+
+- `SUPPORT_EMAIL` (va/yoki `TELEGRAM_BOT_USERNAME`) Vercel'da o'rnatilganini tekshirib bo'lmadi — Play talabi; o'rnatilmagan
+  bo'lsa, huquqiy sahifalar zaxira matnni ko'rsatadi (endi bo'sh emas).
+- `/admin/mfa` (TOTP sozlash) — stendda Supabase MFA emulyatsiya qilinmaydi ("sozlab bo'lmadi"); haqiqiy oqim staging'da.
+- `/admin/settings` 390 px: yuklanishning birinchi ~0,3 s ida hujjat kengligi 513 px (body 390 px), keyin 390 px. Element
+  darajasida manba topilmadi (barcha keng elementlar kesuvchi o'ram ichida); foydalanuvchiga sezilmaydi, C8.10 da qayta
+  ko'riladi.
+- Admin jadvallari telefonda o'z ichida gorizontal suriladi (sahifa emas) — panel asosan desktop uchun; to'liq mobil
+  ko'rinish (kartalar) talab qilinsa — alohida ish.

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Menu, ExternalLink, LogOut } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { signOut } from "@/features/auth/actions";
-import { LanguageSwitcher } from "@/components/shared/language-switcher";
+import { LanguageSelect, LanguageSwitcher } from "@/components/shared/language-switcher";
 import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -41,9 +41,9 @@ export function AdminTopbar({
           <SidebarNav groups={groups} counts={counts} onNavigate={() => setOpen(false)} />
         </Sheet>
       </Dialog>
-      <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight lg:hidden">
+      <Link href="/admin" className="flex min-w-0 items-center gap-2 font-extrabold tracking-tight lg:hidden">
         <BrandMark />
-        <span className="text-base">{t("admin.shell.title")}</span>
+        <span className="truncate text-base">{t("admin.shell.title")}</span>
       </Link>
       <div className="flex-1" />
       <Button asChild variant="ghost" size="sm" className="hidden sm:inline-flex">
@@ -52,7 +52,9 @@ export function AdminTopbar({
           {t("admin.shell.open_site")}
         </Link>
       </Button>
-      <LanguageSwitcher />
+      {/* telefonda ixcham tanlagich: 4 tugmali guruh 390 px sarlavhaga sig'mas, sahifa yonga siljirdi */}
+      <LanguageSelect className="sm:hidden" />
+      <LanguageSwitcher className="hidden sm:inline-flex" />
       <div className="ml-1 flex items-center gap-2 rounded-xl pl-1">
         {avatar}
         <div className="hidden min-w-0 sm:block">

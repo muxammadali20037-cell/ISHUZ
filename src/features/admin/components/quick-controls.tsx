@@ -79,7 +79,8 @@ function ControlRow({ item, canManage }: { item: QuickControl; canManage: boolea
   const dirty = valid && Number(num) !== item.value;
   return (
     <div className="flex flex-wrap items-start justify-between gap-3">
-      <div className="min-w-0 flex-1">
+      {/* min-w-48: tor ekranda yozuv so'zma-so'z siqilmaydi — maydon va tugma pastki qatorga o'tadi */}
+      <div className="min-w-48 flex-1">
         <p className="font-medium">{item.label}</p>
         <p className="text-sm text-muted-foreground">{item.hint}</p>
       </div>

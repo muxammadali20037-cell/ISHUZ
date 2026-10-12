@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { BadgeCheck, ExternalLink, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -77,13 +78,12 @@ export function TelegramCard({ linked, botUsername }: { linked: Linked; botUsern
       ) : (
         <>
           <p className="text-sm">{t("profile.settings.telegram_hint")}</p>
-          {botUsername ? (
-            <Button asChild variant="outline">
-              <a href={`https://t.me/${botUsername}`} target="_blank" rel="noopener noreferrer">
-                <Send className="size-4" /> {t("profile.settings.telegram_open_bot")}
-              </a>
-            </Button>
-          ) : null}
+          {/* veb'da: xavfsiz bir martalik havola bilan ulash (Telegram xabarnomalari sahifasida) */}
+          <Button asChild variant="outline">
+            <Link href="/cabinet/alerts">
+              <Send className="size-4" /> {t("profile.settings.telegram_link")}
+            </Link>
+          </Button>
         </>
       )}
     </div>

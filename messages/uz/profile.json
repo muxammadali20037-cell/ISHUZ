@@ -263,7 +263,7 @@
     "telegram_not_linked": "Telegram bog'lanmagan",
     "telegram_link": "Telegramni bog'lash",
     "telegram_link_success": "Telegram bog'landi",
-    "telegram_hint": "Bildirishnomalarni Telegramda olish uchun botni oching va Mini App orqali kiring.",
+    "telegram_hint": "Bildirishnomalarni Telegram'da olish uchun hisobingizni botga ulang — bir bosishda, kod kiritmasdan.",
     "telegram_open_bot": "Botni ochish",
     "account": "Hisob",
     "phone": "Telefon raqam",
@@ -294,8 +294,9 @@
       "offers_sent": "Yuborilgan takliflar",
       "hired": "Ishga olinganlar"
     },
-    "dashboard": "Dashboard",
+    "dashboard": "Boshqaruv paneli",
     "company_settings": "Kompaniya sozlamalari",
+    "profile_settings": "Profil sozlamalari",
     "create_worker": "Ish qidiruvchi profili yaratish",
     "create_worker_hint": "Bir profil bilan ham ish bering, ham ish qidiring"
   },

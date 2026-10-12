@@ -263,7 +263,7 @@
     "telegram_not_linked": "Telegram не привязан",
     "telegram_link": "Привязать Telegram",
     "telegram_link_success": "Telegram привязан",
-    "telegram_hint": "Чтобы получать уведомления в Telegram, откройте бота и войдите через Mini App.",
+    "telegram_hint": "Чтобы получать уведомления в Telegram, подключите аккаунт к боту — в одно нажатие, без кода.",
     "telegram_open_bot": "Открыть бота",
     "account": "Аккаунт",
     "phone": "Номер телефона",
@@ -294,8 +294,9 @@
       "offers_sent": "Отправлено предложений",
       "hired": "Нанято"
     },
-    "dashboard": "Дашборд",
+    "dashboard": "Панель управления",
     "company_settings": "Настройки компании",
+    "profile_settings": "Настройки профиля",
     "create_worker": "Создать профиль соискателя",
     "create_worker_hint": "С одним профилем можно и нанимать, и искать работу"
   },

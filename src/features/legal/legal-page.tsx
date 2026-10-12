@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import uz from "../../../messages/uz/legal.json";
 import ru from "../../../messages/ru/legal.json";
 import en from "../../../messages/en/legal.json";
+import oz from "../../../messages/oz/legal.json";
 import { getLocale } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/format";
@@ -41,7 +42,8 @@ const fill = (text: string, vars: Record<string, string>) => text.replace(/\{(\w
 
 async function content() {
   const locale = await getLocale();
-  return { locale, L: locale === "ru" ? ru : locale === "en" ? en : uz };
+  // kirill (oz) — o'z matni bilan (avval lotin ko'rsatilardi)
+  return { locale, L: locale === "ru" ? ru : locale === "en" ? en : locale === "oz" ? oz : uz };
 }
 
 export async function legalMetadata(doc: Doc): Promise<Metadata> {
@@ -99,8 +101,9 @@ export async function LegalPage({ doc }: { doc: Doc }) {
         ) : null}
         <section className="mt-7 rounded-2xl bg-secondary p-5">
           <h2 className="text-lg font-bold text-foreground">{L.contact_title}</h2>
-          <p className="mt-1">{L.contact_body}</p>
-          <ul className="mt-2 space-y-1 font-medium">
+          {/* manzil sozlanmagan bo'lsa "yozing:" deb bo'sh ro'yxat emas — halol izoh va o'zi o'chirish yo'li */}
+          <p className="mt-1">{SUPPORT_EMAIL || bot ? L.contact_body : L.contact_none}</p>
+          <ul className="mt-2 space-y-1 font-medium empty:hidden">
             {SUPPORT_EMAIL ? (
               <li>
                 Email:{" "}

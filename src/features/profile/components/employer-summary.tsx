@@ -54,7 +54,8 @@ export async function EmployerSummary({ session, data }: { session: SessionConte
             </Button>
             <Button asChild variant="outline">
               <Link href="/company/settings">
-                <Settings className="size-4" /> {t("profile.employer.company_settings")}
+                {/* kompaniyasiz ("O'zim uchun", YaTT) — shu sahifa ish beruvchi profilini ochadi */}
+                <Settings className="size-4" /> {company ? t("profile.employer.company_settings") : t("profile.employer.profile_settings")}
               </Link>
             </Button>
           </div>

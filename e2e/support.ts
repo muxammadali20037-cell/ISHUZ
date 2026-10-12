@@ -23,10 +23,10 @@ export async function asGuest(ctx: BrowserContext) {
   ]);
 }
 
-/** Shu foydalanuvchi sifatida "kirish" (sessiya cookie'si sinov kaliti bilan imzolangan) */
-export async function loginAs(ctx: BrowserContext, userId: string) {
+/** Shu foydalanuvchi sifatida "kirish" (sessiya cookie'si sinov kaliti bilan imzolangan). `aal2` — ikki bosqichli kirish o'tilgan (admin panel) */
+export async function loginAs(ctx: BrowserContext, userId: string, aal: "aal1" | "aal2" = "aal1") {
   await asGuest(ctx);
-  const c = sessionCookie(userId, stack.secret);
+  const c = sessionCookie(userId, stack.secret, aal);
   await ctx.addCookies([{ ...c, domain: host, path: "/" }]);
 }
 
