@@ -134,7 +134,7 @@ export async function FindResultsView({ params, node, region, district }: { para
   const res = isJobs ? await findJobs(params, place) : await findWorkers(params, place);
   const total = res.ok ? res.total : 0;
   const pages = Math.max(1, Math.ceil(Math.min(total, 5000) / PAGE_SIZE));
-  const prof = node ? name(node.trail.at(-1)!) : "";
+  const prof = node ? name(node.trail.at(-1)!) : params.pay === "daily" ? t("easy.search.daily_jobs") : "";
   const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}` : t("easy.location.whole_country");
   const backHref = region ? findHref(params, { district: null, page: 1 }) : findHref(params, { region: null, district: null, page: 1 });
   // qisqa xulosa: "Buxgalter · Toshkent · 5 mln so'mdan yuqori"
@@ -142,6 +142,7 @@ export async function FindResultsView({ params, node, region, district }: { para
     isJobs && params.salary ? t("easy.search.salary_over", { amount: formatMoneyShort(params.salary, locale) }) : null,
     isJobs && params.schedule ? tEnum("work_schedule", params.schedule) : null,
     isJobs && params.noexp ? t("easy.search.no_experience") : null,
+    isJobs && params.pay === "daily" && node ? t("easy.search.daily_only") : null,
     !isJobs && params.exp ? t("easy.search.experienced") : null,
   ].filter((x): x is string => !!x);
   // qidiruv statistikasi (kasb/hudud ID bilan; birinchi sahifa) — talab, bo'sh natijali qidiruvlar uchun.
@@ -184,7 +185,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           professionHref={findHref(params, { p: null, page: 1 })}
           regionHref={findHref(params, { region: null, district: null, page: 1 })}
         />
-        <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} count={activeFilterCount(params)} />
+        <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} daily={params.pay === "daily"} count={activeFilterCount(params)} />
         {total ? (
           <p className="text-base font-semibold text-muted-foreground" aria-live="polite">
             {t("easy.search.found", { count: total >= 5000 ? "5 000+" : total })}
@@ -236,7 +237,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           <div className="mx-auto grid max-w-md gap-3">
             {activeFilterCount(params) ? (
               <Button asChild size="xl" className="h-14 text-lg">
-                <Link href={findHref(params, { salary: null, schedule: null, noexp: false, exp: false, page: 1 })}>{t("easy.search.empty_no_filters")}</Link>
+                <Link href={findHref(params, { salary: null, schedule: null, noexp: false, exp: false, pay: params.p ? null : params.pay, page: 1 })}>{t("easy.search.empty_no_filters")}</Link>
               </Button>
             ) : district ? (
               <Button asChild size="xl" className="h-14 text-lg">

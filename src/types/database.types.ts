@@ -5305,6 +5305,57 @@ export type Database = {
           work_time_to: string;
         }[];
       };
+      simple_search_vacancies_v2: {
+        Args: {
+          p_district_id?: string;
+          p_limit?: number;
+          p_no_experience?: boolean;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+          p_salary_min?: number;
+          p_salary_type?: Database["public"]["Enums"]["salary_type"];
+          p_schedule?: Database["public"]["Enums"]["work_schedule"];
+        };
+        Returns: {
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employer_name: string;
+          employer_verified: boolean;
+          experience_min_months: number;
+          id: string;
+          is_featured: boolean;
+          is_government: boolean;
+          is_remote: boolean;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          published_at: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          summary: string;
+          title: string;
+          total_count: number;
+          work_time_from: string;
+          work_time_to: string;
+        }[];
+      };
       simple_search_workers: {
         Args: {
           p_district_id?: string;

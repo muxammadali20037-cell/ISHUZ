@@ -4,7 +4,7 @@ import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
-import { findHref, parseFindParams } from "@/features/find/params";
+import { anyProfession, findHref, parseFindParams } from "@/features/find/params";
 import { getNodeInfo } from "@/features/find/queries";
 import { smartResolveQuery } from "@/features/find/ai-search";
 import { getSession } from "@/features/auth/session";
@@ -54,7 +54,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const node = params.p ? await getNodeInfo(params.p) : null;
 
   // maqsad aniqlanmagan, lekin kasb (yoki matn) bor — bitta savol: "Ish qidiryapsizmi yoki ishchi?"
-  const stepKey = !params.mode ? "intent" : !params.p || !node ? "profession" : !regionKnown ? "region" : region && !districtKnown ? "district" : "results";
+  // "Kunlik ishlar" (pay=daily): kasb so'ralmaydi — darhol hudud
+  const stepKey = !params.mode ? "intent" : (!params.p || !node) && !anyProfession(params) ? "profession" : !regionKnown ? "region" : region && !districtKnown ? "district" : "results";
   // ma'lumotnoma o'qilmadi (texnik xato) — bo'sh ro'yxat "hech narsa yo'q" deb ko'rsatilmaydi: xato sahifasi, URL saqlanadi
   if ((stepKey === "profession" && !categories.length) || (stepKey === "region" && !regions.length) || (stepKey === "district" && !districts.length)) {
     throw new Error(`reference_unavailable:${stepKey}`);

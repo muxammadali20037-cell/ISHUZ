@@ -118,7 +118,7 @@ interface Place {
 
 export async function findJobs(params: FindParams, place: Place): Promise<FindOutcome<JobRow>> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("simple_search_vacancies", {
+  const args = {
     p_profession_node_id: params.p ?? undefined,
     p_region_id: place.regionId ?? undefined,
     p_district_id: place.districtId ?? undefined,
@@ -128,7 +128,15 @@ export async function findJobs(params: FindParams, place: Place): Promise<FindOu
     p_no_experience: params.noexp,
     p_limit: PAGE_SIZE,
     p_offset: (params.page - 1) * PAGE_SIZE,
-  });
+  };
+  let { data, error } = params.pay === "daily" ? await supabase.rpc("simple_search_vacancies_v2", { ...args, p_salary_type: "daily" }) : await supabase.rpc("simple_search_vacancies", args);
+  let pageOnly = false;
+  if (error && params.pay === "daily" && (error.code === "PGRST202" || error.code === "42883")) {
+    // 0060 hali qo'llanmagan: shu sahifadagi natijalardan kunliklari (umumiy son — taxminiy)
+    ({ data, error } = await supabase.rpc("simple_search_vacancies", args));
+    data = (data ?? []).filter((r) => r.salary_type === "daily");
+    pageOnly = true;
+  }
   if (error) return searchFailure("jobs", error);
   const items = data ?? [];
   const [images, photoRows] = await Promise.all([
@@ -136,7 +144,7 @@ export async function findJobs(params: FindParams, place: Place): Promise<FindOu
     items.length ? supabase.from("vacancies").select("id, photo_path").in("id", items.map((r) => r.id)).not("photo_path", "is", null) : Promise.resolve({ data: [] }),
   ]);
   const photos = Object.fromEntries((photoRows.data ?? []).filter((r) => r.photo_path).map((r) => [r.id, r.photo_path as string]));
-  return { ok: true, items, total: Number(items[0]?.total_count ?? 0), images, photos };
+  return { ok: true, items, total: pageOnly ? items.length : Number(items[0]?.total_count ?? 0), images, photos };
 }
 
 export async function findWorkers(params: FindParams, place: Place): Promise<FindOutcome<WorkerRow>> {

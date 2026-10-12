@@ -29,7 +29,7 @@ export default async function PostVacancyPage({ searchParams }: { searchParams: 
   return (
     <Shell hideNav>
       <Suspense>
-        <VacancyPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill ?? {}} editId={editId} pricedDays={days.vacancy} aiEnabled={aiProviderConfigured()} customAllowed={features.customProfession} photoQuarantine={features.photoQuarantine} />
+        <VacancyPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill ?? {}} editId={editId} pricedDays={days.vacancy} aiEnabled={aiProviderConfigured()} customAllowed={features.customProfession} photoQuarantine={features.photoQuarantine} dailyAllowed={features.dailyJobs} />
       </Suspense>
     </Shell>
   );

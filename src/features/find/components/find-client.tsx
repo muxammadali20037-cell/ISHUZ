@@ -47,6 +47,7 @@ export function FilterSheet({
   schedule,
   noexp,
   exp,
+  daily = false,
   count,
 }: {
   mode: FindMode;
@@ -54,6 +55,8 @@ export function FilterSheet({
   schedule: Enums<"work_schedule"> | null;
   noexp: boolean;
   exp: boolean;
+  /** faqat kunlik haqli ishlar (pay=daily) */
+  daily?: boolean;
   count: number;
 }) {
   const { t, tEnum } = useT();
@@ -63,6 +66,7 @@ export function FilterSheet({
   const [sch, setSch] = useState<Enums<"work_schedule"> | "">(schedule ?? "");
   const [ne, setNe] = useState(noexp);
   const [ex, setEx] = useState(exp);
+  const [dy, setDy] = useState(daily);
 
   // oyna har ochilganda URL'dagi joriy filtrlar bilan boshlanadi ("Tozalash"dan keyin eski tanlov qolib ketmaydi)
   const openSheet = () => {
@@ -70,17 +74,19 @@ export function FilterSheet({
     setSch(schedule ?? "");
     setNe(noexp);
     setEx(exp);
+    setDy(daily);
     setOpen(true);
   };
 
   const apply = (reset = false) => {
     const url = new URL(window.location.href);
-    for (const k of ["salary", "schedule", "noexp", "exp", "page"]) url.searchParams.delete(k);
+    for (const k of ["salary", "schedule", "noexp", "exp", "pay", "page"]) url.searchParams.delete(k);
     if (!reset) {
       if (mode === "jobs") {
         if (s) url.searchParams.set("salary", s);
         if (sch) url.searchParams.set("schedule", sch);
         if (ne) url.searchParams.set("noexp", "1");
+        if (dy) url.searchParams.set("pay", "daily");
       } else if (ex) url.searchParams.set("exp", "1");
     }
     setOpen(false);
@@ -126,6 +132,13 @@ export function FilterSheet({
               <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
                 <input type="checkbox" checked={ne} onChange={(e) => setNe(e.target.checked)} className="size-7 accent-[var(--primary)]" />
                 <span className="font-semibold">{t("easy.search.no_experience")}</span>
+              </label>
+              <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
+                <input type="checkbox" checked={dy} onChange={(e) => setDy(e.target.checked)} className="size-7 accent-[var(--primary)]" />
+                <span>
+                  <span className="block font-semibold">{t("easy.search.daily_only")}</span>
+                  <span className="block text-base text-muted-foreground">{t("easy.search.daily_only_desc")}</span>
+                </span>
               </label>
             </>
           ) : (

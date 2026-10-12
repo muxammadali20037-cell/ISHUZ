@@ -155,7 +155,7 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   await page.waitForLoadState("networkidle");
   const samples: { round: number; listeners: number; nodes: number }[] = [];
   for (let i = 1; i <= 20; i++) {
-    await page.locator("main a[href='/search?mode=jobs']").click();
+    await page.locator("main a[data-track='direction_select'][href='/search?mode=jobs']").click();
     await page.waitForURL(/\/search/);
     await page.locator("header a[href='/']").first().click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");

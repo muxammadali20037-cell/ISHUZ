@@ -37,7 +37,7 @@ test("mehmon: bosh sahifa → qidiruv → hudud → natija — ovoz yo'q", async
   await page.goto("/");
   await expect(page.getByRole("button", { name: /Ovozni (o'chirish|yoqish)/ })).toHaveCount(0);
   // bosh sahifadan to'g'ridan-to'g'ri "Ish e'lonlari" (qidiruvning birinchi savoli o'tkazib yuboriladi)
-  await page.locator("main a[href='/search?mode=jobs']").click();
+  await page.locator("main a[data-track='direction_select'][href='/search?mode=jobs']").click();
   await page.waitForURL(/mode=jobs/);
   await page.waitForLoadState("networkidle");
   const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");

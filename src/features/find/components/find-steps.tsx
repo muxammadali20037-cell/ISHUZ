@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ProfessionPicker } from "@/features/professions/components/profession-picker";
 import { isCityRegion } from "@/lib/geo/city";
-import { findHref, parseFindParams, type FindParams } from "../params";
+import { anyProfession, findHref, parseFindParams, type FindParams } from "../params";
 
 const bigLink = "press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left text-lg font-semibold hover:border-primary/50";
 
@@ -67,7 +67,7 @@ export function FindSteps({
   };
 
   const modeSummary = cur.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs");
-  const prof = trail?.length ? name(trail.at(-1)!) : "";
+  const prof = trail?.length ? name(trail.at(-1)!) : anyProfession(cur) ? t("easy.search.daily_jobs") : "";
 
   if (step === "profession" || step === "results") {
     const title = cur.mode === "workers" ? t("easy.search.profession_workers") : t("easy.search.profession_jobs");
@@ -98,7 +98,15 @@ export function FindSteps({
     const regionHref = (slug: string) => findHref(cur, { region: slug, district: null, page: 1 });
     return (
       <Shell
-        back={<StepLink href={findHref(cur, { p: null, region: null, district: null })} onGo={show}>{backLabel(t("easy.wizard.back"))}</StepLink>}
+        back={
+          anyProfession(cur) ? (
+            <Link href="/">{backLabel(t("easy.wizard.back"))}</Link>
+          ) : (
+            <StepLink href={findHref(cur, { p: null, region: null, district: null })} onGo={show}>
+              {backLabel(t("easy.wizard.back"))}
+            </StepLink>
+          )
+        }
         title={t("easy.search.region_title")}
         summary={[modeSummary, prof]}
       >
@@ -175,7 +183,7 @@ export function FindSteps({
 }
 
 function stepOf(p: FindParams, hasNode: boolean, regionKnown: boolean, isRegion: boolean, districtKnown: boolean): Step {
-  if (!p.p || !hasNode) return "profession";
+  if ((!p.p || !hasNode) && !anyProfession(p)) return "profession";
   if (!regionKnown) return "region";
   if (isRegion && !districtKnown) return "district";
   return "results";

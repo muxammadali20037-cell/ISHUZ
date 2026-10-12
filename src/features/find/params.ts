@@ -16,6 +16,8 @@ export interface FindParams {
   schedule: Enums<"work_schedule"> | null;
   noexp: boolean;
   exp: boolean;
+  /** "daily" — faqat kunlik haqli ishlar ("Kunlik ishlar" oynasi; kasb tanlash shart emas) */
+  pay: "daily" | null;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -43,6 +45,7 @@ export function parseFindParams(raw: Raw): FindParams {
     schedule: SCHEDULES.has(schedule) ? (schedule as Enums<"work_schedule">) : null,
     noexp: one(raw.noexp) === "1",
     exp: one(raw.exp) === "1",
+    pay: one(raw.pay) === "daily" ? "daily" : null,
   };
 }
 
@@ -59,6 +62,7 @@ export function findHref(base: FindParams, patch: Partial<FindParams> = {}): str
     if (v.salary) q.set("salary", String(v.salary));
     if (v.schedule) q.set("schedule", v.schedule);
     if (v.noexp) q.set("noexp", "1");
+    if (v.pay) q.set("pay", v.pay);
   }
   if (v.mode === "workers" && v.exp) q.set("exp", "1");
   if (v.page > 1) q.set("page", String(v.page));
@@ -66,8 +70,13 @@ export function findHref(base: FindParams, patch: Partial<FindParams> = {}): str
   return s ? `/search?${s}` : "/search";
 }
 
-export const EMPTY_FIND: FindParams = { mode: null, q: "", p: null, region: null, district: null, page: 1, salary: null, schedule: null, noexp: false, exp: false };
+export const EMPTY_FIND: FindParams = { mode: null, q: "", p: null, region: null, district: null, page: 1, salary: null, schedule: null, noexp: false, exp: false, pay: null };
 
 export function activeFilterCount(p: FindParams): number {
-  return p.mode === "jobs" ? Number(!!p.salary) + Number(!!p.schedule) + Number(p.noexp) : Number(p.exp);
+  return p.mode === "jobs" ? Number(!!p.salary) + Number(!!p.schedule) + Number(p.noexp) + Number(p.pay === "daily") : Number(p.exp);
+}
+
+/** "Kunlik ishlar": kasb tanlanmagan bo'lsa ham hudud va natijalar ko'rsatiladi */
+export function anyProfession(p: FindParams): boolean {
+  return p.mode === "jobs" && p.pay === "daily" && !p.p;
 }

@@ -11,7 +11,22 @@
     "search_title": "Browse listings",
     "search_desc": "Search by profession and area. No sign-up needed to browse.",
     "search_jobs": "Jobs",
-    "search_workers": "Workers"
+    "search_workers": "Workers",
+    "windows": {
+      "label": "Quick sections",
+      "workers": {
+        "title": "Finding staff is easy now",
+        "desc": "Pick a profession and region — matching workers right away"
+      },
+      "jobs": {
+        "title": "Finding the right job is easy now",
+        "desc": "Pick your profession — job posts near you"
+      },
+      "daily": {
+        "title": "Day jobs",
+        "desc": "One-day and short gigs — paid every day"
+      }
+    }
   },
   "cabinet": {
     "title": "My account",
@@ -216,7 +231,12 @@
     "salary_period_hourly": "Salary (sum, per hour)",
     "salary_period_piecework": "Salary (sum, piecework)",
     "salary_period_note": "The salary period is not changed in this form.",
-    "detailed_edit": "Detailed edit"
+    "detailed_edit": "Detailed edit",
+    "pay_period": "How is it paid?",
+    "pay_monthly": "Monthly",
+    "pay_monthly_desc": "Regular job — salary per month",
+    "pay_daily": "Daily",
+    "pay_daily_desc": "Work for one or a few days — paid per day"
   },
   "search": {
     "page_title": "Search",
@@ -280,7 +300,10 @@
     "empty_title_jobs_all": "No “{name}” jobs yet",
     "empty_title_workers_all": "No “{name}” workers yet",
     "empty_desc_all": "New listings are added every day. Choose another profession or check back later.",
-    "empty_no_filters": "Search without filters"
+    "empty_no_filters": "Search without filters",
+    "daily_jobs": "Day jobs",
+    "daily_only": "Day jobs only",
+    "daily_only_desc": "One-day and short gigs paid daily"
   },
   "card": {
     "call": "Call",

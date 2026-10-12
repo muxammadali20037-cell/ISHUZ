@@ -6,9 +6,11 @@ import { publicEnv } from "@/lib/env";
 import type { SessionContext } from "@/features/auth/session";
 import { countMyListings } from "@/features/cabinet/queries";
 import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
+import { HomeWindows } from "@/features/home-windows/home-windows";
+import { getHomeSettings } from "@/features/home-windows/queries";
 
 /**
- * Bosh sahifa — uchta yo'l, har biri qayerga olib borishini aytadi:
+ * Bosh sahifa — tepada rasmli oynalar (xodim topish, mos ish, kunlik ishlar), so'ng uchta yo'l:
  *  1) "Ish qidiryapsizmi?" → o'zingiz haqingizda e'lon berish (/post/worker);
  *  2) "Ishchi kerakmi?" → ish e'loni berish (/post/vacancy);
  *  3) "E'lonlarni ko'rish" → ro'yxatdan o'tmasdan qidiruv: ish e'lonlari yoki ishchilar (qidiruvning birinchi savoli o'tkazib yuboriladi).
@@ -16,7 +18,7 @@ import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
  */
 export async function HomeThree({ session }: { session: SessionContext | null }) {
   const { t } = await getT();
-  const count = session ? await countMyListings(session) : 0;
+  const [count, home] = await Promise.all([session ? countMyListings(session) : Promise.resolve(0), getHomeSettings()]);
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const jsonLd = JSON.stringify([
     { "@context": "https://schema.org", "@type": "Organization", name: "Ish topdim", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
@@ -43,7 +45,11 @@ export async function HomeThree({ session }: { session: SessionContext | null })
   return (
     <div className="container-app py-6 sm:py-10">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-      <header className="text-center">
+      {/* ekran tepasida rasmli oynalar (admin panelda sozlanadi) */}
+      <div className="mx-auto max-w-5xl">
+        <HomeWindows windows={home.windows} />
+      </div>
+      <header className="mt-6 text-center sm:mt-8">
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("easy.home.title")}</h1>
         <p className="mt-1 text-lg text-muted-foreground sm:text-xl">{t("easy.home.subtitle")}</p>
       </header>

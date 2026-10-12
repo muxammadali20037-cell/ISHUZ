@@ -11,7 +11,22 @@
     "search_title": "E'lonlarni ko'rish",
     "search_desc": "Kasb va hudud bo'yicha qidiring. Ko'rish uchun ro'yxatdan o'tish shart emas.",
     "search_jobs": "Ish e'lonlari",
-    "search_workers": "Ishchilar"
+    "search_workers": "Ishchilar",
+    "windows": {
+      "label": "Tezkor bo'limlar",
+      "workers": {
+        "title": "Endi xodim topish oson",
+        "desc": "Kasb va hududni tanlang — mos ishchilar darhol chiqadi"
+      },
+      "jobs": {
+        "title": "Endi o'zingizga mos ish topish oson",
+        "desc": "Kasbingizni tanlang — yaqin atrofdagi ish e'lonlari"
+      },
+      "daily": {
+        "title": "Kunlik ishlar",
+        "desc": "Bir kunlik va qisqa ishlar — haq har kuni"
+      }
+    }
   },
   "cabinet": {
     "title": "Kabinetim",
@@ -216,7 +231,12 @@
     "salary_period_hourly": "Maosh (so'm, soatiga)",
     "salary_period_piecework": "Maosh (so'm, ishbay)",
     "salary_period_note": "Maosh davri bu formada o'zgartirilmaydi.",
-    "detailed_edit": "Batafsil tahrirlash"
+    "detailed_edit": "Batafsil tahrirlash",
+    "pay_period": "Haq qanday to'lanadi?",
+    "pay_monthly": "Oylik",
+    "pay_monthly_desc": "Doimiy ish — maosh oyiga",
+    "pay_daily": "Kunlik",
+    "pay_daily_desc": "Bir yoki bir necha kunlik ish — haq har kuni"
   },
   "search": {
     "page_title": "Qidirish",
@@ -280,7 +300,10 @@
     "empty_title_jobs_all": "Hozircha «{name}» bo'yicha ish e'loni yo'q",
     "empty_title_workers_all": "Hozircha «{name}» bo'yicha ishchi topilmadi",
     "empty_desc_all": "Yangi e'lonlar har kuni qo'shiladi. Boshqa kasbni tanlang yoki keyinroq qayting.",
-    "empty_no_filters": "Filtrlarsiz qidirish"
+    "empty_no_filters": "Filtrlarsiz qidirish",
+    "daily_jobs": "Kunlik ishlar",
+    "daily_only": "Faqat kunlik ishlar",
+    "daily_only_desc": "Haq har kuni to'lanadigan bir kunlik va qisqa ishlar"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",

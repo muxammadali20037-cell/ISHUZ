@@ -88,6 +88,7 @@ export function VacancyPost({
   aiEnabled = false,
   customAllowed = false,
   photoQuarantine = false,
+  dailyAllowed = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -101,6 +102,8 @@ export function VacancyPost({
   customAllowed?: boolean;
   /** rasm yopiq karantin bucket'ga yuklanadimi (0058) */
   photoQuarantine?: boolean;
+  /** baza kunlik haqni saqlay oladimi (0060) — "Oylik / Kunlik" tanlovi */
+  dailyAllowed?: boolean;
 }) {
   const { t, name, tEnum } = useT();
   const router = useRouter();
@@ -131,6 +134,8 @@ export function VacancyPost({
   const { category, professionName, professionTrail } = professionLabels(draft, categories, name, t("professions.custom_badge"));
   // mavjud vakansiyaning maosh davri (kunlik/soatlik raqam oylik deb ko'rsatilmaydi)
   const salaryPeriod = draft.salaryType && draft.salaryType !== "monthly" ? draft.salaryType : null;
+  // oylik / kunlik shu formada tanlanadi (0060); soatlik va ishbay — faqat batafsil tahrirda
+  const payChoice = dailyAllowed && (!draft.salaryType || draft.salaryType === "monthly" || draft.salaryType === "daily");
   const phone = normalizePhone(draft.phone);
   const isPerson = draft.employerType === "person";
 
@@ -232,6 +237,7 @@ export function VacancyPost({
         salaryFrom: draft.negotiable ? null : parseMoney(draft.salaryFrom),
         salaryTo: draft.negotiable ? null : parseMoney(draft.salaryTo),
         schedule: draft.schedule || null,
+        salaryType: payChoice ? (draft.salaryType === "daily" ? "daily" : "monthly") : undefined,
         experienceMonths: draft.experienceMonths,
         showPhone: draft.showPhone,
         photoPath: draft.photoPath ?? null,
@@ -487,7 +493,19 @@ export function VacancyPost({
           </div>
           <fieldset>
             <legend className="mb-2 text-lg font-semibold">{salaryPeriod ? t(`easy.vacancy.salary_period_${salaryPeriod}`) : t("easy.vacancy.salary")}</legend>
-            {salaryPeriod && editId ? (
+            {payChoice ? (
+              <div className="mb-3">
+                <ChoiceButtons
+                  label={t("easy.vacancy.pay_period")}
+                  value={draft.salaryType === "daily" ? "daily" : "monthly"}
+                  onChange={(v) => update({ salaryType: v })}
+                  options={[
+                    { value: "monthly" as const, label: t("easy.vacancy.pay_monthly"), description: t("easy.vacancy.pay_monthly_desc") },
+                    { value: "daily" as const, label: t("easy.vacancy.pay_daily"), description: t("easy.vacancy.pay_daily_desc") },
+                  ]}
+                />
+              </div>
+            ) : salaryPeriod && editId ? (
               <p className="mb-3 text-base text-muted-foreground">
                 {t("easy.vacancy.salary_period_note")}{" "}
                 <a href={`/employer/vacancies/${editId}/edit`} className="font-semibold text-primary underline underline-offset-4">
@@ -497,11 +515,11 @@ export function VacancyPost({
             ) : null}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <MoneyInput id="salary-from" value={draft.salaryFrom} onChange={(v) => update({ salaryFrom: v })} placeholder="3 000 000" disabled={draft.negotiable} invalid={!!errors.salary} label={t("easy.vacancy.salary_from")} />
+                <MoneyInput id="salary-from" value={draft.salaryFrom} onChange={(v) => update({ salaryFrom: v })} placeholder={draft.salaryType === "daily" ? "150 000" : "3 000 000"} disabled={draft.negotiable} invalid={!!errors.salary} label={t("easy.vacancy.salary_from")} />
                 <p className="mt-1 text-base text-muted-foreground">{t("easy.vacancy.salary_from")}</p>
               </div>
               <div>
-                <MoneyInput id="salary-to" value={draft.salaryTo} onChange={(v) => update({ salaryTo: v })} placeholder="6 000 000" disabled={draft.negotiable} invalid={!!errors.salary} label={t("easy.vacancy.salary_to")} />
+                <MoneyInput id="salary-to" value={draft.salaryTo} onChange={(v) => update({ salaryTo: v })} placeholder={draft.salaryType === "daily" ? "300 000" : "6 000 000"} disabled={draft.negotiable} invalid={!!errors.salary} label={t("easy.vacancy.salary_to")} />
                 <p className="mt-1 text-base text-muted-foreground">{t("easy.vacancy.salary_to")}</p>
               </div>
             </div>

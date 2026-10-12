@@ -155,6 +155,7 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
       salary_negotiable: v.negotiable,
       salary_from: v.salaryFrom,
       salary_to: v.salaryTo,
+      salary_type: v.salaryType ?? null,
       schedule: v.schedule,
       experience_min_months: v.experienceMonths,
       photo_path: photoPath,

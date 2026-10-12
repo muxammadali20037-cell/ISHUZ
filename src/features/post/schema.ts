@@ -52,6 +52,8 @@ export const vacancyListingSchema = z
     salaryFrom: z.number().int().min(0).max(1_000_000_000).nullable(),
     salaryTo: z.number().int().min(0).max(1_000_000_000).nullable(),
     schedule: schedule.nullable(),
+    /** oddiy formada: oylik yoki kunlik (0060); berilmasa — mavjud tur saqlanadi (yangi e'lon — oylik) */
+    salaryType: z.enum(["monthly", "daily"]).optional(),
     experienceMonths: z.union([z.literal(0), z.literal(12), z.literal(36)]),
     showPhone: z.boolean(),
     source: z.enum(["manual", "ai"]).optional(),

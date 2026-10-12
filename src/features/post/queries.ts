@@ -131,8 +131,10 @@ export interface SimpleListingFeatures {
   customProfession: boolean;
   /** 0058: yopiq karantin bucket (vacancy-uploads) mavjud */
   photoQuarantine: boolean;
+  /** 0060: oddiy e'londa kunlik haq va "Kunlik ishlar" qidiruvi */
+  dailyJobs: boolean;
 }
-const NO_FEATURES: SimpleListingFeatures = { customProfession: false, photoQuarantine: false };
+const NO_FEATURES: SimpleListingFeatures = { customProfession: false, photoQuarantine: false, dailyJobs: false };
 let featuresCache: { at: number; value: SimpleListingFeatures } | null = null;
 /**
  * Bazadagi sodda e'lon imkoniyatlari (0057+): eski bazada "Kasbim topilmadi" ko'rsatilmaydi (saqlab bo'lmaydigan yo'l yo'q),
@@ -149,7 +151,7 @@ export async function getSimpleListingFeatures(): Promise<SimpleListingFeatures>
     return NO_FEATURES;
   }
   const flags = data && typeof data === "object" && !Array.isArray(data) ? (data as Record<string, unknown>) : {};
-  const value = { customProfession: flags.custom_profession === true, photoQuarantine: flags.photo_quarantine === true };
+  const value = { customProfession: flags.custom_profession === true, photoQuarantine: flags.photo_quarantine === true, dailyJobs: flags.daily_jobs === true };
   featuresCache = { at: Date.now(), value };
   return value;
 }

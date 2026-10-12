@@ -65,16 +65,16 @@ test("filtr: 'Filtrni tozalash'dan keyin oyna qayta ochilsa eski tanlov ko'rinma
   await asGuest(context);
   await page.goto(`/search?mode=jobs&p=${await nodeId("Haydovchi")}&region=all`);
   await page.getByRole("button", { name: /^Filtr/ }).click();
-  const noexp = page.getByRole("dialog").getByRole("checkbox");
+  const noexp = page.getByRole("dialog").getByRole("checkbox", { name: "Tajribasiz ham olinadi" });
   await noexp.check();
   await page.getByRole("button", { name: "Natijalarni ko'rsatish" }).click();
   await page.waitForURL(/noexp=1/);
   await page.getByRole("button", { name: /^Filtr/ }).click();
-  await expect(page.getByRole("dialog").getByRole("checkbox")).toBeChecked();
+  await expect(page.getByRole("dialog").getByRole("checkbox", { name: "Tajribasiz ham olinadi" })).toBeChecked();
   await page.getByRole("button", { name: "Filtrni tozalash" }).click();
   await page.waitForURL((u) => !u.searchParams.has("noexp"));
   await page.getByRole("button", { name: /^Filtr/ }).click();
-  await expect(page.getByRole("dialog").getByRole("checkbox")).not.toBeChecked();
+  await expect(page.getByRole("dialog").getByRole("checkbox", { name: "Tajribasiz ham olinadi" })).not.toBeChecked();
 });
 
 test("qidiruv boshi: ikki teng neytral karta (rangli dominant sirt yo'q)", async ({ page, context }) => {
