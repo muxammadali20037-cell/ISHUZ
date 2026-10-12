@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 bilan yangilandi: 2026-10-12) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,11 +11,11 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0058 toza bazaga | ✅ lint, typecheck, unit (569 / 18 skip), SQL, build, 82 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0058** (egasi SQL Editor'da qo'lladi, 2026-10-11; read-only tekshirildi — §2 F-02) | ✅ xavfsizlik qatlami, "Kasbim topilmadi" va rasm karantini yoqilgan |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0060 toza bazaga | ✅ lint, typecheck, unit (577 / 18 skip), SQL (26 fayl), build, 97 ta brauzer E2E — PASS |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0058** (egasi SQL Editor'da qo'lladi, 2026-10-11; read-only tekshirildi — §2 F-02). **0059, 0060 — hali qo'llanmagan** (§12) | ✅ xavfsizlik qatlami, "Kasbim topilmadi" va rasm karantini yoqilgan; D bosqichi kodi 0059/0060 siz ham ishlaydi (§12) |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
-Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
+Qolgan to'siqlar (egasi): 0059 va 0060 ni production'ga qo'llash (§12), staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
 
 ## 2. Topilmalar: muammo → sabab → fayl → yechim → tekshiruv → qolgan cheklov
 
@@ -262,8 +262,10 @@ bosh sahifa, qidiruv natijasi, qidiruv xatosi, "Kasbim topilmadi", kabinet. Yara
 | 0056 | xavfsizlik (RLS yozuv siyosatlari, pre-request, xavfsizlik hodisalari) | RUNBOOK §7 |
 | 0057 | 2 ta RPC'ga aniq yamoq + `simple_listing_features()` | 0049 dagi funksiya matnlari (0056 yamog'i bilan) + funksiyani olib tashlash |
 | 0058 | yangi yopiq bucket, 3 siyosat `ALTER POLICY` bilan toraytirildi, trigger, indeks, tozalash funksiyasi | 0049 dagi siyosat ifodalarini `ALTER POLICY` bilan qaytarish; triggerni o'chirish; bayroqni 0057 holatiga |
+| 0059 | avatar/logotip: yopiq `media-uploads` bucket + 1 INSERT siyosati, 6 siyosat `ALTER POLICY` bilan toraytirildi, 2 trigger (`media_not_verified`), `stale_raw_media()`, bayroq `media_quarantine` | siyosat ifodalarini 0049/0056 holatiga `ALTER POLICY` bilan; triggerlarni o'chirish; bayroqni 0058 holatiga |
+| 0060 | `save_simple_vacancy` ga aniq yamoq (`pay`: oylik/kunlik), yangi `simple_search_vacancies_v2`, qisman indeks, `app_settings`: `home_banners`, `ai_search_button`, ommaviy `site-media` bucket (mijoz siyosatisiz), bayroq `daily_jobs` | funksiya matnini 0057 holatiga; v2 va indeksni olib tashlash; sozlama qatorlari zararsiz qoladi |
 
-Hammasi qo'shimcha (DROP/DELETE yo'q), qayta qo'llash xavfsiz (0058) yoki xato bilan to'xtaydi (0057 — o'zgarishsiz).
+Hammasi qo'shimcha (DROP/DELETE yo'q), qayta qo'llash xavfsiz (0058, 0059, 0060) yoki xato bilan to'xtaydi (0057 — o'zgarishsiz).
 
 ## 10. C8 — ekranlar birma-bir (yangilangan master prompt)
 
@@ -945,7 +947,180 @@ da hisoblanadi; `compute_match` SQL testlari (`supabase/tests/{professions,secur
    va realtime chat sinovi uchun kerak.
 2. **`SUPPORT_EMAIL` Vercel'da tasdiqlanmagan.** Bu Play Market talabi: hisobni o'chirish sahifasida aloqa manzili bo'lishi
    kerak.
-3. **Avatar va logotip yuklash** hali vakansiya rasmi kabi karantin va qayta kodlashdan o'tmaydi (F-06 qolgan qismi).
+3. ~~**Avatar va logotip yuklash** karantin va qayta kodlashdan o'tmaydi~~ — ✅ kodda tuzatildi (D2, §12). Production bazasida
+   to'liq kuchga kirishi uchun 0059 qo'llanishi kerak.
 4. **Zaxira nusxa.** Ishlayapti, lekin egasi uni bir marta yopiq kalit bilan ochib tekshirishi kerak (F-01).
 
 Kod tomonida reliz uchun ma'lum to'siq qolmadi: barcha o'lchangan xatolar tuzatilgan va testlar bilan himoyalangan.
+
+## 12. D — foydalanuvchi so'rovi (2026-10-12)
+
+So'rov qisqacha (o'zbekcha, egasidan):
+- avatar va logotipni ham karantin qilish;
+- bosqich bosilganda sekin o'tishni tezlashtirish;
+- bosh sahifa tepasida my.gov.uz kabi rasmli oynalar: "Endi xodim topish oson", "Endi o'zingizga mos ish topish oson",
+  "Kunlik ishlar" — nomi rasm tagida;
+- Telegram Mini App ichida kirishni osonlashtirish;
+- hammasini admin paneldan sozlash;
+- o'ng pastda doim turadigan lupa "O'zingizga mosini toping": qisqa yozadi, sun'iy intellekt tahlil qilib, moslarini
+  saralab shu ilova ichida chiqaradi.
+
+Usul C8.10 dagidek: avval yangi testlar yozildi va **eski build'da** (`1a0a556`, `old-build.sh`) ishga tushirildi.
+
+### D1 · Qadamlar orasidagi sekinlik
+
+- **OLDIN:** qidiruvdagi har qadam (kasb → viloyat → tuman) serverga to'liq so'rov edi. Javob kelguncha eski qadam
+  ekranda turib qolardi (lab, RTT 400 ms: 526–551 ms; real tarmoqda va cold start'da soniyalar).
+- **KEYIN:** kasb, viloyat va tuman qadamlari mijozda almashadi: 74–134 ms, serverga so'rov 0. Natijaga o'tishda bosilgan
+  qatorda darhol kutish belgisi, bosh sahifadan qidiruvga o'tishda darhol skelet chiqadi.
+  To'liq jadval: [PERFORMANCE_BASELINE.md § D1](PERFORMANCE_BASELINE.md).
+- **Fayllar:** `src/features/find/components/find-steps.tsx` (yangi), `src/app/search/{page,loading}.tsx`,
+  `e2e/perf/steps.mjs`, `e2e/stack/gateway.mjs` (`E2E_DB_LATENCY_MS`).
+- **Testlar:** `e2e/specs/step-speed.spec.ts` (2). Eski build'da ikkalasi ❌: 0 o'rniga 4 ta server so'rovi va kutish
+  belgisi yo'q.
+- **Ochiq:** production vaqti — NOT_RUN (bu muhitdan production manziliga chiqish yopiq).
+
+### D2 · Avatar va logotip karantini
+
+- **OLDIN:** avatar va logotip ommaviy bucket'ga to'g'ridan-to'g'ri yuklanardi. EXIF/GPS saqlanardi, fayl turi faqat
+  kengaytma bo'yicha tekshirilardi, mijoz bazaga istalgan manzilni yoza olardi.
+- **KEYIN:** vakansiya rasmi bilan bir xil oqim. Batafsil: §2 F-06.
+- **Testlar:** 8 unit, 30 SQL, `e2e/specs/media-upload.spec.ts` (2). Eski build'da ikkalasi ❌ — eski oqim xom faylni
+  to'g'ridan-to'g'ri yozadi va yangi baza qoidasi uni rad etadi.
+- **Ochiq:** 0059 production'ga qo'llanmagan (pastda). Qo'llanmaguncha kod eski bucket'ga yuklaydi, lekin server baribir
+  qayta kodlaydi.
+
+### D3 · Bosh sahifadagi rasmli oynalar va "Kunlik ishlar"
+
+- **OLDIN:**
+  - bosh sahifa matnli kartalar bilan boshlanardi, rasm yo'q edi;
+  - "kunlik ish" tushunchasi yo'q edi: oddiy formada maosh faqat oylik edi, kunlik ishlarni alohida ko'rib bo'lmasdi.
+- **KEYIN:**
+  - Tepada 3 ta rasmli oyna: rasm, tagida qalin nom va bir qator izoh.
+    - Telefonda chapga suriladi (keyingisi chetdan ko'rinib turadi), kompyuterda bir qatorda.
+    - "Endi xodim topish oson" → ishchilar qidiruvi.
+    - "Endi o'zingizga mos ish topish oson" → ish qidiruvi.
+    - "Kunlik ishlar" → faqat kunlik e'lonlar.
+  - Oddiy vakansiya formasida "Oylik / Kunlik" tanlovi bor. Maosh yorlig'i "so'm, kuniga" bo'ladi, kartada "/kun" yoziladi.
+  - Qidiruv filtrida "Faqat kunlik ishlar" belgisi bor.
+  - Rasmlar SVG, brend tokenlari bilan chizilgan: qorong'i mavzuda ham to'g'ri, yuklash hajmi deyarli nol.
+- **Fayllar:**
+  - `supabase/migrations/0060_home_windows_daily_jobs.sql`;
+  - `src/features/home-windows/{model,queries}.ts`, `{home-windows,window-art}.tsx`;
+  - `src/features/find/{params,queries}.ts`, `filter-sheet`;
+  - `src/features/post/{schema,actions}.ts`, `vacancy-post.tsx`;
+  - `home-three.tsx`, `messages/*/easy.json`.
+- **Testlar:** `supabase/tests/daily_jobs.test.sql` (12), `e2e/specs/home-windows.spec.ts` (2). Eski build'da ikkalasi ❌
+  (oynalar yo'q, "Kunlik" tanlovi yo'q).
+- **0060 siz:** standart oynalar ko'rinadi, "Kunlik" tanlovi yashirinadi, filtr sahifa ichida saralaydi (xatosiz).
+
+### D4 · "O'zingizga mosini toping" lupa tugmasi
+
+- **OLDIN:** ilova ichida erkin matn bilan topish faqat AI PRO sahifasida edi va natija Telegram'ga borardi.
+- **KEYIN:**
+  - O'ng pastda doim turadigan lupa tugmasi bor (kompyuterda yozuvi bilan). U pastki menyu va "Ariza yuborish" kabi
+    yopishqoq panellar ustida turadi.
+  - Bosilganda oyna ochiladi:
+    - "Ish qidiryapman / Xodim qidiryapman" tanlovi (rolga qarab avtomatik);
+    - qisqa matn va 3 ta namuna.
+  - Server matnni tahlil qiladi. Avval lug'at ishlaydi, kerak bo'lsa va kalit ulangan bo'lsa sun'iy intellekt ishlaydi.
+  - Natijada "Tushundim: …" (kasb, hudud, kunlik) va bazadagi mos e'lonlar ko'rinadi: eng mosi birinchi, 10 tagacha, shu
+    oynaning ichida. "Hammasini ko'rish" to'liq ro'yxatga olib boradi.
+  - Kasb aniqlanmasa, "Kasbni ro'yxatdan tanlash" taklif qilinadi.
+  - Cheklov: soatiga 30 so'rov.
+- **Fayllar:**
+  - `src/features/find/ai-find.ts` (server amali), `src/features/find/components/ai-finder.tsx`;
+  - `src/components/shared/use-cta-offset.ts`, `globals.css` (`.ai-fab`), `shell.tsx`;
+  - `ai-search.ts` (`pay`), `messages/*/easy.json`.
+- **Testlar:** `e2e/specs/ai-finder.spec.ts` (4). Eski build'da 4/4 ❌ (tugma yo'q).
+- **Ochiq:**
+  - Stendda AI kaliti yo'q, shuning uchun E2E lug'at yo'lini tekshiradi. AI javobini qoidalar bilan birlashtirish (qachon
+    AI chaqiriladi, maosh/jadval faqat matnda aytilgan bo'lsa) unit testlarda (`smart.test.ts`) tekshirilgan. Haqiqiy AI
+    provayderi bilan — NOT_RUN.
+  - Sahifa o'rtasida aylantirilganda lupa kontentdagi tugmaning ustiga tushishi mumkin. Pastki menyu va yopishqoq
+    panellar bilan to'qnashuv yo'q.
+
+### D5 · Telegram Mini App ichida oson kirish
+
+- **OLDIN:** Mini App ochilganda foydalanuvchi mehmon edi. Telegram orqali avtomatik kirish faqat "Kirish" sahifasida
+  ishlardi, ya'ni avval "Kirish" tugmasini topib bosish kerak edi.
+- **KEYIN:**
+  - Mini App ochilishi bilan avtomatik kiradi va "Telegram hisobingiz orqali kirdingiz" xabarini ko'radi.
+  - Kirish bir sessiyada faqat bir marta; server rad etsa ham qayta-qayta urinmaydi.
+  - Oddiy brauzerda va allaqachon kirgan bo'lsa, hech narsa qilmaydi.
+  - `initData` imzosi avvalgidek faqat serverda tekshiriladi (`/api/auth/telegram`), bot kaliti mijozga chiqmaydi.
+- **Fayllar:** `src/lib/telegram/auto-login.tsx` (yangi), `src/app/providers.tsx`.
+- **Testlar:** `e2e/specs/telegram-login.spec.ts` (3). Eski build'da 2 tasi ❌. "Oddiy brauzerda so'rov yo'q" ikkala
+  build'da ✅ (regressiya himoyasi).
+- **Ochiq:**
+  - Haqiqiy telefon va Telegram'da — BLOCKED (C8.10 #30 bilan bir xil).
+  - Telegram Web (brauzerdagi web.telegram.org, iframe) ichida sessiya cookie'si (`SameSite=Lax`) uchinchi tomon
+    iframe'ida saqlanmasligi mumkin. Telefon va kompyuter ilovalarida Mini App alohida oynada ochiladi, u yerda muammo yo'q.
+
+### D6 · Admin panel: "Bosh sahifa"
+
+- **OLDIN:** oynalar va lupa tugmasi kodga yozilgan edi, admin o'zgartira olmasdi (`/admin/home` — 404).
+- **KEYIN:** admin → Kontent → "Bosh sahifa" (ruxsat `settings.manage`). Unda:
+  - lupa tugmasini yoqish/o'chirish (saytda darhol);
+  - har oyna uchun:
+    - ko'rsatish/yashirish;
+    - o'z rasmini yuklash: server EXIF/GPS'siz WebP ≤1280 px ga qayta kodlaydi va `site-media/windows/v-<sha256>.webp`
+      ga saqlaydi; rasm bo'lmagan fayl rad etiladi;
+    - o'rnatilgan rasmni tanlash;
+    - havola (faqat sayt ichidagi sahifa);
+    - 4 tilda sarlavha va izoh (bo'sh maydonda saytdagi standart matn ko'rinadi);
+    - tartibni o'zgartirish va o'chirish;
+  - yangi oyna qo'shish (8 tagacha);
+  - "Standartga qaytarish".
+  - Saqlash bitta yozuv bo'ladi: sayt keshi darhol yangilanadi, har o'zgarish audit jurnaliga tushadi.
+- **Shu bosqichda skrinshotdan topilib tuzatilgan:**
+  - telefonda (390 px) pastki yopishqoq panel uch qatorga bo'linib, ekranning ~¼ qismini yopardi. Endi faqat "Saqlash"
+    yopishqoq;
+  - maydonlarda faqat "Standart matn" yozilardi, admin sarlavha qayerda, izoh qayerda ekanini bilmasdi. Endi har tilda
+    o'sha tilning standart matni ko'rinadi.
+- **Fayllar:**
+  - `src/features/admin/actions/home.ts`, `src/features/admin/components/home-editor.tsx`;
+  - `src/app/admin/(panel)/home/page.tsx`, `nav.ts`, `sidebar-nav.tsx`;
+  - `messages/*/admin.json`.
+- **Testlar:** `e2e/specs/admin-home.spec.ts` (2). Asosiy test eski build'da ❌ (404). Placeholder va panel tekshiruvi
+  tuzatishdan oldingi build'da ❌, keyin ✅. "Admin bo'lmagan ocha olmaydi" ikkala build'da ✅.
+- **0060 siz:** sahifada "Bu sozlamalarni saqlash uchun bazaga 0060 migratsiyasi qo'llanishi kerak…" ogohlantirishi
+  chiqadi va maydonlar o'chiq bo'ladi; sayt standart oynalarni ko'rsatadi.
+
+### Skrinshotlar (faqat stend ma'lumotlari; chap — `1a0a556`, o'ng — keyin)
+
+- [bosh sahifa, telefon](screenshots/d/d3-home-m.jpg) va [kompyuter](screenshots/d/d3-home-d.jpg) — tepadagi oynalar va lupa;
+- [kunlik ish: forma va ro'yxat](screenshots/d/d3-daily-m.jpg) — oldin faqat "oyiga" va `?pay=daily` e'tiborsiz,
+  keyin "Oylik/Kunlik" va faqat kunlik e'lonlar;
+- [lupa oynasi: so'rov va natija](screenshots/d/d4-finder-m.jpg) — "Toshkentda kunlik ish" → "Tushundim: Ish e'lonlari ·
+  Toshkent shahri · Kunlik ishlar", 2 ta kunlik e'lon;
+- [Telegram Mini App](screenshots/d/d5-telegram-m.jpg) — oldin "Kirish" tugmasi, keyin avtomatik kirildi;
+- [admin "Bosh sahifa"](screenshots/d/d6-admin-home.jpg) — telefon va kompyuter (oldin 404).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`1a0a556`) | Keyin |
+|---|---|---|
+| `step-speed.spec.ts` (2) | ❌ ❌ | ✅ |
+| `media-upload.spec.ts` (2) | ❌ ❌ | ✅ |
+| `home-windows.spec.ts` (2) | ❌ ❌ | ✅ |
+| `ai-finder.spec.ts` (4) | ❌ ×4 | ✅ |
+| `telegram-login.spec.ts` (3) | ❌ ❌ · ✅ (regressiya himoyasi) | ✅ |
+| `admin-home.spec.ts` (2) | ❌ · ✅ (regressiya himoyasi) | ✅ |
+| SQL: `media_quarantine` (30), `daily_jobs` (12), `security_hardening` (yangi RPC ro'yxatda) | — (yangi) | ✅ 26 fayl |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 97/97 · 577 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
+| CI (`5d816c4`, branch va `main`) | — | ✅ |
+
+### Production uchun (egasi qiladi)
+
+1. **0059 va 0060 ni qo'llash** — Supabase → `oquqqubmicldvreeqgsg` → SQL Editor, tartib bilan: avval
+   `supabase/migrations/0059_media_quarantine.sql`, keyin `0060_home_windows_daily_jobs.sql`.
+   - Ikkalasi qo'shimcha (DROP yo'q) va qayta qo'llash xavfsiz.
+   - Kod allaqachon deploy qilingan, shuning uchun tartib to'g'ri: avval kod, keyin baza. Eski build yangi bazada avatar
+     saqlay olmaydi — bu kutilgan himoya.
+   - Qo'llangach tekshirish:
+     - `select public.simple_listing_features();` → `media_quarantine: true`, `daily_jobs: true`;
+     - admin → "Bosh sahifa" ochiladi;
+     - profil rasmini yuklang → manzil `…/v-<64 belgi>.webp`.
+2. Admin → "Bosh sahifa" da o'z rasmlaringizni yuklash va matnlarni tahrirlash (ixtiyoriy — standartlari tayyor).
+3. Telefonda Telegram → bot → Mini App ochib, avtomatik kirishni bir marta tekshirish (bu muhitda BLOCKED).

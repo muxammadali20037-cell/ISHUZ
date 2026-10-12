@@ -859,7 +859,6 @@
     "link_hint": "E.g. /search?mode=jobs or /post/vacancy",
     "title_field": "Title",
     "desc_field": "Short description",
-    "default_text": "Default text",
     "move_up": "Move up",
     "move_down": "Move down",
     "remove": "Remove window",

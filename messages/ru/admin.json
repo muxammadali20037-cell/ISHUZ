@@ -859,7 +859,6 @@
     "link_hint": "Например: /search?mode=jobs или /post/vacancy",
     "title_field": "Заголовок",
     "desc_field": "Короткое описание",
-    "default_text": "Стандартный текст",
     "move_up": "Выше",
     "move_down": "Ниже",
     "remove": "Удалить окно",

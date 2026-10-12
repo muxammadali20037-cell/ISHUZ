@@ -30,17 +30,25 @@ Oxirgi yangilanish: 2026-10-12 · branch `claude/gallant-thompson-q70fo3` (main 
 | C8.7 — kabinet, e'lon, profil | ✅ yopuvchi amal neytral, "… gacha" muddat, o'zbekcha bandlik turi, "hozirgina", neytral tanlov va holat | `c3243f0` |
 | C8.8 — arizalar, takliflar, chat, bildirishnomalar | ✅ ikki rol E2E; kabinetda arizalar soni, ish beruvchiga uchinchi shaxs sabablari, "Botir ." va foiz yo'q, rolga mos chat bo'sh holati, mobil'da amallar yuqorida; realtime — NOT_RUN | `9f600ca` |
 | C8.9 — sozlamalar, yordam, huquqiy, admin | ✅ yordam hozirgi nomlar bilan (+guard test), oz huquqiy matn, aloqa zaxirasi, Telegram ulash havolasi, "Boshqaruv paneli", "Ish beruvchi", admin 390 px | `f15254c` |
-| C8.10 — to'liq regressiya | ✅ internet uzilganda sahifa yiqilmaydi (`callAction` hamma joyda), kirill sarlavhali vakansiya ochiladi, ru + 150% shriftda layout, "Butun shahar", `info` tokeni, J1 E2E; 32 mezon jadvali (FAIL 0, #18/#30 BLOCKED) va yakuniy xulosa — hisobot §5, §10, §11 | shu bosqich |
+| C8.10 — to'liq regressiya | ✅ internet uzilganda sahifa yiqilmaydi (`callAction` hamma joyda), kirill sarlavhali vakansiya ochiladi, ru + 150% shriftda layout, "Butun shahar", `info` tokeni, J1 E2E; 32 mezon jadvali (FAIL 0, #18/#30 BLOCKED) va yakuniy xulosa — hisobot §5, §10, §11 | `1a0a556` |
+| D1 — qadamlar sekinligi | ✅ kasb/viloyat/tuman mijozda: 526–551 → 74–134 ms (lab, RTT 400), server so'rovi 0; natijaga o'tishda darhol kutish belgisi; production vaqti — NOT_RUN | `6eb9060` |
+| D2 — avatar va logotip karantini | ✅ yopiq bucket → server → EXIF'siz WebP `v-<sha256>`, baza triggeri; production'da 0059 kutilmoqda | `8407d92` |
+| D3 — rasmli oynalar va kunlik ishlar | ✅ bosh sahifa tepasida 3 oyna (nomi rasm tagida), "Oylik/Kunlik" forma, "Kunlik ishlar" ro'yxati; production'da 0060 kutilmoqda | `ccd9c19` |
+| D4 — "O'zingizga mosini toping" lupa | ✅ o'ng pastda doim; qisqa matn → "Tushundim" + mos e'lonlar shu oynada; pastki menyu/yopishqoq panellarni yopmaydi | `ef2ca0a` |
+| D5 — Telegram'da oson kirish | ✅ Mini App ochilishi bilan avtomatik kirish (bir marta); haqiqiy qurilma — BLOCKED; Telegram Web iframe — ochiq | `3fb690f` |
+| D6 — admin "Bosh sahifa" | ✅ oynalar (rasm, matn 4 tilda, tartib, ko'rinish) va lupa tugmasi admin paneldan, audit + kesh; telefon paneli va standart matn ko'rinishi tuzatildi; hisobot §12 | `5d816c4` + shu bosqich |
 
 ## Keyingi sessiya uchun
 
-0. C8 yakunlandi. Keyingi ish — hisobot §11 "Production relizni nima to'sib turibdi" va C8.10 "ochiq" ro'yxati
-   (staging, `SUPPORT_EMAIL`, avatar/logo karantini, #30 haqiqiy qurilmada, tarmoq sekinlashtirish testi).
+0. C8 va D (D1–D6) yakunlandi. Keyingi ish — hisobot §11 "Production relizni nima to'sib turibdi" va C8.10 "ochiq" ro'yxati
+   (0059/0060 production'ga, staging, `SUPPORT_EMAIL`, #30 haqiqiy qurilmada, tarmoq sekinlashtirish testi).
    Yangi o'zgarishda: OLDIN/KEYIN/fayllar/skrinshot/test/ochiq masala; yangi test eski build'da yiqilishini ko'rsating.
    "Oldin" skrinshoti: `bash e2e/screens/old-build.sh <commit>` (:3301, o'sha stend bazasi), oxirida `… <commit> stop`.
 1. ✅ 0056 → 0057 → 0058 production'da (2026-10-11, read-only tekshirildi). Saytni brauzerda tekshirish: "Kasbim topilmadi", rasm yuklash.
 2. ✅ Zaxira sirlari sozlandi, birinchi shifrlangan nusxa yaratildi (run `38207925133`). Egasi: bir marta yopiq kalit bilan ochib ko'rsin (`age -d`).
-3. Ochiq: avatar va kompaniya logotipi uchun ham karantin + qayta kodlash (F-06 qolgan qismi).
+3. ✅ Avatar va logotip karantini kodda (D2). **Egasi: 0059, keyin 0060 ni production'ga qo'llash** (hisobot §12 "Production uchun").
+3a. D ochiq: Telegram Web (iframe) ichida avtomatik kirish cookie'si; lupa sahifa o'rtasida kontent tugmasi ustiga tushishi mumkin;
+    haqiqiy AI provayderi bilan lupa — NOT_RUN (stendda kalit yo'q).
 4. Ochiq: TS matching dvigatelini SQL v2 ga ko'chirish yoki olib tashlash (paritet suite — 18 skip; sababi hisobotda).
 5. Ochiq: staging'da aralash HTTP yuklama testi (F-09) va real qurilmada web-vitals.
 6. Ochiq: login (Telegram kod) — kechikish/qayta yuborish/offline holatlari uchun E2E (haqiqiy bot kerak — BLOCKED).

@@ -39,7 +39,22 @@ async function shrink(file: File): Promise<Blob> {
  * Admin → "Bosh sahifa": tepadagi rasmli oynalar (tartib, matn 4 tilda, havola, rasm) va lupa tugmasi.
  * O'zgarishlar "Saqlash" bilan bitta yozuvda saqlanadi va saytda darhol ko'rinadi; har biri audit jurnaliga tushadi.
  */
-export function HomeEditor({ windows: initial, aiButton, canManage, ready }: { windows: HomeWindow[]; aiButton: boolean; canManage: boolean; ready: boolean }) {
+export type WindowDefaults = Record<WindowArt, Record<Locale, { title: string; desc: string }>>;
+
+export function HomeEditor({
+  windows: initial,
+  defaults,
+  aiButton,
+  canManage,
+  ready,
+}: {
+  windows: HomeWindow[];
+  /** standart oynalarning 4 tildagi matni — maydon bo'sh qolsa saytda shu ko'rinadi (joy egallovchi sifatida ko'rsatiladi) */
+  defaults: WindowDefaults;
+  aiButton: boolean;
+  canManage: boolean;
+  ready: boolean;
+}) {
   const { t } = useT();
   const [list, setList] = useState<HomeWindow[]>(initial);
   const [ai, setAi] = useState(aiButton);
@@ -212,7 +227,7 @@ export function HomeEditor({ windows: initial, aiButton, canManage, ready }: { w
                           disabled={disabled}
                           maxLength={80}
                           onChange={(e) => change(w.id, { title: { ...w.title, [l]: e.target.value } })}
-                          placeholder={isBuiltinWindow(w.id) ? t("admin.home.default_text") : t("admin.home.title_field")}
+                          placeholder={isBuiltinWindow(w.id) ? defaults[w.id][l].title : t("admin.home.title_field")}
                           aria-label={`${t("admin.home.title_field")} (${LOCALE_LABEL[l]})`}
                         />
                         <Input
@@ -220,7 +235,7 @@ export function HomeEditor({ windows: initial, aiButton, canManage, ready }: { w
                           disabled={disabled}
                           maxLength={140}
                           onChange={(e) => change(w.id, { desc: { ...w.desc, [l]: e.target.value } })}
-                          placeholder={isBuiltinWindow(w.id) ? t("admin.home.default_text") : t("admin.home.desc_field")}
+                          placeholder={isBuiltinWindow(w.id) ? defaults[w.id][l].desc : t("admin.home.desc_field")}
                           aria-label={`${t("admin.home.desc_field")} (${LOCALE_LABEL[l]})`}
                         />
                       </fieldset>
@@ -232,7 +247,7 @@ export function HomeEditor({ windows: initial, aiButton, canManage, ready }: { w
           ))}
         </ol>
 
-        <div className="sticky bottom-3 z-10 flex flex-wrap items-center gap-2 rounded-2xl border border-border bg-card p-3 shadow-md">
+        <div className="flex flex-wrap items-center gap-2">
           <Button
             type="button"
             variant="outline"
@@ -247,9 +262,12 @@ export function HomeEditor({ windows: initial, aiButton, canManage, ready }: { w
           <Button type="button" variant="ghost" disabled={disabled} onClick={() => setResetOpen(true)}>
             <RotateCcw className="size-4" /> {t("admin.home.reset")}
           </Button>
+        </div>
+        {/* telefonda faqat "Saqlash" yopishqoq — uch tugma uch qatorga bo'linib ekranning choragini yopardi */}
+        <div className="sticky bottom-3 z-10 flex justify-end rounded-2xl border border-border bg-card p-2 shadow-md">
           <Button
             type="button"
-            className="ml-auto"
+            className="w-full sm:w-auto"
             disabled={disabled || !dirty}
             loading={pending}
             onClick={() =>

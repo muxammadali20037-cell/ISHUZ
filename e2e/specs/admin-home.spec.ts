@@ -51,6 +51,13 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   const first = page.getByRole("listitem", { name: "1-oyna" });
   const third = page.getByRole("listitem", { name: "3-oyna" });
   await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(3);
+  // bo'sh maydonda — saytda ko'rinadigan standart matn (har tilda o'zi), "Standart matn" emas
+  await expect(first.getByRole("textbox", { name: "Sarlavha (O'zbek)" })).toHaveAttribute("placeholder", "Endi xodim topish oson");
+  await expect(first.getByRole("textbox", { name: "Sarlavha (Русский)" })).toHaveAttribute("placeholder", "Найти сотрудника теперь просто");
+  // telefonda pastki yopishqoq panel — faqat "Saqlash", ekranni yopmaydi
+  const bar = page.getByRole("button", { name: "Saqlash" }).locator("xpath=ancestor::div[contains(@class,'sticky')][1]");
+  await expect(bar).toBeVisible();
+  expect((await bar.boundingBox())!.height).toBeLessThan(80);
 
   // 1-oyna sarlavhasi (o'zbekcha), 3-oyna o'chiriladi, 2-oynaga rasm
   await first.getByRole("textbox", { name: "Sarlavha (O'zbek)" }).fill("Ishchi kerakmi? Shu yerda toping");
