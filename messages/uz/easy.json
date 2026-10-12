@@ -542,5 +542,40 @@
       "validation": "Kamida bir-ikki gap yozing (1500 belgigacha).",
       "blocked": "Hisobingiz bloklangan"
     }
+  },
+  "finder": {
+    "button": "O'zingizga mosini toping",
+    "title": "O'zingizga mosini toping",
+    "desc": "Qisqacha yozing — sun'iy intellekt tahlil qilib, mos e'lonlarni saralab beradi",
+    "mode_label": "Kim qidiryapsiz?",
+    "mode_jobs": "Ish qidiryapman",
+    "mode_workers": "Xodim qidiryapman",
+    "label": "Nima qidiryapsiz?",
+    "placeholder_jobs": "Masalan: Chilonzorda oshpaz, kunlik",
+    "placeholder_workers": "Masalan: Toshkentda tajribali haydovchi kerak",
+    "example_j1": "Toshkentda buxgalter",
+    "example_j2": "Kunlik ish",
+    "example_j3": "Tajribasiz sotuvchi",
+    "example_w1": "Toshkentda buxgalter",
+    "example_w2": "Oshpaz kerak",
+    "example_w3": "Tajribali haydovchi",
+    "submit": "Topish",
+    "analyzing": "Tahlil qilinmoqda…",
+    "by_ai": "Sun'iy intellekt tahlil qildi",
+    "by_rules": "So'zlaringizdan tushunildi",
+    "understood": "Tushundim:",
+    "found_jobs": "Mos e'lonlar: {count}",
+    "found_workers": "Mos ishchilar: {count}",
+    "show_all": "Hammasini ko'rish ({count})",
+    "empty_jobs": "Hozircha mos e'lon yo'q",
+    "empty_workers": "Hozircha mos ishchi yo'q",
+    "empty_desc": "Hududni kengaytiring yoki boshqacha yozib ko'ring",
+    "need_profession": "Kasbni aniqlay olmadim",
+    "need_profession_desc": "Kasbni bitta so'z bilan yozing, masalan «oshpaz», «haydovchi» — yoki ro'yxatdan tanlang",
+    "pick_from_list": "Kasbni ro'yxatdan tanlash",
+    "errors": {
+      "search_failed": "Qidiruv vaqtincha ishlamadi. Qayta urinib ko'ring.",
+      "validation": "Kamida 2 ta harf yozing"
+    }
   }
 }

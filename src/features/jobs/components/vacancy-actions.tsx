@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Bookmark, CheckCircle2, Send, Settings2, Share2 } from "lucide-react";
@@ -19,6 +19,7 @@ import type { VacancyViewerState } from "../types";
 import { useSaveVacancy } from "./use-save-vacancy";
 import { celebrate } from "@/lib/celebrate";
 import { callAction } from "@/lib/action-call";
+import { useCtaOffset } from "@/components/shared/use-cta-offset";
 
 export interface VacancyActionsProps {
   vacancy: { id: string; slug: string; title: string; companyName: string | null; status: Enums<"vacancy_status"> };
@@ -39,6 +40,8 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
   const [message, setMessage] = useState(() => t("jobs.apply.default_message", { title: vacancy.title }));
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState<string | null>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  useCtaOffset(ctaRef);
 
   const detailPath = `/jobs/${vacancy.slug}`;
   const isActive = vacancy.status === "active";
@@ -160,8 +163,9 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
         </div>
       </div>
 
-      {/* Mobil / planshet: pastki yopishqoq panel (bottom nav ustida) */}
+      {/* Mobil / planshet: pastki yopishqoq panel (bottom nav ustida); lupa tugmasi undan yuqorida (--cta-offset) */}
       <div
+        ref={ctaRef}
         className="fixed inset-x-0 z-30 border-t border-border/70 bg-card px-4 py-2.5 lg:hidden"
         style={{ bottom: "calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px))" }}
       >

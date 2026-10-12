@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState, useTransition } from "react";
+import { useId, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { Bookmark, MessageCircle, Send, Plus } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -12,6 +12,7 @@ import { RadioGroup, RadioItem } from "@/components/ui/checkbox";
 import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
+import { useCtaOffset } from "@/components/shared/use-cta-offset";
 import { ReportDialog } from "@/features/reports/report-dialog";
 import { saveWorker, sendOffer, unsaveWorker } from "../actions";
 import type { MyVacancy, SavedEntry } from "../types";
@@ -43,6 +44,8 @@ export function CandidateActions(props: Props) {
   const [saved, setSaved] = useState<SavedEntry | null>(props.saved);
   const [chatHref, setChatHref] = useState(props.chatHref);
   const [offered, setOffered] = useState(props.offeredVacancyIds);
+  const ctaRef = useRef<HTMLDivElement>(null);
+  useCtaOffset(ctaRef);
   const [unsaving, startUnsave] = useTransition();
 
   const isSaved = saved !== null;
@@ -117,8 +120,9 @@ export function CandidateActions(props: Props) {
         </div>
       </div>
 
-      {/* Mobil: pastki panel (tab bar ustida) */}
+      {/* Mobil: pastki panel (tab bar ustida); lupa tugmasi undan yuqorida (--cta-offset) */}
       <div
+        ref={ctaRef}
         className="fixed inset-x-0 z-30 border-t border-border bg-card px-4 py-2.5 md:hidden"
         style={{ bottom: "calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px))" }}
       >

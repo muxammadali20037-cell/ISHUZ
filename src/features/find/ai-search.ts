@@ -6,7 +6,7 @@ import { z } from "zod";
 import { aiJson, aiProviderConfigured } from "@/lib/ai/json";
 import { allowRate } from "@/lib/rate-limit";
 import { normalizeText } from "@/features/search/understand";
-import { resolveFindQuery } from "./queries";
+import { isDayLaborNode, resolveFindQuery } from "./queries";
 import { aiRemote, needsAi, professionQueries, smartFilters, type AiSearchParse, type SmartFilters } from "./smart";
 import type { FindMode } from "./intent";
 
@@ -64,6 +64,8 @@ export interface SmartResolved extends SmartFilters {
   regionSlug: string | null;
   districtId: string | null;
   remote: boolean;
+  /** "kunlik ish" / "посуточно" — faqat kunlik haqli ishlar (ish qidirishda) */
+  pay: "daily" | null;
   source: "rules" | "ai";
 }
 
@@ -90,12 +92,16 @@ export async function smartResolveQuery(q: string, userId: string | null, modeHi
     districtId = r.regionSlug ? r.districtId : null;
   }
   const mode = modeHint ?? rules.mode ?? ai?.intent ?? null;
+  const pay = mode !== "workers" && (rules.salaryKind === "daily" || (!rules.salaryKind && ai?.pay_period === "day")) ? "daily" : null;
+  // "kunlik ish" — haq turi: umumiy "Kunlik ish (mardikor)" kasbi bilan cheklanmaydi (barcha kunlik ishlar)
+  if (pay && nodeId && (await isDayLaborNode(nodeId))) nodeId = null;
   return {
     mode,
     nodeId,
     regionSlug,
     districtId,
     remote: rules.remote || aiRemote(q, ai),
+    pay,
     ...smartFilters(q, mode, rules, ai),
     source: ai ? "ai" : "rules",
   };

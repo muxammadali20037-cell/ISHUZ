@@ -75,6 +75,19 @@ export interface NodeInfo {
   categoryIcon: string | null;
 }
 
+/** Umumiy "Kunlik ish (mardikor)" tuguni: "kunlik ish" deb yozilganda kasb emas, haq turi deb tushuniladi */
+const DAY_LABOR_SLUG = "other-day-labor";
+const dayLabor = new Map<string, boolean>();
+export async function isDayLaborNode(nodeId: string): Promise<boolean> {
+  const hit = dayLabor.get(nodeId);
+  if (hit !== undefined) return hit;
+  const { data } = await anon().from("profession_nodes").select("slug").eq("id", nodeId).maybeSingle();
+  const value = data?.slug === DAY_LABOR_SLUG;
+  if (dayLabor.size > 2000) dayLabor.clear();
+  dayLabor.set(nodeId, value);
+  return value;
+}
+
 /** Kasb tuguni. null — bunday tugun yo'q; texnik xato — istisno (xato sahifasi "Qayta urinish" bilan, URL saqlanadi) */
 export async function getNodeInfo(nodeId: string): Promise<NodeInfo | null> {
   const db = anon();

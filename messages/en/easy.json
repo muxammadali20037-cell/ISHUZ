@@ -542,5 +542,40 @@
       "validation": "Write at least a sentence or two (up to 1500 characters).",
       "blocked": "Your account is blocked"
     }
+  },
+  "finder": {
+    "button": "Find what fits you",
+    "title": "Find what fits you",
+    "desc": "Write briefly — AI analyses your request and picks matching posts",
+    "mode_label": "Who are you looking for?",
+    "mode_jobs": "I need a job",
+    "mode_workers": "I need staff",
+    "label": "What are you looking for?",
+    "placeholder_jobs": "E.g.: cook in Chilonzor, daily pay",
+    "placeholder_workers": "E.g.: experienced driver in Tashkent",
+    "example_j1": "Accountant in Tashkent",
+    "example_j2": "Day job",
+    "example_j3": "Seller, no experience",
+    "example_w1": "Accountant in Tashkent",
+    "example_w2": "Need a cook",
+    "example_w3": "Experienced driver",
+    "submit": "Find",
+    "analyzing": "Analysing…",
+    "by_ai": "Analysed by AI",
+    "by_rules": "Understood from your words",
+    "understood": "Understood:",
+    "found_jobs": "Matching posts: {count}",
+    "found_workers": "Matching workers: {count}",
+    "show_all": "Show all ({count})",
+    "empty_jobs": "No matching posts yet",
+    "empty_workers": "No matching workers yet",
+    "empty_desc": "Widen the region or try other words",
+    "need_profession": "Couldn't tell the profession",
+    "need_profession_desc": "Write the profession in one word, e.g. “cook”, “driver” — or pick it from the list",
+    "pick_from_list": "Pick a profession from the list",
+    "errors": {
+      "search_failed": "Search is temporarily unavailable. Please try again.",
+      "validation": "Type at least 2 letters"
+    }
   }
 }

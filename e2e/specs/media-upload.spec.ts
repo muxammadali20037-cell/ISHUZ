@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
-import { expect, test } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 import { USERS, loginAs, sql } from "../support";
 
 /**
@@ -19,6 +19,15 @@ const photoWithExif = () =>
     .jpeg()
     .withExif({ IFD0: { Artist: "Botir uy manzili", Copyright: "maxfiy" } })
     .toBuffer();
+
+/** Foydalanuvchi kabi: tugma bosiladi → fayl tanlash oynasi; sahifa hali "jonlanmagan" bo'lsa (hydration), urinish takrorlanadi */
+async function chooseFile(page: Page, button: Locator, file: { name: string; mimeType: string; buffer: Buffer }) {
+  await expect(async () => {
+    const chooser = page.waitForEvent("filechooser", { timeout: 2000 });
+    await button.click();
+    await (await chooser).setFiles(file);
+  }).toPass({ timeout: 15_000 });
+}
 
 async function workerReady() {
   const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
@@ -42,9 +51,9 @@ test("profil rasmi: EXIF'siz WebP, tekshirilgan nom; xom fayl karantindan o'chad
   await workerReady();
   await loginAs(context, USERS.workerB);
   await page.goto("/profile/edit");
-  const input = page.locator('input[type="file"][accept*="image/jpeg"]').first();
+  const upload = page.getByRole("button", { name: /^Rasm(ni almashtirish| yuklash)$/ });
 
-  await input.setInputFiles({ name: "men.jpg", mimeType: "image/jpeg", buffer: await photoWithExif() });
+  await chooseFile(page, upload, { name: "men.jpg", mimeType: "image/jpeg", buffer: await photoWithExif() });
   await expect(page.getByText("Yuklandi", { exact: true }).first()).toBeVisible({ timeout: 15_000 });
   const [p] = await sql<{ avatar_url: string }>("select avatar_url from public.profiles where id = $1", [USERS.workerB]);
   expect(p!.avatar_url).toMatch(VERIFIED);
@@ -60,7 +69,7 @@ test("profil rasmi: EXIF'siz WebP, tekshirilgan nom; xom fayl karantindan o'chad
   expect(files("media-uploads", `avatar/${USERS.workerB}`)).toEqual([]);
 
   // rasm emas (nomi .jpg) — tushunarli xato, profil rasmi o'zgarmaydi
-  await input.setInputFiles({ name: "virus.jpg", mimeType: "image/jpeg", buffer: Buffer.from("<html><script>alert(1)</script></html>") });
+  await chooseFile(page, upload, { name: "virus.jpg", mimeType: "image/jpeg", buffer: Buffer.from("<html><script>alert(1)</script></html>") });
   await expect(page.getByText("Rasmni o'qib bo'lmadi yoki u surat emas").first()).toBeVisible({ timeout: 15_000 });
   const [after] = await sql<{ avatar_url: string }>("select avatar_url from public.profiles where id = $1", [USERS.workerB]);
   expect(after!.avatar_url).toBe(p!.avatar_url);
@@ -94,7 +103,7 @@ test.describe("kompaniya logotipi", () => {
     await loginAs(context, USERS.employer);
     await page.goto("/company/settings");
     const png = await sharp({ create: { width: 1000, height: 1000, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } }).png().toBuffer();
-    await page.locator('input[type="file"]').first().setInputFiles({ name: "logo.png", mimeType: "image/png", buffer: png });
+    await chooseFile(page, page.getByRole("button", { name: /^(Logotip yuklash|Almashtirish)$/ }), { name: "logo.png", mimeType: "image/png", buffer: png });
     await expect(page.getByText("Logotip yangilandi").first()).toBeVisible({ timeout: 15_000 });
     const [c] = await sql<{ logo_url: string }>("select logo_url from public.companies where id = $1", [companyId]);
     expect(c!.logo_url).toMatch(VERIFIED);

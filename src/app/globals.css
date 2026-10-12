@@ -204,8 +204,25 @@
   .page-with-tabbar {
     padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 16px);
   }
+
   .line-clamp-2 {
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+}
+
+/* "O'zingizga mosini toping" lupa tugmasi: pastki menyu va yopishqoq amallar paneli (--cta-offset) ustida; sahifa oxiri ostida qolmaydi */
+.ai-fab {
+  --fab-base: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
+  bottom: calc(max(var(--fab-base), var(--cta-offset, 0px)) + 16px);
+}
+@media (min-width: 48rem) {
+  .ai-fab {
+    --fab-base: 8px;
+  }
+}
+@media (max-width: 47.99rem) {
+  body:has(.ai-fab) .page-with-tabbar {
+    padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 88px);
   }
 }
 

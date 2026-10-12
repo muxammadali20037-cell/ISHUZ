@@ -39,6 +39,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       schedule: params.schedule ?? r.schedule,
       noexp: params.noexp || r.noexp,
       exp: params.exp || r.exp,
+      pay: params.pay ?? r.pay,
     });
     after(() => trackServer("search_submit", session?.userId ?? null, { source: r.source, found_profession: !!r.nodeId }));
     if (target !== findHref(params)) redirect(target);
