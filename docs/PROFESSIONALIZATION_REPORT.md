@@ -261,9 +261,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.1c | Yagona brend tizimi | ✅ — [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | `c48c5ab` |
 | C8.2 | Bosh sahifa va navigatsiya | ✅ | `8f5baca` |
 | C8.3 | Qidiruv, filtr, kartalar | ✅ | `b595af3` |
-| C8.4 | Ishchi e'loni | ✅ | shu bosqich |
-| C8.5 | Vakansiya e'loni | ⏳ keyingi | — |
-| C8.6–C8.10 | … | ⏳ | — |
+| C8.4 | Ishchi e'loni | ✅ | `48c53fe` |
+| C8.5 | Vakansiya e'loni | ✅ | shu bosqich |
+| C8.6 | Kirish va hisob | ⏳ keyingi | — |
+| C8.7–C8.10 | … | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -472,3 +473,39 @@ Bu bosqichda qabul #32 dagi **to'liq yo'l** birinchi marta oxirigacha yurgizildi
 
 **Ochiq:** haqiqiy Telegram kodi bilan kirish (kod kechikishi, qayta yuborish, eskirgan kod) — stendda Telegram yo'q,
 **BLOCKED** (C8.6 da matn va holatlar tekshiriladi, haqiqiy yuborish — staging/real bot bilan).
+
+### C8.5 · Vakansiya e'loni
+
+4 qadam, tashkilot turi (xususiy/davlat/YATT/o'zim uchun), maosh davri ("Maosh (so'm, oyiga)", tahrirda boshqa davr — batafsil
+tahrirga havola), aloqa roziligi (belgilanmasa raqam ko'rinmaydi) va idempotent joylash (`clientRef`, C8.1b) avvaldan bor.
+Bu bosqichda vakansiya uchun ham to'liq yo'l yurgizildi.
+
+**OLDIN** (48c53fe):
+
+- **Eskirgan xatolar (ikkala forma):** "Davom etish" bo'sh bosilgach, foydalanuvchi har bir maydonni to'g'rilasa ham qizil
+  xatolar ("Kim e'lon berayotganini tanlang", "Nomini yozing", "kamida 10 ta harf yozing", "Maoshni yozing…") va qizil chegaralar
+  joyida qolardi — faqat keyingi bosishda yo'qolardi. Ekran "hammasi noto'g'ri" deb ko'rsatardi.
+- Tekshirish qadamida "Mutaxassis: Buxgalteriya va moliya › Buxgalteriya › Buxgalter" — uch qatorga cho'zilardi.
+
+**KEYIN:**
+
+- `clearEditedErrors` (`src/features/post/field-errors.ts`): maydon tahrirlangan zahoti o'sha maydon xatosi o'chadi (maosh
+  "dan/gacha/kelishiladi" — bitta xato); barcha maydon xatosi ketgach umumiy xabar ham. Qayta tekshiruv — keyingi bosishda.
+  Moderatsiya belgilagan maydon ham tahrirlangach tozalanadi. Ishchi va vakansiya formalari.
+- Tekshirish qadamida — kasb nomi, soha yo'li ostida.
+- C8.4 dagi telefon formati va sarlavha "Kirish" o'tkazishi vakansiya formasida ham ishlaydi (umumiy kod).
+
+**Fayllar:** `src/features/post/field-errors.ts` (+ unit test), `src/features/post/components/{vacancy-post,worker-post}.tsx`.
+Testlar: `e2e/specs/post-forms.spec.ts` (yangi), `e2e/specs/journeys.spec.ts` (+2: ish beruvchi yo'li, mobil va desktop).
+
+**Skrinshot:** [3-qadam: maydonlar to'ldirilgach](screenshots/c8/c8-5-stale-errors-m.jpg) (chap — 48c53fe, o'ng — keyin).
+
+**Testlar:**
+
+| Test | Eski build (48c53fe) | Keyin |
+|---|---|---|
+| `post-forms.spec.ts` — vakansiya: xatolar birma-bir yo'qoladi, `aria-invalid` 0, keyingi qadam ochiladi | ❌ | ✅ |
+| — ishchi: ism/tajriba xatosi tuzatilgach yo'qoladi | ❌ | ✅ |
+| `journeys.spec.ts` — ish beruvchi: bosh sahifa → e'lon → kirish → joylash (`monthly`, 4–6 mln) → kabinet → mehmon qidiruvida, mobil + desktop | — | ✅ |
+| `field-errors.test.ts` — 4 holat | — | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 55/55 · 546 / 18 skip · ✅ · ✅ |

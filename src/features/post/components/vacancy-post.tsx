@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { publishVacancyListing } from "../actions";
 import { formatMoneyInput, parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type ListingStateInfo, type PostViewer, type VacancyDraft } from "../types";
+import { clearEditedErrors } from "../field-errors";
 import { useDraft, useStep } from "../use-draft";
 import { vacancyDraftRules } from "../draft-rules";
 import { track } from "@/features/analytics/client";
@@ -58,6 +59,20 @@ const emptyDraft = (): VacancyDraft => ({
 
 type Errors = Partial<Record<"profession" | "place" | "employerType" | "orgName" | "phone" | "description" | "salary" | "form", string>>;
 
+/** qoralama kaliti → xato kaliti (field-errors.ts) */
+const FIELD_ERROR = {
+  profession: "profession",
+  custom: "profession",
+  place: "place",
+  employerType: "employerType",
+  orgName: "orgName",
+  phone: "phone",
+  description: "description",
+  salaryFrom: "salary",
+  salaryTo: "salary",
+  negotiable: "salary",
+} as const;
+
 /**
  * "Ishchi qidiryapman": 1/4 Mutaxassis → 2/4 Hudud → 3/4 Ish haqida → 4/4 Tekshirish va joylash.
  * Jismoniy shaxsdan rekvizit so'ralmaydi. Takroriy bosish yangi e'lon yaratmaydi (clientRef).
@@ -90,7 +105,7 @@ export function VacancyPost({
   const { t, name, tEnum } = useT();
   const router = useRouter();
   const rules = useMemo(() => vacancyDraftRules(editId), [editId]);
-  const { draft, update, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<VacancyDraft>({
+  const { draft, update: rawUpdate, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<VacancyDraft>({
     entity: "vacancy",
     editId,
     userId: viewer.userId,
@@ -100,6 +115,14 @@ export function VacancyPost({
   });
   const { step, go } = useStep(TOTAL, draft.step);
   const [errors, setErrors] = useState<Errors>({});
+  // maydon tahrirlansa — o'sha maydonning eski xatosi o'chadi (tuzatilgan maydonda qizil matn qolib ketmaydi)
+  const update = useCallback(
+    (patch: Partial<VacancyDraft>) => {
+      rawUpdate(patch);
+      setErrors((e) => clearEditedErrors(e, Object.keys(patch), FIELD_ERROR));
+    },
+    [rawUpdate],
+  );
   const [pending, start] = useTransition();
   const [result, setResult] = useState<(ListingStateInfo & { vacancyId: string; slug: string }) | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
@@ -543,7 +566,9 @@ export function VacancyPost({
           </div>
           <div className="rounded-2xl border border-border bg-card px-4">
             <ReviewRow label={t("easy.wizard.steps.specialist")} onChange={() => goTo(1)} changeLabel={t("easy.wizard.change")}>
-              {professionTrail || "—"}
+              {/* asosiysi — kasb nomi; soha yo'li ostida kichik */}
+              {professionName || "—"}
+              {professionTrail && professionTrail !== professionName ? <span className="block text-base font-normal text-muted-foreground">{professionTrail}</span> : null}
             </ReviewRow>
             <ReviewRow label={t("easy.wizard.steps.location")} onChange={() => goTo(2)} changeLabel={t("easy.wizard.change")}>
               {placeLabel(draft.place, regions, districts, name, t)}

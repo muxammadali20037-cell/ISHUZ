@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import { publishWorkerListing } from "../actions";
 import { parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type ListingStateInfo, type PostViewer, type WorkerDraft } from "../types";
+import { clearEditedErrors } from "../field-errors";
 import { useDraft, useStep } from "../use-draft";
 import { WORKER_DRAFT_RULES } from "../draft-rules";
 import { track } from "@/features/analytics/client";
@@ -49,6 +50,17 @@ const emptyDraft = (): WorkerDraft => ({
 
 type Errors = Partial<Record<"profession" | "place" | "firstName" | "phone" | "about" | "experience" | "form", string>>;
 
+/** qoralama kaliti → xato kaliti (field-errors.ts) */
+const FIELD_ERROR = {
+  profession: "profession",
+  custom: "profession",
+  place: "place",
+  firstName: "firstName",
+  phone: "phone",
+  about: "about",
+  experience: "experience",
+} as const;
+
 /**
  * "Ish qidiryapman": 1/4 Kasb → 2/4 Hudud → 3/4 O'zingiz haqingizda → 4/4 Tekshirish va joylash.
  * Hisob faqat joylashda kerak; javoblar shu qurilmada saqlanadi va kirgandan keyin shu qadamga qaytiladi.
@@ -77,7 +89,7 @@ export function WorkerPost({
 }) {
   const { t, name, tEnum, locale } = useT();
   const router = useRouter();
-  const { draft, update, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<WorkerDraft>({
+  const { draft, update: rawUpdate, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<WorkerDraft>({
     entity: "worker",
     userId: viewer.userId,
     makeInitial: () => ({ ...emptyDraft(), ...prefill }),
@@ -85,6 +97,14 @@ export function WorkerPost({
   });
   const { step, go } = useStep(TOTAL, draft.step);
   const [errors, setErrors] = useState<Errors>({});
+  // maydon tahrirlansa — o'sha maydonning eski xatosi o'chadi (tuzatilgan maydonda qizil matn qolib ketmaydi)
+  const update = useCallback(
+    (patch: Partial<WorkerDraft>) => {
+      rawUpdate(patch);
+      setErrors((e) => clearEditedErrors(e, Object.keys(patch), FIELD_ERROR));
+    },
+    [rawUpdate],
+  );
   const [pending, start] = useTransition();
   const [result, setResult] = useState<(ListingStateInfo & { workerId: string }) | null>(null);
   const [moreOpen, setMoreOpen] = useState(!!(draft.salary || draft.schedule));

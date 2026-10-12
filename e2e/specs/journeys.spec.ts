@@ -10,6 +10,7 @@ import { USERS, asGuest, formReady, loginAs, next, pickProfession, pickWholeRegi
 // keyingi spec'lar workerB uchun bo'sh forma kutadi — yaratilgan e'lon qoldirilmaydi
 test.afterEach(async () => {
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
 for (const vp of [
@@ -67,5 +68,64 @@ for (const vp of [
     await expect(page.getByText(/Qidiruvda ko'rinadi|Tekshiruvda/).first()).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+}
+
+for (const vp of [
+  { name: "mobil", width: 390, height: 844 },
+  { name: "desktop", width: 1440, height: 900 },
+]) {
+  test(`${vp.name}: bosh sahifa → ish e'loni → kirish → joylash → kabinet → qidiruvda ko'rinadi`, async ({ page, context }) => {
+    test.setTimeout(120_000);
+    await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+    await asGuest(context);
+    await page.setViewportSize({ width: vp.width, height: vp.height });
+
+    await page.goto("/");
+    await page.getByRole("link", { name: /Ish e'loni berish/ }).click();
+    await page.waitForURL(/\/post\/vacancy/);
+    await pickProfession(page, "Buxgalter", "Buxgalter");
+    await next(page);
+    await pickWholeRegion(page);
+    await next(page);
+    await page.getByRole("radio", { name: "O'zim uchun" }).click();
+    await page.locator("#org").fill("Dilnoza opa");
+    await page.locator("#phone").fill("90 111 00 03");
+    await page.locator("#desc").fill("Kichik do'konga buxgalter kerak, haftasiga 5 kun, tushlik bepul");
+    await page.locator("#salary-from").fill("4000000");
+    await page.locator("#salary-to").fill("6000000");
+    await next(page);
+
+    await expect(page.getByText("Oxirgi qadam: hisobga kirish")).toBeVisible();
+    await page.getByRole("button", { name: "Kirish va e'lonni joylash" }).click();
+    await page.waitForURL(/\/auth\?/);
+    const back = new URL(page.url()).searchParams.get("next")!;
+    expect(back).toBe("/post/vacancy?step=4");
+
+    await loginAs(context, USERS.employer);
+    await page.goto(back);
+    await formReady(page);
+    await expect(page.getByText("Kichik do'konga buxgalter kerak")).toBeVisible();
+    await expect(page.getByText(/4 000 000/).first()).toBeVisible();
+    await page.getByRole("button", { name: /^E'lonni joylash/ }).click();
+    await expect(page.getByRole("heading", { level: 1, name: /joylandi/i })).toBeVisible({ timeout: 30_000 });
+
+    const rows = await sql<{ salary_from: number; salary_to: number; salary_type: string; status: string }>(
+      "select salary_from, salary_to, salary_type::text, status::text from public.vacancies where owner_profile_id = $1",
+      [USERS.employer],
+    );
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toMatchObject({ salary_from: 4000000, salary_to: 6000000, salary_type: "monthly" });
+
+    await page.goto("/cabinet");
+    await expect(page.getByText("Buxgalter").first()).toBeVisible();
+
+    // mehmon qidiruvida — e'lon va oylik maosh
+    if (rows[0]!.status === "active") {
+      await asGuest(context);
+      const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
+      await page.goto(`/search?mode=jobs&p=${n!.id}&region=all`);
+      await expect(page.locator("main article").filter({ hasText: "Dilnoza opa" })).toBeVisible();
+    }
   });
 }
