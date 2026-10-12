@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Phone, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { useTelegram } from "@/lib/telegram/provider";
-import { formatPhoneAsYouType, formatPhone, normalizePhone } from "@/lib/format";
+import { formatPhone, phoneInputChange, normalizePhone } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
@@ -151,7 +151,7 @@ export function AuthForm({ next, botUsername, initialPhone }: { next: string; bo
               invalid={!!error}
               onChange={(e) => {
                 const raw = e.target.value;
-                setPhone(raw.length < phone.length ? raw : formatPhoneAsYouType(raw.startsWith("+") ? raw : `+${raw}`));
+                setPhone(phoneInputChange(raw, phone));
               }}
             />
           </Field>

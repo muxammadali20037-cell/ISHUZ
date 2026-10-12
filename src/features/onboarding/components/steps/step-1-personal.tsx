@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { BadgeCheck, Phone } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { formatPhone, formatPhoneAsYouType, normalizePhone } from "@/lib/format";
+import { formatPhone, phoneInputChange, normalizePhone } from "@/lib/format";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -191,7 +191,7 @@ export function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
               }}
               onChange={(e) => {
                 const raw = e.target.value;
-                setPhone(raw.length < phone.length ? raw : formatPhoneAsYouType(raw.startsWith("+") ? raw : `+${raw}`));
+                setPhone(phoneInputChange(raw, phone));
               }}
             />
           </div>

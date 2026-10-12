@@ -260,9 +260,10 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.1b | Qotishlar (C7) | ✅ 4 ta o'lchangan qotish tuzatildi — [PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md) | `3581aa0` |
 | C8.1c | Yagona brend tizimi | ✅ — [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) | `c48c5ab` |
 | C8.2 | Bosh sahifa va navigatsiya | ✅ | `8f5baca` |
-| C8.3 | Qidiruv, filtr, kartalar | ✅ | shu bosqich |
-| C8.4 | Ishchi e'loni | ⏳ keyingi | — |
-| C8.5–C8.10 | … | ⏳ | — |
+| C8.3 | Qidiruv, filtr, kartalar | ✅ | `b595af3` |
+| C8.4 | Ishchi e'loni | ✅ | shu bosqich |
+| C8.5 | Vakansiya e'loni | ⏳ keyingi | — |
+| C8.6–C8.10 | … | ⏳ | — |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -425,3 +426,49 @@ o'chirildi: `welcome-gate`, `coach-tour`, `replay-tour-button`, `landing-page`, 
 | — qidiruv boshi: ≥ 80 px rangli sirt yo'q | ❌ | ✅ |
 | `translit.test.ts` — yo'q/yo'l/yo'nalish; `oz` fayllarida "ёъ" yo'q | — | ✅ 15/15 |
 | To'liq E2E · unit · tsc · eslint | — | ✅ 48/48 · 536 / 18 skip · ✅ · ✅ |
+
+### C8.4 · Ishchi e'loni
+
+4 qadam, katalogda yo'q kasb, qoralama, oflayn va ikki marta bosish oldingi bosqichlarda (B1, B3, C8.1b) tuzatilgan va testlangan.
+Bu bosqichda qabul #32 dagi **to'liq yo'l** birinchi marta oxirigacha yurgizildi va u ikkita haqiqiy xatoni ochdi.
+
+**OLDIN** (b595af3):
+
+- **Telefon raqami buziladi (3 ta forma, shu jumladan kirish/login):** maydonga O'zbekistonda odatiy ko'rinishda
+  `901234567` yoki `90 123 45 67` yozilsa/joylansa, u **"+90 1234567"** (Turkiya kodi) ga aylanardi va "Telefon raqamini
+  to'liq yozing" xatosi chiqardi — mehmon e'lonni joylay olmasdi. To'liq raqam ustiga qisqa ko'rinishda joylash esa
+  "o'chirish" deb tushunilib, formatlanmasdi.
+- **Javoblar yo'qoladi:** mehmon formani to'ldirib, sarlavhadagi **"Kirish"** ni bossa, kirgandan keyin o'sha qadamga qaytardi,
+  lekin barcha javoblari bo'sh edi (o'tkazish faqat formaning ichki tugmalarida ishlardi).
+- Tekshirish qadamida kasb "Buxgalteriya va moliya › Buxgalteriya › Buxgalter" — uch qatorga cho'zilardi.
+
+**KEYIN:**
+
+- `phoneInputValue` / `phoneInputChange` (`src/lib/format`): "+" siz raqam — mahalliy (+998), `998…` — xalqaro, eski
+  `8 90 …` — +998; o'chirish faqat raqamlar oldingisining boshi bo'lganda formatlanmaydi. Ishchi va vakansiya formasi,
+  ro'yxatdan o'tish va **kirish formasi** — bitta funksiya.
+- Sarlavhadagi "Kirish" `ishuz:auth-handoff` hodisasini yuboradi; ochiq e'lon formasi (`useDraft`) qoralamani kirgan hisobga
+  o'tkazishga tayyorlaydi — xuddi formaning o'z "Kirish va e'lonni joylash" tugmasidek (B1 izolyatsiyasi saqlanadi).
+- Tekshirish qadamida — kasb nomi, soha yo'li ostida kichik.
+
+**Fayllar:** `src/lib/format/index.ts`, `src/features/post/components/{inputs,worker-post}.tsx`,
+`src/features/auth/components/auth-form.tsx`, `src/features/onboarding/components/steps/step-1-personal.tsx`,
+`src/components/shared/login-link.tsx`, `src/features/post/use-draft.ts`. Testlar: `e2e/specs/journeys.spec.ts` (yangi),
+`drafts.spec.ts` (+1), `src/lib/format/phone.test.ts` (yangi); `no-ui-sound`/`responsiveness` — o'z holatini o'zi tayyorlaydi.
+
+**Skrinshotlar** (chap — b595af3, o'ng — keyin): [telefon `901234567` → keyingi qadam](screenshots/c8/c8-4-phone-m.jpg) ·
+[tekshirish qadami](screenshots/c8/c8-4-review-m.jpg).
+
+**Testlar:**
+
+| Test | Eski build (b595af3) | Keyin |
+|---|---|---|
+| `journeys.spec.ts` — mobil: bosh sahifa → e'lon → "Kirish va e'lonni joylash" → kirish → joylash → kabinet | ❌ (3-qadamda telefon xatosi) | ✅ |
+| — desktop (1440): xuddi shu yo'l | ❌ | ✅ |
+| — kirish sahifasiga raqam `+998901234567` bo'lib o'tadi; `90 123 45 67` joylansa formatlanadi | ❌ | ✅ |
+| `drafts.spec.ts` — sarlavhadagi "Kirish" dan keyin javoblar joyida | ❌ (javob `""`) | ✅ |
+| `phone.test.ts` — 6 holat (mahalliy, xalqaro, `8 90`, yozish, o'chirish, ustiga joylash) | — | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 51/51 · 542 / 18 skip · ✅ · ✅ |
+
+**Ochiq:** haqiqiy Telegram kodi bilan kirish (kod kechikishi, qayta yuborish, eskirgan kod) — stendda Telegram yo'q,
+**BLOCKED** (C8.6 da matn va holatlar tekshiriladi, haqiqiy yuborish — staging/real bot bilan).

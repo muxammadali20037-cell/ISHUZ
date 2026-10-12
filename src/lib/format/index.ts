@@ -66,6 +66,30 @@ export function formatPhoneAsYouType(input: string): string {
   return new AsYouType("UZ").input(input);
 }
 
+/**
+ * Telefon maydoniga yozilgan/joylangan matn → "+998 90 123 45 67" ko'rinishi.
+ * "+" siz yozilgan raqam mahalliy deb olinadi: "901234567", "90 123 45 67", eski "8 90 123 45 67" → +998…;
+ * to'liq "998901234567" → +998…. (Avval "+" qo'shilib, "901234567" → "+90 1234567" — Turkiya kodi bo'lib qolardi.)
+ */
+export function phoneInputValue(raw: string): string {
+  const s = raw.trim();
+  if (s.startsWith("+")) return formatPhoneAsYouType(`+${s.slice(1).replace(/\D/g, "")}`);
+  let digits = s.replace(/\D/g, "");
+  if (digits.length === 10 && digits.startsWith("8")) digits = digits.slice(1);
+  const international = digits.startsWith("998") && digits.length > 9;
+  return formatPhoneAsYouType(`+${international ? "" : "998"}${digits}`);
+}
+
+/**
+ * Telefon maydonining onChange qiymati. O'chirish (backspace) — formatlanmaydi, aks holda bo'shliq qayta paydo bo'lib,
+ * belgini o'chirib bo'lmaydi. Lekin to'liq raqam ustiga qisqaroq raqam joylansa ("90 123 45 67") — bu o'chirish emas, formatlanadi.
+ */
+export function phoneInputChange(raw: string, prev: string): string {
+  const digits = (x: string) => x.replace(/\D/g, "");
+  if (raw.length < prev.length && digits(prev).startsWith(digits(raw))) return raw;
+  return phoneInputValue(raw);
+}
+
 const dateLocales = { uz: uzLocale, oz: ozLocale, ru: ruLocale, en: enLocale };
 
 /** ISO → "26 sentabr 2026" (Toshkent vaqti) */

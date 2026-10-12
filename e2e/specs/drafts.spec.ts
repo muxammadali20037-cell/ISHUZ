@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, draftData, draftKeys, formReady, loginAs, pickProfession } from "../support";
+import { USERS, asGuest, draftData, draftKeys, formReady, loginAs, pickProfession, sql } from "../support";
 
 /** F-03: qoralama hisobga bog'langan; chiqish/hisob almashishida boshqa hisobga ko'rinmaydi; buzilgan qoralama formani buzmaydi */
 
@@ -62,4 +62,26 @@ test("buzilgan va boshqa egaga ko'chirilgan qoralama e'tiborsiz qoladi", async (
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
   expect(await draftKeys(page)).toEqual([]);
   expect(await page.evaluate(() => localStorage.getItem("ib_post_worker_v1"))).toBeNull();
+});
+
+test("mehmon formani to'ldirib sarlavhadagi 'Kirish'ni bossa — kirgandan keyin javoblari joyida", async ({ page, context }) => {
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  await asGuest(context);
+  await page.goto("/post/worker");
+  await pickProfession(page, "Buxgalter", "Buxgalter");
+  await page.getByRole("button", { name: /^Davom etish/ }).click();
+  await page.getByRole("button", { name: /^Toshkent shahri/ }).first().click();
+  await page.getByRole("radio", { name: /^Butun viloyat/ }).click();
+  await page.getByRole("button", { name: /^Davom etish/ }).click();
+  await page.locator("#about").fill("Soliq hisobotlari va 1C — 5 yil");
+  await page.getByRole("banner").getByRole("link", { name: "Kirish" }).click();
+  await page.waitForURL(/\/auth\?next=/);
+  const back = new URL(page.url()).searchParams.get("next")!;
+  expect(back).toMatch(/^\/post\/worker\?step=3/);
+
+  await loginAs(context, USERS.workerB);
+  await page.goto(back);
+  await formReady(page);
+  await expect(page.locator("#about")).toHaveValue("Soliq hisobotlari va 1C — 5 yil");
+  await expect(page.getByText("Buxgalter").first()).toBeVisible();
 });

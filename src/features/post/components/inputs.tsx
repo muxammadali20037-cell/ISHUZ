@@ -2,7 +2,7 @@
 
 import { BadgeCheck, Phone } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { formatPhone, formatPhoneAsYouType } from "@/lib/format";
+import { formatPhone, phoneInputChange } from "@/lib/format";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { formatMoneyInput } from "../money";
@@ -28,7 +28,7 @@ export function PhoneInput({ id, value, onChange, invalid, describedBy }: { id: 
       className={big}
       onChange={(e) => {
         const raw = e.target.value;
-        onChange(raw.length < shown.length ? raw : formatPhoneAsYouType(raw.startsWith("+") ? raw : `+${raw}`));
+        onChange(phoneInputChange(raw, shown));
       }}
     />
   );

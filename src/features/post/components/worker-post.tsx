@@ -479,7 +479,9 @@ export function WorkerPost({
           </div>
           <div className="rounded-2xl border border-border bg-card px-4">
             <ReviewRow label={t("easy.wizard.steps.profession")} onChange={() => goTo(1)} changeLabel={t("easy.wizard.change")}>
-              {professionTrail || "—"}
+              {/* asosiysi — kasb nomi; soha yo'li ostida kichik (uzun "A › B › C" uch qatorga cho'zilmaydi) */}
+              {professionName || "—"}
+              {professionTrail && professionTrail !== professionName ? <span className="block text-base font-normal text-muted-foreground">{professionTrail}</span> : null}
             </ReviewRow>
             <ReviewRow label={t("easy.wizard.steps.location")} onChange={() => goTo(2)} changeLabel={t("easy.wizard.change")}>
               {placeLabel(draft.place, regions, districts, name, t)}

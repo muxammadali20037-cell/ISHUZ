@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { AUTH_HANDOFF_EVENT } from "@/components/shared/login-link";
 import {
   LAST_USER_KEY,
   claimGuestDraft,
@@ -152,6 +153,13 @@ export function useDraft<T extends { v: number; step: number }>({
     },
     [draft, userId],
   );
+
+  // sarlavhadagi "Kirish" bosilsa ham (formaning o'z tugmasidan tashqari) — javoblar kirgan hisobga o'tadi
+  useEffect(() => {
+    const onLogin = () => prepareAuthHandoff();
+    window.addEventListener(AUTH_HANDOFF_EVENT, onLogin);
+    return () => window.removeEventListener(AUTH_HANDOFF_EVENT, onLogin);
+  }, [prepareAuthHandoff]);
 
   return { draft, update, ready, clear, reset, restored, dismissRestored: () => setRestored(false), prepareAuthHandoff };
 }

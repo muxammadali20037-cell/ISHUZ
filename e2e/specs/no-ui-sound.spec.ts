@@ -48,6 +48,7 @@ test("mehmon: bosh sahifa → qidiruv → hudud → natija — ovoz yo'q", async
 });
 
 test("e'lon formasi: kasb qidirish, sohalar ro'yxati, tanlash — ovoz yo'q", async ({ page, context }) => {
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]); // bo'sh forma
   await loginAs(context, USERS.workerB);
   await instrument(page);
   await page.goto("/post/worker");

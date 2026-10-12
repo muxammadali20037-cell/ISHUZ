@@ -93,6 +93,7 @@ test("natijalar ro'yxati: oxirgi karta qancha vaqtda to'liq ko'rinadi", async ({
 });
 
 test("kasb qidiruvi: so'rov kutilayotganda matn qisqartirilsa — aylanuvchi belgi qotib qolmaydi", async ({ page, context }) => {
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]); // bo'sh forma
   await loginAs(context, USERS.workerB);
   await page.route("**/api/professions/search**", async (route) => {
     await new Promise((r) => setTimeout(r, 1500));
