@@ -2,7 +2,7 @@ import type { StatusTone } from "../types";
 
 /** Holat rang sxemasi (Badge fon/matn) */
 export const TONE_BADGE: Record<StatusTone, string> = {
-  info: "bg-sky-100/80 text-sky-800 dark:bg-sky-900/40 dark:text-sky-200",
+  info: "bg-info-soft text-info",
   primary: "bg-primary-soft text-primary",
   success: "bg-success-soft text-success",
   destructive: "bg-destructive-soft text-destructive",
@@ -11,7 +11,7 @@ export const TONE_BADGE: Record<StatusTone, string> = {
 
 /** Kichik nuqta */
 export const TONE_DOT: Record<StatusTone, string> = {
-  info: "bg-sky-500",
+  info: "bg-info",
   primary: "bg-primary",
   success: "bg-success",
   destructive: "bg-destructive",
@@ -20,7 +20,7 @@ export const TONE_DOT: Record<StatusTone, string> = {
 
 /** Timeline: joriy qadam (bo'sh aylana + halqa) */
 export const TONE_RING: Record<StatusTone, string> = {
-  info: "border-sky-500 text-sky-600 ring-sky-500/15 dark:text-sky-300",
+  info: "border-info text-info ring-info/15",
   primary: "border-primary text-primary ring-primary/15",
   success: "border-success text-success ring-success/15",
   destructive: "border-destructive text-destructive ring-destructive/15",
@@ -29,16 +29,16 @@ export const TONE_RING: Record<StatusTone, string> = {
 
 /** Timeline: to'ldirilgan aylana */
 export const TONE_FILL: Record<StatusTone, string> = {
-  info: "border-sky-500 bg-sky-500 text-white",
+  info: "border-info bg-info text-info-foreground",
   primary: "border-primary bg-primary text-primary-foreground",
-  success: "border-success bg-success text-white",
-  destructive: "border-destructive bg-destructive text-white",
-  muted: "border-muted-foreground bg-muted-foreground text-white",
+  success: "border-success bg-success text-success-foreground",
+  destructive: "border-destructive bg-destructive text-destructive-foreground",
+  muted: "border-muted-foreground bg-muted-foreground text-card",
 };
 
 /** Holat banneri (detal sahifa yuqorisi) */
 export const TONE_BANNER: Record<StatusTone, string> = {
-  info: "border-sky-200 bg-sky-50 dark:border-sky-900 dark:bg-sky-950/40",
+  info: "border-info/30 bg-info-soft/60",
   primary: "border-primary/30 bg-primary-soft/60",
   success: "border-success/30 bg-success-soft/50",
   destructive: "border-destructive/30 bg-destructive-soft/50",

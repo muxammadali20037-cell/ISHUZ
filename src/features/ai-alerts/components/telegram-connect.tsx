@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { aiAlertsTelegramLink } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 /**
  * AI yordamchi xabarlari Telegram orqali keladi. Ulanmagan bo'lsa — bir martalik (15 daqiqalik) xavfsiz havola:
@@ -26,7 +27,7 @@ export function TelegramConnect({ connected, botConfigured }: { connected: boole
 
   const link = () =>
     start(async () => {
-      const res = await aiAlertsTelegramLink();
+      const res = await callAction(() => aiAlertsTelegramLink());
       if (!res.ok || !res.data) {
         toast.error(t("common.errors.generic"));
         return;

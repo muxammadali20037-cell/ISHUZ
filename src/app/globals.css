@@ -31,6 +31,9 @@
   --warning: #b45309; /* oq matn bilan 5:1 */
   --warning-soft: #fef3e0;
   --warning-foreground: #ffffff;
+  --info: #0369a1; /* holat "Yuborildi/Ko'rildi": oq matn 5.9:1, yumshoq fonda 5.2:1 */
+  --info-soft: #e0f2fe;
+  --info-foreground: #ffffff;
   --destructive: #d12020; /* oq matn 5.3:1, yumshoq fonda 4.7:1 */
   --destructive-soft: #fdecec;
   --destructive-foreground: #ffffff;
@@ -68,6 +71,9 @@
   --warning: #f59e0b;
   --warning-foreground: #0b1220;
   --warning-soft: #33230a;
+  --info: #38bdf8;
+  --info-foreground: #0b1220;
+  --info-soft: #0c2a3e;
   --destructive: #f05252;
   --destructive-foreground: #0b1220;
   --destructive-soft: #3a1414;
@@ -104,6 +110,9 @@
   --color-warning: var(--warning);
   --color-warning-soft: var(--warning-soft);
   --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-info-foreground: var(--info-foreground);
   --color-destructive: var(--destructive);
   --color-destructive-soft: var(--destructive-soft);
   --color-destructive-foreground: var(--destructive-foreground);

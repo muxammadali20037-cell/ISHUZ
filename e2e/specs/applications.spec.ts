@@ -83,6 +83,8 @@ test("ariza: ishchi yuboradi → ish beruvchi kabinetdan ochadi, holatni o'zgart
   // mobil: "Yozish" va kontakt holat blokidan keyin, moslik/tarixdan oldin
   const write = main.getByRole("link", { name: "Yozish" });
   const matchHeading = main.getByRole("heading", { name: "Moslik" });
+  await expect(write).toBeVisible();
+  await expect(matchHeading).toBeVisible();
   expect((await write.boundingBox())!.y).toBeLessThan((await matchHeading.boundingBox())!.y);
 
   await main.getByRole("button", { name: "Tanlovga olish" }).click();
@@ -174,6 +176,9 @@ test("desktop: ariza sahifasida amallar o'ng ustunda, sahifa boshida", async ({ 
   await loginAs(context, USERS.employer);
   await page.goto(`/employer/vacancies/${vacancy.id}/applications/${app!.id}`);
   const main = page.getByRole("main");
+  // boundingBox() kutmaydi — avval ko'rinishini kutamiz
+  await expect(main.getByRole("link", { name: "Yozish" })).toBeVisible();
+  await expect(main.getByRole("heading", { name: "Holat tarixi" })).toBeVisible();
   const write = (await main.getByRole("link", { name: "Yozish" }).boundingBox())!;
   const timeline = (await main.getByRole("heading", { name: "Holat tarixi" }).boundingBox())!;
   // o'ng ustun (chap ustundagi tafsilotlardan o'ngda) va sahifa boshida — mobil tartib desktop'ga ta'sir qilmagan

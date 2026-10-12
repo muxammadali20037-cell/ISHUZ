@@ -11,6 +11,7 @@ import { actionErrorText } from "../errors";
 import type { EmployerApplicationItem } from "../types";
 import { ApplicantCard } from "./applicant-card";
 import { StatusSheet } from "./status-sheet";
+import { callAction } from "@/lib/action-call";
 
 const OPEN = new Set(["sent", "viewed", "shortlisted", "interview", "offered"]);
 
@@ -40,7 +41,7 @@ export function PipelineList({ items, canAct, vacancyId }: { items: EmployerAppl
   const apply = (status: "shortlisted" | "rejected", note?: string) =>
     new Promise<boolean>((resolve) => {
       startTransition(async () => {
-        const res = await bulkSetApplicationStatus({ vacancyId, ids: [...selected], status, note });
+        const res = await callAction(() => bulkSetApplicationStatus({ vacancyId, ids: [...selected], status, note }));
         if (!res.ok) {
           toast.error(actionErrorText(t, res.error));
           resolve(false);

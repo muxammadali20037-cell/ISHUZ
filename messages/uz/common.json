@@ -122,6 +122,8 @@
   "errors": {
     "generic": "Nimadir xato ketdi. Qayta urinib ko'ring.",
     "network": "Internet bilan aloqa yo'q. Ulanishni tekshiring.",
+    "offline": "Internet aloqasi yo'q. Ulanishni tekshirib, qayta urinib ko'ring — kiritganlaringiz joyida.",
+    "timeout": "Server javob bermadi. Bir ozdan keyin qayta urinib ko'ring.",
     "not_found": "Sahifa topilmadi",
     "not_found_desc": "Siz qidirgan sahifa mavjud emas yoki o'chirilgan.",
     "forbidden": "Bu amalga ruxsatingiz yo'q",

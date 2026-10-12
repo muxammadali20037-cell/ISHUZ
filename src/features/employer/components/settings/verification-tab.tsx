@@ -17,6 +17,7 @@ import { COMPANY_VERIFICATION_TYPES, PERSON_VERIFICATION_TYPES } from "../../sch
 import type { VerificationRequestRow, VerificationStatus, VerificationType } from "../../types";
 import { VerificationBadge } from "../dashboard/status-badge";
 import { DocumentUpload, type UploadedDoc } from "./document-upload";
+import { callAction } from "@/lib/action-call";
 
 const TYPE_DESC: Record<VerificationType, string> = {
   company: "employer.verification.type_company_desc",
@@ -106,7 +107,7 @@ export function VerificationTab({
     }
     setDocError(null);
     startTransition(async () => {
-      const res = await submitVerificationRequest({ companyId, type, note, documentPaths: docs.map((d) => d.path) });
+      const res = await callAction(() => submitVerificationRequest({ companyId, type, note, documentPaths: docs.map((d) => d.path) }));
       if (!res.ok) {
         toast.error(t(errorMessageKey(res.error)));
         return;

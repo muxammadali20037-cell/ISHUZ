@@ -7,6 +7,7 @@ import { toast } from "@/components/ui/toast";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { toggleSaveVacancy } from "../actions";
 import { errorMessage } from "../i18n-helpers";
+import { callAction } from "@/lib/action-call";
 
 /**
  * Saqlash tugmasi mantiqi: server action → toast; kirmagan → /auth?next=; worker profili yo'q → dialog + /onboarding/worker.
@@ -22,7 +23,7 @@ export function useSaveVacancy() {
     async (vacancyId: string, save: boolean): Promise<boolean> => {
       setPendingId(vacancyId);
       try {
-        const res = await toggleSaveVacancy({ vacancyId, save });
+        const res = await callAction(() => toggleSaveVacancy({ vacancyId, save }));
         if (res.ok) {
           toast.success(t(save ? "jobs.save.saved" : "jobs.save.removed"));
           return true;

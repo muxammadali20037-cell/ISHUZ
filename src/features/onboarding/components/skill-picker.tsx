@@ -14,6 +14,7 @@ import { toast } from "@/components/ui/toast";
 import { createCustomSkill } from "../actions";
 import type { SkillOption } from "../types";
 import { errorMessage } from "./wizard-shell";
+import { callAction } from "@/lib/action-call";
 
 export type SelectedSkill = { skill_id: string; level: Enums<"skill_level"> };
 export type SelectedLanguage = { language_code: string; level: Enums<"language_level"> };
@@ -79,7 +80,7 @@ export function SkillPicker({
     const skillName = query.trim();
     if (skillName.length < 2) return;
     startCreate(async () => {
-      const res = await createCustomSkill({ name: skillName, category_id: categoryId });
+      const res = await callAction(() => createCustomSkill({ name: skillName, category_id: categoryId }));
       if (!res.ok || !res.data) {
         toast.error(errorMessage(t, res.ok ? "generic" : res.error));
         return;

@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 bilan yangilandi: 2026-10-12) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,7 +11,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0058 toza bazaga | ✅ lint, typecheck, unit, SQL, build, 24 ta brauzer E2E — PASS |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0058 toza bazaga | ✅ lint, typecheck, unit (569 / 18 skip), SQL, build, 82 ta brauzer E2E — PASS |
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0058** (egasi SQL Editor'da qo'lladi, 2026-10-11; read-only tekshirildi — §2 F-02) | ✅ xavfsizlik qatlami, "Kasbim topilmadi" va rasm karantini yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
@@ -154,16 +154,17 @@ Avvalgi tekshiruvlar ([SECURITY_TEST_REPORT.md](SECURITY_TEST_REPORT.md)) saqlan
 vakansiya rasm yo'li triggeri (mijoz va SECURITY DEFINER RPC orqali ham), service-only tozalash funksiyasi, server action'da rate limit.
 0056 production'da 2026-10-11 qo'llandi — [SECURITY_AUDIT.md](SECURITY_AUDIT.md) dagi tuzatishlarning DB qismi endi amalda (F-02 dagi tekshiruv).
 
-## 5. E bosqichi — test va qabul mezonlari (24 band)
+## 5. E bosqichi — test va qabul mezonlari (32 band)
 
-Yig'indi: unit **515 PASS / 18 skip** · SQL **24 fayl PASS** · brauzer E2E **24 PASS** (lokal va GitHub CI).
+Yig'indi (C8.10 dan keyin): unit **569 PASS / 18 skip** · SQL **24 fayl PASS** (CI `SQL migrations + RLS tests`) · brauzer E2E **82 PASS** (lokal stend va GitHub CI).
+Yangi qabul testlari eski build'da (`old-build.sh`) yiqilishi bilan isbotlangan; ikkala build'da o'tadiganlari — regressiya himoyasi deb belgilangan.
 
 | # | Oqim | Holat | Dalil |
 |---|---|---|---|
 | 1 | Mehmon qidiruvi; texnik xato va 0 natija alohida | PASS | `search.spec.ts` |
 | 2 | Xato zero-results'ga yozilmaydi; retry filtrni saqlaydi | PASS | `search.spec.ts` |
 | 3 | Ishchi forma → login → o'sha qadam/javoblar | PASS (login — imzolangan cookie) | `drafts.spec.ts` #3 |
-| 4 | Ish beruvchi forma → e'lon → tahrirlash | PASS (kabinet ko'rinishi tekshirilmadi) | `vacancy-photo.spec.ts`, `flows.spec.ts` |
+| 4 | Ish beruvchi forma → e'lon → tahrirlash | PASS | `journeys.spec.ts` (forma → kirish → e'lon → kabinet, mobil+desktop), `vacancy-photo.spec.ts`, `flows.spec.ts` |
 | 5 | Ikkala formada katalogda yo'q kasb | Ishchi E2E PASS · vakansiya SQL PASS, E2E NOT_RUN | `custom-profession.spec.ts`, `simple_custom_profession.test.sql` |
 | 6 | A qoralamasi B'da ko'rinmaydi | PASS | `drafts.spec.ts` #1–2 |
 | 7 | Mehmon qoralamasi import; eski server ma'lumoti buzilmaydi | PASS | `drafts.spec.ts` #3, `keep.test.ts` |
@@ -178,12 +179,20 @@ Yig'indi: unit **515 PASS / 18 skip** · SQL **24 fayl PASS** · brauzer E2E **2
 | 16 | AI o'chiq/nosoz/noto'g'ri JSON | PASS (E2E AI kalitlarisiz; unit) | butun E2E to'plami, `json.test.ts`, `gemini.test.ts` |
 | 17 | Telegram soxta/eskirgan initData, takroriy webhook | PASS (unit/SQL) | `telegram-session.test.ts`, `bot.test.sql` |
 | 18 | Haqiqiy staging Supabase + Telegram kirish | BLOCKED | staging va test bot kerak |
-| 19 | OTP qayta yuborish/muddat/parallel, bekor sessiya | NOT_RUN | test yo'q — ochiq vazifa |
+| 19 | OTP qayta yuborish/muddat/parallel, bekor sessiya | UI PASS (server javobi `page.route` bilan) · haqiqiy Telegram kodi BLOCKED · parallel/bekor sessiya NOT_RUN | `auth.spec.ts` (noto'g'ri → eskirgan → 60 s → qayta yuborish) |
 | 20 | Billing yoqilgan/o'chiq, callback takrori/bekor | PASS (unit/SQL) · test provayder bilan NOT_RUN | `providers.test.ts`, `billing*.test.sql` |
-| 21 | Ariza → javob → taklif/chat → natija | PASS (SQL) · E2E NOT_RUN | `pipeline.test.sql`, `flows.test.sql` |
-| 22 | Til, 360–1440, 200% zoom, klaviatura, reduced-motion | PASS (uz/ru/en; oz — unit tarjima tekshiruvi) | `a11y.spec.ts`, `flows.spec.ts` |
+| 21 | Ariza → javob → taklif/chat → natija | PASS (ikki rol, E2E) · realtime NOT_RUN | `applications.spec.ts` (4), `journey-apply.spec.ts`, `pipeline.test.sql` |
+| 22 | Til, 360–1440, 200% zoom, klaviatura, reduced-motion | PASS (uz/ru/en; oz — huquqiy sahifa E2E + unit tarjima tekshiruvi) | `a11y.spec.ts`, `flows.spec.ts`, `settings-legal.spec.ts`, `regression.spec.ts` (ru + 150% shrift) |
 | 23 | Backup disabled/success/failure; artifact; restore | failure (sir yo'q) va success (artefakt) production'da PASS · tiklash lokal PASS, production nusxasi NOT_RUN (yopiq kalit egasida) | runs `38188329869`, `38207925133` |
 | 24 | Barcha migratsiyalar toza bazada; destructive yo'q | PASS (toza baza, CI; CRLF nusxa 0055 ustiga) · production 0056–0058 qo'llangan | `scripts/db-test.sh`, F-02 |
+| 25 | UI ovozi yo'q, SoundToggle yo'q, audio zanjirlar olib tashlangan | PASS | `no-ui-sound.spec.ts`, C8.1a; tsc/build ✅ |
+| 26 | Tez yozish, tez filtr, Orqaga/Oldinga — eski javob yangisini bosmaydi | PASS (regressiya himoyasi: eski build'da ham o'tadi) | `regression.spec.ts` #26 (eski natija 1,5 s kechiktirilib Orqaga→Oldinga), `responsiveness.spec.ts` (kasb qidiruvi), `search-ui.spec.ts` (filtr oynasi URL bilan) |
+| 27 | Oflayn, timeout, 429, 503 — cheksiz spinner/qotgan tugma yo'q; retry idempotent; javoblar saqlangan | PASS · timeout — unit | `regression.spec.ts` (ariza: tarmoq uzilishi, kunlik limit), `auth.spec.ts` (oflayn, 503), `responsiveness.spec.ts` (e'lon: internet uzilishi), `action-call.test.ts` (timeout/network/offline), `flows.spec.ts` (ikki marta bosish → bitta e'lon) |
+| 28 | CPU/tarmoq sekinlashtirilganda yozish, scroll, bosish javob beradi; render loop yo'q | PASS (CPU 4×, lab) · tarmoq sekinlashtirish NOT_RUN · field ma'lumot NOT_RUN | `responsiveness.spec.ts` (CPU 4×), [PERFORMANCE_BASELINE.md](PERFORMANCE_BASELINE.md) |
+| 29 | 20 marta o'tishdan keyin listener/timer/DOM o'smaydi | PASS (lab) · realtime obunalar stendda yo'q | `responsiveness.spec.ts` ("20 marta sahifa almashtirish") |
+| 30 | Telegram klaviaturasi ochilganda CTA ko'rinadi; overlay to'smaydi; navigatsiya touch bilan | BLOCKED | haqiqiy qurilma va Telegram mijozi kerak (emulyator Telegram WebView klaviaturasini bermaydi) |
+| 31 | Brand tokenlari bir xil; uzun ruscha matn, katta shrift, uzun kasb nomi layoutni buzmaydi | PASS | `brand-*.test.ts` (palitra, hex, gradient, radius, soya), `a11y.spec.ts` (kontrast, qorong'i), `regression.spec.ts` #31 (ru + 150% shrift + uzun nom, 7 sahifa), `settings-legal.spec.ts` (admin 390 px) |
+| 32 | Bosh sahifa → qidiruv → batafsil → ariza va bosh sahifa → e'lon → kirish → kabinet, mobil + desktop | PASS | `journey-apply.spec.ts` (J1, mobil+desktop), `journeys.spec.ts` (J2, ikki rol, mobil+desktop) |
 
 **18 ta skip (yashirilmaydi):** hammasi `src/features/matching/engine.parity.test.ts` — TS `computeMatch` ↔ SQL `compute_match` paritet testi.
 Sabab topildi: suite `compute_match` tanasini faqat `0008` fayli bilan solishtiradi, funksiya esa 0013/0028/**0050** da qayta yozilgan —
@@ -266,8 +275,8 @@ Tartib: 1 poydevor → 2 bosh sahifa va navigatsiya → 3 qidiruv/filtr/kartalar
 | C8.6 | Kirish va hisob | ✅ (haqiqiy Telegram yetkazish — BLOCKED) | `e705ab0` |
 | C8.7 | Kabinet, e'lon, profil | ✅ | `c3243f0` |
 | C8.8 | Arizalar, takliflar, chat, bildirishnomalar | ✅ (realtime va Telegram yetkazish — NOT_RUN) | `9f600ca` |
-| C8.9 | Sozlamalar, yordam, huquqiy, admin | ✅ (admin MFA oqimi — NOT_RUN) | shu bosqich |
-| C8.10 | To'liq regressiya | ⏳ keyingi | — |
+| C8.9 | Sozlamalar, yordam, huquqiy, admin | ✅ (admin MFA oqimi — NOT_RUN) | `f15254c` |
+| C8.10 | To'liq regressiya, qabul mezonlari #25–32 | ✅ (#30 Telegram klaviaturasi — BLOCKED, tarmoq sekinlashtirish — NOT_RUN) | shu bosqich |
 
 ### C8.1c · Yagona brend tizimi
 
@@ -610,10 +619,10 @@ profil turini tanlash) shu bosqichda.
 **Ochiq masalalar:**
 
 - "Toshkent shahri · **Butun viloyat**" — shahar uchun "viloyat" so'zi noto'g'ri (kartalar va e'lon sahifasi; RPC hudud turini
-  qaytarmaydi). C8.10 regressiyada hudud turi bilan tuzatiladi.
+  qaytarmaydi). C8.10 regressiyada hudud turi bilan tuzatiladi. → ✅ C8.10: "Butun shahar".
 - `eslint-disable` izohlari 12 joyda qolgan (`<img>`: imzolangan vaqtinchalik URL, satori, SVG data URI va h.k.) — barchasi C8 dan
   oldingi, sababi yozilgan; yangi kodda yo'q. C8.10 da har biri `Photo`/`next/image`ga o'tkazish yoki asos bilan qoldirish
-  sifatida ko'rib chiqiladi.
+  sifatida ko'rib chiqiladi. → ✅ C8.10: 12 tasi ham asos bilan qoldirildi (izohsiz 4 tasiga sabab yozildi).
 
 ### C8.8 · Arizalar, takliflar, chat, bildirishnomalar (ikki rol bilan)
 
@@ -689,6 +698,7 @@ yiqitdi (yangi stendda va CI'da bunday bo'lmaydi). Cheklovning o'zi o'zgarmadi.
 - Ish beruvchining `/profile` sahifasi oddiy "O'zim uchun" e'lon beruvchiga ham "Dashboard" va "Kompaniya sozlamalari"ni
   ko'rsatadi — C8.9 (sozlamalar) da ko'rib chiqiladi.
 - Ariza holatlari palitrasi: "Yuborildi/Ko'rib chiqildi" uchun `sky` rangi (tokenlashtirilmagan) — C8.10 da tokenga o'tkaziladi.
+  → ✅ C8.10: `info` tokeni.
 
 ### C8.9 · Sozlamalar, yordam, huquqiy sahifalar, admin
 
@@ -761,3 +771,173 @@ koddagi MFA talabi o'zgarmagan), foydalanuvchi `admin_users`ga test ichida qo'sh
   ko'riladi.
 - Admin jadvallari telefonda o'z ichida gorizontal suriladi (sahifa emas) — panel asosan desktop uchun; to'liq mobil
   ko'rinish (kartalar) talab qilinsa — alohida ish.
+
+### C8.10 · To'liq regressiya (qabul mezonlari #25–32)
+
+Usul: avval yangi qabul testlari yozildi va **eski build'da** (`f15254c`, `old-build.sh`) ishga tushirildi. U yerda yiqilgan
+test — haqiqiy xato (quyida tuzatilgan). Ikkala build'da ham o'tgan test — regressiya himoyasi sifatida qoldirildi va
+jadvalda shunday belgilangan.
+
+**OLDIN** (f15254c):
+
+- **Internet uzilsa, sahifa "Nimadir xato ketdi" ekraniga tushardi.** Har qanday server amali (ariza yuborish, saqlash,
+  holatni o'zgartirish, chat, sozlamalar …) tarmoq xatosida istisno otardi. Yozilgan xabar yo'qolar, foydalanuvchi sahifani
+  qayta yuklashi kerak edi. Faqat kirish sahifasi C8.6 dan beri himoyalangan edi.
+- **Kirill sarlavhali vakansiya ochilmasdi (404).** Rus/kirill tilidagi oddiy "Ish e'loni berish" formasi sarlavhani kasb
+  nomidan oladi (`Бухгалтер`), `public.slugify` esa kirillni saqlaydi. Sahifa esa manzilni faqat lotin harflari bilan
+  tekshirardi, shuning uchun "Страница не найдена" chiqardi. Natija: rus va kirill tilidagi ish beruvchilarning
+  e'lonlari batafsil sahifada ochilmasdi.
+- **Rus tili va 150% shriftda layout buzilardi:**
+  - vakansiya sarlavhasi va qidiruv kartasi yonga chiqardi (grid ustuni siqilmasdi);
+  - kabinetdagi "Я нашёл работника" kabi tugmalar ekrandan chiqardi;
+  - sarlavhadagi brend belgisi (SVG) 0 px gacha siqilib yo'qolardi;
+  - pastki paneldagi asosiy tugma yozuvi kesilardi;
+  - rol almashtirgich va sozlamalardagi til tanlagich sig'masdi.
+- **Toshkent shahri uchun "Butun viloyat" yozilardi** ("Ташкент · Вся область", "Viloyatning istalgan joyi"): qidiruvda,
+  kartada, kabinetda va e'lon sahifasida.
+- **Ariza holati "Yuborildi/Ko'rildi"** Tailwind `sky` palitrasida edi (token emas). Brend qo'riqchisi faqat `.tsx`
+  fayllarni tekshirgani uchun `tone.ts` dagi 5 ta palitra va 2 ta `text-white` qatori e'tibordan chetda qolgan. Qorong'i
+  mavzuda to'ldirilgan aylana ustida oq belgi bor edi.
+
+**KEYIN:**
+
+- **Tarmoq xatosi.** Mijozdagi server amali chaqiruvlari endi `callAction()` orqali o'tadi (`src/lib/action-call.ts`, C8.6
+  da kirish uchun yaratilgan):
+  - 59 ta fayldagi 98 ta chaqiruv o'tkazildi;
+  - tarmoq xatosida istisno o'rniga `offline` / `network` / `timeout` (30 s) qaytadi;
+  - foydalanuvchi "Internet bilan aloqa yo'q. Ulanishni tekshiring." xabarini ko'radi, forma va yozilgan matn joyida qoladi;
+  - o'sha tugma bilan qayta yuborsa, bitta ariza yaratiladi (takroriy arizani server `already_applied` bilan rad etadi);
+  - timeout matni "yuborildimi-yo'qmi" deb va'da bermaydi (javob kelmagan — natija noma'lum).
+- **Kirill manzil.** `normalizeVacancySlug` manzilni URL-dekodlaydi, kichik harfga o'tkazadi va kirillni (`а-яёўқғҳ`)
+  qabul qiladi; uzunligi 3–120.
+- **Katta shrift:**
+  - ro'yxatlar `grid-cols-1`, uzun so'zlar `break-words`;
+  - tugma yozuvlari qatorga o'raladi (kabinet, e'lon amallari, pastki panel);
+  - sarlavha container query bilan ishlaydi: ≤ 22 rem bo'lganda chat tugmasi va so'z belgisi yashiriladi, brend belgisi qoladi;
+  - rol almashtirgich bir ustunda, til tanlagich 4 ta teng katakda.
+- **Hudud.** `isCityRegion` qo'shildi:
+  - Toshkent shahri uchun "Butun shahar", "Shaharning istalgan joyi" va "Toshkent shahri · Butun shahar" yoziladi;
+  - viloyatlarda avvalgidek;
+  - tuman maydonining izohi neytral bo'ldi (4 tilda).
+- **`info` tokeni** (yorug' `#0369a1` / qorong'i `#38bdf8` + yumshoq fon + foreground) qo'shildi:
+  - AA kontrast testiga kiritildi;
+  - `tone.ts` endi faqat tokenlardan foydalanadi;
+  - to'ldirilgan aylanadagi belgi rangi `*-foreground` tokenidan olinadi;
+  - brend qo'riqchisi endi `.ts` fayllarni ham tekshiradi (eski `tone.ts` da 7 qatorni ushlaydi);
+  - ko'rinish deyarli o'zgarmadi, shuning uchun alohida skrinshot qo'shilmadi;
+  - [BRAND_UI_GUIDE.md](BRAND_UI_GUIDE.md) yangilandi.
+- **`eslint-disable` (12 joy, `<img>`).** Hammasi asos bilan qoldirildi: satori/next/og, `blob:` ko'rinish, SVG data URI,
+  imzolangan vaqtinchalik URL va h.k. Sababi yozilmagan 4 tasiga sabab qo'shildi.
+- **CI tuzatildi.** `f15254c` da branch uchun E2E ishga tushishi yiqilgan (main'da o'tgan). Sabab mahsulotda emas, testda
+  edi: admin sahifasidagi o'lcham sahifa chizilishidan oldin o'qilgan (`boundingBox()` → `null`). Endi test avval element
+  ko'rinishini kutadi (5/5 takror o'tdi). Xuddi shu xavf `applications.spec.ts` dagi 2 joyda ham bor edi — ular ham tuzatildi.
+
+**Fayllar:**
+
+- Kod: `src/lib/geo/city.ts` (+test), `src/features/jobs/slug.ts` (+test), `src/features/jobs/queries.ts`,
+  `src/lib/action-call.ts` (59 ta mijoz fayli shu orqali), `src/components/shared/{top-bar,brand-mark,language-switcher}.tsx`,
+  `src/features/find/components/{find-page,result-cards}.tsx`, `src/features/post/components/region-picker.tsx`,
+  `src/features/cabinet/components/{cabinet-page,listing-actions}.tsx`, `src/app/listing/[id]/page.tsx`,
+  `src/features/jobs/components/{vacancy-actions,vacancy-detail}.tsx`,
+  `src/features/profile/components/settings/{role-switch,settings-view}.tsx`,
+  `src/features/applications/components/tone.ts`, `src/app/globals.css`, `src/features/employer/mappers.ts`.
+- Matnlar: `messages/*/{easy,common}.json`.
+- Testlar:
+  - `e2e/specs/regression.spec.ts` (yangi, 5 test) va `e2e/specs/journey-apply.spec.ts` (yangi, J1 mobil + desktop);
+  - `src/lib/brand-{guard,contrast}.test.ts`;
+  - `e2e/specs/{settings-legal,applications}.spec.ts` — o'lcham olishdan oldin element ko'rinishi kutiladi.
+
+**Skrinshotlar** (chap — f15254c, o'ng — keyin):
+
+- [ariza: internet uzildi](screenshots/c8/c8-10-apply-offline-m.jpg) — oldin xato ekrani, keyin xabar va matn joyida;
+- [ru + 150% shrift: kirill sarlavhali vakansiya va qidiruv](screenshots/c8/c8-10-ru-large-font-m.jpg) — oldin 404 va
+  "Вся область", keyin sahifa ochiladi va "Весь город";
+- [ru + 150%: kabinet](screenshots/c8/c8-10-ru-large-font-cabinet-m.jpg) — tugma ekrandan chiqmaydi.
+
+**Testlar:**
+
+| Test | Eski build (f15254c) | Keyin |
+|---|---|---|
+| `regression.spec.ts` — Toshkent shahri: "Butun shahar"; viloyat: "Butun viloyat" (qidiruv va karta) | ❌ | ✅ |
+| — #26: Orqaga/Oldinga, eski natija javobi 1,5 s kechiktirilgan — yangi natija qoladi | ✅ (regressiya himoyasi) | ✅ |
+| — #27: tarmoq uzilishi — aniq xabar, tugma faol, matn joyida, qayta yuborish → 1 ta ariza | ❌ (xato ekrani) | ✅ |
+| — #27: kunlik limit — tushunarli xabar, tugma faol | ✅ (regressiya himoyasi) | ✅ |
+| — #31: ru + 150% shrift + uzun nom, 7 sahifa: 404 yo'q, yonga siljish yo'q | ❌ (kirill 404, siljish) | ✅ |
+| `journey-apply.spec.ts` — J1 mobil va desktop | ✅ (regressiya himoyasi) | ✅ |
+| `slug.test.ts` (3), `city.test.ts` | — (yangi modul) | ✅ |
+| `brand-guard.test.ts` (endi `.ts` ham), `brand-contrast.test.ts` (`info`) | ❌ (eski `tone.ts`: 7 qator) | ✅ |
+| `settings-legal.spec.ts` admin 390 px — 5 marta takror | CI'da 1 marta ❌ (test poygasi) | ✅ 5/5 |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 82/82 · 569 / 18 skip · ✅ · ✅ |
+
+**18 ta skip (yashirilmaydi):** hammasi `engine.parity.test.ts`. Bu TS `computeMatch` va SQL `compute_match` paritet
+suite'i bo'lib, faqat lokal `ishuz_dev` bazasi migratsiyalar bilan bir xil bo'lganda ishlaydi. Production'dagi moslik SQL v2
+da hisoblanadi; `compute_match` SQL testlari (`supabase/tests/{professions,security}.test.sql` va boshqalar) CI'da ishlaydi.
+
+**BLOCKED / NOT_RUN / ochiq:**
+
+- **#30 — BLOCKED.** Telegram ichidagi klaviatura, overlay va touch navigatsiyasi uchun haqiqiy telefon va Telegram mijozi
+  kerak. Eng qisqa tekshiruv yo'li: Android va iPhone'da bot → Mini App → "Ish e'loni berish" → telefon maydoni → klaviatura
+  ochiq holda "Davom etish" tugmasi ko'rinadimi.
+- **#28 — NOT_RUN.** Tarmoqni sekinlashtirish (Slow 3G) bilan sinov va real qurilmadagi field web-vitals. CPU 4× lab o'lchovi
+  — PASS. Eng qisqa yo'l: `responsiveness.spec.ts` ga CDP `Network.emulateNetworkConditions` qo'shish.
+- **Realtime va Telegram — NOT_RUN.** Chat'ning realtime yetkazilishi va Telegram bildirishnomalari stendda yo'q (staging kerak).
+- **`/admin/mfa` — NOT_RUN** (C8.9).
+- **`/admin/settings`, 390 px.** Yuklanishning birinchi ~0,3 soniyasida hujjat kengligi vaqtinchalik ortadi; yakuniy holat
+  to'g'ri (C8.9).
+- **`SUPPORT_EMAIL`** Vercel'da o'rnatilgani tekshirilmadi (C8.9).
+- **150% shrift, tor ustun.** Uzun ruscha so'z (masalan, "международной") defissiz bo'linadi. O'qiladi va sahifa yonga
+  siljimaydi.
+- **Ish beruvchining `/profile` sahifasi** — dizayni alohida ko'rib chiqilmagan (sodda oqim kabinet orqali ishlaydi).
+- **Avvalgilardan:** avatar va logotip karantini (F-06), staging'da yuklama testi (F-09).
+
+## 11. Yakuniy xulosa
+
+**Nima tuzatildi (C8, 10 bosqich):**
+
+- **UI ovozlari** to'liq olib tashlandi (#25).
+- **Qotishlar.** O'lchab topilgan 4 ta qotish tuzatildi: sahifa o'tishi bloklanishi, sekin ro'yxat animatsiyasi, qidiruvda
+  osilib qolgan spinner, oflayn e'lon.
+- **Brend tizimi.** Bitta palitra (endi `info` holat rangi bilan), shrift, radius va soya shkalalari. Ular qo'riqchi
+  testlar bilan himoyalangan, qorong'i mavzu AA kontrastda.
+- **Ekranlar birma-bir:** bosh sahifa, qidiruv, ikkala e'lon formasi, kirish, kabinet, arizalar, takliflar, chat,
+  bildirishnomalar, sozlamalar, yordam, huquqiy sahifalar va admin.
+- **Regressiyada topilgan haqiqiy xatolar:**
+  - internet uzilganda sahifa yiqilardi;
+  - kirill sarlavhali vakansiyalar 404 berardi;
+  - katta shrift va ruscha matnda layout buzilardi;
+  - Toshkent shahri "viloyat" deb yozilardi.
+
+**Foydalanuvchi endi nimani yaxshiroq qila oladi:**
+
+- **Ishchi:**
+  - ish topadi va bir ekranda ariza yuboradi; kirishdan keyin aynan o'sha vakansiyaga qaytadi;
+  - internet uzilsa, yozgan xabari yo'qolmaydi va qayta yuboradi;
+  - arizasining holatini (Yuborildi → Ko'rildi → Taklif) aniq ranglarda ko'radi.
+- **Ish beruvchi:**
+  - e'lonni kirishdan oldin to'ldiradi, kirgach e'lon joylanadi;
+  - kabinetda "Arizalar: N ta · N ta yangi" ni ko'radi va nomzod haqidagi sabablarni uchinchi shaxsda o'qiydi;
+  - rus va kirill tilida joylagan e'loni ham ochiladi.
+- **Hamma:**
+  - 4 til (uz, oz, ru, en) va katta shriftda sahifa yonga siljimaydi;
+  - Toshkent shahri to'g'ri nomlanadi;
+  - yordam sahifasidagi nomlar interfeysdagi bilan bir xil.
+
+**Qaysi testlar o'tdi** (shu sessiyada haqiqatan bajarilgan):
+
+- unit 569 (18 skip — yuqorida);
+- SQL 24 fayl (CI);
+- brauzer E2E 82/82 (lokal stend, yakuniy build);
+- tsc va eslint toza;
+- 32 ta qabul mezoni: **FAIL — 0**. 30 tasida PASS dalili bor; shulardan 9 tasi qisman (#5, 8, 14, 19, 20, 21, 23, 28, 29 —
+  qolgan qismi NOT_RUN/BLOCKED, sababi §5 da). #18 va #30 — BLOCKED (staging va haqiqiy qurilma kerak).
+
+**Production relizni nima to'sib turibdi:**
+
+1. **Staging muhit yo'q.** U haqiqiy Telegram oqimi (kod, Mini App klaviaturasi #30, bildirishnomalar), yuklama testi (F-09)
+   va realtime chat sinovi uchun kerak.
+2. **`SUPPORT_EMAIL` Vercel'da tasdiqlanmagan.** Bu Play Market talabi: hisobni o'chirish sahifasida aloqa manzili bo'lishi
+   kerak.
+3. **Avatar va logotip yuklash** hali vakansiya rasmi kabi karantin va qayta kodlashdan o'tmaydi (F-06 qolgan qismi).
+4. **Zaxira nusxa.** Ishlayapti, lekin egasi uni bir marta yopiq kalit bilan ochib tekshirishi kerak (F-01).
+
+Kod tomonida reliz uchun ma'lum to'siq qolmadi: barcha o'lchangan xatolar tuzatilgan va testlar bilan himoyalangan.

@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { deleteSavedSearch, markSavedSearchSeen, setSavedSearchNotify } from "../actions";
 import type { SavedSearchItem } from "../queries";
+import { callAction } from "@/lib/action-call";
 
 /** Saqlangan qidiruvlar: ochish (yangi hisoblagich nolga tushadi), xabarni yoqish/o'chirish, o'chirish */
 export function SavedSearchesList({ items }: { items: SavedSearchItem[] }) {
@@ -25,7 +26,7 @@ export function SavedSearchesList({ items }: { items: SavedSearchItem[] }) {
 
   const open = (item: SavedSearchItem) =>
     startTransition(async () => {
-      if (item.newCount > 0) await markSavedSearchSeen({ id: item.id });
+      if (item.newCount > 0) await callAction(() => markSavedSearchSeen({ id: item.id }));
       router.push(`/jobs?${item.queryString}`);
     });
 

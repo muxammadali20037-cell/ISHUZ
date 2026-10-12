@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/client";
 import { DocumentUpload, type UploadedDoc } from "@/features/employer/components/settings/document-upload";
 import { submitEmployerVerification } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 /** Tasdiqlash: tashkilot/YATT uchun STIR yoki JShShIR; jismoniy shaxsdan yuridik hujjat talab qilinmaydi */
 export function VerificationForm({ userId, needsId, initialId }: { userId: string; needsId: boolean; initialId: string | null }) {
@@ -25,7 +26,7 @@ export function VerificationForm({ userId, needsId, initialId }: { userId: strin
         setError(t("easy.verification.id_required"));
         return;
       }
-      const res = await submitEmployerVerification({ identityNumber: digits || undefined, note, documentPaths: docs.map((d) => d.path) });
+      const res = await callAction(() => submitEmployerVerification({ identityNumber: digits || undefined, note, documentPaths: docs.map((d) => d.path) }));
       if (!res.ok) {
         const key = `easy.verification.errors.${res.error}`;
         const msg = t(key);

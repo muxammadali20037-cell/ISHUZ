@@ -25,6 +25,7 @@ Bu hujjat ilovaning yagona ko'rinish qoidalarini beradi. Qoidalar faqat yozib qo
 | `success` | `#15803d` | `#22c55e` | **Faqat natija:** saqlandi, joylandi, tasdiqlandi, "Qidiruvda ko'rinadi" |
 | `warning` | `#b45309` | `#f59e0b` | **Faqat ogohlantirish:** muddat tugayapti, tekshiruvda, chegirma muddati |
 | `destructive` | `#d12020` | `#f05252` | **Faqat xato va o'chirish**, o'qilmagan hisoblagich |
+| `info` | `#0369a1` | `#38bdf8` | **Faqat ariza/taklif holati** "Yuborildi", "Ko'rildi" (jarayonda, hali natija yo'q) — `bg-info-soft text-info` |
 
 Qoidalar:
 

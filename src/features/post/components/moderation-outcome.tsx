@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { requestAppeal } from "../actions";
 import type { ListingStateInfo } from "../types";
+import { callAction } from "@/lib/action-call";
 
 /**
  * Moderatsiya natijasi (joylash tugmasidan keyin): faqat haqiqiy holat.
@@ -39,7 +40,7 @@ export function ModerationOutcome({
 
   const appeal = () =>
     start(async () => {
-      const res = await requestAppeal({ entity, id });
+      const res = await callAction(() => requestAppeal({ entity, id }));
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
         const msg = t(key);

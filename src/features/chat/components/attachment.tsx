@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { getAttachmentUrl } from "../actions";
 import type { ChatMessage } from "../types";
 import { formatBytes, formatDuration, mapUrl } from "../utils";
+import { callAction } from "@/lib/action-call";
 
 /** Yopiq bucket fayli uchun imzolangan URL: serverdan kelgan bo'lsa shu, bo'lmasa action orqali */
 function useAttachmentUrl(message: ChatMessage) {
@@ -20,7 +21,7 @@ function useAttachmentUrl(message: ChatMessage) {
   const query = useQuery({
     queryKey: ["chat-attachment", path],
     queryFn: async () => {
-      const res = await getAttachmentUrl({ path });
+      const res = await callAction(() => getAttachmentUrl({ path }));
       if (!res.ok) throw new Error(res.error);
       if (!res.data) throw new Error("not_found");
       return res.data.url;

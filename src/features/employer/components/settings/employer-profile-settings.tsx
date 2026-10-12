@@ -16,6 +16,7 @@ import { CompanyForm } from "../company-form";
 import { PersonForm } from "../person-form";
 import type { ReferenceLists } from "../ref-types";
 import { VerificationTab } from "./verification-tab";
+import { callAction } from "@/lib/action-call";
 
 /** /company/settings (kompaniyasiz shaxs/YaTT): profil formasi + "Kompaniya yaratish" + shaxs tasdiqlash */
 export function EmployerProfileSettings({ userId, profile, requests, refs }: { userId: string; profile: EmployerProfileRow; requests: VerificationRequestRow[]; refs: ReferenceLists }) {
@@ -27,7 +28,7 @@ export function EmployerProfileSettings({ userId, profile, requests, refs }: { u
 
   const saveProfile = (values: PersonFormValues) => {
     startTransition(async () => {
-      const res = await updateEmployerProfile(values);
+      const res = await callAction(() => updateEmployerProfile(values));
       if (!res.ok) {
         toast.error(t(errorMessageKey(res.error)));
         return;
@@ -39,7 +40,7 @@ export function EmployerProfileSettings({ userId, profile, requests, refs }: { u
 
   const createCompany = (values: CompanyFormValues) => {
     startCreating(async () => {
-      const res = await createCompanyForEmployer(values);
+      const res = await callAction(() => createCompanyForEmployer(values));
       if (!res.ok) {
         toast.error(t(errorMessageKey(res.error)));
         return;

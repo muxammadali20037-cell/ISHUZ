@@ -18,23 +18,24 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
   const { t } = await getT();
   const session = await getSession();
   return (
-    <header className="sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+    // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
+    <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
       <div className="container-app flex h-14 items-center gap-3">
         <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label="Ish topdim">
           <BrandMark />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
-          <span className={session ? "hidden text-lg min-[400px]:inline" : "text-lg"}>
+          <span className={session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "text-lg @max-[22rem]:hidden"}>
             Ish <span className="text-primary">topdim</span>
           </span>
         </Link>
-        <div className="ml-4 flex-1">
+        <div className="ml-4 min-w-0 flex-1 @max-[22rem]:ml-0">
           <DesktopNavLinks role={role} counts={counts} />
         </div>
         <div className="flex items-center gap-1">
           <LanguageSelect />
           {session ? (
             <>
-              <Button asChild variant="ghost" size="icon" className="relative" aria-label={t("common.nav.messages")}>
+              <Button asChild variant="ghost" size="icon" className="relative @max-[22rem]:hidden" aria-label={t("common.nav.messages")}>
                 <Link href="/messages">
                   <MessageCircle className="size-5" />
                   {counts?.messages ? (

@@ -18,6 +18,7 @@ import { toast } from "@/components/ui/toast";
 import { moveSavedFolder, unsaveWorker, updateSavedNote } from "../actions";
 import type { SavedWorkerItem } from "../types";
 import { errorText } from "./error-text";
+import { callAction } from "@/lib/action-call";
 
 const ALL = "__all__";
 const NONE = "__none__";
@@ -47,7 +48,7 @@ export function SavedWorkersList({ items: initial }: { items: SavedWorkerItem[] 
     const target = removing;
     if (!target) return;
     startRemove(async () => {
-      const res = await unsaveWorker({ workerId: target.worker_id });
+      const res = await callAction(() => unsaveWorker({ workerId: target.worker_id }));
       if (!res.ok) {
         toast.error(errorText(t, res.error));
         return;
@@ -151,7 +152,7 @@ function NoteEditor({ item, onSaved }: { item: SavedWorkerItem; onSaved: (note: 
   const save = () => {
     startTransition(async () => {
       const note = value.trim() || null;
-      const res = await updateSavedNote({ workerId: item.worker_id, note });
+      const res = await callAction(() => updateSavedNote({ workerId: item.worker_id, note }));
       if (!res.ok) {
         toast.error(errorText(t, res.error));
         return;
@@ -216,7 +217,7 @@ function MoveSheetBody({ item, folders, onClose, onMoved }: { item: SavedWorkerI
     const target = choice === NEW ? newName.trim() || null : choice === NONE ? null : choice;
     if (choice === NEW && !target) return;
     startTransition(async () => {
-      const res = await moveSavedFolder({ workerId: item.worker_id, folder: target });
+      const res = await callAction(() => moveSavedFolder({ workerId: item.worker_id, folder: target }));
       if (!res.ok) {
         toast.error(errorText(t, res.error));
         return;

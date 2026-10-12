@@ -198,7 +198,7 @@ test("bosish va yozish: vizual javob kechikishi (CPU 4×)", async ({ page, conte
   await page.getByRole("button").filter({ hasText: "Tanlash" }).first().waitFor();
   await page.getByRole("button").filter({ hasText: "Tanlash" }).first().click();
   await page.getByRole("button", { name: /^Davom etish/ }).click();
-  await page.getByRole("radio", { name: /^Butun viloyat/ }).or(page.getByRole("button", { name: /^Toshkent shahri/ })).first().waitFor();
+  await page.getByRole("radio", { name: /^Butun (viloyat|shahar)/ }).or(page.getByRole("button", { name: /^Toshkent shahri/ })).first().waitFor();
   await page.waitForTimeout(500);
   const ev = await page.evaluate(() => (window as unknown as { __ev: { name: string; d: number }[] }).__ev);
   const keys = ev.filter((e) => /key|input|beforeinput/.test(e.name)).map((e) => e.d);

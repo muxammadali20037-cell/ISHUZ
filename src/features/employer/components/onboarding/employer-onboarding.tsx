@@ -15,6 +15,7 @@ import { PersonForm } from "../person-form";
 import type { ReferenceLists } from "../ref-types";
 import { EmployerTypeStep, type EmployerType } from "./employer-type-step";
 import { celebrateAfterNavigation } from "@/lib/celebrate";
+import { callAction } from "@/lib/action-call";
 
 export interface OnboardingPrefill {
   employerType: EmployerType | null;
@@ -44,7 +45,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const continueFromType = () => {
     if (!type) return;
     startTransition(async () => {
-      const res = await saveEmployerType({ employerType: type, note });
+      const res = await callAction(() => saveEmployerType({ employerType: type, note }));
       if (!res.ok) {
         fail(res.error);
         return;
@@ -56,7 +57,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
 
   const goBack = (draft?: PersonFormInput) => {
     startTransition(async () => {
-      if (draft) await saveEmployerDraft(draft); // best-effort qoralama
+      if (draft) await callAction(() => saveEmployerDraft(draft)); // best-effort qoralama
       setStep(1);
       window.scrollTo({ top: 0 });
     });
@@ -72,7 +73,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const submitCompany = (values: CompanyFormValues) => {
     if (type !== "company" && type !== "government" && type !== "individual_entrepreneur" && type !== "other") return;
     startTransition(async () => {
-      const res = await completeCompanyOnboarding({ ...values, employerType: type });
+      const res = await callAction(() => completeCompanyOnboarding({ ...values, employerType: type }));
       if (!res.ok) {
         fail(res.error);
         return;
@@ -87,7 +88,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
 
   const submitPerson = (values: PersonFormValues) => {
     startTransition(async () => {
-      const res = await completePersonOnboarding({ ...values, employerType: type === "self_employed" ? "self_employed" : "person" });
+      const res = await callAction(() => completePersonOnboarding({ ...values, employerType: type === "self_employed" ? "self_employed" : "person" }));
       if (!res.ok) {
         fail(res.error);
         return;

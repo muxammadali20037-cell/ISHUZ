@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { vacancyPhotoUrl } from "../photo";
 import { useT } from "@/lib/i18n/client";
 import { verifyVacancyPhoto } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 const TYPES: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 const MAX = 5 * 1024 * 1024;
@@ -36,7 +37,7 @@ export function PhotoUpload({ userId, value, onChange, quarantine }: { userId: s
       setBusy(false);
       return setError(t("easy.photo.failed"));
     }
-    const res = await verifyVacancyPhoto({ path }).catch(() => null);
+    const res = await callAction(() => verifyVacancyPhoto({ path })).catch(() => null);
     setBusy(false);
     if (!res?.ok || !res.data) return setError(t(res && !res.ok && res.error === "photo_invalid" ? "easy.photo.invalid" : "easy.photo.failed"));
     onChange(res.data.path);
@@ -49,7 +50,7 @@ export function PhotoUpload({ userId, value, onChange, quarantine }: { userId: s
       <p className="text-base text-muted-foreground">{t("easy.photo.hint")}</p>
       {url ? (
         <div className="flex items-center gap-3">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- yuklangan suratning darhol ko'rinishi (karantindan o'tgan public URL) */}
           <img src={url} alt={t("easy.photo.alt")} className="aspect-[4/3] w-40 rounded-2xl object-cover" />
           <Button type="button" variant="outline" className="min-h-12 text-base" onClick={() => onChange(null)}>
             <Trash2 className="size-5" aria-hidden /> {t("easy.photo.remove")}

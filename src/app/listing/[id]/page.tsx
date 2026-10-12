@@ -15,6 +15,7 @@ import { CallBlock } from "@/features/find/components/result-cards";
 import { StatusPill } from "@/features/cabinet/components/status-pill";
 import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
+import { isCityRegion } from "@/lib/geo/city";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -76,15 +77,15 @@ export default async function ListingPage({ params }: Params) {
               fallback={<ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} icon={w.category_icon} name={profession} label={t("easy.image.label")} className="aspect-[4/3] w-full sm:w-56" />}
             />
             <div className="min-w-0">
-              <h1 className="text-3xl font-extrabold leading-tight">{fullName}</h1>
-              <p className="mt-1 text-xl font-semibold text-primary">{profession}</p>
+              <h1 className="break-words text-3xl font-extrabold leading-tight">{fullName}</h1>
+              <p className="mt-1 break-words text-xl font-semibold text-primary">{profession}</p>
             </div>
           </div>
           <ul className="space-y-2">
             <li className="flex items-start gap-2">
               <MapPin className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
               <span>
-                {[region, district ?? t("easy.card.region_wide")].filter(Boolean).join(" · ")}
+                {[region, district ?? t(isCityRegion({ name_uz: w.region_name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].filter(Boolean).join(" · ")}
                 {w.remote_ok ? <span className="text-muted-foreground"> · {t("easy.card.remote")}</span> : null}
               </span>
             </li>

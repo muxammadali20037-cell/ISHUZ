@@ -11,6 +11,7 @@ import { finishOnboarding } from "../actions";
 import { TOTAL_STEPS } from "../types";
 import { errorMessage, stepHref } from "./wizard-shell";
 import { celebrateAfterNavigation } from "@/lib/celebrate";
+import { callAction } from "@/lib/action-call";
 
 /** Yakunlash tugmasi: profil faollashadi → bosh sahifa + "Profil tayyor!" */
 const INCOMPLETE_STEP: Record<string, number> = { incomplete_personal: 1, incomplete_location: 2, incomplete_profession: 3 };
@@ -22,7 +23,7 @@ export function FinishBar() {
 
   const finish = () => {
     startTransition(async () => {
-      const res = await finishOnboarding();
+      const res = await callAction(() => finishOnboarding());
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         const step = INCOMPLETE_STEP[res.error];

@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { actionErrorMessage } from "../../i18n-helpers";
+import { callAction } from "@/lib/action-call";
 
 type Role = "worker" | "employer";
 
@@ -22,7 +23,7 @@ export function RoleSwitch({ roles, activeRole }: { roles: string[]; activeRole:
   const switchTo = (role: Role) => {
     if (role === activeRole) return;
     startTransition(async () => {
-      const res = await setActiveRole(role);
+      const res = await callAction(() => setActiveRole(role));
       if (!res.ok) {
         toast.error(actionErrorMessage(t, res.error));
         return;
@@ -38,11 +39,11 @@ export function RoleSwitch({ roles, activeRole }: { roles: string[]; activeRole:
   ];
 
   return (
-    <div className="grid gap-2 sm:grid-cols-2">
+    <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
       {items.map(({ role, icon: Icon, label, addHref, addLabel }) => {
         if (!has(role)) {
           return (
-            <Button key={role} asChild variant="outline" className="h-auto justify-start py-3">
+            <Button key={role} asChild variant="outline" className="h-auto justify-start whitespace-normal py-3 text-left">
               <Link href={addHref}>
                 <Plus className="size-4" /> {addLabel}
               </Link>

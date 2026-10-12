@@ -15,6 +15,7 @@ import type { CompanyMemberRole, CompanyRow } from "../../types";
 import { CompanyForm } from "../company-form";
 import { LogoUploader } from "../logo-picker";
 import type { ReferenceLists } from "../ref-types";
+import { callAction } from "@/lib/action-call";
 
 export function companyToForm(c: CompanyRow): CompanyFormInput {
   return {
@@ -42,7 +43,7 @@ export function CompanyInfoTab({ company, myRole, refs }: { company: CompanyRow;
 
   const save = (values: CompanyFormValues) => {
     startTransition(async () => {
-      const res = await updateCompany({ ...values, companyId: company.id });
+      const res = await callAction(() => updateCompany({ ...values, companyId: company.id }));
       if (!res.ok) {
         toast.error(t(errorMessageKey(res.error)));
         return;

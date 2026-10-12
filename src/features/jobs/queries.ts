@@ -4,6 +4,7 @@ import { cache } from "react";
 import { after } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { normalizeVacancySlug } from "./slug";
 import { getBenefits, getCategories, getDistricts, getRegions, getSubcategories } from "@/lib/reference";
 import type { SessionContext } from "@/features/auth/session";
 import type { MatchReason } from "@/components/shared/match-score";
@@ -174,8 +175,9 @@ const VACANCY_DETAIL_SELECT = `*,
   vacancy_benefits(benefit_code, benefit:benefits(code, name_uz, name_ru, kind))` as const;
 
 /** Slug bo'yicha vakansiya (RLS: faol — hammaga; boshqa holat — faqat boshqaruvchiga). Topilmasa null. */
-export const getVacancyBySlug = cache(async (slug: string): Promise<VacancyDetail | null> => {
-  if (!/^[a-z0-9-]{3,120}$/i.test(slug)) return null;
+export const getVacancyBySlug = cache(async (rawSlug: string): Promise<VacancyDetail | null> => {
+  const slug = normalizeVacancySlug(rawSlug);
+  if (!slug) return null;
   const supabase = await createClient();
   const [{ data, error }, allBenefits] = await Promise.all([
     supabase.from("vacancies").select(VACANCY_DETAIL_SELECT).eq("slug", slug).maybeSingle(),

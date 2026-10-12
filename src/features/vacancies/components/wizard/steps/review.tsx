@@ -20,6 +20,7 @@ import { QualityPanel } from "../../insights/quality-panel";
 import type { StepProps } from "../types";
 import { PublishModeNote, requestPayment } from "@/features/billing/components/payment-dialog";
 import { celebrateAfterNavigation } from "@/lib/celebrate";
+import { callAction } from "@/lib/action-call";
 
 /**
  * Ko'rib chiqish: to'liq preview + qadamlar xulosasi (tahrirlash havolalari) + E'lon qilish / Qoralama.
@@ -41,7 +42,7 @@ export function ReviewStep({ mode, vacancy: v, refs }: StepProps) {
       return;
     }
     startTransition(async () => {
-      const res = await publishVacancy({ vacancyId: v.id });
+      const res = await callAction(() => publishVacancy({ vacancyId: v.id }));
       if (!res.ok) {
         if (res.error === "payment_required") {
           requestPayment({ purpose: "vacancy_publish", targetId: v.id });

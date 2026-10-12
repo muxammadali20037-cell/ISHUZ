@@ -13,6 +13,7 @@ import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { createAiWorkerAlert, deleteAiWorkerAlert, toggleAiWorkerAlert } from "../actions";
 import type { AiAlertsData } from "../queries";
+import { callAction } from "@/lib/action-call";
 
 const money = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
 
@@ -38,7 +39,7 @@ export function AiWorkerAlertsSection({ data }: { data: AiAlertsData }) {
 
   const create = () =>
     start(async () => {
-      const res = await createAiWorkerAlert({ text });
+      const res = await callAction(() => createAiWorkerAlert({ text }));
       if (!res.ok) {
         toast.error(errorText(res.error ?? "generic"));
         return;
@@ -51,14 +52,14 @@ export function AiWorkerAlertsSection({ data }: { data: AiAlertsData }) {
 
   const toggle = (id: string, active: boolean) =>
     start(async () => {
-      const res = await toggleAiWorkerAlert({ id, active });
+      const res = await callAction(() => toggleAiWorkerAlert({ id, active }));
       if (!res.ok) toast.error(t("common.errors.generic"));
       router.refresh();
     });
 
   const remove = (id: string) =>
     start(async () => {
-      const res = await deleteAiWorkerAlert({ id });
+      const res = await callAction(() => deleteAiWorkerAlert({ id }));
       if (!res.ok) toast.error(t("common.errors.generic"));
       router.refresh();
     });

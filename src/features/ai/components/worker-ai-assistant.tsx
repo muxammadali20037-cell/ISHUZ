@@ -14,6 +14,7 @@ import { Field } from "@/components/ui/label";
 import { birthDateBounds } from "@/features/onboarding/utils";
 import { analyzeWorkerText, applyWorkerPlan, type WorkerAiPreview } from "../actions";
 import { AiComposer } from "./ai-composer";
+import { callAction } from "@/lib/action-call";
 
 export interface WorkerAiRefs {
   categories: Category[];
@@ -44,7 +45,7 @@ export function WorkerAiAssistant({ refs, current, manualHref }: { refs: WorkerA
     setText(value);
     setError(null);
     startTransition(async () => {
-      const res = await analyzeWorkerText({ text: value });
+      const res = await callAction(() => analyzeWorkerText({ text: value }));
       if (!res.ok || !res.data) {
         setError(errorText(res.ok ? "ai_failed" : res.error));
         return;
@@ -66,7 +67,7 @@ export function WorkerAiAssistant({ refs, current, manualHref }: { refs: WorkerA
     if (!preview) return;
     setError(null);
     startTransition(async () => {
-      const res = await applyWorkerPlan({ ...preview.plan, personal });
+      const res = await callAction(() => applyWorkerPlan({ ...preview.plan, personal }));
       if (!res.ok || !res.data) {
         setError(errorText(res.ok ? "generic" : res.error));
         return;

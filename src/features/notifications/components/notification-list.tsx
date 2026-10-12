@@ -17,6 +17,7 @@ import { markNotificationsRead } from "../actions";
 import type { NotificationRow } from "../queries";
 import { renderNotification } from "../render";
 import { NotificationIcon } from "./notification-icon";
+import { callAction } from "@/lib/action-call";
 
 export function NotificationList({
   items: initialItems,
@@ -80,7 +81,7 @@ export function NotificationList({
     if (!n.read_at) {
       setItems((prev) => prev.map((x) => (x.id === n.id ? { ...x, read_at: new Date().toISOString() } : x)));
       setUnread((c) => Math.max(0, c - 1));
-      const res = await markNotificationsRead({ ids: [n.id] });
+      const res = await callAction(() => markNotificationsRead({ ids: [n.id] }));
       if (!res.ok) toast.error(t(`common.errors.${res.error}`));
     }
     if (n.link) router.push(n.link);
@@ -88,7 +89,7 @@ export function NotificationList({
 
   const markAll = () => {
     startTransition(async () => {
-      const res = await markNotificationsRead({});
+      const res = await callAction(() => markNotificationsRead({}));
       if (!res.ok) {
         toast.error(t(`common.errors.${res.error}`));
         return;

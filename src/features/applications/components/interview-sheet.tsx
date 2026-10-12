@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { scheduleInterview } from "../actions";
 import { actionErrorText } from "../errors";
 import { isoToTashkent, tashkentToIso, tashkentToday } from "../tashkent-time";
+import { callAction } from "@/lib/action-call";
 
 const TIMES = Array.from({ length: 27 }, (_, i) => {
   const m = 8 * 60 + i * 30; // 08:00 … 21:00, har 30 daqiqa
@@ -47,7 +48,7 @@ export function InterviewSheet({
     setTouched(true);
     if (!at) return;
     startTransition(async () => {
-      const res = await scheduleInterview({ applicationId, vacancyId, at, place: place.trim() || undefined, note: note.trim() || undefined });
+      const res = await callAction(() => scheduleInterview({ applicationId, vacancyId, at, place: place.trim() || undefined, note: note.trim() || undefined }));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error));
         return;

@@ -71,7 +71,7 @@ test("mehmon formani to'ldirib sarlavhadagi 'Kirish'ni bossa — kirgandan keyin
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await page.getByRole("button", { name: /^Davom etish/ }).click();
   await page.getByRole("button", { name: /^Toshkent shahri/ }).first().click();
-  await page.getByRole("radio", { name: /^Butun viloyat/ }).click();
+  await page.getByRole("radio", { name: /^Butun (viloyat|shahar)/ }).click();
   await page.getByRole("button", { name: /^Davom etish/ }).click();
   await page.locator("#about").fill("Soliq hisobotlari va 1C — 5 yil");
   await page.getByRole("banner").getByRole("link", { name: "Kirish" }).click();

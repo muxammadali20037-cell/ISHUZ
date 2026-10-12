@@ -18,6 +18,7 @@ import { APPLY_MESSAGE_MAX } from "../limits";
 import type { VacancyViewerState } from "../types";
 import { useSaveVacancy } from "./use-save-vacancy";
 import { celebrate } from "@/lib/celebrate";
+import { callAction } from "@/lib/action-call";
 
 export interface VacancyActionsProps {
   vacancy: { id: string; slug: string; title: string; companyName: string | null; status: Enums<"vacancy_status"> };
@@ -83,7 +84,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
   const submit = () => {
     startTransition(async () => {
-      const res = await applyToVacancy({ vacancyId: vacancy.id, message: message.trim() || undefined });
+      const res = await callAction(() => applyToVacancy({ vacancyId: vacancy.id, message: message.trim() || undefined }));
       if (res.ok) {
         const id = res.data?.id ?? null;
         setApplication({ id });
@@ -111,10 +112,12 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
   const applicationHref = application?.id ? `/applications/${application.id}` : "/applications";
 
-  const primary = (props: { fullWidth?: boolean; size?: "default" | "lg" }) => {
+  // mobil panel: katta shrift/uzun tarjimada yozuv qatorga tushadi (sahifa yonga siljimaydi)
+  const primary = (props: { fullWidth?: boolean; size?: "default" | "lg"; wrap?: boolean }) => {
+    const wrapCls = props.wrap ? "h-auto min-h-11 whitespace-normal py-1.5 leading-tight" : undefined;
     if (viewer.kind === "manager") {
       return (
-        <Button asChild variant="outline" fullWidth={props.fullWidth} size={props.size}>
+        <Button asChild variant="outline" fullWidth={props.fullWidth} size={props.size} className={wrapCls}>
           <Link href={`/employer/vacancies/${vacancy.id}`}>
             <Settings2 className="size-4" /> {t("jobs.detail.manage")}
           </Link>
@@ -123,7 +126,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
     }
     if (application) {
       return (
-        <Button asChild variant="soft" fullWidth={props.fullWidth} size={props.size}>
+        <Button asChild variant="soft" fullWidth={props.fullWidth} size={props.size} className={wrapCls}>
           <Link href={applicationHref}>
             <CheckCircle2 className="size-4" /> {t("jobs.detail.applied")}
           </Link>
@@ -131,7 +134,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
       );
     }
     return (
-      <Button type="button" onClick={onApplyClick} disabled={!isActive} fullWidth={props.fullWidth} size={props.size}>
+      <Button type="button" onClick={onApplyClick} disabled={!isActive} fullWidth={props.fullWidth} size={props.size} className={wrapCls}>
         <Send className="size-4" /> {t("jobs.detail.apply")}
       </Button>
     );
@@ -169,7 +172,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
           <Button type="button" variant="outline" size="icon" onClick={onShare} aria-label={t("jobs.detail.share")}>
             <Share2 className="size-5" />
           </Button>
-          <div className="flex-1">{primary({ fullWidth: true })}</div>
+          <div className="min-w-0 flex-1">{primary({ fullWidth: true, wrap: true })}</div>
         </div>
       </div>
 

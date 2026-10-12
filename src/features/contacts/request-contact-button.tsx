@@ -7,6 +7,7 @@ import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { requestContact } from "./actions";
+import { callAction } from "@/lib/action-call";
 
 /** "Telefon raqamini so'rash" — egasi ruxsat bersa raqam shu yerda ochiladi */
 export function RequestContactButton({ profileId, initial }: { profileId: string; initial: "none" | "pending" | "declined" }) {
@@ -25,7 +26,7 @@ export function RequestContactButton({ profileId, initial }: { profileId: string
 
   const ask = () =>
     startTransition(async () => {
-      const res = await requestContact({ profileId });
+      const res = await callAction(() => requestContact({ profileId }));
       if (!res.ok) {
         const key = `contacts.request.errors.${res.error}`;
         const msg = t(key);

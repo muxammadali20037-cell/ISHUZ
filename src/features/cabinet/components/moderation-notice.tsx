@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useT } from "@/lib/i18n/client";
 import { requestAppeal } from "@/features/post/actions";
 import type { ListingStateInfo } from "@/features/post/types";
+import { callAction } from "@/lib/action-call";
 
 /** Kabinetdagi e'lon ostida: rad etilgan bo'lsa sabab + "O'zgartirish" + "Qayta ko'rib chiqishni so'rash"; tasdiqlash kutilsa — havola */
 export function ModerationNotice({ entity, id, info, editHref }: { entity: "vacancy" | "worker"; id: string; info: ListingStateInfo; editHref: string }) {
@@ -46,7 +47,7 @@ export function ModerationNotice({ entity, id, info, editHref }: { entity: "vaca
             disabled={pending}
             onClick={() =>
               start(async () => {
-                const res = await requestAppeal({ entity, id });
+                const res = await callAction(() => requestAppeal({ entity, id }));
                 if (!res.ok || !res.data) {
                   const key = `easy.errors.${res.ok ? "generic" : res.error}`;
                   const msg = t(key);

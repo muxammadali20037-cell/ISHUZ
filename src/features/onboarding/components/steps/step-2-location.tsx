@@ -19,6 +19,7 @@ import { ChoiceList, LocateAsk } from "@/components/shared/locate-ask";
 import { saveLocation, saveWorkerGeo } from "../../actions";
 import { locationSchema, type LocationInput } from "../../schema";
 import { WizardFooter, errorMessage, fieldError, multiValue, singleValue, useStepSubmit } from "../wizard-shell";
+import { callAction } from "@/lib/action-call";
 
 export interface LocationDraft {
   region_id: string | null;
@@ -111,7 +112,7 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
             if (!workDistricts.includes(d.id)) setValue("work_districts", [...workDistricts, d.id], { shouldValidate: true });
             // Aniq nuqta faqat masofani hisoblash uchun (foydalanuvchi o'zi ruxsat berdi), hech kimga ko'rsatilmaydi
             startGeo(async () => {
-              await saveWorkerGeo(coords);
+              await callAction(() => saveWorkerGeo(coords));
             });
             flow.advance();
           }}
@@ -243,10 +244,10 @@ function GeoCard({ hasGeo }: { hasGeo: boolean }) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         startTransition(async () => {
-          const res = await saveWorkerGeo({
+          const res = await callAction(() => saveWorkerGeo({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
-          });
+          }));
           if (!res.ok) {
             setState(hasGeo ? "saved" : "idle");
             toast.error(errorMessage(t, res.error));

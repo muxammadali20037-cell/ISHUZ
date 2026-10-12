@@ -53,6 +53,10 @@ const PAIRS: [string, string][] = [
   ["destructive-foreground", "destructive"],
   ["destructive", "destructive-soft"],
   ["destructive", "card"],
+  ["info-foreground", "info"],
+  ["info", "info-soft"],
+  ["info", "card"],
+  ["card", "muted-foreground"],
 ];
 
 describe("brend ranglari kontrasti (AA ≥ 4.5:1)", () => {

@@ -14,6 +14,7 @@ import { activeFilterCount, findHref, type FindParams } from "../params";
 import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
 import { ChangeSheet, FilterSheet, FindProfessionStep, RetryButton } from "./find-client";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
+import { isCityRegion } from "@/lib/geo/city";
 
 const bigLink = "press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left text-lg font-semibold hover:border-primary/50";
 
@@ -47,7 +48,7 @@ export async function FindStart({ params }: { params: FindParams }) {
   const examples = [t("easy.search.example_1"), t("easy.search.example_2"), t("easy.search.example_3")];
   return (
     <StepShell back="/" title={t("easy.search.choose_title")}>
-      <div className="pop-list grid gap-4 sm:grid-cols-2">
+      <div className="pop-list grid grid-cols-1 gap-4 sm:grid-cols-2">
         {(
           [
             { mode: "jobs", icon: BriefcaseBusiness, title: t("easy.search.jobs"), desc: t("easy.search.jobs_desc") },
@@ -104,7 +105,7 @@ export async function FindAskIntent({ params, node }: { params: FindParams; node
   return (
     <StepShell back="/search" title={t("easy.search.ask_intent")}>
       {said ? <p className="rounded-2xl bg-secondary px-4 py-3 text-lg">{t("easy.search.ask_intent_hint", { q: said })}</p> : null}
-      <div className="pop-list grid gap-4 sm:grid-cols-2">
+      <div className="pop-list grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Link href={findHref(params, { mode: "jobs" })} className={cn(bigLink, "min-h-20 border-primary/40")}>
           <BriefcaseBusiness className="size-7 shrink-0 text-primary" aria-hidden />
           <span>
@@ -148,7 +149,7 @@ export async function FindRegion({ params, regions, node }: { params: FindParams
       title={t("easy.search.region_title")}
       summary={<ChosenSummary items={[params.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs"), prof]} />}
     >
-      <ul className="pop-list grid gap-2 sm:grid-cols-2">
+      <ul className="pop-list grid grid-cols-1 gap-2 sm:grid-cols-2">
         <li className="sm:col-span-2">
           <Link href={findHref(params, { region: "all", district: null, page: 1 })} className={cn(bigLink, "border-primary/40")}>
             <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
@@ -189,12 +190,12 @@ export async function FindDistrict({ params, region, districts, node }: { params
       title={t("easy.location.pick_district", { region: name(region) })}
       summary={<ChosenSummary items={[params.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs"), prof, name(region)]} />}
     >
-      <ul className="pop-list grid gap-2 sm:grid-cols-2">
+      <ul className="pop-list grid grid-cols-1 gap-2 sm:grid-cols-2">
         <li className="sm:col-span-2">
           <Link href={findHref(params, { district: "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
             <span className="flex-1">
-              <span className="block">{t("easy.location.whole_region")}</span>
-              <span className="block text-base font-normal text-muted-foreground">{t("easy.location.whole_region_desc")}</span>
+              <span className="block">{t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}</span>
+              <span className="block text-base font-normal text-muted-foreground">{t(isCityRegion(region) ? "easy.location.whole_city_desc" : "easy.location.whole_region_desc")}</span>
             </span>
             <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
           </Link>
@@ -222,7 +223,7 @@ export async function FindResultsView({ params, node, region, district }: { para
   const total = res.ok ? res.total : 0;
   const pages = Math.max(1, Math.ceil(Math.min(total, 5000) / PAGE_SIZE));
   const prof = node ? name(node.trail.at(-1)!) : "";
-  const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t("easy.location.whole_region")}` : t("easy.location.whole_country");
+  const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}` : t("easy.location.whole_country");
   const backHref = region ? findHref(params, { district: null, page: 1 }) : findHref(params, { region: null, district: null, page: 1 });
   // qisqa xulosa: "Buxgalter · Toshkent · 5 mln so'mdan yuqori"
   const filterParts = [
@@ -299,7 +300,7 @@ export async function FindResultsView({ params, node, region, district }: { para
         </section>
       ) : null}
       {!res.ok || (!res.items.length && params.page > 1) ? null : res.items.length ? (
-        <ul className="pop-list grid gap-4 lg:grid-cols-2">
+        <ul className="pop-list grid grid-cols-1 gap-4 lg:grid-cols-2">
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>
@@ -327,7 +328,7 @@ export async function FindResultsView({ params, node, region, district }: { para
               </Button>
             ) : district ? (
               <Button asChild size="xl" className="h-14 text-lg">
-                <Link href={findHref(params, { district: "all", page: 1 })}>{t("easy.search.empty_region")}</Link>
+                <Link href={findHref(params, { district: "all", page: 1 })}>{t(isCityRegion(region) ? "easy.search.empty_city" : "easy.search.empty_region")}</Link>
               </Button>
             ) : region || remote ? (
               <Button asChild size="xl" className="h-14 text-lg">

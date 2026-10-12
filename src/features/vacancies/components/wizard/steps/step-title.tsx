@@ -19,6 +19,7 @@ import { WizardFooter } from "../wizard-footer";
 import type { WizardRefs } from "../types";
 import { ProfessionPicker } from "@/features/professions/components/profession-picker";
 import type { PickedProfession } from "@/features/professions/types";
+import { callAction } from "@/lib/action-call";
 
 const MAX_SUGGESTIONS = 6;
 
@@ -51,7 +52,7 @@ export function StepTitle({ mode, vacancy, refs }: { mode: WizardMode; vacancy: 
   const onSubmit = form.handleSubmit((data) => {
     if (!vacancy) {
       startCreate(async () => {
-        const res = await createDraft(data);
+        const res = await callAction(() => createDraft(data));
         if (!res.ok || !res.data) {
           toast.error(errorMessage(t, res.ok ? "generic" : res.error));
           return;
@@ -71,7 +72,7 @@ export function StepTitle({ mode, vacancy, refs }: { mode: WizardMode; vacancy: 
   const [manual, setManual] = useState(false);
   const createFrom = (input: { title: string; professionNodeId?: string; customProfession?: string; categoryId?: string }) => {
     startCreate(async () => {
-      const res = await createDraft({ ...input, title: input.title.slice(0, 120), subcategoryId: null });
+      const res = await callAction(() => createDraft({ ...input, title: input.title.slice(0, 120), subcategoryId: null }));
       if (!res.ok || !res.data) {
         toast.error(errorMessage(t, res.ok ? "generic" : res.error));
         return;

@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/toast";
 import { actionErrorText } from "@/features/applications/errors";
 import { respondToOffer } from "../actions";
 import { celebrate } from "@/lib/celebrate";
+import { callAction } from "@/lib/action-call";
 
 /** Ishchi: "Qabul qilish" / "Rad etish" (respond_offer) — har biri ConfirmDialog bilan */
 export function OfferRespondActions({ offerId, disabled }: { offerId: string; disabled?: boolean }) {
@@ -20,7 +21,7 @@ export function OfferRespondActions({ offerId, disabled }: { offerId: string; di
 
   const respond = (accept: boolean) => {
     startTransition(async () => {
-      const res = await respondToOffer({ offerId, accept });
+      const res = await callAction(() => respondToOffer({ offerId, accept }));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error, "offers"));
         setDialog(null);

@@ -10,6 +10,7 @@ import { EmptyState } from "@/components/ui/misc";
 import { toast } from "@/components/ui/toast";
 import { acceptCompanyInvite } from "../../actions";
 import { errorMessageKey } from "../../mappers";
+import { callAction } from "@/lib/action-call";
 
 /** /company/join?token=... — taklifni qabul qilish (rpc accept_company_invite) */
 export function JoinCompany({ token }: { token: string | null }) {
@@ -32,7 +33,7 @@ export function JoinCompany({ token }: { token: string | null }) {
   const accept = () => {
     if (!token) return;
     startTransition(async () => {
-      const res = await acceptCompanyInvite({ token });
+      const res = await callAction(() => acceptCompanyInvite({ token }));
       if (!res.ok) {
         if (res.error === "invite_invalid") {
           setInvalid(true);

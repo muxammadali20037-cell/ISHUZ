@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/toast";
 import { getPromotionQuote, getVacancyQuote, getWorkerListingQuote, startCheckout } from "../actions";
 import type { ListingQuote, PromotionQuote, VacancyQuote } from "../types";
+import { callAction } from "@/lib/action-call";
 
 type Request = { purpose: "vacancy_publish" | "worker_promotion" | "worker_listing"; targetId: string };
 
@@ -75,7 +76,7 @@ function PaymentSheet({ req }: { req: Request }) {
   const pay = (provider: "payme" | "click") => {
     setBusy(provider);
     startTransition(async () => {
-      const res = await startCheckout({ purpose: req.purpose, targetId: req.targetId, provider });
+      const res = await callAction(() => startCheckout({ purpose: req.purpose, targetId: req.targetId, provider }));
       if (!res.ok || !res.data) {
         setBusy(null);
         toast.error(billingErrorMessage(t, res.ok ? "" : res.error) ?? t("common.errors.generic"));

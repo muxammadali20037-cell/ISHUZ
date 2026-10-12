@@ -10,7 +10,7 @@ export function MediaThumb({ path, url, alt, className, controls }: { path: stri
   const kind = mediaKind(path);
   const box = cn("flex size-full items-center justify-center bg-secondary text-muted-foreground", className);
   if (kind === "image") {
-    // eslint-disable-next-line @next/next/no-img-element
+    // eslint-disable-next-line @next/next/no-img-element -- portfolio fayli (public storage URL): rasm, video va hujjat bir xil plitkada
     return <img src={url} alt={alt ?? ""} loading="lazy" className={cn("size-full object-cover", className)} />;
   }
   if (kind === "video") {

@@ -17,6 +17,7 @@ import { createCompanyInvite, deleteCompanyInvite, removeMember, setMemberRole }
 import { errorMessageKey } from "../../mappers";
 import { ASSIGNABLE_MEMBER_ROLES, inviteLink } from "../../schema";
 import type { CompanyInviteRow, CompanyMemberRole, MemberRow } from "../../types";
+import { callAction } from "@/lib/action-call";
 
 type AssignableRole = (typeof ASSIGNABLE_MEMBER_ROLES)[number];
 
@@ -58,7 +59,7 @@ export function MembersTab({ companyId, userId, myRole, members, invites }: { co
 
   const changeRole = (m: MemberRow, role: AssignableRole) => {
     startTransition(async () => {
-      const res = await setMemberRole({ companyId, profileId: m.profile_id, role });
+      const res = await callAction(() => setMemberRole({ companyId, profileId: m.profile_id, role }));
       if (!res.ok) {
         fail(res.error);
         return;
@@ -70,7 +71,7 @@ export function MembersTab({ companyId, userId, myRole, members, invites }: { co
 
   const confirmRemove = async () => {
     if (!removeTarget) return;
-    const res = await removeMember({ companyId, profileId: removeTarget.profile_id });
+    const res = await callAction(() => removeMember({ companyId, profileId: removeTarget.profile_id }));
     setRemoveTarget(null);
     if (!res.ok) {
       fail(res.error);
@@ -82,7 +83,7 @@ export function MembersTab({ companyId, userId, myRole, members, invites }: { co
 
   const createInvite = () => {
     startTransition(async () => {
-      const res = await createCompanyInvite({ companyId, role: inviteRole });
+      const res = await callAction(() => createCompanyInvite({ companyId, role: inviteRole }));
       if (!res.ok || !res.data) {
         fail(res.ok ? "generic" : res.error);
         return;
@@ -95,7 +96,7 @@ export function MembersTab({ companyId, userId, myRole, members, invites }: { co
 
   const deleteInvite = (inviteId: string) => {
     startTransition(async () => {
-      const res = await deleteCompanyInvite({ companyId, inviteId });
+      const res = await callAction(() => deleteCompanyInvite({ companyId, inviteId }));
       if (!res.ok) {
         fail(res.error);
         return;

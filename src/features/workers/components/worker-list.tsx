@@ -6,6 +6,7 @@ import { WorkerCard, type WorkerCardData } from "@/components/shared/worker-card
 import { toast } from "@/components/ui/toast";
 import { toggleSaveWorker } from "../actions";
 import { errorText } from "./error-text";
+import { callAction } from "@/lib/action-call";
 
 /** Nomzod kartalari ro'yxati: saqlash tugmasi optimistik ishlaydi, xato bo'lsa qaytariladi */
 export function WorkerList({ rows, vacancyId, hideMatch }: { rows: WorkerCardData[]; vacancyId?: string | null; hideMatch?: boolean }) {
@@ -18,7 +19,7 @@ export function WorkerList({ rows, vacancyId, hideMatch }: { rows: WorkerCardDat
     setOverrides((o) => ({ ...o, [id]: next }));
     setBusy(id);
     startTransition(async () => {
-      const res = await toggleSaveWorker({ workerId: id, save: next });
+      const res = await callAction(() => toggleSaveWorker({ workerId: id, save: next }));
       setBusy(null);
       if (!res.ok) {
         setOverrides((o) => ({ ...o, [id]: !next }));

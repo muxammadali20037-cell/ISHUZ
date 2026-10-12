@@ -159,7 +159,7 @@ export function PortfolioDialog({ item, userId, onClose }: { item: WorkerPortfol
                   {files.map((f, i) => (
                     <FileTile key={`${f.file.name}-${i}`} onRemove={() => setFiles(files.filter((_, j) => j !== i))} label={t("profile.portfolio.remove_file")}>
                       {f.preview ? (
-                        // eslint-disable-next-line @next/next/no-img-element
+                        // eslint-disable-next-line @next/next/no-img-element -- hali yuklanmagan faylning blob: ko'rinishi (next/image blob URL qabul qilmaydi)
                         <img src={f.preview} alt="" className="size-full object-cover" />
                       ) : (
                         <span className="flex size-full items-center justify-center px-1 text-center text-2xs text-muted-foreground">{f.file.name}</span>

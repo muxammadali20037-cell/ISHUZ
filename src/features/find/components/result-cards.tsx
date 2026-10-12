@@ -11,6 +11,7 @@ import { SalaryText } from "@/components/shared/salary-text";
 import { levelToExperience } from "@/features/post/types";
 import type { Enums } from "@/types/database.types";
 import { cn } from "@/lib/utils";
+import { isCityRegion } from "@/lib/geo/city";
 
 interface PlaceNames {
   region_name_uz: string | null;
@@ -75,8 +76,8 @@ function usePlace() {
     const region = r.region_name_uz ? name({ name_uz: r.region_name_uz, name_ru: r.region_name_ru ?? r.region_name_uz, name_en: r.region_name_en, name_oz: r.region_name_oz }) : null;
     const district = r.district_name_uz ? name({ name_uz: r.district_name_uz, name_ru: r.district_name_ru ?? r.district_name_uz, name_en: r.district_name_en, name_oz: r.district_name_oz }) : null;
     if (!region) return remote ? t("easy.search.remote") : "—";
-    // tuman ko'rsatilmagan e'lon — "Butun viloyat" deb ochiq yoziladi (aniq tuman natijasi sifatida yashirilmaydi)
-    return `${region} · ${district ?? t("easy.card.region_wide")}`;
+    // tuman ko'rsatilmagan e'lon — "Butun viloyat" (shaharda — "Butun shahar") deb ochiq yoziladi (aniq tuman natijasi sifatida yashirilmaydi)
+    return `${region} · ${district ?? t(isCityRegion({ name_uz: r.region_name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")}`;
   };
 }
 
@@ -119,8 +120,8 @@ export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; 
           src={photoPath ? vacancyPhotoUrl(photoPath) : null}
           alt={t("easy.photo.alt")}
           sizes="128px"
-          className="aspect-[4/3] w-24 shrink-0 rounded-2xl sm:w-32"
-          fallback={<ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />}
+          className="aspect-[4/3] w-[96px] shrink-0 rounded-2xl sm:w-[128px]"
+          fallback={<ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-[96px] shrink-0 sm:w-[128px]" />}
         >
           <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-2xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
         </Photo>
@@ -168,8 +169,8 @@ export function WorkerResultCard({ worker, imageUrl }: { worker: WorkerCardData;
           src={worker.avatar_url}
           alt={fullName}
           sizes="128px"
-          className="aspect-[4/3] w-24 shrink-0 rounded-2xl sm:w-32"
-          fallback={<ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-24 shrink-0 sm:w-32" />}
+          className="aspect-[4/3] w-[96px] shrink-0 rounded-2xl sm:w-[128px]"
+          fallback={<ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-[96px] shrink-0 sm:w-[128px]" />}
         />
         <div className="min-w-0 flex-1">
           <h3 className="break-words text-xl font-bold leading-snug">{fullName}</h3>

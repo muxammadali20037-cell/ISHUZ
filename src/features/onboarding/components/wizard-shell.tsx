@@ -15,6 +15,7 @@ import { QUICK_STEPS, TOTAL_STEPS } from "../types";
 import { stepHref } from "../utils";
 import { finishOnboarding } from "../actions";
 import { celebrateAfterNavigation } from "@/lib/celebrate";
+import { callAction } from "@/lib/action-call";
 
 export { stepHref };
 
@@ -81,7 +82,7 @@ export function useStepSubmit() {
         toast.error(errorMessage(t, res.error));
         return;
       }
-      const done = await finishOnboarding();
+      const done = await callAction(() => finishOnboarding());
       if (!done.ok) {
         toast.error(errorMessage(t, done.error));
         return;

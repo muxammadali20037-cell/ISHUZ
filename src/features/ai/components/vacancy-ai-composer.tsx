@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useT } from "@/lib/i18n/client";
 import { createVacancyFromText } from "../actions";
 import { AiComposer } from "./ai-composer";
+import { callAction } from "@/lib/action-call";
 
 /** Ish beruvchi: erkin matn → AI to'ldirgan qoralama → tekshiruv sahifasi (o'sha yerda tahrirlanadi va e'lon qilinadi) */
 export function VacancyAiComposer() {
@@ -18,7 +19,7 @@ export function VacancyAiComposer() {
     setText(value);
     setError(null);
     startTransition(async () => {
-      const res = await createVacancyFromText({ text: value });
+      const res = await callAction(() => createVacancyFromText({ text: value }));
       if (!res.ok || !res.data) {
         const code = res.ok ? "ai_failed" : res.error;
         const key = `ai.errors.${code}`;

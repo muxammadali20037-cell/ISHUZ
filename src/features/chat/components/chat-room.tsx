@@ -29,6 +29,7 @@ import { groupByDay, relativeDay, rowToMessage } from "../utils";
 import { ChatHeader } from "./chat-header";
 import { Composer } from "./composer";
 import { MessageBubble } from "./message-bubble";
+import { callAction } from "@/lib/action-call";
 
 let tempCounter = 0;
 function tempId(): number {
@@ -186,7 +187,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
     const temp = makeTemp(conversationId, myId, { type: "text", body: text });
     setMessages((prev) => [...prev, temp]);
     afterAppend(true);
-    const res = await sendTextMessage({ conversationId, body: text });
+    const res = await callAction(() => sendTextMessage({ conversationId, body: text }));
     if (!res.ok || !res.data) {
       failTemp(temp.client_id ?? "", res.ok ? "generic" : res.error);
       return false;
@@ -206,7 +207,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
       toast.error(uploaded.error === "too_large" ? t("chat.composer.too_large", { max: MAX_FILE_MB }) : uploaded.error === "bad_type" ? t("chat.composer.bad_type") : t("chat.composer.upload_failed"));
       return;
     }
-    const res = await sendAttachmentMessage({ conversationId, type: kind, path: uploaded.path, meta: uploaded.meta });
+    const res = await callAction(() => sendAttachmentMessage({ conversationId, type: kind, path: uploaded.path, meta: uploaded.meta }));
     if (!res.ok || !res.data) {
       failTemp(temp.client_id ?? "", res.ok ? "generic" : res.error);
       return;
@@ -236,7 +237,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
     const temp = makeTemp(conversationId, myId, { type: "location", lat, lng });
     setMessages((prev) => [...prev, temp]);
     afterAppend(true);
-    const res = await sendLocationMessage({ conversationId, lat, lng });
+    const res = await callAction(() => sendLocationMessage({ conversationId, lat, lng }));
     if (!res.ok || !res.data) {
       failTemp(temp.client_id ?? "", res.ok ? "generic" : res.error);
       return;
@@ -252,7 +253,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
     const el = listRef.current;
     const prevHeight = el?.scrollHeight ?? 0;
     const prevTop = el?.scrollTop ?? 0;
-    const res = await loadOlderMessages({ conversationId, before: oldest.id });
+    const res = await callAction(() => loadOlderMessages({ conversationId, before: oldest.id }));
     setLoadingOlder(false);
     if (!res.ok || !res.data) {
       toast.error(chatErrorText(t, res.ok ? "generic" : res.error));
@@ -272,7 +273,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     setDeleting(true);
-    const res = await deleteMessage({ conversationId, messageId: deleteTarget.id });
+    const res = await callAction(() => deleteMessage({ conversationId, messageId: deleteTarget.id }));
     setDeleting(false);
     if (!res.ok) {
       toast.error(chatErrorText(t, res.error));
@@ -286,7 +287,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
 
   const applyBlock = async (blocked: boolean) => {
     setMenuBusy(true);
-    const res = await setConversationBlock({ conversationId, blocked });
+    const res = await callAction(() => setConversationBlock({ conversationId, blocked }));
     setMenuBusy(false);
     if (!res.ok) {
       toast.error(chatErrorText(t, res.error));
@@ -300,7 +301,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   const toggleMute = async () => {
     setMenuBusy(true);
     const next = !muted;
-    const res = await setConversationMuted({ conversationId, muted: next });
+    const res = await callAction(() => setConversationMuted({ conversationId, muted: next }));
     setMenuBusy(false);
     if (!res.ok) {
       toast.error(chatErrorText(t, res.error));

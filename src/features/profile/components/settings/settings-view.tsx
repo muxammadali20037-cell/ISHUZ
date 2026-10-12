@@ -46,7 +46,7 @@ export async function SettingsView({ session }: { session: SessionContext }) {
       <PageHeader title={t("profile.settings.title")} backHref="/profile" />
 
       <SettingsCard title={t("profile.settings.language")} description={t("profile.settings.language_hint")}>
-        <LanguageSwitcher size="md" />
+        <LanguageSwitcher size="md" className="grid w-full max-w-sm grid-cols-4" />
       </SettingsCard>
 
       {requests.length ? (

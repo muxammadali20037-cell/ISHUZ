@@ -5,9 +5,10 @@ import { useT } from "@/lib/i18n/client";
 import type { District, Region } from "@/lib/reference";
 import { cn } from "@/lib/utils";
 import type { PlaceChoice } from "../types";
+import { isCityRegion } from "@/lib/geo/city";
 
 /**
- * Hudud: avval viloyat (yoki Toshkent shahri), keyin FAQAT shu viloyatning tuman/shaharlari + "Butun viloyat".
+ * Hudud: avval viloyat (yoki Toshkent shahri), keyin FAQAT shu viloyatning tuman/shaharlari + "Butun viloyat" (Toshkent shahrida — "Butun shahar").
  * GPS shart emas — qo'lda tanlash doim ishlaydi. Vakansiya uchun "Masofadan" tanlovi ham bor.
  */
 export function RegionPicker({
@@ -89,8 +90,8 @@ export function RegionPicker({
             className={listBtn(wholeOn)}
           >
             <span className="min-w-0 flex-1">
-              <span className="block">{t("easy.location.whole_region")}</span>
-              <span className="block text-base font-normal text-muted-foreground">{t("easy.location.whole_region_desc")}</span>
+              <span className="block">{t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}</span>
+              <span className="block text-base font-normal text-muted-foreground">{t(isCityRegion(region) ? "easy.location.whole_city_desc" : "easy.location.whole_region_desc")}</span>
             </span>
             {wholeOn ? <Check className="size-6 shrink-0 text-primary" strokeWidth={3} aria-hidden /> : null}
           </button>
@@ -132,7 +133,7 @@ function SelectedBox({ icon, title, subtitle }: { icon: React.ReactNode; title: 
   );
 }
 
-/** Hudud matni: "Toshkent shahri · Chilonzor" / "Toshkent shahri · Butun viloyat" / "Masofadan" */
+/** Hudud matni: "Toshkent shahri · Chilonzor" / "Toshkent shahri · Butun shahar" / "Samarqand · Butun viloyat" / "Masofadan" */
 export function placeLabel(
   place: PlaceChoice,
   regions: Region[],
@@ -144,5 +145,5 @@ export function placeLabel(
   const r = regions.find((x) => x.id === place.regionId);
   if (!r) return "—";
   const d = districts.find((x) => x.id === place.districtId);
-  return `${name(r)} · ${d ? name(d) : t("easy.location.whole_region")}`;
+  return `${name(r)} · ${d ? name(d) : t(isCityRegion(r) ? "easy.location.whole_city" : "easy.location.whole_region")}`;
 }

@@ -25,7 +25,7 @@ export function ProfessionImage({
     <figure className={cn("relative overflow-hidden rounded-2xl bg-secondary", className)}>
       {url ? (
         // Supabase public URL (bir marta yaratilgan, keshlanadi)
-        // eslint-disable-next-line @next/next/no-img-element
+        // eslint-disable-next-line @next/next/no-img-element -- kasb tasviri: bir marta yaratilib keshlangan public URL, Photo zaxirasi sifatida ham ishlatiladi
         <img src={url} alt={label ? `${name} — ${label}` : name} loading="lazy" className="size-full object-cover" />
       ) : (
         <div className="flex size-full items-center justify-center bg-primary-soft" role="img" aria-label={name}>

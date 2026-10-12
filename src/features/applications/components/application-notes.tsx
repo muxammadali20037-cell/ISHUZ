@@ -11,6 +11,7 @@ import { toast } from "@/components/ui/toast";
 import { addApplicationNote, deleteApplicationNote } from "../actions";
 import { actionErrorText } from "../errors";
 import type { ApplicationNote } from "../types";
+import { callAction } from "@/lib/action-call";
 
 /** Ish beruvchining shaxsiy izohlari (nomzod ko'rmaydi) */
 export function ApplicationNotes({ applicationId, vacancyId, notes, myId, canWrite }: { applicationId: string; vacancyId: string; notes: ApplicationNote[]; myId: string; canWrite: boolean }) {
@@ -23,7 +24,7 @@ export function ApplicationNotes({ applicationId, vacancyId, notes, myId, canWri
     const text = body.trim();
     if (!text) return;
     startTransition(async () => {
-      const res = await addApplicationNote({ applicationId, vacancyId, body: text });
+      const res = await callAction(() => addApplicationNote({ applicationId, vacancyId, body: text }));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error));
         return;
@@ -36,7 +37,7 @@ export function ApplicationNotes({ applicationId, vacancyId, notes, myId, canWri
 
   const remove = (id: string) =>
     startTransition(async () => {
-      const res = await deleteApplicationNote({ id, applicationId, vacancyId });
+      const res = await callAction(() => deleteApplicationNote({ id, applicationId, vacancyId }));
       if (!res.ok) toast.error(actionErrorText(t, res.error));
       router.refresh();
     });

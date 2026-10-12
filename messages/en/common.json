@@ -122,6 +122,8 @@
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "network": "No internet connection. Check your network.",
+    "offline": "You're offline. Check your connection and try again — what you entered is kept.",
+    "timeout": "The server didn't respond. Try again in a moment.",
     "not_found": "Page not found",
     "not_found_desc": "The page you're looking for doesn't exist or has been removed.",
     "forbidden": "You don't have permission to do this",

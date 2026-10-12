@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
 import { submitReport, type ReportInput } from "./actions";
+import { callAction } from "@/lib/action-call";
 
 const REASONS: ReportInput["reason"][] = ["fraud", "fake_vacancy", "asked_money", "wrong_info", "spam", "abuse", "other"];
 
@@ -41,7 +42,7 @@ export function ReportDialog({
   const submit = () => {
     if (!reason) return;
     startTransition(async () => {
-      const res = await submitReport({ targetType, targetId, reason, details });
+      const res = await callAction(() => submitReport({ targetType, targetId, reason, details }));
       if (!res.ok) {
         toast.error(t(`common.errors.${res.error}`));
         return;

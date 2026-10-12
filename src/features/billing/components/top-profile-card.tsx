@@ -10,6 +10,7 @@ import { toast } from "@/components/ui/toast";
 import { getPromotionQuote, promoteWorker } from "../actions";
 import type { PromotionQuote } from "../types";
 import { billingErrorMessage, requestPayment } from "./payment-dialog";
+import { callAction } from "@/lib/action-call";
 
 /** Ishchi bosh sahifasi: "Profilni TOP ga chiqarish" (bepul/aksiya — darhol, aks holda to'lov oynasi) */
 export function TopProfileCard({ workerId, promotedUntil }: { workerId: string; promotedUntil: string | null }) {
@@ -30,7 +31,7 @@ export function TopProfileCard({ workerId, promotedUntil }: { workerId: string; 
 
   const promote = () =>
     startTransition(async () => {
-      const res = await promoteWorker();
+      const res = await callAction(() => promoteWorker());
       if (!res.ok) {
         if (res.error === "payment_required") {
           requestPayment({ purpose: "worker_promotion", targetId: workerId });

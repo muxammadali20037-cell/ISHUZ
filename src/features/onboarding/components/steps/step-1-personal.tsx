@@ -19,6 +19,7 @@ import { useTelegram } from "@/lib/telegram/provider";
 import { onboardingPersonalSchema, type OnboardingPersonalInput } from "../../schema";
 import type { DraftContacts, DraftProfile } from "../../types";
 import { WizardFooter, errorMessage, fieldError, useStepSubmit } from "../wizard-shell";
+import { callAction } from "@/lib/action-call";
 
 export function Step1Personal({ profile, contacts }: { userId: string; profile: DraftProfile; contacts: DraftContacts | null }) {
   const { t } = useT();
@@ -124,7 +125,7 @@ export function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
       return;
     }
     startTransition(async () => {
-      const res = await sendPhoneChangeCode({ phone });
+      const res = await callAction(() => sendPhoneChangeCode({ phone }));
       if (!res.ok) {
         setError(errorMessage(t, res.error));
         return;
@@ -138,7 +139,7 @@ export function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
   const verify = () => {
     setError(null);
     startTransition(async () => {
-      const res = await verifyPhoneChangeCode({ phone, token: code.trim() });
+      const res = await callAction(() => verifyPhoneChangeCode({ phone, token: code.trim() }));
       if (!res.ok) {
         setError(errorMessage(t, res.error));
         return;

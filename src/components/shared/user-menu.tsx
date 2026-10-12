@@ -7,6 +7,7 @@ import { ChevronDown, LogOut, Settings, User, Briefcase, Repeat } from "lucide-r
 import { useT } from "@/lib/i18n/client";
 import { setActiveRole, signOut } from "@/features/auth/actions";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { callAction } from "@/lib/action-call";
 
 /** Admin panel bu menyuda yo'q: u alohida hostda (ADMIN_HOST) ochiladi */
 export function UserMenu({ name, roles, activeRole, avatar }: { name: string; roles: string[]; activeRole: string | null; avatar: ReactNode }) {
@@ -16,7 +17,7 @@ export function UserMenu({ name, roles, activeRole, avatar }: { name: string; ro
 
   const switchRole = (role: "worker" | "employer") => {
     startTransition(async () => {
-      await setActiveRole(role);
+      await callAction(() => setActiveRole(role));
       router.push(role === "employer" ? "/employer" : "/");
       router.refresh();
     });

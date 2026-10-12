@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { actionErrorText } from "@/features/applications/errors";
 import { withdrawOffer } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 /** Ish beruvchi: taklifni qaytarib olish (faqat sent/viewed) */
 export function WithdrawOfferButton({ offerId, vacancyId, size = "default", fullWidth, className }: { offerId: string; vacancyId?: string | null; size?: "sm" | "default"; fullWidth?: boolean; className?: string }) {
@@ -19,7 +20,7 @@ export function WithdrawOfferButton({ offerId, vacancyId, size = "default", full
 
   const confirm = () => {
     startTransition(async () => {
-      const res = await withdrawOffer({ offerId, vacancyId: vacancyId ?? undefined });
+      const res = await callAction(() => withdrawOffer({ offerId, vacancyId: vacancyId ?? undefined }));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error, "offers"));
         return;

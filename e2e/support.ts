@@ -65,7 +65,7 @@ export async function pickProfession(page: Page, query: string, exact: string) {
 /** Hudud: viloyat → butun viloyat */
 export async function pickWholeRegion(page: Page, region = "Toshkent shahri") {
   await page.getByRole("button", { name: new RegExp(`^${region}`) }).first().click();
-  await page.getByRole("radio", { name: /^Butun viloyat/ }).click();
+  await page.getByRole("radio", { name: /^Butun (viloyat|shahar)/ }).click();
 }
 
 export async function next(page: Page) {

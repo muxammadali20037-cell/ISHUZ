@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { deleteSavedSearch, saveJobsSearch } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 /** "Qidiruvni saqlash" — yangi mos vakansiyalar chiqsa kuniga bir marta xabar keladi */
 export function SaveSearchButton({ query, savedId, loggedIn }: { query: string; savedId: string | null; loggedIn: boolean }) {
@@ -27,7 +28,7 @@ export function SaveSearchButton({ query, savedId, loggedIn }: { query: string; 
 
   const toggle = () =>
     startTransition(async () => {
-      const res = savedId ? await deleteSavedSearch({ id: savedId }) : await saveJobsSearch({ query });
+      const res = savedId ? await callAction(() => deleteSavedSearch({ id: savedId })) : await callAction(() => saveJobsSearch({ query }));
       if (!res.ok) {
         const key = `saved.searches.errors.${res.error}`;
         const msg = t(key);

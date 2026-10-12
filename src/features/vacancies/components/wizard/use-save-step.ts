@@ -8,6 +8,7 @@ import { saveStep } from "../../actions";
 import type { StepPayload } from "../../schema";
 import { nextStep, prevStep, wizardHref, type StepKey, type WizardMode } from "../../steps";
 import { errorMessage } from "../../utils";
+import { callAction } from "@/lib/action-call";
 
 /**
  * Qadamni saqlash: create rejimida keyingi qadamga o'tadi, edit rejimida joyida "Saqlandi" beradi.
@@ -20,7 +21,7 @@ export function useSaveStep(mode: WizardMode, vacancyId: string, step: StepKey) 
 
   const save = (payload: StepPayload) => {
     startTransition(async () => {
-      const res = await saveStep({ vacancyId, payload });
+      const res = await callAction(() => saveStep({ vacancyId, payload }));
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         return;

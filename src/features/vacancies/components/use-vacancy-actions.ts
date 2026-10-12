@@ -8,6 +8,7 @@ import { deleteVacancy, duplicateVacancy, publishVacancy, setVacancyStatus } fro
 import type { VacancyStatus } from "../types";
 import { errorMessage } from "../utils";
 import { requestPayment } from "@/features/billing/components/payment-dialog";
+import { callAction } from "@/lib/action-call";
 
 /**
  * Ro'yxat va boshqaruv sahifasi uchun umumiy amallar: e'lon qilish, to'xtatish, yopish, nusxa, o'chirish.
@@ -32,7 +33,7 @@ export function useVacancyActions() {
 
   const publish = (id: string, onDone?: (status: VacancyStatus) => void) =>
     run(id, async () => {
-      const res = await publishVacancy({ vacancyId: id });
+      const res = await callAction(() => publishVacancy({ vacancyId: id }));
       if (!res.ok) {
         if (res.error === "payment_required") {
           requestPayment({ purpose: "vacancy_publish", targetId: id });
@@ -50,7 +51,7 @@ export function useVacancyActions() {
 
   const pause = (id: string, onDone?: () => void) =>
     run(id, async () => {
-      const res = await setVacancyStatus({ vacancyId: id, status: "paused" });
+      const res = await callAction(() => setVacancyStatus({ vacancyId: id, status: "paused" }));
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         return;
@@ -62,7 +63,7 @@ export function useVacancyActions() {
 
   const close = (id: string, onDone?: () => void) =>
     run(id, async () => {
-      const res = await setVacancyStatus({ vacancyId: id, status: "closed" });
+      const res = await callAction(() => setVacancyStatus({ vacancyId: id, status: "closed" }));
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         return;
@@ -74,7 +75,7 @@ export function useVacancyActions() {
 
   const duplicate = (id: string) =>
     run(id, async () => {
-      const res = await duplicateVacancy({ vacancyId: id });
+      const res = await callAction(() => duplicateVacancy({ vacancyId: id }));
       if (!res.ok || !res.data) {
         toast.error(errorMessage(t, res.ok ? "generic" : res.error));
         return;
@@ -85,7 +86,7 @@ export function useVacancyActions() {
 
   const remove = (id: string, onDone?: () => void) =>
     run(id, async () => {
-      const res = await deleteVacancy({ vacancyId: id });
+      const res = await callAction(() => deleteVacancy({ vacancyId: id }));
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         return;

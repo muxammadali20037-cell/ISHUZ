@@ -85,6 +85,9 @@ test.describe("admin panel (lokal stend, aal2 sinov sessiyasi)", () => {
     await page.goto("/admin");
     const label = page.getByText("AI yordamchi narxi", { exact: true });
     const input = page.getByRole("spinbutton", { name: "AI yordamchi narxi" });
+    // boundingBox() kutmaydi: tezkor boshqaruv kartasi oqimda keyinroq chiziladi (CI'da null qaytgan)
+    await expect(label).toBeVisible();
+    await expect(input).toBeVisible();
     const [l, i] = [(await label.boundingBox())!, (await input.boundingBox())!];
     expect(l.width).toBeGreaterThan(120);
     // maydon yozuv bilan ustma-ust emas: yonida (o'ngda) yoki ostida

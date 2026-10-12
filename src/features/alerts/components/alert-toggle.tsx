@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { getAlertStatus, saveAlertSubscription } from "../actions";
 import type { AlertRole, AlertStatus } from "../types";
+import { callAction } from "@/lib/action-call";
 
 /**
  * "Menga mos ish chiqsa xabar bering" / "Menga mos ishchi topilsa xabar bering".
@@ -39,7 +40,7 @@ export function AlertToggle({
     const id = setInterval(async () => {
       tries += 1;
       if (tries > 100) return clearInterval(id);
-      const res = await getAlertStatus({ role });
+      const res = await callAction(() => getAlertStatus({ role }));
       if (alive && res.ok && res.data && res.data.status !== "needs_bot") {
         setStatus(res.data.status);
         clearInterval(id);
@@ -54,14 +55,14 @@ export function AlertToggle({
   const save = (enabled: boolean) =>
     start(async () => {
       setError(null);
-      const res = await saveAlertSubscription({
+      const res = await callAction(() => saveAlertSubscription({
         role,
         enabled,
         mode: "instant",
         professionNodeId: defaults?.professionNodeId ?? null,
         regionId: defaults?.regionId ?? null,
         vacancyIds: defaults?.vacancyIds ?? [],
-      });
+      }));
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
         const msg = t(key);

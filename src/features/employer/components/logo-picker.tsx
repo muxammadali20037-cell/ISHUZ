@@ -11,6 +11,7 @@ import { validateLogoFile, LOGO_MIME } from "../schema";
 import { uploadCompanyLogo } from "../storage";
 import { saveCompanyLogo } from "../actions";
 import { errorMessageKey } from "../mappers";
+import { callAction } from "@/lib/action-call";
 
 const ACCEPT = Object.keys(LOGO_MIME).join(",");
 
@@ -109,7 +110,7 @@ export function LogoUploader({ companyId, logoUrl, fallback, disabled }: { compa
         toast.error(t(up.error));
         return;
       }
-      const res = await saveCompanyLogo({ companyId, path: up.path });
+      const res = await callAction(() => saveCompanyLogo({ companyId, path: up.path }));
       if (!res.ok) {
         toast.error(t(errorMessageKey(res.error)));
         return;
@@ -125,7 +126,7 @@ export function LogoUploader({ companyId, logoUrl, fallback, disabled }: { compa
   const remove = async () => {
     setBusy(true);
     try {
-      const res = await saveCompanyLogo({ companyId, path: null });
+      const res = await callAction(() => saveCompanyLogo({ companyId, path: null }));
       if (!res.ok) {
         toast.error(t(errorMessageKey(res.error)));
         return;

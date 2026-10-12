@@ -142,7 +142,7 @@ export async function VacancyDetail({
             <div className="flex items-start gap-4">
               <Avatar src={company?.logo_url} fallback={companyName.slice(0, 2)} square size="xl" alt="" className="size-16 sm:size-20" />
               <div className="min-w-0 flex-1">
-                <h1 className="text-xl font-bold leading-tight sm:text-2xl">{v.title}</h1>
+                <h1 className="break-words text-xl font-bold leading-tight sm:text-2xl">{v.title}</h1>
                 {v.is_government ? (
                   <Link href="/jobs?gov=1" className="mt-1.5 inline-flex">
                     <Badge variant="primary" className="gap-1">

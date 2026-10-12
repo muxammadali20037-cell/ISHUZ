@@ -11,6 +11,7 @@ import { InAppNote, requestPayment } from "@/features/billing/components/payment
 import { useAndroidApp } from "@/lib/use-android-app";
 import { celebrate } from "@/lib/celebrate";
 import { markFoundJob, markFoundWorker } from "@/features/post/actions";
+import { callAction } from "@/lib/action-call";
 
 /**
  * "Ishga joylashdim" / "Ishchi topdim" — tasdiqlash bilan; e'lon qidiruvdan chiqadi.
@@ -23,7 +24,7 @@ export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacan
   const [pending, start] = useTransition();
   const confirm = () =>
     start(async () => {
-      const res = kind === "job" ? await markFoundJob() : await markFoundWorker({ vacancyId });
+      const res = kind === "job" ? await callAction(() => markFoundJob()) : await callAction(() => markFoundWorker({ vacancyId }));
       setOpen(false);
       if (!res.ok) {
         const key = `easy.errors.${res.error}`;
@@ -37,7 +38,7 @@ export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacan
     });
   return (
     <>
-      <Button type="button" variant="outline" className="h-12 px-4 text-base" onClick={() => setOpen(true)}>
+      <Button type="button" variant="outline" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base" onClick={() => setOpen(true)}>
         <CheckCircle2 className="size-5 text-success" aria-hidden /> {kind === "job" ? t("easy.cabinet.found_job") : t("easy.cabinet.found_worker")}
       </Button>
       <ConfirmDialog
@@ -60,7 +61,7 @@ export function PayButton({ purpose, targetId }: { purpose: "worker_listing" | "
   const inApp = useAndroidApp();
   if (inApp) return <InAppNote />;
   return (
-    <Button type="button" className="h-12 px-4 text-base" onClick={() => requestPayment({ purpose, targetId })}>
+    <Button type="button" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base" onClick={() => requestPayment({ purpose, targetId })}>
       <CreditCard className="size-5" aria-hidden /> {t("easy.cabinet.pay")}
     </Button>
   );

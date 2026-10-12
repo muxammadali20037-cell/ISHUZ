@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/toast";
 import { createReview } from "../actions";
 import { actionErrorText } from "../errors";
 import { StarRating } from "./star-rating";
+import { callAction } from "@/lib/action-call";
 
 export type ReviewSource = { kind: "application"; applicationId: string; vacancyId?: string } | { kind: "offer"; offerId: string };
 
@@ -30,9 +31,9 @@ export function ReviewSheet({ source, label, variant = "default", fullWidth, cla
   const submit = () => {
     if (rating < 1) return;
     startTransition(async () => {
-      const res = await createReview(
+      const res = await callAction(() => createReview(
         source.kind === "application" ? { applicationId: source.applicationId, vacancyId: source.vacancyId, rating, text } : { offerId: source.offerId, rating, text },
-      );
+      ));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error));
         return;

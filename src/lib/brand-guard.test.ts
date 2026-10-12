@@ -44,7 +44,8 @@ function walk(dir: string, out: string[] = []): string[] {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p, out);
-    else if (e.name.endsWith(".tsx") && !e.name.endsWith(".test.tsx")) out.push(p);
+    // .ts ham: klass satrlari xaritalarda bo'lishi mumkin (masalan, holat ranglari tone.ts)
+    else if (/\.tsx?$/.test(e.name) && !/\.(test|d)\.tsx?$/.test(e.name)) out.push(p);
   }
   return out;
 }

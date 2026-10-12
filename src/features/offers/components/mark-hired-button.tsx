@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { actionErrorText } from "@/features/applications/errors";
 import { markOfferHired } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 /** Ish beruvchi: qabul qilingan taklif bo'yicha nomzod ishga olindi (mark_offer_hired) */
 export function MarkHiredButton({ offerId, vacancyId, fullWidth }: { offerId: string; vacancyId?: string | null; fullWidth?: boolean }) {
@@ -19,7 +20,7 @@ export function MarkHiredButton({ offerId, vacancyId, fullWidth }: { offerId: st
 
   const confirm = () => {
     startTransition(async () => {
-      const res = await markOfferHired({ offerId, vacancyId: vacancyId ?? undefined });
+      const res = await callAction(() => markOfferHired({ offerId, vacancyId: vacancyId ?? undefined }));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error, "offers"));
         return;

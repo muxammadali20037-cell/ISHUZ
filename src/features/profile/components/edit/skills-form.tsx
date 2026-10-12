@@ -18,6 +18,7 @@ import { createCustomSkill, updateSkills } from "../../actions";
 import { MAX_SKILLS } from "../../schema";
 import { useAction } from "../use-action";
 import { EditSectionCard } from "./section-card";
+import { callAction } from "@/lib/action-call";
 
 type SkillLite = { id: string; name_uz: string; name_ru: string };
 type Selected = SkillLite & { level: Enums<"skill_level"> };
@@ -73,7 +74,7 @@ export function SkillsForm({ initial, suggested, categoryId }: { initial: Select
 
   const createCustom = async () => {
     setCreating(true);
-    const res = await createCustomSkill({ name: q, category_id: categoryId });
+    const res = await callAction(() => createCustomSkill({ name: q, category_id: categoryId }));
     setCreating(false);
     if (!res.ok) {
       toast.error(t(`common.errors.${res.error}`));

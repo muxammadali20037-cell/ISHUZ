@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { aiDraftListing, type AiDraftResult } from "../ai-actions";
 import { FieldError } from "./wizard-frame";
+import { callAction } from "@/lib/action-call";
 
 /**
  * 1-qadamdagi ikki yo'l: "O'zim to'ldiraman" (oddiy usta) yoki "AI bilan tez tayyorlash".
@@ -27,7 +28,7 @@ export function AiQuickFill({ kind, onReady }: { kind: "worker" | "vacancy"; onR
     }
     setError(null);
     start(async () => {
-      const res = await aiDraftListing({ kind, text, locale });
+      const res = await callAction(() => aiDraftListing({ kind, text, locale }));
       if (!res.ok || !res.data) {
         const key = `easy.ai.errors.${res.ok ? "ai_failed" : res.error}`;
         const msg = t(key);

@@ -8,6 +8,7 @@ import { formatMoneyInput, parseMoney } from "@/features/post/money";
 import { saveAlertSubscription } from "../actions";
 import type { AlertSubscription } from "../types";
 import { AlertToggle } from "./alert-toggle";
+import { callAction } from "@/lib/action-call";
 
 const SCHEDULES = ["5_2", "6_1", "2_2", "shift", "flexible"] as const;
 
@@ -51,7 +52,7 @@ export function AlertSettings({
     start(async () => {
       setSaved(false);
       setError(null);
-      const res = await saveAlertSubscription({
+      const res = await callAction(() => saveAlertSubscription({
         role: sub.role,
         enabled: true,
         mode,
@@ -60,7 +61,7 @@ export function AlertSettings({
         salaryMin: sub.role === "worker" ? parseMoney(salary) : null,
         schedules: sub.role === "worker" ? schedules : [],
         vacancyIds: sub.role === "employer" ? vacancyIds : [],
-      });
+      }));
       if (!res.ok) {
         const key = `easy.errors.${res.error}`;
         const msg = t(key);

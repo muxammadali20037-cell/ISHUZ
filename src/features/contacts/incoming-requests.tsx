@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { respondContactRequest } from "./actions";
 import type { IncomingContactRequest } from "./queries";
+import { callAction } from "@/lib/action-call";
 
 /** Sozlamalar: kim telefon raqamimni so'radi — ruxsat berish / rad etish */
 export function IncomingContactRequests({ items }: { items: IncomingContactRequest[] }) {
@@ -22,7 +23,7 @@ export function IncomingContactRequests({ items }: { items: IncomingContactReque
   const respond = (id: string, approve: boolean) => {
     setBusy(id);
     startTransition(async () => {
-      const res = await respondContactRequest({ id, approve });
+      const res = await callAction(() => respondContactRequest({ id, approve }));
       if (!res.ok) toast.error(t("common.errors.generic"));
       else toast.success(approve ? t("contacts.incoming.approved") : t("contacts.incoming.declined"));
       router.refresh();

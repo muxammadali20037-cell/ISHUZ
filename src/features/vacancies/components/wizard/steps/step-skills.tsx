@@ -17,6 +17,7 @@ import { errorMessage } from "../../../utils";
 import { useSaveStep } from "../use-save-step";
 import { WizardFooter } from "../wizard-footer";
 import type { SkillsStepProps } from "../types";
+import { callAction } from "@/lib/action-call";
 
 interface SkillOption {
   id: string;
@@ -86,7 +87,7 @@ export function StepSkills({ mode, vacancy, suggestedSkills }: SkillsStepProps) 
       return;
     }
     startAdd(async () => {
-      const res = await addCustomSkill({ name: value, categoryId: vacancy.category_id });
+      const res = await callAction(() => addCustomSkill({ name: value, categoryId: vacancy.category_id }));
       if (!res.ok || !res.data) {
         toast.error(errorMessage(t, res.ok ? "generic" : res.error));
         return;

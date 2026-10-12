@@ -9,6 +9,7 @@ import { ConfirmDialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { withdrawApplication } from "../actions";
 import { actionErrorText } from "../errors";
+import { callAction } from "@/lib/action-call";
 
 /** "Arizani qaytarib olish" → ConfirmDialog → set_application_status('withdrawn') */
 export function WithdrawButton({ applicationId, fullWidth }: { applicationId: string; fullWidth?: boolean }) {
@@ -19,7 +20,7 @@ export function WithdrawButton({ applicationId, fullWidth }: { applicationId: st
 
   const confirm = () => {
     startTransition(async () => {
-      const res = await withdrawApplication({ applicationId });
+      const res = await callAction(() => withdrawApplication({ applicationId }));
       if (!res.ok) {
         toast.error(actionErrorText(t, res.error));
         return;

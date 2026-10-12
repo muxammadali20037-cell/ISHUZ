@@ -13,6 +13,7 @@ import { saveAvatar } from "../actions";
 import { AVATAR_MAX_MB, AVATAR_MIME } from "../types";
 import { fileExtension, storagePathFromPublicUrl, validateFile } from "../utils";
 import { errorMessage } from "./wizard-shell";
+import { callAction } from "@/lib/action-call";
 
 const IMAGE_EXT = new Set(["jpg", "jpeg", "png", "webp"]);
 
@@ -43,7 +44,7 @@ export function AvatarUpload({ userId, url, fallback }: { userId: string; url: s
       const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type, cacheControl: "3600" });
       if (error) throw error;
       const publicUrl = `${supabase.storage.from("avatars").getPublicUrl(path).data.publicUrl}?v=${Date.now()}`;
-      const res = await saveAvatar({ url: publicUrl });
+      const res = await callAction(() => saveAvatar({ url: publicUrl }));
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         return;
@@ -64,7 +65,7 @@ export function AvatarUpload({ userId, url, fallback }: { userId: string; url: s
     if (!current) return;
     setBusy(true);
     try {
-      const res = await saveAvatar({ url: null });
+      const res = await callAction(() => saveAvatar({ url: null }));
       if (!res.ok) {
         toast.error(errorMessage(t, res.error));
         return;

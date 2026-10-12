@@ -16,6 +16,7 @@ import { createAiAlert, deleteAiAlert, startAiAlertsCheckout, toggleAiAlert } fr
 import type { AiAlertsData } from "../queries";
 import { TelegramConnect } from "./telegram-connect";
 import { AiWorkerAlertsSection } from "./ai-worker-alerts-section";
+import { callAction } from "@/lib/action-call";
 
 const money = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
 
@@ -33,7 +34,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
 
   const create = () =>
     start(async () => {
-      const res = await createAiAlert({ text });
+      const res = await callAction(() => createAiAlert({ text }));
       if (!res.ok) {
         const key = `saved.ai_alerts.errors.${res.error}`;
         const msg = t(key);
@@ -48,14 +49,14 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
 
   const toggle = (id: string, active: boolean) =>
     start(async () => {
-      const res = await toggleAiAlert({ id, active });
+      const res = await callAction(() => toggleAiAlert({ id, active }));
       if (!res.ok) toast.error(t("common.errors.generic"));
       router.refresh();
     });
 
   const pay = (provider: "payme" | "click") =>
     start(async () => {
-      const res = await startAiAlertsCheckout({ provider });
+      const res = await callAction(() => startAiAlertsCheckout({ provider }));
       if (!res.ok || !res.data) {
         toast.error(t("common.errors.generic"));
         return;
@@ -68,7 +69,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
 
   const remove = (id: string) =>
     start(async () => {
-      const res = await deleteAiAlert({ id });
+      const res = await callAction(() => deleteAiAlert({ id }));
       if (!res.ok) toast.error(t("common.errors.generic"));
       router.refresh();
     });

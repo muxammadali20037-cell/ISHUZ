@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
 import { updateVisibility, updateWorkerStatus } from "../actions";
+import { callAction } from "@/lib/action-call";
 
 type Mode = "search" | "applied" | "hidden";
 
@@ -39,8 +40,8 @@ export function ListingVisibility({
 
   const apply = (next: Mode, found = false) =>
     start(async () => {
-      const r1 = await updateVisibility({ is_public: next === "search" });
-      const r2 = await updateWorkerStatus({ status: next === "hidden" ? "not_looking" : status === "not_looking" ? "active" : status });
+      const r1 = await callAction(() => updateVisibility({ is_public: next === "search" }));
+      const r2 = await callAction(() => updateWorkerStatus({ status: next === "hidden" ? "not_looking" : status === "not_looking" ? "active" : status }));
       if (!r1.ok || !r2.ok) {
         // E'lon pullik — qidiruvga chiqish to'lov orqali
         if ((!r1.ok && r1.error === "listing_payment_required") || (!r2.ok && r2.error === "listing_payment_required")) {

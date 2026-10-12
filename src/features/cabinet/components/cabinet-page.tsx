@@ -14,6 +14,7 @@ import { getAlertSubscriptions } from "@/features/alerts/queries";
 import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import type { ListingState } from "@/features/post/types";
 import { StatusPill } from "./status-pill";
+import { isCityRegion } from "@/lib/geo/city";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
@@ -82,7 +83,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
             <p className="text-base font-bold uppercase tracking-wide text-primary">{t("easy.cabinet.worker_listing")}</p>
             <h3 className="text-xl font-bold">{worker.headline || "—"}</h3>
             {worker.regionName ? (
-              <p className="text-muted-foreground">{[name(worker.regionName), worker.districtName ? name(worker.districtName) : t("easy.card.region_wide")].join(" · ")}</p>
+              <p className="text-muted-foreground">{[name(worker.regionName), worker.districtName ? name(worker.districtName) : t(isCityRegion({ slug: worker.regionSlug, name_uz: worker.regionName?.name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].join(" · ")}</p>
             ) : null}
             <StatusPill tone={stateTone(worker.moderation.state)}>
               {worker.moderation.state === "listed"
@@ -97,18 +98,18 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
             <div className="flex flex-wrap gap-2 pt-1">
               {worker.status === "payment_required" ? <PayButton purpose="worker_listing" targetId={worker.id} /> : null}
               {worker.status === "listed" ? <FoundButton kind="job" /> : null}
-              <Button asChild variant="outline" className="h-12 px-4 text-base">
+              <Button asChild variant="outline" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base">
                 <Link href={worker.status === "stopped" ? "/post/worker?step=4" : "/post/worker"}>
                   <Pencil className="size-5" aria-hidden /> {worker.status === "stopped" ? t("easy.cabinet.republish") : t("easy.cabinet.edit")}
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="h-12 px-4 text-base">
+              <Button asChild variant="outline" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base">
                 <Link href={`/listing/${worker.id}`}>
                   <ExternalLink className="size-5" aria-hidden /> {t("easy.cabinet.view")}
                 </Link>
               </Button>
               {workerSearch ? (
-                <Button asChild variant="soft" className="h-12 px-4 text-base">
+                <Button asChild variant="soft" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base">
                   <Link href={worker.moderation.state === "listed" ? "/cabinet/matches" : workerSearch}>
                     <Search className="size-5" aria-hidden /> {t("easy.cabinet.matches_jobs")}
                   </Link>
@@ -154,19 +155,19 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
                     {needsPay ? <PayButton purpose="vacancy_publish" targetId={v.id} /> : null}
                     {open ? <FoundButton kind="worker" vacancyId={v.id} /> : null}
                     {editable ? (
-                      <Button asChild variant="outline" className="h-12 px-4 text-base">
+                      <Button asChild variant="outline" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base">
                         <Link href={`/post/vacancy?edit=${v.id}`}>
                           <Pencil className="size-5" aria-hidden /> {t("easy.cabinet.edit")}
                         </Link>
                       </Button>
                     ) : null}
-                    <Button asChild variant="outline" className="h-12 px-4 text-base">
+                    <Button asChild variant="outline" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base">
                       <Link href={`/employer/vacancies/${v.id}`}>
                         <ExternalLink className="size-5" aria-hidden /> {t("easy.cabinet.view")}
                       </Link>
                     </Button>
                     {v.status === "active" ? (
-                      <Button asChild variant="soft" className="h-12 px-4 text-base">
+                      <Button asChild variant="soft" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base">
                         <Link href={`/cabinet/matches?vacancy=${v.id}`} prefetch={false}>
                           <Search className="size-5" aria-hidden /> {t("easy.cabinet.matches_workers")}
                         </Link>

@@ -17,7 +17,8 @@ export function LanguageSwitcher({ className, size = "sm" }: { className?: strin
   const change = (next: Locale) => {
     if (next === locale) return;
     startTransition(async () => {
-      await setLocale(next);
+      // tarmoq uzilsa — sahifa xato ekraniga tushmaydi, til o'zgarmay qoladi (qayta bosish mumkin)
+      await setLocale(next).catch(() => undefined);
       router.refresh();
     });
   };
@@ -61,7 +62,8 @@ export function LanguageSelect({ className }: { className?: string }) {
         onChange={(e) => {
           const next = e.target.value as Locale;
           startTransition(async () => {
-            await setLocale(next);
+            // tarmoq uzilsa — xato ekrani emas, til o'zgarmay qoladi
+            await setLocale(next).catch(() => undefined);
             router.refresh();
           });
         }}

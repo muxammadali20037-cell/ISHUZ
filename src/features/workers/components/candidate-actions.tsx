@@ -17,6 +17,7 @@ import { saveWorker, sendOffer, unsaveWorker } from "../actions";
 import type { MyVacancy, SavedEntry } from "../types";
 import { MoneyInput } from "./money-input";
 import { errorText } from "./error-text";
+import { callAction } from "@/lib/action-call";
 
 const NEW_OFFER = "__new__";
 
@@ -53,7 +54,7 @@ export function CandidateActions(props: Props) {
     const prev = saved;
     setSaved(null);
     startUnsave(async () => {
-      const res = await unsaveWorker({ workerId: props.workerId });
+      const res = await callAction(() => unsaveWorker({ workerId: props.workerId }));
       if (!res.ok) {
         setSaved(prev);
         toast.error(errorText(t, res.error));
@@ -215,14 +216,14 @@ function OfferSheetBody({
     setErrors(next);
     if (Object.keys(next).length) return;
     startTransition(async () => {
-      const res = await sendOffer({
+      const res = await callAction(() => sendOffer({
         workerId,
         vacancyId: isNew ? null : choice,
         title: isNew ? title.trim() : undefined,
         message: message.trim() || undefined,
         salaryFrom: isNew ? salaryFrom : null,
         salaryTo: isNew ? salaryTo : null,
-      });
+      }));
       if (!res.ok) {
         toast.error(errorText(t, res.error));
         return;
@@ -330,7 +331,7 @@ function SaveSheetBody({ workerId, folders, onSaved, close }: { workerId: string
 
   const submit = () => {
     startTransition(async () => {
-      const res = await saveWorker({ workerId, folder: folder.trim() || null, note: note.trim() || null });
+      const res = await callAction(() => saveWorker({ workerId, folder: folder.trim() || null, note: note.trim() || null }));
       if (!res.ok) {
         toast.error(errorText(t, res.error));
         return;
