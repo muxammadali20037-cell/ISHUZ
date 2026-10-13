@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da: 2026-10-13) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -12,10 +12,10 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
 | Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0060 toza bazaga | ✅ lint, typecheck, unit (577 / 18 skip), SQL (26 fayl), build, 97 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0058** (egasi SQL Editor'da qo'lladi, 2026-10-11; read-only tekshirildi — §2 F-02). **0059, 0060 — hali qo'llanmagan** (§12) | ✅ xavfsizlik qatlami, "Kasbim topilmadi" va rasm karantini yoqilgan; D bosqichi kodi 0059/0060 siz ham ishlaydi (§12) |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
-Qolgan to'siqlar (egasi): 0059 va 0060 ni production'ga qo'llash (§12), staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
+Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
 
 ## 2. Topilmalar: muammo → sabab → fayl → yechim → tekshiruv → qolgan cheklov
 
@@ -73,7 +73,7 @@ Qolgan to'siqlar (egasi): 0059 va 0060 ni production'ga qo'llash (§12), staging
   Qisqa formadan tahrir batafsil qiymatlarni yo'qotmaydi (aniq tajriba darajasi, sarlavha, qo'shimcha jadval, masofaviy "any", maosh davri).
 - **Tekshiruv:** 19 SQL, 4 unit (`keep.test.ts`), 1 E2E (ishchi) — PASS. Vakansiya uchun custom — SQL'da PASS, E2E — NOT_RUN.
 
-### F-06 · P1 · Fayl tekshiruvi yuklashdan keyin — ✅ vakansiya rasmi (0058 production'da) · ✅ avatar/logo (kod; 0059 production'ga qo'llanishi kerak)
+### F-06 · P1 · Fayl tekshiruvi yuklashdan keyin — ✅ vakansiya rasmi (0058 production'da) · ✅ avatar/logo (0059 production'da, 2026-10-13)
 - **Yechim:** xom fayl yopiq karantinga (`vacancy-uploads`) → server darhol: hajm ≤5 MB, magic bytes, piksel ≤40 MP, xavfsiz dekoder →
   EXIF/GPS'siz WebP ≤1600 px → `<egasi>/v-<sha256>.webp` (o'zgarmas, mijoz yoza/almashtira/o'chira olmaydi); vakansiyaga faqat shu yo'l (trigger);
   karantindagi xom fayl natijadan qat'i nazar darhol o'chadi; tashlab ketilgan fayllar soatiga tozalanadi (ishlatilayotgani tegilmaydi).
@@ -87,8 +87,7 @@ Qolgan to'siqlar (egasi): 0059 va 0060 ni production'ga qo'llash (§12), staging
   - Ishlatilmagan, tekshiruvni chetlab o'tuvchi `saveAvatar` amali (onboarding) olib tashlandi.
   - Logotip izohidagi eskirgan "yoki SVG" so'zi olib tashlandi (SVG 7bf79b1 da taqiqlangan).
 - **Avatar/logotip tekshiruvi:** 8 unit (`media.test.ts`), 30 SQL (`media_quarantine.test.sql`), 2 E2E (`media-upload.spec.ts`) — PASS.
-- **Qolgan:** 0059 production bazasiga qo'llanishi (egasi, SQL Editor) — qo'llanmaguncha xom fayl ommaviy bucket'da bir lahza
-  turadi va bazadagi qoida ishlamaydi. KYC hujjatlari: AI'ga yuborish/saqlash muddati sozlamasi — ochiq vazifa.
+- **Qolgan:** KYC hujjatlari: AI'ga yuborish/saqlash muddati sozlamasi — ochiq vazifa. (0059 production'da — §12.)
 
 ### F-07 · P1 · Qayta ishlatiladigan E2E/CI yo'q edi — ✅
 - **Yechim:** `e2e/stack` — toza baza (barcha migratsiyalar + seed), PostgREST v12.2.3 (checksum bilan), Auth/Storage shlyuz emulyatori
@@ -947,8 +946,7 @@ da hisoblanadi; `compute_match` SQL testlari (`supabase/tests/{professions,secur
    va realtime chat sinovi uchun kerak.
 2. **`SUPPORT_EMAIL` Vercel'da tasdiqlanmagan.** Bu Play Market talabi: hisobni o'chirish sahifasida aloqa manzili bo'lishi
    kerak.
-3. ~~**Avatar va logotip yuklash** karantin va qayta kodlashdan o'tmaydi~~ — ✅ kodda tuzatildi (D2, §12). Production bazasida
-   to'liq kuchga kirishi uchun 0059 qo'llanishi kerak.
+3. ~~**Avatar va logotip yuklash** karantin va qayta kodlashdan o'tmaydi~~ — ✅ tuzatildi (D2), 0059 production'da (2026-10-13, §12).
 4. **Zaxira nusxa.** Ishlayapti, lekin egasi uni bir marta yopiq kalit bilan ochib tekshirishi kerak (F-01).
 
 Kod tomonida reliz uchun ma'lum to'siq qolmadi: barcha o'lchangan xatolar tuzatilgan va testlar bilan himoyalangan.
@@ -987,8 +985,7 @@ Usul C8.10 dagidek: avval yangi testlar yozildi va **eski build'da** (`1a0a556`,
 - **KEYIN:** vakansiya rasmi bilan bir xil oqim. Batafsil: §2 F-06.
 - **Testlar:** 8 unit, 30 SQL, `e2e/specs/media-upload.spec.ts` (2). Eski build'da ikkalasi ❌ — eski oqim xom faylni
   to'g'ridan-to'g'ri yozadi va yangi baza qoidasi uni rad etadi.
-- **Ochiq:** 0059 production'ga qo'llanmagan (pastda). Qo'llanmaguncha kod eski bucket'ga yuklaydi, lekin server baribir
-  qayta kodlaydi.
+- **Production:** 0059 qo'llandi va tekshirildi (pastda, "Production").
 
 ### D3 · Bosh sahifadagi rasmli oynalar va "Kunlik ishlar"
 
@@ -1111,16 +1108,59 @@ Usul C8.10 dagidek: avval yangi testlar yozildi va **eski build'da** (`1a0a556`,
 | To'liq E2E · unit · tsc · eslint | — | ✅ 97/97 · 577 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
 | CI (`5d816c4`, branch va `main`) | — | ✅ |
 
-### Production uchun (egasi qiladi)
+### Production (2026-10-13)
 
-1. **0059 va 0060 ni qo'llash** — Supabase → `oquqqubmicldvreeqgsg` → SQL Editor, tartib bilan: avval
-   `supabase/migrations/0059_media_quarantine.sql`, keyin `0060_home_windows_daily_jobs.sql`.
-   - Ikkalasi qo'shimcha (DROP yo'q) va qayta qo'llash xavfsiz.
-   - Kod allaqachon deploy qilingan, shuning uchun tartib to'g'ri: avval kod, keyin baza. Eski build yangi bazada avatar
-     saqlay olmaydi — bu kutilgan himoya.
-   - Qo'llangach tekshirish:
-     - `select public.simple_listing_features();` → `media_quarantine: true`, `daily_jobs: true`;
-     - admin → "Bosh sahifa" ochiladi;
-     - profil rasmini yuklang → manzil `…/v-<64 belgi>.webp`.
-2. Admin → "Bosh sahifa" da o'z rasmlaringizni yuklash va matnlarni tahrirlash (ixtiyoriy — standartlari tayyor).
-3. Telefonda Telegram → bot → Mini App ochib, avtomatik kirishni bir marta tekshirish (bu muhitda BLOCKED).
+Egasi ruxsat berdi ("0059 va 0060 ni production'ga qo'llang"); `oquqqubmicldvreeqgsg` (ISHUZ) ga Supabase MCP
+`apply_migration` orqali, tartib bilan qo'llandi. Ikkinchi loyiha (`izmonnkzyolaqwjwjvzj`) ga tegilmadi.
+
+**Qo'llashdan oldin (faqat o'qish):**
+- loyiha nomi va holati to'g'ri (ISHUZ, ACTIVE_HEALTHY);
+- 0060 dagi 3 ta `save_simple_vacancy` yamog'i naqshlarining har biri aynan 1 marta uchraydi;
+- kerakli funksiyalar (`is_company_admin`, `profession_subtree`, `salary_monthly_equivalent`), `salary_type` da `daily`,
+  6 ta eski `avatars_own_*` / `logos_member_*` siyosati, 0056 triggerlari bor;
+- `media-uploads`, `site-media`, yangi sozlamalar yo'q;
+- `avatar_url` / `logo_url` ni yozadigan barcha kod yo'llari mos: Telegram kirish — service role, profil/logotip amallari —
+  faqat `v-…webp` yoki `null`.
+
+**Qo'llangandan keyin (tekshirildi):**
+
+| Tekshiruv | Natija |
+|---|---|
+| `simple_listing_features()` | `custom_profession`, `photo_quarantine`, `media_quarantine`, `daily_jobs` — hammasi `true` |
+| `media-uploads` bucket | yopiq, 5 MB, jpeg/png/webp |
+| `site-media` bucket | ommaviy, 2 MB, faqat webp; mijoz yozuvi siyosati — 0 |
+| Siyosatlar | `media_uploads_insert` + 6 ta toraytirilgan siyosat |
+| Triggerlar | `trg_01_profile_media_verified`, `trg_01_company_media_verified` |
+| `stale_raw_media` | anon ❌, authenticated ❌, service_role ✅ |
+| `save_simple_vacancy` | 3 ta yamoq joyida; huquqlar o'zgarmadi (authenticated ✅, anon ❌) |
+| `simple_search_vacancies_v2` | SECURITY DEFINER + `search_path=public`; anon chaqira oladi, xatosiz ishlaydi |
+| `app_settings` | `home_banners` = `null` (standart oynalar), `ai_search_button` = `true`; ikkalasi ochiq |
+| Migratsiya tarixi | `0059_media_quarantine`, `0060_home_windows_daily_jobs` yozildi |
+| Supabase xavfsizlik maslahatchisi | yangi topilma faqat `simple_search_vacancies_v2` (anon/authenticated chaqira oladi) — ataylab, eski `simple_search_vacancies` bilan bir xil ommaviy qidiruv |
+
+**Rollarda sinov** (baza ichida `set local role`, har biri rollback; bazada iz qolmagani tekshirildi):
+
+| Kim / nima | Kutilgan | Natija |
+|---|---|---|
+| mehmon: `simple_search_vacancies_v2(daily)` | ishlaydi | ✅ |
+| mehmon: `stale_raw_media` | rad | ✅ rad |
+| mehmon: `home_banners`, `ai_search_button` ni o'qish | ko'radi | ✅ 2 ta |
+| faol foydalanuvchi: karantinga o'z papkasiga yuklash | ruxsat | ✅ |
+| foydalanuvchi: begona papkaga yuklash | rad | ✅ rad |
+| foydalanuvchi: `.svg` / noto'g'ri nom | rad | ✅ rad |
+| foydalanuvchi: karantinni o'qish | 0 ta ko'rinadi | ✅ 0 |
+| foydalanuvchi: `avatars/<o'zi>/avatar.jpg` (o'tish davri) | ruxsat | ✅ |
+| foydalanuvchi: `avatars/<o'zi>/boshqa.jpg` yoki `v-….webp` | rad | ✅ rad |
+| foydalanuvchi: `site-media` ga yozish | rad | ✅ rad |
+
+**NOT_RUN:** saytni production'da brauzerda ochib ko'rish (bu muhitdan production manzili va Supabase API'ga tarmoq orqali
+chiqish yopiq — proksi 403). Sayt yangi bayroqlarni o'zi oladi: e'lon imkoniyatlari ≤10 daqiqa, bosh sahifa sozlamalari
+≤5 daqiqa keshda.
+
+**Egasi uchun qisqa tekshiruv (telefonda, 2 daqiqa):**
+1. Profil → rasm yuklang → rasm chiqadi (manzil `…/v-<64 belgi>.webp`).
+2. "Ish e'loni berish" → 3-qadamda "Oylik / Kunlik" tanlovi bor.
+3. Admin → "Bosh sahifa" ochiladi, ogohlantirish yo'q; o'z rasmlaringizni yuklash va matnlarni tahrirlash — ixtiyoriy.
+4. Telegram → bot → Mini App: avtomatik kirish (bu muhitda BLOCKED).
+
+Qaytish (kerak bo'lsa): §9 jadvali.
