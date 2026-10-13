@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LOCALE_COOKIE, isLocale, type Locale } from "@/lib/i18n/config";
 import { getSession } from "./session";
 import { GREETING_NAME_COOKIE } from "@/components/shared/welcome-cookie";
+import { chooseMode } from "@/features/mode/actions";
 
 export type ActionResult<T = undefined> = { ok: true; data?: T } | { ok: false; error: string };
 
@@ -45,14 +46,11 @@ export async function saveGreetingName(raw: string): Promise<ActionResult> {
   return { ok: true };
 }
 
-/** Faol rolni almashtirish (worker ↔ employer) */
+/** Faol rolni almashtirish (worker ↔ employer) — rejim cookie'si bilan birga (bosh sahifa, qidiruv shu rejimda) */
 export async function setActiveRole(role: "worker" | "employer"): Promise<ActionResult> {
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
-  const supabase = await createClient();
-  const { error } = await supabase.from("profiles").update({ active_role: role }).eq("id", session.userId);
-  if (error) return { ok: false, error: "generic" };
-  return { ok: true };
+  return chooseMode(role);
 }
 
 /** Faollik belgisi (last_seen_at) */

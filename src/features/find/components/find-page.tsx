@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ArrowLeft, ArrowRight, BriefcaseBusiness, ChevronRight, Search, UsersRound } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { formatMoneyShort } from "@/lib/format";
@@ -9,14 +9,13 @@ import { trackServer } from "@/features/analytics/server";
 import type { District, Region } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { cn } from "@/lib/utils";
 import { activeFilterCount, findHref, type FindParams } from "../params";
 import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
 import { ChangeSheet, FilterSheet, RetryButton } from "./find-client";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 import { isCityRegion } from "@/lib/geo/city";
-
-const bigLink = "press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left text-lg font-semibold hover:border-primary/50";
+import { ModeChooser } from "@/features/mode/components/mode-chooser";
+import { savedIdSet } from "@/features/saved/queries";
 
 function StepShell({ back, title, children, summary }: { back: string | null; title: string; children: ReactNode; summary?: ReactNode }) {
   return (
@@ -48,29 +47,8 @@ export async function FindStart({ params }: { params: FindParams }) {
   const examples = [t("easy.search.example_1"), t("easy.search.example_2"), t("easy.search.example_3")];
   return (
     <StepShell back="/" title={t("easy.search.choose_title")}>
-      <div className="pop-list grid grid-cols-1 gap-4 sm:grid-cols-2">
-        {(
-          [
-            { mode: "jobs", icon: BriefcaseBusiness, title: t("easy.search.jobs"), desc: t("easy.search.jobs_desc") },
-            { mode: "workers", icon: UsersRound, title: t("easy.search.workers"), desc: t("easy.search.workers_desc") },
-          ] as const
-        ).map((c) => (
-          <Link
-            key={c.mode}
-            href={findHref(params, { mode: c.mode, page: 1 })}
-            className="press group flex min-h-24 items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm hover:border-primary/50 active:scale-[0.98]"
-          >
-            <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
-              <c.icon className="size-7" />
-            </span>
-            <span className="min-w-0 flex-1">
-              <span className="block text-xl font-bold leading-tight">{c.title}</span>
-              <span className="mt-1 block text-base text-muted-foreground">{c.desc}</span>
-            </span>
-            <ChevronRight className="size-6 shrink-0 text-primary" aria-hidden />
-          </Link>
-        ))}
-      </div>
+      {/* tanlov eslab qolinadi: keyingi safar "ish yoki ishchi?" so'ralmaydi, bosh sahifa ham shu rejimda */}
+      <ModeChooser heading={null} next={{ worker: findHref(params, { mode: "jobs", page: 1 }), employer: findHref(params, { mode: "workers", page: 1 }) }} />
 
       <form action="/search" method="get" className="space-y-3 rounded-2xl border border-border bg-card p-4 sm:p-5">
         <p className="text-base font-semibold text-muted-foreground">{t("easy.search.or_type")}</p>
@@ -105,22 +83,7 @@ export async function FindAskIntent({ params, node }: { params: FindParams; node
   return (
     <StepShell back="/search" title={t("easy.search.ask_intent")}>
       {said ? <p className="rounded-2xl bg-secondary px-4 py-3 text-lg">{t("easy.search.ask_intent_hint", { q: said })}</p> : null}
-      <div className="pop-list grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <Link href={findHref(params, { mode: "jobs" })} className={cn(bigLink, "min-h-20 border-primary/40")}>
-          <BriefcaseBusiness className="size-7 shrink-0 text-primary" aria-hidden />
-          <span>
-            <span className="block text-xl font-bold">{t("easy.search.jobs")}</span>
-            <span className="block text-base font-normal text-muted-foreground">{t("easy.search.jobs_desc")}</span>
-          </span>
-        </Link>
-        <Link href={findHref(params, { mode: "workers" })} className={cn(bigLink, "min-h-20 border-success/40")}>
-          <UsersRound className="size-7 shrink-0 text-success" aria-hidden />
-          <span>
-            <span className="block text-xl font-bold">{t("easy.search.workers")}</span>
-            <span className="block text-base font-normal text-muted-foreground">{t("easy.search.workers_desc")}</span>
-          </span>
-        </Link>
-      </div>
+      <ModeChooser heading={null} next={{ worker: findHref(params, { mode: "jobs" }), employer: findHref(params, { mode: "workers" }) }} />
     </StepShell>
   );
 }
@@ -134,7 +97,7 @@ export async function FindResultsView({ params, node, region, district }: { para
   const res = isJobs ? await findJobs(params, place) : await findWorkers(params, place);
   const total = res.ok ? res.total : 0;
   const pages = Math.max(1, Math.ceil(Math.min(total, 5000) / PAGE_SIZE));
-  const prof = node ? name(node.trail.at(-1)!) : params.pay === "daily" ? t("easy.search.daily_jobs") : "";
+  const prof = node ? name(node.trail.at(-1)!) : params.pay === "daily" && isJobs ? t("easy.search.daily_jobs") : params.any ? t("easy.search.all_professions") : "";
   const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}` : t("easy.location.whole_country");
   const backHref = region ? findHref(params, { district: null, page: 1 }) : findHref(params, { region: null, district: null, page: 1 });
   // qisqa xulosa: "Buxgalter · Toshkent · 5 mln so'mdan yuqori"
@@ -163,6 +126,9 @@ export async function FindResultsView({ params, node, region, district }: { para
       }),
     );
   }
+
+  // qaysi kartalar saqlangan ("Saqlash" belgisi holati bilan)
+  const saved = res.ok ? await savedIdSet(await getSession(), isJobs ? "vacancy" : "worker", res.items.map((i) => i.id)) : new Set<string>();
 
   // "Butun O'zbekiston" bo'yicha ham bo'sh — "bu hududda" deyilmaydi va hududni o'zgartirish taklif qilinmaydi
   const wholeCountry = !region && !remote;
@@ -217,12 +183,12 @@ export async function FindResultsView({ params, node, region, district }: { para
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>
-                  <JobResultCard job={job} imageUrl={job.profession_node_id ? res.images[job.profession_node_id] : null} photoPath={res.photos?.[job.id] ?? null} />
+                  <JobResultCard job={job} imageUrl={job.profession_node_id ? res.images[job.profession_node_id] : null} photoPath={res.photos?.[job.id] ?? null} saved={saved.has(job.id)} />
                 </li>
               ))
             : (res.items as Parameters<typeof WorkerResultCard>[0]["worker"][]).map((w) => (
                 <li key={w.id}>
-                  <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? res.images[w.profession_node_id] : null} />
+                  <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? res.images[w.profession_node_id] : null} saved={saved.has(w.id)} />
                 </li>
               ))}
         </ul>

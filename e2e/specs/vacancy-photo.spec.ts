@@ -2,7 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, asMode, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+
+// E: e'lon berish va qidiruv — shu rejimda (rejim tanlanmasa, avval tasdiq so'raladi)
+test.beforeEach(async ({ context }) => {
+  await asMode(context, "employer");
+});
 
 /** F-06: ish joyi surati karantin → serverda qayta kodlash (EXIF yo'q) → o'zgarmas v-<sha256>.webp → e'lon */
 

@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, draftData, draftKeys, formReady, loginAs, pickProfession, sql } from "../support";
+import { USERS, asGuest, asMode, draftData, draftKeys, formReady, loginAs, pickProfession, sql } from "../support";
+
+// E: e'lon berish va qidiruv — shu rejimda (rejim tanlanmasa, avval tasdiq so'raladi)
+test.beforeEach(async ({ context }) => {
+  await asMode(context, "worker");
+});
 
 /** F-03: qoralama hisobga bog'langan; chiqish/hisob almashishida boshqa hisobga ko'rinmaydi; buzilgan qoralama formani buzmaydi */
 

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, draftData, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, asGuest, asMode, draftData, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /** C2/C3: til almashganda qoralama va filtrlar saqlanadi; ikki marta bosish bitta e'lon yaratadi */
 
@@ -8,6 +8,7 @@ async function switchLanguage(page: import("@playwright/test").Page, label: stri
 }
 
 test("til almashganda e'lon qoralamasi yo'qolmaydi", async ({ page, context }) => {
+  await asMode(context, "worker");
   await loginAs(context, USERS.workerB);
   await page.goto("/post/worker");
   await pickProfession(page, "Buxgalter", "Buxgalter");
@@ -35,6 +36,7 @@ test("til almashganda qidiruv filtrlari URL'da saqlanadi", async ({ page, contex
 
 test("e'lonni joylash tugmasini ikki marta bosish — bitta e'lon", async ({ page, context }) => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  await asMode(context, "employer");
   await loginAs(context, USERS.employer);
   await page.goto("/post/vacancy");
   await pickProfession(page, "Buxgalter", "Buxgalter");

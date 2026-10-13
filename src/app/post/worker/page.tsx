@@ -8,16 +8,28 @@ import { aiProviderConfigured } from "@/lib/ai/json";
 import { Shell } from "@/components/shared/shell";
 import { WorkerPost } from "@/features/post/components/worker-post";
 import { getListingDays, getPostViewer, getSimpleListingFeatures, getWorkerPrefill } from "@/features/post/queries";
+import { getMode } from "@/features/mode/server";
+import { ModeGate } from "@/features/mode/components/mode-gate";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
   return { title: t("easy.worker.page_title"), robots: { index: false } };
 }
 
-/** "Ish qidiryapman" — 4 qadamli e'lon. Kirish talab qilinmaydi: hisob faqat joylash paytida so'raladi */
+/**
+ * "Ish qidiryapman" — 4 qadamli e'lon. Kirish talab qilinmaydi: hisob faqat joylash paytida so'raladi.
+ * Avval foydalanuvchi o'zini tasdiqlaydi ("Ha, men ish qidiryapman") — ish beruvchi adashib o'zi haqida e'lon bermaydi.
+ */
 export default async function PostWorkerPage() {
-  const session = await getSession();
+  const [session, mode] = await Promise.all([getSession(), getMode()]);
   if (session?.profile.is_blocked) redirect("/blocked");
+  if (mode !== "worker") {
+    return (
+      <Shell hideNav>
+        <ModeGate variant="post" need="worker" otherHref="/post/vacancy" />
+      </Shell>
+    );
+  }
   const [categories, regions, districts, viewer, prefill, days, features] = await Promise.all([
     getCategories(),
     getRegions(),

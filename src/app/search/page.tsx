@@ -4,13 +4,19 @@ import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
-import { anyProfession, findHref, parseFindParams } from "@/features/find/params";
+import { EMPTY_FIND, anyProfession, findHref, parseFindParams } from "@/features/find/params";
 import { getNodeInfo } from "@/features/find/queries";
 import { smartResolveQuery } from "@/features/find/ai-search";
 import { getSession } from "@/features/auth/session";
 import { trackServer } from "@/features/analytics/server";
 import { FindAskIntent, FindResultsView, FindStart } from "@/features/find/components/find-page";
 import { FindSteps } from "@/features/find/components/find-steps";
+import { getMode } from "@/features/mode/server";
+import { findModeOf, modeOfFind } from "@/features/mode/mode";
+import { ModeGate } from "@/features/mode/components/mode-gate";
+import { cookies } from "next/headers";
+import { PLACE_COOKIE, parsePlace } from "@/features/find/place";
+import { NearMe } from "@/features/find/components/near-me";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -20,17 +26,21 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * Qidirish — har qadam URL'da: ish/ishchi → kasb → viloyat → tuman → natijalar.
  * Yozilgan matndan ("Toshkentda haydovchi kerak") maqsad, kasb va hudud oldindan to'ldiriladi; aniqlanmaganini so'raydi.
+ * Rejim tanlangan bo'lsa (ish izlovchi / ish beruvchi) — "ish yoki ishchi?" so'ralmaydi, matn shu rejimda tushuniladi;
+ * boshqa rejimning qidiruvi ochilsa — tushuntirish va tanlov (ModeGate), avtomatik almashtirilmaydi.
  */
 export default async function SearchPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
-  const params = parseFindParams(await searchParams);
+  const [params, mode, jar] = await Promise.all([searchParams.then(parseFindParams), getMode(), cookies()]);
+  const place = parsePlace(jar.get(PLACE_COOKIE)?.value);
+  const stored = mode ? findModeOf(mode) : null;
 
   // Matn → maqsad + kasb + hudud + filtrlar (lug'at, kerak bo'lsa AI); natija o'zgarsa — bir marta yo'naltiramiz.
   // Natijalar doim bazadagi haqiqiy e'lonlardan; AI faqat so'rovni tushunishga yordam beradi.
   if (params.q && !params.p) {
     const session = await getSession();
-    const r = await smartResolveQuery(params.q, session?.userId ?? null, params.mode);
+    const r = await smartResolveQuery(params.q, session?.userId ?? null, params.mode ?? stored);
     const target = findHref(params, {
-      mode: params.mode ?? r.mode,
+      mode: params.mode ?? stored ?? r.mode,
       p: r.nodeId,
       region: params.region ?? (r.remote ? "remote" : r.regionSlug),
       district: params.district ?? r.districtId,
@@ -45,6 +55,17 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     if (target !== findHref(params)) redirect(target);
   }
 
+  // rejim bor, URL'da maqsad yo'q — savol bermasdan shu rejimning qidiruvi
+  if (!params.mode && stored) redirect(findHref(params, { mode: stored }));
+  // boshqa rejimning qidiruvi: tushuntirish + "o'tish" yoki o'z bo'limiga qaytish
+  if (params.mode && mode && modeOfFind(params.mode) !== mode) {
+    return (
+      <Shell>
+        <ModeGate variant="search" need={modeOfFind(params.mode)} otherHref={findHref(EMPTY_FIND, { mode: stored })} />
+      </Shell>
+    );
+  }
+
   // ma'lumotnoma (kesh): kasb → viloyat → tuman qadamlari shu ma'lumot bilan telefonda almashadi
   const [categories, regions, allDistricts] = await Promise.all([getCategories(), getRegions(), getDistricts()]);
   const region = params.region && params.region !== "all" && params.region !== "remote" ? (regions.find((r) => r.slug === params.region) ?? null) : null;
@@ -53,6 +74,18 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const district = region && params.district && params.district !== "all" ? (districts.find((d) => d.id === params.district) ?? null) : null;
   const districtKnown = params.district === "all" || !!district;
   const node = params.p ? await getNodeInfo(params.p) : null;
+
+  // "Yaqin atrofda": eslab qolingan tuman bo'lsa — darhol natijalar; yo'q bo'lsa — joylashuvni aniqlash (yoki ro'yxatdan tanlash)
+  if (params.mode && params.near && !regionKnown) {
+    if (place && regions.some((r) => r.slug === place.region)) {
+      redirect(findHref(params, { near: false, any: !params.p, region: place.region, district: place.district, page: 1 }));
+    }
+    return (
+      <Shell>
+        <NearMe base={params} regions={regions} districts={allDistricts} />
+      </Shell>
+    );
+  }
 
   // maqsad aniqlanmagan, lekin kasb (yoki matn) bor — bitta savol: "Ish qidiryapsizmi yoki ishchi?"
   // "Kunlik ishlar" (pay=daily): kasb so'ralmaydi — darhol hudud
@@ -65,7 +98,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     stepKey === "intent" ? (
       params.q || node ? <FindAskIntent params={params} node={node} /> : <FindStart params={params} />
     ) : stepKey === "profession" || stepKey === "region" || stepKey === "district" ? (
-      <FindSteps base={params} categories={categories} regions={regions} districts={allDistricts} initialNode={node ? { id: node.id, trail: node.trail } : null} />
+      <FindSteps base={params} categories={categories} regions={regions} districts={allDistricts} initialNode={node ? { id: node.id, trail: node.trail } : null} myPlace={place} />
     ) : (
       <FindResultsView params={params} node={node} region={region} district={district} />
     );

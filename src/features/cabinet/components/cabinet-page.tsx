@@ -15,6 +15,8 @@ import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import type { ListingState } from "@/features/post/types";
 import { StatusPill } from "./status-pill";
 import { isCityRegion } from "@/lib/geo/city";
+import type { AppMode } from "@/features/mode/mode";
+import { ModeSwitch } from "@/features/mode/components/mode-switch";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
@@ -26,7 +28,7 @@ function vacancyTone(s: MyVacancy["status"]): "ok" | "wait" | "off" {
 }
 
 /** Kabinetim: e'lonlarim (o'zgartirish, topdim), yangi e'lon va boshqa bo'limlar — hammasi bir joyda, ixcham */
-export async function CabinetPage({ session }: { session: SessionContext | null }) {
+export async function CabinetPage({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
   const { t, name, locale } = await getT();
 
   if (!session) {
@@ -61,6 +63,11 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
     { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true },
   ];
 
+  const newListings = [
+    { mode: "worker", href: "/post/worker", icon: BriefcaseBusiness, label: t("easy.home.worker_cta") },
+    { mode: "employer", href: "/post/vacancy", icon: UsersRound, label: t("easy.home.employer_cta") },
+  ].filter((l) => !mode || l.mode === mode);
+
   const workerSearch = worker
     ? `/search?${new URLSearchParams({ mode: "jobs", ...(worker.professionNodeId ? { p: worker.professionNodeId } : {}), ...(worker.regionSlug ? { region: worker.regionSlug, district: worker.districtId ?? "all" } : {}) }).toString()}`
     : null;
@@ -71,6 +78,8 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
         <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
         {firstName ? <p className="mt-1 text-muted-foreground">{t("easy.cabinet.greeting", { name: firstName })}</p> : null}
       </div>
+      {/* rejim shu yerda ham almashtiriladi (tasdiq bilan) — e'lon berish va bosh sahifa shu rejimda */}
+      {mode ? <ModeSwitch mode={mode} className="mx-0 max-w-none" /> : null}
 
       <section className="space-y-3" aria-labelledby="my-listings">
         <h2 id="my-listings" className="text-2xl font-bold">
@@ -183,7 +192,7 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
       </section>
 
       <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
-        <AiProCard userId={session.userId} />
+        <AiProCard userId={session.userId} only={mode} />
       </Suspense>
 
       <section className="space-y-3" aria-labelledby="new-listing">
@@ -191,13 +200,8 @@ export async function CabinetPage({ session }: { session: SessionContext | null 
           {t("easy.cabinet.new_listing")}
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
-          {/* ikki teng yo'l — bir xil neytral ko'rinish (ko'k va yashil ramka emas) */}
-          {(
-            [
-              { href: "/post/worker", icon: BriefcaseBusiness, label: t("easy.home.worker_cta") },
-              { href: "/post/vacancy", icon: UsersRound, label: t("easy.home.employer_cta") },
-            ] as const
-          ).map((l) => (
+          {/* joriy rejimning e'loni (rejim tanlanmagan bo'lsa — ikkalasi, bir xil neytral ko'rinish) */}
+          {newListings.map((l) => (
             <Link key={l.href} href={l.href} className="press flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 font-semibold hover:border-primary/50">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
                 <l.icon className="size-5" />

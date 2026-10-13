@@ -17,7 +17,8 @@ import { JobResultCard, WorkerResultCard } from "./result-cards";
  * (lug'at, kerak bo'lsa sun'iy intellekt) va bazadagi mos e'lonlarni saralab qaytaradi — natija shu oynada, ilova ichida.
  * Tugma pastki menyu va yopishqoq amallar paneli ustida turadi (globals.css: .ai-fab, --cta-offset).
  */
-export function AiFinder({ defaultMode }: { defaultMode: "jobs" | "workers" }) {
+/** `locked` — rejim tanlangan: faqat shu rejim ichida qidiradi (ish izlovchi ishchilarni qidirmaydi) */
+export function AiFinder({ defaultMode, locked = false }: { defaultMode: "jobs" | "workers"; locked?: boolean }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState(defaultMode);
@@ -86,6 +87,12 @@ export function AiFinder({ defaultMode }: { defaultMode: "jobs" | "workers" }) {
               submit();
             }}
           >
+            {locked ? (
+              <p className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary">
+                {mode === "workers" ? <UsersRound className="size-4" aria-hidden /> : <BriefcaseBusiness className="size-4" aria-hidden />}
+                {mode === "workers" ? t("easy.mode.finder_in_workers") : t("easy.mode.finder_in_jobs")}
+              </p>
+            ) : (
             <div role="radiogroup" aria-label={t("easy.finder.mode_label")} className="grid grid-cols-2 gap-2">
               {(
                 [
@@ -111,6 +118,7 @@ export function AiFinder({ defaultMode }: { defaultMode: "jobs" | "workers" }) {
                 </button>
               ))}
             </div>
+            )}
             <label htmlFor="ai-finder-text" className="block text-lg font-semibold">
               {t("easy.finder.label")}
             </label>
@@ -175,12 +183,12 @@ export function AiFinder({ defaultMode }: { defaultMode: "jobs" | "workers" }) {
                     <ul className="grid grid-cols-1 gap-3">
                       {result.jobs.map((job) => (
                         <li key={job.id}>
-                          <JobResultCard job={job} imageUrl={job.profession_node_id ? result.images[job.profession_node_id] : null} photoPath={result.photos[job.id] ?? null} />
+                          <JobResultCard job={job} imageUrl={job.profession_node_id ? result.images[job.profession_node_id] : null} photoPath={result.photos[job.id] ?? null} saved={result.saved.includes(job.id)} />
                         </li>
                       ))}
                       {result.workers.map((w) => (
                         <li key={w.id}>
-                          <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? result.images[w.profession_node_id] : null} />
+                          <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? result.images[w.profession_node_id] : null} saved={result.saved.includes(w.id)} />
                         </li>
                       ))}
                     </ul>

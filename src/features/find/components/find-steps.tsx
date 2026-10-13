@@ -12,6 +12,8 @@ import { cn } from "@/lib/utils";
 import { ProfessionPicker } from "@/features/professions/components/profession-picker";
 import { isCityRegion } from "@/lib/geo/city";
 import { anyProfession, findHref, parseFindParams, type FindParams } from "../params";
+import type { Place } from "../place";
+import { NearMeButton } from "./near-me";
 
 const bigLink = "press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left text-lg font-semibold hover:border-primary/50";
 
@@ -28,6 +30,7 @@ export function FindSteps({
   regions,
   districts,
   initialNode,
+  myPlace = null,
 }: {
   /** serverda o'qilgan URL holati (birinchi chizish) */
   base: FindParams;
@@ -36,6 +39,8 @@ export function FindSteps({
   /** barcha faol tumanlar (ma'lumotnoma keshi); bo'sh bo'lsa — tuman qadami serverda ochiladi */
   districts: District[];
   initialNode: { id: string; trail: TrailItem[] } | null;
+  /** "Yaqin atrofda" bilan eslab qolingan tuman (viloyat qadamida birinchi tanlov) */
+  myPlace?: Place | null;
 }) {
   const { t, name } = useT();
   const router = useRouter();
@@ -67,7 +72,7 @@ export function FindSteps({
   };
 
   const modeSummary = cur.mode === "workers" ? t("easy.search.summary_workers") : t("easy.search.summary_jobs");
-  const prof = trail?.length ? name(trail.at(-1)!) : anyProfession(cur) ? t("easy.search.daily_jobs") : "";
+  const prof = trail?.length ? name(trail.at(-1)!) : anyProfession(cur) ? (cur.mode === "jobs" && cur.pay === "daily" ? t("easy.search.daily_jobs") : t("easy.search.all_professions")) : "";
 
   if (step === "profession" || step === "results") {
     const title = cur.mode === "workers" ? t("easy.search.profession_workers") : t("easy.search.profession_jobs");
@@ -96,6 +101,8 @@ export function FindSteps({
 
   if (step === "region") {
     const regionHref = (slug: string) => findHref(cur, { region: slug, district: null, page: 1 });
+    const placeRegion = myPlace ? regions.find((r) => r.slug === myPlace.region) : undefined;
+    const myPlaceInfo = placeRegion ? { region: placeRegion, district: districts.find((d) => d.id === myPlace!.district && d.region_id === placeRegion.id) ?? null } : null;
     return (
       <Shell
         back={
@@ -111,6 +118,24 @@ export function FindSteps({
         summary={[modeSummary, prof]}
       >
         <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+          {/* joylashuv bo'yicha (eng yaqin tuman) va eslab qolingan hudud — birinchi */}
+          {districts.length ? (
+            <li className="sm:col-span-2">
+              <NearMeButton base={cur} regions={regions} districts={districts} />
+            </li>
+          ) : null}
+          {myPlaceInfo ? (
+            <li className="sm:col-span-2">
+              <Link href={findHref(cur, { region: myPlaceInfo.region.slug, district: myPlaceInfo.district?.id ?? "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
+                <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
+                <span className="flex-1">
+                  <span className="block text-base font-normal text-muted-foreground">{t("easy.near.your_area")}</span>
+                  <span className="block">{[name(myPlaceInfo.region), myPlaceInfo.district ? name(myPlaceInfo.district) : null].filter(Boolean).join(" · ")}</span>
+                </span>
+                <PendingChevron />
+              </Link>
+            </li>
+          ) : null}
           <li className="sm:col-span-2">
             <Link href={regionHref("all")} className={cn(bigLink, "border-primary/40")}>
               <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />

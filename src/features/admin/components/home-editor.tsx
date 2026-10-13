@@ -12,7 +12,7 @@ import { Switch } from "@/components/ui/checkbox";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { callAction } from "@/lib/action-call";
-import { WINDOW_ART, isBuiltinWindow, type HomeWindow, type WindowArt } from "@/features/home-windows/model";
+import { MAX_WINDOWS, WINDOW_ART, WINDOW_AUDIENCES, isBuiltinWindow, windowAudience, type BuiltinWindow, type HomeWindow, type WindowArt, type WindowAudience } from "@/features/home-windows/model";
 import { WindowArtwork } from "@/features/home-windows/window-art";
 import { saveHomeWindows, setAiSearchButton, uploadWindowImage } from "../actions/home";
 import { errorText } from "./note-dialog";
@@ -39,7 +39,7 @@ async function shrink(file: File): Promise<Blob> {
  * Admin → "Bosh sahifa": tepadagi rasmli oynalar (tartib, matn 4 tilda, havola, rasm) va lupa tugmasi.
  * O'zgarishlar "Saqlash" bilan bitta yozuvda saqlanadi va saytda darhol ko'rinadi; har biri audit jurnaliga tushadi.
  */
-export type WindowDefaults = Record<WindowArt, Record<Locale, { title: string; desc: string }>>;
+export type WindowDefaults = Record<BuiltinWindow, Record<Locale, { title: string; desc: string }>>;
 
 export function HomeEditor({
   windows: initial,
@@ -214,6 +214,21 @@ export function HomeEditor({
                     </div>
                   </div>
                   <label className="block text-sm">
+                    <span className="mb-1 block font-medium">{t("admin.home.audience")}</span>
+                    <select
+                      className="h-10 w-full rounded-lg border border-input bg-card px-2 text-sm"
+                      value={windowAudience(w)}
+                      disabled={disabled}
+                      onChange={(e) => change(w.id, { audience: e.target.value as WindowAudience })}
+                    >
+                      {WINDOW_AUDIENCES.map((a) => (
+                        <option key={a} value={a}>
+                          {t(`admin.home.audience_${a}`)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                  <label className="block text-sm">
                     <span className="mb-1 block font-medium">{t("admin.home.link")}</span>
                     <Input value={w.href} disabled={disabled} onChange={(e) => change(w.id, { href: e.target.value.trim().slice(0, 300) })} placeholder="/search?mode=jobs" />
                     <span className="mt-1 block text-xs text-muted-foreground">{t("admin.home.link_hint")}</span>
@@ -252,9 +267,9 @@ export function HomeEditor({
           <Button
             type="button"
             variant="outline"
-            disabled={disabled || list.length >= 8}
+            disabled={disabled || list.length >= MAX_WINDOWS}
             onClick={() => {
-              setList((l) => [...l, { id: `w${Date.now().toString(36)}`, enabled: true, art: "jobs", image: null, href: "/search?mode=jobs", title: {}, desc: {} }]);
+              setList((l) => [...l, { id: `w${Date.now().toString(36)}`, enabled: true, art: "jobs", image: null, href: "/search?mode=jobs", audience: "worker", title: {}, desc: {} }]);
               setDirty(true);
             }}
           >

@@ -12,6 +12,7 @@ import { levelToExperience } from "@/features/post/types";
 import type { Enums } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 import { isCityRegion } from "@/lib/geo/city";
+import { SaveButton } from "@/features/saved/components/save-button";
 
 interface PlaceNames {
   region_name_uz: string | null;
@@ -108,7 +109,8 @@ export function CallBlock({ phone, detailsHref, className }: { phone: string | n
   );
 }
 
-export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; imageUrl?: string | null; photoPath?: string | null }) {
+/** `saved` berilsa — "Saqlash" belgisi (holati bilan); berilmasa — belgi yo'q (holati noma'lum joylarda adashtirmasin) */
+export function JobResultCard({ job, imageUrl, photoPath, saved, savedRefresh }: { job: JobCardData; imageUrl?: string | null; photoPath?: string | null; saved?: boolean; savedRefresh?: boolean }) {
   const { t, tEnum, name } = useT();
   const place = usePlace();
   const profession = job.profession_name_uz ? name({ name_uz: job.profession_name_uz, name_ru: job.profession_name_ru ?? job.profession_name_uz, name_en: job.profession_name_en }) : job.title;
@@ -130,6 +132,7 @@ export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; 
           <h3 className="break-words text-xl font-bold leading-snug">{job.title}</h3>
           {job.employer_name ? <p className="mt-0.5 text-base font-medium text-muted-foreground">{job.employer_name}</p> : null}
         </div>
+        {saved !== undefined ? <SaveButton kind="vacancy" id={job.id} initial={saved} label={job.title} refresh={savedRefresh} /> : null}
       </div>
       <ul className="space-y-1.5 text-lg">
         <li className="flex items-start gap-2">
@@ -153,7 +156,7 @@ export function JobResultCard({ job, imageUrl, photoPath }: { job: JobCardData; 
   );
 }
 
-export function WorkerResultCard({ worker, imageUrl }: { worker: WorkerCardData; imageUrl?: string | null }) {
+export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { worker: WorkerCardData; imageUrl?: string | null; saved?: boolean; savedRefresh?: boolean }) {
   const { t, name, locale } = useT();
   const place = usePlace();
   const profession = worker.profession_name_uz
@@ -176,6 +179,7 @@ export function WorkerResultCard({ worker, imageUrl }: { worker: WorkerCardData;
           <h3 className="break-words text-xl font-bold leading-snug">{fullName}</h3>
           <p className="mt-0.5 text-lg font-semibold text-primary">{profession}</p>
         </div>
+        {saved !== undefined ? <SaveButton kind="worker" id={worker.id} initial={saved} label={fullName} refresh={savedRefresh} /> : null}
       </div>
       <ul className="space-y-1.5 text-lg">
         <li className="flex items-start gap-2">

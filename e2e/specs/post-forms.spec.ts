@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { asGuest, next, pickProfession, pickWholeRegion } from "../support";
+import { asGuest, asMode, next, pickProfession, pickWholeRegion } from "../support";
 
 /**
  * C8.5 · e'lon formalari: maydon tuzatilgan zahoti uning qizil xatosi yo'qoladi
@@ -8,6 +8,7 @@ import { asGuest, next, pickProfession, pickWholeRegion } from "../support";
 
 test("vakansiya: bo'sh 3-qadam xatolari maydon to'ldirilgach birma-bir yo'qoladi", async ({ page, context }) => {
   await asGuest(context);
+  await asMode(context, "employer");
   await page.goto("/post/vacancy");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);
@@ -36,6 +37,7 @@ test("vakansiya: bo'sh 3-qadam xatolari maydon to'ldirilgach birma-bir yo'qoladi
 
 test("ishchi: ism va tajriba xatosi tuzatilgach yo'qoladi", async ({ page, context }) => {
   await asGuest(context);
+  await asMode(context, "worker");
   await page.goto("/post/worker");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);

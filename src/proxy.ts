@@ -12,7 +12,7 @@ const PROTECTED_PREFIXES = [
   "/applications",
   "/offers",
   "/messages",
-  "/saved",
+  // /saved — ochiq: mehmon pastki menyudan "Saqlanganlar"ni bossa, nima ekani va kirish taklifi ko'rsatiladi (sahifaning o'zi)
   "/notifications",
   "/profile",
   "/settings",

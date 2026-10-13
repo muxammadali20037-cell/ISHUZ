@@ -80,7 +80,8 @@ test("filtr: 'Filtrni tozalash'dan keyin oyna qayta ochilsa eski tanlov ko'rinma
 test("qidiruv boshi: ikki teng neytral karta (rangli dominant sirt yo'q)", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/search");
-  for (const name of [/^Ish qidiraman/, /^Ishchi qidiraman/]) await expect(page.getByRole("link", { name })).toBeVisible();
+  // rejim hali tanlanmagan — bosh sahifadagi kabi "Ish qidiryapman" / "Xodim qidiryapman" (E1)
+  for (const name of [/^Ish qidiryapman/, /^Xodim qidiryapman/]) await expect(page.getByRole("button", { name })).toBeVisible();
   const big = await page.evaluate(() => {
     const css = getComputedStyle(document.documentElement);
     const brand = ["--primary", "--success"].map((v) => css.getPropertyValue(v).trim());

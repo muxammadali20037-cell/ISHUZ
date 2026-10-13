@@ -1,7 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, asGuest, asMode, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+
+// E: e'lon berish va qidiruv — shu rejimda (rejim tanlanmasa, avval tasdiq so'raladi)
+test.beforeEach(async ({ context }) => {
+  await asMode(context, "worker");
+});
 
 /**
  * C7 · qotish va javobsiz qolishlar (qabul #26–#29). Har test o'lchovni e2e/.stack/responsiveness/<nom>.json ga yozadi

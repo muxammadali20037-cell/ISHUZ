@@ -1,8 +1,8 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, asGuest, asMode, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
- * Qabul #32 · to'liq yo'llar (mobil va desktop): mehmon bosh sahifadan e'lon beradi → oxirgi qadamda kiradi →
+ * Qabul #32 · to'liq yo'llar (mobil va desktop): mehmon bosh sahifada kimligini tanlaydi va e'lon beradi → oxirgi qadamda kiradi →
  * o'sha formaga barcha javoblari bilan qaytadi → joylaydi → kabinetda e'lonini ko'radi.
  * Kirish (Telegram kodi) stendda sessiya cookie'si bilan almashtiriladi — qolgan hamma narsa haqiqiy.
  */
@@ -24,6 +24,8 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
+    // birinchi ochilish: "Siz nima qidiryapsiz?" → ish izlovchi rejimi
+    await page.getByRole("button", { name: /^Ish qidiryapman/ }).click();
     await page.getByRole("link", { name: /O'zim haqimda e'lon berish/ }).click();
     await page.waitForURL(/\/post\/worker/);
     await pickProfession(page, "Buxgalter", "Buxgalter");
@@ -82,6 +84,8 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
+    // birinchi ochilish: "Siz nima qidiryapsiz?" → ish beruvchi rejimi
+    await page.getByRole("button", { name: /^Xodim qidiryapman/ }).click();
     await page.getByRole("link", { name: /Ish e'loni berish/ }).click();
     await page.waitForURL(/\/post\/vacancy/);
     await pickProfession(page, "Buxgalter", "Buxgalter");
@@ -123,6 +127,7 @@ for (const vp of [
     // mehmon qidiruvida — e'lon va oylik maosh
     if (rows[0]!.status === "active") {
       await asGuest(context);
+      await asMode(context, "worker");
       const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
       await page.goto(`/search?mode=jobs&p=${n!.id}&region=all`);
       await expect(page.locator("main article").filter({ hasText: "Dilnoza opa" })).toBeVisible();

@@ -8,6 +8,7 @@ import { getDistricts, getRegions } from "@/lib/reference";
 import { allowRate } from "@/lib/rate-limit";
 import { clientIp, ipBucket, subjectHash } from "@/lib/security/request";
 import { getSession } from "@/features/auth/session";
+import { savedIdSet } from "@/features/saved/queries";
 import type { ActionResult } from "@/features/auth/actions";
 import { trackServer } from "@/features/analytics/server";
 import { aiProviderConfigured } from "@/lib/ai/json";
@@ -35,6 +36,8 @@ export interface AiFindResult {
   workers: WorkerRow[];
   images: Record<string, string>;
   photos: Record<string, string>;
+  /** natijadagi saqlanganlar ("Saqlash" belgisi holati) */
+  saved: string[];
   total: number;
   /** to'liq natijalar sahifasi (filtrlar, sahifalar) */
   href: string;
@@ -82,7 +85,7 @@ export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> 
     params.exp ? t("easy.search.experienced") : null,
   ].filter((x): x is string => !!x);
 
-  const base: Omit<AiFindResult, "needProfession" | "href"> = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), jobs: [], workers: [], images: {}, photos: {}, total: 0 };
+  const base: Omit<AiFindResult, "needProfession" | "href"> = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), jobs: [], workers: [], images: {}, photos: {}, saved: [], total: 0 };
   // kasb aniqlanmadi (kunlik ishlar bundan mustasno) — taxminiy ro'yxat emas, aniq savol
   if (!node && params.pay !== "daily") {
     return { ok: true, data: { ...base, needProfession: true, href: findHref({ ...params, p: null, region: null, district: null }) } };
@@ -92,13 +95,16 @@ export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> 
   const res = mode === "jobs" ? await findJobs(params, place) : await findWorkers(params, place);
   if (!res.ok) return { ok: false, error: "search_failed" };
   void trackServer("ai_find", session?.userId ?? null, { source: r.source, mode, results: res.total });
+  const shown = res.items.slice(0, SHOW);
+  const saved = await savedIdSet(session, mode === "jobs" ? "vacancy" : "worker", shown.map((i) => i.id));
   return {
     ok: true,
     data: {
       ...base,
       needProfession: false,
-      jobs: mode === "jobs" ? (res.items as JobRow[]).slice(0, SHOW) : [],
-      workers: mode === "workers" ? (res.items as WorkerRow[]).slice(0, SHOW) : [],
+      jobs: mode === "jobs" ? (shown as JobRow[]) : [],
+      workers: mode === "workers" ? (shown as WorkerRow[]) : [],
+      saved: [...saved],
       images: res.images,
       photos: "photos" in res ? (res.photos ?? {}) : {},
       total: res.total,

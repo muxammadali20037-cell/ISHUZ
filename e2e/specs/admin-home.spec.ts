@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import sharp from "sharp";
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { USERS, asGuest, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * D6 · admin → "Bosh sahifa": oynalar matni, tartibi, ko'rinishi, rasmi va lupa tugmasi admin panelda sozlanadi;
@@ -50,10 +50,13 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await expect(page.getByRole("heading", { level: 1, name: "Bosh sahifa" })).toBeVisible();
   const first = page.getByRole("listitem", { name: "1-oyna" });
   const third = page.getByRole("listitem", { name: "3-oyna" });
-  await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(3);
+  // 6 ta standart oyna: 3 tasi ish izlovchiga, 3 tasi ish beruvchiga
+  await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(6);
+  await expect(first.getByRole("combobox", { name: "Kimga ko'rinadi" })).toHaveValue("worker");
+  await expect(page.getByRole("listitem", { name: "4-oyna" }).getByRole("combobox", { name: "Kimga ko'rinadi" })).toHaveValue("employer");
   // bo'sh maydonda — saytda ko'rinadigan standart matn (har tilda o'zi), "Standart matn" emas
-  await expect(first.getByRole("textbox", { name: "Sarlavha (O'zbek)" })).toHaveAttribute("placeholder", "Endi xodim topish oson");
-  await expect(first.getByRole("textbox", { name: "Sarlavha (Русский)" })).toHaveAttribute("placeholder", "Найти сотрудника теперь просто");
+  await expect(first.getByRole("textbox", { name: "Sarlavha (O'zbek)" })).toHaveAttribute("placeholder", "Endi o'zingizga mos ish topish oson");
+  await expect(first.getByRole("textbox", { name: "Sarlavha (Русский)" })).toHaveAttribute("placeholder", "Найти подходящую работу теперь просто");
   // telefonda pastki yopishqoq panel — faqat "Saqlash", ekranni yopmaydi
   const bar = page.getByRole("button", { name: "Saqlash" }).locator("xpath=ancestor::div[contains(@class,'sticky')][1]");
   await expect(bar).toBeVisible();
@@ -84,10 +87,11 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await page.getByRole("button", { name: "Saqlash" }).click();
   await expect(page.getByText("Bosh sahifa yangilandi").first()).toBeVisible();
 
-  // sayt (mehmon, alohida kontekst): yangi sarlavha, 2 ta oyna, 2-oynada yuklangan rasm
+  // sayt (mehmon, ish izlovchi rejimida, alohida kontekst): yangi sarlavha, 2 ta oyna, 2-oynada yuklangan rasm
   const guestCtx = await browser.newContext({ baseURL: page.url().replace(/\/admin.*$/, ""), viewport: { width: 390, height: 844 } });
   const guest = await guestCtx.newPage();
   await asGuest(guestCtx);
+  await asMode(guestCtx, "worker");
   await guest.goto("/");
   await expect(windowsOf(guest)).toHaveCount(2);
   await expect(windowsOf(guest).nth(0)).toContainText("Ishchi kerakmi? Shu yerda toping");
@@ -114,10 +118,10 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await expect(guest.getByRole("button", { name: "O'zingizga mosini toping" })).toBeVisible();
   await page.getByRole("button", { name: "Standartga qaytarish" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Standartga qaytarish" }).click();
-  await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(3);
+  await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(6);
   await guest.reload();
   await expect(windowsOf(guest)).toHaveCount(3);
-  await expect(windowsOf(guest).nth(0)).toContainText("Endi xodim topish oson");
+  await expect(windowsOf(guest).nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
   await guestCtx.close();
 });
 

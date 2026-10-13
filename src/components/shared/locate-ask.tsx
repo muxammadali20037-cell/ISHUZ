@@ -43,15 +43,19 @@ export function LocateAsk<D extends GeoDistrict>({
   subtitle,
   onLocated,
   onManual,
+  heading = "h2",
 }: {
   districts: D[];
   title: string;
   subtitle?: string;
+  /** sahifaning asosiy savoli bo'lsa — h1 */
+  heading?: "h1" | "h2";
   onLocated: (district: D, coords: { lat: number; lng: number }) => void;
   onManual: () => void;
 }) {
   const { t } = useT();
   const [state, setState] = useState<"idle" | "locating" | "failed">("idle");
+  const Heading = heading;
 
   const detect = () => {
     if (typeof navigator === "undefined" || !("geolocation" in navigator)) {
@@ -78,7 +82,7 @@ export function LocateAsk<D extends GeoDistrict>({
   return (
     <div className="space-y-5">
       <div>
-        <h2 className="text-2xl font-extrabold leading-tight tracking-tight">{title}</h2>
+        <Heading className="text-2xl font-extrabold leading-tight tracking-tight">{title}</Heading>
         {subtitle ? <p className="mt-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
       <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-5 py-8 text-center">

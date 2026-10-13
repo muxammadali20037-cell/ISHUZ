@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { CabinetPage } from "@/features/cabinet/components/cabinet-page";
+import { getMode } from "@/features/mode/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -12,11 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /** /cabinet — "Kabinetim": e'lonlarim va hisob boshqaruvi. Mehmonga — hisobga kirish taklifi (yo'naltirish yo'q) */
 export default async function Cabinet() {
-  const session = await getSession();
+  const [session, mode] = await Promise.all([getSession(), getMode()]);
   if (session?.profile.is_blocked) redirect("/blocked");
   return (
     <Shell>
-      <CabinetPage session={session} />
+      <CabinetPage session={session} mode={mode} />
     </Shell>
   );
 }

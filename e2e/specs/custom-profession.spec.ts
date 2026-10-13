@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { USERS, formReady, loginAs, next, pickWholeRegion, sql } from "../support";
+import { USERS, asMode, formReady, loginAs, next, pickWholeRegion, sql } from "../support";
+
+// E: e'lon berish va qidiruv — shu rejimda (rejim tanlanmasa, avval tasdiq so'raladi)
+test.beforeEach(async ({ context }) => {
+  await asMode(context, "worker");
+});
 
 /** F-05: sodda ishchi formasida katalogda yo'q kasb yoziladi, saqlanadi va katalog tuguni sifatida ko'rsatilmaydi */
 

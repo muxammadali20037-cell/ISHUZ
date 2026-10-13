@@ -15,11 +15,13 @@ export const USERS = {
 
 const host = new URL(stack.app).hostname;
 
-/** Mehmon: cookie'lar tozalanadi, til — o'zbek lotin */
+/** Mehmon: cookie'lar tozalanadi, til — o'zbek lotin. Ilova rejimi (asMode) saqlanib qoladi — u qurilmadagi tanlov */
 export async function asGuest(ctx: BrowserContext) {
+  const mode = (await ctx.cookies()).find((c) => c.name === "ib_mode");
   await ctx.clearCookies();
   await ctx.addCookies([
     { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
+    ...(mode ? [{ name: "ib_mode", value: mode.value, domain: host, path: "/" }] : []),
   ]);
 }
 
@@ -28,6 +30,11 @@ export async function loginAs(ctx: BrowserContext, userId: string, aal: "aal1" |
   await asGuest(ctx);
   const c = sessionCookie(userId, stack.secret, aal);
   await ctx.addCookies([{ ...c, domain: host, path: "/" }]);
+}
+
+/** Ilova rejimi (ish izlovchi / ish beruvchi) — shu qurilmadagi tanlov; asGuest/loginAs undan keyin ham saqlaydi */
+export async function asMode(ctx: BrowserContext, mode: "worker" | "employer") {
+  await ctx.addCookies([{ name: "ib_mode", value: mode, domain: host, path: "/" }]);
 }
 
 export async function sql<T = Record<string, unknown>>(text: string, params: unknown[] = []): Promise<T[]> {

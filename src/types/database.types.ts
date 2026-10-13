@@ -2470,6 +2470,52 @@ export type Database = {
           },
         ];
       };
+      saved_items: {
+        Row: {
+          created_at: string;
+          id: number;
+          profile_id: string;
+          vacancy_id: string | null;
+          worker_id: string | null;
+        };
+        Insert: {
+          created_at?: string;
+          id?: never;
+          profile_id: string;
+          vacancy_id?: string | null;
+          worker_id?: string | null;
+        };
+        Update: {
+          created_at?: string;
+          id?: never;
+          profile_id?: string;
+          vacancy_id?: string | null;
+          worker_id?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "saved_items_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "saved_items_vacancy_id_fkey";
+            columns: ["vacancy_id"];
+            isOneToOne: false;
+            referencedRelation: "vacancies";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "saved_items_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: false;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       saved_searches: {
         Row: {
           category_id: string | null;
@@ -4618,6 +4664,78 @@ export type Database = {
           entity: string;
           id: string;
           info: Json;
+        }[];
+      };
+      my_saved_vacancies: {
+        Args: { p_limit?: number };
+        Returns: {
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employer_name: string;
+          employer_verified: boolean;
+          experience_min_months: number;
+          id: string;
+          is_featured: boolean;
+          is_government: boolean;
+          is_remote: boolean;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          published_at: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          summary: string;
+          title: string;
+          saved_at: string;
+          work_time_from: string;
+          work_time_to: string;
+        }[];
+      };
+      my_saved_workers: {
+        Args: { p_limit?: number };
+        Returns: {
+          about: string;
+          avatar_url: string;
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          experience_level: Database["public"]["Enums"]["experience_level"];
+          first_name: string;
+          headline: string;
+          id: string;
+          last_active_at: string;
+          last_initial: string;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          remote_ok: boolean;
+          salary_expected: number;
+          saved_at: string;
         }[];
       };
       my_saved_searches: {

@@ -18,6 +18,10 @@ export interface FindParams {
   exp: boolean;
   /** "daily" — faqat kunlik haqli ishlar ("Kunlik ishlar" oynasi; kasb tanlash shart emas) */
   pay: "daily" | null;
+  /** barcha kasblar ("Yaqin atrofda": tumandagi hamma e'lonlar, kasb so'ralmaydi) */
+  any: boolean;
+  /** "Yaqin atrofda" kirishi: hudud joylashuvdan (yoki eslab qolingan tumandan) aniqlanadi */
+  near: boolean;
 }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -46,6 +50,8 @@ export function parseFindParams(raw: Raw): FindParams {
     noexp: one(raw.noexp) === "1",
     exp: one(raw.exp) === "1",
     pay: one(raw.pay) === "daily" ? "daily" : null,
+    any: one(raw.any) === "1",
+    near: one(raw.near) === "1",
   };
 }
 
@@ -65,18 +71,20 @@ export function findHref(base: FindParams, patch: Partial<FindParams> = {}): str
     if (v.pay) q.set("pay", v.pay);
   }
   if (v.mode === "workers" && v.exp) q.set("exp", "1");
+  if (v.any && !v.p) q.set("any", "1");
+  if (v.near) q.set("near", "1");
   if (v.page > 1) q.set("page", String(v.page));
   const s = q.toString();
   return s ? `/search?${s}` : "/search";
 }
 
-export const EMPTY_FIND: FindParams = { mode: null, q: "", p: null, region: null, district: null, page: 1, salary: null, schedule: null, noexp: false, exp: false, pay: null };
+export const EMPTY_FIND: FindParams = { mode: null, q: "", p: null, region: null, district: null, page: 1, salary: null, schedule: null, noexp: false, exp: false, pay: null, any: false, near: false };
 
 export function activeFilterCount(p: FindParams): number {
   return p.mode === "jobs" ? Number(!!p.salary) + Number(!!p.schedule) + Number(p.noexp) + Number(p.pay === "daily") : Number(p.exp);
 }
 
-/** "Kunlik ishlar": kasb tanlanmagan bo'lsa ham hudud va natijalar ko'rsatiladi */
+/** Kasb so'ralmaydi: "Kunlik ishlar" yoki "Yaqin atrofda" (barcha kasblar) — hudud va natijalar darhol */
 export function anyProfession(p: FindParams): boolean {
-  return p.mode === "jobs" && p.pay === "daily" && !p.p;
+  return !p.p && !!p.mode && (p.any || (p.mode === "jobs" && p.pay === "daily"));
 }

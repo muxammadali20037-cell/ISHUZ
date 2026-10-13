@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { EMPTY_FIND, activeFilterCount, findHref, parseFindParams } from "./params";
+import { EMPTY_FIND, activeFilterCount, anyProfession, findHref, parseFindParams } from "./params";
 
 const ID = "11111111-2222-4333-8444-555555555555";
 
@@ -11,6 +11,23 @@ describe("parseFindParams", () => {
   it("to'g'ri qiymatlar", () => {
     const p = parseFindParams({ mode: "jobs", p: ID, region: "tashkent_city", district: "all", page: "3", salary: "5 000 000", schedule: "5_2", noexp: "1" });
     expect(p).toMatchObject({ mode: "jobs", p: ID, region: "tashkent_city", district: "all", page: 3, salary: 5000000, schedule: "5_2", noexp: true });
+  });
+});
+
+describe("barcha kasblar va yaqin atrofda", () => {
+  it("any=1 / near=1 o'qiladi va URL'ga qaytadi; kasb tanlansa any tushadi", () => {
+    const p = parseFindParams({ mode: "jobs", any: "1", near: "1" });
+    expect(p).toMatchObject({ any: true, near: true });
+    expect(findHref(p)).toBe("/search?mode=jobs&any=1&near=1");
+    expect(findHref(p, { near: false, region: "tashkent_city", district: ID })).toBe(`/search?mode=jobs&region=tashkent_city&district=${ID}&any=1`);
+    expect(findHref(p, { near: false, p: ID })).toBe(`/search?mode=jobs&p=${ID}`);
+  });
+  it("kasb so'ralmaydigan holatlar", () => {
+    expect(anyProfession({ ...EMPTY_FIND, mode: "workers", any: true })).toBe(true);
+    expect(anyProfession({ ...EMPTY_FIND, mode: "jobs", pay: "daily" })).toBe(true);
+    expect(anyProfession({ ...EMPTY_FIND, mode: "jobs" })).toBe(false);
+    expect(anyProfession({ ...EMPTY_FIND, mode: "jobs", any: true, p: ID })).toBe(false);
+    expect(anyProfession({ ...EMPTY_FIND, any: true })).toBe(false);
   });
 });
 

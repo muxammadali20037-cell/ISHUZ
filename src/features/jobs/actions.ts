@@ -6,32 +6,19 @@ import type { ActionResult } from "@/features/auth/actions";
 import { getSession } from "@/features/auth/session";
 import { errorCode } from "@/lib/utils";
 import { applySchema, toggleSaveSchema } from "./schema";
+import { toggleSaved } from "@/features/saved/actions";
 
 /**
- * Vakansiyani saqlash / saqlanganlardan olib tashlash (saved_vacancies, RLS: faqat o'z worker_id).
- * Xatolar: not_authenticated (→ /auth), worker_profile_required (→ /onboarding/worker), blocked.
+ * Vakansiyani saqlash / saqlanganlardan olib tashlash — "Saqlanganlar" (saved_items, 0061: ishchi profili shart emas;
+ * 0061 dan oldingi bazada — saved_vacancies, ishchi profili bilan). Xatolar: not_authenticated (→ /auth),
+ * worker_profile_required (faqat 0061 siz), blocked, saved_limit.
  */
 export async function toggleSaveVacancy(input: unknown): Promise<ActionResult<{ saved: boolean }>> {
   const parsed = toggleSaveSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
-  const session = await getSession();
-  if (!session) return { ok: false, error: "not_authenticated" };
-  if (session.profile.is_blocked) return { ok: false, error: "blocked" };
-  if (!session.workerId) return { ok: false, error: "worker_profile_required" };
-
-  const supabase = await createClient();
-  const { vacancyId, save } = parsed.data;
-  if (save) {
-    const { error } = await supabase
-      .from("saved_vacancies")
-      .upsert({ worker_id: session.workerId, vacancy_id: vacancyId }, { onConflict: "worker_id,vacancy_id", ignoreDuplicates: true });
-    if (error) return { ok: false, error: errorCode(error) };
-  } else {
-    const { error } = await supabase.from("saved_vacancies").delete().eq("worker_id", session.workerId).eq("vacancy_id", vacancyId);
-    if (error) return { ok: false, error: errorCode(error) };
-  }
-  revalidatePath("/saved");
-  return { ok: true, data: { saved: save } };
+  const res = await toggleSaved({ kind: "vacancy", id: parsed.data.vacancyId, save: parsed.data.save });
+  if (res.ok) revalidatePath("/jobs");
+  return res;
 }
 
 /**

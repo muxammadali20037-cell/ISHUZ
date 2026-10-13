@@ -25,6 +25,18 @@
       "daily": {
         "title": "Day jobs",
         "desc": "One-day and short gigs — paid every day"
+      },
+      "near_jobs": {
+        "title": "Jobs near you",
+        "desc": "By your location — the closest jobs"
+      },
+      "near_workers": {
+        "title": "Workers near you",
+        "desc": "By your location — the closest workers"
+      },
+      "post_vacancy": {
+        "title": "Post a job",
+        "desc": "In a minute — workers reach out themselves"
       }
     }
   },
@@ -303,7 +315,8 @@
     "empty_no_filters": "Search without filters",
     "daily_jobs": "Day jobs",
     "daily_only": "Day jobs only",
-    "daily_only_desc": "One-day and short gigs paid daily"
+    "daily_only_desc": "One-day and short gigs paid daily",
+    "all_professions": "All professions"
   },
   "card": {
     "call": "Call",
@@ -386,7 +399,10 @@
   },
   "nav": {
     "search": "Search",
-    "cabinet": "My account"
+    "cabinet": "My account",
+    "jobs": "Find a job",
+    "workers": "Find staff",
+    "saved": "Saved"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -577,5 +593,77 @@
       "search_failed": "Search is temporarily unavailable. Please try again.",
       "validation": "Type at least 2 letters"
     }
+  },
+  "mode": {
+    "chooser_title": "What are you looking for?",
+    "chooser_desc": "Choose — the app shows only what you need. You can switch any time.",
+    "worker_title": "I'm looking for a job",
+    "worker_desc": "I browse jobs and post about myself",
+    "employer_title": "I'm looking for staff",
+    "employer_desc": "I browse workers and post a job",
+    "switch_label": "Mode",
+    "worker_short": "Job seeker",
+    "employer_short": "Employer",
+    "to_employer_title": "Switch to employer mode?",
+    "to_employer_desc": "In this mode you search for workers and post jobs. The jobs section is hidden — you can come back any time.",
+    "to_worker_title": "Switch to job seeker mode?",
+    "to_worker_desc": "In this mode you browse jobs and post about yourself. The workers section is hidden — you can come back any time.",
+    "confirm": "Yes, switch",
+    "cancel": "Stay",
+    "gate_workers_title": "This section is for employers",
+    "gate_workers_desc": "You are in “Job seeker” mode now. Searching and contacting workers is for people who are hiring.",
+    "gate_jobs_title": "This section is for job seekers",
+    "gate_jobs_desc": "You are in “Employer” mode now. Browsing jobs and applying is for people looking for work.",
+    "gate_to_employer": "I'm hiring — switch",
+    "gate_to_worker": "I'm looking for work — switch",
+    "gate_back_jobs": "Back to jobs",
+    "gate_back_workers": "Back to workers",
+    "post_worker_title": "Are you looking for a job?",
+    "post_worker_desc": "This post is for job seekers: you write about yourself, employers find you and get in touch.",
+    "post_worker_yes": "Yes, I'm looking for a job",
+    "post_worker_no": "No, I need staff",
+    "post_vacancy_title": "Do you need staff?",
+    "post_vacancy_desc": "This post is for employers: you describe the worker you need, workers get in touch with you.",
+    "post_vacancy_yes": "Yes, I need staff",
+    "post_vacancy_no": "No, I'm looking for a job",
+    "home_worker_subtitle": "The right job — fast and easy",
+    "home_employer_subtitle": "The right staff — fast and easy",
+    "worker_post_title": "Post about yourself",
+    "employer_post_title": "Post a job",
+    "jobs_browse_title": "Jobs",
+    "jobs_browse_desc": "Search by profession or see jobs near you.",
+    "workers_browse_title": "Workers",
+    "workers_browse_desc": "Search by profession or see workers near you.",
+    "by_profession": "By profession",
+    "near_me": "Near me",
+    "finder_in_jobs": "Searching among jobs",
+    "finder_in_workers": "Searching among workers"
+  },
+  "saved": {
+    "save": "Save",
+    "saved": "Saved",
+    "added": "Added to Saved",
+    "removed": "Removed from Saved",
+    "limit": "Saved holds up to 500 items — remove the ones you no longer need",
+    "failed": "Could not save. Please try again.",
+    "page_title": "Saved",
+    "jobs_count": "Saved jobs: {count}",
+    "workers_count": "Saved workers: {count}",
+    "guest_desc": "Save the posts you like with the bookmark on the card — you will find them here later. Sign in to save.",
+    "login": "Sign in",
+    "empty_jobs_title": "No saved jobs yet",
+    "empty_workers_title": "No saved workers yet",
+    "empty_desc": "Tap the bookmark on a post card — it will be kept here.",
+    "browse_jobs": "Browse jobs",
+    "browse_workers": "Browse workers"
+  },
+  "near": {
+    "title_jobs": "We will show jobs near you",
+    "title_workers": "We will show workers near you",
+    "subtitle": "We find the closest district from your phone location. Your exact location is never sent anywhere — only the district is remembered on this device.",
+    "button": "Use my location",
+    "locating": "Finding your location…",
+    "failed": "Could not find your location — pick from the list",
+    "your_area": "Your area"
   }
 }

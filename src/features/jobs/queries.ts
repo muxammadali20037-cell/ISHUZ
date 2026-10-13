@@ -11,6 +11,7 @@ import type { MatchReason } from "@/components/shared/match-score";
 import type { VacancyCardData } from "@/components/shared/vacancy-card";
 import type { Json } from "@/types/database.types";
 import { PAGE_SIZE, matchQueryToCategory, toSearchVacanciesArgs, type JobsSearchParams, type SearchVacanciesArgs } from "./search-params";
+import { savedIdSet } from "@/features/saved/queries";
 import type {
   JobsFilterRefs,
   RefItem,
@@ -225,7 +226,7 @@ export async function getVacancyViewerState(vacancy: VacancyDetail, session: Ses
 
   const [managerRes, savedRes, appRes, matchRes] = await Promise.all([
     supabase.rpc("manages_vacancy", { p_vacancy_id: vacancy.id }),
-    workerId ? supabase.from("saved_vacancies").select("vacancy_id").eq("worker_id", workerId).eq("vacancy_id", vacancy.id).maybeSingle() : null,
+    savedIdSet(session, "vacancy", [vacancy.id]),
     workerId ? supabase.from("applications").select("id, status").eq("worker_id", workerId).eq("vacancy_id", vacancy.id).maybeSingle() : null,
     workerId ? supabase.rpc("compute_match", { p_worker_id: workerId, p_vacancy_id: vacancy.id }).maybeSingle() : null,
   ]);
@@ -234,7 +235,7 @@ export async function getVacancyViewerState(vacancy: VacancyDetail, session: Ses
   const kind = isManager ? "manager" : workerId ? "worker" : "no_worker";
   return {
     kind,
-    isSaved: !!savedRes?.data,
+    isSaved: savedRes.has(vacancy.id),
     application: appRes?.data ? { id: appRes.data.id, status: appRes.data.status } : null,
     match: matchRes?.data && !isManager ? { score: matchRes.data.score, reasons: parseReasons(matchRes.data.reasons) } : null,
   };

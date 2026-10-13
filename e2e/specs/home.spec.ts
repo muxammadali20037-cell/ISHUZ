@@ -1,21 +1,22 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, loginAs } from "../support";
+import { USERS, asGuest, asMode, loginAs } from "../support";
 
 /**
  * C8.2 · bosh sahifa va navigatsiya: har yo'l qayerga olib borishini aytadi va aynan o'sha joyni ochadi
- * (avval "Ish qidiryapman" tugmasi ish ro'yxatini emas, e'lon berish formasini ochardi).
+ * (avval "Ish qidiryapman" tugmasi ish ro'yxatini emas, e'lon berish formasini ochardi). E1 dan beri — joriy rejim yo'llari.
  */
 
 const PATHS = [
-  { name: /O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
-  { name: /Ish e'loni berish/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
-  { name: /^Ish e'lonlari$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
-  { name: /^Ishchilar$/, url: /\/search\?mode=workers$/, heading: /^Ishchi qidiraman/ },
-];
+  { mode: "worker", name: /O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
+  { mode: "worker", name: /^Kasb bo'yicha$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
+  { mode: "employer", name: /Ish e'loni berish/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
+  { mode: "employer", name: /^Kasb bo'yicha$/, url: /\/search\?mode=workers$/, heading: /^Ishchi qidiraman/ },
+] as const;
 
 for (const p of PATHS) {
-  test(`bosh sahifa → "${p.name.source}" kutilgan sahifani ochadi`, async ({ page, context }) => {
+  test(`bosh sahifa (${p.mode}) → "${p.name.source}" kutilgan sahifani ochadi`, async ({ page, context }) => {
     await asGuest(context);
+    await asMode(context, p.mode);
     await page.goto("/");
     const link = page.getByRole("link", { name: p.name });
     await expect(link).toHaveCount(1);
@@ -27,6 +28,7 @@ for (const p of PATHS) {
 
 test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q, AI bonusi asosiy yo'llardan keyin", async ({ page, context }) => {
   await asGuest(context);
+  await asMode(context, "worker");
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   // to'liq rangli (primary/success) katta sirtlar: faqat tugmalar bo'lishi mumkin (balandligi < 80 px)
@@ -77,18 +79,22 @@ test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal
   }
 });
 
-test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi", async ({ page, context }) => {
+test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikkala rejimda va tanlov ekranida)", async ({ page, context }) => {
   await asGuest(context);
   const bad: string[] = [];
-  for (const width of [360, 768, 1024, 1440]) {
+  const modes: ("worker" | "employer" | null)[] = [null, "worker", "employer"];
+  for (const [mode, width] of modes.flatMap((m) => [360, 768, 1024, 1440].map((w) => [m, w] as const))) {
+    await asGuest(context);
+    if (mode) await asMode(context, mode);
+    else await context.clearCookies({ name: "ib_mode" });
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/");
     const over = await page.evaluate(() =>
-      Array.from(document.querySelectorAll<HTMLElement>("main ul > li > a, main ul > li > section, main ul > li a"))
+      Array.from(document.querySelectorAll<HTMLElement>("main ul > li > a, main ul > li > section, main ul > li a, main section button"))
         .filter((el) => el.scrollWidth > el.clientWidth + 1)
         .map((el) => `${(el.textContent ?? "").trim().slice(0, 30)} (+${el.scrollWidth - el.clientWidth}px)`),
     );
-    bad.push(...over.map((o) => `${width}px: ${o}`));
+    bad.push(...over.map((o) => `${mode ?? "tanlov"} ${width}px: ${o}`));
   }
   expect(bad).toEqual([]);
 });

@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da: 2026-10-13) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da va E: 2026-10-13) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,8 +11,8 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0060 toza bazaga | ✅ lint, typecheck, unit (577 / 18 skip), SQL (26 fayl), build, 97 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0061 toza bazaga | ✅ lint, typecheck, unit (590 / 18 skip), SQL (27 fayl), build, 114 ta brauzer E2E — PASS |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) · **0061 (Saqlanganlar) — hali qo'llanmagan, egasi ruxsatini kutmoqda**; usiz kod eski jadvallar bilan ishlaydi (§13) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
 Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
@@ -1190,3 +1190,176 @@ chiqish yopiq — proksi 403). Sayt yangi bayroqlarni o'zi oladi: e'lon imkoniya
 4. Telegram → bot → Mini App: avtomatik kirish (bu muhitda BLOCKED).
 
 Qaytish (kerak bo'lsa): §9 jadvali.
+
+## 13. E — foydalanuvchi so'rovi (2026-10-13)
+
+So'rov qisqacha (egasidan):
+- ish izlovchi va ish beruvchi oynalari alohida bo'lsin. Hozir chalkash: ish qidiruvchi "Ishchi topish"ga kirib ketadi,
+  ish beruvchi ishchi qidira oladi;
+- ish beruvchiman deb o'zini tasdiqlasa, keyin e'lon bersin;
+- "Saqlanganlar" pastki menyuda bo'lsin;
+- o'z joylashuviga mos ish yoki ishchi topa olsin;
+- O'zbekistondagi ilovalardan qulayroq bo'lsin.
+
+Usul D dagidek: avval yangi testlar yozildi va **eski build'da** (`3136d4d`, `old-build.sh`) ishga tushirildi.
+
+### E1 · Ish izlovchi va ish beruvchi — alohida rejim
+
+- **OLDIN:**
+  - Bosh sahifada ikkala tomonning oynalari va kartalari aralash turardi: "Endi xodim topish oson" yonida
+    "Endi o'zingizga mos ish topish oson".
+  - Pastki menyuda "Qidirish" har safar "ish yoki ishchi?" deb so'rardi.
+  - Ish izlovchi `/search?mode=workers` ni ochib ishchilarni ko'rardi, `/post/vacancy` ni ochib vakansiya formasini
+    to'ldirardi. Hech qanday ogohlantirish yo'q edi.
+  - Lupa oynasida har safar "Ish / Ishchi" tanlovi chiqardi.
+- **KEYIN:**
+  - **Birinchi ochilishda** bosh sahifada savol chiqadi: "Siz nima qidiryapsiz?" — ikkita katta rasmli tugma, "Ish
+    qidiryapman" va "Xodim qidiryapman". Tanlov qurilmada (`ib_mode` cookie, 1 yil) va kirgan bo'lsa profilda
+    (`profiles.active_role`) eslab qolinadi.
+  - **Rejimdan keyin** faqat shu tomonga tegishli narsalar ko'rinadi:
+
+    | | Ish izlovchi | Ish beruvchi |
+    |---|---|---|
+    | Oynalar | Mos ish · Kunlik ishlar · Yaqin atrofdagi ishlar | Xodim topish · Yaqin atrofdagi ishchilar · Ish e'loni bering |
+    | E'lon kartasi | "O'zim haqimda e'lon berish" | "Ish e'loni berish" |
+    | Pastki menyu | "Ish topish" → `/search?mode=jobs` | "Xodim topish" → `/search?mode=workers` |
+    | Lupa | faqat ish e'lonlari ichida | faqat ishchilar ichida |
+    | Kabinet | AI PRO va yangi e'lonlar — faqat o'z rejimi | xuddi shunday |
+
+  - **Rejim almashtirgich:** bosh sahifa va kabinet tepasida "Ish izlovchi | Ish beruvchi". Bosilganda tasdiq
+    so'raladi ("Ish beruvchi rejimiga o'tasizmi?" → "Qolish" / "Ha, o'tish"), ya'ni tasodifan almashmaydi.
+  - **Boshqa tomonning bo'limi** havola orqali ochilsa, katta rasm va tushuntirish chiqadi: "Bu bo'lim ish beruvchilar
+    uchun". Ikki tugma bor:
+    - "Ish e'lonlariga qaytish";
+    - "Men xodim qidiryapman — o'tish" (rejim almashadi).
+  - **E'lon berishdan oldin tasdiq:** "Sizga xodim kerakmi?" → "Ha, menga xodim kerak" — shundan keyingina forma
+    ochiladi. "Yo'q" bosilsa, foydalanuvchi o'ziga kerakli e'longa o'tadi. Mavjud vakansiyani tahrirlash (`?edit=`)
+    so'rovsiz ochiladi.
+  - **Admin:** "Bosh sahifa" muharririda har oynaga "Kimga ko'rinadi" maydoni qo'shildi (ish izlovchi / ish beruvchi /
+    hammaga). Eski sozlamalardagi oynalar uchun auditoriya havoladan aniqlanadi. Standart oynalar soni 6 ta, cheklov — 12.
+  - **Mavjud funksiyalar o'zgarmadi:** `setActiveRole` endi `chooseMode` ga yo'naltiradi (bitta joyda cookie va profil
+    yoziladi). Kirishda qurilmadagi rejim profilga ko'chiriladi.
+- **Xavfsizlik:** rejim faqat interfeys tanlovi, huquq bermaydi. Server amali `chooseMode` qiymatni `z.enum` bilan
+  tekshiradi, bloklangan foydalanuvchining profiliga yozmaydi. Ma'lumotga kirish oldingidek RLS bilan cheklangan.
+- **Fayllar:**
+  - `src/features/mode/` (`mode.ts`, `server.ts`, `actions.ts`, `components/mode-chooser.tsx`, `mode-switch.tsx`,
+    `mode-gate.tsx`, `mode.test.ts`);
+  - `src/features/landing/home-three.tsx`, `src/app/page.tsx`;
+  - `src/app/search/page.tsx`, `src/app/post/{worker,vacancy}/page.tsx`;
+  - `src/components/shared/{app-shell,shell,top-bar}.tsx`, `src/features/find/components/{ai-finder,find-page}.tsx`;
+  - `src/features/home-windows/{model,window-art}.tsx`, `src/features/admin/components/home-editor.tsx`;
+  - `src/features/cabinet/components/cabinet-page.tsx`, `src/features/auth/{actions,telegram-session}.ts`;
+  - `messages/*/easy.json`, `messages/*/admin.json`.
+
+### E2 · "Saqlanganlar" pastki menyuda
+
+- **OLDIN:**
+  - Pastki menyuda "Saqlanganlar" yo'q edi; u kabinet ichida yashirin turardi.
+  - Ish izlovchi profil to'ldirmasdan vakansiyani saqlay olmasdi, chunki eski `saved_vacancies` ishchi profilini talab
+    qiladi. `/saved` ni ochganda profil yaratish ustasiga yo'naltirilardi (skrinshot `before-saved-worker`).
+  - Mehmon `/saved` ni ochsa, sabab aytilmasdan kirish sahifasiga otilardi.
+  - Ish beruvchi ishchini faqat kompaniya profili bilan saqlay olardi.
+- **KEYIN:**
+  - Pastki menyu: Bosh sahifa · Ish topish / Xodim topish · **Saqlanganlar** · Kabinet.
+  - Qidiruv, lupa va e'lon sahifasidagi har kartada "Saqlash" tugmasi bor (`aria-pressed`, nomi bilan: "Saqlash: <e'lon
+    nomi>"). Profil to'ldirish shart emas.
+  - `/saved` sahifasi joriy rejimga qarab ishlaydi:
+    - saqlangan ish e'lonlari yoki ishchilar qidiruvdagi kartalar bilan bir xil ko'rinishda (qo'ng'iroq tugmasi bilan);
+    - soni ko'rsatiladi;
+    - bo'sh bo'lsa — "Ish e'lonlarini ko'rish" tugmasi;
+    - ostida saqlangan qidiruvlar.
+  - Mehmonga tushuntirish va "Kirish" tugmasi ko'rsatiladi. Kartadagi "Saqlash" mehmonni kirishga olib boradi, kirgach
+    o'sha qidiruvga qaytaradi.
+  - **Baza (0061, faqat qo'shimcha):**
+    - `saved_items` jadvali: bir kishi bitta narsani bir marta saqlaydi (qisman unique indekslar).
+    - RLS: foydalanuvchi faqat o'z yozuvlarini ko'radi, qo'shadi va o'chiradi. Bloklangan yoki sessiyasi bekor qilingan
+      foydalanuvchi yoza olmaydi (`sec_active_*`). Mehmonga hech qanday huquq yo'q.
+    - Bir kishiga 500 tagacha yozuv (`saved_limit`).
+    - `my_saved_vacancies()` / `my_saved_workers()`: SECURITY DEFINER, faqat authenticated. Faqat hozir ko'rinadigan
+      e'lonlarni qaytaradi, telefon raqami qidiruvdagi qoida bilan beriladi. Eski jadvallardagi yozuvlar ham qo'shiladi.
+  - **0061 hali qo'llanmagan bazada** kod buzilmaydi:
+    - saqlash eski jadvallarga tushadi (profil talabi bilan);
+    - `/saved` ish izlovchiga eski `saved_vacancies` ro'yxatini ko'rsatadi, ish beruvchini papkali `/employer/saved`
+      paneliga yuboradi.
+- **Fayllar:**
+  - `supabase/migrations/0061_saved_items.sql`, `supabase/tests/saved_items.test.sql`;
+  - `src/features/saved/` (`actions.ts`, `queries.ts`, `missing.ts`, `components/save-button.tsx`);
+  - `src/app/saved/page.tsx`, `src/proxy.ts` (`/saved` mehmonga ochiq);
+  - `src/features/find/components/result-cards.tsx`, `src/features/find/ai-find.ts`;
+  - `src/features/jobs/{actions,queries}.ts`, `src/types/database.types.ts`.
+
+### E3 · Yaqin atrofda — joylashuvga mos ish va ishchi
+
+- **OLDIN:** joylashuv faqat e'lon berishda viloyatni tanlash uchun ishlatilardi. Qidiruvda har safar kasb, viloyat va
+  tumanni qo'lda tanlash kerak edi.
+- **KEYIN:**
+  - **"Yaqin atrofdagi ishlar" / "Yaqin atrofdagi ishchilar"** oynasi bosilganda "Joylashuvni aniqlash" tugmasi chiqadi.
+    Brauzer ruxsat bersa, eng yaqin tuman topiladi (tumanlar markazi koordinatalari bo'yicha) va darhol shu tumandagi
+    **barcha kasblar** bo'yicha natijalar ochiladi.
+  - Tuman shu qurilmada 180 kun eslab qolinadi (`ib_place` cookie). Keyingi safar joylashuv so'ralmaydi.
+  - Ruxsat berilmasa yoki xato bo'lsa, "Joylashuvni aniqlab bo'lmadi. Hech qisi yo'q — ro'yxatdan tanlang" xabari chiqadi; "Qo'lda tanlayman" tugmasi viloyat ro'yxatiga olib boradi.
+  - **Oddiy qidiruvda** viloyat qadamining eng boshida "Joylashuvim bo'yicha" tugmasi turadi. Tuman eslab qolingan
+    bo'lsa, undan keyin "Sizning hududingiz: <tuman>" havolasi chiqadi.
+  - Bosh sahifadagi "Kasb bo'yicha" kartasi yonida "Yaqin atrofda" havolasi bor.
+- **Xavfsizlik va maxfiylik:**
+  - koordinatalar serverga yuborilmaydi: eng yaqin tuman brauzerda hisoblanadi, serverga faqat tuman ID'si boradi;
+  - cookie qiymati (`viloyat~tuman`) serverda tekshiriladi: viloyat slug'i regex bilan, tuman — UUID yoki `all`.
+- **Fayllar:**
+  - `src/features/find/place.ts`, `place-actions.ts`, `place.test.ts`;
+  - `src/features/find/components/near-me.tsx`, `find-steps.tsx`;
+  - `src/features/find/params.ts` (`near`, `any`, `anyProfession`), `params.test.ts`;
+  - `src/components/shared/locate-ask.tsx`.
+
+### Qanday qulayroq (O'zbekistondagi ish ilovalari bilan solishtirganda)
+
+- **Bitta savol bilan boshlanadi:** ro'yxatdan o'tish yoki profil to'ldirish so'ralmaydi. "Ish qidiryapman / Xodim
+  qidiryapman" dan keyin faqat kerakli bo'limlar ko'rinadi.
+- **Saqlash uchun profil shart emas:** e'lonni bir bosishda saqlash mumkin, pastki menyudan doim topiladi.
+- **"Yaqin atrofda" bir bosishda:** kasbni bilmasa ham tumanidagi barcha ishlar chiqadi. Aniq manzil hech qayerga
+  yuborilmaydi.
+- **Adashtirmaydi:** boshqa tomonning sahifasi ochilsa, nima uchun ekani tushuntiriladi va qaytish yo'li bor. Rejim
+  tasdiqsiz almashmaydi.
+
+### Skrinshotlar (faqat stend ma'lumotlari, 390 px; "oldin" — `3136d4d`)
+
+- [birinchi ochilish](screenshots/e/e1-first-open-m.jpg) — oldin ikki tomon aralash, keyin "Siz nima qidiryapsiz?";
+- [bosh sahifa ikki rejimda](screenshots/e/e1-home-modes-m.jpg) — o'z oynalari, o'z e'loni, pastki menyuda "Ish topish" /
+  "Xodim topish" va "Saqlanganlar";
+- [ish izlovchi ishchilar qidiruvini ochsa](screenshots/e/e1-other-mode-m.jpg) — oldin ishchilar ro'yxati, keyin
+  tushuntirish va tanlov;
+- [e'lon berishdan oldin tasdiq va rejim almashtirish](screenshots/e/e1-post-confirm-m.jpg) — oldin vakansiya formasi
+  darhol ochilardi;
+- [Saqlanganlar](screenshots/e/e2-saved-m.jpg) — oldin profil ustasiga otardi, keyin kartada saqlash va ro'yxat;
+- [mehmon uchun Saqlanganlar](screenshots/e/e2-saved-guest-m.jpg) — oldin izohsiz kirish sahifasi;
+- [yaqin atrofda](screenshots/e/e3-near-m.jpg) — joylashuv so'rovi va Chilonzor tumanidagi barcha kasblar.
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`3136d4d`) | Keyin |
+|---|---|---|
+| `modes.spec.ts` (7): tanlov, almashtirgich, boshqa rejim, e'londan oldin tasdiq, lupa, yaqin atrofda ×2 | ❌ ×7 | ✅ |
+| `saved.spec.ts` (3): profilsiz saqlash → ro'yxat → olib tashlash; ish beruvchi ishchini saqlaydi; mehmon | ❌ ×3 | ✅ |
+| `home-windows.spec.ts` (3): ish izlovchi oynalari, ish beruvchi oynalari, kunlik ish | ❌ ❌ · ✅ (regressiya himoyasi) | ✅ |
+| `a11y.spec.ts`: 6 ta yangi sahifa (ikki rejimdagi bosh sahifa, boshqa rejim, yaqin atrofda, e'londan oldin tasdiq, Saqlanganlar) × 5 kenglik; forma sahifalari endi kerakli rejimda | — (yangi) | ✅ 17/17 |
+| Yangilangan spec'lar (rejimga moslandi): `journey-apply`, `search-ui`, `journeys`, `home`, `admin-home`, `cabinet`, `ai-finder` va boshqalar | — | ✅ |
+| 0061 qo'llanmagan baza (jadval va funksiyalar vaqtincha qayta nomlandi, keyin tiklandi): `/saved` eski ro'yxat, saqlash `saved_vacancies` ga, qidiruvda "Saqlangan" holati | — | ✅ 5/5 |
+| SQL: `saved_items.test.sql` (26: RLS, boshqa birovniki, bloklangan, limit, anon, funksiyalar) | — (yangi) | ✅ |
+| Unit: `mode.test.ts`, `model.test.ts`, `place.test.ts`, `params.test.ts`, `missing.test.ts` | — | ✅ |
+| To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 114/114 · 590 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 27 fayl |
+
+Topilgan va tuzatilgan xato: yangi kod 0061 qo'llanmagan bazaga chiqsa, `/saved` eski saqlanganlarni ko'rsatmas va
+kartadagi saqlash ishlamas edi (PostgREST yo'q jadvalga `404` va bo'sh `{}` qaytaradi, kod esa faqat xato kodiga
+qaragan edi). Endi `404` ham "jadval yo'q" deb tushuniladi (`missing.test.ts`), sahifa eski ro'yxatni ko'rsatadi.
+
+### Ochiq masalalar
+
+- **0061 production'ga qo'llanmagan — egasi ruxsati kerak.** Usiz ham sayt ishlaydi (eski yo'l). Lekin profilsiz saqlash
+  va ish beruvchining "Saqlanganlar"i faqat 0061 dan keyin ishlaydi.
+- Telegram Mini App ichida haqiqiy qurilmada — NOT_RUN. Production brauzer tekshiruvi — NOT_RUN (bu muhitdan
+  production'ga chiqish yopiq).
+- Joylashuv aniqligi qurilmaga bog'liq: eng yaqin tuman markazi bo'yicha tanlanadi, tuman chegarasida qo'shni tuman
+  chiqishi mumkin. Shuning uchun natija sarlavhasida tuman nomi va "O'zgartirish" tugmasi bor.
+- Ish beruvchi panelidagi papka va eslatmali saqlash (`/employer/saved`) alohida qoldi. Ikkala joyda saqlanganlar
+  `/saved` da birga ko'rinadi.
+- Telefonda bosh sahifa sarlavhasi rejim almashtirgich tufayli biroz pastga tushdi: 390 px da 304 → 374 px (ish
+  izlovchi) va 354 px (ish beruvchi). Test chegarasi < 400 px.

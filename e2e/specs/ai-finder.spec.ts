@@ -102,5 +102,7 @@ test("vakansiya sahifasi (telefon): lupa 'Ariza yuborish' panelini yopmaydi; ish
   await loginAs(context, USERS.employer);
   await page.goto("/");
   await fab(page).click();
-  await expect(page.getByRole("dialog").getByRole("radio", { name: "Xodim qidiryapman" })).toHaveAttribute("aria-checked", "true");
+  // ish beruvchi rejimi: lupa faqat ishchilar ichidan qidiradi (rejim tanlovi ko'rsatilmaydi)
+  await expect(page.getByRole("dialog").getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
+  await expect(page.getByRole("dialog").getByRole("radio")).toHaveCount(0);
 });

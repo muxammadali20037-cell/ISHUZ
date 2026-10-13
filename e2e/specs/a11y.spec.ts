@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * C1: asosiy sahifalar 360–1440 px da — WCAG 2.1 AA (axe: jiddiy/kritik buzilish yo'q), gorizontal siljish yo'q,
@@ -18,12 +18,19 @@ async function buxgalter() {
   return r!.id;
 }
 
-const PAGES: { name: string; url: () => Promise<string>; user?: string }[] = [
+// mode — shu qurilmada tanlangan rejim (E1); yo'q bo'lsa — birinchi ochilish ("Siz nima qidiryapsiz?" / tasdiq ekrani)
+const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "worker" | "employer" }[] = [
   { name: "home", url: async () => "/" },
+  { name: "home-worker", url: async () => "/", mode: "worker" },
+  { name: "home-employer", url: async () => "/", mode: "employer" },
   { name: "search-start", url: async () => "/search" },
-  { name: "search-results", url: async () => `/search?mode=jobs&p=${await buxgalter()}&region=all` },
-  { name: "post-worker", url: async () => "/post/worker" },
-  { name: "post-vacancy", url: async () => "/post/vacancy" },
+  { name: "search-results", url: async () => `/search?mode=jobs&p=${await buxgalter()}&region=all`, mode: "worker" },
+  { name: "search-other-mode", url: async () => "/search?mode=workers", mode: "worker" },
+  { name: "near-me", url: async () => "/search?mode=jobs&near=1", mode: "worker" },
+  { name: "post-worker", url: async () => "/post/worker", mode: "worker" },
+  { name: "post-vacancy", url: async () => "/post/vacancy", mode: "employer" },
+  { name: "post-confirm", url: async () => "/post/vacancy" },
+  { name: "saved", url: async () => "/saved", mode: "worker" },
   { name: "auth", url: async () => "/auth" },
   { name: "cabinet", url: async () => "/cabinet", user: USERS.workerA },
   // brend UI to'plami (faqat UI_KIT_PREVIEW=1 bilan) — barcha komponent holatlari bir sahifada
@@ -73,6 +80,7 @@ for (const p of PAGES) {
     test.setTimeout(120_000);
     if (p.user) await loginAs(context, p.user);
     else await asGuest(context);
+    if (p.mode) await asMode(context, p.mode);
     await page.emulateMedia({ reducedMotion: "reduce" });
     const url = await p.url();
     const mine: Row[] = [];

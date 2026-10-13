@@ -25,6 +25,18 @@
       "daily": {
         "title": "Kunlik ishlar",
         "desc": "Bir kunlik va qisqa ishlar — haq har kuni"
+      },
+      "near_jobs": {
+        "title": "Yaqin atrofdagi ishlar",
+        "desc": "Joylashuvingiz bo'yicha — eng yaqin ish e'lonlari"
+      },
+      "near_workers": {
+        "title": "Yaqin atrofdagi ishchilar",
+        "desc": "Joylashuvingiz bo'yicha — eng yaqin ishchilar"
+      },
+      "post_vacancy": {
+        "title": "Ish e'loni bering",
+        "desc": "Bir daqiqada — ishchilar o'zi bog'lanadi"
       }
     }
   },
@@ -303,7 +315,8 @@
     "empty_no_filters": "Filtrlarsiz qidirish",
     "daily_jobs": "Kunlik ishlar",
     "daily_only": "Faqat kunlik ishlar",
-    "daily_only_desc": "Haq har kuni to'lanadigan bir kunlik va qisqa ishlar"
+    "daily_only_desc": "Haq har kuni to'lanadigan bir kunlik va qisqa ishlar",
+    "all_professions": "Barcha kasblar"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
@@ -386,7 +399,10 @@
   },
   "nav": {
     "search": "Qidirish",
-    "cabinet": "Kabinetim"
+    "cabinet": "Kabinetim",
+    "jobs": "Ish topish",
+    "workers": "Xodim topish",
+    "saved": "Saqlanganlar"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -577,5 +593,77 @@
       "search_failed": "Qidiruv vaqtincha ishlamadi. Qayta urinib ko'ring.",
       "validation": "Kamida 2 ta harf yozing"
     }
+  },
+  "mode": {
+    "chooser_title": "Siz nima qidiryapsiz?",
+    "chooser_desc": "Tanlang — ilova faqat sizga keraklisini ko'rsatadi. Keyin istalgan payt almashtirasiz.",
+    "worker_title": "Ish qidiryapman",
+    "worker_desc": "Ish e'lonlarini ko'raman va o'zim haqimda e'lon beraman",
+    "employer_title": "Xodim qidiryapman",
+    "employer_desc": "Ishchilarni ko'raman va ish e'loni beraman",
+    "switch_label": "Rejim",
+    "worker_short": "Ish izlovchi",
+    "employer_short": "Ish beruvchi",
+    "to_employer_title": "Ish beruvchi rejimiga o'tasizmi?",
+    "to_employer_desc": "Bu rejimda ishchilarni qidirasiz va ish e'loni berasiz. Ish e'lonlari bo'limi yashiriladi — istalgan payt qaytishingiz mumkin.",
+    "to_worker_title": "Ish izlovchi rejimiga o'tasizmi?",
+    "to_worker_desc": "Bu rejimda ish e'lonlarini ko'rasiz va o'zingiz haqingizda e'lon berasiz. Ishchilar bo'limi yashiriladi — istalgan payt qaytishingiz mumkin.",
+    "confirm": "Ha, o'tish",
+    "cancel": "Qolish",
+    "gate_workers_title": "Bu bo'lim ish beruvchilar uchun",
+    "gate_workers_desc": "Siz hozir «Ish izlovchi» rejimidasiz. Ishchilarni qidirish va ularga bog'lanish — xodim qidirayotganlar uchun.",
+    "gate_jobs_title": "Bu bo'lim ish izlovchilar uchun",
+    "gate_jobs_desc": "Siz hozir «Ish beruvchi» rejimidasiz. Ish e'lonlarini ko'rish va ariza yuborish — ish qidirayotganlar uchun.",
+    "gate_to_employer": "Men xodim qidiryapman — o'tish",
+    "gate_to_worker": "Men ish qidiryapman — o'tish",
+    "gate_back_jobs": "Ish e'lonlariga qaytish",
+    "gate_back_workers": "Ishchilarga qaytish",
+    "post_worker_title": "Siz ish qidiryapsizmi?",
+    "post_worker_desc": "Bu e'lon ish qidirayotganlar uchun: o'zingiz haqingizda yozasiz, ish beruvchilar sizni topib bog'lanadi.",
+    "post_worker_yes": "Ha, men ish qidiryapman",
+    "post_worker_no": "Yo'q, menga xodim kerak",
+    "post_vacancy_title": "Sizga xodim kerakmi?",
+    "post_vacancy_desc": "Bu e'lon ish beruvchilar uchun: qanday ishchi kerakligini yozasiz, ishchilar sizga bog'lanadi.",
+    "post_vacancy_yes": "Ha, menga xodim kerak",
+    "post_vacancy_no": "Yo'q, men ish qidiryapman",
+    "home_worker_subtitle": "Sizga mos ish — tez va oson",
+    "home_employer_subtitle": "Sizga kerakli xodim — tez va oson",
+    "worker_post_title": "O'zingiz haqingizda e'lon bering",
+    "employer_post_title": "Ish e'loni bering",
+    "jobs_browse_title": "Ish e'lonlari",
+    "jobs_browse_desc": "Kasbingiz bo'yicha qidiring yoki yaqin atrofdagi ishlarni ko'ring.",
+    "workers_browse_title": "Ishchilar",
+    "workers_browse_desc": "Kerakli kasb bo'yicha qidiring yoki yaqin atrofdagi ishchilarni ko'ring.",
+    "by_profession": "Kasb bo'yicha",
+    "near_me": "Yaqin atrofda",
+    "finder_in_jobs": "Ish e'lonlari ichidan qidiriladi",
+    "finder_in_workers": "Ishchilar ichidan qidiriladi"
+  },
+  "saved": {
+    "save": "Saqlash",
+    "saved": "Saqlangan",
+    "added": "Saqlanganlarga qo'shildi",
+    "removed": "Saqlanganlardan olib tashlandi",
+    "limit": "Saqlanganlar 500 tadan oshmaydi — keraksizlarini olib tashlang",
+    "failed": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
+    "page_title": "Saqlanganlar",
+    "jobs_count": "Saqlangan ish e'lonlari: {count} ta",
+    "workers_count": "Saqlangan ishchilar: {count} ta",
+    "guest_desc": "Yoqqan e'lonlarni kartadagi saqlash belgisi bilan saqlang — keyin shu yerda topasiz. Saqlash uchun hisobga kiring.",
+    "login": "Kirish",
+    "empty_jobs_title": "Hali saqlangan ish e'loni yo'q",
+    "empty_workers_title": "Hali saqlangan ishchi yo'q",
+    "empty_desc": "E'lon kartasidagi saqlash belgisini bosing — u shu yerda saqlanadi.",
+    "browse_jobs": "Ish e'lonlarini ko'rish",
+    "browse_workers": "Ishchilarni ko'rish"
+  },
+  "near": {
+    "title_jobs": "Yaqin atrofdagi ishlarni ko'rsatamiz",
+    "title_workers": "Yaqin atrofdagi ishchilarni ko'rsatamiz",
+    "subtitle": "Telefoningiz joylashuvi bo'yicha eng yaqin tumanni topamiz. Aniq joylashuv hech qayerga yuborilmaydi — faqat tuman shu qurilmada eslab qolinadi.",
+    "button": "Joylashuvim bo'yicha",
+    "locating": "Joylashuv aniqlanmoqda…",
+    "failed": "Joylashuvni aniqlab bo'lmadi — ro'yxatdan tanlang",
+    "your_area": "Sizning hududingiz"
   }
 }

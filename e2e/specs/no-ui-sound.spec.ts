@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, formReady, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, formReady, loginAs, sql } from "../support";
+
+// E: e'lon berish va qidiruv — shu rejimda (rejim tanlanmasa, avval tasdiq so'raladi)
+test.beforeEach(async ({ context }) => {
+  await asMode(context, "worker");
+});
 
 /**
  * Qabul #25: tugma, karta, navigatsiya va ro'yxat chiqishida UI ovozi yo'q; ovoz sozlamasi tugmasi ham yo'q.

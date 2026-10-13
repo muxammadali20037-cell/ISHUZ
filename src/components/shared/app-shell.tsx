@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Search, User, type LucideIcon } from "lucide-react";
+import { Bookmark, Home, Search, User, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
 export type NavRole = "worker" | "employer" | "guest";
+export type NavMode = "worker" | "employer" | null;
 
 interface NavItem {
   href: string;
@@ -17,31 +18,34 @@ interface NavItem {
 }
 
 /**
- * Hamma uchun bir xil, sodda navigatsiya: Bosh sahifa · Qidirish · Kabinetim.
+ * Sodda navigatsiya: Bosh sahifa · Ish topish / Xodim topish (joriy rejim) · Saqlanganlar · Kabinetim.
  * E'lonlar, arizalar, takliflar va sozlamalar — "Kabinetim" ichida.
  */
-const MAIN_NAV: NavItem[] = [
-  { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" },
-  {
-    href: "/search",
-    labelKey: "easy.nav.search",
-    icon: Search,
-    match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/workers") || p.startsWith("/listing"),
-  },
-  {
-    href: "/cabinet",
-    labelKey: "easy.nav.cabinet",
-    icon: User,
-    badgeKey: "offers",
-    match: (p) =>
-      ["/cabinet", "/profile", "/settings", "/notifications", "/applications", "/offers", "/employer", "/company", "/saved", "/messages", "/post"].some((x) => p.startsWith(x)),
-  },
-];
+function mainNav(mode: NavMode): NavItem[] {
+  return [
+    { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" },
+    {
+      href: mode === "worker" ? "/search?mode=jobs" : mode === "employer" ? "/search?mode=workers" : "/search",
+      labelKey: mode === "worker" ? "easy.nav.jobs" : mode === "employer" ? "easy.nav.workers" : "easy.nav.search",
+      icon: Search,
+      match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/workers") || p.startsWith("/listing"),
+    },
+    { href: "/saved", labelKey: "easy.nav.saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
+    {
+      href: "/cabinet",
+      labelKey: "easy.nav.cabinet",
+      icon: User,
+      badgeKey: "offers",
+      match: (p) =>
+        ["/cabinet", "/profile", "/settings", "/notifications", "/applications", "/offers", "/employer", "/company", "/messages", "/post"].some((x) => p.startsWith(x)),
+    },
+  ];
+}
 
-export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
-  const items = MAIN_NAV;
+  const items = mainNav(mode);
   return (
     <nav
       className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
@@ -76,10 +80,10 @@ export function BottomNav({ counts }: { role: NavRole; counts?: Partial<Record<N
 }
 
 /** Desktop uchun yon/ustki navigatsiya havolalari */
-export function DesktopNavLinks({ counts }: { role: NavRole; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
-  const items = MAIN_NAV;
+  const items = mainNav(mode);
   return (
     <nav aria-label={t("common.nav.main_label")} className="hidden md:block">
     <ul className="flex items-center gap-1">

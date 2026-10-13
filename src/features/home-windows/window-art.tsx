@@ -8,7 +8,7 @@ export function WindowArtwork({ art }: { art: WindowArt }) {
   return (
     <svg viewBox="0 0 320 180" className="size-full" aria-hidden focusable="false">
       <rect width="320" height="180" className="fill-primary-soft" />
-      {art === "workers" ? <Workers /> : art === "jobs" ? <Jobs /> : <Daily />}
+      {art === "workers" ? <Workers /> : art === "jobs" ? <Jobs /> : art === "near" ? <Near /> : art === "post" ? <Post /> : <Daily />}
     </svg>
   );
 }
@@ -94,6 +94,46 @@ function Daily() {
       <rect x="237" y="118" width="8" height="30" rx="4" className="fill-warning-foreground/30" />
       <circle cx="34" cy="148" r="15" className="fill-success" />
       <circle cx="34" cy="148" r="9" className="fill-none stroke-success-foreground/60" strokeWidth="2.5" />
+    </>
+  );
+}
+
+/** "Yaqin atrofda": xarita, ko'cha chiziqlari, markazda joylashuv belgisi va radius halqalari */
+function Near() {
+  return (
+    <>
+      <circle cx="300" cy="22" r="58" className="fill-primary/10" />
+      <rect x="44" y="34" width="232" height="128" rx="18" className="fill-card" />
+      <path d="M44 96h232M128 34v128M212 34v128" className="stroke-primary/15" strokeWidth="10" />
+      <path d="M44 62c60 10 110-8 232 22" className="stroke-warning/50" strokeWidth="6" fill="none" strokeLinecap="round" />
+      <circle cx="160" cy="104" r="50" className="fill-primary/10 stroke-primary/30" strokeWidth="3" />
+      <circle cx="160" cy="104" r="28" className="fill-primary/15 stroke-primary/40" strokeWidth="3" />
+      <path d="M160 42c-17 0-29 13-29 29 0 22 29 49 29 49s29-27 29-49c0-16-12-29-29-29z" className="fill-primary" />
+      <circle cx="160" cy="71" r="11" className="fill-card" />
+      <circle cx="96" cy="128" r="9" className="fill-success" />
+      <circle cx="232" cy="70" r="9" className="fill-success" />
+      <circle cx="238" cy="136" r="9" className="fill-success" />
+    </>
+  );
+}
+
+/** "Ish e'loni bering": e'lon varag'i, ustida qo'shish belgisi, karnay */
+function Post() {
+  return (
+    <>
+      <circle cx="30" cy="160" r="56" className="fill-primary/10" />
+      <circle cx="296" cy="20" r="52" className="fill-primary/10" />
+      <rect x="96" y="30" width="128" height="136" rx="14" className="fill-primary/20" />
+      <rect x="84" y="22" width="128" height="136" rx="14" className="fill-card" />
+      <rect x="102" y="44" width="70" height="10" rx="5" className="fill-foreground/80" />
+      <rect x="102" y="64" width="92" height="8" rx="4" className="fill-foreground/25" />
+      <rect x="102" y="80" width="80" height="8" rx="4" className="fill-foreground/25" />
+      <rect x="102" y="104" width="56" height="18" rx="9" className="fill-success/15" />
+      <rect x="110" y="110" width="40" height="6" rx="3" className="fill-success" />
+      <circle cx="214" cy="132" r="26" className="fill-primary" />
+      <path d="M214 119v26M201 132h26" className="stroke-primary-foreground" strokeWidth="7" strokeLinecap="round" />
+      <path d="M244 64l26-14v44l-26-14z" className="fill-warning" />
+      <rect x="232" y="64" width="14" height="16" rx="3" className="fill-warning" />
     </>
   );
 }

@@ -8,13 +8,13 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
 import { LanguageSelect } from "./language-switcher";
-import { DesktopNavLinks, type NavRole } from "./app-shell";
+import { DesktopNavLinks, type NavMode, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
 import { LoginLink } from "./login-link";
 import { BrandMark } from "@/components/shared/brand-mark";
 
 /** Yuqori panel (barcha sahifalarda). Server komponent: sessiyani o'qiydi. */
-export async function TopBar({ role, counts }: { role: NavRole; counts?: { messages?: number; offers?: number; notifications?: number } }) {
+export async function TopBar({ role, counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: { messages?: number; offers?: number; notifications?: number } }) {
   const { t } = await getT();
   const session = await getSession();
   return (
@@ -29,7 +29,7 @@ export async function TopBar({ role, counts }: { role: NavRole; counts?: { messa
           </span>
         </Link>
         <div className="ml-4 min-w-0 flex-1 @max-[22rem]:ml-0">
-          <DesktopNavLinks role={role} counts={counts} />
+          <DesktopNavLinks role={role} mode={mode} counts={counts} />
         </div>
         <div className="flex items-center gap-1">
           <LanguageSelect />

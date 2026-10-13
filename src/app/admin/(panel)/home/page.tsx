@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { getAdminContext } from "@/features/admin/context";
 import { AdminPageHeader, Forbidden } from "@/features/admin/components/notes";
 import { HomeEditor, type WindowDefaults } from "@/features/admin/components/home-editor";
-import { WINDOW_ART, parseWindows } from "@/features/home-windows/model";
+import { BUILTIN_WINDOWS, parseWindows } from "@/features/home-windows/model";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -23,7 +23,7 @@ export default async function AdminHomePage() {
   const map = new Map((data ?? []).map((r) => [r.key, r.value]));
   // standart oynalar matni barcha tillarda (admin interfeysi faqat o'z tilini yuklaydi)
   const defaults = Object.fromEntries(
-    WINDOW_ART.map((id) => [id, Object.fromEntries(LOCALES.map((l) => [l, messages[l].easy.home.windows[id]]))]),
+    BUILTIN_WINDOWS.map((id) => [id, Object.fromEntries(LOCALES.map((l) => [l, messages[l].easy.home.windows[id]]))]),
   ) as WindowDefaults;
   return (
     <div>

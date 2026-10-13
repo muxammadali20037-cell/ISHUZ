@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /** C8.7 · kabinet, e'lon sahifasi, profil: holat va keyingi amal tushunarli, bitta aksent rang, o'zbekcha atamalar */
 
@@ -33,6 +33,7 @@ test.afterEach(async () => {
 test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal — eng yorqin tugma emas", async ({ page, context }) => {
   await activeVacancy();
   await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
   await page.goto("/cabinet");
   await expect(page.getByText("Faol — qidiruvda ko'rinadi · 22-oktabr 2026 gacha")).toBeVisible();
   const found = page.getByRole("button", { name: "Ishchi topdim" });
@@ -40,11 +41,10 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
   const bg = await found.evaluate((el) => getComputedStyle(el).backgroundColor);
   const success = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--success").trim());
   expect(bg).not.toBe(success);
-  // ikki teng "yangi e'lon" yo'li — bir xil neytral ko'rinish
-  const links = page.getByRole("link", { name: /O'zim haqimda e'lon berish|Ish e'loni berish/ });
-  await expect(links).toHaveCount(2);
-  const borders = await links.evaluateAll((els) => els.map((el) => getComputedStyle(el).borderColor));
-  expect(new Set(borders).size).toBe(1);
+  // "yangi e'lon" — faqat joriy rejimniki (ish beruvchiga o'zi haqida e'lon taklif qilinmaydi), neytral ko'rinish
+  await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(1);
+  await expect(page.getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveCount(0);
+  await expect(page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name: "Ish beruvchi" })).toHaveAttribute("aria-checked", "true");
 });
 
 test("vakansiya sahifasi: bandlik turi o'zbekcha ('To'liq kun', 'Full-time' emas)", async ({ page, context }) => {

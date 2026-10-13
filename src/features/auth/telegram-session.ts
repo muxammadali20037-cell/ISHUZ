@@ -3,7 +3,9 @@ import "server-only";
 
 import { createHmac, randomBytes, randomInt, timingSafeEqual } from "node:crypto";
 import type { createAdminClient } from "@/lib/supabase/admin";
+import { cookies } from "next/headers";
 import { createClient } from "@/lib/supabase/server";
+import { MODE_COOKIE, parseMode } from "@/features/mode/mode";
 import { getServerEnv } from "@/lib/env";
 import { logSecurityEvent } from "@/lib/security/events";
 
@@ -147,6 +149,13 @@ export async function startSessionForProfile(admin: AdminClient, profileId: stri
   const supabase = await createClient();
   const { error: verifyErr } = await supabase.auth.verifyOtp({ token_hash: link.properties.hashed_token, type: "magiclink" });
   if (verifyErr) throw new Error(`verifyOtp: ${verifyErr.message}`);
+  // kirishdan oldin shu qurilmada tanlangan rejim ("Ish qidiryapman"/"Xodim qidiryapman") profilga yoziladi —
+  // aks holda kirgandan keyin eski faol rol ustun kelib, e'lon berish oldidan yana tasdiq so'ralardi
+  const mode = parseMode((await cookies()).get(MODE_COOKIE)?.value);
+  if (mode) {
+    const { error } = await admin.from("profiles").update({ active_role: mode }).eq("id", profileId);
+    if (error) console.error("[auth] mode sync", error.message);
+  }
 }
 
 /** Telegram kontaktidagi raqam → E.164 ("998901234567" | "+998 90..." → "+998901234567") */

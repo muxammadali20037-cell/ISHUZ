@@ -13,7 +13,8 @@ const money = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
  * Ikki yo'l: "Menga ish topsin" va "Menga ishchi topsin" — o'z so'zi bilan yozadi, mos e'lon chiqishi bilan Telegram'ga xabar.
  * Google Play ilovasi ichida narx ko'rsatilmaydi (to'lov u yerda sotilmaydi).
  */
-export async function AiProCard({ userId, className }: { userId: string | null; className?: string }) {
+/** `only` — joriy rejim: faqat shu yo'nalish tugmasi (ish izlovchiga "Menga ishchi topsin" ko'rsatilmaydi) */
+export async function AiProCard({ userId, className, only }: { userId: string | null; className?: string; only?: "worker" | "employer" | null }) {
   const [{ t, locale }, pro] = await Promise.all([getT(), getAiProTeaser(userId)]);
   const badge = pro.paidUntil
     ? t("saved.ai_alerts.card_active", { date: formatDate(pro.paidUntil, locale) })
@@ -23,9 +24,9 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
         ? null
         : t("saved.ai_alerts.card_price", { amount: money(pro.price) });
   const ways = [
-    { href: "/ai-alerts?role=worker", track: "/ai-alerts/worker", icon: BriefcaseBusiness, label: t("saved.ai_alerts.card_worker") },
-    { href: "/ai-alerts?role=employer", track: "/ai-alerts/employer", icon: UsersRound, label: t("saved.ai_alerts.card_employer") },
-  ];
+    { role: "worker", href: "/ai-alerts?role=worker", track: "/ai-alerts/worker", icon: BriefcaseBusiness, label: t("saved.ai_alerts.card_worker") },
+    { role: "employer", href: "/ai-alerts?role=employer", track: "/ai-alerts/employer", icon: UsersRound, label: t("saved.ai_alerts.card_employer") },
+  ].filter((w) => !only || w.role === only);
 
   return (
     <section
@@ -57,7 +58,7 @@ export async function AiProCard({ userId, className }: { userId: string | null; 
           </p>
         </div>
       </div>
-      <div className="mt-5 grid gap-2 sm:grid-cols-2">
+      <div className={cn("mt-5 grid gap-2", ways.length > 1 && "sm:grid-cols-2")}>
         {ways.map((w) => (
           <Link
             key={w.href}

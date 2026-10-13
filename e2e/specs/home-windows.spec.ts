@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
  * D3 · bosh sahifa tepasidagi rasmli oynalar (xodim topish, mos ish, kunlik ishlar) va "Kunlik ishlar":
@@ -23,19 +23,20 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa: tepada uchta rasmli oyna, nomi rasm ostida; har biri o'z bo'limiga olib boradi", async ({ page, context }) => {
+test("bosh sahifa (ish izlovchi): tepada uchta rasmli oyna, nomi rasm ostida; har biri o'z bo'limiga olib boradi", async ({ page, context }) => {
   await asGuest(context);
+  await asMode(context, "worker");
   await page.goto("/");
   const windows = page.getByRole("region", { name: "Tezkor bo'limlar" });
   const links = windows.getByRole("link");
   await expect(links).toHaveCount(3);
-  await expect(links.nth(0)).toContainText("Endi xodim topish oson");
-  await expect(links.nth(1)).toContainText("Endi o'zingizga mos ish topish oson");
-  await expect(links.nth(2)).toContainText("Kunlik ishlar");
-  // oynalar sahifaning eng tepasida — sarlavhadan oldin; rasm nomdan yuqorida
+  await expect(links.nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
+  await expect(links.nth(1)).toContainText("Kunlik ishlar");
+  await expect(links.nth(2)).toContainText("Yaqin atrofdagi ishlar");
+  // oynalar sarlavhadan oldin; rasm nomdan yuqorida
   const first = links.nth(0);
   const art = await first.locator("svg").boundingBox();
-  const title = await first.getByText("Endi xodim topish oson").boundingBox();
+  const title = await first.getByText("Endi o'zingizga mos ish topish oson").boundingBox();
   expect(art!.y + art!.height).toBeLessThanOrEqual(title!.y + 1);
   expect(title!.y).toBeLessThan((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y);
   // telefonda sahifa yonga siljimaydi (oynalar o'z qatorida suriladi)
@@ -44,19 +45,29 @@ test("bosh sahifa: tepada uchta rasmli oyna, nomi rasm ostida; har biri o'z bo'l
   const second = (await links.nth(1).boundingBox())!;
   expect(second.x + second.width).toBeLessThanOrEqual(page.viewportSize()!.width);
   expect((await first.boundingBox())!.height).toBeLessThanOrEqual(210);
-  await expect(first.getByText("Kasb va hududni tanlang — mos ishchilar darhol chiqadi")).toBeHidden();
-  expect((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y).toBeLessThan(340);
+  await expect(first.getByText("Kasbingizni tanlang — yaqin atrofdagi ish e'lonlari")).toBeHidden();
+  expect((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y).toBeLessThan(400);
 
   await links.nth(0).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishchi qidiraman");
-  await page.goBack();
-  await page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link").nth(1).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish qidiraman");
   await page.goBack();
-  await page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link").nth(2).click();
+  await page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link").nth(1).click();
   // kunlik ishlar: kasb so'ralmaydi — darhol hudud
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qaysi viloyatda?");
   await expect(page.getByText("Ish e'lonlari · Kunlik ishlar")).toBeVisible();
+});
+
+test("bosh sahifa (ish beruvchi): xodim topish, yaqin atrofdagi ishchilar, ish e'loni berish", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "employer");
+  await page.goto("/");
+  const links = page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link");
+  await expect(links).toHaveCount(3);
+  await expect(links.nth(0)).toContainText("Endi xodim topish oson");
+  await expect(links.nth(1)).toContainText("Yaqin atrofdagi ishchilar");
+  await expect(links.nth(2)).toContainText("Ish e'loni bering");
+  await links.nth(0).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishchi qidiraman");
 });
 
 test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat kunliklar", async ({ page, context }) => {
@@ -70,6 +81,7 @@ test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat
   );
 
   await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
   await page.goto("/post/vacancy");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);
@@ -92,6 +104,7 @@ test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat
 
   // mehmon "Kunlik ishlar" oynasidan: hudud → butun shahar → faqat kunlik e'lon
   await asGuest(context);
+  await asMode(context, "worker");
   await page.goto("/");
   await page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link", { name: /Kunlik ishlar/ }).click();
   await page.getByRole("link", { name: "Toshkent shahri", exact: true }).click();
