@@ -44,7 +44,18 @@
     "to_home": "Home",
     "paid_ai_alerts": "AI assistant is on for 1 month — we'll message you on Telegram about matching jobs and workers",
     "to_ai_alerts": "Go to the AI assistant",
-    "paid_listing": "Your listing is back in search for 10 days"
+    "paid_listing": "Your listing is back in search for 10 days",
+    "paid_topup": "Wallet topped up",
+    "paid_topup_desc": "{amount} added to your balance",
+    "paid_topup_bonus": "{amount} and a {bonus} bonus added to your balance",
+    "to_wallet": "Go to wallet",
+    "retry": "Pay again",
+    "receipt_title": "Receipt",
+    "receipt_service": "Service",
+    "receipt_amount": "Amount",
+    "receipt_method": "Payment method",
+    "receipt_date": "Date",
+    "receipt_order": "Order"
   },
   "pricing": {
     "title": "Pricing",
@@ -68,10 +79,99 @@
     "already_promoted": "TOP is still active — you can turn it on again once it ends",
     "onboarding_required": "Please complete your profile first",
     "listing_payment_required": "Listings are paid. Please pay to appear in search.",
-    "in_app_unavailable": "This service can't be purchased in the app"
+    "in_app_unavailable": "This service can't be purchased in the app",
+    "insufficient_balance": "Not enough balance — top up your wallet or pay by card",
+    "invalid_amount": "Check the amount",
+    "wallet_unavailable": "The wallet is not available right now — pay by card",
+    "rate_limited": "Too many attempts. Please try again a little later",
+    "billing_disabled": "This service is free right now — no payment needed"
   },
   "listing_title": "Publish your job-seeking listing",
   "listing_desc": "Your listing is visible to employers in search for {days} days",
   "discount": "{percent}% off your first listing — until {date}",
-  "in_app_note": "This paid service can't be purchased in the app. Everything else in the app works as usual."
+  "in_app_note": "This paid service can't be purchased in the app. Everything else in the app works as usual.",
+  "checkout": {
+    "price_label": "Price",
+    "term_days": "{days} days",
+    "term_hours": "{hours} h",
+    "per_day": "{amount} a day",
+    "pay_wallet": "Pay from balance",
+    "balance": "Your balance: {amount}",
+    "balance_after": "Left after payment: {amount}",
+    "balance_low": "Your balance: {amount} — not enough for this",
+    "topup_link": "Top up wallet",
+    "or_card": "or by card",
+    "provider_pay": "Pay with {provider}",
+    "paid_toast": "Paid!",
+    "history_link": "My payments",
+    "help": "Questions? Help",
+    "benefits": {
+      "vacancy_publish": [
+        "{days} days in search — workers find you",
+        "Matching workers are notified right away",
+        "Applications and calls come straight to you"
+      ],
+      "worker_listing": [
+        "{days} days in employers' search",
+        "Employers call or message you",
+        "Found a job — close the listing in one tap"
+      ],
+      "worker_promotion": [
+        "{hours} h at the top of the list",
+        "Employers see you first",
+        "More offers"
+      ],
+      "ai_alerts": [
+        "A Telegram message as soon as a matching listing appears",
+        "Jobs and workers — one subscription",
+        "Works for {days} days"
+      ]
+    },
+    "trust": {
+      "secure": "Your card details never reach us — you pay on the Payme or Click page",
+      "receipt": "Receipt and payment history — on the “My payments” page",
+      "resubmit": "Not approved? Fix it and resubmit — no extra payment within {days} days"
+    },
+    "not_needed": "No payment needed right now — the service is active or free"
+  },
+  "wallet": {
+    "title": "My payments",
+    "subtitle": "Wallet, receipts and payment history",
+    "wallet_title": "Wallet",
+    "balance_label": "Balance",
+    "why": "Top up once — then pay for listings and services in one tap, without entering your card.",
+    "topup_title": "Top up wallet",
+    "custom": "Other amount",
+    "custom_placeholder": "For example, 30 000",
+    "range": "from {min} to {max}",
+    "bonus_hint": "Top up {min} or more and get a +{percent}% bonus",
+    "bonus_preview": "+{amount} bonus",
+    "pay_topup": "Top up {amount} with {provider}",
+    "note": "The balance can only be used for “Ish topdim” services and is not refunded in cash.",
+    "unavailable": "The wallet is coming soon. For now you can pay for each service by card.",
+    "history_title": "Payment history",
+    "empty": "No payments yet",
+    "purposes": {
+      "vacancy_publish": "Job listing",
+      "worker_listing": "Job-seeker listing",
+      "worker_promotion": "Profile in TOP",
+      "ai_alerts": "AI assistant (PRO)",
+      "wallet_topup": "Wallet top-up"
+    },
+    "statuses": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "unpaid": "Not paid",
+      "cancelled": "Cancelled",
+      "failed": "Failed"
+    },
+    "methods": {
+      "payme": "Payme",
+      "click": "Click",
+      "wallet": "Wallet"
+    },
+    "order": "#{order}",
+    "bonus": "+{amount} bonus",
+    "retry": "Pay again"
+  }
 }

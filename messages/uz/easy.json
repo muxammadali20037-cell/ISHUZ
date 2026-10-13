@@ -102,7 +102,8 @@
       "logout": "Hisobdan chiqish",
       "matches": "Mos e'lonlar va nomzodlar",
       "alerts": "Telegram xabarnomalari",
-      "verification": "Ish beruvchini tasdiqlash"
+      "verification": "Ish beruvchini tasdiqlash",
+      "billing": "To'lovlarim va hamyon"
     }
   },
   "wizard": {
@@ -187,8 +188,8 @@
     "done_desc": "Endi ish beruvchilar siz bilan bog'lanishi mumkin.",
     "done_matches": "Mos ishlarni ko'rish",
     "done_view": "E'lonimni ko'rish",
-    "pay_title": "E'loningiz saqlandi, lekin hali joylanmadi",
-    "pay_desc": "Qidiruvda ko'rinishi uchun to'lov kerak. To'lovdan keyin e'loningiz {days} kun ish beruvchilarga ko'rinadi.",
+    "pay_title": "E'loningiz tayyor! Joylash uchun to'lov qoldi",
+    "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ish beruvchilarga ko'rinadi.",
     "saved_title": "Ma'lumotlaringiz saqlandi",
     "edit_title": "E'lonni o'zgartirish"
   },
@@ -236,8 +237,8 @@
     "done_view": "E'lonimni ko'rish",
     "review_state_title": "E'loningiz tekshiruvga yuborildi",
     "review_state_desc": "Hali qidiruvda ko'rinmaydi. Moderator tekshirgach e'lon joylanadi va sizga xabar keladi.",
-    "pay_title": "E'loningiz saqlandi, lekin hali joylanmadi",
-    "pay_desc": "Qidiruvda ko'rinishi uchun to'lov kerak. To'lovdan keyin e'lon {days} kun faol bo'ladi.",
+    "pay_title": "E'loningiz tayyor! Joylash uchun to'lov qoldi",
+    "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ishchilarga ko'rinadi.",
     "edit_title": "E'lonni o'zgartirish",
     "salary_period_daily": "Maosh (so'm, kuniga)",
     "salary_period_hourly": "Maosh (so'm, soatiga)",

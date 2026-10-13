@@ -44,7 +44,18 @@
     "to_home": "Bosh sahifa",
     "paid_ai_alerts": "AI yordamchi 1 oyga yoqildi — mos ish va ishchilar haqida Telegram'ga yozamiz",
     "to_ai_alerts": "AI yordamchiga o'tish",
-    "paid_listing": "E'loningiz yana 10 kun qidiruvda"
+    "paid_listing": "E'loningiz yana 10 kun qidiruvda",
+    "paid_topup": "Hamyon to'ldirildi",
+    "paid_topup_desc": "Balansingizga {amount} qo'shildi",
+    "paid_topup_bonus": "Balansingizga {amount} va {bonus} bonus qo'shildi",
+    "to_wallet": "Hamyonga",
+    "retry": "Qayta to'lash",
+    "receipt_title": "Chek",
+    "receipt_service": "Xizmat",
+    "receipt_amount": "Summa",
+    "receipt_method": "To'lov usuli",
+    "receipt_date": "Sana",
+    "receipt_order": "Buyurtma"
   },
   "pricing": {
     "title": "Narxlar",
@@ -68,10 +79,99 @@
     "already_promoted": "TOP hali faol — tugagach yana yoqishingiz mumkin",
     "onboarding_required": "Avval profilingizni to'ldiring",
     "listing_payment_required": "E'lon joylash pullik. Qidiruvga chiqish uchun to'lov qiling.",
-    "in_app_unavailable": "Bu xizmatni ilova ichida xarid qilib bo'lmaydi"
+    "in_app_unavailable": "Bu xizmatni ilova ichida xarid qilib bo'lmaydi",
+    "insufficient_balance": "Balans yetmaydi — hamyonni to'ldiring yoki karta bilan to'lang",
+    "invalid_amount": "Summani tekshiring",
+    "wallet_unavailable": "Hamyon hozircha ishlamayapti — karta bilan to'lang",
+    "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring",
+    "billing_disabled": "Hozir bu xizmat bepul — to'lov kerak emas"
   },
   "listing_title": "Ish qidirish e'lonini joylash",
   "listing_desc": "E'loningiz {days} kun ish beruvchilar qidiruvida ko'rinadi",
   "discount": "Birinchi e'longa {percent}% chegirma — {date} gacha",
-  "in_app_note": "Bu pullik xizmatni ilova ichida xarid qilib bo'lmaydi. Ilovaning qolgan barcha imkoniyatlari ishlayveradi."
+  "in_app_note": "Bu pullik xizmatni ilova ichida xarid qilib bo'lmaydi. Ilovaning qolgan barcha imkoniyatlari ishlayveradi.",
+  "checkout": {
+    "price_label": "Narxi",
+    "term_days": "{days} kun",
+    "term_hours": "{hours} soat",
+    "per_day": "kuniga {amount}",
+    "pay_wallet": "Balansdan to'lash",
+    "balance": "Balansingiz: {amount}",
+    "balance_after": "To'lovdan keyin qoladi: {amount}",
+    "balance_low": "Balansingiz: {amount} — bu xizmatga yetmaydi",
+    "topup_link": "Hamyonni to'ldirish",
+    "or_card": "yoki karta bilan",
+    "provider_pay": "{provider} orqali to'lash",
+    "paid_toast": "To'landi!",
+    "history_link": "To'lovlarim",
+    "help": "Savol bormi? Yordam",
+    "benefits": {
+      "vacancy_publish": [
+        "{days} kun qidiruvda — ishchilar sizni topadi",
+        "Mos ishchilarga darhol xabar boradi",
+        "Arizalar va qo'ng'iroqlar to'g'ridan-to'g'ri sizga"
+      ],
+      "worker_listing": [
+        "{days} kun ish beruvchilar qidiruvida",
+        "Ish beruvchilar sizga qo'ng'iroq qiladi yoki yozadi",
+        "Ish topsangiz — e'lonni bir bosishda yopasiz"
+      ],
+      "worker_promotion": [
+        "{hours} soat ro'yxat boshida",
+        "Ish beruvchilar sizni birinchi ko'radi",
+        "Takliflar ko'payadi"
+      ],
+      "ai_alerts": [
+        "Mos e'lon chiqishi bilan Telegram'ga xabar",
+        "Ish ham, ishchi ham — bitta obuna",
+        "{days} kun davomida ishlaydi"
+      ]
+    },
+    "trust": {
+      "secure": "Karta ma'lumotlari bizga kelmaydi — to'lov Payme yoki Click sahifasida",
+      "receipt": "Chek va to'lovlar tarixi — «To'lovlarim» sahifasida",
+      "resubmit": "Tekshiruvdan o'tmasa — tuzatib qayta yuborasiz, {days} kun ichida qayta to'lamaysiz"
+    },
+    "not_needed": "Hozir to'lov kerak emas — xizmat faol yoki bepul"
+  },
+  "wallet": {
+    "title": "To'lovlarim",
+    "subtitle": "Hamyon, cheklar va to'lovlar tarixi",
+    "wallet_title": "Hamyon",
+    "balance_label": "Balans",
+    "why": "Bir marta to'ldiring — keyin e'lon va xizmatlarga karta kiritmasdan bir bosishda to'laysiz.",
+    "topup_title": "Hamyonni to'ldirish",
+    "custom": "Boshqa summa",
+    "custom_placeholder": "Masalan, 30 000",
+    "range": "{min} dan {max} gacha",
+    "bonus_hint": "{min} va undan ko'p to'ldirsangiz +{percent}% bonus",
+    "bonus_preview": "+{amount} bonus",
+    "pay_topup": "{provider} orqali {amount} to'ldirish",
+    "note": "Balans faqat «Ish topdim» xizmatlariga ishlatiladi va naqd pulga qaytarilmaydi.",
+    "unavailable": "Hamyon tez orada ishga tushadi. Hozircha har bir xizmatni karta bilan to'lashingiz mumkin.",
+    "history_title": "To'lovlar tarixi",
+    "empty": "Hali to'lov yo'q",
+    "purposes": {
+      "vacancy_publish": "Vakansiya e'loni",
+      "worker_listing": "Ish qidirish e'loni",
+      "worker_promotion": "Profil TOP da",
+      "ai_alerts": "AI yordamchi (PRO)",
+      "wallet_topup": "Hamyonni to'ldirish"
+    },
+    "statuses": {
+      "paid": "To'langan",
+      "pending": "Kutilmoqda",
+      "unpaid": "To'lanmagan",
+      "cancelled": "Bekor qilingan",
+      "failed": "Xato"
+    },
+    "methods": {
+      "payme": "Payme",
+      "click": "Click",
+      "wallet": "Hamyon"
+    },
+    "order": "№{order}",
+    "bonus": "+{amount} bonus",
+    "retry": "Qayta to'lash"
+  }
 }

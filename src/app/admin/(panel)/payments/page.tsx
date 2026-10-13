@@ -24,7 +24,8 @@ export default async function AdminPaymentsPage() {
     .order("created_at", { ascending: false })
     .limit(200);
   const rows = data ?? [];
-  const paid = rows.filter((r) => r.status === "paid");
+  // hamyondan to'lov — ichki harakat (pul to'ldirishda allaqachon kelgan): tushumga qo'shilmaydi
+  const paid = rows.filter((r) => r.status === "paid" && r.provider !== "wallet");
   const stats = [
     { label: t("admin.payments.total_paid"), value: formatMoney(paid.reduce((s, r) => s + r.amount, 0), locale) },
     { label: t("admin.payments.count_paid"), value: String(paid.length) },
@@ -36,6 +37,7 @@ export default async function AdminPaymentsPage() {
     <div>
       <AdminPageHeader title={t("admin.payments.title")} subtitle={t("admin.payments.subtitle")} />
       <QueryError message={error?.message ?? null} />
+      <p className="mb-2 text-xs text-muted-foreground">{t("admin.payments.total_note")}</p>
       <div className="mb-5 grid gap-3 sm:grid-cols-3">
         {stats.map((s) => (
           <div key={s.label} className="rounded-2xl border border-border bg-card p-4">
@@ -62,7 +64,7 @@ export default async function AdminPaymentsPage() {
                   <td className="px-4 py-2.5 font-mono tabular">#{r.order_no}</td>
                   <td className="px-4 py-2.5">{t(`admin.payments.purposes.${r.purpose}`)}</td>
                   <td className="px-4 py-2.5 font-semibold tabular">{formatMoney(r.amount, locale)}</td>
-                  <td className="px-4 py-2.5 capitalize">{r.provider ?? "—"}</td>
+                  <td className="px-4 py-2.5 capitalize">{r.provider === "wallet" ? t("admin.payments.providers.wallet") : (r.provider ?? "—")}</td>
                   <td className="px-4 py-2.5">
                     <Badge variant={tone[r.status]} size="sm">
                       {t(`admin.payments.statuses.${r.status}`)}

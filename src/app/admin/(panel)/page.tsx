@@ -35,6 +35,8 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
     { key: "price_ai_alerts", kind: "number" as const, label: t("admin.quick.ai_price"), hint: t("admin.quick.ai_price_hint"), suffix: t("admin.quick.sum_month") },
     { key: "listings_paid", kind: "boolean" as const, label: t("admin.quick.listings_paid"), hint: t("admin.quick.listings_paid_hint"), onText: t("admin.quick.paid"), offText: t("admin.quick.free") },
     { key: "employer_verification_required", kind: "boolean" as const, label: t("admin.quick.employer_check"), hint: t("admin.quick.employer_check_hint") },
+    { key: "wallet_bonus_percent", kind: "number" as const, label: t("admin.quick.wallet_bonus"), hint: t("admin.quick.wallet_bonus_hint"), suffix: "%" },
+    { key: "wallet_bonus_min", kind: "number" as const, label: t("admin.quick.wallet_bonus_min"), hint: t("admin.quick.wallet_bonus_min_hint"), suffix: t("admin.quick.sum") },
   ].flatMap((c) => {
     const row = setting(c.key);
     if (!row || (c.kind === "boolean" ? typeof row.value !== "boolean" : typeof row.value !== "number")) return [];

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Bell, BellRing, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound } from "lucide-react";
+import { Bell, BellRing, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
@@ -60,6 +60,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { href: "/employer/applications", label: t("easy.cabinet.links.employer_applications"), icon: UsersRound, show: !!session.employerOnboarded },
     { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true },
     { href: "/profile", label: t("easy.cabinet.links.profile"), icon: UserRound, show: !!(session.workerOnboarded || session.employerId) },
+    { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true },
     { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true },
   ];
 

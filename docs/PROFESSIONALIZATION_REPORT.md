@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da va E: 2026-10-13) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,8 +11,8 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0061 toza bazaga | ✅ lint, typecheck, unit (590 / 18 skip), SQL (27 fayl), build, 114 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) · **0061 (Saqlanganlar) — hali qo'llanmagan, egasi ruxsatini kutmoqda**; usiz kod eski jadvallar bilan ishlaydi (§13) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0063 toza bazaga | ✅ lint, typecheck, unit (601 / 18 skip), SQL (28 fayl), build, 120 ta brauzer E2E — PASS |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) · **0061 (Saqlanganlar), 0062–0063 (hamyon) — hali qo'llanmagan, egasi ruxsatini kutmoqda**; usiz kod eski yo'l bilan ishlaydi (§13, §14) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
 Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
@@ -1364,3 +1364,131 @@ qaragan edi). Endi `404` ham "jadval yo'q" deb tushuniladi (`missing.test.ts`), 
   `/saved` da birga ko'rinadi.
 - Telefonda bosh sahifa sarlavhasi rejim almashtirgich tufayli biroz pastga tushdi: 390 px da 304 → 374 px (ish
   izlovchi) va 354 px (ish beruvchi). Test chegarasi < 400 px.
+
+## 14. F — to'lov qulay va professional (2026-10-13)
+
+So'rov (egasidan): "odamlar pul to'lashga erinmasin, juda qulay, foydali va professional qilib ber; nima foydali va
+qulay bo'lsa qo'sh, o'zgartir — odamlar to'lashdan qochmasin".
+
+Usul oldingi bosqichlardagidek: avval yangi testlar yozildi va **eski build'da** (`102ff08`, `old-build.sh`) ishga
+tushirildi. Ikkala build bir xil sinov kassasi bilan ishladi: `up.sh` va `old-build.sh`dagi kalitlar haqiqiy emas.
+
+### F1 · To'lov oynasi — nima olinadi, narx, ishonch; to'lovgacha 1 bosish
+
+- **OLDIN** ([skrinshot](screenshots/f/f1-result-m.jpg)):
+  - E'lon to'ldirilgach, sariq "xato" rangida "E'loningiz saqlandi, lekin hali joylanmadi" chiqardi.
+  - Payme sahifasigacha 3 marta bosish kerak edi: "To'lash va joylash" → dialog → usul.
+  - Dialogda faqat narx va ikki bir xil tugma bor edi. Nima olinishi, kunlik narx, chek haqida hech narsa yo'q edi.
+  - AI PRO'ning to'lov tugmalari alohida, boshqacha ko'rinishda edi.
+- **KEYIN:**
+  - Natija ekrani do'stona ko'k rangda: "E'loningiz tayyor! Joylash uchun to'lov qoldi". To'lov paneli **shu ekranning
+    o'zida**, ya'ni Payme yoki Click'gacha **1 bosish**.
+  - **Panel (hamma joyda bir xil: natija ekrani, kabinet dialogi, AI PRO, "Qayta to'lash"):**
+    - xizmatning 3 ta foydasi (masalan: "10 kun ish beruvchilar qidiruvida", "Ish beruvchilar sizga qo'ng'iroq qiladi
+      yoki yozadi", "Ish topsangiz — e'lonni bir bosishda yopasiz");
+    - narx, chegirmada asl narx chizilgan holda, muddat va **kunlik narx**: 5 000 so'm · 10 kun · kuniga 500 so'm;
+      vakansiya — kuniga 2 500 so'm;
+    - to'lov usullari: hamyonda yetarli pul bo'lsa — "Balansdan to'lash" (asosiy tugma, qoldiq ko'rsatiladi), keyin
+      "yoki karta bilan" — Payme / Click. **Oxirgi ishlatilgan usul birinchi turadi** (shu qurilmada eslab qolinadi).
+    - ishonch qatorlari:
+      - "Karta ma'lumotlari bizga kelmaydi — to'lov Payme yoki Click sahifasida";
+      - "Chek va to'lovlar tarixi — «To'lovlarim» sahifasida";
+      - faqat vakansiyada: "Tekshiruvdan o'tmasa — tuzatib qayta yuborasiz, 10 kun ichida qayta to'lamaysiz".
+        Bu va'da SQL test bilan tasdiqlangan: rad etilgan pullik vakansiya muddat ichida to'lovsiz qayta faol bo'ladi.
+    - "To'lovlarim" va "Yordam" havolalari.
+  - Google Play ilovasi ichida to'lov tugmalari o'rniga oldingidek neytral izoh chiqadi (Play qoidasi).
+- **Xavfsizlik:** narx, huquq va "allaqachon to'langan" faqat serverda (`create_payment`) tekshiriladi; panel faqat
+  ko'rsatadi.
+
+### F2 · Hamyon — bir marta to'ldirib, keyin karta kiritmasdan bir bosishda
+
+- **OLDIN:** har bir xizmat uchun alohida Payme yoki Click sahifasiga o'tib, karta va SMS kodini kiritish kerak edi.
+- **KEYIN (0062 + 0063, faqat qo'shimcha):**
+  - **To'ldirish:** "To'lovlarim" sahifasida tayyor summalar (20 000 / 50 000 / 100 000 / 200 000) yoki o'z summasi
+    (5 000 – 2 000 000 so'm). To'lov mavjud Payme/Click oqimi orqali o'tadi.
+  - **Bonus (ixtiyoriy):** admin "Tezkor boshqaruv"da yoqadi (masalan, 100 000 dan +10%). Standart — 0. Bonus tugma
+    ustida oldindan ko'rinadi.
+  - **Balansdan to'lash** — e'lon, ishchi e'loni, TOP va AI PRO uchun bir bosishda. Natijada chek ochiladi
+    (to'lov usuli — "Hamyon").
+  - Balans faqat ilova xizmatlariga ishlatiladi va naqd pulga qaytarilmaydi (sahifada yozilgan).
+- **Baza va xavfsizlik:**
+  - `wallets` va `wallet_ledger` (har harakat yozuvi). Foydalanuvchi faqat o'zinikini o'qiydi; yozish faqat SECURITY
+    DEFINER funksiyalar orqali. Mehmonga hech qanday huquq yo'q, anon ruxsat ro'yxati o'zgarmadi.
+  - `wallet_pay` narxni `create_payment` bilan bir xil hisoblaydi va balans qatorini qulflaydi: bir vaqtdagi ikki
+    to'lov balansni manfiy qila olmaydi, bazada esa `balance >= 0` cheklovi ham bor.
+  - Balans yetmasa — hech narsa yozilmaydi.
+  - Bir to'ldirish balansga faqat bir marta qo'shiladi, Payme `Perform` qayta kelsa ham. Bajarilgan to'ldirishni
+    Payme bekor qila olmaydi (−31007).
+  - Hamyondan to'lovlar admin tushumiga qo'shilmaydi: pul to'ldirishda allaqachon hisoblangan.
+- **Topilgan va tuzatilgan mavjud xato:** to'lov qilingan (masalan, muddati tugagan) vakansiyani ish beruvchi
+  **o'chira olmas edi**. `payments_target` cheklovi bo'shagan havolaga yo'l qo'ymasdi va o'chirish xato bilan
+  to'xtardi (SQL'da takrorlandi).
+  - Endi to'lov tarixi qoladi, havola bo'shaydi.
+  - O'chirilgan e'lonning kutilayotgan to'lovi bekor qilinadi, shu bois Payme keyin pulni yecha olmaydi (−31008).
+- **0063 production'da bo'lmasa:** kod buzilmaydi. Panel hamyonsiz ishlaydi, "To'lovlarim"da tarix va "Hamyon tez
+  orada" izohi chiqadi.
+
+### F3 · "To'lovlarim", chek va "Qayta to'lash"
+
+- **OLDIN** ([skrinshot](screenshots/f/f3-retry-m.jpg)):
+  - Foydalanuvchi o'z to'lovlarini ko'ra olmasdi (faqat admin).
+  - To'lov bekor bo'lsa "Qayta urinib ko'rishingiz mumkin" deyilardi, lekin bunday tugma yo'q edi va ikkita bir xil
+    asosiy tugma turardi.
+- **KEYIN:**
+  - `/billing` "To'lovlarim" (kabinetda "To'lovlarim va hamyon"): hamyon kartasi va to'lovlar tarixi. Har to'lovda
+    xizmat, sana, buyurtma №, usul, summa, holat va bonus ko'rinadi.
+  - 1 soatdan eski "kutilmoqda" to'lov "To'lanmagan" deb ko'rsatiladi: Payme sahifasi yopilgan, pul yechilmagan.
+  - To'lovdan qaytish sahifasida **chek** bor: xizmat, summa, usul, sana, buyurtma.
+  - Bekor bo'lsa — asosiy tugma **"Qayta to'lash"**: shu xizmatning to'lov oynasi ochiladi.
+  - Hamyon to'ldirilsa — "Hamyon to'ldirildi: 100 000 so'm va 10 000 so'm bonus".
+- **Admin:** to'lovlar jadvalida "Hamyon" usuli va to'ldirish turi ko'rinadi. "Tezkor boshqaruv"ga hamyon bonusi
+  (foiz) va eng kam summa qo'shildi.
+
+**Fayllar:**
+- baza: `supabase/migrations/0062_wallet_enums.sql`, `0063_wallet.sql`, `supabase/tests/wallet.test.sql`;
+- to'lov moduli: `src/features/billing/{actions,queries,pricing,types}.ts`, `pricing.test.ts`,
+  `components/{checkout-panel,wallet-topup,retry-pay,in-app-note,payment-dialog}.tsx`;
+- sahifalar: `src/app/billing/page.tsx`, `src/app/billing/return/page.tsx`;
+- e'lon natijasi: `src/features/post/components/{publish-result,worker-post,vacancy-post}.tsx`;
+- AI PRO: `src/features/ai-alerts/{actions.ts,components/ai-alerts-panel.tsx}`;
+- kabinet, admin, bildirishnoma: `src/features/cabinet/components/cabinet-page.tsx`,
+  `src/app/admin/(panel)/{page,payments/page}.tsx`, `src/features/notifications/render.ts`;
+- tiplar va matnlar: `src/types/database.types.ts`, `messages/*/{billing,easy,admin}.json`;
+- stend: `e2e/stack/up.sh` va `e2e/screens/old-build.sh` (sinov kassasi), `e2e/specs/{payments,a11y}.spec.ts`.
+
+### Skrinshotlar (390 px, faqat stend ma'lumotlari; "oldin" — `102ff08`)
+
+- [e'lon natijasi: to'lov shu ekranda](screenshots/f/f1-result-m.jpg);
+- [vakansiya: hamyon bilan](screenshots/f/f1-vacancy-m.jpg);
+- [kabinet dialogi](screenshots/f/f1-dialog-m.jpg);
+- [AI PRO](screenshots/f/f1-ai-m.jpg);
+- ["To'lovlarim" va chek](screenshots/f/f2-billing-m.jpg);
+- [bekor bo'lgan to'lov — "Qayta to'lash"](screenshots/f/f3-retry-m.jpg).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`102ff08`) | Keyin |
+|---|---|---|
+| `payments.spec.ts`: ishchi e'loni — panel (foyda, 5 000 so'm, chizilgan 10 000, kuniga 500, ishonch) → Payme URL (`a=500000`, qaytish manzili) → Payme JSON-RPC (Check/Create/Perform) → chek → e'lon qidiruvda | ❌ | ✅ |
+| `payments.spec.ts`: hamyon — 100 000 + 10% bonus (Payme) → balans 110 000 → vakansiya balansdan 25 000 → faol, qoldiq 85 000, chekda "Hamyon" | ❌ | ✅ |
+| `payments.spec.ts`: bekor to'lov → "Qayta to'lash" → oxirgi usul (Click) birinchi → Click Prepare/Complete (md5 imzo) → e'lon qidiruvda | ❌ | ✅ |
+| `payments.spec.ts`: AI PRO — balansdan bir bosishda, 30 kunlik obuna | ❌ | ✅ |
+| `payments.spec.ts`: mehmon "To'lovlarim" → kirish | ✅ (regressiya himoyasi) | ✅ |
+| `a11y.spec.ts`: "To'lovlarim" × 5 kenglik (WCAG AA, 44 px, siljish yo'q) | — (yangi) | ✅ |
+| SQL `wallet.test.sql` (50): mehmon, bloklangan, begona e'lon, yetmagan balans (hech narsa yozilmaydi), qayta Perform, bonus, manfiy balans, rad etilgan vakansiya qayta to'lovsiz, to'langan e'lonni o'chirish, o'chirilgan e'lon to'lovini Payme bajara olmaydi | — (yangi) | ✅ |
+| Unit `pricing.test.ts` (18): kunlik narx, usullar tartibi, bonus, summa o'qish, tarix holati | — | ✅ |
+| To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 120/120 · 601 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 28 fayl |
+
+### Ochiq masalalar
+
+- **0061, 0062, 0063 production'ga qo'llanmagan — egasi ruxsati kerak.**
+  - 0062 faqat enum qiymatlari.
+  - 0063: hamyon va `payments_target` tuzatishi.
+  - Ular bo'lmasa ham yangi to'lov oynasi, "To'lovlarim" (tarix) va "Qayta to'lash" ishlaydi; hamyon esa yashirin
+    qoladi.
+- **Haqiqiy Payme/Click kassasi bilan sinov — NOT_RUN.** Bu muhitdan tashqi to'lov tizimiga chiqish yo'q. Server
+  so'rovlari stendda ularning protokoli bo'yicha taqlid qilindi (Payme JSON-RPC, Click md5 imzosi). Production'da
+  bitta kichik to'ldirish (5 000 so'm) bilan tekshirish tavsiya qilinadi.
+- **Hamyon bonusi standartda o'chiq (0%)** — bu biznes qarori, admin "Tezkor boshqaruv"dan yoqadi.
+- **Ommaviy oferta matnida hamyon bandi yo'q.** "Balans naqd pulga qaytarilmaydi" qoidasi sahifada yozilgan, lekin
+  huquqiy sahifaga qo'shish egasi yoki yurist bilan kelishilishi kerak.

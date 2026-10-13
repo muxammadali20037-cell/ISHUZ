@@ -33,6 +33,7 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "
   { name: "saved", url: async () => "/saved", mode: "worker" },
   { name: "auth", url: async () => "/auth" },
   { name: "cabinet", url: async () => "/cabinet", user: USERS.workerA },
+  { name: "billing", url: async () => "/billing", user: USERS.workerA },
   // brend UI to'plami (faqat UI_KIT_PREVIEW=1 bilan) — barcha komponent holatlari bir sahifada
   { name: "ui-kit", url: async () => "/dev/ui" },
 ];

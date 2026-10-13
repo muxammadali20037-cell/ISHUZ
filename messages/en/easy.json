@@ -102,7 +102,8 @@
       "logout": "Sign out",
       "matches": "Matching jobs and candidates",
       "alerts": "Telegram notifications",
-      "verification": "Employer verification"
+      "verification": "Employer verification",
+      "billing": "My payments and wallet"
     }
   },
   "wizard": {
@@ -187,8 +188,8 @@
     "done_desc": "Employers can now contact you.",
     "done_matches": "See matching jobs",
     "done_view": "View my listing",
-    "pay_title": "Your listing is saved but not published yet",
-    "pay_desc": "Payment is needed for it to appear in search. After payment your listing is visible to employers for {days} days.",
+    "pay_title": "Your listing is ready! Just pay to publish",
+    "pay_desc": "Once paid, employers see your listing right away for {days} days.",
     "saved_title": "Your details are saved",
     "edit_title": "Edit listing"
   },
@@ -236,8 +237,8 @@
     "done_view": "View my listing",
     "review_state_title": "Your listing was sent for review",
     "review_state_desc": "It is not visible in search yet. Once a moderator checks it, it will be published and you will be notified.",
-    "pay_title": "Your listing is saved but not published yet",
-    "pay_desc": "Payment is needed for it to appear in search. After payment the listing is active for {days} days.",
+    "pay_title": "Your listing is ready! Just pay to publish",
+    "pay_desc": "Once paid, workers see your listing right away for {days} days.",
     "edit_title": "Edit listing",
     "salary_period_daily": "Salary (sum, per day)",
     "salary_period_hourly": "Salary (sum, per hour)",

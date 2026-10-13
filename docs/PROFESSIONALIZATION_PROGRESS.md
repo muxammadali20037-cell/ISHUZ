@@ -41,10 +41,11 @@ Oxirgi yangilanish: 2026-10-13 · branch `claude/gallant-thompson-q70fo3` (main 
 | E1 — ish izlovchi / ish beruvchi alohida | ✅ birinchi ochilishda "Siz nima qidiryapsiz?"; keyin faqat o'z rejimining oynalari, qidiruvi, lupasi, e'loni; boshqa rejim bo'limi — tushuntirish va tasdiq; e'lon berishdan oldin "Sizga xodim kerakmi?"; admin oynalariga "Kimga ko'rinadi" | `d06a93d` |
 | E2 — "Saqlanganlar" pastki menyuda | ✅ profilsiz saqlash (0061 `saved_items`, RLS, 500 limit), kartalarda "Saqlash", `/saved` rejimga mos, mehmonga tushuntirish; **0061 production'ga — egasi ruxsatini kutmoqda** | `d06a93d` |
 | E3 — yaqin atrofda | ✅ joylashuv → eng yaqin tuman → barcha kasblar (koordinata serverga bormaydi), tuman 180 kun eslab qolinadi, viloyat qadamida "Joylashuvim bo'yicha" | `d06a93d` |
+| F — to'lov qulay va professional | ✅ to'lov paneli e'lon natijasi ekranida (foyda, kunlik narx, ishonch, oxirgi usul birinchi — Payme/Click'gacha 1 bosish); hamyon (0062/0063: to'ldirish + ixtiyoriy bonus, balansdan bir bosishda, atomar); "To'lovlarim", chek, "Qayta to'lash"; to'langan e'lonni o'chirish xatosi tuzatildi; **0061–0063 production'ga — egasi ruxsatini kutmoqda** | shu bosqich |
 
 ## Keyingi sessiya uchun
 
-0. C8, D (D1–D7) va E (E1–E3, hisobot §13) yakunlandi. Keyingi ish — hisobot §11 "Production relizni nima to'sib turibdi" va C8.10 "ochiq" ro'yxati
+0. C8, D (D1–D7), E (E1–E3, §13) va F (to'lov, §14) yakunlandi. Keyingi ish — hisobot §11 "Production relizni nima to'sib turibdi" va C8.10 "ochiq" ro'yxati
    (staging, `SUPPORT_EMAIL`, #30 haqiqiy qurilmada, tarmoq sekinlashtirish testi).
    Yangi o'zgarishda: OLDIN/KEYIN/fayllar/skrinshot/test/ochiq masala; yangi test eski build'da yiqilishini ko'rsating.
    "Oldin" skrinshoti: `bash e2e/screens/old-build.sh <commit>` (:3301, o'sha stend bazasi), oxirida `… <commit> stop`.
@@ -52,7 +53,8 @@ Oxirgi yangilanish: 2026-10-13 · branch `claude/gallant-thompson-q70fo3` (main 
 2. ✅ Zaxira sirlari sozlandi, birinchi shifrlangan nusxa yaratildi (run `38207925133`). Egasi: bir marta yopiq kalit bilan ochib ko'rsin (`age -d`).
 3. ✅ Avatar va logotip karantini (D2). ✅ 0059 va 0060 production'da (2026-10-13, egasi ruxsati bilan; tekshiruvlar — hisobot §12 "Production").
    Egasi: telefonda 2 daqiqalik tekshiruv (o'sha bo'lim).
-3b. **E: 0061 (`saved_items`) production'ga hali qo'llanmagan — egasi ruxsati kerak.** Usiz kod buzilmaydi: saqlash eski
+3b. **E/F: 0061 (`saved_items`), 0062–0063 (hamyon) production'ga hali qo'llanmagan — egasi ruxsati kerak.** F: haqiqiy Payme/Click kassasida bitta kichik to'ldirish bilan tekshirish — NOT_RUN; ofertaga hamyon bandi — egasi bilan.
+   E: Usiz kod buzilmaydi: saqlash eski
     jadvallarga tushadi (profil talabi bilan). E ochiq: rejim tanlovi Telegram'da haqiqiy qurilmada — NOT_RUN; joylashuv
     aniqligi qurilmaga bog'liq (tuman markazigacha masofa); ish beruvchi panelidagi papkali saqlash (`/employer/saved`)
     alohida qoldi.

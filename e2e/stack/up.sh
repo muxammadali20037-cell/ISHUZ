@@ -79,7 +79,11 @@ export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_KEY"
 export CRON_SECRET="e2e-cron"
 export SECURITY_PEPPER="e2e-pepper-not-secret-0123456789abcdef"
 export GEMINI_API_KEY="" ANTHROPIC_API_KEY="" IMAGE_GEN_API_KEY="" TELEGRAM_BOT_TOKEN="" TELEGRAM_WEBHOOK_SECRET=""
-export PAYME_KEY="" PAYME_MERCHANT_ID="" CLICK_SECRET_KEY="" CLICK_SERVICE_ID="" CLICK_MERCHANT_ID="" SUPER_ADMIN_PHONES="" ADMIN_HOST=""
+# To'lov: sinov kassasi (haqiqiy kalit emas) — tugmalar ko'rinadi, Payme/Click'ga yo'naltirish va ularning
+# server so'rovlari (JSON-RPC / Prepare-Complete) shu qiymatlar bilan E2E'da taqlid qilinadi; tashqariga chiqilmaydi
+export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAYME_TEST=1
+export CLICK_SERVICE_ID="e2e-service" CLICK_MERCHANT_ID="e2e-merchant" CLICK_SECRET_KEY="e2e-click-key-not-secret"
+export SUPER_ADMIN_PHONES="" ADMIN_HOST=""
 export NEXT_DIST_DIR=".next-e2e"
 export NEXT_TELEMETRY_DISABLED=1
 # brend UI to'plami (/dev/ui) — faqat shu stendda: skrinshot va a11y tekshiruvi uchun (production'da 404)

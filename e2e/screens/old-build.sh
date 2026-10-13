@@ -36,7 +36,10 @@ export SUPABASE_SERVICE_ROLE_KEY="$(E2E_JWT_SECRET=$SECRET node "$ROOT/e2e/stack
 export NEXT_PUBLIC_APP_URL="http://localhost:$PORT" APP_URL="http://localhost:$PORT"
 export CRON_SECRET="e2e-cron" SECURITY_PEPPER="e2e-pepper-not-secret-0123456789abcdef"
 export GEMINI_API_KEY="" ANTHROPIC_API_KEY="" IMAGE_GEN_API_KEY="" TELEGRAM_BOT_TOKEN="" TELEGRAM_WEBHOOK_SECRET=""
-export PAYME_KEY="" PAYME_MERCHANT_ID="" CLICK_SECRET_KEY="" CLICK_SERVICE_ID="" CLICK_MERCHANT_ID="" SUPER_ADMIN_PHONES="" ADMIN_HOST=""
+# to'lov — joriy stend bilan bir xil sinov kassasi (up.sh), "avval/keyin" bir xil sharoitda
+export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAYME_TEST=1
+export CLICK_SERVICE_ID="e2e-service" CLICK_MERCHANT_ID="e2e-merchant" CLICK_SECRET_KEY="e2e-click-key-not-secret"
+export SUPER_ADMIN_PHONES="" ADMIN_HOST=""
 export NEXT_DIST_DIR=".next-old" NEXT_TELEMETRY_DISABLED=1 UI_KIT_PREVIEW=1
 
 [ -d .next-old ] || npx next build > "$ST/old-$REV-build.log" 2>&1 || { tail -30 "$ST/old-$REV-build.log"; exit 1; }

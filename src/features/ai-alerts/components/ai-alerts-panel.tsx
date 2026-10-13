@@ -12,7 +12,8 @@ import { toast } from "@/components/ui/toast";
 import { celebrate } from "@/lib/celebrate";
 import { InAppNote } from "@/features/billing/components/payment-dialog";
 import { cn } from "@/lib/utils";
-import { createAiAlert, deleteAiAlert, startAiAlertsCheckout, toggleAiAlert } from "../actions";
+import { createAiAlert, deleteAiAlert, toggleAiAlert } from "../actions";
+import { CheckoutPanel } from "@/features/billing/components/checkout-panel";
 import type { AiAlertsData } from "../queries";
 import { TelegramConnect } from "./telegram-connect";
 import { AiWorkerAlertsSection } from "./ai-worker-alerts-section";
@@ -54,16 +55,6 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
       router.refresh();
     });
 
-  const pay = (provider: "payme" | "click") =>
-    start(async () => {
-      const res = await callAction(() => startAiAlertsCheckout({ provider }));
-      if (!res.ok || !res.data) {
-        toast.error(t("common.errors.generic"));
-        return;
-      }
-      window.location.href = res.data.url;
-    });
-
   const active = data.free || !!data.paidUntil;
   const until = data.paidUntil ? new Date(data.paidUntil).toLocaleDateString("ru-RU") : null;
 
@@ -101,24 +92,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
             </li>
           ))}
         </ol>
-        {!data.free && !data.inApp ? (
-          data.providers.length ? (
-            <div className="mt-4 grid min-w-0 gap-2">
-              {data.providers.includes("payme") ? (
-                <Button size="lg" className="h-auto min-h-14 w-full whitespace-normal py-3 text-base font-bold" loading={pending} onClick={() => pay("payme")}>
-                  <Wallet className="size-5" /> {data.paidUntil ? t("saved.ai_alerts.extend_payme", { amount: money(data.price) }) : t("saved.ai_alerts.pay_payme", { amount: money(data.price) })}
-                </Button>
-              ) : null}
-              {data.providers.includes("click") ? (
-                <Button size="lg" variant="outline" className="h-12 w-full" loading={pending} onClick={() => pay("click")}>
-                  {t("saved.ai_alerts.pay_click")}
-                </Button>
-              ) : null}
-            </div>
-          ) : (
-            <p className="mt-3 rounded-xl bg-card p-2 text-center text-sm">{t("saved.ai_alerts.pay_soon")}</p>
-          )
-        ) : null}
+        {!data.free && !data.inApp ? <CheckoutPanel purpose="ai_alerts" targetId={null} variant="compact" className="mt-4" /> : null}
       </div>
       {!active && data.inApp ? <InAppNote /> : null}
       {!active && !data.inApp ? <p className="rounded-2xl border-2 border-warning bg-warning-soft p-3 text-sm font-medium">{t("saved.ai_alerts.need_pay")}</p> : null}

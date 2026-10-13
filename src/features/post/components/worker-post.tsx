@@ -290,7 +290,6 @@ export function WorkerPost({
         title={result.state === "payment_required" ? t("easy.worker.pay_title") : t("easy.worker.saved_title")}
         description={t("easy.worker.pay_desc", { days: pricedDays })}
         payment={result.state === "payment_required" ? { purpose: "worker_listing", targetId: result.workerId } : undefined}
-        payLabel={t("easy.cabinet.pay")}
         actions={[{ label: t("easy.worker.done_view"), href: "/cabinet" }]}
       />
     );

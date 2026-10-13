@@ -537,14 +537,19 @@
     "date": "Sana",
     "purposes": {
       "vacancy_publish": "Vakansiya e'loni",
-      "worker_promotion": "TOP profil"
+      "worker_promotion": "TOP profil",
+      "wallet_topup": "Hamyonni to'ldirish"
     },
     "statuses": {
       "pending": "Kutilmoqda",
       "paid": "To'langan",
       "cancelled": "Bekor",
       "failed": "Xato"
-    }
+    },
+    "providers": {
+      "wallet": "Hamyon"
+    },
+    "total_note": "Hamyondan to'lovlar ichki — tushumga qo'shilmaydi (to'ldirish hisoblanadi)"
   },
   "search": {
     "title": "Qidiruv tahlili",
@@ -771,7 +776,12 @@
     "paid": "Pullik",
     "free": "Bepul",
     "on": "Yoqilgan",
-    "off": "O'chirilgan"
+    "off": "O'chirilgan",
+    "wallet_bonus": "Hamyonni to'ldirish bonusi",
+    "wallet_bonus_hint": "Belgilangan summadan ko'p to'ldirganlarga foiz bonus (0 — o'chiq, eng ko'pi 50%)",
+    "wallet_bonus_min": "Bonus uchun eng kam to'ldirish",
+    "wallet_bonus_min_hint": "Shu summa va undan ko'p to'ldirilsa bonus beriladi",
+    "sum": "so'm"
   },
   "ai": {
     "title": "AI holati",

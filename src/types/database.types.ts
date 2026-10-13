@@ -2470,6 +2470,51 @@ export type Database = {
           },
         ];
       };
+      wallet_ledger: {
+        Row: {
+          created_at: string;
+          delta: number;
+          id: number;
+          kind: string;
+          payment_id: string | null;
+          profile_id: string;
+        };
+        Insert: {
+          created_at?: string;
+          delta: number;
+          id?: never;
+          kind: string;
+          payment_id?: string | null;
+          profile_id: string;
+        };
+        Update: {
+          created_at?: string;
+          delta?: number;
+          id?: never;
+          kind?: string;
+          payment_id?: string | null;
+          profile_id?: string;
+        };
+        Relationships: [];
+      };
+      wallets: {
+        Row: {
+          balance: number;
+          profile_id: string;
+          updated_at: string;
+        };
+        Insert: {
+          balance?: number;
+          profile_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          balance?: number;
+          profile_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
       saved_items: {
         Row: {
           created_at: string;
@@ -4666,6 +4711,15 @@ export type Database = {
           info: Json;
         }[];
       };
+      my_wallet: { Args: Record<PropertyKey, never>; Returns: Json };
+      create_topup: { Args: { p_amount: number }; Returns: Json };
+      wallet_pay: {
+        Args: {
+          p_purpose: Database["public"]["Enums"]["payment_purpose"];
+          p_target_id: string | null;
+        };
+        Returns: Json;
+      };
       my_saved_vacancies: {
         Args: { p_limit?: number };
         Returns: {
@@ -5719,9 +5773,13 @@ export type Database = {
         | "internship"
         | "practice"
         | "apprenticeship";
-      payment_provider: "payme" | "click";
+      payment_provider: "payme" | "click" | "wallet";
       payment_purpose:
-        "vacancy_publish" | "worker_promotion" | "ai_alerts" | "worker_listing";
+        | "vacancy_publish"
+        | "worker_promotion"
+        | "ai_alerts"
+        | "worker_listing"
+        | "wallet_topup";
       payment_status: "pending" | "paid" | "cancelled" | "failed";
       phone_visibility: "nobody" | "applicants" | "on_request" | "everyone";
       portfolio_type: "image" | "video" | "pdf" | "document" | "link";
@@ -5988,12 +6046,13 @@ export const Constants = {
         "practice",
         "apprenticeship",
       ],
-      payment_provider: ["payme", "click"],
+      payment_provider: ["payme", "click", "wallet"],
       payment_purpose: [
         "vacancy_publish",
         "worker_promotion",
         "ai_alerts",
         "worker_listing",
+        "wallet_topup",
       ],
       payment_status: ["pending", "paid", "cancelled", "failed"],
       phone_visibility: ["nobody", "applicants", "on_request", "everyone"],

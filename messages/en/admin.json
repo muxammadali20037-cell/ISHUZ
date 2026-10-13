@@ -537,14 +537,19 @@
     "date": "Date",
     "purposes": {
       "vacancy_publish": "Vacancy posting",
-      "worker_promotion": "TOP profile"
+      "worker_promotion": "TOP profile",
+      "wallet_topup": "Wallet top-up"
     },
     "statuses": {
       "pending": "Pending",
       "paid": "Paid",
       "cancelled": "Cancelled",
       "failed": "Failed"
-    }
+    },
+    "providers": {
+      "wallet": "Wallet"
+    },
+    "total_note": "Payments from the wallet are internal — not counted as revenue (top-ups are)"
   },
   "search": {
     "title": "Search analytics",
@@ -771,7 +776,12 @@
     "paid": "Paid",
     "free": "Free",
     "on": "On",
-    "off": "Off"
+    "off": "Off",
+    "wallet_bonus": "Wallet top-up bonus",
+    "wallet_bonus_hint": "Percent bonus for top-ups from the set amount (0 — off, max 50%)",
+    "wallet_bonus_min": "Minimum top-up for the bonus",
+    "wallet_bonus_min_hint": "The bonus applies to top-ups of this amount or more",
+    "sum": "UZS"
   },
   "ai": {
     "title": "AI status",

@@ -341,10 +341,9 @@ export function VacancyPost({
     return (
       <PublishResult
         tone="payment"
-        title={t("easy.vacancy.pay_title")}
+        title={result.state === "payment_required" ? t("easy.vacancy.pay_title") : t("easy.worker.saved_title")}
         description={t("easy.vacancy.pay_desc", { days: pricedDays })}
         payment={result.state === "payment_required" ? { purpose: "vacancy_publish", targetId: result.vacancyId } : undefined}
-        payLabel={t("easy.cabinet.pay")}
         actions={[{ label: t("easy.cabinet.title"), href: "/cabinet" }]}
       />
     );
