@@ -40,6 +40,12 @@ test("bosh sahifa: tepada uchta rasmli oyna, nomi rasm ostida; har biri o'z bo'l
   expect(title!.y).toBeLessThan((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y);
   // telefonda sahifa yonga siljimaydi (oynalar o'z qatorida suriladi)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  // ixcham (my.gov.uz kabi): telefonda ikkitasi to'liq ko'rinadi, oyna past, izoh yo'q — sarlavha birinchi ekranning yuqori qismida
+  const second = (await links.nth(1).boundingBox())!;
+  expect(second.x + second.width).toBeLessThanOrEqual(page.viewportSize()!.width);
+  expect((await first.boundingBox())!.height).toBeLessThanOrEqual(210);
+  await expect(first.getByText("Kasb va hududni tanlang — mos ishchilar darhol chiqadi")).toBeHidden();
+  expect((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y).toBeLessThan(340);
 
   await links.nth(0).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishchi qidiraman");

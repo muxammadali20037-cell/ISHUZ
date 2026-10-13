@@ -241,6 +241,7 @@ export function HomeEditor({
                       </fieldset>
                     ))}
                   </div>
+                  <p className="text-xs text-muted-foreground">{t("admin.home.desc_hint")}</p>
                 </div>
               </div>
             </li>

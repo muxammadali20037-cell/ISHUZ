@@ -1084,6 +1084,32 @@ Usul C8.10 dagidek: avval yangi testlar yozildi va **eski build'da** (`1a0a556`,
 - **0060 siz:** sahifada "Bu sozlamalarni saqlash uchun bazaga 0060 migratsiyasi qo'llanishi kerak…" ogohlantirishi
   chiqadi va maydonlar o'chiq bo'ladi; sayt standart oynalarni ko'rsatadi.
 
+### D7 · Oynalar ixchamroq (my.gov.uz kabi, 2026-10-13)
+
+Egasi my.gov.uz skrinshotini yubordi: "tepadagi katta rasmli oynani ozgina kichiklashtir".
+
+- **OLDIN** (390 px): oyna 286×281 px, ekranda faqat 1 tasi to'liq ko'rinardi; "Ish topdim" sarlavhasi 394 px pastda edi.
+  Kompyuterda oyna 331×306 px edi.
+- **KEYIN:**
+  - Telefonda oyna 136×191 px (ruscha uzun nomlar bilan 211 px). 2 tasi to'liq ko'rinadi, uchinchisi chetdan chiqib
+    turadi, ya'ni suriladi. Rasm ostida faqat nomi: u kesilmaydi, izoh ko'rsatilmaydi. "Ish topdim" endi 304 px da.
+  - Kompyuterda oyna 331×247 px: rasm pastroq, izoh 2 qatorgacha.
+  - Admin muharririda izoh telefonda ko'rinmasligi haqida eslatma bor (4 tilda).
+  - Shu bilan birga oz (kirill) tilidagi havola namunasi tuzatildi: transliteratsiya `/search?моде=жобс` qilib qo'ygan edi.
+- **Fayllar:** `src/features/home-windows/home-windows.tsx`, `src/features/admin/components/home-editor.tsx`,
+  `messages/*/admin.json`.
+- **Test:** `home-windows.spec.ts` ga quyidagi tekshiruvlar qo'shildi:
+  - telefonda 2 ta oyna to'liq ko'rinadi;
+  - oyna balandligi ≤ 210 px;
+  - izoh yashirin;
+  - "Ish topdim" < 340 px.
+
+  Eski build'da ❌ (2-oynaning o'ng cheti 600 > 390), keyin ✅. To'liq E2E: 96/97. Yiqilgan test
+  `responsiveness.spec.ts` ("natijalar 200 ms da ko'rinadi", 308 ms) qidiruv natijalari sahifasida, u yerda oynalar yo'q.
+  Alohida 3 marta ishga tushirilganda 3/3 ✅, ya'ni bu to'plam yuklamasidagi lab vaqti tebranishi.
+- **Skrinshot:** [telefon: oldin / keyin / ruscha](screenshots/d/d7-home-compact-m.jpg),
+  [kompyuter](screenshots/d/d7-home-compact-d.jpg).
+
 ### Skrinshotlar (faqat stend ma'lumotlari; chap — `1a0a556`, o'ng — keyin)
 
 - [bosh sahifa, telefon](screenshots/d/d3-home-m.jpg) va [kompyuter](screenshots/d/d3-home-d.jpg) — tepadagi oynalar va lupa;

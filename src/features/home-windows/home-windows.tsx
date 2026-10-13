@@ -10,8 +10,9 @@ export function windowImageUrl(path: string): string {
 }
 
 /**
- * Bosh sahifa tepasidagi rasmli oynalar: telefonda yonga suriladigan qator (keyingisi chetdan ko'rinib turadi),
- * planshet/kompyuterda — uchta ustun. Har oyna: rasm, ostida nomi va bir qator izoh; butun oyna bosiladi.
+ * Bosh sahifa tepasidagi rasmli oynalar (my.gov.uz kabi ixcham): telefonda yonga suriladigan qator — ikkitasi to'liq,
+ * uchinchisi chetdan ko'rinib turadi; rasm ostida faqat nomi (kesilmaydi). Planshet/kompyuterda — uchta ustun, nomi va qisqa izoh.
+ * Butun oyna bosiladi.
  */
 export async function HomeWindows({ windows }: { windows: HomeWindow[] }) {
   const { t, locale } = await getT();
@@ -28,23 +29,23 @@ export async function HomeWindows({ windows }: { windows: HomeWindow[] }) {
           const desc = textOf(w, "desc");
           const art = <WindowArtwork art={w.art ?? "jobs"} />;
           return (
-            <li key={w.id} className="w-[80%] max-w-sm shrink-0 snap-start sm:w-auto sm:max-w-none">
+            <li key={w.id} className="w-[38%] min-w-[8.5rem] max-w-[11rem] shrink-0 snap-start sm:w-auto sm:min-w-0 sm:max-w-none">
               <Link
                 href={w.href}
                 data-track="home_window"
                 data-track-to={w.id}
                 className="press group flex h-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:border-primary/50"
               >
-                <div className="aspect-[16/9] w-full overflow-hidden bg-primary-soft">
+                <div className="aspect-[3/2] w-full overflow-hidden bg-primary-soft sm:aspect-[5/2]">
                   {w.image ? (
-                    <Photo src={windowImageUrl(w.image)} alt="" sizes="(min-width: 640px) 33vw, 80vw" className="size-full" fallback={art} />
+                    <Photo src={windowImageUrl(w.image)} alt="" sizes="(min-width: 640px) 33vw, 40vw" className="size-full" fallback={art} />
                   ) : (
                     art
                   )}
                 </div>
-                <div className="flex flex-1 flex-col px-4 py-3">
-                  <span className="break-words text-lg font-bold leading-snug group-hover:text-primary">{title}</span>
-                  {desc ? <span className="mt-0.5 break-words text-base leading-snug text-muted-foreground">{desc}</span> : null}
+                <div className="flex flex-1 flex-col px-3 py-2.5 sm:px-4 sm:py-3">
+                  <span className="break-words text-base font-bold leading-tight group-hover:text-primary sm:text-lg sm:leading-snug">{title}</span>
+                  {desc ? <span className="mt-0.5 hidden break-words text-sm leading-snug text-muted-foreground sm:line-clamp-2">{desc}</span> : null}
                 </div>
               </Link>
             </li>

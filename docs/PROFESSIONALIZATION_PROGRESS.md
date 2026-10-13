@@ -37,6 +37,7 @@ Oxirgi yangilanish: 2026-10-12 · branch `claude/gallant-thompson-q70fo3` (main 
 | D4 — "O'zingizga mosini toping" lupa | ✅ o'ng pastda doim; qisqa matn → "Tushundim" + mos e'lonlar shu oynada; pastki menyu/yopishqoq panellarni yopmaydi | `ef2ca0a` |
 | D5 — Telegram'da oson kirish | ✅ Mini App ochilishi bilan avtomatik kirish (bir marta); haqiqiy qurilma — BLOCKED; Telegram Web iframe — ochiq | `3fb690f` |
 | D6 — admin "Bosh sahifa" | ✅ oynalar (rasm, matn 4 tilda, tartib, ko'rinish) va lupa tugmasi admin paneldan, audit + kesh; telefon paneli va standart matn ko'rinishi tuzatildi; hisobot §12 | `5d816c4` + shu bosqich |
+| D7 — oynalar ixchamroq (my.gov.uz kabi) | ✅ telefonda 286×281 → 136×191 px, 2 tasi to'liq ko'rinadi, nomi kesilmaydi; kompyuterda 306 → 247 px; admin eslatmasi | shu bosqich |
 
 ## Keyingi sessiya uchun
 
