@@ -41,7 +41,7 @@ Oxirgi yangilanish: 2026-10-13 · branch `claude/gallant-thompson-q70fo3` (main 
 | E1 — ish izlovchi / ish beruvchi alohida | ✅ birinchi ochilishda "Siz nima qidiryapsiz?"; keyin faqat o'z rejimining oynalari, qidiruvi, lupasi, e'loni; boshqa rejim bo'limi — tushuntirish va tasdiq; e'lon berishdan oldin "Sizga xodim kerakmi?"; admin oynalariga "Kimga ko'rinadi" | `d06a93d` |
 | E2 — "Saqlanganlar" pastki menyuda | ✅ profilsiz saqlash (0061 `saved_items`, RLS, 500 limit), kartalarda "Saqlash", `/saved` rejimga mos, mehmonga tushuntirish; **0061 production'ga — egasi ruxsatini kutmoqda** | `d06a93d` |
 | E3 — yaqin atrofda | ✅ joylashuv → eng yaqin tuman → barcha kasblar (koordinata serverga bormaydi), tuman 180 kun eslab qolinadi, viloyat qadamida "Joylashuvim bo'yicha" | `d06a93d` |
-| F — to'lov qulay va professional | ✅ to'lov paneli e'lon natijasi ekranida (foyda, kunlik narx, ishonch, oxirgi usul birinchi — Payme/Click'gacha 1 bosish); hamyon (0062/0063: to'ldirish + ixtiyoriy bonus, balansdan bir bosishda, atomar); "To'lovlarim", chek, "Qayta to'lash"; to'langan e'lonni o'chirish xatosi tuzatildi; **0061–0063 production'ga — egasi ruxsatini kutmoqda** | shu bosqich |
+| F — to'lov qulay va professional | ✅ to'lov paneli e'lon natijasi ekranida (foyda, kunlik narx, ishonch, oxirgi usul birinchi — Payme/Click'gacha 1 bosish); hamyon (0062/0063: to'ldirish + ixtiyoriy bonus, balansdan bir bosishda, atomar); "To'lovlarim", chek, "Qayta to'lash"; to'langan e'lonni o'chirish xatosi tuzatildi; **0061–0063 production'ga — egasi ruxsatini kutmoqda** | `4788373` |
 
 ## Keyingi sessiya uchun
 

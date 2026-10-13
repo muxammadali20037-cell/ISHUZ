@@ -1478,6 +1478,7 @@ tushirildi. Ikkala build bir xil sinov kassasi bilan ishladi: `up.sh` va `old-bu
 | SQL `wallet.test.sql` (50): mehmon, bloklangan, begona e'lon, yetmagan balans (hech narsa yozilmaydi), qayta Perform, bonus, manfiy balans, rad etilgan vakansiya qayta to'lovsiz, to'langan e'lonni o'chirish, o'chirilgan e'lon to'lovini Payme bajara olmaydi | — (yangi) | ✅ |
 | Unit `pricing.test.ts` (18): kunlik narx, usullar tartibi, bonus, summa o'qish, tarix holati | — | ✅ |
 | To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 120/120 · 601 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 28 fayl |
+| CI (`4788373`, branch va `main`) | — | ✅ |
 
 ### Ochiq masalalar
 
