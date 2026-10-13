@@ -38,9 +38,9 @@ Oxirgi yangilanish: 2026-10-13 · branch `claude/gallant-thompson-q70fo3` (main 
 | D5 — Telegram'da oson kirish | ✅ Mini App ochilishi bilan avtomatik kirish (bir marta); haqiqiy qurilma — BLOCKED; Telegram Web iframe — ochiq | `3fb690f` |
 | D6 — admin "Bosh sahifa" | ✅ oynalar (rasm, matn 4 tilda, tartib, ko'rinish) va lupa tugmasi admin paneldan, audit + kesh; telefon paneli va standart matn ko'rinishi tuzatildi; hisobot §12 | `5d816c4` + shu bosqich |
 | D7 — oynalar ixchamroq (my.gov.uz kabi) | ✅ telefonda 286×281 → 136×191 px, 2 tasi to'liq ko'rinadi, nomi kesilmaydi; kompyuterda 306 → 247 px; admin eslatmasi | `3136d4d` |
-| E1 — ish izlovchi / ish beruvchi alohida | ✅ birinchi ochilishda "Siz nima qidiryapsiz?"; keyin faqat o'z rejimining oynalari, qidiruvi, lupasi, e'loni; boshqa rejim bo'limi — tushuntirish va tasdiq; e'lon berishdan oldin "Sizga xodim kerakmi?"; admin oynalariga "Kimga ko'rinadi" | shu bosqich |
-| E2 — "Saqlanganlar" pastki menyuda | ✅ profilsiz saqlash (0061 `saved_items`, RLS, 500 limit), kartalarda "Saqlash", `/saved` rejimga mos, mehmonga tushuntirish; **0061 production'ga — egasi ruxsatini kutmoqda** | shu bosqich |
-| E3 — yaqin atrofda | ✅ joylashuv → eng yaqin tuman → barcha kasblar (koordinata serverga bormaydi), tuman 180 kun eslab qolinadi, viloyat qadamida "Joylashuvim bo'yicha" | shu bosqich |
+| E1 — ish izlovchi / ish beruvchi alohida | ✅ birinchi ochilishda "Siz nima qidiryapsiz?"; keyin faqat o'z rejimining oynalari, qidiruvi, lupasi, e'loni; boshqa rejim bo'limi — tushuntirish va tasdiq; e'lon berishdan oldin "Sizga xodim kerakmi?"; admin oynalariga "Kimga ko'rinadi" | `d06a93d` |
+| E2 — "Saqlanganlar" pastki menyuda | ✅ profilsiz saqlash (0061 `saved_items`, RLS, 500 limit), kartalarda "Saqlash", `/saved` rejimga mos, mehmonga tushuntirish; **0061 production'ga — egasi ruxsatini kutmoqda** | `d06a93d` |
+| E3 — yaqin atrofda | ✅ joylashuv → eng yaqin tuman → barcha kasblar (koordinata serverga bormaydi), tuman 180 kun eslab qolinadi, viloyat qadamida "Joylashuvim bo'yicha" | `d06a93d` |
 
 ## Keyingi sessiya uchun
 

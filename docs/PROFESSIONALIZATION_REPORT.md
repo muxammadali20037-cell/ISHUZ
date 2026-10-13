@@ -1346,6 +1346,7 @@ Usul D dagidek: avval yangi testlar yozildi va **eski build'da** (`3136d4d`, `ol
 | SQL: `saved_items.test.sql` (26: RLS, boshqa birovniki, bloklangan, limit, anon, funksiyalar) | — (yangi) | ✅ |
 | Unit: `mode.test.ts`, `model.test.ts`, `place.test.ts`, `params.test.ts`, `missing.test.ts` | — | ✅ |
 | To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 114/114 · 590 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 27 fayl |
+| CI (`d06a93d`, branch va `main`) | — | ✅ |
 
 Topilgan va tuzatilgan xato: yangi kod 0061 qo'llanmagan bazaga chiqsa, `/saved` eski saqlanganlarni ko'rsatmas va
 kartadagi saqlash ishlamas edi (PostgREST yo'q jadvalga `404` va bo'sh `{}` qaytaradi, kod esa faqat xato kodiga
