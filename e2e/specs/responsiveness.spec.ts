@@ -87,8 +87,13 @@ test("natijalar ro'yxati: oxirgi karta qancha vaqtda to'liq ko'rinadi", async ({
   const t = await page.evaluate(async () => {
     const t0 = performance.now();
     const items = Array.from(document.querySelectorAll("ul.pop-list > *, main ul > li"));
-    await Promise.all(items.flatMap((el) => el.getAnimations().map((a) => a.finished.catch(() => null))));
-    return { items: items.length, settleMs: Math.round(performance.now() - t0) };
+    const anims = items.flatMap((el) => el.getAnimations());
+    // Oxirgi karta qachon to'liq ko'rinadi — animatsiya jadvali bo'yicha (boshlanish + davomiylik). `finished` promise'i
+    // asosiy oqimda hal bo'ladi va 4× sekin CPU'da gidratsiya bandligini ham qo'shib yuborardi, ekranda esa karta o'z
+    // vaqtida ko'rinib bo'lgan bo'ladi. Kechikkan boshlanish yoki uzun animatsiya baribir shu yerda ko'rinadi.
+    await Promise.all(anims.map((a) => a.ready.catch(() => null)));
+    const ends = anims.map((a) => (a.startTime == null ? t0 : Number(a.startTime) + Number(a.effect?.getComputedTiming().endTime ?? 0)));
+    return { items: items.length, settleMs: Math.round(Math.max(0, ...ends.map((e) => e - t0))) };
   });
   record("results", t);
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);

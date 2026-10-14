@@ -1602,6 +1602,26 @@ Aniq kasb va tuman bo'yicha qidirish o'zgarmadi. U shu sahifada, "Barcha …" tu
 | SQL `quick_apply.test.sql` (13): bayroq, RPC profilsiz rad, begona nomidan profil yo'q, arizagacha ko'rinmaydi, ariza bilan ism ko'rinadi, begona/mehmon/bloklangan — yo'q, to'liq bo'lmagan "ochiq" profil qidiruvga chiqmaydi | — (yangi) | ✅ |
 | To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 124/124 · 601 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 29 fayl |
 | CI (`e9dd099`, branch va `main`) | — | ✅ |
+| CI (`95bcc3e`, faqat hujjat) | — | ❌ `responsiveness.spec` "oxirgi karta" 231 ms > 200 → tuzatildi (pastda) |
+
+### CI'dagi "natijalar animatsiyasi" testi — sabab va tuzatish
+
+- `95bcc3e` (kod `e9dd099` bilan bir xil) CI'da `responsiveness.spec` yiqildi: oxirgi karta 231 ms, chegara 200 ms.
+  Bu test G'dan oldin ham bir marta yiqilgan (`102ff08`, E bosqichi).
+- **O'lchov (4× sekin CPU, 8–12 marta):**
+  - eski build `d292c40`: 1–202 ms, 1/8 yiqildi;
+  - G (`e9dd099`): 1–233 ms, 2/8 yiqildi;
+  - G + tuzatish 1: 0–162 ms, 0/12.
+- **Tuzatish 1 (kod):** kartadagi yangi "Ariza yuborish"/"Bog'lanish" havolasi `prefetch={false}`. "Batafsil" o'sha
+  sahifani allaqachon oldindan yuklaydi; ikkinchi prefetch ro'yxat ochilganda asosiy oqimni band qilardi.
+- **Tuzatish 2 (o'lchov):**
+  - Animatsiya faqat shaffoflik (opacity), uni kompozitor chizadi. Test esa `animation.finished` promise'ini kutardi.
+    Promise asosiy oqimda hal bo'ladi, shuning uchun gidratsiya bandligini ham "ko'rinish vaqti" deb hisoblardi.
+  - Endi vaqt animatsiya jadvalidan olinadi (boshlanish + davomiylik); 200 ms chegarasi o'zgarmadi. Natija: 0–110 ms,
+    12/12 o'tdi.
+  - Test haqiqiy sekinlashuvni hamon ushlaydi: animatsiyani sun'iy ravishda 600 ms qilganda 3 marta ham yiqildi
+    (475–513 ms).
+- Butun to'plam keyin: 124/124.
 
 ### Ochiq masalalar
 

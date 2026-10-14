@@ -102,8 +102,10 @@ export function CallBlock({ phone, detailsHref, action, className }: { phone: st
           <p className="text-center text-lg font-semibold tabular">{formatPhone(phone)}</p>
         </>
       ) : action ? (
+        // "Batafsil" o'sha sahifani oldindan yuklaydi — ikkinchi prefetch ro'yxatda asosiy oqimni band qilmasin
         <Link
           href={action.href}
+          prefetch={false}
           className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
         >
           <Send className="size-5" aria-hidden /> {action.label}
