@@ -1601,6 +1601,7 @@ Aniq kasb va tuman bo'yicha qidirish o'zgarmadi. U shu sahifada, "Barcha …" tu
 | 0064 bo'lmagan baza (production holati): profilsiz → avvalgidek `/onboarding/worker`, `?apply=1` oyna ochmaydi, profil yaratilmaydi | — | ✅ (vaqtinchalik spec) |
 | SQL `quick_apply.test.sql` (13): bayroq, RPC profilsiz rad, begona nomidan profil yo'q, arizagacha ko'rinmaydi, ariza bilan ism ko'rinadi, begona/mehmon/bloklangan — yo'q, to'liq bo'lmagan "ochiq" profil qidiruvga chiqmaydi | — (yangi) | ✅ |
 | To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 124/124 · 601 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 29 fayl |
+| CI (`e9dd099`, branch va `main`) | — | ✅ |
 
 ### Ochiq masalalar
 
