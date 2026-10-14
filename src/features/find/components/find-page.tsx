@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Form from "next/form";
 import { Suspense, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { after } from "next/server";
@@ -51,7 +52,8 @@ export async function FindStart({ params }: { params: FindParams }) {
       {/* tanlov eslab qolinadi: keyingi safar "ish yoki ishchi?" so'ralmaydi, bosh sahifa ham shu rejimda */}
       <ModeChooser heading={null} next={{ worker: findHref(params, { mode: "jobs", page: 1 }), employer: findHref(params, { mode: "workers", page: 1 }) }} />
 
-      <form action="/search" method="get" className="space-y-3 rounded-2xl border border-border bg-card p-4 sm:p-5">
+      {/* mijoz routeri bilan (sahifa qayta yuklanmaydi); prefetch yo'q — bo'sh /search rejimga yo'naltiriladi */}
+      <Form action="/search" prefetch={false} className="space-y-3 rounded-2xl border border-border bg-card p-4 sm:p-5">
         <p className="text-base font-semibold text-muted-foreground">{t("easy.search.or_type")}</p>
         <label htmlFor="find-q" className="block text-xl font-bold">
           {t("easy.search.query_label")}
@@ -72,7 +74,7 @@ export async function FindStart({ params }: { params: FindParams }) {
             ))}
           </div>
         </div>
-      </form>
+      </Form>
     </StepShell>
   );
 }
@@ -148,7 +150,8 @@ export async function FindResultsView({ params, node, region, district }: { para
         <div className="min-w-0 space-y-3">
           {/* J1 (ishgo uslubi): tepada qidiruv va Filtr, ostida qisqa xulosa, soni va "O'zgartirish" (kasb · hudud · rejim) */}
           <div className="flex items-center gap-2">
-            <form action="/search" method="get" role="search" className="min-w-0 flex-1">
+            {/* matn serverda kasbga aylantiriladi (yo'naltirish) — mijoz routeri bilan, sahifa qayta yuklanmaydi */}
+            <Form action="/search" prefetch={false} role="search" className="min-w-0 flex-1">
               {keep.map(([k, v]) => (
                 <input key={k} type="hidden" name={k} value={v} />
               ))}
@@ -164,7 +167,7 @@ export async function FindResultsView({ params, node, region, district }: { para
                 minLength={2}
                 required
               />
-            </form>
+            </Form>
             <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} daily={params.pay === "daily"} count={activeFilterCount(params)} />
           </div>
           <div>

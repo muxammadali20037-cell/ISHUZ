@@ -78,6 +78,17 @@ export function findHref(base: FindParams, patch: Partial<FindParams> = {}): str
   return s ? `/search?${s}` : "/search";
 }
 
+/**
+ * Rejim tanlangan, URL'da maqsad yo'q (/search) — savol bermasdan shu rejimning qidiruvi. Matn (q) bo'lsa — null:
+ * u holda rejim matnni tushunish bilan birga sahifada aniqlanadi.
+ */
+export function modeHref(params: FindParams, stored: FindMode | null): string | null {
+  return !params.mode && !params.q && stored ? findHref(params, { mode: stored }) : null;
+}
+
+/** proxy → /search layout: URL so'rov qismi (layout searchParams olmaydi) */
+export const SEARCH_URL_HEADER = "x-ishuz-search";
+
 export const EMPTY_FIND: FindParams = { mode: null, q: "", p: null, region: null, district: null, page: 1, salary: null, schedule: null, noexp: false, exp: false, pay: null, any: false, near: false };
 
 export function activeFilterCount(p: FindParams): number {

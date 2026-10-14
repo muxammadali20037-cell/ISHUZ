@@ -47,6 +47,11 @@ test("telefon: qidiruv qatori → kasb aniqlanadi, hudud saqlanadi; o'ng panel k
   // o'ng panel — faqat kompyuterda
   await expect(page.getByRole("complementary", { name: "Statistika" })).toBeHidden();
 
+  // yuborish sahifani qayta yuklamaydi (mijoz routeri): matn → kasb yo'naltirishi ham hujjat so'rovisiz
+  const docs: string[] = [];
+  page.on("request", (r) => {
+    if (r.isNavigationRequest() && r.frame() === page.mainFrame()) docs.push(r.url());
+  });
   await search.fill("Oshpaz");
   await search.press("Enter");
   await page.waitForURL((u) => !!u.searchParams.get("p") && u.searchParams.get("region") === "tashkent_city");
@@ -55,6 +60,34 @@ test("telefon: qidiruv qatori → kasb aniqlanadi, hudud saqlanadi; o'ng panel k
   await expect(main.locator("article")).toHaveCount(1);
   await expect(main.locator("article").first()).toContainText("Oshpaz (J1)");
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  expect(docs).toEqual([]);
+});
+
+test("rejim tanlangan: /search — darhol 307 (oqimdagi <meta> emas), sahifa bir marta yuklanadi; kirganda ham", async ({ page, context }) => {
+  const docs: string[] = [];
+  page.on("request", (r) => {
+    if (r.isNavigationRequest() && r.frame() === page.mainFrame()) docs.push(new URL(r.url()).pathname + new URL(r.url()).search);
+  });
+  for (const signedIn of [false, true]) {
+    await asGuest(context);
+    await asMode(context, "worker");
+    if (signedIn) await loginAs(context, USERS.workerB);
+    const r = await context.request.get("/search?region=tashkent_city", { maxRedirects: 0 });
+    expect(r.status()).toBe(307);
+    expect(r.headers().location).toBe("/search?mode=jobs&region=tashkent_city");
+
+    docs.length = 0;
+    const res = await page.goto("/search");
+    // goto javobi — yo'naltirilgan manzilniki (oldin: /search 200, yo'naltirish keyin <meta> bilan)
+    expect(res!.url()).toMatch(/\/search\?mode=jobs$/);
+    expect(res!.request().redirectedFrom()?.url()).toMatch(/\/search$/);
+    await expect(page).toHaveURL(/\/search\?mode=jobs$/);
+    await expect(page.getByRole("main")).toBeVisible();
+    // darhol boshqa sahifaga o'tish bekor bo'lmaydi; oraliqda qayta yuklash yo'q (307 → manzil → /help)
+    await page.goto("/help");
+    await expect(page).toHaveURL(/\/help$/);
+    expect(docs).toEqual(["/search", "/search?mode=jobs", "/help"]);
+  }
 });
 
 test("kompyuter: o'ng panel — e'lon berish, statistika, yirik ish beruvchilar (rejimga mos)", async ({ page, context }) => {

@@ -11,7 +11,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 131 ta brauzer E2E — PASS |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 132 ta brauzer E2E — PASS |
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0064** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12; **0061–0064 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-14**, tekshirildi — §15 "Production") | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari, profilsiz "Saqlanganlar", hamyon (pullik xizmat yoqilganda), tezkor ariza yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
@@ -1871,7 +1871,8 @@ Skrinshotlar: [telefon](screenshots/j/j1-jobs-m.jpg) · [ishchilar](screenshots/
 - `src/features/find/components/{find-page,find-client,market-aside}.tsx`, `src/features/find/market.ts` (yangi);
 - `e2e/stack/up.sh` (`MARKET_CACHE_SECONDS=0`);
 - matnlar: `messages/*/easy.json` (`search.search_*`, `market.*`);
-- test: `e2e/specs/results-page.spec.ts` (yangi).
+- test: `e2e/specs/results-page.spec.ts` (yangi);
+- CI tuzatishi: `src/app/search/layout.tsx` (yangi), `src/proxy.ts`, `src/features/find/params.ts` (`modeHref`), `e2e/specs/telegram-login.spec.ts` (pastda).
 
 ### Testlar (shu sessiyada haqiqatan bajarilgan)
 
@@ -1888,3 +1889,37 @@ Skrinshotlar: [telefon](screenshots/j/j1-jobs-m.jpg) · [ishchilar](screenshots/
 - "Vakansiyalar xaritada" yo'q: e'lonlarda koordinata kam (manzil ixtiyoriy). Alohida bosqich.
 - Yirik ish beruvchilar tartibi oxirgi 500 ta faol e'lon bo'yicha aniqlanadi (sonlari aniq). Juda ko'p e'lon
   bo'lganda aniq reyting uchun bazada bitta ochiq statistika funksiyasi kerak bo'ladi.
+
+### CI: `main`da `telegram-login` yiqildi (`2f2a7ac`) — sabab topildi va tuzatildi
+
+`main` run'ida (o'sha commit, branch run'i yashil) `telegram-login.spec.ts:56`: `page.goto("/cabinet")` →
+`net::ERR_ABORTED`. Bu tasodif emas — trace va o'lchov bilan tekshirildi:
+
+- **Sabab (eski xato, J'dan oldin ham bor edi).** Rejimi tanlangan foydalanuvchi uchun bo'sh `/search` rejim qidiruviga
+  yo'naltiriladi. Yo'naltirish sahifa ichida — `loading.tsx` chegarasidan keyin edi, javob oqimi esa shu chegarada boshlanib
+  bo'ladi. Natija: **har safar** (60/60) `200` + `<meta http-equiv="refresh">`, ya'ni brauzer sahifani **ikki marta**
+  yuklaydi; ikkinchisi `load`dan keyin bo'lsa, shu orada bosilgan havola (testda — `/cabinet`) bekor bo'ladi. Lokal:
+  15 ta takrorlashda 1 marta aynan shu xato.
+- **Tuzatish.** Rejimga yo'naltirish `src/app/search/layout.tsx`ga ko'chdi (oqim boshlanishidan oldin) → haqiqiy `307`,
+  sahifa bir marta yuklanadi. Layout `searchParams` olmaydi — URL so'rov qismini `proxy.ts` sarlavha orqali beradi
+  (faqat `/search`da; boshqa yo'llarda tashqaridan kelgani o'chiriladi). Qoida bitta: `modeHref()` (`params.ts`) — sahifa
+  ham, layout ham shuni chaqiradi. /search ichidagi o'tishlarda yo'naltirishni avvalgidek sahifa bajaradi (mijoz routeri).
+- **J qidiruv qatori ham sahifani qayta yuklamaydi.** Oddiy `<form>` o'rniga `next/form` (`prefetch={false}`): "Oshpaz" +
+  Enter avval 2 ta to'liq hujjat yuklanishi edi (matn → kasb yo'naltirishi ham `<meta>` bilan), endi 0 — mijoz routeri.
+  "Qidirish" boshidagi (rejimsiz) forma ham shunday.
+- **Test barqarorligi.** Shu spec'dagi boshqa ikki test `networkidle` kutardi; ketma-ket `goto`da oldingi sahifa boshlagan
+  prefetch Playwright hisobida "tugamagan" qolib, `networkidle` umuman kelmasligi isbotlandi (eski build'da ham: 30 tadan
+  4 tasida). O'rniga aniq signal: "/" sahifasidagi `home_view` hodisasi (u `TelegramAutoLogin`dan keyin, o'sha effektlar
+  oqimida yuboriladi). Test tekshiradigan narsa o'zgarmadi.
+
+| Test | Eski build (`2f2a7ac`) | Keyin |
+|---|---|---|
+| `results-page.spec.ts`: rejim tanlangan (mehmon va kirgan) — `/search?region=…` → `307` `/search?mode=jobs&region=…`; `goto("/search")` javobi yo'naltirilgan manzilniki; keyin darhol `/help` ochiladi, oraliqda qayta yuklash yo'q | ❌ (`200`) | ✅ |
+| `results-page.spec.ts`: telefon — qidiruv qatoridan yuborish hujjatni qayta yuklamaydi | ❌ (2 ta hujjat yuklanishi) | ✅ |
+| `telegram-login.spec.ts` × 20 takror (3 test) | — | ✅ 60/60 |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 132/132 · 604 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
+
+Qolgan (kam uchraydi): matnli (`?q=`) yoki "Yaqin atrofda" havolasi **tashqaridan** to'g'ridan-to'g'ri ochilsa, ularning
+yo'naltirishi hali sahifa ichida: avval skelet, keyin sahifa bir marta qayta yuklanadi (matnni AI bilan tushunish sekin
+bo'lishi mumkin, uni oqimdan oldinga olib chiqish oq ekranni uzaytiradi). Ilova ichidagi barcha bunday o'tishlar mijoz
+routeri orqali — qayta yuklashsiz.

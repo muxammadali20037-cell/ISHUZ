@@ -5,6 +5,7 @@ import { LOCALE_COOKIE, isLocale } from "@/lib/i18n/config";
 import { ANDROID_APP, APP_COOKIE, isAndroidAppLaunch } from "@/lib/app-platform";
 import { adminHostRoute } from "@/lib/admin-host";
 import { safeInternalPath } from "@/lib/security/safe-path";
+import { SEARCH_URL_HEADER } from "@/features/find/params";
 
 /** Login talab qiladigan yo'llar */
 const PROTECTED_PREFIXES = [
@@ -42,6 +43,10 @@ export async function proxy(request: NextRequest) {
   // Google Play ilovasi (TWA) ichida ochildi — keyingi sahifalar uchun eslab qolamiz (to'lov tugmalari yashiriladi)
   const androidLaunch = isAndroidAppLaunch(request.headers.get("referer"), request.nextUrl.searchParams.get("app"));
   if (androidLaunch) request.cookies.set(APP_COOKIE, ANDROID_APP);
+
+  // /search: URL so'rov qismi layout'ga (rejimga yo'naltirish oqim boshlanmasdan, 307 bilan); boshqa yo'llarda — tashqaridan kelgani o'chiriladi
+  if (request.nextUrl.pathname === "/search") request.headers.set(SEARCH_URL_HEADER, request.nextUrl.search);
+  else request.headers.delete(SEARCH_URL_HEADER);
 
   const { response, user } = await updateSession(request);
   const { search } = request.nextUrl;

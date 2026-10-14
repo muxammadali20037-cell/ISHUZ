@@ -43,6 +43,17 @@ async function telegramApi(page: Page, context: BrowserContext, status: number) 
 
 const loginLink = (page: Page) => page.locator("header").getByRole("link", { name: "Kirish" });
 
+/**
+ * Bosh sahifani ochib, gidratatsiya effektlari ishlaguncha kutish: "home_view" hodisasi (AnalyticsListener) TelegramAutoLogin'dan
+ * keyin, o'sha effektlar oqimida yuboriladi — kirishga urinish bo'lsa, u allaqachon jo'natilgan. networkidle emas: ketma-ket
+ * goto'da oldingi sahifa boshlagan prefetch Playwright hisobida "tugamagan" qolib, networkidle umuman kelmasligi mumkin.
+ */
+async function openHome(page: Page) {
+  const viewed = page.waitForRequest((r) => r.method() === "POST" && new URL(r.url()).pathname === "/api/e");
+  await page.goto("/");
+  await viewed;
+}
+
 test("Mini App ochilganda — avtomatik kiradi, 'Kirish' bosish shart emas; keyingi sahifalarda qayta so'ramaydi", async ({ page, context }) => {
   await asGuest(context);
   await asMiniApp(page);
@@ -66,22 +77,19 @@ test("server rad etsa (bot sozlanmagan) — sahifa ishlayveradi, qayta-qayta uri
   await expect.poll(() => calls.length).toBe(1);
   await expect(loginLink(page)).toBeVisible();
   await page.goto("/search");
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await openHome(page);
   expect(calls).toHaveLength(1);
 });
 
 test("oddiy brauzerda (Telegram emas) va kirgan foydalanuvchida — so'rov yuborilmaydi", async ({ page, context }) => {
   await asGuest(context);
   const calls = await telegramApi(page, context, 200);
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await openHome(page);
   expect(calls).toHaveLength(0);
   await expect(loginLink(page)).toBeVisible();
 
   await loginAs(context, USERS.workerB);
   await asMiniApp(page);
-  await page.goto("/");
-  await page.waitForLoadState("networkidle");
+  await openHome(page);
   expect(calls).toHaveLength(0);
 });

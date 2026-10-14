@@ -4,7 +4,7 @@ import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
-import { EMPTY_FIND, anyProfession, findHref, parseFindParams } from "@/features/find/params";
+import { EMPTY_FIND, anyProfession, findHref, modeHref, parseFindParams } from "@/features/find/params";
 import { getNodeInfo } from "@/features/find/queries";
 import { smartResolveQuery } from "@/features/find/ai-search";
 import { getSession } from "@/features/auth/session";
@@ -59,8 +59,9 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     if (target !== findHref(params)) redirect(target);
   }
 
-  // rejim bor, URL'da maqsad yo'q — savol bermasdan shu rejimning qidiruvi
-  if (!params.mode && stored) redirect(findHref(params, { mode: stored }));
+  // rejim bor, URL'da maqsad yo'q — savol bermasdan shu rejimning qidiruvi (sahifani birinchi ochishda buni layout bajaradi)
+  const toMode = modeHref(params, stored);
+  if (toMode) redirect(toMode);
   // boshqa rejimning qidiruvi: tushuntirish + "o'tish" yoki o'z bo'limiga qaytish
   if (params.mode && mode && modeOfFind(params.mode) !== mode) {
     return (
