@@ -1,5 +1,5 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, Search } from "lucide-react";
 import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
@@ -16,6 +16,7 @@ import { JobResultCard, WorkerResultCard } from "./result-cards";
 import { isCityRegion } from "@/lib/geo/city";
 import { ModeChooser } from "@/features/mode/components/mode-chooser";
 import { savedIdSet } from "@/features/saved/queries";
+import { MarketAside } from "./market-aside";
 
 function StepShell({ back, title, children, summary }: { back: string | null; title: string; children: ReactNode; summary?: ReactNode }) {
   return (
@@ -99,7 +100,6 @@ export async function FindResultsView({ params, node, region, district }: { para
   const pages = Math.max(1, Math.ceil(Math.min(total, 5000) / PAGE_SIZE));
   const prof = node ? name(node.trail.at(-1)!) : params.pay === "daily" && isJobs ? t("easy.search.daily_jobs") : params.any ? t("easy.search.all_professions") : "";
   const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}` : t("easy.location.whole_country");
-  const backHref = region ? findHref(params, { district: null, page: 1 }) : findHref(params, { region: null, district: null, page: 1 });
   // qisqa xulosa: "Buxgalter · Toshkent · 5 mln so'mdan yuqori"
   const filterParts = [
     isJobs && params.salary ? t("easy.search.salary_over", { amount: formatMoneyShort(params.salary, locale) }) : null,
@@ -133,32 +133,56 @@ export async function FindResultsView({ params, node, region, district }: { para
   // "Butun O'zbekiston" bo'yicha ham bo'sh — "bu hududda" deyilmaydi va hududni o'zgartirish taklif qilinmaydi
   const wholeCountry = !region && !remote;
 
+  // qidiruv qatori: shu rejim va hududda matn bo'yicha (kasb aniqlanadi — mavjud "aqlli qidiruv"), filtrlar saqlanadi
+  const keep: Array<[string, string]> = [["mode", params.mode!]];
+  if (params.region) keep.push(["region", params.region]);
+  if (params.district) keep.push(["district", params.district]);
+  if (params.salary) keep.push(["salary", String(params.salary)]);
+  if (params.schedule) keep.push(["schedule", params.schedule]);
+  if (params.noexp) keep.push(["noexp", "1"]);
+  if (params.exp) keep.push(["exp", "1"]);
+
   return (
-    <div className="container-app space-y-4 py-3 text-lg sm:py-8">
-      {/* ixcham sarlavha (H1): "Orqaga" — sarlavha yonida kichik tugma, natijalar birinchi ekranda ko'proq ko'rinsin */}
-      <div className="flex items-start gap-3">
-        <Button asChild variant="outline" size="icon" className="size-11 shrink-0">
-          <Link href={backHref} aria-label={t("easy.wizard.back")} title={t("easy.wizard.back")}>
-            <ArrowLeft className="size-5" aria-hidden />
-          </Link>
-        </Button>
-        <h1 className="min-w-0 pt-1.5 text-lg font-extrabold leading-snug [overflow-wrap:anywhere] sm:text-2xl">
-          {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {[prof, placeText, ...filterParts].join(" · ")}
-        </h1>
-      </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <ChangeSheet
-          modeHref={findHref(params, { mode: null, page: 1 })}
-          professionHref={findHref(params, { p: null, page: 1 })}
-          regionHref={findHref(params, { region: null, district: null, page: 1 })}
-        />
-        <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} daily={params.pay === "daily"} count={activeFilterCount(params)} />
-        {total ? (
-          <p className="text-base font-semibold text-muted-foreground" aria-live="polite">
-            {t("easy.search.found", { count: total >= 5000 ? "5 000+" : total })}
-          </p>
-        ) : null}
-      </div>
+    <div className="container-app py-3 text-lg sm:py-6">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 space-y-3">
+          {/* J1 (ishgo uslubi): tepada qidiruv va Filtr, ostida qisqa xulosa, soni va "O'zgartirish" (kasb · hudud · rejim) */}
+          <div className="flex items-center gap-2">
+            <form action="/search" method="get" role="search" className="min-w-0 flex-1">
+              {keep.map(([k, v]) => (
+                <input key={k} type="hidden" name={k} value={v} />
+              ))}
+              <Input
+                name="q"
+                type="search"
+                defaultValue={node ? prof : ""}
+                placeholder={isJobs ? t("easy.search.search_jobs_placeholder") : t("easy.search.search_workers_placeholder")}
+                aria-label={t("easy.search.search_label")}
+                leftIcon={<Search />}
+                className="h-12 rounded-xl text-base"
+                maxLength={120}
+                minLength={2}
+                required
+              />
+            </form>
+            <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} daily={params.pay === "daily"} count={activeFilterCount(params)} />
+          </div>
+          <div>
+            <h1 className="text-base font-bold leading-snug [overflow-wrap:anywhere] sm:text-lg">
+              {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {[prof, placeText, ...filterParts].join(" · ")}
+            </h1>
+            <div className="flex min-h-11 items-center justify-between gap-3">
+              <p className="text-sm font-semibold text-muted-foreground" aria-live="polite">
+                {total ? t("easy.search.found", { count: total >= 5000 ? "5 000+" : total }) : null}
+              </p>
+              <ChangeSheet
+                compact
+                modeHref={findHref(params, { mode: null, page: 1 })}
+                professionHref={findHref(params, { p: null, page: 1 })}
+                regionHref={findHref(params, { region: null, district: null, page: 1 })}
+              />
+            </div>
+          </div>
 
       {!res.ok ? (
         <section role="alert" className="space-y-4 rounded-2xl border-2 border-warning/40 bg-warning-soft p-6 text-center">
@@ -180,7 +204,7 @@ export async function FindResultsView({ params, node, region, district }: { para
         </section>
       ) : null}
       {!res.ok || (!res.items.length && params.page > 1) ? null : res.items.length ? (
-        <ul className="pop-list grid grid-cols-1 gap-3 lg:grid-cols-2">
+        <ul className="pop-list grid grid-cols-1 gap-3">
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>
@@ -230,7 +254,7 @@ export async function FindResultsView({ params, node, region, district }: { para
       {pages > 1 ? (
         <nav className="flex items-center justify-between gap-3" aria-label="pagination">
           {params.page > 1 ? (
-            <Button asChild variant="outline" className="h-14 px-5 text-lg">
+            <Button asChild variant="outline" className="h-11 px-4 text-base">
               <Link href={findHref(params, { page: params.page - 1 })}>
                 <ArrowLeft className="size-5" aria-hidden /> {t("easy.search.prev")}
               </Link>
@@ -240,7 +264,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           )}
           <span className="text-base font-semibold text-muted-foreground">{t("easy.search.page_of", { page: params.page, pages })}</span>
           {params.page < pages ? (
-            <Button asChild className="h-14 px-5 text-lg">
+            <Button asChild className="h-11 px-4 text-base">
               <Link href={findHref(params, { page: params.page + 1 })}>
                 {t("easy.search.next")} <ArrowRight className="size-5" aria-hidden />
               </Link>
@@ -251,9 +275,16 @@ export async function FindResultsView({ params, node, region, district }: { para
         </nav>
       ) : null}
 
-      <Link href={isJobs ? "/post/worker" : "/post/vacancy"} className="flex min-h-14 items-center justify-center gap-2 rounded-2xl bg-secondary px-4 py-3 text-center text-lg font-semibold text-primary hover:bg-primary-soft">
+      {/* telefonda — ro'yxat ostida; kompyuterda — o'ng panelda */}
+      <Link href={isJobs ? "/post/worker" : "/post/vacancy"} className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-center text-base font-semibold text-primary hover:bg-primary-soft lg:hidden">
         {isJobs ? t("easy.search.post_workers") : t("easy.search.post_jobs")} <ArrowRight className="size-5 shrink-0" aria-hidden />
       </Link>
+        </div>
+        {/* statistika so'rovlari (kesh tugaganda) ro'yxatni ushlab turmasin — kartalar darhol, panel keyin */}
+        <Suspense fallback={<div className="hidden lg:block" aria-hidden />}>
+          <MarketAside mode={isJobs ? "jobs" : "workers"} />
+        </Suspense>
+      </div>
     </div>
   );
 }

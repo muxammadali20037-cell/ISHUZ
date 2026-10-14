@@ -322,7 +322,10 @@
     "all_workers_button": "All workers",
     "all_count": "{count}",
     "newest_jobs": "New jobs",
-    "newest_workers": "New workers"
+    "newest_workers": "New workers",
+    "search_jobs_placeholder": "Search by job or position",
+    "search_workers_placeholder": "Search workers by profession",
+    "search_label": "Search"
   },
   "card": {
     "call": "Call",
@@ -674,5 +677,15 @@
     "locating": "Finding your location…",
     "failed": "Could not find your location — pick from the list",
     "your_area": "Your area"
+  },
+  "market": {
+    "title": "Statistics",
+    "jobs": "Jobs",
+    "workers": "Resumes",
+    "companies": "Companies",
+    "top": "Top employers",
+    "jobs_count": "Jobs: {count}",
+    "post_vacancy": "Post a job",
+    "post_resume": "Post a resume"
   }
 }

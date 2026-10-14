@@ -82,6 +82,8 @@ export GEMINI_API_KEY="" ANTHROPIC_API_KEY="" IMAGE_GEN_API_KEY="" TELEGRAM_BOT_
 # To'lov: sinov kassasi (haqiqiy kalit emas) — tugmalar ko'rinadi, Payme/Click'ga yo'naltirish va ularning
 # server so'rovlari (JSON-RPC / Prepare-Complete) shu qiymatlar bilan E2E'da taqlid qilinadi; tashqariga chiqilmaydi
 export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAYME_TEST=1
+# statistika paneli (natijalar yonida) keshsiz — testlar o'z ma'lumotini darhol ko'rsin (prod: 10 daqiqa)
+export MARKET_CACHE_SECONDS=0
 export CLICK_SERVICE_ID="e2e-service" CLICK_MERCHANT_ID="e2e-merchant" CLICK_SECRET_KEY="e2e-click-key-not-secret"
 export SUPER_ADMIN_PHONES="" ADMIN_HOST=""
 export NEXT_DIST_DIR=".next-e2e"

@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da, H — ixcham kartalar, I — ixcham e'lon sahifalari: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da, H — ixcham kartalar, I — ixcham e'lon sahifalari, J — natijalar sahifasi ishgo uslubida: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,7 +11,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 129 ta brauzer E2E — PASS |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 131 ta brauzer E2E — PASS |
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0064** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12; **0061–0064 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-14**, tekshirildi — §15 "Production") | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari, profilsiz "Saqlanganlar", hamyon (pullik xizmat yoqilganda), tezkor ariza yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
@@ -1812,3 +1812,79 @@ Skrinshotlar: [birinchi ekran](screenshots/i/i1-job-first-m.jpg) · [butun sahif
   kerak bo'ladi — egasi qarori bilan.
 - Eski `/jobs` ro'yxat sahifasi (kategoriya havolalari, "Barchasini ko'rish") hali eski katta kartalarda.
 - Telefonda haqiqiy qurilmada ko'rish — egasi (deploydan keyin).
+
+## 18. J — natijalar sahifasi: sodda va jiddiy, o'z tizimimizda (2026-10-14)
+
+So'rov (egasidan, ishgo.uz skrinshoti bilan): "shunaqa qil, bachkana qilma, lekin o'zimizning tizimimizda — bu ham
+tushunarli, soddaroq".
+
+Nima olindi va nima saqlandi:
+- **Olindi (ishgo uslubi):**
+  - tepada qidiruv qatori va "Filtr";
+  - ostida qisqa xulosa va "N ta e'lon topildi";
+  - toza, bitta ustunli ro'yxat;
+  - kompyuterda o'ng panel: e'lon berish tugmasi, statistika, yirik ish beruvchilar.
+- **Saqlandi (o'zimizning tizim):**
+  - rejimlar (ish izlovchi / ish beruvchi);
+  - kasb → hudud → tuman qadamlari ("O'zgartirish" orqali);
+  - qidiruv matni avvalgidek "aqlli qidiruv" bilan tushuniladi (kasb va hudud aniqlanadi);
+  - lupa, ixcham kartalar (H), tezkor ariza (G).
+
+### O'zgarishlar
+
+- **Qidiruv qatori.**
+  - Placeholder: "Kasb yoki lavozim qidirish" (ish beruvchida — "Kasb bo'yicha ishchi qidirish").
+  - Joriy kasb qatorda yozilgan bo'ladi.
+  - Enter bosilsa — shu rejim, hudud va filtrlar saqlangan holda qidiradi. Masalan, "Oshpaz" →
+    "Ish e'lonlari: Oshpaz · Toshkent shahri · Butun shahar".
+- **Sarlavha** — kichik va jiddiy (avval katta 2 qatorli matn va "Orqaga" tugmasi bor edi). "O'zgartirish" — kichik
+  matnli tugma, ichida avvalgidek kasb, hudud va rejimni o'zgartirish.
+- **Kompyuter (lg+):**
+  - ro'yxat bitta ustunda (ishgo kabi);
+  - o'ng panelda rejimga mos tugma: "Rezyume joylash" (ish izlovchi) yoki "Vakansiya joylashtirish" (ish beruvchi);
+  - **Statistika**: ish o'rinlari, rezyumelar, kompaniyalar;
+  - **Yirik ish beruvchilar**: logotip, nom, tasdiq belgisi va "Ish o'rinlari: N" (aniq son, kompaniya sahifasiga
+    havola).
+- **Telefonda** o'ng panel yo'q (ro'yxat birinchi). "E'lon berish" havolasi ro'yxat ostida qoladi. Sahifalash
+  tugmalari kichraytirildi.
+- **Ma'lumot va xavfsizlik:**
+  - statistika faqat ochiq ma'lumotdan: qidiruvdagi umumiy son (xuddi shu qoida bilan) va faol e'loni bor
+    kompaniyalar;
+  - cookie'siz ochiq klient, 10 daqiqa kesh (E2E stendida keshsiz);
+  - xato bo'lsa panel ko'rsatilmaydi;
+  - panel `Suspense` ichida — kesh yangilanayotganda ham kartalar kutmaydi;
+  - migratsiya kerak bo'lmadi.
+
+### O'lchov
+
+| | Oldin (`fcef075`) | Keyin |
+|---|---|---|
+| Telefon 390: birinchi karta | 241 px | 207 px |
+| Telefon 390: to'liq ko'rinadigan kartalar | 3 | 3 (4-si qisman) |
+| Kompyuter: sahifa tuzilishi | 2 ustunli kartalar, panel yo'q | bitta ustun + o'ng panel (statistika, yirik ish beruvchilar, e'lon berish) |
+| Gorizontal siljish (uz/ru, 360/390/1280) | yo'q | yo'q |
+
+Skrinshotlar: [telefon](screenshots/j/j1-jobs-m.jpg) · [ishchilar](screenshots/j/j1-workers-m.jpg) ·
+[kompyuter](screenshots/j/j1-desktop.jpg) · [kompyuter, ru](screenshots/j/j1-desktop-ru.jpg).
+
+**Fayllar:**
+- `src/features/find/components/{find-page,find-client,market-aside}.tsx`, `src/features/find/market.ts` (yangi);
+- `e2e/stack/up.sh` (`MARKET_CACHE_SECONDS=0`);
+- matnlar: `messages/*/easy.json` (`search.search_*`, `market.*`);
+- test: `e2e/specs/results-page.spec.ts` (yangi).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`fcef075`) | Keyin |
+|---|---|---|
+| `results-page.spec.ts`: telefon — qidiruv qatori (placeholder, "Qidirish" nomi) eng tepada, "Filtr", sarlavha, soni, "O'zgartirish"; birinchi karta < 260 px; o'ng panel yashirin; "Oshpaz" + Enter → kasb aniqlanadi, hudud saqlanadi, natija 1 ta; yonga siljimaydi | ❌ (qidiruv qatori yo'q) | ✅ |
+| `results-page.spec.ts`: kompyuter — o'ng panel: "Rezyume joylash" → `/post/worker`; statistika (son qidiruvdagi bilan bir xil); yirik ish beruvchi "Ish o'rinlari: 3" → `/company/…`; ro'yxat bitta ustunda; ish beruvchi rejimida "Vakansiya joylashtirish" → `/post/vacancy` | ❌ (panel yo'q) | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 131/131 · 604 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
+
+### Ochiq masalalar
+
+- "Saralash" (eng yangi / maosh bo'yicha) yo'q: qidiruv funksiyasi tartiblashni qabul qilmaydi, uning uchun
+  migratsiya kerak (egasi ruxsati bilan). Hozir tartib — TOP e'lonlar, keyin eng yangilari.
+- "Vakansiyalar xaritada" yo'q: e'lonlarda koordinata kam (manzil ixtiyoriy). Alohida bosqich.
+- Yirik ish beruvchilar tartibi oxirgi 500 ta faol e'lon bo'yicha aniqlanadi (sonlari aniq). Juda ko'p e'lon
+  bo'lganda aniq reyting uchun bazada bitta ochiq statistika funksiyasi kerak bo'ladi.

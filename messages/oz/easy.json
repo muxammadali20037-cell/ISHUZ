@@ -322,7 +322,10 @@
     "all_workers_button": "Барча ишчилар",
     "all_count": "{count} та",
     "newest_jobs": "Янги иш эълонлари",
-    "newest_workers": "Янги ишчилар"
+    "newest_workers": "Янги ишчилар",
+    "search_jobs_placeholder": "Касб ёки лавозим қидириш",
+    "search_workers_placeholder": "Касб бўйича ишчи қидириш",
+    "search_label": "Қидириш"
   },
   "card": {
     "call": "Қўнғироқ қилиш",
@@ -674,5 +677,15 @@
     "locating": "Жойлашув аниқланмоқда…",
     "failed": "Жойлашувни аниқлаб бўлмади — рўйхатдан танланг",
     "your_area": "Сизнинг ҳудудингиз"
+  },
+  "market": {
+    "title": "Статистика",
+    "jobs": "Иш ўринлари",
+    "workers": "Резюмелар",
+    "companies": "Компаниялар",
+    "top": "Йирик иш берувчилар",
+    "jobs_count": "Иш ўринлари: {count}",
+    "post_vacancy": "Вакансия жойлаштириш",
+    "post_resume": "Резюме жойлаш"
   }
 }

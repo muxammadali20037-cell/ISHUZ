@@ -322,7 +322,10 @@
     "all_workers_button": "Barcha ishchilar",
     "all_count": "{count} ta",
     "newest_jobs": "Yangi ish e'lonlari",
-    "newest_workers": "Yangi ishchilar"
+    "newest_workers": "Yangi ishchilar",
+    "search_jobs_placeholder": "Kasb yoki lavozim qidirish",
+    "search_workers_placeholder": "Kasb bo'yicha ishchi qidirish",
+    "search_label": "Qidirish"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
@@ -674,5 +677,15 @@
     "locating": "Joylashuv aniqlanmoqda…",
     "failed": "Joylashuvni aniqlab bo'lmadi — ro'yxatdan tanlang",
     "your_area": "Sizning hududingiz"
+  },
+  "market": {
+    "title": "Statistika",
+    "jobs": "Ish o'rinlari",
+    "workers": "Rezyumelar",
+    "companies": "Kompaniyalar",
+    "top": "Yirik ish beruvchilar",
+    "jobs_count": "Ish o'rinlari: {count}",
+    "post_vacancy": "Vakansiya joylashtirish",
+    "post_resume": "Rezyume joylash"
   }
 }

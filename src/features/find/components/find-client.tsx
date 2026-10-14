@@ -14,14 +14,19 @@ import type { Enums } from "@/types/database.types";
 import type { FindMode } from "../intent";
 
 /** "O'zgartirish": ish/ishchi, kasb yoki hudud — uchta katta tugma */
-export function ChangeSheet({ modeHref, professionHref, regionHref }: { modeHref: string; professionHref: string; regionHref: string }) {
+export function ChangeSheet({ modeHref, professionHref, regionHref, compact }: { modeHref: string; professionHref: string; regionHref: string; compact?: boolean }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const item = "flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 text-lg font-semibold hover:border-primary/50";
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Button type="button" variant="outline" className="h-12 px-4 text-base" onClick={() => setOpen(true)}>
-        <Pencil className="size-5" aria-hidden /> {t("easy.search.change")}
+      <Button
+        type="button"
+        variant={compact ? "ghost" : "outline"}
+        className={compact ? "h-11 px-2.5 text-sm font-semibold text-primary" : "h-12 px-4 text-base"}
+        onClick={() => setOpen(true)}
+      >
+        <Pencil className={compact ? "size-4" : "size-5"} aria-hidden /> {t("easy.search.change")}
       </Button>
       <Sheet title={t("easy.search.change")}>
         <div className="grid gap-3 pb-2">

@@ -322,7 +322,10 @@
     "all_workers_button": "Все работники",
     "all_count": "{count}",
     "newest_jobs": "Новые вакансии",
-    "newest_workers": "Новые работники"
+    "newest_workers": "Новые работники",
+    "search_jobs_placeholder": "Поиск по профессии или должности",
+    "search_workers_placeholder": "Поиск работников по профессии",
+    "search_label": "Поиск"
   },
   "card": {
     "call": "Позвонить",
@@ -674,5 +677,15 @@
     "locating": "Определяем местоположение…",
     "failed": "Не удалось определить местоположение — выберите из списка",
     "your_area": "Ваш район"
+  },
+  "market": {
+    "title": "Статистика",
+    "jobs": "Вакансии",
+    "workers": "Резюме",
+    "companies": "Компании",
+    "top": "Крупные работодатели",
+    "jobs_count": "Вакансий: {count}",
+    "post_vacancy": "Разместить вакансию",
+    "post_resume": "Разместить резюме"
   }
 }
