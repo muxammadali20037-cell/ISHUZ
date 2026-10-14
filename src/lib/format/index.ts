@@ -121,6 +121,17 @@ export function formatRelative(iso: string | Date | null | undefined, locale: Lo
   return formatDistanceToNowStrict(d, { addSuffix: true, locale: dateLocales[locale] });
 }
 
+/** E'lon sanasi kartada: Toshkent kuni bo'yicha "today" | "yesterday" | null (undan oldin — sana ko'rsatiladi) */
+export function postedDay(iso: string | Date | null | undefined, now: Date = new Date()): "today" | "yesterday" | null {
+  if (!iso) return null;
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return null;
+  const key = (x: Date) => formatInTimeZone(x, TASHKENT_TZ, "yyyy-MM-dd");
+  if (key(d) === key(now)) return "today";
+  if (key(d) === key(new Date(now.getTime() - 86_400_000))) return "yesterday";
+  return null;
+}
+
 /** "08:00:00" (Postgres time) → "08:00" */
 export function formatWorkTime(time: string | null | undefined): string {
   if (!time) return "";

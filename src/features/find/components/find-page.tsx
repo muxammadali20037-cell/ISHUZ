@@ -134,14 +134,15 @@ export async function FindResultsView({ params, node, region, district }: { para
   const wholeCountry = !region && !remote;
 
   return (
-    <div className="container-app space-y-5 py-4 text-lg sm:py-8">
-      <div className="space-y-3">
-        <Button asChild variant="outline" className="h-12 px-4 text-base">
-          <Link href={backHref}>
-            <ArrowLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
+    <div className="container-app space-y-4 py-3 text-lg sm:py-8">
+      {/* ixcham sarlavha (H1): "Orqaga" — sarlavha yonida kichik tugma, natijalar birinchi ekranda ko'proq ko'rinsin */}
+      <div className="flex items-start gap-3">
+        <Button asChild variant="outline" size="icon" className="size-11 shrink-0">
+          <Link href={backHref} aria-label={t("easy.wizard.back")} title={t("easy.wizard.back")}>
+            <ArrowLeft className="size-5" aria-hidden />
           </Link>
         </Button>
-        <h1 className="text-xl font-extrabold leading-snug [overflow-wrap:anywhere] sm:text-2xl">
+        <h1 className="min-w-0 pt-1.5 text-lg font-extrabold leading-snug [overflow-wrap:anywhere] sm:text-2xl">
           {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {[prof, placeText, ...filterParts].join(" · ")}
         </h1>
       </div>
@@ -179,7 +180,7 @@ export async function FindResultsView({ params, node, region, district }: { para
         </section>
       ) : null}
       {!res.ok || (!res.items.length && params.page > 1) ? null : res.items.length ? (
-        <ul className="pop-list grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <ul className="pop-list grid grid-cols-1 gap-3 lg:grid-cols-2">
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>

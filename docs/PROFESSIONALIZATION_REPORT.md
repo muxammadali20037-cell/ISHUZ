@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da, H — ixcham kartalar: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,7 +11,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (601 / 18 skip), SQL (29 fayl), build, 124 ta brauzer E2E — PASS |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 126 ta brauzer E2E — PASS |
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0064** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12; **0061–0064 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-14**, tekshirildi — §15 "Production") | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari, profilsiz "Saqlanganlar", hamyon (pullik xizmat yoqilganda), tezkor ariza yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
@@ -1659,3 +1659,67 @@ Loyiha `oquqqubmicldvreeqgsg`. Tartib: 0061 → 0062 → 0063 → 0064, har biri
   berganlarga" ko'rinadi. Foydalanuvchi sozlamada raqamni yashirgan bo'lsa, ish beruvchi faqat ismni ko'radi.
 - Keyingi bosqich nomzodlari (o'lchov bilan): ish beruvchining birinchi vakansiyasigacha bo'lgan yo'l (kompaniya
   ma'lumotlari, tekshiruv), arizachiga ish beruvchi javobi tezligi (bildirishnoma/Telegram).
+
+## 16. H — natijalar kartasi ixcham (2026-10-14)
+
+So'rov (egasidan, raqobatchi ilova skrinshoti bilan): "biznikini qara, buni qara — bizniki o'ta katta, 1 ta e'lon
+o'zi ekranni egallayapti, to'g'irla".
+
+### O'lchov (demo ma'lumotlar, 12 ta vakansiya va 8 ta ishchi)
+
+| Ekran | Oldin (`9d4cbd8`) | Keyin |
+|---|---|---|
+| 390×844, ish e'lonlari: to'liq ko'rinadigan kartalar | **1** | **3** (4-si qisman) |
+| 390×844, ishchilar | 1 | 3 |
+| 360×740, ish e'lonlari | **0** (birortasi ham sig'masdi) | 2 (3-si qisman) |
+| Karta balandligi (o'rtacha, 390 px): ish / ishchi | 479 / 406 px | 151 / 169 px |
+| Birinchi kartagacha (sarlavha qismi) | 312 px | 241 px |
+| Kompyuter (1280×900) | 2 ta to'liq | 8 ta to'liq (2 ustun) |
+
+### Nima o'zgardi
+
+- **OLDIN** ([skrinshot](screenshots/h/h1-jobs-m.jpg)):
+  - kartada 96–128 px rasm, alohida qatorlarda joy, maosh va jadval, 3 qatorli tavsif bor edi;
+  - pastda katta "Qo'ng'iroq qilish" (raqam bilan) yoki "Ariza yuborish" tugmasi va alohida "Batafsil" tugmasi turardi;
+  - ism ustuni tor bo'lgani uchun uzun ism ikkiga bo'linardi ("Muhammada / li").
+- **KEYIN** (raqobatchidagidek: hh.uz va boshqa ilovalar uslubi):
+  - chapda 48 px kasb belgisi (yoki ish joyi surati), yonida nomi (2 qatorgacha), maosh (ko'k, qalin) va bitta qatorda
+    joy · ish beruvchi. Joy birinchi turadi, uzun kompaniya nomi tumanni kesib tashlamaydi;
+  - **pastki qator bitta qatorda**: chapda kichik asosiy tugma, keyin "Saqlash", jadval (joy yetmasa qisqaradi) va
+    o'ng chetda sana ("Bugun" / "Kecha" / "12-okt", Toshkent vaqti):
+    - raqam ochiq bo'lsa — "Qo'ng'iroq" (ekran o'qigichi nomi: "Qo'ng'iroq qilish: +998 …");
+    - aks holda — "Ariza yuborish" / "Bog'lanish" (G3);
+  - tugmalar chapda, chunki o'ng pastdagi lupa (AI) tugmasi ularni yopmasin;
+  - **butun karta bosiladi** (sarlavha havolasi kartani to'liq qoplaydi). "Batafsil" tugmasi kerak emas; "Saqlash" va
+    amal tugmasi havola ustida;
+  - ishchi kartasi: ism, kasb, joy, kutilayotgan maosh, tajriba (ikonka bilan qisqa).
+  - Tavsif kartadan olindi, u e'lon sahifasida.
+- **Natijalar sarlavhasi**: "Orqaga" sarlavha yonidagi 44 px'lik tugmaga aylandi (nomi "Orqaga" saqlangan). Birinchi
+  karta 71 px yuqoriga chiqdi.
+- Shu kartalar "Saqlanganlar" va lupa (AI) natijalarida ham ishlatiladi, ular ham ixchamlashdi.
+- Ishchi e'loni sahifasidagi katta "Qo'ng'iroq qilish" (`CallBlock`) o'zgarmadi: u tafsilot sahifasi.
+
+**Fayllar:**
+- `src/features/find/components/result-cards.tsx`, `src/features/find/components/find-page.tsx`;
+- `src/lib/format/index.ts` (`postedDay`), `src/lib/format/date.test.ts`;
+- matnlar: `messages/*/easy.json` (`card.call_short`);
+- testlar: `e2e/specs/compact-cards.spec.ts` (yangi), `journey-apply.spec.ts` va `ai-finder.spec.ts` ("Batafsil" o'rniga
+  karta sarlavhasi).
+
+Skrinshotlar: [ish e'lonlari 390 px](screenshots/h/h1-jobs-m.jpg) · [ishchilar](screenshots/h/h1-workers-m.jpg) ·
+[360 px, uz va ru](screenshots/h/h1-360-m.jpg) · [kompyuter](screenshots/h/h1-desktop.jpg).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`9d4cbd8`) | Keyin |
+|---|---|---|
+| `compact-cards.spec.ts`: ish e'lonlari 390×844 — ≥ 3 karta to'liq, eng baland karta ≤ 200 px; nomi, maosh, joy · ish beruvchi, jadval, "Bugun"; "Batafsil" yo'q; "Qo'ng'iroq" (`tel:`, nomida raqam) va "Ariza yuborish" havola ostida qolmaydi; "Saqlash" bosiladi; maosh yozuvi bosilsa e'lon ochiladi; 360 px'da ≤ 200 px, yonga siljimaydi | ❌ (1 ta karta) | ✅ |
+| `compact-cards.spec.ts`: ishchilar — ≥ 3 karta, ≤ 200 px, tajriba yozuvi bosilsa ishchi e'loni ochiladi | ❌ (1 ta karta) | ✅ |
+| Unit `postedDay` (Toshkent kuni: UTC bo'yicha kecha, Toshkentda bugun; kecha; noto'g'ri sana) | — (yangi) | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 126/126 · 604 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
+
+### Ochiq masalalar
+
+- Rus tilida 360 px'da uzun "Откликнуться" bilan jadval yozuvi qisqaradi ("5/…"). Ma'lumot e'lon sahifasida to'liq.
+- Kartadagi telefon raqami endi tugma nomida va e'lon sahifasida ko'rinadi, kartaning o'zida yozilmaydi.
+- Telefonda haqiqiy qurilmada ko'rish — egasi (production'ga deploy bo'lgach).

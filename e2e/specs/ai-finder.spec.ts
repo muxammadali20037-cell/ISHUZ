@@ -57,7 +57,7 @@ test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosils
   const cards = dialog.locator("article");
   await expect(cards).toHaveCount(1);
   await expect(cards.first()).toContainText("Buxgalter");
-  await cards.first().getByRole("link", { name: "Batafsil" }).click();
+  await cards.first().getByRole("heading").getByRole("link").click();
   await page.waitForURL(`**/jobs/${slug}`);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });

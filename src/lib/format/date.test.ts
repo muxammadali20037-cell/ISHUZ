@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { formatDate, formatDateTime, formatRelative } from "./index";
+import { formatDate, formatDateTime, formatRelative, postedDay } from "./index";
 
 describe("formatDate: o'zbek imlosi", () => {
   const d = "2026-10-22T07:00:00Z"; // Toshkent: 12:00
@@ -39,5 +39,23 @@ describe("formatRelative", () => {
     vi.useFakeTimers({ now });
     expect(formatRelative(new Date(now.getTime() - 3 * 3600_000), "uz")).toBe("3 soat oldin");
     expect(formatRelative(new Date(now.getTime() - 3 * 3600_000), "en")).toBe("3 hours ago");
+  });
+});
+
+describe("postedDay: kartadagi 'Bugun' / 'Kecha' (Toshkent kuni)", () => {
+  const now = new Date("2026-10-14T19:30:00Z"); // Toshkent: 15-oktabr 00:30
+
+  it("Toshkent bo'yicha bugun — UTC bo'yicha kecha bo'lsa ham", () => {
+    expect(postedDay("2026-10-14T19:10:00Z", now)).toBe("today"); // Toshkent 15-okt 00:10
+  });
+
+  it("kecha va undan oldin", () => {
+    expect(postedDay("2026-10-14T10:00:00Z", now)).toBe("yesterday"); // Toshkent 14-okt 15:00
+    expect(postedDay("2026-10-13T10:00:00Z", now)).toBeNull();
+  });
+
+  it("bo'sh yoki noto'g'ri sana — null", () => {
+    expect(postedDay(null, now)).toBeNull();
+    expect(postedDay("emas", now)).toBeNull();
   });
 });

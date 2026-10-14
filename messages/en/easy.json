@@ -326,6 +326,7 @@
   },
   "card": {
     "call": "Call",
+    "call_short": "Call",
     "details": "Details",
     "no_phone": "No number shown — contact via «Details»",
     "negotiable": "Negotiable",

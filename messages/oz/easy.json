@@ -338,7 +338,8 @@
     "exp_required": "Тажриба: {value}",
     "exp_none": "Тажриба шарт эмас",
     "apply": "Ариза юбориш",
-    "contact": "Боғланиш"
+    "contact": "Боғланиш",
+    "call_short": "Қўнғироқ"
   },
   "listing": {
     "title": "Иш қидирувчи эълони",

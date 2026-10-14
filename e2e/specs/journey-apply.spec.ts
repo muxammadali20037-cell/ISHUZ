@@ -59,7 +59,8 @@ for (const vp of VIEWPORTS) {
     // 3. natija → batafsil
     const card = page.locator("main article").filter({ hasText: "Buxgalter" }).first();
     await expect(card).toBeVisible();
-    await card.getByRole("link", { name: "Batafsil" }).click();
+    // karta ixcham (H1): sarlavha — e'lon sahifasiga havola, butun karta bosiladi
+    await card.getByRole("heading").getByRole("link").click();
     await page.waitForURL(/\/jobs\/[^/]+$/);
     const jobUrl = new URL(page.url()).pathname;
 

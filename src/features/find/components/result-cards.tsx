@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { BriefcaseBusiness, ChevronRight, Clock, MapPin, Phone, Send } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, Phone, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { formatMoney, formatPhone } from "@/lib/format";
+import { formatDate, formatMoney, formatPhone, postedDay } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { Photo } from "@/components/shared/photo";
 import { vacancyPhotoUrl } from "@/features/post/photo";
@@ -49,6 +49,8 @@ export interface JobCardData extends PlaceNames {
   summary: string | null;
   phone: string | null;
   is_featured: boolean;
+  /** joylangan vaqt (kartada "Bugun" / "Kecha" / sana) */
+  published_at?: string | null;
 }
 
 export interface WorkerCardData extends PlaceNames {
@@ -83,42 +85,57 @@ export function usePlace() {
   };
 }
 
-/**
- * Katta "Qo'ng'iroq qilish" (tel:, kartaning yagona asosiy amali — brend rangi) + raqam. Raqam ko'rsatilmasa — kulrang
- * izoh o'rniga aniq keyingi amal (`action`): ish e'lonida "Ariza yuborish", ishchida "Bog'lanish" (G3).
- */
-export function CallBlock({ phone, detailsHref, action, className }: { phone: string | null; detailsHref?: string; action?: { href: string; label: string }; className?: string }) {
+/** Katta "Qo'ng'iroq qilish" (tel:, brend rangi) + raqam — ishchi e'loni sahifasidagi bog'lanish bo'limi uchun */
+export function CallBlock({ phone, className }: { phone: string; className?: string }) {
   const { t } = useT();
   return (
     <div className={cn("space-y-2", className)}>
-      {phone ? (
-        <>
-          <a
-            href={`tel:${phone.replace(/[^\d+]/g, "")}`}
-            className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
-          >
-            <Phone className="size-6" aria-hidden /> {t("easy.card.call")}
-          </a>
-          <p className="text-center text-lg font-semibold tabular">{formatPhone(phone)}</p>
-        </>
-      ) : action ? (
-        // "Batafsil" o'sha sahifani oldindan yuklaydi — ikkinchi prefetch ro'yxatda asosiy oqimni band qilmasin
-        <Link
-          href={action.href}
-          prefetch={false}
-          className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
-        >
-          <Send className="size-5" aria-hidden /> {action.label}
-        </Link>
-      ) : detailsHref ? (
-        <p className="rounded-xl bg-secondary px-3 py-2 text-base text-muted-foreground">{t("easy.card.no_phone")}</p>
-      ) : null}
-      {detailsHref ? (
-        <Link href={detailsHref} className="press flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-card px-4 text-lg font-semibold text-primary hover:border-primary/50 hover:bg-primary-soft/50">
-          {t("easy.card.details")}
-        </Link>
-      ) : null}
+      <a
+        href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+        className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
+      >
+        <Phone className="size-6" aria-hidden /> {t("easy.card.call")}
+      </a>
+      <p className="text-center text-lg font-semibold tabular">{formatPhone(phone)}</p>
     </div>
+  );
+}
+
+/** "Bugun" / "Kecha" / "12-oktabr" — Toshkent vaqti bo'yicha (kartadagi e'lon sanasi) */
+function usePosted() {
+  const { t, locale } = useT();
+  return (iso: string | null | undefined) => {
+    if (!iso) return null;
+    const rel = postedDay(iso);
+    return rel === "today" ? t("common.labels.today") : rel === "yesterday" ? t("common.labels.yesterday") : formatDate(iso, locale, "d MMM");
+  };
+}
+
+// Karta ixcham (H1): bitta ekranga 3–4 ta e'lon. Butun karta bosiladi — sarlavha havolasi kartani to'liq qoplaydi
+// (`after:inset-0`), "Saqlash" va amal tugmasi uning ustida (`relative z-10`) — pastki qatorda chapda, matn ustuni keng qolsin
+// (maosh bir qatorga sig'adi). Batafsil matn — e'lon sahifasida.
+const cardCls = "relative rounded-2xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/50 sm:p-4";
+const stretched = "after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
+const thumbCls = "size-12 shrink-0 rounded-xl";
+const pillCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-primary px-3.5 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover";
+// pastki qator bitta qatorda: joy yetmasa — jadval yozuvi qisqaradi ("Erkin gr…"), tugmalar va sana doim to'liq
+const chipCls = "min-w-0 truncate rounded-lg bg-secondary px-2 py-1 text-sm font-medium text-foreground/80";
+
+/** Kartaning asosiy amali (kichik): raqam bo'lsa — "Qo'ng'iroq qilish", bo'lmasa — "Ariza yuborish" / "Bog'lanish" (G3) */
+function CardAction({ phone, action }: { phone: string | null; action: { href: string; label: string } }) {
+  const { t } = useT();
+  if (phone) {
+    return (
+      <a href={`tel:${phone.replace(/[^\d+]/g, "")}`} className={pillCls} aria-label={`${t("easy.card.call")}: ${formatPhone(phone)}`} title={formatPhone(phone)}>
+        <Phone className="size-4" aria-hidden /> {t("easy.card.call_short")}
+      </a>
+    );
+  }
+  return (
+    // "Batafsil" (sarlavha) o'sha sahifani oldindan yuklaydi — ikkinchi prefetch ro'yxatda asosiy oqimni band qilmasin
+    <Link href={action.href} prefetch={false} className={pillCls}>
+      <Send className="size-4" aria-hidden /> {action.label}
+    </Link>
   );
 }
 
@@ -126,45 +143,46 @@ export function CallBlock({ phone, detailsHref, action, className }: { phone: st
 export function JobResultCard({ job, imageUrl, photoPath, saved, savedRefresh }: { job: JobCardData; imageUrl?: string | null; photoPath?: string | null; saved?: boolean; savedRefresh?: boolean }) {
   const { t, tEnum, name } = useT();
   const place = usePlace();
+  const posted = usePosted();
   const profession = job.profession_name_uz ? name({ name_uz: job.profession_name_uz, name_ru: job.profession_name_ru ?? job.profession_name_uz, name_en: job.profession_name_en }) : job.title;
+  const when = posted(job.published_at);
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <div className="flex gap-4">
+    <article className={cardCls}>
+      <div className="flex gap-3">
         {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan); ochilmasa — kasb tasviri */}
         <Photo
           src={photoPath ? vacancyPhotoUrl(photoPath) : null}
           alt={t("easy.photo.alt")}
-          sizes="128px"
-          className="aspect-[4/3] w-[96px] shrink-0 rounded-2xl sm:w-[128px]"
-          fallback={<ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-[96px] shrink-0 sm:w-[128px]" />}
-        >
-          <figcaption className="absolute bottom-1 left-1 rounded-md bg-black/60 px-1.5 py-0.5 text-2xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
-        </Photo>
+          sizes="56px"
+          className={thumbCls}
+          fallback={<ProfessionImage url={imageUrl} icon={job.category_icon} name={profession} className={thumbCls} iconClassName="size-6" />}
+        />
         <div className="min-w-0 flex-1">
-          {job.is_featured ? <span className="mb-1 inline-block rounded-md bg-warning px-1.5 py-0.5 text-xs font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
-          <h3 className="break-words text-xl font-bold leading-snug">{job.title}</h3>
-          {job.employer_name ? <p className="mt-0.5 text-base font-medium text-muted-foreground">{job.employer_name}</p> : null}
+          <h3 className="line-clamp-2 break-words text-lg font-bold leading-snug">
+            <Link href={`/jobs/${job.slug}`} className={stretched}>
+              {job.title}
+            </Link>
+          </h3>
+          <SalaryText from={job.salary_from} to={job.salary_to} type={job.salary_type} negotiable={job.salary_negotiable} className="mt-0.5 block text-base font-bold text-primary" />
+          {/* joy birinchi (ish izlovchi uchun muhimroq) — uzun kompaniya nomi tumanni kesib tashlamasin */}
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">
+            {place(job, job.is_remote)}
+            {job.employer_name ? ` · ${job.employer_name}` : ""}
+          </p>
         </div>
-        {saved !== undefined ? <SaveButton kind="vacancy" id={job.id} initial={saved} label={job.title} refresh={savedRefresh} /> : null}
       </div>
-      <ul className="space-y-1.5 text-lg">
-        <li className="flex items-start gap-2">
-          <MapPin className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-          <span>{place(job, job.is_remote)}</span>
-        </li>
-        <li className="flex items-start gap-2">
-          <BriefcaseBusiness className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-          <SalaryText from={job.salary_from} to={job.salary_to} type={job.salary_type} negotiable={job.salary_negotiable} className="text-lg" />
-        </li>
-        {job.schedule !== "negotiable" ? (
-          <li className="flex items-start gap-2">
-            <Clock className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-            <span>{tEnum("work_schedule", job.schedule)}</span>
-          </li>
+      {/* amallar chapda (o'ngdagi lupa tugmasi ularni yopmasin), sana — o'ng chetda */}
+      <div className="mt-2 flex items-center gap-2">
+        <CardAction phone={job.phone} action={{ href: `/jobs/${job.slug}?apply=1`, label: t("easy.card.apply") }} />
+        {saved !== undefined ? <SaveButton kind="vacancy" id={job.id} initial={saved} label={job.title} refresh={savedRefresh} className="relative z-10" /> : null}
+        {job.is_featured ? <span className="shrink-0 rounded-lg bg-warning px-2 py-1 text-sm font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
+        {job.schedule !== "negotiable" ? <span className={chipCls}>{tEnum("work_schedule", job.schedule)}</span> : null}
+        {when ? (
+          <span className="ml-auto shrink-0 whitespace-nowrap text-sm text-muted-foreground" suppressHydrationWarning>
+            {when}
+          </span>
         ) : null}
-      </ul>
-      {job.summary ? <p className="line-clamp-3 text-base text-foreground/80">{job.summary}</p> : null}
-      <CallBlock phone={job.phone} detailsHref={`/jobs/${job.slug}`} action={{ href: `/jobs/${job.slug}?apply=1`, label: t("easy.card.apply") }} />
+      </div>
     </article>
   );
 }
@@ -176,40 +194,46 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
     ? name({ name_uz: worker.profession_name_uz, name_ru: worker.profession_name_ru ?? worker.profession_name_uz, name_en: worker.profession_name_en })
     : (worker.headline ?? "");
   const exp = levelToExperience(worker.experience_level);
+  const expValue = exp ? t(`easy.worker.exp.${exp}`) : "—";
+  const expText = t("easy.card.experience", { value: expValue });
   const fullName = `${worker.first_name}${worker.last_initial ? ` ${worker.last_initial}.` : ""}`;
   return (
-    <article className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
-      <div className="flex gap-4">
+    <article className={cardCls}>
+      <div className="flex gap-3">
         {/* haqiqiy surat (egasi yuklagan); ochilmasa — kasb tasviri */}
         <Photo
           src={worker.avatar_url}
           alt={fullName}
-          sizes="128px"
-          className="aspect-[4/3] w-[96px] shrink-0 rounded-2xl sm:w-[128px]"
-          fallback={<ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} label={imageUrl ? t("easy.image.label") : undefined} className="aspect-[4/3] w-[96px] shrink-0 sm:w-[128px]" />}
+          sizes="56px"
+          className={thumbCls}
+          fallback={<ProfessionImage url={imageUrl} icon={worker.category_icon} name={profession} className={thumbCls} iconClassName="size-6" />}
         />
         <div className="min-w-0 flex-1">
-          <h3 className="break-words text-xl font-bold leading-snug">{fullName}</h3>
-          <p className="mt-0.5 text-lg font-semibold text-primary">{profession}</p>
-        </div>
-        {saved !== undefined ? <SaveButton kind="worker" id={worker.id} initial={saved} label={fullName} refresh={savedRefresh} /> : null}
-      </div>
-      <ul className="space-y-1.5 text-lg">
-        <li className="flex items-start gap-2">
-          <MapPin className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-          <span>
+          <h3 className="truncate text-lg font-bold leading-snug">
+            <Link href={`/listing/${worker.id}`} className={stretched}>
+              {fullName}
+            </Link>
+          </h3>
+          <p className="truncate text-base font-semibold text-primary">{profession}</p>
+          <p className="mt-0.5 truncate text-sm text-muted-foreground">
             {place(worker, false)}
-            {worker.remote_ok ? <span className="text-muted-foreground"> · {t("easy.card.remote")}</span> : null}
+            {worker.remote_ok ? ` · ${t("easy.card.remote")}` : ""}
+          </p>
+          {worker.salary_expected ? <p className="truncate text-sm font-semibold">{t("easy.card.salary_expected", { amount: formatMoney(worker.salary_expected, locale) })}</p> : null}
+        </div>
+      </div>
+      <div className="mt-2 flex items-center gap-2">
+        <CardAction phone={worker.phone} action={{ href: `/listing/${worker.id}#contact`, label: t("easy.card.contact") }} />
+        {saved !== undefined ? <SaveButton kind="worker" id={worker.id} initial={saved} label={fullName} refresh={savedRefresh} className="relative z-10" /> : null}
+        {/* qisqa: ikonka + qiymat (pastki qator bitta qatorga sig'sin); to'liq "Tajriba: …" — ekran o'qigichi uchun */}
+        <span className={cn(chipCls, "flex items-center gap-1")} title={expText}>
+          <BriefcaseBusiness className="size-4 shrink-0 text-primary" aria-hidden />
+          <span className="sr-only">{expText}</span>
+          <span className="truncate" aria-hidden>
+            {expValue}
           </span>
-        </li>
-        <li className="flex items-start gap-2">
-          <BriefcaseBusiness className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-          <span>{t("easy.card.experience", { value: exp ? t(`easy.worker.exp.${exp}`) : "—" })}</span>
-        </li>
-        {worker.salary_expected ? <li className="pl-7 text-base text-muted-foreground">{t("easy.card.salary_expected", { amount: formatMoney(worker.salary_expected, locale) })}</li> : null}
-      </ul>
-      {worker.about ? <p className="line-clamp-3 text-base text-foreground/80">{worker.about}</p> : null}
-      <CallBlock phone={worker.phone} detailsHref={`/listing/${worker.id}`} action={{ href: `/listing/${worker.id}#contact`, label: t("easy.card.contact") }} />
+        </span>
+      </div>
     </article>
   );
 }

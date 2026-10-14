@@ -326,6 +326,7 @@
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
+    "call_short": "Qo'ng'iroq",
     "details": "Batafsil",
     "no_phone": "Raqam ko'rsatilmagan — «Batafsil» orqali bog'laning",
     "negotiable": "Kelishiladi",
