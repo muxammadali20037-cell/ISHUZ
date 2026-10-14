@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -12,7 +12,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
 | Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (601 / 18 skip), SQL (29 fayl), build, 124 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) · **0061 (Saqlanganlar), 0062–0063 (hamyon), 0064 (tezkor ariza) — hali qo'llanmagan, egasi ruxsatini kutmoqda**; usiz kod eski yo'l bilan ishlaydi (§13, §14, §15) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0064** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12; **0061–0064 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-14**, tekshirildi — §15 "Production") | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari, profilsiz "Saqlanganlar", hamyon (pullik xizmat yoqilganda), tezkor ariza yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
 Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
@@ -1354,8 +1354,7 @@ qaragan edi). Endi `404` ham "jadval yo'q" deb tushuniladi (`missing.test.ts`), 
 
 ### Ochiq masalalar
 
-- **0061 production'ga qo'llanmagan — egasi ruxsati kerak.** Usiz ham sayt ishlaydi (eski yo'l). Lekin profilsiz saqlash
-  va ish beruvchining "Saqlanganlar"i faqat 0061 dan keyin ishlaydi.
+- ~~0061 production'ga qo'llanmagan~~ — ✅ 2026-10-14 egasining ruxsati bilan qo'llandi va tekshirildi (§15 "Production").
 - Telegram Mini App ichida haqiqiy qurilmada — NOT_RUN. Production brauzer tekshiruvi — NOT_RUN (bu muhitdan
   production'ga chiqish yopiq).
 - Joylashuv aniqligi qurilmaga bog'liq: eng yaqin tuman markazi bo'yicha tanlanadi, tuman chegarasida qo'shni tuman
@@ -1482,11 +1481,8 @@ tushirildi. Ikkala build bir xil sinov kassasi bilan ishladi: `up.sh` va `old-bu
 
 ### Ochiq masalalar
 
-- **0061, 0062, 0063 production'ga qo'llanmagan — egasi ruxsati kerak.**
-  - 0062 faqat enum qiymatlari.
-  - 0063: hamyon va `payments_target` tuzatishi.
-  - Ular bo'lmasa ham yangi to'lov oynasi, "To'lovlarim" (tarix) va "Qayta to'lash" ishlaydi; hamyon esa yashirin
-    qoladi.
+- ~~0061, 0062, 0063 production'ga qo'llanmagan~~ — ✅ 2026-10-14 egasining ruxsati bilan qo'llandi va tekshirildi
+  (§15 "Production"). Hamyon faqat pullik xizmat yoqilganda ko'rinadi (`wallet_enabled`).
 - **Haqiqiy Payme/Click kassasi bilan sinov — NOT_RUN.** Bu muhitdan tashqi to'lov tizimiga chiqish yo'q. Server
   so'rovlari stendda ularning protokoli bo'yicha taqlid qilindi (Payme JSON-RPC, Click md5 imzosi). Production'da
   bitta kichik to'ldirish (5 000 so'm) bilan tekshirish tavsiya qilinadi.
@@ -1623,10 +1619,42 @@ Aniq kasb va tuman bo'yicha qidirish o'zgarmadi. U shu sahifada, "Barcha …" tu
     (475–513 ms).
 - Butun to'plam keyin: 124/124.
 
+### Production: 0061–0064 qo'llandi (2026-10-14, egasining ruxsati bilan, Supabase MCP)
+
+Loyiha `oquqqubmicldvreeqgsg`. Tartib: 0061 → 0062 → 0063 → 0064, har biri alohida tranzaksiyada.
+
+- **Qo'llashdan oldin tekshirildi (faqat o'qish):**
+  - production'da to'lovlar soni 0, demak `payments_target` cheklovini almashtirish hech qanday ma'lumotga tegmaydi;
+  - `saved_items`, `wallets`, `wallet_ledger` hali yo'q edi;
+  - 0063 qayta yozadigan `apply_payment_internal` va `billing_guard_payment` production'da 0063 ichidagi asos bilan
+    aynan bir xil (0063 faqat hamyon tarmog'ini qo'shadi);
+  - `can_view_worker` 0064 kutgan holatda edi.
+- **Qo'llagandan keyin tekshirildi:**
+  - `list_migrations` ro'yxatida 0061, 0062, 0063, 0064 bor;
+  - `simple_listing_features()` → `saved_items`, `wallet`, `quick_apply` = true;
+  - enum'lar: `wallet_topup` va `wallet` qo'shildi;
+  - `saved_items`, `wallets`, `wallet_ledger` jadvallarida RLS yoqilgan (`saved_items`da 6 ta qoida);
+  - mehmon jadvallarni o'qiy olmaydi va `create_topup`, `wallet_enabled`ni chaqira olmaydi;
+  - foydalanuvchi balansga yoza olmaydi (insert/update yo'q), `apply_payment_internal`ni chaqira olmaydi;
+  - `payments_target` yangi shaklda, bekor qilish triggerlari (2 ta) o'rnatilgan;
+  - hamyon sozlamalari: bonus 0%, bonus chegarasi 100 000, to'ldirish 5 000 – 2 000 000;
+  - `can_view_worker` yangi shartda, huquqlari o'zgarmagan.
+- **Supabase maslahatchilari:**
+  - yangi obyektlar bo'yicha RLS'siz jadval yoki qoidasiz jadval yo'q;
+  - yangi foydalanuvchi RPC'lari uchun "SECURITY DEFINER'ni authenticated chaqira oladi" ogohlantirishi chiqdi. Bu
+    ataylab shunday: ichida `auth.uid()` va huquq tekshiruvi bor, loyihadagi mavjud RPC'lar ham shu toifada;
+  - unumdorlik: yangi bo'sh jadvallarda "indeks hali ishlatilmagan" ogohlantirishi.
+- `src/types/database.types.ts` qayta yaratish shart emas: 0061–0063 obyektlari allaqachon bor, 0064 imzolarni
+  o'zgartirmaydi.
+- **Egasi uchun 2 daqiqalik tekshiruv (telefonda):**
+  - e'lonni kirmasdan saqlash → "Saqlanganlar";
+  - profili yo'q hisob bilan e'longa "Ariza yuborish" (anketa chiqmasligi kerak);
+  - ish beruvchi hisobida "Kelgan arizalar"da arizachining ismi ko'rinishi.
+  - Hamyon faqat pullik xizmat yoqilganda ko'rinadi.
+
 ### Ochiq masalalar
 
-- **0064 production'ga qo'llanmagan — egasi ruxsati kerak** (0061–0063 bilan birga). Usiz tezkor ariza o'chiq
-  qoladi, qolgan G o'zgarishlari (G1, G3, G4) bazaga bog'liq emas va darhol ishlaydi.
+- Haqiqiy Payme/Click kassasida bitta kichik to'ldirish bilan tekshirish — NOT_RUN (§14).
 - Tezkor ariza izohidagi "telefon raqamingiz bilan" standart sozlamada to'g'ri: yangi foydalanuvchida raqam "ariza
   berganlarga" ko'rinadi. Foydalanuvchi sozlamada raqamni yashirgan bo'lsa, ish beruvchi faqat ismni ko'radi.
 - Keyingi bosqich nomzodlari (o'lchov bilan): ish beruvchining birinchi vakansiyasigacha bo'lgan yo'l (kompaniya
