@@ -131,10 +131,12 @@
   "apply": {
     "title": "Ariza yuborish",
     "description": "Ish beruvchi profilingizni va xabaringizni ko'radi.",
+    "description_quick": "Ish beruvchi ismingizni va xabaringizni ko'radi.",
     "message_label": "Qisqacha xabar",
     "message_hint": "ixtiyoriy",
     "message_placeholder": "Nima uchun bu ish sizga mos?",
     "default_message": "Assalomu alaykum! «{title}» vakansiyasiga qiziqyapman. Profilim bilan tanishib chiqishingizni so'rayman.",
+    "default_message_quick": "Assalomu alaykum! «{title}» vakansiyasiga qiziqyapman. Iltimos, men bilan bog'laning.",
     "chars": "{count} / {max}",
     "submit": "Ariza yuborish",
     "success_title": "Ariza yuborildi",
@@ -150,7 +152,9 @@
       "not_authenticated": "Davom etish uchun tizimga kiring",
       "validation": "Xabar 1000 belgidan oshmasligi kerak",
       "generic": "Ariza yuborilmadi. Qayta urinib ko'ring."
-    }
+    },
+    "quick_note": "Profil to'ldirish shart emas — ariza ismingiz va telefon raqamingiz bilan yuboriladi. Ish beruvchi siz bilan bog'lanadi.",
+    "quick_profile_cta": "Profilingizni 1 daqiqada to'ldiring — ish beruvchilar sizni qidiruvda ham topadi"
   },
   "save": {
     "saved": "Vakansiya saqlandi",

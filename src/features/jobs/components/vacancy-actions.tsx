@@ -2,8 +2,8 @@
 
 import { useRef, useState, useTransition } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Bookmark, CheckCircle2, Send, Settings2, Share2 } from "lucide-react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Bookmark, CheckCircle2, Info, Send, Settings2, Share2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import type { Enums } from "@/types/database.types";
@@ -23,12 +23,14 @@ import { useCtaOffset } from "@/components/shared/use-cta-offset";
 
 export interface VacancyActionsProps {
   vacancy: { id: string; slug: string; title: string; companyName: string | null; status: Enums<"vacancy_status"> };
-  viewer: Pick<VacancyViewerState, "kind" | "isSaved" | "application">;
+  viewer: Pick<VacancyViewerState, "kind" | "isSaved" | "application" | "quickApply">;
 }
 
 /**
  * Saqlash · Ulashish · Ariza yuborish. Mobil: pastki yopishqoq panel; desktop (lg): yon karta.
- * Kirmagan → /auth?next=; worker profili yo'q → /onboarding/worker; boshqaruvchi → "Boshqarish".
+ * Kirmagan → /auth?next=…?apply=1 (kirgach ariza oynasi o'zi ochiladi); profili yo'q — tezkor ariza (ism va telefon bilan,
+ * anketa shart emas; 0064 bo'lmagan bazada — avvalgidek /onboarding/worker); boshqaruvchi → "Boshqarish". `?apply=1` — natija
+ * kartasidagi "Ariza yuborish"dan ham.
  */
 export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
   const { t } = useT();
@@ -36,8 +38,10 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
   const { toggle, pendingId, dialog } = useSaveVacancy();
   const [saved, setSaved] = useState(viewer.isSaved);
   const [application, setApplication] = useState<{ id: string | null } | null>(viewer.application ? { id: viewer.application.id } : null);
-  const [open, setOpen] = useState(false);
-  const [message, setMessage] = useState(() => t("jobs.apply.default_message", { title: vacancy.title }));
+  const sp = useSearchParams();
+  const canApply = (viewer.kind === "worker" || (viewer.kind === "no_worker" && viewer.quickApply)) && !viewer.application && vacancy.status === "active";
+  const [open, setOpen] = useState(() => canApply && sp?.get("apply") === "1");
+  const [message, setMessage] = useState(() => t(viewer.kind === "no_worker" ? "jobs.apply.default_message_quick" : "jobs.apply.default_message", { title: vacancy.title }));
   const [pending, startTransition] = useTransition();
   const [done, setDone] = useState<string | null>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -74,10 +78,10 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
   const onApplyClick = () => {
     if (viewer.kind === "guest") {
-      router.push(`/auth?next=${encodeURIComponent(detailPath)}`);
+      router.push(`/auth?next=${encodeURIComponent(`${detailPath}?apply=1`)}`);
       return;
     }
-    if (viewer.kind === "no_worker") {
+    if (viewer.kind === "no_worker" && !viewer.quickApply) {
       router.push("/onboarding/worker");
       return;
     }
@@ -182,7 +186,15 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
       {dialog}
 
-      <Dialog open={open} onOpenChange={(o) => !pending && setOpen(o)}>
+      <Dialog
+        open={open}
+        onOpenChange={(o) => {
+          if (pending) return;
+          setOpen(o);
+          // ?apply=1 bilan ochilgan bo'lsa — yopilgach manzil toza (yangilanganda qayta ochilmasin)
+          if (!o && sp?.get("apply")) window.history.replaceState(null, "", detailPath);
+        }}
+      >
         {done ? (
           <Sheet title={t("jobs.apply.success_title")}>
             <div className="flex flex-col items-center py-4 text-center">
@@ -194,6 +206,11 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
               <Button asChild className="mt-6" fullWidth>
                 <Link href={`/applications/${done}`}>{t("jobs.apply.success_action")}</Link>
               </Button>
+              {viewer.kind === "no_worker" ? (
+                <Link href="/post/worker" className="mt-3 rounded-xl bg-primary-soft/60 px-4 py-3 text-sm font-semibold text-primary">
+                  {t("jobs.apply.quick_profile_cta")}
+                </Link>
+              ) : null}
               <Button type="button" variant="ghost" className="mt-2" fullWidth onClick={() => setOpen(false)}>
                 {t("common.actions.close")}
               </Button>
@@ -202,13 +219,19 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
         ) : (
           <Sheet
             title={t("jobs.apply.title")}
-            description={t("jobs.apply.description")}
+            description={t(viewer.kind === "no_worker" ? "jobs.apply.description_quick" : "jobs.apply.description")}
             footer={
               <Button type="button" fullWidth size="lg" onClick={submit} loading={pending}>
                 <Send className="size-4" /> {t("jobs.apply.submit")}
               </Button>
             }
           >
+            {viewer.kind === "no_worker" ? (
+              <p className="mb-3 flex items-start gap-2 rounded-xl bg-primary-soft/60 px-3 py-2.5 text-sm">
+                <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                {t("jobs.apply.quick_note")}
+              </p>
+            ) : null}
             <Field
               label={t("jobs.apply.message_label")}
               hint={t("jobs.apply.message_hint")}

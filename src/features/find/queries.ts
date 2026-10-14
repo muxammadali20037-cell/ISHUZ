@@ -129,7 +129,8 @@ interface Place {
   remote: boolean;
 }
 
-export async function findJobs(params: FindParams, place: Place): Promise<FindOutcome<JobRow>> {
+/** `limit` — sahifa hajmi (standart PAGE_SIZE; qidiruv boshidagi "Yangi e'lonlar" — bir nechta) */
+export async function findJobs(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<JobRow>> {
   const supabase = await createClient();
   const args = {
     p_profession_node_id: params.p ?? undefined,
@@ -139,8 +140,8 @@ export async function findJobs(params: FindParams, place: Place): Promise<FindOu
     p_salary_min: params.salary ?? undefined,
     p_schedule: params.schedule ?? undefined,
     p_no_experience: params.noexp,
-    p_limit: PAGE_SIZE,
-    p_offset: (params.page - 1) * PAGE_SIZE,
+    p_limit: limit,
+    p_offset: (params.page - 1) * limit,
   };
   let { data, error } = params.pay === "daily" ? await supabase.rpc("simple_search_vacancies_v2", { ...args, p_salary_type: "daily" }) : await supabase.rpc("simple_search_vacancies", args);
   let pageOnly = false;
@@ -160,7 +161,7 @@ export async function findJobs(params: FindParams, place: Place): Promise<FindOu
   return { ok: true, items, total: pageOnly ? items.length : Number(items[0]?.total_count ?? 0), images, photos };
 }
 
-export async function findWorkers(params: FindParams, place: Place): Promise<FindOutcome<WorkerRow>> {
+export async function findWorkers(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<WorkerRow>> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("simple_search_workers", {
     p_profession_node_id: params.p ?? undefined,
@@ -168,8 +169,8 @@ export async function findWorkers(params: FindParams, place: Place): Promise<Fin
     p_district_id: place.districtId ?? undefined,
     p_remote: place.remote,
     p_experienced: params.exp,
-    p_limit: PAGE_SIZE,
-    p_offset: (params.page - 1) * PAGE_SIZE,
+    p_limit: limit,
+    p_offset: (params.page - 1) * limit,
   });
   if (error) return searchFailure("workers", error);
   const items = data ?? [];

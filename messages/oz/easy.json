@@ -317,7 +317,12 @@
     "daily_jobs": "Кунлик ишлар",
     "daily_only": "Фақат кунлик ишлар",
     "daily_only_desc": "Ҳақ ҳар куни тўланадиган бир кунлик ва қисқа ишлар",
-    "all_professions": "Барча касблар"
+    "all_professions": "Барча касблар",
+    "all_jobs_button": "Барча иш эълонлари",
+    "all_workers_button": "Барча ишчилар",
+    "all_count": "{count} та",
+    "newest_jobs": "Янги иш эълонлари",
+    "newest_workers": "Янги ишчилар"
   },
   "card": {
     "call": "Қўнғироқ қилиш",
@@ -331,7 +336,9 @@
     "city_wide": "Бутун шаҳар",
     "experience": "Тажриба: {value}",
     "exp_required": "Тажриба: {value}",
-    "exp_none": "Тажриба шарт эмас"
+    "exp_none": "Тажриба шарт эмас",
+    "apply": "Ариза юбориш",
+    "contact": "Боғланиш"
   },
   "listing": {
     "title": "Иш қидирувчи эълони",

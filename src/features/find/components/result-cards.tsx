@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BriefcaseBusiness, Clock, MapPin, Phone } from "lucide-react";
+import { BriefcaseBusiness, ChevronRight, Clock, MapPin, Phone, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatMoney, formatPhone } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
@@ -13,6 +13,7 @@ import type { Enums } from "@/types/database.types";
 import { cn } from "@/lib/utils";
 import { isCityRegion } from "@/lib/geo/city";
 import { SaveButton } from "@/features/saved/components/save-button";
+import { CategoryIcon } from "@/components/shared/category-icon";
 
 interface PlaceNames {
   region_name_uz: string | null;
@@ -70,7 +71,7 @@ export interface WorkerCardData extends PlaceNames {
   phone: string | null;
 }
 
-function usePlace() {
+export function usePlace() {
   const { t, name } = useT();
   return (r: PlaceNames, remote: boolean) => {
     if (remote && !r.region_name_uz) return t("easy.search.remote");
@@ -82,8 +83,11 @@ function usePlace() {
   };
 }
 
-/** Katta "Qo'ng'iroq qilish" (tel:, kartaning yagona asosiy amali — brend rangi) + raqam; raqam bo'lmasa — tushuntirish */
-export function CallBlock({ phone, detailsHref, className }: { phone: string | null; detailsHref?: string; className?: string }) {
+/**
+ * Katta "Qo'ng'iroq qilish" (tel:, kartaning yagona asosiy amali — brend rangi) + raqam. Raqam ko'rsatilmasa — kulrang
+ * izoh o'rniga aniq keyingi amal (`action`): ish e'lonida "Ariza yuborish", ishchida "Bog'lanish" (G3).
+ */
+export function CallBlock({ phone, detailsHref, action, className }: { phone: string | null; detailsHref?: string; action?: { href: string; label: string }; className?: string }) {
   const { t } = useT();
   return (
     <div className={cn("space-y-2", className)}>
@@ -97,9 +101,16 @@ export function CallBlock({ phone, detailsHref, className }: { phone: string | n
           </a>
           <p className="text-center text-lg font-semibold tabular">{formatPhone(phone)}</p>
         </>
-      ) : (
-        detailsHref ? <p className="rounded-xl bg-secondary px-3 py-2 text-base text-muted-foreground">{t("easy.card.no_phone")}</p> : null
-      )}
+      ) : action ? (
+        <Link
+          href={action.href}
+          className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
+        >
+          <Send className="size-5" aria-hidden /> {action.label}
+        </Link>
+      ) : detailsHref ? (
+        <p className="rounded-xl bg-secondary px-3 py-2 text-base text-muted-foreground">{t("easy.card.no_phone")}</p>
+      ) : null}
       {detailsHref ? (
         <Link href={detailsHref} className="press flex min-h-12 w-full items-center justify-center rounded-xl border border-border bg-card px-4 text-lg font-semibold text-primary hover:border-primary/50 hover:bg-primary-soft/50">
           {t("easy.card.details")}
@@ -151,7 +162,7 @@ export function JobResultCard({ job, imageUrl, photoPath, saved, savedRefresh }:
         ) : null}
       </ul>
       {job.summary ? <p className="line-clamp-3 text-base text-foreground/80">{job.summary}</p> : null}
-      <CallBlock phone={job.phone} detailsHref={`/jobs/${job.slug}`} />
+      <CallBlock phone={job.phone} detailsHref={`/jobs/${job.slug}`} action={{ href: `/jobs/${job.slug}?apply=1`, label: t("easy.card.apply") }} />
     </article>
   );
 }
@@ -196,7 +207,52 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
         {worker.salary_expected ? <li className="pl-7 text-base text-muted-foreground">{t("easy.card.salary_expected", { amount: formatMoney(worker.salary_expected, locale) })}</li> : null}
       </ul>
       {worker.about ? <p className="line-clamp-3 text-base text-foreground/80">{worker.about}</p> : null}
-      <CallBlock phone={worker.phone} detailsHref={`/listing/${worker.id}`} />
+      <CallBlock phone={worker.phone} detailsHref={`/listing/${worker.id}`} action={{ href: `/listing/${worker.id}#contact`, label: t("easy.card.contact") }} />
     </article>
+  );
+}
+
+const compactRow = "press flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-card px-3 py-2.5 hover:border-primary/50";
+
+/** Ixcham qator (qidiruv boshidagi "Yangi e'lonlar"): nomi, maosh, joy — bosilsa e'lon sahifasi */
+export function JobCompactRow({ job }: { job: JobCardData }) {
+  const place = usePlace();
+  return (
+    <Link href={`/jobs/${job.slug}`} className={compactRow}>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+        <CategoryIcon name={job.category_icon} className="size-6" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-lg font-bold leading-snug">{job.title}</span>
+        <SalaryText from={job.salary_from} to={job.salary_to} type={job.salary_type} negotiable={job.salary_negotiable} className="block truncate text-base" />
+        <span className="block truncate text-sm text-muted-foreground">{place(job, job.is_remote)}</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+    </Link>
+  );
+}
+
+export function WorkerCompactRow({ worker }: { worker: WorkerCardData }) {
+  const { t, name } = useT();
+  const place = usePlace();
+  const profession = worker.profession_name_uz
+    ? name({ name_uz: worker.profession_name_uz, name_ru: worker.profession_name_ru ?? worker.profession_name_uz, name_en: worker.profession_name_en })
+    : (worker.headline ?? "");
+  const exp = levelToExperience(worker.experience_level);
+  return (
+    <Link href={`/listing/${worker.id}`} className={compactRow}>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+        <CategoryIcon name={worker.category_icon} className="size-6" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-lg font-bold leading-snug">
+          {worker.first_name}
+          {worker.last_initial ? ` ${worker.last_initial}.` : ""} · <span className="text-primary">{profession}</span>
+        </span>
+        <span className="block truncate text-base">{t("easy.card.experience", { value: exp ? t(`easy.worker.exp.${exp}`) : "—" })}</span>
+        <span className="block truncate text-sm text-muted-foreground">{place(worker, false)}</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+    </Link>
   );
 }

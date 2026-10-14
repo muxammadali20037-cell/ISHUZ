@@ -409,7 +409,7 @@ export async function VacancyDetail({
         <aside className="contents lg:block lg:self-start lg:sticky lg:top-20 lg:space-y-4">
           <VacancyActions
             vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status: v.status }}
-            viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application }}
+            viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application, quickApply: viewer.quickApply }}
           />
           {showContact ? (
             <div className="hidden lg:block">

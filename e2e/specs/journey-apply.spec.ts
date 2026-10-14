@@ -63,15 +63,14 @@ for (const vp of VIEWPORTS) {
     await page.waitForURL(/\/jobs\/[^/]+$/);
     const jobUrl = new URL(page.url()).pathname;
 
-    // 4. mehmon "Ariza yuborish" → kirish, qaytish yo'li — aynan shu vakansiya
+    // 4. mehmon "Ariza yuborish" → kirish, qaytish yo'li — aynan shu vakansiya, ariza oynasi bilan (G2)
     await page.getByRole("button", { name: "Ariza yuborish" }).last().click();
     await page.waitForURL(/\/auth\?next=/);
-    expect(new URL(page.url()).searchParams.get("next")).toBe(jobUrl);
+    expect(new URL(page.url()).searchParams.get("next")).toBe(`${jobUrl}?apply=1`);
 
-    // 5. kirdi → qaytdi → ariza → "Ariza yuborildi" → arizani ko'rish
+    // 5. kirdi → qaytdi → ariza oynasi o'zi ochiq → "Ariza yuborildi" → arizani ko'rish
     await loginAs(context, USERS.workerB);
-    await page.goto(jobUrl);
-    await page.getByRole("button", { name: "Ariza yuborish" }).last().click();
+    await page.goto(`${jobUrl}?apply=1`);
     await page.getByRole("dialog").getByRole("button", { name: "Ariza yuborish" }).click();
     await expect(page.getByRole("dialog").getByText("Ariza yuborildi").first()).toBeVisible();
     await page.getByRole("link", { name: "Arizani ko'rish" }).click();

@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 import { ProfessionPicker } from "@/features/professions/components/profession-picker";
 import { isCityRegion } from "@/lib/geo/city";
 import { anyProfession, findHref, parseFindParams, type FindParams } from "../params";
+import { NewestPreview, type SearchPreview } from "./newest-preview";
 import type { Place } from "../place";
 import { NearMeButton } from "./near-me";
 
@@ -31,6 +32,7 @@ export function FindSteps({
   districts,
   initialNode,
   myPlace = null,
+  preview = null,
 }: {
   /** serverda o'qilgan URL holati (birinchi chizish) */
   base: FindParams;
@@ -41,6 +43,8 @@ export function FindSteps({
   initialNode: { id: string; trail: TrailItem[] } | null;
   /** "Yaqin atrofda" bilan eslab qolingan tuman (viloyat qadamida birinchi tanlov) */
   myPlace?: Place | null;
+  /** kasb qadamida: kasb tanlamasdan darhol e'lonlar (serverda olingan) */
+  preview?: SearchPreview | null;
 }) {
   const { t, name } = useT();
   const router = useRouter();
@@ -79,6 +83,7 @@ export function FindSteps({
     return (
       <Shell back={<Link href={findHref(cur, { mode: null, p: null })}>{backLabel(t("easy.wizard.back"))}</Link>} title={cur.mode === "workers" ? t("easy.search.workers") : t("easy.search.jobs")}>
         {cur.q ? <p className="rounded-2xl border border-warning/40 bg-warning-soft px-4 py-3 text-lg">{t("easy.search.not_understood", { q: cur.q })}</p> : null}
+        {step === "profession" && !cur.q && preview && preview.mode === cur.mode ? <NewestPreview preview={preview} /> : null}
         <div aria-busy={pending || step === "results" || undefined}>
           <ProfessionPicker
             categories={categories}

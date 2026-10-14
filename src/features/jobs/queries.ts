@@ -12,6 +12,7 @@ import type { VacancyCardData } from "@/components/shared/vacancy-card";
 import type { Json } from "@/types/database.types";
 import { PAGE_SIZE, matchQueryToCategory, toSearchVacanciesArgs, type JobsSearchParams, type SearchVacanciesArgs } from "./search-params";
 import { savedIdSet } from "@/features/saved/queries";
+import { getSimpleListingFeatures } from "@/features/post/queries";
 import type {
   JobsFilterRefs,
   RefItem,
@@ -220,15 +221,17 @@ function parseReasons(json: Json | null | undefined): MatchReason[] {
 
 /** Ko'ruvchi holati: boshqaruvchimi, saqlaganmi, ariza yuborganmi, moslik */
 export async function getVacancyViewerState(vacancy: VacancyDetail, session: SessionContext | null): Promise<VacancyViewerState> {
-  if (!session) return { kind: "guest", isSaved: false, application: null, match: null };
+  if (!session) return { kind: "guest", isSaved: false, application: null, match: null, quickApply: false };
   const supabase = await createClient();
   const workerId = session.workerId && session.workerOnboarded ? session.workerId : null;
 
-  const [managerRes, savedRes, appRes, matchRes] = await Promise.all([
+  const [managerRes, savedRes, appRes, matchRes, features] = await Promise.all([
     supabase.rpc("manages_vacancy", { p_vacancy_id: vacancy.id }),
     savedIdSet(session, "vacancy", [vacancy.id]),
-    workerId ? supabase.from("applications").select("id, status").eq("worker_id", workerId).eq("vacancy_id", vacancy.id).maybeSingle() : null,
+    // tezkor arizadan keyin profil to'ldirilmagan bo'lsa ham — yuborilgan ariza ko'rinsin (qayta yuborish tugmasi emas)
+    session.workerId ? supabase.from("applications").select("id, status").eq("worker_id", session.workerId).eq("vacancy_id", vacancy.id).maybeSingle() : null,
     workerId ? supabase.rpc("compute_match", { p_worker_id: workerId, p_vacancy_id: vacancy.id }).maybeSingle() : null,
+    workerId ? null : getSimpleListingFeatures(),
   ]);
 
   const isManager = managerRes.data === true || vacancy.owner_profile_id === session.userId;
@@ -238,6 +241,7 @@ export async function getVacancyViewerState(vacancy: VacancyDetail, session: Ses
     isSaved: savedRes.has(vacancy.id),
     application: appRes?.data ? { id: appRes.data.id, status: appRes.data.status } : null,
     match: matchRes?.data && !isManager ? { score: matchRes.data.score, reasons: parseReasons(matchRes.data.reasons) } : null,
+    quickApply: !!features?.quickApply,
   };
 }
 

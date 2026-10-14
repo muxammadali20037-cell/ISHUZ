@@ -17,6 +17,10 @@ import { ModeGate } from "@/features/mode/components/mode-gate";
 import { cookies } from "next/headers";
 import { PLACE_COOKIE, parsePlace } from "@/features/find/place";
 import { NearMe } from "@/features/find/components/near-me";
+import { findJobs, findWorkers } from "@/features/find/queries";
+import type { SearchPreview } from "@/features/find/components/newest-preview";
+import type { JobCardData, WorkerCardData } from "@/features/find/components/result-cards";
+import { isCityRegion } from "@/lib/geo/city";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -98,11 +102,51 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
     stepKey === "intent" ? (
       params.q || node ? <FindAskIntent params={params} node={node} /> : <FindStart params={params} />
     ) : stepKey === "profession" || stepKey === "region" || stepKey === "district" ? (
-      <FindSteps base={params} categories={categories} regions={regions} districts={allDistricts} initialNode={node ? { id: node.id, trail: node.trail } : null} myPlace={place} />
+      <FindSteps
+        base={params}
+        categories={categories}
+        regions={regions}
+        districts={allDistricts}
+        initialNode={node ? { id: node.id, trail: node.trail } : null}
+        myPlace={place}
+        preview={stepKey === "profession" && !params.q ? await searchPreview(params, place, regions, allDistricts) : null}
+      />
     ) : (
       <FindResultsView params={params} node={node} region={region} district={district} />
     );
 
   // qadamlar darhol almashadi: o'tish animatsiyasi bosishni bloklamasin (C7)
   return <Shell>{view}</Shell>;
+}
+
+/**
+ * Qidiruv boshida (kasb tanlanmagan): "Barcha e'lonlar · N ta" va eng yangi 3 tasi — eslab qolingan hududda
+ * (bo'lmasa — butun O'zbekiston). Xato bo'lsa — ko'rsatilmaydi (kasb tanlash ishlayveradi).
+ */
+async function searchPreview(
+  params: ReturnType<typeof parseFindParams>,
+  place: ReturnType<typeof parsePlace>,
+  regions: Awaited<ReturnType<typeof getRegions>>,
+  districts: Awaited<ReturnType<typeof getDistricts>>,
+): Promise<SearchPreview | null> {
+  if (!params.mode) return null;
+  const { t, name } = await getT();
+  const region = place ? (regions.find((r) => r.slug === place.region) ?? null) : null;
+  const district = region && place && place.district !== "all" ? (districts.find((d) => d.id === place.district && d.region_id === region.id) ?? null) : null;
+  const where = { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: false };
+  const base = { ...params, any: true, page: 1 };
+  const jobs = params.mode === "jobs";
+  const res = jobs ? await findJobs(base, where, 3) : await findWorkers(base, where, 3);
+  if (!res.ok) return null;
+  const placeLabel = region
+    ? `${name(region)}${district ? ` · ${name(district)}` : ` · ${t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}`}`
+    : t("easy.location.whole_country");
+  return {
+    mode: params.mode,
+    total: res.total,
+    allHref: findHref(EMPTY_FIND, { mode: params.mode, any: true, region: region?.slug ?? "all", district: region ? (district?.id ?? "all") : null }),
+    placeLabel,
+    jobs: jobs ? (res.items as unknown as JobCardData[]) : undefined,
+    workers: jobs ? undefined : (res.items as unknown as WorkerCardData[]),
+  };
 }

@@ -10,7 +10,8 @@ import { requestContact } from "./actions";
 import { callAction } from "@/lib/action-call";
 
 /** "Telefon raqamini so'rash" — egasi ruxsat bersa raqam shu yerda ochiladi */
-export function RequestContactButton({ profileId, initial }: { profileId: string; initial: "none" | "pending" | "declined" }) {
+/** `size="xl"` — sahifaning asosiy amali (ishchi e'loni sahifasi): katta, to'liq kenglikda */
+export function RequestContactButton({ profileId, initial, size = "sm" }: { profileId: string; initial: "none" | "pending" | "declined"; size?: "sm" | "xl" }) {
   const { t } = useT();
   const router = useRouter();
   const [status, setStatus] = useState(initial);
@@ -18,7 +19,7 @@ export function RequestContactButton({ profileId, initial }: { profileId: string
 
   if (status === "pending") {
     return (
-      <p className="flex items-center gap-2 text-sm font-medium text-foreground/80">
+      <p className={size === "xl" ? "flex items-center gap-2 rounded-xl bg-card px-4 py-3 text-base font-semibold" : "flex items-center gap-2 text-sm font-medium text-foreground/80"}>
         <Clock3 className="size-4 shrink-0 text-primary" /> {t("contacts.request.pending")}
       </p>
     );
@@ -43,9 +44,15 @@ export function RequestContactButton({ profileId, initial }: { profileId: string
 
   return (
     <div className="space-y-1.5">
-      <Button type="button" size="sm" variant="soft" onClick={ask} loading={pending}>
-        <PhoneCall className="size-4" /> {t("contacts.request.button")}
-      </Button>
+      {size === "xl" ? (
+        <Button type="button" size="xl" className="h-14 w-full text-lg" onClick={ask} loading={pending}>
+          <PhoneCall className="size-5" /> {t("contacts.request.button")}
+        </Button>
+      ) : (
+        <Button type="button" size="sm" variant="soft" onClick={ask} loading={pending}>
+          <PhoneCall className="size-4" /> {t("contacts.request.button")}
+        </Button>
+      )}
       {status === "declined" ? <p className="text-xs text-muted-foreground">{t("contacts.request.declined")}</p> : null}
     </div>
   );

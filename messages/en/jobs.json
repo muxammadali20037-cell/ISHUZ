@@ -131,10 +131,12 @@
   "apply": {
     "title": "Apply for this job",
     "description": "The employer will see your profile and message.",
+    "description_quick": "The employer will see your name and message.",
     "message_label": "Short message",
     "message_hint": "optional",
     "message_placeholder": "Why is this job a good fit for you?",
     "default_message": "Hello! I'm interested in the “{title}” vacancy. I'd appreciate it if you could take a look at my profile.",
+    "default_message_quick": "Hello! I'm interested in the “{title}” vacancy. Please get in touch with me.",
     "chars": "{count} / {max}",
     "submit": "Submit application",
     "success_title": "Application sent",
@@ -150,7 +152,9 @@
       "not_authenticated": "Log in to continue",
       "validation": "Message must not exceed 1000 characters",
       "generic": "Application not sent. Please try again."
-    }
+    },
+    "quick_note": "No profile needed — your application is sent with your name and phone number. The employer will get in touch with you.",
+    "quick_profile_cta": "Fill in your profile in a minute — employers will also find you in search"
   },
   "save": {
     "saved": "Vacancy saved",

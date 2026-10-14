@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { requireWorker } from "@/features/auth/session";
+import { requireWorkerProfile } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { Shell } from "@/components/shared/shell";
 import { getWorkerApplication } from "@/features/applications/queries";
@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /** /applications/[id] — faqat o'z arizasi (aks holda 404) */
 export default async function ApplicationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const session = await requireWorker(`/applications/${id}`);
+  const session = await requireWorkerProfile(`/applications/${id}`);
   const app = await getWorkerApplication(id, session.workerId, session.userId);
   if (!app) notFound();
   return (

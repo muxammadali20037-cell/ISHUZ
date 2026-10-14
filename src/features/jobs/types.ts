@@ -74,6 +74,8 @@ export interface VacancyViewerState {
   isSaved: boolean;
   application: { id: string; status: Enums<"application_status"> } | null;
   match: { score: number; reasons: MatchReason[] } | null;
+  /** 0064: profilsiz tezkor ariza mumkin (eski bazada — avvalgidek profil to'ldirishga) */
+  quickApply: boolean;
 }
 
 export interface WorkerDashboardStats {

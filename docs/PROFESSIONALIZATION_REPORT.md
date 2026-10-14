@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,8 +11,8 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0063 toza bazaga | ✅ lint, typecheck, unit (601 / 18 skip), SQL (28 fayl), build, 120 ta brauzer E2E — PASS |
-| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) · **0061 (Saqlanganlar), 0062–0063 (hamyon) — hali qo'llanmagan, egasi ruxsatini kutmoqda**; usiz kod eski yo'l bilan ishlaydi (§13, §14) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (601 / 18 skip), SQL (29 fayl), build, 124 ta brauzer E2E — PASS |
+| Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0060** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12) · **0061 (Saqlanganlar), 0062–0063 (hamyon), 0064 (tezkor ariza) — hali qo'llanmagan, egasi ruxsatini kutmoqda**; usiz kod eski yo'l bilan ishlaydi (§13, §14, §15) | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
 Qolgan to'siqlar (egasi): staging muhit (yuklama testi, haqiqiy Telegram oqimi). Zaxira — ✅ ishlayapti (F-01).
@@ -1493,3 +1493,120 @@ tushirildi. Ikkala build bir xil sinov kassasi bilan ishladi: `up.sh` va `old-bu
 - **Hamyon bonusi standartda o'chiq (0%)** — bu biznes qarori, admin "Tezkor boshqaruv"dan yoqadi.
 - **Ommaviy oferta matnida hamyon bandi yo'q.** "Balans naqd pulga qaytarilmaydi" qoidasi sahifada yozilgan, lekin
   huquqiy sahifaga qo'shish egasi yoki yurist bilan kelishilishi kerak.
+
+## 15. G — ish topish va ishchi topish oson (2026-10-14)
+
+So'rov (egasidan): "faqat to'lov qismini yaxshilama, umumiysini ham to'g'irla, kerak bo'lsa bosqichma-bosqich
+ideallashtir — real odamlar ishlata oladigan professional programma bo'lsin, eng muhimi ish topish, ishchi topish oson
+bo'lsin".
+
+Usul:
+- Avval real yo'llar demo ma'lumotlarda (12 ta vakansiya, 6 ta ishchi) **bosishlar soni bilan o'lchandi** (`g0`).
+- Eng ko'p to'xtatadigan to'rt joy tuzatildi.
+- Yangi testlar **eski build'da** (`d292c40`, `old-build.sh`) ishga tushirildi: 4 tadan 4 tasi kutilgan joyda
+  yiqildi. Yangi build'da hammasi o'tdi.
+
+### O'lchov: ro'yxatgacha bosishlar (390 px, mehmon, demo ma'lumotlar)
+
+| Yo'l | Oldin | Keyin |
+|---|---|---|
+| Ish izlovchi, birinchi marta: bosh sahifa → ish e'lonlari ro'yxati | 5 bosish + kasb nomini yozish | **3 bosish**, yozish yo'q |
+| Ish izlovchi, pastki menyu "Ish topish" → ro'yxat | 4 bosish + yozish | **2 bosish** |
+| Ish beruvchi, birinchi marta: bosh sahifa → ishchilar ro'yxati | 5 bosish + yozish | **3 bosish** |
+| Ish beruvchi, pastki menyu "Xodim topish" → ro'yxat | 4 bosish + yozish | **2 bosish** |
+| Kirgan, profili yo'q odam: e'lon → ariza yuborildi | "Ariza yuborish" → 4 qadamli anketa (ism, kasb, hudud, tajriba…) | **2 bosish** |
+| Ish beruvchi: raqami yashirin ishchi → raqam so'rovi | e'lon → "To'liq profilni ochish" → boshqa sahifa → so'rov | **natija kartasidan 2 bosish** |
+
+Aniq kasb va tuman bo'yicha qidirish o'zgarmadi. U shu sahifada, "Barcha …" tugmasining pastida qoladi.
+
+### G1 · "Ish topish" bosilgan zahoti — e'lonlar
+
+- **OLDIN** ([skrinshot](screenshots/g/g1-start-m.jpg)): birinchi ekran "Qaysi kasb bo'yicha ish qidiryapsiz?"
+  edi. Bitta ham e'lon ko'rish uchun kasb, viloyat va tumanni tanlash kerak edi. Kasbini aniq bilmaydigan odam
+  (talaba, "har qanday ish") shu yerda to'xtardi.
+- **KEYIN:**
+  - Tepada katta tugma: **"Barcha ish e'lonlari · 12 ta · Butun O'zbekiston"**. Bir bosishda barcha kasblar
+    natijasi ochiladi.
+  - Uning ostida **eng yangi 3 ta e'lon**: nomi, maosh, joy; bosilsa e'lon ochiladi.
+  - Ish beruvchida xuddi shunday: "Barcha ishchilar · N ta" va "Yangi ishchilar".
+  - Joylashuv yoki avvalgi qidiruvdan tuman eslab qolingan bo'lsa (E3), son va ro'yxat o'sha tuman bo'yicha:
+    "4 ta · Toshkent shahri · Chilonzor tumani".
+  - O'sha hududda e'lon yo'q bo'lsa, tugma umuman chiqmaydi ("0 ta" bilan adashtirmaydi) va kasb tanlash qoladi.
+- Serverda mavjud qidiruv funksiyasi `limit = 3` bilan bitta qo'shimcha chaqiriladi. Xato bo'lsa blok
+  ko'rsatilmaydi, qidiruv odatdagidek ishlaydi.
+
+### G2 · Tezkor ariza — anketa to'ldirmasdan
+
+- **OLDIN** ([skrinshot](screenshots/g/g2-apply-m.jpg)): kirgan, lekin profili yo'q odam "Ariza yuborish"ni
+  bossa, 4 qadamli anketaga o'tkazilardi. Mehmon kirgandan keyin e'lon sahifasiga qaytar, lekin tugmani yana bosishi
+  kerak edi.
+- **KEYIN:**
+  - Ariza oynasi **shu e'lonning o'zida** ochiladi. Izoh: "Profil to'ldirish shart emas — ariza ismingiz va telefon
+    raqamingiz bilan yuboriladi". Standart xabar: "… Iltimos, men bilan bog'laning" ("profilim bilan tanishing"
+    emas, chunki profil yo'q).
+  - Birinchi arizada **yopiq** ishchi profili yaratiladi (`is_public = false`). U ochiq qidiruvga chiqmaydi.
+  - Yuborilgach: "Arizani ko'rish" va "Profilingizni 1 daqiqada to'ldiring — ish beruvchilar sizni qidiruvda ham
+    topadi". Bu ixtiyoriy; profil to'ldirilsa, mavjud profil to'ldiriladi (`save_simple_worker_listing`).
+  - Mehmon: "Ariza yuborish" → kirish → **ariza oynasi o'zi ochiq** (`?apply=1`). Natija kartasidagi "Ariza
+    yuborish" ham shu oynani ochadi.
+  - E'lon qayta ochilganda "Ariza yuborilgan" ko'rinadi (qayta yuborish tugmasi emas). "Arizalarim" sahifasi
+    profil to'ldirilmagan bo'lsa ham ochiladi.
+- **Topilgan va tuzatilgan xato (0064):** birinchi sinovda ish beruvchi bunday arizachini **"Nomzod", ismsiz**
+  ko'rdi. Sabab: `can_view_worker` ariza bo'lsa ham to'liq profilni talab qilardi.
+  - **0064** (`create or replace`, drop yo'q): ariza yoki taklif bo'lsa ish beruvchi (va kompaniya a'zolari)
+    arizachini ko'radi.
+  - Ochiq qidiruv uchun to'liq profil sharti **saqlandi**. Begona ish beruvchi, mehmon va bloklangan arizachi —
+    ko'rinmaydi (`quick_apply.test.sql`, 13 ta tekshiruv).
+- **0064 production'da bo'lmasa:** ilova `simple_listing_features().quick_apply` bayrog'iga qaraydi va
+  **avvalgidek** anketaga yuboradi. Ortiqcha yopiq profil ham yaratilmaydi; server amali ham shu bayroqni
+  tekshiradi. Bu holat bayroqsiz bazada brauzer testi bilan tekshirildi.
+
+### G3 · Natija kartasi — kulrang izoh o'rniga aniq amal
+
+- **OLDIN** ([skrinshot](screenshots/g/g3-card-m.jpg)): raqami ko'rsatilmagan kartada kulrang "Raqam
+  ko'rsatilmagan — «Batafsil» orqali bog'laning" yozuvi bor edi.
+- **KEYIN:** o'sha joyda katta asosiy tugma turadi:
+  - ish e'lonida — **"Ariza yuborish"** (e'lon va ariza oynasi ochiladi);
+  - ishchida — **"Bog'lanish"** (e'londagi bog'lanish bo'limiga).
+  - Raqam bor bo'lsa, avvalgidek "Qo'ng'iroq qilish".
+
+### G4 · Ishchi e'lonida raqam so'rovi — shu yerning o'zida
+
+- **OLDIN** ([skrinshot](screenshots/g/g4-contact-m.jpg)): "Raqam yashirilgan… to'liq profilni ochib, so'rov
+  yuborishingiz mumkin" → "To'liq profilni ochish" → boshqa sahifa → u yerda so'rov.
+- **KEYIN:** kirgan foydalanuvchi shu bo'limning o'zida katta **"Telefon raqamini so'rash"** tugmasini ko'radi.
+  - Bosilgach — "So'rov yuborildi — javobini kutyapmiz". Holat sahifa qayta ochilganda ham saqlanadi.
+  - Egasi raqamni umuman yashirgan bo'lsa ("hech kimga"), tugma chiqmaydi va to'g'ri izoh ko'rsatiladi. Qoida
+    kontakt kartasidagi bilan bir xil: `contact_status_for`.
+  - Mehmonga "Kirish" tugmasi chiqadi; kirgach aynan shu e'longa qaytadi.
+
+**Fayllar:**
+- baza: `supabase/migrations/0064_quick_apply.sql`, `supabase/tests/quick_apply.test.sql`;
+- qidiruv: `src/app/search/page.tsx`, `src/features/find/{queries.ts,components/{newest-preview,find-steps,result-cards}.tsx}`;
+- ariza: `src/features/jobs/{actions,queries,types}.ts`, `components/{vacancy-actions,vacancy-detail}.tsx`,
+  `src/features/post/queries.ts` (bayroq), `src/features/auth/session.ts` (`requireWorkerProfile`),
+  `src/app/applications/{page,[id]/page}.tsx`;
+- bog'lanish: `src/app/listing/[id]/page.tsx`, `src/features/contacts/request-contact-button.tsx`;
+- matnlar: `messages/*/{easy,jobs}.json`;
+- testlar: `e2e/specs/ease.spec.ts` (yangi), `e2e/specs/journey-apply.spec.ts` (kirgandan keyin oyna o'zi ochiladi).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`d292c40`) | Keyin |
+|---|---|---|
+| `ease.spec.ts`: "Ish topish" → "Barcha ish e'lonlari · 4 ta" + eng yangi 3 tasi → bir bosishda 4 ta natija → yangi e'lon ochiladi | ❌ | ✅ |
+| `ease.spec.ts`: eslab qolingan tuman (e'lon yo'q — tugma yo'q; Chilonzor — "4 ta · Toshkent shahri · Chilonzor tumani"); ish beruvchida "Barcha ishchilar" | ❌ | ✅ |
+| `ease.spec.ts`: kartada "Ariza yuborish" → mehmon → kirish → oyna o'zi ochiq → profilsiz ariza → "Arizani ko'rish"; bazada yopiq profil va 1 ariza; qayta ochilganda "Ariza yuborilgan"; ish beruvchi ismni ko'radi | ❌ | ✅ |
+| `ease.spec.ts`: ishchi kartasida "Bog'lanish" → bir bosishda so'rov (bazada `pending`), qayta ochilganda saqlanadi; "hech kimga" — tugma yo'q | ❌ | ✅ |
+| 0064 bo'lmagan baza (production holati): profilsiz → avvalgidek `/onboarding/worker`, `?apply=1` oyna ochmaydi, profil yaratilmaydi | — | ✅ (vaqtinchalik spec) |
+| SQL `quick_apply.test.sql` (13): bayroq, RPC profilsiz rad, begona nomidan profil yo'q, arizagacha ko'rinmaydi, ariza bilan ism ko'rinadi, begona/mehmon/bloklangan — yo'q, to'liq bo'lmagan "ochiq" profil qidiruvga chiqmaydi | — (yangi) | ✅ |
+| To'liq E2E · unit · tsc · eslint · SQL | — | ✅ 124/124 · 601 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) · ✅ 29 fayl |
+
+### Ochiq masalalar
+
+- **0064 production'ga qo'llanmagan — egasi ruxsati kerak** (0061–0063 bilan birga). Usiz tezkor ariza o'chiq
+  qoladi, qolgan G o'zgarishlari (G1, G3, G4) bazaga bog'liq emas va darhol ishlaydi.
+- Tezkor ariza izohidagi "telefon raqamingiz bilan" standart sozlamada to'g'ri: yangi foydalanuvchida raqam "ariza
+  berganlarga" ko'rinadi. Foydalanuvchi sozlamada raqamni yashirgan bo'lsa, ish beruvchi faqat ismni ko'radi.
+- Keyingi bosqich nomzodlari (o'lchov bilan): ish beruvchining birinchi vakansiyasigacha bo'lgan yo'l (kompaniya
+  ma'lumotlari, tekshiruv), arizachiga ish beruvchi javobi tezligi (bildirishnoma/Telegram).

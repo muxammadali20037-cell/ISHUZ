@@ -15,6 +15,7 @@ import { CallBlock } from "@/features/find/components/result-cards";
 import { StatusPill } from "@/features/cabinet/components/status-pill";
 import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
+import { RequestContactButton } from "@/features/contacts/request-contact-button";
 import { isCityRegion } from "@/lib/geo/city";
 
 type Params = { params: Promise<{ id: string }> };
@@ -45,6 +46,8 @@ export default async function ListingPage({ params }: Params) {
   const exp = levelToExperience(w.experience_level);
   const fullName = `${w.first_name}${w.last_initial ? ` ${w.last_initial}.` : ""}`;
   const isEmployer = !!session?.employerId;
+  // G4: raqam yashirin — kirgan foydalanuvchi shu yerning o'zida so'rov yuboradi (to'liq profilga o'tish shart emas)
+  const contact = session && !w.phone && !w.is_owner ? await contactRequestState(w.id) : null;
 
   return (
     <Shell>
@@ -115,7 +118,7 @@ export default async function ListingPage({ params }: Params) {
         </article>
 
         {!w.is_owner ? (
-          <section className="space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-5">
+          <section id="contact" className="scroll-mt-24 space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-5">
             <h2 className="text-xl font-bold">{t("easy.listing.contact")}</h2>
             {w.phone ? (
               <>
@@ -126,11 +129,21 @@ export default async function ListingPage({ params }: Params) {
                   </Button>
                 ) : null}
               </>
+            ) : session ? (
+              <>
+                <p>{contact?.canRequest ? t("contacts.request.hint") : t("common.contact_locked")}</p>
+                {contact?.canRequest ? <RequestContactButton profileId={contact.ownerId} initial={contact.status} size="xl" /> : null}
+                {isEmployer ? (
+                  <Button asChild variant="outline" className="h-12 w-full text-base">
+                    <Link href={`/workers/${w.id}`}>{t("easy.listing.open_full")}</Link>
+                  </Button>
+                ) : null}
+              </>
             ) : (
               <>
-                <p>{session ? t("easy.listing.contact_hidden_logged") : t("easy.listing.contact_hidden")}</p>
+                <p>{t("easy.listing.contact_hidden")}</p>
                 <Button asChild size="xl" className="h-14 w-full text-lg">
-                  <Link href={session ? `/workers/${w.id}` : `/auth?next=${encodeURIComponent(`/workers/${w.id}`)}`}>{session ? t("easy.listing.open_full") : t("easy.cabinet.login")}</Link>
+                  <Link href={`/auth?next=${encodeURIComponent(`/listing/${w.id}`)}`}>{t("easy.cabinet.login")}</Link>
                 </Button>
               </>
             )}
@@ -139,4 +152,17 @@ export default async function ListingPage({ params }: Params) {
       </div>
     </Shell>
   );
+}
+
+/**
+ * E'lon egasi (profil) va raqam so'rovi holati — kontakt kartasidagi qoida bilan bir xil (`contact_status_for`):
+ * egasi raqamni umuman yashirgan bo'lsa ("nobody") so'rash tugmasi ko'rsatilmaydi.
+ */
+async function contactRequestState(workerId: string): Promise<{ ownerId: string; status: "none" | "pending" | "declined"; canRequest: boolean } | null> {
+  const supabase = await createClient();
+  const { data: wp } = await supabase.from("worker_profiles").select("profile_id").eq("id", workerId).maybeSingle();
+  if (!wp?.profile_id) return null;
+  const { data: status } = await supabase.rpc("contact_status_for", { p_owner: wp.profile_id });
+  const canRequest = status === "none" || status === "pending" || status === "declined";
+  return { ownerId: wp.profile_id, status: canRequest ? status : "none", canRequest };
 }

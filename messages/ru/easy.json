@@ -317,7 +317,12 @@
     "daily_jobs": "Подработка на день",
     "daily_only": "Только подработка на день",
     "daily_only_desc": "Работа на день и короткие подработки с ежедневной оплатой",
-    "all_professions": "Все профессии"
+    "all_professions": "Все профессии",
+    "all_jobs_button": "Все вакансии",
+    "all_workers_button": "Все работники",
+    "all_count": "{count}",
+    "newest_jobs": "Новые вакансии",
+    "newest_workers": "Новые работники"
   },
   "card": {
     "call": "Позвонить",
@@ -331,7 +336,9 @@
     "city_wide": "Весь город",
     "experience": "Опыт: {value}",
     "exp_required": "Опыт: {value}",
-    "exp_none": "Опыт не нужен"
+    "exp_none": "Опыт не нужен",
+    "apply": "Откликнуться",
+    "contact": "Связаться"
   },
   "listing": {
     "title": "Объявление соискателя",

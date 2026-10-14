@@ -69,6 +69,13 @@ export async function requireSession(next?: string): Promise<SessionContext> {
   return session;
 }
 
+/** Ish qidiruvchi profili bor (tezkor arizadan keyin to'ldirilmagan bo'lishi ham mumkin) — arizalar sahifalari uchun */
+export async function requireWorkerProfile(next?: string): Promise<SessionContext & { workerId: string }> {
+  const session = await requireSession(next);
+  if (!session.workerId) redirect("/onboarding/worker");
+  return session as SessionContext & { workerId: string };
+}
+
 /** Ish qidiruvchi profili tugallangan bo'lishi shart */
 export async function requireWorker(next?: string): Promise<SessionContext & { workerId: string }> {
   const session = await requireSession(next);

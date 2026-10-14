@@ -317,7 +317,12 @@
     "daily_jobs": "Day jobs",
     "daily_only": "Day jobs only",
     "daily_only_desc": "One-day and short gigs paid daily",
-    "all_professions": "All professions"
+    "all_professions": "All professions",
+    "all_jobs_button": "All job listings",
+    "all_workers_button": "All workers",
+    "all_count": "{count}",
+    "newest_jobs": "New jobs",
+    "newest_workers": "New workers"
   },
   "card": {
     "call": "Call",
@@ -331,7 +336,9 @@
     "city_wide": "Whole city",
     "experience": "Experience: {value}",
     "exp_required": "Experience: {value}",
-    "exp_none": "No experience required"
+    "exp_none": "No experience required",
+    "apply": "Apply",
+    "contact": "Contact"
   },
   "listing": {
     "title": "Job-seeker listing",

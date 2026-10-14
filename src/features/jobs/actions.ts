@@ -7,6 +7,7 @@ import { getSession } from "@/features/auth/session";
 import { errorCode } from "@/lib/utils";
 import { applySchema, toggleSaveSchema } from "./schema";
 import { toggleSaved } from "@/features/saved/actions";
+import { getSimpleListingFeatures } from "@/features/post/queries";
 
 /**
  * Vakansiyani saqlash / saqlanganlardan olib tashlash — "Saqlanganlar" (saved_items, 0061: ishchi profili shart emas;
@@ -31,9 +32,16 @@ export async function applyToVacancy(input: unknown): Promise<ActionResult<{ id:
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   if (session.profile.is_blocked) return { ok: false, error: "blocked" };
-  if (!session.workerId || !session.workerOnboarded) return { ok: false, error: "worker_profile_required" };
 
   const supabase = await createClient();
+  // Tezkor ariza (G2): profil to'ldirish shart emas — birinchi arizada yopiq (qidiruvda ko'rinmaydigan) profil yaratiladi;
+  // ish beruvchi ism va telefonni ko'radi (telefon — "ariza berganlarga" qoidasi bilan). Keyin xohlasa e'lon to'ldiradi.
+  if (!session.workerId) {
+    // 0064 bo'lmasa ish beruvchi to'liq bo'lmagan profilni ko'ra olmaydi — avvalgidek profil to'ldirishga
+    if (!(await getSimpleListingFeatures()).quickApply) return { ok: false, error: "worker_profile_required" };
+    const { error: createError } = await supabase.from("worker_profiles").insert({ profile_id: session.userId, is_public: false });
+    if (createError && createError.code !== "23505") return { ok: false, error: errorCode(createError) };
+  }
   const { data, error } = await supabase.rpc("apply_to_vacancy", {
     p_vacancy_id: parsed.data.vacancyId,
     p_message: parsed.data.message || undefined,

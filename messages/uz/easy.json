@@ -317,7 +317,12 @@
     "daily_jobs": "Kunlik ishlar",
     "daily_only": "Faqat kunlik ishlar",
     "daily_only_desc": "Haq har kuni to'lanadigan bir kunlik va qisqa ishlar",
-    "all_professions": "Barcha kasblar"
+    "all_professions": "Barcha kasblar",
+    "all_jobs_button": "Barcha ish e'lonlari",
+    "all_workers_button": "Barcha ishchilar",
+    "all_count": "{count} ta",
+    "newest_jobs": "Yangi ish e'lonlari",
+    "newest_workers": "Yangi ishchilar"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
@@ -331,7 +336,9 @@
     "city_wide": "Butun shahar",
     "experience": "Tajriba: {value}",
     "exp_required": "Tajriba: {value}",
-    "exp_none": "Tajriba shart emas"
+    "exp_none": "Tajriba shart emas",
+    "apply": "Ariza yuborish",
+    "contact": "Bog'lanish"
   },
   "listing": {
     "title": "Ish qidiruvchi e'loni",
