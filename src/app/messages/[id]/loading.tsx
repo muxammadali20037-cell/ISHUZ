@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingShell } from "@/components/shared/app-frame";
 
-export default function ConversationLoading() {
+function ConversationLoadingContent() {
   return (
     <div className="flex flex-col" style={{ height: "calc(100dvh - 3.5rem)" }}>
       <div className="border-b border-border/70 bg-card">
@@ -28,5 +29,14 @@ export default function ConversationLoading() {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Yuklanayotganda: oxirgi sahifaning yuqori paneli va menyusi joyida, kontent o'rnida skelet */
+export default function ConversationLoading() {
+  return (
+    <LoadingShell hideNav>
+      <ConversationLoadingContent />
+    </LoadingShell>
   );
 }

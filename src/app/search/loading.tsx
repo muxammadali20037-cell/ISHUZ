@@ -1,7 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingShell } from "@/components/shared/app-frame";
 
 /** Qidiruv qadami yoki natijalar serverdan kelguncha — darhol ko'rinadigan skelet (bosish "javobsiz" qolmaydi) */
-export default function SearchLoading() {
+function SearchLoadingContent() {
   return (
     <div className="container-narrow space-y-5 py-4 sm:py-8" data-step-loading aria-busy="true">
       <div className="space-y-3">
@@ -14,5 +15,14 @@ export default function SearchLoading() {
         ))}
       </div>
     </div>
+  );
+}
+
+/** Yuklanayotganda: oxirgi sahifaning yuqori paneli va menyusi joyida, kontent o'rnida skelet */
+export default function SearchLoading() {
+  return (
+    <LoadingShell>
+      <SearchLoadingContent />
+    </LoadingShell>
   );
 }

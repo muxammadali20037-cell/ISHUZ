@@ -60,7 +60,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
-                className={cn("relative flex h-full flex-col items-center justify-center gap-1 text-xs font-semibold transition-colors", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+                className={cn("press relative flex h-full flex-col items-center justify-center gap-1 text-xs font-semibold", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
                 <item.icon className={cn("size-6", active && "fill-primary/10")} strokeWidth={active ? 2.25 : 1.75} />

@@ -226,19 +226,58 @@
   }
 }
 
-/* ---------- Harakat: faqat qisqa (≤150 ms), bosishni hech qachon bloklamaydi; sahifa o'tishlarida animatsiya yo'q (C7) ----------
- * E'lon ustasi qadamlari (sahifa o'zgarmaydi — faqat qadam): yengil paydo bo'lish */
-@keyframes step-in {
-  from { opacity: 0; transform: translateX(var(--step-offset, 24px)); }
+/* ---------- Harakat (K, operator paneli uslubida) ----------
+ * Bir xil "til": o'zgarishlar 200 ms (--ease-std), sahifa kontenti 350 ms da pastdan yumshoq chiqadi, oyna 300 ms da
+ * kattalashib ochiladi. Hech biri bosishni bloklamaydi (oddiy CSS animatsiya, ustiga parda yo'q — C7 dagi View Transition
+ * emas); fill `backwards` — tugagach elementda transform qolmaydi (ichidagi `fixed` panellar joyidan siljimaydi). */
+:root {
+  --ease-std: cubic-bezier(0.4, 0, 0.2, 1);
 }
-.step-forward { --step-offset: 8px; animation: step-in 150ms ease-out both; }
-.step-back { --step-offset: -8px; animation: step-in 150ms ease-out both; }
+@keyframes page-in {
+  from { opacity: 0; transform: translateY(16px); }
+}
+@keyframes swap-in {
+  from { opacity: 0; }
+}
+/* boshqa sahifaga o'tildi (yoki qidiruv/e'lon ustasining keyingi qadami) */
+.page-enter,
+.step-forward,
+.step-back { animation: page-in 350ms ease-out backwards; }
+/* skelet o'rniga haqiqiy kontent keldi — ikkinchi marta "sakramaydi", faqat ochiladi */
+.page-swap { animation: swap-in 200ms ease-out backwards; }
 
 /* ---------- Ro'yxat elementlari: qisqa paydo bo'lish (150 ms, ketma-ket kechikishsiz — natija darhol o'qiladi) ---------- */
 @keyframes list-in {
   from { opacity: 0; }
 }
 .pop-list > * { animation: list-in 150ms ease-out backwards; }
+
+/* Skelet: yuklanayotganini bildiruvchi yengil "yaltirash" (1.4 s) */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton-shimmer {
+  background-color: var(--secondary);
+  background-image: linear-gradient(90deg, var(--secondary) 25%, color-mix(in oklab, var(--secondary) 45%, var(--card)) 37%, var(--secondary) 63%);
+  background-size: 400% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+/* Bildirishnoma: o'ngdan kiradi (350 ms), pastida qolgan vaqt chizig'i, yopilganda o'ngga chiqadi (300 ms) */
+@keyframes toast-in {
+  from { opacity: 0; transform: translateX(40px); }
+}
+@keyframes toast-out {
+  to { opacity: 0; transform: translateX(40px); }
+}
+@keyframes toast-timer {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+.toast-in { animation: toast-in 350ms ease-out backwards; }
+.toast-out { animation: toast-out 300ms ease-in forwards; }
+.toast-timer { transform-origin: left center; animation: toast-timer linear forwards; }
 
 /* Ko'rinishi kichik (h-8/h-9) tugma va chiplar uchun barmoq maydoni kamida 44×44 px — tashqi ko'rinish o'zgarmaydi.
  * Elementning o'zida `relative` (yoki boshqa position) bo'lishi kerak; tugma va chip komponentlari buni o'zi qo'yadi. */
@@ -265,20 +304,38 @@
 .nav-progress[data-state="loading"] > span { animation: nav-grow 2.4s cubic-bezier(0.1, 0.7, 0.2, 1) forwards; }
 .nav-progress[data-state="done"] > span { animation: nav-done 380ms ease-out forwards; }
 
-/* Bosilganda darhol vizual javob: barmoq ostida biroz kichrayadi (60 ms), ortiqcha sakrashsiz.
+/* Bosilganda darhol vizual javob: barmoq ostida biroz kichrayadi (60 ms); qolgan o'zgarishlar 200 ms (--ease-std).
+ * Sichqonchada (kompyuter): asosiy tugma 1 px, bosiladigan karta 2 px ko'tarilib soya oladi — operator panelidagi kabi.
  * components qatlamida — sahifadagi transition va scale utilitalari kerak bo'lsa ustun keladi. */
 @layer components {
   .press {
-    transition: scale 120ms ease-out, color 120ms ease, background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+    transition: scale 200ms var(--ease-std), translate 200ms var(--ease-std), color 200ms var(--ease-std),
+      background-color 200ms var(--ease-std), border-color 200ms var(--ease-std), box-shadow 200ms var(--ease-std);
   }
   .press:active { scale: 0.97; transition-duration: 60ms; }
+  .lift {
+    transition: translate 200ms var(--ease-std), box-shadow 200ms var(--ease-std), border-color 200ms var(--ease-std),
+      background-color 200ms var(--ease-std);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .lift-sm:hover:not(:disabled) { translate: 0 -1px; box-shadow: var(--shadow-md); }
+    .lift-sm:active { translate: 0 0; }
+    .lift:hover { translate: 0 -2px; box-shadow: var(--shadow-md); }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .page-enter,
+  .page-swap,
   .step-forward,
   .step-back,
-  .pop-list > * {
+  .pop-list > *,
+  .toast-in,
+  .toast-out,
+  .skeleton-shimmer {
     animation: none;
   }
   .press:active { scale: none; }
+  .lift:hover,
+  .lift-sm:hover { translate: none; }
 }

@@ -114,7 +114,7 @@ function usePosted() {
 // Karta ixcham (H1): bitta ekranga 3–4 ta e'lon. Butun karta bosiladi — sarlavha havolasi kartani to'liq qoplaydi
 // (`after:inset-0`), "Saqlash" va amal tugmasi uning ustida (`relative z-10`) — pastki qatorda chapda, matn ustuni keng qolsin
 // (maosh bir qatorga sig'adi). Batafsil matn — e'lon sahifasida.
-const cardCls = "relative rounded-2xl border border-border bg-card p-3 shadow-sm transition-colors hover:border-primary/50 sm:p-4";
+const cardCls = "lift relative rounded-2xl border border-border bg-card p-3 shadow-sm hover:border-primary/50 sm:p-4";
 const stretched = "after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
 const thumbCls = "size-12 shrink-0 rounded-xl";
 const pillCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-primary px-3.5 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover";

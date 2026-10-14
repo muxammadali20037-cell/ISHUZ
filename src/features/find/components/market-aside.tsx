@@ -51,7 +51,7 @@ export async function MarketAside({ mode }: { mode: "jobs" | "workers" }) {
               <li key={c.slug}>
                 <Link
                   href={`/company/${c.slug}`}
-                  className="flex h-full flex-col items-center gap-1.5 rounded-xl border border-border px-2 py-3 text-center transition-colors hover:border-primary/50 hover:bg-primary-soft/30"
+                  className="lift flex h-full flex-col items-center gap-1.5 rounded-xl border border-border px-2 py-3 text-center hover:border-primary/50 hover:bg-primary-soft/30"
                 >
                   <Avatar src={c.logoUrl} fallback={c.name.slice(0, 2)} square size="lg" alt="" className="size-12" />
                   <span className="flex max-w-full items-center gap-1 text-sm font-semibold">

@@ -85,3 +85,12 @@ tepada ingichka chiziq ko'rinardi. Haqiqiy tarmoqda va server "uyg'onganda" (col
 - Natijalar va bosh sahifadan birinchi o'tish serverga bog'liq. Haqiqiy production vaqti (Vercel hududi, cold start)
   bu muhitdan o'lchanmadi, chunki tarmoq siyosati production manziliga chiqishga ruxsat bermaydi — NOT_RUN.
 - Eng qisqa yo'l: Vercel Speed Insights yoki telefonda Telegram ichida bir marta yozib olish.
+
+## K · Sahifa o'tishi va bosishga javob (2026-10-14)
+
+Operator paneli (AVTODROM) uslubi: sahifa yuklanayotganda qobiq (yuqori panel, menyu) joyida, kontent 350 ms da pastdan
+chiqadi. Q1 dagi muammo qaytmaydi — bu View Transition emas, oddiy CSS animatsiya (ustiga parda yo'q, bosish bloklanmaydi,
+`fill: backwards`). Oldin `/saved` → "Ish topish" (CPU 4×, RTT 150 ms) 134–593 ms oralig'ida yuqori panel va menyu
+yo'qolardi; keyin — butun vaqt joyida, bosilgan bo'lim 200 ms kadrida faol. Tafsilot va kadrlar — hisobot §19,
+test — `e2e/specs/motion.spec.ts`.
+

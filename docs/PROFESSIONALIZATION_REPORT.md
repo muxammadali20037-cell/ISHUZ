@@ -11,7 +11,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 132 ta brauzer E2E — PASS |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 134 ta brauzer E2E — PASS |
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0064** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12; **0061–0064 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-14**, tekshirildi — §15 "Production") | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari, profilsiz "Saqlanganlar", hamyon (pullik xizmat yoqilganda), tezkor ariza yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
@@ -1923,3 +1923,69 @@ Qolgan (kam uchraydi): matnli (`?q=`) yoki "Yaqin atrofda" havolasi **tashqarida
 yo'naltirishi hali sahifa ichida: avval skelet, keyin sahifa bir marta qayta yuklanadi (matnni AI bilan tushunish sekin
 bo'lishi mumkin, uni oqimdan oldinga olib chiqish oq ekranni uzaytiradi). Ilova ichidagi barcha bunday o'tishlar mijoz
 routeri orqali — qayta yuklashsiz.
+
+## 19. K — harakat va bosish tezligi: operator paneli (AVTODROM) uslubida (2026-10-14)
+
+Foydalanuvchi so'rovi: "animatsiya va bosilishlar tezligini xuddi shu panelga o'xshatib qilib ber" (AVTODROM boshqaruv
+paneli HTML'i). Panelning harakat "tili" o'lchab olindi va o'z tizimimizga (Next.js, server sahifalar) moslab ko'chirildi —
+ranglar va dizayn tizimi o'zgarmadi, faqat harakat va bosishga javob.
+
+### O'lchov: bosilgandan keyin ekranda nima bo'ladi (oldin)
+
+`/saved` → pastki menyudan "Ish topish", 390×844, CPU 4× sekin, RTT 150 ms (lab, field EMAS). Kadrlar: CDP screencast.
+
+- 0–130 ms: eski sahifa;
+- **134–593 ms: yuqori panel, pastki menyu va lupa tugmasi yo'qoladi** — butun ekran kulrang skelet;
+- ~600 ms: yangi sahifa birdan (animatsiyasiz) chiqadi, menyu qaytadi.
+
+Sabab: qobiq (`Shell`: yuqori panel + menyu) har sahifaning ichida, `loading.tsx` esa qobiqsiz. Operator panelida esa yon
+menyu va yuqori panel hech qachon yo'qolmaydi, faqat kontent almashadi.
+
+![oldin](screenshots/k/k1-before.jpg)
+![keyin](screenshots/k/k1-after.jpg)
+
+### Nima qilindi
+
+- **Qobiq joyida qoladi.** `AppFrame` (mijoz) — yuqori panel, kontent, pastki menyu va lupa tugmasini chizadi va oxirgi
+  qobiqni eslab qoladi. `loading.tsx` (19 ta; qobig'i layout'da bo'lgan `jobs`, `saved` dan tashqari) skeletni
+  `LoadingShell` ichida ko'rsatadi: panel va menyu o'sha-o'sha, bosilgan bo'lim **darhol** faol (200 ms kadrida), faqat
+  kontent o'rnida skelet. Server tomonida qo'shimcha so'rov yo'q (qobiq ma'lumoti avvalgidek `Shell`da olinadi).
+  - Yuqori panel mijoz komponentiga aylantirildi (`TopBar`): sessiya ma'lumoti serverda tayyorlanadi;
+    `unreadCounts` — `unread-counts.ts` (server).
+- **Kontent paydo bo'lishi (panel bilan bir xil):** boshqa sahifaga o'tilganda kontent **350 ms** da 16 px pastdan
+  yumshoq chiqadi (`page-enter`). Skelet ko'rsatilgan bo'lsa, haqiqiy kontent ikkinchi marta "sakramaydi" — 200 ms da
+  ochiladi (`page-swap`). Birinchi ochilishda animatsiya yo'q (server HTML'i darhol; klass gidratsiyada server bilan bir xil).
+  Qidiruv va e'lon ustasining qadamlari ham shu 350 ms harakatda.
+- **Bosish va hover:** barcha o'zgarishlar 200 ms, `cubic-bezier(0.4, 0, 0.2, 1)` (panelning `--transition`i). Barmoq
+  ostida darhol (60 ms) kichrayish saqlandi; pastki menyu tugmalariga ham qo'shildi. Kompyuterda (sichqoncha) asosiy tugma
+  1 px, natija kartasi va yirik ish beruvchi plitkasi 2 px ko'tarilib soya oladi (telefonda yo'q — "yopishqoq hover" bo'lmaydi).
+- **Oyna (dialog):** parda 200 ms, oyna 300 ms da 95% dan kattalashib, 10 px pastdan; yopilishi 150 ms. Telefondagi pastki
+  oyna (Sheet) — 300 ms.
+- **Bildirishnoma:** o'ngdan kiradi (350 ms), pastida qolgan vaqt chizig'i (3,5 s / xato — 6 s), yopilganda o'ngga
+  chiqib ketadi (300 ms).
+- **Skelet:** "yaltirash" (shimmer, 1,4 s) — panel bilan bir xil; avval bir xil miltillash (pulse) edi.
+- C7 dagi xato takrorlanmaydi: animatsiyalar oddiy CSS (ustiga parda yo'q — View Transition emas), bosishni bloklamaydi;
+  `fill: backwards` — tugagach `main`da transform qolmaydi (ichidagi `fixed` panellar joyidan siljimaydi);
+  `prefers-reduced-motion` da hammasi o'chadi.
+- Ataylab olinmagan: panel pardasidagi `backdrop-filter: blur(8px)` — o'rta Android telefonlarda kadr tushishiga olib
+  keladi (tezlik muhimroq).
+
+**Fayllar:** `src/components/shared/{app-frame.tsx (yangi), unread-counts.ts (yangi), shell.tsx, top-bar.tsx, app-shell.tsx}`,
+19 ta `src/app/**/loading.tsx`, `src/app/globals.css`, `src/components/ui/{button,dialog,skeleton,toast}.tsx`,
+`src/features/find/components/{result-cards,market-aside}.tsx`; test: `e2e/specs/motion.spec.ts` (yangi).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`36a5ef0`) | Keyin |
+|---|---|---|
+| `motion.spec.ts`: javob 900 ms kechiksa — skelet ko'rinib turgan lahzada yuqori panel, menyu, lupa tugmasi bor, "Ish topish" faol, kontent `page-enter`; javob kelgach `page-swap`, panel va menyu bittadan | ❌ (`header/nav/fab: false`, faol tab yo'q) | ✅ (5× takror) |
+| `motion.spec.ts`: skeletsiz o'tishda `page-enter`; 600 ms dan keyin `main`da transform va animatsiya yo'q; birinchi ochilishda animatsiya klassi yo'q va gidratsiya xatosi yo'q | ❌ (`page-enter` yo'q) | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 134/134 · 604 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
+
+### Ochiq masalalar
+
+- Birinchi ochilishda (havola tashqaridan) server sekin bo'lsa, skelet hali qobiqsiz — eslab qolinadigan qobiq faqat
+  ilova ichida o'tishda bor. To'liq yechim — qobiqni umumiy layout'ga ko'chirish (katta o'zgarish, alohida bosqich).
+- `auth`, `privacy`, `terms`, `ai-alerts`, `blocked` sahifalari o'z qobig'ida — ularda sahifa animatsiyasi yo'q.
+- Real telefondagi his-tuyg'u (Telegram ichida) — lab o'lchovi; field o'lchov (Vercel Speed Insights) NOT_RUN.
+

@@ -1,6 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingShell } from "@/components/shared/app-frame";
 
-export default function NotificationsLoading() {
+function NotificationsLoadingContent() {
   return (
     <div className="container-narrow py-4 md:py-6">
       <Skeleton className="mb-4 h-7 w-48" />
@@ -17,5 +18,14 @@ export default function NotificationsLoading() {
         ))}
       </div>
     </div>
+  );
+}
+
+/** Yuklanayotganda: oxirgi sahifaning yuqori paneli va menyusi joyida, kontent o'rnida skelet */
+export default function NotificationsLoading() {
+  return (
+    <LoadingShell>
+      <NotificationsLoadingContent />
+    </LoadingShell>
   );
 }

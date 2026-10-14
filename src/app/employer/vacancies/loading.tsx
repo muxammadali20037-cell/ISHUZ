@@ -1,6 +1,7 @@
 import { ListSkeleton, Skeleton } from "@/components/ui/skeleton";
+import { LoadingShell } from "@/components/shared/app-frame";
 
-export default function Loading() {
+function LoadingContent() {
   return (
     <div className="container-app py-5 sm:py-8">
       <div className="mb-4 flex items-center justify-between">
@@ -13,5 +14,14 @@ export default function Loading() {
       <Skeleton className="mb-4 h-11 w-full max-w-md rounded-xl" />
       <ListSkeleton count={4} lines={2} />
     </div>
+  );
+}
+
+/** Yuklanayotganda: oxirgi sahifaning yuqori paneli va menyusi joyida, kontent o'rnida skelet */
+export default function Loading() {
+  return (
+    <LoadingShell>
+      <LoadingContent />
+    </LoadingShell>
   );
 }

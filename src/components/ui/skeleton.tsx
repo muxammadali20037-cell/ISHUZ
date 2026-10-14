@@ -1,7 +1,7 @@
 import { cn } from "@/lib/utils";
 
 function Skeleton({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("animate-pulse rounded-lg bg-secondary", className)} {...props} />;
+  return <div className={cn("skeleton-shimmer rounded-lg", className)} {...props} />;
 }
 
 /** Ro'yxat kartasi uchun skeleton */

@@ -14,7 +14,7 @@ const DialogOverlay = React.forwardRef<React.ComponentRef<typeof DialogPrimitive
   ({ className, ...props }, ref) => (
     <DialogPrimitive.Overlay
       ref={ref}
-      className={cn("fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0", className)}
+      className={cn("fixed inset-0 z-50 bg-black/50 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=open]:duration-200 data-[state=closed]:duration-150", className)}
       {...props}
     />
   ),
@@ -33,6 +33,8 @@ const DialogContent = React.forwardRef<
       className={cn(
         "fixed left-1/2 top-1/2 z-50 w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-card p-5 shadow-lg",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        // operator panelidagi kabi: 300 ms da kattalashib, biroz pastdan; yopilish tez (150 ms)
+        "data-[state=open]:slide-in-from-bottom-2.5 data-[state=open]:duration-300 data-[state=open]:ease-out data-[state=closed]:duration-150",
         className,
       )}
       {...props}
@@ -65,6 +67,8 @@ const Sheet = React.forwardRef<
         "fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-2xl bg-card shadow-lg",
         "sm:inset-auto sm:left-1/2 sm:top-1/2 sm:w-full sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-2xl",
         "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom sm:data-[state=closed]:fade-out-0 sm:data-[state=open]:fade-in-0 sm:data-[state=closed]:slide-out-to-bottom-0 sm:data-[state=open]:slide-in-from-bottom-0",
+        // telefonda pastdan 300 ms da chiqadi; kompyuterda markazda kattalashib ochiladi (Dialog bilan bir xil)
+        "data-[state=open]:duration-300 data-[state=open]:ease-out data-[state=closed]:duration-200 sm:data-[state=open]:zoom-in-95 sm:data-[state=open]:slide-in-from-bottom-2.5",
         className,
       )}
       {...props}

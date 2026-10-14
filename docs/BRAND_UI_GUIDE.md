@@ -131,8 +131,13 @@ Qoidalar:
 
 ## 5. Harakat, fokus, ovoz
 
-- Bosilganda darhol javob: `.press` — 120 ms, `scale .97`, sakrashsiz. Ro'yxat paydo bo'lishi 150 ms, ketma-ket kechikishsiz.
-- Sahifa o'tishida animatsiya yo'q (C8.1b: View Transition bosishni 0.5 s bloklardi).
+- Bosilganda darhol javob: `.press` — `scale .97` 60 ms; qolgan o'zgarishlar (rang, soya, siljish) 200 ms,
+  `--ease-std` (`cubic-bezier(0.4, 0, 0.2, 1)`). Ro'yxat paydo bo'lishi 150 ms, ketma-ket kechikishsiz.
+- Kompyuterda (sichqoncha): asosiy tugma `.lift-sm` (1 px), bosiladigan karta `.lift` (2 px) ko'tarilib soya oladi.
+- Sahifa o'tishi (K, operator paneli uslubi): yuqori panel va menyu joyida, kontent `page-enter` — 350 ms, 16 px pastdan;
+  skeletdan keyin `page-swap` — 200 ms. Oddiy CSS animatsiya: bosishni bloklamaydi (C8.1b dagi View Transition EMAS).
+- Oyna: parda 200 ms, oyna 300 ms (`zoom-in-95` + 10 px pastdan); bildirishnoma o'ngdan 350 ms + vaqt chizig'i;
+  skelet — `skeleton-shimmer` (1,4 s).
 - `prefers-reduced-motion` — barcha animatsiya va konfetti o'chadi.
 - Klaviatura fokusi har elementda ko'rinadi (2 px `ring` + 2 px oraliq) — E2E tekshiradi.
 - Avtomatik modal, majburiy tanishtiruv (tour) va ketma-ket toast yo'q — asosiy yo'l to'silmaydi (C8.2 da eski tur olib tashlandi).

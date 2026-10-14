@@ -1,7 +1,8 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { LoadingShell } from "@/components/shared/app-frame";
 
 /** Wizard yuklanayotganda skeleton */
-export default function WorkerOnboardingLoading() {
+function WorkerOnboardingLoadingContent() {
   return (
     <div className="flex min-h-dvh flex-col">
       <div className="h-14 border-b border-border/70 bg-card/90" />
@@ -34,5 +35,14 @@ export default function WorkerOnboardingLoading() {
         <Skeleton className="mt-8 h-13 rounded-2xl" />
       </div>
     </div>
+  );
+}
+
+/** Yuklanayotganda: oxirgi sahifaning yuqori paneli va menyusi joyida, kontent o'rnida skelet */
+export default function WorkerOnboardingLoading() {
+  return (
+    <LoadingShell hideNav>
+      <WorkerOnboardingLoadingContent />
+    </LoadingShell>
   );
 }

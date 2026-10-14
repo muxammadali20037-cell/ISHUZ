@@ -1,6 +1,7 @@
 import { Skeleton, CardSkeleton } from "@/components/ui/skeleton";
+import { LoadingShell } from "@/components/shared/app-frame";
 
-export default function Loading() {
+function LoadingContent() {
   return (
     <div className="container-narrow py-4 sm:py-8">
       <div className="mb-4 flex items-center gap-3">
@@ -13,5 +14,14 @@ export default function Loading() {
         <Skeleton className="h-20 w-full rounded-2xl" />
       </div>
     </div>
+  );
+}
+
+/** Yuklanayotganda: oxirgi sahifaning yuqori paneli va menyusi joyida, kontent o'rnida skelet */
+export default function Loading() {
+  return (
+    <LoadingShell>
+      <LoadingContent />
+    </LoadingShell>
   );
 }

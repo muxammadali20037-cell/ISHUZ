@@ -1,9 +1,8 @@
-import { cookies } from "next/headers";
+"use client";
+
 import Link from "next/link";
 import { Bell, Bookmark, MessageCircle } from "lucide-react";
-import { getT } from "@/lib/i18n/server";
-import { getSession } from "@/features/auth/session";
-import { createClient } from "@/lib/supabase/server";
+import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
@@ -13,10 +12,29 @@ import { UserMenu } from "./user-menu";
 import { LoginLink } from "./login-link";
 import { BrandMark } from "@/components/shared/brand-mark";
 
-/** Yuqori panel (barcha sahifalarda). Server komponent: sessiyani o'qiydi. */
-export async function TopBar({ role, counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: { messages?: number; offers?: number; notifications?: number } }) {
-  const { t } = await getT();
-  const session = await getSession();
+/** Yuqori paneldagi foydalanuvchi (sessiyadan, serverda tayyorlanadi) */
+export interface TopBarUser {
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  roles: string[];
+  activeRole: string | null;
+}
+
+export interface TopBarProps {
+  role: NavRole;
+  mode?: NavMode;
+  counts?: { messages?: number; offers?: number; notifications?: number };
+  user: TopBarUser | null;
+}
+
+/**
+ * Yuqori panel (barcha sahifalarda). Mijoz komponenti: ma'lumot serverda (Shell) tayyorlanadi, shuning uchun sahifa
+ * yuklanayotganda ham (loading.tsx) o'sha panel joyida qoladi — AppFrame.
+ */
+export function TopBar({ role, counts, mode = null, user }: TopBarProps) {
+  const { t } = useT();
+  const session = user;
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
@@ -59,12 +77,10 @@ export async function TopBar({ role, counts, mode = null }: { role: NavRole; mod
                 </Link>
               </Button>
               <UserMenu
-                name={`${session.profile.first_name} ${session.profile.last_name}`.trim()}
+                name={`${session.firstName} ${session.lastName}`.trim()}
                 roles={session.roles}
                 activeRole={session.activeRole}
-                avatar={
-                  <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="sm" />
-                }
+                avatar={<Avatar src={session.avatarUrl} fallback={initials(session.firstName, session.lastName)} size="sm" />}
               />
             </>
           ) : (
@@ -76,19 +92,4 @@ export async function TopBar({ role, counts, mode = null }: { role: NavRole; mod
       </div>
     </header>
   );
-}
-
-export async function unreadCounts() {
-  // sessiya bilan parallel chaqirish uchun: kirish cookie'si bo'lmasa — so'rov yo'q
-  const jar = await cookies();
-  if (!jar.getAll().some((c) => /^sb-.+-auth-token/.test(c.name))) return undefined;
-  const supabase = await createClient();
-  const { data } = await supabase.rpc("unread_counts").maybeSingle();
-  if (!data) return undefined;
-  return {
-    notifications: Number(data.notifications ?? 0),
-    messages: Number(data.messages ?? 0),
-    applications: Number(data.applications ?? 0),
-    offers: Number(data.offers ?? 0),
-  };
 }
