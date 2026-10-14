@@ -111,6 +111,7 @@
     "gender": "Gender",
     "languages": "Languages",
     "skills": "Skills",
+    "conditions": "Requirements and perks",
     "skills_required": "Required",
     "skills_nice": "Nice to have",
     "format": "Work format",

@@ -41,6 +41,8 @@ export type NamedRow = { name_uz: string; name_ru: string };
 
 /** /jobs/[slug] uchun to'liq vakansiya (join'lar bilan) */
 export interface VacancyDetail extends Tables<"vacancies"> {
+  /** e'lon egasining ismi (mehmonga ham ochiq — faol e'lon egasi); kompaniyasiz ish beruvchi nomi uchun zaxira */
+  owner: { first_name: string } | null;
   company: {
     id: string;
     slug: string;

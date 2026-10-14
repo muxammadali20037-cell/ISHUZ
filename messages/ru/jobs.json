@@ -111,6 +111,7 @@
     "gender": "Пол",
     "languages": "Языки",
     "skills": "Навыки",
+    "conditions": "Требования и условия",
     "skills_required": "Обязательно",
     "skills_nice": "Будет плюсом",
     "format": "Формат работы",

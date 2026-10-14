@@ -1,6 +1,6 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
-Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da, H — ixcham kartalar: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
+Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da, H — ixcham kartalar, I — ixcham e'lon sahifalari: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
 
@@ -11,7 +11,7 @@ Belgilar: **PASS** — shu sessiyada haqiqatan bajarildi va o'tdi · **NOT_RUN**
 
 | Muhit | Kod | Baza | Holat |
 |---|---|---|---|
-| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 126 ta brauzer E2E — PASS |
+| Lokal / CI (izolyatsiyalangan stend) | HEAD | 0001…0064 toza bazaga | ✅ lint, typecheck, unit (604 / 18 skip), SQL (29 fayl), build, 129 ta brauzer E2E — PASS |
 | Production (Vercel, `main`) | HEAD (avtomatik deploy) | **0001…0064** (0056–0058 — egasi SQL Editor'da, 2026-10-11; **0059, 0060 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-13**, tekshirildi — §12; **0061–0064 — egasining ruxsati bilan Supabase MCP orqali, 2026-10-14**, tekshirildi — §15 "Production") | ✅ xavfsizlik qatlami, "Kasbim topilmadi", vakansiya rasmi va avatar/logotip karantini, kunlik ishlar, bosh sahifa oynalari va lupa sozlamalari, profilsiz "Saqlanganlar", hamyon (pullik xizmat yoqilganda), tezkor ariza yoqilgan |
 | Staging | — | — | ❌ yo'q (yuklama testi va haqiqiy Telegram oqimi uchun kerak) |
 
@@ -1723,3 +1723,77 @@ Skrinshotlar: [ish e'lonlari 390 px](screenshots/h/h1-jobs-m.jpg) · [ishchilar]
 - Rus tilida 360 px'da uzun "Откликнуться" bilan jadval yozuvi qisqaradi ("5/…"). Ma'lumot e'lon sahifasida to'liq.
 - Kartadagi telefon raqami endi tugma nomida va e'lon sahifasida ko'rinadi, kartaning o'zida yozilmaydi.
 - Telefonda haqiqiy qurilmada ko'rish — egasi (production'ga deploy bo'lgach).
+
+## 17. I — e'lon sahifalari ixcham va professional (2026-10-14)
+
+So'rov (egasidan): "E'lon sahifasini ham ixcham va professional qil".
+
+### O'lchov (demo ma'lumotlar)
+
+| | Oldin (`4a42710`) | Keyin |
+|---|---|---|
+| Ish e'loni, 390 px: sahifa uzunligi | 2016 px | 1702 px |
+| "Ish haqida" (tavsif) boshlanishi | 975 px (2-ekran o'rtasi) | 788 px |
+| "Asosiy ma'lumotlar" bloki | ~300 px (har qatorda katta ikonka doirasi) | ~165 px (ikki ustun) |
+| Bo'limlar soni | 6 ("Ko'nikmalar" va "Ish shakli" alohida) | 5 (birlashtirildi) |
+| Ishchi e'loni, 390 px: ism (h1) | 459 px (240 px'lik bo'sh rasm ostida) | 173 px |
+| Ishchi e'loni: "Bog'lanish" | 915 px (birinchi ekrandan tashqarida) | 531 px (birinchi ekranda) |
+| Ishchi e'loni: sahifa uzunligi | 1296 px | 892 px |
+| Kompyuter (1280): ish e'loni sahifasi | 1596 px | 1387 px |
+
+### Ish e'loni (`/jobs/[slug]`)
+
+- **Sarlavha** (eng muhimi birinchi ekranda): nomi → maosh (katta, ko'k) → ish beruvchi (kichik logotip, tasdiq
+  belgisi, soha › kasb) → joy (xarita havolasi) → joylangan vaqt va ko'rishlar.
+  - Avval sarlavhada 64 px'lik logotip va pastda maosh bor edi.
+- **Asosiy ma'lumotlar** — ikki ustunli ixcham ro'yxat (yorliq + qalin qiymat): ish grafigi (vaqti bilan), bandlik
+  turi, tajriba, ish shakli (rasmiy — yashil); kerak bo'lsa ta'lim, yosh, jins, tillar, o'rinlar soni.
+- **Bog'lanish** telefonda tavsifdan oldin turadi (kompyuterda — yon panelda, avvalgidek).
+- **"Talablar va qulayliklar"** — ko'nikmalar, rasmiy shartlar va imkoniyatlar bitta blokda. Avval "Ko'nikmalar"
+  va "Ish shakli" alohida bloklar edi.
+- **Kompaniya** — ixcham (tavsif 3 qatorgacha).
+- **O'xshash vakansiyalar** — katta kartalar o'rniga ixcham qatorlar (nomi, maosh, joy · ish beruvchi).
+- **"Orqaga"**: avval "Vakansiyalar" yozuvi bilan eski `/jobs` ro'yxatiga olib borardi. Endi qidiruvdan kelgan
+  bo'lsangiz, aynan o'sha natijalarga (o'sha joyiga) qaytaradi. Havola orqali to'g'ridan-to'g'ri ochilgan bo'lsa —
+  qidiruvga. Bu brauzerning Navigation API'si orqali, qo'llanmasa — referrer bo'yicha.
+- **Topilgan va tuzatilgan xato:** kompaniyasiz ish beruvchi (jismoniy shaxs) e'lonida ish beruvchi nomi o'rniga
+  umumiy **"Ish beruvchi"** yozuvi va "IS" belgisi chiqardi, natija kartasida esa "Dilnoza opa" deb ko'rinardi.
+  - Endi kirgan foydalanuvchiga kartadagi nom ko'rsatiladi (`employer_public_names`).
+  - Mehmonga e'lon egasining ismi ko'rsatiladi (`profiles.first_name`; faol e'lon egasining ismi mehmonga RLS
+    bo'yicha allaqachon ochiq).
+  - Yangi ruxsat yoki migratsiya kerak bo'lmadi.
+- Kompyuterda "Toshkent shahri" va "Xaritada ko'rish" yopishib qolmaydi.
+
+### Ishchi e'loni (`/listing/[id]`)
+
+- 240 px'lik katta rasm (ko'pincha bo'sh ikonka) o'rniga ism yonida 64 px'lik surat yoki kasb belgisi.
+- Hudud, tajriba, kutilayotgan maosh va ish grafigi — ikki ustunli ixcham ro'yxatda.
+- "O'zi haqida" shu kartaning ichida. "Bog'lanish" bo'limi (raqam, so'rov, kirish) avvalgidek, faqat ixchamroq.
+- "Orqaga" — ish e'lonidagi kabi (qidiruvdan kelgan bo'lsa — o'sha natijalarga).
+
+**Fayllar:**
+- `src/features/jobs/components/{vacancy-detail,similar-vacancies}.tsx`, `src/features/jobs/{queries,types}.ts`
+  (ega ismi);
+- `src/app/listing/[id]/page.tsx`, `src/components/shared/back-link.tsx` (yangi);
+- matnlar: `messages/*/jobs.json` (`detail.conditions`);
+- test: `e2e/specs/detail-pages.spec.ts` (yangi).
+
+Skrinshotlar: [birinchi ekran](screenshots/i/i1-job-first-m.jpg) · [butun sahifa](screenshots/i/i1-job-full-m.jpg) ·
+[ishchi e'loni](screenshots/i/i1-listing-m.jpg) · [kompyuter](screenshots/i/i1-job-desktop.jpg).
+
+### Testlar (shu sessiyada haqiqatan bajarilgan)
+
+| Test | Eski build (`4a42710`) | Keyin |
+|---|---|---|
+| `detail-pages.spec.ts`: ish e'loni — nomi, maosh, ish beruvchi ismi (mehmonga "Dilnoza", kirganga "Dilnoza opa"), joy, "Ish grafigi" birinchi ekranda (pastki panel ustida); faktlar `dl` ro'yxatida; qo'ng'iroq tavsifdan oldin; o'xshash vakansiya qatori ≤ 100 px; 390 va 360 px'da yonga siljimaydi | ❌ ("Ish beruvchi") | ✅ |
+| `detail-pages.spec.ts`: "Orqaga" — qidiruv natijalaridan kelganda o'sha natijalarga, to'g'ridan-to'g'ri ochilganda `/search?mode=jobs` | ❌ ("Orqaga" yo'q) | ✅ |
+| `detail-pages.spec.ts`: ishchi e'loni — ism < 250 px, belgi ≤ 64 px, faktlar ro'yxati, "Bog'lanish" birinchi ekranda | ❌ (ism 459 px) | ✅ |
+| To'liq E2E · unit · tsc · eslint | — | ✅ 129/129 · 604 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
+
+### Ochiq masalalar
+
+- Mehmon kompaniyasiz ish beruvchining faqat ismini ko'radi ("Dilnoza"), kirgan foydalanuvchi esa ochiq nomini
+  ("Dilnoza opa"). Mehmonga ham ochiq nomni ko'rsatish uchun `employer_public_names`ni mehmonga ochish (migratsiya)
+  kerak bo'ladi — egasi qarori bilan.
+- Eski `/jobs` ro'yxat sahifasi (kategoriya havolalari, "Barchasini ko'rish") hali eski katta kartalarda.
+- Telefonda haqiqiy qurilmada ko'rish — egasi (deploydan keyin).

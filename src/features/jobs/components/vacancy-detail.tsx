@@ -2,22 +2,16 @@ import { Suspense } from "react";
 import Link from "next/link";
 import {
   BadgeCheck,
-  Briefcase,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Clock,
   ExternalLink,
   Eye,
   FileCheck2,
-  FileText,
   Gift,
-  GraduationCap,
-  Languages,
   MapPin,
   Settings2,
   Sparkles,
-  UserRound,
   Users,
   Wifi,
   Landmark,
@@ -42,14 +36,15 @@ import { VacancyActions } from "./vacancy-actions";
 import { VacancyDescription } from "./vacancy-description";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import { Photo } from "@/components/shared/photo";
+import { BackLink } from "@/components/shared/back-link";
 
 const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
 
 function Section({ title, icon: Icon, children, className }: { title: string; icon?: LucideIcon; children: React.ReactNode; className?: string }) {
   return (
     <section className={`rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5 ${className ?? ""}`}>
-      <h2 className="mb-3 flex items-center gap-2 text-base font-semibold">
-        {Icon ? <Icon className="size-4.5 text-primary" /> : null}
+      <h2 className="mb-2.5 flex items-center gap-2 text-lg font-bold">
+        {Icon ? <Icon className="size-4.5 text-primary" aria-hidden /> : null}
         {title}
       </h2>
       {children}
@@ -57,18 +52,31 @@ function Section({ title, icon: Icon, children, className }: { title: string; ic
   );
 }
 
-function InfoItem({ icon: Icon, label, children }: { icon: LucideIcon; label: string; children: React.ReactNode }) {
+/** Ixcham fakt (I1): kichik yorliq + qalin qiymat; ikki ustunli to'rda — katta ikonka doiralarisiz */
+function Fact({ label, children, wide }: { label: string; children: React.ReactNode; wide?: boolean }) {
   return (
-    <div className="flex gap-3">
-      <span className="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
-        <Icon className="size-4.5" />
-      </span>
-      <div className="min-w-0">
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <div className="text-md font-medium leading-snug">{children}</div>
-      </div>
+    <div className={wide ? "col-span-2" : "min-w-0"}>
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="break-words text-base font-semibold leading-snug">{children}</dd>
     </div>
   );
+}
+
+function ChipGroup({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="mb-1.5 text-sm font-medium text-muted-foreground">{label}</p>
+      <div className="flex flex-wrap gap-1.5">{children}</div>
+    </div>
+  );
+}
+
+/** Kompaniyasiz ish beruvchining ochiq nomi (`employer_public_names` — faqat kirgan foydalanuvchiga ruxsat) */
+async function employerPublicName(ownerId: string, session: SessionContext | null): Promise<string | null> {
+  if (!session) return null;
+  const supabase = await createClient();
+  const { data } = await supabase.rpc("employer_public_names", { p_profile_ids: [ownerId] });
+  return data?.[0]?.display_name?.trim() || null;
 }
 
 /** /jobs/[slug] to'liq sahifa (server). Ko'ruvchi holati serverda hisoblangan. */
@@ -83,7 +91,8 @@ export async function VacancyDetail({
 }) {
   const { t, tEnum, locale, name } = await getT();
   const company = v.company;
-  const companyName = company?.name ?? t("common.role.employer");
+  // kompaniyasiz ish beruvchi: qidiruv kartasidagi nom (display_name — kirganlarga), mehmonga — ega ismi
+  const companyName = company?.name ?? (v.owner_profile_id ? await employerPublicName(v.owner_profile_id, session) : null) ?? (v.owner?.first_name?.trim() || t("common.role.employer"));
   const isManager = viewer.kind === "manager";
   const time = v.work_time_from && v.work_time_to ? `${formatWorkTime(v.work_time_from)}–${formatWorkTime(v.work_time_to)}` : null;
   const experienceKey = EXPERIENCE_PRESETS.find((p) => v.experience_min_months >= p) ?? 0;
@@ -105,15 +114,19 @@ export async function VacancyDetail({
   const { data: adPhone } = isManager ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
   const showContact = !isManager && (!!adPhone || !!contactProfileId);
 
+  const hasConditions = v.skills.length > 0 || v.officialTerms.length > 0 || v.benefits.length > 0;
+  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} /> : null;
+
   return (
-    <div className="container-app pb-24 pt-4 sm:pt-6 lg:pb-8">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <Link
-          href="/jobs"
-          className="-ml-1 inline-flex min-h-12 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+    <div className="container-app pb-24 pt-3 sm:pt-6 lg:pb-8">
+      <div className="mb-2 flex items-center justify-between gap-2">
+        {/* qidiruvdan kelgan bo'lsa — o'sha natijalarga (o'sha joyiga) qaytadi */}
+        <BackLink
+          fallback="/search?mode=jobs"
+          className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
-          <ChevronLeft className="size-5" /> {t("jobs.detail.back")}
-        </Link>
+          <ChevronLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
+        </BackLink>
         {isManager ? (
           <Button asChild variant="soft" size="sm">
             <Link href={`/employer/vacancies/${v.id}`}>
@@ -125,84 +138,90 @@ export async function VacancyDetail({
         )}
       </div>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6">
-        <div className="min-w-0 space-y-4">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6">
+        <div className="min-w-0 space-y-3">
           {/* haqiqiy ish joyi surati (egasi yuklagan, moderatsiyadan o'tgan); ochilmasa — joy egallamaydi */}
           <Photo
             src={v.photo_path ? vacancyPhotoUrl(v.photo_path) : null}
             alt={t("easy.photo.alt")}
             sizes="(min-width: 1024px) 640px, 100vw"
-            className="aspect-[16/9] w-full rounded-2xl border border-border/70"
+            className="aspect-[2/1] w-full rounded-2xl border border-border/70"
             fallback={null}
           >
             <figcaption className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
           </Photo>
-          {/* Sarlavha kartasi */}
+
+          {/* Sarlavha: nomi → maosh → ish beruvchi → joy → sana (I1: ixcham, eng muhimi birinchi ekranda) */}
           <header className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-6">
-            <div className="flex items-start gap-4">
-              <Avatar src={company?.logo_url} fallback={companyName.slice(0, 2)} square size="xl" alt="" className="size-16 sm:size-20" />
-              <div className="min-w-0 flex-1">
-                <h1 className="break-words text-xl font-bold leading-tight sm:text-2xl">{v.title}</h1>
-                {v.is_government ? (
-                  <Link href="/jobs?gov=1" className="mt-1.5 inline-flex">
-                    <Badge variant="primary" className="gap-1">
-                      <Landmark className="size-3.5" /> {t("jobs.government.badge")}
-                    </Badge>
+            {v.is_government ? (
+              <Link href="/jobs?gov=1" className="mb-1.5 inline-flex">
+                <Badge variant="primary" className="gap-1">
+                  <Landmark className="size-3.5" /> {t("jobs.government.badge")}
+                </Badge>
+              </Link>
+            ) : null}
+            <h1 className="break-words text-2xl font-bold leading-tight">{v.title}</h1>
+            <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="mt-1.5 block text-xl font-extrabold text-primary sm:text-2xl" />
+            <div className="mt-3 flex items-center gap-2.5">
+              <Avatar src={company?.logo_url} fallback={companyName.slice(0, 2)} square size="md" alt="" className="size-10 shrink-0" />
+              <div className="min-w-0">
+                {company ? (
+                  <Link
+                    href={`/company/${company.slug}`}
+                    className="inline-flex items-center gap-1 text-base font-semibold text-foreground hover:text-primary hover:underline"
+                  >
+                    {company.name}
+                    {company.verification_status === "verified" ? (
+                      <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} />
+                    ) : null}
                   </Link>
-                ) : null}
-                <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                  {company ? (
-                    <Link
-                      href={`/company/${company.slug}`}
-                      className="inline-flex items-center gap-1 font-medium text-foreground hover:text-primary hover:underline"
-                    >
-                      {company.name}
-                      {company.verification_status === "verified" ? (
-                        <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} />
-                      ) : null}
+                ) : (
+                  <p className="text-base font-semibold">{companyName}</p>
+                )}
+                {v.category ? (
+                  <p className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+                    <Link href={`/jobs?category=${v.category.slug}`} className="hover:underline">
+                      {name(v.category)}
                     </Link>
-                  ) : (
-                    <span className="text-muted-foreground">{companyName}</span>
-                  )}
-                  {v.category ? (
-                    <span className="inline-flex w-full flex-wrap items-center gap-1 text-muted-foreground">
-                      <Link href={`/jobs?category=${v.category.slug}`} className="hover:underline">
-                        {name(v.category)}
-                      </Link>
-                      {v.subcategory ? (
-                        <>
-                          <ChevronRight className="size-3.5" />
-                          <Link href={`/jobs?category=${v.category.slug}&subcategory=${v.subcategory.slug}`} className="hover:underline">
-                            {name(v.subcategory)}
-                          </Link>
-                        </>
-                      ) : null}
-                      {v.profession && (!v.subcategory || name(v.profession) !== name(v.subcategory)) ? (
-                        <>
-                          <ChevronRight className="size-3.5" />
-                          <span className="font-medium text-foreground">{name(v.profession)}</span>
-                        </>
-                      ) : null}
-                    </span>
-                  ) : null}
-                </div>
+                    {v.profession ? (
+                      <>
+                        <ChevronRight className="size-3.5" aria-hidden />
+                        <span>{name(v.profession)}</span>
+                      </>
+                    ) : v.subcategory ? (
+                      <>
+                        <ChevronRight className="size-3.5" aria-hidden />
+                        <span>{name(v.subcategory)}</span>
+                      </>
+                    ) : null}
+                  </p>
+                ) : null}
               </div>
             </div>
-            <div className="mt-4">
-              <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="text-xl sm:text-2xl" />
-            </div>
-            <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-muted-foreground">
+            <p className="mt-3 flex items-start gap-1.5 text-base">
+              {v.is_remote ? <Wifi className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden /> : <MapPin className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />}
+              <span className="min-w-0">
+                {v.is_remote ? `${t("jobs.detail.remote")}${locationText ? ` · ${locationText}` : ""}` : locationText || t("common.labels.not_specified")}
+                {v.address && !v.is_remote ? <span className="block text-sm text-muted-foreground">{v.address}</span> : null}
+                {mapHref ? (
+                  <a href={mapHref} target="_blank" rel="noopener noreferrer" className="ml-2 inline-flex items-center gap-1 whitespace-nowrap text-sm font-medium text-primary hover:underline">
+                    {t("jobs.detail.map")} <ExternalLink className="size-3.5" aria-hidden />
+                  </a>
+                ) : null}
+              </span>
+            </p>
+            <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
               {v.published_at ? (
                 <span className="inline-flex items-center gap-1">
-                  <CalendarDays className="size-4" /> {t("jobs.detail.published", { time: formatRelative(v.published_at, locale) })}
+                  <CalendarDays className="size-4" aria-hidden /> {t("jobs.detail.published", { time: formatRelative(v.published_at, locale) })}
                 </span>
               ) : null}
               <span className="inline-flex items-center gap-1">
-                <Eye className="size-4" /> {t("jobs.detail.views", { count: v.views_count })}
+                <Eye className="size-4" aria-hidden /> {t("jobs.detail.views", { count: v.views_count })}
               </span>
               {v.applications_count > 0 ? (
                 <span className="inline-flex items-center gap-1">
-                  <Users className="size-4" /> {t("jobs.detail.applications_count", { count: v.applications_count })}
+                  <Users className="size-4" aria-hidden /> {t("jobs.detail.applications_count", { count: v.applications_count })}
                 </span>
               ) : null}
               {v.status !== "active" ? (
@@ -216,7 +235,40 @@ export async function VacancyDetail({
             ) : null}
           </header>
 
-          {/* Moslik */}
+          {/* Asosiy ma'lumotlar — ixcham ikki ustun */}
+          <Section title={t("jobs.detail.info")}>
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+              <Fact label={t("jobs.detail.schedule")}>
+                {tEnum("work_schedule", v.schedule)}
+                {time ? <span className="block text-sm font-normal text-muted-foreground">{time}</span> : null}
+              </Fact>
+              <Fact label={t("jobs.detail.employment")}>{tEnum("employment_type", v.employment_type)}</Fact>
+              <Fact label={t("jobs.detail.experience")}>{tEnum("experience_min_months", String(experienceKey))}</Fact>
+              <Fact label={t("jobs.detail.format")}>
+                <span className={v.work_format === "official" ? "text-success" : undefined}>{tEnum("work_format", v.work_format)}</span>
+              </Fact>
+              {v.opportunity_type !== "job" ? (
+                <Fact label={t("jobs.filters.opportunity")}>
+                  {tEnum("opportunity_type", v.opportunity_type)}
+                  {v.is_paid === false ? <span className="block text-sm font-normal text-warning">{t("jobs.card.unpaid")}</span> : null}
+                </Fact>
+              ) : null}
+              {v.positions_count > 1 ? <Fact label={t("jobs.detail.positions")}>{t("vacancies.preview.positions", { count: v.positions_count })}</Fact> : null}
+              {v.education_min ? <Fact label={t("jobs.detail.education")}>{tEnum("education_level", v.education_min)}</Fact> : null}
+              {age ? <Fact label={t("jobs.detail.age")}>{age}</Fact> : null}
+              {v.gender ? <Fact label={t("jobs.detail.gender")}>{tEnum("gender", v.gender)}</Fact> : null}
+              {v.languages.length ? (
+                <Fact label={t("jobs.detail.languages")} wide>
+                  {v.languages.map((l) => `${name(l)} — ${tEnum("language_level", l.min_level)}`).join(", ")}
+                </Fact>
+              ) : null}
+            </dl>
+          </Section>
+
+          {/* Bog'lanish — telefonda tavsifdan oldin (asosiy amal birinchi ekranlarda); kompyuterda — yon panelda */}
+          {contactCard ? <div className="lg:hidden">{contactCard}</div> : null}
+
+          {/* Moslik (ish izlovchi profili bo'lsa) */}
           {viewer.match ? (
             <Section title={t("jobs.detail.match_title")} icon={Sparkles}>
               <div className="grid gap-4 sm:grid-cols-[auto_1fr] sm:items-start">
@@ -227,148 +279,8 @@ export async function VacancyDetail({
             </Section>
           ) : null}
 
-          {/* Asosiy ma'lumotlar */}
-          <Section title={t("jobs.detail.info")} icon={Briefcase}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <InfoItem icon={v.is_remote ? Wifi : MapPin} label={t("jobs.detail.location")}>
-                {v.is_remote ? (
-                  <span>
-                    {t("jobs.detail.remote")}
-                    {locationText ? ` · ${locationText}` : ""}
-                  </span>
-                ) : (
-                  <>
-                    <span>{locationText || t("common.labels.not_specified")}</span>
-                    {v.address ? <span className="block text-sm font-normal text-muted-foreground">{v.address}</span> : null}
-                  </>
-                )}
-                {mapHref ? (
-                  <a
-                    href={mapHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="mt-1 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline"
-                  >
-                    {t("jobs.detail.map")} <ExternalLink className="size-3.5" />
-                  </a>
-                ) : null}
-              </InfoItem>
-              <InfoItem icon={CalendarDays} label={t("jobs.detail.schedule")}>
-                {tEnum("work_schedule", v.schedule)}
-                {time ? (
-                  <span className="ml-2 inline-flex items-center gap-1 text-sm font-normal text-muted-foreground">
-                    <Clock className="size-3.5" /> {time}
-                  </span>
-                ) : null}
-              </InfoItem>
-              <InfoItem icon={Briefcase} label={t("jobs.detail.employment")}>
-                {tEnum("employment_type", v.employment_type)}
-              </InfoItem>
-              {v.opportunity_type !== "job" ? (
-                <InfoItem icon={GraduationCap} label={t("jobs.filters.opportunity")}>
-                  {tEnum("opportunity_type", v.opportunity_type)}
-                  {v.is_paid === false ? <span className="ml-2 text-sm font-normal text-warning">· {t("jobs.card.unpaid")}</span> : v.is_paid ? <span className="ml-2 text-sm font-normal text-muted-foreground">· {t("vacancies.wizard.schedule.paid_yes")}</span> : null}
-                </InfoItem>
-              ) : null}
-              <InfoItem icon={FileText} label={t("jobs.detail.experience")}>
-                {tEnum("experience_min_months", String(experienceKey))}
-              </InfoItem>
-              {v.positions_count > 1 ? (
-                <InfoItem icon={Users} label={t("jobs.detail.positions")}>
-                  {t("vacancies.preview.positions", { count: v.positions_count })}
-                </InfoItem>
-              ) : null}
-              {v.education_min ? (
-                <InfoItem icon={GraduationCap} label={t("jobs.detail.education")}>
-                  {tEnum("education_level", v.education_min)}
-                </InfoItem>
-              ) : null}
-              {age ? (
-                <InfoItem icon={UserRound} label={t("jobs.detail.age")}>
-                  {age}
-                </InfoItem>
-              ) : null}
-              {v.gender ? (
-                <InfoItem icon={Users} label={t("jobs.detail.gender")}>
-                  {tEnum("gender", v.gender)}
-                </InfoItem>
-              ) : null}
-              {v.languages.length ? (
-                <InfoItem icon={Languages} label={t("jobs.detail.languages")}>
-                  <ul className="space-y-0.5">
-                    {v.languages.map((l) => (
-                      <li key={l.code}>
-                        {name(l)} <span className="text-sm font-normal text-muted-foreground">— {tEnum("language_level", l.min_level)}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </InfoItem>
-              ) : null}
-            </div>
-          </Section>
-
-          {/* Ko'nikmalar */}
-          {v.skills.length ? (
-            <Section title={t("jobs.detail.skills")} icon={Sparkles}>
-              <div className="space-y-3">
-                {requiredSkills.length ? (
-                  <div>
-                    <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("jobs.detail.skills_required")}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {requiredSkills.map((s) => (
-                        <Badge key={s.id} variant="primary" size="lg">
-                          {name(s)}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-                {niceSkills.length ? (
-                  <div>
-                    <p className="mb-1.5 text-xs font-medium text-muted-foreground">{t("jobs.detail.skills_nice")}</p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {niceSkills.map((s) => (
-                        <Badge key={s.id} variant="outline" size="lg">
-                          {name(s)}
-                        </Badge>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </Section>
-          ) : null}
-
-          {/* Rasmiylik va imkoniyatlar */}
-          <Section title={t("jobs.detail.format")} icon={FileCheck2}>
-            <div className="flex flex-wrap gap-1.5">
-              <Badge variant={v.work_format === "official" ? "success" : "default"} size="lg">
-                <FileCheck2 /> {tEnum("work_format", v.work_format)}
-              </Badge>
-              {v.officialTerms.map((b) => (
-                <Badge key={b.code} variant="success" size="lg">
-                  {name(b)}
-                </Badge>
-              ))}
-            </div>
-            {v.benefits.length ? (
-              <div className="mt-4">
-                <p className="mb-1.5 flex items-center gap-1 text-xs font-medium text-muted-foreground">
-                  <Gift className="size-3.5" /> {t("jobs.detail.benefits")}
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {v.benefits.map((b) => (
-                    <Badge key={b.code} size="lg">
-                      {name(b)}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </Section>
-
           {/* Tavsif */}
-          <Section title={t("jobs.detail.about")} icon={FileText}>
+          <Section title={t("jobs.detail.about")}>
             {v.description?.trim() ? (
               <VacancyDescription text={v.description} />
             ) : (
@@ -376,11 +288,55 @@ export async function VacancyDetail({
             )}
           </Section>
 
-          {/* Kompaniya */}
+          {/* Talablar va qulayliklar: ko'nikmalar, rasmiy shartlar, imkoniyatlar — bitta blokda */}
+          {hasConditions ? (
+            <Section title={t("jobs.detail.conditions")}>
+              <div className="space-y-3">
+                {requiredSkills.length ? (
+                  <ChipGroup label={t("jobs.detail.skills_required")}>
+                    {requiredSkills.map((s) => (
+                      <Badge key={s.id} variant="primary" size="lg">
+                        {name(s)}
+                      </Badge>
+                    ))}
+                  </ChipGroup>
+                ) : null}
+                {niceSkills.length ? (
+                  <ChipGroup label={t("jobs.detail.skills_nice")}>
+                    {niceSkills.map((s) => (
+                      <Badge key={s.id} variant="outline" size="lg">
+                        {name(s)}
+                      </Badge>
+                    ))}
+                  </ChipGroup>
+                ) : null}
+                {v.officialTerms.length ? (
+                  <ChipGroup label={tEnum("work_format", v.work_format)}>
+                    {v.officialTerms.map((b) => (
+                      <Badge key={b.code} variant="success" size="lg">
+                        <FileCheck2 /> {name(b)}
+                      </Badge>
+                    ))}
+                  </ChipGroup>
+                ) : null}
+                {v.benefits.length ? (
+                  <ChipGroup label={t("jobs.detail.benefits")}>
+                    {v.benefits.map((b) => (
+                      <Badge key={b.code} size="lg">
+                        <Gift /> {name(b)}
+                      </Badge>
+                    ))}
+                  </ChipGroup>
+                ) : null}
+              </div>
+            </Section>
+          ) : null}
+
+          {/* Kompaniya — ixcham */}
           {company ? (
             <Section title={t("jobs.detail.company")}>
               <div className="flex items-start gap-3">
-                <Avatar src={company.logo_url} fallback={company.name.slice(0, 2)} square size="lg" alt="" />
+                <Avatar src={company.logo_url} fallback={company.name.slice(0, 2)} square size="md" alt="" className="size-10 shrink-0" />
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1 font-semibold">
                     {company.name}
@@ -389,20 +345,13 @@ export async function VacancyDetail({
                     ) : null}
                   </p>
                   {company.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
-                  {company.about ? <p className="mt-2 text-sm text-foreground/90">{descriptionExcerpt(company.about, 240)}</p> : null}
-                  <Link href={`/company/${company.slug}`} className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                    {t("jobs.detail.company_page")} <ChevronRight className="size-4" />
+                  {company.about ? <p className="mt-1.5 line-clamp-3 text-sm text-foreground/90">{descriptionExcerpt(company.about, 240)}</p> : null}
+                  <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary hover:underline">
+                    {t("jobs.detail.company_page")} <ChevronRight className="size-4" aria-hidden />
                   </Link>
                 </div>
               </div>
             </Section>
-          ) : null}
-
-          {/* Kontakt (mobil: shu yerda; desktop: yon panel) */}
-          {showContact ? (
-            <div className="lg:hidden">
-              <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
-            </div>
           ) : null}
         </div>
 
@@ -411,17 +360,13 @@ export async function VacancyDetail({
             vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status: v.status }}
             viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application, quickApply: viewer.quickApply }}
           />
-          {showContact ? (
-            <div className="hidden lg:block">
-              <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} />
-            </div>
-          ) : null}
+          {contactCard ? <div className="hidden lg:block">{contactCard}</div> : null}
         </aside>
       </div>
 
       <Suspense
         fallback={
-          <div className="mt-8">
+          <div className="mt-6">
             <HomeSectionSkeleton />
           </div>
         }

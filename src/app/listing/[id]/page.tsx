@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ArrowLeft, BriefcaseBusiness, Clock, MapPin, Pencil, Wallet } from "lucide-react";
+import { ChevronLeft, MapPin, Pencil } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatMoney } from "@/lib/format";
@@ -17,6 +17,7 @@ import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
 import { RequestContactButton } from "@/features/contacts/request-contact-button";
 import { isCityRegion } from "@/lib/geo/city";
+import { BackLink } from "@/components/shared/back-link";
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -51,12 +52,14 @@ export default async function ListingPage({ params }: Params) {
 
   return (
     <Shell>
-      <div className="container-narrow space-y-5 py-4 text-lg sm:py-8">
-        <Button asChild variant="outline" className="h-12 px-4 text-base">
-          <Link href={w.is_owner ? "/cabinet" : "/search"}>
-            <ArrowLeft className="size-5" aria-hidden /> {w.is_owner ? t("easy.cabinet.title") : t("easy.listing.back")}
-          </Link>
-        </Button>
+      <div className="container-narrow space-y-3 py-3 text-lg sm:py-8">
+        {/* qidiruvdan kelgan bo'lsa — o'sha natijalarga (o'sha joyiga) qaytadi */}
+        <BackLink
+          fallback={w.is_owner ? "/cabinet" : "/search?mode=workers"}
+          className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+        >
+          <ChevronLeft className="size-5" aria-hidden /> {w.is_owner ? t("easy.cabinet.title") : t("easy.wizard.back")}
+        </BackLink>
 
         {w.is_owner ? (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
@@ -69,57 +72,61 @@ export default async function ListingPage({ params }: Params) {
           </div>
         ) : null}
 
-        <article className="space-y-5 rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-6">
-          <p className="text-base font-bold uppercase tracking-wide text-primary">{t("easy.listing.title")}</p>
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+        {/* I1: ixcham — surat/kasb belgisi ism yonida (katta bo'sh rasm o'rniga), ma'lumotlar ikki ustunda */}
+        <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
+          <p className="text-sm font-bold uppercase tracking-wide text-primary">{t("easy.listing.title")}</p>
+          <div className="mt-2 flex items-center gap-3">
             <Photo
               src={w.avatar_url}
               alt={fullName}
-              sizes="(min-width: 640px) 224px, 100vw"
-              className="aspect-[4/3] w-full shrink-0 rounded-2xl sm:w-56"
-              fallback={<ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} icon={w.category_icon} name={profession} label={t("easy.image.label")} className="aspect-[4/3] w-full sm:w-56" />}
+              sizes="64px"
+              className="size-16 shrink-0 rounded-2xl"
+              fallback={<ProfessionImage url={w.profession_node_id ? images[w.profession_node_id] : null} icon={w.category_icon} name={profession} className="size-16 shrink-0" iconClassName="size-8" />}
             />
             <div className="min-w-0">
-              <h1 className="break-words text-3xl font-extrabold leading-tight">{fullName}</h1>
-              <p className="mt-1 break-words text-xl font-semibold text-primary">{profession}</p>
+              <h1 className="break-words text-2xl font-extrabold leading-tight">{fullName}</h1>
+              <p className="break-words text-lg font-semibold text-primary">{profession}</p>
             </div>
           </div>
-          <ul className="space-y-2">
-            <li className="flex items-start gap-2">
-              <MapPin className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-              <span>
-                {[region, district ?? t(isCityRegion({ name_uz: w.region_name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].filter(Boolean).join(" · ")}
-                {w.remote_ok ? <span className="text-muted-foreground"> · {t("easy.card.remote")}</span> : null}
-              </span>
-            </li>
-            <li className="flex items-start gap-2">
-              <BriefcaseBusiness className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-              <span>{t("easy.card.experience", { value: exp ? t(`easy.worker.exp.${exp}`) : "—" })}</span>
-            </li>
+          <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
+            <div className="col-span-2">
+              <dt className="text-sm text-muted-foreground">{t("easy.listing.location")}</dt>
+              <dd className="flex items-start gap-1.5 text-base font-semibold leading-snug">
+                <MapPin className="mt-0.5 size-4.5 shrink-0 text-primary" aria-hidden />
+                <span>
+                  {[region, district ?? t(isCityRegion({ name_uz: w.region_name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].filter(Boolean).join(" · ")}
+                  {w.remote_ok ? <span className="font-normal text-muted-foreground"> · {t("easy.card.remote")}</span> : null}
+                </span>
+              </dd>
+            </div>
+            <div className="min-w-0">
+              <dt className="text-sm text-muted-foreground">{t("easy.listing.experience")}</dt>
+              <dd className="text-base font-semibold leading-snug">{exp ? t(`easy.worker.exp.${exp}`) : "—"}</dd>
+            </div>
             {w.salary_expected ? (
-              <li className="flex items-start gap-2">
-                <Wallet className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-                <span>{t("easy.card.salary_expected", { amount: formatMoney(w.salary_expected, locale) })}</span>
-              </li>
+              <div className="min-w-0">
+                <dt className="text-sm text-muted-foreground">{t("easy.listing.salary")}</dt>
+                <dd className="text-base font-semibold leading-snug tabular">{formatMoney(w.salary_expected, locale)}</dd>
+              </div>
             ) : null}
             {w.schedules?.filter((s) => s !== "negotiable").length ? (
-              <li className="flex items-start gap-2">
-                <Clock className="mt-1 size-5 shrink-0 text-primary" aria-hidden />
-                <span>{w.schedules.filter((s) => s !== "negotiable").map((s) => tEnum("work_schedule", s)).join(", ")}</span>
-              </li>
+              <div className="col-span-2">
+                <dt className="text-sm text-muted-foreground">{t("jobs.detail.schedule")}</dt>
+                <dd className="text-base font-semibold leading-snug">{w.schedules.filter((s) => s !== "negotiable").map((s) => tEnum("work_schedule", s)).join(", ")}</dd>
+              </div>
             ) : null}
-          </ul>
+          </dl>
           {w.about ? (
-            <section>
-              <h2 className="text-xl font-bold">{t("easy.listing.about")}</h2>
-              <p className="mt-2 whitespace-pre-line">{w.about}</p>
+            <section className="mt-4 border-t border-border/70 pt-3">
+              <h2 className="text-lg font-bold">{t("easy.listing.about")}</h2>
+              <p className="mt-1 whitespace-pre-line text-base">{w.about}</p>
             </section>
           ) : null}
         </article>
 
         {!w.is_owner ? (
-          <section id="contact" className="scroll-mt-24 space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-5">
-            <h2 className="text-xl font-bold">{t("easy.listing.contact")}</h2>
+          <section id="contact" className="scroll-mt-24 space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-4 text-base sm:p-5">
+            <h2 className="text-lg font-bold">{t("easy.listing.contact")}</h2>
             {w.phone ? (
               <>
                 <CallBlock phone={w.phone} />
