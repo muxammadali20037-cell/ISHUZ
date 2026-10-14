@@ -85,15 +85,19 @@ test("natijalar ro'yxati: oxirgi karta qancha vaqtda to'liq ko'rinadi", async ({
   await throttle(page);
   await page.goto(`/search?mode=jobs&p=${n!.id}&region=all`);
   const t = await page.evaluate(async () => {
-    const t0 = performance.now();
     const items = Array.from(document.querySelectorAll("ul.pop-list > *, main ul > li"));
     const anims = items.flatMap((el) => el.getAnimations());
-    // Oxirgi karta qachon to'liq ko'rinadi — animatsiya jadvali bo'yicha (boshlanish + davomiylik). `finished` promise'i
-    // asosiy oqimda hal bo'ladi va 4× sekin CPU'da gidratsiya bandligini ham qo'shib yuborardi, ekranda esa karta o'z
-    // vaqtida ko'rinib bo'lgan bo'ladi. Kechikkan boshlanish yoki uzun animatsiya baribir shu yerda ko'rinadi.
+    // Ro'yxat ko'ringan paytdan (birinchi karta animatsiyasi boshlanishi) oxirgi karta to'liq ko'ringungacha —
+    // animatsiya jadvali bo'yicha: eng kech tugash − eng erta boshlanish. Zinapoyali kechikish yoki uzun animatsiya
+    // shu yerda ko'rinadi (sun'iy 600 ms'lik animatsiya — ~600 ms). Sahifa yuklangach birinchi kadrgacha bo'lgan
+    // kutish (sekin CI'da gidratsiya) ro'yxat animatsiyasiga kirmaydi: u eski va yangi build'da bir xil (8× CPU'da
+    // eng ko'pi 157/158 ms) va natijaga tasodifiy ±60 ms qo'shardi.
     await Promise.all(anims.map((a) => a.ready.catch(() => null)));
-    const ends = anims.map((a) => (a.startTime == null ? t0 : Number(a.startTime) + Number(a.effect?.getComputedTiming().endTime ?? 0)));
-    return { items: items.length, settleMs: Math.round(Math.max(0, ...ends.map((e) => e - t0))) };
+    const started = anims.filter((a) => a.startTime != null);
+    if (!started.length) return { items: items.length, settleMs: 0 }; // animatsiya allaqachon tugagan
+    const starts = started.map((a) => Number(a.startTime));
+    const ends = started.map((a) => Number(a.startTime) + Number(a.effect?.getComputedTiming().endTime ?? 0));
+    return { items: items.length, settleMs: Math.round(Math.max(...ends) - Math.min(...starts)) };
   });
   record("results", t);
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);

@@ -1790,6 +1790,21 @@ Skrinshotlar: [birinchi ekran](screenshots/i/i1-job-first-m.jpg) · [butun sahif
 | `detail-pages.spec.ts`: ishchi e'loni — ism < 250 px, belgi ≤ 64 px, faktlar ro'yxati, "Bog'lanish" birinchi ekranda | ❌ (ism 459 px) | ✅ |
 | To'liq E2E · unit · tsc · eslint | — | ✅ 129/129 · 604 / 18 skip · ✅ · ✅ (0 xato; 2 ta eski ogohlantirish) |
 
+### CI: "natijalar animatsiyasi" testi yana chegarada (`4bc38cd`)
+
+- `4bc38cd` CI'da `responsiveness.spec` "oxirgi karta" 202 va 211 ms ko'rsatdi (chegara 200). Mahalliy o'lchovda
+  0–87 ms edi.
+- **Bu commit sababchi emasligi o'lchandi:** natijalar sahifasini 8× sekin CPU'da 12 martadan yuklab ko'rildi. Eski
+  build `4a42710` eng ko'pi 157 ms, yangi build 158 ms, ya'ni taqsimot bir xil.
+- **Sabab — o'lchov usuli.** Test o'lchashni boshlaganda animatsiya ko'pincha hali boshlanmagan bo'ladi. Shuning
+  uchun natijaga sahifa yuklangach birinchi kadrgacha bo'lgan kutish (sekin CI'da gidratsiya) ham qo'shilardi.
+  150 ms'lik animatsiyaga atigi 50 ms zaxira qolardi.
+- **Tuzatish:** endi ro'yxat ko'ringan paytdan oxirgi karta to'liq ko'ringungacha o'lchanadi (eng kech tugash − eng
+  erta boshlanish). Testning maqsadi aynan shu — `3581aa0` dagi uzun zinapoyali animatsiyaga qaytmaslik. Chegara
+  200 ms o'zgarmadi.
+  - Natija barqaror: 150 ms, animatsiya tugagan bo'lsa 0.
+  - Sun'iy regressiyalar hamon ushlanadi: 600 ms'lik animatsiya → 600, har kartaga +100 ms zinapoya → 650 (2 martadan).
+
 ### Ochiq masalalar
 
 - Mehmon kompaniyasiz ish beruvchining faqat ismini ko'radi ("Dilnoza"), kirgan foydalanuvchi esa ochiq nomini
