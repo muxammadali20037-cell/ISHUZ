@@ -100,7 +100,7 @@ async function loadMatchContext(admin: AdminClient, rows: Row[]) {
     workerIds.size
       ? admin
           .from("worker_profiles")
-          .select("id, is_public, status, headline, experience_level, profile_id, profiles!worker_profiles_profile_id_fkey(first_name, last_name), profession_nodes(name_uz, name_ru, name_en), regions!worker_profiles_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!worker_profiles_district_id_fkey(name_uz, name_ru, name_en, name_oz)")
+          .select("id, is_public, status, headline, experience_level, profile_id, profiles!worker_profiles_profile_id_fkey(first_name, last_name), profession_nodes!worker_profiles_profession_node_id_fkey(name_uz, name_ru, name_en), regions!worker_profiles_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!worker_profiles_district_id_fkey(name_uz, name_ru, name_en, name_oz)")
           .in("id", [...workerIds])
       : Promise.resolve({ data: [] as never[] }),
   ]);

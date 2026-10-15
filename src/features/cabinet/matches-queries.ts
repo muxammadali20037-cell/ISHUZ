@@ -71,7 +71,7 @@ export async function getCandidateMatches(vacancyId: string): Promise<CandidateM
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("matches")
-    .select("score, reasons, hard_fail, complete, worker_profiles!inner(id, headline, experience_level, is_public, profiles!worker_profiles_profile_id_fkey(first_name, last_name), profession_nodes(name_uz, name_ru, name_en), regions!worker_profiles_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!worker_profiles_district_id_fkey(name_uz, name_ru, name_en, name_oz))")
+    .select("score, reasons, hard_fail, complete, worker_profiles!inner(id, headline, experience_level, is_public, profiles!worker_profiles_profile_id_fkey(first_name, last_name), profession_nodes!worker_profiles_profession_node_id_fkey(name_uz, name_ru, name_en), regions!worker_profiles_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!worker_profiles_district_id_fkey(name_uz, name_ru, name_en, name_oz))")
     .eq("vacancy_id", vacancyId)
     .eq("worker_profiles.is_public", true)
     .order("hard_fail", { ascending: true })

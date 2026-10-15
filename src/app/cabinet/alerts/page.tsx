@@ -22,7 +22,7 @@ export default async function Page() {
     getMyActiveVacancies(session),
     supabase.from("regions").select("id, name_uz, name_ru, name_en, name_oz").order("sort_order"),
     session.workerId
-      ? supabase.from("worker_profiles").select("profession_node_id, profession_nodes(id, name_uz, name_ru, name_en)").eq("id", session.workerId).maybeSingle()
+      ? supabase.from("worker_profiles").select("profession_node_id, profession_nodes!worker_profiles_profession_node_id_fkey(id, name_uz, name_ru, name_en)").eq("id", session.workerId).maybeSingle()
       : Promise.resolve({ data: null }),
   ]);
   const profession = worker.data?.profession_nodes ? { id: worker.data.profession_nodes.id, name: name(worker.data.profession_nodes) } : null;
