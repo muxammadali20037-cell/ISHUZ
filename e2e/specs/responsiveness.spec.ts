@@ -165,21 +165,35 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
     const get = (n: string) => metrics.find((m) => m.name === n)?.value ?? 0;
     return { listeners: get("JSEventListeners"), nodes: get("Nodes") };
   };
+  // bosh sahifa bo'limlari oqim bilan keladi (ro'yxat, kasblar, qo'shimcha) — o'lchov faqat to'liq chizilgan sahifada
+  // (aks holda 1-o'lchov yarim sahifada olinib, keyingilar "o'sgan" ko'rinadi)
+  const homeReady = async () => {
+    await expect(page.locator("#home-feed")).toBeVisible();
+    await expect(page.locator("main a[href^='/ai-alerts']")).toBeVisible();
+    await expect(page.locator("main .skeleton-shimmer")).toHaveCount(0);
+  };
   await page.goto("/");
   await page.waitForLoadState("networkidle");
+  await homeReady();
   const samples: { round: number; listeners: number; nodes: number }[] = [];
   for (let i = 1; i <= 20; i++) {
     await page.locator("main a[data-track='direction_select'][href='/search?mode=jobs']").click();
     await page.waitForURL(/\/search/);
     await page.locator("header a[href='/']").first().click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");
-    if (i === 1 || i === 10 || i === 20) samples.push({ round: i, ...(await metric()) });
+    if (i === 1 || i === 10 || i === 20) {
+      await homeReady();
+      samples.push({ round: i, ...(await metric()) });
+    }
   }
   record("navigation-leaks", samples);
-  const [a, , c] = samples;
+  const [a, b, c] = samples;
   // 1-dan 20-gacha: tinglovchilar 25% dan, DOM tugunlari 50% dan ortiq o'smasin
   expect(c!.listeners).toBeLessThanOrEqual(a!.listeners * 1.25);
   expect(c!.nodes).toBeLessThanOrEqual(a!.nodes * 1.5);
+  // 10-dan 20-gacha deyarli o'zgarmaydi (to'xtovsiz o'sish yo'q)
+  expect(c!.listeners).toBeLessThanOrEqual(b!.listeners * 1.1);
+  expect(c!.nodes).toBeLessThanOrEqual(b!.nodes * 1.1);
 });
 
 /** Bosish/yozish kechikishi (INP qoidasi bo'yicha: faqat haqiqiy o'zaro ta'sirlar) — CPU 4× sekin */

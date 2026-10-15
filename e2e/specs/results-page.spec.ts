@@ -120,3 +120,33 @@ test("kompyuter: o'ng panel — e'lon berish, statistika, yirik ish beruvchilar 
   await page.goto("/search?mode=workers&any=1&region=all");
   await expect(page.getByRole("complementary", { name: "Statistika" }).getByRole("link", { name: "Vakansiya joylashtirish" })).toHaveAttribute("href", "/post/vacancy");
 });
+
+test("faol filtrlar (R-C): har biri alohida olib tashlanadi, 'Hammasini tozalash' — barchasi; sarlavhada takrorlanmaydi", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  const url = "/search?mode=jobs&any=1&region=tashkent_city&district=all&salary=3000000&noexp=1";
+  await page.goto(url);
+  const group = page.getByRole("group", { name: "Faol filtrlar" });
+  await expect(group.getByRole("link", { name: /^Filtrni olib tashlash/ })).toHaveCount(2);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish e'lonlari: Barcha kasblar · Toshkent shahri · Butun shahar");
+  await expect(page.locator("main article")).toHaveCount(3);
+
+  // bittasi: faqat maosh olib tashlanadi, "tajribasiz" qoladi
+  await group.getByRole("link", { name: "Filtrni olib tashlash: 3 mln so'mdan yuqori" }).click();
+  await page.waitForURL((u) => !new URL(u).searchParams.has("salary"));
+  expect(new URL(page.url()).searchParams.get("noexp")).toBe("1");
+  await expect(group.getByRole("link", { name: /^Filtrni olib tashlash/ })).toHaveCount(1);
+  await expect(group.getByRole("link", { name: "Hammasini tozalash" })).toHaveCount(0);
+
+  // hammasi: kasb va hudud saqlanadi
+  await page.goto(url);
+  await group.getByRole("link", { name: "Hammasini tozalash" }).click();
+  await page.waitForURL((u) => {
+    const p = new URL(u).searchParams;
+    return !p.has("salary") && !p.has("noexp");
+  });
+  await expect(group).toHaveCount(0);
+  const p = new URL(page.url()).searchParams;
+  expect([p.get("any"), p.get("region"), p.get("district")]).toEqual(["1", "tashkent_city", "all"]);
+  await expect(page.locator("main article")).toHaveCount(3);
+});

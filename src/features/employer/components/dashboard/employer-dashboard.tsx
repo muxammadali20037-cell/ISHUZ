@@ -1,26 +1,31 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { Building2, ChevronRight, Plus, PlusCircle, Search, ShieldCheck } from "lucide-react";
+import Form from "next/form";
+import { Building2, Plus, PlusCircle, Search, ShieldCheck } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { getCategories } from "@/lib/reference";
 import { initials } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
 import { Avatar } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/misc";
 import { employerDisplayName } from "../../mappers";
 import { getCompanyById, getEmployerProfile, getLatestVacancy, getMyVacancies } from "../../queries";
 import { CandidatesSection } from "./candidates-section";
 import { MyVacanciesSection } from "./my-vacancies-section";
 import { RecentApplicationsSection } from "./recent-applications-section";
-import { CardsSectionSkeleton, RowsSectionSkeleton, StatsSkeleton } from "./skeletons";
-import { KeyTiles } from "./stats-tiles";
+import { CardsSectionSkeleton, RowsSectionSkeleton } from "./skeletons";
+import { KeyTiles, KeyTilesSkeleton } from "./stats-tiles";
 import { EmployerSections } from "./employer-sections";
 import { VerificationBadge } from "./status-badge";
 
 /**
- * /employer dashboard (server). Har bo'lim Suspense'da; bo'sh bo'lim ko'rinmaydi.
+ * Ish beruvchi paneli (server): /employer va ish beruvchi rejimidagi bosh sahifa. Tartib: salomlashuv → vakansiya joylash va
+ * nomzod qidirish → qisqa ko'rsatkichlar (haqiqiy ma'lumot) → yangi arizalar → mos nomzodlar → faol vakansiyalar → bo'limlar.
+ * Har bo'lim Suspense'da; bo'sh bo'lim ko'rinmaydi.
  */
-export async function EmployerDashboard({ session }: { session: SessionContext & { employerId: string } }) {
+export async function EmployerDashboard({ session, embedded = false }: { session: SessionContext & { employerId: string }; embedded?: boolean }) {
   const { t, tEnum } = await getT();
   const { userId, companyId } = session;
   const [profile, company, latestActive, latestAny, anyVacancy] = await Promise.all([
@@ -46,7 +51,8 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
   const candidatesHref = latestActive ? withCategory(`/workers?vacancy=${latestActive.id}&sort=relevant`) : "/workers";
 
   return (
-    <div className="container-app space-y-6 py-5 sm:py-8">
+    // embedded — bosh sahifa ichida (o'z konteyneri bor)
+    <div className={embedded ? "space-y-6" : "container-app space-y-6 py-5 sm:py-8"}>
       {/* Salomlashuv */}
       <header className="flex items-center gap-3">
         {company ? (
@@ -72,28 +78,41 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
         </div>
       </header>
 
-      {/* Asosiy harakat — bitta, katta */}
-      <Link
-        href="/employer/vacancies/new"
-        className="group flex items-center gap-4 rounded-2xl bg-primary p-5 text-primary-foreground shadow-md transition-transform hover:-translate-y-0.5 sm:p-7"
-      >
-        <span className="flex size-16 shrink-0 items-center justify-center rounded-2xl bg-primary-foreground/15 sm:size-20">
-          <Plus className="size-9 sm:size-11" strokeWidth={2.5} />
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-xl font-extrabold uppercase tracking-tight sm:text-2xl">{t("employer.dashboard.post_vacancy_big")}</span>
-          <span className="mt-1 block text-sm text-primary-foreground sm:text-base">{t("employer.dashboard.post_vacancy_hint")}</span>
-        </span>
-        <ChevronRight className="size-7 shrink-0 transition-transform group-hover:translate-x-1" />
-      </Link>
+      {/* Asosiy harakatlar: vakansiya joylash (asosiy tugma) va nomzod qidirish — bir qatorda, ortiqcha banner yo'q */}
+      {/* katta shrift / uzun tarjimada tugma yozuvi qatorga tushadi, ustun kengaymaydi (sahifa yonga siljimaydi) */}
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start [&>*]:min-w-0">
+        <Button asChild size="lg" className="h-auto min-h-12 whitespace-normal px-5 py-2 text-center text-base font-bold leading-tight">
+          <Link href="/employer/vacancies/new">
+            <Plus className="size-5" aria-hidden /> {t("easy.start.post_vacancy")}
+          </Link>
+        </Button>
+        <Form action="/search" prefetch={false} role="search" aria-label={t("easy.start.employer_search_label")} className="flex gap-2">
+          <input type="hidden" name="mode" value="workers" />
+          <div className="min-w-0 flex-1">
+            <Input
+              name="q"
+              type="search"
+              enterKeyHint="search"
+              aria-label={t("easy.start.employer_search_label")}
+              placeholder={t("easy.start.employer_search_placeholder")}
+              leftIcon={<Search />}
+              className="h-12 rounded-xl"
+              maxLength={120}
+              minLength={2}
+              required
+            />
+          </div>
+          <Button type="submit" variant="outline" className="h-12 shrink-0 px-4 text-base font-semibold">
+            {t("easy.start.search_button")}
+          </Button>
+        </Form>
+      </div>
 
       <div>
-        <Suspense fallback={<StatsSkeleton />}>
+        <Suspense fallback={<KeyTilesSkeleton />}>
           <KeyTiles candidatesHref={candidatesHref} />
         </Suspense>
       </div>
-
-      <EmployerSections />
 
       {!hasVacancies ? (
         <EmptyState icon={PlusCircle} title={t("employer.dashboard.empty_title")} description={t("employer.dashboard.empty_desc")} />
@@ -131,9 +150,7 @@ export async function EmployerDashboard({ session }: { session: SessionContext &
         </Suspense>
       ) : null}
 
-      <Link href="/workers" className="flex items-center justify-center gap-2 rounded-2xl border border-dashed border-border p-4 text-sm font-semibold text-primary hover:bg-primary-soft/40">
-        <Search className="size-4" /> {t("employer.dashboard.find_workers")}
-      </Link>
+      <EmployerSections />
     </div>
   );
 }

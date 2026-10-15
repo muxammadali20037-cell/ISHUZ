@@ -41,11 +41,10 @@ for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await asGuest(context);
 
-    // 1. bosh sahifa (birinchi ochilish): "Siz nima qidiryapsiz?" → "Ish qidiryapman" → "Kasb bo'yicha"
+    // 1. bosh sahifa (birinchi ochilish, R-C): rejim so'ralmaydi — e'lonlar darhol; kasb bo'yicha — "Barcha kasblar"
     await page.goto("/");
-    await page.getByRole("button", { name: /^Ish qidiryapman/ }).click();
-    await page.getByRole("main").getByRole("link", { name: "Kasb bo'yicha", exact: true }).click();
-    await page.waitForURL(/\/search\?mode=jobs/);
+    await page.getByRole("main").getByRole("link", { name: "Barcha kasblar", exact: true }).click();
+    await page.waitForURL(/\/search\?mode=jobs$/);
 
     // 2. qidiruv: kasb → hudud → tuman (har qadamda savol sarlavhada)
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish qidiraman");

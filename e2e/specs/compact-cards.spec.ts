@@ -84,10 +84,13 @@ test("ish e'lonlari: 390×844 da kamida 3 ta karta to'liq; karta bosilsa e'lon o
   expect(await fullyVisible(page)).toBeGreaterThanOrEqual(3);
   expect(await maxCardHeight(page)).toBeLessThanOrEqual(200); // avval 376–563 px
 
-  // kartada: nomi, maosh, joy, jadval, sana; katta "Batafsil" tugmasi yo'q
+  // kartada (R-C tartibi): nomi, maosh va davri, ish beruvchi, joy, jadval, sana; katta "Batafsil" tugmasi yo'q
   const card = page.locator("main article").filter({ hasText: "Oshpaz — milliy taomlar" });
-  await expect(card).toContainText("3 000 000 – 6 000 000 so'm");
-  await expect(card).toContainText("Toshkent shahri · Chilonzor tumani · Dilnoza opa");
+  await expect(card).toContainText("3 000 000 – 6 000 000 so'm/oy");
+  await expect(card.getByText("Dilnoza opa", { exact: true })).toBeVisible();
+  await expect(card.getByText("Toshkent shahri · Chilonzor tumani", { exact: true })).toBeVisible();
+  // tasdiqlanmagan ish beruvchi — "tasdiqlangan" belgisi yo'q
+  await expect(card.getByRole("img", { name: "Tasdiqlangan kompaniya" })).toHaveCount(0);
   await expect(card).toContainText("5/2");
   await expect(card).toContainText("Bugun");
   await expect(card.getByRole("link", { name: "Batafsil" })).toHaveCount(0);

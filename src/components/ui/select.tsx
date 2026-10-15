@@ -22,7 +22,7 @@ const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({ className, op
     <select
       ref={ref}
       className={cn(
-        "flex h-12 w-full appearance-none rounded-xl border bg-card pl-4 pr-10 text-md text-foreground transition-colors",
+        "flex h-12 w-full appearance-none rounded-xl border bg-card pl-4 pr-10 text-base text-foreground transition-colors",
         "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0 disabled:opacity-60",
         invalid ? "border-destructive" : "border-input",
         (value === "" || (value === undefined && defaultValue === undefined)) && placeholder ? "text-muted-foreground" : "",

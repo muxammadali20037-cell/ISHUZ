@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Briefcase, Clock, Bookmark, Images, ShieldCheck } from "lucide-react";
+import { Bookmark, Briefcase, Clock, Images, MapPin, ShieldCheck, Wallet } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatMoneyShort, formatDistance, shortName, initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -88,7 +88,13 @@ export function WorkerCard({
         <span className="inline-flex items-center gap-1">
           <Briefcase className="size-4" /> {tEnum("experience_level", w.experience_level)}
         </span>
-        {salary ? <span className="inline-flex items-center gap-1 font-medium text-foreground">💰 {salary}</span> : null}
+        {/* kutilayotgan maosh — oylik (moslik ham oylik ekvivalent bilan solishtiriladi) */}
+        {salary ? (
+          <span className="inline-flex items-center gap-1 font-medium text-foreground">
+            <Wallet className="size-4 text-muted-foreground" aria-hidden /> {salary}
+            <span className="font-normal text-muted-foreground">{tEnum("salary_type_suffix", "monthly")}</span>
+          </span>
+        ) : null}
         {w.employment_types?.[0] ? (
           <span className="inline-flex items-center gap-1">
             <Clock className="size-4" /> {tEnum("employment_type", w.employment_types[0])}

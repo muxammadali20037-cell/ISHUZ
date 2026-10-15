@@ -57,39 +57,59 @@ export async function StatsTiles() {
 }
 
 /**
- * Soddalashtirilgan bosh sahifa: faqat 3 ta asosiy karta — faol vakansiyalar, yangi arizalar, mos nomzodlar.
- * (To'liq statistika /employer/vacancies da.)
+ * Qisqa ko'rsatkichlar (bosh sahifa): faol vakansiyalar va yangi arizalar — employer_dashboard_stats() dan (haqiqiy son,
+ * ma'lumot olinmasa — "—"), ostida mos nomzodlarga o'tish. Telefonda ikki ustun — birinchi ekranni egallamaydi.
  */
 export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
   const { t, locale } = await getT();
   const stats = await getDashboardStats();
   const fmt = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ");
+  const newApps = stats?.new_applications ?? null;
   const tiles = [
     { href: "/employer/vacancies", icon: Briefcase, label: t("employer.dashboard.stats.active_vacancies"), value: stats?.active_vacancies ?? null, hot: false },
-    { href: "/employer/candidates", icon: Inbox, label: t("employer.dashboard.stats.new_applications"), value: stats?.new_applications ?? null, hot: (stats?.new_applications ?? 0) > 0 },
-    { href: candidatesHref, icon: Users, label: t("employer.dashboard.matching"), value: null, hot: false },
+    { href: "/employer/applications", icon: Inbox, label: t("employer.dashboard.stats.new_applications"), value: newApps, hot: (newApps ?? 0) > 0 },
   ];
   return (
-    <div className="grid gap-3 sm:grid-cols-3">
+    <div role="group" aria-label={t("easy.start.metrics_label")} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
       {tiles.map((x) => (
         <Link
-          key={x.href + x.label}
+          key={x.href}
           href={x.href}
           className={cn(
-            "flex items-center gap-4 rounded-2xl border bg-card p-4 shadow-sm transition-shadow hover:shadow-md",
-            x.hot ? "border-primary/40 bg-primary-soft/40" : "border-border/70",
+            "press flex min-h-20 flex-col justify-between gap-2 rounded-2xl border bg-card p-3.5 shadow-sm hover:border-primary/50",
+            x.hot ? "border-primary/40 bg-primary-soft/40" : "border-border",
           )}
         >
-          <span className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", x.hot ? "bg-primary text-primary-foreground" : "bg-secondary text-primary")}>
-            <x.icon className="size-6" />
+          <span className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+            <x.icon className={cn("size-4.5 shrink-0", x.hot ? "text-primary" : "")} aria-hidden />
+            <span className="min-w-0 leading-tight">{x.label}</span>
           </span>
-          <span className="min-w-0 flex-1">
-            <span className="block text-md font-semibold">{x.label}</span>
-            {x.value !== null ? <span className={cn("block text-2xl font-extrabold tabular leading-tight", x.hot && "text-primary")}>{fmt.format(x.value)}</span> : null}
-          </span>
-          <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
+          <span className={cn("text-2xl font-extrabold tabular leading-none", x.hot && "text-primary")}>{x.value === null ? "—" : fmt.format(x.value)}</span>
         </Link>
       ))}
+      <Link
+        href={candidatesHref}
+        className="press col-span-2 flex min-h-12 items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-2.5 shadow-sm hover:border-primary/50 sm:col-span-1 sm:min-h-20"
+      >
+        <Users className="size-5 shrink-0 text-primary" aria-hidden />
+        <span className="min-w-0 flex-1 text-base font-semibold leading-tight">{t("employer.dashboard.matching")}</span>
+        <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
+    </div>
+  );
+}
+
+/** KeyTiles skeleti — o'sha o'lchamda (kontent kelganda sahifa siljimaydi) */
+export function KeyTilesSkeleton() {
+  return (
+    <div aria-hidden className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      {[0, 1].map((i) => (
+        <div key={i} className="min-h-20 rounded-2xl border border-border bg-card p-3.5">
+          <div className="skeleton-shimmer h-4 w-24 rounded-lg" />
+          <div className="skeleton-shimmer mt-3 h-6 w-10 rounded-lg" />
+        </div>
+      ))}
+      <div className="skeleton-shimmer col-span-2 min-h-12 rounded-2xl sm:col-span-1 sm:min-h-20" />
     </div>
   );
 }

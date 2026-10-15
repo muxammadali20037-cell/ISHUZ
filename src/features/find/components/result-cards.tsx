@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BriefcaseBusiness, ChevronRight, Phone, Send } from "lucide-react";
+import { BadgeCheck, BriefcaseBusiness, CheckCircle2, ChevronRight, Phone, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate, formatMoney, formatPhone, postedDay } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
@@ -120,6 +120,9 @@ const thumbCls = "size-12 shrink-0 rounded-xl";
 const pillCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl bg-primary px-3.5 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover";
 // pastki qator bitta qatorda: joy yetmasa — jadval yozuvi qisqaradi ("Erkin gr…"), tugmalar va sana doim to'liq
 const chipCls = "min-w-0 truncate rounded-lg bg-secondary px-2 py-1 text-sm font-medium text-foreground/80";
+const tagCls = "shrink-0 whitespace-nowrap rounded-lg bg-secondary px-2 py-1 text-sm font-medium text-foreground/80";
+// o'z arizasi holati (ariza tugmasi o'rnida): bosilsa — "Arizalarim"
+const appliedCls = "press relative z-10 inline-flex min-h-11 min-w-0 items-center gap-1.5 rounded-xl bg-success-soft px-3 text-sm font-bold text-success hover:bg-success-soft/70";
 
 /** Kartaning asosiy amali (kichik): raqam bo'lsa — "Qo'ng'iroq qilish", bo'lmasa — "Ariza yuborish" / "Bog'lanish" (G3) */
 function CardAction({ phone, action }: { phone: string | null; action: { href: string; label: string } }) {
@@ -139,13 +142,35 @@ function CardAction({ phone, action }: { phone: string | null; action: { href: s
   );
 }
 
-/** `saved` berilsa — "Saqlash" belgisi (holati bilan); berilmasa — belgi yo'q (holati noma'lum joylarda adashtirmasin) */
-export function JobResultCard({ job, imageUrl, photoPath, saved, savedRefresh }: { job: JobCardData; imageUrl?: string | null; photoPath?: string | null; saved?: boolean; savedRefresh?: boolean }) {
+/**
+ * Vakansiya kartasi (R-C tartibi): nomi → maosh va to'lov davri → kompaniya (faqat haqiqatan tasdiqlangan bo'lsa — belgi) → hudud →
+ * 2 tagacha belgi (TOP, tajribasiz, jadval) → amal, saqlash, sana. `saved` berilsa — "Saqlash" belgisi (holati bilan); berilmasa —
+ * belgi yo'q (holati noma'lum joylarda adashtirmasin). `applied` — o'z arizasi holati: "Ariza yuborish" o'rniga holat ko'rinadi.
+ */
+export function JobResultCard({
+  job,
+  imageUrl,
+  photoPath,
+  saved,
+  savedRefresh,
+  applied,
+}: {
+  job: JobCardData;
+  imageUrl?: string | null;
+  photoPath?: string | null;
+  saved?: boolean;
+  savedRefresh?: boolean;
+  applied?: Enums<"application_status"> | null;
+}) {
   const { t, tEnum, name } = useT();
   const place = usePlace();
   const posted = usePosted();
   const profession = job.profession_name_uz ? name({ name_uz: job.profession_name_uz, name_ru: job.profession_name_ru ?? job.profession_name_uz, name_en: job.profession_name_en }) : job.title;
   const when = posted(job.published_at);
+  // hammasini belgilamaymiz: TOP bo'lsa — yana bitta, bo'lmasa — ikkita
+  const tags = [job.experience_min_months === 0 ? t("easy.card.no_experience") : null, job.schedule !== "negotiable" ? tEnum("work_schedule", job.schedule) : null]
+    .filter((x): x is string => !!x)
+    .slice(0, job.is_featured ? 1 : 2);
   return (
     <article className={cardCls}>
       <div className="flex gap-3">
@@ -164,19 +189,41 @@ export function JobResultCard({ job, imageUrl, photoPath, saved, savedRefresh }:
             </Link>
           </h3>
           <SalaryText from={job.salary_from} to={job.salary_to} type={job.salary_type} negotiable={job.salary_negotiable} className="mt-0.5 block text-base font-bold text-primary" />
-          {/* joy birinchi (ish izlovchi uchun muhimroq) — uzun kompaniya nomi tumanni kesib tashlamasin */}
-          <p className="mt-0.5 truncate text-sm text-muted-foreground">
-            {place(job, job.is_remote)}
-            {job.employer_name ? ` · ${job.employer_name}` : ""}
-          </p>
+          {job.employer_name ? (
+            <p className="mt-0.5 flex min-w-0 items-center gap-1 text-sm font-medium text-foreground/80">
+              <span className="truncate">{job.employer_name}</span>
+              {/* faqat moderator tasdiqlagan kompaniya (companies.verification_status = verified) */}
+              {job.employer_verified ? <BadgeCheck className="size-4 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
+            </p>
+          ) : null}
+          <p className="truncate text-sm text-muted-foreground">{place(job, job.is_remote)}</p>
         </div>
       </div>
       {/* amallar chapda (o'ngdagi lupa tugmasi ularni yopmasin), sana — o'ng chetda */}
       <div className="mt-2 flex items-center gap-2">
-        <CardAction phone={job.phone} action={{ href: `/jobs/${job.slug}?apply=1`, label: t("easy.card.apply") }} />
+        {applied ? (
+          <>
+            {job.phone ? <CardAction phone={job.phone} action={{ href: `/jobs/${job.slug}`, label: t("easy.card.apply") }} /> : null}
+            <Link href="/applications" prefetch={false} className={appliedCls}>
+              <CheckCircle2 className="size-4 shrink-0" aria-hidden />
+              <span className="truncate">{t("easy.card.applied_status", { status: tEnum("application_status", applied) })}</span>
+            </Link>
+          </>
+        ) : (
+          <CardAction phone={job.phone} action={{ href: `/jobs/${job.slug}?apply=1`, label: t("easy.card.apply") }} />
+        )}
         {saved !== undefined ? <SaveButton kind="vacancy" id={job.id} initial={saved} label={job.title} refresh={savedRefresh} className="relative z-10" /> : null}
-        {job.is_featured ? <span className="shrink-0 rounded-lg bg-warning px-2 py-1 text-sm font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
-        {job.schedule !== "negotiable" ? <span className={chipCls}>{tEnum("work_schedule", job.schedule)}</span> : null}
+        {/* belgilar bitta qatorda: sig'maganlari butunlay yashiriladi ("T…", "2…" kabi kesilib qolmaydi). Boshidagi nol kenglikdagi
+            element birinchi belgi ham sig'masa uni yashirin ikkinchi qatorga o'tkazadi (aks holda u kesilib ko'rinardi) */}
+        <span className="flex h-8 min-w-0 flex-1 flex-wrap items-center gap-1.5 overflow-hidden">
+          <span aria-hidden className="-mr-1.5 h-8 w-0" />
+          {job.is_featured ? <span className="shrink-0 rounded-lg bg-warning px-2 py-1 text-sm font-bold text-warning-foreground">{t("easy.card.featured")}</span> : null}
+          {tags.map((tag) => (
+            <span key={tag} className={tagCls}>
+              {tag}
+            </span>
+          ))}
+        </span>
         {when ? (
           <span className="ml-auto shrink-0 whitespace-nowrap text-sm text-muted-foreground" suppressHydrationWarning>
             {when}
@@ -188,7 +235,7 @@ export function JobResultCard({ job, imageUrl, photoPath, saved, savedRefresh }:
 }
 
 export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { worker: WorkerCardData; imageUrl?: string | null; saved?: boolean; savedRefresh?: boolean }) {
-  const { t, name, locale } = useT();
+  const { t, tEnum, name, locale } = useT();
   const place = usePlace();
   const profession = worker.profession_name_uz
     ? name({ name_uz: worker.profession_name_uz, name_ru: worker.profession_name_ru ?? worker.profession_name_uz, name_en: worker.profession_name_en })
@@ -219,7 +266,12 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
             {place(worker, false)}
             {worker.remote_ok ? ` · ${t("easy.card.remote")}` : ""}
           </p>
-          {worker.salary_expected ? <p className="truncate text-sm font-semibold">{t("easy.card.salary_expected", { amount: formatMoney(worker.salary_expected, locale) })}</p> : null}
+          {worker.salary_expected ? (
+            <p className="truncate text-sm font-semibold">
+              {t("easy.card.salary_expected", { amount: formatMoney(worker.salary_expected, locale) })}
+              <span className="font-normal text-muted-foreground">{tEnum("salary_type_suffix", "monthly")}</span>
+            </p>
+          ) : null}
         </div>
       </div>
       <div className="mt-2 flex items-center gap-2">

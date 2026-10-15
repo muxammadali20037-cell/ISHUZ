@@ -325,7 +325,10 @@
     "newest_workers": "New workers",
     "search_jobs_placeholder": "Search by job or position",
     "search_workers_placeholder": "Search workers by profession",
-    "search_label": "Search"
+    "search_label": "Search",
+    "active_filters": "Active filters",
+    "filter_remove": "Remove filter: {label}",
+    "filters_clear": "Clear all"
   },
   "card": {
     "call": "Call",
@@ -342,7 +345,9 @@
     "exp_required": "Experience: {value}",
     "exp_none": "No experience required",
     "apply": "Apply",
-    "contact": "Contact"
+    "contact": "Contact",
+    "no_experience": "No experience",
+    "applied_status": "Application: {status}"
   },
   "listing": {
     "title": "Job-seeker listing",
@@ -692,5 +697,49 @@
     "jobs_count": "Jobs: {count}",
     "post_vacancy": "Post a job",
     "post_resume": "Post a resume"
+  },
+  "start": {
+    "seeker_title": "Find a job",
+    "seeker_subtitle": "Real job listings — browse without signing up",
+    "search_label": "Job search",
+    "search_placeholder": "Profession, position or company",
+    "search_button": "Find",
+    "filters_label": "Quick filters",
+    "place_label": "Area: {place}. Change",
+    "f_salary": "5M+ UZS",
+    "f_noexp": "No experience",
+    "f_daily": "Day jobs",
+    "f_remote": "Remote",
+    "f_experienced": "Experienced",
+    "match_title": "Jobs for you",
+    "match_reason": "Based on your profession: {profession} · {place}",
+    "new_title": "New jobs",
+    "new_reason": "{place} · newest first",
+    "no_match_note": "No jobs for “{profession}” yet — showing new jobs",
+    "see_all": "See all",
+    "all_jobs": "All jobs · {count}",
+    "empty_title": "No active jobs yet",
+    "empty_desc": "Post about yourself — employers will find you and get in touch.",
+    "list_error_title": "Could not load the list",
+    "list_error_desc": "A temporary internet or server problem. Please try again.",
+    "professions_title": "Popular professions",
+    "all_professions": "All professions",
+    "more_title": "More",
+    "post_resume": "Post about yourself",
+    "post_resume_desc": "Employers will find you in search",
+    "ai_desc_short": "A Telegram message as soon as a match appears",
+    "employer_title": "Find an employee",
+    "employer_subtitle": "Browse candidates by profession or post a job",
+    "employer_search_label": "Candidate search",
+    "employer_search_placeholder": "Profession or position",
+    "post_vacancy": "Post a job",
+    "post_vacancy_hint": "A few minutes — candidates apply on their own",
+    "new_workers_title": "New candidates",
+    "all_workers": "All candidates · {count}",
+    "workers_empty_title": "No open candidates yet",
+    "workers_empty_desc": "Post a job — matching candidates will apply.",
+    "finish_company_title": "Complete your company details",
+    "finish_company_desc": "One minute: name and area — then post jobs and see applications",
+    "metrics_label": "Key numbers"
   }
 }

@@ -86,3 +86,25 @@ Next/React/Playwright va major versiyalar bu bosqichda o'zgartirilmaydi (zaiflik
 - **R-D/E** ariza qo'riqlari (B1, B2 — migratsiya, production uchun alohida tasdiq), kirishdan keyin ariza oynasi (F1), klaviatura (F2),
   admin audit (B8), ish beruvchi paneli.
 - **R-F/G** 6 kenglikda tekshiruv, uz/ru, a11y, lab o'lchovlari, yakuniy hisobot.
+
+## 9. Holat (bosqichlar bo'yicha)
+
+| # | Holat | Qayerda | Qanday tekshirildi |
+|---|---|---|---|
+| A1 | ✅ R-C | bosh sahifada qidiruv, tez filtrlar va 8 tagacha haqiqiy e'lon ("Sizga mos ishlar" — profildagi kasb va viloyat bo'yicha, sababi yozilgan; aks holda "Yangi ishlar") | `home.spec`, `modes.spec`, skrinshot `after/` |
+| A2 | ✅ R-C | rejim tanlanmagan mehmon — ish qidiruvchi ko'rinishi, savol ekrani yo'q; ish beruvchi — almashtirgich + tasdiq | `modes.spec` |
+| A3 | ✅ R-C | kompyuterda ikki ustun: ro'yxat + bozor paneli | skrinshot 1280 |
+| A4 | ✅ R-B | rolga xos pastki menyu | `home.spec`, `modes.spec` |
+| A5 | ✅ R-B/R-C | yangi arizalar soni — "Vakansiyalar" belgisida va panelda ("Yangi arizalar" → `/employer/applications`) | `modes.spec` |
+| A6 | ✅ R-B | `/employer` siljish 36 → 0 px | skrinshot logi |
+| A7 | ✅ R-C | AI PRO — ro'yxatdan keyin bitta ixcham qator | `home.spec` (tartib) |
+| S1 | ✅ R-C | kasbga aylanmagan matn → sarlavha, tavsif va kompaniya nomi bo'yicha natijalar (`search_vacancies_v2`), topilmasa — avvalgidek kasb tanlash | `home.spec` (kompaniya nomi) |
+| S2 | ✅ R-C | faol filtrlar chip sifatida, bittadan yoki hammasi olib tashlanadi | `results-page.spec` |
+| C1 | ✅ R-C | kartada kompaniya va faqat haqiqatan tasdiqlangan bo'lsa belgi; karta tartibi: nomi → maosh → kompaniya → hudud → 2 tagacha belgi (sig'magan belgi kesilmaydi — butunlay yashiriladi) | `home.spec`, `compact-cards.spec` |
+| C3 | ✅ R-C | 💰 o'rniga ikonka + "/oy" | kod |
+| C4 | ⏳ R-D/E | taklifda to'lov davri yo'q (jadvalda ustun yo'q — migratsiya kerak) | — |
+| D2 | ✅ R-B | `src/config/brand.ts` | grep |
+| D3 | ✅ R-C | ish beruvchi panelidagi KATTA HARFLI banner o'rniga oddiy "Vakansiya joylash" tugmasi; bosh sahifa sarlavhasi `text-2xl/3xl` | skrinshot |
+| — | ✅ R-C | mobil inputlar 15 → 16 px (iOS fokusda kattalashtirmaydi) | `input.tsx`, `select.tsx` |
+| X1 | ✅ R-C (yangi topilma, **XATO**) | `worker_profiles → profession_nodes` bog'lanishi 0028 dan beri PostgREST'da ikki ma'noli (`worker_professions` ko'p-ko'p, `PGRST201`): so'rov jim yiqilardi — `/cabinet/matches` da mos nomzodlar doim bo'sh, `/cabinet/alerts` da kasb nomi yo'q, Telegram'dagi "mos nomzod" xabarlari tashlab ketilardi. FK nomi aniq ko'rsatildi (4 joy) | `matches.spec`, PostgREST so'rovi (oldin `PGRST201`, keyin natija) |
+| B8 | ↺ qayta baholandi | kasblar daraxtidagi yaratish, ko'chirish, nomini o'zgartirish va o'chirish/yoqish 0028 dagi trigger bilan auditga yoziladi; oyna rasmi saqlanganda `settings.update` yoziladi. Yozilmaydi: sinonimlar, ikonka, "mashhur", tartib (kichik) — R-D/E | `0028:474-488`, `admin-home.spec` |

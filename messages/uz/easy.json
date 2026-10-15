@@ -325,7 +325,10 @@
     "newest_workers": "Yangi ishchilar",
     "search_jobs_placeholder": "Kasb yoki lavozim qidirish",
     "search_workers_placeholder": "Kasb bo'yicha ishchi qidirish",
-    "search_label": "Qidirish"
+    "search_label": "Qidirish",
+    "active_filters": "Faol filtrlar",
+    "filter_remove": "Filtrni olib tashlash: {label}",
+    "filters_clear": "Hammasini tozalash"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
@@ -342,7 +345,9 @@
     "exp_required": "Tajriba: {value}",
     "exp_none": "Tajriba shart emas",
     "apply": "Ariza yuborish",
-    "contact": "Bog'lanish"
+    "contact": "Bog'lanish",
+    "no_experience": "Tajribasiz",
+    "applied_status": "Ariza: {status}"
   },
   "listing": {
     "title": "Ish qidiruvchi e'loni",
@@ -692,5 +697,49 @@
     "jobs_count": "Ish o'rinlari: {count}",
     "post_vacancy": "Vakansiya joylashtirish",
     "post_resume": "Rezyume joylash"
+  },
+  "start": {
+    "seeker_title": "Ish toping",
+    "seeker_subtitle": "Haqiqiy e'lonlar — ro'yxatdan o'tmasdan ko'ring",
+    "search_label": "Ish qidirish",
+    "search_placeholder": "Kasb, lavozim yoki kompaniya",
+    "search_button": "Topish",
+    "filters_label": "Tez filtrlar",
+    "place_label": "Hudud: {place}. O'zgartirish",
+    "f_salary": "5 mln so'mdan",
+    "f_noexp": "Tajribasiz",
+    "f_daily": "Kunlik ish",
+    "f_remote": "Masofaviy",
+    "f_experienced": "Tajribali",
+    "match_title": "Sizga mos ishlar",
+    "match_reason": "Kasbingiz bo'yicha: {profession} · {place}",
+    "new_title": "Yangi ishlar",
+    "new_reason": "{place} · eng yangilari birinchi",
+    "no_match_note": "«{profession}» bo'yicha hozircha e'lon yo'q — yangi ishlar ko'rsatildi",
+    "see_all": "Barchasi",
+    "all_jobs": "Barcha vakansiyalar · {count} ta",
+    "empty_title": "Hozircha faol vakansiya yo'q",
+    "empty_desc": "O'zingiz haqingizda e'lon bering — ish beruvchilar sizni topib, bog'lanadi.",
+    "list_error_title": "Ro'yxatni yuklab bo'lmadi",
+    "list_error_desc": "Internet yoki serverda vaqtinchalik nosozlik. Qayta urinib ko'ring.",
+    "professions_title": "Mashhur kasblar",
+    "all_professions": "Barcha kasblar",
+    "more_title": "Yana foydali",
+    "post_resume": "O'zim haqimda e'lon berish",
+    "post_resume_desc": "Ish beruvchilar sizni qidiruvda topadi",
+    "ai_desc_short": "Mos e'lon chiqishi bilan Telegram'ga xabar",
+    "employer_title": "Xodim toping",
+    "employer_subtitle": "Kasb bo'yicha nomzodlarni ko'ring yoki vakansiya joylang",
+    "employer_search_label": "Nomzod qidirish",
+    "employer_search_placeholder": "Kasb yoki lavozim",
+    "post_vacancy": "Vakansiya joylash",
+    "post_vacancy_hint": "Bir necha daqiqada — nomzodlar o'zi ariza yuboradi",
+    "new_workers_title": "Yangi nomzodlar",
+    "all_workers": "Barcha nomzodlar · {count} ta",
+    "workers_empty_title": "Hozircha ochiq nomzod yo'q",
+    "workers_empty_desc": "Vakansiya joylang — mos ishchilar sizga ariza yuboradi.",
+    "finish_company_title": "Kompaniya ma'lumotlarini to'ldiring",
+    "finish_company_desc": "Bir daqiqa: nomi va hudud — keyin vakansiya joylaysiz va arizalarni ko'rasiz",
+    "metrics_label": "Qisqa ko'rsatkichlar"
   }
 }

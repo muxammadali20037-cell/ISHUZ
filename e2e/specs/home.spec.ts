@@ -1,16 +1,16 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
- * C8.2 · bosh sahifa va navigatsiya: har yo'l qayerga olib borishini aytadi va aynan o'sha joyni ochadi
- * (avval "Ish qidiryapman" tugmasi ish ro'yxatini emas, e'lon berish formasini ochardi). E1 dan beri — joriy rejim yo'llari.
+ * R-C · bosh sahifa: birinchi ekranda qidiruv va haqiqiy e'lonlar. Har bir yo'l aytgan joyini ochadi:
+ * qidiruv qatori → natijalar; tez filtr → shu filtrli natijalar; "Barcha kasblar" → kasb tanlash; e'lon berish → forma.
  */
-
 const PATHS = [
-  { mode: "worker", name: /O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
-  { mode: "worker", name: /^Kasb bo'yicha$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
-  { mode: "employer", name: /Ish e'loni berish/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
-  { mode: "employer", name: /^Kasb bo'yicha$/, url: /\/search\?mode=workers$/, heading: /^Ishchi qidiraman/ },
+  { mode: "worker", name: /^O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
+  { mode: "worker", name: /^Barcha kasblar$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
+  { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
+  { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
+  { mode: "employer", name: /^Tajribali$/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
 ] as const;
 
 for (const p of PATHS) {
@@ -18,19 +18,52 @@ for (const p of PATHS) {
     await asGuest(context);
     await asMode(context, p.mode);
     await page.goto("/");
-    const link = page.getByRole("link", { name: p.name });
-    await expect(link).toHaveCount(1);
+    // ro'yxat bo'sh bo'lsa (toza baza) "O'zim haqimda e'lon berish" bo'sh holatda ham turadi — birinchi ko'rinadiganini bosamiz
+    const link = page.getByRole("main").getByRole("link", { name: p.name }).first();
+    await expect(link).toBeVisible();
     await link.click();
     await page.waitForURL(p.url);
     await expect(page.getByRole("heading", { level: 1 }).or(page.getByRole("heading", { level: 2 })).first()).toContainText(p.heading);
   });
 }
 
-test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q, AI bonusi asosiy yo'llardan keyin", async ({ page, context }) => {
+test("bosh sahifa: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbga aylanmasa ham)", async ({ page, context }) => {
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  const [co] = await sql<{ id: string }>(
+    `insert into public.companies (name, slug, verification_status) values ('Sarbon Savdo', 'sarbon-savdo-e2e', 'verified')
+     on conflict (slug) do update set name = excluded.name returning id`,
+  );
+  await sql(
+    `insert into public.vacancies (owner_profile_id, company_id, title, region_id, description, status, salary_from, salary_type, experience_min_months, published_at, expires_at)
+     select $1, $2, 'Kassir', r.id, 'Do''konga kassir kerak, 9 dan 18 gacha', 'active', 4000000, 'monthly', 0, now(), now() + interval '10 days'
+     from public.regions r where r.slug = 'tashkent_city'`,
+    [USERS.employer, co!.id],
+  );
+  try {
+    await asGuest(context);
+    await page.goto("/");
+    await page.getByRole("searchbox", { name: "Ish qidirish" }).fill("Sarbon");
+    await page.getByRole("button", { name: "Topish" }).click();
+    await page.waitForURL(/\/search\?mode=jobs&q=Sarbon/);
+    const card = page.locator("main article").filter({ hasText: "Kassir" });
+    await expect(card).toHaveCount(1);
+    // kompaniya va haqiqiy "tasdiqlangan" belgisi; maosh davri bilan
+    await expect(card.getByText("Sarbon Savdo")).toBeVisible();
+    await expect(card.getByRole("img", { name: "Tasdiqlangan kompaniya" })).toBeVisible();
+    await expect(card).toContainText("so'm/oy");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("«Sarbon»");
+  } finally {
+    await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+    await sql("delete from public.companies where slug = 'sarbon-savdo-e2e'");
+  }
+});
+
+test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q; qidiruv birinchi ekranda, AI bonusi ro'yxatdan keyin", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
   // to'liq rangli (primary/success) katta sirtlar: faqat tugmalar bo'lishi mumkin (balandligi < 80 px)
   const big = await page.evaluate(() => {
     const brand = [getComputedStyle(document.documentElement).getPropertyValue("--primary").trim(), getComputedStyle(document.documentElement).getPropertyValue("--success").trim()];
@@ -43,14 +76,19 @@ test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q, AI bonusi asosiy yo'
       .map((el) => `${el.tagName}.${el.className.toString().slice(0, 60)}`);
   });
   expect(big).toEqual([]);
-  // AI kartasi Suspense ichida oqim bilan keladi — o'lchashdan oldin joyiga tushishini kutamiz (CI'dagi poyga: top = 0)
-  await expect(page.locator("#ai-pro-title")).toBeVisible();
+  // qidiruv va tez filtrlar birinchi ekranda (390×844)
+  const search = await page.getByRole("searchbox", { name: "Ish qidirish" }).boundingBox();
+  expect(search!.y + search!.height).toBeLessThan(400);
+  await expect(page.getByRole("group", { name: "Tez filtrlar" }).getByRole("link", { name: /Butun O'zbekiston/ })).toBeVisible();
+  // AI qatori Suspense ichida oqim bilan keladi — o'lchashdan oldin joyiga tushishini kutamiz
+  const ai = page.getByRole("link", { name: /AI yordamchi/ });
+  await expect(ai).toBeVisible();
   const order = await page.evaluate(() => {
     const y = (sel: string) => document.querySelector(sel)?.getBoundingClientRect().top ?? -1;
-    return { post: y("main a[href='/post/worker']"), ai: y("#ai-pro-title") };
+    return { list: y("#home-feed"), ai: y("main a[href^='/ai-alerts']") };
   });
-  expect(order.post).toBeGreaterThan(0);
-  expect(order.ai).toBeGreaterThan(order.post);
+  expect(order.list).toBeGreaterThan(0);
+  expect(order.ai).toBeGreaterThan(order.list);
 });
 
 test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgilanadi", async ({ page, context }) => {
@@ -81,7 +119,7 @@ test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal
   }
 });
 
-test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikkala rejimda va tanlov ekranida)", async ({ page, context }) => {
+test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikkala rejimda va rejim tanlanmaganda)", async ({ page, context }) => {
   await asGuest(context);
   const bad: string[] = [];
   const modes: ("worker" | "employer" | null)[] = [null, "worker", "employer"];
@@ -96,7 +134,7 @@ test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikk
         .filter((el) => el.scrollWidth > el.clientWidth + 1)
         .map((el) => `${(el.textContent ?? "").trim().slice(0, 30)} (+${el.scrollWidth - el.clientWidth}px)`),
     );
-    bad.push(...over.map((o) => `${mode ?? "tanlov"} ${width}px: ${o}`));
+    bad.push(...over.map((o) => `${mode ?? "rejimsiz"} ${width}px: ${o}`));
   }
   expect(bad).toEqual([]);
 });

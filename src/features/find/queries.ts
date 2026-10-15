@@ -12,6 +12,8 @@ import { normalizeText, understandQuery } from "@/features/search/understand";
 import { getProfessionTrail } from "@/features/professions/queries";
 import type { TrailItem } from "@/features/professions/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
+import { getCategories } from "@/lib/reference";
+import type { JobCardData } from "./components/result-cards";
 import { detectIntent, professionCandidates, type FindMode } from "./intent";
 import type { FindParams } from "./params";
 
@@ -159,6 +161,69 @@ export async function findJobs(params: FindParams, place: Place, limit = PAGE_SI
   ]);
   const photos = Object.fromEntries((photoRows.data ?? []).filter((r) => r.photo_path).map((r) => [r.id, r.photo_path as string]));
   return { ok: true, items, total: pageOnly ? items.length : Number(items[0]?.total_count ?? 0), images, photos };
+}
+
+/**
+ * Matn bo'yicha qidiruv (kasbga aylanmagan so'rov: kompaniya nomi, erkin lavozim — S1): sarlavha, tavsif (to'liq matn indeksi)
+ * va kompaniya nomi bo'yicha, xuddi shu hudud va filtrlar bilan. Natija oddiy qidiruv kartasi shaklida.
+ * Telefon bu yo'lda qaytarilmaydi (ko'rsatish qoidasi faqat asosiy qidiruvda) — kartada "Ariza yuborish".
+ */
+export async function findJobsByText(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<JobCardData>> {
+  const q = params.q.trim();
+  if (q.length < 2) return { ok: true, items: [], total: 0, images: {}, photos: {} };
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("search_vacancies_v2", {
+    p_query: q,
+    p_region_id: place.remote ? undefined : (place.regionId ?? undefined),
+    p_district_ids: !place.remote && place.districtId ? [place.districtId] : undefined,
+    p_is_remote: place.remote ? true : undefined,
+    p_salary_min: params.salary ?? undefined,
+    p_schedules: params.schedule ? [params.schedule] : undefined,
+    p_no_experience: params.noexp,
+    p_sort: "relevant",
+    p_limit: limit,
+    p_offset: (params.page - 1) * limit,
+  });
+  if (error) return searchFailure("jobs", error);
+  const icons = new Map((await getCategories()).map((c) => [c.id, c.icon]));
+  // "Kunlik ishlar" filtri bu funksiyada yo'q — shu sahifadagilardan (umumiy son — taxminiy)
+  const rows = (data ?? []).filter((r) => params.pay !== "daily" || r.salary_type === "daily");
+  const items: JobCardData[] = rows.map((r) => ({
+    id: r.id,
+    slug: r.slug,
+    title: r.title,
+    employer_name: r.company_name,
+    employer_verified: !!r.company_verified,
+    profession_node_id: null,
+    profession_name_uz: null,
+    profession_name_ru: null,
+    profession_name_en: null,
+    category_slug: r.category_slug,
+    category_icon: icons.get(r.category_id) ?? null,
+    region_name_uz: r.region_name_uz,
+    region_name_ru: r.region_name_ru,
+    region_name_en: null,
+    region_name_oz: null,
+    district_name_uz: r.district_name_uz,
+    district_name_ru: r.district_name_ru,
+    district_name_en: null,
+    district_name_oz: null,
+    region_wide: !!r.region_id && !r.district_id,
+    is_remote: r.is_remote,
+    salary_from: r.salary_from,
+    salary_to: r.salary_to,
+    salary_type: r.salary_type,
+    salary_negotiable: r.salary_negotiable,
+    schedule: r.schedule,
+    experience_min_months: r.experience_min_months,
+    summary: null,
+    phone: null,
+    published_at: r.published_at,
+    is_featured: r.is_featured,
+  }));
+  const photoRows = items.length ? await supabase.from("vacancies").select("id, photo_path").in("id", items.map((r) => r.id)).not("photo_path", "is", null) : { data: [] };
+  const photos = Object.fromEntries((photoRows.data ?? []).filter((r) => r.photo_path).map((r) => [r.id, r.photo_path as string]));
+  return { ok: true, items, total: params.pay === "daily" ? items.length : Number(data?.[0]?.total_count ?? 0), images: {}, photos };
 }
 
 export async function findWorkers(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<WorkerRow>> {

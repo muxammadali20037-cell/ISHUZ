@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Form from "next/form";
 import { Suspense, type ReactNode } from "react";
-import { ArrowLeft, ArrowRight, Search } from "lucide-react";
+import { ArrowLeft, ArrowRight, Search, X } from "lucide-react";
 import { after } from "next/server";
 import { getT } from "@/lib/i18n/server";
 import { formatMoneyShort } from "@/lib/format";
@@ -11,12 +11,13 @@ import type { District, Region } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { activeFilterCount, findHref, type FindParams } from "../params";
-import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type NodeInfo } from "../queries";
+import { PAGE_SIZE, findJobs, findWorkers, logFindSearch, type FindOutcome, type NodeInfo } from "../queries";
 import { ChangeSheet, FilterSheet, RetryButton } from "./find-client";
-import { JobResultCard, WorkerResultCard } from "./result-cards";
+import { JobResultCard, WorkerResultCard, type JobCardData } from "./result-cards";
 import { isCityRegion } from "@/lib/geo/city";
 import { ModeChooser } from "@/features/mode/components/mode-chooser";
 import { savedIdSet } from "@/features/saved/queries";
+import { myApplicationStatuses } from "@/features/applications/queries";
 import { MarketAside } from "./market-aside";
 
 function StepShell({ back, title, children, summary }: { back: string | null; title: string; children: ReactNode; summary?: ReactNode }) {
@@ -91,25 +92,41 @@ export async function FindAskIntent({ params, node }: { params: FindParams; node
   );
 }
 
-/** Natijalar: qisqa xulosa + O'zgartirish + Filtr, kartalar, sahifalar, bo'sh holat */
-export async function FindResultsView({ params, node, region, district }: { params: FindParams; node: NodeInfo | null; region: Region | null; district: District | null }) {
-  const { t, name, tEnum, locale } = await getT();
+/**
+ * Natijalar: qisqa xulosa + O'zgartirish + Filtr, faol filtrlar (bittadan olib tashlanadi), kartalar, sahifalar, bo'sh holat.
+ * `text` — kasbga aylanmagan matn bo'yicha (sarlavha, tavsif, kompaniya) oldindan olingan natija (S1).
+ */
+export async function FindResultsView({
+  params,
+  node,
+  region,
+  district,
+  text,
+}: {
+  params: FindParams;
+  node: NodeInfo | null;
+  region: Region | null;
+  district: District | null;
+  text?: FindOutcome<JobCardData>;
+}) {
+  const { t, name } = await getT();
   const remote = params.region === "remote";
   const place = { regionId: region?.id ?? null, districtId: district?.id ?? null, remote };
   const isJobs = params.mode === "jobs";
-  const res = isJobs ? await findJobs(params, place) : await findWorkers(params, place);
+  const res = text ?? (isJobs ? await findJobs(params, place) : await findWorkers(params, place));
   const total = res.ok ? res.total : 0;
   const pages = Math.max(1, Math.ceil(Math.min(total, 5000) / PAGE_SIZE));
-  const prof = node ? name(node.trail.at(-1)!) : params.pay === "daily" && isJobs ? t("easy.search.daily_jobs") : params.any ? t("easy.search.all_professions") : "";
+  const prof = node
+    ? name(node.trail.at(-1)!)
+    : text
+      ? `«${params.q}»`
+      : params.pay === "daily" && isJobs
+        ? t("easy.search.daily_jobs")
+        : params.any
+          ? t("easy.search.all_professions")
+          : "";
   const placeText = remote ? t("easy.location.remote") : region ? `${name(region)} · ${district ? name(district) : t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}` : t("easy.location.whole_country");
-  // qisqa xulosa: "Buxgalter · Toshkent · 5 mln so'mdan yuqori"
-  const filterParts = [
-    isJobs && params.salary ? t("easy.search.salary_over", { amount: formatMoneyShort(params.salary, locale) }) : null,
-    isJobs && params.schedule ? tEnum("work_schedule", params.schedule) : null,
-    isJobs && params.noexp ? t("easy.search.no_experience") : null,
-    isJobs && params.pay === "daily" && node ? t("easy.search.daily_only") : null,
-    !isJobs && params.exp ? t("easy.search.experienced") : null,
-  ].filter((x): x is string => !!x);
+  // qisqa xulosa: "Buxgalter · Toshkent" — filtrlar alohida chiplarda (ActiveFilters)
   // qidiruv statistikasi (kasb/hudud ID bilan; birinchi sahifa) — talab, bo'sh natijali qidiruvlar uchun.
   // Texnik xato bo'sh natija sifatida yozilmaydi: alohida "search_error" hodisasi (shaxsiy ma'lumotsiz).
   if (!res.ok) {
@@ -122,15 +139,20 @@ export async function FindResultsView({ params, node, region, district }: { para
       logFindSearch({
         scope: isJobs ? "jobs" : "workers",
         query: params.q || prof,
-        understood: { node: node?.id ?? null, region: region?.id ?? null, district: district?.id ?? null, remote, salary: params.salary, schedule: params.schedule },
+        understood: { node: node?.id ?? null, text: !!text, region: region?.id ?? null, district: district?.id ?? null, remote, salary: params.salary, schedule: params.schedule },
         results: total,
         profileId,
       }),
     );
   }
 
-  // qaysi kartalar saqlangan ("Saqlash" belgisi holati bilan)
-  const saved = res.ok ? await savedIdSet(await getSession(), isJobs ? "vacancy" : "worker", res.items.map((i) => i.id)) : new Set<string>();
+  // qaysi kartalar saqlangan ("Saqlash" belgisi holati bilan) va qaysiga ariza yuborilgan (kartada holati)
+  const session = await getSession();
+  const ids = res.ok ? res.items.map((i) => i.id) : [];
+  const [saved, applied] = await Promise.all([
+    savedIdSet(session, isJobs ? "vacancy" : "worker", ids),
+    isJobs ? myApplicationStatuses(session?.workerId ?? null, ids) : Promise.resolve(new Map<string, never>()),
+  ]);
 
   // "Butun O'zbekiston" bo'yicha ham bo'sh — "bu hududda" deyilmaydi va hududni o'zgartirish taklif qilinmaydi
   const wholeCountry = !region && !remote;
@@ -158,7 +180,7 @@ export async function FindResultsView({ params, node, region, district }: { para
               <Input
                 name="q"
                 type="search"
-                defaultValue={node ? prof : ""}
+                defaultValue={node ? prof : text ? params.q : ""}
                 placeholder={isJobs ? t("easy.search.search_jobs_placeholder") : t("easy.search.search_workers_placeholder")}
                 aria-label={t("easy.search.search_label")}
                 leftIcon={<Search />}
@@ -172,7 +194,7 @@ export async function FindResultsView({ params, node, region, district }: { para
           </div>
           <div>
             <h1 className="text-base font-bold leading-snug [overflow-wrap:anywhere] sm:text-lg">
-              {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {[prof, placeText, ...filterParts].join(" · ")}
+              {isJobs ? t("easy.search.summary_jobs") : t("easy.search.summary_workers")}: {[prof, placeText].join(" · ")}
             </h1>
             <div className="flex min-h-11 items-center justify-between gap-3">
               <p className="text-sm font-semibold text-muted-foreground" aria-live="polite">
@@ -181,11 +203,13 @@ export async function FindResultsView({ params, node, region, district }: { para
               <ChangeSheet
                 compact
                 modeHref={findHref(params, { mode: null, page: 1 })}
-                professionHref={findHref(params, { p: null, page: 1 })}
+                professionHref={findHref(params, { p: null, q: "", page: 1 })}
                 regionHref={findHref(params, { region: null, district: null, page: 1 })}
               />
             </div>
           </div>
+
+      <ActiveFilters params={params} hasProfession={!!node || !!text} />
 
       {!res.ok ? (
         <section role="alert" className="space-y-4 rounded-2xl border-2 border-warning/40 bg-warning-soft p-6 text-center">
@@ -211,7 +235,13 @@ export async function FindResultsView({ params, node, region, district }: { para
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>
-                  <JobResultCard job={job} imageUrl={job.profession_node_id ? res.images[job.profession_node_id] : null} photoPath={res.photos?.[job.id] ?? null} saved={saved.has(job.id)} />
+                  <JobResultCard
+                    job={job}
+                    imageUrl={job.profession_node_id ? res.images[job.profession_node_id] : null}
+                    photoPath={res.photos?.[job.id] ?? null}
+                    saved={saved.has(job.id)}
+                    applied={applied.get(job.id) ?? null}
+                  />
                 </li>
               ))
             : (res.items as Parameters<typeof WorkerResultCard>[0]["worker"][]).map((w) => (
@@ -288,6 +318,48 @@ export async function FindResultsView({ params, node, region, district }: { para
           <MarketAside mode={isJobs ? "jobs" : "workers"} />
         </Suspense>
       </div>
+    </div>
+  );
+}
+
+/**
+ * Faol filtrlar (S2): har biri alohida chip — bosilsa faqat o'sha filtr olib tashlanadi; ikkita va undan ko'p bo'lsa —
+ * "Hammasini tozalash". Kasb va hudud — sarlavhada ("O'zgartirish" orqali).
+ */
+async function ActiveFilters({ params, hasProfession }: { params: FindParams; hasProfession: boolean }) {
+  const { t, tEnum, locale } = await getT();
+  const jobs = params.mode === "jobs";
+  // kasb tanlanmagan "Kunlik ishlar"da kunlik — filtr emas, bo'limning o'zi: olib tashlansa barcha kasblar qoladi
+  const keepAny = !params.p ? { any: true } : {};
+  const items = [
+    jobs && params.salary ? { key: "salary", label: t("easy.search.salary_over", { amount: formatMoneyShort(params.salary, locale) }), href: findHref(params, { salary: null, page: 1 }) } : null,
+    jobs && params.schedule ? { key: "schedule", label: tEnum("work_schedule", params.schedule), href: findHref(params, { schedule: null, page: 1 }) } : null,
+    jobs && params.noexp ? { key: "noexp", label: t("easy.search.no_experience"), href: findHref(params, { noexp: false, page: 1 }) } : null,
+    jobs && params.pay === "daily" && hasProfession ? { key: "daily", label: t("easy.search.daily_only"), href: findHref(params, { pay: null, page: 1, ...keepAny }) } : null,
+    !jobs && params.exp ? { key: "exp", label: t("easy.search.experienced"), href: findHref(params, { exp: false, page: 1 }) } : null,
+  ].filter((x): x is { key: string; label: string; href: string } => !!x);
+  if (!items.length) return null;
+  const clearAll = findHref(params, { salary: null, schedule: null, noexp: false, exp: false, pay: hasProfession ? null : params.pay, page: 1 });
+  return (
+    // telefonda — bitta suriladigan qator (ro'yxat pastga surilmaydi), kattaroq ekranda — o'raladi
+    <div role="group" aria-label={t("easy.search.active_filters")} className="-mx-4 flex items-center gap-2 overflow-x-auto overscroll-x-contain px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
+      {items.map((f) => (
+        <Link
+          key={f.key}
+          href={f.href}
+          prefetch={false}
+          aria-label={t("easy.search.filter_remove", { label: f.label })}
+          className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-primary/40 bg-primary-soft/60 px-3 text-sm font-semibold text-primary hover:bg-primary-soft"
+        >
+          <span>{f.label}</span>
+          <X className="size-4 shrink-0" aria-hidden />
+        </Link>
+      ))}
+      {items.length > 1 ? (
+        <Link href={clearAll} prefetch={false} className="inline-flex min-h-11 shrink-0 items-center whitespace-nowrap px-2 text-sm font-semibold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">
+          {t("easy.search.filters_clear")}
+        </Link>
+      ) : null}
     </div>
   );
 }

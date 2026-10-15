@@ -280,3 +280,21 @@ export async function getApplicationNotes(applicationId: string): Promise<Applic
     author_name: n.author ? [n.author.first_name, n.author.last_name].filter(Boolean).join(" ") : "",
   }));
 }
+
+/**
+ * Ro'yxatdagi vakansiyalar bo'yicha ish qidiruvchining o'z arizalari holati (kartada "Ariza: Ko'rib chiqildi" — qayta yuborish
+ * tugmasi o'rniga). Faqat o'z arizalari (RLS); qaytarib olingani hisobga olinmaydi — qayta yuborish mumkin.
+ */
+export async function myApplicationStatuses(workerId: string | null, vacancyIds: string[]): Promise<Map<string, ApplicationStatus>> {
+  const out = new Map<string, ApplicationStatus>();
+  if (!workerId || !vacancyIds.length) return out;
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("applications").select("vacancy_id, status").eq("worker_id", workerId).in("vacancy_id", vacancyIds).neq("status", "withdrawn");
+  if (error) {
+    // holat ko'rsatilmasa ham kartalar ishlaydi (ariza tugmasi — e'lon sahifasida server baribir takrorni rad etadi)
+    console.warn("[applications] statuses", error.message);
+    return out;
+  }
+  for (const row of data ?? []) out.set(row.vacancy_id, row.status as ApplicationStatus);
+  return out;
+}

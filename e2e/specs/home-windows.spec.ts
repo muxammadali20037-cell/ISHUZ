@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
- * D3 · bosh sahifa tepasidagi rasmli oynalar (xodim topish, mos ish, kunlik ishlar) va "Kunlik ishlar":
+ * D3/R-C · bosh sahifadagi tezkor bo'limlar (admin sozlaydi; xodim topish, mos ish, kunlik ishlar) va "Kunlik ishlar":
  * ish beruvchi oddiy formada "Kunlik" haq tanlaydi → bazada kunlik → "Kunlik ishlar" oynasi faqat kunliklarni ko'rsatadi.
  */
 
@@ -23,7 +23,7 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (ish izlovchi): tepada uchta rasmli oyna, nomi rasm ostida; har biri o'z bo'limiga olib boradi", async ({ page, context }) => {
+test("bosh sahifa (ish izlovchi): uchta tezkor bo'lim — ixcham qator, e'lonlar ro'yxatidan keyin; har biri o'z bo'limiga olib boradi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
@@ -33,20 +33,18 @@ test("bosh sahifa (ish izlovchi): tepada uchta rasmli oyna, nomi rasm ostida; ha
   await expect(links.nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
   await expect(links.nth(1)).toContainText("Kunlik ishlar");
   await expect(links.nth(2)).toContainText("Yaqin atrofdagi ishlar");
-  // oynalar sarlavhadan oldin; rasm nomdan yuqorida
+  // R-C: birinchi ekranni qidiruv va e'lonlar egallaydi — oynalar ro'yxatdan keyin, ixcham (rasm chapda, nomi yonida)
   const first = links.nth(0);
-  const art = await first.locator("svg").boundingBox();
-  const title = await first.getByText("Endi o'zingizga mos ish topish oson").boundingBox();
-  expect(art!.y + art!.height).toBeLessThanOrEqual(title!.y + 1);
-  expect(title!.y).toBeLessThan((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y);
-  // telefonda sahifa yonga siljimaydi (oynalar o'z qatorida suriladi)
+  const art = (await first.locator("svg").boundingBox())!;
+  const title = (await first.getByText("Endi o'zingizga mos ish topish oson").boundingBox())!;
+  expect(art.x + art.width).toBeLessThanOrEqual(title.x + 1);
+  expect(art.width).toBeLessThanOrEqual(56);
+  expect((await first.boundingBox())!.height).toBeLessThanOrEqual(96);
+  const feed = (await page.locator("#home-feed").boundingBox())!;
+  expect((await first.boundingBox())!.y).toBeGreaterThan(feed.y);
+  expect((await page.getByRole("searchbox", { name: "Ish qidirish" }).boundingBox())!.y).toBeLessThan(400);
+  // telefonda sahifa yonga siljimaydi
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-  // ixcham (my.gov.uz kabi): telefonda ikkitasi to'liq ko'rinadi, oyna past, izoh yo'q — sarlavha birinchi ekranning yuqori qismida
-  const second = (await links.nth(1).boundingBox())!;
-  expect(second.x + second.width).toBeLessThanOrEqual(page.viewportSize()!.width);
-  expect((await first.boundingBox())!.height).toBeLessThanOrEqual(210);
-  await expect(first.getByText("Kasbingizni tanlang — yaqin atrofdagi ish e'lonlari")).toBeHidden();
-  expect((await page.getByRole("heading", { level: 1, name: "Ish topdim" }).boundingBox())!.y).toBeLessThan(400);
 
   await links.nth(0).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish qidiraman");

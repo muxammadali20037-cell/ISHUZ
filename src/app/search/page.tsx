@@ -17,7 +17,7 @@ import { ModeGate } from "@/features/mode/components/mode-gate";
 import { cookies } from "next/headers";
 import { PLACE_COOKIE, parsePlace } from "@/features/find/place";
 import { NearMe } from "@/features/find/components/near-me";
-import { findJobs, findWorkers } from "@/features/find/queries";
+import { findJobs, findJobsByText, findWorkers } from "@/features/find/queries";
 import type { SearchPreview } from "@/features/find/components/newest-preview";
 import type { JobCardData, WorkerCardData } from "@/features/find/components/result-cards";
 import { isCityRegion } from "@/lib/geo/city";
@@ -79,6 +79,19 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   const district = region && params.district && params.district !== "all" ? (districts.find((d) => d.id === params.district) ?? null) : null;
   const districtKnown = params.district === "all" || !!district;
   const node = params.p ? await getNodeInfo(params.p) : null;
+
+  // S1: matn kasbga aylanmadi (kompaniya nomi, erkin lavozim) — sarlavha, tavsif va kompaniya bo'yicha haqiqiy natijalar.
+  // Topilmasa — avvalgidek "tushunilmadi" va kasb tanlash. Texnik xato — xato oynasi (bo'sh natija deb ko'rsatilmaydi).
+  if (params.mode === "jobs" && params.q && !params.p) {
+    const text = await findJobsByText(params, { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: params.region === "remote" });
+    if (!text.ok || text.total > 0 || params.page > 1) {
+      return (
+        <Shell>
+          <FindResultsView params={params} node={null} region={region} district={district} text={text} />
+        </Shell>
+      );
+    }
+  }
 
   // "Yaqin atrofda": eslab qolingan tuman bo'lsa — darhol natijalar; yo'q bo'lsa — joylashuvni aniqlash (yoki ro'yxatdan tanlash)
   if (params.mode && params.near && !regionKnown) {

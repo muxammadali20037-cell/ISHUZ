@@ -325,7 +325,10 @@
     "newest_workers": "Янги ишчилар",
     "search_jobs_placeholder": "Касб ёки лавозим қидириш",
     "search_workers_placeholder": "Касб бўйича ишчи қидириш",
-    "search_label": "Қидириш"
+    "search_label": "Қидириш",
+    "active_filters": "Фаол филтрлар",
+    "filter_remove": "Филтрни олиб ташлаш: {label}",
+    "filters_clear": "Ҳаммасини тозалаш"
   },
   "card": {
     "call": "Қўнғироқ қилиш",
@@ -342,7 +345,9 @@
     "exp_none": "Тажриба шарт эмас",
     "apply": "Ариза юбориш",
     "contact": "Боғланиш",
-    "call_short": "Қўнғироқ"
+    "call_short": "Қўнғироқ",
+    "no_experience": "Тажрибасиз",
+    "applied_status": "Ариза: {status}"
   },
   "listing": {
     "title": "Иш қидирувчи эълони",
@@ -692,5 +697,49 @@
     "jobs_count": "Иш ўринлари: {count}",
     "post_vacancy": "Вакансия жойлаштириш",
     "post_resume": "Резюме жойлаш"
+  },
+  "start": {
+    "seeker_title": "Иш топинг",
+    "seeker_subtitle": "Ҳақиқий эълонлар — рўйхатдан ўтмасдан кўринг",
+    "search_label": "Иш қидириш",
+    "search_placeholder": "Касб, лавозим ёки компания",
+    "search_button": "Топиш",
+    "filters_label": "Тез филтрлар",
+    "place_label": "Ҳудуд: {place}. Ўзгартириш",
+    "f_salary": "5 млн сўмдан",
+    "f_noexp": "Тажрибасиз",
+    "f_daily": "Кунлик иш",
+    "f_remote": "Масофавий",
+    "f_experienced": "Тажрибали",
+    "match_title": "Сизга мос ишлар",
+    "match_reason": "Касбингиз бўйича: {profession} · {place}",
+    "new_title": "Янги ишлар",
+    "new_reason": "{place} · энг янгилари биринчи",
+    "no_match_note": "«{profession}» бўйича ҳозирча эълон йўқ — янги ишлар кўрсатилди",
+    "see_all": "Барчаси",
+    "all_jobs": "Барча вакансиялар · {count} та",
+    "empty_title": "Ҳозирча фаол вакансия йўқ",
+    "empty_desc": "Ўзингиз ҳақингизда эълон беринг — иш берувчилар сизни топиб, боғланади.",
+    "list_error_title": "Рўйхатни юклаб бўлмади",
+    "list_error_desc": "Интернет ёки серверда вақтинчалик носозлик. Қайта уриниб кўринг.",
+    "professions_title": "Машҳур касблар",
+    "all_professions": "Барча касблар",
+    "more_title": "Яна фойдали",
+    "post_resume": "Ўзим ҳақимда эълон бериш",
+    "post_resume_desc": "Иш берувчилар сизни қидирувда топади",
+    "ai_desc_short": "Мос эълон чиқиши билан Telegramга хабар",
+    "employer_title": "Ходим топинг",
+    "employer_subtitle": "Касб бўйича номзодларни кўринг ёки вакансия жойланг",
+    "employer_search_label": "Номзод қидириш",
+    "employer_search_placeholder": "Касб ёки лавозим",
+    "post_vacancy": "Вакансия жойлаш",
+    "post_vacancy_hint": "Бир неча дақиқада — номзодлар ўзи ариза юборади",
+    "new_workers_title": "Янги номзодлар",
+    "all_workers": "Барча номзодлар · {count} та",
+    "workers_empty_title": "Ҳозирча очиқ номзод йўқ",
+    "workers_empty_desc": "Вакансия жойланг — мос ишчилар сизга ариза юборади.",
+    "finish_company_title": "Компания маълумотларини тўлдиринг",
+    "finish_company_desc": "Бир дақиқа: номи ва ҳудуд — кейин вакансия жойлайсиз ва аризаларни кўрасиз",
+    "metrics_label": "Қисқа кўрсаткичлар"
   }
 }

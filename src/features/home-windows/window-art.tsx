@@ -4,9 +4,10 @@ import type { WindowArt } from "./model";
  * Bosh sahifa oynalari uchun o'rnatilgan illyustratsiyalar (SVG, ~1 KB): ranglar faqat brend tokenlaridan —
  * qorong'i mavzuda ham o'qiladi, tarmoqdan rasm yuklanmaydi (Telegram ichida darhol ko'rinadi).
  */
-export function WindowArtwork({ art }: { art: WindowArt }) {
+export function WindowArtwork({ art, cover = false }: { art: WindowArt; cover?: boolean }) {
   return (
-    <svg viewBox="0 0 320 180" className="size-full" aria-hidden focusable="false">
+    // cover — kvadrat kichik rasm (ixcham qator): o'rtasi kesib olinadi, chetida bo'sh joy qolmaydi
+    <svg viewBox="0 0 320 180" preserveAspectRatio={cover ? "xMidYMid slice" : undefined} className="size-full" aria-hidden focusable="false">
       <rect width="320" height="180" className="fill-primary-soft" />
       {art === "workers" ? <Workers /> : art === "jobs" ? <Jobs /> : art === "near" ? <Near /> : art === "post" ? <Post /> : <Daily />}
     </svg>

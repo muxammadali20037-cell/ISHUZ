@@ -105,7 +105,8 @@ Qoidalar:
 - Holatlar: oddiy · fokus (ko'k chegara + halqa) · xato (qizil chegara + pastda matn) · o'chiq.
 - `Field` xato yoki izoh matniga `id` beradi va ichidagi `Input`/`Textarea`/`Select` ga avtomatik
   `aria-describedby` va `aria-invalid` qo'yadi (ekran o'quvchi xatoni maydon bilan birga o'qiydi) — `field.test.tsx`.
-- Balandlik 48 px, matn `text-md`; label har doim ko'rinadi (placeholder label o'rnini bosmaydi).
+- Balandlik 48 px, matn `text-base` (16 px — iOS fokusda sahifani kattalashtirmasin; R-C), label har doim ko'rinadi
+  (placeholder label o'rnini bosmaydi). Qidiruv qatori — label o'rniga `aria-label` + `role="search"`.
 - Xato matni: **nima bo'ldi + nima qilish kerak** ("Raqam to'liq emas: +998 va 9 ta raqam").
 
 ### Tanlov: `Checkbox`, `RadioItem`, `Switch`, `Chip`
@@ -113,6 +114,21 @@ Qoidalar:
 - Checkbox — kvadrat (`rounded-xs`), radio — doira: ikkalasi farqlanadi (avval checkbox ham doira bo'lib chizilardi).
 - Butun qator (label) bosiladi; kichik elementlarda `tap-target` (44×44).
 - Chip — filtr va ko'p tanlov; tanlangani `primary` fon + belgi.
+
+### Vakansiya kartasi (`JobResultCard`) va nomzod kartasi (`WorkerResultCard`)
+
+- Tartib: **nomi** → **maosh + to'lov davri** (`so'm/oy`, `/kun`, `/soat`, ` · ishbay`; maosh yo'q — "Kelishiladi", hech qachon
+  "0 so'm") → kompaniya (belgi faqat `companies.verification_status = verified` bo'lsa) → hudud → amal, saqlash, sana.
+- Belgilar 2 tadan ko'p emas (TOP bo'lsa — yana bitta): tajribasiz, jadval. Sig'maganlari butunlay yashiriladi — "T…" kabi
+  kesilgan belgi bo'lmaydi.
+- O'z arizasi bor bo'lsa — "Ariza yuborish" o'rniga holat ("Ariza: Ko'rib chiqildi", `bg-success-soft`), bosilsa — "Arizalar".
+- Moslik foizi kartada yo'q; "Sizga mos ishlar" sababi matn bilan yoziladi ("Kasbingiz bo'yicha: Oshpaz · Toshkent").
+
+### Filtr chiplari
+
+- Tez filtrlar (bosh sahifa): `rounded-full border bg-card`, 44 px; telefonda bitta suriladigan qator (sahifa kengaymaydi).
+- Faol filtrlar (natijalar): `bg-primary-soft/60 text-primary` + ✕, har biri alohida olib tashlanadi; 2 tadan ko'p bo'lsa —
+  "Hammasini tozalash". Sarlavhada filtrlar takrorlanmaydi (faqat kasb · hudud).
 
 ### Belgi (`Badge`)
 
@@ -124,7 +140,8 @@ Qoidalar:
 - Karta: `rounded-2xl border bg-card shadow-sm`, ichki chegara 16–24. Ikonka plitasi — `bg-primary-soft text-primary`.
 - Katta to'liq rangli karta (`bg-primary`, `bg-success` yuzali) ishlatilmaydi — to'liq rang faqat **tugmada**. Ta'kidlangan
   bonus (AI yordamchi) — `bg-primary-soft` + `border-primary/25`, "PRO" belgisi `bg-primary`. Bosh sahifa testi buni tekshiradi.
-- Bir nechta teng yo'l (bosh sahifa) — bir xil neytral kartalar; har kartada bitta aniq fe'lli tugma ("Ish e'loni berish").
+- Bosh sahifa (R-C): birinchi ekranda qidiruv ("Kasb, lavozim yoki kompaniya"), tez filtr chiplari va haqiqiy e'lonlar;
+  admin oynalari, e'lon berish va AI PRO — ro'yxatdan keyin ixcham qatorlar (rasm 48 px). Katta banner yo'q.
 - Oyna (`Dialog`/`ConfirmDialog`): sarlavha + bir jumla izoh + "Bekor qilish" (outline) va amal tugmasi.
 - Bo'sh holat (`EmptyState`): ikonka + nima uchun bo'sh + keyingi qadam tugmasi.
 - Yuklanish: joyni egallaydigan `Skeleton` (sahifa sakramaydi); 30 s dan uzoq kutilmaydi (`callAction` → "Javob kechikdi").

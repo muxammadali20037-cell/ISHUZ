@@ -325,7 +325,10 @@
     "newest_workers": "Новые работники",
     "search_jobs_placeholder": "Поиск по профессии или должности",
     "search_workers_placeholder": "Поиск работников по профессии",
-    "search_label": "Поиск"
+    "search_label": "Поиск",
+    "active_filters": "Активные фильтры",
+    "filter_remove": "Убрать фильтр: {label}",
+    "filters_clear": "Сбросить все"
   },
   "card": {
     "call": "Позвонить",
@@ -342,7 +345,9 @@
     "exp_required": "Опыт: {value}",
     "exp_none": "Опыт не нужен",
     "apply": "Откликнуться",
-    "contact": "Связаться"
+    "contact": "Связаться",
+    "no_experience": "Без опыта",
+    "applied_status": "Отклик: {status}"
   },
   "listing": {
     "title": "Объявление соискателя",
@@ -692,5 +697,49 @@
     "jobs_count": "Вакансий: {count}",
     "post_vacancy": "Разместить вакансию",
     "post_resume": "Разместить резюме"
+  },
+  "start": {
+    "seeker_title": "Найдите работу",
+    "seeker_subtitle": "Настоящие вакансии — смотрите без регистрации",
+    "search_label": "Поиск работы",
+    "search_placeholder": "Профессия, должность или компания",
+    "search_button": "Найти",
+    "filters_label": "Быстрые фильтры",
+    "place_label": "Регион: {place}. Изменить",
+    "f_salary": "от 5 млн сум",
+    "f_noexp": "Без опыта",
+    "f_daily": "Работа на день",
+    "f_remote": "Удалённо",
+    "f_experienced": "С опытом",
+    "match_title": "Подходящие вам вакансии",
+    "match_reason": "По вашей профессии: {profession} · {place}",
+    "new_title": "Новые вакансии",
+    "new_reason": "{place} · сначала новые",
+    "no_match_note": "По профессии «{profession}» пока нет вакансий — показаны новые",
+    "see_all": "Все",
+    "all_jobs": "Все вакансии · {count}",
+    "empty_title": "Пока нет активных вакансий",
+    "empty_desc": "Разместите объявление о себе — работодатели найдут вас и свяжутся.",
+    "list_error_title": "Не удалось загрузить список",
+    "list_error_desc": "Временный сбой интернета или сервера. Попробуйте ещё раз.",
+    "professions_title": "Популярные профессии",
+    "all_professions": "Все профессии",
+    "more_title": "Ещё полезное",
+    "post_resume": "Разместить объявление о себе",
+    "post_resume_desc": "Работодатели найдут вас в поиске",
+    "ai_desc_short": "Сообщение в Telegram, как только появится подходящее",
+    "employer_title": "Найдите сотрудника",
+    "employer_subtitle": "Смотрите кандидатов по профессии или разместите вакансию",
+    "employer_search_label": "Поиск кандидатов",
+    "employer_search_placeholder": "Профессия или должность",
+    "post_vacancy": "Разместить вакансию",
+    "post_vacancy_hint": "Несколько минут — кандидаты откликнутся сами",
+    "new_workers_title": "Новые кандидаты",
+    "all_workers": "Все кандидаты · {count}",
+    "workers_empty_title": "Пока нет открытых кандидатов",
+    "workers_empty_desc": "Разместите вакансию — подходящие кандидаты откликнутся.",
+    "finish_company_title": "Заполните данные компании",
+    "finish_company_desc": "Минута: название и регион — затем размещайте вакансии и смотрите отклики",
+    "metrics_label": "Ключевые показатели"
   }
 }
