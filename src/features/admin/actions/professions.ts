@@ -6,7 +6,7 @@ import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import type { ActionResult } from "@/features/auth/actions";
-import { requirePerm } from "./guard";
+import { logAdmin, requirePerm, snapshot } from "./guard";
 
 /*
  * Kasblar daraxti (profession_nodes) — admin. RLS: categories.manage.
@@ -61,6 +61,9 @@ export async function saveProfessionNode(input: unknown): Promise<ActionResult<{
   if (!guard.ok) return guard;
   const d = parsed.data;
   const supabase = await createClient();
+  // trigger (0028) nom, ota, faollikni yozadi; qolgan maydonlar o'zgarishi — shu yerda auditga
+  const META = "aliases, icon, selectable, is_popular, sort_order";
+  const before = d.id ? (await supabase.from("profession_nodes").select(META).eq("id", d.id).maybeSingle()).data : null;
   const values = {
     name_uz: d.nameUz,
     name_ru: d.nameRu,
@@ -81,6 +84,12 @@ export async function saveProfessionNode(input: unknown): Promise<ActionResult<{
         .single();
   const { data, error } = await q;
   if (error) return { ok: false, error: errorCode(error) };
+  if (before) {
+    const after = { aliases: values.aliases, icon: values.icon, selectable: values.selectable, is_popular: values.is_popular, sort_order: values.sort_order };
+    if (JSON.stringify(snapshot(before)) !== JSON.stringify(snapshot({ ...before, ...after }))) {
+      await logAdmin(supabase, "profession.update_meta", "profession_node", data.id, snapshot(before), snapshot(after));
+    }
+  }
   revalidate();
   return { ok: true, data: { id: data.id } };
 }

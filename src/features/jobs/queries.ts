@@ -208,6 +208,7 @@ export const getVacancyBySlug = cache(async (rawSlug: string): Promise<VacancyDe
     })),
     benefits: vacancy_benefits.flatMap((b) => (b.benefit ? [b.benefit] : [])),
     officialTerms,
+    is_expired: vacancy.status === "active" && !!vacancy.expires_at && new Date(vacancy.expires_at).getTime() <= Date.now(),
   };
 });
 
@@ -230,7 +231,10 @@ export async function getVacancyViewerState(vacancy: VacancyDetail, session: Ses
     supabase.rpc("manages_vacancy", { p_vacancy_id: vacancy.id }),
     savedIdSet(session, "vacancy", [vacancy.id]),
     // tezkor arizadan keyin profil to'ldirilmagan bo'lsa ham — yuborilgan ariza ko'rinsin (qayta yuborish tugmasi emas)
-    session.workerId ? supabase.from("applications").select("id, status").eq("worker_id", session.workerId).eq("vacancy_id", vacancy.id).maybeSingle() : null,
+    // qaytarib olingan ariza hisobga olinmaydi — apply_to_vacancy uni qayta yuboradi (kartadagi holat bilan bir xil qoida)
+    session.workerId
+      ? supabase.from("applications").select("id, status").eq("worker_id", session.workerId).eq("vacancy_id", vacancy.id).neq("status", "withdrawn").maybeSingle()
+      : null,
     workerId ? supabase.rpc("compute_match", { p_worker_id: workerId, p_vacancy_id: vacancy.id }).maybeSingle() : null,
     workerId ? null : getSimpleListingFeatures(),
   ]);

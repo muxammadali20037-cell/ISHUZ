@@ -87,6 +87,7 @@
     "not_found": "Taklif topilmadi",
     "worker_profile_required": "Ish qidiruvchi profili kerak",
     "offer_expired": "Taklif muddati tugagan",
-    "offer_not_accepted": "Taklif hali qabul qilinmagan"
+    "offer_not_accepted": "Taklif hali qabul qilinmagan",
+    "vacancy_not_active": "Vakansiya yopilgan yoki muddati tugagan — taklifni qabul qilib bo'lmaydi. Rad etishingiz mumkin."
   }
 }

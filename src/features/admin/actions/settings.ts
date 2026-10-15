@@ -16,6 +16,8 @@ import { logAdmin, requirePerm, snapshot } from "./guard";
  */
 
 const MATCHING_KEYS = ["match_weights", "match_notify_threshold", "match_rules_version"];
+/** Xavfsizlik sozlamalari — faqat adminlarni boshqaruvchi (super_admin); bazada ham trigger bilan himoyalangan (0065) */
+const SECURITY_KEYS = ["admin_mfa_required"];
 
 /** Sozlama qiymatini yangilash (JSON) */
 export async function updateSetting(input: unknown): Promise<ActionResult> {
@@ -25,6 +27,10 @@ export async function updateSetting(input: unknown): Promise<ActionResult> {
   if (!guard.ok) return guard;
   // moslik qoidalari faqat versiyalangan yo'l orqali (admin_update_matching)
   if (MATCHING_KEYS.includes(parsed.data.key)) return { ok: false, error: "use_matching_page" };
+  if (SECURITY_KEYS.includes(parsed.data.key)) {
+    const owner = await requirePerm("admins.manage");
+    if (!owner.ok) return owner;
+  }
   let value: Json;
   try {
     value = JSON.parse(parsed.data.valueJson) as Json;

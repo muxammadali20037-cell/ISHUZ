@@ -94,6 +94,8 @@ export async function VacancyDetail({
   // kompaniyasiz ish beruvchi: qidiruv kartasidagi nom (display_name — kirganlarga), mehmonga — ega ismi
   const companyName = company?.name ?? (v.owner_profile_id ? await employerPublicName(v.owner_profile_id, session) : null) ?? (v.owner?.first_name?.trim() || t("common.role.employer"));
   const isManager = viewer.kind === "manager";
+  // muddati o'tgan, lekin soatlik vazifa hali yopmagan e'lon ham yopiq ko'rinadi (ariza serverda ham rad etiladi — 0065)
+  const status = v.is_expired ? "expired" : v.status;
   const time = v.work_time_from && v.work_time_to ? `${formatWorkTime(v.work_time_from)}–${formatWorkTime(v.work_time_to)}` : null;
   const experienceKey = EXPERIENCE_PRESETS.find((p) => v.experience_min_months >= p) ?? 0;
   const age =
@@ -224,13 +226,13 @@ export async function VacancyDetail({
                   <Users className="size-4" aria-hidden /> {t("jobs.detail.applications_count", { count: v.applications_count })}
                 </span>
               ) : null}
-              {v.status !== "active" ? (
+              {status !== "active" ? (
                 <Badge variant="warning" size="lg">
-                  {tEnum("vacancy_status", v.status)}
+                  {tEnum("vacancy_status", status)}
                 </Badge>
               ) : null}
             </div>
-            {v.status !== "active" && !isManager ? (
+            {status !== "active" && !isManager ? (
               <p className="mt-3 rounded-xl bg-warning-soft px-3 py-2 text-sm text-warning">{t("jobs.detail.status_inactive")}</p>
             ) : null}
           </header>
@@ -357,7 +359,7 @@ export async function VacancyDetail({
 
         <aside className="contents lg:block lg:self-start lg:sticky lg:top-20 lg:space-y-4">
           <VacancyActions
-            vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status: v.status }}
+            vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status }}
             viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application, quickApply: viewer.quickApply }}
           />
           {contactCard ? <div className="hidden lg:block">{contactCard}</div> : null}
