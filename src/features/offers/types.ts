@@ -26,6 +26,11 @@ export interface OfferVacancy {
   title: string;
   slug: string;
   status: Enums<"vacancy_status">;
+  /** vakansiya bo'yicha taklifda maosh shu yerdan (taklifning o'zida yozilmaydi) */
+  salary_from?: number | null;
+  salary_to?: number | null;
+  salary_type?: Enums<"salary_type"> | null;
+  salary_negotiable?: boolean | null;
 }
 
 export interface OfferCompany {

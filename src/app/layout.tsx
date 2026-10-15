@@ -51,6 +51,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
+  // klaviatura ochilganda sahifa balandligi qisqaradi (Android Chrome): yopishqoq tugmalar klaviatura ustida qoladi (F2)
+  interactiveWidget: "resizes-content",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

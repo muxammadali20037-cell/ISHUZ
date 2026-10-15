@@ -12,6 +12,7 @@ import { TOTAL_STEPS } from "../types";
 import { errorMessage, stepHref } from "./wizard-shell";
 import { celebrateAfterNavigation } from "@/lib/celebrate";
 import { callAction } from "@/lib/action-call";
+import { takeReturnTo } from "../return-to";
 
 /** Yakunlash tugmasi: profil faollashadi → bosh sahifa + "Profil tayyor!" */
 const INCOMPLETE_STEP: Record<string, number> = { incomplete_personal: 1, incomplete_location: 2, incomplete_profession: 3 };
@@ -32,7 +33,7 @@ export function FinishBar() {
       }
       celebrateAfterNavigation();
       toast.success(t("onboarding.worker.review.done_toast"), t("onboarding.worker.review.done_desc"));
-      router.replace(res.data?.redirect ?? "/");
+      router.replace(takeReturnTo() ?? res.data?.redirect ?? "/");
       router.refresh();
     });
   };

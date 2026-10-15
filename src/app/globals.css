@@ -224,6 +224,16 @@
   body:has(.ai-fab) .page-with-tabbar {
     padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 88px);
   }
+
+  /*
+   * F2 · telefonda matn yozilayotganda (klaviatura ochiq) pastki menyu va lupa tugmasi yashiriladi: ular maydon yoki
+   * yopishqoq "Davom etish"/"Ariza yuborish" tugmasini yopmaydi. Klaviatura yopilgach (fokus chiqqach) darhol qaytadi.
+   */
+  @media (hover: none) and (pointer: coarse) {
+    body:has(:is(input:not([type="checkbox"], [type="radio"], [type="button"], [type="submit"], [type="range"], [type="file"], [type="color"]), textarea, [contenteditable="true"]):focus) :is(.bottom-nav, .ai-fab) {
+      display: none;
+    }
+  }
 }
 
 /* ---------- Harakat (K, operator paneli uslubida) ----------

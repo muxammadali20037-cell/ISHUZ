@@ -7,7 +7,7 @@ import type { OfferBase, OfferDetail, OfferEmployer, OfferStatus, ReceivedOffer,
 
 const OFFER_FIELDS =
   "id, status, title, message, salary_from, salary_to, expires_at, viewed_at, responded_at, hired_at, created_at, updated_at, vacancy_id, employer_profile_id, company_id, worker_id";
-const VACANCY_SELECT = "vacancy:vacancies(id, title, slug, status)";
+const VACANCY_SELECT = "vacancy:vacancies(id, title, slug, status, salary_from, salary_to, salary_type, salary_negotiable)";
 const COMPANY_SELECT = "company:companies(id, name, slug, logo_url, verification_status)";
 const EMPLOYER_SELECT = "employer:profiles!job_offers_employer_profile_id_fkey(id, first_name, last_name, avatar_url)";
 const CANDIDATE_SELECT = "worker:worker_profiles(id, profile_id, headline, experience_level, profile:profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url))";
@@ -29,7 +29,16 @@ type OfferRow = {
   employer_profile_id: string;
   company_id: string | null;
   worker_id: string;
-  vacancy: { id: string; title: string; slug: string; status: Enums<"vacancy_status"> } | null;
+  vacancy: {
+    id: string;
+    title: string;
+    slug: string;
+    status: Enums<"vacancy_status">;
+    salary_from: number | null;
+    salary_to: number | null;
+    salary_type: Enums<"salary_type">;
+    salary_negotiable: boolean;
+  } | null;
   company: { id: string; name: string; slug: string; logo_url: string | null; verification_status: Enums<"verification_status"> } | null;
 };
 

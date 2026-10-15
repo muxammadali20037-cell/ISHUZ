@@ -6,7 +6,7 @@ import { useT } from "@/lib/i18n/client";
 import { formatRelative, initials, shortName } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { SalaryText } from "@/components/shared/salary-text";
+import { OfferSalary } from "./offer-salary";
 import { isOfferPending, offerTitle, type SentOffer } from "../types";
 import { OfferStatusBadge } from "./offer-status-badge";
 import { WithdrawOfferButton } from "./withdraw-offer-button";
@@ -34,7 +34,7 @@ export function SentOfferCard({ offer, canWithdraw, className }: { offer: SentOf
       </div>
       <div className="mt-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="text-sm font-medium">{title}</span>
-        <SalaryText from={offer.salary_from} to={offer.salary_to} className="text-sm" />
+        <OfferSalary offer={offer} className="text-sm" />
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <OfferStatusBadge status={offer.status} />

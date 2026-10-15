@@ -75,7 +75,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
   const items = mainNav(mode);
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
+      className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
       aria-label={t("common.nav.main_label")}
     >

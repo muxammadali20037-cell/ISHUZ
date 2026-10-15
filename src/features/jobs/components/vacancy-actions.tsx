@@ -77,13 +77,15 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
     }
   };
 
+  // kirish yoki profil to'ldirishdan keyin — aynan shu vakansiyaga, ariza oynasi ochiq holda (F1)
+  const applyReturn = encodeURIComponent(`${detailPath}?apply=1`);
   const onApplyClick = () => {
     if (viewer.kind === "guest") {
-      router.push(`/auth?next=${encodeURIComponent(`${detailPath}?apply=1`)}`);
+      router.push(`/auth?next=${applyReturn}`);
       return;
     }
     if (viewer.kind === "no_worker" && !viewer.quickApply) {
-      router.push("/onboarding/worker");
+      router.push(`/onboarding/worker?next=${applyReturn}`);
       return;
     }
     setDone(null);
@@ -107,10 +109,10 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
           toast.info(t("jobs.apply.errors.already_applied"));
           return;
         case "not_authenticated":
-          router.push(`/auth?next=${encodeURIComponent(detailPath)}`);
+          router.push(`/auth?next=${applyReturn}`);
           return;
         case "worker_profile_required":
-          router.push("/onboarding/worker");
+          router.push(`/onboarding/worker?next=${applyReturn}`);
           return;
         default:
           toast.error(errorMessage(t, res.error, "jobs.apply.errors"));

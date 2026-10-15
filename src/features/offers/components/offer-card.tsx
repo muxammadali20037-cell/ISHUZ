@@ -6,7 +6,7 @@ import { useT } from "@/lib/i18n/client";
 import { formatRelative, initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { SalaryText } from "@/components/shared/salary-text";
+import { OfferSalary } from "./offer-salary";
 import { isOfferExpired, offerSenderName, offerTitle, type ReceivedOffer } from "../types";
 import { OfferStatusBadge } from "./offer-status-badge";
 
@@ -32,7 +32,7 @@ export function OfferCard({ offer, className }: { offer: ReceivedOffer; classNam
         </div>
       </div>
       <div className="mt-3">
-        <SalaryText from={offer.salary_from} to={offer.salary_to} className="text-md" />
+        <OfferSalary offer={offer} className="text-md" />
       </div>
       {offer.message ? <p className="mt-2 line-clamp-2 text-sm text-foreground/80">{offer.message}</p> : null}
       <div className="mt-3 flex flex-wrap items-center gap-2">

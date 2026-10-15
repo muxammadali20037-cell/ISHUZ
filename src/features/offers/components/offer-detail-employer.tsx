@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PageHeader, SectionHeader, InfoRow } from "@/components/ui/misc";
-import { SalaryText } from "@/components/shared/salary-text";
+import { OfferSalary } from "./offer-salary";
 import { ContactCard } from "@/features/contacts/contact-card";
 import { ReviewSheet } from "@/features/applications/components/review-sheet";
 import { ReviewCard } from "@/features/applications/components/review-card";
@@ -80,7 +80,7 @@ export async function OfferDetailEmployer({ offer, userId }: { offer: OfferDetai
               </div>
               <div>
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("offers.detail.salary")}</p>
-                <SalaryText from={offer.salary_from} to={offer.salary_to} className="text-base" />
+                <OfferSalary offer={offer} className="text-base" />
               </div>
               {offer.vacancy_id ? (
                 <Button asChild variant="outline" size="sm">

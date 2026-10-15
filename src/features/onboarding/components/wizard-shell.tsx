@@ -16,6 +16,7 @@ import { stepHref } from "../utils";
 import { finishOnboarding } from "../actions";
 import { celebrateAfterNavigation } from "@/lib/celebrate";
 import { callAction } from "@/lib/action-call";
+import { takeReturnTo } from "../return-to";
 
 export { stepHref };
 
@@ -89,7 +90,7 @@ export function useStepSubmit() {
       }
       celebrateAfterNavigation();
       toast.success(t("onboarding.worker.quick_done"));
-      router.replace(done.data?.redirect ?? "/");
+      router.replace(takeReturnTo() ?? done.data?.redirect ?? "/");
       router.refresh();
     });
   };
