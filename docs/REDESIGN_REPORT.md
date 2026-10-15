@@ -18,7 +18,7 @@ natijasi emas, E2E esa lokal stendda (haqiqiy Supabase/Telegram/to'lov emas) ish
 | R-C | Topilgan xato X1: mos nomzodlar doim bo'sh edi (PostgREST `PGRST201`) | `4d97e68` |
 | R-D | Server qo'riqlari, migratsiya 0065 (production'ga qo'llanmagan) | `f012106` |
 | R-E | Kirish/profil to'ldirishdan keyin ariza oynasiga qaytish, klaviatura, taklif maoshi davri | `71c362a` |
-| R-F/G | Tillar va tor ekran, a11y kengaytmasi, JS hajmi, yakuniy tekshiruv va shu hisobot | shu commit |
+| R-F/G | Tillar va tor ekran, a11y kengaytmasi, JS hajmi, yakuniy tekshiruv va shu hisobot | `643a883` (+ yakuniy E2E natijasi) |
 
 ## 1. Muammolar va tuzatishlar
 
@@ -84,7 +84,7 @@ kesilgan (`overflow: hidden`, "…"siz) matn 0, ustma-ust bosiladigan element 0.
 | TypeScript | `npm run typecheck` | 0 xato |
 | Unit | `npm test` | 627 o'tdi, 18 o'tkazib yuborildi (TS↔SQL moslik paritet to'plami — sababi PROFESSIONALIZATION_REPORT'da) |
 | SQL/RLS | `bash scripts/db-test.sh` | 853 tekshiruv `ok`, xato yo'q (0065 qo'riqlari, RLS, to'lov, hamyon) |
-| E2E | `bash e2e/stack/up.sh && npx playwright test -c e2e` | 148/148 (oxirgi to'liq yurgizish); keyin qo'shilgan 3 a11y sahifasi va `tap-target` tuzatishidan so'ng o'zgargan spec'lar (a11y, detail-pages, i18n-fit, flows, home-windows, compact-cards, regression) alohida o'tdi |
+| E2E | `bash e2e/stack/up.sh && npx playwright test -c e2e` | 151/151 (toza stend, 7.0 daqiqa) |
 | Production build | `npm run build` (CI'dagi placeholder env bilan) | muvaffaqiyatli |
 | Sir skaneri | `bash scripts/security/secret-scan.sh` | sir topilmadi |
 | Paketlar | `npm audit --omit=dev` | 0 zaiflik |
