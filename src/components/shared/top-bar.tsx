@@ -11,6 +11,8 @@ import { DesktopNavLinks, type NavMode, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
 import { LoginLink } from "./login-link";
 import { BrandMark } from "@/components/shared/brand-mark";
+import { BrandWordmark } from "@/components/shared/brand-wordmark";
+import { BRAND } from "@/config/brand";
 
 /** Yuqori paneldagi foydalanuvchi (sessiyadan, serverda tayyorlanadi) */
 export interface TopBarUser {
@@ -39,11 +41,11 @@ export function TopBar({ role, counts, mode = null, user }: TopBarProps) {
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
       <div className="container-app flex h-14 items-center gap-3">
-        <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label="Ish topdim">
+        <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label={BRAND.name}>
           <BrandMark />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
           <span className={session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "text-lg @max-[22rem]:hidden"}>
-            Ish <span className="text-primary">topdim</span>
+            <BrandWordmark />
           </span>
         </Link>
         <div className="ml-4 min-w-0 flex-1 @max-[22rem]:ml-0">

@@ -6,6 +6,7 @@ import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
+import { BRAND } from "@/config/brand";
 
 /** Ish beruvchi: vakansiya reklama rasmi (post/story) + tayyor matn + ulashish */
 export function PromoPanel({ slug, caption, url, isActive }: { slug: string; caption: string; url: string; isActive: boolean }) {
@@ -51,7 +52,7 @@ export function PromoPanel({ slug, caption, url, isActive }: { slug: string; cap
           <pre className="max-h-72 overflow-auto whitespace-pre-wrap rounded-xl bg-secondary/60 p-3 font-sans text-sm leading-relaxed">{caption}</pre>
           <div className="grid gap-2 sm:grid-cols-3">
             <Button asChild variant="default">
-              <a href={src} download={`ishtopdim-${slug}-${format}.png`}>
+              <a href={src} download={`${BRAND.fileSlug}-${slug}-${format}.png`}>
                 <Download className="size-4" />
                 {t("promo.download")}
               </a>

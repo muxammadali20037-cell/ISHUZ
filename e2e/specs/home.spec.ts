@@ -59,12 +59,14 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" });
-  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
-  await nav.getByRole("link", { name: "Qidirish" }).click();
-  await page.waitForURL(/\/search$/);
-  await expect(nav.getByRole("link", { name: "Qidirish" })).toHaveAttribute("aria-current", "page");
-  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).not.toHaveAttribute("aria-current", "page");
+  // R-B: ish qidiruvchi (rejim tanlamagan mehmon ham) — Ishlar · Saqlanganlar · Arizalar · Profil
+  const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
+  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlanganlar", "Arizalar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: "Saqlanganlar" }).click();
+  await page.waitForURL(/\/saved$/);
+  await expect(nav.getByRole("link", { name: "Saqlanganlar" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Ishlar" })).not.toHaveAttribute("aria-current", "page");
 });
 
 test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal siljish yo'q)", async ({ page, context }) => {

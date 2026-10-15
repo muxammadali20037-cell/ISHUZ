@@ -20,6 +20,7 @@ import { useSaveVacancy } from "./use-save-vacancy";
 import { celebrate } from "@/lib/celebrate";
 import { callAction } from "@/lib/action-call";
 import { useCtaOffset } from "@/components/shared/use-cta-offset";
+import { BRAND } from "@/config/brand";
 
 export interface VacancyActionsProps {
   vacancy: { id: string; slug: string; title: string; companyName: string | null; status: Enums<"vacancy_status"> };
@@ -59,7 +60,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
   const onShare = async () => {
     const url = `${window.location.origin}${detailPath}`;
-    const text = t("jobs.detail.share_text", { title: vacancy.title, company: vacancy.companyName ?? "Ish topdim" });
+    const text = t("jobs.detail.share_text", { title: vacancy.title, company: vacancy.companyName ?? BRAND.name });
     if (typeof navigator.share === "function") {
       try {
         await navigator.share({ title: vacancy.title, text, url });

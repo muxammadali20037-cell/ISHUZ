@@ -10,6 +10,7 @@ import { getServerEnv } from "@/lib/env";
 import { logAiUsage } from "@/lib/ai/usage";
 import type { Locale } from "@/lib/i18n/config";
 import type { AiCatalog } from "./catalog";
+import { BRAND } from "@/config/brand";
 
 const E = Constants.public.Enums;
 const code = z.string().nullable();
@@ -124,7 +125,7 @@ export type WorkerAlertExtract = z.infer<typeof workerAlertExtractSchema>;
 // Promptlar
 // ---------------------------------------------------------------------------
 
-const COMMON = `Sen «Ish topdim» (O'zbekiston ish platformasi) yordamchisisan. Foydalanuvchi o'z so'zlari bilan, ba'zan xatolar bilan, o'zbek (lotin/kirill) yoki rus tilida yozadi.
+const COMMON = `Sen «${BRAND.name}» (O'zbekiston ish platformasi) yordamchisisan. Foydalanuvchi o'z so'zlari bilan, ba'zan xatolar bilan, o'zbek (lotin/kirill) yoki rus tilida yozadi.
 Vazifang: matnni tahlil qilib, berilgan JSON sxemasi bo'yicha to'ldirish.
 Qoidalar:
 - Kategoriya, yo'nalish, viloyat, tuman, ko'nikma — FAQAT pastdagi ma'lumotnomadagi kodlar (c1, s5, r2, d17, k3). Mosi yo'q bo'lsa null (ko'nikma bo'lsa ro'yxatga qo'shma).

@@ -414,7 +414,12 @@
     "cabinet": "Кабинетим",
     "jobs": "Иш топиш",
     "workers": "Ходим топиш",
-    "saved": "Сақланганлар"
+    "saved": "Сақланганлар",
+    "tab_jobs": "Ишлар",
+    "tab_applications": "Аризалар",
+    "tab_profile": "Профил",
+    "tab_vacancies": "Вакансиялар",
+    "tab_candidates": "Номзодлар"
   },
   "moderation": {
     "pending_title": "Эълонингиз сақланди",

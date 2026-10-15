@@ -25,10 +25,12 @@ test("mehmon: avval 'Siz nima qidiryapsiz?'; 'Ish qidiryapman' — faqat ish izl
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/worker']")).toBeVisible();
-  // pastki menyu: rejimga mos nom + "Saqlanganlar"
+  // pastki menyu (R-B): Ishlar · Saqlanganlar · Arizalar · Profil — arizalar va takliflar yashirin emas
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link", { name: "Ish topish" })).toHaveAttribute("href", "/search?mode=jobs");
-  await expect(nav.getByRole("link", { name: "Saqlanganlar" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/");
+  await expect(nav.getByRole("link", { name: "Saqlanganlar" })).toHaveAttribute("href", "/saved");
+  await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/applications");
+  await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
 
   await page.reload();
   await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
@@ -50,7 +52,9 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(windows(page).nth(0)).toContainText("Endi xodim topish oson");
   await expect(page.getByText("Endi o'zingizga mos ish topish oson")).toHaveCount(0);
   await expect(page.getByRole("link", { name: /Ish e'loni berish/ })).toBeVisible();
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Xodim topish" })).toBeVisible();
+  // ish beruvchi menyusi (R-B): Bosh sahifa · Vakansiyalar · Nomzodlar · Profil
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Bosh sahifa", "Vakansiyalar", "Nomzodlar", "Profil"]);
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Nomzodlar" })).toHaveAttribute("href", "/search?mode=workers");
 });
 
 test("ish izlovchi ishchilar qidiruviga kirsa — tushuntirish; 'qaytish' o'z bo'limiga, 'o'tish' — rejim almashadi", async ({ page, context }) => {

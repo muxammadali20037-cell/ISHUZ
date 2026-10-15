@@ -1,6 +1,7 @@
 import "server-only";
 
 import { getServerEnv } from "@/lib/env";
+import { BRAND } from "@/config/brand";
 
 export type InlineButton = { text: string; url?: string; web_app?: { url: string }; callback_data?: string };
 export type InlineKeyboard = { inline_keyboard: InlineButton[][] };
@@ -81,7 +82,7 @@ export async function syncBotMenuButtonOnce() {
 }
 
 export async function setBotMenuButton() {
-  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: "Ish topdim", web_app: { url: miniAppBaseUrl() } } });
+  return callBot("setChatMenuButton", { menu_button: { type: "web_app", text: BRAND.name, web_app: { url: miniAppBaseUrl() } } });
 }
 
 export async function setBotWebhook(url: string, secret: string) {

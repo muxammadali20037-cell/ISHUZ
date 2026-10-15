@@ -11,6 +11,7 @@ import { getSidebarCounts } from "../queries/dashboard";
 import { SidebarNav } from "./sidebar-nav";
 import { AdminTopbar } from "./admin-topbar";
 import { BrandMark } from "@/components/shared/brand-mark";
+import { BrandWordmark } from "@/components/shared/brand-wordmark";
 
 /** Admin panel qobig'i: chap yon panel (lg+), yuqori panel, kontent */
 export async function AdminShell({ ctx, children }: { ctx: AdminContext; children: ReactNode }) {
@@ -28,7 +29,7 @@ export async function AdminShell({ ctx, children }: { ctx: AdminContext; childre
           <Link href="/admin" className="flex items-center gap-2 font-extrabold tracking-tight">
             <BrandMark />
             <span className="text-lg">
-              Ish <span className="text-primary">topdim</span>
+              <BrandWordmark />
             </span>
           </Link>
           <Badge variant="outline" size="sm" className="ml-auto">

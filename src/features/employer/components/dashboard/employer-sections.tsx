@@ -16,7 +16,7 @@ export async function EmployerSections() {
   return (
     <nav aria-label={t("employer.sections.title")}>
       <h2 className="mb-3 text-lg font-bold">{t("employer.sections.title")}</h2>
-      <ul className="grid gap-2 sm:grid-cols-2">
+      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {items.map(({ href, icon: Icon, key }) => (
           <li key={key}>
             <Link href={href} className="flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary/50">

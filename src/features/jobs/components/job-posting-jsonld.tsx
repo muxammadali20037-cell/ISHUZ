@@ -2,6 +2,7 @@ import { publicEnv } from "@/lib/env";
 import type { Enums } from "@/types/database.types";
 import { descriptionToPlainText } from "../description";
 import type { VacancyDetail } from "../types";
+import { BRAND } from "@/config/brand";
 
 const EMPLOYMENT: Record<Enums<"employment_type">, string> = {
   full_time: "FULL_TIME",
@@ -34,7 +35,7 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
     "@type": "JobPosting",
     title: v.title,
     description,
-    identifier: { "@type": "PropertyValue", name: "Ish topdim", value: v.id },
+    identifier: { "@type": "PropertyValue", name: BRAND.name, value: v.id },
     datePosted: v.published_at ?? v.created_at,
     validThrough: v.expires_at ?? undefined,
     employmentType: EMPLOYMENT[v.employment_type],
@@ -42,7 +43,7 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
     directApply: true,
     hiringOrganization: {
       "@type": "Organization",
-      name: v.company?.name ?? "Ish topdim",
+      name: v.company?.name ?? BRAND.name,
       sameAs: v.company?.website ?? undefined,
       logo: v.company?.logo_url ?? undefined,
     },

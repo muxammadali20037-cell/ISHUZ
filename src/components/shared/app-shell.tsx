@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, Home, Search, User, type LucideIcon } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, FileText, Home, Search, User, Users, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
@@ -18,27 +18,54 @@ interface NavItem {
 }
 
 /**
- * Sodda navigatsiya: Bosh sahifa · Ish topish / Xodim topish (joriy rejim) · Saqlanganlar · Kabinetim.
- * E'lonlar, arizalar, takliflar va sozlamalar — "Kabinetim" ichida.
+ * Rolga xos navigatsiya (R-B): oddiy ishni bajarish uchun ortiqcha menyu yo'q, arizalar va takliflar yashirin emas.
+ *   Ish qidiruvchi (va rejim tanlamagan mehmon): Ishlar · Saqlanganlar · Arizalar · Profil
+ *   Ish beruvchi:                                Bosh sahifa · Vakansiyalar · Nomzodlar · Profil
+ * Xabarlar va bildirishnomalar — yuqori panelda. Eski manzillar (/search, /cabinet, /employer…) o'zgarmagan.
  */
+const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/messages", "/billing", "/ai-alerts", "/help"];
+
 function mainNav(mode: NavMode): NavItem[] {
+  if (mode === "employer") {
+    return [
+      { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" || p === "/employer" },
+      {
+        href: "/employer/vacancies",
+        labelKey: "easy.nav.tab_vacancies",
+        icon: BriefcaseBusiness,
+        badgeKey: "applications",
+        match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/employer/applications") || p.startsWith("/post/vacancy"),
+      },
+      {
+        href: "/search?mode=workers",
+        labelKey: "easy.nav.tab_candidates",
+        icon: Users,
+        match: (p) => p.startsWith("/search") || p.startsWith("/workers") || p.startsWith("/listing") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates"),
+      },
+      {
+        href: "/cabinet",
+        labelKey: "easy.nav.tab_profile",
+        icon: User,
+        match: (p) => PROFILE_PATHS.some((x) => p.startsWith(x)) || p.startsWith("/company") || p.startsWith("/offers"),
+      },
+    ];
+  }
   return [
-    { href: "/", labelKey: "common.nav.home", icon: Home, match: (p) => p === "/" },
     {
-      href: mode === "worker" ? "/search?mode=jobs" : mode === "employer" ? "/search?mode=workers" : "/search",
-      labelKey: mode === "worker" ? "easy.nav.jobs" : mode === "employer" ? "easy.nav.workers" : "easy.nav.search",
+      href: "/",
+      labelKey: "easy.nav.tab_jobs",
       icon: Search,
-      match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/workers") || p.startsWith("/listing"),
+      match: (p) => p === "/" || p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students"),
     },
     { href: "/saved", labelKey: "easy.nav.saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
     {
-      href: "/cabinet",
-      labelKey: "easy.nav.cabinet",
-      icon: User,
+      href: "/applications",
+      labelKey: "easy.nav.tab_applications",
+      icon: FileText,
       badgeKey: "offers",
-      match: (p) =>
-        ["/cabinet", "/profile", "/settings", "/notifications", "/applications", "/offers", "/employer", "/company", "/messages", "/post"].some((x) => p.startsWith(x)),
+      match: (p) => p.startsWith("/applications") || p.startsWith("/offers"),
     },
+    { href: "/cabinet", labelKey: "easy.nav.tab_profile", icon: User, match: (p) => PROFILE_PATHS.some((x) => p.startsWith(x)) || p.startsWith("/post") },
   ];
 }
 

@@ -248,7 +248,7 @@
     "pay_period": "Как платите?",
     "pay_monthly": "Помесячно",
     "pay_monthly_desc": "Постоянная работа — зарплата в месяц",
-    "pay_daily": "Посуточно",
+    "pay_daily": "За день",
     "pay_daily_desc": "Работа на один или несколько дней — оплата за день"
   },
   "search": {
@@ -414,7 +414,12 @@
     "cabinet": "Кабинет",
     "jobs": "Найти работу",
     "workers": "Найти сотрудника",
-    "saved": "Избранное"
+    "saved": "Избранное",
+    "tab_jobs": "Работа",
+    "tab_applications": "Отклики",
+    "tab_profile": "Профиль",
+    "tab_vacancies": "Вакансии",
+    "tab_candidates": "Кандидаты"
   },
   "moderation": {
     "pending_title": "Объявление сохранено",

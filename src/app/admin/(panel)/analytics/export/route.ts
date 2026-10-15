@@ -3,6 +3,7 @@ import { adminUiEnabled } from "@/lib/features";
 import { getAdminActor } from "@/features/admin/context";
 import { resolvePeriod } from "@/features/admin/period";
 import { SERIES_METRICS, getStatsSeries, getStatsV2 } from "@/features/admin/queries/panel";
+import { BRAND } from "@/config/brand";
 
 /** CSV hujayra: Excel formula in'ektsiyasidan himoya (=, +, -, @ bilan boshlansa — apostrof) */
 function cell(v: unknown): string {
@@ -48,7 +49,7 @@ export async function GET(request: NextRequest) {
   return new NextResponse(body, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
-      "Content-Disposition": `attachment; filename="ishtopdim-${kind}-${period.fromDay}_${period.toDay}.csv"`,
+      "Content-Disposition": `attachment; filename="${BRAND.fileSlug}-${kind}-${period.fromDay}_${period.toDay}.csv"`,
       "Cache-Control": "no-store",
       "X-Robots-Tag": "noindex, nofollow",
     },

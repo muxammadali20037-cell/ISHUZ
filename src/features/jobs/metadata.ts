@@ -8,6 +8,7 @@ import { formatSalaryRange } from "@/lib/format";
 import { descriptionExcerpt } from "./description";
 import { countActiveFilters, jobsHref, type JobsSearchParams } from "./search-params";
 import type { VacancyDetail } from "./types";
+import { BRAND } from "@/config/brand";
 
 /** /jobs sahifasi SEO: sarlavha kategoriya/hududga qarab */
 export async function jobsListMetadata(params: JobsSearchParams): Promise<Metadata> {
@@ -29,7 +30,7 @@ export async function jobsListMetadata(params: JobsSearchParams): Promise<Metada
     title,
     description,
     alternates: localeAlternates(canonical, locale),
-    openGraph: { title: `${title} · Ish topdim`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : locale === "oz" ? "uz_UZ" : "uz_UZ" },
+    openGraph: { title: `${title} · ${BRAND.name}`, description, url: canonical, type: "website", locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : locale === "oz" ? "uz_UZ" : "uz_UZ" },
     robots: noindex ? { index: false, follow: true } : undefined,
   };
 }
@@ -58,7 +59,7 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
     description,
     alternates: localeAlternates(url, locale),
     openGraph: {
-      title: `${title} · Ish topdim`,
+      title: `${title} · ${BRAND.name}`,
       description,
       url,
       type: "article",

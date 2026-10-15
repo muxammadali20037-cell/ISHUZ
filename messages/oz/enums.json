@@ -64,10 +64,10 @@
     "negotiable": "Келишилади"
   },
   "salary_type_suffix": {
-    "monthly": "/oy",
-    "daily": "/kun",
-    "hourly": "/soat",
-    "piecework": "ишбай",
+    "monthly": "/ой",
+    "daily": "/кун",
+    "hourly": "/соат",
+    "piecework": " · ишбай",
     "negotiable": ""
   },
   "availability": {

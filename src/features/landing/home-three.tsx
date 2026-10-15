@@ -12,6 +12,7 @@ import { windowsFor } from "@/features/home-windows/model";
 import type { AppMode } from "@/features/mode/mode";
 import { ModeChooser } from "@/features/mode/components/mode-chooser";
 import { ModeSwitch } from "@/features/mode/components/mode-switch";
+import { BRAND } from "@/config/brand";
 
 /**
  * Bosh sahifa — rejimga qarab, aralashmasdan:
@@ -26,11 +27,11 @@ export async function HomeThree({ session, mode }: { session: SessionContext | n
   const [count, home] = await Promise.all([session ? countMyListings(session) : Promise.resolve(0), getHomeSettings()]);
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const jsonLd = JSON.stringify([
-    { "@context": "https://schema.org", "@type": "Organization", name: "Ish topdim", url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
+    { "@context": "https://schema.org", "@type": "Organization", name: BRAND.name, url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
-      name: "Ish topdim",
+      name: BRAND.name,
       url: base,
       inLanguage: ["uz", "ru"],
       potentialAction: { "@type": "SearchAction", target: { "@type": "EntryPoint", urlTemplate: `${base}/search?q={search_term_string}` }, "query-input": "required name=search_term_string" },

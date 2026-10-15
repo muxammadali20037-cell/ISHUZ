@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
@@ -52,14 +52,12 @@ test.afterEach(async () => {
   await sql("delete from public.worker_profiles where profile_id = any($1)", [[FRESH, USERS.workerB]]);
 });
 
-const nav = (page: Page) => page.getByRole("navigation").last();
 
 test("G1: 'Ish topish' — darhol 'Barcha ish e'lonlari · N ta' va yangilari; bir bosishda natijalar", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
-  await page.goto("/");
-  await nav(page).getByRole("link", { name: "Ish topish" }).click();
-  await page.waitForURL(/\/search\?mode=jobs$/);
+  // R-B: pastki menyuda "Ishlar" — bosh sahifa (u yerdagi ro'yxat — home.spec); qidiruv boshi to'g'ridan-to'g'ri
+  await page.goto("/search?mode=jobs");
   const all = page.getByRole("link", { name: /^Barcha ish e'lonlari/ });
   await expect(all).toContainText("4 ta · Butun O'zbekiston");
   // eng yangisi birinchi, 3 tasi

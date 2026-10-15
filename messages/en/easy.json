@@ -414,7 +414,12 @@
     "cabinet": "My account",
     "jobs": "Find a job",
     "workers": "Find staff",
-    "saved": "Saved"
+    "saved": "Saved",
+    "tab_jobs": "Jobs",
+    "tab_applications": "Applications",
+    "tab_profile": "Profile",
+    "tab_vacancies": "Vacancies",
+    "tab_candidates": "Candidates"
   },
   "moderation": {
     "pending_title": "Your listing is saved",

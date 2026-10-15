@@ -67,7 +67,7 @@
     "monthly": "/мес",
     "daily": "/день",
     "hourly": "/час",
-    "piecework": "сдельно",
+    "piecework": " · сдельно",
     "negotiable": ""
   },
   "availability": {

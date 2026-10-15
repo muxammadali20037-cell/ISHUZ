@@ -18,8 +18,8 @@ async function slowNavigation(page: Page, path: string) {
 
 test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol faol, kontent o'rnida skelet", async ({ page, context }) => {
   await asGuest(context);
-  await asMode(context, "worker");
-  await page.goto("/saved");
+  await asMode(context, "employer");
+  await page.goto("/");
   const main = page.locator("main");
   // birinchi ochilish: animatsiya yo'q
   await expect(main).not.toHaveClass(/page-(enter|swap)/);
@@ -27,7 +27,7 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
 
   await slowNavigation(page, "/search");
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await nav.getByRole("link", { name: "Ish topish" }).click();
+  await nav.getByRole("link", { name: "Nomzodlar" }).click();
 
   // javob hali kelmagan: skelet ko'rinadi — xuddi shu lahzada panel, menyu va lupa tugmasi ham joyida
   // (bitta "surat": kutib turib, javob kelgandan keyingi holatni tekshirib qo'ymaslik uchun)
@@ -41,11 +41,11 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
     active: document.querySelector("nav.fixed a[aria-current='page']")?.textContent ?? null,
     mainClass: document.querySelector("main")?.className ?? "",
   }));
-  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, fab: true, active: "Ish topish" });
+  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, fab: true, active: "Nomzodlar" });
   expect(snap.mainClass).toContain("page-enter");
 
   // javob keldi: kontent skelet o'rnida, faqat ochiladi (pastdan ikkinchi marta chiqmaydi)
-  await expect(page.getByRole("heading", { name: "Qaysi kasb bo'yicha ish qidiryapsiz?" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Qanday mutaxassis kerak?" })).toBeVisible();
   await expect(skeleton).toHaveCount(0);
   await expect(page.locator("main")).toHaveClass(/page-swap/);
   await expect(page.locator("header")).toHaveCount(1);

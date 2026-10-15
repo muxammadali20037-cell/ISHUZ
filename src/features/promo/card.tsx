@@ -1,3 +1,4 @@
+import { BRAND } from "@/config/brand";
 /**
  * Vakansiya reklama kartasi (next/og → PNG). Faqat flexbox va satori qo'llaydigan CSS.
  * Formatlar: square (Instagram post / Telegram), story (Reels/Stories), og (havola oldindan ko'rinishi).
@@ -130,7 +131,7 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
               <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
             </svg>
           </div>
-          <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>Ish topdim</div>
+          <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>{BRAND.name}</div>
         </div>
         <div style={{ display: "flex", transform: "rotate(6deg)", background: "#fde047", color: "#0f172a", padding: `${z.brand * 0.3}px ${z.brand * 0.7}px`, borderRadius: 999, fontSize: z.brand * 0.72, fontWeight: 800, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
           {data.labels.hiring}

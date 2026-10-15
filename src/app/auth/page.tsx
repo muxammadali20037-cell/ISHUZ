@@ -6,6 +6,7 @@ import { AuthForm } from "@/features/auth/components/auth-form";
 import { getServerEnv } from "@/lib/env";
 import { BrandMark } from "@/components/shared/brand-mark";
 import { safeInternalPath } from "@/lib/security/safe-path";
+import { BrandWordmark } from "@/components/shared/brand-wordmark";
 
 export const metadata: Metadata = { title: "Kirish" };
 
@@ -22,7 +23,7 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
         <Link href="/" className="flex min-h-11 items-center gap-2 font-extrabold tracking-tight">
           <BrandMark />
           <span className="text-lg">
-            Ish <span className="text-primary">topdim</span>
+            <BrandWordmark />
           </span>
         </Link>
         <LanguageSwitcher />

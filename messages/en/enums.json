@@ -67,7 +67,7 @@
     "monthly": "/mo",
     "daily": "/day",
     "hourly": "/hr",
-    "piecework": "piece rate",
+    "piecework": " · piece rate",
     "negotiable": ""
   },
   "availability": {
