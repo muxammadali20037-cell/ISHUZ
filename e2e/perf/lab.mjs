@@ -13,20 +13,28 @@ import { sessionCookie } from "../stack/jwt.mjs";
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const stack = JSON.parse(fs.readFileSync(path.join(dir, "../.stack/env.json"), "utf8"));
 const RUNS = Number(process.argv[2] || 3);
-const host = new URL(stack.app).hostname;
+// E2E_BASE_URL — o'sha stendga ulangan boshqa build (masalan, eski commit) ustida o'lchash (Playwright konfiguratsiyasidagidek)
+const app = process.env.E2E_BASE_URL ?? stack.app;
+const host = new URL(app).hostname;
 
 const db = new pg.Client({ connectionString: stack.db });
 await db.connect();
 const { rows } = await db.query("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
+// e'lon sahifasi (R-F): eng yangi faol vakansiya; bazada bo'lmasa — o'lchanmaydi
+const { rows: vac } = await db.query("select slug from public.vacancies where status = 'active' order by published_at desc nulls last limit 1");
 await db.end();
 
 const ROUTES = [
   { name: "home", url: "/", tap: "main a[href^='/search']:visible" },
   { name: "search-start", url: "/search", tap: "main a[href*='mode=']:visible" },
   { name: "search-results", url: `/search?mode=jobs&p=${rows[0].id}&region=all`, tap: null },
-  { name: "post-worker", url: "/post/worker", tap: "main input:visible" },
+  // E1 dan keyin rejimsiz mehmonga avval "ish izlayapsizmi?" savoli chiqadi — formaning o'zi o'lchanishi uchun rejim beriladi
+  { name: "post-worker", url: "/post/worker", mode: "worker", tap: "main input:visible" },
   { name: "auth", url: "/auth", tap: null },
   { name: "cabinet", url: "/cabinet", user: "7e2e0000-0000-4000-8000-000000000001", tap: null },
+  // R-F: ish beruvchi bosh sahifasi (mehmon) va e'lon sahifasi
+  { name: "home-employer", url: "/", mode: "employer", tap: null },
+  ...(vac[0] ? [{ name: "vacancy", url: `/jobs/${vac[0].slug}`, tap: null }] : []),
 ];
 
 const median = (xs) => {
@@ -39,9 +47,12 @@ const out = [];
 for (const r of ROUTES) {
   const samples = [];
   for (let i = 0; i < RUNS; i++) {
-    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: "uz-UZ" });
+    // service worker o'chiq: u /_next/static fayllarini keshdan siqilmagan holda beradi va resource timing'da "siqilgan hajm"
+    // o'rniga to'liq hajm chiqadi (gidratsiyadan keyin yuklangan bo'laklar 3–4 baravar katta ko'rinardi). Birinchi tashrif sharoiti.
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, isMobile: true, hasTouch: true, locale: "uz-UZ", serviceWorkers: "block" });
     await ctx.addCookies([
       { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
+      ...(r.mode ? [{ name: "ib_mode", value: r.mode, domain: host, path: "/" }] : []),
       ...(r.user ? [{ ...sessionCookie(r.user, stack.secret), domain: host, path: "/" }] : []),
     ]);
     const page = await ctx.newPage();
@@ -58,15 +69,20 @@ for (const r of ROUTES) {
       new PerformanceObserver((l) => l.getEntries().forEach((e) => { if (e.interactionId) window.__lab.maxEvent = Math.max(window.__lab.maxEvent, e.duration); })).observe({ type: "event", buffered: true, durationThreshold: 16 });
     });
     const t0 = Date.now();
-    await page.goto(stack.app + r.url, { waitUntil: "load" });
+    await page.goto(app + r.url, { waitUntil: "load" });
     const loadMs = Date.now() - t0;
     await page.waitForLoadState("networkidle");
     const idleMs = Date.now() - t0;
     await page.waitForTimeout(1000);
     // JS hajmi bosishdan OLDIN (bosish keyingi sahifa chunk'larini oldindan yuklaydi)
+    // jsKb — bosishgacha yuklangan barcha JS (Next.js ko'rinib turgan havolalar sahifalarining bo'laklarini ham oldindan oladi);
+    // jsAtLoadKb — `load` hodisasigacha tugaganlari (sahifaning o'zi uchun kerak bo'lgani, taxminan)
     const js = await page.evaluate(() => {
       const res = performance.getEntriesByType("resource").filter((e) => e.initiatorType === "script" || e.name.endsWith(".js"));
-      return { jsKb: res.reduce((s, e) => s + (e.encodedBodySize || 0), 0) / 1024, jsFiles: res.length };
+      const nav = performance.getEntriesByType("navigation")[0];
+      const loadEnd = nav && nav.loadEventEnd > 0 ? nav.loadEventEnd : Infinity;
+      const kb = (xs) => xs.reduce((s, e) => s + (e.encodedBodySize || 0), 0) / 1024;
+      return { jsKb: kb(res), jsFiles: res.length, jsAtLoadKb: kb(res.filter((e) => e.responseEnd <= loadEnd)) };
     });
     if (r.tap) {
       const el = page.locator(r.tap).first();
@@ -89,9 +105,9 @@ for (const r of ROUTES) {
     await ctx.close();
   }
   const pick = (k) => median(samples.map((s) => s[k]).filter((v) => v !== null));
-  const row = { route: r.name, runs: RUNS, loadMs: pick("loadMs"), idleMs: pick("idleMs"), ttfbMs: Math.round(pick("ttfb")), lcpMs: Math.round(pick("lcp")), cls: Number(pick("cls").toFixed(3)), tapMs: Math.round(pick("tapMs")), jsKb: Math.round(pick("jsKb")), jsFiles: pick("jsFiles"), htmlKb: Math.round(pick("htmlKb")) };
+  const row = { route: r.name, runs: RUNS, loadMs: pick("loadMs"), idleMs: pick("idleMs"), ttfbMs: Math.round(pick("ttfb")), lcpMs: Math.round(pick("lcp")), cls: Number(pick("cls").toFixed(3)), tapMs: Math.round(pick("tapMs")), jsKb: Math.round(pick("jsKb")), jsAtLoadKb: Math.round(pick("jsAtLoadKb")), jsFiles: pick("jsFiles"), htmlKb: Math.round(pick("htmlKb")) };
   out.push(row);
   console.log(JSON.stringify(row));
 }
 await browser.close();
-fs.writeFileSync(path.join(dir, "../.stack/perf.json"), JSON.stringify({ at: new Date().toISOString(), conditions: "390×844 DPR3, 150ms RTT, 1.6 Mbit/s, CPU 4×, local production build", rows: out }, null, 2));
+fs.writeFileSync(path.join(dir, "../.stack/perf.json"), JSON.stringify({ at: new Date().toISOString(), app, conditions: "390×844 DPR3, 150ms RTT, 1.6 Mbit/s, CPU 4×, local production build, service worker blocked", rows: out }, null, 2));

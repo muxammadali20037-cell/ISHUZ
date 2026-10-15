@@ -1,4 +1,4 @@
-import { publicEnv } from "@/lib/env";
+import { publicEnv } from "@/lib/env-public";
 
 /** vacancy-photos bucket yo'li → ochiq URL (server va mijozda ishlaydi) */
 export function vacancyPhotoUrl(path: string | null | undefined): string | null {

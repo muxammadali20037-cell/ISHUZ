@@ -76,6 +76,8 @@
     "required": "обязательно",
     "from": "от",
     "to": "до",
+    "salary_from": "от",
+    "salary_to": "до",
     "negotiable": "Договорная",
     "not_specified": "Не указано",
     "yes": "Да",

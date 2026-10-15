@@ -211,7 +211,7 @@ function OfferSheetBody({
   const salaryLabel = (v: MyVacancy) =>
     v.salary_negotiable || (!v.salary_from && !v.salary_to)
       ? t("common.labels.negotiable")
-      : `${formatSalaryRange(v.salary_from, v.salary_to, locale, { negotiable: t("common.labels.negotiable"), from: t("common.labels.from"), to: t("common.labels.to") })}${v.salary_type !== "negotiable" ? tEnum("salary_type_suffix", v.salary_type) : ""}`;
+      : `${formatSalaryRange(v.salary_from, v.salary_to, locale, { negotiable: t("common.labels.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") })}${v.salary_type !== "negotiable" ? tEnum("salary_type_suffix", v.salary_type) : ""}`;
 
   const submit = () => {
     const next: typeof errors = {};

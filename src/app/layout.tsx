@@ -60,7 +60,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const cookieStore = await cookies();
   const theme = cookieStore.get("ishuz_theme")?.value;
   return (
-    <html lang={locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
+    // "oz" — ilova ichki kodi, BCP-47 da yo'q: ekran o'qigichi o'zbek kirill matnini taniy olishi uchun "uz-Cyrl"
+    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
       <head>
         {/* Telegram Mini App SDK faqat Telegram ichida (gidratsiyadan oldin, avvalgidek). Oddiy brauzerda yuklanmaydi —
             tashqi skript kutilmagani uchun sahifa darhol "jonlanadi" (bosishlar kechikmaydi) */}

@@ -818,7 +818,7 @@ export async function sendMatchingJobs(ctx: BotCtx, offset: number) {
   }
 
   const total = Number(list[0]?.total ?? list.length);
-  const labels = { negotiable: ctx.t("bot.jobs.negotiable"), from: ctx.t("common.labels.from"), to: ctx.t("common.labels.to") };
+  const labels = { negotiable: ctx.t("bot.jobs.negotiable"), from: ctx.t("common.labels.salary_from"), to: ctx.t("common.labels.salary_to") };
   const lines = list.map((v, i) => {
     const place = v.is_remote ? ctx.t("bot.jobs.remote") : [ctx.locale === "ru" ? v.district_name_ru : v.district_name_uz, ctx.locale === "ru" ? v.region_name_ru : v.region_name_uz].filter(Boolean).join(", ");
     const salary = v.salary_negotiable ? labels.negotiable : formatSalaryRange(v.salary_from, v.salary_to, ctx.locale, labels);

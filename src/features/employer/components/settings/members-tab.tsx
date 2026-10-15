@@ -4,7 +4,7 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Copy, Link2, Trash2, UserMinus, UserPlus } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { publicEnv } from "@/lib/env";
+import { publicEnv } from "@/lib/env-public";
 import { formatDate, fullName, initials } from "@/lib/format";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";

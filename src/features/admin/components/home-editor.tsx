@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { ArrowDown, ArrowUp, ImagePlus, Plus, RotateCcw, Save, Trash2, Undo2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { LOCALES, type Locale } from "@/lib/i18n/config";
-import { publicEnv } from "@/lib/env";
+import { publicEnv } from "@/lib/env-public";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";

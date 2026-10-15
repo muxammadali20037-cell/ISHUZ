@@ -9,7 +9,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type, invalid, leftIcon, rightSlot, ...props }, ref) => {
   const base = cn(
-    "flex h-12 w-full rounded-xl border bg-card px-4 text-base text-foreground placeholder:text-muted-foreground transition-colors",
+    "flex h-12 w-full text-ellipsis rounded-xl border bg-card px-4 text-base text-foreground placeholder:text-muted-foreground transition-colors",
     "focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary/20 focus-visible:ring-offset-0",
     "disabled:cursor-not-allowed disabled:opacity-60",
     invalid ? "border-destructive focus-visible:border-destructive focus-visible:ring-destructive/20" : "border-input",

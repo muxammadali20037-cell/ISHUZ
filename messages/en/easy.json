@@ -342,6 +342,12 @@
     "region_wide": "Whole region",
     "city_wide": "Whole city",
     "experience": "Experience: {value}",
+    "exp_short": {
+      "none": "No experience",
+      "lt1": "Under 1 year",
+      "1_3": "1–3 years",
+      "3plus": "3+ years"
+    },
     "exp_required": "Experience: {value}",
     "exp_none": "No experience required",
     "apply": "Apply",

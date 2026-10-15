@@ -94,3 +94,39 @@ chiqadi. Q1 dagi muammo qaytmaydi — bu View Transition emas, oddiy CSS animats
 yo'qolardi; keyin — butun vaqt joyida, bosilgan bo'lim 200 ms kadrida faol. Tafsilot va kadrlar — hisobot §19,
 test — `e2e/specs/motion.spec.ts`.
 
+
+## R-F · Yuklanadigan JS va sahifa tezligi (2026-10-15)
+
+**Muhit.** Lokal production build (`bash e2e/stack/up.sh`), Chromium (Playwright), 390×844 DPR 3, 150 ms RTT,
+1.6 Mbit/s yuklash / 750 kbit/s yuborish, CPU 4× sekin, service worker o'chiq (birinchi tashrif), demo ma'lumotlar
+(12 faol vakansiya, 8 ishchi), **5 run mediana**. Avval — `71c362a` (R-D/E), keyin — shu commit, bir xil baza va stendda
+(`E2E_BASE_URL=http://localhost:3301 node e2e/perf/lab.mjs 5`). Bu **laboratoriya**; real foydalanuvchi (field, p75) — NOT_RUN.
+
+**Topilma.** `src/lib/env.ts` zod bilan yozilgan va uni mijoz kodi ham import qilardi (`vacancyPhotoUrl` → natija kartalari,
+brauzer Supabase klienti). Natijada **zod (~89 KB siqilgan, 392 KB xom)** natija kartasi bor har bir sahifaga (bosh sahifa,
+qidiruv, e'lon, kabinet) yuklanardi — faqat uchta `NEXT_PUBLIC_*` qatorini tekshirish uchun. Tuzatish: ochiq o'zgaruvchilar
+`src/lib/env-public.ts` da zod'siz (tekshiruv qoidalari bir xil — `env-public.test.ts`), server sxemasi `env.ts` da qoldi.
+Zod endi faqat uni haqiqatan ishlatadigan joylarda yuklanadi: formalar, chat va bildirishnomalar (ilova metama'lumotini tekshirish), admin.
+
+| Sahifa | LCP avval → keyin | CLS | Bosish | JS `load` gacha, KB | JS jami (prefetch bilan) | `load` |
+|---|---|---|---|---|---|---|
+| `/` (ish qidiruvchi) | 956 → 976 ms | 0 | 80 → 72 ms | **376 → 287** | 398 → 309 | **3110 → 2619 ms** |
+| `/search` | 952 → 948 ms | 0 | < 16 ms | **385 → 296** | 387 → 298 | 2987 → 2693 ms |
+| `/search?…` (natija) | 964 → 956 ms | 0 | — | **385 → 296** | 387 → 298 | 3187 → 2699 ms |
+| `/jobs/[slug]` | 1320 → 1276 ms | 0.005 | — | **379 → 290** | 411 → 322 | 3137 → 2598 ms |
+| `/` (ish beruvchi) | 1068 → 1004 ms | 0 | — | **376 → 287** | 397 → 308 | 3116 → 2591 ms |
+| `/cabinet` | 1016 → 960 ms | 0 | — | **370 → 282** | 459 → 282 | 3074 → 2646 ms |
+| `/post/worker` | 996 → 984 ms | 0 | 40 → 40 ms | 480 → 480 | 480 → 480 | 3656 → 3516 ms |
+| `/auth` | 880 → 852 ms | 0 | — | 235 → 235 | 235 → 235 | 2378 → 2400 ms |
+
+- LCP o'zgarmadi (±5% — shovqin): u server HTML va matn chizilishiga bog'liq, JS'ga emas. Yaxshilanish — JS hajmi va `load`.
+- `/post/worker` va `/auth` o'zgarmadi (forma zod'ni haqiqatan ishlatadi; `/auth` da zod avval ham yo'q edi).
+- "JS jami" — Next.js ko'rinib turgan havolalarning sahifalarini oldindan yuklashi bilan; run'dan run'ga farq qiladi
+  (`/cabinet`: bir run'da 460, boshqasida 282). Sahifaning o'zi uchun kerak bo'lgani — "`load` gacha" ustuni.
+- "Bosish" — sahifa tayyor bo'lgach bitta haqiqiy bosish (Event Timing, `interactionId > 0`, ≥ 16 ms yoziladi); INP emas.
+
+**O'lchov metodikasi tuzatildi** (`e2e/perf/lab.mjs`): (1) service worker `/_next/static` fayllarini keshdan siqilmagan
+holda beradi — resource timing'da gidratsiyadan keyin yuklangan bo'laklar 3–4 baravar katta ko'rinardi (`/cabinet` 687 KB
+"o'lchangan" edi, haqiqatda ~460 KB); endi lab'da service worker o'chiq. (2) "`load` gacha" JS alohida ko'rsatkich.
+(3) Yangi yo'llar: ish beruvchi bosh sahifasi va e'lon sahifasi. (4) `/post/worker` rejim bilan o'lchanadi (E1 dan keyin
+rejimsiz mehmonga avval savol ekrani chiqadi — forma o'lchanmay qolardi). D bosqichi jadvali (hisobot §4) eski metodika bilan.

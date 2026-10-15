@@ -76,6 +76,8 @@
     "required": "required",
     "from": "from",
     "to": "to",
+    "salary_from": "from",
+    "salary_to": "up to",
     "negotiable": "Negotiable",
     "not_specified": "Not specified",
     "yes": "Yes",

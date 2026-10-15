@@ -3,7 +3,7 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { SUPABASE_COOKIE_OPTIONS } from "@/lib/security/cookies";
 import type { Database } from "@/types/database.types";
-import { publicEnv } from "@/lib/env";
+import { publicEnv } from "@/lib/env-public";
 
 let client: ReturnType<typeof createBrowserClient<Database>> | undefined;
 

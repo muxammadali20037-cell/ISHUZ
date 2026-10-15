@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BadgeCheck, BriefcaseBusiness, CheckCircle2, ChevronRight, Phone, Send } from "lucide-react";
+import { BadgeCheck, BriefcaseBusiness, CheckCircle2, ChevronRight, Phone, Send, Wallet } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate, formatMoney, formatPhone, postedDay } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
@@ -241,8 +241,9 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
     ? name({ name_uz: worker.profession_name_uz, name_ru: worker.profession_name_ru ?? worker.profession_name_uz, name_en: worker.profession_name_en })
     : (worker.headline ?? "");
   const exp = levelToExperience(worker.experience_level);
-  const expValue = exp ? t(`easy.worker.exp.${exp}`) : "—";
-  const expText = t("easy.card.experience", { value: expValue });
+  const expText = t("easy.card.experience", { value: exp ? t(`easy.worker.exp.${exp}`) : "—" });
+  const salaryAmount = worker.salary_expected ? formatMoney(worker.salary_expected, locale) : "";
+  const salarySuffix = tEnum("salary_type_suffix", "monthly");
   const fullName = `${worker.first_name}${worker.last_initial ? ` ${worker.last_initial}.` : ""}`;
   return (
     <article className={cardCls}>
@@ -266,10 +267,18 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
             {place(worker, false)}
             {worker.remote_ok ? ` · ${t("easy.card.remote")}` : ""}
           </p>
-          {worker.salary_expected ? (
-            <p className="truncate text-sm font-semibold">
-              {t("easy.card.salary_expected", { amount: formatMoney(worker.salary_expected, locale) })}
-              <span className="font-normal text-muted-foreground">{tEnum("salary_type_suffix", "monthly")}</span>
+          {salaryAmount ? (
+            // ikonka + summa: "Желаемая зарплата: …" kabi uzun yozuv summani kesib qo'ymasin; to'liq matn — ekran o'qigichi uchun
+            <p className="flex min-w-0 items-center gap-1 text-sm font-semibold" title={`${t("easy.card.salary_expected", { amount: salaryAmount })}${salarySuffix}`}>
+              <Wallet className="size-4 shrink-0 text-primary" aria-hidden />
+              <span className="sr-only">
+                {t("easy.card.salary_expected", { amount: salaryAmount })}
+                {salarySuffix}
+              </span>
+              <span className="truncate tabular" aria-hidden>
+                {salaryAmount}
+                <span className="font-normal text-muted-foreground">{salarySuffix}</span>
+              </span>
             </p>
           ) : null}
         </div>
@@ -277,12 +286,12 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
       <div className="mt-2 flex items-center gap-2">
         <CardAction phone={worker.phone} action={{ href: `/listing/${worker.id}#contact`, label: t("easy.card.contact") }} />
         {saved !== undefined ? <SaveButton kind="worker" id={worker.id} initial={saved} label={fullName} refresh={savedRefresh} className="relative z-10" /> : null}
-        {/* qisqa: ikonka + qiymat (pastki qator bitta qatorga sig'sin); to'liq "Tajriba: …" — ekran o'qigichi uchun */}
+        {/* qisqa: ikonka + "3+ yil" (pastki qator bitta qatorga sig'sin, ru/en da ham); to'liq "Tajriba: …" — ekran o'qigichi uchun */}
         <span className={cn(chipCls, "flex items-center gap-1")} title={expText}>
           <BriefcaseBusiness className="size-4 shrink-0 text-primary" aria-hidden />
           <span className="sr-only">{expText}</span>
           <span className="truncate" aria-hidden>
-            {expValue}
+            {exp ? t(`easy.card.exp_short.${exp}`) : "—"}
           </span>
         </span>
       </div>

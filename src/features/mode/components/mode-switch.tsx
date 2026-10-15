@@ -51,11 +51,12 @@ export function ModeSwitch({ mode, className }: { mode: AppMode; className?: str
               data-track="mode_switch"
               data-track-to={it.mode}
               className={cn(
-                "flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 text-base font-bold transition-colors",
+                "flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 text-base font-bold transition-colors max-[339px]:px-1",
                 on ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground",
               )}
             >
-              <it.icon className="size-5 shrink-0" aria-hidden /> <span className="truncate">{it.label}</span>
+              {/* tor ekranda ikonka joy olmasin — yozuv to'liq ko'rinsin ("Работодатель" 360 px da kesilardi) */}
+              <it.icon className="size-5 shrink-0 max-[339px]:hidden max-[379px]:[:lang(ru)_&]:hidden" aria-hidden /> <span className="truncate">{it.label}</span>
             </button>
           );
         })}

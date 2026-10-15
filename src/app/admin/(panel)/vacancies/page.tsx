@@ -38,7 +38,7 @@ export default async function AdminVacanciesPage({ searchParams }: { searchParam
   const canModerate = ctx.can("vacancies.moderate");
   const [paged, counts, categories, detail] = await Promise.all([listVacancies(f), vacancyStatusCounts(), categoryOptions(), view ? getVacancyDetail(view) : Promise.resolve(null)]);
   const hasActive = Boolean(f.q || f.category);
-  const salaryLabels = { negotiable: t("common.labels.negotiable"), from: t("common.labels.from"), to: t("common.labels.to") };
+  const salaryLabels = { negotiable: t("common.labels.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") };
 
   const tabs = [
     { href: withParam(BASE, { q: f.q, category: f.category }, "status", null), label: t("admin.vacancies.all"), active: !f.status },

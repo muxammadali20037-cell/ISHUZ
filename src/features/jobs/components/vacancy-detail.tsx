@@ -181,8 +181,9 @@ export async function VacancyDetail({
                   <p className="text-base font-semibold">{companyName}</p>
                 )}
                 {v.category ? (
-                  <p className="flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-                    <Link href={`/jobs?category=${v.category.slug}`} className="hover:underline">
+                  // bosish maydoni 44 px (tap-target); mt-3 — kengaygan maydon tepadagi kompaniya havolasini yopmasin
+                  <p className="mt-3 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+                    <Link href={`/jobs?category=${v.category.slug}`} className="tap-target relative hover:underline">
                       {name(v.category)}
                     </Link>
                     {v.profession ? (

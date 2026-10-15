@@ -4,7 +4,7 @@ Manba: `ISHUZ_Professional_Audit_va_Prompt_2026-10-11_1.md` (audit tayanch commi
 To'liq natija va dalillar: [PROFESSIONALIZATION_REPORT.md](PROFESSIONALIZATION_REPORT.md). Bu fayl — keyingi sessiya qayerdan
 davom etishini ko'rsatadigan qisqa holat. Bir xil auditni qaytadan boshlamang.
 
-Oxirgi yangilanish: 2026-10-13 · branch `claude/gallant-thompson-q70fo3` (main bilan bir xil, fast-forward).
+Oxirgi yangilanish: 2026-10-15 · branch `claude/gallant-thompson-q70fo3` (qayta loyihalash R-A…R-G; main'ga hali qo'shilmagan).
 
 ## Bosqichlar
 
@@ -50,10 +50,13 @@ Oxirgi yangilanish: 2026-10-13 · branch `claude/gallant-thompson-q70fo3` (main 
 | R-A — qayta loyihalash auditi | ✅ joriy ekranlar 390/1280 px, topilmalar turi bilan (XATO / UX / XAVF) va dalil — `docs/REDESIGN_AUDIT.md` | `3d56138` |
 | R-B — brend konfiguratsiyasi, rolga xos menyu | ✅ `src/config/brand.ts` (31 joy), ish qidiruvchi: Ishlar · Saqlanganlar · Arizalar · Profil; ish beruvchi: Bosh sahifa · Vakansiyalar · Nomzodlar · Profil; ishbay qo'shimchasi, `/employer` 36 px siljish | `f6b11d2` |
 | R-C — bosh sahifa, qidiruv, kartalar | ✅ birinchi ekranda qidiruv + tez filtrlar + haqiqiy e'lonlar ("Sizga mos" / "Yangi ishlar", rejim so'ralmaydi); ish beruvchi paneli (oddiy tugma, haqiqiy ko'rsatkichlar); matn → kompaniya/lavozim bo'yicha natija; faol filtr chiplari; karta tartibi, tasdiq belgisi, ariza holati; inputlar 16 px; topilgan xato X1 (mos nomzodlar doim bo'sh edi) tuzatildi | `a52001b`, `4d97e68` |
-| R-D/E — asosiy oqim qo'riqlari | ✅ 0065: muddati o'tgan vakansiyaga ariza yo'q, qidiruvda yo'q; yopilgan vakansiya bo'yicha taklif qabul qilinmaydi; admin MFA kaliti — faqat super_admin (lokal SQL testlar; **production'ga qo'llash egasi ruxsatini kutadi**); kirish/profil to'ldirishdan keyin ariza oynasiga qaytish; profilsiz "Arizalar"; klaviatura; taklif maoshi davri bilan; kasb meta-audit | (shu commit) |
+| R-D/E — asosiy oqim qo'riqlari | ✅ 0065: muddati o'tgan vakansiyaga ariza yo'q, qidiruvda yo'q; yopilgan vakansiya bo'yicha taklif qabul qilinmaydi; admin MFA kaliti — faqat super_admin (lokal SQL testlar; **production'ga qo'llash egasi ruxsatini kutadi**); kirish/profil to'ldirishdan keyin ariza oynasiga qaytish; profilsiz "Arizalar"; klaviatura; taklif maoshi davri bilan; kasb meta-audit | `f012106`, `71c362a` |
+| R-F/G — moslashuv, tillar, a11y, tezlik, yakuniy tekshiruv | ✅ 12 sahifa × 6 kenglik (uz) va × 3 (ru): siljish/kesilish/ustma-ust 0; ru/oz/en da kesilgan asosiy ma'lumot (rejim tugmasi, ishchi maoshi va tajribasi, "сум/мес" bo'linishi) tuzatildi; "dan 4 000 000 so'm" → "kamida …"; kirillda "сўм"; `lang="uz-Cyrl"`; a11y 3 sahifaga kengaytirildi, kichik bosish maydonlari tuzatildi; zod mijoz JS'idan chiqarildi (−89 KB, lab); yakuniy hisobot `docs/REDESIGN_REPORT.md` | (shu commit) |
 
 ## Keyingi sessiya uchun
 
+00. Qayta loyihalash (R-A…R-G) yakunlandi — natija, testlar va ochiq masalalar: [REDESIGN_REPORT.md](REDESIGN_REPORT.md).
+    **0065 (`apply_guards`) production'ga qo'llanmagan — egasining alohida ruxsati kerak.** Main'ga birlashtirish va deploy — alohida ruxsat bilan.
 0. C8, D (D1–D7), E (E1–E3, §13), F (to'lov, §14), G (ish/ishchi topish oson, §15), H (ixcham kartalar, §16), I (ixcham e'lon sahifalari, §17), J (natijalar sahifasi, §18) va K (harakat va bosish tezligi, §19) yakunlandi. Keyingi ish — hisobot §11 "Production relizni nima to'sib turibdi" va C8.10 "ochiq" ro'yxati
    (staging, `SUPPORT_EMAIL`, #30 haqiqiy qurilmada, tarmoq sekinlashtirish testi).
    Yangi o'zgarishda: OLDIN/KEYIN/fayllar/skrinshot/test/ochiq masala; yangi test eski build'da yiqilishini ko'rsating.

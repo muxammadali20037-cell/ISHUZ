@@ -34,7 +34,7 @@ export async function Review({ draft, reference }: { draft: WorkerDraft; referen
   const salary = (() => {
     if (!pr || (pr.salary_min === null && pr.salary_expected === null)) return none;
     const parts: string[] = [];
-    if (pr.salary_min !== null) parts.push(`${t("common.labels.from")} ${formatMoney(pr.salary_min, locale)}`);
+    if (pr.salary_min !== null) parts.push(`${t("common.labels.salary_from")} ${formatMoney(pr.salary_min, locale)}`);
     if (pr.salary_expected !== null) parts.push(`${t("onboarding.worker.review.expected")} ${formatMoney(pr.salary_expected, locale)}`);
     return `${parts.join(" · ")} ${tEnum("salary_type_suffix", pr.salary_type)}`.trim();
   })();

@@ -6,17 +6,20 @@ import type { Locale } from "@/lib/i18n/config";
 
 export const TASHKENT_TZ = "Asia/Tashkent";
 
-/** 5000000 → "5 000 000 so'm" (ru: "5 000 000 сум") */
+/** Valyuta nomi har tilning o'z yozuvida (o'zbek kirillda ham — "сўм", lotincha "so'm" aralashmasin) */
+const CURRENCY: Record<Locale, string> = { uz: "so'm", oz: "сўм", ru: "сум", en: "UZS" };
+
+/** 5000000 → "5 000 000 so'm" (oz: "5 000 000 сўм", ru: "5 000 000 сум") */
 export function formatMoney(amount: number | null | undefined, locale: Locale = "uz", opts: { withCurrency?: boolean } = {}): string {
   if (amount === null || amount === undefined || Number.isNaN(amount)) return "";
   const n = Math.round(amount)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
   if (opts.withCurrency === false) return n;
-  return `${n} ${locale === "ru" ? "сум" : locale === "en" ? "UZS" : "so'm"}`;
+  return `${n} ${CURRENCY[locale]}`;
 }
 
-/** Maosh oralig'i: "5 000 000 – 7 000 000 so'm", "5 000 000 so'm dan", "Kelishiladi" */
+/** Maosh oralig'i: "5 000 000 – 7 000 000 so'm", "kamida 5 000 000 so'm" (labels.from — common.labels.salary_from), "Kelishiladi" */
 export function formatSalaryRange(
   from: number | null | undefined,
   to: number | null | undefined,
@@ -35,8 +38,8 @@ export function formatSalaryRange(
 /** Qisqa ko'rinish: 5 000 000 → "5 mln", 750 000 → "750 ming" */
 export function formatMoneyShort(amount: number | null | undefined, locale: Locale = "uz"): string {
   if (!amount) return "";
-  const mln = locale === "ru" ? "млн" : locale === "en" ? "M" : "mln";
-  const thousand = locale === "ru" ? "тыс." : locale === "en" ? "K" : "ming";
+  const mln = { uz: "mln", oz: "млн", ru: "млн", en: "M" }[locale];
+  const thousand = { uz: "ming", oz: "минг", ru: "тыс.", en: "K" }[locale];
   if (amount >= 1_000_000) {
     const v = amount / 1_000_000;
     return `${Number.isInteger(v) ? v : v.toFixed(1).replace(/\.0$/, "")} ${mln}`;

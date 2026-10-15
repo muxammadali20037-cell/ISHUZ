@@ -45,8 +45,8 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
       ? t("common.labels.negotiable")
       : formatSalaryRange(v.salary_from, v.salary_to, locale, {
           negotiable: t("common.labels.negotiable"),
-          from: t("common.labels.from"),
-          to: t("common.labels.to"),
+          from: t("common.labels.salary_from"),
+          to: t("common.labels.salary_to"),
         });
   const location = v.is_remote ? t("jobs.detail.remote") : [name(v.district), name(v.region)].filter(Boolean).join(", ") || t("common.labels.not_specified");
   const description = [t("jobs.meta.detail_description", { title: v.title, company, salary, location }), descriptionExcerpt(v.description, 120)]

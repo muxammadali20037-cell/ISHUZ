@@ -1,14 +1,10 @@
 import { z } from "zod";
 
 /**
- * Muhit o'zgaruvchilari. Client'ga faqat NEXT_PUBLIC_* chiqadi.
- * Server o'zgaruvchilari `serverEnv` orqali, faqat server kodida ishlatiladi.
+ * Muhit o'zgaruvchilari. Client'ga faqat NEXT_PUBLIC_* chiqadi — ular `@/lib/env-public` da (zod'siz, mijoz kodi o'shandan
+ * import qiladi). Server o'zgaruvchilari `getServerEnv` orqali, faqat server kodida ishlatiladi.
  */
-const publicSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(10),
-  NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
-});
+export { publicEnv } from "./env-public";
 
 const serverSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(10).optional(),
@@ -53,23 +49,6 @@ const serverSchema = z.object({
   CLICK_MERCHANT_ID: z.string().optional(),
   CLICK_SECRET_KEY: z.string().optional(),
 });
-
-function readPublic() {
-  const parsed = publicSchema.safeParse({
-    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-  });
-  if (!parsed.success) {
-    // Build vaqtida (masalan CI) env bo'lmasligi mumkin — aniq xabar beramiz
-    throw new Error(
-      "Supabase muhit o'zgaruvchilari yo'q: NEXT_PUBLIC_SUPABASE_URL va NEXT_PUBLIC_SUPABASE_ANON_KEY ni .env.local ga yozing (.env.example ga qarang)",
-    );
-  }
-  return parsed.data;
-}
-
-export const publicEnv = readPublic();
 
 /**
  * Sinov uchun tashqi API manzilini almashtirish (mock serverlar). Vercel production'da e'tiborsiz —

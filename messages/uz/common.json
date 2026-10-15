@@ -76,6 +76,8 @@
     "required": "majburiy",
     "from": "dan",
     "to": "gacha",
+    "salary_from": "kamida",
+    "salary_to": "ko'pi bilan",
     "negotiable": "Kelishiladi",
     "not_specified": "Ko'rsatilmagan",
     "yes": "Ha",

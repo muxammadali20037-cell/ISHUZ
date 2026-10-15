@@ -76,6 +76,8 @@
     "required": "мажбурий",
     "from": "дан",
     "to": "гача",
+    "salary_from": "камида",
+    "salary_to": "кўпи билан",
     "negotiable": "Келишилади",
     "not_specified": "Кўрсатилмаган",
     "yes": "Ҳа",

@@ -61,7 +61,7 @@ export async function EmployerDashboard({ session, embedded = false }: { session
           <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="lg" alt="" />
         )}
         <div className="min-w-0">
-          <h1 className="truncate text-xl font-bold sm:text-2xl">{t("employer.dashboard.greeting", { name })}</h1>
+          <h1 className="line-clamp-2 break-words text-xl font-bold sm:text-2xl">{t("employer.dashboard.greeting", { name })}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <VerificationBadge status={verification} label={tEnum("verification_status", verification)} />
             {verification === "unverified" || verification === "rejected" ? (

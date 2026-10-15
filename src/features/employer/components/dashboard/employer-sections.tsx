@@ -25,7 +25,7 @@ export async function EmployerSections() {
               </span>
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{t(`employer.sections.${key}`)}</span>
-                <span className="block truncate text-sm text-muted-foreground">{t(`employer.sections.${key}_desc`)}</span>
+                <span className="line-clamp-2 text-sm text-muted-foreground">{t(`employer.sections.${key}_desc`)}</span>
               </span>
               <ChevronRight className="size-5 shrink-0 text-muted-foreground" />
             </Link>

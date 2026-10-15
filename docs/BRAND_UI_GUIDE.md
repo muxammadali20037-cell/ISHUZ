@@ -108,11 +108,15 @@ Qoidalar:
 - Balandlik 48 px, matn `text-base` (16 px — iOS fokusda sahifani kattalashtirmasin; R-C), label har doim ko'rinadi
   (placeholder label o'rnini bosmaydi). Qidiruv qatori — label o'rniga `aria-label` + `role="search"`.
 - Xato matni: **nima bo'ldi + nima qilish kerak** ("Raqam to'liq emas: +998 va 9 ta raqam").
+- Uzun placeholder tor ekranda qirqilmaydi — "…" bilan tugaydi (`Input` da `text-ellipsis`; R-F).
 
 ### Tanlov: `Checkbox`, `RadioItem`, `Switch`, `Chip`
 
 - Checkbox — kvadrat (`rounded-xs`), radio — doira: ikkalasi farqlanadi (avval checkbox ham doira bo'lib chizilardi).
 - Butun qator (label) bosiladi; kichik elementlarda `tap-target` (44×44).
+- Matn ichida bo'lmagan alohida kichik havola (soha, "N ta ariza", karta sarlavhasi) ham boshqaruv: `tap-target relative`.
+  Kengaygan maydon qo'shni havolani yopmasligi kerak — oraliq qoldiring (masalan, e'lon sahifasida soha qatori `mt-3`).
+  `line-clamp`/`overflow-hidden` ichida maydon qirqiladi — qisqartirishni ichki `span` ga o'tkazing.
 - Chip — filtr va ko'p tanlov; tanlangani `primary` fon + belgi.
 
 ### Vakansiya kartasi (`JobResultCard`) va nomzod kartasi (`WorkerResultCard`)
@@ -123,6 +127,12 @@ Qoidalar:
   kesilgan belgi bo'lmaydi.
 - O'z arizasi bor bo'lsa — "Ariza yuborish" o'rniga holat ("Ariza: Ko'rib chiqildi", `bg-success-soft`), bosilsa — "Arizalar".
 - Moslik foizi kartada yo'q; "Sizga mos ishlar" sababi matn bilan yoziladi ("Kasbingiz bo'yicha: Oshpaz · Toshkent").
+- Maosh faqat `SalaryText` orqali: qator so'zlar orasida bo'linadi, raqam ("10 000 000") va birlik ("so'm/oy", "сум/мес")
+  yaxlit qoladi. Faqat boshlang'ich maosh — "kamida 4 000 000 so'm" (`common.labels.salary_from`; o'zbekchada "dan" raqamdan
+  oldin kelmaydi). Valyuta har tilning o'z yozuvida: so'm · сўм · сум · UZS (`formatMoney`) — R-F.
+- Nomzod kartasida maosh — hamyon ikonkasi + summa, tajriba — qisqa ("3+ yil", "От 3 лет"); to'liq yozuv ("Kutilayotgan
+  maosh: …", "Tajriba: …") ekran o'qigichi uchun `sr-only` va `title` da. Asosiy ma'lumot (nom, maosh, tajriba, tugma yozuvi)
+  ru/oz/en da ham 360 px da "…" bilan kesilmasligi kerak — `i18n-fit.spec` (R-F).
 
 ### Filtr chiplari
 
@@ -198,7 +208,8 @@ Yangi istisno faqat `src/lib/brand-guard.test.ts` dagi ro'yxatga sababi bilan qo
 | `src/lib/brand-guard.test.ts` | `src/**/*.tsx` da palitra rangi, hex, gradient, blur, radius/shrift/soya shkalasidan tashqari qiymat, rangli fonda `text-white` yo'qligi |
 | `src/lib/brand-contrast.test.ts` | 19 rang juftligi × 2 mavzu ≥ 4.5:1 (globals.css dan o'qiladi) |
 | `src/components/ui/field.test.tsx` | Xato/izoh matni maydonga `aria-describedby` bilan bog'langan |
-| `e2e/specs/a11y.spec.ts` | 8 sahifa (shu jumladan `/dev/ui`) × 5 kenglik: axe AA, gorizontal siljish, 24/44 px nishon; klaviatura fokusi; reduced-motion; **qorong'i mavzuda** 6 sahifa kontrasti |
+| `e2e/specs/a11y.spec.ts` | 18 sahifa (shu jumladan `/dev/ui`, e'lon sahifasi, "Arizalarim", ish beruvchi vakansiyalari) × 5 kenglik: axe AA, gorizontal siljish, 24/44 px nishon; klaviatura fokusi; reduced-motion; **qorong'i mavzuda** 6 sahifa kontrasti |
+| `e2e/specs/i18n-fit.spec.ts` | ru, 360 px: rejim tugmasi, nomzod maoshi va tajribasi kesilmaydi; "сум/мес" bo'linmaydi; "kamida …"; `<html lang>` BCP-47 |
 | `e2e/specs/no-ui-sound.spec.ts` | AudioContext yaratilmaydi, ovoz tugmasi yo'q |
 
 ## 10. Yangi ekran uchun nazorat ro'yxati

@@ -342,6 +342,12 @@
     "region_wide": "Вся область",
     "city_wide": "Весь город",
     "experience": "Опыт: {value}",
+    "exp_short": {
+      "none": "Без опыта",
+      "lt1": "До 1 года",
+      "1_3": "1–3 года",
+      "3plus": "От 3 лет"
+    },
     "exp_required": "Опыт: {value}",
     "exp_none": "Опыт не нужен",
     "apply": "Откликнуться",

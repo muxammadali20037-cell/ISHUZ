@@ -175,7 +175,7 @@ export default async function AdminWorkersPage({ searchParams }: { searchParams:
               {detail.worker_preferences ? (
                 <DetailSection title={t("admin.workers.preferences")}>
                   <DetailRow label={t("admin.workers.salary")}>
-                    {detail.worker_preferences.salary_expected ? formatMoney(detail.worker_preferences.salary_expected, locale) : detail.worker_preferences.salary_min ? `${t("common.labels.from")} ${formatMoney(detail.worker_preferences.salary_min, locale)}` : t("common.labels.negotiable")}
+                    {detail.worker_preferences.salary_expected ? formatMoney(detail.worker_preferences.salary_expected, locale) : detail.worker_preferences.salary_min ? `${t("common.labels.salary_from")} ${formatMoney(detail.worker_preferences.salary_min, locale)}` : t("common.labels.negotiable")}
                     {" "}{tEnum("salary_type_suffix", detail.worker_preferences.salary_type)}
                   </DetailRow>
                   <DetailRow label={t("admin.workers.employment")}>{detail.worker_preferences.employment_types.map((e) => tEnum("employment_type", e)).join(", ") || "—"}</DetailRow>

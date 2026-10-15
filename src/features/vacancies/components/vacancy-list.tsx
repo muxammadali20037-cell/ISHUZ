@@ -66,7 +66,7 @@ export function VacancyList({ items, filter }: { items: VacancyListItem[]; filte
                   href={f === "all" ? "/employer/vacancies" : `/employer/vacancies?status=${f}`}
                   scroll={false}
                   className={cn(
-                    "flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium transition-colors",
+                    "tap-target relative flex h-9 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-medium transition-colors",
                     active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
                   )}
                   aria-current={active ? "page" : undefined}
@@ -143,9 +143,10 @@ function VacancyRow({
               </span>
             ) : null}
           </div>
-          <h3 className="mt-2 line-clamp-2 text-base font-semibold leading-snug">
-            <Link href={manageHref} className="hover:text-primary">
-              {v.title}
+          {/* bosish maydoni 44 px: havola butun qator kengligida (menyu tugmasi alohida ustunda), qisqartirish ichki span'da */}
+          <h3 className="mt-2 text-base font-semibold leading-snug">
+            <Link href={manageHref} className="tap-target relative block hover:text-primary">
+              <span className="line-clamp-2">{v.title}</span>
             </Link>
           </h3>
           <p className="mt-0.5 truncate text-sm text-muted-foreground">{v.category ? name(v.category) : t("vacancies.list.no_category")}{v.region && !v.is_remote ? ` · ${name(v.region)}` : ""}</p>
@@ -214,7 +215,7 @@ function VacancyRow({
         <span className="inline-flex items-center gap-1">
           <Eye className="size-4" /> {t("vacancies.list.views", { count: v.views_count })}
         </span>
-        <Link href={`${manageHref}/applications`} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+        <Link href={`${manageHref}/applications`} className="tap-target relative inline-flex items-center gap-1 font-medium text-primary hover:underline">
           <Users className="size-4" /> {t("vacancies.list.applications", { count: v.applications_count })}
         </Link>
         {v.published_at ? (

@@ -17,7 +17,7 @@ export function buildPromoData(v: VacancyDetail, { t, tEnum, name, locale }: T):
   const salary =
     v.salary_negotiable || (!v.salary_from && !v.salary_to)
       ? t("common.labels.negotiable")
-      : `${formatSalaryRange(v.salary_from, v.salary_to, locale, { negotiable: t("common.labels.negotiable"), from: t("common.labels.from"), to: t("common.labels.to") })}${tEnum("salary_type_suffix", v.salary_type)}`;
+      : `${formatSalaryRange(v.salary_from, v.salary_to, locale, { negotiable: t("common.labels.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") })}${tEnum("salary_type_suffix", v.salary_type)}`;
   const place = v.is_remote ? tEnum("employment_type", "remote") : [name(v.district), name(v.region)].filter(Boolean).join(", ") || null;
   const time = v.work_time_from && v.work_time_to ? `${formatWorkTime(v.work_time_from)}–${formatWorkTime(v.work_time_to)}` : null;
   const schedule = [v.schedule ? tEnum("work_schedule", v.schedule) : null, time].filter(Boolean).join(" · ") || null;

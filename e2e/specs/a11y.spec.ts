@@ -18,6 +18,26 @@ async function buxgalter() {
   return r!.id;
 }
 
+const A11Y_VACANCY = "Bosh buxgalter (A11Y)";
+
+/** R-F: e'lon sahifasi va ish beruvchi ro'yxati uchun bitta faol vakansiya (ish beruvchi profili bilan) */
+async function vacancySlug() {
+  await sql(
+    `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
+     values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
+    [USERS.employer],
+  );
+  const [old] = await sql<{ slug: string }>("select slug from public.vacancies where owner_profile_id = $1 and title = $2 and status = 'active'", [USERS.employer, A11Y_VACANCY]);
+  if (old) return old.slug;
+  const [v] = await sql<{ slug: string }>(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, profession_node_id, salary_from, salary_to, salary_type, published_at, expires_at)
+     select $1, $2, r.id, 'Sinov e''loni: 1C, soliq hisobotlari, haftasiga 5 kun, 9 dan 18 gacha', 'active', $3, 6000000, 9000000, 'monthly', now(), now() + interval '10 days'
+     from public.regions r where r.slug = 'tashkent_city' returning slug`,
+    [USERS.employer, A11Y_VACANCY, await buxgalter()],
+  );
+  return v!.slug;
+}
+
 // mode — shu qurilmada tanlangan rejim (E1); yo'q bo'lsa — birinchi ochilish ("Siz nima qidiryapsiz?" / tasdiq ekrani)
 const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "worker" | "employer" }[] = [
   { name: "home", url: async () => "/" },
@@ -34,6 +54,10 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "
   { name: "auth", url: async () => "/auth" },
   { name: "cabinet", url: async () => "/cabinet", user: USERS.workerA },
   { name: "billing", url: async () => "/billing", user: USERS.workerA },
+  // R-F: redizayndagi asosiy sahifalar
+  { name: "vacancy", url: async () => `/jobs/${await vacancySlug()}`, mode: "worker" },
+  { name: "applications", url: async () => "/applications", user: USERS.workerA },
+  { name: "employer-vacancies", url: async () => (await vacancySlug(), "/employer/vacancies"), user: USERS.employer, mode: "employer" },
   // brend UI to'plami (faqat UI_KIT_PREVIEW=1 bilan) — barcha komponent holatlari bir sahifada
   { name: "ui-kit", url: async () => "/dev/ui" },
 ];
@@ -75,6 +99,10 @@ async function measure(page: Page) {
   });
 }
 
+
+test.afterAll(async () => {
+  await sql("delete from public.vacancies where owner_profile_id = $1 and title = $2", [USERS.employer, A11Y_VACANCY]);
+});
 
 for (const p of PAGES) {
   test(`a11y + responsive: ${p.name}`, async ({ page, context }) => {
