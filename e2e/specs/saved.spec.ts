@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
- * E2 · "Saqlanganlar" pastki menyuda: profil to'ldirmagan ish izlovchi ham vakansiyani saqlaydi, ish beruvchi — ishchini;
+ * E2/S2 · "Saqlanganlar" (S2 dan — Profil ichida): profil to'ldirmagan ish izlovchi ham vakansiyani saqlaydi, ish beruvchi — ishchini;
  * sahifada qidiruv kartalari bilan bir xil ko'rinadi, olib tashlansa yo'qoladi; mehmonga — kirish taklifi.
  */
 
@@ -28,7 +28,12 @@ async function vacancy(title: string) {
   return { id: v!.id, node: n!.id };
 }
 
-const savedNav = (page: Page) => page.getByRole("navigation").last().getByRole("link", { name: "Saqlanganlar" });
+/** S2: "Saqlanganlar" — Profil (kabinet) ichida: pastki menyudan Profil → "Saqlanganlar" */
+async function openSaved(page: Page) {
+  await page.getByRole("navigation").last().getByRole("link", { name: "Profil" }).click();
+  await page.waitForURL("**/cabinet");
+  await page.getByRole("main").getByRole("link", { name: "Saqlanganlar" }).click();
+}
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -55,7 +60,7 @@ test("profilsiz ish izlovchi: kartadan saqlaydi → 'Saqlanganlar'da ko'radi →
   const [wp] = await sql<{ n: number }>("select count(*)::int as n from public.worker_profiles where profile_id = $1", [FRESH]);
   expect(wp!.n).toBe(0);
 
-  await savedNav(page).click();
+  await openSaved(page);
   await page.waitForURL("**/saved");
   await expect(page.getByRole("heading", { level: 1, name: "Saqlanganlar" })).toBeVisible();
   await expect(page.getByText("Saqlangan ish e'lonlari: 1 ta")).toBeVisible();
@@ -96,8 +101,8 @@ test("mehmon: 'Saqlanganlar' — tushuntirish va kirish; kartadagi saqlash — k
   const v = await vacancy("Buxgalter yordamchisi");
   await asGuest(context);
   await asMode(context, "worker");
-  await page.goto("/");
-  await savedNav(page).click();
+  // mehmon: Profil — faqat kirish taklifi; "Saqlanganlar" sahifasi o'z tushuntirishi bilan
+  await page.goto("/saved");
   await expect(page.getByRole("heading", { level: 1, name: "Saqlanganlar" })).toBeVisible();
   await expect(page.getByRole("link", { name: "Kirish" }).last()).toHaveAttribute("href", "/auth?next=%2Fsaved");
 

@@ -65,9 +65,9 @@ test("skeletsiz o'tishda kontent pastdan chiqadi; animatsiya tugagach main'da tr
   await page.waitForLoadState("networkidle");
   expect(errors.filter((e) => /hydrat|#418|#423|#425/i.test(e))).toEqual([]);
   await expect(page.locator("main")).not.toHaveClass(/page-(enter|swap)/);
-  // /saved — layout'dagi qobiq bilan: kontent bevosita, skeletsiz (yoki o'z skeleti layout ichida)
-  await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().getByRole("link", { name: "Saqlanganlar" }).click();
-  await expect(page).toHaveURL(/\/saved$/);
+  // /ai (pastki menyu, S2) — kontent bevosita, skeletsiz
+  await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().getByRole("link", { name: "AI" }).click();
+  await expect(page).toHaveURL(/\/ai$/);
   const main = page.locator("main");
   await expect(main).toHaveClass(/page-enter/);
   // 350 ms dan keyin: element o'z joyida, ichidagi fixed panellar uchun "containing block" yaratmaydi

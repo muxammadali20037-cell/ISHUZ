@@ -16,7 +16,8 @@ import { windowsFor } from "@/features/home-windows/model";
 import { EmployerDashboard } from "@/features/employer/components/dashboard/employer-dashboard";
 import { HomeSearch } from "./home-search";
 import { getHomePlace, getNewWorkers, type HomePlace } from "./home-queries";
-import { employerQuickFilters, placeChooserHref } from "./quick-filters";
+import { placeChooserHref } from "./quick-filters";
+import { HireSections, SectionsSkeleton } from "./section-tiles";
 
 /**
  * Ish beruvchi bosh sahifasi. Profili bor — panel (vakansiya joylash, qisqa ko'rsatkichlar, yangi arizalar, faol vakansiyalar,
@@ -28,10 +29,6 @@ export async function EmployerHome({ session }: { session: SessionContext | null
   if (session?.employerId && session.employerOnboarded) return <EmployerDashboard session={session as SessionContext & { employerId: string }} embedded />;
   const [{ t, name }, place] = await Promise.all([getT(), getHomePlace()]);
   const placeLabel = place.region ? (place.district ? `${name(place.region)} · ${name(place.district)}` : name(place.region)) : t("easy.location.whole_country");
-  const chips = employerQuickFilters({ region: place.region?.slug ?? null, district: place.district?.id ?? null }).map((c) => ({
-    ...c,
-    label: c.key === "near" ? t("easy.mode.near_me") : t("easy.start.f_experienced"),
-  }));
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0 space-y-7">
@@ -47,9 +44,14 @@ export async function EmployerHome({ session }: { session: SessionContext | null
             label={t("easy.start.employer_search_label")}
             placeholder={t("easy.start.employer_search_placeholder")}
             place={{ label: placeLabel, href: placeChooserHref("workers") }}
-            chips={chips}
+            chips={[]}
           />
         </section>
+
+        {/* S2: bo'limlar — kunlik ishchilar, yaqin, tajribali, masofaviy (haqiqiy sonlar) */}
+        <Suspense fallback={<SectionsSkeleton />}>
+          <HireSections place={place} />
+        </Suspense>
 
         {/* asosiy harakat: oddiy brend tugmasi (katta banner emas) */}
         <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm sm:flex-row sm:items-center sm:p-5">

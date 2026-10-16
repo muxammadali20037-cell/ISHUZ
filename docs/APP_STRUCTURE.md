@@ -27,3 +27,31 @@ Ishlaydigan va saqlanadigan qismlar: telefon/Telegram kirish, Mini App avtomatik
 Ma'lumot cheklovlari (soxta raqam chiqmasligi uchun): TOP (`is_featured`) faqat admin qo'yadi — bo'sh bo'lsa bo'lim
 yashiriladi; "MChJ" alohida yuridik shakl emas — `employer_type = company` (kompaniyalar); "kunlik ishchi" — ishchi
 istagida kunlik to'lov yoki "bugun/ertaga" tayyor.
+
+## S1 — kirish (bajarildi, `33693f2`)
+
+- **Ochilish ekrani** (`components/shared/splash.tsx`, `globals.css` `.splash*`): "Ish topdim" → kamera "topdim" so'zining
+  "o" harfi markaziga (brauzerda o'lchangan: 20.96% / 60.1%) uchib kiradi, ilova "o" ichidan ochiladi; ~1.2 s, sessiyada bir
+  marta, bosishni to'smaydi; reduced-motion, admin panel va avtomatlashtirilgan brauzerda yo'q.
+- **Tanishtiruv** (`features/intro`): 3 slayd — ish topish, ishchi topish, sizga mosini topamiz + rol tanlash; o'tkazib yuborish,
+  oldingi/keyingi, nuqtalar, ←/→, barmoq surish; faqat haqiqiy sonlar; bir marta (`ib_intro`), qidiruv robotlariga ko'rsatilmaydi.
+- **Kirish oynasi** (`features/landing/entry-home.tsx`) — rejim tanlanmagan mehmon: bugungi yangi e'lonlar soni, "Nima qidiryapsiz?",
+  ikki katta maqsad (vakansiyalar / ishchilar soni bilan), qidiruv, tez kirish (ish izlovchilarga 4, ish beruvchilarga 4),
+  yangi vakansiyalar (haqiqiy kartalar), "Nega Ish topdim", "Hisobingiz bormi? Kirish". Maqsad plitkalari — JS'siz ham ishlaydigan
+  forma (`enterMode`: rejim yoziladi, faqat ichki manzilga o'tiladi).
+
+## S2 — rolga xos bosh sahifa bo'limlari va pastki menyu
+
+- **Migratsiya 0066** (`0066_home_sections.sql`, faqat yangi nomli funksiyalar, `drop` yo'q; 0065 dan keyin):
+  `simple_search_vacancies_v3` (ish beruvchi turi, TOP, ommaviy 5+ o'rin), `vacancy_section_counts`,
+  `simple_search_workers_v2` (kunlik ishchilar), `worker_section_counts`, `vacancy_employer_kind`. SQL test:
+  `supabase/tests/home_sections.test.sql` (24 tekshiruv). **Production'ga qo'llanmagan — egasi tasdig'i kerak.**
+- **Bo'limlar** (`features/landing/section-tiles.tsx`): ish izlovchi — katta: Kunlik ishlar, Yaqin atrofda; kichik: Masofaviy,
+  Tajribasiz, MChJ, YaTT, Davlat, Jismoniy shaxs, Ommaviy, TOP, Barcha sohalar. Ish beruvchi — katta: Kunlik ishchilar,
+  Yaqin ishchilar; kichik: Tajribali, Masofaviy, Barcha ishchilar, Vakansiya joylash (panelda ham). Har bo'limda haqiqiy son;
+  soni 0 bo'lgan kichik bo'lim ko'rsatilmaydi; 0066 yo'q bo'lsa — sonsiz ishlaydigan bo'limlargina qoladi.
+- **Qidiruv**: `etype` (company | ie | person | gov), `top=1`, `mass=1`, ishchilar uchun `pay=daily`; natijalarda faol filtr
+  chiplari, filtr oynasida ish beruvchi turi / ommaviy / TOP (0066 bo'lsa). Matnli qidiruv bu filtrlarni bajarmaydi — chip ham chiqmaydi.
+- **Pastki menyu**: ish izlovchi — Asosiy · Ishlar · AI · Xabarlar · Profil; ish beruvchi — Asosiy · Vakansiyalar · Nomzodlar · Profil.
+  Saqlanganlar, arizalar, takliflar — Profil (kabinet) ichida. **`/ai`**: oddiy so'z bilan qidiruv, "Sizga mos" (moslik dvigateli),
+  AI PRO kuzatuv, AI bilan e'lon tuzish (faqat AI provayder sozlangan bo'lsa).

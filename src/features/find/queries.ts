@@ -15,7 +15,7 @@ import { getProfessionImages } from "@/lib/profession-images/server";
 import { getCategories } from "@/lib/reference";
 import type { JobCardData } from "./components/result-cards";
 import { detectIntent, professionCandidates, type FindMode } from "./intent";
-import type { FindParams } from "./params";
+import { EMPLOYER_KIND_TYPE, hasSectionFilter, type FindParams } from "./params";
 
 export const PAGE_SIZE = 20;
 
@@ -145,6 +145,18 @@ export async function findJobs(params: FindParams, place: Place, limit = PAGE_SI
     p_limit: limit,
     p_offset: (params.page - 1) * limit,
   };
+  // bo'lim filtrlari (ish beruvchi turi, TOP, ommaviy) — faqat 0066 funksiyasida; u yo'q bo'lsa — xato (filtrsiz natija "filtrlangan" deb ko'rsatilmaydi)
+  if (hasSectionFilter(params)) {
+    const { data, error } = await supabase.rpc("simple_search_vacancies_v3", {
+      ...args,
+      p_salary_type: params.pay === "daily" ? "daily" : undefined,
+      p_employer_type: params.etype ? EMPLOYER_KIND_TYPE[params.etype] : undefined,
+      p_featured: params.top,
+      p_mass: params.mass,
+    });
+    if (error) return searchFailure("jobs", error);
+    return withMedia(supabase, data ?? [], false);
+  }
   let { data, error } = params.pay === "daily" ? await supabase.rpc("simple_search_vacancies_v2", { ...args, p_salary_type: "daily" }) : await supabase.rpc("simple_search_vacancies", args);
   let pageOnly = false;
   if (error && params.pay === "daily" && (error.code === "PGRST202" || error.code === "42883")) {
@@ -154,7 +166,11 @@ export async function findJobs(params: FindParams, place: Place, limit = PAGE_SI
     pageOnly = true;
   }
   if (error) return searchFailure("jobs", error);
-  const items = data ?? [];
+  return withMedia(supabase, data ?? [], pageOnly);
+}
+
+/** Kasb rasmlari va ish joyi suratlari; `pageOnly` — umumiy son noma'lum (faqat shu sahifadagilar) */
+async function withMedia(supabase: Awaited<ReturnType<typeof createClient>>, items: JobRow[], pageOnly: boolean): Promise<FindOutcome<JobRow>> {
   const [images, photoRows] = await Promise.all([
     getProfessionImages(items.map((r) => r.profession_node_id)),
     items.length ? supabase.from("vacancies").select("id, photo_path").in("id", items.map((r) => r.id)).not("photo_path", "is", null) : Promise.resolve({ data: [] }),
@@ -228,7 +244,7 @@ export async function findJobsByText(params: FindParams, place: Place, limit = P
 
 export async function findWorkers(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<WorkerRow>> {
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("simple_search_workers", {
+  const args = {
     p_profession_node_id: params.p ?? undefined,
     p_region_id: place.regionId ?? undefined,
     p_district_id: place.districtId ?? undefined,
@@ -236,7 +252,9 @@ export async function findWorkers(params: FindParams, place: Place, limit = PAGE
     p_experienced: params.exp,
     p_limit: limit,
     p_offset: (params.page - 1) * limit,
-  });
+  };
+  // "Kunlik ishchilar" (kunlik to'lov istagi yoki bugun/ertaga tayyor) — 0066 funksiyasi; yo'q bo'lsa — xato
+  const { data, error } = params.pay === "daily" ? await supabase.rpc("simple_search_workers_v2", { ...args, p_daily: true }) : await supabase.rpc("simple_search_workers", args);
   if (error) return searchFailure("workers", error);
   const items = data ?? [];
   const images = await getProfessionImages(items.map((r) => r.profession_node_id));

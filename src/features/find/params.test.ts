@@ -49,3 +49,22 @@ describe("findHref", () => {
     expect(findHref({ ...EMPTY_FIND, q: "buxgalter" }, { mode: "jobs", p: ID })).toBe(`/search?mode=jobs&p=${ID}`);
   });
 });
+
+describe("bosh sahifa bo'limlari (S2)", () => {
+  it("ish beruvchi turi, TOP va ommaviy o'qiladi va URL'ga qaytadi; noto'g'ri tur tashlanadi", () => {
+    const p = parseFindParams({ mode: "jobs", any: "1", region: "all", etype: "ie", top: "1", mass: "1" });
+    expect(p).toMatchObject({ etype: "ie", top: true, mass: true });
+    expect(findHref(p)).toBe("/search?mode=jobs&region=all&etype=ie&top=1&mass=1&any=1");
+    expect(parseFindParams({ mode: "jobs", etype: "llc'; drop" }).etype).toBeNull();
+    expect(activeFilterCount(p)).toBe(3);
+  });
+  it("bo'lim filtrlari faqat ishlar qidiruvida (ishchilar URL'iga tushmaydi)", () => {
+    expect(findHref({ ...EMPTY_FIND, mode: "workers", any: true, etype: "company", top: true })).toBe("/search?mode=workers&any=1");
+  });
+  it("kunlik ishchilar: pay=daily ishchilar qidiruvida ham saqlanadi, kasb so'ralmaydi va filtr hisoblanadi", () => {
+    const p = parseFindParams({ mode: "workers", pay: "daily", region: "all" });
+    expect(findHref(p)).toBe("/search?mode=workers&region=all&pay=daily");
+    expect(anyProfession(p)).toBe(true);
+    expect(activeFilterCount({ ...p, exp: true })).toBe(2);
+  });
+});

@@ -19,6 +19,7 @@ import { CardsSectionSkeleton, RowsSectionSkeleton } from "./skeletons";
 import { KeyTiles, KeyTilesSkeleton } from "./stats-tiles";
 import { EmployerSections } from "./employer-sections";
 import { VerificationBadge } from "./status-badge";
+import { HireSections, SectionsSkeleton } from "@/features/landing/section-tiles";
 
 /**
  * Ish beruvchi paneli (server): /employer va ish beruvchi rejimidagi bosh sahifa. Tartib: salomlashuv → vakansiya joylash va
@@ -107,6 +108,11 @@ export async function EmployerDashboard({ session, embedded = false }: { session
           </Button>
         </Form>
       </div>
+
+      {/* S2: nomzodlar bo'limlari (kunlik ishchilar, yaqin, tajribali — haqiqiy sonlar) */}
+      <Suspense fallback={<SectionsSkeleton />}>
+        <HireSections />
+      </Suspense>
 
       <div>
         <Suspense fallback={<KeyTilesSkeleton />}>

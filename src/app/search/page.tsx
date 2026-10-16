@@ -83,11 +83,13 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   // S1: matn kasbga aylanmadi (kompaniya nomi, erkin lavozim) — sarlavha, tavsif va kompaniya bo'yicha haqiqiy natijalar.
   // Topilmasa — avvalgidek "tushunilmadi" va kasb tanlash. Texnik xato — xato oynasi (bo'sh natija deb ko'rsatilmaydi).
   if (params.mode === "jobs" && params.q && !params.p) {
-    const text = await findJobsByText(params, { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: params.region === "remote" });
+    // matnli qidiruv bo'lim filtrlarini (ish beruvchi turi, TOP, ommaviy) bajarmaydi — ular chip sifatida ham ko'rsatilmaydi
+    const textParams = { ...params, etype: null, top: false, mass: false };
+    const text = await findJobsByText(textParams, { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: params.region === "remote" });
     if (!text.ok || text.total > 0 || params.page > 1) {
       return (
         <Shell>
-          <FindResultsView params={params} node={null} region={region} district={district} text={text} />
+          <FindResultsView params={textParams} node={null} region={region} district={district} text={text} />
         </Shell>
       );
     }

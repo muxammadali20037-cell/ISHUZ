@@ -4713,6 +4713,126 @@ export type Database = {
       };
       my_wallet: { Args: Record<PropertyKey, never>; Returns: Json };
       create_topup: { Args: { p_amount: number }; Returns: Json };
+      simple_search_vacancies_v3: {
+        Args: {
+          p_district_id?: string;
+          p_employer_type?: Database["public"]["Enums"]["employer_type"];
+          p_featured?: boolean;
+          p_limit?: number;
+          p_mass?: boolean;
+          p_no_experience?: boolean;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+          p_salary_min?: number;
+          p_salary_type?: Database["public"]["Enums"]["salary_type"];
+          p_schedule?: Database["public"]["Enums"]["work_schedule"];
+        };
+        Returns: {
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employer_name: string;
+          employer_verified: boolean;
+          experience_min_months: number;
+          id: string;
+          is_featured: boolean;
+          is_government: boolean;
+          is_remote: boolean;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          published_at: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          summary: string;
+          title: string;
+          total_count: number;
+          work_time_from: string;
+          work_time_to: string;
+        }[];
+      };
+      simple_search_workers_v2: {
+        Args: {
+          p_daily?: boolean;
+          p_district_id?: string;
+          p_experienced?: boolean;
+          p_limit?: number;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+        };
+        Returns: {
+          about: string;
+          avatar_url: string;
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          experience_level: Database["public"]["Enums"]["experience_level"];
+          first_name: string;
+          headline: string;
+          id: string;
+          is_promoted: boolean;
+          last_active_at: string;
+          last_initial: string;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          remote_ok: boolean;
+          salary_expected: number;
+          total_count: number;
+        }[];
+      };
+      vacancy_employer_kind: {
+        Args: {
+          p_company_id: string;
+          p_employer_type: Database["public"]["Enums"]["employer_type"];
+          p_is_government: boolean;
+        };
+        Returns: Database["public"]["Enums"]["employer_type"];
+      };
+      vacancy_section_counts: {
+        Args: { p_district_id?: string; p_region_id?: string };
+        Returns: {
+          company: number;
+          daily: number;
+          entrepreneur: number;
+          featured: number;
+          government: number;
+          mass: number;
+          no_experience: number;
+          person: number;
+          remote: number;
+          today: number;
+          total: number;
+        }[];
+      };
       wallet_pay: {
         Args: {
           p_purpose: Database["public"]["Enums"]["payment_purpose"];
@@ -5695,6 +5815,15 @@ export type Database = {
       worker_related_to_vacancy: {
         Args: { p_vacancy_id: string };
         Returns: boolean;
+      };
+      worker_section_counts: {
+        Args: { p_district_id?: string; p_region_id?: string };
+        Returns: {
+          daily: number;
+          experienced: number;
+          remote: number;
+          total: number;
+        }[];
       };
       write_audit: {
         Args: {

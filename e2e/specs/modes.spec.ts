@@ -31,11 +31,13 @@ test("mehmon (rejim tanlanmagan): kirish oynasi — avval maqsad; 'Ish topaman' 
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/worker']:visible").first()).toBeVisible();
-  // pastki menyu (R-B): Ishlar · Saqlanganlar · Arizalar · Profil — arizalar va takliflar yashirin emas
+  // pastki menyu (S2): Asosiy · Ishlar · AI · Xabarlar · Profil (saqlanganlar, arizalar, takliflar — Profil ichida)
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/");
-  await expect(nav.getByRole("link", { name: "Saqlanganlar" })).toHaveAttribute("href", "/saved");
-  await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/applications");
+  await expect(nav.getByRole("link")).toHaveText(["Asosiy", "Ishlar", "AI", "Xabarlar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "Asosiy" })).toHaveAttribute("href", "/");
+  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/search?mode=jobs");
+  await expect(nav.getByRole("link", { name: "AI" })).toHaveAttribute("href", "/ai");
+  await expect(nav.getByRole("link", { name: "Xabarlar" })).toHaveAttribute("href", "/messages");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 });
@@ -57,8 +59,8 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(page.getByText("Endi o'zingizga mos ish topish oson")).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
-  // ish beruvchi menyusi (R-B): Bosh sahifa · Vakansiyalar · Nomzodlar · Profil
-  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Bosh sahifa", "Vakansiyalar", "Nomzodlar", "Profil"]);
+  // ish beruvchi menyusi (S2): Asosiy · Vakansiyalar · Nomzodlar · Profil
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Asosiy", "Vakansiyalar", "Nomzodlar", "Profil"]);
   await expect(page.getByRole("navigation").last().getByRole("link", { name: "Nomzodlar" })).toHaveAttribute("href", "/search?mode=workers");
 });
 

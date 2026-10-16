@@ -12,6 +12,7 @@ import { MoneyInput } from "@/features/post/components/inputs";
 import { SCHEDULES } from "@/features/post/types";
 import type { Enums } from "@/types/database.types";
 import type { FindMode } from "../intent";
+import type { EmployerKind } from "../params";
 
 /** "O'zgartirish": ish/ishchi, kasb yoki hudud — uchta katta tugma */
 export function ChangeSheet({ modeHref, professionHref, regionHref, compact }: { modeHref: string; professionHref: string; regionHref: string; compact?: boolean }) {
@@ -53,6 +54,10 @@ export function FilterSheet({
   noexp,
   exp,
   daily = false,
+  etype = null,
+  top = false,
+  mass = false,
+  sections = false,
   count,
 }: {
   mode: FindMode;
@@ -60,8 +65,14 @@ export function FilterSheet({
   schedule: Enums<"work_schedule"> | null;
   noexp: boolean;
   exp: boolean;
-  /** faqat kunlik haqli ishlar (pay=daily) */
+  /** ishlar: faqat kunlik haqli (pay=daily); ishchilar: kunlik ishga tayyorlar */
   daily?: boolean;
+  /** bo'lim filtrlari (S2): ish beruvchi turi, TOP, ommaviy */
+  etype?: EmployerKind | null;
+  top?: boolean;
+  mass?: boolean;
+  /** bo'lim filtrlari bazada bor (0066) — bo'lmasa ular taklif qilinmaydi */
+  sections?: boolean;
   count: number;
 }) {
   const { t, tEnum } = useT();
@@ -72,6 +83,9 @@ export function FilterSheet({
   const [ne, setNe] = useState(noexp);
   const [ex, setEx] = useState(exp);
   const [dy, setDy] = useState(daily);
+  const [et, setEt] = useState<EmployerKind | "">(etype ?? "");
+  const [tp, setTp] = useState(top);
+  const [ms, setMs] = useState(mass);
 
   // oyna har ochilganda URL'dagi joriy filtrlar bilan boshlanadi ("Tozalash"dan keyin eski tanlov qolib ketmaydi)
   const openSheet = () => {
@@ -80,19 +94,30 @@ export function FilterSheet({
     setNe(noexp);
     setEx(exp);
     setDy(daily);
+    setEt(etype ?? "");
+    setTp(top);
+    setMs(mass);
     setOpen(true);
   };
 
   const apply = (reset = false) => {
     const url = new URL(window.location.href);
-    for (const k of ["salary", "schedule", "noexp", "exp", "pay", "page"]) url.searchParams.delete(k);
+    for (const k of ["salary", "schedule", "noexp", "exp", "pay", "etype", "top", "mass", "page"]) url.searchParams.delete(k);
     if (!reset) {
       if (mode === "jobs") {
         if (s) url.searchParams.set("salary", s);
         if (sch) url.searchParams.set("schedule", sch);
         if (ne) url.searchParams.set("noexp", "1");
         if (dy) url.searchParams.set("pay", "daily");
-      } else if (ex) url.searchParams.set("exp", "1");
+        if (et) url.searchParams.set("etype", et);
+        if (tp) url.searchParams.set("top", "1");
+        if (ms) url.searchParams.set("mass", "1");
+      } else {
+        if (ex) url.searchParams.set("exp", "1");
+        if (dy) url.searchParams.set("pay", "daily");
+      }
+      // kasbsiz bo'limdan (MChJ, YaTT, TOP, ...) kirilgan: bo'lim filtri olib tashlansa — barcha kasblar natijalari qoladi
+      if (!url.searchParams.get("p") && (etype || top || mass)) url.searchParams.set("any", "1");
     }
     setOpen(false);
     router.push(`${url.pathname}${url.search}`);
@@ -145,12 +170,53 @@ export function FilterSheet({
                   <span className="block text-base text-muted-foreground">{t("easy.search.daily_only_desc")}</span>
                 </span>
               </label>
+              {sections ? (
+                <>
+                  <div>
+                    <p className="mb-2 font-semibold">{t("easy.search.employer_type")}</p>
+                    <ChoiceButtons
+                      label={t("easy.search.employer_type")}
+                      value={et}
+                      onChange={setEt}
+                      options={[
+                        { value: "" as const, label: t("easy.search.any") },
+                        { value: "company" as const, label: t("easy.sections.company_title") },
+                        { value: "ie" as const, label: t("easy.sections.ie_title") },
+                        { value: "gov" as const, label: t("easy.sections.gov_title") },
+                        { value: "person" as const, label: t("easy.sections.person") },
+                      ]}
+                    />
+                  </div>
+                  <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
+                    <input type="checkbox" checked={ms} onChange={(e) => setMs(e.target.checked)} className="size-7 accent-[var(--primary)]" />
+                    <span>
+                      <span className="block font-semibold">{t("easy.sections.mass")}</span>
+                      <span className="block text-base text-muted-foreground">{t("easy.sections.mass_title")}</span>
+                    </span>
+                  </label>
+                  <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
+                    <input type="checkbox" checked={tp} onChange={(e) => setTp(e.target.checked)} className="size-7 accent-[var(--primary)]" />
+                    <span className="font-semibold">{t("easy.sections.top_title")}</span>
+                  </label>
+                </>
+              ) : null}
             </>
           ) : (
-            <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
-              <input type="checkbox" checked={ex} onChange={(e) => setEx(e.target.checked)} className="size-7 accent-[var(--primary)]" />
-              <span className="font-semibold">{t("easy.search.experienced")}</span>
-            </label>
+            <>
+              <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
+                <input type="checkbox" checked={ex} onChange={(e) => setEx(e.target.checked)} className="size-7 accent-[var(--primary)]" />
+                <span className="font-semibold">{t("easy.search.experienced")}</span>
+              </label>
+              {sections ? (
+                <label className="flex min-h-14 cursor-pointer items-center gap-3 rounded-2xl border-2 border-border p-4">
+                  <input type="checkbox" checked={dy} onChange={(e) => setDy(e.target.checked)} className="size-7 accent-[var(--primary)]" />
+                  <span>
+                    <span className="block font-semibold">{t("easy.search.daily_workers_only")}</span>
+                    <span className="block text-base text-muted-foreground">{t("easy.sections.daily_workers_hint")}</span>
+                  </span>
+                </label>
+              ) : null}
+            </>
           )}
         </div>
       </Sheet>

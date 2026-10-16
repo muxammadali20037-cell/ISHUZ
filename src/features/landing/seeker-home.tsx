@@ -19,19 +19,21 @@ import { windowsFor } from "@/features/home-windows/model";
 import { HomeSearch } from "./home-search";
 import { getHomePlace, getPopularProfessions, getSeekerFeed, type HomePlace } from "./home-queries";
 import { placeChooserHref, seekerQuickFilters } from "./quick-filters";
+import { SectionsSkeleton, SeekerSections } from "./section-tiles";
 
 /**
  * Ish qidiruvchi bosh sahifasi (mehmon ham — ro'yxatdan o'tmasdan ko'radi):
- * qidiruv → tez filtrlar → haqiqiy e'lonlar ("Sizga mos" yoki "Yangi ishlar") → mashhur kasblar → qo'shimcha (e'lon berish, AI PRO).
+ * qidiruv → bo'limlar (kunlik, yaqin, masofaviy, tajribasiz, MChJ, YaTT, davlat… — sonlari bilan) → haqiqiy e'lonlar
+ * ("Sizga mos" yoki "Yangi ishlar") → mashhur kasblar → qo'shimcha (e'lon berish, AI PRO).
  * Kompyuterda o'ngda — bozor paneli (statistika, yirik ish beruvchilar).
  */
 export async function SeekerHome({ session }: { session: SessionContext | null }) {
   const [{ t, name }, place] = await Promise.all([getT(), getHomePlace()]);
   const placeLabel = placeText(place, name, t("easy.location.whole_country"));
-  const chips = seekerQuickFilters({ region: place.region?.slug ?? null, district: place.district?.id ?? null }).map((c) => ({
-    ...c,
-    label: t(`easy.start.f_${c.key}`),
-  }));
+  // tez filtrlar: maosh chegarasi (kunlik, masofaviy, tajribasiz — endi bo'lim plitkalarida, sonlari bilan)
+  const chips = seekerQuickFilters({ region: place.region?.slug ?? null, district: place.district?.id ?? null })
+    .filter((c) => c.key === "salary")
+    .map((c) => ({ ...c, label: t(`easy.start.f_${c.key}`) }));
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
       <div className="min-w-0 space-y-7">
@@ -50,6 +52,11 @@ export async function SeekerHome({ session }: { session: SessionContext | null }
             chips={chips}
           />
         </section>
+
+        {/* S2: Yandex Go uslubidagi bo'limlar (haqiqiy sonlar bilan) — qidiruvdan keyin, ro'yxatdan oldin */}
+        <Suspense fallback={<SectionsSkeleton />}>
+          <SeekerSections place={place} />
+        </Suspense>
 
         {/* ro'yxat oqim bilan keladi: qidiruv qatori darhol ishlaydi */}
         <Suspense fallback={<FeedSkeleton />}>

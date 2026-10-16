@@ -19,6 +19,7 @@ import { ModeChooser } from "@/features/mode/components/mode-chooser";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { MarketAside } from "./market-aside";
+import { getJobSections, getWorkerSections } from "@/features/landing/sections";
 
 function StepShell({ back, title, children, summary }: { back: string | null; title: string; children: ReactNode; summary?: ReactNode }) {
   return (
@@ -149,10 +150,13 @@ export async function FindResultsView({
   // qaysi kartalar saqlangan ("Saqlash" belgisi holati bilan) va qaysiga ariza yuborilgan (kartada holati)
   const session = await getSession();
   const ids = res.ok ? res.items.map((i) => i.id) : [];
-  const [saved, applied] = await Promise.all([
+  const [saved, applied, sectionCounts] = await Promise.all([
     savedIdSet(session, isJobs ? "vacancy" : "worker", ids),
     isJobs ? myApplicationStatuses(session?.workerId ?? null, ids) : Promise.resolve(new Map<string, never>()),
+    // bo'lim filtrlari (0066) bazada bormi — bo'lmasa filtr oynasi ularni taklif qilmaydi (keshlangan, butun O'zbekiston)
+    text ? Promise.resolve(null) : isJobs ? getJobSections(null, null) : getWorkerSections(null, null),
   ]);
+  const sectionsOk = sectionCounts !== null;
 
   // "Butun O'zbekiston" bo'yicha ham bo'sh — "bu hududda" deyilmaydi va hududni o'zgartirish taklif qilinmaydi
   const wholeCountry = !region && !remote;
@@ -165,6 +169,9 @@ export async function FindResultsView({
   if (params.schedule) keep.push(["schedule", params.schedule]);
   if (params.noexp) keep.push(["noexp", "1"]);
   if (params.exp) keep.push(["exp", "1"]);
+  if (params.etype) keep.push(["etype", params.etype]);
+  if (params.top) keep.push(["top", "1"]);
+  if (params.mass) keep.push(["mass", "1"]);
 
   return (
     <div className="container-app py-3 text-lg sm:py-6">
@@ -190,7 +197,19 @@ export async function FindResultsView({
                 required
               />
             </Form>
-            <FilterSheet mode={params.mode!} salary={params.salary} schedule={params.schedule} noexp={params.noexp} exp={params.exp} daily={params.pay === "daily"} count={activeFilterCount(params)} />
+            <FilterSheet
+              mode={params.mode!}
+              salary={params.salary}
+              schedule={params.schedule}
+              noexp={params.noexp}
+              exp={params.exp}
+              daily={params.pay === "daily"}
+              etype={params.etype}
+              top={params.top}
+              mass={params.mass}
+              sections={sectionsOk}
+              count={activeFilterCount(params)}
+            />
           </div>
           <div>
             <h1 className="text-base font-bold leading-snug [overflow-wrap:anywhere] sm:text-lg">
@@ -336,10 +355,25 @@ async function ActiveFilters({ params, hasProfession }: { params: FindParams; ha
     jobs && params.schedule ? { key: "schedule", label: tEnum("work_schedule", params.schedule), href: findHref(params, { schedule: null, page: 1 }) } : null,
     jobs && params.noexp ? { key: "noexp", label: t("easy.search.no_experience"), href: findHref(params, { noexp: false, page: 1 }) } : null,
     jobs && params.pay === "daily" && hasProfession ? { key: "daily", label: t("easy.search.daily_only"), href: findHref(params, { pay: null, page: 1, ...keepAny }) } : null,
+    jobs && params.etype ? { key: "etype", label: t(`easy.sections.${params.etype}`), href: findHref(params, { etype: null, page: 1, ...keepAny }) } : null,
+    jobs && params.mass ? { key: "mass", label: t("easy.sections.mass"), href: findHref(params, { mass: false, page: 1, ...keepAny }) } : null,
+    jobs && params.top ? { key: "top", label: t("easy.sections.top"), href: findHref(params, { top: false, page: 1, ...keepAny }) } : null,
     !jobs && params.exp ? { key: "exp", label: t("easy.search.experienced"), href: findHref(params, { exp: false, page: 1 }) } : null,
+    !jobs && params.pay === "daily" ? { key: "daily", label: t("easy.sections.daily_workers"), href: findHref(params, { pay: null, page: 1, ...keepAny }) } : null,
   ].filter((x): x is { key: string; label: string; href: string } => !!x);
   if (!items.length) return null;
-  const clearAll = findHref(params, { salary: null, schedule: null, noexp: false, exp: false, pay: hasProfession ? null : params.pay, page: 1 });
+  const clearAll = findHref(params, {
+    salary: null,
+    schedule: null,
+    noexp: false,
+    exp: false,
+    etype: null,
+    top: false,
+    mass: false,
+    pay: jobs && !hasProfession ? params.pay : null,
+    page: 1,
+    ...(params.etype || params.top || params.mass || (!jobs && params.pay) ? keepAny : {}),
+  });
   return (
     // telefonda — bitta suriladigan qator (ro'yxat pastga surilmaydi), kattaroq ekranda — o'raladi
     <div role="group" aria-label={t("easy.search.active_filters")} className="-mx-4 flex items-center gap-2 overflow-x-auto overscroll-x-contain px-4 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">

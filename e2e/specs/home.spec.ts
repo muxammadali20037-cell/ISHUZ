@@ -3,14 +3,14 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * R-C · bosh sahifa: birinchi ekranda qidiruv va haqiqiy e'lonlar. Har bir yo'l aytgan joyini ochadi:
- * qidiruv qatori → natijalar; tez filtr → shu filtrli natijalar; "Barcha kasblar" → kasb tanlash; e'lon berish → forma.
+ * qidiruv qatori → natijalar; bo'lim plitkasi (S2) → shu bo'lim natijalari; "Barcha kasblar" → kasb tanlash; e'lon berish → forma.
  */
 const PATHS = [
   { mode: "worker", name: /^O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
   { mode: "worker", name: /^Barcha kasblar$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
-  { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
+  { mode: "worker", name: /^Kunlik ishlar/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
   { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
-  { mode: "employer", name: /^Tajribali$/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
+  { mode: "employer", name: /^Tajribali/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
 ] as const;
 
 for (const p of PATHS) {
@@ -97,14 +97,20 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  // R-B: ish qidiruvchi (rejim tanlamagan mehmon ham) — Ishlar · Saqlanganlar · Arizalar · Profil
+  // S2: ish qidiruvchi (rejim tanlamagan mehmon ham) — Asosiy · Ishlar · AI · Xabarlar · Profil
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlanganlar", "Arizalar", "Profil"]);
-  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
-  await nav.getByRole("link", { name: "Saqlanganlar" }).click();
-  await page.waitForURL(/\/saved$/);
-  await expect(nav.getByRole("link", { name: "Saqlanganlar" })).toHaveAttribute("aria-current", "page");
-  await expect(nav.getByRole("link", { name: "Ishlar" })).not.toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link")).toHaveText(["Asosiy", "Ishlar", "AI", "Xabarlar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "Asosiy" })).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: "AI" }).click();
+  await page.waitForURL(/\/ai$/);
+  await expect(page.getByRole("heading", { level: 1, name: "AI yordamchi" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "AI" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Asosiy" })).not.toHaveAttribute("aria-current", "page");
+  // 360 px da beshta yozuv ham sig'adi (kesilmaydi)
+  for (const name of ["Asosiy", "Ishlar", "AI", "Xabarlar", "Profil"]) {
+    const label = nav.getByRole("link", { name }).locator("span").first();
+    expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), name).toBe(true);
+  }
 });
 
 test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal siljish yo'q)", async ({ page, context }) => {

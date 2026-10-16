@@ -22,7 +22,23 @@ export interface FindParams {
   any: boolean;
   /** "Yaqin atrofda" kirishi: hudud joylashuvdan (yoki eslab qolingan tumandan) aniqlanadi */
   near: boolean;
+  /** bo'lim (S2): ish beruvchi turi — kompaniya (MChJ), YaTT, jismoniy shaxs, davlat */
+  etype: EmployerKind | null;
+  /** bo'lim (S2): faqat TOP e'lonlar */
+  top: boolean;
+  /** bo'lim (S2): ommaviy ishga olish (5 va undan ko'p o'rin) */
+  mass: boolean;
 }
+
+/** Bosh sahifa bo'limidagi ish beruvchi turi (URL'da qisqa) → bazadagi employer_type */
+export type EmployerKind = "company" | "ie" | "person" | "gov";
+export const EMPLOYER_KIND_TYPE: Record<EmployerKind, Enums<"employer_type">> = {
+  company: "company",
+  ie: "individual_entrepreneur",
+  person: "person",
+  gov: "government",
+};
+const EMPLOYER_KINDS = new Set(Object.keys(EMPLOYER_KIND_TYPE));
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SCHEDULES = new Set(["5_2", "6_1", "2_2", "shift", "flexible", "negotiable"]);
@@ -52,6 +68,9 @@ export function parseFindParams(raw: Raw): FindParams {
     pay: one(raw.pay) === "daily" ? "daily" : null,
     any: one(raw.any) === "1",
     near: one(raw.near) === "1",
+    etype: EMPLOYER_KINDS.has(one(raw.etype)) ? (one(raw.etype) as EmployerKind) : null,
+    top: one(raw.top) === "1",
+    mass: one(raw.mass) === "1",
   };
 }
 
@@ -68,8 +87,12 @@ export function findHref(base: FindParams, patch: Partial<FindParams> = {}): str
     if (v.salary) q.set("salary", String(v.salary));
     if (v.schedule) q.set("schedule", v.schedule);
     if (v.noexp) q.set("noexp", "1");
-    if (v.pay) q.set("pay", v.pay);
+    if (v.etype) q.set("etype", v.etype);
+    if (v.top) q.set("top", "1");
+    if (v.mass) q.set("mass", "1");
   }
+  // "kunlik": ishlar — kunlik haqli e'lonlar; ishchilar — kunlik ishga tayyorlar (S2)
+  if (v.mode && v.pay) q.set("pay", v.pay);
   if (v.mode === "workers" && v.exp) q.set("exp", "1");
   if (v.any && !v.p) q.set("any", "1");
   if (v.near) q.set("near", "1");
@@ -89,13 +112,37 @@ export function modeHref(params: FindParams, stored: FindMode | null): string | 
 /** proxy → /search layout: URL so'rov qismi (layout searchParams olmaydi) */
 export const SEARCH_URL_HEADER = "x-ishuz-search";
 
-export const EMPTY_FIND: FindParams = { mode: null, q: "", p: null, region: null, district: null, page: 1, salary: null, schedule: null, noexp: false, exp: false, pay: null, any: false, near: false };
+export const EMPTY_FIND: FindParams = {
+  mode: null,
+  q: "",
+  p: null,
+  region: null,
+  district: null,
+  page: 1,
+  salary: null,
+  schedule: null,
+  noexp: false,
+  exp: false,
+  pay: null,
+  any: false,
+  near: false,
+  etype: null,
+  top: false,
+  mass: false,
+};
 
 export function activeFilterCount(p: FindParams): number {
-  return p.mode === "jobs" ? Number(!!p.salary) + Number(!!p.schedule) + Number(p.noexp) + Number(p.pay === "daily") : Number(p.exp);
+  return p.mode === "jobs"
+    ? Number(!!p.salary) + Number(!!p.schedule) + Number(p.noexp) + Number(p.pay === "daily") + Number(!!p.etype) + Number(p.top) + Number(p.mass)
+    : Number(p.exp) + Number(p.pay === "daily");
+}
+
+/** Bo'lim filtrlari (S2) — faqat 0066 dagi qidiruv funksiyalari bajaradi */
+export function hasSectionFilter(p: FindParams): boolean {
+  return p.mode === "jobs" && (!!p.etype || p.top || p.mass);
 }
 
 /** Kasb so'ralmaydi: "Kunlik ishlar" yoki "Yaqin atrofda" (barcha kasblar) — hudud va natijalar darhol */
 export function anyProfession(p: FindParams): boolean {
-  return !p.p && !!p.mode && (p.any || (p.mode === "jobs" && p.pay === "daily"));
+  return !p.p && !!p.mode && (p.any || p.pay === "daily");
 }

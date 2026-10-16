@@ -103,7 +103,8 @@
       "matches": "Matching jobs and candidates",
       "alerts": "Telegram notifications",
       "verification": "Employer verification",
-      "billing": "My payments and wallet"
+      "billing": "My payments and wallet",
+      "saved": "Saved"
     }
   },
   "wizard": {
@@ -328,7 +329,9 @@
     "search_label": "Search",
     "active_filters": "Active filters",
     "filter_remove": "Remove filter: {label}",
-    "filters_clear": "Clear all"
+    "filters_clear": "Clear all",
+    "employer_type": "Employer",
+    "daily_workers_only": "Day workers only"
   },
   "card": {
     "call": "Call",
@@ -430,7 +433,10 @@
     "tab_applications": "Applications",
     "tab_profile": "Profile",
     "tab_vacancies": "Vacancies",
-    "tab_candidates": "Candidates"
+    "tab_candidates": "Candidates",
+    "tab_home": "Home",
+    "tab_ai": "AI",
+    "tab_messages": "Messages"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -586,6 +592,28 @@
       "validation": "Write at least a sentence or two (up to 1500 characters).",
       "blocked": "Your account is blocked"
     }
+  },
+  "aihub": {
+    "title": "AI assistant",
+    "subtitle": "Helps you find the right match faster. Results come only from real listings.",
+    "search_title": "Search in plain words",
+    "search_desc_jobs": "For example: \"evening shift cashier in Chilonzor\". We work out the job, area and terms.",
+    "search_desc_workers": "For example: \"experienced electrician in Yunusobod\". We work out the job, area and terms.",
+    "search_label": "What are you looking for?",
+    "search_button": "Find",
+    "matches_title": "Listings that fit you",
+    "matches_desc": "Fit calculated from your profile (job, area, experience, pay) and why",
+    "matches_login": "Log in to see them",
+    "matches_profile": "Tell us about yourself first",
+    "pro_title": "AI PRO watch",
+    "pro_desc": "A Telegram message as soon as a fitting listing appears",
+    "fill_title_worker": "Quick résumé",
+    "fill_desc_worker": "Describe yourself in plain words — the fields fill in, you check and publish",
+    "fill_title_employer": "Quick vacancy",
+    "fill_desc_employer": "Describe who you need in plain words — the fields fill in, you check and publish",
+    "candidates_title": "Candidates for your vacancy",
+    "candidates_desc": "Workers ranked by your vacancy requirements",
+    "note": "AI only assists: the decision is yours. We never show a match percentage that was not calculated."
   },
   "finder": {
     "button": "Find what fits you",
@@ -747,5 +775,34 @@
     "finish_company_title": "Complete your company details",
     "finish_company_desc": "One minute: name and area — then post jobs and see applications",
     "metrics_label": "Key numbers"
+  },
+  "sections": {
+    "title": "Sections",
+    "jobs_count": "{count} listings",
+    "workers_count": "{count} workers",
+    "near_hint": "By your location",
+    "daily": "Daily jobs",
+    "daily_hint": "Paid by the day",
+    "near": "Nearby",
+    "remote": "Remote",
+    "noexp": "No experience",
+    "company": "Companies",
+    "company_title": "Companies: LLCs, JSCs and other legal entities",
+    "ie": "Sole traders",
+    "ie_title": "Sole proprietors",
+    "gov": "Government",
+    "gov_title": "Government organisations",
+    "person": "Individuals",
+    "person_title": "Private individuals (home, garden, nanny, etc.)",
+    "mass": "Mass hiring",
+    "mass_title": "5 or more people needed",
+    "top": "TOP",
+    "top_title": "Featured listings",
+    "all": "All fields",
+    "daily_workers": "Day workers",
+    "daily_workers_hint": "Paid daily or ready today or tomorrow",
+    "near_workers": "Workers nearby",
+    "experienced": "Experienced",
+    "all_workers": "All workers"
   }
 }

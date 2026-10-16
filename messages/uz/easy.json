@@ -103,7 +103,8 @@
       "matches": "Mos e'lonlar va nomzodlar",
       "alerts": "Telegram xabarnomalari",
       "verification": "Ish beruvchini tasdiqlash",
-      "billing": "To'lovlarim va hamyon"
+      "billing": "To'lovlarim va hamyon",
+      "saved": "Saqlanganlar"
     }
   },
   "wizard": {
@@ -328,7 +329,9 @@
     "search_label": "Qidirish",
     "active_filters": "Faol filtrlar",
     "filter_remove": "Filtrni olib tashlash: {label}",
-    "filters_clear": "Hammasini tozalash"
+    "filters_clear": "Hammasini tozalash",
+    "employer_type": "Ish beruvchi",
+    "daily_workers_only": "Faqat kunlik ishchilar"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",
@@ -430,7 +433,10 @@
     "tab_applications": "Arizalar",
     "tab_profile": "Profil",
     "tab_vacancies": "Vakansiyalar",
-    "tab_candidates": "Nomzodlar"
+    "tab_candidates": "Nomzodlar",
+    "tab_home": "Asosiy",
+    "tab_ai": "AI",
+    "tab_messages": "Xabarlar"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -586,6 +592,28 @@
       "validation": "Kamida bir-ikki gap yozing (1500 belgigacha).",
       "blocked": "Hisobingiz bloklangan"
     }
+  },
+  "aihub": {
+    "title": "AI yordamchi",
+    "subtitle": "Sizga mosini tezroq topishga yordam beradi. Natijalar — faqat bazadagi haqiqiy e'lonlardan.",
+    "search_title": "Oddiy so'z bilan qidiring",
+    "search_desc_jobs": "Masalan: «Chilonzorda kechki smena kassir». Kasb, hudud va shartlarni o'zimiz tushunamiz.",
+    "search_desc_workers": "Masalan: «Yunusobodda tajribali elektrik kerak». Kasb, hudud va shartlarni o'zimiz tushunamiz.",
+    "search_label": "Nima qidiryapsiz?",
+    "search_button": "Topish",
+    "matches_title": "Sizga mos e'lonlar",
+    "matches_desc": "Profilingiz (kasb, hudud, tajriba, maosh) bo'yicha hisoblangan moslik va uning sabablari",
+    "matches_login": "Ko'rish uchun hisobga kiring",
+    "matches_profile": "Avval o'zingiz haqingizda e'lon bering",
+    "pro_title": "AI PRO kuzatuv",
+    "pro_desc": "Mos yangi e'lon chiqishi bilan Telegram'ga xabar keladi",
+    "fill_title_worker": "Rezyumeni tez tuzish",
+    "fill_desc_worker": "O'zingiz haqingizda oddiy yozing — maydonlar to'ldiriladi, tekshirib joylaysiz",
+    "fill_title_employer": "Vakansiyani tez tuzish",
+    "fill_desc_employer": "Kim kerakligini oddiy yozing — maydonlar to'ldiriladi, tekshirib joylaysiz",
+    "candidates_title": "Vakansiyangizga mos nomzodlar",
+    "candidates_desc": "Vakansiya talablari bo'yicha saralangan ishchilar",
+    "note": "AI faqat yordamchi: qaror sizniki. Hisoblanmagan moslik foizi ko'rsatilmaydi."
   },
   "finder": {
     "button": "O'zingizga mosini toping",
@@ -747,5 +775,34 @@
     "finish_company_title": "Kompaniya ma'lumotlarini to'ldiring",
     "finish_company_desc": "Bir daqiqa: nomi va hudud — keyin vakansiya joylaysiz va arizalarni ko'rasiz",
     "metrics_label": "Qisqa ko'rsatkichlar"
+  },
+  "sections": {
+    "title": "Bo'limlar",
+    "jobs_count": "{count} ta e'lon",
+    "workers_count": "{count} ta ishchi",
+    "near_hint": "Joylashuvingiz bo'yicha",
+    "daily": "Kunlik ishlar",
+    "daily_hint": "Haqi kunbay to'lanadi",
+    "near": "Yaqin atrofda",
+    "remote": "Masofaviy",
+    "noexp": "Tajribasiz",
+    "company": "MChJ",
+    "company_title": "Kompaniyalar: MChJ, AJ va boshqa yuridik shaxslar",
+    "ie": "YaTT",
+    "ie_title": "Yakka tartibdagi tadbirkorlar",
+    "gov": "Davlat",
+    "gov_title": "Davlat tashkilotlari",
+    "person": "Jismoniy shaxs",
+    "person_title": "Xususiy shaxslar e'lonlari (uy, bog', enaga va boshqalar)",
+    "mass": "Ommaviy",
+    "mass_title": "5 va undan ko'p ishchi kerak",
+    "top": "TOP",
+    "top_title": "TOP e'lonlar",
+    "all": "Barcha sohalar",
+    "daily_workers": "Kunlik ishchilar",
+    "daily_workers_hint": "Kunlik to'lovga yoki bugun-ertaga tayyor",
+    "near_workers": "Yaqin ishchilar",
+    "experienced": "Tajribali",
+    "all_workers": "Barcha ishchilar"
   }
 }
