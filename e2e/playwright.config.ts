@@ -24,6 +24,8 @@ export default defineConfig({
   reporter: [["list"], ["html", { outputFolder: path.join(__dirname, ".stack/report"), open: "never" }], ...(process.env.CI ? [["github"] as ["github"]] : [])],
   use: {
     baseURL: app,
+    // tanishtiruv (birinchi ochilish) "ko'rilgan": yangi kontekstli testlar sahifaning o'zini tekshiradi; uni intro.spec ochadi
+    storageState: { cookies: [{ name: "ib_intro", value: "1", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" }], origins: [] },
     locale: "uz-UZ",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",

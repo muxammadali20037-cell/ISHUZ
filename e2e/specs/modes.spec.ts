@@ -2,23 +2,27 @@ import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, sql } from "../support";
 
 /**
- * E1/E3/R-C · ish izlovchi va ish beruvchi alohida: rejim tanlanmagan mehmon — ish qidiruvchi ko'rinishi, keyin faqat shu rejimning
+ * E1/E3/R-C/S1 · ish izlovchi va ish beruvchi alohida: rejim tanlanmagan mehmon — kirish oynasi (maqsad), keyin faqat shu rejimning
  * oynalari, qidiruvi va e'loni; boshqa rejim bo'limi — tushuntirish va tasdiq bilan; "Yaqin atrofda" — joylashuvdan eng yaqin tuman.
  */
 
 const windows = (page: Page) => page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link");
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
 
-test("mehmon (rejim tanlanmagan): darhol ish qidiruvchi ko'rinishi — qidiruv, haqiqiy e'lonlar, faqat shu rejim bo'limlari", async ({ page, context }) => {
+test("mehmon (rejim tanlanmagan): kirish oynasi — avval maqsad; 'Ish topaman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/");
-  // savol ekrani yo'q: birinchi ekranda qidiruv va e'lonlar
-  await expect(page.getByRole("heading", { name: "Siz nima qidiryapsiz?" })).toHaveCount(0);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
+  // S1: kirish oynasi — savol, ikki katta maqsad, shu yerning o'zida qidiruv va haqiqiy e'lonlar (rejim almashtirgich yo'q)
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nima qidiryapsiz?");
   await expect(page.getByRole("searchbox", { name: "Ish qidirish" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: /Yangi ishlar|Sizga mos ishlar/ })).toBeVisible();
-  await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
+  await expect(page.getByRole("heading", { level: 2, name: "Yangi vakansiyalar" })).toBeVisible();
+  await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+  // ko'rish rejim tanlovini o'zi yozmaydi (tanlov faqat foydalanuvchi bosganda)
+  expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
 
+  await page.getByRole("main").getByRole("button", { name: /^Ish topaman/ }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
+  await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
   await expect(windows(page)).toHaveCount(3);
   await expect(windows(page).nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
   await expect(windows(page).nth(1)).toContainText("Kunlik ishlar");
@@ -33,8 +37,7 @@ test("mehmon (rejim tanlanmagan): darhol ish qidiruvchi ko'rinishi — qidiruv, 
   await expect(nav.getByRole("link", { name: "Saqlanganlar" })).toHaveAttribute("href", "/saved");
   await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/applications");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
-  // ko'rish rejim tanlovini o'zi yozmaydi (tanlov faqat foydalanuvchi almashtirganda)
-  expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
+  expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 });
 
 test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi bo'limlari", async ({ page, context }) => {

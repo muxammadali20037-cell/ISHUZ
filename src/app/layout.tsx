@@ -5,6 +5,7 @@ import { getLocale, getT } from "@/lib/i18n/server";
 import { clientMessages } from "@/lib/i18n/translate";
 import { getServerEnv } from "@/lib/env";
 import { CelebrationListener } from "@/components/shared/celebration-listener";
+import { SPLASH_BOOT, Splash } from "@/components/shared/splash";
 import { Providers } from "./providers";
 import "./globals.css";
 import { BRAND } from "@/config/brand";
@@ -66,6 +67,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Telegram Mini App SDK faqat Telegram ichida (gidratsiyadan oldin, avvalgidek). Oddiy brauzerda yuklanmaydi —
             tashqi skript kutilmagani uchun sahifa darhol "jonlanadi" (bosishlar kechikmaydi) */}
         <script dangerouslySetInnerHTML={{ __html: TELEGRAM_SDK_LOADER }} />
+        {/* ochilish ekrani sessiyada bir marta: kerak bo'lmasa birinchi chizishdan oldin yashiriladi */}
+        <script dangerouslySetInnerHTML={{ __html: SPLASH_BOOT }} />
         {/* Mavzu: cookie yo'q ("system") bo'lsa — qurilma sozlamasiga qarab, gidratsiyadan oldin (miltillashsiz) */}
         <script
           dangerouslySetInnerHTML={{
@@ -74,6 +77,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         />
       </head>
       <body className="font-sans">
+        <Splash />
         <Providers locale={locale} messages={clientMessages(locale)}>
           {children}
           <CelebrationListener />

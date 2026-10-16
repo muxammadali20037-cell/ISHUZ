@@ -15,12 +15,16 @@ export const USERS = {
 
 const host = new URL(stack.app).hostname;
 
-/** Mehmon: cookie'lar tozalanadi, til — o'zbek lotin. Ilova rejimi (asMode) saqlanib qoladi — u qurilmadagi tanlov */
+/**
+ * Mehmon: cookie'lar tozalanadi, til — o'zbek lotin. Ilova rejimi (asMode) saqlanib qoladi — u qurilmadagi tanlov.
+ * Birinchi ochilishdagi tanishtiruv "ko'rilgan" (ib_intro) — testlar sahifaning o'zini tekshiradi; tanishtiruvni intro.spec ochadi.
+ */
 export async function asGuest(ctx: BrowserContext) {
   const mode = (await ctx.cookies()).find((c) => c.name === "ib_mode");
   await ctx.clearCookies();
   await ctx.addCookies([
     { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
+    { name: "ib_intro", value: "1", domain: host, path: "/" },
     ...(mode ? [{ name: "ib_mode", value: mode.value, domain: host, path: "/" }] : []),
   ]);
 }

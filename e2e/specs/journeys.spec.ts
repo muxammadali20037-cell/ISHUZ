@@ -24,12 +24,12 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish (R-C): rejim so'ralmaydi — ish qidiruvchi ko'rinishi; "O'zim haqimda e'lon berish"
-    // (kompyuterda — o'ng paneldagi "Rezyume joylash")
+    // birinchi ochilish (S1): kirish oynasi — "Ish topaman"; keyin "O'zim haqimda e'lon berish"
+    // (kompyuterda — o'ng paneldagi "Rezyume joylash"). Rejim tanlangan — e'lon turi qayta so'ralmaydi (tasdiq — modes.spec)
+    await page.getByRole("main").getByRole("button", { name: /^Ish topaman/ }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
     await page.locator("main a[href='/post/worker']:visible").first().click();
     await page.waitForURL(/\/post\/worker/);
-    // rejim hali tanlanmagan — e'lon turi bir marta tasdiqlanadi (tanlov eslab qolinadi, E1)
-    await page.getByRole("button", { name: "Ha, men ish qidiryapman" }).click();
     await pickProfession(page, "Buxgalter", "Buxgalter");
     await next(page);
     await pickWholeRegion(page);
@@ -86,9 +86,9 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish (R-C): ish qidiruvchi ko'rinishi; ish beruvchi rejimiga — almashtirgich va tasdiq bilan
-    await page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name: "Ish beruvchi" }).click();
-    await page.getByRole("dialog").getByRole("button", { name: "Ha, o'tish" }).click();
+    // birinchi ochilish (S1): kirish oynasi — "Ishchi topaman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
+    await page.getByRole("main").getByRole("button", { name: /^Ishchi topaman/ }).click();
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
     await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
     await page.waitForURL(/\/post\/vacancy/);
     await pickProfession(page, "Buxgalter", "Buxgalter");

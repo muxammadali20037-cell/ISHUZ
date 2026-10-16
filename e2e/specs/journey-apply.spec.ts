@@ -41,8 +41,9 @@ for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await asGuest(context);
 
-    // 1. bosh sahifa (birinchi ochilish, R-C): rejim so'ralmaydi — e'lonlar darhol; kasb bo'yicha — "Barcha kasblar"
+    // 1. bosh sahifa (birinchi ochilish, S1): kirish oynasi — "Ish topaman"; kasb bo'yicha — "Barcha kasblar"
     await page.goto("/");
+    await page.getByRole("main").getByRole("button", { name: /^Ish topaman/ }).click();
     await page.getByRole("main").getByRole("link", { name: "Barcha kasblar", exact: true }).click();
     await page.waitForURL(/\/search\?mode=jobs$/);
 

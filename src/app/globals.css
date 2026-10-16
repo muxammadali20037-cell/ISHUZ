@@ -189,6 +189,83 @@
   }
 }
 
+/*
+ * Ochilish ekrani (S1): "Ish topdim" → kamera "topdim" so'zining "o" harfi ichiga uchib kiradi va ilova ochiladi.
+ * Faqat ilova ochilganda (sessiyada bir marta), jami ~1.2 s; bosishni to'smaydi; reduced-motion'da yo'q.
+ * "o" markazi (Manrope 800, -0.03em) brauzerda o'lchangan: so'z qutisining 20.96% / 60.1% nuqtasi.
+ */
+.splash {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--background);
+  animation: splash-out 0.25s ease-out 0.95s forwards;
+}
+html.no-splash .splash { display: none; }
+.splash-logo { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: splash-in 0.28s ease-out both; }
+.splash-mark {
+  display: flex;
+  width: 68px;
+  height: 68px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  animation: splash-fade 0.2s ease-in 0.4s forwards;
+}
+.splash-mark svg { width: 74%; height: 74%; }
+.splash-word { display: flex; align-items: baseline; gap: 0.26em; font-size: 2.6rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: var(--foreground); }
+.splash-ish::before, .splash-top::before, .splash-slogan::before { content: attr(data-t); }
+.splash-ish { animation: splash-fade 0.2s ease-in 0.4s forwards; }
+.splash-top {
+  display: inline-block;
+  color: var(--primary);
+  transform-origin: 20.96% 60.1%;
+  will-change: transform;
+  /* tezlashib yaqinlashadi; halqa ekrandan chiqayotganda so'z eriydi — "o" ichidan ilova ochiladi */
+  animation: splash-zoom 0.6s cubic-bezier(0.7, 0, 0.84, 0.25) 0.4s forwards, splash-fade 0.14s linear 0.86s forwards;
+}
+.splash-slogan { font-size: 0.95rem; font-weight: 600; color: var(--muted-foreground); animation: splash-fade 0.18s ease-in 0.34s forwards; }
+.splash-bar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  width: 96px;
+  height: 4px;
+  margin-left: -48px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--primary-soft);
+  animation: splash-fade 0.18s ease-in 0.4s forwards;
+}
+.splash-bar::after { content: ""; position: absolute; inset: 0; background: var(--primary); transform-origin: left; animation: splash-load 0.4s ease-out forwards; }
+@keyframes splash-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+@keyframes splash-fade { to { opacity: 0; } }
+@keyframes splash-zoom { to { transform: scale(64); } }
+@keyframes splash-load { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes splash-out { to { opacity: 0; visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) {
+  .splash { display: none; }
+}
+
+/* Kirish oynasi: "jonli" nuqta (bugungi yangi e'lonlar) va tanishtiruv slaydlari almashinuvi */
+.entry-live { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: var(--success); }
+.entry-live::after { content: ""; position: absolute; inset: -3px; border-radius: inherit; border: 2px solid var(--success); opacity: 0; animation: entry-pulse 1.8s ease-out infinite; }
+.intro-slide { animation: intro-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.intro-slide.intro-back { animation-name: intro-in-back; }
+@keyframes entry-pulse { 0% { opacity: 0.8; transform: scale(0.6); } 100% { opacity: 0; transform: scale(1.8); } }
+@keyframes intro-in { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes intro-in-back { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .entry-live::after, .intro-slide { animation: none; }
+}
+
 /* forma serverda chizilgan, qurilmadagi qoralama hali o'qilmoqda (bir lahza) — bosish hali qabul qilinmaydi */
 [inert][aria-busy="true"] {
   cursor: progress;

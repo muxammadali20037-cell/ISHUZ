@@ -1,9 +1,11 @@
 "use server";
 
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { prefCookie } from "@/lib/security/cookies";
+import { safeInternalPath } from "@/lib/security/safe-path";
 import { getSession } from "@/features/auth/session";
 import type { ActionResult } from "@/features/auth/actions";
 import { MODE_COOKIE } from "./mode";
@@ -27,4 +29,15 @@ export async function chooseMode(input: unknown): Promise<ActionResult> {
     if (error) return { ok: false, error: "generic" };
   }
   return { ok: true };
+}
+
+/**
+ * Kirish oynasidagi maqsad plitkasi ("Ish topaman", "Ishchi topaman", "Kunlik ish"...): JS'siz ham ishlaydigan forma.
+ * Rejim yoziladi va o'sha bo'limga o'tiladi; `next` — faqat ilova ichidagi manzil (tashqi yo'naltirish yo'q).
+ */
+export async function enterMode(form: FormData): Promise<void> {
+  const mode = modeSchema.safeParse(form.get("mode"));
+  const next = form.get("next");
+  if (mode.success) await chooseMode(mode.data);
+  redirect(safeInternalPath(typeof next === "string" ? next : null));
 }
