@@ -82,6 +82,31 @@ export const getLatestVacancy = cache(async (userId: string, companyId: string |
   return data ?? null;
 });
 
+/** Barcha vakansiyalarim bo'yicha arizalar holati (S3 paneli): yangi, ko'rilgan, saralangan, suhbat, ishga olingan — aniq sonlar */
+export type PipelineTotals = Record<"sent" | "viewed" | "shortlisted" | "interview" | "hired", number>;
+const PIPELINE_KEYS = ["sent", "viewed", "shortlisted", "interview", "hired"] as const;
+
+export async function getPipelineTotals(userId: string, companyId: string | null): Promise<PipelineTotals | null> {
+  const supabase = await createClient();
+  const { data: mine, error: vErr } = await supabase.from("vacancies").select("id").or(mineFilter(userId, companyId)).limit(1000);
+  if (vErr) {
+    console.error("[employer] getPipelineTotals(vacancies)", vErr.message);
+    return null;
+  }
+  const ids = (mine ?? []).map((v) => v.id);
+  const totals: PipelineTotals = { sent: 0, viewed: 0, shortlisted: 0, interview: 0, hired: 0 };
+  if (!ids.length) return totals;
+  const res = await Promise.all(PIPELINE_KEYS.map((k) => supabase.from("applications").select("id", { count: "exact", head: true }).in("vacancy_id", ids).eq("status", k)));
+  for (const [i, r] of res.entries()) {
+    if (r.error) {
+      console.error("[employer] getPipelineTotals", r.error.message);
+      return null;
+    }
+    totals[PIPELINE_KEYS[i]!] = r.count ?? 0;
+  }
+  return totals;
+}
+
 export async function getRecentApplications(userId: string, companyId: string | null, limit = 5): Promise<RecentApplicationRow[]> {
   const supabase = await createClient();
   const { data: mine, error: vErr } = await supabase.from("vacancies").select("id").or(mineFilter(userId, companyId)).limit(200);

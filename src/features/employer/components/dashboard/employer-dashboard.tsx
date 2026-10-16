@@ -16,7 +16,7 @@ import { CandidatesSection } from "./candidates-section";
 import { MyVacanciesSection } from "./my-vacancies-section";
 import { RecentApplicationsSection } from "./recent-applications-section";
 import { CardsSectionSkeleton, RowsSectionSkeleton } from "./skeletons";
-import { KeyTiles, KeyTilesSkeleton } from "./stats-tiles";
+import { KeyTiles, KeyTilesSkeleton, PipelineTiles } from "./stats-tiles";
 import { EmployerSections } from "./employer-sections";
 import { VerificationBadge } from "./status-badge";
 import { HireSections, SectionsSkeleton } from "@/features/landing/section-tiles";
@@ -119,6 +119,12 @@ export async function EmployerDashboard({ session, embedded = false }: { session
           <KeyTiles candidatesHref={candidatesHref} />
         </Suspense>
       </div>
+
+      {hasVacancies ? (
+        <Suspense fallback={null}>
+          <PipelineTiles userId={userId} companyId={companyId} />
+        </Suspense>
+      ) : null}
 
       {!hasVacancies ? (
         <EmptyState icon={PlusCircle} title={t("employer.dashboard.empty_title")} description={t("employer.dashboard.empty_desc")} />

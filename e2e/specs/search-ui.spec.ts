@@ -67,8 +67,14 @@ test("filtr: 'Filtrni tozalash'dan keyin oyna qayta ochilsa eski tanlov ko'rinma
   await page.getByRole("button", { name: /^Filtr/ }).click();
   const noexp = page.getByRole("dialog").getByRole("checkbox", { name: "Tajribasiz ham olinadi" });
   await noexp.check();
-  await page.getByRole("button", { name: "Natijalarni ko'rsatish" }).click();
+  // S3: tugmada tanlangan filtrlar bo'yicha haqiqiy son — sahifadagi natijalar soni bilan bir xil
+  const show = page.getByRole("dialog").getByRole("button", { name: /^Natijalarni ko'rish \(\d+\)$/ });
+  await expect(show).toBeVisible();
+  const n = Number((await show.textContent())!.match(/\((\d+)\)/)![1]);
+  await show.click();
   await page.waitForURL(/noexp=1/);
+  if (n > 0) await expect(page.getByText(`${n} ta e'lon topildi`)).toBeVisible();
+  else await expect(page.locator("main article")).toHaveCount(0);
   await page.getByRole("button", { name: /^Filtr/ }).click();
   await expect(page.getByRole("dialog").getByRole("checkbox", { name: "Tajribasiz ham olinadi" })).toBeChecked();
   await page.getByRole("button", { name: "Filtrni tozalash" }).click();

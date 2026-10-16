@@ -34,6 +34,7 @@ import { SimilarVacancies } from "./similar-vacancies";
 import { HomeSectionSkeleton } from "./skeletons";
 import { VacancyActions } from "./vacancy-actions";
 import { VacancyDescription } from "./vacancy-description";
+import { VacancyTabs } from "./vacancy-tabs";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import { Photo } from "@/components/shared/photo";
 import { BackLink } from "@/components/shared/back-link";
@@ -116,7 +117,7 @@ export async function VacancyDetail({
   const { data: adPhone } = isManager ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
   const showContact = !isManager && (!!adPhone || !!contactProfileId);
 
-  const hasConditions = v.skills.length > 0 || v.officialTerms.length > 0 || v.benefits.length > 0;
+  const hasBenefits = v.officialTerms.length > 0 || v.benefits.length > 0;
   const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} /> : null;
 
   return (
@@ -257,14 +258,6 @@ export async function VacancyDetail({
                 </Fact>
               ) : null}
               {v.positions_count > 1 ? <Fact label={t("jobs.detail.positions")}>{t("vacancies.preview.positions", { count: v.positions_count })}</Fact> : null}
-              {v.education_min ? <Fact label={t("jobs.detail.education")}>{tEnum("education_level", v.education_min)}</Fact> : null}
-              {age ? <Fact label={t("jobs.detail.age")}>{age}</Fact> : null}
-              {v.gender ? <Fact label={t("jobs.detail.gender")}>{tEnum("gender", v.gender)}</Fact> : null}
-              {v.languages.length ? (
-                <Fact label={t("jobs.detail.languages")} wide>
-                  {v.languages.map((l) => `${name(l)} — ${tEnum("language_level", l.min_level)}`).join(", ")}
-                </Fact>
-              ) : null}
             </dl>
           </Section>
 
@@ -279,83 +272,132 @@ export async function VacancyDetail({
                 <MatchReasons reasons={viewer.match.reasons} />
               </div>
               <p className="mt-3 text-xs text-muted-foreground">{t("jobs.detail.match_hint")}</p>
+              <Link href={`/jobs/${v.slug}/moslik`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary hover:underline">
+                {t("jobs.fit.open")} <ChevronRight className="size-4" aria-hidden />
+              </Link>
             </Section>
           ) : null}
 
-          {/* Tavsif */}
-          <Section title={t("jobs.detail.about")}>
-            {v.description?.trim() ? (
-              <VacancyDescription text={v.description} />
-            ) : (
-              <p className="text-sm text-muted-foreground">{t("jobs.detail.no_description")}</p>
-            )}
-          </Section>
-
-          {/* Talablar va qulayliklar: ko'nikmalar, rasmiy shartlar, imkoniyatlar — bitta blokda */}
-          {hasConditions ? (
-            <Section title={t("jobs.detail.conditions")}>
-              <div className="space-y-3">
-                {requiredSkills.length ? (
-                  <ChipGroup label={t("jobs.detail.skills_required")}>
-                    {requiredSkills.map((s) => (
-                      <Badge key={s.id} variant="primary" size="lg">
-                        {name(s)}
-                      </Badge>
-                    ))}
-                  </ChipGroup>
-                ) : null}
-                {niceSkills.length ? (
-                  <ChipGroup label={t("jobs.detail.skills_nice")}>
-                    {niceSkills.map((s) => (
-                      <Badge key={s.id} variant="outline" size="lg">
-                        {name(s)}
-                      </Badge>
-                    ))}
-                  </ChipGroup>
-                ) : null}
-                {v.officialTerms.length ? (
-                  <ChipGroup label={tEnum("work_format", v.work_format)}>
-                    {v.officialTerms.map((b) => (
-                      <Badge key={b.code} variant="success" size="lg">
-                        <FileCheck2 /> {name(b)}
-                      </Badge>
-                    ))}
-                  </ChipGroup>
-                ) : null}
-                {v.benefits.length ? (
-                  <ChipGroup label={t("jobs.detail.benefits")}>
-                    {v.benefits.map((b) => (
-                      <Badge key={b.code} size="lg">
-                        <Gift /> {name(b)}
-                      </Badge>
-                    ))}
-                  </ChipGroup>
-                ) : null}
-              </div>
-            </Section>
-          ) : null}
-
-          {/* Kompaniya — ixcham */}
-          {company ? (
-            <Section title={t("jobs.detail.company")}>
-              <div className="flex items-start gap-3">
-                <Avatar src={company.logo_url} fallback={company.name.slice(0, 2)} square size="md" alt="" className="size-10 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1 font-semibold">
-                    {company.name}
-                    {company.verification_status === "verified" ? (
-                      <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} />
+          {/* S3: Tavsif · Talablar · Imtiyozlar · Kompaniya — faqat ma'lumoti borlari */}
+          <VacancyTabs
+            label={t("jobs.detail.tabs_label")}
+            tabs={[
+              {
+                value: "about",
+                label: t("jobs.detail.tab_about"),
+                content: (
+                  <Section title={t("jobs.detail.about")}>
+                    {v.description?.trim() ? (
+                      <VacancyDescription text={v.description} />
+                    ) : (
+                      <p className="text-sm text-muted-foreground">{t("jobs.detail.no_description")}</p>
+                    )}
+                  </Section>
+                ),
+              },
+              {
+                value: "requirements",
+                label: t("jobs.detail.tab_requirements"),
+                content: (
+                  <Section title={t("jobs.detail.tab_requirements")}>
+                    <dl className="grid grid-cols-2 gap-x-4 gap-y-3">
+                      <Fact label={t("jobs.detail.experience")}>{tEnum("experience_min_months", String(experienceKey))}</Fact>
+                      {v.education_min ? <Fact label={t("jobs.detail.education")}>{tEnum("education_level", v.education_min)}</Fact> : null}
+                      {age ? <Fact label={t("jobs.detail.age")}>{age}</Fact> : null}
+                      {v.gender ? <Fact label={t("jobs.detail.gender")}>{tEnum("gender", v.gender)}</Fact> : null}
+                      {v.languages.length ? (
+                        <Fact label={t("jobs.detail.languages")} wide>
+                          {v.languages.map((l) => `${name(l)} — ${tEnum("language_level", l.min_level)}`).join(", ")}
+                        </Fact>
+                      ) : null}
+                    </dl>
+                    {requiredSkills.length || niceSkills.length ? (
+                      <div className="mt-4 space-y-3">
+                        {requiredSkills.length ? (
+                          <ChipGroup label={t("jobs.detail.skills_required")}>
+                            {requiredSkills.map((s) => (
+                              <Badge key={s.id} variant="primary" size="lg">
+                                {name(s)}
+                              </Badge>
+                            ))}
+                          </ChipGroup>
+                        ) : null}
+                        {niceSkills.length ? (
+                          <ChipGroup label={t("jobs.detail.skills_nice")}>
+                            {niceSkills.map((s) => (
+                              <Badge key={s.id} variant="outline" size="lg">
+                                {name(s)}
+                              </Badge>
+                            ))}
+                          </ChipGroup>
+                        ) : null}
+                      </div>
                     ) : null}
-                  </p>
-                  {company.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
-                  {company.about ? <p className="mt-1.5 line-clamp-3 text-sm text-foreground/90">{descriptionExcerpt(company.about, 240)}</p> : null}
-                  <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary hover:underline">
-                    {t("jobs.detail.company_page")} <ChevronRight className="size-4" aria-hidden />
-                  </Link>
-                </div>
-              </div>
-            </Section>
-          ) : null}
+                  </Section>
+                ),
+              },
+              ...(hasBenefits
+                ? [
+                    {
+                      value: "benefits",
+                      label: t("jobs.detail.tab_benefits"),
+                      content: (
+                        <Section title={t("jobs.detail.tab_benefits")}>
+                          <div className="space-y-3">
+                            {v.officialTerms.length ? (
+                              <ChipGroup label={tEnum("work_format", v.work_format)}>
+                                {v.officialTerms.map((b) => (
+                                  <Badge key={b.code} variant="success" size="lg">
+                                    <FileCheck2 /> {name(b)}
+                                  </Badge>
+                                ))}
+                              </ChipGroup>
+                            ) : null}
+                            {v.benefits.length ? (
+                              <ChipGroup label={t("jobs.detail.benefits")}>
+                                {v.benefits.map((b) => (
+                                  <Badge key={b.code} size="lg">
+                                    <Gift /> {name(b)}
+                                  </Badge>
+                                ))}
+                              </ChipGroup>
+                            ) : null}
+                          </div>
+                        </Section>
+                      ),
+                    },
+                  ]
+                : []),
+              ...(company
+                ? [
+                    {
+                      value: "company",
+                      label: t("jobs.detail.tab_company"),
+                      content: (
+                        <Section title={t("jobs.detail.company")}>
+                          <div className="flex items-start gap-3">
+                            <Avatar src={company.logo_url} fallback={company.name.slice(0, 2)} square size="md" alt="" className="size-10 shrink-0" />
+                            <div className="min-w-0 flex-1">
+                              <p className="flex items-center gap-1 font-semibold">
+                                {company.name}
+                                {company.verification_status === "verified" ? (
+                                  <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} />
+                                ) : null}
+                              </p>
+                              {company.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
+                              {company.about ? <p className="mt-1.5 text-sm text-foreground/90">{descriptionExcerpt(company.about, 600)}</p> : null}
+                              <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary hover:underline">
+                                {t("jobs.detail.company_page")} <ChevronRight className="size-4" aria-hidden />
+                              </Link>
+                            </div>
+                          </div>
+                        </Section>
+                      ),
+                    },
+                  ]
+                : []),
+            ]}
+          />
         </div>
 
         <aside className="contents lg:block lg:self-start lg:sticky lg:top-20 lg:space-y-4">

@@ -105,7 +105,22 @@
       "verification": "Подтверждение работодателя",
       "billing": "Мои платежи и кошелёк",
       "saved": "Избранное"
-    }
+    },
+    "header": {
+      "worker": "Соискатель",
+      "employer": "Работодатель",
+      "completeness": "Профиль заполнен на {value}%",
+      "complete_cta": "Дополнить",
+      "activity": "Активность",
+      "applications": "Отклики",
+      "offers": "Приглашения",
+      "saved": "Избранное",
+      "views": "Просмотры",
+      "active_vacancies": "Активные",
+      "new_applications": "Новые отклики",
+      "hired": "Нанято"
+    },
+    "account": "Аккаунт"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -331,7 +346,9 @@
     "filter_remove": "Убрать фильтр: {label}",
     "filters_clear": "Сбросить все",
     "employer_type": "Работодатель",
-    "daily_workers_only": "Только работники на день"
+    "daily_workers_only": "Только работники на день",
+    "show_results": "Показать результаты ({count})",
+    "counting": "Считаем…"
   },
   "card": {
     "call": "Позвонить",

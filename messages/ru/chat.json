@@ -9,7 +9,15 @@
     "empty_cta_employer": "Отклики на мои вакансии",
     "no_messages": "Нет сообщений",
     "you": "Вы",
-    "unread_aria": "Непрочитанных сообщений: {count}"
+    "unread_aria": "Непрочитанных сообщений: {count}",
+    "search_label": "Поиск по чатам",
+    "search_placeholder": "Имя, вакансия или сообщение",
+    "filter_label": "С кем",
+    "filter_all": "Все",
+    "filter_employers": "Работодатели",
+    "filter_candidates": "Кандидаты",
+    "no_results": "По этому запросу чатов нет",
+    "clear": "Сбросить"
   },
   "room": {
     "back": "Диалоги",

@@ -9,7 +9,15 @@
     "empty_cta_employer": "Applications received",
     "no_messages": "No messages",
     "you": "You",
-    "unread_aria": "{count} unread messages"
+    "unread_aria": "{count} unread messages",
+    "search_label": "Search chats",
+    "search_placeholder": "Name, vacancy or message",
+    "filter_label": "With whom",
+    "filter_all": "All",
+    "filter_employers": "Employers",
+    "filter_candidates": "Candidates",
+    "no_results": "No chats match this search",
+    "clear": "Clear"
   },
   "room": {
     "back": "Conversations",

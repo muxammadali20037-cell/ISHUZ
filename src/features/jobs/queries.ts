@@ -212,7 +212,7 @@ export const getVacancyBySlug = cache(async (rawSlug: string): Promise<VacancyDe
   };
 });
 
-function parseReasons(json: Json | null | undefined): MatchReason[] {
+export function parseReasons(json: Json | null | undefined): MatchReason[] {
   if (!Array.isArray(json)) return [];
   const out: MatchReason[] = [];
   for (const r of json) {

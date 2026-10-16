@@ -19,8 +19,9 @@ async function seed() {
   for (const [i, title] of TITLES.entries()) {
     await sql(
       `insert into public.vacancies (owner_profile_id, title, region_id, district_id, description, status, salary_from, salary_to, salary_type, schedule, published_at, expires_at)
-       select $1, $2, r.id, d.id, 'Sinov e''loni: ' || $2 || ', 9 dan 18 gacha, tushlik bepul', 'active', 3000000, 6000000, 'monthly', '5_2', now() - make_interval(hours => $3), now() + interval '10 days'
+       select $1, $2, r.id, d.id, 'Sinov e''loni: ' || $2 || ', 9 dan 18 gacha, tushlik bepul', 'active', 3000000, 6000000, 'monthly', '5_2', now() - make_interval(mins => $3), now() + interval '10 days'
        from public.regions r join public.districts d on d.region_id = r.id and d.name_uz = 'Chilonzor tumani' where r.slug = 'tashkent_city'`,
+      // daqiqa oralig'i (soat emas): Toshkent yarim tunidan keyin ham "Bugun" — test kun almashinuviga bog'liq emas
       [USERS.employer, title, i],
     );
   }

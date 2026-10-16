@@ -9,7 +9,15 @@
     "empty_cta_employer": "Kelgan arizalar",
     "no_messages": "Xabarlar yo'q",
     "you": "Siz",
-    "unread_aria": "{count} ta o'qilmagan xabar"
+    "unread_aria": "{count} ta o'qilmagan xabar",
+    "search_label": "Suhbatlarni qidirish",
+    "search_placeholder": "Ism, vakansiya yoki xabar",
+    "filter_label": "Kim bilan",
+    "filter_all": "Barchasi",
+    "filter_employers": "Ish beruvchilar",
+    "filter_candidates": "Nomzodlar",
+    "no_results": "Bu qidiruv bo'yicha suhbat topilmadi",
+    "clear": "Tozalash"
   },
   "room": {
     "back": "Suhbatlar",

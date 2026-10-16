@@ -20,6 +20,29 @@ export async function getMyConversations(): Promise<ConversationListItem[]> {
   return data ?? [];
 }
 
+/**
+ * Suhbatdagi qarshi tomon (S3, "Ish beruvchilar · Nomzodlar" filtri uchun): suhbat ariza yoki taklifga bog'langan —
+ * o'sha ariza/taklif ishchisi men bo'lsam, qarshi tomon ish beruvchi; aks holda — nomzod. RLS: faqat ishtirokchilar o'qiydi.
+ */
+export async function conversationSides(items: ConversationListItem[], workerId: string | null): Promise<Map<string, "employer" | "candidate">> {
+  const sides = new Map<string, "employer" | "candidate">();
+  const appIds = items.map((c) => c.application_id).filter((x): x is string => !!x);
+  const offerIds = items.map((c) => c.job_offer_id).filter((x): x is string => !!x);
+  if (!appIds.length && !offerIds.length) return sides;
+  const supabase = await createClient();
+  const [apps, offers] = await Promise.all([
+    appIds.length ? supabase.from("applications").select("id, worker_id").in("id", appIds) : Promise.resolve({ data: [] as { id: string; worker_id: string }[] }),
+    offerIds.length ? supabase.from("job_offers").select("id, worker_id").in("id", offerIds) : Promise.resolve({ data: [] as { id: string; worker_id: string }[] }),
+  ]);
+  const workerOf = new Map<string, string>();
+  for (const r of [...(apps.data ?? []), ...(offers.data ?? [])]) workerOf.set(r.id, r.worker_id);
+  for (const c of items) {
+    const w = workerOf.get(c.application_id ?? c.job_offer_id ?? "");
+    if (w) sides.set(c.id, workerId && w === workerId ? "employer" : "candidate");
+  }
+  return sides;
+}
+
 /** Yopiq `chat` bucket fayllari uchun vaqtinchalik URL'lar (RLS: faqat suhbat a'zolari) */
 export async function signAttachmentUrls(supabase: SupabaseServerClient, paths: string[]): Promise<Map<string, string>> {
   const unique = [...new Set(paths.filter((p) => p.length > 0))];

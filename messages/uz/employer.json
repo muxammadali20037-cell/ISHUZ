@@ -105,7 +105,15 @@
     "no_applications": "Hozircha arizalar yo'q",
     "post_vacancy_big": "+ Vakansiya joylashtirish",
     "post_vacancy_hint": "3 daqiqada: kasb → shartlar → e'lon. Mos nomzodlarni darhol ko'rsatamiz",
-    "matching": "Mos nomzodlar"
+    "matching": "Mos nomzodlar",
+    "pipeline_title": "Arizalar holati",
+    "pipeline": {
+      "sent": "Yangi",
+      "viewed": "Ko'rilgan",
+      "shortlisted": "Saralangan",
+      "interview": "Suhbat",
+      "hired": "Ishga olingan"
+    }
   },
   "company": {
     "verified": "Tasdiqlangan kompaniya",

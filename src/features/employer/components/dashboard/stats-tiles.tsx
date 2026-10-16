@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Briefcase, Inbox, FileText, Eye, Bookmark, Send, UserCheck, Users, ChevronRight, type LucideIcon } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
-import { getDashboardStats } from "../../queries";
+import { getDashboardStats, getPipelineTotals } from "../../queries";
 import type { DashboardStats } from "../../types";
 
 interface Tile {
@@ -111,5 +111,34 @@ export function KeyTilesSkeleton() {
       ))}
       <div className="skeleton-shimmer col-span-2 min-h-12 rounded-2xl sm:col-span-1 sm:min-h-20" />
     </div>
+  );
+}
+
+/**
+ * Arizalar holati (S3): barcha vakansiyalar bo'yicha yangi → ko'rilgan → saralangan → suhbat → ishga olingan (aniq sonlar).
+ * Arizasi yo'q ish beruvchida ko'rsatilmaydi (bo'sh nollar qatori yo'q).
+ */
+export async function PipelineTiles({ userId, companyId }: { userId: string; companyId: string | null }) {
+  const { t, locale } = await getT();
+  const totals = await getPipelineTotals(userId, companyId);
+  if (!totals || Object.values(totals).every((v) => v === 0)) return null;
+  const fmt = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ");
+  const keys = ["sent", "viewed", "shortlisted", "interview", "hired"] as const;
+  return (
+    <section aria-labelledby="pipeline-title">
+      <h2 id="pipeline-title" className="mb-2 text-lg font-bold">
+        {t("employer.dashboard.pipeline_title")}
+      </h2>
+      <ul className="grid grid-cols-5 gap-1.5 sm:gap-2">
+        {keys.map((k) => (
+          <li key={k} className="flex">
+            <Link href="/employer/applications" className="press flex w-full flex-col items-center justify-center rounded-xl border border-border bg-card px-1 py-2.5 text-center hover:border-primary/50">
+              <span className={cn("text-lg font-extrabold tabular leading-tight", k === "sent" && totals[k] > 0 && "text-primary")}>{fmt.format(totals[k])}</span>
+              <span className="mt-0.5 text-2xs font-semibold leading-tight text-muted-foreground">{t(`employer.dashboard.pipeline.${k}`)}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

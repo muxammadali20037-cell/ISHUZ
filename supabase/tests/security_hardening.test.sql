@@ -143,14 +143,16 @@ select pg_temp.fails($$select public.admin_security_overview()$$, 'B: moderatord
 select pg_temp.login('f5600000-0000-0000-0000-00000000000d');
 select pg_temp.ok((select public.admin_security_overview(24) ? 'recent'), 'B: admin xavfsizlik panelini ko''radi');
 
--- anon chaqira oladigan SECURITY DEFINER funksiyalar — aniq ro'yxat (yangi funksiya ongli ravishda qo'shiladi)
+-- anon chaqira oladigan SECURITY DEFINER funksiyalar — aniq ro'yxat (yangi funksiya ongli ravishda qo'shiladi).
+-- 0066: simple_search_vacancies_v3 / simple_search_workers_v2 — v2/v1 bilan bir xil ochiq maydonlar (telefon — o'sha rozilik qoidasi);
+--       vacancy_section_counts / worker_section_counts — faqat yig'ma sonlar (shaxsiy ma'lumot yo'q)
 select pg_temp.superuser();
 select pg_temp.ok((
   select coalesce(string_agg(p.proname, ',' order by p.proname), '')
   from pg_proc p
   where p.pronamespace = 'public'::regnamespace and p.prosecdef and p.prorettype <> 'trigger'::regtype
     and has_function_privilege('anon', p.oid, 'execute')
-) = 'ai_alerts_paid,api_pre_request,billing_enabled,can_edit_vacancy,can_view_worker,compute_match,current_worker_id,has_admin_permission,is_active_user,is_admin,is_allowed_media_url,is_company_member,listings_paid,notification_open,profile_rating,record_vacancy_view,salary_insight,simple_search_vacancies,simple_search_vacancies_v2,simple_search_workers,simple_vacancy_phone,simple_worker_listing',
+) = 'ai_alerts_paid,api_pre_request,billing_enabled,can_edit_vacancy,can_view_worker,compute_match,current_worker_id,has_admin_permission,is_active_user,is_admin,is_allowed_media_url,is_company_member,listings_paid,notification_open,profile_rating,record_vacancy_view,salary_insight,simple_search_vacancies,simple_search_vacancies_v2,simple_search_vacancies_v3,simple_search_workers,simple_search_workers_v2,simple_vacancy_phone,simple_worker_listing,vacancy_section_counts,worker_section_counts',
   'B: anon uchun ochiq SECURITY DEFINER funksiyalar faqat ruxsat etilgan ro''yxat');
 
 -- ===================================================================================

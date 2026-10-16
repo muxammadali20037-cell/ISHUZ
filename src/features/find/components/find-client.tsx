@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, MapPin, Pencil, RotateCw, SlidersHorizontal, Users } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -13,6 +13,7 @@ import { SCHEDULES } from "@/features/post/types";
 import type { Enums } from "@/types/database.types";
 import type { FindMode } from "../intent";
 import type { EmployerKind } from "../params";
+import { countFindResults } from "../count-action";
 
 /** "O'zgartirish": ish/ishchi, kasb yoki hudud — uchta katta tugma */
 export function ChangeSheet({ modeHref, professionHref, regionHref, compact }: { modeHref: string; professionHref: string; regionHref: string; compact?: boolean }) {
@@ -100,7 +101,8 @@ export function FilterSheet({
     setOpen(true);
   };
 
-  const apply = (reset = false) => {
+  // tanlangan filtrlar bilan URL (qo'llash va "Natijalarni ko'rish (N)" uchun bir xil)
+  const buildUrl = (reset: boolean) => {
     const url = new URL(window.location.href);
     for (const k of ["salary", "schedule", "noexp", "exp", "pay", "etype", "top", "mass", "page"]) url.searchParams.delete(k);
     if (!reset) {
@@ -119,9 +121,39 @@ export function FilterSheet({
       // kasbsiz bo'limdan (MChJ, YaTT, TOP, ...) kirilgan: bo'lim filtri olib tashlansa — barcha kasblar natijalari qoladi
       if (!url.searchParams.get("p") && (etype || top || mass)) url.searchParams.set("any", "1");
     }
+    return url;
+  };
+
+  const apply = (reset = false) => {
+    const url = buildUrl(reset);
     setOpen(false);
     router.push(`${url.pathname}${url.search}`);
   };
+
+  // "Natijalarni ko'rish (N)": tanlov o'zgarganda (300 ms kutib) serverdan haqiqiy son; aniqlab bo'lmasa — sonsiz tugma.
+  // Natija qaysi so'rovga tegishli ekani saqlanadi: tanlov o'zgarsa, eski son ko'rsatilmaydi ("Hisoblanmoqda…")
+  const pendingQuery = open ? buildUrl(false).search : "";
+  const [result, setResult] = useState<{ query: string; total: number | null } | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    let alive = true;
+    const timer = setTimeout(async () => {
+      let total: number | null = null;
+      try {
+        const res = await countFindResults(pendingQuery.replace(/^\?/, ""));
+        total = res.ok ? res.total : null;
+      } catch {
+        total = null;
+      }
+      if (alive) setResult({ query: pendingQuery, total });
+    }, 300);
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [open, pendingQuery]);
+  const counting = open && result?.query !== pendingQuery;
+  const found = counting ? null : (result?.total ?? null);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -135,8 +167,8 @@ export function FilterSheet({
             <Button type="button" variant="outline" className="h-14 px-4 text-base" onClick={() => apply(true)}>
               {t("easy.search.reset")}
             </Button>
-            <Button type="button" className="h-14 flex-1 text-lg" onClick={() => apply(false)}>
-              {t("easy.search.apply")}
+            <Button type="button" className="h-14 flex-1 text-lg" onClick={() => apply(false)} aria-live="polite">
+              {found !== null && !counting ? t("easy.search.show_results", { count: found }) : counting ? t("easy.search.counting") : t("easy.search.apply")}
             </Button>
           </div>
         }

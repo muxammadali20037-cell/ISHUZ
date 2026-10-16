@@ -105,7 +105,22 @@
       "verification": "Employer verification",
       "billing": "My payments and wallet",
       "saved": "Saved"
-    }
+    },
+    "header": {
+      "worker": "Job seeker",
+      "employer": "Employer",
+      "completeness": "Profile {value}% complete",
+      "complete_cta": "Complete",
+      "activity": "Activity",
+      "applications": "Applications",
+      "offers": "Offers",
+      "saved": "Saved",
+      "views": "Views",
+      "active_vacancies": "Active",
+      "new_applications": "New",
+      "hired": "Hired"
+    },
+    "account": "Account"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -331,7 +346,9 @@
     "filter_remove": "Remove filter: {label}",
     "filters_clear": "Clear all",
     "employer_type": "Employer",
-    "daily_workers_only": "Day workers only"
+    "daily_workers_only": "Day workers only",
+    "show_results": "Show results ({count})",
+    "counting": "Counting…"
   },
   "card": {
     "call": "Call",

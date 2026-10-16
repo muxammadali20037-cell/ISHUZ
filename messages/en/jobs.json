@@ -127,7 +127,12 @@
     "share_text": "{title} — {company} · Ish beruvchi",
     "save": "Save",
     "saved": "Saved",
-    "positions": "Openings"
+    "positions": "Openings",
+    "tabs_label": "Vacancy sections",
+    "tab_about": "Description",
+    "tab_requirements": "Requirements",
+    "tab_benefits": "Benefits",
+    "tab_company": "Company"
   },
   "apply": {
     "title": "Apply for this job",
@@ -246,5 +251,30 @@
     "workers": "{count} candidates",
     "more": "Directions with no listings yet ({count})",
     "sheet_hint": "All directions (e.g. Doctors → Cardiologist) are shown large at the top of the page."
+  },
+  "fit": {
+    "title": "Fit analysis",
+    "open": "Detailed fit analysis",
+    "score_label": "Calculated fit",
+    "score_note": "Based on the vacancy terms and your profile (job, area, experience, pay, skills). It is not a hiring probability.",
+    "hard_title": "A required condition does not match",
+    "hard_desc": "So no percentage is shown. You can still apply, but the employer will take it into account.",
+    "incomplete_title": "Not enough data for an exact percentage",
+    "incomplete_desc": "Add what is missing and the fit will be calculated exactly.",
+    "why": "Why it fits",
+    "attention": "Pay attention",
+    "missing": "What is missing",
+    "missing_profession": "Your profession",
+    "missing_location": "Your area",
+    "missing_experience": "Your work experience",
+    "missing_skills": "Your skills",
+    "missing_languages": "Languages you speak",
+    "add": "Add",
+    "apply": "Apply",
+    "back": "Back to the vacancy",
+    "no_profile_title": "Tell us about yourself to calculate the fit",
+    "no_profile_desc": "We will show how well you fit each vacancy by job, area and experience.",
+    "no_profile_cta": "Tell about myself",
+    "advisory": "This analysis is advisory: the employer makes the final decision."
   }
 }

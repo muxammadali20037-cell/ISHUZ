@@ -105,7 +105,22 @@
       "verification": "Ish beruvchini tasdiqlash",
       "billing": "To'lovlarim va hamyon",
       "saved": "Saqlanganlar"
-    }
+    },
+    "header": {
+      "worker": "Ish izlovchi",
+      "employer": "Ish beruvchi",
+      "completeness": "Profil to'liqligi: {value}%",
+      "complete_cta": "To'ldirish",
+      "activity": "Faoliyat",
+      "applications": "Arizalar",
+      "offers": "Takliflar",
+      "saved": "Saqlangan",
+      "views": "Ko'rishlar",
+      "active_vacancies": "Faol vakansiya",
+      "new_applications": "Yangi ariza",
+      "hired": "Ishga olingan"
+    },
+    "account": "Hisob"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -331,7 +346,9 @@
     "filter_remove": "Filtrni olib tashlash: {label}",
     "filters_clear": "Hammasini tozalash",
     "employer_type": "Ish beruvchi",
-    "daily_workers_only": "Faqat kunlik ishchilar"
+    "daily_workers_only": "Faqat kunlik ishchilar",
+    "show_results": "Natijalarni ko'rish ({count})",
+    "counting": "Hisoblanmoqda…"
   },
   "card": {
     "call": "Qo'ng'iroq qilish",

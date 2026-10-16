@@ -7,11 +7,13 @@ import { getServerEnv } from "@/lib/env";
 import { BrandMark } from "@/components/shared/brand-mark";
 import { safeInternalPath } from "@/lib/security/safe-path";
 import { BrandWordmark } from "@/components/shared/brand-wordmark";
+import { AuthRoleCards } from "@/features/auth/components/auth-role-cards";
+import { getMode } from "@/features/mode/server";
 
 export const metadata: Metadata = { title: "Kirish" };
 
 export default async function AuthPage({ searchParams }: { searchParams: Promise<{ next?: string; phone?: string }> }) {
-  const { t } = await getT();
+  const [{ t }, mode] = await Promise.all([getT(), getMode()]);
   const { next, phone } = await searchParams;
   // e'lon formasida yozilgan raqam — qayta yozdirmaslik uchun oldindan to'ldiriladi
   const initialPhone = phone && /^\+998\d{9}$/.test(phone) ? phone : null;
@@ -32,6 +34,10 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
         <div className="mx-auto w-full max-w-sm">
           <h1 className="text-2xl font-bold">{t("auth.title")}</h1>
           <p className="mt-1 text-sm text-muted-foreground">{t("auth.subtitle")}</p>
+          {/* S3: rol kartalari — kirgach ilova shu rol bilan ochiladi (tanlov ixtiyoriy, keyin ham almashtiriladi) */}
+          <div className="mt-6">
+            <AuthRoleCards initial={mode} />
+          </div>
           <div className="mt-6">
             <AuthForm next={safeNext} botUsername={botUsername} initialPhone={initialPhone} />
           </div>

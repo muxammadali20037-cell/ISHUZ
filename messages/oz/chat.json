@@ -9,7 +9,15 @@
     "empty_cta_employer": "Келган аризалар",
     "no_messages": "Хабарлар йўқ",
     "you": "Сиз",
-    "unread_aria": "{count} та ўқилмаган хабар"
+    "unread_aria": "{count} та ўқилмаган хабар",
+    "search_label": "Суҳбатларни қидириш",
+    "search_placeholder": "Исм, вакансия ёки хабар",
+    "filter_label": "Ким билан",
+    "filter_all": "Барчаси",
+    "filter_employers": "Иш берувчилар",
+    "filter_candidates": "Номзодлар",
+    "no_results": "Бу қидирув бўйича суҳбат топилмади",
+    "clear": "Тозалаш"
   },
   "room": {
     "back": "Суҳбатлар",

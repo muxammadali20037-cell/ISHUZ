@@ -105,7 +105,15 @@
     "no_applications": "No applications yet",
     "post_vacancy_big": "+ Post a job",
     "post_vacancy_hint": "3 minutes: profession → conditions → publish. We show matching candidates right away",
-    "matching": "Matching candidates"
+    "matching": "Matching candidates",
+    "pipeline_title": "Application status",
+    "pipeline": {
+      "sent": "New",
+      "viewed": "Viewed",
+      "shortlisted": "Shortlisted",
+      "interview": "Interview",
+      "hired": "Hired"
+    }
   },
   "company": {
     "verified": "Verified company",

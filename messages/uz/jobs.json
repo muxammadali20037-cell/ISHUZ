@@ -127,7 +127,12 @@
     "share_text": "{title} — {company} · Ish beruvchi",
     "save": "Saqlash",
     "saved": "Saqlangan",
-    "positions": "Nechta xodim"
+    "positions": "Nechta xodim",
+    "tabs_label": "Vakansiya bo'limlari",
+    "tab_about": "Tavsif",
+    "tab_requirements": "Talablar",
+    "tab_benefits": "Imtiyozlar",
+    "tab_company": "Kompaniya"
   },
   "apply": {
     "title": "Ariza yuborish",
@@ -246,5 +251,30 @@
     "workers": "{count} ta nomzod",
     "more": "Hozircha bo'sh yo'nalishlar ({count})",
     "sheet_hint": "Barcha yo'nalishlar (masalan, Shifokorlar → Kardiolog) sahifaning tepasida katta ko'rinishda chiqadi."
+  },
+  "fit": {
+    "title": "Moslik tahlili",
+    "open": "Batafsil moslik tahlili",
+    "score_label": "Hisoblangan moslik",
+    "score_note": "E'lon shartlari va profilingiz (kasb, hudud, tajriba, maosh, ko'nikmalar) bo'yicha. Bu ishga olinish ehtimoli emas.",
+    "hard_title": "Majburiy talab mos kelmaydi",
+    "hard_desc": "Shuning uchun foiz ko'rsatilmaydi. Ariza yuborishingiz mumkin, lekin ish beruvchi buni hisobga oladi.",
+    "incomplete_title": "Aniq foiz uchun ma'lumot yetarli emas",
+    "incomplete_desc": "Quyidagilarni qo'shsangiz, moslik aniq hisoblanadi.",
+    "why": "Nima uchun mos",
+    "attention": "E'tibor bering",
+    "missing": "Nima yetishmaydi",
+    "missing_profession": "Kasbingiz",
+    "missing_location": "Hududingiz",
+    "missing_experience": "Ish tajribangiz",
+    "missing_skills": "Ko'nikmalaringiz",
+    "missing_languages": "Bilgan tillaringiz",
+    "add": "Qo'shish",
+    "apply": "Ariza yuborish",
+    "back": "Vakansiyaga qaytish",
+    "no_profile_title": "Moslikni hisoblash uchun o'zingiz haqingizda yozing",
+    "no_profile_desc": "Kasb, hudud va tajribangiz bo'yicha har bir vakansiyaga qanchalik mos ekaningizni ko'rsatamiz.",
+    "no_profile_cta": "O'zim haqimda e'lon berish",
+    "advisory": "Tahlil maslahat uchun: yakuniy qaror ish beruvchida."
   }
 }

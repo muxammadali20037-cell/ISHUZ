@@ -17,6 +17,7 @@ import { StatusPill } from "./status-pill";
 import { isCityRegion } from "@/lib/geo/city";
 import type { AppMode } from "@/features/mode/mode";
 import { ModeSwitch } from "@/features/mode/components/mode-switch";
+import { ProfileHeader } from "./profile-header";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
@@ -49,20 +50,20 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
   }
 
   const [{ worker, vacancies, paid }, alerts] = await Promise.all([getMyListings(session), getAlertSubscriptions(session)]);
-  const firstName = session.profile.first_name?.trim();
-  const links: { href: string; label: string; icon: typeof Bell; show: boolean }[] = [
-    { href: "/cabinet/matches", label: t("easy.cabinet.links.matches"), icon: Sparkles, show: !!(worker || vacancies.length) },
-    { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true },
-    { href: "/cabinet/verification", label: t("easy.cabinet.links.verification"), icon: ShieldCheck, show: !!session.employerId || vacancies.length > 0 },
-    { href: "/saved", label: t("easy.cabinet.links.saved"), icon: Bookmark, show: true },
-    { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true },
-    { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId },
-    { href: "/offers", label: t("easy.cabinet.links.offers"), icon: Handshake, show: !!session.workerId },
-    { href: "/employer/applications", label: t("easy.cabinet.links.employer_applications"), icon: UsersRound, show: !!session.employerOnboarded },
-    { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true },
-    { href: "/profile", label: t("easy.cabinet.links.profile"), icon: UserRound, show: !!(session.workerOnboarded || session.employerId) },
-    { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true },
-    { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true },
+  // S3: guruhlangan menyu — faoliyat (arizalar, takliflar, saqlangan, xabarlar…) va hisob (profil, to'lovlar, sozlamalar)
+  const links: { href: string; label: string; icon: typeof Bell; show: boolean; group: "activity" | "account" }[] = [
+    { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId, group: "activity" },
+    { href: "/offers", label: t("easy.cabinet.links.offers"), icon: Handshake, show: !!session.workerId, group: "activity" },
+    { href: "/employer/applications", label: t("easy.cabinet.links.employer_applications"), icon: UsersRound, show: !!session.employerOnboarded, group: "activity" },
+    { href: "/saved", label: t("easy.cabinet.links.saved"), icon: Bookmark, show: true, group: "activity" },
+    { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true, group: "activity" },
+    { href: "/cabinet/matches", label: t("easy.cabinet.links.matches"), icon: Sparkles, show: !!(worker || vacancies.length), group: "activity" },
+    { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true, group: "activity" },
+    { href: "/profile", label: t("easy.cabinet.links.profile"), icon: UserRound, show: !!(session.workerOnboarded || session.employerId), group: "account" },
+    { href: "/cabinet/verification", label: t("easy.cabinet.links.verification"), icon: ShieldCheck, show: !!session.employerId || vacancies.length > 0, group: "account" },
+    { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true, group: "account" },
+    { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true, group: "account" },
+    { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true, group: "account" },
   ];
 
   const newListings = [
@@ -76,10 +77,11 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
 
   return (
     <div className="container-narrow space-y-6 py-6 text-lg sm:py-8">
-      <div>
-        <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
-        {firstName ? <p className="mt-1 text-muted-foreground">{t("easy.cabinet.greeting", { name: firstName })}</p> : null}
-      </div>
+      <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
+      {/* S3: profil sarlavhasi — avatar, ism, rol, to'liqlik va faoliyat sonlari (haqiqiy) */}
+      <Suspense fallback={<div className="h-44 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
+        <ProfileHeader session={session} mode={mode} />
+      </Suspense>
       {/* rejim shu yerda ham almashtiriladi (tasdiq bilan) — e'lon berish va bosh sahifa shu rejimda */}
       {mode ? <ModeSwitch mode={mode} className="mx-0 max-w-none" /> : null}
 
@@ -214,32 +216,36 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         </div>
       </section>
 
-      <section className="space-y-2" aria-labelledby="more-links">
-        <h2 id="more-links" className="text-2xl font-bold">
-          {t("easy.cabinet.more")}
-        </h2>
-        <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-          {links
-            .filter((l) => l.show)
-            .map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="flex min-h-14 items-center gap-3 px-4 py-3 font-medium hover:bg-secondary/60">
-                  <l.icon className="size-6 shrink-0 text-primary" aria-hidden />
-                  <span className="flex-1">{l.label}</span>
-                  <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
-                </Link>
+      {(["activity", "account"] as const).map((group) => (
+        <section key={group} className="space-y-2" aria-labelledby={`links-${group}`}>
+          <h2 id={`links-${group}`} className="text-xl font-bold">
+            {group === "activity" ? t("easy.cabinet.header.activity") : t("easy.cabinet.account")}
+          </h2>
+          <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+            {links
+              .filter((l) => l.show && l.group === group)
+              .map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="flex min-h-14 items-center gap-3 px-4 py-3 font-medium hover:bg-secondary/60">
+                    <l.icon className="size-6 shrink-0 text-primary" aria-hidden />
+                    <span className="flex-1">{l.label}</span>
+                    <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+            {group === "account" ? (
+              <li>
+                <form action={signOut}>
+                  <button type="submit" className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left font-medium text-destructive hover:bg-destructive-soft/50">
+                    <LogOut className="size-6 shrink-0" aria-hidden />
+                    <span className="flex-1">{t("easy.cabinet.links.logout")}</span>
+                  </button>
+                </form>
               </li>
-            ))}
-          <li>
-            <form action={signOut}>
-              <button type="submit" className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left font-medium text-destructive hover:bg-destructive-soft/50">
-                <LogOut className="size-6 shrink-0" aria-hidden />
-                <span className="flex-1">{t("easy.cabinet.links.logout")}</span>
-              </button>
-            </form>
-          </li>
-        </ul>
-      </section>
+            ) : null}
+          </ul>
+        </section>
+      ))}
     </div>
   );
 }

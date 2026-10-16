@@ -105,7 +105,22 @@
       "verification": "Иш берувчини тасдиқлаш",
       "billing": "Тўловларим ва ҳамён",
       "saved": "Сақланганлар"
-    }
+    },
+    "header": {
+      "worker": "Иш изловчи",
+      "employer": "Иш берувчи",
+      "completeness": "Профил тўлиқлиги: {value}%",
+      "complete_cta": "Тўлдириш",
+      "activity": "Фаолият",
+      "applications": "Аризалар",
+      "offers": "Таклифлар",
+      "saved": "Сақланган",
+      "views": "Кўришлар",
+      "active_vacancies": "Фаол вакансия",
+      "new_applications": "Янги ариза",
+      "hired": "Ишга олинган"
+    },
+    "account": "Ҳисоб"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -331,7 +346,9 @@
     "filter_remove": "Филтрни олиб ташлаш: {label}",
     "filters_clear": "Ҳаммасини тозалаш",
     "employer_type": "Иш берувчи",
-    "daily_workers_only": "Фақат кунлик ишчилар"
+    "daily_workers_only": "Фақат кунлик ишчилар",
+    "show_results": "Натижаларни кўриш ({count})",
+    "counting": "Ҳисобланмоқда…"
   },
   "card": {
     "call": "Қўнғироқ қилиш",
