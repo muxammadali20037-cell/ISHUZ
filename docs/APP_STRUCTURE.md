@@ -45,7 +45,7 @@ istagida kunlik to'lov yoki "bugun/ertaga" tayyor.
 - **Migratsiya 0066** (`0066_home_sections.sql`, faqat yangi nomli funksiyalar, `drop` yo'q; 0065 dan keyin):
   `simple_search_vacancies_v3` (ish beruvchi turi, TOP, ommaviy 5+ o'rin), `vacancy_section_counts`,
   `simple_search_workers_v2` (kunlik ishchilar), `worker_section_counts`, `vacancy_employer_kind`. SQL test:
-  `supabase/tests/home_sections.test.sql` (24 tekshiruv). **Production'ga qo'llanmagan — egasi tasdig'i kerak.**
+  `supabase/tests/home_sections.test.sql` (24 tekshiruv). **Production'ga qo'llangan (2026-10-17, egasi ruxsati bilan)**, 0065 bilan birga.
 - **Bo'limlar** (`features/landing/section-tiles.tsx`): ish izlovchi — katta: Kunlik ishlar, Yaqin atrofda; kichik: Masofaviy,
   Tajribasiz, MChJ, YaTT, Davlat, Jismoniy shaxs, Ommaviy, TOP, Barcha sohalar. Ish beruvchi — katta: Kunlik ishchilar,
   Yaqin ishchilar; kichik: Tajribali, Masofaviy, Barcha ishchilar, Vakansiya joylash (panelda ham). Har bo'limda haqiqiy son;
@@ -74,3 +74,10 @@ istagida kunlik to'lov yoki "bugun/ertaga" tayyor.
 - **Ish beruvchi paneli**: "Arizalar holati" — barcha vakansiyalar bo'yicha yangi · ko'rilgan · saralangan · suhbat · ishga olingan.
 - **Filtr oynasi**: "Natijalarni ko'rish (N)" — N sahifadagi qidiruv bilan aynan bir xil funksiyadan (`countFindResults`);
   aniqlab bo'lmasa (matnli qidiruv, kasb tanlanmagan) — sonsiz tugma.
+
+## Deploy
+
+- Vercel production endi `main` branch'idan chiqadi (2026-10-17 dan; avval ish branch'i `claude/gallant-thompson-q70fo3` edi).
+  Ish branch'iga push — faqat Preview; saytga chiqishi uchun `main` ga merge kerak.
+- 0065 va 0066 production bazasiga qo'llangan; tekshiruv: bo'lim sonlari va yangi qidiruv funksiyalari javob beradi,
+  anon chaqira oladigan SECURITY DEFINER ro'yxati `security_hardening.test.sql` dagi bilan bir xil.

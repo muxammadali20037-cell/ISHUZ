@@ -166,8 +166,9 @@ Qayta loyihalash **yangi o'zgaruvchi qo'shmadi**. Ro'yxat va izohlar — `.env.e
 
 | Migratsiya | Holat |
 |---|---|
-| `0065_apply_guards.sql` (R-D) | Lokal tekshirilgan (SQL to'plami, 0065'siz yiqiladigan test). **Production'ga qo'llanmagan — egasining alohida ruxsati kerak.** Ma'lumot o'zgartirmaydi va o'chirmaydi: `create or replace` funksiyalar (`apply_to_vacancy`, `respond_offer`, 3 qidiruv funksiyasi) va yangi trigger. Qaytarish — oldingi funksiya ta'riflarini qayta qo'llash |
+| `0065_apply_guards.sql` (R-D) | Lokal tekshirilgan (SQL to'plami, 0065'siz yiqiladigan test). **Production'ga qo'llangan (2026-10-17, egasi ruxsati bilan).** Ma'lumot o'zgartirmaydi va o'chirmaydi: `create or replace` funksiyalar (`apply_to_vacancy`, `respond_offer`, 3 qidiruv funksiyasi) va yangi trigger. Qaytarish — oldingi funksiya ta'riflarini qayta qo'llash |
 | R-F/G | Migratsiya yo'q |
+| `0066_home_sections.sql` (S2) | **Production'ga qo'llangan (2026-10-17, egasi ruxsati bilan).** Faqat yangi nomli funksiyalar (`drop` yo'q); bo'lim sonlari va yangi qidiruv javob beradi, anon ruxsatlari test ro'yxati bilan bir xil |
 
 ## 10. Tekshirilmagan integratsiyalar (NOT_RUN)
 
@@ -176,7 +177,7 @@ Qayta loyihalash **yangi o'zgaruvchi qo'shmadi**. Ro'yxat va izohlar — `.env.e
 - Haqiqiy AI provayderlari (Gemini/Claude) — stendda kalit yo'q.
 - Real iPhone/Android: klaviatura va pastki tugmalar (F2), Telegram ichidagi safe area.
 - Real foydalanuvchi web-vitals (Vercel Speed Insights yoki CrUX ulanishi kerak).
-- Shu branch'ning Vercel preview/production deploy'i va 0065 qo'llangan production bazasi.
+- Jonli saytni brauzerda ochib ko'rish (bu muhitdan tarmoq ruxsati yo'q); production deploy holati va bazadagi so'rovlar (API loglari) tekshirilgan.
 - E2E haqiqiy Supabase Auth/Storage emas, ularning lokal emulyatori ustida ishlaydi.
 
 ## 11. Cheklovlar va ochiq masalalar
