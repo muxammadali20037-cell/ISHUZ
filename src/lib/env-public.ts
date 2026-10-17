@@ -24,7 +24,8 @@ export function readPublicEnv(env: { url: string | undefined; anonKey: string | 
   if (!isUrl(env.url) || !env.anonKey || env.anonKey.length < 10 || (env.appUrl !== undefined && !isUrl(env.appUrl))) {
     // Build vaqtida (masalan CI) env bo'lmasligi mumkin — aniq xabar beramiz
     throw new Error(
-      "Supabase muhit o'zgaruvchilari yo'q: NEXT_PUBLIC_SUPABASE_URL va NEXT_PUBLIC_SUPABASE_ANON_KEY ni .env.local ga yozing (.env.example ga qarang)",
+      "Supabase muhit o'zgaruvchilari yo'q: NEXT_PUBLIC_SUPABASE_URL va NEXT_PUBLIC_SUPABASE_ANON_KEY ni .env.local ga yozing (.env.example ga qarang); " +
+        "Vercel'da — Settings → Environment Variables, shu build muhiti uchun (Production yoki Preview) belgilangan bo'lsin",
     );
   }
   return { NEXT_PUBLIC_SUPABASE_URL: env.url, NEXT_PUBLIC_SUPABASE_ANON_KEY: env.anonKey, NEXT_PUBLIC_APP_URL: env.appUrl ?? "http://localhost:3000" };
