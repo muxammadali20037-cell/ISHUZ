@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * R-D/E · asosiy oqim qo'riqlari:
@@ -107,7 +107,9 @@ test("profilsiz foydalanuvchi: 'Arizalar' — onboardingga majburan emas, tushun
 test.describe("telefon klaviaturasi", () => {
   test.use({ hasTouch: true, isMobile: true });
 
-  test("matn yozilayotganda pastki menyu va lupa yashiriladi, chiqqach qaytadi; sahifa klaviatura bilan qisqaradi", async ({ page }) => {
+  test("matn yozilayotganda pastki menyu va lupa yashiriladi, chiqqach qaytadi; sahifa klaviatura bilan qisqaradi", async ({ page, context }) => {
+    // birinchi ochilish (til, tanishtiruv) — entry-flow.spec.ts; bu yerda oddiy mehmon
+    await asGuest(context);
     await page.goto("/");
     const meta = await page.locator("meta[name='viewport']").getAttribute("content");
     expect(meta).toContain("interactive-widget=resizes-content");

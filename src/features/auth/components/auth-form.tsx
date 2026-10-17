@@ -153,7 +153,9 @@ function PhoneLoginInner({ next, botUsername, initialPhone, backHref, tgFailed }
   const caretToEnd = (el: HTMLInputElement | null) => {
     if (!el) return;
     const end = el.value.length;
-    requestAnimationFrame(() => el.setSelectionRange(end, end));
+    // darhol (dasturiy fokus, birinchi bosilgan raqam) va keyingi kadrda (telefonda bosilgan joyga qo'yilgan kursorni ham)
+    el.setSelectionRange(end, end);
+    requestAnimationFrame(() => el.setSelectionRange(el.value.length, el.value.length));
   };
   useEffect(() => {
     if (step !== "phone") return;
