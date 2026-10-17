@@ -43,7 +43,8 @@ for (const vp of [
     // 4-qadam: mehmon — "Kirish va e'lonni joylash"; javoblar yo'qolmasligi aytiladi
     await expect(page.getByText("Oxirgi qadam: hisobga kirish")).toBeVisible();
     await page.getByRole("button", { name: "Kirish va e'lonni joylash" }).click();
-    await page.waitForURL(/\/auth\?/);
+    // raqam e'londa yozilgan va rol tanlangan — kirish usuli o'tkazib, to'g'ridan-to'g'ri raqam ekraniga (8-ekran)
+    await page.waitForURL(/\/auth\/telefon\?/);
     const back = new URL(page.url()).searchParams.get("next");
     expect(back).toBe("/post/worker?step=4");
     // mehmon "901234567" deb yozgan raqam to'liq +998 bilan kirish formasiga o'tadi (avval "+90 1234567" bo'lib qolardi)
@@ -105,7 +106,8 @@ for (const vp of [
 
     await expect(page.getByText("Oxirgi qadam: hisobga kirish")).toBeVisible();
     await page.getByRole("button", { name: "Kirish va e'lonni joylash" }).click();
-    await page.waitForURL(/\/auth\?/);
+    // raqam e'londa yozilgan va rol tanlangan — kirish usuli o'tkazib, to'g'ridan-to'g'ri raqam ekraniga (8-ekran)
+    await page.waitForURL(/\/auth\/telefon\?/);
     const back = new URL(page.url()).searchParams.get("next")!;
     expect(back).toBe("/post/vacancy?step=4");
 

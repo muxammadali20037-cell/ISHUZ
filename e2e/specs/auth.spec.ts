@@ -8,8 +8,9 @@ import { USERS, asGuest, loginAs } from "../support";
  *  · haqiqiy Telegram orqali kod yetkazish — BLOCKED (staging + real bot kerak).
  */
 
+/** 8-ekran (telefon raqam); kirish usuli ekranidan keyin — entry-flow.spec.ts */
 async function openAuth(page: Page) {
-  await page.goto("/auth?next=%2Fcabinet");
+  await page.goto("/auth/telefon?next=%2Fcabinet");
   const phone = page.locator("#phone");
   await phone.fill("90 123 45 67");
   await expect(phone).toHaveValue("+998 90 123 45 67");
@@ -19,7 +20,7 @@ test("bot sozlanmagan: tushunarli xabar, soxta 'kod yuborildi' yo'q, forma joyid
   await asGuest(context);
   await openAuth(page);
   // sarlavha haqiqatni aytadi: veb'da kod Telegram orqali keladi (avval "kod ham kerak emas" deyilardi)
-  await expect(page.getByText(/kirish kodini Telegram orqali yuboramiz/)).toBeVisible();
+  await expect(page.getByText("Tasdiqlash kodini Telegram orqali yuboramiz (SMS emas).")).toBeVisible();
   await page.getByRole("button", { name: "Kod yuborish" }).click();
   await expect(page.getByText("Telegram orqali kirish hozircha o'chirilgan")).toBeVisible();
   await expect(page.getByText(/yuborildi/)).toHaveCount(0);
@@ -66,14 +67,13 @@ test("kod: noto'g'ri, eskirgan, 60 s dan keyin qayta yuborish", async ({ page, c
   await openAuth(page);
   await page.getByRole("button", { name: "Kod yuborish" }).click();
 
-  const code = page.getByLabel("Telegram'dagi kod");
-  await expect(code).toBeVisible();
+  const code = page.getByLabel("6 xonali kod");
+  await expect(code).toBeAttached();
   await expect(page.getByText(/Qayta yuborish: \d+ s/)).toBeVisible();
+  // 6 raqam kiritilganda o'zi tekshiriladi
   await code.fill("123456");
-  await page.getByRole("button", { name: "Tasdiqlash" }).click();
   await expect(page.getByText("Kod noto'g'ri")).toBeVisible();
   await code.fill("654321");
-  await page.getByRole("button", { name: "Tasdiqlash" }).click();
   await expect(page.getByText("Kod muddati tugagan. Yangi kod so'rang.")).toBeVisible();
 
   // hisoblagich har soniyada qayta rejalashtiriladi — vaqtni soniyama-soniya o'tkazamiz (React har qadamda chizadi)

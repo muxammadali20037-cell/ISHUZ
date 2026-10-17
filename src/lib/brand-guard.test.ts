@@ -17,6 +17,7 @@ const ALLOW: Record<string, { rules: Rule[]; why: string }> = {
   "app/global-error.tsx": { rules: ["hex"], why: "ildiz layout yiqilganda — globals.css yuklanmagan bo'lishi mumkin" },
   "app/layout.tsx": { rules: ["hex"], why: "brauzer themeColor meta (CSS emas)" },
   "features/auth/components/auth-form.tsx": { rules: ["hex"], why: "Telegram belgisining rasmiy rangi (uchinchi tomon logotipi)" },
+  "features/entry/components/flags.tsx": { rules: ["hex"], why: "til kartalaridagi davlat bayroqlarining rasmiy ranglari (uchinchi tomon belgisi)" },
   "components/ui/checkbox.tsx": { rules: ["white"], why: "Switch tutqichi har ikki mavzuda oq (rangli/kulrang yo'lak ustida)" },
   "features/admin/components/mfa-form.tsx": { rules: ["white"], why: "QR kod faqat oq fonda o'qiladi" },
   "features/workers/components/portfolio-gallery.tsx": { rules: ["white"], why: "to'liq ekranli qora foto ko'rgich (mavzudan mustaqil)" },

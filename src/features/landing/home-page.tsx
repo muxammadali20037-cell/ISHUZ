@@ -1,21 +1,17 @@
 import Link from "next/link";
-import { cookies, headers } from "next/headers";
 import { getT } from "@/lib/i18n/server";
 import { publicEnv } from "@/lib/env";
 import type { SessionContext } from "@/features/auth/session";
 import type { AppMode } from "@/features/mode/mode";
 import { ModeSwitch } from "@/features/mode/components/mode-switch";
 import { BRAND } from "@/config/brand";
-import { INTRO_COOKIE, introEligible } from "@/features/intro/intro";
-import { IntroOverlay } from "@/features/intro/intro-overlay";
 import { SeekerHome } from "./seeker-home";
 import { EmployerHome } from "./employer-home";
 import { EntryHome } from "./entry-home";
-import { getEntryStats } from "./entry-queries";
 
 /**
  * Bosh sahifa. Rejim tanlanmagan (mehmon yoki yangi foydalanuvchi) — kirish oynasi (S1): haqiqiy raqamlar, ikki katta maqsad
- * ("Ish topaman" / "Ishchi topaman"), qidiruv, tez kirish va yangi vakansiyalar; birinchi ochilishda — 3 qadamli tanishtiruv.
+ * ("Ish topaman" / "Ishchi topaman"), qidiruv, tez kirish va yangi vakansiyalar (birinchi ochilishdagi til va tanishtiruv — /start, app/page.tsx).
  * Rejim tanlangan — o'sha rolning bosh sahifasi; boshqasiga almashtirgich orqali (tasdiq bilan, rollar aralashmaydi).
  */
 export async function HomePage({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
@@ -34,15 +30,11 @@ export async function HomePage({ session, mode }: { session: SessionContext | nu
   ]).replace(/</g, "\\u003c");
 
   if (!mode) {
-    const [jar, head] = await Promise.all([cookies(), headers()]);
-    const intro = introEligible({ mode, cookie: jar.get(INTRO_COOKIE)?.value, userAgent: head.get("user-agent") });
-    const stats = intro ? await getEntryStats() : null;
     return (
       <div className="container-app py-4 sm:py-6">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
         <EntryHome session={session} />
         <HomeFooter />
-        {intro ? <IntroOverlay stats={stats ? { vacancies: stats.vacancies, workers: stats.workers } : null} /> : null}
       </div>
     );
   }

@@ -93,6 +93,41 @@
     "latest_more": "Barcha vakansiyalar ({count})",
     "latest_empty": "Hozircha faol vakansiya yo'q. Birinchi bo'lib e'lon bering yoki o'zingiz haqingizda yozing.",
     "latest_error": "E'lonlarni yuklab bo'lmadi",
-    "live": "Jonli"
+    "live": "Jonli",
+    "language": {
+      "title": "Tilni tanlang",
+      "subtitle": "O'zingizga qulay tilda foydalaning.",
+      "continue": "Davom etish",
+      "hint": "Tilni keyin «Sozlamalar»da o'zgartirish mumkin."
+    },
+    "intro": {
+      "s1_title": "Ish topish endi osonroq",
+      "s1_text": "Turli sohalardagi vakansiyalarni bitta platformada qidiring.",
+      "s2_title": "Ishchi topish bir joyda",
+      "s2_text": "Vakansiya joylang va sizga mos nomzodlarni toping.",
+      "s3_title": "AI yordamchingiz har doim yoningizda",
+      "s3_text": "Qiziqishlaringiz, ko'nikmalaringiz va tajribangizga mos imkoniyatlarni toping.",
+      "start": "Boshlash",
+      "slides": "Tanishtiruv"
+    },
+    "role": {
+      "title": "O'z rolingizni tanlang",
+      "subtitle": "Siz uchun mos imkoniyatlarni tayyorlaymiz.",
+      "worker_title": "Ish qidiryapman",
+      "worker_desc": "Yangi imkoniyatlar topish",
+      "employer_title": "Ishchi qidiryapman",
+      "employer_desc": "Jamoam uchun xodim topish",
+      "continue": "Davom etish",
+      "note": "Keyin ikkinchi rolni ham qo'shish mumkin — bitta hisobda.",
+      "error": "Tanlov saqlanmadi. Qayta urinib ko'ring."
+    },
+    "done": {
+      "title": "Profilingiz tayyor!",
+      "text": "Endi barcha imkoniyatlardan foydalanishingiz mumkin.",
+      "worker_note": "Ko'nikmalar, ta'lim va portfolioni keyin profilingizga qo'shishingiz mumkin.",
+      "employer_note": "Kompaniyani tasdiqlash va vakansiya joylash — panelingizda.",
+      "cta": "Bosh sahifaga o'tish",
+      "edit": "Profilni tahrirlash"
+    }
   }
 }

@@ -3,7 +3,7 @@ import { asGuest, loginAs, sql } from "../support";
 
 /**
  * S3 · ilova tuzilmasi: vakansiya tablari (faqat ma'lumoti borlari), moslik tahlili (foiz faqat to'liq hisoblanganda),
- * xabarlar qidiruvi, profil sarlavhasi (haqiqiy to'liqlik), kirish sahifasida rol kartalari.
+ * xabarlar qidiruvi, profil sarlavhasi (haqiqiy to'liqlik), rol kartalari (kirish oqimining 7-ekrani).
  */
 
 const EMP = "7e2e0000-0000-4000-8000-000000000068";
@@ -121,14 +121,16 @@ test.describe("tuzilma", () => {
     await expect(main.getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
   });
 
-  test("kirish sahifasi: 'Kim sifatida kirasiz?' — tanlov qurilmada saqlanadi", async ({ page, context }) => {
+  test("rol tanlash (7-ekran): ikki karta, tanlov qurilmada saqlanadi", async ({ page, context }) => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
-    await page.goto("/auth");
-    const group = page.getByRole("radiogroup", { name: "Kim sifatida kirasiz?" });
+    await page.goto("/start/rol?next=%2Fauth%2Ftelefon");
+    const group = page.getByRole("group", { name: "O'z rolingizni tanlang" });
     await expect(group.getByRole("radio")).toHaveCount(2);
-    await group.getByRole("radio", { name: /Ish beruvchi/ }).click();
-    await expect(group.getByRole("radio", { name: /Ish beruvchi/ })).toHaveAttribute("aria-checked", "true");
+    await group.getByText("Ishchi qidiryapman", { exact: true }).click();
+    await expect(group.getByRole("radio", { name: /Ishchi qidiryapman/ })).toBeChecked();
+    await page.getByRole("button", { name: "Davom etish" }).click();
+    await page.waitForURL("**/auth/telefon");
     await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   });
 });

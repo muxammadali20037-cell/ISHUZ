@@ -16,24 +16,9 @@ import { MAX_WINDOWS, WINDOW_ART, WINDOW_AUDIENCES, isBuiltinWindow, windowAudie
 import { WindowArtwork } from "@/features/home-windows/window-art";
 import { saveHomeWindows, setAiSearchButton, uploadWindowImage } from "../actions/home";
 import { errorText } from "./note-dialog";
+import { shrink } from "./shrink-image";
 
 const LOCALE_LABEL: Record<Locale, string> = { uz: "O'zbek", oz: "Ўзбек", ru: "Русский", en: "English" };
-
-/** Yuklashdan oldin brauzerda kichraytirish (≤1600 px, JPEG): server action hajm chegarasidan oshmasin; server baribir qayta kodlaydi */
-async function shrink(file: File): Promise<Blob> {
-  try {
-    const bmp = await createImageBitmap(file);
-    const scale = Math.min(1, 1600 / Math.max(bmp.width, bmp.height));
-    const canvas = document.createElement("canvas");
-    canvas.width = Math.max(1, Math.round(bmp.width * scale));
-    canvas.height = Math.max(1, Math.round(bmp.height * scale));
-    canvas.getContext("2d")!.drawImage(bmp, 0, 0, canvas.width, canvas.height);
-    return await new Promise<Blob>((resolve, reject) => canvas.toBlob((b) => (b ? resolve(b) : reject(new Error("blob"))), "image/jpeg", 0.88));
-  } catch {
-    // rasm sifatida ochilmadi — asl fayl yuboriladi, server tushunarli xato qaytaradi
-    return file;
-  }
-}
 
 /**
  * Admin → "Bosh sahifa": tepadagi rasmli oynalar (tartib, matn 4 tilda, havola, rasm) va lupa tugmasi.

@@ -34,7 +34,8 @@
     "matching": "Moslik qoidalari",
     "queues": "Navbatlar holati",
     "security": "Xavfsizlik",
-    "home": "Bosh sahifa"
+    "home": "Bosh sahifa",
+    "entry": "Kirish ekranlari"
   },
   "common": {
     "done": "Bajarildi",
@@ -884,5 +885,21 @@
     "reset": "Standartga qaytarish",
     "reset_confirm": "Oynalar standart holatga qaytarilsinmi? Yuklangan rasmlar va yozilgan matnlar olib tashlanadi.",
     "saved": "Bosh sahifa yangilandi"
+  },
+  "entry": {
+    "title": "Kirish ekranlari",
+    "subtitle": "Tanishtiruv va rol tanlash ekranlaridagi rasmlar. Haqiqiy fotosurat yuklang — yuklanmagan joyda o'rnatilgan tasvir ko'rinadi.",
+    "slot_intro_jobs": "Tanishtiruv 1 — ish topish",
+    "slot_intro_workers": "Tanishtiruv 2 — ishchi topish",
+    "slot_intro_ai": "Tanishtiruv 3 — mos imkoniyatlar",
+    "slot_role_worker": "Rol kartasi — ish qidiryapman",
+    "slot_role_employer": "Rol kartasi — ishchi qidiryapman",
+    "hint": "Nisbat {ratio}, kamida {size} px. JPG, PNG yoki WebP, 4 MB gacha. Serverda tekshiriladi va metama'lumotsiz WebP'ga o'tkaziladi.",
+    "builtin": "O'rnatilgan tasvir",
+    "upload": "Rasm yuklash",
+    "replace": "Almashtirish",
+    "remove": "O'rnatilgan tasvirga qaytish",
+    "saved": "Kirish ekranlari yangilandi",
+    "guide": "Har bir rasm uchun suratga olish va generatsiya ko'rsatmasi: docs/ENTRY_MEDIA.md"
   }
 }

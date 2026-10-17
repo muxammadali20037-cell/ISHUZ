@@ -34,7 +34,8 @@
     "matching": "Matching rules",
     "queues": "Queues",
     "security": "Security",
-    "home": "Home page"
+    "home": "Home page",
+    "entry": "Entry screens"
   },
   "common": {
     "done": "Done",
@@ -884,5 +885,21 @@
     "reset": "Restore defaults",
     "reset_confirm": "Restore the default windows? Uploaded pictures and texts will be removed.",
     "saved": "Home page updated"
+  },
+  "entry": {
+    "title": "Entry screens",
+    "subtitle": "Images on the introduction and role screens. Upload real photos; empty slots show the built-in illustration.",
+    "slot_intro_jobs": "Intro 1: finding a job",
+    "slot_intro_workers": "Intro 2: hiring",
+    "slot_intro_ai": "Intro 3: matching opportunities",
+    "slot_role_worker": "Role card: looking for a job",
+    "slot_role_employer": "Role card: hiring",
+    "hint": "Ratio {ratio}, at least {size} px. JPG, PNG or WebP up to 4 MB. Checked on the server and re-encoded to WebP without metadata.",
+    "builtin": "Built-in illustration",
+    "upload": "Upload photo",
+    "replace": "Replace",
+    "remove": "Back to built-in illustration",
+    "saved": "Entry screens updated",
+    "guide": "How to shoot or generate each image: docs/ENTRY_MEDIA.md"
   }
 }

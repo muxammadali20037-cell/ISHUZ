@@ -9,16 +9,21 @@ import { createClient } from "@/lib/supabase/server";
 import { formatPhone } from "@/lib/format";
 import { EmployerOnboarding } from "@/features/employer/components/onboarding/employer-onboarding";
 import { getGreetingName } from "@/features/auth/greeting-name";
+import { safeInternalPath } from "@/lib/security/safe-path";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
   return { title: t("employer.onboarding.title"), robots: { index: false } };
 }
 
-/** /onboarding/employer — ish beruvchi profilini yaratish (2 qadam). Tugallangan bo'lsa → /employer */
-export default async function EmployerOnboardingPage() {
-  const session = await requireSession("/onboarding/employer");
-  if (session.employerId && session.employerOnboarded) redirect("/employer");
+/**
+ * /onboarding/employer — ish beruvchi profilini yaratish (2 qadam). Tugallangan bo'lsa → /employer.
+ * ?next= — tugagach qaytiladigan joy (kirish oqimida — "Profilingiz tayyor!" ekrani); faqat shu saytdagi yo'l.
+ */
+export default async function EmployerOnboardingPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+  const next = safeInternalPath((await searchParams).next, "") || null;
+  const session = await requireSession(next ? `/onboarding/employer?next=${encodeURIComponent(next)}` : "/onboarding/employer");
+  if (session.employerId && session.employerOnboarded) redirect(next ?? "/employer");
 
   const supabase = await createClient();
   const [profile, regions, districts, categories, { data: contacts }] = await Promise.all([
@@ -34,6 +39,7 @@ export default async function EmployerOnboardingPage() {
   return (
     <Shell hideNav forceRole="employer">
       <EmployerOnboarding
+        doneHref={next ?? "/employer"}
         firstName={session.profile.first_name.trim() || (await getGreetingName())}
         prefill={{
           employerType: profile?.employer_type ?? null,

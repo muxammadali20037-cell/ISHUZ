@@ -93,6 +93,41 @@
     "latest_more": "All vacancies ({count})",
     "latest_empty": "No active vacancies yet. Post the first one or tell employers about yourself.",
     "latest_error": "Could not load listings",
-    "live": "Live"
+    "live": "Live",
+    "language": {
+      "title": "Choose your language",
+      "subtitle": "Use the app in the language you prefer.",
+      "continue": "Continue",
+      "hint": "You can change it later in Settings."
+    },
+    "intro": {
+      "s1_title": "Finding a job is easier now",
+      "s1_text": "Search vacancies across many fields in one place.",
+      "s2_title": "Hiring, all in one place",
+      "s2_text": "Post a vacancy and find candidates who fit.",
+      "s3_title": "Your AI assistant is always with you",
+      "s3_text": "Find opportunities that match your interests, skills and experience.",
+      "start": "Get started",
+      "slides": "Introduction"
+    },
+    "role": {
+      "title": "Choose your role",
+      "subtitle": "We'll tailor the app to you.",
+      "worker_title": "I'm looking for a job",
+      "worker_desc": "Find new opportunities",
+      "employer_title": "I'm hiring",
+      "employer_desc": "Find people for my team",
+      "continue": "Continue",
+      "note": "You can add the other role later, in the same account.",
+      "error": "Your choice wasn't saved. Please try again."
+    },
+    "done": {
+      "title": "Your profile is ready!",
+      "text": "You can now use everything the app offers.",
+      "worker_note": "You can add skills, education and a portfolio to your profile later.",
+      "employer_note": "Verify your company and post vacancies from your dashboard.",
+      "cta": "Go to home",
+      "edit": "Edit profile"
+    }
   }
 }

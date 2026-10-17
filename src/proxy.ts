@@ -74,7 +74,8 @@ export async function proxy(request: NextRequest) {
     return redirect;
   }
 
-  if (pathname === "/auth" && user) {
+  // kirgan foydalanuvchiga kirish ekranlari (usul, raqam, kod) kerak emas — kelgan joyiga
+  if ((pathname === "/auth" || pathname.startsWith("/auth/")) && user) {
     const next = request.nextUrl.searchParams.get("next");
     const url = request.nextUrl.clone();
     // faqat shu saytdagi manzil; so'rov qismi (?step=4) saqlanadi — kirgandan keyin aynan to'xtagan qadamga qaytiladi

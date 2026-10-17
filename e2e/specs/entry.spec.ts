@@ -1,21 +1,13 @@
-import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { USERS, asGuest, sql, stack } from "../support";
+import { expect, test, type BrowserContext } from "@playwright/test";
+import { USERS, asGuest, sql } from "../support";
 
 /**
- * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi), birinchi ochilishdagi 3 qadamli tanishtiruv,
- * rejim tanlanmagan mehmon uchun kirish oynasi (haqiqiy raqamlar, ikki katta maqsad, tez kirish, yangi vakansiyalar).
+ * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi), rejim tanlanmagan mehmon uchun kirish oynasi
+ * (haqiqiy raqamlar, ikki katta maqsad, tez kirish, yangi vakansiyalar). Birinchi ochilishdagi til va tanishtiruv —
+ * entry-flow.spec.ts.
  */
 
-const host = new URL(stack.app).hostname;
 const cookie = async (ctx: BrowserContext, name: string) => (await ctx.cookies()).find((c) => c.name === name)?.value;
-
-/** Birinchi marta ochayotgan qurilma: faqat til; tanishtiruv hali ko'rilmagan */
-async function firstOpen(ctx: BrowserContext) {
-  await ctx.clearCookies();
-  await ctx.addCookies([{ name: "ishuz_locale", value: "uz", domain: host, path: "/" }]);
-}
-
-const intro = (page: Page) => page.getByTestId("intro");
 
 async function activeJobs(): Promise<number> {
   const [r] = await sql<{ n: string }>("select coalesce((select total_count from public.simple_search_vacancies(p_remote => false, p_no_experience => false, p_limit => 1, p_offset => 0) limit 1), 0) as n");
@@ -35,62 +27,6 @@ test.describe("kirish", () => {
   });
   test.afterAll(async () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
-  });
-
-  test("birinchi ochilish: tanishtiruv 3 qadam — keyingi, oldingi, nuqtalar, klaviatura, o'tkazib yuborish; rol tanlansa — o'sha bosh sahifa", async ({ page, context }) => {
-    await firstOpen(context);
-    await page.goto("/");
-    const dialog = intro(page);
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole("heading", { name: "Ish topish endi oson" })).toBeVisible();
-    // raqam — haqiqiy (qidiruvdagi bilan bir xil qoida)
-    await expect(dialog.getByText(`Hozir ${await activeJobs()} ta faol vakansiya`)).toBeVisible();
-    // bir marta: ochilishi bilan belgilanadi
-    expect(await cookie(context, "ib_intro")).toBe("1");
-
-    await dialog.getByRole("button", { name: "Keyingi" }).click();
-    await expect(dialog.getByRole("heading", { name: "Ishchi kerakmi?" })).toBeVisible();
-    await dialog.getByRole("button", { name: "Oldingi" }).click();
-    await expect(dialog.getByRole("heading", { name: "Ish topish endi oson" })).toBeVisible();
-    await page.keyboard.press("ArrowRight");
-    await expect(dialog.getByRole("heading", { name: "Ishchi kerakmi?" })).toBeVisible();
-    await dialog.getByRole("button", { name: "3-qadam, jami 3" }).click();
-    await expect(dialog.getByRole("heading", { name: "Sizga mosini o'zimiz topamiz" })).toBeVisible();
-    await page.keyboard.press("ArrowLeft");
-    await expect(dialog.getByRole("heading", { name: "Ishchi kerakmi?" })).toBeVisible();
-    await dialog.getByRole("button", { name: "O'tkazib yuborish" }).click();
-    await expect(dialog.getByRole("heading", { name: "Sizga mosini o'zimiz topamiz" })).toBeVisible();
-
-    await dialog.getByRole("button", { name: "Ish qidiryapman" }).click();
-    await expect(dialog).toBeHidden();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
-    expect(await cookie(context, "ib_mode")).toBe("worker");
-    await page.reload();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
-    await expect(intro(page)).toHaveCount(0);
-  });
-
-  test("tanishtiruv: 'Keyinroq tanlayman' — kirish oynasida qoladi, rejim yozilmaydi, qayta chiqmaydi", async ({ page, context }) => {
-    await firstOpen(context);
-    await page.goto("/");
-    await intro(page).getByRole("button", { name: "O'tkazib yuborish" }).click();
-    await intro(page).getByRole("button", { name: "Keyinroq tanlayman" }).click();
-    await expect(intro(page)).toBeHidden();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nima qidiryapsiz?");
-    expect(await cookie(context, "ib_mode")).toBeUndefined();
-    await page.reload();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nima qidiryapsiz?");
-    await expect(intro(page)).toHaveCount(0);
-  });
-
-  test("qidiruv robotiga tanishtiruv ko'rsatilmaydi — sahifa mazmuni darhol", async ({ browser }) => {
-    const ctx = await browser.newContext({ baseURL: stack.app, userAgent: "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" });
-    await firstOpen(ctx);
-    const page = await ctx.newPage();
-    await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nima qidiryapsiz?");
-    await expect(intro(page)).toHaveCount(0);
-    await ctx.close();
   });
 
   test("kirish oynasi: haqiqiy raqamlar, ikki katta maqsad, qidiruv, yangi vakansiyalar; ko'rish rejim yozmaydi", async ({ page, context }) => {

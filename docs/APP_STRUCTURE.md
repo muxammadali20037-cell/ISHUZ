@@ -75,6 +75,34 @@ istagida kunlik to'lov yoki "bugun/ertaga" tayyor.
 - **Filtr oynasi**: "Natijalarni ko'rish (N)" — N sahifadagi qidiruv bilan aynan bir xil funksiyadan (`countFindResults`);
   aniqlab bo'lmasa (matnli qidiruv, kasb tanlanmagan) — sonsiz tugma.
 
+## T — kirish oqimi (11 ekran + bosh sahifa)
+
+Yangi foydalanuvchi: **splash → til → tanishtiruv (3) → kirish usuli → rol → telefon → kod → profil → "Profilingiz tayyor!" →
+rolning bosh sahifasi**. Qaytgan foydalanuvchi: splash → darhol bosh sahifa. Qaysi qadam kerakligini bitta funksiya hal qiladi:
+`nextEntryStep` (`src/features/entry/flow.ts`, 12 unit test). Shu bilan redirect sikli va qayta tanishtiruv oldi olinadi.
+
+| # | Ekran | Marshrut | Eslatma |
+|---|---|---|---|
+| 1 | Splash | har qanday sahifa ustida | sessiyada bir marta, sun'iy kutish yo'q (avvalgidek) |
+| 2 | Til | `/start/til` | birinchi amal; bosilgan til darhol saqlanadi (`setLocale`: cookie + profil), "Davom etish" tanlangandan keyin faol |
+| 3–5 | Tanishtiruv | `/start/tanishtiruv?s=1..3` | O'tkazib yuborish / Oldingi / Keyingi / nuqtalar / surish; `ib_intro` faqat "Boshlash" yoki "O'tkazib yuborish"da yoziladi |
+| 6 | Kirish usuli | `/auth` | telefon; Telegram (bot sozlangan bo'lsa); Google sozlanmagan — ko'rsatilmaydi; "Kirmasdan ko'rish" |
+| 7 | Rol | `/start/rol` | rol tanlanmagan qurilmada telefondan oldin; kirgandan keyin ham (Telegram'dan birinchi kirish); `chooseMode` |
+| 8–9 | Telefon, kod | `/auth/telefon` | +998 niqobi; kod Telegram bot orqali (SMS emas); 6 katak (bitta input, `one-time-code`, joylash), avtomatik tekshirish; muddat, urinishlar, tezlik — serverda (avvalgidek) |
+| 10 | Profil | `/onboarding/worker` yoki `/onboarding/employer` `?next=/start/tayyor` | mavjud wizard'lar: ish izlovchi — 4 majburiy qadam (ism, joy, kasb, tajriba), qolgani keyin; ish beruvchi — tur + joy/nom/telefon |
+| 11 | Tayyor | `/start/tayyor` | faqat profil yakunidan keladi; profil tayyor bo'lmasa — oqimga qaytaradi |
+| 12 | Bosh sahifa | `/` yoki `/employer` | rolga qarab |
+
+Qoidalar:
+- Bosh sahifa (`/`) oqimga faqat birinchi ochilishda (til, tanishtiruv) yoki oqimni boshlab tugatmagan kirgan
+  foydalanuvchini (`ib_entry`) o'tkazadi. Vakansiya, qidiruv va boshqa to'g'ridan-to'g'ri havolalar oqimsiz ochiladi.
+  Qidiruv robotlari oqimni ko'rmaydi. Mehmon tanishtiruvdan keyin kirishga majburlanmaydi.
+- Kirishdan keyin `next` saqlanadi (`/start?next=…` → oqim tugagach o'sha joy). Faqat ichki yo'l qabul qilinadi
+  (`safeInternalPath`). Kirgan foydalanuvchi `/auth/*` ga kirmaydi (proxy → `next`).
+- Telegram Mini App: telefon va kod so'ralmaydi — initData orqali avtomatik kirish (`TelegramGate`, server HMAC tekshiruvi).
+- Rasmlar (tanishtiruv 3 ta, rol kartalari 2 ta) admin panelda almashtiriladi: **Admin → Kirish ekranlari** (`/admin/entry`).
+  Qo'llanma va promptlar: `docs/ENTRY_MEDIA.md`.
+
 ## Deploy
 
 - Vercel production endi `main` branch'idan chiqadi (2026-10-17 dan; avval ish branch'i `claude/gallant-thompson-q70fo3` edi).

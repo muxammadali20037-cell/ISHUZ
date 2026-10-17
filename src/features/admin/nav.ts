@@ -24,7 +24,8 @@ export type NavIcon =
   | "matching"
   | "queues"
   | "security"
-  | "home";
+  | "home"
+  | "entry";
 
 export interface NavItem {
   href: string;
@@ -64,6 +65,7 @@ export const NAV_GROUPS: NavGroup[] = [
     key: "content",
     items: [
       { href: "/admin/home", key: "home", icon: "home", perm: "settings.manage" },
+      { href: "/admin/entry", key: "entry", icon: "entry", perm: "settings.manage" },
       { href: "/admin/moderation", key: "moderation", icon: "moderation", perm: "vacancies.moderate" },
       { href: "/admin/vacancies", key: "vacancies", icon: "vacancies", perm: "vacancies.view", badge: "vacancies" },
       { href: "/admin/reports", key: "reports", icon: "reports", perm: "reports.view", badge: "reports" },

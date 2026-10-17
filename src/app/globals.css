@@ -257,13 +257,16 @@ html.no-splash .splash { display: none; }
 /* Kirish oynasi: "jonli" nuqta (bugungi yangi e'lonlar) va tanishtiruv slaydlari almashinuvi */
 .entry-live { position: relative; display: inline-block; width: 8px; height: 8px; border-radius: 999px; background: var(--success); }
 .entry-live::after { content: ""; position: absolute; inset: -3px; border-radius: inherit; border: 2px solid var(--success); opacity: 0; animation: entry-pulse 1.8s ease-out infinite; }
-.intro-slide { animation: intro-in 0.32s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.intro-slide { animation: intro-in 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
 .intro-slide.intro-back { animation-name: intro-in-back; }
 @keyframes entry-pulse { 0% { opacity: 0.8; transform: scale(0.6); } 100% { opacity: 0; transform: scale(1.8); } }
 @keyframes intro-in { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
 @keyframes intro-in-back { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+/* "Profilingiz tayyor!" belgisi — bir marta yumshoq kattalashib chiqadi */
+.entry-done { animation: entry-done-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+@keyframes entry-done-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
-  .entry-live::after, .intro-slide { animation: none; }
+  .entry-live::after, .intro-slide, .entry-done { animation: none; }
 }
 
 /* forma serverda chizilgan, qurilmadagi qoralama hali o'qilmoqda (bir lahza) — bosish hali qabul qilinmaydi */

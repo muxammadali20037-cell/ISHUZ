@@ -1,18 +1,15 @@
 "use server";
 
-import { createHash } from "node:crypto";
 import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { errorCode } from "@/lib/utils";
-import { reencodeImage } from "@/lib/security/image-reencode";
-import { logSecurityEvent } from "@/lib/security/events";
 import type { ActionResult } from "@/features/auth/actions";
 import type { Json } from "@/types/database.types";
 import { DEFAULT_WINDOWS, homeWindowsSchema } from "@/features/home-windows/model";
 import { HOME_TAG } from "@/features/home-windows/queries";
 import { logAdmin, requirePerm, snapshot } from "./guard";
+import { storeSiteImage } from "./site-image";
 
 /*
  * Bosh sahifa (admin → "Bosh sahifa"): tepadagi rasmli oynalar va o'ng pastdagi lupa tugmasi.
@@ -54,25 +51,9 @@ export async function setAiSearchButton(input: unknown): Promise<ActionResult> {
   return writeSetting("ai_search_button", parsed.data.enabled);
 }
 
-const MAX_UPLOAD = 4 * 1024 * 1024;
-
-/**
- * Oyna rasmi: mazmuni tekshiriladi (magic bytes, piksel), metama'lumotsiz WebP (≤1280 px) qilib ommaviy site-media ga
- * mazmun xeshi nomi bilan yoziladi (0060; mijoz bu bucket'ga yoza olmaydi). Natija — oynaga yoziladigan yo'l.
- */
+/** Oyna rasmi: tekshirilib, metama'lumotsiz WebP (≤1280 px) qilib site-media ga yoziladi (site-image.ts) */
 export async function uploadWindowImage(form: FormData): Promise<ActionResult<{ path: string }>> {
   const guard = await requirePerm("settings.manage");
   if (!guard.ok) return guard;
-  const file = form.get("file");
-  if (!(file instanceof File) || file.size === 0 || file.size > MAX_UPLOAD) return { ok: false, error: "image_invalid" };
-  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return { ok: false, error: "image_unavailable" };
-  const out = await reencodeImage(Buffer.from(await file.arrayBuffer()), file.type, { maxSide: 1280, quality: 84 });
-  if (!out) {
-    await logSecurityEvent({ type: "upload.content_rejected", severity: "low", reason: "home_window", actorId: guard.ctx.session.userId, action: "blocked" });
-    return { ok: false, error: "image_invalid" };
-  }
-  const name = `windows/v-${createHash("sha256").update(out).digest("hex")}.webp`;
-  const { error } = await createAdminClient().storage.from("site-media").upload(name, out, { contentType: "image/webp", cacheControl: "31536000", upsert: true });
-  if (error) return { ok: false, error: /not.?found/i.test(error.message) ? "needs_migration" : "image_unavailable" };
-  return { ok: true, data: { path: `site-media/${name}` } };
+  return storeSiteImage(form, { folder: "windows", actorId: guard.ctx.session.userId, reason: "home_window", maxSide: 1280 });
 }

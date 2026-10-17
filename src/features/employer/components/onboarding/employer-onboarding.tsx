@@ -30,7 +30,7 @@ export interface OnboardingPrefill {
  * Ish beruvchi onboarding: 1) tur  2) joylashuv → viloyat → tuman → nom → telefon (logo va boshqalar — keyin sozlamalarda).
  * 1-qadam tanlovi darhol saqlanadi; qaytganda 2-qadamdan davom etadi.
  */
-export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: OnboardingPrefill; refs: ReferenceLists; firstName: string }) {
+export function EmployerOnboarding({ prefill, refs, firstName, doneHref = "/employer" }: { prefill: OnboardingPrefill; refs: ReferenceLists; firstName: string; doneHref?: string }) {
   const { t } = useT();
   const router = useRouter();
   const [type, setType] = useState<EmployerType | null>(prefill.employerType);
@@ -66,7 +66,7 @@ export function EmployerOnboarding({ prefill, refs, firstName }: { prefill: Onbo
   const finish = () => {
     celebrateAfterNavigation();
     toast.success(t("employer.onboarding.done_toast"));
-    router.replace("/employer");
+    router.replace(doneHref);
     router.refresh();
   };
 
