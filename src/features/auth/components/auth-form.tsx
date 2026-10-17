@@ -412,7 +412,7 @@ function OtpBoxes({
         inputMode="numeric"
         autoComplete="one-time-code"
         pattern="\d*"
-        maxLength={CODE_LENGTH}
+        // maxLength yo'q: "Kod: 123456" kabi joylangan matndan ham raqamlar olinadi (onChange — faqat 6 ta raqam)
         value={value}
         disabled={disabled}
         onChange={(e) => onChange(e.target.value)}

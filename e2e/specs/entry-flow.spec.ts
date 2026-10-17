@@ -148,7 +148,11 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByText("Telefon raqam noto'g'ri")).toBeVisible();
     expect(sends).toBe(0);
 
-    await phone.pressSequentially("34567");
+    // foydalanuvchi maydonga bosadi: kursor qayerga bosilganidan qat'i nazar oxiriga o'tadi (prefiks oldiga raqam tushmaydi).
+    // pressSequentially emas: Playwright fokusdan keyin kursorni majburan boshiga qo'yadi (haqiqiy brauzer bunday qilmaydi)
+    await phone.click({ position: { x: 60, y: 20 } });
+    await expect.poll(() => phone.evaluate((el: HTMLInputElement) => el.selectionStart === el.value.length)).toBe(true);
+    await page.keyboard.type("34567");
     await expect(phone).toHaveValue("+998 90 123 45 67");
     await page.getByRole("button", { name: "Kod yuborish" }).dblclick();
     await expect(page.getByRole("heading", { level: 1, name: "Tasdiqlash kodini kiriting" })).toBeVisible();
@@ -158,9 +162,10 @@ test.describe("kirish oqimi", () => {
 
     const code = page.getByLabel("6 xonali kod");
     await expect(code).toHaveAttribute("autocomplete", "one-time-code");
-    await code.fill("12a3456");
+    // Telegram xabaridan nusxalangan matn — faqat raqamlar olinadi
+    await code.fill("Kod: 123456");
     // 6 raqam — avtomatik tekshiriladi (bir marta), server javobi ko'rsatiladi
-    await expect(page.getByRole("alert")).toHaveText("Kod noto'g'ri");
+    await expect(page.getByRole("alert").filter({ hasText: "Kod noto'g'ri" })).toBeVisible();
     expect(verifies).toHaveLength(1);
     expect(JSON.parse(verifies[0]!)).toEqual({ phone: "+998901234567", code: "123456" });
 

@@ -102,6 +102,7 @@ Qoidalar:
 - Telegram Mini App: telefon va kod so'ralmaydi — initData orqali avtomatik kirish (`TelegramGate`, server HMAC tekshiruvi).
 - Rasmlar (tanishtiruv 3 ta, rol kartalari 2 ta) admin panelda almashtiriladi: **Admin → Kirish ekranlari** (`/admin/entry`).
   Qo'llanma va promptlar: `docs/ENTRY_MEDIA.md`.
+- Suratlar (E2E stendi, 390×844): `docs/screenshots/entry/entry-flow-12.jpg`, admin — `docs/screenshots/entry/admin-entry.jpg`.
 
 ## Deploy
 
