@@ -79,5 +79,9 @@ istagida kunlik to'lov yoki "bugun/ertaga" tayyor.
 
 - Vercel production endi `main` branch'idan chiqadi (2026-10-17 dan; avval ish branch'i `claude/gallant-thompson-q70fo3` edi).
   Ish branch'iga push — faqat Preview; saytga chiqishi uchun `main` ga merge kerak.
+- Preview muhitida faqat ochiq qiymatlar: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (ularsiz build
+  `src/lib/env-public.ts` tekshiruvida to'xtaydi). Maxfiy kalitlar (`SUPABASE_SERVICE_ROLE_KEY`, Telegram, Payme/Click,
+  `LOGIN_CODE_SECRET`, `SECURITY_PEPPER`, `CRON_SECRET`) — faqat Production: main'ga qo'shilmagan kod production bazaga
+  to'liq huquq bilan yozmasin, haqiqiy xabar yoki to'lov yubormasin. Preview'da kirish va Telegram ishlamaydi.
 - 0065 va 0066 production bazasiga qo'llangan; tekshiruv: bo'lim sonlari va yangi qidiruv funksiyalari javob beradi,
   anon chaqira oladigan SECURITY DEFINER ro'yxati `security_hardening.test.sql` dagi bilan bir xil.
