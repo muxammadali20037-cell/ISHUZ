@@ -17,7 +17,8 @@ function NavProgressBar() {
     const onClick = (e: MouseEvent) => {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as Element | null)?.closest?.("a[href]") as HTMLAnchorElement | null;
-      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      // data-no-progress — havola sahifani almashtirmaydi (masalan, tanishtiruv slaydi shu joyda almashinadi)
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download") || a.hasAttribute("data-no-progress")) return;
       const to = new URL(a.href, window.location.href);
       if (to.origin !== window.location.origin || (to.pathname === window.location.pathname && to.search === window.location.search)) return;
       const from = `${window.location.pathname}?${new URLSearchParams(window.location.search).toString()}`;

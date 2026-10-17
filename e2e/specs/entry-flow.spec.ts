@@ -18,6 +18,8 @@ const NEW_EMPLOYER = "7e2e0000-0000-4000-8000-000000000072";
 async function freshUser(id: string, phone: string, first: string, last: string) {
   await sql("delete from public.worker_profiles where profile_id = $1", [id]);
   await sql("delete from public.employer_profiles where profile_id = $1", [id]);
+  // oldingi yugurishdan qolgan rol (profil yakunida beriladi) — yangi foydalanuvchida bo'lmaydi
+  await sql("delete from public.user_roles where profile_id = $1", [id]);
   await sql(
     `insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values ($1, $2, now(), jsonb_build_object('first_name', $3::text, 'last_name', $4::text))
      on conflict (id) do nothing`,

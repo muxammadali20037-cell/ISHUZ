@@ -71,7 +71,7 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
               <ChevronLeft className="size-6" aria-hidden />
             </Link>
           ) : (
-            <Link href={slideHref(step - 1)} replace scroll={false} onClick={goLink(step - 1)} aria-label={t("welcome.intro.back")} className="inline-flex size-11 items-center justify-center rounded-xl hover:bg-secondary">
+            <Link href={slideHref(step - 1)} replace scroll={false} data-no-progress onClick={goLink(step - 1)} aria-label={t("welcome.intro.back")} className="inline-flex size-11 items-center justify-center rounded-xl hover:bg-secondary">
               <ChevronLeft className="size-6" aria-hidden />
             </Link>
           )}
@@ -107,7 +107,7 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
                 href={slideHref(i)}
                 replace
                 scroll={false}
-                onClick={goLink(i)}
+                data-no-progress onClick={goLink(i)}
                 aria-label={t("welcome.intro.step", { n: i + 1, total })}
                 aria-current={i === step ? "step" : undefined}
                 className="flex h-11 items-center px-1"
@@ -122,13 +122,13 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
             <div className="flex gap-2">
               {step > 0 ? (
                 <Button asChild variant="outline" className="h-14 w-14 shrink-0 px-0">
-                  <Link href={slideHref(step - 1)} replace scroll={false} onClick={goLink(step - 1)} aria-label={t("welcome.intro.back")}>
+                  <Link href={slideHref(step - 1)} replace scroll={false} data-no-progress onClick={goLink(step - 1)} aria-label={t("welcome.intro.back")}>
                     <ArrowLeft className="size-5" aria-hidden />
                   </Link>
                 </Button>
               ) : null}
               <Button asChild className="h-14 flex-1 text-base font-bold">
-                <Link href={slideHref(step + 1)} replace scroll={false} onClick={goLink(step + 1)}>
+                <Link href={slideHref(step + 1)} replace scroll={false} data-no-progress onClick={goLink(step + 1)}>
                   {t("welcome.intro.next")} <ArrowRight className="size-5" aria-hidden />
                 </Link>
               </Button>

@@ -258,7 +258,7 @@ function PhoneLoginInner({ next, botUsername, initialPhone, backHref, tgFailed }
             <EntryIcon>
               <MessageSquareText />
             </EntryIcon>
-            <EntryHeading className="mt-5" title={t("auth.code.title")} subtitle={t("auth.code_sent_telegram", { phone: prettyPhone, bot: botUsername ?? "" })} />
+            <EntryHeading className="mt-5" title={t("auth.code.title")} subtitle={botUsername ? t("auth.code_sent_telegram", { phone: prettyPhone, bot: botUsername }) : t("auth.code.sent", { phone: prettyPhone })} />
           </div>
           <div className="mt-8">
             <OtpBoxes ref={codeRef} value={code} onChange={onCodeChange} invalid={!!error} label={t("auth.code.boxes_label")} disabled={pending} />
