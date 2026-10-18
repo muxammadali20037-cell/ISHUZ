@@ -7,7 +7,7 @@ tekshiruvi, storage, kesh) — `ENTRY_MEDIA.md`.
 
 | # | Qayerga | Nechta | Kim qo'yadi | Majburiymi |
 |---|---|---|---|---|
-| A | **Admin → Kontent → Kirish ekranlari** (`/admin/entry`) | 5 | Siz, admin panelda | Tavsiya etiladi — eng ko'p ko'rinadigan joy |
+| A | **Admin → Kontent → Kirish ekranlari** (`/admin/entry`): kirish ekranlari (5) va bosh sahifadagi katta plitkalar (4) | 9 | Siz, admin panelda | Tavsiya etiladi — eng ko'p ko'rinadigan joylar |
 | B | **Admin → Bosh sahifa → Rasmli oynalar** (`/admin/home`) | 6 (12 gacha) | Siz, admin panelda | Ixtiyoriy — rasm 48 px'da ko'rinadi |
 | C | Havola ulashilganda chiqadigan rasm (OG, 1200×630) | 1 | Kod orqali | Hozir **yo'q** — qo'shish kerak (pastda) |
 | D | Kasb rasmlari (kartalarda) | avtomatik | AI (Gemini), kod | Siz hech narsa qilmaysiz |
@@ -51,7 +51,7 @@ license plate, extra fingers, distorted hands, robot, holograms, floating UI ele
 
 ---
 
-## A. Kirish ekranlari — `/admin/entry` (5 ta)
+## A. Kirish ekranlari — `/admin/entry` (5 ta + 4 ta plitka)
 
 ### A1. «Tanishtiruv 1 — ish topish» (`intro_jobs`)
 
@@ -117,6 +117,57 @@ Head-and-shoulders portrait, square 1:1. An Uzbek shop owner in his forties wear
 expression, standing in his small store, face centered and filling most of the frame. Background softly blurred with
 plain shelves, no readable products. Soft natural light, full-frame camera, 85mm lens, realistic skin texture,
 true-to-life colors. No text, no logos, no signage.
+```
+
+### A6–A9. Bosh sahifa — katta plitkalar (o'sha sahifada, «Bosh sahifa — katta plitkalar» guruhi)
+
+- **Qayerda:** ish izlovchi va ish beruvchi bosh sahifasining tepasidagi ikkita katta plitka (ish beruvchi kabinetida ham).
+  Telefonda har biri ekranning **yarmi kengligida** (~170×96 px), kompyuterda ~540×300 px.
+- **Nisbat:** 16:9, kamida 1280×720. Bitta yoki ikkita odam, markazda, oddiy fon — kichik o'lchamda ham tanilsin.
+- Ish beruvchi sahifasida sonlar olinmasa, birinchi plitka «Barcha ishchilar» bo'lib chiqadi. Unda o'rnatilgan tasvir
+  qoladi, «Kunlik ishchilar» rasmi qo'yilmaydi.
+
+| Joy (admin) | Ekrandagi nomi | Rasm g'oyasi |
+|---|---|---|
+| Ish izlovchi — «Kunlik ishlar» | Kunlik ishlar | Bozorda mashinadan quti tushirayotgan yigit |
+| Ish izlovchi — «Yaqin atrofda» | Yaqin atrofda | Mahalladagi ish joyiga piyoda kelayotgan qiz |
+| Ish beruvchi — «Kunlik ishchilar» | Kunlik ishchilar | Ish boshlashga tayyor ikki ishchi, qurilish maydoni |
+| Ish beruvchi — «Yaqin ishchilar» | Yaqin ishchilar | Uy darvozasida usta va uy egasi ko'rishmoqda |
+
+**A6. Ish izlovchi — «Kunlik ishlar»** (`tile_daily_jobs`)
+
+```text
+Documentary photograph, 16:9, main subject in the center. A young Uzbek man in work gloves and a plain t-shirt
+unloads cardboard boxes from a small delivery van at a Tashkent bazaar in the morning, energetic and focused, waist-up,
+background softly blurred. Natural daylight, full-frame camera, 35mm lens, realistic skin texture, true-to-life
+colors. No text, no logos, no printed labels on the boxes, no license plates.
+```
+
+**A7. Ish izlovchi — «Yaqin atrofda»** (`tile_near_jobs`)
+
+```text
+Documentary photograph, 16:9, main subject in the center. A young Uzbek woman walks along a quiet tree-lined mahalla
+street in Tashkent toward a small neighborhood bakery where she works, relaxed and smiling, seen from a three-quarter
+angle, low houses softly blurred. Morning daylight, full-frame camera, 35mm lens, true-to-life colors. No text,
+no signage, no license plates.
+```
+
+**A8. Ish beruvchi — «Kunlik ishchilar»** (`tile_daily_workers`)
+
+```text
+Documentary photograph, 16:9, both people in the center. Two Uzbek day workers in work clothes and gloves stand ready
+at the entrance of a small construction site in Tashkent, one holding a shovel, confident and friendly, waist-up,
+site softly blurred behind them. Natural daylight, full-frame camera, 35mm lens, realistic skin texture,
+true-to-life colors. No text, no logos, no safety signs with writing.
+```
+
+**A9. Ish beruvchi — «Yaqin ishchilar»** (`tile_near_workers`)
+
+```text
+Documentary photograph, 16:9, both people in the center. An Uzbek plumber in his thirties with a toolbox is greeted by
+a homeowner at the gate of a house in a Tashkent mahalla, friendly handshake, waist-up, courtyard softly blurred.
+Natural daylight, full-frame camera, 35mm lens, realistic skin texture, true-to-life colors. No text, no logos,
+no house numbers.
 ```
 
 ---
@@ -263,8 +314,6 @@ No text, no logos, no signage.
 
 Bu joylarda faqat o'rnatilgan tasvir bor, admin joyi yo'q. Kerak bo'lsa, admin joyi kod bilan qo'shiladi:
 
-- ish izlovchi / ish beruvchi bosh sahifasidagi katta plitkalar («Kunlik ishlar», «Yaqin atrofda», «Barcha ishchilar») —
-  16:9;
 - «Siz nima qidiryapsiz?» tanlovi va noto'g'ri rejim ekrani — 16:9;
 - mehmon bosh sahifasidagi «Sizga kerakli xodimni toping» ko'k bloki.
 

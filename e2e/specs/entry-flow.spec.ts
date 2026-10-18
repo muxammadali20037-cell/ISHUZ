@@ -416,4 +416,41 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
     await expect(g.locator(`img[src*="/site-media/entry/"]`)).toHaveCount(0);
     await guest.close();
   });
+
+  test("bosh sahifa plitkasi: yuklangan rasm ish izlovchi bosh sahifasidagi «Kunlik ishlar» plitkasida chiqadi; olib tashlansa — o'rnatilgan tasvir", async ({ page, context, browser }) => {
+    test.setTimeout(120_000);
+    const sharp = (await import("sharp")).default;
+    await loginAs(context, USERS.workerB, "aal2");
+    await page.goto("/admin/entry");
+    await expect(page.getByRole("heading", { level: 2, name: "Bosh sahifa — katta plitkalar" })).toBeVisible();
+    const slot = page.getByTestId("entry-slot-tile_daily_jobs");
+    await expect(slot.getByRole("heading", { name: "Ish izlovchi — «Kunlik ishlar»" })).toBeVisible();
+    const photo = await sharp({ create: { width: 1920, height: 1080, channels: 3, background: { r: 200, g: 120, b: 40 } } }).jpeg().toBuffer();
+    await expect(async () => {
+      const chooser = page.waitForEvent("filechooser", { timeout: 2000 }).catch(() => null);
+      await slot.getByRole("button", { name: "Rasm yuklash" }).click();
+      const c = await chooser;
+      if (!c) throw new Error("fayl tanlash oynasi ochilmadi");
+      await c.setFiles({ name: "tile.jpg", mimeType: "image/jpeg", buffer: photo });
+    }).toPass({ timeout: 15_000 });
+    const preview = slot.locator("img");
+    await expect(preview).toHaveAttribute("src", /\/site-media\/entry\/v-[0-9a-f]{64}\.webp$/, { timeout: 15_000 });
+    const name = (await preview.getAttribute("src"))!.split("/").pop()!;
+
+    const guest = await browser.newContext({ baseURL: stack.app });
+    await asMode(guest, "worker");
+    await asGuest(guest);
+    const g = await guest.newPage();
+    await g.goto("/");
+    const tiles = g.locator('section[aria-labelledby="home-sections"]');
+    await expect(tiles.locator(`img[src$="${name}"]`)).toBeVisible();
+    // ikkinchi plitkada («Yaqin atrofda») rasm yuklanmagan — o'rnatilgan tasvir
+    await expect(tiles.locator(`img[src*="/site-media/entry/"]`)).toHaveCount(1);
+
+    await slot.getByRole("button", { name: "O'rnatilgan tasvirga qaytish" }).click();
+    await expect(slot.getByText("O'rnatilgan tasvir", { exact: true })).toBeVisible();
+    await g.reload();
+    await expect(tiles.locator(`img[src*="/site-media/entry/"]`)).toHaveCount(0);
+    await guest.close();
+  });
 });

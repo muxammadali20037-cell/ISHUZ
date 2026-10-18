@@ -17,6 +17,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EMPTY_FIND, findHref, type FindParams } from "@/features/find/params";
 import { WindowArtwork } from "@/features/home-windows/window-art";
 import type { WindowArt } from "@/features/home-windows/model";
+import { EntryImage } from "@/features/entry/components/entry-art";
+import type { EntryMedia, EntrySlot } from "@/features/entry/media";
+import { getEntryMedia } from "@/features/entry/queries";
 import { getHomePlace, type HomePlace } from "./home-queries";
 import { getJobSections, getWorkerSections } from "./sections";
 
@@ -27,6 +30,8 @@ interface BigTile {
   href: string;
   label: string;
   art: WindowArt;
+  /** admin yuklagan rasm joyi (Kirish ekranlari → katta plitkalar); rasm bo'lmasa — `art` */
+  slot?: EntrySlot;
   /** son yoki izoh (son noma'lum bo'lsa) */
   sub: string;
 }
@@ -49,7 +54,7 @@ interface SmallTile {
  * Har bo'lim — haqiqiy son (0066) va shu bo'lim bo'yicha natijalar; asosiy bo'limlardan tashqari soni 0 bo'lgan kichik bo'lim
  * ko'rsatilmaydi (bo'sh oynaga olib bormaymiz). Sonlar olinmasa — faqat sonsiz ishlaydigan bo'limlar.
  */
-function SectionGrid({ title, big, small }: { title: string; big: BigTile[]; small: SmallTile[] }) {
+function SectionGrid({ title, big, small, media }: { title: string; big: BigTile[]; small: SmallTile[]; media: EntryMedia }) {
   return (
     <section aria-labelledby="home-sections">
       <h2 id="home-sections" className="sr-only">
@@ -66,7 +71,7 @@ function SectionGrid({ title, big, small }: { title: string; big: BigTile[]; sma
               className="press lift flex w-full flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-sm hover:border-primary/50"
             >
               <span className="block aspect-[16/9] w-full" aria-hidden>
-                <WindowArtwork art={b.art} cover />
+                {b.slot ? <EntryImage slot={b.slot} media={media} sizes="(min-width: 768px) 360px, 50vw" className="size-full" /> : <WindowArtwork art={b.art} cover />}
               </span>
               <span className="flex flex-1 flex-col px-3 pb-3 pt-2">
                 <span className="text-base font-extrabold leading-tight">{b.label}</span>
@@ -110,7 +115,7 @@ function wherePatch(place: HomePlace): Partial<FindParams> {
 
 /** Ish qidiruvchi: Kunlik ishlar · Yaqin atrofda | Masofaviy · Tajribasiz · MChJ · YaTT · Davlat · Jismoniy shaxs · Ommaviy · TOP · Barcha sohalar */
 export async function SeekerSections({ place }: { place: HomePlace }) {
-  const [{ t }, c] = await Promise.all([getT(), getJobSections(place.region?.id ?? null, place.district?.id ?? null)]);
+  const [{ t }, c, media] = await Promise.all([getT(), getJobSections(place.region?.id ?? null, place.district?.id ?? null), getEntryMedia()]);
   const any: FindParams = { ...EMPTY_FIND, mode: "jobs", any: true, ...wherePatch(place) };
   const big: BigTile[] = [
     {
@@ -118,9 +123,17 @@ export async function SeekerSections({ place }: { place: HomePlace }) {
       href: findHref({ ...EMPTY_FIND, mode: "jobs", pay: "daily", ...wherePatch(place) }),
       label: t("easy.sections.daily"),
       art: "daily",
+      slot: "tile_daily_jobs",
       sub: c ? t("easy.sections.jobs_count", { count: num(c.daily) }) : t("easy.sections.daily_hint"),
     },
-    { key: "near", href: findHref({ ...EMPTY_FIND, mode: "jobs", near: true }), label: t("easy.sections.near"), art: "near", sub: t("easy.sections.near_hint") },
+    {
+      key: "near",
+      href: findHref({ ...EMPTY_FIND, mode: "jobs", near: true }),
+      label: t("easy.sections.near"),
+      art: "near",
+      slot: "tile_near_jobs",
+      sub: t("easy.sections.near_hint"),
+    },
   ];
   const small: SmallTile[] = [
     { key: "remote", href: findHref(any, { region: "remote", district: null }), label: t("easy.sections.remote"), icon: Laptop, count: c?.remote ?? null, core: true },
@@ -137,19 +150,34 @@ export async function SeekerSections({ place }: { place: HomePlace }) {
       : []),
   ].filter((s) => s.core || s.count === null || s.count > 0);
   small.push({ key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.sections.all"), icon: LayoutGrid, count: null });
-  return <SectionGrid title={t("easy.sections.title")} big={big} small={small} />;
+  return <SectionGrid title={t("easy.sections.title")} big={big} small={small} media={media} />;
 }
 
 /** Ish beruvchi: Kunlik ishchilar · Yaqin ishchilar | Tajribali · Masofaviy · Barcha ishchilar · Barcha sohalar (vakansiya joylash — sahifaning asosiy tugmasi) */
 export async function HireSections({ place: given }: { place?: HomePlace }) {
   const place = given ?? (await getHomePlace());
-  const [{ t }, c] = await Promise.all([getT(), getWorkerSections(place.region?.id ?? null, place.district?.id ?? null)]);
+  const [{ t }, c, media] = await Promise.all([getT(), getWorkerSections(place.region?.id ?? null, place.district?.id ?? null), getEntryMedia()]);
   const any: FindParams = { ...EMPTY_FIND, mode: "workers", any: true, ...wherePatch(place) };
+  // sonlar olinmasa birinchi plitka "Barcha ishchilar" bo'ladi — unga kunlik ishchilar rasmi qo'yilmaydi (o'rnatilgan tasvir)
   const big: BigTile[] = [
     c
-      ? { key: "daily_workers", href: findHref(any, { pay: "daily" }), label: t("easy.sections.daily_workers"), art: "daily", sub: t("easy.sections.workers_count", { count: num(c.daily) }) }
+      ? {
+          key: "daily_workers",
+          href: findHref(any, { pay: "daily" }),
+          label: t("easy.sections.daily_workers"),
+          art: "daily",
+          slot: "tile_daily_workers",
+          sub: t("easy.sections.workers_count", { count: num(c.daily) }),
+        }
       : { key: "all_workers", href: findHref(any), label: t("easy.sections.all_workers"), art: "workers", sub: t("easy.sections.daily_workers_hint") },
-    { key: "near_workers", href: findHref({ ...EMPTY_FIND, mode: "workers", near: true }), label: t("easy.sections.near_workers"), art: "near", sub: t("easy.sections.near_hint") },
+    {
+      key: "near_workers",
+      href: findHref({ ...EMPTY_FIND, mode: "workers", near: true }),
+      label: t("easy.sections.near_workers"),
+      art: "near",
+      slot: "tile_near_workers",
+      sub: t("easy.sections.near_hint"),
+    },
   ];
   const small: SmallTile[] = [
     { key: "experienced", href: findHref(any, { exp: true }), label: t("easy.sections.experienced"), icon: BadgeCheck, count: c?.experienced ?? null, core: true },
@@ -157,7 +185,7 @@ export async function HireSections({ place: given }: { place?: HomePlace }) {
     ...(c ? [{ key: "all_workers", href: findHref(any), label: t("easy.sections.all_workers"), icon: UsersRound, count: c.total }] : []),
   ].filter((s) => s.core || s.count === null || s.count > 0);
   small.push({ key: "all", href: findHref(EMPTY_FIND, { mode: "workers" }), label: t("easy.sections.all"), icon: LayoutGrid, count: null });
-  return <SectionGrid title={t("easy.sections.title")} big={big} small={small} />;
+  return <SectionGrid title={t("easy.sections.title")} big={big} small={small} media={media} />;
 }
 
 /** Bo'limlar oqim bilan keladi — o'rnini oldindan egallaydi (sahifa sakramaydi) */

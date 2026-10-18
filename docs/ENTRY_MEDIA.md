@@ -1,6 +1,6 @@
 # Kirish ekranlari rasmlari — suratga olish va generatsiya qo'llanmasi
 
-Kirish oqimidagi 5 ta rasm admin panelda almashtiriladi: **Admin → Kontent → Kirish ekranlari** (`/admin/entry`, ruxsat:
+Kirish oqimidagi 5 ta rasm va bosh sahifadagi 4 ta katta plitka rasmi admin panelda almashtiriladi: **Admin → Kontent → Kirish ekranlari** (`/admin/entry`, ruxsat:
 `settings.manage`). Har bir joyga alohida fayl yuklanadi. Server faylni tekshiradi (magic bytes, piksel) va metama'lumotsiz
 WebP'ga o'tkazadi. Rasm saytda darhol ko'rinadi, har bir o'zgarish audit jurnaliga yoziladi. Rasm yuklanmagan joyda
 o'rnatilgan brend tasviri ko'rinadi: sodda, faqat brend ranglari, tarmoqsiz ochiladi.
@@ -32,6 +32,10 @@ yuklaydi. Quyida har bir joy uchun nima kerakligi yozilgan.
 | Tanishtiruv 3 — mos imkoniyatlar | 5-ekran "AI yordamchingiz…" | 4:3 | 1200×900 | Telefonda mos e'lonni ko'rayotgan odam |
 | Rol kartasi — ish qidiryapman | 7-ekran, 1-karta | 1:1 | 800×800 | Bitta odam, yuz va yelka |
 | Rol kartasi — ishchi qidiryapman | 7-ekran, 2-karta | 1:1 | 800×800 | Rahbar yoki do'kon egasi, yuz va yelka |
+| Ish izlovchi — «Kunlik ishlar» | Ish izlovchi bosh sahifasi, 1-katta plitka | 16:9 | 1280×720 | Kunlik ish ustidagi yigit |
+| Ish izlovchi — «Yaqin atrofda» | Ish izlovchi bosh sahifasi, 2-katta plitka | 16:9 | 1280×720 | Mahalladagi ish joyiga kelayotgan odam |
+| Ish beruvchi — «Kunlik ishchilar» | Ish beruvchi bosh sahifasi va kabineti, 1-katta plitka | 16:9 | 1280×720 | Ishga tayyor kunlik ishchilar |
+| Ish beruvchi — «Yaqin ishchilar» | Ish beruvchi bosh sahifasi va kabineti, 2-katta plitka | 16:9 | 1280×720 | Uyga kelgan mahalla ustasi |
 
 ## Suratga olish ro'yxati (haqiqiy fotosessiya uchun)
 

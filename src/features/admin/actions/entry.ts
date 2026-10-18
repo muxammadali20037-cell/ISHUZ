@@ -11,7 +11,7 @@ import { logAdmin, requirePerm, snapshot } from "./guard";
 import { storeSiteImage } from "./site-image";
 
 /*
- * Kirish ekranlari (admin → "Kirish ekranlari"): tanishtiruv va rol kartalari rasmlari.
+ * Kirish ekranlari (admin → "Kirish ekranlari"): tanishtiruv, rol kartalari va bosh sahifadagi katta plitkalar rasmlari.
  * Yozuv: app_settings.entry_media (RLS: settings.manage; ochiq o'qiladi) + audit; sayt keshi darhol yangilanadi.
  * Sozlama qatori bo'lmasa — yaratiladi (migratsiya shart emas).
  */
