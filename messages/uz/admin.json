@@ -35,7 +35,8 @@
     "queues": "Navbatlar holati",
     "security": "Xavfsizlik",
     "home": "Bosh sahifa",
-    "entry": "Kirish ekranlari"
+    "entry": "Kirish ekranlari",
+    "account": "Kirish usullari"
   },
   "common": {
     "done": "Bajarildi",
@@ -61,7 +62,15 @@
     "invalid_threshold": "Chegara 50 dan 100 gacha bo'lsin",
     "invalid_weights": "Har bir og'irlik 0–60 oralig'ida bo'lsin",
     "use_matching_page": "Bu sozlama «Moslik qoidalari» sahifasida o'zgartiriladi",
-    "needs_migration": "Avval bazaga 0060 migratsiyasini qo'llang"
+    "needs_migration": "Avval bazaga 0060 migratsiyasini qo'llang",
+    "invalid_email": "Emailni to'g'ri yozing",
+    "password_mismatch": "Parollar bir xil emas",
+    "password_too_short": "Parol kamida 12 belgi bo'lsin",
+    "password_too_long": "Parol juda uzun (ko'pi bilan 128 belgi)",
+    "password_too_simple": "Parol juda oddiy — har xil belgilardan tuzing",
+    "password_contains_email": "Parolda email nomi bo'lmasin",
+    "password_weak": "Bu parol zaif deb topildi — boshqasini tanlang",
+    "email_taken": "Bu email boshqa hisobga biriktirilgan"
   },
   "table": {
     "range": "{from}–{to} / {total}"
@@ -901,5 +910,26 @@
     "remove": "O'rnatilgan tasvirga qaytish",
     "saved": "Kirish ekranlari yangilandi",
     "guide": "Har bir rasm uchun suratga olish va generatsiya ko'rsatmasi: docs/ENTRY_MEDIA.md"
+  },
+  "account": {
+    "title": "Kirish usullari",
+    "subtitle": "Telegram ishlamay qolsa ham panelga kira olishingiz uchun email va parol o'rnating.",
+    "setup_hint": "Emaildagi havola orqali kirdingiz. Endi parol o'rnating — keyingi safar Telegram'siz kira olasiz.",
+    "methods": "Siz qanday kirasiz",
+    "method_telegram": "Telefon yoki Telegram (kod bot orqali)",
+    "method_password": "Email va parol (zaxira)",
+    "method_totp": "Har safar — autentifikator ilovadagi 6 xonali kod",
+    "on": "Yoqilgan",
+    "off": "O'rnatilmagan",
+    "current_email": "Kirish emaili",
+    "no_email": "Hali o'rnatilmagan",
+    "login_url": "Kirish manzili",
+    "form_title": "Email va parolni o'rnatish",
+    "email_label": "Email",
+    "password_label": "Yangi parol",
+    "password_hint": "Kamida 12 belgi. Uzun ibora yaxshi, masalan: «tog'da uchta oq olma».",
+    "confirm_label": "Parolni qayta yozing",
+    "save": "Saqlash",
+    "saved": "Saqlandi. Endi email va parol bilan ham kira olasiz."
   }
 }

@@ -52,6 +52,8 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "
   { name: "post-confirm", url: async () => "/post/vacancy" },
   { name: "saved", url: async () => "/saved", mode: "worker" },
   { name: "auth", url: async () => "/auth" },
+  { name: "auth-admin", url: async () => "/auth/admin" },
+  { name: "auth-admin-recover", url: async () => "/auth/admin/tiklash" },
   { name: "cabinet", url: async () => "/cabinet", user: USERS.workerA },
   { name: "billing", url: async () => "/billing", user: USERS.workerA },
   // R-F: redizayndagi asosiy sahifalar

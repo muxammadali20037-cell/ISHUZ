@@ -9,6 +9,8 @@ import { SPLASH_BOOT, Splash } from "@/components/shared/splash";
 import { Providers } from "./providers";
 import "./globals.css";
 import { BRAND } from "@/config/brand";
+import { ADMIN_LINK_PATH } from "@/features/auth/admin-login";
+import { adminBaseUrl } from "@/features/auth/admin-password";
 
 /**
  * Telegram ichidamizmi: ishga tushirish manzilida #tgWebAppData..., keyingi sahifalarda SDK saqlagan
@@ -60,6 +62,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const cookieStore = await cookies();
   const theme = cookieStore.get("ishuz_theme")?.value;
+  const adminLink = JSON.stringify(`${adminBaseUrl()}${ADMIN_LINK_PATH}`).replace(/</g, "\\u003c");
   return (
     // "oz" — ilova ichki kodi, BCP-47 da yo'q: ekran o'qigichi o'zbek kirill matnini taniy olishi uchun "uz-Cyrl"
     <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={`${manrope.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
@@ -69,6 +72,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script dangerouslySetInnerHTML={{ __html: TELEGRAM_SDK_LOADER }} />
         {/* ochilish ekrani sessiyada bir marta: kerak bo'lmasa birinchi chizishdan oldin yashiriladi */}
         <script dangerouslySetInnerHTML={{ __html: SPLASH_BOOT }} />
+        {/* Admin emailidagi havola Supabase sozlamasiga ko'ra boshqa sahifaga (Site URL) tushsa — tokenlar bilan o'z sahifasiga
+            (alohida admin domeni bo'lsa — o'sha domenga: panel faqat u yerda ochiladi) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var h=location.hash,u=${adminLink};if(h&&/[#&]type=recovery(&|$)/.test(h)&&/[#&]access_token=/.test(h)&&location.origin+location.pathname!==u)location.replace(u+h);}catch(e){}})();`,
+          }}
+        />
         {/* Mavzu: cookie yo'q ("system") bo'lsa — qurilma sozlamasiga qarab, gidratsiyadan oldin (miltillashsiz) */}
         <script
           dangerouslySetInnerHTML={{

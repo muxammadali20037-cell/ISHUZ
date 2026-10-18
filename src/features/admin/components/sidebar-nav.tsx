@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, BarChart3, Users, UserSearch, Building2, BadgeCheck, Briefcase, Flag, Star, FolderTree, Wrench, MapPin, Megaphone, ScrollText, Settings, type LucideIcon, Wallet, SearchX, Network, ShieldAlert, SlidersHorizontal, Activity, ShieldHalf, House, Smartphone } from "lucide-react";
+import { LayoutDashboard, BarChart3, Users, UserSearch, Building2, BadgeCheck, Briefcase, Flag, Star, FolderTree, Wrench, MapPin, Megaphone, ScrollText, Settings, type LucideIcon, Wallet, SearchX, Network, ShieldAlert, SlidersHorizontal, Activity, ShieldHalf, House, Smartphone, KeyRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import type { NavGroup, NavIcon } from "../nav";
@@ -33,6 +33,7 @@ const ICONS: Record<NavIcon, LucideIcon> = {
   security: ShieldHalf,
   home: House,
   entry: Smartphone,
+  account: KeyRound,
 };
 
 /** Yon panel navigatsiyasi (desktop sidebar va mobil Sheet ichida ishlatiladi) */

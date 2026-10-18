@@ -5,7 +5,9 @@ import { expect, type BrowserContext, type Page } from "@playwright/test";
 import { sessionCookie } from "./stack/jwt.mjs";
 
 /** up.sh yozgan stend ma'lumoti (tasodifiy JWT kaliti, baza, ilova manzili) */
-export const stack = JSON.parse(fs.readFileSync(path.join(__dirname, ".stack/env.json"), "utf8")) as { secret: string; db: string; app: string };
+export const stack = JSON.parse(fs.readFileSync(path.join(__dirname, ".stack/env.json"), "utf8")) as { secret: string; db: string; app: string; gateway?: string };
+/** Supabase o'rnidagi lokal shlyuz (e2e/stack/gateway.mjs) */
+export const gatewayUrl = stack.gateway ?? "http://localhost:54331";
 
 export const USERS = {
   workerA: "7e2e0000-0000-4000-8000-000000000001",

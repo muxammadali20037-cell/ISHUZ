@@ -7,6 +7,8 @@ import { getMode } from "@/features/mode/server";
 import { LoginMethods } from "@/features/auth/components/auth-form";
 import { phoneLoginHref } from "@/features/entry/auth-links";
 import { isAdminPath } from "@/lib/admin-host";
+import { adminUiEnabled } from "@/lib/features";
+import { ADMIN_LOGIN_PATH } from "@/features/auth/admin-login";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -14,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * 6-ekran: kirish usuli (telefon / Telegram). `?next=` — kirgandan keyin qaytiladigan joy (yo'q bo'lsa — /start: yangi
+ * 6-ekran: kirish usuli (telefon / Telegram; admin panelga kirishda — yana email + parol). `?next=` — kirgandan keyin qaytiladigan joy (yo'q bo'lsa — /start: yangi
  * foydalanuvchi rol va profilga, qaytgan — bosh sahifasiga). `?phone=` (e'lon formasida yozilgan raqam) — to'g'ridan-to'g'ri
  * raqam ekraniga, qayta yozdirmasdan.
  */
@@ -26,5 +28,14 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
   const botUsername = getServerEnv().TELEGRAM_BOT_USERNAME?.replace(/^@/, "") || null;
   // admin panelga kirish: "orqaga" va "kirmasdan ko'rish" yo'q (alohida admin domenida ommaviy sahifalar ochilmaydi)
   const adminLogin = isAdminPath(next.split("?")[0] ?? "");
-  return <LoginMethods next={next} phoneHref={phoneHref} botUsername={botUsername} backHref={adminLogin ? null : "/"} showBrowse={!adminLogin} />;
+  return (
+    <LoginMethods
+      next={next}
+      phoneHref={phoneHref}
+      botUsername={botUsername}
+      backHref={adminLogin ? null : "/"}
+      showBrowse={!adminLogin}
+      adminEmailHref={adminLogin && adminUiEnabled() ? `${ADMIN_LOGIN_PATH}?next=${encodeURIComponent(next)}` : null}
+    />
+  );
 }

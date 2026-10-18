@@ -34,6 +34,8 @@ const serverSchema = z.object({
   ADMIN_HOST: z.string().optional(),
   /** Loyiha egasi(lar)ning telefon raqami: shu raqam bilan (tasdiqlangan holda) kirgan foydalanuvchi /admin da super_admin bo'ladi */
   SUPER_ADMIN_PHONES: z.string().optional(),
+  /** Egasining emaili (Telegram'siz zaxira kirish): /auth/admin/tiklash shu manzilga parol o'rnatish havolasini yuboradi */
+  SUPER_ADMIN_EMAILS: z.string().optional(),
   /** Kasb rasmlari generatsiyasi — matnli AI dan ALOHIDA kalit (alohida vakolat va xarajat nazorati). Bo'lmasa rasm yaratilmaydi, ikonka chiqadi */
   IMAGE_GEN_API_KEY: z.string().optional(),
   /** Google Gemini rasm modeli (standart: gemini-2.5-flash-image) */
@@ -79,6 +81,7 @@ export function getServerEnv() {
     GEMINI_BASE_URL: testOnlyOverride(process.env.GEMINI_BASE_URL),
     ADMIN_HOST: process.env.ADMIN_HOST || undefined,
     SUPER_ADMIN_PHONES: process.env.SUPER_ADMIN_PHONES || undefined,
+    SUPER_ADMIN_EMAILS: process.env.SUPER_ADMIN_EMAILS || undefined,
     IMAGE_GEN_API_KEY: process.env.IMAGE_GEN_API_KEY || undefined,
     IMAGE_GEN_MODEL: process.env.IMAGE_GEN_MODEL || undefined,
     IMAGE_GEN_BASE_URL: testOnlyOverride(process.env.IMAGE_GEN_BASE_URL),

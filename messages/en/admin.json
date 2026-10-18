@@ -35,7 +35,8 @@
     "queues": "Queues",
     "security": "Security",
     "home": "Home page",
-    "entry": "Entry screens"
+    "entry": "Entry screens",
+    "account": "Sign-in methods"
   },
   "common": {
     "done": "Done",
@@ -61,7 +62,15 @@
     "invalid_threshold": "Threshold must be 50–100",
     "invalid_weights": "Each weight must be 0–60",
     "use_matching_page": "Change this on the Matching rules page",
-    "needs_migration": "Apply migration 0060 to the database first"
+    "needs_migration": "Apply migration 0060 to the database first",
+    "invalid_email": "Enter a valid email",
+    "password_mismatch": "Passwords don't match",
+    "password_too_short": "Use at least 12 characters",
+    "password_too_long": "Password is too long (max 128 characters)",
+    "password_too_simple": "Password is too simple — use different characters",
+    "password_contains_email": "Don't include your email name in the password",
+    "password_weak": "This password was rejected as weak — choose another",
+    "email_taken": "This email belongs to another account"
   },
   "table": {
     "range": "{from}–{to} / {total}"
@@ -901,5 +910,26 @@
     "remove": "Back to built-in illustration",
     "saved": "Entry screens updated",
     "guide": "How to shoot or generate each image: docs/ENTRY_MEDIA.md"
+  },
+  "account": {
+    "title": "Sign-in methods",
+    "subtitle": "Set an email and password so you can reach the panel even if Telegram is unavailable.",
+    "setup_hint": "You signed in with the email link. Now set a password so next time you can sign in without Telegram.",
+    "methods": "How you sign in",
+    "method_telegram": "Phone or Telegram (code via the bot)",
+    "method_password": "Email and password (backup)",
+    "method_totp": "Every time — the 6-digit code from your authenticator app",
+    "on": "On",
+    "off": "Not set",
+    "current_email": "Sign-in email",
+    "no_email": "Not set yet",
+    "login_url": "Sign-in address",
+    "form_title": "Set email and password",
+    "email_label": "Email",
+    "password_label": "New password",
+    "password_hint": "At least 12 characters. A long phrase works well, e.g. “three white apples on a hill”.",
+    "confirm_label": "Repeat the password",
+    "save": "Save",
+    "saved": "Saved. You can now also sign in with email and password."
   }
 }

@@ -1,4 +1,5 @@
-// E2E uchun lokal Supabase shlyuzi: PostgREST'ga proksi + Auth (/auth/v1/user) va Storage'ning kichik emulyatsiyasi.
+// E2E uchun lokal Supabase shlyuzi: PostgREST'ga proksi + Auth (/auth/v1/user, email+parol, admin users, tiklash xati)
+// va Storage'ning kichik emulyatsiyasi.
 // Faqat sinov muhiti: JWT kaliti har ishga tushirishda tasodifiy (up.sh yaratadi), haqiqiy Supabase kalitlari ishlatilmaydi.
 //
 // Env: E2E_JWT_SECRET (majburiy), GATEWAY_PORT (54331), PGRST_PORT (3401), STORAGE_DIR (fayllar)
@@ -6,6 +7,7 @@ import fs from "node:fs";
 import http from "node:http";
 import crypto from "node:crypto";
 import path from "node:path";
+import { sign } from "./jwt.mjs";
 
 const SECRET = process.env.E2E_JWT_SECRET;
 if (!SECRET || SECRET.length < 32) {
@@ -79,6 +81,50 @@ function verify(token) {
   }
 }
 
+/**
+ * Auth emulyatsiyasi (xotirada): admin API (updateUserById) qo'ygan email/parol, parol bilan kirish (aal1 sessiya) va
+ * tiklash xati — haqiqiy email o'rniga "pochta qutisi" (/__e2e/mail). Testlar /__e2e/auth/reset bilan tozalaydi.
+ */
+const AUTH_USERS = new Map(); // id → { email, password }
+const MAILBOX = []; // { email, link }
+const FAR = 4_102_444_800;
+
+function authUser(id, email) {
+  return { id, aud: "authenticated", role: "authenticated", email, app_metadata: { provider: "email" }, user_metadata: {}, factors: [], created_at: new Date().toISOString() };
+}
+
+/** Telegram orqali yaratilgan hisob kabi: email biriktirilmagan bo'lsa — texnik manzil */
+function emailOf(id) {
+  return AUTH_USERS.get(id)?.email ?? `tg_${id.slice(-6)}@telegram.ishuz.local`;
+}
+
+function idByEmail(email) {
+  for (const [id, u] of AUTH_USERS) if (u.email === email) return id;
+  return null;
+}
+
+function issueSession(id, email, amr) {
+  const iat = Math.floor(Date.now() / 1000);
+  const access = sign({ role: "authenticated", sub: id, email, aud: "authenticated", aal: "aal1", amr: [{ method: amr, timestamp: iat }], iat, exp: FAR }, SECRET);
+  return { access_token: access, token_type: "bearer", expires_in: FAR - iat, expires_at: FAR, refresh_token: `e2e-${crypto.randomBytes(8).toString("hex")}`, user: authUser(id, email) };
+}
+
+function readJson(req) {
+  return new Promise((resolve) => {
+    const chunks = [];
+    req.on("data", (d) => chunks.push(d));
+    req.on("end", () => {
+      try {
+        resolve(JSON.parse(Buffer.concat(chunks).toString() || "{}"));
+      } catch {
+        resolve({});
+      }
+    });
+  });
+}
+
+const authError = (res, code, errorCode, msg) => json(res, code, { code: errorCode, error_code: errorCode, msg, message: msg });
+
 function json(res, code, obj) {
   res.writeHead(code, { "content-type": "application/json" });
   res.end(JSON.stringify(obj));
@@ -124,6 +170,51 @@ async function handle(req, res) {
   if (url.startsWith("/auth/v1/logout")) {
     res.writeHead(204);
     return res.end();
+  }
+  if (url.startsWith("/__e2e/auth/reset") && req.method === "POST") {
+    AUTH_USERS.clear();
+    MAILBOX.length = 0;
+    return json(res, 200, { ok: true });
+  }
+  if (url.startsWith("/__e2e/mail")) {
+    const email = new URL(url, "http://x").searchParams.get("email");
+    const last = [...MAILBOX].reverse().find((m) => m.email === email);
+    return json(res, last ? 200 : 404, last ?? {});
+  }
+  if (url.startsWith("/auth/v1/token?grant_type=password") && req.method === "POST") {
+    const body = await readJson(req);
+    const email = String(body.email || "").toLowerCase();
+    const id = idByEmail(email);
+    if (!id || AUTH_USERS.get(id).password !== body.password) return authError(res, 400, "invalid_credentials", "Invalid login credentials");
+    return json(res, 200, issueSession(id, email, "password"));
+  }
+  if (url.startsWith("/auth/v1/recover") && req.method === "POST") {
+    const body = await readJson(req);
+    const email = String(body.email || "").toLowerCase();
+    const id = idByEmail(email);
+    // haqiqiy Supabase kabi: email topilmasa ham 200 (xat yuborilmaydi)
+    if (id) {
+      const redirectTo = new URL(url, "http://x").searchParams.get("redirect_to") || "";
+      const s = issueSession(id, email, "recovery");
+      const hash = new URLSearchParams({ access_token: s.access_token, expires_at: String(s.expires_at), expires_in: String(s.expires_in), refresh_token: s.refresh_token, token_type: "bearer", type: "recovery" });
+      MAILBOX.push({ email, link: `${redirectTo}#${hash}` });
+    }
+    return json(res, 200, {});
+  }
+  const adminUser = /^\/auth\/v1\/admin\/users\/([0-9a-f-]{36})/.exec(url);
+  if (adminUser) {
+    const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+    if (c?.role !== "service_role") return authError(res, 403, "not_admin", "User not allowed");
+    const id = adminUser[1];
+    if (req.method === "GET") return json(res, 200, authUser(id, emailOf(id)));
+    if (req.method === "PUT") {
+      const body = await readJson(req);
+      const email = body.email ? String(body.email).toLowerCase() : emailOf(id);
+      const other = idByEmail(email);
+      if (other && other !== id) return authError(res, 422, "email_exists", "A user with this email address has already been registered");
+      AUTH_USERS.set(id, { email, password: body.password ?? AUTH_USERS.get(id)?.password ?? null });
+      return json(res, 200, authUser(id, email));
+    }
   }
   if (url.startsWith("/auth/v1/user")) {
     const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));

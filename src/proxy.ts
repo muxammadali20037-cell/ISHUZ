@@ -6,6 +6,7 @@ import { ANDROID_APP, APP_COOKIE, isAndroidAppLaunch } from "@/lib/app-platform"
 import { adminHostRoute } from "@/lib/admin-host";
 import { safeInternalPath } from "@/lib/security/safe-path";
 import { SEARCH_URL_HEADER } from "@/features/find/params";
+import { ADMIN_LINK_PATH } from "@/features/auth/admin-login";
 
 /** Login talab qiladigan yo'llar */
 const PROTECTED_PREFIXES = [
@@ -74,8 +75,9 @@ export async function proxy(request: NextRequest) {
     return redirect;
   }
 
-  // kirgan foydalanuvchiga kirish ekranlari (usul, raqam, kod) kerak emas — kelgan joyiga
-  if ((pathname === "/auth" || pathname.startsWith("/auth/")) && user) {
+  // kirgan foydalanuvchiga kirish ekranlari (usul, raqam, kod) kerak emas — kelgan joyiga.
+  // Admin emailidagi havola bundan mustasno: boshqa hisob bilan kirilgan brauzerda ham ochilishi kerak
+  if ((pathname === "/auth" || pathname.startsWith("/auth/")) && user && pathname !== ADMIN_LINK_PATH) {
     const next = request.nextUrl.searchParams.get("next");
     const url = request.nextUrl.clone();
     // faqat shu saytdagi manzil; so'rov qismi (?step=4) saqlanadi — kirgandan keyin aynan to'xtagan qadamga qaytiladi

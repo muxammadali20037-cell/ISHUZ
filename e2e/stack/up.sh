@@ -61,8 +61,8 @@ CONF
 
 ANON_KEY="$(E2E_JWT_SECRET=$SECRET node e2e/stack/jwt.mjs role anon)"
 SERVICE_KEY="$(E2E_JWT_SECRET=$SECRET node e2e/stack/jwt.mjs role service_role)"
-node -e 'require("fs").writeFileSync(process.argv[1], JSON.stringify({secret: process.argv[2], db: process.argv[3], app: process.argv[4]}))' \
-  "$ST/env.json" "$SECRET" "$E2E_PG/$E2E_DB" "http://localhost:$APP_PORT"
+node -e 'require("fs").writeFileSync(process.argv[1], JSON.stringify({secret: process.argv[2], db: process.argv[3], app: process.argv[4], gateway: process.argv[5]}))' \
+  "$ST/env.json" "$SECRET" "$E2E_PG/$E2E_DB" "http://localhost:$APP_PORT" "http://localhost:$GATEWAY_PORT"
 
 echo "→ PostgREST :$PGRST_PORT"
 (setsid nohup "$POSTGREST_BIN" "$ST/pgrst.conf" > "$ST/postgrest.log" 2>&1 < /dev/null & echo $! > "$ST/postgrest.pid")
@@ -85,7 +85,7 @@ export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAY
 # statistika paneli (natijalar yonida) keshsiz — testlar o'z ma'lumotini darhol ko'rsin (prod: 10 daqiqa)
 export MARKET_CACHE_SECONDS=0
 export CLICK_SERVICE_ID="e2e-service" CLICK_MERCHANT_ID="e2e-merchant" CLICK_SECRET_KEY="e2e-click-key-not-secret"
-export SUPER_ADMIN_PHONES="" ADMIN_HOST=""
+export SUPER_ADMIN_PHONES="" ADMIN_HOST="" SUPER_ADMIN_EMAILS="owner@e2e.uz"
 export NEXT_DIST_DIR=".next-e2e"
 export NEXT_TELEMETRY_DISABLED=1
 # brend UI to'plami (/dev/ui) — faqat shu stendda: skrinshot va a11y tekshiruvi uchun (production'da 404)

@@ -25,7 +25,8 @@ export type NavIcon =
   | "queues"
   | "security"
   | "home"
-  | "entry";
+  | "entry"
+  | "account";
 
 export interface NavItem {
   href: string;
@@ -92,6 +93,8 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/audit", key: "audit", icon: "audit", perm: "audit.view" },
       { href: "/admin/security", key: "security", icon: "security", perm: "security.view" },
       { href: "/admin/settings", key: "settings", icon: "settings" },
+      // har bir admin — o'z kirish usullari (zaxira email + parol)
+      { href: "/admin/account", key: "account", icon: "account" },
     ],
   },
 ];

@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 type State = { kind: "loading" } | { kind: "enroll"; factorId: string; qr: string; secret: string } | { kind: "verify"; factorId: string } | { kind: "error"; message: string };
 
 /** TOTP: birinchi marta — QR kod va kalit (autentifikator ilovaga qo'shish), keyin — 6 xonali kod */
-export function MfaForm() {
+export function MfaForm({ next = "/admin" }: { next?: string }) {
   const { t } = useT();
   const router = useRouter();
   const [state, setState] = useState<State>({ kind: "loading" });
@@ -51,7 +51,7 @@ export function MfaForm() {
         setError(t("admin.mfa.wrong_code"));
         return;
       }
-      router.replace("/admin");
+      router.replace(next);
       router.refresh();
     });
   };

@@ -7,6 +7,7 @@ import { adminUiEnabled } from "@/lib/features";
 import { createClient } from "@/lib/supabase/server";
 import { requireSession } from "@/features/auth/session";
 import { MfaForm } from "@/features/admin/components/mfa-form";
+import { adminNext } from "@/features/auth/admin-login";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -17,20 +18,22 @@ export async function generateMetadata(): Promise<Metadata> {
  * Admin uchun ikki bosqichli kirish (TOTP). Admin huquqlari faqat aal2 sessiyada ishlaydi —
  * buni baza (has_admin_permission → admin_aal_ok) tekshiradi; bu sahifa faqat kodni kiritish uchun.
  */
-export default async function AdminMfaPage() {
+export default async function AdminMfaPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   if (!adminUiEnabled()) notFound();
-  const session = await requireSession("/admin/mfa");
+  // koddan keyin qaytiladigan joy — faqat panel ichida (masalan, emaildagi havoladan keyin parol o'rnatish)
+  const next = adminNext((await searchParams).next);
+  const session = await requireSession(next === "/admin" ? "/admin/mfa" : `/admin/mfa?next=${encodeURIComponent(next)}`);
   const supabase = await createClient();
   const { data } = await supabase.rpc("my_admin_status");
   const status = (data ?? {}) as { is_staff?: boolean; aal_ok?: boolean };
   // admin bo'lmaganlarga sahifa borligini ham bildirmaymiz
   if (!status.is_staff || session.profile.is_blocked) notFound();
-  if (status.aal_ok) redirect("/admin");
+  if (status.aal_ok) redirect(next);
   const locale = await getLocale();
   return (
     <I18nProvider locale={locale} messages={clientMessages(locale, { admin: true })}>
       <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center px-4 py-10">
-        <MfaForm />
+        <MfaForm next={next} />
       </main>
     </I18nProvider>
   );

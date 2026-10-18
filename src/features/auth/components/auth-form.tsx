@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ChevronLeft, MessageSquareText, Phone, Send, Smartphone } from "lucide-react";
+import { ChevronLeft, KeyRound, MessageSquareText, Phone, Send, Smartphone } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatPhone, phoneInputChange, normalizePhone } from "@/lib/format";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,7 @@ const CODE_LENGTH = 6;
 /** Serverdagi LOGIN_CODE_RESEND_SECONDS bilan bir xil (server baribir o'zi tekshiradi) */
 const RESEND_SECONDS = 60;
 
-async function postJson(url: string, body: unknown): Promise<{ ok: boolean; error?: string }> {
+export async function postJson(url: string, body: unknown): Promise<{ ok: boolean; error?: string }> {
   try {
     const r = await fetch(url, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(body) });
     const data = (await r.json().catch(() => ({}))) as { error?: string };
@@ -67,12 +67,15 @@ export function LoginMethods({
   botUsername,
   backHref,
   showBrowse = true,
+  adminEmailHref = null,
 }: {
   next: string;
   phoneHref: string;
   botUsername: string | null;
   backHref: string | null;
   showBrowse?: boolean;
+  /** faqat admin panelga kirishda: email + parol (Telegram ishlamaganda) */
+  adminEmailHref?: string | null;
 }) {
   const { t } = useT();
   return (
@@ -116,6 +119,20 @@ export function LoginMethods({
                     <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{t("auth.method.telegram_desc")}</span>
                   </span>
                 </a>
+              ) : null}
+              {adminEmailHref ? (
+                <Link
+                  href={adminEmailHref}
+                  data-track="auth_method"
+                  data-track-to="admin_password"
+                  className="press flex min-h-16 items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 hover:border-primary/50"
+                >
+                  <KeyRound className="size-6 shrink-0 text-primary" aria-hidden />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-bold leading-tight">{t("auth.admin.menu")}</span>
+                    <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{t("auth.admin.menu_desc")}</span>
+                  </span>
+                </Link>
               ) : null}
             </nav>
             {showBrowse ? (

@@ -100,6 +100,9 @@ Qoidalar:
 - Kirishdan keyin `next` saqlanadi (`/start?next=…` → oqim tugagach o'sha joy). Faqat ichki yo'l qabul qilinadi
   (`safeInternalPath`). Kirgan foydalanuvchi `/auth/*` ga kirmaydi (proxy → `next`).
 - Telegram Mini App: telefon va kod so'ralmaydi — initData orqali avtomatik kirish (`TelegramGate`, server HMAC tekshiruvi).
+- Admin panelga kirishda (`next` = `/admin…`) kirish ekranida uchinchi yo'l bor: **Email va parol** (`/auth/admin`) —
+  Telegram ishlamaganda. Panel baribir autentifikator kodi bilan ochiladi. Parol o'rnatish, tiklash va egasining
+  `SUPER_ADMIN_EMAILS` orqali birinchi kirishi: `docs/ADMIN_LOGIN.md`.
 - Telegram Mini App haqiqiy ilova kabi (`src/lib/telegram/provider.tsx`, qoidalar — `fullscreen.ts`, unit test):
   telefonda (Android/iOS, Bot API 8.0+) ochilishi bilan **butun ekran** (`requestFullscreen`), kompyuter Telegram'ida — faqat
   `expand()`; ro'yxatni aylantirganda yopilib qolmaydi (`disableVerticalSwipes`, 7.7+); Telegram panellari ilova ranglarida

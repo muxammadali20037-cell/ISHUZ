@@ -75,6 +75,7 @@ CI'da `e2e` job shu stendni ko'taradi; xato bo'lsa trace, skrinshot va loglar ar
    select vault.create_secret('<CRON_SECRET qiymati>', 'ishuz_cron_secret');
    ```
 6. Birinchi admin: `SUPER_ADMIN_PHONES` (tasdiqlangan telefon bilan kirgan egasi avtomatik super_admin bo'ladi) yoki SQL: `insert into public.admin_users (profile_id, role) values ('<auth.users.id>', 'super_admin');`
+7. Telegram'siz zaxira kirish (email + parol + autentifikator kodi): `SUPER_ADMIN_EMAILS` va panelda «Kirish usullari» — [docs/ADMIN_LOGIN.md](docs/ADMIN_LOGIN.md).
 
 ## Telegram
 
