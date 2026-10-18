@@ -122,5 +122,5 @@ Qoidalar:
   `src/lib/env-public.ts` tekshiruvida to'xtaydi). Maxfiy kalitlar (`SUPABASE_SERVICE_ROLE_KEY`, Telegram, Payme/Click,
   `LOGIN_CODE_SECRET`, `SECURITY_PEPPER`, `CRON_SECRET`) — faqat Production: main'ga qo'shilmagan kod production bazaga
   to'liq huquq bilan yozmasin, haqiqiy xabar yoki to'lov yubormasin. Preview'da kirish va Telegram ishlamaydi.
-- 0065 va 0066 production bazasiga qo'llangan; tekshiruv: bo'lim sonlari va yangi qidiruv funksiyalari javob beradi,
+- 0065, 0066 va 0067 production bazasiga qo'llangan; tekshiruv: bo'lim sonlari va yangi qidiruv funksiyalari javob beradi,
   anon chaqira oladigan SECURITY DEFINER ro'yxati `security_hardening.test.sql` dagi bilan bir xil.

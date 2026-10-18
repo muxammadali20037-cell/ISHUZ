@@ -62,8 +62,9 @@ ishlaydi; pastki qism (footer) uchala ko'rinishda bir xil.
 
 `0067_home_market_counts.sql`:
 - faqat yangi funksiya qo'shadi (drop yo'q);
-- qo'llanmaguncha soha sonlari va «faol ish beruvchilar» ko'rsatilmaydi, sahifaning qolgan qismi ishlaydi;
-- production'ga faqat ruxsat bilan qo'llanadi.
+- production'ga 2026-10-18 da egasining ruxsati bilan qo'llangan;
+- tekshiruv: SECURITY INVOKER, anon va authenticated chaqira oladi, Supabase xavfsizlik maslahatchisida yangi ogohlantirish yo'q;
+- qo'llash paytida bazada faol vakansiya bo'lmagani uchun sonlar hali chiqmaydi — e'lonlar paydo bo'lishi bilan avtomatik ko'rinadi (kesh ~10 daqiqa).
 
 ## Tekshiruvlar
 
