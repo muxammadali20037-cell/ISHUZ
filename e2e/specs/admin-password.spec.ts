@@ -38,6 +38,8 @@ const sessionCookie = async (page: Page) => (await page.context().cookies()).fin
 test.beforeEach(async () => {
   await fetch(`${gatewayUrl}/__e2e/auth/reset`, { method: "POST" });
   await sql("delete from public.rate_limits where key like 'admin_pw:%' or key like 'admin_link:%'");
+  // shlyuzdagi parollar tozalandi — "parol o'rnatilgan" belgisi (audit) ham avvalgi ishga tushirishlardan qolmasin
+  await sql("delete from public.audit_logs where target_id = $1 and action in ('admin.login_credentials_set', 'admin.owner_email_attach')", [USERS.workerB]);
   await sql("update public.admin_users set is_active = false where role = 'super_admin' and profile_id <> $1", [USERS.workerB]);
   await sql(
     `insert into public.admin_users (profile_id, role, permissions, is_active) values ($1, 'super_admin', '{}', true)

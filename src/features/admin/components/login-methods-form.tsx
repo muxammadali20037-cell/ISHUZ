@@ -42,7 +42,7 @@ export function LoginMethodsForm({ initialEmail }: { initialEmail: string }) {
       onClick={() => setShow((s) => !s)}
       aria-label={show ? t("auth.admin.hide_password") : t("auth.admin.show_password")}
       aria-pressed={show}
-      className="inline-flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary"
+      className="-mr-2 inline-flex size-11 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary"
     >
       {show ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
     </button>
