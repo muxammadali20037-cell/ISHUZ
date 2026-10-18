@@ -83,7 +83,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
   return (
     <nav
       className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
-      style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}
+      style={{ paddingBottom: "var(--safe-bottom)" }}
       aria-label={t("common.nav.main_label")}
     >
       <ul className="flex h-[var(--tabbar-height)] items-stretch">

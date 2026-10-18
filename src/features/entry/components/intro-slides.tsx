@@ -53,7 +53,7 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
       <form
         action={finishIntro}
         aria-label={t("welcome.entry.intro.slides")}
-        className="flex w-full flex-1 flex-col pt-[max(0.5rem,env(safe-area-inset-top))] sm:min-h-[min(760px,calc(100dvh-4rem))] sm:max-w-md sm:flex-none sm:rounded-2xl sm:border sm:border-border sm:bg-background sm:shadow-sm"
+        className="flex w-full flex-1 flex-col pt-[max(0.5rem,var(--safe-top))] sm:min-h-[min(760px,calc(100dvh-4rem))] sm:max-w-md sm:flex-none sm:rounded-2xl sm:border sm:border-border sm:bg-background sm:shadow-sm"
         onPointerDown={(e) => {
           swipe.current = { x: e.clientX, y: e.clientY };
         }}
@@ -99,7 +99,7 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
           </div>
         </div>
 
-        <div className="sticky bottom-0 bg-background px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:rounded-b-2xl">
+        <div className="sticky bottom-0 bg-background px-5 pb-[max(1rem,var(--safe-bottom))] pt-3 sm:rounded-b-2xl">
           <div className="mb-3 flex justify-center gap-1" role="group" aria-label={t("welcome.intro.step", { n: step + 1, total })}>
             {slides.map((_, i) => (
               <Link

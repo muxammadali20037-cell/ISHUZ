@@ -39,7 +39,7 @@ export function TopBar({ role, counts, mode = null, user }: TopBarProps) {
   const session = user;
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
-    <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "env(safe-area-inset-top, 0px)" }}>
+    <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "var(--safe-top)" }}>
       <div className="container-app flex h-14 items-center gap-3">
         <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label={BRAND.name}>
           <BrandMark />

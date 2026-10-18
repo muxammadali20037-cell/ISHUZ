@@ -25,7 +25,7 @@ export function EntryScreen({
     <div className="flex min-h-dvh flex-col bg-background sm:items-center sm:justify-center sm:bg-secondary sm:py-8">
       <div
         className={cn(
-          "flex w-full flex-1 flex-col pt-[max(0.5rem,env(safe-area-inset-top))] sm:max-w-md sm:flex-none sm:rounded-2xl sm:border sm:border-border sm:bg-background sm:shadow-sm",
+          "flex w-full flex-1 flex-col pt-[max(0.5rem,var(--safe-top))] sm:max-w-md sm:flex-none sm:rounded-2xl sm:border sm:border-border sm:bg-background sm:shadow-sm",
           "sm:min-h-[min(760px,calc(100dvh-4rem))]",
           className,
         )}
@@ -35,7 +35,7 @@ export function EntryScreen({
           <div className="flex min-w-11 items-center justify-end">{right}</div>
         </header>
         <main className="flex min-h-0 flex-1 flex-col px-5">{children}</main>
-        {footer ? <div className="sticky bottom-0 z-10 bg-background px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:rounded-b-2xl">{footer}</div> : null}
+        {footer ? <div className="sticky bottom-0 z-10 bg-background px-5 pb-[max(1rem,var(--safe-bottom))] pt-3 sm:rounded-b-2xl">{footer}</div> : null}
       </div>
     </div>
   );

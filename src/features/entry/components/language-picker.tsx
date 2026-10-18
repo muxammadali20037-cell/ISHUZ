@@ -66,7 +66,7 @@ export function LanguagePicker({ current, chosen }: { current: Locale; chosen: b
       </fieldset>
       <p className="mt-4 text-center text-sm text-muted-foreground">{t("welcome.entry.language.hint")}</p>
       <div className="flex-1" />
-      <div className="sticky bottom-0 -mx-5 bg-background px-5 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3">
+      <div className="sticky bottom-0 -mx-5 bg-background px-5 pb-[max(1rem,var(--safe-bottom))] pt-3">
         <EntrySubmit disabled={hydrated && !picked}>{t("welcome.entry.language.continue")}</EntrySubmit>
       </div>
     </form>

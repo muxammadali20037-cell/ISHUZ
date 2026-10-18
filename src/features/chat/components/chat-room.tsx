@@ -323,7 +323,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   };
 
   return (
-    <div className="flex flex-col bg-background" style={{ height: "calc(100dvh - 3.5rem - env(safe-area-inset-top, 0px))" }}>
+    <div className="flex flex-col bg-background" style={{ height: "calc(100dvh - 3.5rem - var(--safe-top))" }}>
       <ChatHeader
         view={view}
         blockedByMe={blockedByMe}

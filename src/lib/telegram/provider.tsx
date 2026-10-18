@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { canDisableVerticalSwipes, hexColor, insetVars, versionAtLeast, wantsFullscreen } from "./fullscreen";
 
 /** Telegram Mini App SDK ning biz ishlatadigan qismi (window.Telegram.WebApp) */
 export interface TelegramWebApp {
@@ -21,7 +22,19 @@ export interface TelegramWebApp {
   openLink: (url: string) => void;
   setHeaderColor?: (color: string) => void;
   setBackgroundColor?: (color: string) => void;
+  /** Bot API 7.10+ */
+  setBottomBarColor?: (color: string) => void;
   enableClosingConfirmation?: () => void;
+  /** Bot API 7.7+: pastga surish bilan yopilmasin (ro'yxat aylantirilganda) */
+  disableVerticalSwipes?: () => void;
+  /** Bot API 8.0+: telefonda butun ekran (Telegram sarlavhasisiz) */
+  requestFullscreen?: () => void;
+  isFullscreen?: boolean;
+  /** Bot API 8.0+: tizim paneli va Telegram'ning ✕/⋯ tugmalari egallagan joy (px) */
+  safeAreaInset?: { top: number; bottom: number; left: number; right: number };
+  contentSafeAreaInset?: { top: number; bottom: number; left: number; right: number };
+  onEvent?: (event: string, cb: () => void) => void;
+  offEvent?: (event: string, cb: () => void) => void;
   /** Bot API 6.9+: foydalanuvchi raqamini botga ulashadi (Telegram tasdiqlagan raqam, SMS kodsiz) */
   requestContact?: (callback?: (shared: boolean) => void) => void;
 }
@@ -62,10 +75,47 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!webApp) return;
+    const root = document.documentElement;
     webApp.ready();
     webApp.expand();
-    document.documentElement.classList.add("tg");
-    if (webApp.colorScheme === "dark") document.documentElement.classList.add("dark");
+    root.classList.add("tg");
+    if (webApp.colorScheme === "dark") root.classList.add("dark");
+    // eski Telegram versiyalarida usul yo'q yoki xato tashlaydi — ilova baribir ochiladi
+    const safely = (fn: (() => void) | undefined) => {
+      try {
+        fn?.();
+      } catch {
+        // qo'llab-quvvatlanmaydi
+      }
+    };
+
+    // Telegram panellari ilova ranglarida (yuqori — karta, orqa fon — sahifa, pastki — pastki menyu)
+    const paintChrome = () => {
+      const css = getComputedStyle(root);
+      const card = hexColor(css.getPropertyValue("--card"));
+      const bg = hexColor(css.getPropertyValue("--background"));
+      if (card && versionAtLeast(webApp.version, "6.9")) safely(() => webApp.setHeaderColor?.(card));
+      if (bg && versionAtLeast(webApp.version, "6.1")) safely(() => webApp.setBackgroundColor?.(bg));
+      if (card && versionAtLeast(webApp.version, "7.10")) safely(() => webApp.setBottomBarColor?.(card));
+    };
+    // to'liq ekranda sahifa tizim paneli va Telegram tugmalari ostidan boshlanadi (globals.css: html.tg-fullscreen)
+    const syncInsets = () => {
+      for (const [k, v] of Object.entries(insetVars(webApp.safeAreaInset, webApp.contentSafeAreaInset))) root.style.setProperty(k, v);
+      root.classList.toggle("tg-fullscreen", !!webApp.isFullscreen);
+    };
+
+    paintChrome();
+    syncInsets();
+    if (canDisableVerticalSwipes(webApp.version)) safely(() => webApp.disableVerticalSwipes?.());
+    const events = ["safeAreaChanged", "contentSafeAreaChanged", "fullscreenChanged", "fullscreenFailed"];
+    for (const e of events) webApp.onEvent?.(e, syncInsets);
+    webApp.onEvent?.("themeChanged", paintChrome);
+    // telefonda haqiqiy ilova kabi: butun ekran (kompyuter Telegram'ida — faqat expand)
+    if (wantsFullscreen(webApp.platform, webApp.version) && !webApp.isFullscreen) safely(() => webApp.requestFullscreen?.());
+    return () => {
+      for (const e of events) webApp.offEvent?.(e, syncInsets);
+      webApp.offEvent?.("themeChanged", paintChrome);
+    };
   }, [webApp]);
 
   // Telegram "Orqaga" tugmasi: ildiz sahifalarda yashirin, boshqalarida router.back()

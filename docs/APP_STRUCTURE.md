@@ -100,6 +100,13 @@ Qoidalar:
 - Kirishdan keyin `next` saqlanadi (`/start?next=…` → oqim tugagach o'sha joy). Faqat ichki yo'l qabul qilinadi
   (`safeInternalPath`). Kirgan foydalanuvchi `/auth/*` ga kirmaydi (proxy → `next`).
 - Telegram Mini App: telefon va kod so'ralmaydi — initData orqali avtomatik kirish (`TelegramGate`, server HMAC tekshiruvi).
+- Telegram Mini App haqiqiy ilova kabi (`src/lib/telegram/provider.tsx`, qoidalar — `fullscreen.ts`, unit test):
+  telefonda (Android/iOS, Bot API 8.0+) ochilishi bilan **butun ekran** (`requestFullscreen`), kompyuter Telegram'ida — faqat
+  `expand()`; ro'yxatni aylantirganda yopilib qolmaydi (`disableVerticalSwipes`, 7.7+); Telegram panellari ilova ranglarida
+  (`setHeaderColor` / `setBackgroundColor` / `setBottomBarColor`). Sarlavha va pastki menyu tizim paneli hamda Telegram'ning
+  ✕/⋯ tugmalari ostiga tushmaydi: barcha sahifalar `--safe-top` / `--safe-bottom` dan foydalanadi (globals.css; brauzerda —
+  `env(safe-area-inset-*)`, Telegram to'liq ekranida — Telegram bergan chetlar). Eski Telegram versiyalarida usullar
+  chaqirilmaydi — ilova odatdagidek ochiladi. E2E: `telegram-fullscreen.spec.ts`.
 - Rasmlar (tanishtiruv 3 ta, rol kartalari 2 ta) admin panelda almashtiriladi: **Admin → Kirish ekranlari** (`/admin/entry`).
   Qo'llanma va promptlar: `docs/ENTRY_MEDIA.md`.
 - Suratlar (E2E stendi, 390×844): `docs/screenshots/entry/entry-flow-12.jpg`, admin — `docs/screenshots/entry/admin-entry.jpg`.

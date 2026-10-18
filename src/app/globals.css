@@ -46,6 +46,18 @@
   --shadow-lg: 0 8px 24px rgb(15 23 42 / 0.08), 0 2px 6px rgb(15 23 42 / 0.04);
   --tabbar-height: 64px;
   color-scheme: light;
+  /*
+   * Ekran chetlari (soat/batareya paneli, "chuqurcha", pastki chiziq): odatda brauzer beradi (env); Telegram Mini App to'liq
+   * ekranda — Telegram beradi (html.tg-fullscreen, pastda). Sahifalar faqat --safe-top / --safe-bottom ni ishlatadi.
+   */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
+html.tg-fullscreen {
+  --safe-top: calc(var(--tg-safe-area-inset-top, 0px) + var(--tg-content-safe-area-inset-top, 0px));
+  --safe-bottom: max(var(--tg-safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px));
 }
 
 .dark {
@@ -178,9 +190,9 @@
   ::selection {
     background: var(--primary-soft);
   }
-  /* Safe area (iOS / Telegram) */
-  .pb-safe { padding-bottom: env(safe-area-inset-bottom, 0px); }
-  .pt-safe { padding-top: env(safe-area-inset-top, 0px); }
+  /* Ekran chetlari (iOS, Android, Telegram to'liq ekran) — :root dagi --safe-top / --safe-bottom */
+  .pb-safe { padding-bottom: var(--safe-bottom); }
+  .pt-safe { padding-top: var(--safe-top); }
   .tabular { font-variant-numeric: tabular-nums; }
   .scrollbar-none { scrollbar-width: none; }
   .scrollbar-none::-webkit-scrollbar { display: none; }
@@ -235,7 +247,7 @@ html.no-splash .splash { display: none; }
 .splash-bar {
   position: absolute;
   left: 50%;
-  bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(56px + var(--safe-bottom));
   width: 96px;
   height: 4px;
   margin-left: -48px;
@@ -282,7 +294,7 @@ html.no-splash .splash { display: none; }
     @apply mx-auto w-full max-w-2xl px-4 sm:px-6;
   }
   .page-with-tabbar {
-    padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 16px);
+    padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 16px);
   }
 
   .line-clamp-2 {
@@ -292,7 +304,7 @@ html.no-splash .splash { display: none; }
 
 /* "O'zingizga mosini toping" lupa tugmasi: pastki menyu va yopishqoq amallar paneli (--cta-offset) ustida; sahifa oxiri ostida qolmaydi */
 .ai-fab {
-  --fab-base: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px));
+  --fab-base: calc(var(--tabbar-height) + var(--safe-bottom));
   bottom: calc(max(var(--fab-base), var(--cta-offset, 0px)) + 16px);
 }
 @media (min-width: 48rem) {
@@ -302,7 +314,7 @@ html.no-splash .splash { display: none; }
 }
 @media (max-width: 47.99rem) {
   body:has(.ai-fab) .page-with-tabbar {
-    padding-bottom: calc(var(--tabbar-height) + env(safe-area-inset-bottom, 0px) + 88px);
+    padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 88px);
   }
 
   /*

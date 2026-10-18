@@ -84,7 +84,7 @@ export function WizardFrame({
       </div>
 
       {!hideFooter ? (
-        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card" style={{ paddingBottom: "env(safe-area-inset-bottom, 0px)" }}>
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card" style={{ paddingBottom: "var(--safe-bottom)" }}>
           <div className="container-narrow flex gap-3 py-3">
             {onBack ? (
               <Button type="button" variant="outline" size="xl" className="h-14 min-w-[7.5rem] px-4 text-lg" onClick={onBack} disabled={pending}>

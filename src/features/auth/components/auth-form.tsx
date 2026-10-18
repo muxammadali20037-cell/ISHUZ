@@ -110,7 +110,7 @@ export function LoginMethods({ next, phoneHref, botUsername, backHref }: { next:
               {t("auth.method.browse")}
             </Link>
             <div className="flex-1" />
-            <p className="pb-[max(1rem,env(safe-area-inset-bottom))] pt-6 text-center text-xs text-muted-foreground">
+            <p className="pb-[max(1rem,var(--safe-bottom))] pt-6 text-center text-xs text-muted-foreground">
               <AgreeText text={t("auth.agree", { terms: "\u0001", privacy: "\u0002" })} terms={t("auth.terms")} privacy={t("auth.privacy")} />
             </p>
           </div>
