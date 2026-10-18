@@ -51,12 +51,15 @@ export function AppFrame({
   hideNav = false,
   skeleton = false,
   extras,
+  footer,
   children,
 }: {
   chrome: FrameChrome | null;
   hideNav?: boolean;
   skeleton?: boolean;
   extras?: ReactNode;
+  /** sahifa pastki qismi (bosh sahifa): <main> dan tashqarida — ekran o'qigichlari uchun alohida "contentinfo" hudud */
+  footer?: ReactNode;
   children: ReactNode;
 }) {
   const hydrating = useHydrating();
@@ -80,7 +83,9 @@ export function AppFrame({
   return (
     <div className="flex min-h-dvh flex-col">
       {chrome ? <TopBar {...chrome.top} /> : null}
-      <main className={cn(hideNav ? "flex-1" : "flex-1 page-with-tabbar md:pb-8", anim)}>{children}</main>
+      {/* pastki qism bo'lsa — pastki menyu uchun joy o'sha yerda (aks holda kontent ostida) */}
+      <main className={cn(hideNav || footer ? "flex-1" : "flex-1 page-with-tabbar md:pb-8", anim)}>{children}</main>
+      {footer}
       {chrome && !hideNav ? <BottomNav role={chrome.top.role} mode={chrome.top.mode} counts={chrome.top.counts} /> : null}
       {/* o'ng pastda doim: "O'zingizga mosini toping" — joriy rejim ichida qidiradi (admin panelda o'chiriladi) */}
       {chrome?.ai ? <AiFinder key={chrome.top.mode ?? "none"} defaultMode={chrome.ai.defaultMode} locked={chrome.ai.locked} /> : null}

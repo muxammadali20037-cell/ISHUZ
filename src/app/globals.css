@@ -40,6 +40,11 @@
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #1d5fe0;
+  /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
+  --navy: #102347;
+  --navy-foreground: #ffffff;
+  --navy-muted: #b9c6dc;
+  --navy-line: #24395f;
   --radius: 0.875rem;
   --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.04);
   --shadow-md: 0 2px 8px rgb(15 23 42 / 0.06), 0 1px 2px rgb(15 23 42 / 0.04);
@@ -92,6 +97,10 @@ html.tg-fullscreen {
   --border: #223047;
   --input: #223047;
   --ring: #5a8ef8;
+  --navy: #070e1c;
+  --navy-foreground: #e6ebf3;
+  --navy-muted: #a3b2c9;
+  --navy-line: #1b2a44;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 2px 8px rgb(0 0 0 / 0.35);
   --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.4);
@@ -131,6 +140,10 @@ html.tg-fullscreen {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-navy: var(--navy);
+  --color-navy-foreground: var(--navy-foreground);
+  --color-navy-muted: var(--navy-muted);
+  --color-navy-line: var(--navy-line);
   --radius-xs: calc(var(--radius) - 9px);
   --radius-sm: calc(var(--radius) - 6px);
   --radius-md: calc(var(--radius) - 2px);

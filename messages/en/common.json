@@ -221,5 +221,17 @@
     "privacy": "Only to find your region and district. Your exact address is never shown.",
     "failed": "Couldn't detect your location. No problem — pick from the list.",
     "confirm_hint": "Pre-selected from your location. Tap if correct."
+  },
+  "site": {
+    "tagline": "Finding work and workers made easy.",
+    "nav_label": "Site sections",
+    "nav_home": "Home",
+    "nav_jobs": "Jobs",
+    "nav_workers": "Workers",
+    "nav_services": "Services",
+    "nav_about": "About us",
+    "nav_help": "Help",
+    "register": "Sign up",
+    "menu": "Menu"
   }
 }

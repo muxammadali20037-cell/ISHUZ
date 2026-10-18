@@ -24,9 +24,9 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish (S1): kirish oynasi — "Ish topaman"; keyin "O'zim haqimda e'lon berish"
+    // birinchi ochilish: bosh sahifa — "Ish qidiraman"; keyin "O'zim haqimda e'lon berish"
     // (kompyuterda — o'ng paneldagi "Rezyume joylash"). Rejim tanlangan — e'lon turi qayta so'ralmaydi (tasdiq — modes.spec)
-    await page.getByRole("main").getByRole("button", { name: /^Ish topaman/ }).click();
+    await page.getByRole("main").getByRole("button", { name: /^Ish qidiraman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
     await page.locator("main a[href='/post/worker']:visible").first().click();
     await page.waitForURL(/\/post\/worker/);
@@ -87,8 +87,8 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish (S1): kirish oynasi — "Ishchi topaman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
-    await page.getByRole("main").getByRole("button", { name: /^Ishchi topaman/ }).click();
+    // birinchi ochilish: bosh sahifa — "Xodim qidiraman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
+    await page.getByRole("main").getByRole("button", { name: /^Xodim qidiraman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
     await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
     await page.waitForURL(/\/post\/vacancy/);

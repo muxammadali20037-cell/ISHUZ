@@ -115,10 +115,10 @@ test.describe("telefon klaviaturasi", () => {
     expect(meta).toContain("interactive-widget=resizes-content");
     const nav = page.locator("nav.bottom-nav");
     await expect(nav).toBeVisible();
-    await page.getByRole("searchbox", { name: "Ish qidirish" }).focus();
+    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).focus();
     await expect(nav).toBeHidden();
     await expect(page.locator(".ai-fab")).toBeHidden();
-    await page.getByRole("searchbox", { name: "Ish qidirish" }).blur();
+    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).blur();
     await expect(nav).toBeVisible();
   });
 });

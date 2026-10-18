@@ -2,9 +2,9 @@ import { expect, test, type BrowserContext } from "@playwright/test";
 import { USERS, asGuest, sql } from "../support";
 
 /**
- * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi), rejim tanlanmagan mehmon uchun kirish oynasi
- * (haqiqiy raqamlar, ikki katta maqsad, tez kirish, yangi vakansiyalar). Birinchi ochilishdagi til va tanishtiruv —
- * entry-flow.spec.ts.
+ * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi), rejim tanlanmagan mehmon uchun bosh sahifa
+ * (haqiqiy raqamlar, "Ish qidiraman" / "Xodim qidiraman", tezkor filtrlar, yangi ishlar). Birinchi ochilishdagi til va
+ * tanishtiruv — entry-flow.spec.ts; bosh sahifaning qolgan qismlari — home-market.spec.ts.
  */
 
 const cookie = async (ctx: BrowserContext, name: string) => (await ctx.cookies()).find((c) => c.name === name)?.value;
@@ -29,23 +29,23 @@ test.describe("kirish", () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   });
 
-  test("kirish oynasi: haqiqiy raqamlar, ikki katta maqsad, qidiruv, yangi vakansiyalar; ko'rish rejim yozmaydi", async ({ page, context }) => {
+  test("bosh sahifa (mehmon): haqiqiy raqamlar, ikki aniq yo'l, qidiruv paneli, yangi ishlar; ko'rish rejim yozmaydi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Nima qidiryapsiz?");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping yoki eng yaxshi xodimni toping!");
     const jobs = await activeJobs();
     const [today] = await sql<{ n: string }>(
       "select count(*) as n from public.vacancies where status = 'active' and (expires_at is null or expires_at > now()) and published_at >= date_trunc('day', now() at time zone 'Asia/Tashkent') at time zone 'Asia/Tashkent'",
     );
     await expect(main.getByText(`Bugun ${today!.n} ta yangi e'lon`)).toBeVisible();
-    await expect(main.getByRole("button", { name: new RegExp(`^Ish topaman\\s*${jobs} ta vakansiya`) })).toBeVisible();
-    await expect(main.getByRole("button", { name: /^Ishchi topaman/ })).toBeVisible();
-    await expect(page.getByRole("searchbox", { name: "Ish qidirish" })).toBeVisible();
-    await expect(main.getByRole("heading", { level: 2, name: "Yangi vakansiyalar" })).toBeVisible();
-    const cards = main.getByRole("region", { name: "Yangi vakansiyalar" }).locator("article");
+    await expect(main.getByRole("button", { name: new RegExp(`^Ish qidiraman\\s*${jobs} ta faol vakansiya`) })).toBeVisible();
+    await expect(main.getByRole("button", { name: /^Xodim qidiraman/ })).toBeVisible();
+    await expect(page.getByRole("search", { name: "Ish qidirish" }).getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
+    await expect(main.getByRole("heading", { level: 2, name: "Yangi ishlar" })).toBeVisible();
+    const cards = main.getByRole("region", { name: "Yangi ishlar" }).locator("article");
     await expect(cards.first()).toBeVisible();
-    expect(await cards.count()).toBeLessThanOrEqual(5);
+    expect(await cards.count()).toBeLessThanOrEqual(6);
     await expect(main.getByText("Ro'yxatdan o'tmasdan ko'rish")).toBeVisible();
     await expect(main.getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", "/auth");
     // faqat ko'rish rejimni tanlamaydi
@@ -55,25 +55,25 @@ test.describe("kirish", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   });
 
-  test("maqsad plitkalari: 'Ish topaman' → ish qidiruvchi bosh sahifasi; 'Ishchi topaman' → ish beruvchi", async ({ page, context }) => {
+  test("ikki yo'l: 'Ish qidiraman' → ish qidiruvchi bosh sahifasi; 'Xodim qidiraman' → ish beruvchi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Ish topaman/ }).click();
+    await page.getByRole("main").getByRole("button", { name: /^Ish qidiraman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
     expect(await cookie(context, "ib_mode")).toBe("worker");
 
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Ishchi topaman/ }).click();
+    await page.getByRole("main").getByRole("button", { name: /^Xodim qidiraman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
     expect(await cookie(context, "ib_mode")).toBe("employer");
   });
 
-  test("tez kirish: 'Kunlik ish' → kunlik ishlar natijasi; 'E'lon berish' → vakansiya e'loni (rejim shunga mos)", async ({ page, context }) => {
+  test("tezkor filtr: 'Kunlik ishlar' → kunlik ishlar natijasi; 'E'lon joylashtirish' → vakansiya e'loni (rejim shunga mos)", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: "Kunlik ish", exact: true }).click();
+    await page.getByRole("main").getByRole("button", { name: "Kunlik ishlar", exact: true }).click();
     await page.waitForURL(/\/search\?.*pay=daily/);
     await expect(page.locator("main article").filter({ hasText: "Omborchi" })).toHaveCount(1);
     expect(await cookie(context, "ib_mode")).toBe("worker");
@@ -81,7 +81,7 @@ test.describe("kirish", () => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: "E'lon berish", exact: true }).click();
+    await page.getByRole("main").getByRole("button", { name: /^E'lon joylashtirish/ }).click();
     await page.waitForURL(/\/post\/vacancy/);
     expect(await cookie(context, "ib_mode")).toBe("employer");
   });
@@ -95,7 +95,7 @@ test.describe("kirish", () => {
     expect(await page.evaluate(() => document.documentElement.classList.contains("no-splash"))).toBe(false);
     // kontent ostida allaqachon chizilgan; splash bosishlarni o'tkazib yuboradi (sun'iy kutish yo'q)
     expect(await splash.evaluate((el) => [getComputedStyle(el).display, getComputedStyle(el).pointerEvents])).toEqual(["flex", "none"]);
-    await page.getByRole("searchbox", { name: "Ish qidirish" }).fill("kassir");
+    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).fill("kassir");
     await expect(splash).toBeHidden({ timeout: 2500 });
     // shu sessiyada qayta ochilsa — yo'q
     await page.reload();

@@ -317,7 +317,7 @@ test.describe("kirish oqimi", () => {
     const p = await bot.newPage();
     await p.goto("/");
     expect(path(p)).toBe("/");
-    await expect(p.getByRole("heading", { level: 1 })).toHaveText("Nima qidiryapsiz?");
+    await expect(p.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping yoki eng yaxshi xodimni toping!");
     await bot.close();
   });
 

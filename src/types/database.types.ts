@@ -4543,6 +4543,7 @@ export type Database = {
         Returns: string;
       };
       has_admin_permission: { Args: { perm: string }; Returns: boolean };
+      home_market_counts: { Args: Record<PropertyKey, never>; Returns: Json };
       is_active_user: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_allowed_media_url: { Args: { p_bucket: string; p_owner: string; p_url: string }; Returns: boolean };

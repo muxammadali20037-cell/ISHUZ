@@ -8,6 +8,8 @@ import { DraftGuard } from "./draft-guard";
 import { getHomeSettings } from "@/features/home-windows/queries";
 import { getMode } from "@/features/mode/server";
 import { findModeOf } from "@/features/mode/mode";
+import { billingEnabled } from "@/lib/features";
+import { phoneLoginHref } from "@/features/entry/auth-links";
 
 /**
  * Umumiy sahifa qobig'i: yuqori panel + (mobil) pastki navigatsiya.
@@ -15,7 +17,7 @@ import { findModeOf } from "@/features/mode/mode";
  * Ma'lumot shu yerda (serverda) olinadi, chizish — AppFrame (mijoz): u qobiqni eslab qoladi, keyingi sahifa
  * yuklanayotganda panel va menyu joyida turadi.
  */
-export async function Shell({ children, forceRole, hideNav }: { children: ReactNode; forceRole?: NavRole; hideNav?: boolean }) {
+export async function Shell({ children, forceRole, hideNav, footer }: { children: ReactNode; forceRole?: NavRole; hideNav?: boolean; footer?: ReactNode }) {
   // sessiya va o'qilmaganlar soni parallel (ketma-ket ikki so'rov emas)
   const [session, unread, home, mode] = await Promise.all([getSession(), unreadCounts(), hideNav ? null : getHomeSettings(), getMode()]);
   const role: NavRole = forceRole ?? (session ? (mode === "employer" ? "employer" : "worker") : "guest");
@@ -24,6 +26,7 @@ export async function Shell({ children, forceRole, hideNav }: { children: ReactN
       role,
       mode,
       counts: session ? unread : undefined,
+      site: !session && !mode ? { pricing: billingEnabled(), registerHref: phoneLoginHref({ next: "/start", mode: null }) } : null,
       user: session
         ? {
             firstName: session.profile.first_name,
@@ -40,6 +43,7 @@ export async function Shell({ children, forceRole, hideNav }: { children: ReactN
     <AppFrame
       chrome={chrome}
       hideNav={hideNav}
+      footer={footer}
       extras={
         <>
           {session ? <LastSeenPing /> : null}

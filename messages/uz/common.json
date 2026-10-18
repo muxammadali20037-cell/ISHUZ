@@ -221,5 +221,17 @@
     "privacy": "Faqat viloyat va tumaningizni topish uchun. Aniq manzilingiz hech kimga ko'rsatilmaydi.",
     "failed": "Joylashuvni aniqlab bo'lmadi. Hech qisi yo'q — ro'yxatdan tanlang.",
     "confirm_hint": "Joylashuvingiz bo'yicha belgilandi. To'g'ri bo'lsa, bosing."
+  },
+  "site": {
+    "tagline": "Ish va ishchi topish oson.",
+    "nav_label": "Sayt bo'limlari",
+    "nav_home": "Bosh sahifa",
+    "nav_jobs": "Ishlar",
+    "nav_workers": "Ishchilar",
+    "nav_services": "Xizmatlar",
+    "nav_about": "Biz haqimizda",
+    "nav_help": "Yordam",
+    "register": "Ro'yxatdan o'tish",
+    "menu": "Menyu"
   }
 }
