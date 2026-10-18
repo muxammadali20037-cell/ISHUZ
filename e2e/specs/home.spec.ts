@@ -83,6 +83,8 @@ test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q; qidiruv birinchi ekr
   // AI qatori Suspense ichida oqim bilan keladi — o'lchashdan oldin joyiga tushishini kutamiz
   const ai = page.getByRole("link", { name: /AI yordamchi/ });
   await expect(ai).toBeVisible();
+  // ro'yxat ham alohida Suspense bo'lagi: React ochilishni biroz kechiktirishi mumkin (sekin CI) — u ham joyiga tushsin
+  await expect(page.locator("#home-feed")).toBeVisible();
   const order = await page.evaluate(() => {
     const y = (sel: string) => document.querySelector(sel)?.getBoundingClientRect().top ?? -1;
     return { list: y("#home-feed"), ai: y("main a[href^='/ai-alerts']") };
