@@ -61,12 +61,24 @@ function TelegramIcon({ className }: { className?: string }) {
  * 6-ekran: kirish usuli. Faqat haqiqatan ishlaydigan usullar: telefon (kod Telegram bot orqali) va Telegram (bot ochiladi,
  * undagi ilova tugmasi — avtomatik kirish). Google kirish sozlanmagan — ko'rsatilmaydi. Telegram Mini App ichida — darhol kiriladi.
  */
-export function LoginMethods({ next, phoneHref, botUsername, backHref }: { next: string; phoneHref: string; botUsername: string | null; backHref: string }) {
+export function LoginMethods({
+  next,
+  phoneHref,
+  botUsername,
+  backHref,
+  showBrowse = true,
+}: {
+  next: string;
+  phoneHref: string;
+  botUsername: string | null;
+  backHref: string | null;
+  showBrowse?: boolean;
+}) {
   const { t } = useT();
   return (
     <TelegramGate next={next}>
       {(failed) => (
-        <EntryScreen left={<EntryBack href={backHref} label={t("common.actions.back")} />}>
+        <EntryScreen left={backHref ? <EntryBack href={backHref} label={t("common.actions.back")} /> : null}>
           <div className="flex flex-1 flex-col">
             <div className="flex flex-col items-center pt-6 text-center">
               <BrandMark className="size-16 rounded-2xl" />
@@ -106,9 +118,11 @@ export function LoginMethods({ next, phoneHref, botUsername, backHref }: { next:
                 </a>
               ) : null}
             </nav>
-            <Link href="/" className="mx-auto mt-5 inline-flex min-h-11 items-center px-2 text-base font-semibold text-primary hover:underline">
-              {t("auth.method.browse")}
-            </Link>
+            {showBrowse ? (
+              <Link href="/" className="mx-auto mt-5 inline-flex min-h-11 items-center px-2 text-base font-semibold text-primary hover:underline">
+                {t("auth.method.browse")}
+              </Link>
+            ) : null}
             <div className="flex-1" />
             <p className="pb-[max(1rem,var(--safe-bottom))] pt-6 text-center text-xs text-muted-foreground">
               <AgreeText text={t("auth.agree", { terms: "\u0001", privacy: "\u0002" })} terms={t("auth.terms")} privacy={t("auth.privacy")} />

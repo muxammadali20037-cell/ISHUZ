@@ -126,6 +126,17 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByRole("link", { name: /Telefon raqam orqali kirish/ })).toHaveAttribute("href", "/auth/telefon?next=%2Fstart");
   });
 
+  test("admin panelga kirish: rol so'ralmaydi — kirish usulidan to'g'ridan-to'g'ri raqam ekraniga", async ({ page, context }) => {
+    await asGuest(context);
+    await context.clearCookies({ name: "ib_mode" });
+    await page.goto("/admin");
+    await page.waitForURL(/\/auth\?next=%2Fadmin$/);
+    await expect(page.getByRole("link", { name: "Kirmasdan e'lonlarni ko'rish" })).toHaveCount(0);
+    await page.getByRole("link", { name: /Telefon raqam orqali kirish/ }).click();
+    await page.waitForURL(/\/auth\/telefon\?next=%2Fadmin$/);
+    await expect(page.getByRole("heading", { level: 1, name: "Telefon raqamingizni kiriting" })).toBeVisible();
+  });
+
   test("telefon va kod: format tekshiriladi, ikki marta yuborilmaydi; 6 katak, joylash bilan avtomatik tekshiriladi", async ({ page, context }) => {
     await asGuest(context);
     await asMode(context, "worker");
