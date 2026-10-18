@@ -16,8 +16,9 @@ yuklaydi. Quyida har bir joy uchun nima kerakligi yozilgan.
   kontrast bo'lmasin.
 - **Rang.** Kiyim yoki fonda ko'k (brend rangi) bo'lsa yaxshi, lekin majburiy emas. Rasm ustiga matn va logotip qo'shmang:
   matn ekranning o'zida bor.
-- **Kompozitsiya.** Asosiy obyekt markazda yoki biroz chapda bo'lsin: rasm ekranda burchaklari yumaloqlangan holda
-  kesiladi.
+- **Kompozitsiya.** Asosiy obyekt markazda bo'lsin: rasm ekranda burchaklari yumaloqlangan holda kesiladi.
+  «Tanishtiruv 1» va «Tanishtiruv 2» kompyuterdagi bosh sahifada ham chiqadi — 256×240 (deyarli kvadrat), pastki chap
+  burchagida yozuv bilan. Shuning uchun chetlari va chap pastki burchagi muhim bo'lmasin.
 - **Ruxsat.** Rasmdagi odamlarning roziligi bo'lsin (model release). Begona logotip, avtomobil raqami, hujjat matni
   ko'rinmasin.
 - **Fayl.** JPG, PNG yoki WebP, 4 MB gacha. Brauzer yuklashdan oldin 1600 px gacha kichraytiradi.
@@ -44,41 +45,10 @@ yuklaydi. Quyida har bir joy uchun nima kerakligi yozilgan.
    tabiiy qarab turibdi.
 5. **Rol: ishchi qidiryapman.** Kostyum yoki toza ish kiyimidagi rahbar, yelkagacha, ofis yoki do'kon fonida.
 
-## Generatsiya prompti (fotoreal model uchun)
+## Generatsiya prompti
 
-Haqiqiy suratga olish imkoni bo'lmasa, quyidagi promptlar fotoreal model uchun yozilgan (inglizcha — modellar uni yaxshiroq
-tushunadi). Har biriga **umumiy qo'shimcha** va **taqiqlar** qismini qo'shing.
-
-**Umumiy qo'shimcha:**
-`documentary photograph, shot on a full-frame camera with a 35mm lens, natural daylight, realistic skin texture with
-pores and small imperfections, candid moment, slight film grain, true-to-life colors, Central Asian (Uzbek) people,
-everyday clothing, Tashkent, Uzbekistan`
-
-**Taqiqlar (negative prompt):**
-`3d render, cartoon, illustration, anime, CGI, plastic skin, airbrushed, overly smooth face, perfect symmetry,
-glowing edges, neon lights, cinematic teal-orange grading, text, watermark, logo, extra fingers, distorted hands,
-robot, holograms, floating UI elements`
-
-1. **intro_jobs (4:3):**
-   `a young Uzbek man in his twenties with a backpack sitting at a street cafe table in Tashkent, looking at his
-   smartphone while searching for jobs, relaxed posture, morning light, shallow depth of field, city street softly
-   blurred behind him`
-2. **intro_workers (4:3):**
-   `a small business owner in her forties interviewing a young job candidate in a bright small office in Tashkent,
-   holding a tablet, both seated at a wooden desk, natural window light, genuine conversation, medium shot`
-3. **intro_ai (4:3):**
-   `a mechanic in a clean blue work uniform taking a short break in a car service workshop, smiling while reading a
-   message on his phone, warm natural light from an open garage door, close-medium shot`
-4. **role_worker (1:1):**
-   `head-and-shoulders portrait of a young Uzbek woman in casual clothes, neutral light grey background, soft natural
-   light, calm confident expression, looking at the camera`
-5. **role_employer (1:1):**
-   `head-and-shoulders portrait of an Uzbek shop owner in his forties wearing a neat shirt, standing in his small store,
-   background softly blurred, soft natural light, friendly professional expression`
-
-**AI ko'rinishini tekshirish (yuklashdan oldin):** qo'l barmoqlari, ko'zlar, tishlar, yozuvlar va orqa fondagi narsalar
-tabiiy bo'lishi kerak. Teri haddan tashqari silliq bo'lmasin, yorug'lik bir tomondan tushsin. Shubha bo'lsa — boshqa
-variantni tanlang yoki haqiqiy surat oling.
+Har bir joy uchun tayyor promptlar, taqiqlar ro'yxati va yuklashdan oldingi tekshiruv — `IMAGE_PROMPTS.md`, A bo'limi.
+Ilovadagi boshqa rasm joylari ham o'sha hujjatda.
 
 ## Texnik tafsilotlar
 
