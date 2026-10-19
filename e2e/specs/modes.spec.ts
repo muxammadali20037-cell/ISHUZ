@@ -65,9 +65,22 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
 });
 
 test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Kabinetim → 'Rolni o'zgartirish' → o'sha rol ekrani", async ({ page, context }) => {
-  const [before] = await sql<{ active_role: string | null }>("select active_role from public.profiles where id = $1", [USERS.workerB]);
+  // profili tayyor ish izlovchi (yangi foydalanuvchi emas — rol almashganda ro'yxatdan o'tish oqimiga tushmaydi)
+  const RET = "7e2e0000-0000-4000-8000-000000000073";
+  await sql(
+    `insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values ($1, '+998901110073', now(), '{"first_name":"Bobur","last_name":"Rolov"}')
+     on conflict (id) do nothing`,
+    [RET],
+  );
+  await sql("delete from public.worker_profiles where profile_id = $1", [RET]);
+  await sql(
+    `insert into public.worker_profiles (profile_id, headline, category_id, region_id, experience_level, onboarding_completed_at, is_public)
+     select $1, 'Sotuvchi', c.id, r.id, '1_2y', now(), true from public.categories c, public.regions r where c.slug = 'sales' and r.slug = 'tashkent_city'`,
+    [RET],
+  );
+  await sql("update public.profiles set active_role = 'worker' where id = $1", [RET]);
   try {
-    await loginAs(context, USERS.workerB);
+    await loginAs(context, RET);
     await asMode(context, "worker");
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
@@ -84,10 +97,10 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
-    const [after] = await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [USERS.workerB]);
+    const [after] = await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [RET]);
     expect(after!.active_role).toBe("employer");
   } finally {
-    await sql("update public.profiles set active_role = $2 where id = $1", [USERS.workerB, before!.active_role]);
+    await sql("delete from public.worker_profiles where profile_id = $1", [RET]);
   }
 });
 
