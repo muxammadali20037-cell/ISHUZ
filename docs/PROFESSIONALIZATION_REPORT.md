@@ -1228,6 +1228,8 @@ Usul D dagidek: avval yangi testlar yozildi va **eski build'da** (`3136d4d`, `ol
 
   - **Rejim almashtirgich:** bosh sahifa va kabinet tepasida "Ish izlovchi | Ish beruvchi". Bosilganda tasdiq
     so'raladi ("Ish beruvchi rejimiga o'tasizmi?" → "Qolish" / "Ha, o'tish"), ya'ni tasodifan almashmaydi.
+    *Keyinroq (2026-10-19, egasining so'rovi):* almashtirgich faqat mehmonda qoldi. Rol har kirishda tanlanadi, kirgandan
+    keyin almashtirish — Kabinetim → "Rolni o'zgartirish" (`APP_STRUCTURE.md`, T bo'limi).
   - **Boshqa tomonning bo'limi** havola orqali ochilsa, katta rasm va tushuntirish chiqadi: "Bu bo'lim ish beruvchilar
     uchun". Ikki tugma bor:
     - "Ish e'lonlariga qaytish";

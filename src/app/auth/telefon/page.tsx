@@ -19,7 +19,8 @@ export default async function PhoneAuthPage({ searchParams }: { searchParams: Pr
       next={next}
       botUsername={botUsername}
       initialPhone={phone && /^\+998\d{9}$/.test(phone) ? phone : null}
-      backHref={`/auth?next=${encodeURIComponent(next)}`}
+      // orqaga — kirish usuliga (rol shu kirishda allaqachon tanlangan, qayta so'ralmaydi)
+      backHref={`/auth?${new URLSearchParams({ next, role: "1" }).toString()}`}
     />
   );
 }

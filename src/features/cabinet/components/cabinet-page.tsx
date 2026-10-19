@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Bell, BellRing, Bookmark, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
+import { Bell, BellRing, Bookmark, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Repeat, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
@@ -16,7 +16,6 @@ import type { ListingState } from "@/features/post/types";
 import { StatusPill } from "./status-pill";
 import { isCityRegion } from "@/lib/geo/city";
 import type { AppMode } from "@/features/mode/mode";
-import { ModeSwitch } from "@/features/mode/components/mode-switch";
 import { ProfileHeader } from "./profile-header";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
@@ -64,6 +63,8 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true, group: "account" },
     { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true, group: "account" },
     { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true, group: "account" },
+    // rol kirishda tanlanadi; almashtirish — o'sha rol ekrani orqali (bosh sahifada almashtirgich yo'q)
+    { href: `/start/rol?next=${encodeURIComponent("/")}`, label: t("easy.cabinet.links.change_role"), icon: Repeat, show: true, group: "account" },
   ];
 
   const newListings = [
@@ -82,8 +83,6 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
       <Suspense fallback={<div className="h-44 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
         <ProfileHeader session={session} mode={mode} />
       </Suspense>
-      {/* rejim shu yerda ham almashtiriladi (tasdiq bilan) — e'lon berish va bosh sahifa shu rejimda */}
-      {mode ? <ModeSwitch mode={mode} className="mx-0 max-w-none" /> : null}
 
       <section className="space-y-3" aria-labelledby="my-listings">
         <h2 id="my-listings" className="text-2xl font-bold">

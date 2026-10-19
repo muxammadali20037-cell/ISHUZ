@@ -138,8 +138,8 @@ test("parol yo'li faqat faol admin uchun: oddiy hisob yoki o'chirilgan admin —
     await expect(page.getByRole("alert").filter({ hasText: "Email yoki parol noto'g'ri" })).toBeVisible();
     expect(await sessionCookie(page)).toBeUndefined();
   }
-  // oddiy kirish ekranida bu yo'l ko'rinmaydi
-  await page.goto("/auth");
+  // oddiy kirish ekranida (rol tanlangandan keyingi usullar) bu yo'l ko'rinmaydi
+  await page.goto("/auth?role=1");
   await expect(page.getByRole("link", { name: /Telefon raqam/ })).toBeVisible();
   await expect(page.getByRole("link", { name: /Email va parol/ })).toHaveCount(0);
 });

@@ -12,8 +12,9 @@ import type { LatestTab } from "./market/model";
 /**
  * Bosh sahifa. Rejim tanlanmagan (mehmon yoki yangi foydalanuvchi) — marketplace ko'rinishi (market/market-home): sarlavha,
  * "Ish qidiraman" / "Xodim qidiraman", qidiruv paneli, sohalar, yangi ishlar, ish beruvchilar bo'limi (birinchi ochilishdagi
- * til va tanishtiruv — /start, app/page.tsx). Rejim tanlangan — o'sha rolning bosh sahifasi; boshqasiga almashtirgich orqali
- * (tasdiq bilan, rollar aralashmaydi). Pastki qism (footer) — hammasida bir xil, <main> dan tashqarida (app/page.tsx → Shell).
+ * til va tanishtiruv — /start, app/page.tsx). Rejim tanlangan — o'sha rolning bosh sahifasi. Almashtirgich faqat mehmonda
+ * (tasdiq bilan): kirgan foydalanuvchi rolini kirishda tanlaydi, keyin — Kabinetim → "Rolni o'zgartirish".
+ * Pastki qism (footer) — hammasida bir xil, <main> dan tashqarida (app/page.tsx → Shell).
  */
 export async function HomePage({ session, mode, tab = "all" }: { session: SessionContext | null; mode: AppMode | null; tab?: LatestTab }) {
   const { t } = await getT();
@@ -43,7 +44,7 @@ export async function HomePage({ session, mode, tab = "all" }: { session: Sessio
     <>
       <div className="container-app py-4 sm:py-6">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-        <ModeSwitch mode={mode} className="mb-5 sm:mx-0 sm:max-w-sm" />
+        {session ? null : <ModeSwitch mode={mode} className="mb-5 sm:mx-0 sm:max-w-sm" />}
         {mode === "employer" ? <EmployerHome session={session} /> : <SeekerHome session={session} />}
       </div>
     </>

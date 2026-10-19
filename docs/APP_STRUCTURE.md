@@ -77,7 +77,7 @@ istagida kunlik to'lov yoki "bugun/ertaga" tayyor.
 
 ## T — kirish oqimi (11 ekran + bosh sahifa)
 
-Yangi foydalanuvchi: **splash → til → tanishtiruv (3) → kirish usuli → rol → telefon → kod → profil → "Profilingiz tayyor!" →
+Yangi foydalanuvchi: **splash → til → tanishtiruv (3) → rol → kirish usuli → telefon → kod → profil → "Profilingiz tayyor!" →
 rolning bosh sahifasi**. Qaytgan foydalanuvchi: splash → darhol bosh sahifa. Qaysi qadam kerakligini bitta funksiya hal qiladi:
 `nextEntryStep` (`src/features/entry/flow.ts`, 12 unit test). Shu bilan redirect sikli va qayta tanishtiruv oldi olinadi.
 
@@ -86,14 +86,18 @@ rolning bosh sahifasi**. Qaytgan foydalanuvchi: splash → darhol bosh sahifa. Q
 | 1 | Splash | har qanday sahifa ustida | sessiyada bir marta, sun'iy kutish yo'q (avvalgidek) |
 | 2 | Til | `/start/til` | birinchi amal; bosilgan til darhol saqlanadi (`setLocale`: cookie + profil), "Davom etish" tanlangandan keyin faol |
 | 3–5 | Tanishtiruv | `/start/tanishtiruv?s=1..3` | O'tkazib yuborish / Oldingi / Keyingi / nuqtalar / surish; `ib_intro` faqat "Boshlash" yoki "O'tkazib yuborish"da yoziladi |
-| 6 | Kirish usuli | `/auth` | telefon; Telegram (bot sozlangan bo'lsa); Google sozlanmagan — ko'rsatilmaydi; "Kirmasdan ko'rish" |
-| 7 | Rol | `/start/rol` | rol tanlanmagan qurilmada telefondan oldin; kirgandan keyin ham (Telegram'dan birinchi kirish); `chooseMode` |
+| 6 | Rol | `/auth` (birinchi ko'rinish), `/start/rol` | **har kirishda** so'raladi, oxirgi tanlov belgilangan; manzil `/auth?next=…` o'zgarmaydi, tanlangach `?role=1`. Admin panelga kirishda va e'lon formasidan (raqam yozilgan) so'ralmaydi. `/start/rol` — kirgandan keyin (Telegram'dan birinchi kirish) va Kabinetim → "Rolni o'zgartirish"; `chooseMode` |
+| 7 | Kirish usuli | `/auth?role=1` | telefon; Telegram (bot sozlangan bo'lsa); Google sozlanmagan — ko'rsatilmaydi; "Kirmasdan ko'rish". Raqam ekranidan orqaga — shu yerga (rol qayta so'ralmaydi) |
 | 8–9 | Telefon, kod | `/auth/telefon` | +998 niqobi; kod Telegram bot orqali (SMS emas); 6 katak (bitta input, `one-time-code`, joylash), avtomatik tekshirish; muddat, urinishlar, tezlik — serverda (avvalgidek) |
 | 10 | Profil | `/onboarding/worker` yoki `/onboarding/employer` `?next=/start/tayyor` | mavjud wizard'lar: ish izlovchi — 4 majburiy qadam (ism, joy, kasb, tajriba), qolgani keyin; ish beruvchi — tur + joy/nom/telefon |
 | 11 | Tayyor | `/start/tayyor` | faqat profil yakunidan keladi; profil tayyor bo'lmasa — oqimga qaytaradi |
 | 12 | Bosh sahifa | `/` yoki `/employer` | rolga qarab |
 
 Qoidalar:
+- **Kirgandan keyin almashtirgich yo'q.** "Ish izlovchi | Ish beruvchi" almashtirgichi faqat mehmonda (bosh sahifa). Kirgan
+  foydalanuvchi ilovani kirishda tanlagan rolida ko'radi (bosh sahifa, kabinet, pastki menyu). Rolni almashtirish — Kabinetim →
+  "Rolni o'zgartirish" (`/start/rol?next=/`, o'sha rol ekrani). Boshqa rol bo'limi havola orqali ochilsa — avvalgidek
+  tushuntirish va tasdiq (ModeGate).
 - Bosh sahifa (`/`) oqimga faqat birinchi ochilishda (til, tanishtiruv) yoki oqimni boshlab tugatmagan kirgan
   foydalanuvchini (`ib_entry`) o'tkazadi. Vakansiya, qidiruv va boshqa to'g'ridan-to'g'ri havolalar oqimsiz ochiladi.
   Qidiruv robotlari oqimni ko'rmaydi. Mehmon tanishtiruvdan keyin kirishga majburlanmaydi.

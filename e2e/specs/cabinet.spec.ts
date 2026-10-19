@@ -44,7 +44,9 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
   // "yangi e'lon" — faqat joriy rejimniki (ish beruvchiga o'zi haqida e'lon taklif qilinmaydi), neytral ko'rinish
   await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveCount(0);
-  await expect(page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name: "Ish beruvchi" })).toHaveAttribute("aria-checked", "true");
+  // kirgandan keyin almashtirgich yo'q — rol kirishda tanlangan; almashtirish faqat "Rolni o'zgartirish" orqali
+  await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Rolni o'zgartirish" })).toHaveAttribute("href", "/start/rol?next=%2F");
 });
 
 test("vakansiya sahifasi: bandlik turi o'zbekcha ('To'liq kun', 'Full-time' emas)", async ({ page, context }) => {

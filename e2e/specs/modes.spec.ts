@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * E1/E3/R-C/S1 · ish izlovchi va ish beruvchi alohida: rejim tanlanmagan mehmon — bosh sahifa (maqsad), keyin faqat shu rejimning
@@ -62,6 +62,33 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   // ish beruvchi menyusi (S2): Asosiy · Vakansiyalar · Nomzodlar · Profil
   await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Asosiy", "Vakansiyalar", "Nomzodlar", "Profil"]);
   await expect(page.getByRole("navigation").last().getByRole("link", { name: "Nomzodlar" })).toHaveAttribute("href", "/search?mode=workers");
+});
+
+test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Kabinetim → 'Rolni o'zgartirish' → o'sha rol ekrani", async ({ page, context }) => {
+  const [before] = await sql<{ active_role: string | null }>("select active_role from public.profiles where id = $1", [USERS.workerB]);
+  try {
+    await loginAs(context, USERS.workerB);
+    await asMode(context, "worker");
+    await page.goto("/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
+    await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+
+    await page.goto("/cabinet");
+    await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+    await page.getByRole("link", { name: "Rolni o'zgartirish" }).click();
+    await page.waitForURL("**/start/rol?next=%2F");
+    await expect(page.getByRole("radio", { name: /Ish qidiryapman/ })).toBeChecked();
+    await page.getByText("Ishchi qidiryapman", { exact: true }).click();
+    await page.getByRole("button", { name: "Davom etish" }).click();
+    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
+    await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+    expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
+    const [after] = await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [USERS.workerB]);
+    expect(after!.active_role).toBe("employer");
+  } finally {
+    await sql("update public.profiles set active_role = $2 where id = $1", [USERS.workerB, before!.active_role]);
+  }
 });
 
 test("ish izlovchi ishchilar qidiruviga kirsa — tushuntirish; 'qaytish' o'z bo'limiga, 'o'tish' — rejim almashadi", async ({ page, context }) => {

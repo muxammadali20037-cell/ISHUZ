@@ -57,7 +57,8 @@ test.describe("kirish oqimi", () => {
 
     await page.getByRole("button", { name: "Пропустить" }).click();
     await page.waitForURL(/\/auth\?next=%2Fstart$/);
-    await expect(page.getByRole("heading", { level: 1, name: "Добро пожаловать!" })).toBeVisible();
+    // kirishning birinchi qadami — rol
+    await expect(page.getByRole("heading", { level: 1, name: "Выберите свою роль" })).toBeVisible();
     expect(await cookie(context, "ib_intro")).toBe("1");
 
     // mehmon kirishga majburlanmaydi: bosh sahifa endi oqimsiz, o'sha tilda
@@ -100,30 +101,37 @@ test.describe("kirish oqimi", () => {
     expect(await cookie(context, "ib_intro")).toBe("1");
   });
 
-  test("kirish usuli: faqat ishlaydiganlari (Google yo'q, bot sozlanmagan — Telegram ham yo'q); rol tanlanmagan bo'lsa — avval rol", async ({ page, context }) => {
+  test("kirish: avval rol (har safar, oxirgi tanlov belgilangan), keyin usul — faqat ishlaydiganlari (Google yo'q, bot sozlanmagan — Telegram ham yo'q)", async ({ page, context }) => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/auth");
+    // manzil o'zgarmaydi, birinchi ko'rinish — rol
+    await expect(page.getByRole("heading", { level: 1, name: "O'z rolingizni tanlang" })).toBeVisible();
+    expect(path(page)).toBe("/auth");
+    await expect(page.getByRole("button", { name: "Davom etish" })).toBeDisabled();
+    await page.getByText("Ishchi qidiryapman", { exact: true }).click();
+    await page.getByRole("button", { name: "Davom etish" }).click();
+    await page.waitForURL(/\/auth\?next=%2Fstart&role=1$/);
+    expect(await cookie(context, "ib_mode")).toBe("employer");
+
     await expect(page.getByRole("heading", { level: 1, name: "Xush kelibsiz!" })).toBeVisible();
     const methods = page.getByRole("navigation", { name: "Kirish usuli" });
     await expect(methods.getByRole("link")).toHaveCount(1);
     await expect(page.getByText(/Google/)).toHaveCount(0);
     await expect(page.getByRole("link", { name: "Kirmasdan e'lonlarni ko'rish" })).toHaveAttribute("href", "/");
-
+    // rol tanlangan — raqam ekraniga to'g'ridan-to'g'ri
     await methods.getByRole("link", { name: /Telefon raqam orqali kirish/ }).click();
-    await page.waitForURL("**/start/rol?**");
-    await expect(page.getByRole("heading", { level: 1, name: "O'z rolingizni tanlang" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Davom etish" })).toBeDisabled();
-    await page.getByText("Ishchi qidiryapman", { exact: true }).click();
-    await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL(/\/auth\/telefon\?next=%2Fstart$/);
-    expect(await cookie(context, "ib_mode")).toBe("employer");
     await expect(page.getByRole("heading", { level: 1, name: "Telefon raqamingizni kiriting" })).toBeVisible();
     await expect(page.getByText("Tasdiqlash kodini Telegram orqali yuboramiz (SMS emas).")).toBeVisible();
+    // orqaga — kirish usuliga (rol qayta so'ralmaydi)
+    await expect(page.getByRole("link", { name: "Orqaga" })).toHaveAttribute("href", "/auth?next=%2Fstart&role=1");
 
-    // rol allaqachon tanlangan qurilmada — rol ekrani qayta so'ralmaydi
+    // keyingi kirishda ham rol so'raladi — oxirgi tanlov belgilangan, bir bosishda davom etadi
     await page.goto("/auth");
-    await expect(page.getByRole("link", { name: /Telefon raqam orqali kirish/ })).toHaveAttribute("href", "/auth/telefon?next=%2Fstart");
+    await expect(page.getByRole("heading", { level: 1, name: "O'z rolingizni tanlang" })).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Ishchi qidiryapman/ })).toBeChecked();
+    await expect(page.getByRole("button", { name: "Davom etish" })).toBeEnabled();
   });
 
   test("admin panelga kirish: rol so'ralmaydi — kirish usulidan to'g'ridan-to'g'ri raqam ekraniga", async ({ page, context }) => {
@@ -335,7 +343,7 @@ test.describe("kirish oqimi", () => {
       await page.setViewportSize({ width, height: 700 });
       await asGuest(context);
       await asMode(context, "worker");
-      const screens = ["/start/til", "/start/tanishtiruv", "/auth", "/start/rol", "/auth/telefon"];
+      const screens = ["/start/til", "/start/tanishtiruv", "/auth", "/auth?role=1", "/start/rol", "/auth/telefon"];
       for (const url of screens) {
         await page.goto(url);
         await expect(page.getByRole("heading", { level: 1 })).toBeVisible();

@@ -2,7 +2,7 @@ import { safeInternalPath } from "@/lib/security/safe-path";
 import type { AppMode } from "@/features/mode/mode";
 
 /**
- * Kirish oqimi (T1): yangi foydalanuvchi — til → tanishtiruv → kirish usuli → rol → telefon/kod → profil → "Profilingiz tayyor!"
+ * Kirish oqimi (T1): yangi foydalanuvchi — til → tanishtiruv → rol → kirish usuli → telefon/kod → profil → "Profilingiz tayyor!"
  * → o'z rolining bosh sahifasi. Qaysi qadam kerakligini faqat shu funksiya hal qiladi (bosh sahifa, /start, kirishdan keyin):
  * redirect sikli va qayta-qayta tanishtiruv bo'lmasligi uchun bitta joyda.
  *
