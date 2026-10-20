@@ -14,10 +14,8 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
       return <WindowArtwork art="workers" cover />;
     case "intro_ai":
       return <MatchArt />;
-    case "tile_daily_jobs":
     case "tile_daily_workers":
       return <WindowArtwork art="daily" cover />;
-    case "tile_near_jobs":
     case "tile_near_workers":
       return <WindowArtwork art="near" cover />;
     case "role_worker":

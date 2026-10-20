@@ -18,7 +18,7 @@ test.afterAll(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("ish joyi surati ochilmasa — buzilgan rasm va alt-matn o'rniga kasb tasviri", async ({ page, context }) => {
+test("ro'yxatda rasm yo'q (2026-10: matn birinchi), buzilgan rasm qolmaydi; ish joyi surati ochilmasa — e'lon sahifasida joy egallamaydi", async ({ page, context }) => {
   await asGuest(context);
   const oshpaz = await nodeId("Oshpaz");
   const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
@@ -30,11 +30,18 @@ test("ish joyi surati ochilmasa — buzilgan rasm va alt-matn o'rniga kasb tasvi
   await page.goto(`/search?mode=jobs&p=${oshpaz}&region=all`);
   const card = page.locator("main article").first();
   await expect(card).toBeVisible();
-  // rasm 404 → zaxira (role=img, kasb nomi bilan); sahifada buzilgan <img> qolmaydi
-  await expect(card.getByRole("img", { name: "Oshpaz" })).toBeVisible();
+  // karta matndan iborat: lavozim va maosh, rasm/surat yo'q; sahifada buzilgan <img> qolmaydi
+  await expect(card.getByRole("heading", { level: 3, name: "Oshpaz" })).toBeVisible();
+  await expect(card.locator("img")).toHaveCount(0);
   const broken = await page.evaluate(() => Array.from(document.querySelectorAll("main img")).filter((i) => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth === 0).length);
   expect(broken).toBe(0);
   await expect(card.getByText("Ish joyi surati", { exact: true })).toHaveCount(0);
+  // e'lon sahifasi: surat 404 → joy egallamaydi, buzilgan rasm yo'q
+  await card.getByRole("heading", { level: 3 }).getByRole("link").click();
+  await expect(page.getByRole("heading", { level: 1, name: "Oshpaz" })).toBeVisible();
+  await expect
+    .poll(() => page.evaluate(() => Array.from(document.querySelectorAll("main img")).filter((i) => (i as HTMLImageElement).complete && (i as HTMLImageElement).naturalWidth === 0).length))
+    .toBe(0);
 });
 
 test("bo'sh natija: butun O'zbekiston — kasb nomi bilan, 'hududni o'zgartirish' yo'q", async ({ page, context }) => {

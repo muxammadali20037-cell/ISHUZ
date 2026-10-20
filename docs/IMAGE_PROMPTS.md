@@ -129,28 +129,11 @@ true-to-life colors. No text, no logos, no signage.
 
 | Joy (admin) | Ekrandagi nomi | Rasm g'oyasi |
 |---|---|---|
-| Ish izlovchi — «Kunlik ishlar» | Kunlik ishlar | Bozorda mashinadan quti tushirayotgan yigit |
-| Ish izlovchi — «Yaqin atrofda» | Yaqin atrofda | Mahalladagi ish joyiga piyoda kelayotgan qiz |
 | Ish beruvchi — «Kunlik ishchilar» | Kunlik ishchilar | Ish boshlashga tayyor ikki ishchi, qurilish maydoni |
 | Ish beruvchi — «Yaqin ishchilar» | Yaqin ishchilar | Uy darvozasida usta va uy egasi ko'rishmoqda |
 
-**A6. Ish izlovchi — «Kunlik ishlar»** (`tile_daily_jobs`)
-
-```text
-Documentary photograph, 16:9, main subject in the center. A young Uzbek man in work gloves and a plain t-shirt
-unloads cardboard boxes from a small delivery van at a Tashkent bazaar in the morning, energetic and focused, waist-up,
-background softly blurred. Natural daylight, full-frame camera, 35mm lens, realistic skin texture, true-to-life
-colors. No text, no logos, no printed labels on the boxes, no license plates.
-```
-
-**A7. Ish izlovchi — «Yaqin atrofda»** (`tile_near_jobs`)
-
-```text
-Documentary photograph, 16:9, main subject in the center. A young Uzbek woman walks along a quiet tree-lined mahalla
-street in Tashkent toward a small neighborhood bakery where she works, relaxed and smiling, seen from a three-quarter
-angle, low houses softly blurred. Morning daylight, full-frame camera, 35mm lens, true-to-life colors. No text,
-no signage, no license plates.
-```
+**A6, A7** (ish izlovchi «Kunlik ishlar» va «Yaqin atrofda» plitkalari) — 2026-10 redizaynida olib tashlandi: ish izlovchi
+bosh sahifasida katta plitkalar yo'q, bo'limlar ixcham ro'yxat ko'rinishida (`docs/REDESIGN_2026-10.md`).
 
 **A8. Ish beruvchi — «Kunlik ishchilar»** (`tile_daily_workers`)
 

@@ -125,7 +125,6 @@ async function seekerSectionItems(place: HomePlace) {
       href: findHref({ ...EMPTY_FIND, mode: "jobs", pay: "daily", ...wherePatch(place) }),
       label: t("easy.sections.daily"),
       art: "daily",
-      slot: "tile_daily_jobs",
       sub: c ? t("easy.sections.jobs_count", { count: num(c.daily) }) : t("easy.sections.daily_hint"),
     },
     {
@@ -133,7 +132,6 @@ async function seekerSectionItems(place: HomePlace) {
       href: findHref({ ...EMPTY_FIND, mode: "jobs", near: true }),
       label: t("easy.sections.near"),
       art: "near",
-      slot: "tile_near_jobs",
       sub: t("easy.sections.near_hint"),
     },
   ];

@@ -37,6 +37,6 @@ describe("kirish ekranlari rasmlari", () => {
 
   it("plitka rasmlari ham faqat o'z storage'imizdan", () => {
     expect(parseEntryMedia({ tile_near_workers: own })).toEqual({ tile_near_workers: own });
-    expect(parseEntryMedia({ tile_daily_jobs: "https://evil.example/x.webp" })).toEqual({});
+    expect(parseEntryMedia({ tile_daily_workers: "https://evil.example/x.webp" })).toEqual({});
   });
 });
