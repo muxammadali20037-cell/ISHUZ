@@ -59,7 +59,7 @@ Payme/Click tugmasi ilovada bo'lsa, ilova rad etilishi yoki o'chirilishi mumkin.
    - **Package ID:** `uz.ishtopdim.app`
    - **Start URL:** `/?app=android` (ilova ichida to'lov tugmalarini yashirish uchun)
    - **App name:** `Ish topdim`, **Launcher name:** `Ish topdim`
-   - **Theme / navigation color:** `#1d5fe0`, **background:** `#f6f8fb`
+   - **Theme / navigation color:** `#2457f5`, **background:** `#f6f8fc`
    - **Signing key:** "Create new" (yangi kalit).
 4. **Download** → zip ichida `.aab`, `signing.keystore` va `signing-key-info.txt` bo'ladi.
    ⚠️ `signing.keystore` va parolni **xavfsiz joyda saqlang**. Yo'qolsa, ilovani yangilab bo'lmaydi. Uni repoga qo'ymang.

@@ -35,7 +35,7 @@ test.afterEach(async ({ page }) => {
   const [s] = await sql<{ on: boolean }>("select value = 'true'::jsonb as on from public.app_settings where key = 'ai_search_button'");
   if (s && !s.on && (await page.url()).includes("/admin")) {
     await page.goto("/admin/home");
-    const sw = page.getByRole("switch", { name: "«O'zingizga mosini toping» lupa tugmasi" });
+    const sw = page.getByRole("switch", { name: "«AI bilan qidirish» tugmasi (qidiruv yonida)" });
     await sw.click();
     await expect(sw).toHaveAttribute("aria-checked", "true");
   }
@@ -96,14 +96,14 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await expect(windowsOf(guest)).toHaveCount(2);
   await expect(windowsOf(guest).nth(0)).toContainText("Ishchi kerakmi? Shu yerda toping");
   await expect(windowsOf(guest).nth(1).locator("img")).toHaveAttribute("src", new RegExp(file.replace(/[.]/g, "\\.")));
-  await expect(guest.getByRole("button", { name: "O'zingizga mosini toping" })).toBeVisible();
+  await expect(guest.getByRole("button", { name: "AI bilan qidirish" })).toBeVisible();
 
-  // lupa tugmasi o'chiriladi — saytda yo'qoladi
-  const aiSwitch = page.getByRole("switch", { name: "«O'zingizga mosini toping» lupa tugmasi" });
+  // AI qidiruv tugmasi o'chiriladi — saytda yo'qoladi
+  const aiSwitch = page.getByRole("switch", { name: "«AI bilan qidirish» tugmasi (qidiruv yonida)" });
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "false");
   await guest.reload();
-  await expect(guest.getByRole("button", { name: "O'zingizga mosini toping" })).toHaveCount(0);
+  await expect(guest.getByRole("button", { name: "AI bilan qidirish" })).toHaveCount(0);
 
   const logs = await sql<{ target_id: string }>(
     "select target_id from public.audit_logs where actor_id = $1 and action = 'settings.update' and target_id in ('home_banners', 'ai_search_button') and created_at >= $2::timestamptz order by id",
@@ -111,11 +111,11 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   );
   expect(logs.map((l) => l.target_id)).toEqual(["home_banners", "ai_search_button"]);
 
-  // lupa tugmasi qayta yoqiladi, oynalar standartga qaytariladi
+  // AI qidiruv tugmasi qayta yoqiladi, oynalar standartga qaytariladi
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "true");
   await guest.reload();
-  await expect(guest.getByRole("button", { name: "O'zingizga mosini toping" })).toBeVisible();
+  await expect(guest.getByRole("button", { name: "AI bilan qidirish" })).toBeVisible();
   await page.getByRole("button", { name: "Standartga qaytarish" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Standartga qaytarish" }).click();
   await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(6);

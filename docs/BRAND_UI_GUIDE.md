@@ -14,18 +14,23 @@ Bu hujjat ilovaning yagona ko'rinish qoidalarini beradi. Qoidalar faqat yozib qo
 
 **Bitta aksent.** Brend rangi — ko'k (`primary`). Qolgan ranglar faqat **ma'no** uchun ishlatiladi, bezak uchun emas.
 
+COBALT SUN palitrasi (2026-10, `docs/REDESIGN_2026-10.md`).
+
 | Token | Yorug' | Qorong'i | Qachon |
 |---|---|---|---|
-| `primary` | `#1d5fe0` | `#5a8ef8` | Asosiy tugma, faol holat, havola, tanlangan chip |
-| `primary-soft` | `#e8effc` | `#16274a` | Ikonka plitasi, tanlangan qator foni, ma'lumot paneli |
-| `foreground` | `#0f172a` | `#e6ebf3` | Asosiy matn |
-| `muted-foreground` | `#5b687c` | `#94a3b8` | Ikkinchi darajali matn, izoh |
-| `background` / `card` | `#f6f8fb` / `#ffffff` | `#0b1220` / `#111a2b` | Sahifa foni / karta va forma sirti |
-| `border` | `#e2e8f0` | `#223047` | Chegara, ajratgich |
-| `success` | `#15803d` | `#22c55e` | **Faqat natija:** saqlandi, joylandi, tasdiqlandi, "Qidiruvda ko'rinadi" |
+| `primary` | `#2457f5` | `#7a9bff` | Asosiy tugma, faol holat, havola, tanlangan chip |
+| `primary-soft` | `#eef3ff` | `#1b2a50` | Ikonka plitasi, tanlangan qator foni, ma'lumot paneli |
+| `foreground` | `#15213b` | `#e7ecf5` | Asosiy matn |
+| `muted-foreground` | `#5f6b7f` | `#9aa6bc` | Ikkinchi darajali matn, izoh (ochiq fonlarda ham ≥ 4.8:1) |
+| `background` / `card` | `#f6f8fc` / `#ffffff` | `#0e1729` / `#152036` | Sahifa foni / karta va forma sirti |
+| `border` / `input` | `#e4e9f2` / `#d5dce8` | `#26334d` / `#2f3e5c` | Chegara, ajratgich / forma maydoni chegarasi |
+| `highlight` | `#ffc83d` | `#ffc83d` | **Kam ishlatiladigan sariq urg'u:** faqat TOP belgisi (`bg-highlight text-highlight-foreground`) |
+| `success` | `#137a53` | `#34c38a` | **Faqat natija:** saqlandi, joylandi, tasdiqlandi, "Qidiruvda ko'rinadi" |
 | `warning` | `#b45309` | `#f59e0b` | **Faqat ogohlantirish:** muddat tugayapti, tekshiruvda, chegirma muddati |
-| `destructive` | `#d12020` | `#f05252` | **Faqat xato va o'chirish**, o'qilmagan hisoblagich |
+| `destructive` | `#c42719` | `#f26b5e` | **Faqat xato va o'chirish**, o'qilmagan hisoblagich |
 | `info` | `#0369a1` | `#38bdf8` | **Faqat ariza/taklif holati** "Yuborildi", "Ko'rildi" (jarayonda, hali natija yo'q) — `bg-info-soft text-info` |
+
+Radius 8 px asosida (`rounded-lg` = 8, `rounded-xl` = 12 px — kartalar); soyalar yengil, kartada soya o'rniga chegara.
 
 Qoidalar:
 

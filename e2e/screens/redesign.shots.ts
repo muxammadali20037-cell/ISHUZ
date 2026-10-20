@@ -124,3 +124,28 @@ test("redizayn: 5 ekran × 390/1440", async ({ browser }) => {
     await e.close();
   }
 });
+
+/** Qo'shimcha holatlar (faqat "keyin"): ru tili, 360 px, mehmon (ish qidiruvchi rejimi), qidiruv 768 px */
+test("redizayn: qo'shimcha holatlar (ru, 360, mehmon, planshet)", async ({ browser }) => {
+  test.skip(TAG === "before", "faqat yangi dizayn uchun");
+  await seed();
+  const take = async (name: string, viewport: { width: number; height: number }, setup: (ctx: BrowserContext) => Promise<void>, url = "/") => {
+    const ctx = await browser.newContext({ baseURL: stack.app, viewport, reducedMotion: "reduce" });
+    await asGuest(ctx);
+    await setup(ctx);
+    const p = await ctx.newPage();
+    await p.goto(url);
+    await expect(p.getByRole("heading", { level: 1 }).first()).toBeVisible();
+    await shot(p, name, viewport.width);
+    await ctx.close();
+  };
+  const ru = async (ctx: BrowserContext) => {
+    await as(ctx, "worker");
+    await ctx.addCookies([{ name: "ishuz_locale", value: "ru", url: stack.app }]);
+  };
+  await take("1-seeker-home-ru", { width: 390, height: 844 }, ru);
+  await take("1-seeker-home", { width: 360, height: 780 }, (ctx) => as(ctx, "worker"));
+  await take("6-guest-seeker-home", { width: 390, height: 844 }, (ctx) => asMode(ctx, "worker"));
+  await take("2-search-ru", { width: 390, height: 844 }, ru, "/search?mode=jobs&any=1&region=tashkent_city&district=all");
+  await take("2-search", { width: 768, height: 1024 }, (ctx) => as(ctx, "worker"), "/search?mode=jobs&any=1&region=tashkent_city&district=all");
+});

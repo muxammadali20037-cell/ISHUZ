@@ -29,7 +29,7 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
   await nav.getByRole("link", { name: "Nomzodlar" }).click();
 
-  // javob hali kelmagan: skelet ko'rinadi — xuddi shu lahzada panel, menyu va lupa tugmasi ham joyida
+  // javob hali kelmagan: skelet ko'rinadi — xuddi shu lahzada panel va menyu ham joyida
   // (bitta "surat": kutib turib, javob kelgandan keyingi holatni tekshirib qo'ymaslik uchun)
   const skeleton = page.locator("[data-step-loading]");
   await page.waitForSelector("[data-step-loading]");
@@ -37,11 +37,10 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
     skeleton: !!document.querySelector("[data-step-loading]"),
     header: !!document.querySelector("header"),
     nav: !!document.querySelector("nav.fixed"),
-    fab: document.querySelectorAll("main ~ button, main ~ div button").length > 0,
     active: document.querySelector("nav.fixed a[aria-current='page']")?.textContent ?? null,
     mainClass: document.querySelector("main")?.className ?? "",
   }));
-  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, fab: true, active: "Nomzodlar" });
+  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, active: "Nomzodlar" });
   expect(snap.mainClass).toContain("page-enter");
 
   // javob keldi: kontent skelet o'rnida, faqat ochiladi (pastdan ikkinchi marta chiqmaydi)
@@ -65,9 +64,9 @@ test("skeletsiz o'tishda kontent pastdan chiqadi; animatsiya tugagach main'da tr
   await page.waitForLoadState("networkidle");
   expect(errors.filter((e) => /hydrat|#418|#423|#425/i.test(e))).toEqual([]);
   await expect(page.locator("main")).not.toHaveClass(/page-(enter|swap)/);
-  // /ai (pastki menyu, S2) — kontent bevosita, skeletsiz
-  await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().getByRole("link", { name: "AI" }).click();
-  await expect(page).toHaveURL(/\/ai$/);
+  // Profil (pastki menyu) — kontent bevosita, skeletsiz
+  await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().getByRole("link", { name: "Profil" }).click();
+  await expect(page).toHaveURL(/\/cabinet$/);
   const main = page.locator("main");
   await expect(main).toHaveClass(/page-enter/);
   // 350 ms dan keyin: element o'z joyida, ichidagi fixed panellar uchun "containing block" yaratmaydi

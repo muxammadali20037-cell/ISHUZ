@@ -85,11 +85,18 @@ test("kod: noto'g'ri, eskirgan, 60 s dan keyin qayta yuborish", async ({ page, c
 
 test("chiqish: sarlavhada yana 'Kirish', kabinet kirishni taklif qiladi", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
-  await page.goto("/");
-  await page.getByRole("banner").getByRole("button").last().click();
-  await page.getByRole("menuitem", { name: "Chiqish" }).click();
+  // telefonda profil menyusi — pastki "Profil" (kabinet); kompyuterda — sarlavhadagi avatar menyusi
+  await page.goto("/cabinet");
+  await page.getByRole("main").getByRole("button", { name: "Chiqish" }).click();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
   await page.goto("/cabinet");
   await expect(page.getByRole("heading", { name: "Hisobga kiring" })).toBeVisible();
   await expect(page.getByRole("main").getByRole("link", { name: "Hisobga kirish" })).toHaveAttribute("href", "/auth?next=%2Fcabinet");
+  // kompyuterda: avatar menyusi orqali chiqish
+  await loginAs(context, USERS.workerA);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/");
+  await page.getByRole("banner").getByRole("button").last().click();
+  await page.getByRole("menuitem", { name: "Chiqish" }).click();
+  await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
 });

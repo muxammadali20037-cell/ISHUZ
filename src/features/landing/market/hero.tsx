@@ -1,5 +1,6 @@
 import { ArrowRight, BriefcaseBusiness, CalendarDays, Laptop, MapPin, Search, Sparkles, Sprout, UsersRound, type LucideIcon } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
+import { AiFinder } from "@/features/find/components/ai-finder";
 import { getRegions } from "@/lib/reference";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
@@ -22,7 +23,7 @@ const num = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
  * "Xodim qidiraman" — rejim yoziladi, mavjud bosh sahifasiga), katta qidiruv paneli va tezkor filtrlar.
  * Kompyuterda o'ngda — admin almashtira oladigan rasmlar (telefonda yo'q: qidiruv yuqoriroq turadi).
  */
-export async function MarketHero({ stats, media }: { stats: EntryStats | null; media: EntryMedia }) {
+export async function MarketHero({ stats, media, ai = false }: { stats: EntryStats | null; media: EntryMedia; ai?: boolean }) {
   const { t } = await getT();
   const seek = Object.fromEntries(seekerQuickFilters({ region: null, district: null }).map((f) => [f.key, f.href])) as Record<"salary" | "noexp" | "daily" | "remote", string>;
   const chips: { key: string; icon: LucideIcon; label: string; next: string }[] = [
@@ -87,6 +88,12 @@ export async function MarketHero({ stats, media }: { stats: EntryStats | null; m
                 </form>
               </li>
             ))}
+            {/* AI qidiruv — qidiruv paneli yonida (suzuvchi tugma yo'q); mehmon oynada ish yoki xodim qidirishni tanlaydi */}
+            {ai ? (
+              <li className="flex">
+                <AiFinder defaultMode="jobs" className="rounded-full border border-primary/30 bg-card px-3.5" />
+              </li>
+            ) : null}
           </ul>
         </nav>
       </div>

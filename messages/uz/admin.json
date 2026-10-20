@@ -860,10 +860,10 @@
   },
   "home": {
     "title": "Bosh sahifa",
-    "subtitle": "Tepadagi rasmli oynalar va «O'zingizga mosini toping» lupa tugmasi",
+    "subtitle": "Bosh sahifadagi oynalar va «AI bilan qidirish» tugmasi",
     "needs_migration": "Bu sozlamalarni saqlash uchun bazaga 0060 migratsiyasi qo'llanishi kerak. Hozircha saytda standart oynalar ko'rinadi.",
-    "ai_button": "«O'zingizga mosini toping» lupa tugmasi",
-    "ai_button_hint": "Har sahifada o'ng pastda turadi. O'chirsangiz — saytdan darhol yo'qoladi.",
+    "ai_button": "«AI bilan qidirish» tugmasi (qidiruv yonida)",
+    "ai_button_hint": "Bosh sahifada qidiruv blokida turadi (ekranni to'smaydi). O'chirsangiz — saytdan darhol yo'qoladi.",
     "windows": "Rasmli oynalar",
     "windows_hint": "Bosh sahifa tepasida, chapdan o'ngga shu tartibda. Matn yozilmagan tilda standart matn ko'rinadi.",
     "window_n": "{n}-oyna",

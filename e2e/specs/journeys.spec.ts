@@ -27,7 +27,7 @@ for (const vp of [
     // birinchi ochilish: bosh sahifa — "Ish qidiraman"; keyin "O'zim haqimda e'lon berish"
     // (kompyuterda — o'ng paneldagi "Rezyume joylash"). Rejim tanlangan — e'lon turi qayta so'ralmaydi (tasdiq — modes.spec)
     await page.getByRole("main").getByRole("button", { name: /^Ish qidiraman/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
     await page.locator("main a[href='/post/worker']:visible").first().click();
     await page.waitForURL(/\/post\/worker/);
     await pickProfession(page, "Buxgalter", "Buxgalter");

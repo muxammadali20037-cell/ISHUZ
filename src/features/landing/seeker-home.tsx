@@ -18,13 +18,15 @@ import { windowsFor } from "@/features/home-windows/model";
 import { SeekerSearch } from "./home-search";
 import { getHomePlace, getPopularProfessions, getSeekerFeed, type HomePlace } from "./home-queries";
 import { placeChooserHref, seekerFiltersHref, seekerQuickFilters } from "./quick-filters";
+import { SeekerSectionList } from "./section-tiles";
 
 /**
  * Ish qidiruvchi bosh sahifasi (2026-10 redizayn; mehmon ham — ro'yxatdan o'tmasdan ko'radi). Birinchi ekranda vazifa:
  * qisqa sarlavha → qidiruv (filtrlar va AI unga biriktirilgan) → tez filtrlar → darhol haqiqiy vakansiyalar ro'yxati.
  * Katta bezak plitkalari va statistika bannerlari yo'q. 390×844 da birinchi vakansiyaning nomi, maoshi va hududi ko'rinadi.
  * Kompyuterda: tepada keng qidiruv (hudud shu blokda), ostida ro'yxat (2 ustun) va o'ngda ixcham yordamchi panel —
- * "o'zim haqimda e'lon", mashhur kasblar, admin sozlagan bo'limlar, AI PRO. Telefonda shu panel ro'yxatdan keyin keladi.
+ * "o'zim haqimda e'lon", bo'limlar (sonlari bilan), mashhur kasblar, admin sozlagan oynalar, AI PRO. Telefonda shu panel ro'yxatdan
+ * keyin keladi.
  */
 export async function SeekerHome({ session }: { session: SessionContext | null }) {
   const [{ t, name }, place, home] = await Promise.all([getT(), getHomePlace(), getHomeSettings()]);
@@ -53,6 +55,10 @@ export async function SeekerHome({ session }: { session: SessionContext | null }
         </Suspense>
         <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-5">
           <ResumeCard />
+          {/* bo'limlar (sonlari bilan): ish beruvchi turi, ommaviy, TOP, yaqin atrofda — ixcham ro'yxat, ro'yxatdan keyin */}
+          <Suspense fallback={null}>
+            <SeekerSectionList place={place} />
+          </Suspense>
           <Suspense fallback={null}>
             <PopularProfessions place={place} />
           </Suspense>

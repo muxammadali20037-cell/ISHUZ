@@ -2,10 +2,12 @@ import Link from "next/link";
 import {
   BadgeCheck,
   Building2,
+  CalendarDays,
   Crown,
   Landmark,
   Laptop,
   LayoutGrid,
+  MapPin,
   Sprout,
   Store,
   User,
@@ -113,9 +115,9 @@ function wherePatch(place: HomePlace): Partial<FindParams> {
   return { region: place.region?.slug ?? "all", district: place.region ? (place.district?.id ?? "all") : null };
 }
 
-/** Ish qidiruvchi: Kunlik ishlar · Yaqin atrofda | Masofaviy · Tajribasiz · MChJ · YaTT · Davlat · Jismoniy shaxs · Ommaviy · TOP · Barcha sohalar */
-export async function SeekerSections({ place }: { place: HomePlace }) {
-  const [{ t }, c, media] = await Promise.all([getT(), getJobSections(place.region?.id ?? null, place.district?.id ?? null), getEntryMedia()]);
+/** Ish qidiruvchi bo'limlari: Kunlik ishlar · Yaqin atrofda | Masofaviy · Tajribasiz · MChJ · YaTT · Davlat · Jismoniy shaxs · Ommaviy · TOP · Barcha sohalar */
+async function seekerSectionItems(place: HomePlace) {
+  const [{ t }, c] = await Promise.all([getT(), getJobSections(place.region?.id ?? null, place.district?.id ?? null)]);
   const any: FindParams = { ...EMPTY_FIND, mode: "jobs", any: true, ...wherePatch(place) };
   const big: BigTile[] = [
     {
@@ -150,7 +152,46 @@ export async function SeekerSections({ place }: { place: HomePlace }) {
       : []),
   ].filter((s) => s.core || s.count === null || s.count > 0);
   small.push({ key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.sections.all"), icon: LayoutGrid, count: null });
-  return <SectionGrid title={t("easy.sections.title")} big={big} small={small} media={media} />;
+  return { title: t("easy.sections.title"), big, small, dailyCount: c?.daily ?? null };
+}
+
+/**
+ * Ixcham bo'limlar ro'yxati (2026-10 redizayn, bosh sahifaning yon paneli): katta rasmli plitkalar o'rnida — belgi, nomi va
+ * haqiqiy son bir qatorda. Telefonda ro'yxatdan keyin ikki ustun, kompyuterda o'ng panelda bitta ustun.
+ */
+export async function SeekerSectionList({ place }: { place: HomePlace }) {
+  const { title, big, small, dailyCount } = await seekerSectionItems(place);
+  const rows: { key: string; href: string; label: string; title?: string; icon: LucideIcon; count: number | null }[] = [
+    { key: big[0]!.key, href: big[0]!.href, label: big[0]!.label, icon: CalendarDays, count: dailyCount },
+    { key: big[1]!.key, href: big[1]!.href, label: big[1]!.label, icon: MapPin, count: null },
+    ...small,
+  ];
+  return (
+    <section aria-labelledby="home-sections" className="rounded-xl border border-border bg-card p-2">
+      <h2 id="home-sections" className="px-2 pb-1 pt-1.5 text-base font-bold">
+        {title}
+      </h2>
+      <ul className="grid grid-cols-2 gap-x-1 lg:grid-cols-1">
+        {rows.map((r) => (
+          <li key={r.key} className="flex min-w-0">
+            <Link
+              href={r.href}
+              prefetch={false}
+              title={r.title}
+              data-track="home_section"
+              data-track-to={r.key}
+              className="press flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold hover:bg-secondary hover:text-primary"
+            >
+              <r.icon className="size-4 shrink-0 text-primary" aria-hidden />
+              <span className="min-w-0 flex-1 truncate">{r.label}</span>
+              {r.title ? <span className="sr-only">{r.title}</span> : null}
+              {r.count !== null ? <span className="shrink-0 text-sm font-medium tabular text-muted-foreground">{num(r.count)}</span> : null}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
 }
 
 /** Ish beruvchi: Kunlik ishchilar · Yaqin ishchilar | Tajribali · Masofaviy · Barcha ishchilar · Barcha sohalar (vakansiya joylash — sahifaning asosiy tugmasi) */

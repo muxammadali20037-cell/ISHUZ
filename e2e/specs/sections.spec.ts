@@ -2,9 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { asGuest, asMode, sql } from "../support";
 
 /**
- * S2 · bosh sahifa bo'limlari (Yandex Go uslubida): har bo'lim soni bazadagi bilan bir xil, bosilsa — o'sha bo'lim natijalari,
- * faol filtr chip sifatida ko'rinadi va olib tashlanadi; soni 0 bo'lgan kichik bo'lim ko'rsatilmaydi. Ish beruvchi — kunlik ishchilar.
- * Pastki menyu: Asosiy · Ishlar · AI · Xabarlar · Profil; /ai — aqlli qidiruv va "Sizga mos".
+ * S2 / 2026-10 · bosh sahifa bo'limlari: har bo'lim soni bazadagi bilan bir xil, bosilsa — o'sha bo'lim natijalari, faol filtr
+ * chip sifatida ko'rinadi va olib tashlanadi; soni 0 bo'lgan kichik bo'lim ko'rsatilmaydi. Ish qidiruvchida — ixcham ro'yxat
+ * (ro'yxatdan keyin / o'ng panelda, katta plitkalar yo'q). Ish beruvchi — kunlik ishchilar. /ai — aqlli qidiruv va "Sizga mos".
  */
 
 const EMP = "7e2e0000-0000-4000-8000-000000000066";
@@ -57,17 +57,18 @@ test.describe("bo'limlar", () => {
     await asMode(context, "worker");
     await page.goto("/");
     const [c] = await sql<Record<string, string>>("select * from public.vacancy_section_counts(null, null)");
-    await expect(tile(page, "Kunlik ishlar")).toContainText(`${c!.daily} ta e'lon`);
+    await expect(tile(page, "Kunlik ishlar")).toContainText(new Intl.NumberFormat("ru-RU").format(Number(c!.daily)));
     await expect(tile(page, "YaTT")).toContainText(String(c!.entrepreneur));
     await expect(tile(page, "Ommaviy")).toContainText(String(c!.mass));
     await expect(tile(page, "Yaqin atrofda")).toBeVisible();
     await expect(tile(page, "Barcha sohalar")).toBeVisible();
     // TOP — faqat admin belgilagan e'lon bo'lsa
     if (Number(c!.featured) === 0) await expect(tile(page, "TOP")).toHaveCount(0);
-    // bo'limlar qidiruvdan keyin, ro'yxatdan oldin
-    const order = await page.evaluate(() => ({ search: document.querySelector("form[role=search]")!.getBoundingClientRect().top, sections: document.querySelector("#home-sections")!.parentElement!.getBoundingClientRect().top, feed: document.querySelector("#home-feed")?.getBoundingClientRect().top ?? 1e9 }));
-    expect(order.sections).toBeGreaterThan(order.search);
-    expect(order.feed).toBeGreaterThan(order.sections);
+    // 2026-10: birinchi ekranni katta plitkalar egallamaydi — bo'limlar ro'yxatdan keyin (telefonda), rasmsiz
+    await expect(page.locator("#home-feed")).toBeVisible();
+    const order = await page.evaluate(() => ({ sections: document.querySelector("#home-sections")!.getBoundingClientRect().top, feed: document.querySelector("#home-feed")!.getBoundingClientRect().top }));
+    expect(order.sections).toBeGreaterThan(order.feed);
+    await expect(sections(page).locator("img")).toHaveCount(0);
   });
 
   test("bo'lim → natijalar: YaTT e'lonlari, chip bilan; chip olib tashlansa — barcha kasblar", async ({ page, context }) => {

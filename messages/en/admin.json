@@ -860,10 +860,10 @@
   },
   "home": {
     "title": "Home page",
-    "subtitle": "Picture windows at the top and the “Find what fits you” magnifier button",
+    "subtitle": "Home page windows and the “Search with AI” button",
     "needs_migration": "Migration 0060 must be applied to the database to save these settings. The site shows the default windows for now.",
-    "ai_button": "“Find what fits you” magnifier button",
-    "ai_button_hint": "Sits at the bottom right of every page. Turning it off removes it from the site immediately.",
+    "ai_button": "“Search with AI” button (next to search)",
+    "ai_button_hint": "Sits in the search block on the home page (does not cover the screen). Turning it off removes it from the site immediately.",
     "windows": "Picture windows",
     "windows_hint": "At the top of the home page, left to right in this order. Where no text is set, the default text is shown.",
     "window_n": "Window {n}",

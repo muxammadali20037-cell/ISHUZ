@@ -20,6 +20,8 @@ import { KeyTiles, KeyTilesSkeleton, PipelineTiles } from "./stats-tiles";
 import { EmployerSections } from "./employer-sections";
 import { VerificationBadge } from "./status-badge";
 import { HireSections, SectionsSkeleton } from "@/features/landing/section-tiles";
+import { AiFinder } from "@/features/find/components/ai-finder";
+import { getHomeSettings } from "@/features/home-windows/queries";
 
 /**
  * Ish beruvchi paneli (server): /employer va ish beruvchi rejimidagi bosh sahifa. Tartib: salomlashuv → vakansiya joylash va
@@ -29,12 +31,13 @@ import { HireSections, SectionsSkeleton } from "@/features/landing/section-tiles
 export async function EmployerDashboard({ session, embedded = false }: { session: SessionContext & { employerId: string }; embedded?: boolean }) {
   const { t, tEnum } = await getT();
   const { userId, companyId } = session;
-  const [profile, company, latestActive, latestAny, anyVacancy] = await Promise.all([
+  const [profile, company, latestActive, latestAny, anyVacancy, home] = await Promise.all([
     getEmployerProfile(userId),
     companyId ? getCompanyById(companyId) : Promise.resolve(null),
     getLatestVacancy(userId, companyId, true),
     getLatestVacancy(userId, companyId, false),
     getMyVacancies(userId, companyId, 1),
+    getHomeSettings(),
   ]);
 
   const name = employerDisplayName({ companyName: company?.name, displayName: profile?.display_name, firstName: session.profile.first_name });
@@ -107,6 +110,8 @@ export async function EmployerDashboard({ session, embedded = false }: { session
             {t("easy.start.search_button")}
           </Button>
         </Form>
+        {/* AI qidiruv — nomzod qidiruvi ostida (suzuvchi tugma yo'q; admin o'chirsa — ko'rinmaydi) */}
+        {home.aiButton ? <AiFinder defaultMode="workers" locked className="justify-self-start sm:col-start-2" /> : null}
       </div>
 
       {/* S2: nomzodlar bo'limlari (kunlik ishchilar, yaqin, tajribali — haqiqiy sonlar) */}

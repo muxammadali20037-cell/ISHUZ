@@ -3,6 +3,7 @@ import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { getEntryMedia } from "@/features/entry/queries";
+import { getHomeSettings } from "@/features/home-windows/queries";
 import { getEntryStats } from "../entry-queries";
 import { MarketHero } from "./hero";
 import { CategoryGrid, EmployerBand, HowItWorks, LatestJobsSection, LatestJobsSkeleton, MarketStats, TrustStrip, WhyUs, WorkersPreview } from "./sections";
@@ -17,10 +18,10 @@ import type { LatestTab } from "./model";
  * Rejim tanlangach — o'sha rolning bosh sahifasi (seeker-home / employer-home), avvalgidek.
  */
 export async function MarketHome({ session, tab }: { session: SessionContext | null; tab: LatestTab }) {
-  const [{ t }, stats, counts, media] = await Promise.all([getT(), getEntryStats(), getMarketCounts(), getEntryMedia()]);
+  const [{ t }, stats, counts, media, home] = await Promise.all([getT(), getEntryStats(), getMarketCounts(), getEntryMedia(), getHomeSettings()]);
   return (
     <>
-      <MarketHero stats={stats} media={media} />
+      <MarketHero stats={stats} media={media} ai={home.aiButton} />
       <TrustStrip />
       <CategoryGrid counts={counts} />
       <Suspense fallback={<LatestJobsSkeleton />}>

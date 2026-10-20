@@ -1,9 +1,9 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
- * D4 · o'ng pastdagi lupa tugmasi "O'zingizga mosini toping": doim ko'rinadi, pastki menyu va yopishqoq amallar panelini
- * yopmaydi; qisqa matn → tushunilgan narsalar + mos e'lonlar shu oynada (stendda AI kaliti yo'q — lug'at bilan tushuniladi).
+ * D4 / 2026-10 · "AI bilan qidirish" — qidiruv blokida (ekranni to'sadigan suzuvchi tugma yo'q): "O'zingizga mosini toping"
+ * oynasi; qisqa matn → tushunilgan narsalar + mos e'lonlar shu oynada (stendda AI kaliti yo'q — lug'at bilan tushuniladi).
  */
 
 async function nodeId(name: string) {
@@ -21,7 +21,7 @@ async function vacancy(title: string, profession: string, salaryType: "monthly" 
   return v!.slug;
 }
 
-const fab = (page: Page) => page.getByRole("button", { name: "O'zingizga mosini toping" });
+const fab = (page: Page) => page.getByRole("button", { name: "AI bilan qidirish" });
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -30,16 +30,23 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("lupa tugmasi: o'ng pastda, pastki menyu ustida, sahifa aylantirilganda ham joyida", async ({ page, context }) => {
+test("AI tugmasi qidiruv blokida (suzuvchi emas): sahifa aylantirilganda ekranni to'smaydi, vakansiya sahifasida yo'q", async ({ page, context }) => {
+  const slug = await vacancy("Buxgalter", "Buxgalter");
   await asGuest(context);
+  await asMode(context, "worker");
   await page.goto("/");
+  // qidiruv blokining ichida (bir xil ota konteyner), pozitsiyasi oddiy — fixed/sticky emas
   const box = (await fab(page).boundingBox())!;
-  const vp = page.viewportSize()!;
-  expect(box.x + box.width).toBeGreaterThan(vp.width - 40);
-  const nav = (await page.getByRole("navigation").last().boundingBox())!;
-  expect(box.y + box.height).toBeLessThanOrEqual(nav.y);
+  const search = (await page.getByRole("search", { name: "Ish qidirish" }).boundingBox())!;
+  expect(box.y).toBeGreaterThan(search.y);
+  expect(box.y).toBeLessThan(search.y + search.height + 60);
+  expect(await fab(page).evaluate((el) => getComputedStyle(el).position)).toBe("static");
   await page.mouse.wheel(0, 2000);
-  await expect(fab(page)).toBeInViewport();
+  await expect(fab(page)).not.toBeInViewport();
+  // vakansiya sahifasida "Ariza yuborish" paneli ustida hech narsa yo'q
+  await page.goto(`/jobs/${slug}`);
+  await expect(page.getByRole("button", { name: "Ariza yuborish" }).last()).toBeVisible();
+  await expect(fab(page)).toHaveCount(0);
 });
 
 test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosilsa — sahifasi ochiladi", async ({ page, context }) => {
@@ -82,17 +89,7 @@ test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq ta
   await expect(dialog.getByRole("link", { name: "Kasbni ro'yxatdan tanlash" })).toHaveAttribute("href", /\/search\?mode=jobs/);
 });
 
-test("vakansiya sahifasi (telefon): lupa 'Ariza yuborish' panelini yopmaydi; ish beruvchida — 'Xodim qidiryapman'", async ({ page, context }) => {
-  const slug = await vacancy("Buxgalter", "Buxgalter");
-  await asGuest(context);
-  await page.goto(`/jobs/${slug}`);
-  const apply = page.getByRole("button", { name: "Ariza yuborish" }).last();
-  await expect(apply).toBeVisible();
-  const panel = (await apply.locator("xpath=ancestor::div[contains(@class,'fixed')][1]").boundingBox())!;
-  const box = (await fab(page).boundingBox())!;
-  expect(box.y + box.height).toBeLessThanOrEqual(panel.y);
-  await apply.click({ trial: true });
-
+test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ishchilar ichida", async ({ page, context }) => {
   await sql(
     `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
      values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
@@ -102,7 +99,7 @@ test("vakansiya sahifasi (telefon): lupa 'Ariza yuborish' panelini yopmaydi; ish
   await loginAs(context, USERS.employer);
   await page.goto("/");
   await fab(page).click();
-  // ish beruvchi rejimi: lupa faqat ishchilar ichidan qidiradi (rejim tanlovi ko'rsatilmaydi)
+  // ish beruvchi rejimi: faqat ishchilar ichidan qidiradi (rejim tanlovi ko'rsatilmaydi)
   await expect(page.getByRole("dialog").getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
   await expect(page.getByRole("dialog").getByRole("radio")).toHaveCount(0);
 });
