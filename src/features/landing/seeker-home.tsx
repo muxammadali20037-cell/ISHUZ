@@ -22,6 +22,9 @@ import { getHomePlace, getPopularProfessions, getSeekerFeed, type HomePlace } fr
 import { placeChooserHref, seekerFiltersHref, seekerQuickFilters } from "./quick-filters";
 import { SeekerSectionList } from "./section-tiles";
 import { getEntryStats } from "./entry-queries";
+import { getEntryMedia } from "@/features/entry/queries";
+import { entryMediaUrl } from "@/features/entry/media";
+import { HeroBackdrop } from "@/components/shared/hero-backdrop";
 
 /**
  * Ish qidiruvchi bosh sahifasi — mini-ilova uslubi (premium 2026-10; mehmon ham — ro'yxatdan o'tmasdan ko'radi):
@@ -32,7 +35,8 @@ import { getEntryStats } from "./entry-queries";
  * Kompyuterda: sarlavha va xizmatlar keng, ostida ro'yxat (2 ustun) va o'ngda yordamchi panel. Telefonda panel ro'yxatdan keyin.
  */
 export async function SeekerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
-  const [{ t, name }, place, home, stats] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryStats()]);
+  const [{ t, name }, place, home, stats, media] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryStats(), getEntryMedia()]);
+  const photo = entryMediaUrl(media.hero_seeker);
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const quick = Object.fromEntries(seekerQuickFilters(where).map((c) => [c.key, c.href])) as Record<"daily" | "noexp" | "remote" | "students", string>;
   const hasCv = !!session?.workerId;
@@ -55,8 +59,9 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
         {/* flush — sahifaning eng tepasi (kirgan foydalanuvchi): telefonda sarlavha chetdan-chetga */}
         <section
           aria-labelledby="home-title"
-          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl")}
+          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl", photo && "has-photo")}
         >
+          <HeroBackdrop src={photo} />
           <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end lg:gap-10">
             <div className="min-w-0">
               <p className="text-sm font-semibold text-hero-muted">{firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}</p>

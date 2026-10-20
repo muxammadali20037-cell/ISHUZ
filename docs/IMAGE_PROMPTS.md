@@ -7,7 +7,7 @@ tekshiruvi, storage, kesh) — `ENTRY_MEDIA.md`.
 
 | # | Qayerga | Nechta | Kim qo'yadi | Majburiymi |
 |---|---|---|---|---|
-| A | **Admin → Kontent → Kirish ekranlari** (`/admin/entry`): kirish ekranlari (5) va bosh sahifadagi katta plitkalar (4) | 9 | Siz, admin panelda | Tavsiya etiladi — eng ko'p ko'rinadigan joylar |
+| A | **Admin → Kontent → Kirish ekranlari** (`/admin/entry`): bosh ekran fonlari (3) va kirish ekranlari (5) | 8 | Siz, admin panelda | Tavsiya etiladi — eng ko'p ko'rinadigan joylar |
 | B | **Admin → Bosh sahifa → Rasmli oynalar** (`/admin/home`) | 6 (12 gacha) | Siz, admin panelda | Ixtiyoriy — rasm 48 px'da ko'rinadi |
 | C | Havola ulashilganda chiqadigan rasm (OG, 1200×630) | 1 | Kod orqali | Hozir **yo'q** — qo'shish kerak (pastda) |
 | D | Kasb rasmlari (kartalarda) | avtomatik | AI (Gemini), kod | Siz hech narsa qilmaysiz |
@@ -281,3 +281,19 @@ Bu joylarda faqat o'rnatilgan tasvir bor, admin joyi yo'q. Kerak bo'lsa, admin j
 - [ ] Rasm haqiqiy biror odamga (taniqli shaxsga) o'xshamaydi.
 
 Shubha bo'lsa — boshqa variantni tanlang yoki haqiqiy surat oling.
+
+
+## Bosh ekran fonlari (premium 2026-10) — `/admin/entry` → «Bosh ekran fonlari»
+
+Bosh sahifa sarlavhasining orqa foni. Surat ustiga **ko'k parda** tushadi (oq yozuv har qanday suratda o'qiladi), shuning
+uchun surat biroz to'qroq va ko'k tusda ko'rinadi — bu ataylab. Yuklanmasa — ko'k brend foni.
+
+- **O'lcham:** 16:9, kamida **1920×1080**. Telefonda o'rtasidan tik kesiladi, kompyuterda yozuv **chap** tomonda turadi —
+  asosiy obyekt **o'ng yarmida**, chap tomon tinchroq (osmon, devor, xira fon) bo'lsin.
+- **Tavsiya:** juda mayda detallar va ko'p odamli olomon emas — 1–3 kishi yoki bitta aniq joy.
+
+| Joy | Nima ko'rinsin | Prompt (inglizcha) |
+|---|---|---|
+| `hero_seeker` — ish qidiruvchi | Ishga kelgan yosh odam: Toshkentdagi zamonaviy ofis yoki do'kon kirishi, ertalabki yorug'lik | Documentary photo, a young Uzbek man in a neat shirt walking into a modern office building in Tashkent in the morning, seen from the side on the right third of the frame, soft morning light, calm sky and glass facade on the left, natural colors with a slight blue tone, 16:9, no text, no logos |
+| `hero_employer` — ish beruvchi | Kichik biznes egasi jamoasi bilan: ustaxona, kafe yoki ofisda suhbat | Documentary photo, an Uzbek small-business owner talking with two employees in a bright workshop or cafe in Tashkent, people on the right half of the frame, blurred calm interior on the left, natural daylight, realistic, slight blue tone, 16:9, no text, no logos |
+| `hero_guest` — mehmon va birinchi ochilish | Toshkent shahri: zamonaviy ko'cha yoki biznes markaz, ertalab, odamlar ishga ketmoqda | Wide documentary photo of a modern Tashkent street in the early morning, people going to work in the distance on the right side, clear sky and buildings on the left, natural light, realistic, slight blue tone, 16:9, no text, no readable signs, no logos |

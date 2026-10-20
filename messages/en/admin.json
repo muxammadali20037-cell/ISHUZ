@@ -911,7 +911,12 @@
     "replace": "Replace",
     "remove": "Back to built-in illustration",
     "saved": "Entry screens updated",
-    "guide": "Ready generation prompts and shooting tips for every image: docs/IMAGE_PROMPTS.md"
+    "guide": "Ready generation prompts and shooting tips for every image: docs/IMAGE_PROMPTS.md",
+    "group_hero": "Home screen backgrounds",
+    "group_hero_hint": "Background of the home page header. A blue veil goes over the photo so white text always reads. No photo — blue background.",
+    "slot_hero_seeker": "Job seeker home screen",
+    "slot_hero_employer": "Employer home screen",
+    "slot_hero_guest": "Guest page and first launch"
   },
   "account": {
     "title": "Sign-in methods",

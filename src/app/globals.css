@@ -388,6 +388,22 @@ html.no-splash .splash { display: none; }
   -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 90%);
   mask-image: linear-gradient(to bottom, #000 0%, transparent 90%);
 }
+/* Sarlavha fon surati (admin yuklasa): surat + ko'k parda. Parda hisob-kitobi: eng oq piksel ustida ham oq matn ≥ 5:1,
+   och matn (hero-muted) ≥ 4.5:1 (telefonda bir xil parda; kompyuterda matn chapda — o'ng tomon ochiqroq, surat ko'rinadi) */
+.hero-photo { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgb(20 52 194 / 0.76) 0%, rgb(13 31 117 / 0.84) 100%);
+}
+@media (min-width: 64rem) {
+  .hero-scrim { background: linear-gradient(90deg, rgb(13 31 117 / 0.88) 0%, rgb(20 52 194 / 0.82) 48%, rgb(20 52 194 / 0.5) 100%); }
+}
+.hero-surface.has-photo::before { display: none; }
+.has-photo .hero-glass { background-color: rgb(13 31 117 / 0.6); }
+
 /* hero ustidagi shaffof tugma/chip */
 .hero-glass {
   background-color: rgb(255 255 255 / 0.14);

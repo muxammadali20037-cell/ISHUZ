@@ -40,6 +40,14 @@ kontrast testiga qo'shildi. Radius biroz kattalashdi (zamonaviyroq). Harakat `pr
 **Fishka — "Gapirib bering":** AI bilan rezyume/vakansiya tuzishda yozish shart emas — "Gapirib berish" tugmasi, aytilgani matnga
 yoziladi, AI maydonlarni to'ldiradi (brauzer qo'llasa; ovoz serverga yuborilmaydi). AI qidiruvda ham mikrofon bor (2-qism).
 
+### Bosh ekran fonlari (surat)
+
+Ko'k fon o'rniga surat qo'yish mumkin: **admin → Kirish ekranlari → «Bosh ekran fonlari»** — ish qidiruvchi, ish beruvchi,
+mehmon (birinchi ochilish ham) uchun alohida. Surat ustiga ko'k parda tushadi (`.hero-scrim`): eng oq surat ustida ham oq yozuv
+≥ 5:1, och yozuv ≥ 4.5:1 — matn doim o'qiladi. Kompyuterda yozuv chapda, o'ng tomonda surat ochiqroq ko'rinadi. Surat
+yuklanmasa yoki ochilmasa — avvalgi ko'k fon. Mehmon sahifasida surat bo'lsa, ustidagi tasvir kartalari yashiriladi.
+Qanday surat va tayyor promptlar: `docs/IMAGE_PROMPTS.md` → «Bosh ekran fonlari». Sinov: `entry-flow.spec.ts`.
+
 ## 3. Oldin / keyin (`docs/screenshots/premium-2026-10/`, skript: `e2e/screens/premium.shots.ts`)
 
 | Ekran | Oldin | Keyin |

@@ -2,6 +2,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { HeroBackdrop } from "@/components/shared/hero-backdrop";
 
 /**
  * Kirish oqimi ekranlari uchun umumiy qolip (mobil ilova kabi): tepada — orqaga / o'tkazib yuborish, o'rtada — asosiy mazmun,
@@ -73,9 +74,10 @@ export function EntryIcon({ children }: { children: ReactNode }) {
  * Birinchi ekrandagi brend kartasi: chuqur ko'k sirt, oq "Ish topdim" belgisi, shior va (bo'lsa) haqiqiy jonli son.
  * Foydalanuvchi ilovani birinchi ochganda nima ekanini va u "tirik" ekanini bir qarashda ko'radi.
  */
-export function EntryBrand({ name, slogan, live }: { name: ReactNode; slogan: string; live?: string | null }) {
+export function EntryBrand({ name, slogan, live, photo = null }: { name: ReactNode; slogan: string; live?: string | null; photo?: string | null }) {
   return (
-    <div className="hero-surface rounded-2xl px-5 py-6 text-center shadow-lg">
+    <div className={cn("hero-surface rounded-2xl px-5 py-6 text-center shadow-lg", photo && "has-photo")}>
+      <HeroBackdrop src={photo} />
       <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-card text-primary shadow-lg [&_svg]:size-[78%]" aria-hidden>
         {/* BrandMark shakli — oq plita ustida ko'k */}
         <svg viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">

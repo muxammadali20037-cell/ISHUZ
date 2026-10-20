@@ -911,7 +911,12 @@
     "replace": "Almashtirish",
     "remove": "O'rnatilgan tasvirga qaytish",
     "saved": "Kirish ekranlari yangilandi",
-    "guide": "Har bir rasm uchun tayyor generatsiya prompti va suratga olish ko'rsatmasi: docs/IMAGE_PROMPTS.md"
+    "guide": "Har bir rasm uchun tayyor generatsiya prompti va suratga olish ko'rsatmasi: docs/IMAGE_PROMPTS.md",
+    "group_hero": "Bosh ekran fonlari",
+    "group_hero_hint": "Bosh sahifa sarlavhasining orqa foni. Surat ustiga ko'k parda tushadi — oq yozuv doim o'qiladi. Yuklanmasa — ko'k fon.",
+    "slot_hero_seeker": "Ish qidiruvchi bosh ekrani",
+    "slot_hero_employer": "Ish beruvchi bosh ekrani",
+    "slot_hero_guest": "Mehmon sahifasi va birinchi ochilish"
   },
   "account": {
     "title": "Kirish usullari",

@@ -16,6 +16,9 @@ import { EmployerDashboard } from "@/features/employer/components/dashboard/empl
 import { SeekerSearch } from "./home-search";
 import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
 import { cn } from "@/lib/utils";
+import { getEntryMedia } from "@/features/entry/queries";
+import { entryMediaUrl } from "@/features/entry/media";
+import { HeroBackdrop } from "@/components/shared/hero-backdrop";
 import { getHomePlace, getNewWorkers, type HomePlace } from "./home-queries";
 import { employerServiceHrefs, placeChooserHref } from "./quick-filters";
 import { HireSectionList } from "./section-tiles";
@@ -28,7 +31,8 @@ import { HireSectionList } from "./section-tiles";
 export async function EmployerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
   // panel — /employer bilan bir xil shart (requireEmployer): profil bor va to'ldirilgan
   if (session?.employerId && session.employerOnboarded) return <EmployerDashboard session={session as SessionContext & { employerId: string }} embedded />;
-  const [{ t, name }, place, home] = await Promise.all([getT(), getHomePlace(), getHomeSettings()]);
+  const [{ t, name }, place, home, media] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryMedia()]);
+  const photo = entryMediaUrl(media.hero_employer);
   const placeLabel = place.region ? (place.district ? `${name(place.region)} · ${name(place.district)}` : name(place.region)) : t("easy.location.whole_country");
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const hrefs = employerServiceHrefs(where);
@@ -46,8 +50,9 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
       <div>
         <section
           aria-labelledby="home-title"
-          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl")}
+          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl", photo && "has-photo")}
         >
+          <HeroBackdrop src={photo} />
           <p className="text-sm font-semibold text-hero-muted">{firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}</p>
           <div className="mt-0.5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
             <div className="min-w-0">

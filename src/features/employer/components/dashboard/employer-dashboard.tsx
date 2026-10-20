@@ -24,6 +24,9 @@ import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tile
 import { employerServiceHrefs } from "@/features/landing/quick-filters";
 import { aiEnabled } from "@/lib/ai/client";
 import { cn } from "@/lib/utils";
+import { getEntryMedia } from "@/features/entry/queries";
+import { entryMediaUrl } from "@/features/entry/media";
+import { HeroBackdrop } from "@/components/shared/hero-backdrop";
 
 /**
  * Ish beruvchi paneli (server): /employer va ish beruvchi rejimidagi bosh sahifa. Tartib: salomlashuv → vakansiya joylash va
@@ -33,14 +36,16 @@ import { cn } from "@/lib/utils";
 export async function EmployerDashboard({ session, embedded = false }: { session: SessionContext & { employerId: string }; embedded?: boolean }) {
   const { t, tEnum } = await getT();
   const { userId, companyId } = session;
-  const [profile, company, latestActive, latestAny, anyVacancy, home] = await Promise.all([
+  const [profile, company, latestActive, latestAny, anyVacancy, home, media] = await Promise.all([
     getEmployerProfile(userId),
     companyId ? getCompanyById(companyId) : Promise.resolve(null),
     getLatestVacancy(userId, companyId, true),
     getLatestVacancy(userId, companyId, false),
     getMyVacancies(userId, companyId, 1),
     getHomeSettings(),
+    getEntryMedia(),
   ]);
+  const photo = entryMediaUrl(media.hero_employer);
 
   const name = employerDisplayName({ companyName: company?.name, displayName: profile?.display_name, firstName: session.profile.first_name });
   const verification = company?.verification_status ?? profile?.verification_status ?? "unverified";
@@ -80,7 +85,8 @@ export async function EmployerDashboard({ session, embedded = false }: { session
     // embedded — bosh sahifa ichida (o'z konteyneri bor)
     <div className={embedded ? "space-y-6" : "container-app space-y-6 py-5 sm:py-8"}>
       <div>
-        <header className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20", embedded ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl")}>
+        <header className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20", embedded ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl", photo && "has-photo")}>
+          <HeroBackdrop src={photo} />
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <div className="flex min-w-0 flex-1 items-center gap-3">
               {company ? (

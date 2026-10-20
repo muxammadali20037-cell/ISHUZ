@@ -10,6 +10,8 @@ import type { AppMode } from "@/features/mode/mode";
 import type { EntryMedia } from "@/features/entry/media";
 import { EntryImage } from "@/features/entry/components/entry-art";
 import { cn } from "@/lib/utils";
+import { entryMediaUrl } from "@/features/entry/media";
+import { HeroBackdrop } from "@/components/shared/hero-backdrop";
 import { TileButton } from "../entry-client";
 import { seekerQuickFilters } from "../quick-filters";
 import type { EntryStats } from "../entry-queries";
@@ -25,6 +27,7 @@ const num = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
  */
 export async function MarketHero({ stats, media, ai = false }: { stats: EntryStats | null; media: EntryMedia; ai?: boolean }) {
   const { t } = await getT();
+  const photo = entryMediaUrl(media.hero_guest);
   const seek = Object.fromEntries(seekerQuickFilters({ region: null, district: null }).map((f) => [f.key, f.href])) as Record<"salary" | "noexp" | "daily" | "remote", string>;
   const chips: { key: string; icon: LucideIcon; label: string; next: string }[] = [
     { key: "daily", icon: CalendarDays, label: t("welcome.market.q_daily"), next: seek.daily },
@@ -34,7 +37,8 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
     { key: "near", icon: MapPin, label: t("welcome.market.q_near"), next: findHref(EMPTY_FIND, { mode: "jobs", near: true }) },
   ];
   return (
-    <section aria-labelledby="hero-title" className="hero-surface">
+    <section aria-labelledby="hero-title" className={cn("hero-surface", photo && "has-photo")}>
+      <HeroBackdrop src={photo} />
       <div className="container-app grid grid-cols-1 gap-8 pb-6 pt-7 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-center lg:gap-12 lg:pb-8 lg:pt-14">
         <div>
           {stats && stats.today > 0 ? (
@@ -65,7 +69,8 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
             />
           </div>
         </div>
-        <HeroPhotos media={media} seekLabel={t("welcome.market.hero_photo_seek")} hireLabel={t("welcome.market.hero_photo_hire")} />
+        {/* fon surati bo'lsa — u o'zi asosiy tasvir: ustiga yana tasvir kartalari qo'yilmaydi */}
+        {photo ? null : <HeroPhotos media={media} seekLabel={t("welcome.market.hero_photo_seek")} hireLabel={t("welcome.market.hero_photo_hire")} />}
       </div>
       <div className="container-app pb-7 sm:pb-10">
         <HeroSearch />

@@ -14,6 +14,11 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
       return <WindowArtwork art="workers" cover />;
     case "intro_ai":
       return <MatchArt />;
+    case "hero_seeker":
+    case "hero_employer":
+    case "hero_guest":
+      // suratsiz — ko'k brend sirti (bosh ekrandagidek)
+      return <span className="hero-surface block size-full" />;
     case "role_worker":
     case "role_employer": {
       const Icon = slot === "role_worker" ? BriefcaseBusiness : UsersRound;
