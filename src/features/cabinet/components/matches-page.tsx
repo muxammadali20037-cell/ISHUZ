@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Info, ShieldAlert } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
-import { formatSalaryRange } from "@/lib/format";
+import { formatSalaryWithPeriod } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { MatchReasons } from "@/components/shared/match-score";
 import type { SessionContext } from "@/features/auth/session";
@@ -22,7 +22,7 @@ function ScorePill({ score, threshold, hardFail }: { score: number; threshold: n
  * har bir mezon sababi, yetishmayotgan ma'lumot va qat'iy nomuvofiqlik ochiq ko'rsatiladi.
  */
 export async function MatchesPage({ session, vacancyId }: { session: SessionContext; vacancyId: string | null }) {
-  const { t, name, locale } = await getT();
+  const { t, tEnum, name, locale } = await getT();
   const [jobs, vacancies, threshold] = await Promise.all([getJobMatches(session), getMyActiveVacancies(session), getMatchThreshold()]);
   const selected = vacancies.find((v) => v.id === vacancyId) ?? vacancies[0] ?? null;
   const candidates = selected ? await getCandidateMatches(selected.id) : [];
@@ -50,7 +50,12 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
                   {m.employer ? <p className="text-muted-foreground">{m.employer}</p> : null}
                   <p className="text-base text-muted-foreground">{place(m.region, m.district)}</p>
                   <p className="text-base font-semibold">
-                    {m.negotiable ? t("easy.card.negotiable") : formatSalaryRange(m.salaryFrom, m.salaryTo, locale, { negotiable: t("easy.card.negotiable"), from: "", to: "" })}
+                    {formatSalaryWithPeriod(
+                      { from: m.salaryFrom, to: m.salaryTo, type: m.salaryType, negotiable: m.negotiable },
+                      locale,
+                      { negotiable: t("easy.card.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") },
+                      (type) => tEnum("salary_type_suffix", type),
+                    )}
                   </p>
                 </div>
                 <ScorePill score={m.score} threshold={threshold} hardFail={m.hardFail} />

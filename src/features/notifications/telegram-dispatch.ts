@@ -169,6 +169,11 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
   const aiVacancies = new Map(
     aiSlugs.length ? ((await admin.from("vacancies").select("slug, status, expires_at, salary_type").in("slug", aiSlugs)).data ?? []).map((v) => [v.slug, v]) : [],
   );
+  // obuna (0068 dan keyingi yozuvlarda alert_id bor): o'chirilgan yoki to'xtatilgan AI PRO obunasi bo'yicha xabar yuborilmaydi
+  const aiAlertIds = [...new Set(rows.map((r) => rec(r.payload)).filter((p) => p.kind === "ai_alert" && typeof p.alert_id === "string").map((p) => p.alert_id as string))];
+  const activeAlerts = new Set(
+    aiAlertIds.length ? ((await admin.from("ai_job_alerts").select("id").in("id", aiAlertIds).eq("is_active", true)).data ?? []).map((a) => a.id) : [],
+  );
   const nowIso = () => new Date().toISOString();
 
   const mark = async (ids: number[], patch: TablesUpdate<"notifications">) => {
@@ -307,7 +312,8 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
         const slug = jobSlugFromLink(r.link);
         const v = slug ? aiVacancies.get(slug) : undefined;
         // eski yozuvlarda havola bo'lmasa — avvalgidek yuboriladi; havola bor, lekin e'lon yopilgan/muddati o'tgan — yo'q
-        if (slug && !vacancyStillOpen(v, now)) {
+        const alertId = rec(r.payload).alert_id;
+        if ((slug && !vacancyStillOpen(v, now)) || (typeof alertId === "string" && !activeAlerts.has(alertId))) {
           skippedIds.push(r.id);
           continue;
         }

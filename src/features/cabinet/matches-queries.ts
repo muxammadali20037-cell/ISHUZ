@@ -15,6 +15,7 @@ export interface JobMatch {
   district: Named | null;
   salaryFrom: number | null;
   salaryTo: number | null;
+  salaryType: string | null;
   negotiable: boolean;
   score: number;
   hardFail: boolean;
@@ -42,9 +43,11 @@ export async function getJobMatches(session: SessionContext): Promise<JobMatch[]
   const supabase = await createClient();
   const { data, error } = await supabase
     .from("matches")
-    .select("score, reasons, hard_fail, complete, vacancies!inner(id, slug, title, status, salary_from, salary_to, salary_negotiable, companies(name), regions!vacancies_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!vacancies_district_id_fkey(name_uz, name_ru, name_en, name_oz))")
+    .select("score, reasons, hard_fail, complete, vacancies!inner(id, slug, title, status, expires_at, salary_from, salary_to, salary_type, salary_negotiable, companies(name), regions!vacancies_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!vacancies_district_id_fkey(name_uz, name_ru, name_en, name_oz))")
     .eq("worker_id", session.workerId)
     .eq("vacancies.status", "active")
+    // muddati o'tgan, lekin soatlik cron hali yopmagan e'lon tavsiya qilinmaydi
+    .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`, { referencedTable: "vacancies" })
     .order("hard_fail", { ascending: true })
     .order("score", { ascending: false })
     .limit(40);
@@ -58,6 +61,7 @@ export async function getJobMatches(session: SessionContext): Promise<JobMatch[]
     district: m.vacancies.districts,
     salaryFrom: m.vacancies.salary_from,
     salaryTo: m.vacancies.salary_to,
+    salaryType: m.vacancies.salary_type,
     negotiable: m.vacancies.salary_negotiable,
     score: m.score,
     hardFail: m.hard_fail,
