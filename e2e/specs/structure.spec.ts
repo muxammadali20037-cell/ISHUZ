@@ -54,17 +54,14 @@ test.describe("tuzilma", () => {
     await sql("delete from public.worker_profiles where profile_id = $1", [WRK]);
   });
 
-  test("vakansiya: Tavsif · Talablar tablari; ma'lumoti yo'q tab (imtiyozlar, kompaniya) ko'rsatilmaydi", async ({ page, context }) => {
+  test("vakansiya: bo'limlar ochiq (tablar yo'q) — matn ham, talablar ham bir sahifada; bo'sh kompaniya — ega nomi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto(`/jobs/${slug}`);
-    const tabs = page.getByRole("tablist", { name: "Vakansiya bo'limlari" });
-    await expect(tabs.getByRole("tab")).toHaveText(["Tavsif", "Talablar"]);
-    await expect(page.getByRole("heading", { level: 2, name: "Ish haqida" })).toBeVisible();
-    await tabs.getByRole("tab", { name: "Talablar" }).click();
-    await expect(page.getByRole("tabpanel").getByText("Tajriba", { exact: true })).toBeVisible();
-    await expect(page.getByRole("heading", { level: 2, name: "Ish haqida" })).toBeHidden();
-    // yashirin tab matni ham sahifa HTML'ida (qidiruv tizimlari uchun)
-    expect(await page.locator("[role=tabpanel][data-state=inactive]").count()).toBe(1);
+    await expect(page.getByRole("tablist")).toHaveCount(0);
+    const main = page.getByRole("main");
+    await expect(main.getByRole("heading", { level: 2, name: "Vazifalar" })).toBeVisible();
+    await expect(main.getByRole("region", { name: "Talablar" }).getByText("Tajriba", { exact: true })).toBeVisible();
+    await expect(main.getByRole("region", { name: "Kompaniya" })).toBeVisible();
   });
 
   test("moslik tahlili: mehmon — kirishga; ishchi — foiz faqat to'liq hisoblanganda, aks holda nima yetishmasligi", async ({ page, context }) => {

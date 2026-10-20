@@ -119,39 +119,11 @@ plain shelves, no readable products. Soft natural light, full-frame camera, 85mm
 true-to-life colors. No text, no logos, no signage.
 ```
 
-### A6–A9. Bosh sahifa — katta plitkalar (o'sha sahifada, «Bosh sahifa — katta plitkalar» guruhi)
+### A6–A9. Bosh sahifa — katta plitkalar (olib tashlangan)
 
-- **Qayerda:** ish izlovchi va ish beruvchi bosh sahifasining tepasidagi ikkita katta plitka (ish beruvchi kabinetida ham).
-  Telefonda har biri ekranning **yarmi kengligida** (~170×96 px), kompyuterda ~540×300 px.
-- **Nisbat:** 16:9, kamida 1280×720. Bitta yoki ikkita odam, markazda, oddiy fon — kichik o'lchamda ham tanilsin.
-- Ish beruvchi sahifasida sonlar olinmasa, birinchi plitka «Barcha ishchilar» bo'lib chiqadi. Unda o'rnatilgan tasvir
-  qoladi, «Kunlik ishchilar» rasmi qo'yilmaydi.
-
-| Joy (admin) | Ekrandagi nomi | Rasm g'oyasi |
-|---|---|---|
-| Ish beruvchi — «Kunlik ishchilar» | Kunlik ishchilar | Ish boshlashga tayyor ikki ishchi, qurilish maydoni |
-| Ish beruvchi — «Yaqin ishchilar» | Yaqin ishchilar | Uy darvozasida usta va uy egasi ko'rishmoqda |
-
-**A6, A7** (ish izlovchi «Kunlik ishlar» va «Yaqin atrofda» plitkalari) — 2026-10 redizaynida olib tashlandi: ish izlovchi
-bosh sahifasida katta plitkalar yo'q, bo'limlar ixcham ro'yxat ko'rinishida (`docs/REDESIGN_2026-10.md`).
-
-**A8. Ish beruvchi — «Kunlik ishchilar»** (`tile_daily_workers`)
-
-```text
-Documentary photograph, 16:9, both people in the center. Two Uzbek day workers in work clothes and gloves stand ready
-at the entrance of a small construction site in Tashkent, one holding a shovel, confident and friendly, waist-up,
-site softly blurred behind them. Natural daylight, full-frame camera, 35mm lens, realistic skin texture,
-true-to-life colors. No text, no logos, no safety signs with writing.
-```
-
-**A9. Ish beruvchi — «Yaqin ishchilar»** (`tile_near_workers`)
-
-```text
-Documentary photograph, 16:9, both people in the center. An Uzbek plumber in his thirties with a toolbox is greeted by
-a homeowner at the gate of a house in a Tashkent mahalla, friendly handshake, waist-up, courtyard softly blurred.
-Natural daylight, full-frame camera, 35mm lens, realistic skin texture, true-to-life colors. No text, no logos,
-no house numbers.
-```
+**A6–A9** (bosh sahifadagi katta plitkalar: «Kunlik ishlar», «Yaqin atrofda», «Kunlik ishchilar», «Yaqin ishchilar») —
+2026-10 redizaynida olib tashlandi: bosh sahifalarda katta rasmli plitkalar yo'q, bo'limlar ixcham ro'yxat ko'rinishida
+(`docs/REDESIGN_2026-10.md`). Admin panelda ularning rasm joylari ham yo'q.
 
 ---
 

@@ -57,8 +57,8 @@ export async function StatsTiles() {
 }
 
 /**
- * Qisqa ko'rsatkichlar (bosh sahifa): faol vakansiyalar va yangi arizalar — employer_dashboard_stats() dan (haqiqiy son,
- * ma'lumot olinmasa — "—"), ostida mos nomzodlarga o'tish. Telefonda ikki ustun — birinchi ekranni egallamaydi.
+ * Bugungi ishlar (2026-10): bitta ixcham qator — yangi arizalar (bo'lsa ko'k), faol vakansiyalar, mos nomzodlarga o'tish.
+ * Sonlar employer_dashboard_stats() dan (haqiqiy; olinmasa — "—"). Katta rangli plitkalar yo'q.
  */
 export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
   const { t, locale } = await getT();
@@ -66,34 +66,27 @@ export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
   const fmt = new Intl.NumberFormat(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ");
   const newApps = stats?.new_applications ?? null;
   const tiles = [
-    { href: "/employer/vacancies", icon: Briefcase, label: t("employer.dashboard.stats.active_vacancies"), value: stats?.active_vacancies ?? null, hot: false },
     { href: "/employer/applications", icon: Inbox, label: t("employer.dashboard.stats.new_applications"), value: newApps, hot: (newApps ?? 0) > 0 },
+    { href: "/employer/vacancies", icon: Briefcase, label: t("employer.dashboard.stats.active_vacancies"), value: stats?.active_vacancies ?? null, hot: false },
   ];
   return (
-    <div role="group" aria-label={t("easy.start.metrics_label")} className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+    <div role="group" aria-label={t("easy.start.metrics_label")} className="grid grid-cols-2 divide-x divide-border overflow-hidden rounded-xl border border-border bg-card sm:grid-cols-3">
       {tiles.map((x) => (
-        <Link
-          key={x.href}
-          href={x.href}
-          className={cn(
-            "press flex min-h-20 flex-col justify-between gap-2 rounded-2xl border bg-card p-3.5 shadow-sm hover:border-primary/50",
-            x.hot ? "border-primary/40 bg-primary-soft/40" : "border-border",
-          )}
-        >
-          <span className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <x.icon className={cn("size-4.5 shrink-0", x.hot ? "text-primary" : "")} aria-hidden />
+        <Link key={x.href} href={x.href} className="press flex min-h-16 flex-col justify-center gap-0.5 px-4 py-3 hover:bg-secondary/60">
+          <span className={cn("text-2xl font-extrabold tabular leading-none", x.hot && "text-primary")}>{x.value === null ? "—" : fmt.format(x.value)}</span>
+          <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+            <x.icon className={cn("size-4 shrink-0", x.hot && "text-primary")} aria-hidden />
             <span className="min-w-0 leading-tight">{x.label}</span>
           </span>
-          <span className={cn("text-2xl font-extrabold tabular leading-none", x.hot && "text-primary")}>{x.value === null ? "—" : fmt.format(x.value)}</span>
         </Link>
       ))}
       <Link
         href={candidatesHref}
-        className="press col-span-2 flex min-h-12 items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-2.5 shadow-sm hover:border-primary/50 sm:col-span-1 sm:min-h-20"
+        className="press col-span-2 flex min-h-12 items-center gap-2 border-t border-border px-4 py-3 text-base font-semibold text-primary hover:bg-secondary/60 sm:col-span-1 sm:border-t-0"
       >
-        <Users className="size-5 shrink-0 text-primary" aria-hidden />
-        <span className="min-w-0 flex-1 text-base font-semibold leading-tight">{t("employer.dashboard.matching")}</span>
-        <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+        <Users className="size-5 shrink-0" aria-hidden />
+        <span className="min-w-0 flex-1 leading-tight">{t("employer.dashboard.matching")}</span>
+        <ChevronRight className="size-5 shrink-0" aria-hidden />
       </Link>
     </div>
   );
@@ -102,14 +95,13 @@ export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
 /** KeyTiles skeleti — o'sha o'lchamda (kontent kelganda sahifa siljimaydi) */
 export function KeyTilesSkeleton() {
   return (
-    <div aria-hidden className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-      {[0, 1].map((i) => (
-        <div key={i} className="min-h-20 rounded-2xl border border-border bg-card p-3.5">
+    <div aria-hidden className="grid min-h-16 grid-cols-2 gap-3 rounded-xl border border-border bg-card p-3 sm:grid-cols-3">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="space-y-2">
+          <div className="skeleton-shimmer h-6 w-10 rounded-lg" />
           <div className="skeleton-shimmer h-4 w-24 rounded-lg" />
-          <div className="skeleton-shimmer mt-3 h-6 w-10 rounded-lg" />
         </div>
       ))}
-      <div className="skeleton-shimmer col-span-2 min-h-12 rounded-2xl sm:col-span-1 sm:min-h-20" />
     </div>
   );
 }
@@ -126,13 +118,13 @@ export async function PipelineTiles({ userId, companyId }: { userId: string; com
   const keys = ["sent", "viewed", "shortlisted", "interview", "hired"] as const;
   return (
     <section aria-labelledby="pipeline-title">
-      <h2 id="pipeline-title" className="mb-2 text-lg font-bold">
+      <h2 id="pipeline-title" className="mb-2 text-base font-bold">
         {t("employer.dashboard.pipeline_title")}
       </h2>
       <ul className="grid grid-cols-5 gap-1.5 sm:gap-2">
         {keys.map((k) => (
           <li key={k} className="flex">
-            <Link href="/employer/applications" className="press flex w-full flex-col items-center justify-center rounded-xl border border-border bg-card px-1 py-2.5 text-center hover:border-primary/50">
+            <Link href="/employer/applications" className="press flex w-full flex-col items-center justify-center rounded-lg border border-border bg-card px-1 py-2.5 text-center hover:border-primary/40">
               <span className={cn("text-lg font-extrabold tabular leading-tight", k === "sent" && totals[k] > 0 && "text-primary")}>{fmt.format(totals[k])}</span>
               <span className="mt-0.5 text-2xs font-semibold leading-tight text-muted-foreground">{t(`employer.dashboard.pipeline.${k}`)}</span>
             </Link>

@@ -32,11 +32,10 @@ describe("kirish ekranlari rasmlari", () => {
   it("admin sahifasida har joy aynan bitta guruhda (yo'qolgan yoki takrorlangan joy yo'q)", () => {
     const grouped = Object.values(SLOT_GROUPS).flat();
     expect([...grouped].sort()).toEqual([...ENTRY_SLOTS].sort());
-    for (const s of SLOT_GROUPS.tiles) expect(SLOT_SPEC[s].ratio).toBe("16:9");
   });
 
-  it("plitka rasmlari ham faqat o'z storage'imizdan", () => {
-    expect(parseEntryMedia({ tile_near_workers: own })).toEqual({ tile_near_workers: own });
-    expect(parseEntryMedia({ tile_daily_workers: "https://evil.example/x.webp" })).toEqual({});
+  it("olib tashlangan bosh sahifa plitkalari (2026-10) bazada qolgan bo'lsa ham e'tiborsiz qoldiriladi", () => {
+    expect(ENTRY_SLOTS).not.toContain("tile_daily_workers");
+    expect(parseEntryMedia({ intro_jobs: own, tile_near_workers: own })).toEqual({ intro_jobs: own });
   });
 });

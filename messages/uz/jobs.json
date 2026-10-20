@@ -132,7 +132,9 @@
     "tab_about": "Tavsif",
     "tab_requirements": "Talablar",
     "tab_benefits": "Imtiyozlar",
-    "tab_company": "Kompaniya"
+    "tab_company": "Kompaniya",
+    "sec_duties": "Vazifalar",
+    "sec_conditions": "Sharoitlar"
   },
   "apply": {
     "title": "Ariza yuborish",

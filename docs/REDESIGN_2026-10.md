@@ -61,7 +61,37 @@
 - **Yuqori panel:** chat va bildirishnomalar. Telefonda avatar takrorlanmaydi — profil pastki menyuda, chiqish kabinetda.
 - **Suzuvchi AI tugmasi olib tashlandi.** "AI bilan qidirish" endi qidiruv yonida turadi: ish qidiruvchi va ish beruvchi bosh sahifasida, ish beruvchi panelida va mehmon bosh sahifasida. Admin sozlamasi (yoqish/o'chirish) ishlashda davom etadi.
 
-### 2.5 O'zgarmagan narsalar
+### 2.5 Vakansiya sahifasi — `/jobs/[slug]` (2-bosqich)
+
+- **Sarlavha:**
+  - lavozim;
+  - maosh davri bilan (to'q rang, kelishiladigan bo'lsa kulrang);
+  - kompaniya (logotip yoki bosh harf, tasdiq belgisi);
+  - joy;
+  - bitta qatorda grafik va ish vaqti, tajriba;
+  - sana va ko'rishlar soni.
+- **Bo'limlar ochiq (tablar yo'q):** Vazifalar · Talablar · Sharoitlar · Manzil · Kompaniya. Tepada ularga havolalar (`#vazifalar` …). Avval "Talablar" ochilganda tavsif yashirinardi.
+- **Telefondagi pastki panel (avvaldan bor edi, saqlandi):**
+  - Saqlash, Ulashish, "Ariza yuborish";
+  - ariza yuborilgach — "Ariza yuborilgan" (arizaga havola).
+- **"Orqaga":** qidiruv natijalariga, o'sha joyiga qaytadi.
+
+### 2.6 Ish beruvchi sahifalari (2-bosqich)
+
+- **Panel (`/`, ish beruvchi rejimi, profil bor):**
+  1. Salomlashuv (emoji yo'q) va "Vakansiya joylash" — kompyuterda o'ngda, telefonda to'liq kenglikda.
+  2. Bitta ixcham qator: yangi arizalar · faol vakansiyalar · mos nomzodlar.
+  3. Yangi arizalar.
+  4. Ko'rib chiqish uchun nomzodlar.
+  5. Faol vakansiyalar.
+  6. Arizalar holati.
+  7. Nomzod qidirish (AI bilan).
+  8. Bo'limlar ixcham ro'yxatda.
+- **Jadval:** kompyuterda "Yangi arizalar" (nomzod · vakansiya · sana · holat) va "Faol vakansiyalar" (lavozim · holat · arizalar · ko'rishlar · yangilangan) — jadval. Telefonda — ixcham qatorlar. Har qator bosiladi.
+- **Mehmon / profili yo'q ish beruvchi:** qidiruv, "Vakansiya joylash", darhol yangi nomzodlar; bo'limlar ixcham ro'yxat (o'ng panelda yoki ro'yxatdan keyin). Statistika banneri yo'q.
+- **Olib tashlangan:** katta rasmli plitkalar ("Kunlik ishchilar", "Yaqin ishchilar") va ularning admin rasm joylari. Bosh sahifalarda endi rasmli plitka yo'q.
+
+### 2.7 O'zgarmagan narsalar
 
 Backend, auth, RLS, to'lovlar va biznes qoidalari o'zgarmadi. Migratsiya yo'q.
 
@@ -87,7 +117,7 @@ Bir xil namunaviy ma'lumot (8 ta vakansiya, bitta tasdiqlangan kompaniya), bir x
 To'liq sahifa variantlari: `*-full.jpg`.
 
 **Ochiq aytilishi kerak:**
-- Vakansiya sahifasi, ish beruvchi bosh sahifasi va vakansiya joylash formasida bu bosqichda faqat ranglar, navigatsiya va AI tugmasi o'zgardi. Ularning tuzilmasi keyingi bosqichlarda qayta quriladi (§5).
+- Vakansiya joylash formasida hozircha faqat ranglar va navigatsiya o'zgardi. 3 qadamli usta keyingi bosqichda (§5).
 - Qidiruv sahifasida yangi kartalar bor. Kompyuterdagi 3 ustunli tuzilma (filtrlar · ro'yxat · tanlangan vakansiya) hali qilinmagan.
 
 ## 4. Sinovlar (2026-10-20, lokal izolyatsiyalangan stend)
@@ -137,15 +167,9 @@ npx playwright test -c e2e/playwright.config.ts                     # to'liq E2E
 ## 5. Keyingi bosqichlar (spec bo'yicha)
 
 1. **Qidiruv (kompyuter):** chapda ~260 px filtrlar, ro'yxat, tanlangan vakansiya paneli o'z URL'i bilan (yangilansa saqlanadi). Planshetda kamroq ustun.
-2. **Vakansiya sahifasi:**
-   - bo'limlar: Vazifalar / Talablar / Sharoitlar / Manzil / Kompaniya;
-   - telefonda yopishqoq "Ariza yuborish" va "Saqlash"; ariza yuborilgach — "Ariza yuborilgan";
-   - orqaga qaytilganda filtr va scroll saqlanadi.
-3. **Ish beruvchi bosh sahifasi:**
-   - "Vakansiya joylash", yangi arizalar, ko'rib chiqiladigan nomzodlar, faol vakansiyalar;
-   - katta bezak plitkalari olib tashlanadi;
-   - kompyuterda jadval, telefonda ixcham kartalar.
+2. ~~Vakansiya sahifasi~~ — bajarildi (§2.5).
+3. ~~Ish beruvchi bosh sahifasi~~ — bajarildi (§2.6).
 4. **Vakansiya joylash:**
    - 3 qadam: Lavozim va hudud → Maosh va shartlar → Tekshirish va joylash;
    - progress, qoralama, haqiqiy karta ko'rinishi, ixtiyoriy AI.
-5. **Admin rasm joylari:** ish qidiruvchi plitkalari (`tile_daily_jobs`, `tile_near_jobs`) olib tashlandi — ular endi hech qayerda ko'rsatilmasdi. Ish beruvchi plitkalari ish beruvchi sahifasi qayta qurilganda ko'rib chiqiladi.
+5. **Kunlik ishlar jarayoni, monitoring va tiklash** — `docs/PRODUCT_AUDIT_2026-10.md` §4 rejasi bo'yicha (6–10-bosqichlar).

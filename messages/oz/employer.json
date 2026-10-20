@@ -73,7 +73,7 @@
     }
   },
   "dashboard": {
-    "greeting": "Ассалому алайкум, {name} 👋",
+    "greeting": "Ассалому алайкум, {name}",
     "subtitle": "Кўп CV кўрманг. Сизга мос ходимни топинг.",
     "verify_cta": "Тасдиқлаш",
     "post_vacancy": "Вакансия жойлаш",
@@ -113,7 +113,17 @@
       "shortlisted": "Сараланган",
       "interview": "Суҳбат",
       "hired": "Ишга олинган"
-    }
+    },
+    "col_title": "Лавозим",
+    "col_status": "Ҳолат",
+    "col_applications": "Аризалар",
+    "col_views": "Кўришлар",
+    "col_updated": "Янгиланган",
+    "col_candidate": "Номзод",
+    "col_vacancy": "Вакансия",
+    "col_date": "Сана",
+    "find_title": "Номзод қидириш",
+    "review_candidates": "Кўриб чиқиш учун номзодлар"
   },
   "company": {
     "verified": "Тасдиқланган компания",

@@ -132,7 +132,9 @@
     "tab_about": "Description",
     "tab_requirements": "Requirements",
     "tab_benefits": "Benefits",
-    "tab_company": "Company"
+    "tab_company": "Company",
+    "sec_duties": "Duties",
+    "sec_conditions": "Conditions"
   },
   "apply": {
     "title": "Apply for this job",

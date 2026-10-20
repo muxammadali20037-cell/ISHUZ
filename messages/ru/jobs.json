@@ -132,7 +132,9 @@
     "tab_about": "Описание",
     "tab_requirements": "Требования",
     "tab_benefits": "Условия",
-    "tab_company": "Компания"
+    "tab_company": "Компания",
+    "sec_duties": "Обязанности",
+    "sec_conditions": "Условия"
   },
   "apply": {
     "title": "Отклик на вакансию",

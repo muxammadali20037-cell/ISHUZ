@@ -73,7 +73,7 @@
     }
   },
   "dashboard": {
-    "greeting": "Hello, {name} 👋",
+    "greeting": "Hello, {name}",
     "subtitle": "Skip the endless CVs. Find the right hire.",
     "verify_cta": "Verify",
     "post_vacancy": "Post a vacancy",
@@ -113,7 +113,17 @@
       "shortlisted": "Shortlisted",
       "interview": "Interview",
       "hired": "Hired"
-    }
+    },
+    "col_title": "Position",
+    "col_status": "Status",
+    "col_applications": "Applications",
+    "col_views": "Views",
+    "col_updated": "Updated",
+    "col_candidate": "Candidate",
+    "col_vacancy": "Vacancy",
+    "col_date": "Date",
+    "find_title": "Find candidates",
+    "review_candidates": "Candidates to review"
   },
   "company": {
     "verified": "Verified company",

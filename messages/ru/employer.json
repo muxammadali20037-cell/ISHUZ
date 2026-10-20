@@ -73,7 +73,7 @@
     }
   },
   "dashboard": {
-    "greeting": "Здравствуйте, {name} 👋",
+    "greeting": "Здравствуйте, {name}",
     "subtitle": "Не просматривайте сотни резюме. Найдите подходящего сотрудника.",
     "verify_cta": "Подтвердить",
     "post_vacancy": "Разместить вакансию",
@@ -113,7 +113,17 @@
       "shortlisted": "Отобраны",
       "interview": "Собеседование",
       "hired": "Наняты"
-    }
+    },
+    "col_title": "Должность",
+    "col_status": "Статус",
+    "col_applications": "Отклики",
+    "col_views": "Просмотры",
+    "col_updated": "Обновлено",
+    "col_candidate": "Кандидат",
+    "col_vacancy": "Вакансия",
+    "col_date": "Дата",
+    "find_title": "Поиск кандидатов",
+    "review_candidates": "Кандидаты для просмотра"
   },
   "company": {
     "verified": "Проверенная компания",

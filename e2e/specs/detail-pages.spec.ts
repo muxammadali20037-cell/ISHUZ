@@ -2,7 +2,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
- * I1 · e'lon sahifalari ixcham: eng muhim ma'lumot (nomi, maosh, ish beruvchi, joy, asosiy faktlar) birinchi ekranda,
+ * I1 / 2026-10 · e'lon sahifalari ixcham: eng muhim ma'lumot (nomi, maosh, ish beruvchi, joy, grafik) birinchi ekranda,
  * qo'ng'iroq tavsifdan oldin, "Orqaga" — qidiruv natijalariga (o'sha joyiga), sahifa yonga siljimaydi.
  */
 
@@ -65,22 +65,29 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   await expect(main.getByRole("heading", { level: 1 })).toHaveText(TITLE);
 
   const bottom = await visibleBottom(page);
-  // birinchi ekranda (pastki panel ustida): maosh, ish beruvchi, joy, "Ish grafigi" fakti
+  // birinchi ekranda (pastki panel ustida): maosh, ish beruvchi, joy, grafik va ish vaqti (sarlavhada bir qatorda)
   // kompaniyasiz ish beruvchi — umumiy "Ish beruvchi" emas, ismi (mehmonga — ega ismi)
   const header = main.locator("header").first();
   await expect(header).toContainText("Dilnoza");
-  for (const loc of [main.getByText("5 000 000 – 7 000 000 so'm").first(), header.getByText(/^Dilnoza/).first(), header.getByText("Chilonzor tumani, Toshkent shahri"), main.getByText("Ish grafigi", { exact: true })]) {
+  for (const loc of [main.getByText("5 000 000 – 7 000 000 so'm").first(), header.getByText(/^Dilnoza/).first(), header.getByText("Chilonzor tumani, Toshkent shahri"), header.getByText("· 09:00–18:00")]) {
     const box = (await loc.boundingBox())!;
     expect(box.y + box.height).toBeLessThanOrEqual(bottom);
   }
-  // faktlar — ixcham ro'yxat (yorliq + qiymat)
-  const facts = main.locator("dl").first();
-  for (const label of ["Ish grafigi", "Bandlik turi", "Tajriba", "Ish shakli"]) await expect(facts.locator("dt", { hasText: label })).toBeVisible();
+  // 2026-10: bo'limlar ochiq (tablar yo'q) — Vazifalar · Talablar · Sharoitlar · Manzil · Kompaniya, yuqorida havolalar
+  const nav = main.getByRole("navigation", { name: "Vakansiya bo'limlari" });
+  await expect(nav.getByRole("link")).toHaveText(["Vazifalar", "Talablar", "Sharoitlar", "Manzil", "Kompaniya"]);
+  for (const name of ["Vazifalar", "Talablar", "Sharoitlar", "Manzil", "Kompaniya"]) await expect(main.getByRole("region", { name })).toBeAttached();
+  // shartlar — ixcham ro'yxat (yorliq + qiymat)
+  const facts = main.getByRole("region", { name: "Sharoitlar" }).locator("dl");
+  for (const label of ["Ish grafigi", "Bandlik turi", "Ish shakli"]) await expect(facts.locator("dt", { hasText: label })).toBeVisible();
   await expect(facts).toContainText("09:00–18:00");
+  await nav.getByRole("link", { name: "Manzil" }).click();
+  await expect(page).toHaveURL(/#manzil$/);
+  await expect(main.getByRole("heading", { level: 2, name: "Manzil" })).toBeInViewport();
 
-  // qo'ng'iroq — tavsifdan oldin
+  // qo'ng'iroq — bo'limlardan oldin
   const call = main.getByRole("link", { name: "Qo'ng'iroq qilish" }).first();
-  const about = main.getByRole("heading", { level: 2, name: "Ish haqida" });
+  const about = main.getByRole("heading", { level: 2, name: "Vazifalar" });
   expect((await call.boundingBox())!.y).toBeLessThan((await about.boundingBox())!.y);
 
   // o'xshash vakansiya — ixcham qator

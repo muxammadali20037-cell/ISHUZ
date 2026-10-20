@@ -153,7 +153,7 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
   return (
     <>
       {/* Desktop (lg+): yon karta */}
-      <div className="hidden space-y-3 rounded-2xl border border-border/70 bg-card p-4 shadow-sm lg:block">
+      <div className="hidden space-y-3 rounded-xl border border-border bg-card p-4 lg:block">
         {primary({ fullWidth: true, size: "lg" })}
         {application ? <p className="text-center text-xs text-muted-foreground">{t("jobs.apply.success_desc")}</p> : null}
         {!isActive && viewer.kind !== "manager" ? <p className="text-center text-xs text-warning">{t("jobs.detail.status_inactive")}</p> : null}

@@ -97,7 +97,7 @@ test.describe("bo'limlar", () => {
     await asMode(context, "employer");
     await page.goto("/");
     const [c] = await sql<Record<string, string>>("select * from public.worker_section_counts(null, null)");
-    await expect(tile(page, "Kunlik ishchilar")).toContainText(`${c!.daily} ta ishchi`);
+    await expect(tile(page, "Kunlik ishchilar")).toContainText(new Intl.NumberFormat("ru-RU").format(Number(c!.daily)));
     await tile(page, "Kunlik ishchilar").click();
     await page.waitForURL(/mode=workers.*pay=daily/);
     await expect(page.locator("main article").filter({ hasText: "Yuk tashuvchi (kunlik)" })).toHaveCount(1);

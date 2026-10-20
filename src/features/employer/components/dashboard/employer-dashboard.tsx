@@ -8,7 +8,6 @@ import { initials } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { EmptyState } from "@/components/ui/misc";
 import { employerDisplayName } from "../../mappers";
 import { getCompanyById, getEmployerProfile, getLatestVacancy, getMyVacancies } from "../../queries";
@@ -19,7 +18,6 @@ import { CardsSectionSkeleton, RowsSectionSkeleton } from "./skeletons";
 import { KeyTiles, KeyTilesSkeleton, PipelineTiles } from "./stats-tiles";
 import { EmployerSections } from "./employer-sections";
 import { VerificationBadge } from "./status-badge";
-import { HireSections, SectionsSkeleton } from "@/features/landing/section-tiles";
 import { AiFinder } from "@/features/find/components/ai-finder";
 import { getHomeSettings } from "@/features/home-windows/queries";
 
@@ -54,97 +52,63 @@ export async function EmployerDashboard({ session, embedded = false }: { session
 
   const candidatesHref = latestActive ? withCategory(`/workers?vacancy=${latestActive.id}&sort=relevant`) : "/workers";
 
+  const postButton = (cls: string) => (
+    <Button asChild size="lg" className={`h-12 px-5 text-base font-bold ${cls}`}>
+      <Link href="/employer/vacancies/new">
+        <Plus className="size-5" aria-hidden /> {t("easy.start.post_vacancy")}
+      </Link>
+    </Button>
+  );
+
+  /*
+   * 2026-10: "bugun nima qilish kerak" tartibi — vakansiya joylash → yangi arizalar → ko'rib chiqiladigan nomzodlar →
+   * faol vakansiyalar → nomzod qidirish (AI bilan) → bo'limlar. Katta rasmli plitkalar yo'q; kompyuterda jadval, telefonda qatorlar.
+   */
   return (
     // embedded — bosh sahifa ichida (o'z konteyneri bor)
     <div className={embedded ? "space-y-6" : "container-app space-y-6 py-5 sm:py-8"}>
-      {/* Salomlashuv */}
       <header className="flex items-center gap-3">
         {company ? (
-          <Avatar src={logoUrl} fallback={initials(name)} square size="lg" alt="" className="border border-border/70" />
+          <Avatar src={logoUrl} fallback={initials(name)} square size="lg" alt="" className="border border-border" />
         ) : (
           <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="lg" alt="" />
         )}
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <h1 className="line-clamp-2 break-words text-xl font-bold sm:text-2xl">{t("employer.dashboard.greeting", { name })}</h1>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <VerificationBadge status={verification} label={tEnum("verification_status", verification)} />
             {verification === "unverified" || verification === "rejected" ? (
-              <Link href="/company/settings#verification" className="inline-flex items-center gap-1 text-sm font-medium text-primary hover:underline">
-                <ShieldCheck className="size-4" /> {t("employer.dashboard.verify_cta")}
+              <Link href="/company/settings#verification" className="inline-flex min-h-8 items-center gap-1 text-sm font-medium text-primary hover:underline">
+                <ShieldCheck className="size-4" aria-hidden /> {t("employer.dashboard.verify_cta")}
               </Link>
             ) : null}
             {company ? (
               <Link href={`/company/${company.slug}`} className="hidden items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
-                <Building2 className="size-4" /> {t("employer.settings.public_page")}
+                <Building2 className="size-4" aria-hidden /> {t("employer.settings.public_page")}
               </Link>
             ) : null}
           </div>
         </div>
+        {postButton("hidden shrink-0 sm:inline-flex")}
       </header>
+      {postButton("w-full sm:hidden")}
 
-      {/* Asosiy harakatlar: vakansiya joylash (asosiy tugma) va nomzod qidirish — bir qatorda, ortiqcha banner yo'q */}
-      {/* katta shrift / uzun tarjimada tugma yozuvi qatorga tushadi, ustun kengaymaydi (sahifa yonga siljimaydi) */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start [&>*]:min-w-0">
-        <Button asChild size="lg" className="h-auto min-h-12 whitespace-normal px-5 py-2 text-center text-base font-bold leading-tight">
-          <Link href="/employer/vacancies/new">
-            <Plus className="size-5" aria-hidden /> {t("easy.start.post_vacancy")}
-          </Link>
-        </Button>
-        <Form action="/search" prefetch={false} role="search" aria-label={t("easy.start.employer_search_label")} className="flex gap-2">
-          <input type="hidden" name="mode" value="workers" />
-          <div className="min-w-0 flex-1">
-            <Input
-              name="q"
-              type="search"
-              enterKeyHint="search"
-              aria-label={t("easy.start.employer_search_label")}
-              placeholder={t("easy.start.employer_search_placeholder")}
-              leftIcon={<Search />}
-              className="h-12 rounded-xl"
-              maxLength={120}
-              minLength={2}
-              required
-            />
-          </div>
-          <Button type="submit" variant="outline" className="h-12 shrink-0 px-4 text-base font-semibold">
-            {t("easy.start.search_button")}
-          </Button>
-        </Form>
-        {/* AI qidiruv — nomzod qidiruvi ostida (suzuvchi tugma yo'q; admin o'chirsa — ko'rinmaydi) */}
-        {home.aiButton ? <AiFinder defaultMode="workers" locked className="justify-self-start sm:col-start-2" /> : null}
-      </div>
-
-      {/* S2: nomzodlar bo'limlari (kunlik ishchilar, yaqin, tajribali — haqiqiy sonlar) */}
-      <Suspense fallback={<SectionsSkeleton />}>
-        <HireSections />
+      <Suspense fallback={<KeyTilesSkeleton />}>
+        <KeyTiles candidatesHref={candidatesHref} />
       </Suspense>
 
-      <div>
-        <Suspense fallback={<KeyTilesSkeleton />}>
-          <KeyTiles candidatesHref={candidatesHref} />
-        </Suspense>
-      </div>
-
-      {hasVacancies ? (
-        <Suspense fallback={null}>
-          <PipelineTiles userId={userId} companyId={companyId} />
-        </Suspense>
-      ) : null}
-
-      {!hasVacancies ? (
-        <EmptyState icon={PlusCircle} title={t("employer.dashboard.empty_title")} description={t("employer.dashboard.empty_desc")} />
-      ) : null}
+      {!hasVacancies ? <EmptyState icon={PlusCircle} title={t("employer.dashboard.empty_title")} description={t("employer.dashboard.empty_desc")} /> : null}
 
       {hasVacancies ? (
         <Suspense fallback={<RowsSectionSkeleton />}>
-          <RecentApplicationsSection userId={userId} companyId={companyId} limit={3} title={t("employer.dashboard.stats.new_applications")} />
+          <RecentApplicationsSection userId={userId} companyId={companyId} limit={5} title={t("employer.dashboard.stats.new_applications")} />
         </Suspense>
       ) : null}
 
       {latestActive ? (
         <Suspense fallback={<CardsSectionSkeleton />}>
           <CandidatesSection
-            title={t("employer.dashboard.matching")}
+            title={t("employer.dashboard.review_candidates")}
             subtitle={t("employer.dashboard.for_you_vacancy", { title: latestActive.title })}
             viewAllHref={candidatesHref}
             search={{ vacancyId: latestActive.id, categoryId: latestActive.category_id, sort: "relevant", limit: 3 }}
@@ -163,9 +127,49 @@ export async function EmployerDashboard({ session, embedded = false }: { session
 
       {hasVacancies ? (
         <Suspense fallback={<RowsSectionSkeleton />}>
-          <MyVacanciesSection userId={userId} companyId={companyId} limit={3} title={t("employer.dashboard.stats.active_vacancies")} />
+          <MyVacanciesSection userId={userId} companyId={companyId} limit={5} title={t("employer.dashboard.stats.active_vacancies")} />
         </Suspense>
       ) : null}
+
+      {hasVacancies ? (
+        <Suspense fallback={null}>
+          <PipelineTiles userId={userId} companyId={companyId} />
+        </Suspense>
+      ) : null}
+
+      {/* Nomzod qidirish: matn bilan yoki AI bilan (suzuvchi tugma yo'q; admin o'chirsa — AI ko'rinmaydi) */}
+      <section aria-labelledby="find-candidates" className="space-y-2">
+        <h2 id="find-candidates" className="text-base font-bold">
+          {t("employer.dashboard.find_title")}
+        </h2>
+        <div className="rounded-xl border border-input bg-card focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25">
+          <Form action="/search" prefetch={false} role="search" aria-label={t("easy.start.employer_search_label")} className="flex items-center gap-1 p-1">
+            <input type="hidden" name="mode" value="workers" />
+            <label className="flex min-w-0 flex-1 cursor-text items-center gap-2 pl-2.5">
+              <Search className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              <input
+                name="q"
+                type="search"
+                enterKeyHint="search"
+                aria-label={t("easy.start.employer_search_label")}
+                placeholder={t("easy.start.employer_search_placeholder")}
+                maxLength={120}
+                minLength={2}
+                required
+                className="h-12 w-full min-w-0 bg-transparent text-base outline-none placeholder:text-muted-foreground"
+              />
+            </label>
+            <Button type="submit" variant="outline" className="h-11 shrink-0 px-4 text-base font-semibold">
+              {t("easy.start.search_button")}
+            </Button>
+          </Form>
+          {home.aiButton ? (
+            <div className="flex justify-end border-t border-border px-1">
+              <AiFinder defaultMode="workers" locked />
+            </div>
+          ) : null}
+        </div>
+      </section>
 
       <EmployerSections />
     </div>

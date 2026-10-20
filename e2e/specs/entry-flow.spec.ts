@@ -427,42 +427,25 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
     await guest.close();
   });
 
-  test("bosh sahifa plitkasi: yuklangan rasm ish beruvchi bosh sahifasidagi «Kunlik ishchilar» plitkasida chiqadi; olib tashlansa — o'rnatilgan tasvir", async ({ page, context, browser }) => {
-    test.setTimeout(120_000);
-    const sharp = (await import("sharp")).default;
+  test("2026-10: bosh sahifalarda katta rasmli plitkalar yo'q — admin'da ularning rasm joylari ham yo'q, bo'limlar ixcham ro'yxat", async ({ page, context, browser }) => {
     await loginAs(context, USERS.workerB, "aal2");
     await page.goto("/admin/entry");
-    await expect(page.getByRole("heading", { level: 2, name: "Bosh sahifa — katta plitkalar" })).toBeVisible();
-    // 2026-10: ish izlovchi bosh sahifasida katta plitkalar yo'q — uning rasm joylari ham admin sahifasida yo'q
-    await expect(page.getByTestId("entry-slot-tile_daily_jobs")).toHaveCount(0);
-    const slot = page.getByTestId("entry-slot-tile_daily_workers");
-    await expect(slot.getByRole("heading", { name: "Ish beruvchi — «Kunlik ishchilar»" })).toBeVisible();
-    const photo = await sharp({ create: { width: 1920, height: 1080, channels: 3, background: { r: 200, g: 120, b: 40 } } }).jpeg().toBuffer();
-    await expect(async () => {
-      const chooser = page.waitForEvent("filechooser", { timeout: 2000 }).catch(() => null);
-      await slot.getByRole("button", { name: "Rasm yuklash" }).click();
-      const c = await chooser;
-      if (!c) throw new Error("fayl tanlash oynasi ochilmadi");
-      await c.setFiles({ name: "tile.jpg", mimeType: "image/jpeg", buffer: photo });
-    }).toPass({ timeout: 15_000 });
-    const preview = slot.locator("img");
-    await expect(preview).toHaveAttribute("src", /\/site-media\/entry\/v-[0-9a-f]{64}\.webp$/, { timeout: 15_000 });
-    const name = (await preview.getAttribute("src"))!.split("/").pop()!;
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await expect(page.getByTestId("entry-slot-intro_jobs")).toBeVisible();
+    await expect(page.locator('[data-testid^="entry-slot-tile_"]')).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 2, name: "Bosh sahifa — katta plitkalar" })).toHaveCount(0);
 
-    const guest = await browser.newContext({ baseURL: stack.app });
-    await asMode(guest, "employer");
-    await asGuest(guest);
-    const g = await guest.newPage();
-    await g.goto("/");
-    const tiles = g.locator('section[aria-labelledby="home-sections"]');
-    await expect(tiles.locator(`img[src$="${name}"]`)).toBeVisible();
-    // ikkinchi plitkada («Yaqin ishchilar») rasm yuklanmagan — o'rnatilgan tasvir
-    await expect(tiles.locator(`img[src*="/site-media/entry/"]`)).toHaveCount(1);
-
-    await slot.getByRole("button", { name: "O'rnatilgan tasvirga qaytish" }).click();
-    await expect(slot.getByText("O'rnatilgan tasvir", { exact: true })).toBeVisible();
-    await g.reload();
-    await expect(tiles.locator(`img[src*="/site-media/entry/"]`)).toHaveCount(0);
-    await guest.close();
+    for (const mode of ["worker", "employer"] as const) {
+      const guest = await browser.newContext({ baseURL: stack.app });
+      await asMode(guest, mode);
+      await asGuest(guest);
+      const g = await guest.newPage();
+      await g.goto("/");
+      const sections = g.getByRole("region", { name: "Bo'limlar", exact: true });
+      await expect(sections).toBeVisible();
+      await expect(sections.locator("img")).toHaveCount(0);
+      await expect(g.locator('main img[src*="/site-media/entry/"]')).toHaveCount(0);
+      await guest.close();
+    }
   });
 });

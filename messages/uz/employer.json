@@ -73,7 +73,7 @@
     }
   },
   "dashboard": {
-    "greeting": "Assalomu alaykum, {name} 👋",
+    "greeting": "Assalomu alaykum, {name}",
     "subtitle": "Ko'p CV ko'rmang. Sizga mos xodimni toping.",
     "verify_cta": "Tasdiqlash",
     "post_vacancy": "Vakansiya joylash",
@@ -113,7 +113,17 @@
       "shortlisted": "Saralangan",
       "interview": "Suhbat",
       "hired": "Ishga olingan"
-    }
+    },
+    "col_title": "Lavozim",
+    "col_status": "Holat",
+    "col_applications": "Arizalar",
+    "col_views": "Ko'rishlar",
+    "col_updated": "Yangilangan",
+    "col_candidate": "Nomzod",
+    "col_vacancy": "Vakansiya",
+    "col_date": "Sana",
+    "find_title": "Nomzod qidirish",
+    "review_candidates": "Ko'rib chiqish uchun nomzodlar"
   },
   "company": {
     "verified": "Tasdiqlangan kompaniya",

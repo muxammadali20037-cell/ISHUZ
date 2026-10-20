@@ -24,7 +24,7 @@ export async function CandidatesSection({
   const workers = await searchCandidates(search);
   if (!workers.length) return null;
   return (
-    <section className="mt-8">
+    <section aria-label={title}>
       <SectionHeader title={title} href={viewAllHref} linkLabel={t("common.actions.view_all")} className={subtitle ? "mb-1" : undefined} />
       {subtitle ? <p className="mb-3 text-sm text-muted-foreground">{subtitle}</p> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
