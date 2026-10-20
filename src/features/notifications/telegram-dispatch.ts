@@ -3,10 +3,11 @@ import "server-only";
 import { getServerEnv, testOnlyOverride } from "@/lib/env";
 import { escapeHtml, miniAppBaseUrl, type ReplyMarkup } from "@/lib/telegram/bot";
 import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
-import { formatSalaryRange } from "@/lib/format";
+import { formatSalaryWithPeriod } from "@/lib/format";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import type { Json, Tables, TablesUpdate } from "@/types/database.types";
 import { renderNotification } from "./render";
+import { jobSlugFromLink, vacancyStillOpen } from "./eligibility";
 import { isTelegramBlockedError, resolveTelegramLocale } from "./telegram";
 import { employerMatchHtml, workerMatchHtml, type MatchReasonLite, type VacancyMatchItem, type WorkerMatchItem } from "./match-message";
 
@@ -60,6 +61,7 @@ export interface DispatchCounts {
 
 const MATCH_TYPES = new Set(["new_matching_vacancy", "new_matching_worker"]);
 const MAX_ATTEMPTS = 6;
+const attemptsOf = (rows: Row[]) => rows.reduce((max, r) => Math.max(max, r.tg_attempts ?? 0), 0);
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 function rec(p: Json): Record<string, unknown> {
@@ -94,7 +96,7 @@ async function loadMatchContext(admin: AdminClient, rows: Row[]) {
     vacancyIds.size
       ? admin
           .from("vacancies")
-          .select("id, title, status, salary_from, salary_to, salary_negotiable, owner_profile_id, companies(name), regions!vacancies_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!vacancies_district_id_fkey(name_uz, name_ru, name_en, name_oz)")
+          .select("id, title, status, expires_at, salary_from, salary_to, salary_negotiable, salary_type, owner_profile_id, companies(name), regions!vacancies_region_id_fkey(name_uz, name_ru, name_en, name_oz), districts!vacancies_district_id_fkey(name_uz, name_ru, name_en, name_oz)")
           .in("id", [...vacancyIds])
       : Promise.resolve({ data: [] as never[] }),
     workerIds.size
@@ -141,7 +143,8 @@ function subscriptionOk(ctx: Ctx, profileId: string, role: "worker" | "employer"
 /**
  * Outbox (notifications.tg_status) bo'yicha Telegram yuborish:
  *  - navbat ijara bilan olinadi (ikki parallel yuboruvchi bitta xabarni ikki marta yubormaydi);
- *  - yuborishdan oldin qayta tekshiriladi: Telegram bog'langanmi, obuna yoqilganmi, e'lon hali faolmi;
+ *  - yuborishdan oldin qayta tekshiriladi: Telegram bog'langanmi, foydalanuvchi bloklanmaganmi, obuna yoqilganmi,
+ *    e'lon hali faol va muddati o'tmaganmi (moslik va AI PRO xabarlari);
  *  - bir foydalanuvchiga bir nechta moslik — bitta jamlangan xabar (eng moslari);
  *  - 403 (bot bloklangan) → cheksiz urinish yo'q; 429 → retry_after; 5xx/tarmoq → ortib boruvchi kutish, 6 urinishdan keyin "failed".
  */
@@ -158,9 +161,14 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
   const profileIds = [...new Set(rows.map((r) => r.profile_id))];
   const [{ data: accounts }, { data: profs }] = await Promise.all([
     admin.from("telegram_accounts").select("profile_id, telegram_user_id, bot_started, language_code").in("profile_id", profileIds),
-    admin.from("profiles").select("id, locale").in("id", profileIds),
+    admin.from("profiles").select("id, locale, is_blocked").in("id", profileIds),
   ]);
   const ctx = await loadMatchContext(admin, rows);
+  // AI PRO xabarlari (havolasi /jobs/<slug>): e'lon yuborish paytida qayta o'qiladi — yopilgan yoki muddati o'tgani yuborilmaydi
+  const aiSlugs = [...new Set(rows.filter((r) => rec(r.payload).kind === "ai_alert").map((r) => jobSlugFromLink(r.link)).filter((x): x is string => !!x))];
+  const aiVacancies = new Map(
+    aiSlugs.length ? ((await admin.from("vacancies").select("slug, status, expires_at, salary_type").in("slug", aiSlugs)).data ?? []).map((v) => [v.slug, v]) : [],
+  );
   const nowIso = () => new Date().toISOString();
 
   const mark = async (ids: number[], patch: TablesUpdate<"notifications">) => {
@@ -186,9 +194,19 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
       await mark(list.map((r) => r.id), { tg_status: "skipped", tg_error: "no_telegram" });
       continue;
     }
-    const locale = resolveTelegramLocale([(profs ?? []).find((p) => p.id === profileId)?.locale, tg.language_code]);
+    const prof = (profs ?? []).find((p) => p.id === profileId);
+    // navbatga qo'yilgandan keyin bloklangan foydalanuvchiga yuborilmaydi
+    if (prof?.is_blocked) {
+      counts.skipped += list.length;
+      await mark(list.map((r) => r.id), { tg_status: "skipped", tg_error: "blocked_user" });
+      continue;
+    }
+    const locale = resolveTelegramLocale([prof?.locale, tg.language_code]);
     const t = makeT(locale);
     const tEnum = makeTEnum(t);
+    const now = Date.now();
+    const salaryLabels = { negotiable: t("notifications.match.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") };
+    const periodOf = (type: string) => tEnum("salary_type_suffix", type);
 
     // xabarlar: moslik (jamlanadi) + boshqalar (alohida)
     type Msg = { rows: Row[]; html: string; markup: ReplyMarkup };
@@ -210,13 +228,13 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
         if (subscriptionOk(ctx, profileId, "worker")) {
           for (const vid of refs) {
             const v = ctx.vacancies.get(vid);
-            if (!v || v.status !== "active") continue;
+            if (!vacancyStillOpen(v, now)) continue;
             const m = reasonsOf(ctx, workerId, vid);
             items.push({
               title: v.title,
               employer: v.companies?.name ?? (v.owner_profile_id ? (ctx.employers.get(v.owner_profile_id) ?? "") : ""),
               place: [localizedName(locale, v.regions), localizedName(locale, v.districts)].filter(Boolean).join(", "),
-              salary: v.salary_negotiable || (!v.salary_from && !v.salary_to) ? t("notifications.match.negotiable") : formatSalaryRange(v.salary_from, v.salary_to, locale, { negotiable: t("notifications.match.negotiable"), from: "", to: "" }),
+              salary: formatSalaryWithPeriod({ from: v.salary_from, to: v.salary_to, type: v.salary_type, negotiable: v.salary_negotiable }, locale, salaryLabels, periodOf),
               score: m.score ?? Number(p.score ?? 0),
               reasons: m.reasons,
             });
@@ -246,7 +264,7 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
       }
       for (const [vid, group] of byVacancy) {
         const v = ctx.vacancies.get(vid);
-        if (!v || v.status !== "active" || !subscriptionOk(ctx, profileId, "employer", vid)) {
+        if (!vacancyStillOpen(v, now) || !subscriptionOk(ctx, profileId, "employer", vid)) {
           skippedIds.push(...group.map((r) => r.id));
           continue;
         }
@@ -284,7 +302,18 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
     } else skippedIds.push(...employerSide.map((r) => r.id));
 
     for (const r of others) {
-      const rendered = renderNotification(r.type, r.payload, t, locale);
+      let payload = r.payload;
+      if (rec(r.payload).kind === "ai_alert") {
+        const slug = jobSlugFromLink(r.link);
+        const v = slug ? aiVacancies.get(slug) : undefined;
+        // eski yozuvlarda havola bo'lmasa — avvalgidek yuboriladi; havola bor, lekin e'lon yopilgan/muddati o'tgan — yo'q
+        if (slug && !vacancyStillOpen(v, now)) {
+          skippedIds.push(r.id);
+          continue;
+        }
+        if (v?.salary_type) payload = { ...rec(r.payload), salary_type: v.salary_type } as typeof r.payload;
+      }
+      const rendered = renderNotification(r.type, payload, t, locale);
       const html = rendered.body ? `<b>${escapeHtml(rendered.title)}</b>\n${escapeHtml(rendered.body)}` : `<b>${escapeHtml(rendered.title)}</b>`;
       messages.push({ rows: [r], html, markup: keyboard([[{ text: t("notifications.telegram.open"), url: trackedUrl(r.open_token) }]]) });
     }
@@ -300,11 +329,13 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
       const ids = msg.rows.map((r) => r.id);
       if (result.ok) {
         counts.sent += ids.length;
-        await mark(ids, { tg_status: "sent", telegram_sent_at: nowIso(), tg_error: null, tg_attempts: (msg.rows[0]?.tg_attempts ?? 0) + 1 });
+        await mark(ids, { tg_status: "sent", telegram_sent_at: nowIso(), tg_error: null, tg_attempts: attemptsOf(msg.rows) + 1 });
       } else if (isTelegramBlockedError(result.code, result.description)) {
-        counts.blocked += list.length;
+        // faqat hali yuborilmaganlari: shu ro'yxatda avval yuborilgan yoki o'tkazib yuborilganlari o'z holatida qoladi
+        const rest = messages.slice(m).flatMap((x) => x.rows.map((r) => r.id));
+        counts.blocked += rest.length;
         await admin.rpc("telegram_blocked", { p_profile_id: profileId });
-        await mark(list.map((r) => r.id), { tg_status: "dead", tg_error: "bot_blocked" });
+        await mark(rest, { tg_status: "dead", tg_error: "bot_blocked" });
         break;
       } else if (result.code === 429) {
         // Telegram limiti: shu va qolgan xabarlar ko'rsatilgan vaqtdan keyin
@@ -314,7 +345,8 @@ export async function dispatchTelegramNotifications(admin: AdminClient, opts: { 
         return counts;
       } else {
         counts.failed += ids.length;
-        const attempts = (msg.rows[0]?.tg_attempts ?? 0) + 1;
+        // jamlangan xabar: eng ko'p urinilgan yozuv bo'yicha (birinchisi bo'yicha emas) — cheksiz qayta urinish bo'lmaydi
+        const attempts = attemptsOf(msg.rows) + 1;
         const dead = !result.transient || attempts >= MAX_ATTEMPTS;
         await mark(ids, {
           tg_status: dead ? "failed" : "queued",

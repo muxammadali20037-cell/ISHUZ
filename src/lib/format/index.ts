@@ -35,6 +35,22 @@ export function formatSalaryRange(
   return `${labels.to} ${formatMoney(to, locale)}`;
 }
 
+/**
+ * Maosh va uning davri — sayt (SalaryText) bilan bir xil qoida: "5 000 000 – 7 000 000 so'm/oy", "kamida 250 000 so'm/kun",
+ * "Kelishiladi". `suffixOf` — davr qo'shimchasi (enums.salary_type_suffix): "/oy", "/kun", "/soat", " · ishbay".
+ * Telegram xabarlari va bot shu funksiyadan foydalanadi — davrsiz summa (300 000 — kuniga yoki oyiga?) chiqmasin.
+ */
+export function formatSalaryWithPeriod(
+  s: { from: number | null | undefined; to: number | null | undefined; type: string | null | undefined; negotiable?: boolean | null },
+  locale: Locale,
+  labels: { negotiable: string; from: string; to: string },
+  suffixOf: (type: string) => string,
+): string {
+  if (s.negotiable || (!s.from && !s.to)) return labels.negotiable;
+  const text = formatSalaryRange(s.from, s.to, locale, labels);
+  return s.type && s.type !== "negotiable" ? `${text}${suffixOf(s.type)}` : text;
+}
+
 /** Qisqa ko'rinish: 5 000 000 → "5 mln", 750 000 → "750 ming" */
 export function formatMoneyShort(amount: number | null | undefined, locale: Locale = "uz"): string {
   if (!amount) return "";

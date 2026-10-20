@@ -196,7 +196,10 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       if (str(p, "kind") === "ai_alert") {
         const from = num(p, "salary_from");
         const to = num(p, "salary_to");
-        const salary = p.negotiable === true || (!from && !to) ? t("saved.ai_alerts.negotiable") : salaryText(t, from, to);
+        // davr: yangi yozuvlarda payload'da, eskilarida Telegram yuboruvchi e'londan qo'shadi ("/oy", "/kun")
+        const type = str(p, "salary_type");
+        const period = type && type !== "negotiable" ? tEnum(t, "salary_type_suffix", type) : "";
+        const salary = p.negotiable === true || (!from && !to) ? t("saved.ai_alerts.negotiable") : `${salaryText(t, from, to)}${period === type ? "" : period}`;
         const who = str(p, "who") + (p.verified === true ? " ✅" : "");
         return {
           title: t("saved.ai_alerts.notify_title", { title: str(p, "title") }),

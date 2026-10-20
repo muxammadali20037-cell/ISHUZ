@@ -142,4 +142,13 @@ describe("renderNotification", () => {
     expect(rr.body).toContain("г. Ташкент, Чиланзар");
     expect(renderNotification("system", { kind: "ai_worker_alert", profession: "Oshpaz" }, uz, "uz").body).toBe("");
   });
+
+  it("AI PRO xabari: maosh davri bilan ('/kun', '/мес'); davr noma'lum bo'lsa — avvalgidek", () => {
+    const base = { kind: "ai_alert", title: "Yuk tashuvchi", who: "Ombor", region: "Toshkent", salary_from: 250_000, salary_to: null };
+    expect(renderNotification("system", { ...base, salary_type: "daily" }, uz, "uz").body).toMatch(/250 000 .+\/kun$/);
+    expect(renderNotification("system", { ...base, salary_from: 6_000_000, salary_type: "monthly" }, ru, "ru").body).toMatch(/6 000 000 .+\/мес$/);
+    expect(renderNotification("system", base, uz, "uz").body).not.toMatch(/\/(kun|oy)$/);
+    expect(renderNotification("system", { ...base, negotiable: true, salary_type: "daily" }, uz, "uz").body).toMatch(/Kelishiladi$/);
+  });
 });
+

@@ -8,7 +8,7 @@ import type { Json } from "@/types/database.types";
 import type { Locale } from "@/lib/i18n/config";
 import type { TFunction } from "@/lib/i18n/translate";
 import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
-import { formatMoney, formatMoneyShort, formatSalaryRange } from "@/lib/format";
+import { formatMoney, formatMoneyShort, formatSalaryWithPeriod } from "@/lib/format";
 import {
   answerCallback,
   editBotKeyboard,
@@ -821,7 +821,7 @@ export async function sendMatchingJobs(ctx: BotCtx, offset: number) {
   const labels = { negotiable: ctx.t("bot.jobs.negotiable"), from: ctx.t("common.labels.salary_from"), to: ctx.t("common.labels.salary_to") };
   const lines = list.map((v, i) => {
     const place = v.is_remote ? ctx.t("bot.jobs.remote") : [ctx.locale === "ru" ? v.district_name_ru : v.district_name_uz, ctx.locale === "ru" ? v.region_name_ru : v.region_name_uz].filter(Boolean).join(", ");
-    const salary = v.salary_negotiable ? labels.negotiable : formatSalaryRange(v.salary_from, v.salary_to, ctx.locale, labels);
+    const salary = formatSalaryWithPeriod({ from: v.salary_from, to: v.salary_to, type: v.salary_type, negotiable: v.salary_negotiable }, ctx.locale, labels, (type: string) => ctx.t(`enums.salary_type_suffix.${type}`));
     return [
       `<b>${offset + i + 1}. ${escapeHtml(v.title)}</b>`,
       v.company_name ? `🏢 ${escapeHtml(v.company_name)}` : null,
