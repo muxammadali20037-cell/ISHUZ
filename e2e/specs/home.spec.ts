@@ -9,8 +9,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 const PATHS = [
   { mode: "worker", name: /^O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
   { mode: "worker", name: /^Barcha kasblar$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
-  { mode: "worker", name: /^Kunlik$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
-  { mode: "worker", name: /^Talabalar uchun$/, url: /\/students$/, heading: /Talabalar/ },
+  { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
+  { mode: "worker", name: /^Talabalar$/, url: /\/students$/, heading: /Talabalar/ },
   { mode: "worker", name: /^Filtrlar$/, url: /\/search\?mode=jobs&region=all&any=1$/, heading: /Ish e'lonlari/ },
   { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
   { mode: "employer", name: /^Tajribali/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
@@ -61,13 +61,14 @@ test("bosh sahifa: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbg
   }
 });
 
-test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q; qidiruv birinchi ekranda, AI bonusi ro'yxatdan keyin", async ({ page, context }) => {
+test("bosh sahifa: bitta h1; rangli katta sirt faqat sarlavha (hero); qidiruv va xizmatlar birinchi ekranda, AI bonusi ro'yxatdan keyin", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
-  // to'liq rangli (primary/success) katta sirtlar: faqat tugmalar bo'lishi mumkin (balandligi < 80 px)
+  // premium (2026-10): to'liq rangli katta sirt — faqat bitta sarlavha (.hero-surface); boshqa joyda faqat tugmalar (< 80 px)
+  await expect(page.locator("main .hero-surface")).toHaveCount(1);
   const big = await page.evaluate(() => {
     const brand = [getComputedStyle(document.documentElement).getPropertyValue("--primary").trim(), getComputedStyle(document.documentElement).getPropertyValue("--success").trim()];
     const toHex = (rgb: string) => {
@@ -75,7 +76,7 @@ test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q; qidiruv birinchi ekr
       return m ? `#${m.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}` : "";
     };
     return Array.from(document.querySelectorAll<HTMLElement>("main *"))
-      .filter((el) => brand.includes(toHex(getComputedStyle(el).backgroundColor)) && el.getBoundingClientRect().height >= 80)
+      .filter((el) => !el.closest(".hero-surface") && brand.includes(toHex(getComputedStyle(el).backgroundColor)) && el.getBoundingClientRect().height >= 80)
       .map((el) => `${el.tagName}.${el.className.toString().slice(0, 60)}`);
   });
   expect(big).toEqual([]);
@@ -83,7 +84,13 @@ test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q; qidiruv birinchi ekr
   const search = await page.getByRole("searchbox", { name: "Ish qidirish" }).boundingBox();
   expect(search!.y + search!.height).toBeLessThan(400);
   await expect(page.getByRole("searchbox", { name: "Ish qidirish" })).toHaveAttribute("placeholder", "Kasb yoki ish nomi");
-  await expect(page.getByRole("group", { name: "Tez filtrlar" }).getByRole("link")).toHaveText(["Kunlik", "Tajribasiz", "Masofaviy", "Talabalar uchun"]);
+  // xizmatlar to'ri: 8 ta, shu tartibda (mehmonda — "CV yaratish")
+  const services = page.getByRole("navigation", { name: "Xizmatlar" }).getByRole("link");
+  // telefonda faqat nom ko'rinadi (izoh — kompyuterda): ko'rinadigan matn bo'yicha
+  await expect(services).toHaveCount(8);
+  expect((await services.allInnerTexts()).map((x) => x.trim())).toEqual(["CV yaratish", "Kunlik ish", "Yaqin atrofda", "Masofaviy", "Tajribasiz", "Talabalar", "Telegram xabar", "Kasblar"]);
+  await expect(services.first()).toHaveAttribute("href", "/post/worker");
+  expect((await services.last().boundingBox())!.y).toBeLessThan(844);
   await expect(page.getByRole("banner").getByRole("link", { name: "Hudud: Butun O'zbekiston. O'zgartirish" })).toBeVisible();
   // AI qatori Suspense ichida oqim bilan keladi — o'lchashdan oldin joyiga tushishini kutamiz
   const ai = page.getByRole("link", { name: /AI yordamchi/ });
@@ -92,7 +99,8 @@ test("bosh sahifa: bitta h1, rangli dominant kartalar yo'q; qidiruv birinchi ekr
   await expect(page.locator("#home-feed")).toBeVisible();
   const order = await page.evaluate(() => {
     const y = (sel: string) => document.querySelector(sel)?.getBoundingClientRect().top ?? -1;
-    return { list: y("#home-feed"), ai: y("main a[href^='/ai-alerts']") };
+    // AI PRO qatori — yordamchi panelda (xizmatlar to'ridagi "Telegram xabar" emas)
+    return { list: y("#home-feed"), ai: y("main aside a[href^='/ai-alerts']") };
   });
   expect(order.list).toBeGreaterThan(0);
   expect(order.ai).toBeGreaterThan(order.list);
@@ -135,14 +143,16 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
   // 2026-10: ish qidiruvchi (rejim tanlamagan mehmon ham) — Ishlar · Saqlangan · Arizalar · Profil
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "Arizalar", "Profil"]);
+  // o'rtada — bo'rtib turadigan "E'lon" (ish qidiruvchi: o'zi haqida e'lon / CV)
+  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "E'lon" })).toHaveAttribute("href", "/post/worker");
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
   await nav.getByRole("link", { name: "Saqlangan" }).click();
   await page.waitForURL(/\/saved$/);
   await expect(nav.getByRole("link", { name: "Saqlangan" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Ishlar" })).not.toHaveAttribute("aria-current", "page");
   // 360 px da yozuvlar sig'adi (kesilmaydi)
-  for (const name of ["Ishlar", "Saqlangan", "Arizalar", "Profil"]) {
+  for (const name of ["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]) {
     const label = nav.getByRole("link", { name }).locator("span").first();
     expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), name).toBe(true);
   }

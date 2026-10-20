@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, Building2, ChevronRight, Plus } from "lucide-react";
+import { ArrowRight, BadgeCheck, Building2, CalendarDays, ChevronRight, MapPin, Plus, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { Button } from "@/components/ui/button";
@@ -13,9 +13,11 @@ import { HomeQuickLinks } from "@/features/home-windows/home-windows";
 import { getHomeSettings } from "@/features/home-windows/queries";
 import { windowsFor } from "@/features/home-windows/model";
 import { EmployerDashboard } from "@/features/employer/components/dashboard/employer-dashboard";
-import { HomeSearch } from "./home-search";
+import { SeekerSearch } from "./home-search";
+import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
+import { cn } from "@/lib/utils";
 import { getHomePlace, getNewWorkers, type HomePlace } from "./home-queries";
-import { placeChooserHref } from "./quick-filters";
+import { employerServiceHrefs, placeChooserHref } from "./quick-filters";
 import { HireSectionList } from "./section-tiles";
 
 /**
@@ -23,43 +25,62 @@ import { HireSectionList } from "./section-tiles";
  * nomzodlar). Mehmon yoki profil hali yo'q — nomzod qidiruvi, "Vakansiya joylash" va eng yangi nomzodlar.
  * Rejim faqat ko'rinishni tanlaydi: ruxsatlar serverda (requireEmployer, RLS) — rejim o'zgarsa ham kengaymaydi.
  */
-export async function EmployerHome({ session }: { session: SessionContext | null }) {
+export async function EmployerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
   // panel — /employer bilan bir xil shart (requireEmployer): profil bor va to'ldirilgan
   if (session?.employerId && session.employerOnboarded) return <EmployerDashboard session={session as SessionContext & { employerId: string }} embedded />;
   const [{ t, name }, place, home] = await Promise.all([getT(), getHomePlace(), getHomeSettings()]);
   const placeLabel = place.region ? (place.district ? `${name(place.region)} · ${name(place.district)}` : name(place.region)) : t("easy.location.whole_country");
-  // 2026-10: katta rasmli plitkalar va statistika banneri yo'q — qidiruv, "Vakansiya joylash", darhol nomzodlar; bo'limlar ixcham
+  const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
+  const hrefs = employerServiceHrefs(where);
+  const firstName = session?.profile.first_name?.trim();
+  const tiles: ServiceTile[] = [
+    { key: "candidates", href: hrefs.candidates, label: t("easy.services.e_candidates"), hint: t("easy.services.e_candidates_hint"), icon: UsersRound, tone: "indigo", featured: true, track: "home_service" },
+    { key: "daily", href: hrefs.daily, label: t("easy.services.e_daily"), hint: t("easy.services.e_daily_hint"), icon: CalendarDays, tone: "orange", track: "home_service" },
+    { key: "experienced", href: hrefs.experienced, label: t("easy.services.e_exp"), hint: t("easy.services.e_exp_hint"), icon: BadgeCheck, tone: "green", track: "home_service" },
+    { key: "near", href: hrefs.near, label: t("easy.services.e_near"), hint: t("easy.services.e_near_hint"), icon: MapPin, tone: "cyan", track: "home_service" },
+  ];
+  // mini-ilova uslubi: chuqur ko'k sarlavha (asosiy amal — yaltirab turadigan "Vakansiya joylash", nomzod qidiruvi va jonli AI
+  // qatori), ustiga chiqib turadigan xizmatlar, keyin darhol yangi nomzodlar. Statistika banneri yo'q.
   return (
-    <div className="space-y-5 lg:space-y-6">
-      <section aria-labelledby="home-title" className="space-y-3 lg:max-w-3xl">
-        <h1 id="home-title" className="text-[1.375rem] font-extrabold leading-tight tracking-tight sm:text-3xl">
-          {t("easy.start.employer_title")}
-        </h1>
-        <HomeSearch
-          scope="workers"
-          label={t("easy.start.employer_search_label")}
-          placeholder={t("easy.start.employer_search_placeholder")}
-          place={{ label: placeLabel, href: placeChooserHref("workers") }}
-          chips={[]}
-          ai={home.aiButton}
-        />
-      </section>
+    <div className="space-y-6">
+      <div>
+        <section
+          aria-labelledby="home-title"
+          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl")}
+        >
+          <p className="text-sm font-semibold text-hero-muted">{firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}</p>
+          <div className="mt-0.5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="min-w-0">
+              <h1 id="home-title" className="text-2xl font-extrabold leading-tight tracking-tight text-hero-fg sm:text-3xl lg:text-4xl">
+                {t("easy.start.employer_title")}
+              </h1>
+              <p className="mt-1 max-w-xl text-sm text-hero-muted sm:text-base">{t("easy.services.hire_sub")}</p>
+            </div>
+            <Link
+              href="/post/vacancy"
+              data-track="home_post_vacancy"
+              className="press shine btn-light inline-flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold"
+            >
+              <Plus className="relative z-10 size-5" aria-hidden />
+              <span className="relative z-10">{t("easy.start.post_vacancy")}</span>
+            </Link>
+          </div>
+          <div className="mt-4 lg:max-w-3xl">
+            <SeekerSearch
+              scope="workers"
+              label={t("easy.start.employer_search_label")}
+              placeholder={t("easy.start.employer_search_placeholder")}
+              place={{ label: placeLabel, href: placeChooserHref("workers"), ...where }}
+              filtersHref={hrefs.candidates}
+              ai={home.aiButton}
+            />
+          </div>
+        </section>
+        <ServiceTiles items={tiles} label={t("easy.services.label")} className="relative z-10 -mt-11 lg:-mt-12 lg:mx-4" />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="min-w-0 space-y-5">
-          {/* asosiy harakat: oddiy brend tugmasi (katta banner emas) */}
-          <section className="flex flex-col gap-3 rounded-xl border border-border bg-card p-4 sm:flex-row sm:items-center">
-            <span className="min-w-0 flex-1">
-              <span className="block text-base font-bold leading-tight">{t("easy.home.employer_title")}</span>
-              <span className="block text-sm text-muted-foreground">{t("easy.start.post_vacancy_hint")}</span>
-            </span>
-            <Button asChild className="h-auto min-h-12 shrink-0 whitespace-normal px-5 py-2 text-center text-base font-bold leading-tight">
-              <Link href="/post/vacancy">
-                <Plus className="size-5" aria-hidden /> {t("easy.start.post_vacancy")}
-              </Link>
-            </Button>
-          </section>
-
           {session ? (
             // kirgan, lekin ish beruvchi profili yo'q: bir daqiqalik to'ldirish (arizalar va vakansiyalar shundan keyin)
             <Link href="/onboarding/employer" className="press flex min-h-16 items-center gap-3 rounded-xl border border-primary/40 bg-primary-soft/40 px-4 py-3 hover:border-primary">

@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, ChevronDown, MapPin, MessageCircle } from "lucide-react";
+import { Bell, Bookmark, ChevronDown, MapPin, MessageCircle, Plus } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
 import { LanguageSelect } from "./language-switcher";
-import { DesktopNavLinks, type NavMode, type NavRole } from "./app-shell";
+import { DesktopNavLinks, postAction, type NavMode, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
 import { SiteMenu, SiteNavLinks, type SiteNavConfig } from "./site-nav";
 import { LoginLink } from "./login-link";
@@ -81,6 +81,15 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           ) : null}
         </div>
         <div className="flex items-center gap-1">
+          {/* kompyuterda — yaltirab turadigan asosiy amal (telefonda pastki menyuning o'rtasida); bosh sahifada u sarlavhada bor */}
+          {!site && !(pathname === "/" && mode === "employer") && !pathname.startsWith("/post/") ? (
+            <Button asChild className="shine mr-1 hidden h-11 px-4 text-base font-bold lg:inline-flex">
+              <Link href={postAction(mode).href} data-track="nav_post">
+                <Plus className="relative z-10 size-5" aria-hidden />
+                <span className="relative z-10">{t(postAction(mode).ctaKey)}</span>
+              </Link>
+            </Button>
+          ) : null}
           <LanguageSelect className={showPlace && session ? "max-md:hidden" : undefined} />
           {session ? (
             <>

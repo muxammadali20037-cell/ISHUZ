@@ -456,7 +456,9 @@
     "tab_ai": "AI",
     "tab_messages": "Xabarlar",
     "tab_saved": "Saqlangan",
-    "tab_dashboard": "Boshqaruv"
+    "tab_dashboard": "Boshqaruv",
+    "tab_post": "E'lon",
+    "post_worker_cta": "E'lon berish"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -707,7 +709,8 @@
     "empty_ai_hint": "Yoki oddiy so'z bilan yozing — AI yordamchi boshqacha qidirib ko'radi",
     "composer_placeholder_jobs": "Kasb, tuman, maosh…",
     "composer_placeholder_workers": "Kim kerak: kasb, tuman…",
-    "cta_button": "AI yordamchini sinab ko'ring"
+    "cta_button": "AI yordamchini sinab ko'ring",
+    "bar_badge": "Yangi"
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",
@@ -865,5 +868,48 @@
     "near_workers": "Yaqin ishchilar",
     "experienced": "Tajribali",
     "all_workers": "Barcha ishchilar"
+  },
+  "services": {
+    "label": "Xizmatlar",
+    "greeting": "Assalomu alaykum, {name}!",
+    "greeting_guest": "Assalomu alaykum!",
+    "today": "Bugun {count} ta yangi e'lon",
+    "total": "{count} ta faol e'lon",
+    "cv": "CV yaratish",
+    "cv_hint": "1 daqiqada, bepul",
+    "cv_mine": "Mening CV'im",
+    "cv_mine_hint": "Ko'rish va yuklab olish",
+    "daily": "Kunlik ish",
+    "daily_hint": "Bugun ish — bugun pul",
+    "near": "Yaqin atrofda",
+    "near_hint": "Uyingizga yaqin ishlar",
+    "remote": "Masofaviy",
+    "remote_hint": "Uydan ishlash",
+    "noexp": "Tajribasiz",
+    "noexp_hint": "Tajriba shart emas",
+    "students": "Talabalar",
+    "students_hint": "Amaliyot, yarim kun",
+    "alerts": "Telegram xabar",
+    "alerts_hint": "Yangi ish chiqsa — darhol",
+    "all": "Kasblar",
+    "all_hint": "Sohalar bo'yicha",
+    "e_post": "Vakansiya joylash",
+    "e_post_hint": "5 daqiqada",
+    "e_ai": "AI bilan e'lon",
+    "e_ai_hint": "Yozing — AI to'ldiradi",
+    "e_candidates": "Nomzodlar",
+    "e_candidates_hint": "Ishchilar ro'yxati",
+    "e_daily": "Kunlik ishchi",
+    "e_daily_hint": "Bugunoq tayyor",
+    "e_exp": "Tajribali",
+    "e_exp_hint": "Tajribasi borlar",
+    "e_near": "Yaqin atrofda",
+    "e_near_hint": "Sizga yaqin ishchilar",
+    "e_apps": "Arizalar",
+    "e_apps_hint": "Kelgan arizalar",
+    "e_company": "Kompaniya",
+    "e_company_hint": "Sahifa va tasdiq",
+    "hire_title": "Kerakli xodimni tez toping",
+    "hire_sub": "Vakansiya joylang yoki AI bilan nomzod qidiring — haqiqiy ishchilar ichidan"
   }
 }

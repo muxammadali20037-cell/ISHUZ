@@ -9,14 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "lift-sm bg-primary text-primary-foreground hover:bg-primary-hover shadow-sm",
+        // bo'rtib turadigan asosiy tugma (globals.css → .btn-3d): yuqorida yorug', pastda soya, rangli nur
+        default: "btn-3d lift-sm bg-primary text-primary-foreground hover:bg-primary-hover",
         secondary: "bg-secondary text-secondary-foreground hover:bg-border/70",
-        outline: "border border-border bg-card text-foreground hover:bg-secondary",
+        outline: "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:bg-secondary",
         ghost: "text-foreground hover:bg-secondary",
         soft: "bg-primary-soft text-primary hover:bg-primary/15",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         "destructive-soft": "bg-destructive-soft text-destructive hover:bg-destructive/15",
-        success: "bg-success text-success-foreground hover:bg-success/90",
+        success: "bg-success text-success-foreground shadow-sm hover:bg-success/90",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {

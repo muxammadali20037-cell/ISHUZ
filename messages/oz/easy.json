@@ -456,7 +456,9 @@
     "tab_ai": "AI",
     "tab_messages": "Хабарлар",
     "tab_saved": "Сақланган",
-    "tab_dashboard": "Бошқарув"
+    "tab_dashboard": "Бошқарув",
+    "tab_post": "Эълон",
+    "post_worker_cta": "Эълон бериш"
   },
   "moderation": {
     "pending_title": "Эълонингиз сақланди",
@@ -707,7 +709,8 @@
     "empty_ai_hint": "Ёки оддий сўз билан ёзинг — AI ёрдамчи бошқача қидириб кўради",
     "composer_placeholder_jobs": "Касб, туман, маош…",
     "composer_placeholder_workers": "Ким керак: касб, туман…",
-    "cta_button": "AI ёрдамчини синаб кўринг"
+    "cta_button": "AI ёрдамчини синаб кўринг",
+    "bar_badge": "Янги"
   },
   "mode": {
     "chooser_title": "Сиз нима қидиряпсиз?",
@@ -865,5 +868,48 @@
     "near_workers": "Яқин ишчилар",
     "experienced": "Тажрибали",
     "all_workers": "Барча ишчилар"
+  },
+  "services": {
+    "label": "Хизматлар",
+    "greeting": "Ассалому алайкум, {name}!",
+    "greeting_guest": "Ассалому алайкум!",
+    "today": "Бугун {count} та янги эълон",
+    "total": "{count} та фаол эълон",
+    "cv": "CV яратиш",
+    "cv_hint": "1 дақиқада, бепул",
+    "cv_mine": "Менинг CVим",
+    "cv_mine_hint": "Кўриш ва юклаб олиш",
+    "daily": "Кунлик иш",
+    "daily_hint": "Бугун иш — бугун пул",
+    "near": "Яқин атрофда",
+    "near_hint": "Уйингизга яқин ишлар",
+    "remote": "Масофавий",
+    "remote_hint": "Уйдан ишлаш",
+    "noexp": "Тажрибасиз",
+    "noexp_hint": "Тажриба шарт эмас",
+    "students": "Талабалар",
+    "students_hint": "Амалиёт, ярим кун",
+    "alerts": "Telegram хабар",
+    "alerts_hint": "Янги иш чиқса — дарҳол",
+    "all": "Касблар",
+    "all_hint": "Соҳалар бўйича",
+    "e_post": "Вакансия жойлаш",
+    "e_post_hint": "5 дақиқада",
+    "e_ai": "AI билан эълон",
+    "e_ai_hint": "Ёзинг — AI тўлдиради",
+    "e_candidates": "Номзодлар",
+    "e_candidates_hint": "Ишчилар рўйхати",
+    "e_daily": "Кунлик ишчи",
+    "e_daily_hint": "Бугуноқ тайёр",
+    "e_exp": "Тажрибали",
+    "e_exp_hint": "Тажрибаси борлар",
+    "e_near": "Яқин атрофда",
+    "e_near_hint": "Сизга яқин ишчилар",
+    "e_apps": "Аризалар",
+    "e_apps_hint": "Келган аризалар",
+    "e_company": "Компания",
+    "e_company_hint": "Саҳифа ва тасдиқ",
+    "hire_title": "Керакли ходимни тез топинг",
+    "hire_sub": "Вакансия жойланг ёки AI билан номзод қидиринг — ҳақиқий ишчилар ичидан"
   }
 }

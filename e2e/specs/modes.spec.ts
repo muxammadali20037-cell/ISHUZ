@@ -31,9 +31,10 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/worker']:visible").first()).toBeVisible();
-  // pastki menyu (2026-10): Ishlar · Saqlangan · Arizalar · Profil (chat va bildirishnomalar — yuqori panelda)
+  // pastki menyu (2026-10): Ishlar · Saqlangan · [E'lon] · Arizalar · Profil (chat va bildirishnomalar — yuqori panelda)
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "Arizalar", "Profil"]);
+  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "E'lon" })).toHaveAttribute("href", "/post/worker");
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/");
   await expect(nav.getByRole("link", { name: "Saqlangan" })).toHaveAttribute("href", "/saved");
   await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/applications");
@@ -59,7 +60,8 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   // ish beruvchi menyusi (2026-10): Boshqaruv · Vakansiyalar · Nomzodlar · Profil
-  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Boshqaruv", "Vakansiyalar", "Nomzodlar", "Profil"]);
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Boshqaruv", "Vakansiyalar", "E'lon", "Nomzodlar", "Profil"]);
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "E'lon" })).toHaveAttribute("href", "/post/vacancy");
   await expect(page.getByRole("navigation").last().getByRole("link", { name: "Nomzodlar" })).toHaveAttribute("href", "/search?mode=workers");
 });
 

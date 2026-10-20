@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
 import { ArrowRight, Search, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Dialog, Sheet } from "@/components/ui/dialog";
@@ -18,7 +18,9 @@ import { AiModeSwitch, AiPromptBox, AiThread, useAiChat } from "./ai-chat";
  *  - "inline" — qidiruv qatori yonidagi ixcham tugma (belgi + "AI bilan qidirish");
  *  - "card"   — kompyuterdagi bosh sahifa uchun taklif kartasi: yozish maydoniga o'xshash tugma va misollar
  *               (misol bosilsa — oyna ochiladi va shu so'rov darhol yuboriladi);
- *  - "cta"    — mehmon bosh sahifasidagi AI bo'limi uchun asosiy tugma ("AI yordamchini sinab ko'ring").
+ *  - "cta"    — mehmon bosh sahifasidagi AI bo'limi uchun asosiy tugma ("AI yordamchini sinab ko'ring");
+ *  - "bar"    — bosh ekrandagi "jonli" AI qatori: aylanib turadigan rangli chegara, yaltiroq belgi va o'zi yozilib-o'chib
+ *               turadigan misollar (prefers-reduced-motion — harakatsiz, birinchi misol).
  */
 export function AiFinder({
   defaultMode,
@@ -28,7 +30,7 @@ export function AiFinder({
 }: {
   defaultMode: "jobs" | "workers";
   locked?: boolean;
-  variant?: "inline" | "card" | "cta";
+  variant?: "inline" | "card" | "cta" | "bar";
   className?: string;
 }) {
   const { t } = useT();
@@ -87,6 +89,28 @@ export function AiFinder({
             ))}
           </ul>
         </section>
+      ) : variant === "bar" ? (
+        <button
+          type="button"
+          onClick={() => openWith()}
+          data-track="ai_finder_open"
+          aria-label={t("easy.finder.inline_button")}
+          className={cn("ai-glow press flex min-h-14 w-full items-center gap-3 rounded-2xl py-1.5 pl-2 pr-1.5 text-left", className)}
+        >
+          <AiAvatar className="ai-twinkle" />
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
+              {t("easy.finder.inline_button")}
+              <span className="rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary">{t("easy.finder.bar_badge")}</span>
+            </span>
+            <span className="block truncate text-sm text-muted-foreground" aria-hidden>
+              <TypedExamples examples={examples} />
+            </span>
+          </span>
+          <span className="btn-3d flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-hidden>
+            <ArrowRight className="size-5" />
+          </span>
+        </button>
       ) : variant === "cta" ? (
         <button
           type="button"
@@ -130,4 +154,28 @@ export function AiFinder({
       </Dialog>
     </>
   );
+}
+
+const noopSubscribe = () => () => {};
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Misollar o'zi yozilib, turib, o'chib turadi (AI "jonli" ko'rinsin); harakat o'chiq bo'lsa — birinchi misol */
+function TypedExamples({ examples }: { examples: string[] }) {
+  const still = useSyncExternalStore(noopSubscribe, reducedMotion, () => true);
+  const [state, setState] = useState({ i: 0, n: 0, del: false });
+  const word = examples[state.i % examples.length] ?? "";
+  useEffect(() => {
+    if (still || !word) return;
+    const full = state.n >= word.length;
+    const delay = state.del ? 28 : full ? 1700 : 65;
+    const id = setTimeout(() => {
+      setState((s) => {
+        if (s.del) return s.n <= 0 ? { i: s.i + 1, n: 0, del: false } : { ...s, n: s.n - 1 };
+        return s.n >= word.length ? { ...s, del: true } : { ...s, n: s.n + 1 };
+      });
+    }, delay);
+    return () => clearTimeout(id);
+  }, [state, still, word]);
+  if (still) return <>{word}</>;
+  return <span className="type-caret">{word.slice(0, state.n)}</span>;
 }

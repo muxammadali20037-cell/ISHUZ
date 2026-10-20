@@ -169,7 +169,7 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   // (aks holda 1-o'lchov yarim sahifada olinib, keyingilar "o'sgan" ko'rinadi)
   const homeReady = async () => {
     await expect(page.locator("#home-feed")).toBeVisible();
-    await expect(page.locator("main a[href^='/ai-alerts']")).toBeVisible();
+    await expect(page.locator("main aside a[href^='/ai-alerts']")).toBeVisible();
     await expect(page.locator("main .skeleton-shimmer")).toHaveCount(0);
   };
   await page.goto("/");

@@ -47,5 +47,8 @@
     "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring"
   },
   "cta_worker_update": "✨ Profilingizni AI bilan yangilang",
-  "cta_worker_update_desc": "Nima o'zgargan bo'lsa oddiy tilda yozing — AI kerakli bo'limlarni o'zi yangilaydi"
+  "cta_worker_update_desc": "Nima o'zgargan bo'lsa oddiy tilda yozing — AI kerakli bo'limlarni o'zi yangilaydi",
+  "voice_start": "Gapirib berish",
+  "voice_listening": "Gapiring — yozib boryapman… Tugatgach «To'xtatish»ni bosing.",
+  "voice_hint": "Yozish shart emas: «Gapirib berish»ni bosing va o'zingiz haqingizda ayting — AI o'zi yozib, maydonlarni to'ldiradi."
 }

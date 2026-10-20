@@ -45,7 +45,7 @@ export async function HomePage({ session, mode, tab = "all" }: { session: Sessio
       <div className="container-app py-4 sm:py-6">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
         {session ? null : <ModeSwitch mode={mode} className="mb-5 sm:mx-0 sm:max-w-sm" />}
-        {mode === "employer" ? <EmployerHome session={session} /> : <SeekerHome session={session} />}
+        {mode === "employer" ? <EmployerHome session={session} flush={!!session} /> : <SeekerHome session={session} flush={!!session} />}
       </div>
     </>
   );

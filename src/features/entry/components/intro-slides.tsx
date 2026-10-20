@@ -84,7 +84,10 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
 
         <div className="flex min-h-0 flex-1 flex-col overflow-y-auto px-5">
           <div key={step} className={cn("intro-slide my-auto flex flex-col py-3", dir < 0 && "intro-back")}>
-            <div className="mx-auto aspect-[4/3] w-full max-w-sm overflow-hidden rounded-2xl bg-primary-soft">{s.media}</div>
+            {/* tasvir brend ramkasida (premium 2026-10): chuqur ko'k sirt ustida oq "ekran" */}
+            <div className="hero-surface mx-auto aspect-[4/3] w-full max-w-sm rounded-2xl p-3 shadow-lg">
+              <div className="size-full overflow-hidden rounded-xl bg-primary-soft shadow-lg">{s.media}</div>
+            </div>
             <p className="sr-only" aria-live="polite">
               {t("welcome.intro.step", { n: step + 1, total })}
             </p>

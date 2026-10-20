@@ -34,21 +34,21 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
     { key: "near", icon: MapPin, label: t("welcome.market.q_near"), next: findHref(EMPTY_FIND, { mode: "jobs", near: true }) },
   ];
   return (
-    <section aria-labelledby="hero-title" className="border-b border-primary/10 bg-primary-soft">
+    <section aria-labelledby="hero-title" className="hero-surface">
       <div className="container-app grid grid-cols-1 gap-8 pb-6 pt-7 sm:pt-10 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-center lg:gap-12 lg:pb-8 lg:pt-14">
         <div>
           {stats && stats.today > 0 ? (
-            <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-sm font-semibold shadow-sm">
+            <p className="mb-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-sm font-semibold text-foreground shadow-sm">
               <span className="entry-live" aria-hidden />
               {t("welcome.entry.today", { count: num(stats.today) })}
             </p>
           ) : null}
-          <h1 id="hero-title" className="text-balance text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl lg:text-5xl lg:leading-tight">
+          <h1 id="hero-title" className="text-balance text-3xl font-extrabold leading-tight tracking-tight text-hero-fg sm:text-4xl lg:text-5xl lg:leading-tight">
             {t("welcome.market.title_a")}
-            <span className="text-primary">{t("welcome.market.title_em")}</span>
+            <span className="text-highlight">{t("welcome.market.title_em")}</span>
             {t("welcome.market.title_b")}
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground sm:mt-4 sm:text-lg">{t("welcome.market.subtitle")}</p>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-hero-muted sm:mt-4 sm:text-lg">{t("welcome.market.subtitle")}</p>
           <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:max-w-xl sm:gap-3">
             <RoleCta
               mode="worker"
@@ -111,17 +111,17 @@ function RoleCta({ mode, primary, icon: Icon, label, hint }: { mode: AppMode; pr
         data-track-to={mode}
         className={cn(
           "press lift-sm flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left sm:px-4",
-          primary ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover" : "border border-border bg-card text-foreground shadow-sm hover:border-primary/50",
+          primary ? "btn-light shine" : "hero-glass",
         )}
       >
-        <span className={cn("hidden size-10 shrink-0 items-center justify-center rounded-xl min-[400px]:flex", primary ? "bg-primary-foreground/15" : "bg-primary-soft text-primary")} aria-hidden>
+        <span className={cn("relative z-10 hidden size-10 shrink-0 items-center justify-center rounded-xl min-[400px]:flex", primary ? "badge-glossy badge-blue" : "bg-card/20")} aria-hidden>
           <Icon className="size-5" />
         </span>
-        <span className="min-w-0 flex-1">
+        <span className="relative z-10 min-w-0 flex-1">
           <span className="block text-base font-extrabold leading-tight">{label}</span>
-          <span className={cn("mt-0.5 block text-xs leading-snug sm:text-sm", primary ? "opacity-90" : "text-muted-foreground")}>{hint}</span>
+          <span className={cn("mt-0.5 block text-xs leading-snug sm:text-sm", primary ? "text-muted-foreground" : "text-hero-muted")}>{hint}</span>
         </span>
-        <ArrowRight className="hidden size-5 shrink-0 sm:block" aria-hidden />
+        <ArrowRight className="relative z-10 hidden size-5 shrink-0 sm:block" aria-hidden />
       </TileButton>
     </form>
   );
@@ -152,7 +152,7 @@ async function HeroSearch() {
   const [{ t, name }, regions] = await Promise.all([getT(), getRegions()]);
   const label = "mb-1 block text-sm font-semibold text-foreground";
   return (
-    <form action={homeSearch} role="search" aria-label={t("welcome.market.search_label")} className="rounded-2xl border border-border bg-card p-3 shadow-md sm:p-4">
+    <form action={homeSearch} role="search" aria-label={t("welcome.market.search_label")} className="rounded-2xl bg-card p-3 text-foreground shadow-lg ring-1 ring-black/5 sm:p-4">
       <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] lg:items-end">
         <div>
           <label htmlFor="hero-q" className={label}>
@@ -206,7 +206,7 @@ async function HeroSearch() {
 
 function SubmitSearch({ label }: { label: string }) {
   return (
-    <TileButton className="press lift-sm inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover lg:w-auto">
+    <TileButton className="press lift-sm btn-3d inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-bold text-primary-foreground hover:bg-primary-hover lg:w-auto">
       <Search className="size-5" aria-hidden />
       {label}
     </TileButton>

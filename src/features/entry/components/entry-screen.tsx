@@ -60,11 +60,38 @@ export function EntryHeading({ title, subtitle, className }: { title: string; su
   );
 }
 
-/** Ekran tepasidagi belgi (globus, telefon, xat...) — yumshoq doira ichida */
+/** Ekran tepasidagi belgi (globus, telefon, xat...) — yaltiroq ko'k "ilova belgisi" (premium 2026-10) */
 export function EntryIcon({ children }: { children: ReactNode }) {
   return (
-    <span className="mx-auto flex size-20 items-center justify-center rounded-full bg-primary-soft text-primary [&_svg]:size-10" aria-hidden>
+    <span className="badge-glossy badge-blue mx-auto flex size-20 items-center justify-center rounded-2xl [&_svg]:size-10" aria-hidden>
       {children}
     </span>
+  );
+}
+
+/**
+ * Birinchi ekrandagi brend kartasi: chuqur ko'k sirt, oq "Ish topdim" belgisi, shior va (bo'lsa) haqiqiy jonli son.
+ * Foydalanuvchi ilovani birinchi ochganda nima ekanini va u "tirik" ekanini bir qarashda ko'radi.
+ */
+export function EntryBrand({ name, slogan, live }: { name: ReactNode; slogan: string; live?: string | null }) {
+  return (
+    <div className="hero-surface rounded-2xl px-5 py-6 text-center shadow-lg">
+      <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-card text-primary shadow-lg [&_svg]:size-[78%]" aria-hidden>
+        {/* BrandMark shakli — oq plita ustida ko'k */}
+        <svg viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M196 168 V140 A28 28 0 0 1 224 112 H288 A28 28 0 0 1 316 140 V168" strokeWidth="40" />
+          <rect x="100" y="168" width="312" height="232" rx="48" strokeWidth="40" />
+          <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
+        </svg>
+      </span>
+      <p className="mt-3 text-2xl font-extrabold tracking-tight text-hero-fg">{name}</p>
+      <p className="mt-1 text-sm font-semibold text-hero-muted">{slogan}</p>
+      {live ? (
+        <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-bold text-foreground shadow-sm">
+          <span className="entry-live" aria-hidden />
+          {live}
+        </p>
+      ) : null}
+    </div>
   );
 }

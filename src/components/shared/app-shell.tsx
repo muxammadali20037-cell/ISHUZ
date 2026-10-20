@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Search, User, Users, type LucideIcon } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Plus, Search, User, Users, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
@@ -70,18 +70,46 @@ function mainNav(mode: NavMode): NavItem[] {
   ];
 }
 
+/** Markaziy "E'lon" tugmasi (OLX/super-ilovalar uslubi): ish qidiruvchi — o'zi haqida e'lon (CV), ish beruvchi — vakansiya */
+export function postAction(mode: NavMode): { href: string; labelKey: string; ctaKey: string } {
+  return mode === "employer"
+    ? { href: "/post/vacancy", labelKey: "easy.nav.tab_post", ctaKey: "easy.start.post_vacancy" }
+    : { href: "/post/worker", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
+}
+
 export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
   const items = mainNav(mode);
+  const post = postAction(mode);
+  const postActive = pathname.startsWith(post.href);
+  // o'rtada — menyudan bo'rtib chiqib turadigan "E'lon" tugmasi (2 ta bo'lim · E'lon · 2 ta bo'lim)
+  const cells: (NavItem | "post")[] = [...items.slice(0, 2), "post", ...items.slice(2)];
   return (
     <nav
-      className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
+      className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card shadow-lg md:hidden"
       style={{ paddingBottom: "var(--safe-bottom)" }}
       aria-label={t("common.nav.main_label")}
     >
       <ul className="flex h-[var(--tabbar-height)] items-stretch">
-        {items.map((item) => {
+        {cells.map((item) => {
+          if (item === "post") {
+            return (
+              <li key="post" className="flex flex-1 justify-center">
+                <Link
+                  href={post.href}
+                  aria-current={postActive ? "page" : undefined}
+                  data-track="nav_post"
+                  className="press flex h-full flex-col items-center justify-center gap-0.5 text-xs font-bold text-primary"
+                >
+                  <span className="nav-fab btn-3d shine flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground" aria-hidden>
+                    <Plus className="relative z-10 size-7" strokeWidth={2.6} />
+                  </span>
+                  <span>{t(post.labelKey)}</span>
+                </Link>
+              </li>
+            );
+          }
           const active = item.match ? item.match(pathname) : pathname === item.href;
           const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
           return (

@@ -47,5 +47,8 @@
     "rate_limited": "Too many attempts. Please try again later"
   },
   "cta_worker_update": "✨ Update your profile with AI",
-  "cta_worker_update_desc": "Describe what has changed in plain words — AI will update the right sections for you"
+  "cta_worker_update_desc": "Describe what has changed in plain words — AI will update the right sections for you",
+  "voice_start": "Speak instead",
+  "voice_listening": "Speak — I'm writing it down… Tap “Stop” when you're done.",
+  "voice_hint": "No need to type: tap “Speak instead” and talk about yourself — AI writes it down and fills the fields."
 }

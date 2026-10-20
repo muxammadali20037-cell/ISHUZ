@@ -426,7 +426,7 @@ function speechCtor(): SpeechCtor | null {
   return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
 }
 
-function useVoice(onInterim: (text: string) => void, onFinal: (text: string) => void) {
+export function useVoice(onInterim: (text: string) => void, onFinal: (text: string) => void, opts?: { continuous?: boolean }) {
   const { locale } = useT();
   const supported = useSyncExternalStore(noopSubscribe, () => !!speechCtor(), () => false);
   const [listening, setListening] = useState(false);
@@ -445,7 +445,8 @@ function useVoice(onInterim: (text: string) => void, onFinal: (text: string) => 
     const r = new Ctor();
     r.lang = speechLang(locale);
     r.interimResults = true;
-    r.continuous = false;
+    // uzun matn (rezyume, vakansiya) — to'xtatilguncha tinglaydi; qidiruv — bitta gap
+    r.continuous = !!opts?.continuous;
     r.maxAlternatives = 1;
     r.onresult = (e) => {
       let interim = "";

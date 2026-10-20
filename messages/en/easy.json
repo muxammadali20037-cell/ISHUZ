@@ -456,7 +456,9 @@
     "tab_ai": "AI",
     "tab_messages": "Messages",
     "tab_saved": "Saved",
-    "tab_dashboard": "Dashboard"
+    "tab_dashboard": "Dashboard",
+    "tab_post": "Post",
+    "post_worker_cta": "Post a CV"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -707,7 +709,8 @@
     "empty_ai_hint": "Or describe it in plain words — the AI assistant will try another way",
     "composer_placeholder_jobs": "Job, area, pay…",
     "composer_placeholder_workers": "Who you need: job, area…",
-    "cta_button": "Try the AI assistant"
+    "cta_button": "Try the AI assistant",
+    "bar_badge": "New"
   },
   "mode": {
     "chooser_title": "What are you looking for?",
@@ -865,5 +868,48 @@
     "near_workers": "Workers nearby",
     "experienced": "Experienced",
     "all_workers": "All workers"
+  },
+  "services": {
+    "label": "Services",
+    "greeting": "Hello, {name}!",
+    "greeting_guest": "Hello!",
+    "today": "{count} new listings today",
+    "total": "{count} active listings",
+    "cv": "Create a CV",
+    "cv_hint": "In 1 minute, free",
+    "cv_mine": "My CV",
+    "cv_mine_hint": "View and download",
+    "daily": "Day jobs",
+    "daily_hint": "Work today — paid today",
+    "near": "Nearby",
+    "near_hint": "Jobs close to home",
+    "remote": "Remote",
+    "remote_hint": "Work from home",
+    "noexp": "No experience",
+    "noexp_hint": "No experience needed",
+    "students": "Students",
+    "students_hint": "Internships, part-time",
+    "alerts": "Alerts",
+    "alerts_hint": "New job — straight to Telegram",
+    "all": "Professions",
+    "all_hint": "By field",
+    "e_post": "Post a vacancy",
+    "e_post_hint": "In 5 minutes",
+    "e_ai": "Vacancy with AI",
+    "e_ai_hint": "Write — AI fills it in",
+    "e_candidates": "Candidates",
+    "e_candidates_hint": "Worker list",
+    "e_daily": "Day workers",
+    "e_daily_hint": "Ready today",
+    "e_exp": "Experienced",
+    "e_exp_hint": "Workers with experience",
+    "e_near": "Nearby",
+    "e_near_hint": "Workers near you",
+    "e_apps": "Applications",
+    "e_apps_hint": "Incoming applications",
+    "e_company": "Company",
+    "e_company_hint": "Page and verification",
+    "hire_title": "Find the right person fast",
+    "hire_sub": "Post a vacancy or search candidates with AI — among real workers"
   }
 }

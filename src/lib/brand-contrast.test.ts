@@ -57,6 +57,12 @@ const PAIRS: [string, string][] = [
   ["info", "info-soft"],
   ["info", "card"],
   ["card", "muted-foreground"],
+  // premium bosh ekran sirti (.hero-surface): oq va och matn uchala rang nuqtasida
+  ["hero-fg", "hero-from"],
+  ["hero-fg", "hero-via"],
+  ["hero-fg", "hero-to"],
+  ["hero-muted", "hero-via"],
+  ["hero-muted", "hero-to"],
 ];
 
 describe("brend ranglari kontrasti (AA ≥ 4.5:1)", () => {

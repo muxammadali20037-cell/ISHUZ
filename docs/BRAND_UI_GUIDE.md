@@ -39,9 +39,32 @@ Qoidalar:
   oq matn o'qilmay qoladi (C8.1c da 59 qator tokenlarga o'tkazildi).
 - Yumshoq fon + to'q matn juftligi: `bg-success-soft text-success`, `bg-warning-soft text-warning` va h.k. (`Badge`).
 - Ikki teng tanlov (masalan, "Ishchiman / Ish beruvchiman") bir xil ko'rinadi — biri yashil, biri ko'k bo'lmaydi.
-- Tailwind palitrasi (`bg-violet-600`, `text-amber-300` …), hex rang (`bg-[#7c3aed]`) va bezak gradienti ishlatilmaydi.
+- Tailwind palitrasi (`bg-violet-600`, `text-amber-300` …), hex rang (`bg-[#7c3aed]`) va komponent ichidagi gradient
+  ishlatilmaydi — gradient va nur faqat §1.1 dagi tasdiqlangan utilitalar orqali.
 - Uchinchi tomon belgisi o'z rangida faqat **ikonkada** qoladi (Telegram ikonkasi `#2AABEE`); tugmaning o'zi — bizning `Button`.
 - Kontrast: barcha juftliklar ikkala mavzuda **≥ 4.5:1** (WCAG AA) — `src/lib/brand-contrast.test.ts` tekshiradi.
+
+### 1.1 Premium qatlam (2026-10, egasining so'rovi bilan)
+
+Egasi: "kirganda bron qilish mini-ilovasidek, tugmalar bo'rtib, yaltirab tursin, AI qidiruv qimirlab tursin, professional
+bo'lsin". Shuning uchun "faqat tekis sirt" qoidasiga **nazoratli istisno** qo'shildi. Gradient, nur va harakat faqat
+`globals.css` dagi tasdiqlangan utilitalarda yashaydi — komponentlarda xom gradient, hex yoki palitra rangi hali ham yo'q
+(`brand-guard.test.ts` o'zgarmadi).
+
+| Utilita | Qayerda | Qoida |
+|---|---|---|
+| `.hero-surface` | Bosh ekran sarlavhasi (ish qidiruvchi, ish beruvchi, mehmon), birinchi ochilishdagi brend kartasi, tanishtiruv ramkasi | Sahifada **bittadan**. Ustida faqat `text-hero-fg` / `text-hero-muted` (AA, `brand-contrast.test.ts`) |
+| `.btn-3d` | `Button` (`default`), markaziy "E'lon" tugmasi, brend belgisi | Yuqorida yorug', pastda soya, rangli nur; bosilganda "botadi" |
+| `.btn-light` | Ko'k sarlavha ustidagi asosiy amal ("Vakansiya joylash", "Ish qidiraman") | Ko'k sirtda ko'k tugma ko'rinmaydi — oq "bo'rtgan" tugma |
+| `.shine` | Ekrandagi **eng muhim bitta-ikkita** amal: "E'lon", "Vakansiya joylash", "CV yaratish" belgisi | Har ~4 s da yorug' chiziq o'tadi; ko'p joyda ishlatilmaydi |
+| `.ai-glow`, `.ai-twinkle`, `.type-caret` | Faqat "AI bilan qidirish" jonli qatori | Aylanuvchi rangli chegara (ko'k → binafsha → moviy) — AI ning yagona belgisi |
+| `.badge-glossy .badge-{blue,violet,green,orange,rose,cyan,indigo,amber}` | Xizmatlar to'ri belgilari, rol kartalari, kirish ekrani belgisi | Rang **faqat belgida**; nom va izoh — oddiy matn tokenlari |
+| `.tile-raise` | Xizmatlar to'ri, rol kartalari | Oq, yengil ko'tarilgan karta |
+| `.nav-fab` | Pastki menyuning o'rtasidagi "E'lon" | Menyudan bo'rtib chiqadi (OLX/super-ilovalar uslubi) |
+| `.hero-glass` | Sarlavha ustidagi ikkinchi darajali tugma ("Filtrlar", "Xodim qidiraman") | Shaffof oq |
+
+- `prefers-reduced-motion` — yaltirash, aylanish, yozilib turish va ko'tarilib chiqish o'chadi (a11y testi).
+- Yangi joyga gradient yoki nur kerak bo'lsa — avval shu jadvalga utilita sifatida qo'shiladi, keyin ishlatiladi.
 
 ## 2. Shrift
 
@@ -168,7 +191,8 @@ Qoidalar:
 ### Karta, oyna, bo'sh holat, yuklanish
 
 - Karta: `rounded-2xl border bg-card shadow-sm`, ichki chegara 16–24. Ikonka plitasi — `bg-primary-soft text-primary`.
-- Katta to'liq rangli karta (`bg-primary`, `bg-success` yuzali) ishlatilmaydi — to'liq rang faqat **tugmada**. Ta'kidlangan
+- Katta to'liq rangli karta (`bg-primary`, `bg-success` yuzali) ishlatilmaydi — to'liq rang faqat **tugmada** va sahifadagi
+  bitta `.hero-surface` sarlavhada (§1.1). Ta'kidlangan
   bonus (AI yordamchi) — `bg-primary-soft` + `border-primary/25`, "PRO" belgisi `bg-primary`. Bosh sahifa testi buni tekshiradi.
 - Bosh sahifa (R-C): birinchi ekranda qidiruv ("Kasb, lavozim yoki kompaniya"), tez filtr chiplari va haqiqiy e'lonlar;
   admin oynalari, e'lon berish va AI PRO — ro'yxatdan keyin ixcham qatorlar (rasm 48 px). Katta banner yo'q.

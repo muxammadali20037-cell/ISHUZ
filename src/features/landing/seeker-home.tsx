@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, ChevronRight, FileUser, SearchX } from "lucide-react";
+import { ArrowRight, BellRing, CalendarDays, ChevronRight, FileUser, GraduationCap, Laptop, LayoutGrid, MapPin, SearchX, Sprout } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,8 @@ import { CategoryIcon } from "@/components/shared/category-icon";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
-import { AiFinder } from "@/features/find/components/ai-finder";
+import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
+import { cn } from "@/lib/utils";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { AiProRow } from "@/features/ai-alerts/components/ai-pro-card";
@@ -20,60 +21,112 @@ import { SeekerSearch } from "./home-search";
 import { getHomePlace, getPopularProfessions, getSeekerFeed, type HomePlace } from "./home-queries";
 import { placeChooserHref, seekerFiltersHref, seekerQuickFilters } from "./quick-filters";
 import { SeekerSectionList } from "./section-tiles";
+import { getEntryStats } from "./entry-queries";
 
 /**
- * Ish qidiruvchi bosh sahifasi (2026-10 redizayn; mehmon ham — ro'yxatdan o'tmasdan ko'radi). Birinchi ekranda vazifa:
- * qisqa sarlavha → qidiruv (filtrlar va AI unga biriktirilgan) → tez filtrlar → darhol haqiqiy vakansiyalar ro'yxati.
- * Katta bezak plitkalari va statistika bannerlari yo'q. 390×844 da birinchi vakansiyaning nomi, maoshi va hududi ko'rinadi.
- * Kompyuterda: tepada keng qidiruv (hudud shu blokda), ostida ro'yxat (2 ustun) va o'ngda ixcham yordamchi panel —
- * "o'zim haqimda e'lon", bo'limlar (sonlari bilan), mashhur kasblar, admin sozlagan oynalar, AI PRO. Telefonda shu panel ro'yxatdan
- * keyin keladi.
+ * Ish qidiruvchi bosh sahifasi — mini-ilova uslubi (premium 2026-10; mehmon ham — ro'yxatdan o'tmasdan ko'radi):
+ *  1) chuqur ko'k sarlavha: salomlashuv, "O'zingizga mos ishni toping", bugungi haqiqiy son, oq qidiruv kartasi va jonli AI qatori;
+ *  2) sarlavha ustiga chiqib turadigan xizmatlar to'ri (yaltiroq belgilar): CV, kunlik, yaqin atrofda, masofaviy, tajribasiz,
+ *     talabalar, Telegram xabar, barcha kasblar;
+ *  3) darhol haqiqiy vakansiyalar (390×844 da birinchi vakansiyaning nomi, maoshi va hududi ko'rinadi).
+ * Kompyuterda: sarlavha va xizmatlar keng, ostida ro'yxat (2 ustun) va o'ngda yordamchi panel. Telefonda panel ro'yxatdan keyin.
  */
-export async function SeekerHome({ session }: { session: SessionContext | null }) {
-  const [{ t, name }, place, home] = await Promise.all([getT(), getHomePlace(), getHomeSettings()]);
+export async function SeekerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
+  const [{ t, name }, place, home, stats] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryStats()]);
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
-  const chips = seekerQuickFilters(where).map((c) => ({ ...c, label: t(`easy.start.f_${c.key}`) }));
+  const quick = Object.fromEntries(seekerQuickFilters(where).map((c) => [c.key, c.href])) as Record<"daily" | "noexp" | "remote" | "students", string>;
+  const hasCv = !!session?.workerId;
+  const firstName = session?.profile.first_name?.trim();
+  const tiles: ServiceTile[] = [
+    hasCv
+      ? { key: "cv", href: "/profile/cv", label: t("easy.services.cv_mine"), hint: t("easy.services.cv_mine_hint"), icon: FileUser, tone: "violet", featured: true, track: "home_service" }
+      : { key: "cv", href: "/post/worker", label: t("easy.services.cv"), hint: t("easy.services.cv_hint"), icon: FileUser, tone: "violet", featured: true, track: "home_service" },
+    { key: "daily", href: quick.daily, label: t("easy.services.daily"), hint: t("easy.services.daily_hint"), icon: CalendarDays, tone: "orange", track: "home_service" },
+    { key: "near", href: findHref(EMPTY_FIND, { mode: "jobs", near: true }), label: t("easy.services.near"), hint: t("easy.services.near_hint"), icon: MapPin, tone: "green", track: "home_service" },
+    { key: "remote", href: quick.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop, tone: "cyan", track: "home_service" },
+    { key: "noexp", href: quick.noexp, label: t("easy.services.noexp"), hint: t("easy.services.noexp_hint"), icon: Sprout, tone: "blue", track: "home_service" },
+    { key: "students", href: quick.students, label: t("easy.services.students"), hint: t("easy.services.students_hint"), icon: GraduationCap, tone: "rose", track: "home_service" },
+    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, tone: "amber", track: "home_service" },
+    { key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.services.all"), hint: t("easy.services.all_hint"), icon: LayoutGrid, tone: "indigo", track: "home_service" },
+  ];
   return (
-    // kompyuterda ikki ustun: chapda qidiruv va ro'yxat, o'ngda — AI yordamchi taklifi va yordamchi panel (bo'sh joy qolmaydi);
-    // telefonda tartib: qidiruv → ro'yxat → panel (AI kartasi telefonda yo'q: birinchi ekran vakansiyalar uchun, AI qidiruv blokida)
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
-      <div className="min-w-0 space-y-5 lg:space-y-6">
-        <section aria-labelledby="home-title" className="space-y-3">
-          <h1 id="home-title" className="text-[1.375rem] font-extrabold leading-tight tracking-tight sm:text-3xl">
-            {t("easy.start.seeker_title")}
-          </h1>
-          <SeekerSearch
-            label={t("easy.start.search_label")}
-            placeholder={t("easy.start.search_placeholder")}
-            place={{ label: placeText(place, name, t("easy.location.whole_country")), href: placeChooserHref("jobs"), ...where }}
-            filtersHref={seekerFiltersHref(where)}
-            chips={chips}
-            ai={home.aiButton}
-          />
+    <div className="space-y-6">
+      <div>
+        {/* flush — sahifaning eng tepasi (kirgan foydalanuvchi): telefonda sarlavha chetdan-chetga */}
+        <section
+          aria-labelledby="home-title"
+          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl")}
+        >
+          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end lg:gap-10">
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-hero-muted">{firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}</p>
+              <h1 id="home-title" className="mt-0.5 text-2xl font-extrabold leading-tight tracking-tight text-hero-fg sm:text-3xl lg:text-4xl">
+                {t("easy.start.seeker_title")}
+              </h1>
+              {stats && stats.vacancies > 0 ? (
+                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/15 px-2.5 py-1 text-xs font-semibold text-hero-fg lg:hidden">
+                  <span className="entry-live" aria-hidden />
+                  {stats.today > 0 ? t("easy.services.today", { count: num(stats.today) }) : t("easy.services.total", { count: num(stats.vacancies) })}
+                </p>
+              ) : null}
+              <div className="mt-4">
+                <SeekerSearch
+                  label={t("easy.start.search_label")}
+                  placeholder={t("easy.start.search_placeholder")}
+                  place={{ label: placeText(place, name, t("easy.location.whole_country")), href: placeChooserHref("jobs"), ...where }}
+                  filtersHref={seekerFiltersHref(where)}
+                  ai={home.aiButton}
+                />
+              </div>
+            </div>
+            {/* kompyuterda o'ngda: haqiqiy raqamlar (bazadan, ~10 daqiqada yangilanadi) — ishonch uchun, soxta "10 000+" yo'q */}
+            {stats ? (
+              <dl className="hero-glass hidden space-y-3 rounded-2xl p-4 lg:block">
+                {(
+                  [
+                    ["stat_vacancies", stats.vacancies],
+                    ["stat_today", stats.today],
+                    ["stat_workers", stats.workers],
+                  ] as const
+                ).map(([key, value]) => (
+                  <div key={key} className="flex items-baseline justify-between gap-3 border-b border-hero-fg/15 pb-2.5 last:border-0 last:pb-0">
+                    <dt className="text-sm font-semibold text-hero-muted">{t(`welcome.market.${key}`)}</dt>
+                    <dd className="tabular text-2xl font-extrabold text-hero-fg">{num(value)}</dd>
+                  </div>
+                ))}
+              </dl>
+            ) : null}
+          </div>
         </section>
+        {/* xizmatlar sarlavha ustiga chiqib turadi */}
+        <ServiceTiles items={tiles} label={t("easy.services.label")} className="relative z-10 -mt-11 lg:-mt-12 lg:mx-4" />
+      </div>
+
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
         {/* ro'yxat oqim bilan keladi: qidiruv qatori darhol ishlaydi */}
         <Suspense fallback={<FeedSkeleton />}>
           <SeekerFeed session={session} place={place} />
         </Suspense>
+        <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-5">
+          <ResumeCard />
+          {/* bo'limlar (sonlari bilan): ish beruvchi turi, ommaviy, TOP, yaqin atrofda — ixcham ro'yxat, ro'yxatdan keyin */}
+          <Suspense fallback={null}>
+            <SeekerSectionList place={place} />
+          </Suspense>
+          <Suspense fallback={null}>
+            <PopularProfessions place={place} />
+          </Suspense>
+          <HomeQuickLinks windows={windowsFor("worker", home.windows)} stacked />
+          <Suspense fallback={null}>
+            <AiProRow userId={session?.userId ?? null} role="worker" />
+          </Suspense>
+        </aside>
       </div>
-      <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-5">
-        {home.aiButton ? <AiFinder defaultMode="jobs" locked variant="card" className="hidden lg:block" /> : null}
-        <ResumeCard />
-        {/* bo'limlar (sonlari bilan): ish beruvchi turi, ommaviy, TOP, yaqin atrofda — ixcham ro'yxat, ro'yxatdan keyin */}
-        <Suspense fallback={null}>
-          <SeekerSectionList place={place} />
-        </Suspense>
-        <Suspense fallback={null}>
-          <PopularProfessions place={place} />
-        </Suspense>
-        <HomeQuickLinks windows={windowsFor("worker", home.windows)} stacked />
-        <Suspense fallback={null}>
-          <AiProRow userId={session?.userId ?? null} role="worker" />
-        </Suspense>
-      </aside>
     </div>
   );
 }
+
+const num = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
 
 type NameFn = (row: { name_uz: string; name_ru: string; name_en?: string | null; name_oz?: string | null } | null | undefined) => string;
 

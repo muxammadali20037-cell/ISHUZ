@@ -88,37 +88,35 @@ export async function HomeSearch({
   );
 }
 
-const seekerChipCls =
-  "press inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border border-border bg-card px-4 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary";
-
 /**
- * Ish qidiruvchi qidiruvi (2026-10 redizayn): bitta blok — katta maydon "Kasb yoki ish nomi" + "Topish"; unga biriktirilgan
- * qator — "Filtrlar" (natijalar sahifasidagi barcha filtrlar) va "AI bilan qidirish". Hudud: kompyuterda shu blokda, telefonda —
- * yuqori panelda (TopBar). Qidiruv eslab qolingan hududda ishlaydi (yashirin maydonlar). Ostida — tez filtrlar (bir bosishda natija).
+ * Ish qidiruvchi qidiruvi (bosh ekran sarlavhasi ichida, premium 2026-10): oq qidiruv kartasi — "Kasb yoki ish nomi" + "Topish"
+ * (kompyuterda hudud ham shu yerda); ostida bitta qator — jonli "AI bilan qidirish" qatori va "Filtrlar" (natijalar sahifasidagi
+ * barcha filtrlar). Hudud telefonda — yuqori panelda. Qidiruv eslab qolingan hududda ishlaydi (yashirin maydonlar).
  */
 export async function SeekerSearch({
+  scope = "jobs",
   label,
   placeholder,
   place,
   filtersHref,
-  chips,
   ai,
 }: {
+  /** ish qidiruvchi — e'lonlar; ish beruvchi — ishchilar */
+  scope?: "jobs" | "workers";
   label: string;
   placeholder: string;
   /** joriy hudud (eslab qolingan): nomi, tanlash manzili va qidiruvga uzatiladigan qiymatlar */
   place: { label: string; href: string; region: string | null; district: string | null };
   filtersHref: string;
-  chips: HomeChip[];
   /** "AI bilan qidirish" (admin o'chirgan bo'lsa — yo'q) */
   ai: boolean;
 }) {
   const { t } = await getT();
   return (
-    <div className="space-y-3">
-      <div className="rounded-xl border border-input bg-card transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25">
-        <Form action="/search" prefetch={false} role="search" aria-label={label} className="flex items-center gap-1 p-1">
-          <input type="hidden" name="mode" value="jobs" />
+    <div className="space-y-2.5">
+      <div className="rounded-2xl bg-card p-1.5 shadow-lg ring-1 ring-black/5 transition-shadow focus-within:ring-2 focus-within:ring-ring/40">
+        <Form action="/search" prefetch={false} role="search" aria-label={label} className="flex items-center gap-1">
+          <input type="hidden" name="mode" value={scope} />
           {place.region ? <input type="hidden" name="region" value={place.region} /> : null}
           {place.region && place.district ? <input type="hidden" name="district" value={place.district} /> : null}
           <label className="flex min-w-0 flex-1 cursor-text items-center gap-2 pl-2.5">
@@ -139,43 +137,30 @@ export async function SeekerSearch({
             href={place.href}
             prefetch={false}
             aria-label={t("easy.start.place_label", { place: place.label })}
-            className="hidden h-11 max-w-60 shrink-0 items-center gap-1.5 border-l border-border px-3 text-base font-semibold hover:text-primary md:inline-flex"
+            className="hidden h-11 max-w-60 shrink-0 items-center gap-1.5 border-l border-border px-3 text-base font-semibold text-foreground hover:text-primary md:inline-flex"
           >
             <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
             <span className="truncate">{place.label}</span>
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           </Link>
-          <Button type="submit" aria-label={t("easy.start.search_button")} className="h-11 w-11 shrink-0 px-0 text-base font-semibold min-[420px]:w-auto min-[420px]:px-5">
+          <Button type="submit" aria-label={t("easy.start.search_button")} className="h-12 w-12 shrink-0 rounded-xl px-0 text-base font-bold min-[420px]:w-auto min-[420px]:px-6">
             <ArrowRight className="size-5 min-[420px]:hidden" aria-hidden />
             <span className="hidden min-[420px]:inline">{t("easy.start.search_button")}</span>
           </Button>
         </Form>
-        {/* AI oynasi forma tashqarisida: uning ichki formasi (portal) qidiruv formasiga "submit" bo'lib tushmasin */}
-        <div className="flex items-center justify-between gap-2 border-t border-border px-1">
-          <Link
-            href={filtersHref}
-            prefetch={false}
-            data-track="home_filters"
-            className="press inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-sm font-semibold text-foreground hover:text-primary"
-          >
-            <SlidersHorizontal className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            {t("easy.start.filters")}
-          </Link>
-          {ai ? <AiFinder defaultMode="jobs" locked /> : null}
-        </div>
       </div>
-      {/* telefonda — yonga suriladigan bitta qator (sahifa kengaymaydi), kattaroq ekranda — o'raladi */}
-      <div role="group" aria-label={t("easy.start.filters_label")} className="-mx-4 sm:mx-0">
-        <ul className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 pb-0.5 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
-          {chips.map((c) => (
-            <li key={c.key} className="flex">
-              {/* prefetch yo'q: chiplar ko'p, har biri alohida qidiruv — bosilganda yuklanadi */}
-              <Link href={c.href} prefetch={false} className={seekerChipCls} data-track="home_chip" data-track-to={c.key}>
-                {c.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
+      {/* AI oynasi forma tashqarisida: uning ichki formasi (portal) qidiruv formasiga "submit" bo'lib tushmasin */}
+      <div className="flex items-stretch gap-2">
+        {ai ? <AiFinder defaultMode={scope} locked variant="bar" className="min-w-0 flex-1" /> : null}
+        <Link
+          href={filtersHref}
+          prefetch={false}
+          data-track="home_filters"
+          className={`press hero-glass inline-flex min-h-14 shrink-0 items-center justify-center gap-1.5 rounded-2xl px-3.5 text-sm font-bold ${ai ? "flex-col gap-0.5 sm:flex-row sm:gap-1.5" : "w-full"}`}
+        >
+          <SlidersHorizontal className="size-5 shrink-0" aria-hidden />
+          {t("easy.start.filters")}
+        </Link>
       </div>
     </div>
   );

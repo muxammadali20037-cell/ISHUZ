@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import Form from "next/form";
-import { Building2, Plus, PlusCircle, Search, ShieldCheck } from "lucide-react";
+import { BadgeCheck, BellRing, Building2, CalendarDays, Inbox, Laptop, MapPin, Plus, PlusCircle, Search, ShieldCheck, Sparkles, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { getCategories } from "@/lib/reference";
 import { initials } from "@/lib/format";
@@ -20,6 +20,10 @@ import { EmployerSections } from "./employer-sections";
 import { VerificationBadge } from "./status-badge";
 import { AiFinder } from "@/features/find/components/ai-finder";
 import { getHomeSettings } from "@/features/home-windows/queries";
+import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
+import { employerServiceHrefs } from "@/features/landing/quick-filters";
+import { aiEnabled } from "@/lib/ai/client";
+import { cn } from "@/lib/utils";
 
 /**
  * Ish beruvchi paneli (server): /employer va ish beruvchi rejimidagi bosh sahifa. Tartib: salomlashuv → vakansiya joylash va
@@ -51,47 +55,74 @@ export async function EmployerDashboard({ session, embedded = false }: { session
   const withCategory = (base: string) => (latestCategorySlug ? `${base}&category=${latestCategorySlug}` : base);
 
   const candidatesHref = latestActive ? withCategory(`/workers?vacancy=${latestActive.id}&sort=relevant`) : "/workers";
+  const hrefs = employerServiceHrefs({ region: null, district: null });
 
-  const postButton = (cls: string) => (
-    <Button asChild size="lg" className={`h-12 px-5 text-base font-bold ${cls}`}>
-      <Link href="/employer/vacancies/new">
-        <Plus className="size-5" aria-hidden /> {t("easy.start.post_vacancy")}
-      </Link>
-    </Button>
-  );
+  const aiPost = aiEnabled();
+  const all: ServiceTile[] = [
+    ...(aiPost ? [{ key: "ai", href: "/employer/vacancies/new/ai", label: t("easy.services.e_ai"), hint: t("easy.services.e_ai_hint"), icon: Sparkles, tone: "violet" as const, featured: true }] : []),
+    { key: "apps", href: "/employer/applications", label: t("easy.services.e_apps"), hint: t("easy.services.e_apps_hint"), icon: Inbox, tone: "blue", featured: !aiPost },
+    { key: "candidates", href: candidatesHref, label: t("easy.services.e_candidates"), hint: t("easy.services.e_candidates_hint"), icon: UsersRound, tone: "indigo" },
+    { key: "daily", href: hrefs.daily, label: t("easy.services.e_daily"), hint: t("easy.services.e_daily_hint"), icon: CalendarDays, tone: "orange" },
+    { key: "experienced", href: hrefs.experienced, label: t("easy.services.e_exp"), hint: t("easy.services.e_exp_hint"), icon: BadgeCheck, tone: "green" },
+    { key: "near", href: hrefs.near, label: t("easy.services.e_near"), hint: t("easy.services.e_near_hint"), icon: MapPin, tone: "cyan" },
+    ...(aiPost ? [] : [{ key: "remote", href: hrefs.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop, tone: "rose" as const }]),
+    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, tone: "amber" },
+    { key: "company", href: company ? "/company/settings" : "/onboarding/employer", label: t("easy.services.e_company"), hint: t("easy.services.e_company_hint"), icon: Building2, tone: "rose" },
+  ];
+  const tiles = all.slice(0, 8);
 
   /*
-   * 2026-10: "bugun nima qilish kerak" tartibi — vakansiya joylash → yangi arizalar → ko'rib chiqiladigan nomzodlar →
-   * faol vakansiyalar → nomzod qidirish (AI bilan) → bo'limlar. Katta rasmli plitkalar yo'q; kompyuterda jadval, telefonda qatorlar.
+   * Premium (2026-10): chuqur ko'k sarlavha — logotip, salomlashuv, holat, yaltirab turadigan "Vakansiya joylash" va jonli AI
+   * nomzod qidiruvi; ustiga chiqib turadigan xizmatlar to'ri. Keyin "bugun nima qilish kerak" tartibi — ko'rsatkichlar →
+   * yangi arizalar → ko'rib chiqiladigan nomzodlar → faol vakansiyalar → nomzod qidirish → bo'limlar.
    */
   return (
     // embedded — bosh sahifa ichida (o'z konteyneri bor)
     <div className={embedded ? "space-y-6" : "container-app space-y-6 py-5 sm:py-8"}>
-      <header className="flex items-center gap-3">
-        {company ? (
-          <Avatar src={logoUrl} fallback={initials(name)} square size="lg" alt="" className="border border-border" />
-        ) : (
-          <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="lg" alt="" />
-        )}
-        <div className="min-w-0 flex-1">
-          <h1 className="line-clamp-2 break-words text-xl font-bold sm:text-2xl">{t("employer.dashboard.greeting", { name })}</h1>
-          <div className="mt-1 flex flex-wrap items-center gap-2">
-            <VerificationBadge status={verification} label={tEnum("verification_status", verification)} />
-            {verification === "unverified" || verification === "rejected" ? (
-              <Link href="/company/settings#verification" className="inline-flex min-h-8 items-center gap-1 text-sm font-medium text-primary hover:underline">
-                <ShieldCheck className="size-4" aria-hidden /> {t("employer.dashboard.verify_cta")}
-              </Link>
-            ) : null}
-            {company ? (
-              <Link href={`/company/${company.slug}`} className="hidden items-center gap-1 text-sm text-muted-foreground hover:text-foreground sm:inline-flex">
-                <Building2 className="size-4" aria-hidden /> {t("employer.settings.public_page")}
-              </Link>
-            ) : null}
+      <div>
+        <header className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20", embedded ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl")}>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center gap-3">
+              {company ? (
+                <Avatar src={logoUrl} fallback={initials(name)} square size="lg" alt="" className="ring-2 ring-white/40" />
+              ) : (
+                <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="lg" alt="" className="ring-2 ring-white/40" />
+              )}
+              <div className="min-w-0 flex-1">
+                <h1 className="line-clamp-2 break-words text-xl font-extrabold text-hero-fg sm:text-2xl">{t("employer.dashboard.greeting", { name })}</h1>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span className="inline-flex rounded-full bg-card p-0.5">
+                    <VerificationBadge status={verification} label={tEnum("verification_status", verification)} />
+                  </span>
+                  {verification === "unverified" || verification === "rejected" ? (
+                    <Link href="/company/settings#verification" className="inline-flex min-h-8 items-center gap-1 text-sm font-semibold text-hero-fg underline-offset-2 hover:underline">
+                      <ShieldCheck className="size-4" aria-hidden /> {t("employer.dashboard.verify_cta")}
+                    </Link>
+                  ) : null}
+                  {company ? (
+                    <Link href={`/company/${company.slug}`} className="hidden items-center gap-1 text-sm text-hero-muted hover:text-hero-fg sm:inline-flex">
+                      <Building2 className="size-4" aria-hidden /> {t("employer.settings.public_page")}
+                    </Link>
+                  ) : null}
+                </div>
+              </div>
+            </div>
+            <Link
+              href="/employer/vacancies/new"
+              className="press shine btn-light inline-flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold"
+            >
+              <Plus className="relative z-10 size-5" aria-hidden />
+              <span className="relative z-10">{t("easy.start.post_vacancy")}</span>
+            </Link>
           </div>
-        </div>
-        {postButton("hidden shrink-0 sm:inline-flex")}
-      </header>
-      {postButton("w-full sm:hidden")}
+          {home.aiButton ? (
+            <div className="mt-4 lg:max-w-3xl">
+              <AiFinder defaultMode="workers" locked variant="bar" />
+            </div>
+          ) : null}
+        </header>
+        <ServiceTiles items={tiles} label={t("easy.services.label")} className="relative z-10 -mt-11 lg:-mt-12 lg:mx-4" />
+      </div>
 
       <Suspense fallback={<KeyTilesSkeleton />}>
         <KeyTiles candidatesHref={candidatesHref} />
@@ -137,7 +168,7 @@ export async function EmployerDashboard({ session, embedded = false }: { session
         </Suspense>
       ) : null}
 
-      {/* Nomzod qidirish: matn bilan yoki AI bilan (suzuvchi tugma yo'q; admin o'chirsa — AI ko'rinmaydi) */}
+      {/* Nomzod qidirish matn bilan (AI bilan qidirish — tepadagi sarlavhada, jonli qatorda) */}
       <section aria-labelledby="find-candidates" className="space-y-2">
         <h2 id="find-candidates" className="text-base font-bold">
           {t("employer.dashboard.find_title")}
@@ -163,11 +194,6 @@ export async function EmployerDashboard({ session, embedded = false }: { session
               {t("easy.start.search_button")}
             </Button>
           </Form>
-          {home.aiButton ? (
-            <div className="flex justify-end border-t border-border px-1">
-              <AiFinder defaultMode="workers" locked />
-            </div>
-          ) : null}
         </div>
       </section>
 

@@ -31,8 +31,8 @@ export function RolePicker({ initial, next, images }: { initial: AppMode | null;
             <label
               key={it.mode}
               className={cn(
-                "press relative flex cursor-pointer items-center gap-4 rounded-2xl border-2 bg-card p-3 pr-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
-                on ? "border-primary bg-primary-soft" : "border-border hover:border-primary/50",
+                "press tile-raise relative flex cursor-pointer items-center gap-4 rounded-2xl border-2 p-3 pr-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
+                on ? "border-primary ring-4 ring-primary/15" : "border-transparent hover:border-primary/40",
               )}
             >
               <input type="radio" name="mode" value={it.mode} required checked={on} onChange={() => setMode(it.mode)} className="sr-only" data-testid={`role-${it.mode}`} />
@@ -41,7 +41,7 @@ export function RolePicker({ initial, next, images }: { initial: AppMode | null;
                 <span className="block text-lg font-extrabold leading-tight">{it.title}</span>
                 <span className="mt-1 block text-sm leading-snug text-muted-foreground">{it.desc}</span>
               </span>
-              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border-2", on ? "border-primary bg-primary text-primary-foreground" : "border-border")} aria-hidden>
+              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border-2", on ? "btn-3d border-primary bg-primary text-primary-foreground" : "border-border")} aria-hidden>
                 {on ? <Check className="size-4" strokeWidth={3} /> : null}
               </span>
             </label>

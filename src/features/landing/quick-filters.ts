@@ -45,3 +45,16 @@ export function employerQuickFilters(place: { region: string | null; district: s
 export function placeChooserHref(scope: "jobs" | "workers"): string {
   return findHref({ ...EMPTY_FIND, mode: scope, any: true });
 }
+
+/** Ish beruvchi xizmatlari (bosh ekran to'ri): nomzodlar, kunlik ishchilar, tajribalilar, yaqin atrofda, masofaviy, barcha kasblar */
+export function employerServiceHrefs(place: { region: string | null; district: string | null }) {
+  const any: FindParams = { ...EMPTY_FIND, mode: "workers", any: true, region: place.region ?? "all", district: place.region ? (place.district ?? "all") : null };
+  return {
+    candidates: findHref(any),
+    daily: findHref(any, { pay: "daily" }),
+    experienced: findHref(any, { exp: true }),
+    near: findHref({ ...EMPTY_FIND, mode: "workers", near: true }),
+    remote: findHref(any, { region: "remote", district: null }),
+    all: findHref(EMPTY_FIND, { mode: "workers" }),
+  };
+}
