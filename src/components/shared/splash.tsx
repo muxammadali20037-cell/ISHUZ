@@ -1,8 +1,8 @@
-import { BRAND } from "@/config/brand";
+import { BrandLogo } from "./brand-logo";
 import { getT } from "@/lib/i18n/server";
 
 /**
- * Ochilish ekrani: "Ish topdim" yozuvi, keyin kamera "topdim" so'ziga yaqinlashib, uning ichidan ilovaga kiradi (~1.2 s).
+ * Ochilish ekrani: "Ish topdim" logotipi (qo'l siqishayotgan odamlar harakatda) va shior, keyin yumshoq yo'qoladi (~1.4 s).
  * - faqat ilova ochilganda, sessiyada bir marta (SPLASH_BOOT `<head>` da — qayta yuklashda miltillamaydi);
  * - kontent ostida darhol chiziladi, splash bosishni to'smaydi (pointer-events: none), sun'iy kutish yo'q;
  * - harakat kamaytirilgan qurilmada, admin panelda va avtomatlashtirilgan brauzerda (navigator.webdriver) ko'rsatilmaydi.
@@ -13,16 +13,9 @@ export async function Splash() {
   return (
     <div className="splash" aria-hidden="true">
       <div className="splash-logo">
+        {/* egasi bergan logotip: qo'l berib so'rashayotgan odamlar — qo'llar siqiladi (BrandLogo) */}
         <span className="splash-mark">
-          <svg viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M196 168 V140 A28 28 0 0 1 224 112 H288 A28 28 0 0 1 316 140 V168" strokeWidth="40" />
-            <rect x="100" y="168" width="312" height="232" rx="48" strokeWidth="40" />
-            <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
-          </svg>
-        </span>
-        <span className="splash-word">
-          <span className="splash-ish" data-t={BRAND.wordmark[0]} />
-          <span className="splash-top" data-t={BRAND.wordmark[1]} />
+          <BrandLogo variant="full" period={2.4} />
         </span>
         <span className="splash-slogan" data-t={t("welcome.splash.slogan")} />
       </div>

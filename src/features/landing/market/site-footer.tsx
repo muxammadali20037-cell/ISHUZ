@@ -60,7 +60,7 @@ export async function SiteFooter() {
       <div className="container-app grid grid-cols-1 gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] lg:py-14">
         <div>
           <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-tight" aria-label={BRAND.name}>
-            <BrandMark className="size-9" />
+            <BrandMark className="size-11 rounded-xl" />
             <span>{BRAND.name}</span>
           </Link>
           <p className="mt-2 text-base font-semibold">{t("common.site.tagline")}</p>

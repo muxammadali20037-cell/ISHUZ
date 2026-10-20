@@ -66,6 +66,18 @@ bo'lsin". Shuning uchun "faqat tekis sirt" qoidasiga **nazoratli istisno** qo'sh
 - `prefers-reduced-motion` — yaltirash, aylanish, yozilib turish va ko'tarilib chiqish o'chadi (a11y testi).
 - Yangi joyga gradient yoki nur kerak bo'lsa — avval shu jadvalga utilita sifatida qo'shiladi, keyin ishlatiladi.
 
+### 1.2 Logotip (2026-10, egasi bergan)
+
+- Manba: `scripts/brand/logo-source.png` (yozuv va qo'l berib so'rashayotgan ishchi bilan ish beruvchi). Barcha fayllar shu
+  manbadan `python3 scripts/brand/build-logo.py` bilan yasaladi: `public/brand/*` (shaffof qatlamlar, siljish xaritasi),
+  `public/icons/*` (ilova belgilari — to'liq logo oq fonda), `src/app/favicon.ico` va `public/icon.svg` (faqat odamlar).
+- `BrandLogo` (`components/shared/brand-logo.tsx`): `full` — butun logo (ochilish ekrani, birinchi ochilishdagi brend kartasi),
+  `mark` — faqat odamlar (sarlavha, footer, kirish). **Qo'llar siqiladi** — SVG siljish filtri faqat qo'llar va bilaklarni
+  qimirlatadi (gavda va yozuv joyida), keyin kichik sariq uchqun; sarlavhada uzun tanaffus bilan (7 s). Reduced-motion — harakatsiz.
+- Logo ko'k, shuning uchun har doim **oq plitada** (`bg-logo-tile`, qorong'i mavzuda ham oq). Ko'k sirt ustiga to'g'ridan-to'g'ri
+  qo'yilmaydi.
+- Sarlavhada belgi yonida matnli nom ("Ish topdim") qoladi: 40 px da logodagi yozuv o'qilmaydi.
+
 ## 2. Shrift
 
 **Manrope** — bitta oila, lotin va kirill (`next/font/google`, o'zimizdan yuklanadi, tashqi so'rov yo'q). O'zbek lotin

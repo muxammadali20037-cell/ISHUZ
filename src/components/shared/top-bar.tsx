@@ -52,7 +52,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
     <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "var(--safe-top)" }}>
       <div className="container-app flex h-14 items-center gap-3">
         <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label={BRAND.name}>
-          <BrandMark />
+          <BrandMark className="size-10 rounded-xl" />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
           <span
             className={cn(

@@ -42,7 +42,7 @@ export function AdminTopbar({
         </Sheet>
       </Dialog>
       <Link href="/admin" className="flex min-w-0 items-center gap-2 font-extrabold tracking-tight lg:hidden">
-        <BrandMark />
+        <BrandMark animated={false} />
         <span className="truncate text-base">{t("admin.shell.title")}</span>
       </Link>
       <div className="flex-1" />

@@ -63,6 +63,8 @@
   --hero-fg: #ffffff;
   --hero-muted: #f0f4ff; /* hero sirtining barcha nuqtalarida ≥ 4.5:1 */
   --glow: rgb(36 87 245 / 0.38);
+  /* logotip plitasi: logo ko'k, shuning uchun har ikki mavzuda oq fon */
+  --logo-tile: #ffffff;
   --ai-1: #2457f5;
   --ai-2: #8b5cf6;
   --ai-3: #06b6d4;
@@ -183,6 +185,7 @@ html.tg-fullscreen {
   --color-navy-muted: var(--navy-muted);
   --color-navy-line: var(--navy-line);
   --color-hero-fg: var(--hero-fg);
+  --color-logo-tile: var(--logo-tile);
   --color-hero-muted: var(--hero-muted);
   /* 2 · 4 · 6 · 8 · 12 · 14 px — kartalar 12–14, tugma va maydonlar 8–12 (haddan tashqari yumaloq emas) */
   --radius-xs: calc(var(--radius) - 6px);
@@ -270,34 +273,21 @@ html.tg-fullscreen {
   overflow: hidden;
   pointer-events: none;
   background: var(--background);
-  animation: splash-out 0.25s ease-out 0.95s forwards;
+  animation: splash-out 0.3s ease-out 1.15s forwards;
 }
 html.no-splash .splash { display: none; }
-.splash-logo { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: splash-in 0.28s ease-out both; }
+.splash-logo { display: flex; flex-direction: column; align-items: center; gap: 18px; animation: splash-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
+/* logotip oq plitada (logo ko'k — qorong'i mavzuda ham oq fon) */
 .splash-mark {
   display: flex;
-  width: 68px;
-  height: 68px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  background: var(--primary);
-  color: var(--primary-foreground);
-  animation: splash-fade 0.2s ease-in 0.4s forwards;
+  width: min(260px, 70vw);
+  padding: 18px 20px;
+  border-radius: 24px;
+  background: var(--logo-tile);
+  box-shadow: 0 18px 40px -18px var(--glow), 0 2px 6px rgb(21 33 59 / 0.08);
 }
-.splash-mark svg { width: 74%; height: 74%; }
-.splash-word { display: flex; align-items: baseline; gap: 0.26em; font-size: 2.6rem; font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: var(--foreground); }
-.splash-ish::before, .splash-top::before, .splash-slogan::before { content: attr(data-t); }
-.splash-ish { animation: splash-fade 0.2s ease-in 0.4s forwards; }
-.splash-top {
-  display: inline-block;
-  color: var(--primary);
-  transform-origin: 20.96% 60.1%;
-  will-change: transform;
-  /* tezlashib yaqinlashadi; halqa ekrandan chiqayotganda so'z eriydi — "o" ichidan ilova ochiladi */
-  animation: splash-zoom 0.6s cubic-bezier(0.7, 0, 0.84, 0.25) 0.4s forwards, splash-fade 0.14s linear 0.86s forwards;
-}
-.splash-slogan { font-size: 0.95rem; font-weight: 600; color: var(--muted-foreground); animation: splash-fade 0.18s ease-in 0.34s forwards; }
+.splash-slogan::before { content: attr(data-t); }
+.splash-slogan { font-size: 0.95rem; font-weight: 600; color: var(--muted-foreground); animation: splash-fade 0.2s ease-in 0.95s forwards; }
 .splash-bar {
   position: absolute;
   left: 50%;
@@ -308,12 +298,11 @@ html.no-splash .splash { display: none; }
   overflow: hidden;
   border-radius: 999px;
   background: var(--primary-soft);
-  animation: splash-fade 0.18s ease-in 0.4s forwards;
+  animation: splash-fade 0.2s ease-in 0.95s forwards;
 }
-.splash-bar::after { content: ""; position: absolute; inset: 0; background: var(--primary); transform-origin: left; animation: splash-load 0.4s ease-out forwards; }
-@keyframes splash-in { from { opacity: 0; transform: scale(0.94); } to { opacity: 1; transform: none; } }
+.splash-bar::after { content: ""; position: absolute; inset: 0; background: var(--primary); transform-origin: left; animation: splash-load 0.9s ease-out forwards; }
+@keyframes splash-in { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
 @keyframes splash-fade { to { opacity: 0; } }
-@keyframes splash-zoom { to { transform: scale(64); } }
 @keyframes splash-load { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 @keyframes splash-out { to { opacity: 0; visibility: hidden; } }
 @media (prefers-reduced-motion: reduce) {

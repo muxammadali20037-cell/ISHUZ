@@ -1,14 +1,14 @@
 import { cn } from "@/lib/utils";
+import { BrandLogo } from "./brand-logo";
 
-/** "Ish topdim" belgisi: portfel + belgi (topildi). Ikonlar (public/icon.svg) bilan bir xil shakl. */
-export function BrandMark({ className }: { className?: string }) {
+/**
+ * "Ish topdim" belgisi (sarlavha, footer, kirish): logotipdagi qo'l berib so'rashayotgan ikki odam, oq plitada (har ikki
+ * mavzuda). Qo'llar vaqti-vaqti bilan siqiladi (BrandLogo, uzun tanaffus bilan — chalg'itmasin). To'liq logo — BrandLogo.
+ */
+export function BrandMark({ className, animated = true }: { className?: string; animated?: boolean }) {
   return (
-    <span className={cn("btn-3d flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary text-primary-foreground", className)} aria-hidden>
-      <svg viewBox="0 0 512 512" className="size-[78%]" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M196 168 V140 A28 28 0 0 1 224 112 H288 A28 28 0 0 1 316 140 V168" strokeWidth="40" />
-        <rect x="100" y="168" width="312" height="232" rx="48" strokeWidth="40" />
-        <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
-      </svg>
+    <span className={cn("flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-logo-tile p-0.5 shadow-sm ring-1 ring-black/5", className)} aria-hidden>
+      <BrandLogo variant="mark" animated={animated} period={7} />
     </span>
   );
 }

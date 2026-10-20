@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HeroBackdrop } from "@/components/shared/hero-backdrop";
+import { BrandLogo } from "@/components/shared/brand-logo";
 
 /**
  * Kirish oqimi ekranlari uchun umumiy qolip (mobil ilova kabi): tepada — orqaga / o'tkazib yuborish, o'rtada — asosiy mazmun,
@@ -78,16 +79,11 @@ export function EntryBrand({ name, slogan, live, photo = null }: { name: ReactNo
   return (
     <div className={cn("hero-surface rounded-2xl px-5 py-6 text-center shadow-lg", photo && "has-photo")}>
       <HeroBackdrop src={photo} />
-      <span className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-card text-primary shadow-lg [&_svg]:size-[78%]" aria-hidden>
-        {/* BrandMark shakli — oq plita ustida ko'k */}
-        <svg viewBox="0 0 512 512" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M196 168 V140 A28 28 0 0 1 224 112 H288 A28 28 0 0 1 316 140 V168" strokeWidth="40" />
-          <rect x="100" y="168" width="312" height="232" rx="48" strokeWidth="40" />
-          <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
-        </svg>
+      {/* egasi bergan logotip oq plitada; qo'l berib so'rashayotgan odamlar harakatda */}
+      <span className="mx-auto flex w-52 rounded-2xl bg-logo-tile px-4 py-3 shadow-lg">
+        <BrandLogo variant="full" label={typeof name === "string" ? name : undefined} />
       </span>
-      <p className="mt-3 text-2xl font-extrabold tracking-tight text-hero-fg">{name}</p>
-      <p className="mt-1 text-sm font-semibold text-hero-muted">{slogan}</p>
+      <p className="mt-3 text-sm font-semibold text-hero-muted">{slogan}</p>
       {live ? (
         <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-bold text-foreground shadow-sm">
           <span className="entry-live" aria-hidden />
