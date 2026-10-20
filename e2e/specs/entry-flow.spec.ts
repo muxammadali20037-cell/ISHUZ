@@ -259,6 +259,8 @@ test.describe("kirish oqimi", () => {
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL(/\/onboarding\/worker\?next=%2Fstart%2Ftayyor/);
     expect((await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [NEW_WORKER]))[0]!.active_role).toBe("worker");
+    // qaytish manzili (sessionStorage) sahifa jonlangach yoziladi — undan oldin boshqa sahifaga o'tilsa, yakunda "/" ga ketardi (CI'da tasodifiy yiqilish)
+    await expect.poll(() => page.evaluate(() => sessionStorage.getItem("ib_onb_return"))).toContain("/start/tayyor");
 
     // 1–3-qadamlar (ism, joy, kasb) — mavjud wizard; bu yerda bazadan, oxirgi majburiy qadam (tajriba) — ekrandan
     await sql(
