@@ -41,6 +41,16 @@ Har bandda tartib bir xil: **muammo → o'zgarish → sinov → natija → qolga
 - 0068 bilan: barchasi **PASS**;
 - mavjud 33 SQL test fayli ham o'tadi.
 
+### Sinov natijalari (2026-10-20, lokal izolyatsiyalangan stend)
+
+- **TypeScript va lint:** toza.
+- **Unit:** 678 o'tdi, 18 skip (avvalgidek — tashqi xizmat kalitlari kerak bo'lgan testlar).
+- **SQL:** 34 fayl o'tdi, shu jumladan yangi `salary_periods.test.sql` (0068 siz 12/16 FAIL, 0068 bilan 16/16 PASS).
+- **E2E:** 202 dan 201 tasi o'tdi.
+  - Yiqilgan bitta test: `flows.spec.ts:26` (til almashtirish). U avval ham barqaror emas edi (10 tadan 3 FAIL); bu safar 5 tadan 1 FAIL.
+  - Ehtimoliy sabab: sahifa to'liq yuklanmasdan (hydration) til tanlansa, tanlov yo'qoladi. Bu sekin telefonda haqiqiy foydalanuvchi muammosi — 3-bosqichda (komponentlar) tuzatiladi.
+- **CI tekshiruvi:** barcha workflow skriptlari `bash -n` dan o'tadi (yangi test).
+
 ## 3. Monitoring va tiklash — hozirgi holat (o'zgartirilmadi)
 
 - **Yo'q:**
