@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Globe } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -51,22 +51,32 @@ export function LanguageSelect({ className }: { className?: string }) {
   const { locale } = useT();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
+  const ref = useRef<HTMLSelectElement>(null);
+  const apply = (next: Locale) =>
+    startTransition(async () => {
+      // tarmoq uzilsa — xato ekrani emas, til o'zgarmay qoladi
+      await setLocale(next).catch(() => undefined);
+      router.refresh();
+    });
+  // sahifa to'liq yuklanmasdan (gidratsiyadan oldin) tanlangan til yo'qolmasin: sekin telefonda foydalanuvchi tanlab
+  // ulgurgan bo'lsa, tanlov o'sha zahoti qo'llanadi (select boshqarilmaydi — React uni eski qiymatga qaytarmaydi)
+  useEffect(() => {
+    const picked = ref.current?.value as Locale | undefined;
+    if (picked && picked !== locale && (LOCALES as readonly string[]).includes(picked)) apply(picked);
+    // faqat birinchi chizilishda
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <label className={cn("relative inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-card pl-2.5 pr-2 text-sm font-bold", pending && "opacity-60", className)}>
       <Globe className="hidden size-4 text-muted-foreground min-[400px]:block" aria-hidden />
       <span aria-hidden>{LOCALE_LABELS[locale]}</span>
       <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
       <select
+        ref={ref}
+        key={locale}
         aria-label="Til · Тил · Язык · Language"
-        value={locale}
-        onChange={(e) => {
-          const next = e.target.value as Locale;
-          startTransition(async () => {
-            // tarmoq uzilsa — xato ekrani emas, til o'zgarmay qoladi
-            await setLocale(next).catch(() => undefined);
-            router.refresh();
-          });
-        }}
+        defaultValue={locale}
+        onChange={(e) => apply(e.target.value as Locale)}
         className="absolute -inset-px cursor-pointer opacity-0"
       >
         {LOCALES.map((l) => (

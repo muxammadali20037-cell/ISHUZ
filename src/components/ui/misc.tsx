@@ -120,10 +120,11 @@ function Separator({ className }: { className?: string }) {
 /** Bo'lim sarlavhasi + "Barchasini ko'rish" havolasi */
 function SectionHeader({ title, href, linkLabel, className }: { title: string; href?: string; linkLabel?: string; className?: string }) {
   return (
-    <div className={cn("mb-3 flex items-end justify-between gap-3", className)}>
-      <h2 className="text-lg font-bold">{title}</h2>
+    <div className={cn("mb-2 flex items-center justify-between gap-3", className)}>
+      <h2 className="min-w-0 text-lg font-bold">{title}</h2>
       {href && linkLabel ? (
-        <Link href={href} className="text-sm font-medium text-primary hover:underline">
+        // bosish maydoni ≥ 44 px (matn kichik bo'lsa ham), sarlavha bilan bir chiziqda
+        <Link href={href} className="-my-2 inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary hover:underline">
           {linkLabel}
         </Link>
       ) : null}

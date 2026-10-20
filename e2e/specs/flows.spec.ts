@@ -34,6 +34,27 @@ test("til almashganda qidiruv filtrlari URL'da saqlanadi", async ({ page, contex
   await switchLanguage(page, "O'zbekcha");
 });
 
+test("til sahifa to'liq yuklanmasdan tanlansa ham yo'qolmaydi (sekin telefon: JS kech keladi)", async ({ page, context }) => {
+  await asGuest(context);
+  let release!: () => void;
+  const gate = new Promise<void>((r) => (release = r));
+  // JS bo'laklari ushlab turiladi — sahifa HTML'i ko'rinadi, React hali ulanmagan
+  await page.route("**/_next/static/chunks/**", async (route) => {
+    // faqat skriptlar (uslublar ushlansa — sahifa umuman chizilmaydi)
+    if (route.request().resourceType() === "script") await gate;
+    await route.continue();
+  });
+  // HTML kelishi bilan (skriptlarni kutmasdan): tanlagich chizilgan, lekin React hali ulanmagan
+  await page.goto("/search?mode=jobs&any=1&region=all", { waitUntil: "commit" });
+  await page.getByRole("combobox", { name: /Til · Тил · Язык · Language/ }).waitFor();
+  await switchLanguage(page, "English");
+  release();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await page.unroute("**/_next/static/chunks/**");
+  await switchLanguage(page, "O'zbekcha");
+  await expect(page.locator("html")).toHaveAttribute("lang", "uz");
+});
+
 test("e'lonni joylash tugmasini ikki marta bosish — bitta e'lon", async ({ page, context }) => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await asMode(context, "employer");

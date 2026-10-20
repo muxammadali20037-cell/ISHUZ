@@ -81,6 +81,11 @@ async function seed() {
   return v!.slug;
 }
 
+/** Namunaviy e'lonlar boshqa E2E testlar natijasiga aralashmasin (stend umumiy) — skrinshotdan keyin o'chiriladi */
+test.afterAll(async () => {
+  await sql("delete from public.vacancies where owner_profile_id = $1", [EMP]);
+});
+
 async function as(ctx: BrowserContext, who: "worker" | "employer") {
   await loginAs(ctx, who === "worker" ? WRK : EMP);
   await asMode(ctx, who);

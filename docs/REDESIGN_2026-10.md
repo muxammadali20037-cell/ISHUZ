@@ -132,6 +132,13 @@ To'liq sahifa variantlari: `*-full.jpg`.
   - ish izlovchi bosh sahifasidagi rasmli plitka.
 
   Ular yangi xulq-atvorga moslandi — kartada rasm yo'q va buzilgan rasm qolmaydi; plitka rasmi ish beruvchi sahifasida tekshiriladi. Shu 4 fayl qayta ishga tushirildi: 41/41 o'tdi.
+- **2-bosqichdan keyin to'liq E2E (toza stend, 205 ta):** 204 o'tdi.
+  - Yagona yiqilgan test — avvaldan ma'lum beqaror til almashtirish testi (`flows.spec.ts:26`).
+  - **Sabab topildi:** sahifa to'liq yuklanmasdan (React ulanmasdan) til tanlansa, React tanlovni eski qiymatga qaytarardi. Sekin telefonda haqiqiy foydalanuvchida ham shunday bo'ladi.
+  - **Tuzatildi:** tanlagich boshqarilmaydigan bo'ldi va oldin qilingan tanlov ulanish zahoti qo'llanadi.
+  - **Yangi test:** JS yuklanishini ushlab turib, til tanlanadi. Eski kodda 3/3 FAIL ("uz" qoladi), yangisida 5/5 PASS. Eski beqaror test 8/8 o'tdi.
+- **a11y testi topgan kamchilik:** "Barchasini ko'rish" havolasining bosish maydoni 20 px edi (o'xshash vakansiyalar, nomzodlar bo'limi). Endi ≥ 44 px.
+- **Stend gigiyenasi:** skrinshot skripti o'z namunaviy e'lonlarini endi o'zi o'chiradi. Avval ular keyingi E2E natijalariga aralashib, 13 ta soxta yiqilishga sabab bo'lgan edi; toza stendda bu testlar o'tadi.
 - **Yangi yoki yangilangan tekshiruvlar:**
   - 390×844 da kirgan ish qidiruvchida birinchi vakansiyaning nomi, maoshi (davri bilan) va hududi pastki menyudan yuqorida;
   - tez filtrlar tartibi Kunlik · Tajribasiz · Masofaviy · Talabalar uchun; "Filtrlar" va "Talabalar uchun" to'g'ri sahifani ochadi;
