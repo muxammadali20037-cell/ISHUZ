@@ -9,6 +9,7 @@ import { CategoryIcon } from "@/components/shared/category-icon";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
+import { AiFinder } from "@/features/find/components/ai-finder";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { AiProRow } from "@/features/ai-alerts/components/ai-pro-card";
@@ -33,41 +34,43 @@ export async function SeekerHome({ session }: { session: SessionContext | null }
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const chips = seekerQuickFilters(where).map((c) => ({ ...c, label: t(`easy.start.f_${c.key}`) }));
   return (
-    <div className="space-y-5 lg:space-y-6">
-      <section aria-labelledby="home-title" className="space-y-3 lg:max-w-3xl">
-        <h1 id="home-title" className="text-[1.375rem] font-extrabold leading-tight tracking-tight sm:text-3xl">
-          {t("easy.start.seeker_title")}
-        </h1>
-        <SeekerSearch
-          label={t("easy.start.search_label")}
-          placeholder={t("easy.start.search_placeholder")}
-          place={{ label: placeText(place, name, t("easy.location.whole_country")), href: placeChooserHref("jobs"), ...where }}
-          filtersHref={seekerFiltersHref(where)}
-          chips={chips}
-          ai={home.aiButton}
-        />
-      </section>
-
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
+    // kompyuterda ikki ustun: chapda qidiruv va ro'yxat, o'ngda — AI yordamchi taklifi va yordamchi panel (bo'sh joy qolmaydi);
+    // telefonda tartib: qidiruv → ro'yxat → panel (AI kartasi telefonda yo'q: birinchi ekran vakansiyalar uchun, AI qidiruv blokida)
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="min-w-0 space-y-5 lg:space-y-6">
+        <section aria-labelledby="home-title" className="space-y-3">
+          <h1 id="home-title" className="text-[1.375rem] font-extrabold leading-tight tracking-tight sm:text-3xl">
+            {t("easy.start.seeker_title")}
+          </h1>
+          <SeekerSearch
+            label={t("easy.start.search_label")}
+            placeholder={t("easy.start.search_placeholder")}
+            place={{ label: placeText(place, name, t("easy.location.whole_country")), href: placeChooserHref("jobs"), ...where }}
+            filtersHref={seekerFiltersHref(where)}
+            chips={chips}
+            ai={home.aiButton}
+          />
+        </section>
         {/* ro'yxat oqim bilan keladi: qidiruv qatori darhol ishlaydi */}
         <Suspense fallback={<FeedSkeleton />}>
           <SeekerFeed session={session} place={place} />
         </Suspense>
-        <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-5">
-          <ResumeCard />
-          {/* bo'limlar (sonlari bilan): ish beruvchi turi, ommaviy, TOP, yaqin atrofda — ixcham ro'yxat, ro'yxatdan keyin */}
-          <Suspense fallback={null}>
-            <SeekerSectionList place={place} />
-          </Suspense>
-          <Suspense fallback={null}>
-            <PopularProfessions place={place} />
-          </Suspense>
-          <HomeQuickLinks windows={windowsFor("worker", home.windows)} stacked />
-          <Suspense fallback={null}>
-            <AiProRow userId={session?.userId ?? null} role="worker" />
-          </Suspense>
-        </aside>
       </div>
+      <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-5">
+        {home.aiButton ? <AiFinder defaultMode="jobs" locked variant="card" className="hidden lg:block" /> : null}
+        <ResumeCard />
+        {/* bo'limlar (sonlari bilan): ish beruvchi turi, ommaviy, TOP, yaqin atrofda — ixcham ro'yxat, ro'yxatdan keyin */}
+        <Suspense fallback={null}>
+          <SeekerSectionList place={place} />
+        </Suspense>
+        <Suspense fallback={null}>
+          <PopularProfessions place={place} />
+        </Suspense>
+        <HomeQuickLinks windows={windowsFor("worker", home.windows)} stacked />
+        <Suspense fallback={null}>
+          <AiProRow userId={session?.userId ?? null} role="worker" />
+        </Suspense>
+      </aside>
     </div>
   );
 }

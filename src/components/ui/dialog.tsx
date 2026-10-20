@@ -43,7 +43,7 @@ const DialogContent = React.forwardRef<
       {description ? <DialogPrimitive.Description className="mt-1 text-sm text-muted-foreground">{description}</DialogPrimitive.Description> : null}
       <div className="mt-4">{children}</div>
       {!hideClose ? (
-        <DialogPrimitive.Close className="absolute right-3 top-3 rounded-lg p-2 text-muted-foreground hover:bg-secondary" aria-label="Close">
+        <DialogPrimitive.Close className="tap-target absolute right-3 top-3 rounded-lg p-2 text-muted-foreground hover:bg-secondary" aria-label="Close">
           <X className="size-5" />
         </DialogPrimitive.Close>
       ) : null}
@@ -57,8 +57,16 @@ DialogContent.displayName = "DialogContent";
  */
 const Sheet = React.forwardRef<
   React.ComponentRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & { title: string; description?: string; footer?: React.ReactNode }
->(({ className, children, title, description, footer, ...props }, ref) => (
+  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+    title: string;
+    description?: string;
+    footer?: React.ReactNode;
+    /** sarlavha oldidagi belgi (masalan, AI yordamchi belgisi) */
+    icon?: React.ReactNode;
+    /** sarlavha qatoridagi qo'shimcha amal (yopish tugmasidan oldin) */
+    headerAction?: React.ReactNode;
+  }
+>(({ className, children, title, description, footer, icon, headerAction, ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
@@ -75,13 +83,19 @@ const Sheet = React.forwardRef<
     >
       <div className="mx-auto mt-2.5 h-1.5 w-10 shrink-0 rounded-full bg-border sm:hidden" aria-hidden />
       <div className="flex items-start justify-between gap-3 px-5 pb-2 pt-3">
-        <div>
-          <DialogPrimitive.Title className="text-lg font-semibold">{title}</DialogPrimitive.Title>
-          {description ? <DialogPrimitive.Description className="mt-0.5 text-sm text-muted-foreground">{description}</DialogPrimitive.Description> : null}
+        <div className="flex min-w-0 items-center gap-3">
+          {icon}
+          <div className="min-w-0">
+            <DialogPrimitive.Title className="text-lg font-semibold">{title}</DialogPrimitive.Title>
+            {description ? <DialogPrimitive.Description className="mt-0.5 text-sm text-muted-foreground">{description}</DialogPrimitive.Description> : null}
+          </div>
         </div>
-        <DialogPrimitive.Close className="-mr-2 rounded-lg p-2 text-muted-foreground hover:bg-secondary" aria-label="Close">
-          <X className="size-5" />
-        </DialogPrimitive.Close>
+        <div className="-mr-2 flex shrink-0 items-center gap-1">
+          {headerAction}
+          <DialogPrimitive.Close className="tap-target relative rounded-lg p-2 text-muted-foreground hover:bg-secondary" aria-label="Close">
+            <X className="size-5" />
+          </DialogPrimitive.Close>
+        </div>
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-4">{children}</div>
       {footer ? <div className="shrink-0 border-t border-border bg-card px-5 py-3 pb-safe">{footer}</div> : null}

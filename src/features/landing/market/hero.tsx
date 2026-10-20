@@ -71,6 +71,12 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
         <HeroSearch />
         <nav aria-label={t("welcome.market.quick_label")} className="-mx-4 mt-3 sm:mx-0">
           <ul className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
+            {/* AI yordamchi — qatorning boshida (telefonda ham birinchi ekranda ko'rinsin); mehmon oynada ish yoki xodimni tanlaydi */}
+            {ai ? (
+              <li className="flex">
+                <AiFinder defaultMode="jobs" className="border border-primary/30 bg-card" />
+              </li>
+            ) : null}
             {chips.map((c) => (
               <li key={c.key} className="flex">
                 {/* tezkor filtr: ish qidiruvchi rejimi yoziladi va natijalar ochiladi (avvalgi "tez kirish" plitkalari kabi) */}
@@ -88,12 +94,6 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
                 </form>
               </li>
             ))}
-            {/* AI qidiruv — qidiruv paneli yonida (suzuvchi tugma yo'q); mehmon oynada ish yoki xodim qidirishni tanlaydi */}
-            {ai ? (
-              <li className="flex">
-                <AiFinder defaultMode="jobs" className="rounded-full border border-primary/30 bg-card px-3.5" />
-              </li>
-            ) : null}
           </ul>
         </nav>
       </div>

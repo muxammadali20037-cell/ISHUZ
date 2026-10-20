@@ -259,7 +259,19 @@
     "f_guide": "Employer guide",
     "f_pricing": "Pricing",
     "f_contact": "Contact",
-    "f_telegram": "Telegram bot"
+    "f_telegram": "Telegram bot",
+    "ai_title": "Write in plain words — the AI assistant finds it",
+    "ai_desc": "Job, area, pay or “daily” — write the way you speak. The assistant shows what it understood and lists only real listings from the database.",
+    "ai_point_1": "Understands Uzbek (Latin and Cyrillic) and Russian",
+    "ai_point_2": "Narrow down in one tap: daily, no experience, remote",
+    "ai_point_3": "Works without signing up",
+    "ai_sample": "Example",
+    "ai_sample_q": "Cook in Chilonzor, daily pay",
+    "ai_sample_understood": "Understood:",
+    "ai_sample_chip_1": "Cook",
+    "ai_sample_chip_2": "Chilonzor district",
+    "ai_sample_chip_3": "Daily jobs",
+    "ai_sample_answer": "I'll show matching listings right here — narrow it down with “no experience” if you like."
   },
   "about": {
     "title": "About us",

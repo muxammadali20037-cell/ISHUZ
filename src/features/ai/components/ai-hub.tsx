@@ -1,16 +1,15 @@
-import Form from "next/form";
 import Link from "next/link";
-import { BellRing, ChevronRight, PenLine, Search, Sparkles, type LucideIcon } from "lucide-react";
+import { BellRing, ChevronRight, PenLine, Sparkles, type LucideIcon } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { aiProviderConfigured } from "@/lib/ai/json";
 import type { SessionContext } from "@/features/auth/session";
 import type { AppMode } from "@/features/mode/mode";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { AiAvatar } from "@/components/shared/ai-avatar";
+import { AiChatPanel } from "@/features/find/components/ai-chat";
 
 /**
- * /ai — AI bo'limi (pastki menyudagi "AI"): bitta joyda —
- *  1) oddiy so'z bilan qidiruv (lug'at + sozlangan bo'lsa AI tushunadi; natijalar — bazadagi haqiqiy e'lonlar);
+ * /ai — AI yordamchi sahifasi: bitta joyda —
+ *  1) suhbat (yozish yoki ovoz): lug'at + sozlangan bo'lsa AI tushunadi; natijalar — bazadagi haqiqiy e'lonlar, shu sahifada;
  *  2) "Sizga mos" — moslik dvigateli hisoblagan e'lonlar/nomzodlar va sabablari (/cabinet/matches);
  *  3) AI PRO kuzatuv (/ai-alerts); 4) AI bilan e'lon tuzish — faqat AI provayder sozlangan bo'lsa.
  * Hisoblanmagan foiz yoki soxta va'da yo'q.
@@ -42,43 +41,25 @@ export async function AiHub({ session, mode }: { session: SessionContext | null;
 
   return (
     <div className="container-narrow space-y-6 py-5 sm:py-8">
-      <div>
-        <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
-          <span className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-hidden>
-            <Sparkles className="size-5" />
-          </span>
-          {t("easy.aihub.title")}
-        </h1>
-        <p className="mt-2 text-base text-muted-foreground">{t("easy.aihub.subtitle")}</p>
+      <div className="flex items-start gap-3">
+        <AiAvatar size="lg" />
+        <div className="min-w-0">
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{t("easy.aihub.title")}</h1>
+          <p className="mt-1 text-base text-muted-foreground">{t("easy.aihub.subtitle")}</p>
+        </div>
       </div>
 
-      <section aria-labelledby="ai-search" className="space-y-3 rounded-2xl border border-primary/20 bg-primary-soft p-4 sm:p-5">
-        <h2 id="ai-search" className="text-lg font-bold">
-          {t("easy.aihub.search_title")}
-        </h2>
-        <p className="text-sm text-muted-foreground">{employer ? t("easy.aihub.search_desc_workers") : t("easy.aihub.search_desc_jobs")}</p>
-        <Form action="/search" prefetch={false} role="search" aria-label={t("easy.aihub.search_label")} className="flex gap-2">
-          <input type="hidden" name="mode" value={employer ? "workers" : "jobs"} />
-          <div className="min-w-0 flex-1">
-            <Input
-              name="q"
-              type="search"
-              enterKeyHint="search"
-              aria-label={t("easy.aihub.search_label")}
-              placeholder={t("easy.aihub.search_label")}
-              leftIcon={<Search />}
-              className="h-12 rounded-xl bg-card"
-              maxLength={120}
-              minLength={2}
-              required
-            />
-          </div>
-          <Button type="submit" className="h-12 shrink-0 px-5 text-base font-bold">
-            {t("easy.aihub.search_button")}
-          </Button>
-        </Form>
-      </section>
+      {/* suhbat shu sahifaning o'zida: yozing yoki ayting — natija (bazadagi haqiqiy e'lonlar) shu yerda, aniqlashtirish bilan */}
+      <AiChatPanel
+        defaultMode={employer ? "workers" : "jobs"}
+        locked={mode !== null}
+        examples={{
+          jobs: [t("easy.finder.example_j1"), t("easy.finder.example_j2"), t("easy.finder.example_j3")],
+          workers: [t("easy.finder.example_w1"), t("easy.finder.example_w2"), t("easy.finder.example_w3")],
+        }}
+      />
 
+      <h2 className="text-lg font-bold">{t("easy.aihub.more_title")}</h2>
       <ul className="grid gap-3 sm:grid-cols-2">
         {cards.map((c) => (
           <li key={c.key} className="flex">

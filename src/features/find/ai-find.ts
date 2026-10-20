@@ -13,6 +13,7 @@ import type { ActionResult } from "@/features/auth/actions";
 import { trackServer } from "@/features/analytics/server";
 import { aiProviderConfigured } from "@/lib/ai/json";
 import { smartResolveQuery } from "./ai-search";
+import type { AppliedFilters } from "./ai-chat-model";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
 import { findJobs, findWorkers, getNodeInfo, type JobRow, type WorkerRow } from "./queries";
 
@@ -32,6 +33,8 @@ export interface AiFindResult {
   /** "ai" — sun'iy intellekt tahlil qildi; "rules" — lug'at bilan tushunildi (AI kerak bo'lmadi yoki ulanmagan) */
   source: "ai" | "rules";
   aiAvailable: boolean;
+  /** qo'llangan shartlar — AI yordamchi aniqlashtirish takliflarini takrorlamaydi */
+  applied: AppliedFilters;
   jobs: JobRow[];
   workers: WorkerRow[];
   images: Record<string, string>;
@@ -85,7 +88,8 @@ export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> 
     params.exp ? t("easy.search.experienced") : null,
   ].filter((x): x is string => !!x);
 
-  const base: Omit<AiFindResult, "needProfession" | "href"> = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), jobs: [], workers: [], images: {}, photos: {}, saved: [], total: 0 };
+  const applied: AppliedFilters = { daily: params.pay === "daily", noexp: params.noexp, exp: params.exp, remote: r.remote, shift: params.schedule === "shift" };
+  const base: Omit<AiFindResult, "needProfession" | "href"> = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, jobs: [], workers: [], images: {}, photos: {}, saved: [], total: 0 };
   // kasb aniqlanmadi (kunlik ishlar bundan mustasno) — taxminiy ro'yxat emas, aniq savol
   if (!node && params.pay !== "daily") {
     return { ok: true, data: { ...base, needProfession: true, href: findHref({ ...params, p: null, region: null, district: null }) } };

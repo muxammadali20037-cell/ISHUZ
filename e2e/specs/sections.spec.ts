@@ -104,19 +104,18 @@ test.describe("bo'limlar", () => {
     await expect(page.getByRole("group", { name: "Faol filtrlar" }).getByRole("link", { name: /Kunlik ishchilar/ })).toBeVisible();
   });
 
-  test("AI bo'limi: oddiy so'z bilan qidiruv natijaga olib boradi; 'Sizga mos' mehmonda — kirishga", async ({ page, context }) => {
+  test("AI bo'limi: oddiy so'z bilan suhbat — natija shu sahifada; 'Sizga mos' mehmonda — kirishga", async ({ page, context }) => {
     await asGuest(context);
     await asMode(context, "worker");
     await page.goto("/ai");
     await expect(page.getByRole("heading", { level: 1, name: "AI yordamchi" })).toBeVisible();
     await expect(page.getByRole("link", { name: /Sizga mos e'lonlar/ })).toHaveAttribute("href", "/auth?next=%2Fcabinet%2Fmatches");
     await expect(page.getByRole("link", { name: /AI PRO kuzatuv/ })).toHaveAttribute("href", "/ai-alerts");
-    await page.getByRole("searchbox", { name: "Nima qidiryapsiz?" }).fill("omborchi");
+    await page.getByLabel("Nima qidiryapsiz?").fill("omborchi");
     await page.getByRole("button", { name: "Topish" }).click();
-    // so'z kasbga aylandi ("Omborchi") — keyingi savol hudud
-    await expect(page.getByText("Ish e'lonlari · Omborchi")).toBeVisible();
-    await page.getByRole("link", { name: /Butun O'zbekiston/ }).click();
-    await page.waitForURL(/\/search\?mode=jobs.*region=all/);
+    // so'z kasbga aylandi ("Omborchi"), hudud aytilmagan — butun O'zbekiston bo'yicha; natija shu sahifada
+    await expect(page.getByText(/^Tushundim:/)).toContainText("Omborchi");
     await expect(page.locator("main article").filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(1);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 });

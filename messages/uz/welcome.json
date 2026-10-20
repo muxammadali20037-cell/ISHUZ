@@ -259,7 +259,19 @@
     "f_guide": "Ish beruvchi qo'llanmasi",
     "f_pricing": "Narxlar",
     "f_contact": "Aloqa",
-    "f_telegram": "Telegram bot"
+    "f_telegram": "Telegram bot",
+    "ai_title": "Oddiy so'z bilan yozing — AI yordamchi topib beradi",
+    "ai_desc": "Kasb, tuman, maosh yoki «kunlik» — o'zingiz gapirgandek yozing. Yordamchi nimani tushunganini ko'rsatadi va faqat bazadagi haqiqiy e'lonlarni chiqaradi.",
+    "ai_point_1": "O'zbekcha (lotin va kirill) va ruscha tushunadi",
+    "ai_point_2": "Bir bosishda aniqlashtirish: kunlik, tajribasiz, masofaviy",
+    "ai_point_3": "Ro'yxatdan o'tmasdan ham ishlaydi",
+    "ai_sample": "Namuna",
+    "ai_sample_q": "Chilonzorda oshpaz, kunlik",
+    "ai_sample_understood": "Tushundim:",
+    "ai_sample_chip_1": "Oshpaz",
+    "ai_sample_chip_2": "Chilonzor tumani",
+    "ai_sample_chip_3": "Kunlik ishlar",
+    "ai_sample_answer": "Mos e'lonlarni shu yerda ko'rsataman — xohlasangiz, «tajribasiz» deb aniqlashtiring."
   },
   "about": {
     "title": "Biz haqimizda",

@@ -7,6 +7,7 @@ import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
+import { AiAvatar } from "@/components/shared/ai-avatar";
 
 const MIN_LENGTH = 15;
 
@@ -40,8 +41,8 @@ export function AiComposer({
 
   return (
     <div className="container-narrow py-5 sm:py-8">
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1 text-xs font-semibold text-primary">
-        <Sparkles className="size-3.5" />
+      <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft py-1 pl-1 pr-3 text-xs font-semibold text-primary">
+        <AiAvatar size="sm" className="rounded-full" />
         {t("ai.badge")}
       </span>
       <h1 className="mt-3 text-2xl font-bold sm:text-3xl">{title}</h1>
@@ -108,9 +109,7 @@ function AnalyzingStatus() {
   }, [steps.length]);
   return (
     <div className="flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary-soft/50 p-4" role="status" aria-live="polite">
-      <span className="relative flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-        <Sparkles className="size-5 animate-pulse" />
-      </span>
+      <AiAvatar busy />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold">{steps[i]}</p>
         <div className="mt-2 flex gap-1">
@@ -131,9 +130,7 @@ export function AiCtaCard({ title, description, href }: { title: string; descrip
       href={href}
       className="group flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary-soft p-4 transition-colors hover:border-primary/60"
     >
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-        <Sparkles className="size-5" />
-      </span>
+      <AiAvatar className="size-11" />
       <span className="min-w-0 flex-1">
         <span className="block text-sm font-semibold leading-snug">{title}</span>
         <span className="mt-0.5 block text-xs text-muted-foreground">{description}</span>

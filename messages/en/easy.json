@@ -633,7 +633,8 @@
     "fill_desc_employer": "Describe who you need in plain words — the fields fill in, you check and publish",
     "candidates_title": "Candidates for your vacancy",
     "candidates_desc": "Workers ranked by your vacancy requirements",
-    "note": "AI only assists: the decision is yours. We never show a match percentage that was not calculated."
+    "note": "AI only assists: the decision is yours. We never show a match percentage that was not calculated.",
+    "more_title": "More AI tools"
   },
   "finder": {
     "button": "Find what fits you",
@@ -669,7 +670,44 @@
       "search_failed": "Search is temporarily unavailable. Please try again.",
       "validation": "Type at least 2 letters"
     },
-    "inline_button": "Search with AI"
+    "inline_button": "Search with AI",
+    "assistant_title": "AI assistant",
+    "assistant_desc_jobs": "Write in plain words — I'll search real listings",
+    "assistant_desc_workers": "Describe who you need — I'll search real workers",
+    "greeting_jobs": "Hi! What job are you looking for? Write the profession, area, pay or “daily” — I'll show matching listings right here.",
+    "greeting_workers": "Hi! Who do you need? Write the profession, area and experience — I'll show matching workers right here.",
+    "try_label": "For example, tap:",
+    "you": "You",
+    "thinking_understand": "Understanding your request…",
+    "thinking_jobs": "Sorting matching listings…",
+    "thinking_workers": "Sorting matching workers…",
+    "found_jobs_chat": "Found {count} matching listings",
+    "found_workers_chat": "Found {count} matching workers",
+    "refine_label": "Narrow it down?",
+    "refine": {
+      "daily": "Daily pay",
+      "noexp": "No experience",
+      "exp": "Experienced",
+      "remote": "Remote",
+      "shift": "Shifts"
+    },
+    "refine_add": "Add: {label}",
+    "open_results": "Open results",
+    "new_chat": "New chat",
+    "voice_start": "Speak",
+    "voice_stop": "Stop",
+    "voice_listening": "Listening — go ahead…",
+    "voice_error": "Couldn't recognise your voice. Type it or try again.",
+    "voice_denied": "No microphone access. Allow it in browser settings or type instead.",
+    "disclaimer": "Only real listings. The decision is yours.",
+    "card_title": "Ask the AI assistant",
+    "card_desc_jobs": "In plain words: job, area, pay — finds matching listings instantly",
+    "card_desc_workers": "In plain words: job, area, experience — finds matching workers instantly",
+    "card_open": "Start typing",
+    "empty_ai_hint": "Or describe it in plain words — the AI assistant will try another way",
+    "composer_placeholder_jobs": "Job, area, pay…",
+    "composer_placeholder_workers": "Who you need: job, area…",
+    "cta_button": "Try the AI assistant"
   },
   "mode": {
     "chooser_title": "What are you looking for?",

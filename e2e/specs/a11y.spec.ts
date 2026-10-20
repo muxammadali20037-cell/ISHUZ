@@ -60,6 +60,8 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "
   { name: "vacancy", url: async () => `/jobs/${await vacancySlug()}`, mode: "worker" },
   { name: "applications", url: async () => "/applications", user: USERS.workerA },
   { name: "employer-vacancies", url: async () => (await vacancySlug(), "/employer/vacancies"), user: USERS.employer, mode: "employer" },
+  // AI yordamchi sahifasi (suhbat sahifaning o'zida, yozish maydoni pastda yopishgan)
+  { name: "ai-hub", url: async () => "/ai", mode: "worker" },
   // brend UI to'plami (faqat UI_KIT_PREVIEW=1 bilan) — barcha komponent holatlari bir sahifada
   { name: "ui-kit", url: async () => "/dev/ui" },
 ];
@@ -188,7 +190,7 @@ test("qorong'i mavzu: asosiy sahifalarda rang kontrasti buzilmaydi", async ({ pa
   page.on("requestfinished", (r) => inflight.delete(`${r.method()} ${r.url()}`));
   page.on("requestfailed", (r) => inflight.delete(`${r.method()} ${r.url()}`));
   const bad: string[] = [];
-  for (const url of ["/", "/search", `/search?mode=jobs&p=${await buxgalter()}&region=all`, "/post/worker", "/cabinet", "/dev/ui"]) {
+  for (const url of ["/", "/search", `/search?mode=jobs&p=${await buxgalter()}&region=all`, "/post/worker", "/cabinet", "/ai", "/dev/ui"]) {
     await page.goto(url);
     const idle = await page.waitForLoadState("networkidle", { timeout: 15_000 }).then(() => true, () => false);
     const pending = [...inflight.entries()].map(([k, t]) => `${k} (${Date.now() - t} ms)`);

@@ -633,7 +633,8 @@
     "fill_desc_employer": "Kim kerakligini oddiy yozing — maydonlar to'ldiriladi, tekshirib joylaysiz",
     "candidates_title": "Vakansiyangizga mos nomzodlar",
     "candidates_desc": "Vakansiya talablari bo'yicha saralangan ishchilar",
-    "note": "AI faqat yordamchi: qaror sizniki. Hisoblanmagan moslik foizi ko'rsatilmaydi."
+    "note": "AI faqat yordamchi: qaror sizniki. Hisoblanmagan moslik foizi ko'rsatilmaydi.",
+    "more_title": "Yana AI imkoniyatlari"
   },
   "finder": {
     "button": "O'zingizga mosini toping",
@@ -669,7 +670,44 @@
       "search_failed": "Qidiruv vaqtincha ishlamadi. Qayta urinib ko'ring.",
       "validation": "Kamida 2 ta harf yozing"
     },
-    "inline_button": "AI bilan qidirish"
+    "inline_button": "AI bilan qidirish",
+    "assistant_title": "AI yordamchi",
+    "assistant_desc_jobs": "Oddiy so'z bilan yozing — bazadagi haqiqiy e'lonlardan topaman",
+    "assistant_desc_workers": "Kim kerakligini oddiy yozing — haqiqiy ishchilar ichidan topaman",
+    "greeting_jobs": "Salom! Qanday ish qidiryapsiz? Kasb, tuman, maosh yoki «kunlik» deb yozing — mos e'lonlarni shu yerda ko'rsataman.",
+    "greeting_workers": "Salom! Qanday xodim kerak? Kasb, tuman va tajribani yozing — mos ishchilarni shu yerda ko'rsataman.",
+    "try_label": "Masalan, bosing:",
+    "you": "Siz",
+    "thinking_understand": "So'zlaringizni tushunmoqdaman…",
+    "thinking_jobs": "Mos e'lonlarni saralamoqdaman…",
+    "thinking_workers": "Mos ishchilarni saralamoqdaman…",
+    "found_jobs_chat": "{count} ta mos e'lon topdim",
+    "found_workers_chat": "{count} ta mos ishchi topdim",
+    "refine_label": "Aniqlashtiraymi?",
+    "refine": {
+      "daily": "Kunlik",
+      "noexp": "Tajribasiz",
+      "exp": "Tajribali",
+      "remote": "Masofaviy",
+      "shift": "Smenali"
+    },
+    "refine_add": "Qo'shish: {label}",
+    "open_results": "Natijalarni ochish",
+    "new_chat": "Yangi suhbat",
+    "voice_start": "Ovoz bilan aytish",
+    "voice_stop": "To'xtatish",
+    "voice_listening": "Gapiring — eshityapman…",
+    "voice_error": "Ovozni tanib bo'lmadi. Yozib yuboring yoki qayta urinib ko'ring.",
+    "voice_denied": "Mikrofonga ruxsat yo'q. Brauzer sozlamalarida ruxsat bering yoki yozib yuboring.",
+    "disclaimer": "Faqat bazadagi haqiqiy e'lonlar. Qaror — sizniki.",
+    "card_title": "AI yordamchiga yozing",
+    "card_desc_jobs": "Oddiy so'z bilan: kasb, tuman, maosh — mos e'lonlarni darhol topadi",
+    "card_desc_workers": "Oddiy so'z bilan: kasb, tuman, tajriba — mos ishchilarni darhol topadi",
+    "card_open": "Yozishni boshlash",
+    "empty_ai_hint": "Yoki oddiy so'z bilan yozing — AI yordamchi boshqacha qidirib ko'radi",
+    "composer_placeholder_jobs": "Kasb, tuman, maosh…",
+    "composer_placeholder_workers": "Kim kerak: kasb, tuman…",
+    "cta_button": "AI yordamchini sinab ko'ring"
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",

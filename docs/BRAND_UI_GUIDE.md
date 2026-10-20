@@ -150,6 +150,21 @@ Qoidalar:
 `default` neytral · `primary` yangi/ma'lumot · `success` joylandi/faol · `warning` tekshiruvda/muddat ·
 `destructive` rad etildi/xato · `outline` xususiyat (yarim kun, masofaviy).
 
+### AI yordamchi (`components/shared/ai-avatar.tsx`, `features/find/components/ai-chat.tsx`)
+
+- **Yagona belgi** — `AiAvatar`: `bg-primary` plita + uchqun (`sm` 28 · `md` 36 · `lg` 48 px). Hamma AI joyida shu belgi:
+  qidiruv yonidagi tugma, oyna sarlavhasi, suhbat, "AI bilan to'ldirish", mehmon bosh sahifasidagi bo'lim. "O'ylayapti"
+  holatida (`busy`) atrofida yumshoq halqa (`.ai-orb`); boshqa bezak (gradient, porlash) yo'q.
+- **Kirish nuqtalari:** qidiruv blokidagi "AI bilan qidirish" (belgi + matn, 44 px), kompyuterda bosh sahifa o'ng ustunida
+  taklif kartasi (`variant="card"`), mehmon bosh sahifasida bo'lim va asosiy tugma (`variant="cta"`), bo'sh qidiruv natijasida,
+  `/ai` sahifasi. Suzuvchi tugma yo'q.
+- **Suhbat:** foydalanuvchi xabari — o'ngda `bg-primary`; yordamchi — chapda belgi + nom, matn `bg-secondary` pufakchada.
+  Tushunilgani — chiplar ("Tushundim: Buxgalter · Toshkent shahri"), keyin soni va haqiqiy kartalar (faqat oxirgi javobda;
+  oldingilari ixcham — "Natijalarni ochish"). Aniqlashtirish — `+ Kunlik`, `+ Tajribasiz`… (qo'llangani takrorlanmaydi).
+- **Yozish maydoni** pastda (telefonda barmoq yetadigan joy): matn (Enter — yuborish), mikrofon (brauzer qo'llasa), yuborish.
+  Ostida bir qator: "Faqat bazadagi haqiqiy e'lonlar. Qaror — sizniki." — soxta foiz yoki va'da yo'q.
+- Suhbat shu tabda 30 daqiqa saqlanadi (e'lon ochilib "Orqaga" bosilsa yo'qolmaydi); "Yangi suhbat" — tozalash.
+
 ### Karta, oyna, bo'sh holat, yuklanish
 
 - Karta: `rounded-2xl border bg-card shadow-sm`, ichki chegara 16–24. Ikonka plitasi — `bg-primary-soft text-primary`.

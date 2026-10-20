@@ -143,7 +143,7 @@ test("AI qidiruv: rejim tanlangan bo'lsa — faqat shu rejim ichida qidiradi", a
   await asMode(context, "employer");
   await page.goto("/");
   await page.getByRole("button", { name: "AI bilan qidirish" }).click();
-  const dialog = page.getByRole("dialog", { name: "O'zingizga mosini toping" });
+  const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
   await expect(dialog.getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
   await expect(dialog.getByRole("radio")).toHaveCount(0);
 });

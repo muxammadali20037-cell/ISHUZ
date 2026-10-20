@@ -1,209 +1,130 @@
 "use client";
 
-import Link from "next/link";
-import { useRef, useState, useTransition, type MouseEvent } from "react";
-import { ArrowRight, BriefcaseBusiness, Loader2, Search, Sparkles, UsersRound } from "lucide-react";
+import { useRef, useState, type MouseEvent } from "react";
+import { ArrowRight, Search, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { callAction } from "@/lib/action-call";
-import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { aiFind, type AiFindResult } from "../ai-find";
-import { JobResultCard, WorkerResultCard } from "./result-cards";
+import { AiAvatar } from "@/components/shared/ai-avatar";
+import { AiModeSwitch, AiPromptBox, AiThread, useAiChat } from "./ai-chat";
 
 /**
- * "AI bilan qidirish" — "O'zingizga mosini toping" oynasi: foydalanuvchi qisqa yozadi, server matnni tahlil qiladi
- * (lug'at, kerak bo'lsa sun'iy intellekt) va bazadagi mos e'lonlarni saralab qaytaradi — natija shu oynada, ilova ichida.
- * Tugma qidiruv qatorining yonida turadi (2026-10 redizayn): ekranni to'sib turadigan suzuvchi tugma yo'q.
- * `locked` — rejim tanlangan: faqat shu rejim ichida qidiradi (ish izlovchi ishchilarni qidirmaydi).
+ * "AI bilan qidirish" — AI yordamchi oynasi (suhbat ko'rinishi, ./ai-chat): foydalanuvchi oddiy so'z bilan yozadi yoki aytadi,
+ * yordamchi tushunganini ko'rsatadi va bazadagi mos e'lonlarni shu oynada chiqaradi; bir bosishda aniqlashtiriladi.
+ * Telefonda — deyarli to'liq ekranli pastki oyna (yozish maydoni pastda, barmoq yetadigan joyda), kompyuterda — kengroq oyna.
+ * Tugma qidiruv blokida turadi (suzuvchi tugma yo'q). `locked` — rejim tanlangan: faqat shu rejim ichida qidiradi.
+ *
+ * Ko'rinishlar:
+ *  - "inline" — qidiruv qatori yonidagi ixcham tugma (belgi + "AI bilan qidirish");
+ *  - "card"   — kompyuterdagi bosh sahifa uchun taklif kartasi: yozish maydoniga o'xshash tugma va misollar
+ *               (misol bosilsa — oyna ochiladi va shu so'rov darhol yuboriladi);
+ *  - "cta"    — mehmon bosh sahifasidagi AI bo'limi uchun asosiy tugma ("AI yordamchini sinab ko'ring").
  */
-export function AiFinder({ defaultMode, locked = false, className }: { defaultMode: "jobs" | "workers"; locked?: boolean; className?: string }) {
+export function AiFinder({
+  defaultMode,
+  locked = false,
+  variant = "inline",
+  className,
+}: {
+  defaultMode: "jobs" | "workers";
+  locked?: boolean;
+  variant?: "inline" | "card" | "cta";
+  className?: string;
+}) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState(defaultMode);
-  const [text, setText] = useState("");
-  const [pending, start] = useTransition();
-  const [result, setResult] = useState<AiFindResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const chat = useAiChat(defaultMode);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  const errorText = (code: string) => {
-    for (const key of [`easy.finder.errors.${code}`, `common.errors.${code}`]) {
-      const v = t(key);
-      if (v !== key) return v;
-    }
-    return t("common.errors.generic");
-  };
-
-  const submit = (query = text) => {
-    const q = query.trim();
-    if (q.length < 2) {
-      inputRef.current?.focus();
-      return;
-    }
-    setText(q);
-    setError(null);
-    start(async () => {
-      const res = await callAction(() => aiFind({ text: q, mode }));
-      if (res.ok && res.data) setResult(res.data);
-      else {
-        setResult(null);
-        setError(errorText(res.ok ? "generic" : res.error));
-      }
-    });
-  };
-
-  // natijadagi havola bosilsa — oyna yopiladi (sahifa ochiladi)
+  // natijadagi havola bosilsa — oyna yopiladi (sahifa ochiladi; suhbat saqlanadi)
   const closeOnLink = (e: MouseEvent) => {
     if (e.target instanceof Element && e.target.closest("a[href^='/']")) setOpen(false);
   };
 
-  const examples = mode === "workers" ? [t("easy.finder.example_w1"), t("easy.finder.example_w2"), t("easy.finder.example_w3")] : [t("easy.finder.example_j1"), t("easy.finder.example_j2"), t("easy.finder.example_j3")];
-  const count = result ? result.jobs.length + result.workers.length : 0;
+  const examples = chat.mode === "workers" ? [t("easy.finder.example_w1"), t("easy.finder.example_w2"), t("easy.finder.example_w3")] : [t("easy.finder.example_j1"), t("easy.finder.example_j2"), t("easy.finder.example_j3")];
+
+  const openWith = (example?: string) => {
+    chat.reload();
+    setOpen(true);
+    if (example) chat.ask(example);
+  };
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        data-track="ai_finder_open"
-        className={cn("press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-primary hover:bg-primary-soft", className)}
-      >
-        <Sparkles className="size-4 shrink-0" aria-hidden />
-        {t("easy.finder.inline_button")}
-      </button>
+      {variant === "card" ? (
+        <section aria-labelledby="ai-card-title" className={cn("rounded-2xl border border-primary/25 bg-primary-soft p-4", className)}>
+          <div className="flex items-center gap-3">
+            <AiAvatar />
+            <div className="min-w-0">
+              <h2 id="ai-card-title" className="text-base font-bold leading-tight">
+                {t("easy.finder.card_title")}
+              </h2>
+              <p className="mt-0.5 text-sm leading-snug text-muted-foreground">{defaultMode === "workers" ? t("easy.finder.card_desc_workers") : t("easy.finder.card_desc_jobs")}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => openWith()}
+            data-track="ai_finder_open"
+            className="press mt-3 flex min-h-12 w-full items-center gap-2 rounded-xl border border-input bg-card px-3 text-left text-base text-muted-foreground hover:border-primary/50"
+          >
+            <Search className="size-5 shrink-0" aria-hidden />
+            <span className="min-w-0 flex-1 truncate">{defaultMode === "workers" ? t("easy.finder.placeholder_workers") : t("easy.finder.placeholder_jobs")}</span>
+            <span className="sr-only">{t("easy.finder.card_open")}</span>
+            <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
+          </button>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {examples.map((ex) => (
+              <li key={ex} className="flex">
+                <button
+                  type="button"
+                  onClick={() => openWith(ex)}
+                  className="press inline-flex min-h-11 items-center rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary hover:border-primary/60"
+                >
+                  {ex}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : variant === "cta" ? (
+        <button
+          type="button"
+          onClick={() => openWith()}
+          data-track="ai_finder_open"
+          className={cn("press lift-sm inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary px-5 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover", className)}
+        >
+          <Sparkles className="size-5" aria-hidden />
+          {t("easy.finder.cta_button")}
+        </button>
+      ) : (
+        <button
+          type="button"
+          onClick={() => openWith()}
+          data-track="ai_finder_open"
+          className={cn("press inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full py-1 pl-1 pr-3.5 text-sm font-bold text-primary hover:bg-primary-soft", className)}
+        >
+          <AiAvatar size="sm" className="rounded-full" />
+          {t("easy.finder.inline_button")}
+        </button>
+      )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <Sheet title={t("easy.finder.title")} description={t("easy.finder.desc")} onOpenAutoFocus={(e) => (e.preventDefault(), inputRef.current?.focus())}>
-          <form
-            className="space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              submit();
-            }}
-          >
-            {locked ? (
-              <p className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary">
-                {mode === "workers" ? <UsersRound className="size-4" aria-hidden /> : <BriefcaseBusiness className="size-4" aria-hidden />}
-                {mode === "workers" ? t("easy.mode.finder_in_workers") : t("easy.mode.finder_in_jobs")}
-              </p>
-            ) : (
-            <div role="radiogroup" aria-label={t("easy.finder.mode_label")} className="grid grid-cols-2 gap-2">
-              {(
-                [
-                  ["jobs", BriefcaseBusiness, t("easy.finder.mode_jobs")],
-                  ["workers", UsersRound, t("easy.finder.mode_workers")],
-                ] as const
-              ).map(([m, Icon, label]) => (
-                <button
-                  key={m}
-                  type="button"
-                  role="radio"
-                  aria-checked={mode === m}
-                  onClick={() => {
-                    setMode(m);
-                    setResult(null);
-                  }}
-                  className={cn(
-                    "flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 px-3 text-base font-semibold",
-                    mode === m ? "border-primary bg-primary-soft text-foreground" : "border-border bg-card text-muted-foreground hover:border-primary/50",
-                  )}
-                >
-                  <Icon className="size-5 shrink-0" aria-hidden /> {label}
-                </button>
-              ))}
-            </div>
-            )}
-            <label htmlFor="ai-finder-text" className="block text-lg font-semibold">
-              {t("easy.finder.label")}
-            </label>
-            <Textarea
-              ref={inputRef}
-              id="ai-finder-text"
-              value={text}
-              onChange={(e) => setText(e.target.value.slice(0, 300))}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  submit();
-                }
-              }}
-              rows={2}
-              maxLength={300}
-              placeholder={mode === "workers" ? t("easy.finder.placeholder_workers") : t("easy.finder.placeholder_jobs")}
-              className="min-h-20 rounded-2xl text-lg"
-            />
-            <div className="flex flex-wrap gap-2">
-              {examples.map((ex) => (
-                <button key={ex} type="button" onClick={() => submit(ex)} className="inline-flex min-h-10 items-center rounded-full border border-primary/40 bg-primary-soft/50 px-3 text-base font-semibold text-primary hover:bg-primary-soft">
-                  «{ex}»
-                </button>
-              ))}
-            </div>
-            <Button type="submit" size="xl" fullWidth className="h-14 text-lg" loading={pending}>
-              {pending ? t("easy.finder.analyzing") : t("easy.finder.submit")} {pending ? null : <Search className="size-5" aria-hidden />}
-            </Button>
-          </form>
-
-          <div aria-live="polite" className="mt-5 space-y-4" onClick={closeOnLink}>
-            {error ? <p className="rounded-2xl border border-destructive/40 bg-destructive-soft px-4 py-3 text-base text-destructive">{error}</p> : null}
-            {pending && !result ? (
-              <p className="flex items-center gap-2 text-base text-muted-foreground">
-                <Loader2 className="size-5 animate-spin" aria-hidden /> {t("easy.finder.analyzing")}
-              </p>
-            ) : null}
-            {result ? (
-              <>
-                <div className="rounded-2xl bg-secondary px-4 py-3">
-                  <p className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground">
-                    <Sparkles className="size-4 text-primary" aria-hidden /> {result.source === "ai" ? t("easy.finder.by_ai") : t("easy.finder.by_rules")}
-                  </p>
-                  <p className="mt-1 text-base font-semibold">
-                    {t("easy.finder.understood")} {result.understood.join(" · ")}
-                  </p>
-                </div>
-                {result.needProfession ? (
-                  <div className="space-y-3 rounded-2xl border-2 border-dashed border-border p-4 text-center">
-                    <p className="text-lg font-bold">{t("easy.finder.need_profession")}</p>
-                    <p className="text-base text-muted-foreground">{t("easy.finder.need_profession_desc")}</p>
-                    <Button asChild variant="outline" className="h-12 text-base">
-                      <Link href={result.href}>{t("easy.finder.pick_from_list")}</Link>
-                    </Button>
-                  </div>
-                ) : count ? (
-                  <>
-                    <p className="text-base font-semibold text-muted-foreground">
-                      {result.mode === "workers" ? t("easy.finder.found_workers", { count: result.total }) : t("easy.finder.found_jobs", { count: result.total })}
-                    </p>
-                    <ul className="grid grid-cols-1 gap-3">
-                      {result.jobs.map((job) => (
-                        <li key={job.id}>
-                          <JobResultCard job={job} imageUrl={job.profession_node_id ? result.images[job.profession_node_id] : null} photoPath={result.photos[job.id] ?? null} saved={result.saved.includes(job.id)} />
-                        </li>
-                      ))}
-                      {result.workers.map((w) => (
-                        <li key={w.id}>
-                          <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? result.images[w.profession_node_id] : null} saved={result.saved.includes(w.id)} />
-                        </li>
-                      ))}
-                    </ul>
-                    {result.total > count ? (
-                      <Button asChild size="xl" fullWidth className="h-14 text-lg">
-                        <Link href={result.href}>
-                          {t("easy.finder.show_all", { count: result.total })} <ArrowRight className="size-5" aria-hidden />
-                        </Link>
-                      </Button>
-                    ) : null}
-                  </>
-                ) : (
-                  <div className="space-y-2 rounded-2xl border-2 border-dashed border-border p-4 text-center">
-                    <p className="text-lg font-bold">{result.mode === "workers" ? t("easy.finder.empty_workers") : t("easy.finder.empty_jobs")}</p>
-                    <p className="text-base text-muted-foreground">{t("easy.finder.empty_desc")}</p>
-                  </div>
-                )}
-              </>
-            ) : null}
+        <Sheet
+          title={t("easy.finder.assistant_title")}
+          description={chat.mode === "workers" ? t("easy.finder.assistant_desc_workers") : t("easy.finder.assistant_desc_jobs")}
+          icon={<AiAvatar busy={chat.pending} />}
+          className="h-[92dvh] sm:h-[min(46rem,88dvh)] sm:max-w-2xl"
+          onOpenAutoFocus={(e) => {
+            e.preventDefault();
+            // telefonda klaviatura darhol chiqib, natijani yopmasin: misol bilan ochilganda fokus berilmaydi
+            if (!chat.pending) inputRef.current?.focus();
+          }}
+          footer={<AiPromptBox chat={chat} inputRef={inputRef} />}
+        >
+          <div className="space-y-4 pt-1" onClick={closeOnLink}>
+            <AiModeSwitch chat={chat} locked={locked} />
+            <AiThread chat={chat} examples={examples} />
           </div>
         </Sheet>
       </Dialog>

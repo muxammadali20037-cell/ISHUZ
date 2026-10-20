@@ -19,6 +19,8 @@ import { ModeChooser } from "@/features/mode/components/mode-chooser";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { MarketAside } from "./market-aside";
+import { AiFinder } from "./ai-finder";
+import { getHomeSettings } from "@/features/home-windows/queries";
 import { getJobSections, getWorkerSections } from "@/features/landing/sections";
 
 function StepShell({ back, title, children, summary }: { back: string | null; title: string; children: ReactNode; summary?: ReactNode }) {
@@ -150,11 +152,12 @@ export async function FindResultsView({
   // qaysi kartalar saqlangan ("Saqlash" belgisi holati bilan) va qaysiga ariza yuborilgan (kartada holati)
   const session = await getSession();
   const ids = res.ok ? res.items.map((i) => i.id) : [];
-  const [saved, applied, sectionCounts] = await Promise.all([
+  const [saved, applied, sectionCounts, { aiButton }] = await Promise.all([
     savedIdSet(session, isJobs ? "vacancy" : "worker", ids),
     isJobs ? myApplicationStatuses(session?.workerId ?? null, ids) : Promise.resolve(new Map<string, never>()),
     // bo'lim filtrlari (0066) bazada bormi — bo'lmasa filtr oynasi ularni taklif qilmaydi (keshlangan, butun O'zbekiston)
     text ? Promise.resolve(null) : isJobs ? getJobSections(null, null) : getWorkerSections(null, null),
+    getHomeSettings(),
   ]);
   const sectionsOk = sectionCounts !== null;
 
@@ -300,6 +303,13 @@ export async function FindResultsView({
               <Link href={findHref(params, { p: null, page: 1 })}>{t("easy.search.empty_change_profession")}</Link>
             </Button>
           </div>
+          {/* hech narsa topilmadi — AI yordamchi so'rovni boshqacha tushunib, qayta qidiradi (admin o'chirgan bo'lsa — yo'q) */}
+          {aiButton ? (
+            <div className="mx-auto flex max-w-md flex-col items-center gap-2 border-t border-border pt-4">
+              <p className="text-base text-muted-foreground">{t("easy.finder.empty_ai_hint")}</p>
+              <AiFinder defaultMode={isJobs ? "jobs" : "workers"} locked className="border border-primary/30 bg-card" />
+            </div>
+          ) : null}
         </section>
       )}
 
