@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Bookmark, MessageCircle } from "lucide-react";
+import { usePathname } from "next/navigation";
+import { Bell, Bookmark, ChevronDown, MapPin, MessageCircle } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { LoginLink } from "./login-link";
 import { BrandMark } from "@/components/shared/brand-mark";
 import { BrandWordmark } from "@/components/shared/brand-wordmark";
 import { BRAND } from "@/config/brand";
+import { cn } from "@/lib/utils";
 
 /** Yuqori paneldagi foydalanuvchi (sessiyadan, serverda tayyorlanadi) */
 export interface TopBarUser {
@@ -31,15 +33,20 @@ export interface TopBarProps {
   user: TopBarUser | null;
   /** mehmon, rejim tanlanmagan: sayt bo'limlari (Bosh sahifa · Ishlar · Ishchilar · Xizmatlar · Biz haqimizda) va ro'yxatdan o'tish */
   site?: SiteNavConfig | null;
+  /** ish qidiruvchi: eslab qolingan hudud — telefonda bosh sahifa panelida (kompyuterda u qidiruv blokida) */
+  place?: { label: string; href: string } | null;
 }
 
 /**
  * Yuqori panel (barcha sahifalarda). Mijoz komponenti: ma'lumot serverda (Shell) tayyorlanadi, shuning uchun sahifa
  * yuklanayotganda ham (loading.tsx) o'sha panel joyida qoladi — AppFrame.
  */
-export function TopBar({ role, counts, mode = null, user, site = null }: TopBarProps) {
+export function TopBar({ role, counts, mode = null, user, site = null, place = null }: TopBarProps) {
   const { t } = useT();
+  const pathname = usePathname();
   const session = user;
+  // telefonda bosh sahifa paneli: logo · hudud · chat · bildirishnomalar (til — Profil → Sozlamalar, avatar — pastki "Profil")
+  const showPlace = !!place && pathname === "/";
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "var(--safe-top)" }}>
@@ -47,17 +54,34 @@ export function TopBar({ role, counts, mode = null, user, site = null }: TopBarP
         <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label={BRAND.name}>
           <BrandMark />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
-          <span className={session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "text-lg @max-[22rem]:hidden"}>
+          <span
+            className={cn(
+              session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "text-lg @max-[22rem]:hidden",
+              showPlace && "max-md:hidden",
+            )}
+          >
             <BrandWordmark />
             {/* kompyuterda nom ostida qisqa shior (mehmon sahifasida) */}
             {site ? <span className="hidden text-2xs font-semibold leading-none text-muted-foreground xl:block">{t("common.site.tagline")}</span> : null}
           </span>
         </Link>
-        <div className="ml-4 min-w-0 flex-1 @max-[22rem]:ml-0">
+        <div className={cn("ml-4 min-w-0 flex-1 @max-[22rem]:ml-0", showPlace && "max-md:ml-0")}>
           {site ? <SiteNavLinks pricing={site.pricing} /> : <DesktopNavLinks role={role} mode={mode} counts={counts} />}
+          {showPlace ? (
+            <Link
+              href={place.href}
+              prefetch={false}
+              aria-label={t("easy.start.place_label", { place: place.label })}
+              className="press flex min-h-11 max-w-full items-center gap-1 rounded-lg px-1.5 text-base font-semibold hover:bg-secondary md:hidden"
+            >
+              <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
+              <span className="truncate">{place.label}</span>
+              <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+            </Link>
+          ) : null}
         </div>
         <div className="flex items-center gap-1">
-          <LanguageSelect />
+          <LanguageSelect className={showPlace && session ? "max-md:hidden" : undefined} />
           {session ? (
             <>
               <Button asChild variant="ghost" size="icon" className="relative @max-[22rem]:hidden" aria-label={t("common.nav.messages")}>
@@ -83,12 +107,15 @@ export function TopBar({ role, counts, mode = null, user, site = null }: TopBarP
                   {counts?.notifications ? <span className="absolute right-1 top-1 size-2 rounded-full bg-destructive" /> : null}
                 </Link>
               </Button>
-              <UserMenu
-                name={`${session.firstName} ${session.lastName}`.trim()}
-                roles={session.roles}
-                activeRole={session.activeRole}
-                avatar={<Avatar src={session.avatarUrl} fallback={initials(session.firstName, session.lastName)} size="sm" />}
-              />
+              {/* telefonda profil — pastki menyuda ("Profil"): sarlavhada takrorlanmaydi */}
+              <div className="hidden md:block">
+                <UserMenu
+                  name={`${session.firstName} ${session.lastName}`.trim()}
+                  roles={session.roles}
+                  activeRole={session.activeRole}
+                  avatar={<Avatar src={session.avatarUrl} fallback={initials(session.firstName, session.lastName)} size="sm" />}
+                />
+              </div>
             </>
           ) : (
             <>

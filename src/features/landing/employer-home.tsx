@@ -27,7 +27,7 @@ import { HireSections, SectionsSkeleton } from "./section-tiles";
 export async function EmployerHome({ session }: { session: SessionContext | null }) {
   // panel — /employer bilan bir xil shart (requireEmployer): profil bor va to'ldirilgan
   if (session?.employerId && session.employerOnboarded) return <EmployerDashboard session={session as SessionContext & { employerId: string }} embedded />;
-  const [{ t, name }, place] = await Promise.all([getT(), getHomePlace()]);
+  const [{ t, name }, place, home] = await Promise.all([getT(), getHomePlace(), getHomeSettings()]);
   const placeLabel = place.region ? (place.district ? `${name(place.region)} · ${name(place.district)}` : name(place.region)) : t("easy.location.whole_country");
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -45,6 +45,7 @@ export async function EmployerHome({ session }: { session: SessionContext | null
             placeholder={t("easy.start.employer_search_placeholder")}
             place={{ label: placeLabel, href: placeChooserHref("workers") }}
             chips={[]}
+            ai={home.aiButton}
           />
         </section>
 

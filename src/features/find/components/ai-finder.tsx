@@ -13,12 +13,12 @@ import { aiFind, type AiFindResult } from "../ai-find";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 
 /**
- * O'ng pastdagi doimiy lupa tugmasi — "O'zingizga mosini toping": foydalanuvchi qisqa yozadi, server matnni tahlil qiladi
+ * "AI bilan qidirish" — "O'zingizga mosini toping" oynasi: foydalanuvchi qisqa yozadi, server matnni tahlil qiladi
  * (lug'at, kerak bo'lsa sun'iy intellekt) va bazadagi mos e'lonlarni saralab qaytaradi — natija shu oynada, ilova ichida.
- * Tugma pastki menyu va yopishqoq amallar paneli ustida turadi (globals.css: .ai-fab, --cta-offset).
+ * Tugma qidiruv qatorining yonida turadi (2026-10 redizayn): ekranni to'sib turadigan suzuvchi tugma yo'q.
+ * `locked` — rejim tanlangan: faqat shu rejim ichida qidiradi (ish izlovchi ishchilarni qidirmaydi).
  */
-/** `locked` — rejim tanlangan: faqat shu rejim ichida qidiradi (ish izlovchi ishchilarni qidirmaydi) */
-export function AiFinder({ defaultMode, locked = false }: { defaultMode: "jobs" | "workers"; locked?: boolean }) {
+export function AiFinder({ defaultMode, locked = false, className }: { defaultMode: "jobs" | "workers"; locked?: boolean; className?: string }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState(defaultMode);
@@ -67,15 +67,11 @@ export function AiFinder({ defaultMode, locked = false }: { defaultMode: "jobs" 
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label={t("easy.finder.button")}
         data-track="ai_finder_open"
-        className="ai-fab press fixed right-4 z-30 flex size-14 items-center justify-center gap-2 rounded-full bg-primary text-primary-foreground shadow-lg ring-4 ring-background hover:bg-primary-hover md:right-6 md:size-auto md:h-14 md:px-5"
+        className={cn("press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold text-primary hover:bg-primary-soft", className)}
       >
-        <span className="relative" aria-hidden>
-          <Search className="size-7" strokeWidth={2.5} />
-          <Sparkles className="absolute -right-2 -top-2 size-4" />
-        </span>
-        <span className="hidden text-base font-bold md:inline">{t("easy.finder.button")}</span>
+        <Sparkles className="size-4 shrink-0" aria-hidden />
+        {t("easy.finder.inline_button")}
       </button>
 
       <Dialog open={open} onOpenChange={setOpen}>

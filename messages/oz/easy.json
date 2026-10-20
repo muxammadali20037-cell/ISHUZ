@@ -454,7 +454,9 @@
     "tab_candidates": "Номзодлар",
     "tab_home": "Асосий",
     "tab_ai": "AI",
-    "tab_messages": "Хабарлар"
+    "tab_messages": "Хабарлар",
+    "tab_saved": "Сақланган",
+    "tab_dashboard": "Бошқарув"
   },
   "moderation": {
     "pending_title": "Эълонингиз сақланди",
@@ -666,7 +668,8 @@
     "errors": {
       "search_failed": "Қидирув вақтинча ишламади. Қайта уриниб кўринг.",
       "validation": "Камида 2 та ҳарф ёзинг"
-    }
+    },
+    "inline_button": "AI билан қидириш"
   },
   "mode": {
     "chooser_title": "Сиз нима қидиряпсиз?",
@@ -751,16 +754,16 @@
     "post_resume": "Резюме жойлаш"
   },
   "start": {
-    "seeker_title": "Иш топинг",
+    "seeker_title": "Ўзингизга мос ишни топинг",
     "seeker_subtitle": "Ҳақиқий эълонлар — рўйхатдан ўтмасдан кўринг",
     "search_label": "Иш қидириш",
-    "search_placeholder": "Касб, лавозим ёки компания",
+    "search_placeholder": "Касб ёки иш номи",
     "search_button": "Топиш",
     "filters_label": "Тез филтрлар",
     "place_label": "Ҳудуд: {place}. Ўзгартириш",
     "f_salary": "5 млн сўмдан",
     "f_noexp": "Тажрибасиз",
-    "f_daily": "Кунлик иш",
+    "f_daily": "Кунлик",
     "f_remote": "Масофавий",
     "f_experienced": "Тажрибали",
     "match_title": "Сизга мос ишлар",
@@ -792,7 +795,9 @@
     "workers_empty_desc": "Вакансия жойланг — мос ишчилар сизга ариза юборади.",
     "finish_company_title": "Компания маълумотларини тўлдиринг",
     "finish_company_desc": "Бир дақиқа: номи ва ҳудуд — кейин вакансия жойлайсиз ва аризаларни кўрасиз",
-    "metrics_label": "Қисқа кўрсаткичлар"
+    "metrics_label": "Қисқа кўрсаткичлар",
+    "f_students": "Талабалар учун",
+    "filters": "Филтрлар"
   },
   "sections": {
     "title": "Бўлимлар",

@@ -60,7 +60,7 @@ export async function HomeWindows({ windows }: { windows: HomeWindow[] }) {
  * Ixcham variant (R-C, bosh sahifa ro'yxatidan keyin): admin sozlagan oynalar kichik qatorlar — rasm 48 px, nomi va bir
  * qator izoh. Birinchi ekranni katta rasmlar egallamaydi, admin sozlamalari esa ishlashda davom etadi.
  */
-export async function HomeQuickLinks({ windows, className }: { windows: HomeWindow[]; className?: string }) {
+export async function HomeQuickLinks({ windows, className, stacked = false }: { windows: HomeWindow[]; className?: string; stacked?: boolean }) {
   const { t, locale } = await getT();
   const items = windows.filter((w) => w.enabled);
   if (!items.length) return null;
@@ -68,7 +68,7 @@ export async function HomeQuickLinks({ windows, className }: { windows: HomeWind
     w[field][locale] || (isBuiltinWindow(w.id) ? t(`easy.home.windows.${w.id}.${field}`) : "") || w[field].uz || "";
   return (
     <section aria-label={t("easy.home.windows.label")} className={className}>
-      <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3">
+      <ul className={stacked ? "grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-1" : "grid grid-cols-1 gap-2 sm:grid-cols-2 xl:grid-cols-3"}>
         {items.map((w) => {
           const art = <WindowArtwork art={w.art ?? "jobs"} cover />;
           const desc = textOf(w, "desc");
@@ -79,9 +79,9 @@ export async function HomeQuickLinks({ windows, className }: { windows: HomeWind
                 prefetch={false}
                 data-track="home_window"
                 data-track-to={w.id}
-                className="press flex w-full min-w-0 items-center gap-3 rounded-2xl border border-border bg-card p-2.5 pr-3 hover:border-primary/50"
+                className="press flex w-full min-w-0 items-center gap-3 rounded-xl border border-border bg-card p-2.5 pr-3 hover:border-primary/40"
               >
-                <span className="size-12 shrink-0 overflow-hidden rounded-xl bg-primary-soft" aria-hidden>
+                <span className="size-12 shrink-0 overflow-hidden rounded-lg bg-primary-soft" aria-hidden>
                   {w.image ? <Photo src={windowImageUrl(w.image)} alt="" sizes="48px" className="size-full" fallback={art} /> : art}
                 </span>
                 <span className="min-w-0 flex-1">

@@ -454,7 +454,9 @@
     "tab_candidates": "Nomzodlar",
     "tab_home": "Asosiy",
     "tab_ai": "AI",
-    "tab_messages": "Xabarlar"
+    "tab_messages": "Xabarlar",
+    "tab_saved": "Saqlangan",
+    "tab_dashboard": "Boshqaruv"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -666,7 +668,8 @@
     "errors": {
       "search_failed": "Qidiruv vaqtincha ishlamadi. Qayta urinib ko'ring.",
       "validation": "Kamida 2 ta harf yozing"
-    }
+    },
+    "inline_button": "AI bilan qidirish"
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",
@@ -751,16 +754,16 @@
     "post_resume": "Rezyume joylash"
   },
   "start": {
-    "seeker_title": "Ish toping",
+    "seeker_title": "O'zingizga mos ishni toping",
     "seeker_subtitle": "Haqiqiy e'lonlar — ro'yxatdan o'tmasdan ko'ring",
     "search_label": "Ish qidirish",
-    "search_placeholder": "Kasb, lavozim yoki kompaniya",
+    "search_placeholder": "Kasb yoki ish nomi",
     "search_button": "Topish",
     "filters_label": "Tez filtrlar",
     "place_label": "Hudud: {place}. O'zgartirish",
     "f_salary": "5 mln so'mdan",
     "f_noexp": "Tajribasiz",
-    "f_daily": "Kunlik ish",
+    "f_daily": "Kunlik",
     "f_remote": "Masofaviy",
     "f_experienced": "Tajribali",
     "match_title": "Sizga mos ishlar",
@@ -792,7 +795,9 @@
     "workers_empty_desc": "Vakansiya joylang — mos ishchilar sizga ariza yuboradi.",
     "finish_company_title": "Kompaniya ma'lumotlarini to'ldiring",
     "finish_company_desc": "Bir daqiqa: nomi va hudud — keyin vakansiya joylaysiz va arizalarni ko'rasiz",
-    "metrics_label": "Qisqa ko'rsatkichlar"
+    "metrics_label": "Qisqa ko'rsatkichlar",
+    "f_students": "Talabalar uchun",
+    "filters": "Filtrlar"
   },
   "sections": {
     "title": "Bo'limlar",

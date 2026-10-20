@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BriefcaseBusiness, Home, MessageCircle, Search, Sparkles, User, Users, type LucideIcon } from "lucide-react";
+import { Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Search, User, Users, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
@@ -18,18 +18,18 @@ interface NavItem {
 }
 
 /**
- * Rolga xos navigatsiya (S2, ilova tuzilmasi talabi):
- *   Ish qidiruvchi (va rejim tanlamagan mehmon): Asosiy · Ishlar · AI · Xabarlar · Profil
- *   Ish beruvchi:                                Asosiy · Vakansiyalar · Nomzodlar · Profil
- * Saqlanganlar, arizalar va takliflar — Profil (kabinet) ichida, takliflar belgisi Profil ustida.
- * Eski manzillar (/search, /cabinet, /saved, /applications, /employer…) o'zgarmagan.
+ * Rolga xos navigatsiya (2026-10 redizayn):
+ *   Ish qidiruvchi (va rejim tanlamagan mehmon): Ishlar · Saqlangan · Arizalar · Profil
+ *   Ish beruvchi:                                Boshqaruv · Vakansiyalar · Nomzodlar · Profil
+ * Chat va bildirishnomalar — yuqori panelda. AI qidiruv — qidiruv yonida ("AI bilan qidirish"), AI sahifalari "Ishlar" ichida.
+ * Takliflar (ish beruvchidan) — "Arizalar" bilan birga. Eski manzillar (/search, /cabinet, /saved, /applications, /employer…) o'zgarmagan.
  */
-const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help"];
+const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages"];
 
 function mainNav(mode: NavMode): NavItem[] {
   if (mode === "employer") {
     return [
-      { href: "/", labelKey: "easy.nav.tab_home", icon: Home, match: (p) => p === "/" || p === "/employer" },
+      { href: "/", labelKey: "easy.nav.tab_dashboard", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
       {
         href: "/employer/vacancies",
         labelKey: "easy.nav.tab_vacancies",
@@ -47,31 +47,25 @@ function mainNav(mode: NavMode): NavItem[] {
         href: "/cabinet",
         labelKey: "easy.nav.tab_profile",
         icon: User,
-        match: (p) => PROFILE_PATHS.some((x) => p.startsWith(x)) || p.startsWith("/messages") || p.startsWith("/ai") || p.startsWith("/company") || p.startsWith("/offers"),
+        match: (p) => PROFILE_PATHS.some((x) => p.startsWith(x)) || p.startsWith("/ai") || p.startsWith("/company") || p.startsWith("/offers"),
       },
     ];
   }
   return [
-    { href: "/", labelKey: "easy.nav.tab_home", icon: Home, match: (p) => p === "/" },
     {
-      href: "/search?mode=jobs",
+      href: "/",
       labelKey: "easy.nav.tab_jobs",
       icon: Search,
-      match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students"),
+      match: (p) =>
+        p === "/" || p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p === "/ai" || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
     },
-    { href: "/ai", labelKey: "easy.nav.tab_ai", icon: Sparkles, match: (p) => p === "/ai" || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches") },
-    { href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
+    { href: "/saved", labelKey: "easy.nav.tab_saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
+    { href: "/applications", labelKey: "easy.nav.tab_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
     {
       href: "/cabinet",
       labelKey: "easy.nav.tab_profile",
       icon: User,
-      badgeKey: "offers",
-      match: (p) =>
-        (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches")) ||
-        p.startsWith("/post") ||
-        p.startsWith("/saved") ||
-        p.startsWith("/applications") ||
-        p.startsWith("/offers"),
+      match: (p) => (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches")) || p.startsWith("/post"),
     },
   ];
 }

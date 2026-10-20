@@ -71,7 +71,7 @@ test.describe("Telegram Mini App: to'liq ekran", () => {
     const names = (await calls(page)).map((c) => c.name);
     expect(names).toEqual(expect.arrayContaining(["ready", "expand", "requestFullscreen", "disableVerticalSwipes"]));
     const colors = Object.fromEntries((await calls(page)).filter((c) => c.arg).map((c) => [c.name, c.arg]));
-    expect(colors).toEqual({ setHeaderColor: "#ffffff", setBackgroundColor: "#f6f8fb", setBottomBarColor: "#ffffff" });
+    expect(colors).toEqual({ setHeaderColor: "#ffffff", setBackgroundColor: "#f6f8fc", setBottomBarColor: "#ffffff" });
 
     // sarlavha: tizim paneli (24) + Telegram tugmalari (46) ostidan; pastki menyu: tizim chizig'i (20) ustida
     const header = page.locator("header").first();

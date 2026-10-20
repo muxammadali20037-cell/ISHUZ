@@ -454,7 +454,9 @@
     "tab_candidates": "Candidates",
     "tab_home": "Home",
     "tab_ai": "AI",
-    "tab_messages": "Messages"
+    "tab_messages": "Messages",
+    "tab_saved": "Saved",
+    "tab_dashboard": "Dashboard"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -666,7 +668,8 @@
     "errors": {
       "search_failed": "Search is temporarily unavailable. Please try again.",
       "validation": "Type at least 2 letters"
-    }
+    },
+    "inline_button": "Search with AI"
   },
   "mode": {
     "chooser_title": "What are you looking for?",
@@ -751,16 +754,16 @@
     "post_resume": "Post a resume"
   },
   "start": {
-    "seeker_title": "Find a job",
+    "seeker_title": "Find a job that suits you",
     "seeker_subtitle": "Real job listings — browse without signing up",
     "search_label": "Job search",
-    "search_placeholder": "Profession, position or company",
+    "search_placeholder": "Profession or job title",
     "search_button": "Find",
     "filters_label": "Quick filters",
     "place_label": "Area: {place}. Change",
     "f_salary": "5M+ UZS",
     "f_noexp": "No experience",
-    "f_daily": "Day jobs",
+    "f_daily": "Daily pay",
     "f_remote": "Remote",
     "f_experienced": "Experienced",
     "match_title": "Jobs for you",
@@ -792,7 +795,9 @@
     "workers_empty_desc": "Post a job — matching candidates will apply.",
     "finish_company_title": "Complete your company details",
     "finish_company_desc": "One minute: name and area — then post jobs and see applications",
-    "metrics_label": "Key numbers"
+    "metrics_label": "Key numbers",
+    "f_students": "For students",
+    "filters": "Filters"
   },
   "sections": {
     "title": "Sections",

@@ -13,7 +13,24 @@ import { toggleSaved } from "../actions";
  * Kartadagi "Saqlash" belgisi: bosilsa — "Saqlanganlar"ga qo'shiladi (pastki menyu). Kirmagan foydalanuvchi — kirish
  * sahifasiga (keyin shu joyga qaytadi). `refresh` — "Saqlanganlar" sahifasida olib tashlangan karta ro'yxatdan yo'qolsin.
  */
-export function SaveButton({ kind, id, initial, label, refresh = false, className }: { kind: "vacancy" | "worker"; id: string; initial: boolean; label: string; refresh?: boolean; className?: string }) {
+export function SaveButton({
+  kind,
+  id,
+  initial,
+  label,
+  refresh = false,
+  variant = "outline",
+  className,
+}: {
+  kind: "vacancy" | "worker";
+  id: string;
+  initial: boolean;
+  label: string;
+  refresh?: boolean;
+  /** "ghost" — kartaning burchagida: ramkasiz, holati rang bilan (saqlangan — ko'k fon) */
+  variant?: "outline" | "ghost";
+  className?: string;
+}) {
   const { t } = useT();
   const router = useRouter();
   const pathname = usePathname();
@@ -52,8 +69,14 @@ export function SaveButton({ kind, id, initial, label, refresh = false, classNam
       data-track="save_toggle"
       data-track-to={kind}
       className={cn(
-        "press flex size-11 shrink-0 items-center justify-center rounded-xl border transition-colors",
-        saved ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary",
+        "press flex size-11 shrink-0 items-center justify-center rounded-lg border transition-colors",
+        variant === "ghost"
+          ? saved
+            ? "border-transparent bg-primary-soft text-primary"
+            : "border-transparent text-muted-foreground hover:bg-secondary hover:text-primary"
+          : saved
+            ? "border-primary bg-primary-soft text-primary"
+            : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary",
         className,
       )}
     >

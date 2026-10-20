@@ -4,51 +4,58 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   Ish beruvchi dizayn tokenlari
-   Rang: professional royal blue, ko'k tusli neytral kulranglar
-   Radius: 12–20px · Soyalar: juda yengil
+   ISH TOPDIM · COBALT SUN tokenlari (2026-10 redizayn)
+   Asosiy ko'k #2457F5 — harakat; sariq #FFC83D — kam, faqat urg'u (ustida to'q matn);
+   fon #F6F8FC, sirt #FFFFFF, matn #15213B. Kontrast (WCAG AA): primary/oq 5.6, matn/fon 15.1,
+   muted/fon 4.7; yashil va qizil och fondagi matn uchun biroz to'qlashtirilgan (≥ 4.8).
+   Radius 8–14 px, soyalar juda yengil.
    ============================================================ */
 :root {
-  --background: #f6f8fb;
-  --foreground: #0f172a;
+  --background: #f6f8fc;
+  --foreground: #15213b;
   --card: #ffffff;
-  --card-foreground: #0f172a;
+  --card-foreground: #15213b;
   --popover: #ffffff;
-  --popover-foreground: #0f172a;
-  --primary: #1d5fe0;
-  --primary-hover: #1a52c4;
+  --popover-foreground: #15213b;
+  --primary: #2457f5;
+  --primary-hover: #1d47d6;
   --primary-foreground: #ffffff;
-  --primary-soft: #e8effc;
-  --secondary: #eef2f7;
-  --secondary-foreground: #1e293b;
-  --muted: #eef2f7;
-  --muted-foreground: #5b687c; /* WCAG AA: och fonlarda ≥ 4.9:1 */
-  --accent: #e8effc;
-  --accent-foreground: #1d5fe0;
-  --success: #15803d; /* oq matn bilan 5:1 */
-  --success-soft: #e6f7ec;
+  --primary-soft: #eef3ff;
+  --secondary: #eef2f8;
+  --secondary-foreground: #15213b;
+  --muted: #eef2f8;
+  --muted-foreground: #5f6b7f; /* oq ustida 5.4:1, fon ustida 5.1:1, secondary va primary-soft ustida ≥ 4.8:1 */
+  --accent: #eef3ff;
+  --accent-foreground: #1d47d6;
+  /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
+  --highlight: #ffc83d;
+  --highlight-foreground: #15213b;
+  --highlight-soft: #fff4d6;
+  --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
+  --success: #137a53; /* asos #16865C; och fonda matn uchun 4.8:1 */
+  --success-soft: #eaf7f0;
   --success-foreground: #ffffff;
-  --warning: #b45309; /* oq matn bilan 5:1 */
+  --warning: #b45309;
   --warning-soft: #fef3e0;
   --warning-foreground: #ffffff;
-  --info: #0369a1; /* holat "Yuborildi/Ko'rildi": oq matn 5.9:1, yumshoq fonda 5.2:1 */
+  --info: #0369a1;
   --info-soft: #e0f2fe;
   --info-foreground: #ffffff;
-  --destructive: #d12020; /* oq matn 5.3:1, yumshoq fonda 4.7:1 */
-  --destructive-soft: #fdecec;
+  --destructive: #c42719; /* asos #D92D20; och fonda matn uchun 5.1:1 */
+  --destructive-soft: #fdeeec;
   --destructive-foreground: #ffffff;
-  --border: #e2e8f0;
-  --input: #e2e8f0;
-  --ring: #1d5fe0;
+  --border: #e4e9f2;
+  --input: #d5dce8;
+  --ring: #2457f5;
   /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
-  --navy: #102347;
+  --navy: #15213b;
   --navy-foreground: #ffffff;
-  --navy-muted: #b9c6dc;
-  --navy-line: #24395f;
-  --radius: 0.875rem;
-  --shadow-sm: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 3px rgb(15 23 42 / 0.04);
-  --shadow-md: 0 2px 8px rgb(15 23 42 / 0.06), 0 1px 2px rgb(15 23 42 / 0.04);
-  --shadow-lg: 0 8px 24px rgb(15 23 42 / 0.08), 0 2px 6px rgb(15 23 42 / 0.04);
+  --navy-muted: #b9c3d6;
+  --navy-line: #2a3756;
+  --radius: 0.5rem;
+  --shadow-sm: 0 1px 2px rgb(21 33 59 / 0.04);
+  --shadow-md: 0 1px 3px rgb(21 33 59 / 0.06), 0 1px 2px rgb(21 33 59 / 0.04);
+  --shadow-lg: 0 6px 16px rgb(21 33 59 / 0.08), 0 2px 4px rgb(21 33 59 / 0.04);
   --tabbar-height: 64px;
   color-scheme: light;
   /*
@@ -66,44 +73,48 @@ html.tg-fullscreen {
 }
 
 .dark {
-  --background: #0b1220;
-  --foreground: #e6ebf3;
-  --card: #111a2b;
-  --card-foreground: #e6ebf3;
-  --popover: #111a2b;
-  --popover-foreground: #e6ebf3;
-  --primary: #5a8ef8;
-  --primary-hover: #74a0f9;
-  --primary-foreground: #0b1220;
-  --primary-soft: #16274a;
-  --secondary: #1a2438;
-  --secondary-foreground: #e6ebf3;
-  --muted: #1a2438;
-  --muted-foreground: #94a3b8;
-  --accent: #16274a;
-  --accent-foreground: #8fb2ff;
-  --success: #22c55e;
-  --success-foreground: #0b1220; /* yorqin yashil ustida oq matn 2.3:1 edi */
-  --success-soft: #0f2e1d;
+  --background: #0e1729;
+  --foreground: #e7ecf5;
+  --card: #152036;
+  --card-foreground: #e7ecf5;
+  --popover: #152036;
+  --popover-foreground: #e7ecf5;
+  --primary: #7a9bff;
+  --primary-hover: #93aeff;
+  --primary-foreground: #0e1729;
+  --primary-soft: #1b2a50;
+  --secondary: #1c2840;
+  --secondary-foreground: #e7ecf5;
+  --muted: #1c2840;
+  --muted-foreground: #9aa6bc;
+  --accent: #1b2a50;
+  --accent-foreground: #a9bdff;
+  --highlight: #ffc83d;
+  --highlight-foreground: #0e1729;
+  --highlight-soft: #3a2e0c;
+  --highlight-soft-foreground: #ffd76b;
+  --success: #34c38a;
+  --success-foreground: #0e1729;
+  --success-soft: #10301f;
   --warning: #f59e0b;
-  --warning-foreground: #0b1220;
+  --warning-foreground: #0e1729;
   --warning-soft: #33230a;
   --info: #38bdf8;
-  --info-foreground: #0b1220;
+  --info-foreground: #0e1729;
   --info-soft: #0c2a3e;
-  --destructive: #f05252;
-  --destructive-foreground: #0b1220;
-  --destructive-soft: #3a1414;
-  --border: #223047;
-  --input: #223047;
-  --ring: #5a8ef8;
-  --navy: #070e1c;
-  --navy-foreground: #e6ebf3;
-  --navy-muted: #a3b2c9;
-  --navy-line: #1b2a44;
+  --destructive: #f26b5e;
+  --destructive-foreground: #0e1729;
+  --destructive-soft: #3a1714;
+  --border: #26334d;
+  --input: #2f3e5c;
+  --ring: #7a9bff;
+  --navy: #0a1120;
+  --navy-foreground: #e7ecf5;
+  --navy-muted: #a3b0c6;
+  --navy-line: #1d2a44;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
-  --shadow-md: 0 2px 8px rgb(0 0 0 / 0.35);
-  --shadow-lg: 0 8px 24px rgb(0 0 0 / 0.4);
+  --shadow-md: 0 1px 3px rgb(0 0 0 / 0.35);
+  --shadow-lg: 0 6px 16px rgb(0 0 0 / 0.4);
   color-scheme: dark;
 }
 
@@ -125,6 +136,10 @@ html.tg-fullscreen {
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-highlight: var(--highlight);
+  --color-highlight-foreground: var(--highlight-foreground);
+  --color-highlight-soft: var(--highlight-soft);
+  --color-highlight-soft-foreground: var(--highlight-soft-foreground);
   --color-success: var(--success);
   --color-success-soft: var(--success-soft);
   --color-success-foreground: var(--success-foreground);
@@ -144,12 +159,13 @@ html.tg-fullscreen {
   --color-navy-foreground: var(--navy-foreground);
   --color-navy-muted: var(--navy-muted);
   --color-navy-line: var(--navy-line);
-  --radius-xs: calc(var(--radius) - 9px);
-  --radius-sm: calc(var(--radius) - 6px);
+  /* 2 · 4 · 6 · 8 · 12 · 14 px — kartalar 12–14, tugma va maydonlar 8–12 (haddan tashqari yumaloq emas) */
+  --radius-xs: calc(var(--radius) - 6px);
+  --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 10px);
+  --radius-2xl: calc(var(--radius) + 6px);
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
@@ -315,27 +331,13 @@ html.no-splash .splash { display: none; }
   }
 }
 
-/* "O'zingizga mosini toping" lupa tugmasi: pastki menyu va yopishqoq amallar paneli (--cta-offset) ustida; sahifa oxiri ostida qolmaydi */
-.ai-fab {
-  --fab-base: calc(var(--tabbar-height) + var(--safe-bottom));
-  bottom: calc(max(var(--fab-base), var(--cta-offset, 0px)) + 16px);
-}
-@media (min-width: 48rem) {
-  .ai-fab {
-    --fab-base: 8px;
-  }
-}
 @media (max-width: 47.99rem) {
-  body:has(.ai-fab) .page-with-tabbar {
-    padding-bottom: calc(var(--tabbar-height) + var(--safe-bottom) + 88px);
-  }
-
   /*
-   * F2 · telefonda matn yozilayotganda (klaviatura ochiq) pastki menyu va lupa tugmasi yashiriladi: ular maydon yoki
-   * yopishqoq "Davom etish"/"Ariza yuborish" tugmasini yopmaydi. Klaviatura yopilgach (fokus chiqqach) darhol qaytadi.
+   * F2 · telefonda matn yozilayotganda (klaviatura ochiq) pastki menyu yashiriladi: u maydon yoki yopishqoq
+   * "Davom etish"/"Ariza yuborish" tugmasini yopmaydi. Klaviatura yopilgach (fokus chiqqach) darhol qaytadi.
    */
   @media (hover: none) and (pointer: coarse) {
-    body:has(:is(input:not([type="checkbox"], [type="radio"], [type="button"], [type="submit"], [type="range"], [type="file"], [type="color"]), textarea, [contenteditable="true"]):focus) :is(.bottom-nav, .ai-fab) {
+    body:has(:is(input:not([type="checkbox"], [type="radio"], [type="button"], [type="submit"], [type="range"], [type="file"], [type="color"]), textarea, [contenteditable="true"]):focus) .bottom-nav {
       display: none;
     }
   }

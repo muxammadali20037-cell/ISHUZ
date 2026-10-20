@@ -454,7 +454,9 @@
     "tab_candidates": "Кандидаты",
     "tab_home": "Главная",
     "tab_ai": "AI",
-    "tab_messages": "Сообщения"
+    "tab_messages": "Сообщения",
+    "tab_saved": "Избранное",
+    "tab_dashboard": "Панель"
   },
   "moderation": {
     "pending_title": "Объявление сохранено",
@@ -666,7 +668,8 @@
     "errors": {
       "search_failed": "Поиск временно не работает. Попробуйте ещё раз.",
       "validation": "Напишите хотя бы 2 буквы"
-    }
+    },
+    "inline_button": "Поиск с ИИ"
   },
   "mode": {
     "chooser_title": "Что вы ищете?",
@@ -751,16 +754,16 @@
     "post_resume": "Разместить резюме"
   },
   "start": {
-    "seeker_title": "Найдите работу",
+    "seeker_title": "Найдите подходящую работу",
     "seeker_subtitle": "Настоящие вакансии — смотрите без регистрации",
     "search_label": "Поиск работы",
-    "search_placeholder": "Профессия, должность или компания",
+    "search_placeholder": "Профессия или должность",
     "search_button": "Найти",
     "filters_label": "Быстрые фильтры",
     "place_label": "Регион: {place}. Изменить",
     "f_salary": "от 5 млн сум",
     "f_noexp": "Без опыта",
-    "f_daily": "Работа на день",
+    "f_daily": "Подённая",
     "f_remote": "Удалённо",
     "f_experienced": "С опытом",
     "match_title": "Подходящие вам вакансии",
@@ -792,7 +795,9 @@
     "workers_empty_desc": "Разместите вакансию — подходящие кандидаты откликнутся.",
     "finish_company_title": "Заполните данные компании",
     "finish_company_desc": "Минута: название и регион — затем размещайте вакансии и смотрите отклики",
-    "metrics_label": "Ключевые показатели"
+    "metrics_label": "Ключевые показатели",
+    "f_students": "Для студентов",
+    "filters": "Фильтры"
   },
   "sections": {
     "title": "Разделы",

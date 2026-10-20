@@ -2,15 +2,12 @@
 
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
-import { AiFinder } from "@/features/find/components/ai-finder";
 import { TopBar, type TopBarProps } from "./top-bar";
 import { BottomNav } from "./app-shell";
 
-/** Qobiq ma'lumoti (serverda Shell tayyorlaydi): yuqori panel, pastki menyu va lupa tugmasi */
+/** Qobiq ma'lumoti (serverda Shell tayyorlaydi): yuqori panel va pastki menyu */
 export interface FrameChrome {
   top: TopBarProps;
-  /** "O'zingizga mosini toping" tugmasi (admin o'chirgan bo'lsa — null) */
-  ai: { defaultMode: "jobs" | "workers"; locked: boolean } | null;
 }
 
 /*
@@ -43,7 +40,7 @@ function useHydrating() {
 }
 
 /**
- * Sahifa qobig'i (mijoz): yuqori panel + kontent + (mobil) pastki menyu + lupa tugmasi.
+ * Sahifa qobig'i (mijoz): yuqori panel + kontent + (mobil) pastki menyu. AI qidiruv — sahifalarda, qidiruv yonida (suzuvchi tugma yo'q).
  * `skeleton` — loading.tsx ichida: qobiq oxirgi sahifadagidek, kontent o'rnida skelet.
  */
 export function AppFrame({
@@ -87,8 +84,6 @@ export function AppFrame({
       <main className={cn(hideNav || footer ? "flex-1" : "flex-1 page-with-tabbar md:pb-8", anim)}>{children}</main>
       {footer}
       {chrome && !hideNav ? <BottomNav role={chrome.top.role} mode={chrome.top.mode} counts={chrome.top.counts} /> : null}
-      {/* o'ng pastda doim: "O'zingizga mosini toping" — joriy rejim ichida qidiradi (admin panelda o'chiriladi) */}
-      {chrome?.ai ? <AiFinder key={chrome.top.mode ?? "none"} defaultMode={chrome.ai.defaultMode} locked={chrome.ai.locked} /> : null}
       {extras}
     </div>
   );

@@ -13,23 +13,23 @@ export const PROMO_SIZES: Record<PromoFormat, { width: number; height: number }>
 
 /** Kategoriya → stiker emoji va rang */
 const THEME: Record<string, { emoji: string; from: string; to: string }> = {
-  it: { emoji: "💻", from: "#1d5fe0", to: "#6d28d9" },
-  sales: { emoji: "🛍️", from: "#0ea5e9", to: "#1d5fe0" },
+  it: { emoji: "💻", from: "#2457f5", to: "#6d28d9" },
+  sales: { emoji: "🛍️", from: "#0ea5e9", to: "#2457f5" },
   marketing: { emoji: "📣", from: "#db2777", to: "#7c3aed" },
   design: { emoji: "🎨", from: "#f97316", to: "#db2777" },
-  finance: { emoji: "📊", from: "#0f766e", to: "#1d5fe0" },
+  finance: { emoji: "📊", from: "#0f766e", to: "#2457f5" },
   driver: { emoji: "🚗", from: "#1e3a8a", to: "#0ea5e9" },
   logistics: { emoji: "🚚", from: "#1e40af", to: "#0891b2" },
   courier: { emoji: "🛵", from: "#ea580c", to: "#dc2626" },
   construction: { emoji: "🏗️", from: "#d97706", to: "#b45309" },
-  craftsman: { emoji: "🛠️", from: "#475569", to: "#1d5fe0" },
+  craftsman: { emoji: "🛠️", from: "#475569", to: "#2457f5" },
   electrician: { emoji: "⚡", from: "#ca8a04", to: "#ea580c" },
   plumber: { emoji: "🔧", from: "#0284c7", to: "#1d4ed8" },
   mechanic: { emoji: "⚙️", from: "#334155", to: "#0f766e" },
-  auto_service: { emoji: "🚘", from: "#1f2937", to: "#1d5fe0" },
+  auto_service: { emoji: "🚘", from: "#1f2937", to: "#2457f5" },
   restaurant: { emoji: "👨‍🍳", from: "#ea580c", to: "#b91c1c" },
-  call_center: { emoji: "🎧", from: "#7c3aed", to: "#1d5fe0" },
-  office: { emoji: "💼", from: "#1d5fe0", to: "#0f172a" },
+  call_center: { emoji: "🎧", from: "#7c3aed", to: "#2457f5" },
+  office: { emoji: "💼", from: "#2457f5", to: "#15213b" },
   education: { emoji: "📚", from: "#16a34a", to: "#0f766e" },
   medicine: { emoji: "🩺", from: "#0891b2", to: "#16a34a" },
   cleaning: { emoji: "🧹", from: "#0d9488", to: "#0284c7" },
@@ -39,7 +39,7 @@ const THEME: Record<string, { emoji: string; from: string; to: string }> = {
   production: { emoji: "🏭", from: "#475569", to: "#b45309" },
   agriculture: { emoji: "🌾", from: "#65a30d", to: "#15803d" },
 };
-const DEFAULT_THEME = { emoji: "✨", from: "#1d5fe0", to: "#1446b0" };
+const DEFAULT_THEME = { emoji: "✨", from: "#2457f5", to: "#1446b0" };
 
 export function promoTheme(categorySlug: string | null | undefined) {
   return (categorySlug && THEME[categorySlug]) || DEFAULT_THEME;
@@ -124,8 +124,8 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
       {/* yuqori: brend + "Ish bor" stikeri */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{ width: z.logo, height: z.logo, borderRadius: z.logo * 0.28, background: "#fff", color: "#1d5fe0", display: "flex", alignItems: "center", justifyContent: "center", fontSize: z.logo * 0.42, fontWeight: 800, letterSpacing: -1 }}>
-            <svg width={z.logo * 0.78} height={z.logo * 0.78} viewBox="0 0 512 512" fill="none" stroke="#1d5fe0" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ width: z.logo, height: z.logo, borderRadius: z.logo * 0.28, background: "#fff", color: "#2457f5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: z.logo * 0.42, fontWeight: 800, letterSpacing: -1 }}>
+            <svg width={z.logo * 0.78} height={z.logo * 0.78} viewBox="0 0 512 512" fill="none" stroke="#2457f5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M196 168 V140 A28 28 0 0 1 224 112 H288 A28 28 0 0 1 316 140 V168" strokeWidth="40" />
               <rect x="100" y="168" width="312" height="232" rx="48" strokeWidth="40" />
               <path d="M190 284 L240 332 L326 240" strokeWidth="44" />
@@ -133,7 +133,7 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
           </div>
           <div style={{ display: "flex", fontSize: z.brand, fontWeight: 800, letterSpacing: -1 }}>{BRAND.name}</div>
         </div>
-        <div style={{ display: "flex", transform: "rotate(6deg)", background: "#fde047", color: "#0f172a", padding: `${z.brand * 0.3}px ${z.brand * 0.7}px`, borderRadius: 999, fontSize: z.brand * 0.72, fontWeight: 800, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
+        <div style={{ display: "flex", transform: "rotate(6deg)", background: "#fde047", color: "#15213b", padding: `${z.brand * 0.3}px ${z.brand * 0.7}px`, borderRadius: 999, fontSize: z.brand * 0.72, fontWeight: 800, boxShadow: "0 12px 30px rgba(0,0,0,0.25)" }}>
           {data.labels.hiring}
         </div>
       </div>
@@ -189,12 +189,12 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
       </div>
 
       {/* pastki CTA */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", color: "#0f172a", borderRadius: z.cta, padding: `${z.cta * 0.6}px ${z.cta}px` }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "#fff", color: "#15213b", borderRadius: z.cta, padding: `${z.cta * 0.6}px ${z.cta}px` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
           <div style={{ display: "flex", fontSize: z.cta, fontWeight: 800 }}>{data.labels.apply}</div>
-          <div style={{ display: "flex", fontSize: z.ctaUrl, fontWeight: 700, color: "#1d5fe0" }}>{data.url}</div>
+          <div style={{ display: "flex", fontSize: z.ctaUrl, fontWeight: 700, color: "#2457f5" }}>{data.url}</div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: z.cta * 1.8, height: z.cta * 1.8, borderRadius: 999, background: "#1d5fe0", color: "#fff", fontSize: z.cta * 1.1, fontWeight: 800 }}>→</div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: z.cta * 1.8, height: z.cta * 1.8, borderRadius: 999, background: "#2457f5", color: "#fff", fontSize: z.cta * 1.1, fontWeight: 800 }}>→</div>
       </div>
     </div>
   );
