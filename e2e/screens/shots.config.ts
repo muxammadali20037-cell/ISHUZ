@@ -9,7 +9,7 @@ import base from "../playwright.config";
 export default defineConfig({
   ...base,
   testDir: __dirname,
-  testMatch: /.*\.shots\.ts$/,
+  testMatch: /.*\.(shots|audit)\.ts$/,
   globalSetup: undefined,
   outputDir: path.join(__dirname, "../.stack/shots-results"),
   reporter: [["list"]],

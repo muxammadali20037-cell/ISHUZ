@@ -60,7 +60,7 @@ bo'lsin". Shuning uchun "faqat tekis sirt" qoidasiga **nazoratli istisno** qo'sh
 | `.ai-glow`, `.ai-twinkle`, `.type-caret` | Faqat "AI bilan qidirish" jonli qatori | Aylanuvchi rangli chegara (ko'k → binafsha → moviy) — AI ning yagona belgisi |
 | `.badge-glossy .badge-{blue,violet,green,orange,rose,cyan,indigo,amber}` | Xizmatlar to'ri belgilari, rol kartalari, kirish ekrani belgisi | Rang **faqat belgida**; nom va izoh — oddiy matn tokenlari |
 | `.tile-raise` | Xizmatlar to'ri, rol kartalari | Oq, yengil ko'tarilgan karta |
-| `.nav-fab` | Pastki menyuning o'rtasidagi "E'lon" | Menyudan bo'rtib chiqadi (OLX/super-ilovalar uslubi) |
+| `.nav-fab` | Pastki menyuning o'rtasidagi "E'lon" | Ko'k, bo'rtgan, yaltiraydi — lekin menyu ichida: yuqoriga chiqmaydi, ostidan o'tayotgan yozuvni to'smaydi |
 | `.hero-glass` | Sarlavha ustidagi ikkinchi darajali tugma ("Filtrlar", "Xodim qidiraman") | Shaffof oq |
 
 - `prefers-reduced-motion` — yaltirash, aylanish, yozilib turish va ko'tarilib chiqish o'chadi (a11y testi).

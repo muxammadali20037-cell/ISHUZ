@@ -285,15 +285,36 @@ Shubha bo'lsa — boshqa variantni tanlang yoki haqiqiy surat oling.
 
 ## Bosh ekran fonlari (premium 2026-10) — `/admin/entry` → «Bosh ekran fonlari»
 
-Bosh sahifa sarlavhasining orqa foni. Surat ustiga **ko'k parda** tushadi (oq yozuv har qanday suratda o'qiladi), shuning
-uchun surat biroz to'qroq va ko'k tusda ko'rinadi — bu ataylab. Yuklanmasa — ko'k brend foni.
+Ko'k sarlavhalar orqasidagi surat. Uchta joy: **ish qidiruvchi**, **ish beruvchi** (mehmon va panel), **mehmon sahifasi + birinchi
+ochilish** (til ekranidagi brend kartasi ham). Surat ustiga **ko'k parda** tushadi — oq yozuv har qanday suratda o'qiladi, surat
+esa biroz to'qroq va ko'k tusda ko'rinadi (ataylab). Yuklanmasa — oddiy ko'k fon.
 
-- **O'lcham:** 16:9, kamida **1920×1080**. Telefonda o'rtasidan tik kesiladi, kompyuterda yozuv **chap** tomonda turadi —
-  asosiy obyekt **o'ng yarmida**, chap tomon tinchroq (osmon, devor, xira fon) bo'lsin.
-- **Tavsiya:** juda mayda detallar va ko'p odamli olomon emas — 1–3 kishi yoki bitta aniq joy.
+### Texnik talab
+
+- **Nisbat 16:9**, kamida **1920×1080** (yaxshisi 2400×1350). JPG yoki WebP, **4 MB gacha**. Server o'zi WebP'ga o'tkazadi.
+- **Asosiy obyekt (odam, qo'l siqish) — o'ngroqda, kenglikning 55–80% oralig'ida, balandlik o'rtasida.**
+  - Telefonda sarlavha tik: suratning taxminan **25–90%** oralig'i ko'rinadi (chap chekka va o'ng chekka kesiladi).
+  - Kompyuterda butun kenglik ko'rinadi, lekin **chap yarmida yozuv** turadi — u yer tinch bo'lsin (devor, osmon, xira fon).
+- **Yorug', aniq surat** — parda baribir to'qlashtiradi. Juda qorong'i yoki tungi surat — xira chiqadi.
+- **Yo'q:** yozuv, logotip, o'qiladigan peshtaxta, avtomobil raqami, olomon, "stok" pozasi (kameraga qarab kulib turish).
+- **Huquq:** haqiqiy surat bo'lsa — odamlarning roziligi; AI surat ma'lum odamga o'xshamasin.
+
+### Uchala joy uchun tayyor promptlar (Gemini / ChatGPT / Midjourney)
+
+Har promptning oxiriga qo'shing: `16:9, photorealistic documentary photo, natural light, no text, no logos, no watermark`.
 
 | Joy | Nima ko'rinsin | Prompt (inglizcha) |
 |---|---|---|
-| `hero_seeker` — ish qidiruvchi | Ishga kelgan yosh odam: Toshkentdagi zamonaviy ofis yoki do'kon kirishi, ertalabki yorug'lik | Documentary photo, a young Uzbek man in a neat shirt walking into a modern office building in Tashkent in the morning, seen from the side on the right third of the frame, soft morning light, calm sky and glass facade on the left, natural colors with a slight blue tone, 16:9, no text, no logos |
-| `hero_employer` — ish beruvchi | Kichik biznes egasi jamoasi bilan: ustaxona, kafe yoki ofisda suhbat | Documentary photo, an Uzbek small-business owner talking with two employees in a bright workshop or cafe in Tashkent, people on the right half of the frame, blurred calm interior on the left, natural daylight, realistic, slight blue tone, 16:9, no text, no logos |
-| `hero_guest` — mehmon va birinchi ochilish | Toshkent shahri: zamonaviy ko'cha yoki biznes markaz, ertalab, odamlar ishga ketmoqda | Wide documentary photo of a modern Tashkent street in the early morning, people going to work in the distance on the right side, clear sky and buildings on the left, natural light, realistic, slight blue tone, 16:9, no text, no readable signs, no logos |
+| `hero_seeker` — ish qidiruvchi | Yosh yigit yoki qiz ishga kelgan: zamonaviy ofis/do'kon kirishi, ertalab, xursand lekin tabiiy | A young Uzbek woman in smart casual clothes walking confidently into a bright modern office lobby in Tashkent in the morning, she is on the right side of the frame (around 65% from the left), the left half is a calm blurred glass wall, soft morning sunlight, natural colors with a slight cool blue tone |
+| ↳ muqobil | Usta ish ustida (ko'k forma) | A young Uzbek technician in a blue work uniform and hard hat checking equipment at a clean modern workshop, he stands right of center, the left side is a softly blurred bright workshop wall, natural daylight, slight blue tone |
+| `hero_employer` — ish beruvchi | Ish beruvchi yangi xodimni qabul qilyapti: qo'l siqish, ofis yoki ustaxona | An Uzbek business owner in a suit shaking hands with a new employee in a work uniform inside a bright modern office in Tashkent, both people on the right half of the frame, the left half is a calm blurred office interior, natural daylight, slight blue tone |
+| ↳ muqobil | Kichik biznes egasi jamoasi bilan | An Uzbek cafe owner briefing two smiling young employees behind a clean counter, people right of center, calm blurred interior on the left, warm natural daylight with a slight blue tone |
+| `hero_guest` — mehmon va birinchi ochilish | Logodagidek: ishchi va ish beruvchi qo'l berib so'rashmoqda — brendning o'zi | A construction worker in a blue uniform and white hard hat shaking hands with a businessman in a dark blue suit at a modern building site in Tashkent, both on the right half of the frame, clear morning sky and the building on the left half, natural light, realistic |
+| ↳ muqobil | Toshkent: ertalab odamlar ishga ketmoqda | Wide photo of a modern Tashkent street in the early morning, a few people walking to work on the right side, clear sky and modern buildings on the left, natural light, no readable signs |
+
+### Qanday yuklash
+
+1. Admin panel → **Kontent → Kirish ekranlari** → **«Bosh ekran fonlari»**.
+2. Kerakli joyda **«Rasm yuklash»** → faylni tanlang. Saytda shu zahoti chiqadi.
+3. Yoqmasa — **«Almashtirish»** yoki **«O'rnatilgan tasvirga qaytish»** (ko'k fon qaytadi).
+4. Telefonda tekshiring: odam/qo'l siqish ko'rinib turishi va yozuvlar ustida tinch joy bo'lishi kerak.

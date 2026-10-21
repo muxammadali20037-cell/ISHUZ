@@ -234,6 +234,10 @@ html.tg-fullscreen {
     min-height: 100dvh;
     overflow-x: hidden;
   }
+  /* uzun so'z ("telekommunikatsiya", "Приглашения") tor plitkadan qo'shnisiga chiqib ketmasin — qator oxirida bo'linadi */
+  body {
+    overflow-wrap: break-word;
+  }
   h1, h2, h3, h4 {
     text-wrap: balance;
     @apply font-semibold tracking-tight;
@@ -380,6 +384,9 @@ html.no-splash .splash { display: none; }
 /* Sarlavha fon surati (admin yuklasa): surat + ko'k parda. Parda hisob-kitobi: eng oq piksel ustida ham oq matn ≥ 5:1,
    och matn (hero-muted) ≥ 4.5:1 (telefonda bir xil parda; kompyuterda matn chapda — o'ng tomon ochiqroq, surat ko'rinadi) */
 .hero-photo { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+/* telefonda sarlavha tik — 16:9 suratning o'ng-markaz qismi ko'rinadi (asosiy obyekt shu yerda bo'lishi kerak, IMAGE_PROMPTS.md) */
+.hero-photo img { object-position: 68% 45%; }
+@media (min-width: 64rem) { .hero-photo img { object-position: 50% 40%; } }
 .hero-scrim {
   position: absolute;
   inset: 0;
@@ -493,9 +500,9 @@ html.no-splash .splash { display: none; }
 .badge-amber { background-image: linear-gradient(180deg, rgb(255 255 255 / 0.26), transparent 52%), linear-gradient(145deg, #fbbf24, #b45309); --badge-glow: rgb(180 83 9 / 0.5); }
 
 /* Pastki menyudagi markaziy "E'lon" tugmasi: menyudan bo'rtib chiqadi */
+/* menyu ichida turadi (yuqoriga chiqmaydi): ostidan o'tayotgan yozuvni to'smaydi; ko'zga tashlanishi — rang, nur va yaltirash */
 .nav-fab {
-  margin-top: -22px;
-  box-shadow: 0 0 0 5px var(--card), inset 0 1px 0 rgb(255 255 255 / 0.30), inset 0 -2px 0 rgb(0 0 0 / 0.14), 0 12px 22px -6px var(--glow);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.30), inset 0 -2px 0 rgb(0 0 0 / 0.14), 0 6px 14px -4px var(--glow);
 }
 
 /* Bo'limlar ketma-ket ko'tarilib chiqadi (birinchi ochilishda bir marta) */

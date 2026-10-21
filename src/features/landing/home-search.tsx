@@ -89,9 +89,9 @@ export async function HomeSearch({
 }
 
 /**
- * Ish qidiruvchi qidiruvi (bosh ekran sarlavhasi ichida, premium 2026-10): oq qidiruv kartasi — "Kasb yoki ish nomi" + "Topish"
- * (kompyuterda hudud ham shu yerda); ostida bitta qator — jonli "AI bilan qidirish" qatori va "Filtrlar" (natijalar sahifasidagi
- * barcha filtrlar). Hudud telefonda — yuqori panelda. Qidiruv eslab qolingan hududda ishlaydi (yashirin maydonlar).
+ * Ish qidiruvchi qidiruvi (bosh ekran sarlavhasi ichida, premium 2026-10): oq qidiruv kartasi — "Kasb yoki ish nomi", "Filtrlar"
+ * (natijalar sahifasidagi barcha filtrlar; telefonda belgi) va "Topish" (kompyuterda hudud ham shu yerda); ostida butun kenglikda —
+ * jonli "AI bilan qidirish" qatori. Hudud telefonda — yuqori panelda. Qidiruv eslab qolingan hududda ishlaydi (yashirin maydonlar).
  */
 export async function SeekerSearch({
   scope = "jobs",
@@ -130,7 +130,7 @@ export async function SeekerSearch({
               maxLength={120}
               minLength={2}
               required
-              className="h-12 w-full min-w-0 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+              className="h-12 w-full min-w-0 text-ellipsis bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
             />
           </label>
           <Link
@@ -143,6 +143,20 @@ export async function SeekerSearch({
             <span className="truncate">{place.label}</span>
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           </Link>
+          {/* "Filtrlar" qidiruv kartasi ichida (telefonda — faqat belgi): pastdagi AI qatori butun kenglikni oladi, yozuvlar sig'adi */}
+          <Link
+            href={filtersHref}
+            prefetch={false}
+            data-track="home_filters"
+            aria-label={t("easy.start.filters")}
+            title={t("easy.start.filters")}
+            className="press inline-flex h-11 w-11 shrink-0 items-center justify-center gap-1.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-primary md:w-auto md:border-l md:border-border md:px-3 md:text-base md:font-semibold md:text-foreground"
+          >
+            <SlidersHorizontal className="size-5 shrink-0" aria-hidden />
+            <span className="hidden md:inline" aria-hidden>
+              {t("easy.start.filters")}
+            </span>
+          </Link>
           <Button type="submit" aria-label={t("easy.start.search_button")} className="h-12 w-12 shrink-0 rounded-xl px-0 text-base font-bold min-[420px]:w-auto min-[420px]:px-6">
             <ArrowRight className="size-5 min-[420px]:hidden" aria-hidden />
             <span className="hidden min-[420px]:inline">{t("easy.start.search_button")}</span>
@@ -150,18 +164,7 @@ export async function SeekerSearch({
         </Form>
       </div>
       {/* AI oynasi forma tashqarisida: uning ichki formasi (portal) qidiruv formasiga "submit" bo'lib tushmasin */}
-      <div className="flex items-stretch gap-2">
-        {ai ? <AiFinder defaultMode={scope} locked variant="bar" className="min-w-0 flex-1" /> : null}
-        <Link
-          href={filtersHref}
-          prefetch={false}
-          data-track="home_filters"
-          className={`press hero-glass inline-flex min-h-14 shrink-0 items-center justify-center gap-1.5 rounded-2xl px-3.5 text-sm font-bold ${ai ? "flex-col gap-0.5 sm:flex-row sm:gap-1.5" : "w-full"}`}
-        >
-          <SlidersHorizontal className="size-5 shrink-0" aria-hidden />
-          {t("easy.start.filters")}
-        </Link>
-      </div>
+      {ai ? <AiFinder defaultMode={scope} locked variant="bar" /> : null}
     </div>
   );
 }

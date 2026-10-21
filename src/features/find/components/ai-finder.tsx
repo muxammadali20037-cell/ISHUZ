@@ -98,10 +98,11 @@ export function AiFinder({
           className={cn("ai-glow press flex min-h-14 w-full items-center gap-3 rounded-2xl py-1.5 pl-2 pr-1.5 text-left", className)}
         >
           <AiAvatar className="ai-twinkle" />
-          <span className="min-w-0 flex-1">
-            <span className="flex items-center gap-1.5 text-sm font-bold text-foreground">
-              {t("easy.finder.inline_button")}
-              <span className="rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary">{t("easy.finder.bar_badge")}</span>
+          {/* @container: tor joyda (kichik telefon, katta shrift) "YANGI" belgisi yashiriladi — nom to'liq ko'rinsin, ustma-ust tushmasin */}
+          <span className="@container min-w-0 flex-1">
+            <span className="flex min-w-0 items-center gap-1.5 text-sm font-bold text-foreground">
+              <span className="truncate">{t("easy.finder.inline_button")}</span>
+              <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary @max-[11rem]:hidden">{t("easy.finder.bar_badge")}</span>
             </span>
             <span className="block truncate text-sm text-muted-foreground" aria-hidden>
               <TypedExamples examples={examples} />

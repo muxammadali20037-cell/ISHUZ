@@ -70,3 +70,20 @@ Qanday surat va tayyor promptlar: `docs/IMAGE_PROMPTS.md` → «Bosh ekran fonla
 3. **Bir bosishda Telegram orqali ariza** va ish beruvchiga darhol xabar (bot bor — oqimni qisqartirish).
 4. **Maosh ko'rsatkichi:** "Bu kasb bo'yicha Toshkentda o'rtacha maosh" — faqat bazadagi haqiqiy e'lonlardan.
 5. **Ishonch belgilari:** tasdiqlangan kompaniya, "javob beradi" (o'rtacha javob vaqti), shikoyatlar soni.
+
+## 5. Ustma-ust yozuvlar — tuzatish (2026-10-21)
+
+Egasi telefonda: "yozuvlar ustga chiqib ketgan, ba'zi belgilar yozuvni to'sib qo'ygan". Avtomatik audit (`e2e/overlap.ts`,
+`e2e/screens/overlap.audit.ts`): 26 sahifa × 11 holat (320–1440 px; uz, oz, ru, en; shrift 1.15–1.25× va telefonning "katta
+shrift"i — faqat yozuv 1.3×). Topilgan va tuzatilgan:
+
+| Joy | Muammo | Tuzatish |
+|---|---|---|
+| Bosh ekran, AI qatori | Tor telefon / katta shriftda "YANGI" belgisi strelka tugmasi ostida qolardi | "Filtrlar" qidiruv kartasi ichiga (telefonda belgi), AI qatori butun kenglikda; joy yetmasa "YANGI" yashiriladi |
+| Pastki menyu, "E'lon" | Menyudan yuqoriga chiqib, ostidan o'tayotgan yozuvni to'sardi | Menyu ichida (yaltiroq, bo'rtgan, lekin chiqmaydi) + test |
+| E'lon berish, kasb sohalari | "telekommunikatsiya", "программирование" qo'shni plitkaga chiqardi | Nom plitka kengligida, kerak bo'lsa bo'linadi |
+| Kabinet, hisoblagichlar | Ruscha katta shriftda "Приглашения" qo'shnisiga chiqardi | Tor joyda 2 ustun |
+| Xizmatlar to'ri | 320 px da "Masofavi/y" bo'linardi; ruscha "Уведомления" sig'masdi | < 380 px da biroz kichik shrift; ruscha "В Telegram" |
+| Butun sayt | Uzun so'z tor joydan chiqib ketishi mumkin edi | `overflow-wrap: break-word` (asos) |
+
+Natija: audit — 0 muammo. Doimiy test: `e2e/specs/layout-overlap.spec.ts` (3 holat × 9 sahifa, AI oynasi, pastki menyu).

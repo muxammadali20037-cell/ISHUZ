@@ -209,9 +209,9 @@ export function ProfessionPicker({
               type="button"
               aria-pressed={customSector === c.id}
               onClick={() => setCustomSector(c.id)}
-              className={cn("flex items-center gap-2 rounded-2xl border p-3 text-left text-sm font-medium", customSector === c.id ? "border-primary bg-primary-soft" : "border-border bg-card hover:border-primary/50")}
+              className={cn("flex min-w-0 items-center gap-2 rounded-2xl border p-3 text-left text-sm font-medium [overflow-wrap:anywhere]", customSector === c.id ? "border-primary bg-primary-soft" : "border-border bg-card hover:border-primary/50")}
             >
-              <CategoryIcon name={c.icon} className="size-4 shrink-0 text-primary" /> {name(c)}
+              <CategoryIcon name={c.icon} className="size-4 shrink-0 text-primary" /> <span className="min-w-0">{name(c)}</span>
             </button>
           ))}
         </div>
@@ -378,7 +378,8 @@ export function ProfessionPicker({
                     <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                       <CategoryIcon name={c.icon} className="size-6" />
                     </span>
-                    <span className="text-md font-semibold leading-snug">{name(c)}</span>
+                    {/* uzun so'z (telekommunikatsiya, программирование) plitkadan chiqmasin: kenglik — plitka, so'z kerak bo'lsa bo'linadi */}
+                    <span className="max-w-full text-md font-semibold leading-snug [overflow-wrap:anywhere]">{name(c)}</span>
                   </button>
                 ))}
               </div>

@@ -68,16 +68,19 @@ export async function ProfileHeader({ session, mode }: { session: SessionContext
       ) : null}
 
       {counters.length ? (
-        <ul aria-label={t("easy.cabinet.header.activity")} className="grid grid-cols-4 gap-2">
+        // tor joyda (kichik telefon, katta shrift, uzun ruscha so'z) — 2 ustun: yozuvlar qo'shni plitkaga chiqmaydi
+        <div className="@container">
+        <ul aria-label={t("easy.cabinet.header.activity")} className="grid grid-cols-2 gap-2 @[26rem]:grid-cols-4">
           {counters.map((c) => (
-            <li key={c.key} className="flex">
-              <Link href={c.href} className="press flex w-full flex-col items-center justify-center rounded-xl bg-secondary px-1 py-2 text-center hover:bg-primary-soft">
+            <li key={c.key} className="flex min-w-0">
+              <Link href={c.href} className="press flex w-full min-w-0 flex-col items-center justify-center rounded-xl bg-secondary px-1 py-2 text-center hover:bg-primary-soft">
                 <span className="text-lg font-extrabold tabular leading-tight">{num(c.value)}</span>
-                <span className="text-2xs font-semibold leading-tight text-muted-foreground">{t(`easy.cabinet.header.${c.key}`)}</span>
+                <span className="max-w-full text-xs font-semibold leading-tight text-muted-foreground">{t(`easy.cabinet.header.${c.key}`)}</span>
               </Link>
             </li>
           ))}
         </ul>
+        </div>
       ) : null}
     </section>
   );

@@ -49,8 +49,10 @@ export function ServiceTiles({ items, label, className }: { items: ServiceTile[]
               <span className={cn("badge-glossy flex size-12 shrink-0 items-center justify-center rounded-2xl transition-transform group-hover:-translate-y-0.5", TONE[it.tone], it.featured && "shine")} aria-hidden>
                 <it.icon className="relative z-10 size-6" strokeWidth={2.1} />
               </span>
-              <span className="min-w-0 lg:flex-1">
-                <span className="block text-xs font-bold leading-tight text-foreground [overflow-wrap:anywhere] sm:text-sm">{it.label}</span>
+              {/* nom plitka kengligidan chiqmaydi (max-w-full): tor ekranda (< 380 px) biroz kichikroq — so'z butun qoladi;
+                  juda katta shriftda ham qo'shni plitkaga o'tmaydi (bo'g'in bo'yicha yoki qator oxirida bo'linadi) */}
+              <span className="min-w-0 max-w-full lg:flex-1">
+                <span className="block hyphens-auto text-2xs font-bold leading-tight text-foreground min-[380px]:text-xs sm:text-sm">{it.label}</span>
                 {it.hint ? <span className="mt-0.5 hidden text-xs leading-snug text-muted-foreground lg:block">{it.hint}</span> : null}
               </span>
             </Link>

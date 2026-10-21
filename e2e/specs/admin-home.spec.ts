@@ -13,12 +13,15 @@ const STORAGE = path.join(__dirname, "../.stack/storage");
 
 async function chooseFile(page: Page, button: Locator, file: { name: string; mimeType: string; buffer: Buffer }) {
   await expect(async () => {
-    const chooser = page.waitForEvent("filechooser", { timeout: 2000 }).catch(() => null);
+    // telefonda yopishqoq sarlavha va "Saqlash" paneli orasida: avval ko'rinadigan joyga suriladi; bosish o'zi ~2 s kutishi
+    // mumkin (barqarorlik, ustidagi panel) — fayl oynasi kutilishi bosishdan qisqa bo'lmasin
+    await button.scrollIntoViewIfNeeded();
+    const chooser = page.waitForEvent("filechooser", { timeout: 8000 }).catch(() => null);
     await button.click();
     const c = await chooser;
     if (!c) throw new Error("fayl tanlash oynasi ochilmadi");
     await c.setFiles(file);
-  }).toPass({ timeout: 15_000 });
+  }).toPass({ timeout: 30_000 });
 }
 
 const windowsOf = (page: Page) => page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link");

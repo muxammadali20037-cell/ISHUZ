@@ -83,7 +83,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
   const items = mainNav(mode);
   const post = postAction(mode);
   const postActive = pathname.startsWith(post.href);
-  // o'rtada — menyudan bo'rtib chiqib turadigan "E'lon" tugmasi (2 ta bo'lim · E'lon · 2 ta bo'lim)
+  // o'rtada — yaltirab turadigan "E'lon" tugmasi (2 ta bo'lim · E'lon · 2 ta bo'lim); menyu chegarasidan chiqmaydi — yozuvni to'smaydi
   const cells: (NavItem | "post")[] = [...items.slice(0, 2), "post", ...items.slice(2)];
   return (
     <nav
@@ -102,8 +102,8 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
                   data-track="nav_post"
                   className="press flex h-full flex-col items-center justify-center gap-0.5 text-xs font-bold text-primary"
                 >
-                  <span className="nav-fab btn-3d shine flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground" aria-hidden>
-                    <Plus className="relative z-10 size-7" strokeWidth={2.6} />
+                  <span className="nav-fab btn-3d shine flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground" aria-hidden>
+                    <Plus className="relative z-10 size-6" strokeWidth={2.6} />
                   </span>
                   <span>{t(post.labelKey)}</span>
                 </Link>
