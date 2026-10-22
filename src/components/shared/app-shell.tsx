@@ -1,5 +1,6 @@
 "use client";
 
+import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Plus, Search, User, Users, type LucideIcon } from "lucide-react";
@@ -143,8 +144,9 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
   const pathname = usePathname();
   const { t } = useT();
   const items = mainNav(mode);
+  const [navRef, compact] = useFitLabels(items.map((i) => t(i.labelKey)).join("|"));
   return (
-    <nav aria-label={t("common.nav.main_label")} className="hidden md:block">
+    <nav ref={navRef} aria-label={t("common.nav.main_label")} className="hidden md:block">
     <ul className="flex items-center gap-1">
       {items.map((item) => {
         const active = item.match ? item.match(pathname) : pathname === item.href;
@@ -161,8 +163,9 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
               )}
             >
               <item.icon className="size-4.5" aria-hidden />
-              {/* planshetda (md) faqat belgi — sarlavha ekrandan chiqib ketmasin; nom ekran o'quvchisi uchun saqlanadi */}
-              <span className="sr-only lg:not-sr-only">{t(item.labelKey)}</span>
+              {/* planshetda (md) va joy yetmaganda (uzun nomlar, o'ng tomonda "Vakansiya joylash") — faqat belgi: menyu o'ngdagi
+                  tugmalar ostiga kirib, ularni to'smaydi; nom ekran o'quvchisi va title uchun saqlanadi */}
+              <span className={compact ? "sr-only" : "sr-only lg:not-sr-only"}>{t(item.labelKey)}</span>
               {badge ? <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span> : null}
             </Link>
           </li>
@@ -171,4 +174,49 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
     </ul>
     </nav>
   );
+}
+
+/**
+ * Yuqori menyu nomlari joyiga sig'adimi (kompyuter, lg+): sig'masa — faqat belgilar. Menyu joyi (`flex-1 min-w-0`) qolgan
+ * kenglikka teng, mazmunga bog'liq emas — shuning uchun nomlar bilan to'liq kenglik bir marta o'lchanadi va joy bilan
+ * solishtiriladi (til, rejim yoki shrift o'zgarsa — qayta). Holat ref'da ham saqlanadi: ResizeObserver eski qiymatni ko'rmaydi.
+ */
+function useFitLabels(labelsKey: string) {
+  const ref = useRef<HTMLElement>(null);
+  const [on, setOn] = useState(false);
+  const state = useRef({ on: false, full: 0 });
+  useLayoutEffect(() => {
+    const nav = ref.current;
+    const slot = nav?.parentElement;
+    if (!nav || !slot) return;
+    state.current = { on: false, full: 0 };
+    setOn(false);
+    const wide = window.matchMedia("(min-width: 64rem)");
+    const check = () => {
+      if (!wide.matches) return; // planshetda nomlar baribir yashirin
+      const ul = nav.firstElementChild as HTMLElement | null;
+      if (!ul) return;
+      const room = slot.clientWidth;
+      const s = state.current;
+      if (!s.on) {
+        s.full = ul.scrollWidth;
+        if (s.full > room + 1) {
+          s.on = true;
+          setOn(true);
+        }
+      } else if (s.full > 0 && s.full <= room) {
+        s.on = false;
+        setOn(false);
+      }
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(slot);
+    wide.addEventListener("change", check);
+    return () => {
+      ro.disconnect();
+      wide.removeEventListener("change", check);
+    };
+  }, [labelsKey]);
+  return [ref, on] as const;
 }
