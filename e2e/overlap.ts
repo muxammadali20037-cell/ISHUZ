@@ -5,7 +5,7 @@ import type { Page } from "@playwright/test";
  *  - covered — yozuvning o'zi (harf qutilari) boshqa element (belgi, tugma, panel) ostida qolgan: elementFromPoint yozuv
  *    nuqtasida begona elementni qaytaradi;
  *  - text-overlap — ikki xil yozuv bir-birining ustiga tushgan (qatorlar kesishgan);
- *  - icon-overlap — belgi (svg, rasm, yaltiroq belgi) begona yozuv ustida yoki ostida (kesishuv ≥ 20%);
+ *  - icon-overlap — belgi (svg, rasm) begona yozuv ustida yoki ostida (kesishuv ≥ 20%);
  *  - clipped — yozuv konteyneridan chiqib qirqilgan ("…" bilan emas);
  *  - offscreen — yozuv ekran chetidan chiqib ketgan.
  * Butun sahifa bir ekranda bo'lishi uchun chaqiruvchi viewport balandligini sahifa balandligiga tenglaydi (fullHeight) —
@@ -134,8 +134,8 @@ export async function findLayoutIssues(page: Page, scope = "body"): Promise<Layo
       }
     }
 
-    // 4) belgilar (svg, rasm, yaltiroq belgi plitasi) begona yozuv bilan kesishgan
-    const icons = Array.from(root.querySelectorAll("svg, img, .badge-glossy, .entry-live")).filter((e) => !hidden(e) && !e.closest("svg svg"));
+    // 4) belgilar (svg, rasm) begona yozuv bilan kesishgan (belgi plitasi yozuvni to'ssa — 1-tekshiruv "covered" ushlaydi)
+    const icons = Array.from(root.querySelectorAll("svg, img, .entry-live")).filter((e) => !hidden(e) && !e.closest("svg svg"));
     for (const ic of icons) {
       const ir = ic.getBoundingClientRect();
       if (ir.width < 6 || ir.height < 6) continue;

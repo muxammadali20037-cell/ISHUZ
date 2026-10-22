@@ -43,15 +43,15 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
   const firstName = session?.profile.first_name?.trim();
   const tiles: ServiceTile[] = [
     hasCv
-      ? { key: "cv", href: "/profile/cv", label: t("easy.services.cv_mine"), hint: t("easy.services.cv_mine_hint"), icon: FileUser, tone: "violet", featured: true, track: "home_service" }
-      : { key: "cv", href: "/post/worker", label: t("easy.services.cv"), hint: t("easy.services.cv_hint"), icon: FileUser, tone: "violet", featured: true, track: "home_service" },
-    { key: "daily", href: quick.daily, label: t("easy.services.daily"), hint: t("easy.services.daily_hint"), icon: CalendarDays, tone: "orange", track: "home_service" },
-    { key: "near", href: findHref(EMPTY_FIND, { mode: "jobs", near: true }), label: t("easy.services.near"), hint: t("easy.services.near_hint"), icon: MapPin, tone: "green", track: "home_service" },
-    { key: "remote", href: quick.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop, tone: "cyan", track: "home_service" },
-    { key: "noexp", href: quick.noexp, label: t("easy.services.noexp"), hint: t("easy.services.noexp_hint"), icon: Sprout, tone: "blue", track: "home_service" },
-    { key: "students", href: quick.students, label: t("easy.services.students"), hint: t("easy.services.students_hint"), icon: GraduationCap, tone: "rose", track: "home_service" },
-    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, tone: "amber", track: "home_service" },
-    { key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.services.all"), hint: t("easy.services.all_hint"), icon: LayoutGrid, tone: "indigo", track: "home_service" },
+      ? { key: "cv", href: "/profile/cv", label: t("easy.services.cv_mine"), hint: t("easy.services.cv_mine_hint"), icon: FileUser, featured: true, track: "home_service" }
+      : { key: "cv", href: "/post/worker", label: t("easy.services.cv"), hint: t("easy.services.cv_hint"), icon: FileUser, featured: true, track: "home_service" },
+    { key: "daily", href: quick.daily, label: t("easy.services.daily"), hint: t("easy.services.daily_hint"), icon: CalendarDays, track: "home_service" },
+    { key: "near", href: findHref(EMPTY_FIND, { mode: "jobs", near: true }), label: t("easy.services.near"), hint: t("easy.services.near_hint"), icon: MapPin, track: "home_service" },
+    { key: "remote", href: quick.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop, track: "home_service" },
+    { key: "noexp", href: quick.noexp, label: t("easy.services.noexp"), hint: t("easy.services.noexp_hint"), icon: Sprout, track: "home_service" },
+    { key: "students", href: quick.students, label: t("easy.services.students"), hint: t("easy.services.students_hint"), icon: GraduationCap, track: "home_service" },
+    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, track: "home_service" },
+    { key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.services.all"), hint: t("easy.services.all_hint"), icon: LayoutGrid, track: "home_service" },
   ];
   return (
     <div className="space-y-6">

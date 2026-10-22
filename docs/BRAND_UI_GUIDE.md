@@ -40,31 +40,38 @@ Qoidalar:
 - Yumshoq fon + to'q matn juftligi: `bg-success-soft text-success`, `bg-warning-soft text-warning` va h.k. (`Badge`).
 - Ikki teng tanlov (masalan, "Ishchiman / Ish beruvchiman") bir xil ko'rinadi — biri yashil, biri ko'k bo'lmaydi.
 - Tailwind palitrasi (`bg-violet-600`, `text-amber-300` …), hex rang (`bg-[#7c3aed]`) va komponent ichidagi gradient
-  ishlatilmaydi — gradient va nur faqat §1.1 dagi tasdiqlangan utilitalar orqali.
+  ishlatilmaydi — gradient faqat §1.1 dagi tasdiqlangan utilitalar orqali.
 - Uchinchi tomon belgisi o'z rangida faqat **ikonkada** qoladi (Telegram ikonkasi `#2AABEE`); tugmaning o'zi — bizning `Button`.
 - Kontrast: barcha juftliklar ikkala mavzuda **≥ 4.5:1** (WCAG AA) — `src/lib/brand-contrast.test.ts` tekshiradi.
 
-### 1.1 Premium qatlam (2026-10, egasining so'rovi bilan)
+### 1.1 Bosh ekran va tugmalar: "toza" uslub (2026-10-22, egasi tanlagan A varianti)
 
-Egasi: "kirganda bron qilish mini-ilovasidek, tugmalar bo'rtib, yaltirab tursin, AI qidiruv qimirlab tursin, professional
-bo'lsin". Shuning uchun "faqat tekis sirt" qoidasiga **nazoratli istisno** qo'shildi. Gradient, nur va harakat faqat
-`globals.css` dagi tasdiqlangan utilitalarda yashaydi — komponentlarda xom gradient, hex yoki palitra rangi hali ham yo'q
-(`brand-guard.test.ts` o'zgarmadi).
+Tarix: 2026-10 da egasi "tugmalar bo'rtib, yaltirab tursin" deb so'ragan edi (3D tugmalar, yaltirash, kamalak rangli belgilar,
+aylanuvchi AI chegarasi). Ko'rgandan keyin: "AI qilgani bilinib turibdi, bachkana". Ikki variant ko'rsatildi, egasi **A** ni
+tanladi: tuzilma o'sha (8 ta xizmat to'ri), lekin **bitta brend rangi, tekis sirt**. Endi qoidalar:
+
+- Belgilar **bitta rangda**: och ko'k plita (`bg-primary-soft`) + ko'k chiziqli belgi (`text-primary`, chiziq 1.8). Ekrandagi
+  bitta asosiy xizmat (`featured`) — to'q ko'k plita (`bg-primary text-primary-foreground`). Kamalak ranglar ishlatilmaydi.
+- Tugmalar **tekis**: brend ko'ki, `shadow-sm`, hover — `primary-hover`. Gradient, yorug' chiziq (yaltirash), 3D chekka va
+  rangli nur yo'q.
+- AI qatori — qidiruv kartasi bilan bir xil oq karta (`bg-card shadow-lg ring-1 ring-black/5`). "Jonli"ligi faqat o'zi yozilib
+  turadigan misolda (`.type-caret`); AI belgisi (`AiAvatar`) harakatsiz (faqat "o'ylayapti" holatida halqa).
+- Pastki menyu: o'rtadagi "E'lon" — ko'k pilyula (56×32), menyu ichida. Hamma bo'limda belgi maydoni 32 px — nomlar bitta chiziqda.
+
+Gradient faqat `globals.css` dagi tasdiqlangan utilitalarda — komponentlarda xom gradient, hex yoki palitra rangi yo'q
+(`brand-guard.test.ts`).
 
 | Utilita | Qayerda | Qoida |
 |---|---|---|
 | `.hero-surface` | Bosh ekran sarlavhasi (ish qidiruvchi, ish beruvchi, mehmon), birinchi ochilishdagi brend kartasi, tanishtiruv ramkasi | Sahifada **bittadan**. Ustida faqat `text-hero-fg` / `text-hero-muted` (AA, `brand-contrast.test.ts`) |
-| `.btn-3d` | `Button` (`default`), markaziy "E'lon" tugmasi, brend belgisi | Yuqorida yorug', pastda soya, rangli nur; bosilganda "botadi" |
-| `.btn-light` | Ko'k sarlavha ustidagi asosiy amal ("Vakansiya joylash", "Ish qidiraman") | Ko'k sirtda ko'k tugma ko'rinmaydi — oq "bo'rtgan" tugma |
-| `.shine` | Ekrandagi **eng muhim bitta-ikkita** amal: "E'lon", "Vakansiya joylash", "CV yaratish" belgisi | Har ~4 s da yorug' chiziq o'tadi; ko'p joyda ishlatilmaydi |
-| `.ai-glow`, `.ai-twinkle`, `.type-caret` | Faqat "AI bilan qidirish" jonli qatori | Aylanuvchi rangli chegara (ko'k → binafsha → moviy) — AI ning yagona belgisi |
-| `.badge-glossy .badge-{blue,violet,green,orange,rose,cyan,indigo,amber}` | Xizmatlar to'ri belgilari, rol kartalari, kirish ekrani belgisi | Rang **faqat belgida**; nom va izoh — oddiy matn tokenlari |
+| `.btn-light` | Ko'k sarlavha ustidagi asosiy amal ("Vakansiya joylash", "Ish qidiraman") | Ko'k sirtda ko'k tugma ko'rinmaydi — oq, tekis tugma |
+| `.type-caret` | Faqat "AI bilan qidirish" qatoridagi yozilib turadigan misol | Yonib-o'chadigan kursor |
 | `.tile-raise` | Xizmatlar to'ri, rol kartalari | Oq, yengil ko'tarilgan karta |
-| `.nav-fab` | Pastki menyuning o'rtasidagi "E'lon" | Ko'k, bo'rtgan, yaltiraydi — lekin menyu ichida: yuqoriga chiqmaydi, ostidan o'tayotgan yozuvni to'smaydi |
 | `.hero-glass` | Sarlavha ustidagi ikkinchi darajali tugma ("Filtrlar", "Xodim qidiraman") | Shaffof oq |
 
-- `prefers-reduced-motion` — yaltirash, aylanish, yozilib turish va ko'tarilib chiqish o'chadi (a11y testi).
-- Yangi joyga gradient yoki nur kerak bo'lsa — avval shu jadvalga utilita sifatida qo'shiladi, keyin ishlatiladi.
+- `prefers-reduced-motion` — yozilib turish va ko'tarilib chiqish o'chadi (a11y testi).
+- Yangi joyga gradient kerak bo'lsa — avval shu jadvalga utilita sifatida qo'shiladi, keyin ishlatiladi. Yaltirash, kamalak
+  ranglar va 3D tugmalar qaytarilmaydi (egasining qarori, 2026-10-22).
 
 ### 1.2 Logotip (2026-10, egasi bergan)
 

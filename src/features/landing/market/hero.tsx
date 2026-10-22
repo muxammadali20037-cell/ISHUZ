@@ -116,17 +116,17 @@ function RoleCta({ mode, primary, icon: Icon, label, hint }: { mode: AppMode; pr
         data-track-to={mode}
         className={cn(
           "press lift-sm flex w-full items-center gap-3 rounded-2xl px-3 py-3 text-left sm:px-4",
-          primary ? "btn-light shine" : "hero-glass",
+          primary ? "btn-light" : "hero-glass",
         )}
       >
-        <span className={cn("relative z-10 hidden size-10 shrink-0 items-center justify-center rounded-xl min-[400px]:flex", primary ? "badge-glossy badge-blue" : "bg-card/20")} aria-hidden>
+        <span className={cn("hidden size-10 shrink-0 items-center justify-center rounded-xl min-[400px]:flex", primary ? "bg-primary text-primary-foreground" : "bg-card/20")} aria-hidden>
           <Icon className="size-5" />
         </span>
-        <span className="relative z-10 min-w-0 flex-1">
+        <span className="min-w-0 flex-1">
           <span className="block text-base font-extrabold leading-tight">{label}</span>
           <span className={cn("mt-0.5 block text-xs leading-snug sm:text-sm", primary ? "text-muted-foreground" : "text-hero-muted")}>{hint}</span>
         </span>
-        <ArrowRight className="relative z-10 hidden size-5 shrink-0 sm:block" aria-hidden />
+        <ArrowRight className="hidden size-5 shrink-0 sm:block" aria-hidden />
       </TileButton>
     </form>
   );
@@ -211,7 +211,7 @@ async function HeroSearch() {
 
 function SubmitSearch({ label }: { label: string }) {
   return (
-    <TileButton className="press lift-sm btn-3d inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-bold text-primary-foreground hover:bg-primary-hover lg:w-auto">
+    <TileButton className="press lift-sm inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover lg:w-auto">
       <Search className="size-5" aria-hidden />
       {label}
     </TileButton>

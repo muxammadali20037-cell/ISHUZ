@@ -9,8 +9,8 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        // bo'rtib turadigan asosiy tugma (globals.css → .btn-3d): yuqorida yorug', pastda soya, rangli nur
-        default: "btn-3d lift-sm bg-primary text-primary-foreground hover:bg-primary-hover",
+        // asosiy tugma: tekis brend ko'ki, yengil soya ("toza" uslub, 2026-10-22 — gradient, yaltirash, 3D chekka yo'q)
+        default: "lift-sm bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover",
         secondary: "bg-secondary text-secondary-foreground hover:bg-border/70",
         outline: "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:bg-secondary",
         ghost: "text-foreground hover:bg-secondary",

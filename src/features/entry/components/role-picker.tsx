@@ -41,7 +41,7 @@ export function RolePicker({ initial, next, images }: { initial: AppMode | null;
                 <span className="block text-lg font-extrabold leading-tight">{it.title}</span>
                 <span className="mt-1 block text-sm leading-snug text-muted-foreground">{it.desc}</span>
               </span>
-              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border-2", on ? "btn-3d border-primary bg-primary text-primary-foreground" : "border-border")} aria-hidden>
+              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border-2", on ? "border-primary bg-primary text-primary-foreground" : "border-border")} aria-hidden>
                 {on ? <Check className="size-4" strokeWidth={3} /> : null}
               </span>
             </label>

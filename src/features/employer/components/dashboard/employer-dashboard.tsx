@@ -64,15 +64,15 @@ export async function EmployerDashboard({ session, embedded = false }: { session
 
   const aiPost = aiEnabled();
   const all: ServiceTile[] = [
-    ...(aiPost ? [{ key: "ai", href: "/employer/vacancies/new/ai", label: t("easy.services.e_ai"), hint: t("easy.services.e_ai_hint"), icon: Sparkles, tone: "violet" as const, featured: true }] : []),
-    { key: "apps", href: "/employer/applications", label: t("easy.services.e_apps"), hint: t("easy.services.e_apps_hint"), icon: Inbox, tone: "blue", featured: !aiPost },
-    { key: "candidates", href: candidatesHref, label: t("easy.services.e_candidates"), hint: t("easy.services.e_candidates_hint"), icon: UsersRound, tone: "indigo" },
-    { key: "daily", href: hrefs.daily, label: t("easy.services.e_daily"), hint: t("easy.services.e_daily_hint"), icon: CalendarDays, tone: "orange" },
-    { key: "experienced", href: hrefs.experienced, label: t("easy.services.e_exp"), hint: t("easy.services.e_exp_hint"), icon: BadgeCheck, tone: "green" },
-    { key: "near", href: hrefs.near, label: t("easy.services.e_near"), hint: t("easy.services.e_near_hint"), icon: MapPin, tone: "cyan" },
-    ...(aiPost ? [] : [{ key: "remote", href: hrefs.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop, tone: "rose" as const }]),
-    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, tone: "amber" },
-    { key: "company", href: company ? "/company/settings" : "/onboarding/employer", label: t("easy.services.e_company"), hint: t("easy.services.e_company_hint"), icon: Building2, tone: "rose" },
+    ...(aiPost ? [{ key: "ai", href: "/employer/vacancies/new/ai", label: t("easy.services.e_ai"), hint: t("easy.services.e_ai_hint"), icon: Sparkles, featured: true }] : []),
+    { key: "apps", href: "/employer/applications", label: t("easy.services.e_apps"), hint: t("easy.services.e_apps_hint"), icon: Inbox, featured: !aiPost },
+    { key: "candidates", href: candidatesHref, label: t("easy.services.e_candidates"), hint: t("easy.services.e_candidates_hint"), icon: UsersRound },
+    { key: "daily", href: hrefs.daily, label: t("easy.services.e_daily"), hint: t("easy.services.e_daily_hint"), icon: CalendarDays },
+    { key: "experienced", href: hrefs.experienced, label: t("easy.services.e_exp"), hint: t("easy.services.e_exp_hint"), icon: BadgeCheck },
+    { key: "near", href: hrefs.near, label: t("easy.services.e_near"), hint: t("easy.services.e_near_hint"), icon: MapPin },
+    ...(aiPost ? [] : [{ key: "remote", href: hrefs.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop }]),
+    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing },
+    { key: "company", href: company ? "/company/settings" : "/onboarding/employer", label: t("easy.services.e_company"), hint: t("easy.services.e_company_hint"), icon: Building2 },
   ];
   const tiles = all.slice(0, 8);
 
@@ -115,10 +115,10 @@ export async function EmployerDashboard({ session, embedded = false }: { session
             </div>
             <Link
               href="/employer/vacancies/new"
-              className="press shine btn-light inline-flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold"
+              className="press btn-light inline-flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold"
             >
-              <Plus className="relative z-10 size-5" aria-hidden />
-              <span className="relative z-10">{t("easy.start.post_vacancy")}</span>
+              <Plus className="size-5" aria-hidden />
+              <span>{t("easy.start.post_vacancy")}</span>
             </Link>
           </div>
           {home.aiButton ? (

@@ -62,10 +62,10 @@ export function EntryHeading({ title, subtitle, className }: { title: string; su
   );
 }
 
-/** Ekran tepasidagi belgi (globus, telefon, xat...) — yaltiroq ko'k "ilova belgisi" (premium 2026-10) */
+/** Ekran tepasidagi belgi (globus, telefon, xat...) — tekis ko'k "ilova belgisi" */
 export function EntryIcon({ children }: { children: ReactNode }) {
   return (
-    <span className="badge-glossy badge-blue mx-auto flex size-20 items-center justify-center rounded-2xl [&_svg]:size-10" aria-hidden>
+    <span className="mx-auto flex size-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground [&_svg]:size-10" aria-hidden>
       {children}
     </span>
   );

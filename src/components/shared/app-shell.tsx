@@ -83,7 +83,8 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
   const items = mainNav(mode);
   const post = postAction(mode);
   const postActive = pathname.startsWith(post.href);
-  // o'rtada — yaltirab turadigan "E'lon" tugmasi (2 ta bo'lim · E'lon · 2 ta bo'lim); menyu chegarasidan chiqmaydi — yozuvni to'smaydi
+  // o'rtada — "E'lon" (2 ta bo'lim · E'lon · 2 ta bo'lim): ko'k pilyula, menyu ichida (yozuvni to'smaydi). Hamma bo'limda belgi
+  // maydoni bir xil balandlikda (h-8) — nomlar bitta chiziqda turadi
   const cells: (NavItem | "post")[] = [...items.slice(0, 2), "post", ...items.slice(2)];
   return (
     <nav
@@ -100,10 +101,10 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
                   href={post.href}
                   aria-current={postActive ? "page" : undefined}
                   data-track="nav_post"
-                  className="press flex h-full flex-col items-center justify-center gap-0.5 text-xs font-bold text-primary"
+                  className="press flex h-full flex-col items-center justify-center gap-1 text-xs font-bold text-primary"
                 >
-                  <span className="nav-fab btn-3d shine flex size-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground" aria-hidden>
-                    <Plus className="relative z-10 size-6" strokeWidth={2.6} />
+                  <span className="flex h-8 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm" aria-hidden>
+                    <Plus className="size-5" strokeWidth={2.5} />
                   </span>
                   <span>{t(post.labelKey)}</span>
                 </Link>
@@ -119,7 +120,9 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
                 className={cn("press relative flex h-full flex-col items-center justify-center gap-1 text-xs font-semibold", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
-                <item.icon className={cn("size-6", active && "fill-primary/10")} strokeWidth={active ? 2.25 : 1.75} />
+                <span className="flex h-8 items-center" aria-hidden>
+                  <item.icon className={cn("size-6", active && "fill-primary/10")} strokeWidth={active ? 2.25 : 1.75} />
+                </span>
                 <span>{t(item.labelKey)}</span>
                 {badge ? (
                   <span className="absolute left-1/2 top-2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-2xs font-bold text-destructive-foreground">

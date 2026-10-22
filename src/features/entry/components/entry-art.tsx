@@ -23,8 +23,8 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
     case "role_employer": {
       const Icon = slot === "role_worker" ? BriefcaseBusiness : UsersRound;
       return (
-        // yaltiroq "ilova belgisi" (premium 2026-10): ish qidiruvchi — ko'k, ish beruvchi — binafsha
-        <span className={cn("badge-glossy flex size-full items-center justify-center", slot === "role_worker" ? "badge-blue" : "badge-violet")} aria-hidden>
+        // "toza" uslub (2026-10-22): ikkala rol ham bir xil — och ko'k plita, ko'k belgi (biri ikkinchisidan ustun ko'rinmaydi)
+        <span className="flex size-full items-center justify-center bg-primary-soft text-primary" aria-hidden>
           <Icon className="size-1/2" strokeWidth={1.8} />
         </span>
       );

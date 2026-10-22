@@ -95,9 +95,10 @@ export function AiFinder({
           onClick={() => openWith()}
           data-track="ai_finder_open"
           aria-label={t("easy.finder.inline_button")}
-          className={cn("ai-glow press flex min-h-14 w-full items-center gap-3 rounded-2xl py-1.5 pl-2 pr-1.5 text-left", className)}
+          // qidiruv kartasi bilan bir xil: oq, tekis, yengil soya; "jonli"ligi — o'zi yozilib turadigan misolda (kamalak chegara yo'q)
+          className={cn("press flex min-h-14 w-full items-center gap-3 rounded-2xl bg-card py-1.5 pl-2 pr-1.5 text-left shadow-lg ring-1 ring-black/5", className)}
         >
-          <AiAvatar className="ai-twinkle" />
+          <AiAvatar />
           {/* @container: tor joyda (kichik telefon, katta shrift) "YANGI" belgisi yashiriladi — nom to'liq ko'rinsin, ustma-ust tushmasin */}
           <span className="@container min-w-0 flex-1">
             <span className="flex min-w-0 items-center gap-1.5 text-sm font-bold text-foreground">
@@ -108,7 +109,7 @@ export function AiFinder({
               <TypedExamples examples={examples} />
             </span>
           </span>
-          <span className="btn-3d flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-hidden>
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground" aria-hidden>
             <ArrowRight className="size-5" />
           </span>
         </button>

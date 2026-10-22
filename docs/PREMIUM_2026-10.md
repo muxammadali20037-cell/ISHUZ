@@ -16,6 +16,8 @@ professional bo'lsin; odamlarni jalb qiladigan fishkalar.
 
 ## 2. Nima o'zgardi
 
+> **2026-10-22:** quyidagi yaltiroq tugmalar va kamalak belgilar egasining qarori bilan "toza" uslubga almashtirildi — §6.
+
 **Dizayn qatlami** (`globals.css`, `docs/BRAND_UI_GUIDE.md` §1.1): chuqur ko'k sarlavha sirti (`.hero-surface`), bo'rtib turadigan
 tugmalar (`.btn-3d` — barcha asosiy tugmalar), ko'k sirt ustidagi oq tugma (`.btn-light`), yaltirash (`.shine`), aylanib
 turadigan AI chegarasi (`.ai-glow`), yaltiroq rangli belgilar (`.badge-*`), ko'tarilgan plitkalar, menyudan bo'rtib chiqadigan
@@ -87,3 +89,30 @@ shrift"i — faqat yozuv 1.3×). Topilgan va tuzatilgan:
 | Butun sayt | Uzun so'z tor joydan chiqib ketishi mumkin edi | `overflow-wrap: break-word` (asos) |
 
 Natija: audit — 0 muammo. Doimiy test: `e2e/specs/layout-overlap.spec.ts` (3 holat × 9 sahifa, AI oynasi, pastki menyu).
+
+## 6. "Toza" uslub — tugmalar va belgilar (2026-10-22)
+
+Egasi: "zo'r chiqqan, faqat tugmalar — AI qilgani bilinib turibdi, bachkana; avval ko'rsat, keyin qilamiz". Haqiqiy ilova
+ustida ikki variant ko'rsatildi (A — tuzilma o'sha, bitta rang; B — 2 katta karta + filtr chiplari), egasi **A** ni tanladi.
+Qoidalar: `docs/BRAND_UI_GUIDE.md` §1.1.
+
+| Nima | Oldin | Endi |
+|---|---|---|
+| Xizmat belgilari | 8 xil kamalak rang, yaltiroq gradient, rangli nur | Bitta brend rangi: och ko'k plita + ko'k chiziqli belgi; asosiysi to'q ko'k |
+| Tugmalar (`Button`, qidiruv, AI strelkasi) | 3D: gradient, yorug' chekka, rangli nur | Tekis ko'k, yengil soya |
+| "Vakansiya joylash", "Ish qidiraman" (ko'k sarlavhada) | Oq gradient, yaltiraydi | Oq, tekis |
+| Yaltirash (`.shine`) | "E'lon", "Vakansiya joylash", "CV" ustidan har 4 s da nur | Yo'q |
+| AI qatori | Aylanuvchi kamalak chegara, belgi "sakraydi" | Qidiruv kartasi bilan bir xil oq karta; harakat — faqat o'zi yozilib turadigan misol |
+| Pastki menyu "E'lon" | Katta yaltiroq kvadrat, nomi boshqalardan pastda | Ko'k pilyula, hamma nomlar bitta chiziqda |
+| Rol kartalari, til ekrani belgisi | Ko'k / binafsha yaltiroq | Rollar — ikkalasi bir xil och ko'k; til ekrani belgisi — tekis ko'k |
+
+Olib tashlangan utilitalar: `.btn-3d`, `.shine`, `.ai-glow`, `.ai-twinkle`, `.badge-glossy`, `.badge-*`, `.nav-fab`
+(`--ai-1..3` ranglari ham). Skript: `e2e/screens/clean.shots.ts`.
+
+| Ekran | Oldin | Keyin |
+|---|---|---|
+| Ish qidiruvchi | ![](screenshots/clean-2026-10-22/before-worker-home.jpg) | ![](screenshots/clean-2026-10-22/after-worker-home.jpg) |
+| Ish beruvchi | ![](screenshots/clean-2026-10-22/before-employer-home.jpg) | ![](screenshots/clean-2026-10-22/after-employer-home.jpg) |
+| Mehmon | ![](screenshots/clean-2026-10-22/before-guest-home.jpg) | ![](screenshots/clean-2026-10-22/after-guest-home.jpg) |
+| Rol | ![](screenshots/clean-2026-10-22/before-start-role.jpg) | ![](screenshots/clean-2026-10-22/after-start-role.jpg) |
+| Til | ![](screenshots/clean-2026-10-22/before-start-language.jpg) | ![](screenshots/clean-2026-10-22/after-start-language.jpg) |

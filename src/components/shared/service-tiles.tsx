@@ -2,36 +2,23 @@ import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type TileTone = "blue" | "violet" | "green" | "orange" | "rose" | "cyan" | "indigo" | "amber";
-
 export interface ServiceTile {
   key: string;
   href: string;
   label: string;
   icon: LucideIcon;
-  tone: TileTone;
   /** kompyuterda ikkinchi qator (telefonda — faqat nom) */
   hint?: string;
-  /** asosiy xizmat: belgisi yaltirab turadi */
+  /** asosiy xizmat: belgisi to'q ko'k (qolganlari och ko'k) — ekranda bitta */
   featured?: boolean;
   track?: string;
 }
 
-const TONE: Record<TileTone, string> = {
-  blue: "badge-blue",
-  violet: "badge-violet",
-  green: "badge-green",
-  orange: "badge-orange",
-  rose: "badge-rose",
-  cyan: "badge-cyan",
-  indigo: "badge-indigo",
-  amber: "badge-amber",
-};
-
 /**
- * Xizmatlar to'ri (super-ilovalar uslubi): har xizmat — yaltiroq rangli belgi va qisqa nom. Telefonda 4 ustun (belgi tepada,
- * nom ostida), kompyuterda 4 ustun gorizontal (belgi + nom + izoh). Bosh ekran sarlavhasi ustiga chiqib turadi (`overlap`).
- * Ranglar faqat belgida (globals.css → .badge-*); nom va izoh — oddiy matn tokenlari.
+ * Xizmatlar to'ri: har xizmat — belgi va qisqa nom. Telefonda 4 ustun (belgi tepada, nom ostida), kompyuterda 4 ustun
+ * gorizontal (belgi + nom + izoh). Bosh ekran sarlavhasi ustiga chiqib turadi.
+ * "Toza" uslub (2026-10-22, egasi tanlagan A varianti): hamma belgi bitta brend rangida — och ko'k plita, ko'k chiziqli belgi;
+ * faqat asosiy xizmat (`featured`) to'q ko'k. Kamalak ranglar, yaltirash va gradient yo'q.
  */
 export function ServiceTiles({ items, label, className }: { items: ServiceTile[]; label: string; className?: string }) {
   return (
@@ -46,13 +33,19 @@ export function ServiceTiles({ items, label, className }: { items: ServiceTile[]
               data-track-to={it.track ? it.key : undefined}
               className="press group flex w-full min-w-0 flex-col items-center gap-1.5 rounded-xl px-1 py-2 text-center hover:bg-secondary lg:flex-row lg:gap-3 lg:px-3 lg:text-left"
             >
-              <span className={cn("badge-glossy flex size-12 shrink-0 items-center justify-center rounded-2xl transition-transform group-hover:-translate-y-0.5", TONE[it.tone], it.featured && "shine")} aria-hidden>
-                <it.icon className="relative z-10 size-6" strokeWidth={2.1} />
+              <span
+                className={cn(
+                  "flex size-12 shrink-0 items-center justify-center rounded-2xl",
+                  it.featured ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary",
+                )}
+                aria-hidden
+              >
+                <it.icon className="size-6" strokeWidth={1.8} />
               </span>
               {/* nom plitka kengligidan chiqmaydi (max-w-full): tor ekranda (< 380 px) biroz kichikroq — so'z butun qoladi;
                   juda katta shriftda ham qo'shni plitkaga o'tmaydi (bo'g'in bo'yicha yoki qator oxirida bo'linadi) */}
               <span className="min-w-0 max-w-full lg:flex-1">
-                <span className="block hyphens-auto text-2xs font-bold leading-tight text-foreground min-[380px]:text-xs sm:text-sm">{it.label}</span>
+                <span className="block hyphens-auto text-2xs font-semibold leading-tight text-foreground min-[380px]:text-xs sm:text-sm">{it.label}</span>
                 {it.hint ? <span className="mt-0.5 hidden text-xs leading-snug text-muted-foreground lg:block">{it.hint}</span> : null}
               </span>
             </Link>

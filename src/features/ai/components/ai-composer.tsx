@@ -103,7 +103,7 @@ export function AiComposer({
               aria-label={voice.listening ? t("easy.finder.voice_stop") : t("ai.voice_start")}
               className={cn(
                 "ai-mic press absolute bottom-3 right-3 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-bold",
-                voice.listening ? "bg-destructive-soft text-destructive" : "btn-3d bg-primary text-primary-foreground",
+                voice.listening ? "bg-destructive-soft text-destructive" : "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover",
               )}
             >
               {voice.listening ? <Square className="size-4 fill-current" aria-hidden /> : <Mic className="size-5" aria-hidden />}

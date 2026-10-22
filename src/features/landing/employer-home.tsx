@@ -38,10 +38,10 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
   const hrefs = employerServiceHrefs(where);
   const firstName = session?.profile.first_name?.trim();
   const tiles: ServiceTile[] = [
-    { key: "candidates", href: hrefs.candidates, label: t("easy.services.e_candidates"), hint: t("easy.services.e_candidates_hint"), icon: UsersRound, tone: "indigo", featured: true, track: "home_service" },
-    { key: "daily", href: hrefs.daily, label: t("easy.services.e_daily"), hint: t("easy.services.e_daily_hint"), icon: CalendarDays, tone: "orange", track: "home_service" },
-    { key: "experienced", href: hrefs.experienced, label: t("easy.services.e_exp"), hint: t("easy.services.e_exp_hint"), icon: BadgeCheck, tone: "green", track: "home_service" },
-    { key: "near", href: hrefs.near, label: t("easy.services.e_near"), hint: t("easy.services.e_near_hint"), icon: MapPin, tone: "cyan", track: "home_service" },
+    { key: "candidates", href: hrefs.candidates, label: t("easy.services.e_candidates"), hint: t("easy.services.e_candidates_hint"), icon: UsersRound, featured: true, track: "home_service" },
+    { key: "daily", href: hrefs.daily, label: t("easy.services.e_daily"), hint: t("easy.services.e_daily_hint"), icon: CalendarDays, track: "home_service" },
+    { key: "experienced", href: hrefs.experienced, label: t("easy.services.e_exp"), hint: t("easy.services.e_exp_hint"), icon: BadgeCheck, track: "home_service" },
+    { key: "near", href: hrefs.near, label: t("easy.services.e_near"), hint: t("easy.services.e_near_hint"), icon: MapPin, track: "home_service" },
   ];
   // mini-ilova uslubi: chuqur ko'k sarlavha (asosiy amal — yaltirab turadigan "Vakansiya joylash", nomzod qidiruvi va jonli AI
   // qatori), ustiga chiqib turadigan xizmatlar, keyin darhol yangi nomzodlar. Statistika banneri yo'q.
@@ -64,10 +64,10 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
             <Link
               href="/post/vacancy"
               data-track="home_post_vacancy"
-              className="press shine btn-light inline-flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold"
+              className="press btn-light inline-flex min-h-13 shrink-0 items-center justify-center gap-2 rounded-2xl px-6 text-base font-extrabold"
             >
-              <Plus className="relative z-10 size-5" aria-hidden />
-              <span className="relative z-10">{t("easy.start.post_vacancy")}</span>
+              <Plus className="size-5" aria-hidden />
+              <span>{t("easy.start.post_vacancy")}</span>
             </Link>
           </div>
           <div className="mt-4 lg:max-w-3xl">
