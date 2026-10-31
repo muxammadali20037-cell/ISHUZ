@@ -118,7 +118,8 @@
     "skill_name": "Ko'nikma nomi 2–60 ta belgi",
     "skill_limit": "Ko'pi bilan {max} ta ko'nikma",
     "coords_invalid": "Koordinatalar noto'g'ri (ikkalasi ham kiritilishi kerak)",
-    "load_failed": "Ma'lumotlarni yuklab bo'lmadi"
+    "load_failed": "Ma'lumotlarni yuklab bo'lmadi",
+    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («Vakansiyalarim»)."
   },
   "wizard": {
     "title_new": "Vakansiya joylash",

@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import type { ActionResult } from "@/features/auth/actions";
 import { documentUrlSchema, moderateReviewSchema, resolveReportSchema, reviewVerificationSchema } from "../schema";
-import { requirePerm } from "./guard";
+import { logAdmin, requirePerm } from "./guard";
 
 /** Shikoyat holati → rpc admin_resolve_report (in_review / resolved / dismissed) */
 export async function resolveReport(input: unknown): Promise<ActionResult> {
@@ -71,5 +71,7 @@ export async function getDocumentUrl(input: unknown): Promise<ActionResult<{ url
   const supabase = await createClient();
   const { data, error } = await supabase.storage.from("documents").createSignedUrl(parsed.data.path, 600);
   if (error || !data?.signedUrl) return { ok: false, error: error ? errorCode(error) : "not_found" };
+  // maxfiy hujjatni kim va qachon ochgani — auditda (2026-10-31 auditi)
+  await logAdmin(supabase, "verification.document_view", "document", parsed.data.path, null, null);
   return { ok: true, data: { url: data.signedUrl } };
 }

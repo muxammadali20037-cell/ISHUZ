@@ -151,7 +151,8 @@
     "forbidden_hierarchy": "Adminni faqat bosh admin bloklay oladi",
     "cross_site": "So'rov rad etildi. Sahifani yangilab qayta urinib ko'ring.",
     "image_invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa JPG, PNG yoki WEBP surat tanlang.",
-    "image_unavailable": "Rasmni hozir saqlab bo'lmadi. Birozdan keyin qayta urinib ko'ring."
+    "image_unavailable": "Rasmni hozir saqlab bo'lmadi. Birozdan keyin qayta urinib ko'ring.",
+    "duplicate_vacancy": "Shu nom va joy bilan faol e'lon allaqachon bor"
   },
   "empty": {
     "nothing_here": "Hozircha bu yerda hech narsa yo'q",

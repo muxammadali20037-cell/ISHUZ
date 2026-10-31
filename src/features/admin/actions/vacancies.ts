@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import type { ActionResult } from "@/features/auth/actions";
+import { z } from "zod";
 import { vacancyStatusSchema } from "../schema";
 import { requirePerm } from "./guard";
 
@@ -23,5 +24,25 @@ export async function setVacancyStatus(input: unknown): Promise<ActionResult> {
   revalidatePath("/admin/vacancies");
   revalidatePath("/admin/reports");
   revalidatePath("/admin");
+  return { ok: true };
+}
+
+const featuredSchema = z.object({ vacancyId: z.string().uuid(), days: z.union([z.literal(0), z.literal(7), z.literal(14), z.literal(30)]) });
+
+/**
+ * TOP vakansiya (0072): 7/14/30 kun qidiruv va ro'yxatlarda birinchi, "TOP" belgisi bilan; 0 — olib tashlash.
+ * Faqat faol vakansiya; vacancies.moderate; audit — bazada (vacancy.featured / vacancy.unfeatured).
+ */
+export async function setVacancyFeatured(input: unknown): Promise<ActionResult> {
+  const parsed = featuredSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
+  const guard = await requirePerm("vacancies.moderate");
+  if (!guard.ok) return guard;
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("admin_set_vacancy_featured", { p_vacancy_id: parsed.data.vacancyId, p_days: parsed.data.days });
+  if (error) return { ok: false, error: errorCode(error) };
+  revalidatePath("/admin/vacancies");
+  revalidatePath("/jobs");
+  revalidatePath("/");
   return { ok: true };
 }

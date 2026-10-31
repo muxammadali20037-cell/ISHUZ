@@ -4309,6 +4309,7 @@ export type Database = {
         Args: { p_block: boolean; p_profile_id: string; p_reason?: string };
         Returns: undefined;
       };
+      admin_set_vacancy_featured: { Args: { p_days: number; p_vacancy_id: string }; Returns: undefined };
       admin_set_vacancy_status: {
         Args: {
           p_note?: string;
@@ -4704,6 +4705,7 @@ export type Database = {
         Args: { p_entity: string; p_id: string };
         Returns: Json;
       };
+      my_duplicate_vacancy: { Args: { p_vacancy_id: string }; Returns: string };
       my_listing_states: {
         Args: Record<PropertyKey, never>;
         Returns: {

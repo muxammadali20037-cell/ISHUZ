@@ -320,7 +320,15 @@
     "section_main": "Asosiy",
     "requirements": "Talablar",
     "benefits": "Imkoniyatlar",
-    "description": "Tavsif"
+    "description": "Tavsif",
+    "featured_title": "TOP vakansiya",
+    "featured_on": "TOP — muddatsiz",
+    "featured_until": "TOP: {date} gacha — qidiruvda birinchi",
+    "featured_off": "TOP emas. TOP vakansiya qidiruv va ro'yxatlarda birinchi turadi.",
+    "featured_days": "{days} kun",
+    "featured_remove": "TOPdan olish",
+    "featured_done": "Vakansiya TOPga chiqarildi",
+    "unfeatured_done": "TOPdan olindi"
   },
   "reports": {
     "title": "Shikoyatlar",

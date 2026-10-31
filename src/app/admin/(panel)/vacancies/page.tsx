@@ -17,6 +17,8 @@ import { StatusBadge } from "@/features/admin/components/status-badge";
 import { UrlSheet } from "@/features/admin/components/url-sheet";
 import { DetailRow, DetailSection } from "@/features/admin/components/detail-sheet";
 import { VacancyActions } from "@/features/admin/components/vacancy-actions";
+import { FeaturedControl } from "@/features/admin/components/featured-control";
+import { featuredNow } from "@/features/admin/featured";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/misc";
@@ -159,6 +161,9 @@ export default async function AdminVacanciesPage({ searchParams }: { searchParam
                   </Link>
                 ) : null}
               </div>
+              {detail.status === "active" ? (
+                <FeaturedControl vacancyId={detail.id} active={featuredNow(detail.is_featured, detail.featured_until)} featuredUntil={detail.featured_until} canModerate={canModerate} />
+              ) : null}
               {detail.moderation_note ? (
                 <div className="mt-3 rounded-xl bg-warning-soft p-3 text-sm text-warning">
                   <span className="font-medium">{t("admin.vacancies.note")}:</span> {detail.moderation_note}

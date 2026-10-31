@@ -118,7 +118,8 @@
     "skill_name": "Skill name must be 2–60 characters",
     "skill_limit": "Up to {max} skills",
     "coords_invalid": "Invalid coordinates (both must be entered)",
-    "load_failed": "Couldn't load data"
+    "load_failed": "Couldn't load data",
+    "duplicate_vacancy": "You already have an active job with the same title and location. Edit or close it instead of posting a new one (“My jobs”)."
   },
   "wizard": {
     "title_new": "Post a vacancy",

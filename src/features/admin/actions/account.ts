@@ -41,7 +41,8 @@ export async function setAdminLogin(input: unknown): Promise<ActionResult> {
   }
   const supabase = await createClient();
   const emailChanged = (before.user?.email ?? "").toLowerCase() !== email;
-  await logAdmin(supabase, "admin.login_credentials_set", "admin_user", userId, null, { method: "email_password", email_changed: emailChanged });
+  // "account." — o'z hisobi: har qanday faol admin audit yoza oladi (0072; avval "admin." → admins.manage talab qilinardi)
+  await logAdmin(supabase, "account.login_credentials_set", "admin_user", userId, null, { method: "email_password", email_changed: emailChanged });
   await logSecurityEvent({ type: "admin.password_set", severity: "medium", reason: "self_service", actorId: userId, route: ADMIN_ACCOUNT_PATH, action: "logged", details: { email_changed: emailChanged } });
   revalidatePath(ADMIN_ACCOUNT_PATH);
   return { ok: true };

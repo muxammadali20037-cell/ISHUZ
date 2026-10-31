@@ -151,7 +151,8 @@
     "forbidden_hierarchy": "Only a super admin can block an admin",
     "cross_site": "The request was rejected. Refresh the page and try again.",
     "image_invalid": "We couldn't read this image or it isn't a photo. Choose another JPG, PNG or WEBP picture.",
-    "image_unavailable": "We couldn't save the image right now. Please try again in a moment."
+    "image_unavailable": "We couldn't save the image right now. Please try again in a moment.",
+    "duplicate_vacancy": "An active job with the same title and location already exists"
   },
   "empty": {
     "nothing_here": "Nothing here yet",

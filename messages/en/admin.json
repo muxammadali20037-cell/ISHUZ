@@ -320,7 +320,15 @@
     "section_main": "Main",
     "requirements": "Requirements",
     "benefits": "Benefits",
-    "description": "Description"
+    "description": "Description",
+    "featured_title": "Featured (TOP)",
+    "featured_on": "Featured — no end date",
+    "featured_until": "Featured until {date} — shown first in search",
+    "featured_off": "Not featured. Featured jobs appear first in search and lists.",
+    "featured_days": "{days} days",
+    "featured_remove": "Remove",
+    "featured_done": "Job featured",
+    "unfeatured_done": "Removed from featured"
   },
   "reports": {
     "title": "Reports",

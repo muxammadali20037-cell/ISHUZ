@@ -1,6 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { adminUiEnabled } from "@/lib/features";
 import { getAdminActor } from "@/features/admin/context";
+import { logAdmin } from "@/features/admin/actions/guard";
+import { createClient } from "@/lib/supabase/server";
 import { resolvePeriod } from "@/features/admin/period";
 import { SERIES_METRICS, getStatsSeries, getStatsV2 } from "@/features/admin/queries/panel";
 import { BRAND } from "@/config/brand";
@@ -46,6 +48,8 @@ export async function GET(request: NextRequest) {
     for (const r of stats.regions) out.push(["region", r.name_uz, r.demand, `vacancies=${r.vacancies};workers=${r.workers}`]);
     body = csv(out);
   }
+  // ma'lumot eksporti — auditda (kim, qaysi davr, qaysi turdagi)
+  await logAdmin(await createClient(), "analytics.export", "analytics", kind, null, { from: period.from.toISOString(), to: period.to.toISOString() });
   return new NextResponse(body, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",

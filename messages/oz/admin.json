@@ -320,7 +320,15 @@
     "section_main": "Асосий",
     "requirements": "Талаблар",
     "benefits": "Имкониятлар",
-    "description": "Тавсиф"
+    "description": "Тавсиф",
+    "featured_title": "TOP вакансия",
+    "featured_on": "TOP — муддатсиз",
+    "featured_until": "TOP: {date} гача — қидирувда биринчи",
+    "featured_off": "TOP эмас. TOP вакансия қидирув ва рўйхатларда биринчи туради.",
+    "featured_days": "{days} кун",
+    "featured_remove": "ТОПдан олиш",
+    "featured_done": "Вакансия ТОПга чиқарилди",
+    "unfeatured_done": "ТОПдан олинди"
   },
   "reports": {
     "title": "Шикоятлар",

@@ -81,7 +81,7 @@ export async function getVacancyDetail(id: string) {
   const { data } = await supabase
     .from("vacancies")
     .select(
-      `${LIST_SELECT}, description, address, is_remote, employment_type, schedule, work_time_from, work_time_to, experience_min_months, age_min, age_max, education_min, gender, work_format, official_terms, updated_at,
+      `${LIST_SELECT}, is_featured, featured_until, description, address, is_remote, employment_type, schedule, work_time_from, work_time_to, experience_min_months, age_min, age_max, education_min, gender, work_format, official_terms, updated_at,
        districts(name_uz, name_ru), subcategories(name_uz, name_ru), vacancy_skills(is_required, skills(name_uz, name_ru)), vacancy_languages(min_level, languages(name_uz, name_ru)), vacancy_benefits(benefits(name_uz, name_ru))`,
     )
     .eq("id", id)

@@ -320,7 +320,15 @@
     "section_main": "Основное",
     "requirements": "Требования",
     "benefits": "Условия",
-    "description": "Описание"
+    "description": "Описание",
+    "featured_title": "ТОП-вакансия",
+    "featured_on": "В ТОПе — бессрочно",
+    "featured_until": "В ТОПе до {date} — первой в поиске",
+    "featured_off": "Не в ТОПе. ТОП-вакансия показывается первой в поиске и списках.",
+    "featured_days": "{days} дн.",
+    "featured_remove": "Убрать из ТОПа",
+    "featured_done": "Вакансия добавлена в ТОП",
+    "unfeatured_done": "Убрано из ТОПа"
   },
   "reports": {
     "title": "Жалобы",

@@ -439,7 +439,8 @@
     "photo_not_verified": "The photo hasn't been checked. Please upload it again",
     "offline": "You're offline. Your answers are saved on this device — tap again when you're back online.",
     "network": "The connection dropped or the server didn't respond. Your answers are saved — tap again.",
-    "timeout": "The response is taking long. The listing may already be saved — tap again, it won't be posted twice."
+    "timeout": "The response is taking long. The listing may already be saved — tap again, it won't be posted twice.",
+    "duplicate_vacancy": "You already have an active job with the same title and location. Edit or close it instead of posting a new one (“My jobs”)."
   },
   "nav": {
     "search": "Search",
