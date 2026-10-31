@@ -5042,6 +5042,22 @@ export type Database = {
         }[];
       };
       promote_worker: { Args: Record<PropertyKey, never>; Returns: string };
+      public_companies: {
+        Args: { p_limit?: number; p_offset?: number; p_query?: string; p_region_id?: string };
+        Returns: {
+          about: string;
+          active_jobs: number;
+          id: string;
+          industry_category_id: string;
+          is_government: boolean;
+          logo_url: string;
+          name: string;
+          region_id: string;
+          slug: string;
+          total_count: number;
+          verified: boolean;
+        }[];
+      };
       publish_vacancy: {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];

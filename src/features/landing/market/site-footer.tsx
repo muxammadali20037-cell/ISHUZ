@@ -16,11 +16,17 @@ interface FooterLink {
 
 /**
  * Bosh sahifa pastki qismi (to'q ko'k). Faqat haqiqiy sahifa va oqimlarga havolalar: narxlar — to'lovlar yoqilgan bo'lsa,
- * aloqa — SUPPORT_EMAIL sozlangan bo'lsa, Telegram — rasmiy bot sozlangan bo'lsa (soxta ijtimoiy tarmoq havolalari yo'q).
+ * aloqa — SUPPORT_EMAIL sozlangan bo'lsa, Telegram — rasmiy bot sozlangan bo'lsa, ijtimoiy tarmoqlar — SOCIAL_*_URL
+ * sozlangan bo'lsa (soxta ijtimoiy tarmoq havolalari yo'q).
  */
 export async function SiteFooter() {
   const { t } = await getT();
-  const { SUPPORT_EMAIL, TELEGRAM_BOT_USERNAME } = getServerEnv();
+  const { SUPPORT_EMAIL, TELEGRAM_BOT_USERNAME, SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL } = getServerEnv();
+  const social = [
+    { href: SOCIAL_TELEGRAM_URL, label: "Telegram" },
+    { href: SOCIAL_INSTAGRAM_URL, label: "Instagram" },
+    { href: SOCIAL_FACEBOOK_URL, label: "Facebook" },
+  ].filter((x): x is { href: string; label: string } => !!x.href);
   const bot = TELEGRAM_BOT_USERNAME?.replace(/^@/, "") || null;
   const seek = Object.fromEntries(seekerQuickFilters({ region: null, district: null }).map((f) => [f.key, f.href])) as Record<"salary" | "noexp" | "daily" | "remote", string>;
   const columns: { title: string; links: FooterLink[] }[] = [
@@ -28,6 +34,7 @@ export async function SiteFooter() {
       title: t("welcome.market.footer_seekers"),
       links: [
         { href: "/jobs", label: t("welcome.market.f_jobs") },
+        { href: "/companies", label: t("common.site.nav_companies") },
         { href: seek.daily, label: t("welcome.market.f_daily") },
         { href: seek.remote, label: t("welcome.market.f_remote") },
         { href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("welcome.market.f_professions") },
@@ -38,7 +45,7 @@ export async function SiteFooter() {
       links: [
         { href: "/post/vacancy", label: t("welcome.market.f_post") },
         { href: findHref(EMPTY_FIND, { mode: "workers", any: true, region: "all" }), label: t("welcome.market.f_workers") },
-        { href: "/help", label: t("welcome.market.f_guide") },
+        { href: "/for-employers", label: t("common.site.nav_for_employers") },
         ...(billingEnabled() ? [{ href: "/pricing", label: t("welcome.market.f_pricing") }] : []),
       ],
     },
@@ -74,6 +81,17 @@ export async function SiteFooter() {
             <a href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer" className={`${linkCls} mt-2`}>
               {t("welcome.market.f_telegram")} · @{bot}
             </a>
+          ) : null}
+          {social.length ? (
+            <ul className="mt-2 flex flex-wrap gap-x-4" aria-label={t("welcome.market.f_social")}>
+              {social.map((x) => (
+                <li key={x.label}>
+                  <a href={x.href} target="_blank" rel="noopener noreferrer" className={linkCls}>
+                    {x.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
           ) : null}
         </div>
         {columns.map((c) => (

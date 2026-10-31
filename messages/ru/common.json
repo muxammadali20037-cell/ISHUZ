@@ -232,7 +232,12 @@
     "nav_about": "О нас",
     "nav_help": "Помощь",
     "register": "Регистрация",
-    "menu": "Меню"
+    "menu": "Меню",
+    "nav_find_jobs": "Поиск работы",
+    "nav_companies": "Компании",
+    "nav_professions": "Профессии",
+    "nav_for_employers": "Работодателям",
+    "post_job": "Разместить вакансию"
   },
   "report_login": "Войдите, чтобы отправить жалобу"
 }

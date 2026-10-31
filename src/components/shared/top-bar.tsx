@@ -66,7 +66,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           </span>
         </Link>
         <div className={cn("ml-4 min-w-0 flex-1 @max-[22rem]:ml-0", showPlace && "max-md:ml-0")}>
-          {site ? <SiteNavLinks pricing={site.pricing} /> : <DesktopNavLinks role={role} mode={mode} counts={counts} />}
+          {site ? <SiteNavLinks /> : <DesktopNavLinks role={role} mode={mode} counts={counts} />}
           {showPlace ? (
             <Link
               href={place.href}
@@ -133,8 +133,14 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               </Button>
               {site ? (
                 <>
-                  <Button asChild className="hidden h-11 px-4 text-base lg:inline-flex">
+                  {/* kompyuterda: Kirish · Ro'yxatdan o'tish · Ish joylashtirish (asosiy amal); telefonda — menyuda */}
+                  <Button asChild variant="ghost" className="hidden h-11 px-3 text-base xl:inline-flex">
                     <Link href={site.registerHref}>{t("common.site.register")}</Link>
+                  </Button>
+                  <Button asChild className="hidden h-11 px-4 text-base lg:inline-flex">
+                    <Link href="/post/vacancy" data-track="home_post_vacancy" data-track-to="header">
+                      {t("common.site.post_job")}
+                    </Link>
                   </Button>
                   <SiteMenu {...site} />
                 </>

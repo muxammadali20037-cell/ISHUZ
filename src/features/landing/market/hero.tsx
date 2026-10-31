@@ -16,7 +16,6 @@ import { TileButton } from "../entry-client";
 import { seekerQuickFilters } from "../quick-filters";
 import type { EntryStats } from "../entry-queries";
 import { homeSearch } from "./actions";
-import { HERO_SALARIES, WORK_TYPES } from "./model";
 
 const num = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
 
@@ -47,12 +46,11 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
               {t("welcome.entry.today", { count: num(stats.today) })}
             </p>
           ) : null}
+          {/* 2026-10-31: bitta aniq va'da (sariq urg'usiz — bitta brend rangi), ostida qisqa tushuntirish */}
           <h1 id="hero-title" className="text-balance text-3xl font-extrabold leading-tight tracking-tight text-hero-fg sm:text-4xl lg:text-5xl lg:leading-tight">
-            {t("welcome.market.title_a")}
-            <span className="text-highlight">{t("welcome.market.title_em")}</span>
-            {t("welcome.market.title_b")}
+            {t("welcome.market.hero_title")}
           </h1>
-          <p className="mt-3 max-w-2xl text-base leading-relaxed text-hero-muted sm:mt-4 sm:text-lg">{t("welcome.market.subtitle")}</p>
+          <p className="mt-3 max-w-2xl text-base leading-relaxed text-hero-muted sm:mt-4 sm:text-lg">{t("welcome.market.hero_subtitle")}</p>
           <div className="mt-5 grid grid-cols-2 gap-2.5 sm:mt-6 sm:max-w-xl sm:gap-3">
             <RoleCta
               mode="worker"
@@ -69,8 +67,10 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
             />
           </div>
         </div>
-        {/* fon surati bo'lsa — u o'zi asosiy tasvir: ustiga yana tasvir kartalari qo'yilmaydi */}
-        {photo ? null : <HeroPhotos media={media} seekLabel={t("welcome.market.hero_photo_seek")} hireLabel={t("welcome.market.hero_photo_hire")} />}
+        {/* fon surati bo'lsa — u o'zi asosiy tasvir. Kartalar faqat admin HAQIQIY surat yuklagan bo'lsa (bezak rasm — yo'q) */}
+        {photo || !(entryMediaUrl(media.intro_jobs) || entryMediaUrl(media.intro_workers)) ? null : (
+          <HeroPhotos media={media} seekLabel={t("welcome.market.hero_photo_seek")} hireLabel={t("welcome.market.hero_photo_hire")} />
+        )}
       </div>
       <div className="container-app pb-7 sm:pb-10">
         <HeroSearch />
@@ -150,15 +150,16 @@ function HeroPhotos({ media, seekLabel, hireLabel }: { media: EntryMedia; seekLa
 }
 
 /**
- * Qidiruv paneli: kasb (matn), hudud (viloyatlar ma'lumotnomadan), ish turi va maosh. Server action — JS'siz ham ishlaydi,
- * qiymatlar serverda tekshiriladi va mavjud /search oqimiga yo'naltiriladi (tuman — keyingi qadamda).
+ * Qidiruv paneli: "Qanday ish qidiryapsiz?" (matn) va "Qaysi shahar yoki hudud?" — ikki savol, bitta tugma. Server action —
+ * JS'siz ham ishlaydi, qiymatlar serverda tekshiriladi va /search ga yo'naltiriladi (matn kasbga tushuniladi; tuman,
+ * grafik va maosh — natijalar sahifasida filtr bilan).
  */
 async function HeroSearch() {
   const [{ t, name }, regions] = await Promise.all([getT(), getRegions()]);
   const label = "mb-1 block text-sm font-semibold text-foreground";
   return (
     <form action={homeSearch} role="search" aria-label={t("welcome.market.search_label")} className="rounded-2xl bg-card p-3 text-foreground shadow-lg ring-1 ring-black/5 sm:p-4">
-      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.9fr)_auto] lg:items-end">
+      <div className="grid grid-cols-1 gap-3 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] lg:items-end">
         <div>
           <label htmlFor="hero-q" className={label}>
             {t("welcome.market.q_label")}
@@ -183,25 +184,6 @@ async function HeroSearch() {
           <span id="hero-region-hint" className="sr-only">
             {t("welcome.market.region_hint")}
           </span>
-        </div>
-        <div className="grid grid-cols-2 gap-3 lg:contents">
-          <div className="min-w-0">
-            <label htmlFor="hero-type" className={label}>
-              {t("welcome.market.type_label")}
-            </label>
-            <Select id="hero-type" name="type" defaultValue="" options={[{ value: "", label: t("welcome.market.type_any") }, ...WORK_TYPES.map((w) => ({ value: w, label: t(`welcome.market.type_${w}`) }))]} />
-          </div>
-          <div className="min-w-0">
-            <label htmlFor="hero-salary" className={label}>
-              {t("welcome.market.salary_label")}
-            </label>
-            <Select
-              id="hero-salary"
-              name="salary"
-              defaultValue=""
-              options={[{ value: "", label: t("welcome.market.salary_any") }, ...HERO_SALARIES.map((s) => ({ value: String(s), label: t("welcome.market.salary_from", { amount: s / 1_000_000 }) }))]}
-            />
-          </div>
         </div>
         <SubmitSearch label={t("welcome.market.submit")} />
       </div>

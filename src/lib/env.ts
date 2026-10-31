@@ -23,6 +23,10 @@ const serverSchema = z.object({
   SUPPORT_EMAIL: z.string().email().optional(),
   /** Huquqiy sahifalardagi operator rekvizitlari, masalan: «"Topdim" MChJ, STIR 123456789, Toshkent sh., ...» (ixtiyoriy) */
   LEGAL_OPERATOR: z.string().optional(),
+  /** Footer'dagi rasmiy ijtimoiy tarmoqlar (to'liq https havola; bo'lmasa ko'rsatilmaydi — soxta havola yo'q) */
+  SOCIAL_TELEGRAM_URL: z.string().url().optional(),
+  SOCIAL_INSTAGRAM_URL: z.string().url().optional(),
+  SOCIAL_FACEBOOK_URL: z.string().url().optional(),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
@@ -75,6 +79,9 @@ export function getServerEnv() {
     YANDEX_VERIFICATION: process.env.YANDEX_VERIFICATION || undefined,
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || undefined,
     LEGAL_OPERATOR: process.env.LEGAL_OPERATOR || undefined,
+    SOCIAL_TELEGRAM_URL: process.env.SOCIAL_TELEGRAM_URL || undefined,
+    SOCIAL_INSTAGRAM_URL: process.env.SOCIAL_INSTAGRAM_URL || undefined,
+    SOCIAL_FACEBOOK_URL: process.env.SOCIAL_FACEBOOK_URL || undefined,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,

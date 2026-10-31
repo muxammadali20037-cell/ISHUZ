@@ -16,45 +16,50 @@ export interface SiteNavConfig {
   registerHref: string;
 }
 
-type Key = "home" | "jobs" | "workers" | "services" | "about";
+/**
+ * Sayt menyusi (2026-10-31 auditi, egasining spetsifikatsiyasi): Ish qidirish · Kompaniyalar · Kasblar · Ish beruvchilar uchun.
+ * "Bosh sahifa" — logotip; "Biz haqimizda", "Yordam", narxlar — footer va telefon menyusida. "Ish qidirish" — to'liq filtrli
+ * ro'yxat (/jobs), "Kasblar" — soha → kasb → hudud bo'yicha bosqichli tanlash (/search?mode=jobs).
+ */
+type Key = "jobs" | "companies" | "professions" | "employers";
 
-function items(pricing: boolean): { key: Key; href: string }[] {
+function items(): { key: Key; href: string }[] {
   return [
-    { key: "home", href: "/" },
-    { key: "jobs", href: "/search?mode=jobs" },
-    { key: "workers", href: "/search?mode=workers" },
-    ...(pricing ? [{ key: "services" as const, href: "/pricing" }] : []),
-    { key: "about", href: "/about" },
+    { key: "jobs", href: "/jobs" },
+    { key: "companies", href: "/companies" },
+    { key: "professions", href: "/search?mode=jobs" },
+    { key: "employers", href: "/for-employers" },
   ];
 }
 
 function activeKey(pathname: string, mode: string | null): Key | null {
-  if (pathname === "/") return "home";
-  if (pathname.startsWith("/workers") || pathname.startsWith("/listing") || (pathname.startsWith("/search") && mode === "workers")) return "workers";
-  if (pathname.startsWith("/search") || pathname.startsWith("/jobs") || pathname.startsWith("/students")) return "jobs";
-  if (pathname.startsWith("/pricing")) return "services";
-  if (pathname.startsWith("/about")) return "about";
+  if (pathname.startsWith("/jobs") || pathname.startsWith("/students")) return "jobs";
+  if (pathname.startsWith("/companies") || pathname.startsWith("/company/")) return "companies";
+  if (pathname.startsWith("/search") && mode !== "workers") return "professions";
+  if (pathname.startsWith("/for-employers") || pathname.startsWith("/workers") || pathname.startsWith("/listing") || (pathname.startsWith("/search") && mode === "workers"))
+    return "employers";
   return null;
 }
 
 const LABEL: Record<Key, string> = {
-  home: "common.site.nav_home",
-  jobs: "common.site.nav_jobs",
-  workers: "common.site.nav_workers",
-  services: "common.site.nav_services",
-  about: "common.site.nav_about",
+  jobs: "common.site.nav_find_jobs",
+  companies: "common.site.nav_companies",
+  professions: "common.site.nav_professions",
+  employers: "common.site.nav_for_employers",
 };
 
-function DesktopLinks({ pricing, mode }: { pricing: boolean; mode: string | null }) {
+function DesktopLinks({ mode }: { mode: string | null }) {
   const { t } = useT();
   const pathname = usePathname();
   const active = activeKey(pathname, mode);
   return (
     <ul className="flex items-center gap-1">
-      {items(pricing).map((it) => (
+      {items().map((it) => (
         <li key={it.key}>
           <Link
             href={it.href}
+            data-track="site_nav"
+            data-track-to={it.key}
             aria-current={active === it.key ? "page" : undefined}
             className={cn(
               "flex min-h-11 items-center whitespace-nowrap rounded-xl px-3 text-base font-semibold transition-colors lg:px-3.5",
@@ -69,19 +74,19 @@ function DesktopLinks({ pricing, mode }: { pricing: boolean; mode: string | null
   );
 }
 
-function ModeAware({ pricing }: { pricing: boolean }) {
+function ModeAware() {
   const mode = useSearchParams().get("mode");
-  return <DesktopLinks pricing={pricing} mode={mode} />;
+  return <DesktopLinks mode={mode} />;
 }
 
-/** Kompyuter va planshet (md+): sayt bo'limlari. Faol bo'lim belgilanadi ("Ishchilar" — /search?mode=workers ham) */
-export function SiteNavLinks({ pricing }: { pricing: boolean }) {
+/** Kompyuter va planshet (md+): sayt bo'limlari. Faol bo'lim belgilanadi */
+export function SiteNavLinks() {
   const { t } = useT();
   return (
     <nav aria-label={t("common.site.nav_label")} className="hidden md:block">
       {/* useSearchParams statik sahifalarda Suspense talab qiladi; kutish paytida — rejimsiz holat */}
-      <Suspense fallback={<DesktopLinks pricing={pricing} mode={null} />}>
-        <ModeAware pricing={pricing} />
+      <Suspense fallback={<DesktopLinks mode={null} />}>
+        <ModeAware />
       </Suspense>
     </nav>
   );
@@ -90,8 +95,8 @@ export function SiteNavLinks({ pricing }: { pricing: boolean }) {
 /** Telefonda (md dan tor): sayt bo'limlari menyusi. Pastki menyu (ilova bo'limlari) o'z joyida qoladi */
 export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
   const { t } = useT();
-  // "Bosh sahifa" va "Ishlar" — pastki menyuda bor; bu yerda faqat qolgan bo'limlar
-  const extra = items(pricing).filter((it) => it.key !== "home" && it.key !== "jobs");
+  // "Ish qidirish" — pastki menyuda bor; bu yerda qolgan bo'limlar + biz haqimizda, narxlar (yoqilgan bo'lsa), yordam
+  const extra = items().filter((it) => it.key !== "jobs");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -106,10 +111,23 @@ export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
           </DropdownMenuItem>
         ))}
         <DropdownMenuItem asChild className="min-h-11 text-base font-semibold">
+          <Link href="/about">{t("common.site.nav_about")}</Link>
+        </DropdownMenuItem>
+        {pricing ? (
+          <DropdownMenuItem asChild className="min-h-11 text-base font-semibold">
+            <Link href="/pricing">{t("common.site.nav_services")}</Link>
+          </DropdownMenuItem>
+        ) : null}
+        <DropdownMenuItem asChild className="min-h-11 text-base font-semibold">
           <Link href="/help">{t("common.site.nav_help")}</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild className="min-h-11 text-base font-bold text-primary focus:text-primary">
+          <Link href="/post/vacancy" data-track="home_post_vacancy" data-track-to="site_menu">
+            {t("common.site.post_job")}
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild className="min-h-11 text-base font-semibold">
           <Link href={registerHref}>{t("common.site.register")}</Link>
         </DropdownMenuItem>
       </DropdownMenuContent>

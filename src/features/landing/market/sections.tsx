@@ -8,10 +8,8 @@ import {
   LayoutGrid,
   LifeBuoy,
   MessageCircle,
-  MousePointerClick,
   ShieldCheck,
   Wallet,
-  Zap,
   type LucideIcon,
 } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -385,7 +383,7 @@ export async function HowItWorks() {
     {
       key: "seek",
       title: t("welcome.market.how_seek"),
-      steps: [1, 2, 3].map((i) => t(`welcome.market.how_seek_${i}`)),
+      steps: [1, 2, 3, 4].map((i) => t(`welcome.market.how_seek_${i}`)),
       cta: (
         <ModeButton mode="worker" next={findHref(EMPTY_FIND, { mode: "jobs" })} track="how_seek" className={btnPrimary}>
           {t("welcome.market.how_seek_cta")} <ArrowRight className="size-5" aria-hidden />
@@ -395,7 +393,7 @@ export async function HowItWorks() {
     {
       key: "hire",
       title: t("welcome.market.how_hire"),
-      steps: [1, 2, 3].map((i) => t(`welcome.market.how_hire_${i}`)),
+      steps: [1, 2, 3, 4].map((i) => t(`welcome.market.how_hire_${i}`)),
       cta: (
         <ModeButton mode="employer" next="/post/vacancy" track="how_hire" className={btnOutline}>
           {t("welcome.market.how_hire_cta")} <ArrowRight className="size-5" aria-hidden />
@@ -428,29 +426,30 @@ export async function HowItWorks() {
   );
 }
 
-/** Nega Ish topdim: to'rt tamoyil — va'dalar emas, mavjud imkoniyatlar (sohalar soni — ma'lumotnomadan) */
-export async function WhyUs() {
-  const [{ t }, categories] = await Promise.all([getT(), getCategories()]);
-  const items: { icon: LucideIcon; title: string; desc: string }[] = [
-    { icon: LayoutGrid, title: t("welcome.market.why_all"), desc: t("welcome.market.why_all_desc", { count: categories.length }) },
-    { icon: Zap, title: t("welcome.market.why_fast"), desc: t("welcome.market.why_fast_desc") },
-    { icon: MousePointerClick, title: t("welcome.market.why_simple"), desc: t("welcome.market.why_simple_desc") },
-    { icon: ShieldCheck, title: t("welcome.market.why_trust"), desc: t("welcome.market.why_trust_desc") },
-  ];
+/**
+ * Yakuniy chaqiruv (2026-10-31): sahifa oxirida ikki aniq yo'l — ish qidirish (to'liq filtrli ro'yxat) va xodim izlash
+ * (ish beruvchilar sahifasi). "Nega Ish topdim?" bo'limi olib tashlandi — ishonch qatorini takrorlardi.
+ */
+export async function FinalCta() {
+  const { t } = await getT();
   return (
-    <section aria-labelledby="home-why" className="container-app py-8 sm:py-10">
-      <SectionHead id="home-why" title={t("welcome.market.why_title")} />
-      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {items.map((it) => (
-          <li key={it.title} className="rounded-2xl border border-border bg-card p-5">
-            <span className="flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
-              <it.icon className="size-5" />
-            </span>
-            <h3 className="mt-3 text-lg font-bold leading-tight">{it.title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{it.desc}</p>
-          </li>
-        ))}
-      </ul>
+    <section aria-labelledby="home-final" className="container-app py-8 sm:py-12">
+      <div className="flex flex-col items-start gap-5 rounded-2xl border border-primary/25 bg-primary-soft p-6 sm:p-10 lg:flex-row lg:items-center lg:justify-between">
+        <div className="max-w-xl">
+          <h2 id="home-final" className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            {t("welcome.market.final_title")}
+          </h2>
+          <p className="mt-2 text-base leading-relaxed text-muted-foreground">{t("welcome.market.final_text")}</p>
+        </div>
+        <div className="flex w-full flex-col gap-2.5 sm:w-auto sm:flex-row">
+          <ModeButton mode="worker" next="/jobs" track="final_seek" className={btnPrimary}>
+            {t("welcome.market.final_seek")} <ArrowRight className="size-5" aria-hidden />
+          </ModeButton>
+          <Link href="/for-employers" data-track="home_cta" data-track-to="final_hire" className={btnOutline}>
+            {t("welcome.market.final_hire")}
+          </Link>
+        </div>
+      </div>
     </section>
   );
 }
