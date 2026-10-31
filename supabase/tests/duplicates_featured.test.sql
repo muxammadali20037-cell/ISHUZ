@@ -83,16 +83,18 @@ insert into public.vacancies (owner_profile_id, title, category_id, region_id, d
 select o1.id, 'Kassir', cat, reg2, 'Boshqa viloyatdagi kassir e''loni — takror emas', 'active', now(), now() + interval '7 days' from ref, o1;
 insert into public.vacancies (owner_profile_id, title, category_id, region_id, description, status, published_at, expires_at)
 select o1.id, 'Katta kassir', cat, reg, 'Boshqa lavozim nomi — takror emas, ish vaqti 9-18', 'active', now(), now() + interval '7 days' from ref, o1;
-select pg_temp.ok((select count(*) from public.vacancies v, o1 where v.owner_profile_id = o1.id and v.status = 'active') = 3, 'boshqa hudud va boshqa nom — chiqadi');
+insert into public.vacancies (owner_profile_id, title, category_id, region_id, description, status, salary_type, salary_from, published_at, expires_at)
+select o1.id, 'Kassir', cat, reg, 'Shu joyda kunlik kassir — boshqa to''lov davri, boshqa taklif', 'active', 'daily', 200000, now(), now() + interval '7 days' from ref, o1;
+select pg_temp.ok((select count(*) from public.vacancies v, o1 where v.owner_profile_id = o1.id and v.status = 'active') = 4, 'boshqa hudud, boshqa nom va boshqa to''lov davri — chiqadi');
 
 -- birinchisi yopilsa — qoralamani chiqarish mumkin
-update public.vacancies v set status = 'closed' from ref, o1 where v.owner_profile_id = o1.id and v.title = 'Kassir' and v.region_id = ref.reg and v.status = 'active';
+update public.vacancies v set status = 'closed' from ref, o1 where v.owner_profile_id = o1.id and v.title = 'Kassir' and v.region_id = ref.reg and v.status = 'active' and v.salary_type <> 'daily';
 select pg_temp.login('72000000-0000-0000-0000-000000000001');
 select pg_temp.ok((select public.my_duplicate_vacancy(id) is null from public.vacancies where owner_profile_id = auth.uid() and status = 'draft'),
   'birinchisi yopilgach takror yo''q');
 select pg_temp.as_owner('72000000-0000-0000-0000-000000000001');
 update public.vacancies v set status = 'active', published_at = now(), expires_at = now() + interval '7 days' from o1 where v.owner_profile_id = o1.id and v.status = 'draft';
-select pg_temp.ok((select count(*) from public.vacancies v, o1 where v.owner_profile_id = o1.id and v.status = 'active' and v.title = 'Kassir') = 2, 'yopilgandan keyin yangi e''lon chiqadi');
+select pg_temp.ok((select count(*) from public.vacancies v, o1 where v.owner_profile_id = o1.id and v.status = 'active' and v.title = 'Kassir') = 3, 'yopilgandan keyin yangi e''lon chiqadi');
 
 -- pauza → faol (qayta ochish) takror tekshiruviga tushmaydi
 update public.vacancies v set status = 'paused' from o1 where v.owner_profile_id = o1.id and v.title = 'Katta kassir';

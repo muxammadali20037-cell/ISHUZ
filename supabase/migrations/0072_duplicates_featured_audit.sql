@@ -1,5 +1,6 @@
 -- 0072 · Ishonch va admin (2026-10-31 auditi, §5):
---   1) Takroriy vakansiya: bir ish beruvchi (yoki bitta kompaniya) bir xil nom + bir xil joy bilan ikkinchi e'lonni
+--   1) Takroriy vakansiya: bir ish beruvchi (yoki bitta kompaniya) bir xil nom + bir xil joy + bir xil to'lov davri (kunlik /
+--      oylik / soatlik — boshqa davr boshqa taklif) bilan ikkinchi e'lonni
 --      CHIQARA OLMAYDI, birinchisi faol / ko'rib chiqilmoqda / to'xtatilgan va muddati o'tmagan bo'lsa. Bir nechta odam kerak
 --      bo'lsa — mavjud e'londagi "o'rinlar soni" (positions_count). Xato: duplicate_vacancy (ilova tushuntiradi va mavjud
 --      e'longa havola beradi). Qoralama saqlash cheklanmaydi — faqat chiqarish (ommaga yoki moderatsiyaga yuborish).
@@ -19,7 +20,7 @@ returns text language sql immutable set search_path = public as $$
   select btrim(regexp_replace(lower(coalesce(p_title, '')), '[^[:alnum:]]+', ' ', 'g'))
 $$;
 
-create or replace function public.find_duplicate_vacancy(p_id uuid, p_owner uuid, p_company uuid, p_title text, p_region uuid, p_district uuid, p_remote boolean)
+create or replace function public.find_duplicate_vacancy(p_id uuid, p_owner uuid, p_company uuid, p_title text, p_region uuid, p_district uuid, p_remote boolean, p_salary_type public.salary_type)
 returns text language sql stable security definer set search_path = public as $$
   select o.slug
   from public.vacancies o
@@ -28,12 +29,14 @@ returns text language sql stable security definer set search_path = public as $$
     and o.status in ('active', 'pending_review', 'paused')
     and (o.expires_at is null or o.expires_at > now())
     and public.vacancy_title_key(o.title) = public.vacancy_title_key(p_title)
+    and o.salary_type is not distinct from p_salary_type
     and o.is_remote = coalesce(p_remote, false)
     and (coalesce(p_remote, false) or (o.region_id is not distinct from p_region and o.district_id is not distinct from p_district))
   order by o.published_at desc nulls last
   limit 1
 $$;
-revoke all on function public.find_duplicate_vacancy(uuid, uuid, uuid, text, uuid, uuid, boolean) from public;
+-- faqat trigger va my_duplicate_vacancy ichida (Supabase standart huquqlari anon/authenticated ga ham beradi — aniq olinadi)
+revoke all on function public.find_duplicate_vacancy(uuid, uuid, uuid, text, uuid, uuid, boolean, public.salary_type) from public, anon, authenticated;
 
 create or replace function public.trg_vacancy_b_duplicate()
 returns trigger language plpgsql security definer set search_path = public as $$
@@ -45,7 +48,7 @@ begin
   -- faqat ish beruvchining o'z amali (publish_vacancy, save_simple_vacancy — ular ichki bayroq bilan yozadi, shuning uchun
   -- moderation_internal emas, aktyor tekshiriladi). Admin tasdig'i va cron (auth.uid() boshqa yoki yo'q) — tekshirilmaydi
   if auth.uid() is null or not (new.owner_profile_id = auth.uid() or public.manages_vacancy(new.id)) then return new; end if;
-  dup := public.find_duplicate_vacancy(new.id, new.owner_profile_id, new.company_id, new.title, new.region_id, new.district_id, new.is_remote);
+  dup := public.find_duplicate_vacancy(new.id, new.owner_profile_id, new.company_id, new.title, new.region_id, new.district_id, new.is_remote, new.salary_type);
   if dup is not null then
     raise exception 'duplicate_vacancy' using errcode = 'P0001', detail = dup,
       hint = 'Sizda shu nom va joy bilan faol e''lon bor — uni tahrirlang yoki "o''rinlar soni"ni oshiring';
@@ -63,9 +66,9 @@ declare v public.vacancies;
 begin
   select * into v from public.vacancies where id = p_vacancy_id;
   if v.id is null or not public.can_edit_vacancy(v.id) then return null; end if;
-  return public.find_duplicate_vacancy(v.id, v.owner_profile_id, v.company_id, v.title, v.region_id, v.district_id, v.is_remote);
+  return public.find_duplicate_vacancy(v.id, v.owner_profile_id, v.company_id, v.title, v.region_id, v.district_id, v.is_remote, v.salary_type);
 end $$;
-revoke all on function public.my_duplicate_vacancy(uuid) from public;
+revoke all on function public.my_duplicate_vacancy(uuid) from public, anon;
 grant execute on function public.my_duplicate_vacancy(uuid) to authenticated;
 
 create index if not exists idx_vacancies_owner_live on public.vacancies (owner_profile_id) where status in ('active', 'pending_review', 'paused');
@@ -92,7 +95,7 @@ begin
   perform public.write_audit(case when p_days > 0 then 'vacancy.featured' else 'vacancy.unfeatured' end, 'vacancy', p_vacancy_id::text,
     before_row, jsonb_build_object('days', p_days));
 end $$;
-revoke all on function public.admin_set_vacancy_featured(uuid, int) from public;
+revoke all on function public.admin_set_vacancy_featured(uuid, int) from public, anon;
 grant execute on function public.admin_set_vacancy_featured(uuid, int) to authenticated;
 
 -- ---------------------------------------------------------------------------------------------------

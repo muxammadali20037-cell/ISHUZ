@@ -59,7 +59,9 @@ grant select on vl to authenticated;
 select pg_temp.login('5f000000-0000-0000-0000-000000000001');
 create temp table r1 on commit drop as select public.save_simple_vacancy((select p || jsonb_build_object('client_ref', gen_random_uuid(), 'salary_type', 'daily') from vl)) as r;
 create temp table r2 on commit drop as select public.save_simple_vacancy((select p || jsonb_build_object('client_ref', gen_random_uuid()) from vl)) as r;
-create temp table r3 on commit drop as select public.save_simple_vacancy((select p || jsonb_build_object('client_ref', gen_random_uuid(), 'salary_type', 'hourly') from vl)) as r;
+-- r3 — shu viloyatning tumanida: "soatlik" e'tiborsiz qolib oylik bo'ladi; aynan r2 joyida bo'lsa — bir xil e'lon (0072: chiqmaydi)
+create temp table r3 on commit drop as select public.save_simple_vacancy((select p || jsonb_build_object('client_ref', gen_random_uuid(), 'salary_type', 'hourly',
+  'district_id', (select d.id from public.districts d where d.region_id = (select region from fx) order by d.sort_order limit 1)) from vl)) as r;
 grant select on r1, r2, r3 to authenticated, anon;
 select pg_temp.ok((select salary_type = 'daily' from public.vacancies where id = ((select r from r1) ->> 'vacancy_id')::uuid), 'kunlik haq saqlanadi');
 select pg_temp.ok((select salary_type = 'monthly' from public.vacancies where id = ((select r from r2) ->> 'vacancy_id')::uuid), 'berilmasa — oylik (avvalgidek)');
