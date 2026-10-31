@@ -146,7 +146,7 @@ select pg_temp.fails($$select public.admin_set_vacancy_featured((select id from 
 -- moderator: employers.verify yo'q, analytics.view bor; admin: employers.verify bor; tahlilchi: faqat analytics.view
 select pg_temp.fails($$select public.admin_log('verification.document_view', 'document', 'x/y.pdf')$$, 'moderator — employers.verify yo''q → forbidden', 'forbidden');
 select public.admin_log('analytics.export', 'analytics', 'summary');
-select public.admin_log('account.login_credentials_set', 'admin_user', auth.uid()::text);
+select public.admin_log('admin.login_credentials_set', 'admin_user', auth.uid()::text);
 select pg_temp.login('72000000-0000-0000-0000-000000000005');
 select public.admin_log('verification.document_view', 'document', 'x/y.pdf');
 select public.admin_log('profession.update_meta', 'profession_node', 'n1');
@@ -154,9 +154,11 @@ select pg_temp.login('72000000-0000-0000-0000-000000000004');
 select pg_temp.fails($$select public.admin_log('verification.document_view', 'document', 'x')$$, 'tahlilchi — employers.verify yo''q → forbidden', 'forbidden');
 select pg_temp.fails($$select public.admin_log('profession.update_meta', 'profession_node', 'n1')$$, 'tahlilchi — categories.manage yo''q → forbidden', 'forbidden');
 select pg_temp.login('72000000-0000-0000-0000-000000000002');
-select pg_temp.fails($$select public.admin_log('account.login_credentials_set', 'admin_user', 'x')$$, 'admin bo''lmagan — forbidden', 'forbidden');
+select pg_temp.fails($$select public.admin_log('admin.login_credentials_set', 'admin_user', 'x')$$, 'admin bo''lmagan — forbidden', 'forbidden');
+select pg_temp.login('72000000-0000-0000-0000-000000000003');
+select pg_temp.fails($$select public.admin_log('admin.owner_email_attach', 'admin_user', 'x')$$, 'boshqa "admin." amallari — admins.manage (moderatorda yo''q)', 'forbidden');
 select pg_temp.superuser();
-select pg_temp.ok((select count(*) = 4 from public.audit_logs where action in ('verification.document_view', 'account.login_credentials_set', 'analytics.export', 'profession.update_meta')
+select pg_temp.ok((select count(*) = 4 from public.audit_logs where action in ('verification.document_view', 'admin.login_credentials_set', 'analytics.export', 'profession.update_meta')
   and actor_id::text like '72000000-%'), 'audit: hujjat ko''rish, o''z hisobi (moderator), eksport, kasb (oddiy admin) yozildi');
 
 rollback;

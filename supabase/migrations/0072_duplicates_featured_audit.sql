@@ -9,8 +9,8 @@
 --      hech kim yoqa olmasdi. admin_set_vacancy_featured — 7/14/30 kun yoki olib tashlash; faqat faol vakansiya; audit bilan.
 --      Pullik "TOP" mahsuloti — to'lov ulanganda (bu funksiya o'shanda ham ishlatiladi).
 --   3) Admin audit: admin_log prefikslari — avval noma'lum prefiks "admins.manage" talab qilardi va oddiy admin uchun
---      "profession.update_meta" va o'z kirish ma'lumotini o'rnatish audit qilinmasdi (xato). Yangi: profession, media,
---      verification (hujjat ko'rish), analytics (CSV eksport), account (o'z hisobi — har qanday faol admin).
+--      "profession.update_meta" va o'z kirish ma'lumotini o'rnatish ("admin.login_credentials_set") audit qilinmasdi (xato).
+--      Yangi: profession, media, verification (hujjat ko'rish), analytics (CSV eksport); o'z hisobi — har qanday faol admin.
 
 -- ---------------------------------------------------------------------------------------------------
 -- 1. Takroriy vakansiya
@@ -110,7 +110,10 @@ begin
   if not public.is_admin() then raise exception 'forbidden' using errcode = '42501'; end if;
   if p_action !~ '^[a-z_]+\.[a-z_]+$' then raise exception 'invalid_action' using errcode = '23514'; end if;
   prefix := split_part(p_action, '.', 1);
-  perm := case prefix
+  perm := case
+    -- o'z kirish ma'lumotini o'rnatish (/admin/account bu yozuvdan "parol o'rnatilgan" belgisini o'qiydi)
+    when p_action = 'admin.login_credentials_set' then null
+    else case prefix
     when 'category' then 'categories.manage'
     when 'subcategory' then 'categories.manage'
     when 'profession' then 'categories.manage'
@@ -121,10 +124,9 @@ begin
     when 'media' then 'settings.manage'
     when 'verification' then 'employers.verify'
     when 'analytics' then 'analytics.view'
-    when 'account' then null          -- o'z hisobi: har qanday faol admin
     when 'admin' then 'admins.manage'
     else 'admins.manage'
-  end;
+  end end;
   if perm is not null and not public.has_admin_permission(perm) then raise exception 'forbidden' using errcode = '42501'; end if;
   perform public.write_audit(p_action, p_target_type, p_target_id, p_before, p_after);
 end $$;
