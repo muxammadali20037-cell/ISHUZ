@@ -106,7 +106,7 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   await expect(page.getByRole("main").locator("header").first()).toContainText("Dilnoza opa");
 });
 
-test("'Orqaga': qidiruvdan kelganda — o'sha natijalarga; havola orqali ochilganda — qidiruvga", async ({ page, context }) => {
+test("'Orqaga': qidiruvdan kelganda — o'sha natijalarga; havola orqali ochilganda — ish ro'yxatiga (/jobs)", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   const results = "/search?mode=jobs&any=1&region=tashkent_city&district=all";
@@ -117,12 +117,12 @@ test("'Orqaga': qidiruvdan kelganda — o'sha natijalarga; havola orqali ochilga
   await page.waitForURL((u) => u.pathname === "/search" && u.searchParams.get("region") === "tashkent_city");
   await expect(page.locator("main article").filter({ hasText: TITLE })).toBeVisible();
 
-  // to'g'ridan-to'g'ri havola (tarix yo'q) — qidiruv sahifasiga
+  // to'g'ridan-to'g'ri havola (tarix yo'q) — to'liq filtrli ish ro'yxatiga (2026-10-31: sayt menyusidagi "Ish qidirish" bilan bir xil)
   const [v] = await sql<{ slug: string }>("select slug from public.vacancies where title = $1", [TITLE]);
   const fresh = await context.newPage();
   await fresh.goto(`/jobs/${v!.slug}`);
   await fresh.getByRole("link", { name: "Orqaga" }).click();
-  await fresh.waitForURL((u) => u.pathname === "/search" && u.searchParams.get("mode") === "jobs");
+  await fresh.waitForURL((u) => u.pathname === "/jobs");
   await fresh.close();
 });
 

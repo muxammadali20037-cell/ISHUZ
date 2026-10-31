@@ -62,7 +62,7 @@ function DesktopLinks({ mode }: { mode: string | null }) {
             data-track-to={it.key}
             aria-current={active === it.key ? "page" : undefined}
             className={cn(
-              "flex min-h-11 items-center whitespace-nowrap rounded-xl px-3 text-base font-semibold transition-colors lg:px-3.5",
+              "flex min-h-11 items-center whitespace-nowrap rounded-xl px-3 text-base font-semibold transition-colors",
               active === it.key ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
             )}
           >
