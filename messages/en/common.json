@@ -233,5 +233,6 @@
     "nav_help": "Help",
     "register": "Sign up",
     "menu": "Menu"
-  }
+  },
+  "report_login": "Log in to send a report"
 }

@@ -114,9 +114,15 @@ export const professionNodeIdBySlug = cache(async (slug: string): Promise<string
  * PostgREST PGRST202 qaytaradi — eski funksiya bilan qayta so'raymiz, qidiruv ishlashda davom etadi.
  */
 async function rpcSearch(supabase: Awaited<ReturnType<typeof createClient>>, args: SearchVacanciesArgs) {
-  const res = await supabase.rpc("search_vacancies_v2", args);
+  // maksimal maosh / ma'lumoti filtri tanlangan — v3 (0070); v3 yo'q bazada ularsiz davom etadi
+  const { p_salary_max, p_education, ...v2args } = args;
+  if (p_salary_max !== undefined || p_education !== undefined) {
+    const res3 = await supabase.rpc("search_vacancies_v3", args);
+    if (res3.error?.code !== "PGRST202") return res3;
+  }
+  const res = await supabase.rpc("search_vacancies_v2", v2args);
   if (res.error?.code !== "PGRST202") return res;
-  const v1 = { ...args };
+  const v1 = { ...v2args };
   delete v1.p_profession_node_id;
   const res1 = await supabase.rpc("search_vacancies", v1);
   if (res1.error?.code !== "PGRST202") return res1;
@@ -211,6 +217,54 @@ export const getVacancyBySlug = cache(async (rawSlug: string): Promise<VacancyDe
     is_expired: vacancy.status === "active" && !!vacancy.expires_at && new Date(vacancy.expires_at).getTime() <= Date.now(),
   };
 });
+
+const stubSchema = z.object({
+  slug: z.string(),
+  title: z.string(),
+  status: z.enum(["closed", "expired", "paused"]),
+  category_id: z.string().nullable(),
+  region_id: z.string().nullable(),
+  district_id: z.string().nullable(),
+  is_remote: z.boolean(),
+  published_at: z.string().nullable(),
+  company: z.object({ name: z.string(), slug: z.string(), verified: z.boolean() }).nullable(),
+});
+export type VacancyStub = z.infer<typeof stubSchema> & { category: RefItem | null; region: RefItem | null; district: RefItem | null };
+
+/**
+ * Yopilgan / muddati o'tgan / to'xtatilgan (avval ommaviy) vakansiyaning ommaviy ko'rinishi (0069): mehmon ham ko'radi —
+ * ulashilgan havola 404 emas, "yopilgan" sahifasi. Faqat nom, kompaniya, hudud, soha, holat (maxfiy maydonlar yo'q).
+ */
+export const getVacancyStub = cache(async (rawSlug: string): Promise<VacancyStub | null> => {
+  const slug = normalizeVacancySlug(rawSlug);
+  if (!slug) return null;
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("vacancy_public_stub", { p_slug: slug });
+  if (error) {
+    // 0069 hali qo'llanmagan bazada — avvalgidek 404
+    if (error.code !== "PGRST202") console.error("[jobs] vacancy_public_stub", error.message);
+    return null;
+  }
+  const parsed = stubSchema.safeParse(data);
+  if (!parsed.success) return null;
+  const v = parsed.data;
+  const [categories, regions, districts] = await Promise.all([getCategories(), getRegions(), getDistricts()]);
+  const pick = <T extends { id: string; slug: string; name_uz: string; name_ru: string }>(list: T[], id: string | null): RefItem | null => {
+    const r = id ? list.find((x) => x.id === id) : undefined;
+    return r ? { id: r.id, slug: r.slug, name_uz: r.name_uz, name_ru: r.name_ru } : null;
+  };
+  return { ...v, category: pick(categories, v.category_id), region: pick(regions, v.region_id), district: pick(districts, v.district_id) };
+});
+
+/** Faol o'xshash vakansiyalar: shu soha (bo'lsa shu hudud birinchi), berilgan slug'dan tashqari */
+export async function getActiveSimilar(opts: { categoryId: string | null; regionId?: string | null; excludeSlug?: string; limit?: number }): Promise<VacancyCardData[]> {
+  if (!opts.categoryId) return [];
+  const limit = opts.limit ?? 5;
+  const base = { p_category_id: opts.categoryId, p_sort: "relevant" as const, p_limit: limit + 1, p_offset: 0 };
+  let items = opts.regionId ? await searchVacancyCards({ ...base, p_region_id: opts.regionId }) : [];
+  if (items.length <= 1) items = await searchVacancyCards(base);
+  return items.filter((v) => v.slug !== opts.excludeSlug).slice(0, limit);
+}
 
 export function parseReasons(json: Json | null | undefined): MatchReason[] {
   if (!Array.isArray(json)) return [];

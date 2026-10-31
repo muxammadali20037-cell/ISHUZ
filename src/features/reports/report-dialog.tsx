@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Flag } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -17,6 +19,8 @@ const REASONS: ReportInput["reason"][] = ["fraud", "fake_vacancy", "asked_money"
 /**
  * "Shikoyat qilish" tugmasi + bottom sheet. Har qanday joyda:
  * <ReportDialog targetType="vacancy" targetId={vacancy.id} />
+ * `guest` — mehmon: forma o'rniga kirish sahifasiga (shu sahifaga qaytadi). Avval mehmon formani to'ldirib, faqat
+ * "kirish kerak" xatosini olardi (2026-10-31 auditi). Sessiya tugagan bo'lsa ham — kirishga.
  */
 export function ReportDialog({
   targetType,
@@ -25,6 +29,7 @@ export function ReportDialog({
   size = "sm",
   iconOnly,
   className,
+  guest,
 }: {
   targetType: ReportInput["targetType"];
   targetId: string;
@@ -32,8 +37,12 @@ export function ReportDialog({
   size?: "sm" | "default" | "icon-sm";
   iconOnly?: boolean;
   className?: string;
+  guest?: boolean;
 }) {
   const { t } = useT();
+  const pathname = usePathname();
+  const router = useRouter();
+  const loginHref = `/auth?next=${encodeURIComponent(pathname)}`;
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<ReportInput["reason"] | "">("");
   const [details, setDetails] = useState("");
@@ -44,6 +53,10 @@ export function ReportDialog({
     startTransition(async () => {
       const res = await callAction(() => submitReport({ targetType, targetId, reason, details }));
       if (!res.ok) {
+        if (res.error === "not_authenticated") {
+          router.push(loginHref);
+          return;
+        }
         toast.error(t(`common.errors.${res.error}`));
         return;
       }
@@ -53,6 +66,17 @@ export function ReportDialog({
       setDetails("");
     });
   };
+
+  if (guest) {
+    return (
+      <Button asChild variant={variant} size={iconOnly ? "icon-sm" : size} className={className}>
+        <Link href={loginHref} aria-label={t("common.actions.report")} title={t("common.report_login")}>
+          <Flag className="size-4" />
+          {!iconOnly ? t("common.actions.report") : null}
+        </Link>
+      </Button>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

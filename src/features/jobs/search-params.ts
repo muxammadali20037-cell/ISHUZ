@@ -3,7 +3,7 @@
  * Sof modul (runtime import yo'q) — vitest bilan testlanadi.
  *
  * URL: /jobs?q=kassir&category=sales&subcategory=cashier&region=tashkent_city&district=<uuid>,<uuid>
- *      &salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official
+ *      &salary_min=5000000&salary_max=10000000&education=higher&employment=full_time,part_time&schedule=5_2,6_1&format=official
  *      &experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=1&sort=newest&page=2
  */
 import type { Database, Enums } from "@/types/database.types";
@@ -12,6 +12,7 @@ export type SortKey = "relevant" | "newest" | "salary";
 export type FormatKey = "official" | "unofficial";
 export type EmploymentType = Enums<"employment_type">;
 export type WorkSchedule = Enums<"work_schedule">;
+export type EducationLevel = Enums<"education_level">;
 
 export const PAGE_SIZE = 20;
 export const MAX_PAGE = 500;
@@ -19,6 +20,8 @@ export const SORT_KEYS: readonly SortKey[] = ["relevant", "newest", "salary"];
 export const FORMAT_KEYS: readonly FormatKey[] = ["official", "unofficial"];
 export const EMPLOYMENT_TYPES: readonly EmploymentType[] = ["full_time", "part_time", "permanent", "temporary", "shift", "remote", "freelance", "internship"];
 export const SCHEDULES: readonly WorkSchedule[] = ["5_2", "6_1", "2_2", "shift", "flexible", "negotiable"];
+/** "Mening ma'lumotim": shu darajadan yuqori ma'lumot talab qilmaydigan e'lonlar (0070, education_rank) */
+export const EDUCATION_LEVELS: readonly EducationLevel[] = ["secondary", "vocational", "incomplete_higher", "higher", "master"];
 /** experience_max (oy): "shuncha oygacha tajriba talab qiladigan" vakansiyalar */
 export const EXPERIENCE_MAX_OPTIONS = [0, 6, 12, 24, 36, 60] as const;
 /** Imkoniyat turlari (bandlikdan mustaqil) */
@@ -41,6 +44,10 @@ export interface JobsSearchParams {
   /** districts.id (uuid) ro'yxati */
   district: string[];
   salaryMin: number | null;
+  /** maosh shu summadan oshmasin (oylik ekvivalentda; 0070) */
+  salaryMax: number | null;
+  /** foydalanuvchining ma'lumoti — undan yuqorisini talab qiladigan e'lonlar chiqmaydi (0070) */
+  education: EducationLevel | null;
   employment: EmploymentType[];
   schedule: WorkSchedule[];
   format: FormatKey | null;
@@ -65,7 +72,8 @@ export interface JobsSearchParams {
 }
 
 export type RawSearchParams = Record<string, string | string[] | undefined> | URLSearchParams;
-export type SearchVacanciesArgs = Database["public"]["Functions"]["search_vacancies_v2"]["Args"];
+/** v3 = v2 + p_salary_max, p_education (0070); v3 yo'q bazada rpcSearch ularsiz v2 ga qaytadi */
+export type SearchVacanciesArgs = Database["public"]["Functions"]["search_vacancies_v3"]["Args"];
 
 export const DEFAULT_JOBS_PARAMS: JobsSearchParams = {
   q: "",
@@ -75,6 +83,8 @@ export const DEFAULT_JOBS_PARAMS: JobsSearchParams = {
   region: null,
   district: [],
   salaryMin: null,
+  salaryMax: null,
+  education: null,
   employment: [],
   schedule: [],
   format: null,
@@ -153,6 +163,8 @@ export function parseJobsSearchParams(raw: RawSearchParams): JobsSearchParams {
       .filter((d) => UUID_RE.test(d))
       .slice(0, 30),
     salaryMin: int(first(raw, "salary_min"), 1, SALARY_MAX),
+    salaryMax: int(first(raw, "salary_max"), 1, SALARY_MAX),
+    education: pickEnum([first(raw, "education") ?? ""], EDUCATION_LEVELS)[0] ?? null,
     employment: pickEnum(csv(first(raw, "employment")), EMPLOYMENT_TYPES),
     schedule: pickEnum(csv(first(raw, "schedule")), SCHEDULES),
     format,
@@ -184,6 +196,8 @@ export function serializeJobsSearchParams(params: Partial<JobsSearchParams>): st
   if (p.region) sp.set("region", p.region);
   if (p.district.length) sp.set("district", p.district.join(","));
   if (p.salaryMin) sp.set("salary_min", String(p.salaryMin));
+  if (p.salaryMax) sp.set("salary_max", String(p.salaryMax));
+  if (p.education) sp.set("education", p.education);
   if (p.employment.length) sp.set("employment", p.employment.join(","));
   if (p.schedule.length) sp.set("schedule", p.schedule.join(","));
   if (p.format) sp.set("format", p.format);
@@ -217,6 +231,8 @@ export function countActiveFilters(p: JobsSearchParams): number {
   if (p.region) n++;
   if (p.district.length) n++;
   if (p.salaryMin) n++;
+  if (p.salaryMax) n++;
+  if (p.education) n++;
   if (p.employment.length) n++;
   if (p.schedule.length) n++;
   if (p.format) n++;
@@ -262,6 +278,8 @@ export function toSearchVacanciesArgs(p: JobsSearchParams, ids: ResolvedIds, lim
   if (ids.regionId) args.p_region_id = ids.regionId;
   if (p.district.length) args.p_district_ids = p.district;
   if (p.salaryMin) args.p_salary_min = p.salaryMin;
+  if (p.salaryMax) args.p_salary_max = p.salaryMax;
+  if (p.education) args.p_education = p.education;
   if (p.employment.length) args.p_employment_types = p.employment;
   if (p.schedule.length) args.p_schedules = p.schedule;
   if (p.format) args.p_work_format = p.format;

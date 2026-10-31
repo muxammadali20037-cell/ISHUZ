@@ -5301,6 +5301,78 @@ export type Database = {
           work_time_to: string;
         }[];
       };
+      search_vacancies_v3: {
+        Args: {
+          p_benefits?: string[];
+          p_category_id?: string;
+          p_company_id?: string;
+          p_district_ids?: string[];
+          p_employment_types?: Database["public"]["Enums"]["employment_type"][];
+          p_experience_max_months?: number;
+          p_government_only?: boolean;
+          p_is_remote?: boolean;
+          p_limit?: number;
+          p_no_experience?: boolean;
+          p_offset?: number;
+          p_salary_max?: number;
+          p_education?: Database["public"]["Enums"]["education_level"];
+          p_opportunity_types?: Database["public"]["Enums"]["opportunity_type"][];
+          p_profession_node_id?: string;
+          p_query?: string;
+          p_region_id?: string;
+          p_salary_min?: number;
+          p_schedules?: Database["public"]["Enums"]["work_schedule"][];
+          p_sort?: string;
+          p_start_today?: boolean;
+          p_student_friendly?: boolean;
+          p_subcategory_id?: string;
+          p_verified_only?: boolean;
+          p_work_format?: Database["public"]["Enums"]["work_format"];
+        };
+        Returns: {
+          applications_count: number;
+          benefits: string[];
+          category_id: string;
+          category_slug: string;
+          company_id: string;
+          company_logo_url: string;
+          company_name: string;
+          company_verified: boolean;
+          district_id: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employment_type: Database["public"]["Enums"]["employment_type"];
+          experience_min_months: number;
+          expires_at: string;
+          has_applied: boolean;
+          id: string;
+          is_featured: boolean;
+          is_government: boolean;
+          is_paid: boolean;
+          is_remote: boolean;
+          is_saved: boolean;
+          match_reasons: Json;
+          match_score: number;
+          opportunity_type: Database["public"]["Enums"]["opportunity_type"];
+          published_at: string;
+          region_id: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          student_friendly: boolean;
+          title: string;
+          total_count: number;
+          views_count: number;
+          work_format: Database["public"]["Enums"]["work_format"];
+          work_time_from: string;
+          work_time_to: string;
+        }[];
+      };
       search_workers: {
         Args: {
           p_availability?: Database["public"]["Enums"]["availability"][];
@@ -5786,6 +5858,7 @@ export type Database = {
       };
       vacancy_managers: { Args: { p_vacancy_id: string }; Returns: string[] };
       vacancy_publish_mode: { Args: { p_vacancy_id: string }; Returns: string };
+      vacancy_public_stub: { Args: { p_slug: string }; Returns: Json };
       vacancy_publish_quote: { Args: { p_vacancy_id: string }; Returns: Json };
       vacancy_risk_flags: {
         Args: { p_description: string; p_title: string };

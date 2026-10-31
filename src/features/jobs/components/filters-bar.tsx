@@ -72,7 +72,7 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
   const resetSheet = () => {
     if (sheet === "all") setDraft(clearFilters(draft));
     else if (sheet === "region") patch({ region: null, district: [] });
-    else if (sheet === "salary") patch({ salaryMin: null });
+    else if (sheet === "salary") patch({ salaryMin: null, salaryMax: null });
     else if (sheet === "schedule") patch({ schedule: [], employment: [] });
     else if (sheet === "experience") patch({ experienceMax: null, noExperience: false });
   };
@@ -114,6 +114,18 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
       label: t("jobs.filters.salary_from", { amount: formatMoneyShort(params.salaryMin, locale) }),
       next: { ...params, salaryMin: null },
     });
+  if (params.salaryMax)
+    chips.push({
+      key: "salary-max",
+      label: t("jobs.filters.salary_to", { amount: formatMoneyShort(params.salaryMax, locale) }),
+      next: { ...params, salaryMax: null },
+    });
+  if (params.education)
+    chips.push({
+      key: "education",
+      label: t("jobs.filters.education_chip", { level: tEnum("education_level", params.education) }),
+      next: { ...params, education: null },
+    });
   for (const s of params.schedule)
     chips.push({ key: `schedule-${s}`, label: tEnum("work_schedule", s), next: { ...params, schedule: params.schedule.filter((x) => x !== s) } });
   for (const e of params.employment)
@@ -141,8 +153,14 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
         <QuickChip onClick={() => openSheet("region")} active={!!regionSummary}>
           {regionSummary ?? t("jobs.filters.region")}
         </QuickChip>
-        <QuickChip onClick={() => openSheet("salary")} active={!!params.salaryMin}>
-          {params.salaryMin ? `${formatMoneyShort(params.salaryMin, locale)}+` : t("jobs.filters.salary")}
+        <QuickChip onClick={() => openSheet("salary")} active={!!params.salaryMin || !!params.salaryMax}>
+          {params.salaryMin && params.salaryMax
+            ? `${formatMoneyShort(params.salaryMin, locale)}–${formatMoneyShort(params.salaryMax, locale)}`
+            : params.salaryMin
+              ? `${formatMoneyShort(params.salaryMin, locale)}+`
+              : params.salaryMax
+                ? t("jobs.filters.salary_to", { amount: formatMoneyShort(params.salaryMax, locale) })
+                : t("jobs.filters.salary")}
         </QuickChip>
         <QuickChip onClick={() => openSheet("schedule")} active={!!scheduleSummary}>
           {scheduleSummary ?? t("jobs.filters.schedule")}

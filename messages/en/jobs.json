@@ -60,7 +60,14 @@
     "government_short": "Government organizations",
     "students": "Good for students and beginners",
     "students_hint": "Internships, placements, apprenticeships and after-class jobs",
-    "opportunity": "Opportunity type"
+    "opportunity": "Opportunity type",
+    "salary_max": "Maximum salary",
+    "salary_max_placeholder": "e.g. 10,000,000",
+    "salary_to": "up to {amount}",
+    "salary_inverted": "Maximum is lower than minimum",
+    "education": "Your education",
+    "education_hint": "Jobs requiring a higher level are hidden. Jobs without a requirement are shown.",
+    "education_chip": "Education: {level}"
   },
   "empty": {
     "title": "No vacancies found",
@@ -211,7 +218,9 @@
     "benefits": "Without benefits filter",
     "verified": "Include unverified companies",
     "government": "Not only government organizations",
-    "profession_only": "Profession only (no other filters)"
+    "profession_only": "Profession only (no other filters)",
+    "salary_max": "Remove the salary cap",
+    "education": "Ignore education"
   },
   "worker_home": {
     "browse_title": "Browse open jobs",
@@ -278,5 +287,20 @@
     "no_profile_desc": "We will show how well you fit each vacancy by job, area and experience.",
     "no_profile_cta": "Tell about myself",
     "advisory": "This analysis is advisory: the employer makes the final decision."
+  },
+  "closed": {
+    "badge_closed": "Closed",
+    "badge_expired": "Expired",
+    "badge_paused": "Paused",
+    "text_closed": "The employer closed this vacancy — applications are no longer accepted. Similar open jobs are below.",
+    "text_expired": "This listing has expired — applications are no longer accepted. Similar open jobs are below.",
+    "text_paused": "The employer has paused applications. It may reopen later — meanwhile, see similar open jobs.",
+    "search_category": "All {category} jobs",
+    "search_all": "All jobs",
+    "company_jobs": "Other jobs at this company",
+    "similar": "Similar open jobs",
+    "verified": "Verified employer",
+    "meta_title": "{title} — vacancy closed",
+    "private_employer": "Private employer"
   }
 }

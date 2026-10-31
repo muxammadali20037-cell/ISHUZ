@@ -39,7 +39,6 @@ export async function jobsListMetadata(params: JobsSearchParams): Promise<Metada
 export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
   const { t, locale, name } = await getT();
   const company = v.company?.name ?? t("common.role.employer");
-  const title = `${v.title} — ${company}`;
   const salary =
     v.salary_negotiable || (!v.salary_from && !v.salary_to)
       ? t("common.labels.negotiable")
@@ -49,6 +48,9 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
           to: t("common.labels.salary_to"),
         });
   const location = v.is_remote ? t("jobs.detail.remote") : [name(v.district), name(v.region)].filter(Boolean).join(", ") || t("common.labels.not_specified");
+  // qidiruv natijasida joy ham ko'rinsin: "Kassir — Orient Savdo, Toshkent shahri"
+  const city = v.is_remote ? t("jobs.detail.remote") : name(v.region);
+  const title = city ? `${v.title} — ${company}, ${city}` : `${v.title} — ${company}`;
   const description = [t("jobs.meta.detail_description", { title: v.title, company, salary, location }), descriptionExcerpt(v.description, 120)]
     .filter(Boolean)
     .join(" ")
@@ -68,6 +70,7 @@ export async function vacancyMetadata(v: VacancyDetail): Promise<Metadata> {
       images: [{ url: `/api/promo/vacancy/${v.slug}?f=og`, width: 1200, height: 630 }],
     },
     twitter: { card: "summary_large_image" },
-    robots: v.status === "active" ? undefined : { index: false, follow: false },
+    // muddati o'tgan (cron hali yopmagan) ham indekslanmaydi — Google Jobs eskirgan e'lonni ko'rsatmasin
+    robots: v.status === "active" && !v.is_expired ? undefined : { index: false, follow: true },
   };
 }

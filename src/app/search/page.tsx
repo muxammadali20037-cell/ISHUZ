@@ -24,7 +24,9 @@ import { isCityRegion } from "@/lib/geo/city";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
-  return { title: t("easy.search.page_title"), description: t("easy.home.search_desc") };
+  // bosqichli tanlash: URL variantlari juda ko'p (kasb × hudud × tuman) — indekslanmaydi, havolalar kuzatiladi;
+  // qidiruv tizimlari uchun asosiy ro'yxat — /jobs (canonical, sitemap)
+  return { title: t("easy.search.page_title"), description: t("easy.home.search_desc"), robots: { index: false, follow: true } };
 }
 
 /**

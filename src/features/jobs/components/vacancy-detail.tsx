@@ -134,7 +134,7 @@ export async function VacancyDetail({
       <div className="mb-2 flex items-center justify-between gap-2">
         {/* qidiruvdan kelgan bo'lsa — o'sha natijalarga (o'sha joyiga) qaytadi */}
         <BackLink
-          fallback="/search?mode=jobs"
+          fallback="/jobs"
           className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
           <ChevronLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
@@ -146,7 +146,7 @@ export async function VacancyDetail({
             </Link>
           </Button>
         ) : (
-          <ReportDialog targetType="vacancy" targetId={v.id} iconOnly />
+          <ReportDialog targetType="vacancy" targetId={v.id} guest={viewer.kind === "guest"} className="text-muted-foreground" />
         )}
       </div>
 

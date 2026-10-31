@@ -20,7 +20,7 @@ describe("parseJobsSearchParams", () => {
   });
 
   it("to'liq URL ni o'qiydi (Record va URLSearchParams)", () => {
-    const qs = `q=%20kassir%20&category=sales&subcategory=cashier&region=tashkent_city&district=${D1},${D2}&salary_min=5000000&employment=full_time,part_time&schedule=5_2,6_1&format=official&experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=true&profession=medicine-doctors&sort=newest&page=3`;
+    const qs = `q=%20kassir%20&category=sales&subcategory=cashier&region=tashkent_city&district=${D1},${D2}&salary_min=5000000&salary_max=9000000&education=vocational&employment=full_time,part_time&schedule=5_2,6_1&format=official&experience_max=12&remote=1&benefits=food,transport&verified=1&gov=1&no_experience=true&profession=medicine-doctors&sort=newest&page=3`;
     const parsed = parseJobsSearchParams(new URLSearchParams(qs));
     expect(parsed).toEqual({
       q: "kassir",
@@ -30,6 +30,8 @@ describe("parseJobsSearchParams", () => {
       region: "tashkent_city",
       district: [D1, D2],
       salaryMin: 5_000_000,
+      salaryMax: 9_000_000,
+      education: "vocational",
       employment: ["full_time", "part_time"],
       schedule: ["5_2", "6_1"],
       format: "official",
@@ -54,6 +56,8 @@ describe("parseJobsSearchParams", () => {
       category: "../etc",
       district: `${D1},not-a-uuid,${D1}`,
       salary_min: "-5",
+      salary_max: "abc",
+      education: "phd",
       employment: "full_time,hacker",
       schedule: "9_9",
       format: "any",
@@ -64,6 +68,8 @@ describe("parseJobsSearchParams", () => {
       page: "0",
     });
     expect(parsed.category).toBeNull();
+    expect(parsed.salaryMax).toBeNull();
+    expect(parsed.education).toBeNull();
     expect(parsed.district).toEqual([D1]);
     expect(parsed.salaryMin).toBeNull();
     expect(parsed.employment).toEqual(["full_time"]);
@@ -154,6 +160,16 @@ describe("toSearchVacanciesArgs", () => {
     expect(args.p_salary_min).toBe(3_000_000);
     expect(args.p_limit).toBe(5);
     expect(args.p_offset).toBe(0);
+    expect(args.p_salary_max).toBeUndefined();
+    expect(args.p_education).toBeUndefined();
+  });
+  it("maksimal maosh va ma'lumot (0070) — faqat tanlanganda; round-trip", () => {
+    const params = parseJobsSearchParams({ salary_max: "8 000 000", education: "higher" });
+    const args = toSearchVacanciesArgs(params, {});
+    expect(args.p_salary_max).toBe(8_000_000);
+    expect(args.p_education).toBe("higher");
+    expect(countActiveFilters(params)).toBe(2);
+    expect(parseJobsSearchParams(new URLSearchParams(serializeJobsSearchParams(params)))).toEqual(params);
   });
 });
 

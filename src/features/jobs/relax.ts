@@ -4,7 +4,7 @@
  */
 import { DEFAULT_JOBS_PARAMS, type JobsSearchParams } from "./search-params";
 
-export type RelaxKey = "q" | "subcategory" | "category" | "district" | "region" | "salary" | "schedule" | "employment" | "experience" | "no_experience" | "remote" | "format" | "benefits" | "verified" | "government" | "profession_only";
+export type RelaxKey = "q" | "subcategory" | "category" | "district" | "region" | "salary" | "salary_max" | "education" | "schedule" | "employment" | "experience" | "no_experience" | "remote" | "format" | "benefits" | "verified" | "government" | "profession_only";
 
 export function jobsRelaxations(p: JobsSearchParams): { key: RelaxKey; params: JobsSearchParams }[] {
   const base = { ...p, page: 1 };
@@ -16,6 +16,8 @@ export function jobsRelaxations(p: JobsSearchParams): { key: RelaxKey; params: J
   if (p.district.length) add("district", { district: [] });
   else if (p.region) add("region", { region: null, district: [] });
   if (p.salaryMin) add("salary", { salaryMin: null });
+  if (p.salaryMax) add("salary_max", { salaryMax: null });
+  if (p.education) add("education", { education: null });
   if (p.schedule.length) add("schedule", { schedule: [] });
   if (p.employment.length) add("employment", { employment: [] });
   if (p.experienceMax !== null) add("experience", { experienceMax: null });

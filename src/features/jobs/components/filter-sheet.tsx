@@ -11,12 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Field, Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import {
+  EDUCATION_LEVELS,
   EMPLOYMENT_TYPES,
   EXPERIENCE_MAX_OPTIONS,
   OPPORTUNITY_TYPES,
   SALARY_MAX,
   SALARY_PRESETS,
   SCHEDULES,
+  type EducationLevel,
   type EmploymentType,
   type FormatKey,
   type JobsSearchParams,
@@ -97,9 +99,30 @@ function RegionSection({ draft, patch, refs }: SectionProps) {
   );
 }
 
+function MoneyInput({ id, value, onChange, placeholder }: { id: string; value: number | null; onChange: (n: number | null) => void; placeholder: string }) {
+  const { locale } = useT();
+  return (
+    <Input
+      id={id}
+      inputMode="numeric"
+      autoComplete="off"
+      placeholder={placeholder}
+      value={value ? formatMoney(value, locale, { withCurrency: false }) : ""}
+      onChange={(e) => {
+        const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
+        const n = digits ? Math.min(Number(digits), SALARY_MAX) : 0;
+        onChange(n > 0 ? n : null);
+      }}
+    />
+  );
+}
+
+/** Maosh: tezkor "dan" tugmalari + "dan" va "gacha" maydonlari (oylik ekvivalentda; gacha < dan bo'lsa ogohlantirish) */
 function SalarySection({ draft, patch }: SectionProps) {
   const { t, locale } = useT();
   const id = useId();
+  const maxId = useId();
+  const inverted = !!draft.salaryMin && !!draft.salaryMax && draft.salaryMax < draft.salaryMin;
   return (
     <div className="space-y-3">
       <ChipGroup
@@ -111,20 +134,35 @@ function SalarySection({ draft, patch }: SectionProps) {
         value={draft.salaryMin ? String(draft.salaryMin) : null}
         onChange={(next) => patch({ salaryMin: typeof next === "string" ? Number(next) : null })}
       />
-      <Field label={t("jobs.filters.salary_min")} htmlFor={id} hint={t("jobs.filters.salary_min_hint")}>
-        <Input
-          id={id}
-          inputMode="numeric"
-          autoComplete="off"
-          placeholder={t("jobs.filters.salary_placeholder")}
-          value={draft.salaryMin ? formatMoney(draft.salaryMin, locale, { withCurrency: false }) : ""}
-          onChange={(e) => {
-            const digits = e.target.value.replace(/\D/g, "").slice(0, 10);
-            const n = digits ? Math.min(Number(digits), SALARY_MAX) : 0;
-            patch({ salaryMin: n > 0 ? n : null });
-          }}
-        />
-      </Field>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label={t("jobs.filters.salary_min")} htmlFor={id} hint={t("jobs.filters.salary_min_hint")}>
+          <MoneyInput id={id} value={draft.salaryMin} onChange={(n) => patch({ salaryMin: n })} placeholder={t("jobs.filters.salary_placeholder")} />
+        </Field>
+        <Field
+          label={t("jobs.filters.salary_max")}
+          htmlFor={maxId}
+          hint={t("jobs.filters.salary_min_hint")}
+          error={inverted ? t("jobs.filters.salary_inverted") : undefined}
+        >
+          <MoneyInput id={maxId} value={draft.salaryMax} onChange={(n) => patch({ salaryMax: n })} placeholder={t("jobs.filters.salary_max_placeholder")} />
+        </Field>
+      </div>
+    </div>
+  );
+}
+
+/** Ma'lumoti: "mening ma'lumotim" — undan yuqori ma'lumot talab qiladigan e'lonlar chiqmaydi (talab ko'rsatilmaganlar chiqadi) */
+function EducationSection({ draft, patch }: SectionProps) {
+  const { t, tEnum } = useT();
+  return (
+    <div className="space-y-2">
+      <p className="text-sm text-muted-foreground">{t("jobs.filters.education_hint")}</p>
+      <RadioGroup value={draft.education ?? "any"} onValueChange={(v) => patch({ education: v === "any" ? null : (v as EducationLevel) })} className="space-y-2">
+        <RadioItem value="any" label={t("jobs.filters.any")} />
+        {EDUCATION_LEVELS.map((e) => (
+          <RadioItem key={e} value={e} label={tEnum("education_level", e)} />
+        ))}
+      </RadioGroup>
     </div>
   );
 }
@@ -357,6 +395,10 @@ export function FilterSheet({
             <section>
               <SectionTitle>{t("jobs.filters.experience_max")}</SectionTitle>
               <ExperienceSection {...props} />
+            </section>
+            <section>
+              <SectionTitle>{t("jobs.filters.education")}</SectionTitle>
+              <EducationSection {...props} />
             </section>
             <section>
               <SectionTitle>{t("jobs.filters.format")}</SectionTitle>

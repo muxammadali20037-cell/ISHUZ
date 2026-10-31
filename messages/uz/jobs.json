@@ -60,7 +60,14 @@
     "government_short": "Davlat tashkilotlari",
     "students": "Talabalar va tajribasizlarga mos",
     "students_hint": "Stajirovka, amaliyot, shogirdlik va darsdan keyingi ishlar",
-    "opportunity": "Imkoniyat turi"
+    "opportunity": "Imkoniyat turi",
+    "salary_max": "Maksimal maosh",
+    "salary_max_placeholder": "Masalan: 10 000 000",
+    "salary_to": "{amount} gacha",
+    "salary_inverted": "Maksimal maosh minimaldan kichik",
+    "education": "Ma'lumotingiz",
+    "education_hint": "Undan yuqori ma'lumot talab qiladigan e'lonlar ko'rsatilmaydi. Talab yozilmagan e'lonlar ko'rsatiladi.",
+    "education_chip": "Ma'lumot: {level}"
   },
   "empty": {
     "title": "Vakansiya topilmadi",
@@ -211,7 +218,9 @@
     "benefits": "Qo'shimcha imkoniyatlarsiz",
     "verified": "Tasdiqlanmagan kompaniyalar ham",
     "government": "Davlat tashkilotlaridan tashqari ham",
-    "profession_only": "Faqat kasb bo'yicha (boshqa filtrlarsiz)"
+    "profession_only": "Faqat kasb bo'yicha (boshqa filtrlarsiz)",
+    "salary_max": "Maksimal maosh chegarasini olib tashlash",
+    "education": "Ma'lumot talabini hisobga olmaslik"
   },
   "worker_home": {
     "browse_title": "Bo'sh ish o'rinlarini ko'rish",
@@ -278,5 +287,20 @@
     "no_profile_desc": "Kasb, hudud va tajribangiz bo'yicha har bir vakansiyaga qanchalik mos ekaningizni ko'rsatamiz.",
     "no_profile_cta": "O'zim haqimda e'lon berish",
     "advisory": "Tahlil maslahat uchun: yakuniy qaror ish beruvchida."
+  },
+  "closed": {
+    "badge_closed": "Yopilgan",
+    "badge_expired": "Muddati tugagan",
+    "badge_paused": "Vaqtincha to'xtatilgan",
+    "text_closed": "Ish beruvchi bu vakansiyani yopdi — endi ariza qabul qilinmaydi. Quyida shunga o'xshash faol ishlar.",
+    "text_expired": "Bu e'lonning muddati tugagan — endi ariza qabul qilinmaydi. Quyida shunga o'xshash faol ishlar.",
+    "text_paused": "Ish beruvchi arizalarni vaqtincha to'xtatgan. Keyinroq qayta ochilishi mumkin — hozircha o'xshash faol ishlarni ko'ring.",
+    "search_category": "{category}: barcha ishlar",
+    "search_all": "Barcha ishlar",
+    "company_jobs": "Kompaniyaning boshqa ishlari",
+    "similar": "O'xshash faol ishlar",
+    "verified": "Tasdiqlangan ish beruvchi",
+    "meta_title": "{title} — vakansiya yopilgan",
+    "private_employer": "Xususiy ish beruvchi"
   }
 }

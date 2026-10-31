@@ -32,10 +32,11 @@ export async function MarketAside({ mode }: { mode: "jobs" | "workers" }) {
       {stats.length ? (
         <section className="rounded-2xl border border-border bg-card p-4 shadow-sm">
           <h2 className="text-lg font-bold">{t("easy.market.title")}</h2>
-          <dl className="mt-3 grid grid-cols-3 gap-2">
+          {/* qatorlar (nom — chapda, son — o'ngda): tor panelda 3 ustun "Kompaniyal/ar" kabi so'zni bo'lib yuborardi */}
+          <dl className="mt-3 divide-y divide-border">
             {stats.map((s) => (
-              <div key={s.key} className="flex flex-col-reverse rounded-xl bg-secondary px-2.5 py-2.5">
-                <dt className="text-xs font-medium text-muted-foreground">{s.label}</dt>
+              <div key={s.key} className="flex items-baseline justify-between gap-3 py-2">
+                <dt className="text-sm text-muted-foreground">{s.label}</dt>
                 <dd className="text-lg font-extrabold leading-tight tabular">{num.format(s.value)}</dd>
               </div>
             ))}

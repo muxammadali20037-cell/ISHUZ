@@ -13,7 +13,8 @@ function entry(base: string, path: string, e: Omit<MetadataRoute.Sitemap[number]
 }
 
 /**
- * Ommaviy sahifalar: bosh sahifa, qidiruv (hudud va kasb bo'yicha), narxlar, faol vakansiyalar va kompaniyalar.
+ * Ommaviy sahifalar: bosh sahifa, ish ro'yxati (hudud va soha bo'yicha), kompaniyalar katalogi, ish beruvchilar uchun,
+ * faol (muddati o'tmagan) vakansiyalar va kompaniyalar. `/search` (bosqichli tanlash, URL variantlari ko'p) — noindex.
  * Nomzodlar profillari kiritilmaydi (maxfiylik). Anonim client (cookie'siz) — RLS faqat ommaviy ma'lumot beradi.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -25,15 +26,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry(base, "/students", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
     entry(base, "/help", { lastModified: now, changeFrequency: "monthly", priority: 0.3 }),
     entry(base, "/about", { lastModified: now, changeFrequency: "monthly", priority: 0.4 }),
-    entry(base, "/search", { lastModified: now, changeFrequency: "daily", priority: 0.8 }),
+    entry(base, "/companies", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
+    entry(base, "/for-employers", { lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
     entry(base, "/privacy", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
     entry(base, "/terms", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
   ];
   try {
     const supabase = createSupabaseClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { persistSession: false } });
     const [vacancies, companies, categories, regions] = await Promise.all([
-      supabase.from("vacancies").select("slug, updated_at, company_id").eq("status", "active").order("published_at", { ascending: false }).limit(20000),
-      supabase.from("companies").select("slug, updated_at").eq("is_blocked", false).not("slug", "is", null).limit(10000),
+      // muddati o'tgan (cron hali yopmagan) e'lonlar kiritilmaydi — sahifasi noindex
+      supabase
+        .from("vacancies")
+        .select("slug, updated_at, company_id")
+        .eq("status", "active")
+        .or(`expires_at.is.null,expires_at.gt.${now.toISOString()}`)
+        .order("published_at", { ascending: false })
+        .limit(20000),
+      supabase.from("companies").select("id, slug, updated_at").eq("is_blocked", false).not("slug", "is", null).limit(10000),
       supabase.from("categories").select("slug").eq("is_active", true).order("sort_order"),
       supabase.from("regions").select("slug").eq("is_active", true).order("sort_order"),
     ]);
@@ -49,7 +58,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...(vacancies.data ?? []).map((v) => entry(base, `/jobs/${v.slug}`, { lastModified: new Date(v.updated_at), changeFrequency: "daily", priority: 0.8 })),
       ...(companies.data ?? [])
         .filter((c) => c.slug)
-        .map((c) => entry(base, `/company/${c.slug}`, { lastModified: new Date(c.updated_at), changeFrequency: "weekly", priority: withJobs.size ? 0.5 : 0.4 })),
+        // faol vakansiyasi bor kompaniya muhimroq (avval xato: to'plam bo'shmi-yo'qmi tekshirilardi, kompaniyaning o'zi emas)
+        .map((c) => entry(base, `/company/${c.slug}`, { lastModified: new Date(c.updated_at), changeFrequency: "weekly", priority: withJobs.has(c.id) ? 0.5 : 0.3 })),
     ];
   } catch (error) {
     console.error("[sitemap]", error instanceof Error ? error.message : error);

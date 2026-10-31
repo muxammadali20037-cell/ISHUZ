@@ -23,9 +23,9 @@ const EDUCATION: Record<Enums<"education_level">, string> = {
   master: "postgraduate degree",
 };
 
-/** schema.org JobPosting (Google Jobs). Faqat faol vakansiya uchun. */
-export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
-  if (v.status !== "active") return null;
+/** schema.org JobPosting (Google Jobs). Faqat faol va muddati o'tmagan vakansiya uchun. */
+export function JobPostingJsonLd({ vacancy: v, privateEmployerLabel }: { vacancy: VacancyDetail; privateEmployerLabel: string }) {
+  if (v.status !== "active" || v.is_expired) return null;
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const url = `${base}/jobs/${v.slug}`;
   const description = descriptionToPlainText(v.description) || v.title;
@@ -43,7 +43,8 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
     directApply: true,
     hiringOrganization: {
       "@type": "Organization",
-      name: v.company?.name ?? BRAND.name,
+      // kompaniyasiz (jismoniy shaxs) ish beruvchi — sayt nomi emas, halol "Xususiy ish beruvchi"
+      name: v.company?.name ?? privateEmployerLabel,
       sameAs: v.company?.website ?? undefined,
       logo: v.company?.logo_url ?? undefined,
     },
@@ -75,7 +76,6 @@ export function JobPostingJsonLd({ vacancy: v }: { vacancy: VacancyDetail }) {
       : undefined,
     experienceRequirements:
       v.experience_min_months > 0 ? { "@type": "OccupationalExperienceRequirements", monthsOfExperience: v.experience_min_months } : undefined,
-    experienceInPlaceOfEducation: v.experience_min_months === 0 ? true : undefined,
     educationRequirements: v.education_min ? { "@type": "EducationalOccupationalCredential", credentialCategory: EDUCATION[v.education_min] } : undefined,
     skills: v.skills.length ? v.skills.map((s) => s.name_uz).join(", ") : undefined,
     industry: v.category?.name_uz ?? undefined,
