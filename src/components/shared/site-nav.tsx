@@ -79,11 +79,12 @@ function ModeAware() {
   return <DesktopLinks mode={mode} />;
 }
 
-/** Kompyuter va planshet (md+): sayt bo'limlari. Faol bo'lim belgilanadi */
+/** Kompyuter (lg+): sayt bo'limlari. Faol bo'lim belgilanadi */
 export function SiteNavLinks() {
   const { t } = useT();
   return (
-    <nav aria-label={t("common.site.nav_label")} className="hidden md:block">
+    // lg+ (≥1024): to'rt bo'lim matn bilan sig'adi; undan tor — telefon menyusi (SiteMenu)
+    <nav aria-label={t("common.site.nav_label")} className="hidden lg:block">
       {/* useSearchParams statik sahifalarda Suspense talab qiladi; kutish paytida — rejimsiz holat */}
       <Suspense fallback={<DesktopLinks mode={null} />}>
         <ModeAware />
@@ -92,7 +93,7 @@ export function SiteNavLinks() {
   );
 }
 
-/** Telefonda (md dan tor): sayt bo'limlari menyusi. Pastki menyu (ilova bo'limlari) o'z joyida qoladi */
+/** Telefon va planshetda (lg dan tor): sayt bo'limlari menyusi. Pastki menyu (ilova bo'limlari) o'z joyida qoladi */
 export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
   const { t } = useT();
   // "Ish qidirish" — pastki menyuda bor; bu yerda qolgan bo'limlar + biz haqimizda, narxlar (yoqilgan bo'lsa), yordam
@@ -100,7 +101,7 @@ export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="md:hidden" aria-label={t("common.site.menu")}>
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("common.site.menu")}>
           <Menu className="size-5" />
         </Button>
       </DropdownMenuTrigger>

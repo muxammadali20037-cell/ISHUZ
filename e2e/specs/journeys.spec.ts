@@ -87,8 +87,8 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish: bosh sahifa — "Xodim qidiraman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
-    await page.getByRole("main").getByRole("button", { name: /^Xodim qidiraman/ }).click();
+    // birinchi ochilish: bosh sahifa — "Ish beruvchiman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
+    await page.getByRole("main").getByRole("button", { name: /^Ish beruvchiman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
     await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
     await page.waitForURL(/\/post\/vacancy/);

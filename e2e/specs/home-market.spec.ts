@@ -7,7 +7,7 @@ import { USERS, asGuest, sql } from "../support";
  * bo'limi, raqamlar (bazadan), pastki qism havolalari, SEO va 320–1440 px. Kirish oqimi va ikki yo'l — entry.spec.ts.
  */
 
-const HOME_H1 = "O'zingizga mos ishni toping yoki eng yaxshi xodimni toping!";
+const HOME_H1 = "O'zingizga mos ishni toping.";
 const ACTIVE = "status = 'active' and (expires_at is null or expires_at > now())";
 
 async function seed() {
@@ -35,28 +35,34 @@ test.describe("bosh sahifa (marketplace)", () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   });
 
-  test("sayt menyusi (kompyuter): bo'limlar haqiqiy sahifalarga; faol bo'lim belgilanadi; ro'yxatdan o'tish — rol tanlashdan", async ({ page, context }) => {
+  test("sayt menyusi (kompyuter): Ish qidirish · Kompaniyalar · Kasblar · Ish beruvchilar uchun; o'ngda Kirish va 'Ish joylashtirish'", async ({ page, context }) => {
     await asGuest(context);
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
-    const nav = page.getByRole("banner").getByRole("navigation", { name: "Sayt bo'limlari" });
-    await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ishchilar", "Biz haqimizda"]);
-    await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
+    const banner = page.getByRole("banner");
+    const nav = banner.getByRole("navigation", { name: "Sayt bo'limlari" });
+    await expect(nav.getByRole("link")).toHaveText(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun"]);
     // to'lovlar o'chiq stendda — "Xizmatlar" (narxlar) yo'q: o'lik havola ko'rsatilmaydi
     await expect(nav.getByRole("link", { name: "Xizmatlar" })).toHaveCount(0);
-    await expect(page.getByRole("banner").getByRole("link", { name: "Ro'yxatdan o'tish" })).toHaveAttribute("href", /^\/start\/rol\?next=/);
-    await expect(page.getByRole("banner").getByRole("link", { name: "Ish topdim" })).toHaveAttribute("href", "/");
+    // "Ro'yxatdan o'tish" — "Kirish" oqimining o'zi (telefon raqami); alohida havola — telefon menyusida
+    await expect(banner.getByRole("link", { name: "Kirish" })).toBeVisible();
+    await expect(banner.getByRole("link", { name: "Ish joylashtirish" })).toHaveAttribute("href", "/post/vacancy");
+    await expect(banner.getByRole("link", { name: "Ish topdim" })).toHaveAttribute("href", "/");
 
-    await nav.getByRole("link", { name: "Biz haqimizda" }).click();
-    await page.waitForURL(/\/about$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Biz haqimizda");
-    await expect(nav.getByRole("link", { name: "Biz haqimizda" })).toHaveAttribute("aria-current", "page");
-    await nav.getByRole("link", { name: "Ishchilar" }).click();
-    await page.waitForURL(/\/search\?mode=workers/);
-    await expect(nav.getByRole("link", { name: "Ishchilar" })).toHaveAttribute("aria-current", "page");
-    await nav.getByRole("link", { name: "Ishlar" }).click();
-    await page.waitForURL(/\/search\?mode=jobs/);
-    await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
+    await nav.getByRole("link", { name: "Ish qidirish" }).click();
+    await page.waitForURL(/\/jobs$/);
+    await expect(nav.getByRole("link", { name: "Ish qidirish" })).toHaveAttribute("aria-current", "page");
+    await nav.getByRole("link", { name: "Kompaniyalar" }).click();
+    await page.waitForURL(/\/companies$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kompaniyalar");
+    await expect(nav.getByRole("link", { name: "Kompaniyalar" })).toHaveAttribute("aria-current", "page");
+    await nav.getByRole("link", { name: "Kasblar" }).click();
+    await page.waitForURL(/\/search\?mode=jobs$/);
+    await expect(nav.getByRole("link", { name: "Kasblar" })).toHaveAttribute("aria-current", "page");
+    await nav.getByRole("link", { name: "Ish beruvchilar uchun" }).click();
+    await page.waitForURL(/\/for-employers$/);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kerakli xodimni tez va ishonchli toping");
+    await expect(nav.getByRole("link", { name: "Ish beruvchilar uchun" })).toHaveAttribute("aria-current", "page");
   });
 
   test("telefonda: ixcham sarlavha, menyu ochiladi va yopiladi; pastki menyu o'z joyida", async ({ page, context }) => {
@@ -67,7 +73,7 @@ test.describe("bosh sahifa (marketplace)", () => {
     const menuButton = page.getByRole("banner").getByRole("button", { name: "Menyu" });
     await menuButton.click();
     const menu = page.getByRole("menu");
-    await expect(menu.getByRole("menuitem")).toHaveText(["Ishchilar", "Biz haqimizda", "Yordam", "Ro'yxatdan o'tish"]);
+    await expect(menu.getByRole("menuitem")).toHaveText(["Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Biz haqimizda", "Yordam", "Ish joylashtirish", "Ro'yxatdan o'tish"]);
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
     await expect(menuButton).toBeFocused();
@@ -77,28 +83,37 @@ test.describe("bosh sahifa (marketplace)", () => {
     await expect(page.locator("nav.bottom-nav")).toBeVisible();
   });
 
-  test("qidiruv paneli: kasb, viloyat, ish turi va maosh — /search ga to'g'ri parametrlar bilan (tuman — keyingi qadamda)", async ({ page, context }) => {
+  test("qidiruv paneli: 'Qanday ish qidiryapsiz?' va 'Qaysi shahar yoki hudud?' — /search ga to'g'ri parametrlar bilan", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     const form = page.getByRole("search", { name: "Ish qidirish" });
-    await form.getByRole("searchbox", { name: "Kasb yoki lavozim" }).fill("yuk tashuvchi");
-    await form.getByLabel("Hudud").selectOption({ label: "Samarqand" });
-    await form.getByLabel("Ish turi").selectOption({ label: "Kunlik ish (kunbay to'lov)" });
-    await form.getByLabel("Maosh (oyiga)").selectOption({ label: "5 mln so'mdan" });
-    await form.getByRole("button", { name: "Ish qidirish", exact: true }).click();
+    await expect(form.getByLabel("Ish turi")).toHaveCount(0);
+    await form.getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" }).fill("yuk tashuvchi");
+    await form.getByLabel("Qaysi shahar yoki hudud?").selectOption({ label: "Samarqand" });
+    await form.getByRole("button", { name: "Ish topish", exact: true }).click();
     await page.waitForURL(/\/search\?/);
     const url = new URL(page.url());
     expect(url.searchParams.get("mode")).toBe("jobs");
     expect(url.searchParams.get("region")).toBe("samarkand");
-    expect(url.searchParams.get("pay")).toBe("daily");
-    expect(url.searchParams.get("salary")).toBe("5000000");
 
     // kasb yozilmagan, "Butun O'zbekiston" — barcha kasblar bo'yicha natijalar darhol
     await page.goto("/");
-    await form.getByLabel("Hudud").selectOption({ label: "Butun O'zbekiston" });
-    await form.getByRole("button", { name: "Ish qidirish", exact: true }).click();
+    await form.getByLabel("Qaysi shahar yoki hudud?").selectOption({ label: "Butun O'zbekiston" });
+    await form.getByRole("button", { name: "Ish topish", exact: true }).click();
     await page.waitForURL(/\/search\?mode=jobs&region=all&any=1$/);
     await expect(page.locator("main article").filter({ hasText: "Backend dasturchi" })).toHaveCount(1);
+  });
+
+  test("yakuniy chaqiruv: 'Yangi imkoniyatlar sizni kutmoqda' — ish qidirish va xodim izlash; takror 'Nega Ish topdim?' yo'q", async ({ page, context }) => {
+    await asGuest(context);
+    await page.goto("/");
+    const final = main(page).getByRole("region", { name: "Yangi imkoniyatlar sizni kutmoqda." });
+    await expect(final.getByRole("button", { name: /Ish qidirishni boshlash/ })).toBeVisible();
+    await expect(final.getByRole("link", { name: "Xodim izlash" })).toHaveAttribute("href", "/for-employers");
+    await expect(main(page).getByRole("heading", { name: "Nega Ish topdim?" })).toHaveCount(0);
+    // "Qanday ishlaydi" — 4 + 4 qadam
+    const how = main(page).getByRole("region", { name: "Qanday ishlaydi" });
+    await expect(how.getByRole("listitem")).toHaveCount(8);
   });
 
   test("sohalar: son bazadagi bilan bir xil, karta /jobs?category= ga olib boradi; 'Barcha kategoriyalar' qolganini ochadi", async ({ page, context }) => {
@@ -227,8 +242,8 @@ test.describe("bosh sahifa (marketplace)", () => {
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
       await expect(main(page).getByRole("button", { name: /^Ish qidiraman/ }), `${width}px`).toBeVisible();
-      await expect(main(page).getByRole("button", { name: /^Xodim qidiraman/ }), `${width}px`).toBeVisible();
-      const submit = page.getByRole("search", { name: "Ish qidirish" }).getByRole("button", { name: "Ish qidirish", exact: true });
+      await expect(main(page).getByRole("button", { name: /^Ish beruvchiman/ }), `${width}px`).toBeVisible();
+      const submit = page.getByRole("search", { name: "Ish qidirish" }).getByRole("button", { name: "Ish topish", exact: true });
       await submit.scrollIntoViewIfNeeded();
       const box = (await submit.boundingBox())!;
       expect(box.height, `${width}px`).toBeGreaterThanOrEqual(44);

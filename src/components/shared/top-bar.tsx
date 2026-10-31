@@ -57,6 +57,8 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           <span
             className={cn(
               session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "text-lg @max-[22rem]:hidden",
+              // sayt menyusi (lg–xl): nom o'rniga faqat belgi — to'rt bo'lim va o'ngdagi tugmalar sig'sin
+              site && "lg:max-xl:hidden",
               showPlace && "max-md:hidden",
             )}
           >
@@ -133,10 +135,8 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               </Button>
               {site ? (
                 <>
-                  {/* kompyuterda: Kirish · Ro'yxatdan o'tish · Ish joylashtirish (asosiy amal); telefonda — menyuda */}
-                  <Button asChild variant="ghost" className="hidden h-11 px-3 text-base xl:inline-flex">
-                    <Link href={site.registerHref}>{t("common.site.register")}</Link>
-                  </Button>
+                  {/* kompyuterda: Kirish · Ish joylashtirish (asosiy amal). "Ro'yxatdan o'tish" — menyuda va "Kirish" oqimida
+                      (telefon raqami bilan kirish = ro'yxatdan o'tish): to'rt bo'limli menyu bilan sarlavhaga sig'masdi */}
                   <Button asChild className="hidden h-11 px-4 text-base lg:inline-flex">
                     <Link href="/post/vacancy" data-track="home_post_vacancy" data-track-to="header">
                       {t("common.site.post_job")}

@@ -23,7 +23,7 @@ import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { formatRelative, formatWorkTime } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
-import { EmployerCallCard } from "@/features/contacts/employer-call-card";
+import { EmployerCallCard, telegramUsername } from "@/features/contacts/employer-call-card";
 import { ReportDialog } from "@/features/reports/report-dialog";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -116,7 +116,8 @@ export async function VacancyDetail({
   // E'londagi aloqa raqami: ish beruvchi rozilik bergan bo'lsa — hammaga (mehmonga ham); rad etgan bo'lsa — ko'rsatilmaydi
   const supabase = await createClient();
   const { data: adPhone } = isManager ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
-  const showContact = !isManager && (!!adPhone || !!contactProfileId);
+  // kompaniya faqat Telegram bergan bo'lsa ham (telefonsiz) — "Telegram'da yozish" mehmonga ham ko'rinadi
+  const showContact = !isManager && (!!adPhone || !!contactProfileId || !!telegramUsername(company?.telegram));
 
   const hasBenefits = v.officialTerms.length > 0 || v.benefits.length > 0;
   const placeLine = v.is_remote ? `${t("jobs.detail.remote")}${locationText ? ` · ${locationText}` : ""}` : locationText || t("common.labels.not_specified");

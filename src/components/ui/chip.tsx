@@ -3,6 +3,7 @@
 import * as React from "react";
 import { X, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useT } from "@/lib/i18n/client";
 
 /** Tanlanadigan chip (bir yoki ko'p tanlov uchun) */
 function Chip({
@@ -42,11 +43,14 @@ function Chip({
 }
 
 /** Tanlangan filtr chipi: "Chilonzor ×" */
+/** Faol filtr chipi: matn + "olib tashlash" tugmasi. Tugma nomi — "Olib tashlash: <filtr>" (ekran o'qigich, avval inglizcha "Remove" edi) */
 function FilterChip({ children, onRemove, className }: { children: React.ReactNode; onRemove: () => void; className?: string }) {
+  const { t } = useT();
+  const text = typeof children === "string" ? children : "";
   return (
     <span className={cn("inline-flex h-8 items-center gap-1 rounded-full bg-primary-soft pl-3 pr-1.5 text-sm font-medium text-primary", className)}>
       {children}
-      <button type="button" onClick={onRemove} className="rounded-full p-0.5 hover:bg-primary/15" aria-label="Remove">
+      <button type="button" onClick={onRemove} className="rounded-full p-0.5 hover:bg-primary/15" aria-label={text ? `${t("common.actions.remove")}: ${text}` : t("common.actions.remove")}>
         <X className="size-3.5" />
       </button>
     </span>

@@ -45,8 +45,8 @@ test("bosh sahifa: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbg
   try {
     await asGuest(context);
     await page.goto("/");
-    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).fill("Sarbon");
-    await page.getByRole("button", { name: "Ish qidirish", exact: true }).click();
+    await page.getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" }).fill("Sarbon");
+    await page.getByRole("button", { name: "Ish topish", exact: true }).click();
     await page.waitForURL(/\/search\?mode=jobs&q=Sarbon/);
     const card = page.locator("main article").filter({ hasText: "Kassir" });
     await expect(card).toHaveCount(1);
