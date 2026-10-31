@@ -63,8 +63,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
             )}
           >
             <BrandWordmark />
-            {/* kompyuterda nom ostida qisqa shior (mehmon sahifasida) */}
-            {site ? <span className="hidden text-2xs font-semibold leading-none text-muted-foreground xl:block">{t("common.site.tagline")}</span> : null}
+            {/* shior sarlavhada yo'q (2026-10-31): to'rt bo'limli menyu va "Ish joylashtirish" sig'sin — shior footer'da */}
           </span>
         </Link>
         <div className={cn("ml-4 min-w-0 flex-1 @max-[22rem]:ml-0", showPlace && "max-md:ml-0")}>
