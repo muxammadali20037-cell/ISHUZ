@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import { publicEnv } from "@/lib/env";
@@ -8,6 +9,7 @@ import { getSession, type SessionContext } from "@/features/auth/session";
 import { finalizeMedia, mediaFinalizeAvailable, pruneMedia } from "@/features/media/finalize";
 import { isLegacyMediaPath, isRawMediaPath, MEDIA_BUCKET } from "@/features/media/paths";
 import type { ActionResult } from "@/features/auth/actions";
+import { trackServer } from "@/features/analytics/server";
 import type { TablesInsert, TablesUpdate } from "@/types/database.types";
 import {
   acceptInviteSchema,
@@ -18,15 +20,12 @@ import {
   employerDraftSchema,
   employerTypeSchema,
   inviteLink,
-  isValidDocumentPath,
   personOnboardingSchema,
   personSchema,
   removeMemberSchema,
   saveCompanyLogoSchema,
   setMemberRoleSchema,
   updateCompanySchema,
-  verificationRequestSchema,
-  COMPANY_VERIFICATION_TYPES,
   type CompanyFormValues,
 } from "./schema";
 
@@ -148,6 +147,8 @@ export async function completeCompanyOnboarding(input: unknown): Promise<ActionR
   const { error: roleErr } = await supabase.from("profiles").update({ active_role: "employer" }).eq("id", userId);
   if (roleErr) console.error("[employer] active_role", roleErr.message);
 
+  // biznes ko'rsatkichi: yangi ish beruvchi (mavjud kompaniyaga qayta kirish hisoblanmaydi)
+  if (!existingCompanyId) after(() => trackServer("employer_register", userId, { kind: "company", type: v.employerType }));
   revalidateEmployer(slug);
   revalidatePath("/");
   return { ok: true, data: { companyId, slug } };
@@ -162,6 +163,7 @@ export async function completePersonOnboarding(input: unknown): Promise<ActionRe
   const { userId } = auth.session;
   const d = parsed.data;
   const supabase = await createClient();
+  const { data: before } = await supabase.from("employer_profiles").select("onboarding_completed_at").eq("profile_id", userId).maybeSingle();
   const row: TablesInsert<"employer_profiles"> = {
     profile_id: userId,
     employer_type: d.employerType ?? "person",
@@ -176,6 +178,7 @@ export async function completePersonOnboarding(input: unknown): Promise<ActionRe
   if (error) return { ok: false, error: errorCode(error) };
   const { error: roleErr } = await supabase.from("profiles").update({ active_role: "employer" }).eq("id", userId);
   if (roleErr) console.error("[employer] active_role", roleErr.message);
+  if (!before?.onboarding_completed_at) after(() => trackServer("employer_register", userId, { kind: "person", type: d.employerType ?? "person" }));
   revalidateEmployer();
   revalidatePath("/");
   return { ok: true };
@@ -357,27 +360,5 @@ export async function acceptCompanyInvite(input: unknown): Promise<ActionResult<
 }
 
 // ---------- tasdiqlash ----------
-
-export async function submitVerificationRequest(input: unknown): Promise<ActionResult<{ id: string }>> {
-  const parsed = verificationRequestSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "validation" };
-  const auth = await requireActionSession();
-  if ("ok" in auth) return auth;
-  const { userId } = auth.session;
-  const { companyId, type, note, documentPaths } = parsed.data;
-  const isCompanyType = (COMPANY_VERIFICATION_TYPES as readonly string[]).includes(type);
-  if ((companyId && !isCompanyType) || (!companyId && type !== "identity")) return { ok: false, error: "validation" };
-  if (documentPaths.some((p) => !isValidDocumentPath(userId, p))) return { ok: false, error: "invalid_path" };
-
-  const supabase = await createClient();
-  let pendingQ = supabase.from("verification_requests").select("id", { count: "exact", head: true }).eq("profile_id", userId).eq("status", "pending");
-  pendingQ = companyId ? pendingQ.eq("company_id", companyId) : pendingQ.is("company_id", null);
-  const { count } = await pendingQ;
-  if (count) return { ok: false, error: "already_pending" };
-
-  const insert: TablesInsert<"verification_requests"> = { profile_id: userId, company_id: companyId, type, note, document_paths: documentPaths };
-  const { data, error } = await supabase.from("verification_requests").insert(insert).select("id").single();
-  if (error) return { ok: false, error: errorCode(error) === "forbidden" ? "not_admin" : errorCode(error) };
-  revalidatePath("/company/settings");
-  return { ok: true, data: { id: data.id } };
-}
+// Tasdiqlash so'rovi faqat `@/features/verification/actions` → RPC `submit_employer_verification` orqali (0056 dan beri
+// verification_requests ga to'g'ridan-to'g'ri yozish taqiqlangan).

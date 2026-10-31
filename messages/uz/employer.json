@@ -217,7 +217,8 @@
       "doc_type": "Faqat PDF, JPG yoki PNG",
       "doc_size": "Fayl 15 MB dan katta bo'lmasligi kerak",
       "doc_limit": "Ko'pi bilan 5 ta hujjat"
-    }
+    },
+    "suspended_notice": "Hisobingiz vaqtincha to'xtatilgan. Sababini bilish uchun yordam markaziga yozing."
   },
   "errors": {
     "company_exists": "Sizda allaqachon kompaniya bor",

@@ -31,7 +31,7 @@ export default async function CompanySettingsPage() {
       const invites = myRole === "owner" || myRole === "admin" ? await getPendingInvites(companyId) : [];
       return (
         <Shell forceRole="employer">
-          <CompanySettings userId={userId} company={company} myRole={myRole} members={members} invites={invites} requests={requests} refs={refs} />
+          <CompanySettings userId={userId} company={company} profile={profile} myRole={myRole} members={members} invites={invites} requests={requests} refs={refs} />
         </Shell>
       );
     }

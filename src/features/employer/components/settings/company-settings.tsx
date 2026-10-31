@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PageHeader } from "@/components/ui/misc";
-import type { CompanyInviteRow, CompanyMemberRole, CompanyRow, MemberRow, VerificationRequestRow } from "../../types";
+import type { CompanyInviteRow, CompanyMemberRole, CompanyRow, EmployerProfileRow, MemberRow, VerificationRequestRow } from "../../types";
 import type { ReferenceLists } from "../ref-types";
 import { CompanyInfoTab } from "./company-info-tab";
 import { MembersTab } from "./members-tab";
@@ -22,6 +22,7 @@ function tabFromHash(): TabKey | null {
 export function CompanySettings({
   userId,
   company,
+  profile,
   myRole,
   members,
   invites,
@@ -30,6 +31,8 @@ export function CompanySettings({
 }: {
   userId: string;
   company: CompanyRow;
+  /** ish beruvchi profili: tasdiqlash holati va STIR shu yerda (RPC uni yangilaydi) */
+  profile: EmployerProfileRow;
   myRole: CompanyMemberRole | null;
   members: MemberRow[];
   invites: CompanyInviteRow[];
@@ -72,7 +75,15 @@ export function CompanySettings({
           <MembersTab companyId={company.id} userId={userId} myRole={myRole} members={members} invites={invites} />
         </TabsContent>
         <TabsContent value="verification">
-          <VerificationTab userId={userId} companyId={company.id} status={company.verification_status} requests={requests} canSubmit={isAdmin} />
+          <VerificationTab
+            userId={userId}
+            isCompany
+            status={company.verification_status === "verified" ? "verified" : profile.verification_status}
+            requests={requests}
+            canSubmit={isAdmin}
+            needsId={profile.employer_type === "company" || profile.employer_type === "government"}
+            initialId={profile.identity_number ?? company.tin ?? null}
+          />
         </TabsContent>
       </Tabs>
     </div>

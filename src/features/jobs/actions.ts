@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { after } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/features/auth/actions";
 import { getSession } from "@/features/auth/session";
@@ -8,6 +9,7 @@ import { errorCode } from "@/lib/utils";
 import { applySchema, toggleSaveSchema } from "./schema";
 import { toggleSaved } from "@/features/saved/actions";
 import { getSimpleListingFeatures } from "@/features/post/queries";
+import { trackServer } from "@/features/analytics/server";
 
 /**
  * Vakansiyani saqlash / saqlanganlardan olib tashlash — "Saqlanganlar" (saved_items, 0061: ishchi profili shart emas;
@@ -48,6 +50,8 @@ export async function applyToVacancy(input: unknown): Promise<ActionResult<{ id:
   });
   if (error) return { ok: false, error: errorCode(error) };
   if (!data) return { ok: false, error: "unknown" };
+  // biznes ko'rsatkichi: ariza (ishga olish EMAS) — "ariza / vakansiya" va konversiya uchun
+  after(() => trackServer("application_submit", session.userId, { quick: !session.workerId, with_message: !!parsed.data.message }));
   revalidatePath("/applications");
   revalidatePath("/");
   return { ok: true, data: { id: data } };

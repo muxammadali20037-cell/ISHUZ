@@ -90,7 +90,15 @@ export function EmployerProfileSettings({ userId, profile, requests, refs }: { u
           </Dialog>
         </section>
 
-        <VerificationTab userId={userId} companyId={null} status={profile.verification_status} requests={requests} canSubmit />
+        <VerificationTab
+          userId={userId}
+          isCompany={false}
+          status={profile.verification_status}
+          requests={requests}
+          canSubmit
+          needsId={profile.employer_type === "company" || profile.employer_type === "government"}
+          initialId={profile.identity_number ?? null}
+        />
       </div>
     </div>
   );

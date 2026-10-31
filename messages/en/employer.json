@@ -217,7 +217,8 @@
       "doc_type": "PDF, JPG or PNG only",
       "doc_size": "File must not exceed 15 MB",
       "doc_limit": "5 documents max"
-    }
+    },
+    "suspended_notice": "Your account is temporarily suspended. Contact support to find out why."
   },
   "errors": {
     "company_exists": "You already have a company",

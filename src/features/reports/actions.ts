@@ -1,10 +1,12 @@
 "use server";
 
+import { after } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/features/auth/actions";
 import { getSession } from "@/features/auth/session";
 import { errorCode } from "@/lib/utils";
+import { trackServer } from "@/features/analytics/server";
 
 const schema = z.object({
   targetType: z.enum(["profile", "vacancy", "company", "message", "review"]),
@@ -30,5 +32,6 @@ export async function submitReport(input: ReportInput): Promise<ActionResult> {
     p_details: parsed.data.details?.trim() || undefined,
   });
   if (error) return { ok: false, error: errorCode(error) };
+  if (parsed.data.targetType === "vacancy") after(() => trackServer("vacancy_report", session.userId, { reason: parsed.data.reason }));
   return { ok: true };
 }

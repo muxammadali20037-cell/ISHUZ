@@ -1,33 +1,12 @@
 "use client";
 
-import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { Check, Clock, FileSearch, ShieldCheck, ShieldX, type LucideIcon } from "lucide-react";
+import { Check, Clock, FileSearch, ShieldAlert, ShieldCheck, ShieldX, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDateTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioItem } from "@/components/ui/checkbox";
-import { Textarea } from "@/components/ui/input";
-import { Field } from "@/components/ui/label";
-import { toast } from "@/components/ui/toast";
-import { submitVerificationRequest } from "../../actions";
-import { errorMessageKey } from "../../mappers";
-import { COMPANY_VERIFICATION_TYPES, PERSON_VERIFICATION_TYPES } from "../../schema";
-import type { VerificationRequestRow, VerificationStatus, VerificationType } from "../../types";
+import { VerificationForm } from "@/features/verification/components/verification-form";
+import type { VerificationRequestRow, VerificationStatus } from "../../types";
 import { VerificationBadge } from "../dashboard/status-badge";
-import { DocumentUpload, type UploadedDoc } from "./document-upload";
-import { callAction } from "@/lib/action-call";
-
-const TYPE_DESC: Record<VerificationType, string> = {
-  company: "employer.verification.type_company_desc",
-  tin: "employer.verification.type_tin_desc",
-  documents: "employer.verification.type_documents_desc",
-  identity: "employer.verification.type_identity_desc",
-  phone: "",
-  telegram: "",
-  education: "",
-};
 
 /** Holat vaqt chizig'i: unverified → pending → verified | rejected */
 function Timeline({ status, reviewNote }: { status: VerificationStatus; reviewNote: string | null }) {
@@ -72,52 +51,33 @@ function Timeline({ status, reviewNote }: { status: VerificationStatus; reviewNo
 
 /**
  * Tasdiqlash bo'limi: holat, so'rovlar ro'yxati, yangi so'rov formasi.
- * companyId bo'lsa turlari company|tin|documents (faqat admin yuboradi), bo'lmasa identity.
+ * So'rov faqat xavfsiz RPC orqali (`submit_employer_verification`, 0049): u holatni "kutilmoqda" ga o'tkazadi, eski kutilayotgan
+ * so'rovni almashtiradi va kompaniyani o'zi biriktiradi. To'g'ridan-to'g'ri `verification_requests` ga yozish 0056 dan beri
+ * taqiqlangan (oldingi forma shu sabab "ruxsat yo'q" xatosini berardi — 2026-10-31 auditi).
+ * Tashkilot/davlat uchun STIR (yoki JShShIR) majburiy — kompaniya ma'lumotlaridagi STIR oldindan to'ldiriladi.
  */
 export function VerificationTab({
   userId,
-  companyId,
+  isCompany,
   status,
   requests,
   canSubmit,
+  needsId,
+  initialId,
 }: {
   userId: string;
-  companyId: string | null;
+  isCompany: boolean;
   status: VerificationStatus;
   requests: VerificationRequestRow[];
   canSubmit: boolean;
+  needsId: boolean;
+  initialId: string | null;
 }) {
   const { t, tEnum, locale } = useT();
-  const router = useRouter();
-  const types = companyId ? COMPANY_VERIFICATION_TYPES : PERSON_VERIFICATION_TYPES;
-  const [type, setType] = useState<VerificationType>(types[0]);
-  const [note, setNote] = useState("");
-  const [docs, setDocs] = useState<UploadedDoc[]>([]);
-  const [docError, setDocError] = useState<string | null>(null);
-  const [pending, startTransition] = useTransition();
   const latest = requests[0] ?? null;
   const reviewNote = latest?.status === "rejected" ? latest.review_note : null;
   const hasPending = requests.some((r) => r.status === "pending") || status === "pending";
-  const showForm = !hasPending && status !== "verified";
-
-  const submit = () => {
-    if (!docs.length) {
-      setDocError(t("employer.verification.documents_required"));
-      return;
-    }
-    setDocError(null);
-    startTransition(async () => {
-      const res = await callAction(() => submitVerificationRequest({ companyId, type, note, documentPaths: docs.map((d) => d.path) }));
-      if (!res.ok) {
-        toast.error(t(errorMessageKey(res.error)));
-        return;
-      }
-      toast.success(t("employer.verification.submitted"));
-      setDocs([]);
-      setNote("");
-      router.refresh();
-    });
-  };
+  const showForm = !hasPending && status !== "verified" && status !== "suspended";
 
   return (
     <div className="space-y-6" id="verification">
@@ -126,34 +86,23 @@ export function VerificationTab({
           <h2 className="text-lg font-bold">{t("employer.verification.title")}</h2>
           <VerificationBadge status={status} label={tEnum("verification_status", status)} />
         </div>
-        <p className="mb-5 text-sm text-muted-foreground">{companyId ? t("employer.verification.desc_company") : t("employer.verification.desc_person")}</p>
+        <p className="mb-5 text-sm text-muted-foreground">{isCompany ? t("employer.verification.desc_company") : t("employer.verification.desc_person")}</p>
         <Timeline status={status} reviewNote={reviewNote} />
         {status === "pending" ? <p className="mt-4 rounded-xl bg-warning-soft p-3 text-sm text-warning">{t("employer.verification.pending_notice")}</p> : null}
         {status === "verified" ? <p className="mt-4 rounded-xl bg-success-soft p-3 text-sm text-success">{t("employer.verification.verified_notice")}</p> : null}
+        {status === "suspended" ? (
+          <p className="mt-4 flex gap-2 rounded-xl bg-destructive-soft p-3 text-sm text-destructive">
+            <ShieldAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
+            {t("employer.verification.suspended_notice")}
+          </p>
+        ) : null}
       </section>
 
       {showForm ? (
         canSubmit ? (
-          <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5">
-            <h3 className="mb-4 text-base font-semibold">{t("employer.verification.new_request")}</h3>
-            <div className="space-y-5">
-              <Field label={t("employer.verification.type")}>
-                <RadioGroup value={type} onValueChange={(v) => setType(v as VerificationType)} className="space-y-2" disabled={pending}>
-                  {types.map((v) => (
-                    <RadioItem key={v} value={v} label={tEnum("verification_type", v)} description={t(TYPE_DESC[v])} />
-                  ))}
-                </RadioGroup>
-              </Field>
-              <Field label={t("employer.verification.documents")} required error={docError ?? undefined}>
-                <DocumentUpload userId={userId} value={docs} onChange={(d) => { setDocs(d); if (d.length) setDocError(null); }} disabled={pending} />
-              </Field>
-              <Field label={t("employer.verification.note")} htmlFor="verification-note" hint={t("common.labels.optional")}>
-                <Textarea id="verification-note" value={note} onChange={(e) => setNote(e.target.value)} maxLength={1000} placeholder={t("employer.verification.note_placeholder")} className="min-h-[90px]" disabled={pending} />
-              </Field>
-              <Button size="lg" onClick={submit} loading={pending} className="w-full sm:w-auto">
-                <ShieldCheck className="size-5" /> {t("employer.verification.submit")}
-              </Button>
-            </div>
+          <section>
+            <h3 className="mb-3 text-base font-semibold">{t("employer.verification.new_request")}</h3>
+            <VerificationForm userId={userId} needsId={needsId} initialId={initialId} />
           </section>
         ) : (
           <p className="rounded-xl bg-secondary p-3 text-sm text-muted-foreground">{t("employer.verification.admin_only")}</p>
