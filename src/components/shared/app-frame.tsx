@@ -3,7 +3,7 @@
 import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TopBar, type TopBarProps } from "./top-bar";
-import { BottomNav } from "./app-shell";
+import { BottomNav, SideNav } from "./app-shell";
 
 /** Qobiq ma'lumoti (serverda Shell tayyorlaydi): yuqori panel va pastki menyu */
 export interface FrameChrome {
@@ -77,11 +77,21 @@ export function AppFrame({
     };
   }, [skeleton]);
 
+  // kirgan foydalanuvchi, kompyuter (lg+): chap yon menyu (2026-11); yuqori paneldagi bo'lim havolalari o'shanda yashiriladi
+  const side = !!chrome?.top.user && !hideNav;
   return (
     <div className="flex min-h-dvh flex-col">
-      {chrome ? <TopBar {...chrome.top} /> : null}
-      {/* pastki qism bo'lsa — pastki menyu uchun joy o'sha yerda (aks holda kontent ostida) */}
-      <main className={cn(hideNav || footer ? "flex-1" : "flex-1 page-with-tabbar md:pb-8", anim)}>{children}</main>
+      {chrome ? <TopBar {...chrome.top} side={side} /> : null}
+      <div className="flex flex-1">
+        {side && chrome ? (
+          // to'q ko'k ustun butun balandlikda; menyuning o'zi ekranga yopishib turadi
+          <div className="hidden w-64 shrink-0 bg-navy lg:block xl:w-72">
+            <SideNav mode={chrome.top.mode} counts={chrome.top.counts} />
+          </div>
+        ) : null}
+        {/* pastki qism bo'lsa — pastki menyu uchun joy o'sha yerda (aks holda kontent ostida) */}
+        <main className={cn("min-w-0 flex-1", hideNav || footer ? "" : "page-with-tabbar md:pb-8", anim)}>{children}</main>
+      </div>
       {footer}
       {chrome && !hideNav ? <BottomNav role={chrome.top.role} mode={chrome.top.mode} counts={chrome.top.counts} /> : null}
       {extras}

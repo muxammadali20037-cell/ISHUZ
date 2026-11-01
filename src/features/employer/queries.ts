@@ -107,7 +107,7 @@ export async function getPipelineTotals(userId: string, companyId: string | null
   return totals;
 }
 
-export async function getRecentApplications(userId: string, companyId: string | null, limit = 5): Promise<RecentApplicationRow[]> {
+export async function getRecentApplications(userId: string, companyId: string | null, limit = 5, status?: Enums<"application_status"> | null): Promise<RecentApplicationRow[]> {
   const supabase = await createClient();
   const { data: mine, error: vErr } = await supabase.from("vacancies").select("id").or(mineFilter(userId, companyId)).limit(200);
   if (vErr) {
@@ -120,6 +120,7 @@ export async function getRecentApplications(userId: string, companyId: string | 
     .from("applications")
     .select("id, status, match_score, created_at, vacancy_id, vacancies!inner(title), worker_profiles(profiles!worker_profiles_profile_id_fkey(first_name, last_name, avatar_url))")
     .in("vacancy_id", ids)
+    .match(status ? { status } : {})
     .order("created_at", { ascending: false })
     .limit(limit);
   if (error) {
@@ -140,6 +141,26 @@ export async function getRecentApplications(userId: string, companyId: string | 
       avatar_url: profile?.avatar_url ?? null,
     };
   });
+}
+
+/**
+ * Ish beruvchining barcha vakansiyalariga kelgan arizalar — holat bo'yicha soni (/employer/applications bosqich kartalari va
+ * filtr chiplari uchun). Haqiqiy son; xato bo'lsa — null (kartalar ko'rsatilmaydi).
+ */
+export async function getApplicationStageCounts(userId: string, companyId: string | null): Promise<Partial<Record<Enums<"application_status">, number>> | null> {
+  const supabase = await createClient();
+  const { data: mine, error: vErr } = await supabase.from("vacancies").select("id").or(mineFilter(userId, companyId)).limit(200);
+  if (vErr) return null;
+  const ids = (mine ?? []).map((v) => v.id);
+  if (!ids.length) return {};
+  const { data, error } = await supabase.from("applications").select("status").in("vacancy_id", ids).limit(10000);
+  if (error) {
+    console.error("[employer] getApplicationStageCounts", error.message);
+    return null;
+  }
+  const out: Partial<Record<Enums<"application_status">, number>> = {};
+  for (const r of data ?? []) out[r.status] = (out[r.status] ?? 0) + 1;
+  return out;
 }
 
 export interface CandidateSearch {

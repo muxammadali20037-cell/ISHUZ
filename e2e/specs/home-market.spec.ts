@@ -7,7 +7,7 @@ import { USERS, asGuest, sql } from "../support";
  * bo'limi, raqamlar (bazadan), pastki qism havolalari, SEO va 320–1440 px. Kirish oqimi va ikki yo'l — entry.spec.ts.
  */
 
-const HOME_H1 = "O'zingizga mos ishni toping.";
+const HOME_H1 = "To'g'ri ish. To'g'ri inson. Bitta platformada.";
 const ACTIVE = "status = 'active' and (expires_at is null or expires_at > now())";
 
 async function seed() {

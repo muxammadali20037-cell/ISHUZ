@@ -23,7 +23,9 @@ export function RolePicker({ initial, next, images }: { initial: AppMode | null;
   return (
     <form action={pickRole} className="flex flex-1 flex-col">
       <input type="hidden" name="next" value={next} />
-      <fieldset className="mt-8 grid gap-3">
+      {/* 2026-11 ("Outreach" uslubi): kompyuterda ikki karta yonma-yon — chap yuqorida belgi katakchasi, markazda rasm, nom va izoh;
+          telefonda — avvalgidek gorizontal kartalar (bosh barmoq bilan qulay) */}
+      <fieldset className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4">
         <legend className="sr-only">{t("welcome.entry.role.title")}</legend>
         {items.map((it) => {
           const on = mode === it.mode;
@@ -31,17 +33,23 @@ export function RolePicker({ initial, next, images }: { initial: AppMode | null;
             <label
               key={it.mode}
               className={cn(
-                "press tile-raise relative flex cursor-pointer items-center gap-4 rounded-2xl border-2 p-3 pr-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring",
-                on ? "border-primary ring-4 ring-primary/15" : "border-transparent hover:border-primary/40",
+                "press relative flex cursor-pointer items-center gap-4 rounded-2xl border-2 bg-card p-3 pr-4 transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-ring sm:flex-col sm:px-5 sm:pb-6 sm:pt-10 sm:text-center",
+                on ? "border-primary bg-primary-soft" : "border-border hover:border-primary/40",
               )}
             >
               <input type="radio" name="mode" value={it.mode} required checked={on} onChange={() => setMode(it.mode)} className="sr-only" data-testid={`role-${it.mode}`} />
-              <span className="size-24 shrink-0 overflow-hidden rounded-xl">{images[it.mode]}</span>
+              <span className="size-24 shrink-0 overflow-hidden rounded-xl sm:size-28">{images[it.mode]}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-extrabold leading-tight">{it.title}</span>
                 <span className="mt-1 block text-sm leading-snug text-muted-foreground">{it.desc}</span>
               </span>
-              <span className={cn("flex size-7 shrink-0 items-center justify-center rounded-full border-2", on ? "border-primary bg-primary text-primary-foreground" : "border-border")} aria-hidden>
+              <span
+                className={cn(
+                  "flex size-7 shrink-0 items-center justify-center rounded-full border-2 sm:absolute sm:left-3 sm:top-3 sm:size-6 sm:rounded-md",
+                  on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card",
+                )}
+                aria-hidden
+              >
                 {on ? <Check className="size-4" strokeWidth={3} /> : null}
               </span>
             </label>

@@ -17,6 +17,7 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
     case "hero_seeker":
     case "hero_employer":
     case "hero_guest":
+    case "home_photo":
       // suratsiz — ko'k brend sirti (bosh ekrandagidek)
       return <span className="hero-surface block size-full" />;
     case "role_worker":

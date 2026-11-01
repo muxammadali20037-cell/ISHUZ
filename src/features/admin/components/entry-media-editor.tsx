@@ -80,7 +80,13 @@ export function EntryMediaEditor({ media: initial, canManage }: { media: EntryMe
                   <div
                     className={cn(
                       "overflow-hidden rounded-xl bg-primary-soft",
-                      spec.ratio === "1:1" ? "mx-auto aspect-square w-40" : spec.ratio === "16:9" ? "aspect-video w-full" : "aspect-[4/3] w-full",
+                      spec.ratio === "1:1"
+                        ? "mx-auto aspect-square w-40"
+                        : spec.ratio === "16:9"
+                          ? "aspect-video w-full"
+                          : spec.ratio === "4:5"
+                            ? "mx-auto aspect-[4/5] w-48"
+                            : "aspect-[4/3] w-full",
                     )}
                   >
                     <EntryImage slot={slot} media={media} sizes="320px" className="size-full" />

@@ -912,5 +912,39 @@
     "e_company_hint": "Sahifa va tasdiq",
     "hire_title": "Kerakli xodimni tez toping",
     "hire_sub": "Vakansiya joylang yoki AI bilan nomzod qidiring — haqiqiy ishchilar ichidan"
+  },
+  "side": {
+    "label": "Kabinet menyusi",
+    "home": "Bosh sahifa",
+    "vacancies": "Vakansiyalar",
+    "my_applications": "Arizalarim",
+    "saved": "Saqlanganlar",
+    "messages": "Xabarlar",
+    "profile": "Profil",
+    "my_vacancies": "Vakansiyalarim",
+    "applications": "Arizalar",
+    "candidates": "Nomzodlar",
+    "company": "Kompaniya",
+    "more": "Boshqa",
+    "notifications": "Bildirishnomalar",
+    "settings": "Sozlamalar",
+    "help": "Yordam",
+    "cta_worker_title": "Ish beruvchilar sizni topsin",
+    "cta_worker_desc": "O'zingiz haqingizda e'lon bering — ish beruvchilar o'zi bog'lanadi.",
+    "cta_employer_title": "Kerakli xodimni toping",
+    "cta_employer_desc": "Vakansiya joylang — nomzodlar arizalari shu yerda ko'rinadi."
+  },
+  "activity": {
+    "title": "Mening faoliyatim",
+    "subtitle": "Arizalaringiz holati va saqlangan vakansiyalar",
+    "stat_sent": "Yuborilgan arizalar",
+    "stat_review": "Ko'rib chiqilmoqda",
+    "stat_interview": "Suhbat va takliflar",
+    "stat_saved": "Saqlangan vakansiyalar",
+    "recent_title": "So'nggi arizalar",
+    "recent_empty": "Hali ariza yubormagansiz.",
+    "saved_title": "Saqlangan vakansiyalar",
+    "saved_empty": "Saqlangan vakansiya yo'q — yoqqan e'londa belgini bosing.",
+    "find_jobs": "Ishlarni ko'rish"
   }
 }

@@ -255,5 +255,15 @@
     "messages_desc": "Nomzodlar bilan yozishmalar",
     "company": "Kompaniya",
     "company_desc": "Nom, manzil, logo va boshqalar"
+  },
+  "pipeline": {
+    "stage_new": "Yangi arizalar",
+    "stage_review": "Ko'rib chiqilmoqda",
+    "stage_interview": "Suhbat va taklif",
+    "stage_hired": "Ishga olingan",
+    "total": "Jami {count} ta ariza — barcha vakansiyalaringiz bo'yicha",
+    "filters_label": "Holat bo'yicha",
+    "filter_all": "Hammasi",
+    "filter_empty": "Bu holatda ariza yo'q."
   }
 }

@@ -24,6 +24,8 @@ import { BRAND } from "@/config/brand";
 export interface VacancyActionsProps {
   vacancy: { id: string; slug: string; title: string; companyName: string | null; status: Enums<"vacancy_status"> };
   viewer: Pick<VacancyViewerState, "kind" | "isSaved" | "application" | "quickApply">;
+  /** desktop ko'rinishi: "card" — yon karta (avvalgi), "inline" — sarlavha kartasi ichida bir qator (2026-11 redizayn) */
+  layout?: "card" | "inline";
 }
 
 /**
@@ -32,7 +34,7 @@ export interface VacancyActionsProps {
  * anketa shart emas; 0064 bo'lmagan bazada — avvalgidek /onboarding/worker); boshqaruvchi → "Boshqarish". `?apply=1` — natija
  * kartasidagi "Ariza yuborish"dan ham.
  */
-export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
+export function VacancyActions({ vacancy, viewer, layout = "card" }: VacancyActionsProps) {
   const { t } = useT();
   const router = useRouter();
   const { toggle, pendingId, dialog } = useSaveVacancy();
@@ -152,8 +154,23 @@ export function VacancyActions({ vacancy, viewer }: VacancyActionsProps) {
 
   return (
     <>
+      {layout === "inline" ? (
+        // Desktop (lg+): sarlavha kartasida — asosiy amal, "Saqlash", "Ulashish" bir qatorda
+        <div className="mt-5 hidden lg:block">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="min-w-48">{primary({ size: "lg", fullWidth: true })}</div>
+            <Button type="button" variant="outline" size="lg" onClick={onSave} loading={pendingId === vacancy.id} aria-pressed={saved}>
+              {saveIcon} {saveLabel}
+            </Button>
+            <Button type="button" variant="outline" size="lg" onClick={onShare}>
+              <Share2 className="size-5" /> {t("jobs.detail.share")}
+            </Button>
+          </div>
+          {application ? <p className="mt-2 text-sm text-muted-foreground">{t("jobs.apply.success_desc")}</p> : null}
+        </div>
+      ) : null}
       {/* Desktop (lg+): yon karta */}
-      <div className="hidden space-y-3 rounded-xl border border-border bg-card p-4 lg:block">
+      <div className={cn("hidden space-y-3 rounded-xl border border-border bg-card p-4", layout === "card" && "lg:block")}>
         {primary({ fullWidth: true, size: "lg" })}
         {application ? <p className="text-center text-xs text-muted-foreground">{t("jobs.apply.success_desc")}</p> : null}
         {!isActive && viewer.kind !== "manager" ? <p className="text-center text-xs text-warning">{t("jobs.detail.status_inactive")}</p> : null}

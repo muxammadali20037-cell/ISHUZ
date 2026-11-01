@@ -33,13 +33,15 @@ test.describe("kirish", () => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("To'g'ri ish. To'g'ri inson. Bitta platformada.");
     const jobs = await activeJobs();
     const [today] = await sql<{ n: string }>(
       "select count(*) as n from public.vacancies where status = 'active' and (expires_at is null or expires_at > now()) and published_at >= date_trunc('day', now() at time zone 'Asia/Tashkent') at time zone 'Asia/Tashkent'",
     );
     await expect(main.getByText(`Bugun ${today!.n} ta yangi e'lon`)).toBeVisible();
-    await expect(main.getByRole("button", { name: new RegExp(`^Ish qidiraman\\s*${jobs} ta faol vakansiya`) })).toBeVisible();
+    await expect(main.getByRole("button", { name: /^Ish qidiraman/ })).toBeVisible();
+    // haqiqiy raqam (telefonda — tugmalar ostida; kompyuterda — o'ngdagi kartada)
+    await expect(main.getByText(`${jobs} ta faol vakansiya`).first()).toBeVisible();
     await expect(main.getByRole("button", { name: /^Ish beruvchiman/ })).toBeVisible();
     await expect(page.getByRole("search", { name: "Ish qidirish" }).getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" })).toBeVisible();
     await expect(main.getByRole("heading", { level: 2, name: "Yangi ishlar" })).toBeVisible();

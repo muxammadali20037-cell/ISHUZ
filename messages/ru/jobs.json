@@ -141,7 +141,12 @@
     "tab_benefits": "Условия",
     "tab_company": "Компания",
     "sec_duties": "Обязанности",
-    "sec_conditions": "Условия"
+    "sec_conditions": "Условия",
+    "match_why": "Почему вам подходит?",
+    "stat_applications": "Отклики",
+    "stat_none": "Пока нет",
+    "stat_published": "Опубликовано",
+    "stat_views": "Просмотры"
   },
   "apply": {
     "title": "Отклик на вакансию",

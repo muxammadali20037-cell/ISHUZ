@@ -255,5 +255,15 @@
     "messages_desc": "Chats with candidates",
     "company": "Company",
     "company_desc": "Name, address, logo and more"
+  },
+  "pipeline": {
+    "stage_new": "New applications",
+    "stage_review": "Under review",
+    "stage_interview": "Interview and offer",
+    "stage_hired": "Hired",
+    "total": "{count} applications in total across all your vacancies",
+    "filters_label": "By status",
+    "filter_all": "All",
+    "filter_empty": "No applications with this status."
   }
 }

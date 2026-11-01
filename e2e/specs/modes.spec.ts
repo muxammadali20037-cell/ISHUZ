@@ -13,7 +13,7 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await asGuest(context);
   await page.goto("/");
   // bosh sahifa: sarlavha, ikki aniq yo'l, shu yerning o'zida qidiruv va haqiqiy e'lonlar (rejim almashtirgich yo'q)
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping.");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("To'g'ri ish. To'g'ri inson. Bitta platformada.");
   await expect(page.getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 2, name: "Yangi ishlar" })).toBeVisible();
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);

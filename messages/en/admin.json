@@ -924,7 +924,8 @@
     "group_hero_hint": "Background of the home page header. A blue veil goes over the photo so white text always reads. No photo — blue background.",
     "slot_hero_seeker": "Job seeker home screen",
     "slot_hero_employer": "Employer home screen",
-    "slot_hero_guest": "Guest page and first launch"
+    "slot_hero_guest": "First launch (language choice) background",
+    "slot_home_photo": "Home page: photo on the right (portrait, person centred)"
   },
   "account": {
     "title": "Sign-in methods",

@@ -35,13 +35,15 @@ export interface TopBarProps {
   site?: SiteNavConfig | null;
   /** ish qidiruvchi: eslab qolingan hudud — telefonda bosh sahifa panelida (kompyuterda u qidiruv blokida) */
   place?: { label: string; href: string } | null;
+  /** kompyuterda chap yon menyu bor (kirgan foydalanuvchi): bo'lim havolalari faqat planshetda (md) */
+  side?: boolean;
 }
 
 /**
  * Yuqori panel (barcha sahifalarda). Mijoz komponenti: ma'lumot serverda (Shell) tayyorlanadi, shuning uchun sahifa
  * yuklanayotganda ham (loading.tsx) o'sha panel joyida qoladi — AppFrame.
  */
-export function TopBar({ role, counts, mode = null, user, site = null, place = null }: TopBarProps) {
+export function TopBar({ role, counts, mode = null, user, site = null, place = null, side = false }: TopBarProps) {
   const { t } = useT();
   const pathname = usePathname();
   const session = user;
@@ -50,8 +52,13 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header className="@container sticky top-0 z-40 border-b border-border/70 bg-card" style={{ paddingTop: "var(--safe-top)" }}>
-      <div className="container-app flex h-14 items-center gap-3">
-        <Link href="/" className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight" aria-label={BRAND.name}>
+      {/* yon menyu bo'lsa (kompyuter): panel to'liq kenglikda, logotip menyu ustida */}
+      <div className={cn("flex h-14 items-center gap-3", side ? "mx-auto w-full max-w-6xl px-4 sm:px-6 lg:max-w-none lg:pl-0 lg:pr-6" : "container-app")}>
+        <Link
+          href="/"
+          className={cn("flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight", side && "lg:w-64 lg:shrink-0 lg:justify-start lg:px-5 xl:w-72")}
+          aria-label={BRAND.name}
+        >
           <BrandMark className="size-10 rounded-xl" />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
           <span
@@ -67,7 +74,13 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           </span>
         </Link>
         <div className={cn("ml-4 min-w-0 flex-1 @max-[22rem]:ml-0", showPlace && "max-md:ml-0")}>
-          {site ? <SiteNavLinks /> : <DesktopNavLinks role={role} mode={mode} counts={counts} />}
+          {site ? (
+            <SiteNavLinks />
+          ) : (
+            <div className={side ? "lg:hidden" : undefined}>
+              <DesktopNavLinks role={role} mode={mode} counts={counts} />
+            </div>
+          )}
           {showPlace ? (
             <Link
               href={place.href}

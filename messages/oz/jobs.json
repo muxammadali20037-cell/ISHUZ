@@ -141,7 +141,12 @@
     "tab_benefits": "Имтиёзлар",
     "tab_company": "Компания",
     "sec_duties": "Вазифалар",
-    "sec_conditions": "Шароитлар"
+    "sec_conditions": "Шароитлар",
+    "match_why": "Нима учун сизга мос?",
+    "stat_applications": "Аризалар",
+    "stat_none": "Ҳали йўқ",
+    "stat_published": "Жойланган",
+    "stat_views": "Кўришлар"
   },
   "apply": {
     "title": "Ариза юбориш",

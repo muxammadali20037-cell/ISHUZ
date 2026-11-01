@@ -912,5 +912,39 @@
     "e_company_hint": "Page and verification",
     "hire_title": "Find the right person fast",
     "hire_sub": "Post a vacancy or search candidates with AI — among real workers"
+  },
+  "side": {
+    "label": "Account menu",
+    "home": "Home",
+    "vacancies": "Vacancies",
+    "my_applications": "My applications",
+    "saved": "Saved",
+    "messages": "Messages",
+    "profile": "Profile",
+    "my_vacancies": "My vacancies",
+    "applications": "Applications",
+    "candidates": "Candidates",
+    "company": "Company",
+    "more": "More",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "help": "Help",
+    "cta_worker_title": "Let employers find you",
+    "cta_worker_desc": "Post a listing about yourself — employers will contact you.",
+    "cta_employer_title": "Find the right employee",
+    "cta_employer_desc": "Post a vacancy — candidates' applications will appear here."
+  },
+  "activity": {
+    "title": "My activity",
+    "subtitle": "Your application status and saved vacancies",
+    "stat_sent": "Applications sent",
+    "stat_review": "Under review",
+    "stat_interview": "Interviews and offers",
+    "stat_saved": "Saved vacancies",
+    "recent_title": "Recent applications",
+    "recent_empty": "You haven't applied yet.",
+    "saved_title": "Saved vacancies",
+    "saved_empty": "No saved vacancies — tap the bookmark on a listing.",
+    "find_jobs": "Browse jobs"
   }
 }

@@ -53,7 +53,8 @@ test("vakansiya sahifasi: bandlik turi o'zbekcha ('To'liq kun', 'Full-time' emas
   const slug = await activeVacancy();
   await asGuest(context);
   await page.goto(`/jobs/${slug}`);
-  await expect(page.getByText("To'liq kun")).toBeVisible();
+  // sarlavhadagi shartlar qatorida va "Sharoitlar" bo'limida
+  await expect(page.getByText("To'liq kun").first()).toBeVisible();
   await expect(page.getByText("Full-time")).toHaveCount(0);
   // kasb yo'li o'z qatorida: mobil'da qator boshida yolg'iz "·" qolmaydi
   await expect(page.locator("main span[aria-hidden]").filter({ hasText: /^·$/ })).toHaveCount(0);

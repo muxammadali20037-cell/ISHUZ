@@ -12,7 +12,7 @@ import { RolePicker } from "./role-picker";
 export async function RoleScreen({ mode, next, backHref, error }: { mode: AppMode | null; next: string; backHref: string; error?: boolean }) {
   const [{ t }, media] = await Promise.all([getT(), getEntryMedia()]);
   return (
-    <EntryScreen left={<EntryBack href={backHref} label={t("common.actions.back")} />}>
+    <EntryScreen className="sm:max-w-2xl" left={<EntryBack href={backHref} label={t("common.actions.back")} />}>
       <EntryHeading className="pt-2" title={t("welcome.entry.role.title")} subtitle={t("welcome.entry.role.subtitle")} />
       {error ? (
         <p className="mt-4 rounded-xl bg-destructive/10 p-3 text-center text-sm font-medium text-destructive" role="alert">

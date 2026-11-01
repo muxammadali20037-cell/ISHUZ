@@ -114,12 +114,12 @@ export function EmployerOnboarding({ prefill, refs, firstName, doneHref = "/empl
 
   return (
     <div className="container-narrow py-6 sm:py-10">
-      <Stepper current={step} total={2} label={t("employer.onboarding.title")} className="mb-6" />
+      <Stepper centered current={step} total={2} label={t("employer.onboarding.title")} className="mb-6 sm:mb-9" />
 
       {step === 1 ? (
         <section>
-          <h1 className="text-2xl font-bold sm:text-3xl">{t("employer.onboarding.step_type_title")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_type_subtitle")}</p>
+          <h1 className="text-center text-2xl font-bold sm:text-3xl">{t("employer.onboarding.step_type_title")}</h1>
+          <p className="mx-auto mt-2 max-w-md text-center text-sm text-muted-foreground sm:text-base">{t("employer.onboarding.step_type_subtitle")}</p>
           <div className="mt-6">
             <EmployerTypeStep value={type} onChange={setType} disabled={pending} note={note} onNoteChange={setNote} />
           </div>

@@ -21,18 +21,19 @@ export const ENTRY_SLOTS = [
   "hero_seeker",
   "hero_employer",
   "hero_guest",
+  "home_photo",
 ] as const;
 export type EntrySlot = (typeof ENTRY_SLOTS)[number];
 
 /** Admin sahifasidagi guruhlar (har joy — bitta guruhda) */
 export const SLOT_GROUPS = {
   // bosh ekran sarlavhalarining fon surati (premium 2026-10): yuklanmasa — ko'k brend sirti
-  hero: ["hero_seeker", "hero_employer", "hero_guest"],
+  hero: ["hero_seeker", "hero_employer", "hero_guest", "home_photo"],
   entry: ["intro_jobs", "intro_workers", "intro_ai", "role_worker", "role_employer"],
 } as const satisfies Record<string, readonly EntrySlot[]>;
 
 /** Admin va hujjat uchun: tavsiya etilgan nisbat va o'lcham (ekranda shu nisbatda kesiladi) */
-export const SLOT_SPEC: Record<EntrySlot, { ratio: "4:3" | "1:1" | "16:9"; size: string }> = {
+export const SLOT_SPEC: Record<EntrySlot, { ratio: "4:3" | "1:1" | "16:9" | "4:5"; size: string }> = {
   intro_jobs: { ratio: "4:3", size: "1200×900" },
   intro_workers: { ratio: "4:3", size: "1200×900" },
   intro_ai: { ratio: "4:3", size: "1200×900" },
@@ -41,6 +42,9 @@ export const SLOT_SPEC: Record<EntrySlot, { ratio: "4:3" | "1:1" | "16:9"; size:
   hero_seeker: { ratio: "16:9", size: "1920×1080" },
   hero_employer: { ratio: "16:9", size: "1920×1080" },
   hero_guest: { ratio: "16:9", size: "1920×1080" },
+  // bosh sahifa (mehmon) hero'sining o'ng tomonidagi ko'k shakl ichidagi surat (2026-11): tik kadr, odam markazda.
+  // Yuklanmasa — o'sha joyda haqiqiy yangi vakansiyalar ro'yxati
+  home_photo: { ratio: "4:5", size: "1200×1500" },
 };
 
 const PATH_RE = /^site-media\/entry\/v-[0-9a-f]{64}\.webp$/;

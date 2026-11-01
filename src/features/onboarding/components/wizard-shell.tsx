@@ -50,10 +50,11 @@ export function WizardShell({ step, title, subtitle, children }: { step: number;
   return (
     <div className="container-narrow py-5 sm:py-8">
       {/* Majburiy qism — 4 qadam; qolganlari (ko'nikma, ta'lim...) keyin, ixtiyoriy */}
-      <Stepper current={step <= QUICK_STEPS ? step : Math.min(step, TOTAL_STEPS)} total={step <= QUICK_STEPS ? QUICK_STEPS : TOTAL_STEPS} label={t("onboarding.worker.step_label")} />
-      <div className="mt-5 sm:mt-7">
+      <Stepper centered current={step <= QUICK_STEPS ? step : Math.min(step, TOTAL_STEPS)} total={step <= QUICK_STEPS ? QUICK_STEPS : TOTAL_STEPS} label={t("onboarding.worker.step_label")} />
+      {/* 2026-11 ("Outreach" uslubi): savol markazda, ostida qisqa izoh */}
+      <div className="mt-6 text-center sm:mt-9">
         <h1 className="text-2xl font-bold sm:text-3xl">{title}</h1>
-        {subtitle ? <p className="mt-1.5 text-md text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? <p className="mx-auto mt-2 max-w-md text-md text-muted-foreground">{subtitle}</p> : null}
       </div>
       <div className="mt-6 animate-fade-in">{children}</div>
     </div>

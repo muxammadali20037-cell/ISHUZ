@@ -167,6 +167,47 @@ function OrgMark({ name }: { name: string }) {
   );
 }
 
+/**
+ * Bosh sahifa hero'sidagi "Yangi vakansiyalar" qatori (2026-11 redizayn): haqiqiy e'lon — bosilsa sahifasi ochiladi (bezak emas).
+ * Bosh harf belgisi · lavozim · ish beruvchi va hudud · maosh.
+ */
+export function JobPeekRow({ job }: { job: JobCardData }) {
+  const { t } = useT();
+  const shortPlace = useShortPlace();
+  const posted = usePosted();
+  const org = job.employer_name ?? job.title;
+  return (
+    <article className="relative flex gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/40 focus-within:border-primary/60">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-lg font-extrabold uppercase text-primary" aria-hidden>
+        {org.trim().slice(0, 1)}
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline justify-between gap-2">
+          <h3 className="min-w-0 truncate text-sm font-bold leading-snug">
+            <Link href={`/jobs/${job.slug}`} className={stretched}>
+              {job.title}
+            </Link>
+          </h3>
+          <span className="shrink-0 text-2xs text-muted-foreground">{posted(job.published_at)}</span>
+        </div>
+        <p className="mt-0.5 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
+          {job.employer_name ? <span className="truncate">{job.employer_name}</span> : null}
+          {job.employer_verified ? <BadgeCheck className="size-3.5 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
+          {job.employer_name ? <span aria-hidden>·</span> : null}
+          <span className="truncate">{shortPlace(job, job.is_remote)}</span>
+        </p>
+        <SalaryText
+          from={job.salary_from}
+          to={job.salary_to}
+          type={job.salary_type}
+          negotiable={job.salary_negotiable}
+          className={cn("mt-1 block truncate text-sm font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-primary")}
+        />
+      </div>
+    </article>
+  );
+}
+
 const EXP_STEPS = [60, 36, 24, 12, 6] as const;
 
 /**

@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Plus, Search, User, Users, type LucideIcon } from "lucide-react";
+import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, User, Users, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 
@@ -219,4 +219,105 @@ function useFitLabels(labelsKey: string) {
     };
   }, [labelsKey]);
   return [ref, on] as const;
+}
+
+/**
+ * Kompyuter (lg+) uchun chap yon menyu — kirgan foydalanuvchi (2026-11 redizayn, "Hirelly" uslubi): to'q ko'k panel, faol bo'lim —
+ * ko'k plita. Ish qidiruvchi: Bosh sahifa · Vakansiyalar · Arizalarim · Saqlanganlar · Xabarlar · Profil; ish beruvchi:
+ * Bosh sahifa · Vakansiyalarim · Arizalar · Nomzodlar · Xabarlar · Kompaniya · Profil; pastda — Bildirishnomalar, Sozlamalar, Yordam
+ * (asosiy amal — yuqori paneldagi tugma). Telefon va planshetda — avvalgidek pastki va yuqori menyu.
+ * Hisoblagichlar — haqiqiy o'qilmaganlar (yuqori paneldagi bilan bir xil).
+ */
+interface SideItem {
+  href: string;
+  labelKey: string;
+  icon: LucideIcon;
+  badgeKey?: "messages" | "applications" | "offers" | "notifications";
+  match: (path: string) => boolean;
+}
+
+function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
+  const more: SideItem[] = [
+    { href: "/notifications", labelKey: "easy.side.notifications", icon: Bell, badgeKey: "notifications", match: (p) => p.startsWith("/notifications") },
+    { href: "/settings", labelKey: "easy.side.settings", icon: Settings, match: (p) => p.startsWith("/settings") },
+    { href: "/help", labelKey: "easy.side.help", icon: LifeBuoy, match: (p) => p.startsWith("/help") },
+  ];
+  const messages: SideItem = { href: "/messages", labelKey: "easy.side.messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") };
+  if (mode === "employer") {
+    return {
+      main: [
+        { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
+        { href: "/employer/vacancies", labelKey: "easy.side.my_vacancies", icon: BriefcaseBusiness, match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/post/vacancy") },
+        { href: "/employer/applications", labelKey: "easy.side.applications", icon: Inbox, badgeKey: "applications", match: (p) => p.startsWith("/employer/applications") },
+        {
+          href: "/search?mode=workers",
+          labelKey: "easy.side.candidates",
+          icon: Users,
+          match: (p) => p.startsWith("/search") || p.startsWith("/workers") || p.startsWith("/listing") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates"),
+        },
+        messages,
+        { href: "/company/settings", labelKey: "easy.side.company", icon: Building2, match: (p) => p.startsWith("/company") },
+        { href: "/cabinet", labelKey: "easy.side.profile", icon: User, match: (p) => p.startsWith("/cabinet") || p.startsWith("/profile") || p.startsWith("/billing") || p.startsWith("/ai") || p.startsWith("/offers") },
+      ],
+      more,
+    };
+  }
+  return {
+    main: [
+      { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" },
+      {
+        href: "/jobs",
+        labelKey: "easy.side.vacancies",
+        icon: Search,
+        match: (p) => p.startsWith("/jobs") || p.startsWith("/search") || p.startsWith("/listing") || p.startsWith("/students") || p === "/ai" || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
+      },
+      { href: "/applications", labelKey: "easy.side.my_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
+      { href: "/saved", labelKey: "easy.side.saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
+      messages,
+      {
+        href: "/cabinet",
+        labelKey: "easy.side.profile",
+        icon: User,
+        match: (p) => (p.startsWith("/cabinet") && !p.startsWith("/cabinet/matches")) || p.startsWith("/profile") || p.startsWith("/billing") || p.startsWith("/post"),
+      },
+    ],
+    more,
+  };
+}
+
+export function SideNav({ counts, mode = null }: { mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+  const pathname = usePathname();
+  const { t } = useT();
+  const { main, more } = sideNav(mode);
+  const link = (item: SideItem) => {
+    const active = item.match(pathname);
+    const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
+    return (
+      <li key={item.href}>
+        <Link
+          href={item.href}
+          aria-current={active ? "page" : undefined}
+          className={cn(
+            "flex min-h-11 items-center gap-3 rounded-xl px-3 text-base font-semibold transition-colors",
+            active ? "bg-primary text-primary-foreground shadow-sm" : "text-navy-muted hover:bg-navy-line hover:text-navy-foreground",
+          )}
+        >
+          <item.icon className="size-5 shrink-0" aria-hidden />
+          <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
+          {badge ? (
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span>
+          ) : null}
+        </Link>
+      </li>
+    );
+  };
+  return (
+    <aside className="sticky top-14 flex h-[calc(100dvh-3.5rem)] flex-col overflow-y-auto px-3 py-5">
+      <nav aria-label={t("easy.side.label")}>
+        <ul className="space-y-1">{main.map(link)}</ul>
+        <p className="mb-2 mt-6 px-3 text-xs font-bold uppercase tracking-wider text-navy-muted">{t("easy.side.more")}</p>
+        <ul className="space-y-1">{more.map(link)}</ul>
+      </nav>
+    </aside>
+  );
 }

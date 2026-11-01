@@ -11,6 +11,7 @@ import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
 import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
 import { cn } from "@/lib/utils";
+import { SeekerActivity } from "./seeker-dashboard";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { AiProRow } from "@/features/ai-alerts/components/ai-pro-card";
@@ -106,6 +107,13 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
         {/* xizmatlar sarlavha ustiga chiqib turadi */}
         <ServiceTiles items={tiles} label={t("easy.services.label")} className="relative z-10 -mt-11 lg:-mt-12 lg:mx-4" />
       </div>
+
+      {/* kirgan ish izlovchi: arizalar holati va saqlanganlar (faqat ma'lumot bo'lsa) */}
+      {session?.workerId ? (
+        <Suspense fallback={null}>
+          <SeekerActivity workerId={session.workerId} />
+        </Suspense>
+      ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
         {/* ro'yxat oqim bilan keladi: qidiruv qatori darhol ishlaydi */}

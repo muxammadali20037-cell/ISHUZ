@@ -141,7 +141,12 @@
     "tab_benefits": "Imtiyozlar",
     "tab_company": "Kompaniya",
     "sec_duties": "Vazifalar",
-    "sec_conditions": "Sharoitlar"
+    "sec_conditions": "Sharoitlar",
+    "match_why": "Nima uchun sizga mos?",
+    "stat_applications": "Arizalar",
+    "stat_none": "Hali yo'q",
+    "stat_published": "Joylangan",
+    "stat_views": "Ko'rishlar"
   },
   "apply": {
     "title": "Ariza yuborish",

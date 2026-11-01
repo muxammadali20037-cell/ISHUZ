@@ -85,7 +85,25 @@ function PageHeader({
 }
 
 /** Qadam ko'rsatkichi: "3 / 8" + progress */
-function Stepper({ current, total, label, className }: { current: number; total: number; label?: string; className?: string }) {
+function Stepper({ current, total, label, className, centered = false }: { current: number; total: number; label?: string; className?: string; centered?: boolean }) {
+  if (centered) {
+    // onboarding (2026-11, "Outreach" uslubi): markazda "QADAM 1 / 4" va qisqa bo'lakli chiziq
+    return (
+      <div className={cn("mx-auto w-full max-w-60 space-y-2 text-center", className)}>
+        <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          {label ? `${label} ` : null}
+          <span className="tabular text-primary">
+            {current} / {total}
+          </span>
+        </p>
+        <div className="flex gap-1">
+          {Array.from({ length: total }).map((_, i) => (
+            <span key={i} className={cn("h-1.5 flex-1 rounded-full transition-colors", i < current ? "bg-primary" : "bg-secondary")} />
+          ))}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between text-sm">
