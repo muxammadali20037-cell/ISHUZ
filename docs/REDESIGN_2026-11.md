@@ -12,6 +12,20 @@ soxta avatar, soxta "AI moslik foizi", soxta logotip yo'q; hamma son va ro'yxat 
 | Hiring Flow (nomzodlar) | `/employer/applications` | Bosqich kartalari (yangi · ko'rib chiqilmoqda · suhbat va taklif · ishga olingan; jami arizalardagi ulushi chizig'i bilan), holat bo'yicha filtr (`?holat=`, sonlari bilan), jadval (nomzod · vakansiya · sana · holat). "AI ball" va "reyting yulduzlari" — yo'q (bunday ma'lumot yo'q; soxta qo'yilmaydi). |
 | Outreach (onboarding) | `/start/rol`, `/onboarding/employer`, `/onboarding/worker` | Markazda "QADAM 1 / 4" va bo'lakli chiziq, markazdagi savol va izoh. Ish beruvchi turi — 3×2 kartalar (chap yuqorida belgi katakchasi, markazda belgi, nom, izoh). Rol tanlash — kompyuterda ikki karta yonma-yon. |
 
+## "Mening dunyom" (egasi, 2026-11-01 kechqurun)
+
+"Odam kirganda o'z dunyosiga kirsin, o'sha yerda dunyosini yaratsin, ilovada doim band bo'lsin; nimalarga qiziqishi va kasblari
+bo'yicha tahlil qilib, o'sha dunyoga olib kirish kerak — Telegram'da ham, telefonda ham."
+
+| Qism | Fayl | Nima qiladi |
+|---|---|---|
+| Qiziqishlar (0073) | `supabase/migrations/0073_profile_interests.sql` | `profile_interests` (faqat egasi o'qiydi), `set_my_interests(uuid[])` — 1–8 soha, to'liq almashtiradi, mehmonga yopiq. SQL test: `supabase/tests/profile_interests.test.sql`. |
+| "Dunyongizni yarating" | `/dunyo` — `features/world/components/world-builder.tsx` | 3 qadam ("Outreach"): sohalar (e'loni ko'plari birinchi, har birida haqiqiy son) → hudud → "Dunyongiz tayyor!" (tanlangan sohalardagi faol vakansiyalar soni, qilinmagan keyingi qadamlar: CV, Telegram xabarlari). Sayt sarlavhasi va menyusiz — telefonda va Telegram Mini App'da to'liq ekran (safe-area, Telegram "orqaga" tugmasi, muvaffaqiyatda tebranish). |
+| Bosh sahifadagi dunyo | `features/world/components/my-world.tsx` | Qiziqish yo'q — "Dunyongizni yarating" taklifi (mehmonga ham; kirgach o'sha oqim). Bor — "Sohalaringizda N ta faol vakansiya", soha plitkalari (son bilan), har soha bo'yicha eng yangi 3 ta e'lon (hududda, bo'lmasa butun mamlakatda; bugungilari — "Yangi"). |
+| "Bugungi rejangiz" | `features/world/queries.ts` (`getDailyPlan`) | Har kuni yangilanadigan 5 qadam — hammasi haqiqiy holatdan: qiziqishlar tanlangan; profil to'liqligi (%), bugun saqlangan vakansiya, bugun yuborilgan ariza, Telegram bot ulangan. Soxta "streak", ball yoki mukofot yo'q. |
+
+E2E: `e2e/specs/world.spec.ts` (mehmon → kirish; yaratish oqimi; bazada 2 ta qiziqish; hudud eslab qolinadi; bosh sahifa moslashadi).
+
 ## Ataylab qilinmagan (va nega)
 
 - **Odam surati** (Jobio'dagi kabi): tashqi foto banklari tarmoqdan yopiq va begona odam suratini "bizning foydalanuvchi" deb
@@ -26,7 +40,7 @@ soxta avatar, soxta "AI moslik foizi", soxta logotip yo'q; hamma son va ro'yxat 
 
 ## Ma'lumotlar bazasi
 
-O'zgarish yo'q (migratsiya yo'q). Yangi so'rovlar mavjud jadvallardan o'qiydi: `getApplicationStageCounts` (arizalar holati),
+Dizayn qismi uchun migratsiya yo'q; "Mening dunyom" — 0073 (yuqorida). Yangi so'rovlar mavjud jadvallardan o'qiydi: `getApplicationStageCounts` (arizalar holati),
 `getWorkerApplications` + `listSavedJobs` ("Mening faoliyatim"), `findJobs` (hero ro'yxati).
 
 ## Tekshiruv

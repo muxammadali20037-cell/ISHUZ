@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, BellRing, CalendarDays, ChevronRight, FileUser, GraduationCap, Laptop, LayoutGrid, MapPin, SearchX, Sprout } from "lucide-react";
+import { ArrowRight, BellRing, CalendarDays, ChevronRight, FileUser, GraduationCap, Laptop, LayoutGrid, MapPin, SearchX, Sparkles, Sprout } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { Button } from "@/components/ui/button";
@@ -12,6 +12,8 @@ import { RetryButton } from "@/features/find/components/find-client";
 import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
 import { cn } from "@/lib/utils";
 import { SeekerActivity } from "./seeker-dashboard";
+import { MyWorld } from "@/features/world/components/my-world";
+import { getMyInterests } from "@/features/world/queries";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { AiProRow } from "@/features/ai-alerts/components/ai-pro-card";
@@ -36,7 +38,7 @@ import { HeroBackdrop } from "@/components/shared/hero-backdrop";
  * Kompyuterda: sarlavha va xizmatlar keng, ostida ro'yxat (2 ustun) va o'ngda yordamchi panel. Telefonda panel ro'yxatdan keyin.
  */
 export async function SeekerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
-  const [{ t, name }, place, home, stats, media] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryStats(), getEntryMedia()]);
+  const [{ t, name }, place, home, stats, media, world] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryStats(), getEntryMedia(), getMyInterests(session?.userId)]);
   const photo = entryMediaUrl(media.hero_seeker);
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const quick = Object.fromEntries(seekerQuickFilters(where).map((c) => [c.key, c.href])) as Record<"daily" | "noexp" | "remote" | "students", string>;
@@ -52,10 +54,20 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
     { key: "noexp", href: quick.noexp, label: t("easy.services.noexp"), hint: t("easy.services.noexp_hint"), icon: Sprout, track: "home_service" },
     { key: "students", href: quick.students, label: t("easy.services.students"), hint: t("easy.services.students_hint"), icon: GraduationCap, track: "home_service" },
     { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, track: "home_service" },
-    { key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.services.all"), hint: t("easy.services.all_hint"), icon: LayoutGrid, track: "home_service" },
+    // kirgan foydalanuvchi: oxirgi plitka — "Mening dunyom" (telefonda birinchi ekranda; to'liq bo'lim ro'yxatdan keyin)
+    world.supported && session
+      ? {
+          key: "world",
+          href: world.categories.length ? "#mening-dunyom" : "/dunyo",
+          label: t("easy.world.my_world"),
+          hint: world.categories.length ? t("easy.world.tile_hint", { count: world.categories.length }) : t("easy.world.strip_desc"),
+          icon: Sparkles,
+          track: "home_service",
+        }
+      : { key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.services.all"), hint: t("easy.services.all_hint"), icon: LayoutGrid, track: "home_service" },
   ];
   return (
-    <div className="space-y-6">
+    <div className="flex flex-col gap-6">
       <div>
         {/* flush — sahifaning eng tepasi (kirgan foydalanuvchi): telefonda sarlavha chetdan-chetga */}
         <section
@@ -106,6 +118,13 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
         </section>
         {/* xizmatlar sarlavha ustiga chiqib turadi */}
         <ServiceTiles items={tiles} label={t("easy.services.label")} className="relative z-10 -mt-11 lg:-mt-12 lg:mx-4" />
+      </div>
+
+      {/* "Mening dunyom" (2026-11): qiziqishlar bo'yicha ishlar va kunlik reja; tanlanmagan bo'lsa — "Dunyongizni yarating" */}
+      <div id="mening-dunyom" className="scroll-mt-20 empty:hidden max-lg:order-last">
+        <Suspense fallback={null}>
+          <MyWorld session={session} />
+        </Suspense>
       </div>
 
       {/* kirgan ish izlovchi: arizalar holati va saqlanganlar (faqat ma'lumot bo'lsa) */}

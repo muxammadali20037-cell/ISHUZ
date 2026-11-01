@@ -171,6 +171,18 @@ export async function searchVacancyCards(args: SearchVacanciesArgs): Promise<Vac
   return (data ?? []).map(toCardData);
 }
 
+/** Kichik ro'yxat va umumiy soni ("Mening dunyom" — soha bo'yicha yangi ishlar). Xatoda — null (son ko'rsatilmaydi). */
+export async function searchVacancyCardsWithTotal(args: SearchVacanciesArgs): Promise<{ items: VacancyCardData[]; total: number } | null> {
+  const supabase = await createClient();
+  const { data, error } = await rpcSearch(supabase, args);
+  if (error) {
+    console.error("[jobs] search_vacancies", error.message);
+    return null;
+  }
+  const rows = data ?? [];
+  return { items: rows.map(toCardData), total: Number(rows[0]?.total_count ?? 0) };
+}
+
 const VACANCY_DETAIL_SELECT = `*,
   company:companies(id, slug, name, logo_url, about, website, size, verification_status, phone, telegram),
   owner:profiles!vacancies_owner_profile_id_fkey(first_name),

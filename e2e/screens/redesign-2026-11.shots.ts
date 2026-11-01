@@ -23,6 +23,7 @@ const EXTRA = [
 test.afterAll(async () => {
   await cleanDemo();
   await sql("delete from public.saved_items where profile_id = $1", [DEMO.worker]);
+  await sql("delete from public.profile_interests where profile_id = $1", [DEMO.worker]);
   await sql("delete from public.worker_profiles where profile_id = any($1::uuid[])", [EXTRA.map((e) => e[0])]);
 });
 
@@ -68,12 +69,21 @@ async function seedApplications() {
   );
 }
 
+/** "Mening dunyom": demo ishchining qiziqishlari (savdo, haydovchi, IT) va hududi — Toshkent shahri */
+async function seedWorld() {
+  await sql(
+    `insert into public.profile_interests (profile_id, category_id) select $1, id from public.categories where slug in ('sales', 'driver', 'it') on conflict do nothing`,
+    [DEMO.worker],
+  );
+}
+
 async function capture(browser: Browser, who: "guest" | "worker" | "employer" | "new", pages: [string, string][]) {
   for (const width of [1440, 390]) {
     const c = await browser.newContext({ baseURL: stack.app, viewport: { width, height: width < 768 ? 844 : 900 }, reducedMotion: "reduce", storageState: { cookies: [], origins: [] } });
     if (who === "worker" || who === "employer") {
       await loginAs(c, who === "employer" ? DEMO.employer : DEMO.worker);
       await asMode(c, who === "employer" ? "employer" : "worker");
+      if (who === "worker") await c.addCookies([{ name: "ib_place", value: "tashkent_city~all", domain: host, path: "/" }]);
     }
     if (who === "new") await loginAs(c, NEWCOMER);
     await c.addCookies([
@@ -96,6 +106,7 @@ test("redizayn 2026-11: bosh sahifa, vakansiya, kabinet, arizalar, onboarding", 
   test.setTimeout(300_000);
   const slug = await seedDemo();
   await seedApplications();
+  await seedWorld();
   await sql(`insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values ($1, '+998901110096', now(), '{"first_name":"Botir"}') on conflict (id) do nothing`, [
     NEWCOMER,
   ]);
@@ -112,5 +123,6 @@ test("redizayn 2026-11: bosh sahifa, vakansiya, kabinet, arizalar, onboarding", 
   await capture(browser, "new", [
     ["onboarding-employer", "/onboarding/employer"],
     ["onboarding-worker", "/onboarding/worker"],
+    ["world-builder", "/dunyo"],
   ]);
 });

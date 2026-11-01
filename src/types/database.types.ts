@@ -2032,6 +2032,39 @@ export type Database = {
           },
         ];
       };
+      profile_interests: {
+        Row: {
+          category_id: string;
+          created_at: string;
+          profile_id: string;
+        };
+        Insert: {
+          category_id: string;
+          created_at?: string;
+          profile_id: string;
+        };
+        Update: {
+          category_id?: string;
+          created_at?: string;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profile_interests_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profile_interests_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profession_images: {
         Row: {
           attempts: number;
@@ -5586,6 +5619,10 @@ export type Database = {
           p_worker_id: string;
         };
         Returns: string;
+      };
+      set_my_interests: {
+        Args: { p_category_ids: string[] };
+        Returns: number;
       };
       set_application_status: {
         Args: {
