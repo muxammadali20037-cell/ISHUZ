@@ -139,6 +139,16 @@ export async function findLayoutIssues(page: Page, scope = "body"): Promise<Layo
     for (const ic of icons) {
       const ir = ic.getBoundingClientRect();
       if (ir.width < 6 || ir.height < 6) continue;
+      // boshqa (shaffof bo'lmagan) qatlam ostida yashiringan belgi — masalan, yopishqoq yozish paneli ostiga aylantirilgan
+      // ro'yxatdagi belgi — ko'rinmaydi, demak hech narsaga xalaqit bermaydi. Ustidagi element belgining o'zi, uning ichidagi
+      // yoki uni o'z ichiga olgan element bo'lsa — belgi ko'rinadi (pointer-events: none belgilar ota-elementni qaytaradi)
+      // (faqat ekrandagi belgilar uchun — ekrandan tashqaridagilar avvalgidek tekshiriladi)
+      const cx = ir.left + ir.width / 2;
+      const cy = ir.top + ir.height / 2;
+      if (cx >= 0 && cy >= 0 && cx < innerWidth && cy < innerHeight) {
+        const topEl = document.elementFromPoint(cx, cy);
+        if (topEl && topEl !== ic && !ic.contains(topEl) && !topEl.contains(ic)) continue;
+      }
       for (const { el, rect, text } of lines) {
         if (related(ic, el) || el.contains(ic) || ic.parentElement === el) continue;
         const r = inter(ir, rect);

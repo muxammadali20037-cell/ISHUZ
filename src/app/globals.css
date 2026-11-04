@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@fontsource-variable/inter/index.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -11,65 +12,65 @@
    Radius 8–14 px, soyalar juda yengil.
    ============================================================ */
 :root {
-  --background: #f6f8fc;
-  --foreground: #15213b;
+  --background: #f5f7fb;
+  --foreground: #172033;
   --card: #ffffff;
-  --card-foreground: #15213b;
+  --card-foreground: #172033;
   --popover: #ffffff;
-  --popover-foreground: #15213b;
-  --primary: #2457f5;
-  --primary-hover: #1d47d6;
+  --popover-foreground: #172033;
+  --primary: #3164dc; /* namunadagi #356ae6 — AA (och ko'k fonda ≥ 4.5:1) uchun bir pog'ona to'qroq */
+  --primary-hover: #2a58c9;
   --primary-foreground: #ffffff;
-  --primary-soft: #eef3ff;
+  --primary-soft: #ebf1fd;
   --secondary: #eef2f8;
-  --secondary-foreground: #15213b;
+  --secondary-foreground: #172033;
   --muted: #eef2f8;
   --muted-foreground: #5f6b7f; /* oq ustida 5.4:1, fon ustida 5.1:1, secondary va primary-soft ustida ≥ 4.8:1 */
-  --accent: #eef3ff;
-  --accent-foreground: #1d47d6;
+  --accent: #ebf1fd;
+  --accent-foreground: #2a58c9;
   /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
   --highlight: #ffc83d;
-  --highlight-foreground: #15213b;
+  --highlight-foreground: #172033;
   --highlight-soft: #fff4d6;
   --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
   --success: #137a53; /* asos #16865C; och fonda matn uchun 4.8:1 */
-  --success-soft: #eaf7f0;
+  --success-soft: #e7f6ef;
   --success-foreground: #ffffff;
   --warning: #b45309;
-  --warning-soft: #fef3e0;
+  --warning-soft: #fdf3e2;
   --warning-foreground: #ffffff;
   --info: #0369a1;
   --info-soft: #e0f2fe;
   --info-foreground: #ffffff;
   --destructive: #c42719; /* asos #D92D20; och fonda matn uchun 5.1:1 */
-  --destructive-soft: #fdeeec;
+  --destructive-soft: #fcecec;
   --destructive-foreground: #ffffff;
-  --border: #e4e9f2;
-  --input: #d5dce8;
-  --ring: #2457f5;
+  --border: #e5eaf2;
+  --input: #d7deea;
+  --ring: #3164dc;
   /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
-  --navy: #15213b;
+  --navy: #101b35;
   --navy-foreground: #ffffff;
-  --navy-muted: #b9c3d6;
-  --navy-line: #2a3756;
+  --navy-muted: #c9d3e6;
+  --navy-line: #22355c;
   /*
    * Bosh ekran ko'k sirti (2026-10). Faqat shu faylda va pastdagi tasdiqlangan utilitalarda ishlatiladi (.hero-surface,
    * .btn-light): komponentlarda xom gradient/hex yo'q (brand-guard.test.ts). Tugma va belgilar — "toza" uslub (2026-10-22,
    * egasi tanlagan A varianti): bitta brend rangi, tekis sirt; yaltirash, gradient, 3D chekka va kamalak ranglar yo'q.
    */
-  --hero-from: #1434c2;
-  --hero-via: #2457f5;
-  --hero-to: #2f66e8;
+  --hero-from: #101b35;
+  --hero-via: #132042;
+  --hero-to: #172746;
   --hero-fg: #ffffff;
-  --hero-muted: #f0f4ff; /* hero sirtining barcha nuqtalarida ≥ 4.5:1 */
-  --glow: rgb(36 87 245 / 0.38);
+  --hero-muted: #e3e9f5; /* hero sirtining barcha nuqtalarida ≥ 4.5:1 */
+  --glow: rgb(53 106 230 / 0.30);
   /* logotip plitasi: logo ko'k, shuning uchun har ikki mavzuda oq fon */
   --logo-tile: #ffffff;
   --radius: 0.625rem;
   --shadow-sm: 0 1px 2px rgb(21 33 59 / 0.04);
   --shadow-md: 0 1px 3px rgb(21 33 59 / 0.06), 0 1px 2px rgb(21 33 59 / 0.04);
   --shadow-lg: 0 6px 16px rgb(21 33 59 / 0.08), 0 2px 4px rgb(21 33 59 / 0.04);
-  --tabbar-height: 64px;
+  --tabbar-height: 58px;
   color-scheme: light;
   /*
    * Ekran chetlari (soat/batareya paneli, "chuqurcha", pastki chiziq): odatda brauzer beradi (env); Telegram Mini App to'liq
@@ -77,6 +78,9 @@
    */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --sidebar-active: #1d2d52;
+  --sidebar-accent: #6d9eff;
+  --border-strong: #cfd7e4;
 }
 
 /* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
@@ -86,21 +90,21 @@ html.tg-fullscreen {
 }
 
 .dark {
-  --background: #0e1729;
-  --foreground: #e7ecf5;
-  --card: #152036;
-  --card-foreground: #e7ecf5;
-  --popover: #152036;
-  --popover-foreground: #e7ecf5;
-  --primary: #7a9bff;
-  --primary-hover: #93aeff;
-  --primary-foreground: #0e1729;
-  --primary-soft: #1b2a50;
-  --secondary: #1c2840;
-  --secondary-foreground: #e7ecf5;
-  --muted: #1c2840;
-  --muted-foreground: #9aa6bc;
-  --accent: #1b2a50;
+  --background: #101827;
+  --foreground: #e8ecf5;
+  --card: #16213a;
+  --card-foreground: #e8ecf5;
+  --popover: #1a2742;
+  --popover-foreground: #e8ecf5;
+  --primary: #6b93f2;
+  --primary-hover: #7da1f4;
+  --primary-foreground: #0b1222;
+  --primary-soft: #1d2c4f;
+  --secondary: #1c2843;
+  --secondary-foreground: #e8ecf5;
+  --muted: #1c2843;
+  --muted-foreground: #93a0b8;
+  --accent: #1d2c4f;
   --accent-foreground: #a9bdff;
   --highlight: #ffc83d;
   --highlight-foreground: #0e1729;
@@ -118,16 +122,16 @@ html.tg-fullscreen {
   --destructive: #f26b5e;
   --destructive-foreground: #0e1729;
   --destructive-soft: #3a1714;
-  --border: #26334d;
-  --input: #2f3e5c;
-  --ring: #7a9bff;
-  --navy: #0a1120;
-  --navy-foreground: #e7ecf5;
-  --navy-muted: #a3b0c6;
-  --navy-line: #1d2a44;
-  --hero-from: #0d1f75;
-  --hero-via: #1a3db0;
-  --hero-to: #2c5fdc;
+  --border: #26324d;
+  --input: #34425f;
+  --ring: #6d9eff;
+  --navy: #0b1222;
+  --navy-foreground: #ffffff;
+  --navy-muted: #c9d3e6;
+  --navy-line: #1f2c49;
+  --hero-from: #0b1222;
+  --hero-via: #0f1830;
+  --hero-to: #16213a;
   --hero-fg: #ffffff;
   --hero-muted: #eef2ff;
   --glow: rgb(122 155 255 / 0.32);
@@ -135,10 +139,18 @@ html.tg-fullscreen {
   --shadow-md: 0 1px 3px rgb(0 0 0 / 0.35);
   --shadow-lg: 0 6px 16px rgb(0 0 0 / 0.4);
   color-scheme: dark;
+  --sidebar-active: #1a2742;
+  --sidebar-accent: #6d9eff;
+  --border-strong: #34425f;
 }
 
 @theme inline {
-  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* 2026-11 (egasi: "SAT MASTER" bilan bir xil): matn — Inter, sarlavhalar — Geist (kirill harflari — Inter) */
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-geist-sans), "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  /* og'irliklar: Inter'da 700/800 og'ir ko'rinadi — namunadagidek yengilroq (bold → 600, extrabold → 700) */
+  --font-weight-bold: 600;
+  --font-weight-extrabold: 700;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -178,16 +190,20 @@ html.tg-fullscreen {
   --color-navy-foreground: var(--navy-foreground);
   --color-navy-muted: var(--navy-muted);
   --color-navy-line: var(--navy-line);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-border-strong: var(--border-strong);
   --color-hero-fg: var(--hero-fg);
   --color-logo-tile: var(--logo-tile);
   --color-hero-muted: var(--hero-muted);
   /* 2 · 4 · 6 · 8 · 12 · 14 px — kartalar 12–14, tugma va maydonlar 8–12 (haddan tashqari yumaloq emas) */
-  --radius-xs: calc(var(--radius) - 6px);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 6px);
+  /* namunadagi kabi ixcham burchaklar: tugma va maydon 6 px, karta 10–12 px */
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 12px;
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
@@ -196,6 +212,15 @@ html.tg-fullscreen {
   --text-2xs--line-height: 1rem;
   --text-md: 0.9375rem;
   --text-md--line-height: 1.375rem;
+  /* "SAT MASTER" shkalasi (2026-11): 13 px — yon menyu kartasi, 19 px — bo'lim sarlavhasi, 26/30 px — sahifa sarlavhasi */
+  --text-sub: 0.8125rem;
+  --text-sub--line-height: 1.125rem;
+  --text-section: 1.1875rem;
+  --text-section--line-height: 1.5rem;
+  --text-page: 1.625rem;
+  --text-page--line-height: 1.2;
+  --text-page-lg: 1.875rem;
+  --text-page-lg--line-height: 1.2;
   --animate-fade-in: fade-in 0.2s ease-out;
   --animate-slide-up: slide-up 0.25s ease-out;
 }
@@ -224,7 +249,7 @@ html.tg-fullscreen {
   }
   body {
     @apply bg-background text-foreground antialiased;
-    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    font-feature-settings: "cv11", "ss01";
     min-height: 100dvh;
     overflow-x: hidden;
   }
@@ -234,7 +259,8 @@ html.tg-fullscreen {
   }
   h1, h2, h3, h4 {
     text-wrap: balance;
-    @apply font-semibold tracking-tight;
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
   }
   input, textarea, select, button {
     font: inherit;
@@ -354,26 +380,12 @@ html.no-splash .splash { display: none; }
 
 /* Bosh ekran sarlavhasi: chuqur ko'k sirt, yumshoq yorug'lik va nuqtali naqsh. Ustida faqat text-hero-fg / text-hero-muted. */
 .hero-surface {
+  /* "SAT MASTER" uslubi (2026-11): tekis to'q ko'k maydon — gradient, yorug'lik dog'i va nuqtali naqsh yo'q */
   position: relative;
   isolation: isolate;
   overflow: hidden;
   color: var(--hero-fg);
-  background-color: var(--hero-via);
-  background-image:
-    radial-gradient(110% 80% at 100% 0%, rgb(255 255 255 / 0.20) 0%, transparent 55%),
-    radial-gradient(80% 70% at 0% 100%, rgb(139 92 246 / 0.30) 0%, transparent 60%),
-    linear-gradient(135deg, var(--hero-from) 0%, var(--hero-via) 55%, var(--hero-to) 100%);
-}
-.hero-surface::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-image: radial-gradient(rgb(255 255 255 / 0.14) 1px, transparent 1.3px);
-  background-size: 18px 18px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, transparent 90%);
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 90%);
+  background-color: var(--hero-from);
 }
 /* Sarlavha fon surati (admin yuklasa): surat + ko'k parda. Parda hisob-kitobi: eng oq piksel ustida ham oq matn ≥ 5:1,
    och matn (hero-muted) ≥ 4.5:1 (telefonda bir xil parda; kompyuterda matn chapda — o'ng tomon ochiqroq, surat ko'rinadi) */
@@ -391,7 +403,6 @@ html.no-splash .splash { display: none; }
 @media (min-width: 64rem) {
   .hero-scrim { background: linear-gradient(90deg, rgb(13 31 117 / 0.88) 0%, rgb(20 52 194 / 0.82) 48%, rgb(20 52 194 / 0.5) 100%); }
 }
-.hero-surface.has-photo::before { display: none; }
 .has-photo .hero-glass { background-color: rgb(13 31 117 / 0.6); }
 
 /* hero ustidagi shaffof tugma/chip */

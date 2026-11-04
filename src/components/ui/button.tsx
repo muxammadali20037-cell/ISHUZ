@@ -5,28 +5,28 @@ import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "press inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl font-semibold disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none",
+  "press inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 select-none",
   {
     variants: {
       variant: {
         // asosiy tugma: tekis brend ko'ki, yengil soya ("toza" uslub, 2026-10-22 — gradient, yaltirash, 3D chekka yo'q)
-        default: "lift-sm bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover",
+        default: "bg-primary text-primary-foreground hover:bg-primary-hover",
         secondary: "bg-secondary text-secondary-foreground hover:bg-border/70",
-        outline: "border border-border bg-card text-foreground shadow-sm hover:border-primary/40 hover:bg-secondary",
+        outline: "border border-border-strong bg-card text-foreground hover:bg-muted",
         ghost: "text-foreground hover:bg-secondary",
         soft: "bg-primary-soft text-primary hover:bg-primary/15",
         destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
         "destructive-soft": "bg-destructive-soft text-destructive hover:bg-destructive/15",
-        success: "bg-success text-success-foreground shadow-sm hover:bg-success/90",
+        success: "bg-success text-success-foreground hover:bg-success/90",
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
         default: "h-11 px-5 text-md",
-        sm: "tap-target relative h-9 px-3.5 text-sm rounded-lg",
-        lg: "h-13 px-6 text-base rounded-2xl",
-        xl: "h-14 px-7 text-lg rounded-2xl",
+        sm: "tap-target relative h-9 px-3.5 text-sm",
+        lg: "h-12 px-6 text-md",
+        xl: "h-14 px-7 text-base rounded-lg",
         icon: "h-11 w-11",
-        "icon-sm": "tap-target relative h-9 w-9 rounded-lg",
+        "icon-sm": "tap-target relative h-9 w-9",
       },
       fullWidth: { true: "w-full" },
     },

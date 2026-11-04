@@ -1,10 +1,10 @@
 import { BRAND } from "@/config/brand";
 
 /** Logo matni: "Ish topdim" — ikkinchi qism asosiy rangda */
-export function BrandWordmark() {
+export function BrandWordmark({ onDark = false }: { onDark?: boolean }) {
   return (
     <>
-      {BRAND.wordmark[0]} <span className="text-primary">{BRAND.wordmark[1]}</span>
+      {BRAND.wordmark[0]} <span className={onDark ? "text-sidebar-accent" : "text-primary"}>{BRAND.wordmark[1]}</span>
     </>
   );
 }

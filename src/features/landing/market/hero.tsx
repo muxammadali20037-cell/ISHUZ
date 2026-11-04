@@ -1,7 +1,6 @@
 import { Fragment, Suspense } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, CalendarDays, CheckCircle2, Laptop, MapPin, Search, Sparkles, Sprout, UsersRound, type LucideIcon } from "lucide-react";
+import { ArrowRight, CalendarDays, Check, Laptop, MapPin, Search, Sparkles, Sprout, UsersRound, type LucideIcon } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { AiFinder } from "@/features/find/components/ai-finder";
 import { JobPeekRow } from "@/features/find/components/result-cards";
@@ -26,11 +25,12 @@ import { homeSearch } from "./actions";
 const num = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
 
 /**
- * Bosh sahifaning birinchi ekrani (2026-11 redizayn — "Jobio" uslubi): oq fon, katta sarlavha (oxirgi qatori — ko'k urg'u),
- * bir jumlali tushuntirish, ikki aniq yo'l ("Ish qidiraman" / "Ish beruvchiman" — rejim yoziladi), haqiqiy raqamlar.
- * Kompyuterda o'ngda — katta ko'k doira ustida admin yuklagan surat (home_photo) yoki, surat bo'lmasa, HAQIQIY yangi
- * vakansiyalar ro'yxati (bosiladi). Qidiruv paneli hero chegarasida turadi (yarmi oq fonda, yarmi sahifa fonida).
- * Hech qanday soxta avatar, raqam yoki "AI moslik" yo'q: son 0 yoki xato bo'lsa — ko'rsatilmaydi.
+ * Bosh sahifaning birinchi ekrani (2026-11, egasi: "SAT MASTER" bilan bir xil): sarlavha bilan bitta to'q ko'k maydon —
+ * markazda katta sarlavha (oxirgi qatori och ko'k), bir jumlali izoh, ikki yo'l ("Ish qidiraman" — to'ldirilgan,
+ * "Ish beruvchiman" — chiziqli), haqiqiy raqamlar belgilar bilan. Pastda maydondan chiqib turgan ramka ichida "jonli
+ * ko'rinish": qidiruv paneli va bazadagi eng yangi 3 vakansiya (bosiladi) — namunadagi mahsulot ko'rinishi o'rnida.
+ * Soxta avatar, raqam yoki "AI moslik" yo'q: son 0 yoki xato bo'lsa — ko'rsatilmaydi. Admin surati (home_photo) bo'lsa —
+ * ramkada ro'yxat o'rnida surat.
  */
 export async function MarketHero({ stats, media, ai = false }: { stats: EntryStats | null; media: EntryMedia; ai?: boolean }) {
   const { t } = await getT();
@@ -44,79 +44,68 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
     { key: "near", icon: MapPin, label: t("welcome.market.q_near"), next: findHref(EMPTY_FIND, { mode: "jobs", near: true }) },
   ];
   const proof = [
-    stats && stats.vacancies > 0 ? { key: "jobs", icon: BriefcaseBusiness, text: t("welcome.market.cta_seek_hint", { count: num(stats.vacancies) }) } : null,
-    stats && stats.workers > 0 ? { key: "workers", icon: UsersRound, text: t("welcome.market.cta_hire_hint", { count: num(stats.workers) }) } : null,
+    stats && stats.vacancies > 0 ? { key: "jobs", text: t("welcome.market.cta_seek_hint", { count: num(stats.vacancies) }) } : null,
+    stats && stats.workers > 0 ? { key: "workers", text: t("welcome.market.cta_hire_hint", { count: num(stats.workers) }) } : null,
+    stats && stats.today > 0 ? { key: "today", text: t("welcome.entry.today", { count: num(stats.today) }) } : null,
   ].filter((p) => p !== null);
   return (
     <section aria-labelledby="hero-title">
-      <div className="relative overflow-hidden border-b border-border bg-card">
-        <div className="container-app grid grid-cols-1 gap-10 pb-20 pt-7 sm:pb-24 sm:pt-12 lg:min-h-[33rem] lg:grid-cols-[minmax(0,1fr)_minmax(0,30rem)] lg:items-center lg:pb-28 lg:pt-12">
-          <div className="relative z-10">
-            {stats && stats.today > 0 ? (
-              <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1 text-sm font-semibold text-primary sm:mb-5">
-                <span className="entry-live" aria-hidden />
-                {t("welcome.entry.today", { count: num(stats.today) })}
-              </p>
-            ) : null}
-            <h1 id="hero-title" className="text-balance text-4xl font-extrabold leading-[1.1] tracking-tight text-foreground sm:text-5xl lg:text-6xl">
-              <HeroTitle text={t("welcome.market.hero_title")} />
-            </h1>
-            <p className="mt-4 max-w-xl text-base leading-relaxed text-muted-foreground sm:mt-5 sm:text-lg">{t("welcome.market.hero_subtitle")}</p>
-            <div className="mt-6 grid grid-cols-1 gap-3 min-[400px]:grid-cols-2 sm:mt-8 sm:flex sm:flex-wrap">
-              <RoleCta mode="worker" primary icon={Search} label={t("welcome.market.cta_seek")} />
-              <RoleCta mode="employer" icon={UsersRound} label={t("welcome.market.cta_hire")} />
-            </div>
-            {/* haqiqiy raqamlar (kompyuterda — o'ngdagi suzuvchi kartada) */}
-            {proof.length ? (
-              <ul className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-muted-foreground lg:hidden">
-                {proof.map((p) => (
-                  <li key={p.key} className="inline-flex items-center gap-1.5">
-                    <CheckCircle2 className="size-4 text-success" aria-hidden />
-                    {p.text}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+      <div className="bg-navy text-navy-foreground">
+        <div className="mx-auto max-w-6xl px-4 pb-12 pt-10 text-center sm:px-6 sm:pb-14 sm:pt-16 lg:px-8 lg:pt-20">
+          <h1 id="hero-title" className="mx-auto max-w-3xl text-4xl font-semibold leading-[1.08] tracking-tight text-navy-foreground sm:text-5xl lg:text-6xl">
+            <HeroTitle text={t("welcome.market.hero_title")} />
+          </h1>
+          <p className="mx-auto mt-5 max-w-[60ch] text-lg leading-relaxed text-navy-muted">{t("welcome.market.hero_subtitle")}</p>
+          <div className="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:max-w-none sm:flex-row sm:justify-center">
+            <RoleCta mode="worker" primary icon={Search} label={t("welcome.market.cta_seek")} />
+            <RoleCta mode="employer" icon={UsersRound} label={t("welcome.market.cta_hire")} />
           </div>
-          <div className="relative hidden h-[32rem] lg:block">
-            {/* ko'k shakl: katta doira, o'ng chetdan chiqib ketadi; ichida — nozik halqa */}
-            <span aria-hidden className="absolute left-14 top-1/2 size-[46rem] -translate-y-1/2 rounded-full bg-primary" />
-            <span aria-hidden className="absolute left-32 top-1/2 size-[36rem] -translate-y-1/2 rounded-full border border-primary-foreground/20" />
-            {photo ? (
-              <div className="absolute bottom-6 right-0 top-6 w-[22rem] overflow-hidden rounded-2xl border-4 border-card bg-muted shadow-md">
-                <Photo src={photo} alt="" sizes="352px" className="size-full" fallback={null} />
-              </div>
-            ) : (
-              <Suspense fallback={<PeekSkeleton />}>
-                <HeroPeek />
-              </Suspense>
-            )}
-            {proof.length ? (
-              <ul aria-label={t("welcome.market.peek_label")} className="absolute bottom-0 left-0 z-10 space-y-2 rounded-2xl bg-card p-3 pr-5 shadow-md ring-1 ring-black/5">
-                {proof.map((p) => (
-                  <li key={p.key} className="flex items-center gap-2.5 text-sm font-semibold text-foreground">
-                    <span className="flex size-9 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
-                      <p.icon className="size-5" />
-                    </span>
-                    {p.text}
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+          {/* haqiqiy raqamlar (0 bo'lsa — yo'q) */}
+          {proof.length ? (
+            <ul className="mt-6 flex flex-wrap justify-center gap-x-6 gap-y-2 text-sm text-navy-muted">
+              {proof.map((p) => (
+                <li key={p.key} className="inline-flex items-center gap-1.5">
+                  <Check className="size-4 text-sidebar-accent" aria-hidden />
+                  {p.text}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </div>
+      </div>
+
+      {/* maydondan chiqib turgan "jonli ko'rinish": qidiruv + eng yangi vakansiyalar. Ramkaning yuqori qismi orqasida to'q ko'k
+          tasma (balandligi o'zgarmas) — ro'yxat bo'lmasa ham ramka ostidagi matn och fonda qoladi */}
+      <div className="relative px-4 sm:px-6 lg:px-8">
+        <div className="absolute inset-x-0 top-0 h-24 bg-navy sm:h-28" aria-hidden />
+        <div className="relative mx-auto max-w-5xl">
+          <div className="rounded-2xl border border-navy-line bg-navy-line p-2 sm:p-3 dark:border-border dark:bg-muted">
+            <div className="rounded-xl bg-card p-3 text-card-foreground sm:p-5">
+              <HeroSearch />
+              {photo ? (
+                <div className="mt-4 hidden aspect-[21/9] overflow-hidden rounded-lg bg-muted sm:block">
+                  <Photo src={photo} alt="" sizes="(min-width: 1024px) 1000px, 100vw" className="size-full" fallback={null} />
+                </div>
+              ) : (
+                <Suspense fallback={<PeekSkeleton />}>
+                  <HeroPeek />
+                </Suspense>
+              )}
+            </div>
           </div>
         </div>
       </div>
-      <div className="container-app relative z-10 -mt-12 pb-6 sm:-mt-14 sm:pb-8">
-        <HeroSearch />
-        <nav aria-label={t("welcome.market.quick_label")} className="-mx-4 mt-3 sm:mx-0">
-          <ul className="flex items-center gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
-            <li className="hidden shrink-0 pr-1 text-sm font-semibold text-muted-foreground sm:block" aria-hidden>
+
+      <div className="mx-auto max-w-5xl px-4 pb-6 pt-4 sm:px-6 sm:pb-8 lg:px-8">
+        <nav aria-label={t("welcome.market.quick_label")} className="-mx-4 sm:mx-0">
+          <ul className="flex items-center gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:justify-center sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
+            <li className="hidden shrink-0 pr-1 text-sm font-medium text-muted-foreground sm:block" aria-hidden>
               {t("welcome.market.popular")}
             </li>
             {/* AI yordamchi — qatorning boshida (telefonda ham birinchi ekranda ko'rinsin); mehmon oynada ish yoki xodimni tanlaydi */}
             {ai ? (
               <li className="flex">
-                <AiFinder defaultMode="jobs" className="border border-primary/30 bg-card" />
+                <AiFinder defaultMode="jobs" className="border border-border bg-card" />
               </li>
             ) : null}
             {chips.map((c) => (
@@ -128,7 +117,7 @@ export async function MarketHero({ stats, media, ai = false }: { stats: EntrySta
                   <TileButton
                     data-track="entry_quick"
                     data-track-to={c.key}
-                    className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary"
+                    className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 text-sm font-medium text-foreground hover:border-primary/50 hover:text-primary"
                   >
                     <c.icon className="size-4 shrink-0 text-primary" aria-hidden />
                     {c.label}
@@ -159,7 +148,7 @@ function HeroTitle({ text }: { text: string }) {
       ) : null}
       {line.split(/(\[[^\]]+\])/).map((part, j) =>
         part.startsWith("[") && part.endsWith("]") ? (
-          <span key={j} className="text-primary">
+          <span key={j} className="text-sidebar-accent">
             {part.slice(1, -1)}
           </span>
         ) : (
@@ -179,8 +168,8 @@ function RoleCta({ mode, primary, icon: Icon, label }: { mode: AppMode; primary?
         data-track="entry_role"
         data-track-to={mode}
         className={cn(
-          "press inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl px-6 text-base font-bold transition-colors sm:w-auto",
-          primary ? "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover" : "border border-primary/40 bg-card text-primary hover:bg-primary-soft",
+          "press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-6 text-md font-medium transition-colors sm:w-auto",
+          primary ? "bg-primary text-primary-foreground hover:bg-primary-hover" : "border border-navy-foreground/25 text-navy-foreground hover:bg-navy-foreground/10",
         )}
       >
         <Icon className="size-5 shrink-0" aria-hidden />
@@ -197,28 +186,23 @@ async function HeroPeek() {
   const { params, remote } = latestTabFind("all");
   const res = await findJobs(params, { regionId: null, districtId: null, remote }, 3);
   const items = res.ok ? res.items : [];
-  if (!items.length) {
-    return (
-      <div className="absolute right-6 top-1/2 flex size-80 -translate-y-1/2 items-center justify-center rounded-full bg-card shadow-md" aria-hidden>
-        <Image src="/brand/logo-figures.webp" alt="" width={240} height={240} className="size-60 object-contain" />
-      </div>
-    );
-  }
+  if (!items.length) return null;
   return (
-    <div className="absolute right-0 top-0 w-[27rem] rounded-2xl bg-card p-4 shadow-md ring-1 ring-black/5">
+    <div className="mt-4 border-t border-border pt-4">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="inline-flex items-center gap-2 text-sm font-bold text-foreground">
+        <p className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
           <span className="entry-live" aria-hidden />
           {t("welcome.market.peek_title")}
         </p>
-        <Link href="/jobs?sort=newest" prefetch={false} className="inline-flex items-center gap-1 text-sm font-semibold text-primary hover:underline">
+        <Link href="/jobs?sort=newest" prefetch={false} className="inline-flex min-h-11 items-center gap-1 text-sm font-medium text-primary hover:underline">
           {t("welcome.market.peek_all")}
           <ArrowRight className="size-4" aria-hidden />
         </Link>
       </div>
-      <ul className="space-y-2">
-        {items.map((job) => (
-          <li key={job.id}>
+      <ul className="grid grid-cols-1 gap-2 md:grid-cols-3">
+        {items.map((job, i) => (
+          // telefonda bitta (qidiruv birinchi ekranda qolsin), planshet va kompyuterda — uchtasi yonma-yon
+          <li key={job.id} className={i > 0 ? "hidden md:block" : undefined}>
             <JobPeekRow job={job} />
           </li>
         ))}
@@ -229,10 +213,9 @@ async function HeroPeek() {
 
 function PeekSkeleton() {
   return (
-    <div className="absolute right-0 top-0 w-[27rem] space-y-2 rounded-2xl bg-card p-4 shadow-md" aria-hidden>
-      <Skeleton className="h-5 w-40" />
+    <div className="mt-4 grid grid-cols-1 gap-2 border-t border-border pt-4 md:grid-cols-3" aria-hidden>
       {[0, 1, 2].map((i) => (
-        <Skeleton key={i} className="h-20 w-full rounded-xl" />
+        <Skeleton key={i} className={cn("h-20 w-full rounded-lg", i > 0 && "hidden md:block")} />
       ))}
     </div>
   );
@@ -244,9 +227,9 @@ function PeekSkeleton() {
  */
 async function HeroSearch() {
   const [{ t, name }, regions] = await Promise.all([getT(), getRegions()]);
-  const field = "border-transparent bg-muted hover:border-border focus-visible:bg-card";
+  const field = "bg-background hover:border-border-strong focus-visible:bg-card";
   return (
-    <form action={homeSearch} role="search" aria-label={t("welcome.market.search_label")} className="rounded-2xl bg-card p-2.5 text-foreground shadow-lg ring-1 ring-black/5 sm:p-3">
+    <form action={homeSearch} role="search" aria-label={t("welcome.market.search_label")} className="text-foreground">
       <div className="grid grid-cols-1 gap-2.5 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)_auto] lg:items-center">
         <div>
           <label htmlFor="hero-q" className="sr-only">
@@ -275,7 +258,7 @@ async function HeroSearch() {
             {t("welcome.market.region_hint")}
           </span>
         </div>
-        <TileButton className="press inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-7 text-base font-bold text-primary-foreground shadow-sm hover:bg-primary-hover lg:w-auto">
+        <TileButton className="press inline-flex h-11 w-full items-center justify-center gap-2 rounded-md bg-primary px-6 text-md font-medium text-primary-foreground hover:bg-primary-hover lg:w-auto">
           <Search className="size-5" aria-hidden />
           {t("welcome.market.submit")}
         </TileButton>

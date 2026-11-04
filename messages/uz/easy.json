@@ -932,7 +932,9 @@
     "cta_worker_title": "Ish beruvchilar sizni topsin",
     "cta_worker_desc": "O'zingiz haqingizda e'lon bering — ish beruvchilar o'zi bog'lanadi.",
     "cta_employer_title": "Kerakli xodimni toping",
-    "cta_employer_desc": "Vakansiya joylang — nomzodlar arizalari shu yerda ko'rinadi."
+    "cta_employer_desc": "Vakansiya joylang — nomzodlar arizalari shu yerda ko'rinadi.",
+    "mode_worker": "Ish izlovchi",
+    "mode_employer": "Ish beruvchi"
   },
   "activity": {
     "title": "Mening faoliyatim",

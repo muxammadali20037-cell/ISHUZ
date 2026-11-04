@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
   ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
   reactStrictMode: true,
   poweredByHeader: false,
+  experimental: {
+    // bir marta ochilgan sahifaga 30 s ichida qaytish — serverni kutmasdan, darhol (orqaga/oldinga va menyu bo'ylab yurish).
+    // Server amallari (revalidatePath, router.refresh) va cookie o'zgarishi keshni o'zi tozalaydi
+    staleTimes: { dynamic: 30 },
+  },
   // PDF CV shriftlari serverless funksiyaga qo'shiladi (fs orqali o'qiladi)
   outputFileTracingIncludes: {
     "/api/telegram/webhook": ["./src/features/cv/fonts/*"],

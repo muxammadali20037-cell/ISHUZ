@@ -47,7 +47,7 @@ export function LanguageSwitcher({ className, size = "sm" }: { className?: strin
 const LOCALE_NAMES: Record<Locale, string> = { uz: "O'zbekcha", oz: "Ўзбекча", ru: "Русский", en: "English" };
 
 /** Ixcham til tanlagich (telefonda ham sig'adi): globus + qisqa nom, ochilganda to'liq nomlar */
-export function LanguageSelect({ className }: { className?: string }) {
+export function LanguageSelect({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {
   const { locale } = useT();
   const router = useRouter();
   const [pending, startTransition] = useTransition();
@@ -67,10 +67,19 @@ export function LanguageSelect({ className }: { className?: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <label className={cn("relative inline-flex h-11 items-center gap-1 rounded-xl border border-border bg-card pl-2.5 pr-2 text-sm font-bold", pending && "opacity-60", className)}>
-      <Globe className="hidden size-4 text-muted-foreground min-[400px]:block" aria-hidden />
-      <span aria-hidden>{LOCALE_LABELS[locale]}</span>
-      <ChevronDown className="size-4 text-muted-foreground" aria-hidden />
+    <label
+      className={cn(
+        "relative inline-flex items-center gap-1 rounded-md border pl-2.5 pr-2 text-sm font-medium",
+        tone === "dark" ? "h-11 border-navy-line bg-navy-foreground/5 text-navy-foreground hover:bg-navy-foreground/10" : "h-11 border-border bg-card",
+        pending && "opacity-60",
+        className,
+      )}
+    >
+      <Globe className={cn("hidden size-4 min-[400px]:block", tone === "dark" ? "text-navy-muted" : "text-muted-foreground")} aria-hidden />
+      <span aria-hidden className={tone === "dark" ? "flex-1" : undefined}>
+        {LOCALE_LABELS[locale]}
+      </span>
+      <ChevronDown className={cn("size-4", tone === "dark" ? "text-navy-muted/70" : "text-muted-foreground")} aria-hidden />
       <select
         ref={ref}
         key={locale}

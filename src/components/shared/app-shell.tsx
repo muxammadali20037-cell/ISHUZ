@@ -6,6 +6,12 @@ import { usePathname } from "next/navigation";
 import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, User, Users, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
+import { initials } from "@/lib/format";
+import { BRAND } from "@/config/brand";
+import { BrandMark } from "@/components/shared/brand-mark";
+import { LanguageSelect } from "./language-switcher";
+import { UserMenu } from "./user-menu";
+import type { TopBarUser } from "./top-bar";
 
 export type NavRole = "worker" | "employer" | "guest";
 export type NavMode = "worker" | "employer" | null;
@@ -89,7 +95,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
   const cells: (NavItem | "post")[] = [...items.slice(0, 2), "post", ...items.slice(2)];
   return (
     <nav
-      className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card shadow-lg md:hidden"
+      className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
       style={{ paddingBottom: "var(--safe-bottom)" }}
       aria-label={t("common.nav.main_label")}
     >
@@ -102,9 +108,9 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
                   href={post.href}
                   aria-current={postActive ? "page" : undefined}
                   data-track="nav_post"
-                  className="press flex h-full flex-col items-center justify-center gap-1 text-xs font-bold text-primary"
+                  className="press flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary"
                 >
-                  <span className="flex h-8 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm" aria-hidden>
+                  <span className="flex h-8 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground" aria-hidden>
                     <Plus className="size-5" strokeWidth={2.5} />
                   </span>
                   <span>{t(post.labelKey)}</span>
@@ -118,11 +124,11 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
-                className={cn("press relative flex h-full flex-col items-center justify-center gap-1 text-xs font-semibold", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+                className={cn("press relative flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
                 <span className="flex h-8 items-center" aria-hidden>
-                  <item.icon className={cn("size-6", active && "fill-primary/10")} strokeWidth={active ? 2.25 : 1.75} />
+                  <item.icon className="size-5" strokeWidth={active ? 2.25 : 1.75} />
                 </span>
                 <span>{t(item.labelKey)}</span>
                 {badge ? (
@@ -238,7 +244,6 @@ interface SideItem {
 
 function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
   const more: SideItem[] = [
-    { href: "/notifications", labelKey: "easy.side.notifications", icon: Bell, badgeKey: "notifications", match: (p) => p.startsWith("/notifications") },
     { href: "/settings", labelKey: "easy.side.settings", icon: Settings, match: (p) => p.startsWith("/settings") },
     { href: "/help", labelKey: "easy.side.help", icon: LifeBuoy, match: (p) => p.startsWith("/help") },
   ];
@@ -285,10 +290,19 @@ function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
   };
 }
 
-export function SideNav({ counts, mode = null }: { mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+export function SideNav({
+  counts,
+  mode = null,
+  user,
+}: {
+  mode?: NavMode;
+  counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>>;
+  user?: TopBarUser | null;
+}) {
   const pathname = usePathname();
   const { t } = useT();
   const { main, more } = sideNav(mode);
+  const post = postAction(mode);
   const link = (item: SideItem) => {
     const active = item.match(pathname);
     const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
@@ -298,26 +312,75 @@ export function SideNav({ counts, mode = null }: { mode?: NavMode; counts?: Part
           href={item.href}
           aria-current={active ? "page" : undefined}
           className={cn(
-            "flex min-h-11 items-center gap-3 rounded-xl px-3 text-base font-semibold transition-colors",
-            active ? "bg-primary text-primary-foreground shadow-sm" : "text-navy-muted hover:bg-navy-line hover:text-navy-foreground",
+            "flex h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors",
+            active ? "bg-sidebar-active font-medium text-navy-foreground" : "text-navy-muted hover:bg-navy-foreground/5 hover:text-navy-foreground",
           )}
         >
-          <item.icon className="size-5 shrink-0" aria-hidden />
+          <item.icon className={cn("size-4 shrink-0", active ? "text-sidebar-accent" : "opacity-80")} aria-hidden />
           <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
           {badge ? (
-            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span>
+            <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-semibold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span>
           ) : null}
         </Link>
       </li>
     );
   };
+  const name = user ? `${user.firstName} ${user.lastName}`.trim() : "";
   return (
-    <aside className="sticky top-14 flex h-[calc(100dvh-3.5rem)] flex-col overflow-y-auto px-3 py-5">
-      <nav aria-label={t("easy.side.label")}>
-        <ul className="space-y-1">{main.map(link)}</ul>
-        <p className="mb-2 mt-6 px-3 text-xs font-bold uppercase tracking-wider text-navy-muted">{t("easy.side.more")}</p>
-        <ul className="space-y-1">{more.map(link)}</ul>
+    // "SAT MASTER" uslubi (2026-11): ekranning butun balandligidagi to'q ko'k ustun — logotip, bildirishnomalar, asosiy amal,
+    // bo'limlar; pastda — sozlamalar, til va foydalanuvchi kartasi (rejimni almashtirish, chiqish)
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-navy lg:flex" style={{ paddingTop: "var(--safe-top)" }}>
+      <div className="flex h-16 shrink-0 items-center gap-2 px-5">
+        <Link href="/" className="flex min-h-11 min-w-0 items-center gap-2 rounded-md" aria-label={BRAND.name}>
+          <BrandMark className="size-8 rounded-md" />
+          <span className="truncate font-display text-md font-semibold tracking-tight text-navy-foreground">{BRAND.name}</span>
+        </Link>
+        <Link
+          href="/notifications"
+          aria-label={t("common.nav.notifications")}
+          className="relative ml-auto inline-flex size-11 items-center justify-center rounded-md text-navy-muted hover:bg-navy-foreground/10 hover:text-navy-foreground"
+        >
+          <Bell className="size-4.5" aria-hidden />
+          {counts?.notifications ? <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-destructive" aria-hidden /> : null}
+        </Link>
+      </div>
+      {pathname.startsWith("/post/") ? null : (
+        <div className="px-3 pb-3">
+          <Link
+            href={post.href}
+            data-track="nav_post"
+            data-track-to="side"
+            className="flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+          >
+            <Plus className="size-4" aria-hidden />
+            {t(post.ctaKey)}
+          </Link>
+        </div>
+      )}
+      <nav aria-label={t("easy.side.label")} className="flex-1 space-y-5 overflow-y-auto px-3 pb-4">
+        <ul className="space-y-0.5">{main.map(link)}</ul>
+        <div>
+          <p className="mb-1.5 px-3 text-xs font-medium text-navy-muted/60">{t("easy.side.more")}</p>
+          <ul className="space-y-0.5">{more.map(link)}</ul>
+        </div>
       </nav>
+      {user ? (
+        <div className="shrink-0 space-y-2 border-t border-navy-line px-3 py-3">
+          <LanguageSelect tone="dark" className="w-full" />
+          <UserMenu
+            variant="sidebar"
+            name={name}
+            subtitle={t(mode === "employer" ? "easy.side.mode_employer" : "easy.side.mode_worker")}
+            roles={user.roles}
+            activeRole={user.activeRole}
+            avatar={
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-navy-foreground/10 text-sub font-semibold text-navy-foreground" aria-hidden>
+                {initials(user.firstName, user.lastName)}
+              </span>
+            }
+          />
+        </div>
+      ) : null}
     </aside>
   );
 }

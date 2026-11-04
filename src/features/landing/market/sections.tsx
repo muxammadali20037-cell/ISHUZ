@@ -297,18 +297,18 @@ export async function EmployerBand() {
   const benefits = [t("welcome.market.emp_b1"), t("welcome.market.emp_b2"), t("welcome.market.emp_b3"), t("welcome.market.emp_b4")];
   return (
     <section aria-labelledby="home-employers" className="container-app py-8 sm:py-10">
-      <div className="grid grid-cols-1 gap-6 rounded-2xl bg-primary p-5 text-primary-foreground sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:p-10">
+      <div className="grid grid-cols-1 gap-6 rounded-xl bg-navy p-5 text-navy-foreground sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:p-10">
         <div>
           <h2 id="home-employers" className="text-2xl font-extrabold tracking-tight sm:text-3xl">
             {t("welcome.market.emp_title")}
           </h2>
-          <p className="mt-2 text-base leading-relaxed opacity-90 sm:text-lg">{t("welcome.market.emp_desc")}</p>
+          <p className="mt-2 text-base leading-relaxed text-navy-muted sm:text-lg">{t("welcome.market.emp_desc")}</p>
           <div className="mt-5 flex flex-col gap-2.5 sm:flex-row">
             <ModeButton
               mode="employer"
               next="/post/vacancy"
               track="post_vacancy"
-              className="press lift-sm inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-card px-5 text-base font-bold text-primary shadow-sm hover:bg-primary-soft sm:w-auto"
+              className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-primary px-5 text-md font-medium text-primary-foreground hover:bg-primary-hover sm:w-auto"
             >
               {t("welcome.market.emp_post")} <ArrowRight className="size-5" aria-hidden />
             </ModeButton>
@@ -316,7 +316,7 @@ export async function EmployerBand() {
               mode="employer"
               next={workers}
               track="browse_workers"
-              className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-primary-foreground/40 px-5 text-base font-bold hover:bg-primary-foreground/10 sm:w-auto"
+              className="press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md border border-navy-foreground/25 px-5 text-md font-medium hover:bg-navy-foreground/10 sm:w-auto"
             >
               {t("welcome.market.emp_browse")}
             </ModeButton>
@@ -324,8 +324,8 @@ export async function EmployerBand() {
         </div>
         <ul className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
           {benefits.map((b) => (
-            <li key={b} className="flex gap-2.5 rounded-xl bg-primary-foreground/10 p-3 text-sm font-semibold leading-snug sm:text-base">
-              <BadgeCheck className="size-5 shrink-0" aria-hidden />
+            <li key={b} className="flex gap-2.5 rounded-lg border border-navy-line p-3 text-sm font-medium leading-snug text-navy-muted sm:text-base">
+              <BadgeCheck className="size-5 shrink-0 text-sidebar-accent" aria-hidden />
               <span className="min-w-0">{b}</span>
             </li>
           ))}

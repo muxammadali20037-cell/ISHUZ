@@ -47,3 +47,19 @@ Dizayn qismi uchun migratsiya yo'q; "Mening dunyom" — 0073 (yuqorida). Yangi s
 
 typecheck · lint · unit (brend qo'riqchisi va kontrast bilan) · E2E (390 px) · ustma-ust tushish auditi; skrinshotlar —
 `docs/screenshots/redesign-2026-11/`.
+
+## "SAT MASTER" uslubi (egasi, 2026-11-04) — tarmoq `claude/sat-uslub`
+
+Egasi: "https://sat-iota-nine.vercel.app/dashboard/subscription — Ish topdim'ning hamma dizaynini shu bilan bir xil qil, tugmani
+bosganda boshqa oynaga o'tish tezligini ham". Namuna — egasining o'z loyihasi (`muxammadali20037-cell/sat-`); tokenlar va qobiq
+uning kodidan (`src/app/globals.css`, `components/layout/app-shell.tsx`, `route-states.tsx`) olindi.
+
+| Qism | Nima o'zgardi |
+|---|---|
+| Ranglar | fon `#f5f7fb`, matn `#172033`, chegara `#e5eaf2`, asosiy ko'k `#3164dc` (namunada `#356ae6` — AA kontrast uchun bir pog'ona to'q), navy `#101b35`, yon menyu faol bandi `#1d2d52`, urg'u `#6d9eff`; qorong'i mavzu ham namunadan |
+| Shriftlar | Inter (matn) + Geist (sarlavhalar), o'zimizda (`@fontsource-variable/inter`, `geist`) — Google Fonts'ga bog'liq emas; qalinlik yengilroq (bold → 600) |
+| Burchaklar | tugma/maydon 6 px, karta 8–12 px |
+| Qobiq (kirgan, kompyuter) | ekran bo'yi to'q ko'k yon menyu: logo + bildirishnomalar, "E'lon berish", bo'limlar, "Boshqa", til, foydalanuvchi kartasi (rejim almashtirish, chiqish); yuqori panel yo'q |
+| Qobiq (telefon) | yuqori panel + pastki 5 tab (11 px yozuv, faol — ko'k) |
+| Mehmon bosh sahifasi | sarlavha va hero bitta to'q ko'k maydonda, markazda katta sarlavha, ikki tugma, haqiqiy raqamlar belgilar bilan; maydondan chiqib turgan ramkada qidiruv va eng yangi 3 vakansiya |
+| Tezlik | har sahifa uchun yuklanish skeleti (`app/loading.tsx` — menyu joyida qoladi), shuning uchun dinamik sahifalar ham oldindan yuklanadi va bosilganda darhol javob beradi; `staleTimes.dynamic = 30` — ochilgan sahifaga 30 s ichida qaytish oniy; sahifa almashish animatsiyasi olib tashlandi |

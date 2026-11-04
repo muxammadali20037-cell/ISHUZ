@@ -59,7 +59,8 @@ test("ish beruvchi profili ('O'zim uchun'): o'zbekcha 'Boshqaruv paneli', 'Profi
   await expect(main.getByText("Dashboard")).toHaveCount(0);
   await page.goto("/settings");
   await expect(page.getByText(/Ish Beruvchi/)).toHaveCount(0); // regex — registrga sezgir
-  await expect(page.getByText("Ish beruvchi", { exact: true }).first()).toBeVisible();
+  // kompyuter yon menyusidagi (telefonda yashirin) rejim yozuvi emas — ko'rinadigani
+  await expect(page.getByText("Ish beruvchi", { exact: true }).filter({ visible: true }).first()).toBeVisible();
 });
 
 test.describe("admin panel (lokal stend, aal2 sinov sessiyasi)", () => {
