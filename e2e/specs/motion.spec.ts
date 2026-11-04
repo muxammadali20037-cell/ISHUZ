@@ -3,8 +3,8 @@ import { asGuest, asMode } from "../support";
 
 /**
  * K · operator paneli uslubidagi harakat: sahifa yuklanayotganda yuqori panel va pastki menyu joyida qoladi (faqat kontent
- * o'rnida skelet), bosilgan bo'lim darhol faol; kontent pastdan yumshoq chiqadi, skeletdan keyin ikkinchi marta "sakramaydi";
- * birinchi ochilishda animatsiya yo'q (server HTML'i darhol ko'rinadi).
+ * o'rnida skelet), bosilgan bo'lim darhol faol. 2026-11 ("SAT MASTER" kabi tezlik): sahifa almashish animatsiyasi yo'q — kontent
+ * javob kelishi bilan o'z joyida ko'rinadi (na birinchi ochilishda, na o'tishda kechikish yoki "sakrash").
  */
 
 /** Sahifa javobi (RSC) 900 ms kechiksin — oraliqdagi holat ko'rinadigan bo'lsin; prefetch kechiktirilmaydi */
@@ -41,17 +41,17 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
     mainClass: document.querySelector("main")?.className ?? "",
   }));
   expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, active: "Nomzodlar" });
-  expect(snap.mainClass).toContain("page-enter");
+  expect(snap.mainClass).not.toMatch(/page-(enter|swap)/);
 
   // javob keldi: kontent skelet o'rnida, faqat ochiladi (pastdan ikkinchi marta chiqmaydi)
   await expect(page.getByRole("heading", { name: "Qanday mutaxassis kerak?" })).toBeVisible();
   await expect(skeleton).toHaveCount(0);
-  await expect(page.locator("main")).toHaveClass(/page-swap/);
+  await expect(page.locator("main")).not.toHaveClass(/page-(enter|swap)/);
   await expect(page.locator("header")).toHaveCount(1);
   await expect(page.locator("nav.fixed")).toHaveCount(1);
 });
 
-test("skeletsiz o'tishda kontent pastdan chiqadi; animatsiya tugagach main'da transform qolmaydi; gidratsiya xatosiz", async ({ page, context }) => {
+test("o'tishda kontent darhol (animatsiyasiz); main'da transform va animatsiya yo'q; gidratsiya xatosiz", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   // birinchi ochilishda (server HTML'i + gidratsiya) animatsiya klassi server bilan bir xil — React xatosi yo'q
@@ -68,9 +68,8 @@ test("skeletsiz o'tishda kontent pastdan chiqadi; animatsiya tugagach main'da tr
   await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().getByRole("link", { name: "Profil" }).click();
   await expect(page).toHaveURL(/\/cabinet$/);
   const main = page.locator("main");
-  await expect(main).toHaveClass(/page-enter/);
-  // 350 ms dan keyin: element o'z joyida, ichidagi fixed panellar uchun "containing block" yaratmaydi
-  await page.waitForTimeout(600);
+  await expect(main).not.toHaveClass(/page-(enter|swap)/);
+  // element darhol o'z joyida, ichidagi fixed panellar uchun "containing block" yaratmaydi
   expect(await main.evaluate((el) => getComputedStyle(el).transform)).toBe("none");
   expect(await main.evaluate((el) => el.getAnimations().length)).toBe(0);
 });

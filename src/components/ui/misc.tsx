@@ -69,15 +69,15 @@ function PageHeader({
   className?: string;
 }) {
   return (
-    <div className={cn("mb-4 flex items-start gap-3", className)}>
+    <div className={cn("mb-6 flex items-start gap-3 lg:mb-8", className)}>
       {backHref ? (
-        <Link href={backHref} className="-ml-2 mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-secondary" aria-label="Back">
+        <Link href={backHref} className="-ml-2 mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md hover:bg-secondary" aria-label="Back">
           <ChevronLeft className="size-6" />
         </Link>
       ) : null}
       <div className="min-w-0 flex-1">
-        <h1 className="text-xl font-bold sm:text-2xl">{title}</h1>
-        {subtitle ? <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p> : null}
+        <h1 className="text-page font-semibold leading-tight text-foreground [overflow-wrap:anywhere] sm:text-page-lg">{title}</h1>
+        {subtitle ? <p className="mt-1.5 max-w-2xl text-md text-muted-foreground">{subtitle}</p> : null}
       </div>
       {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
     </div>
@@ -138,11 +138,11 @@ function Separator({ className }: { className?: string }) {
 /** Bo'lim sarlavhasi + "Barchasini ko'rish" havolasi */
 function SectionHeader({ title, href, linkLabel, className }: { title: string; href?: string; linkLabel?: string; className?: string }) {
   return (
-    <div className={cn("mb-2 flex items-center justify-between gap-3", className)}>
-      <h2 className="min-w-0 text-lg font-bold">{title}</h2>
+    <div className={cn("mb-3 flex items-end justify-between gap-3", className)}>
+      <h2 className="min-w-0 text-section font-semibold text-foreground">{title}</h2>
       {href && linkLabel ? (
         // bosish maydoni ≥ 44 px (matn kichik bo'lsa ham), sarlavha bilan bir chiziqda
-        <Link href={href} className="-my-2 inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary hover:underline">
+        <Link href={href} className="-my-2 inline-flex min-h-11 shrink-0 items-center text-sm font-medium text-primary hover:underline">
           {linkLabel}
         </Link>
       ) : null}

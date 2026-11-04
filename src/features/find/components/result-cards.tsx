@@ -177,17 +177,13 @@ export function JobPeekRow({ job }: { job: JobCardData }) {
   const posted = usePosted();
   const org = job.employer_name ?? job.title;
   return (
-    <article className="relative flex gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/40 focus-within:border-primary/60">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-lg font-extrabold uppercase text-primary" aria-hidden>
+    <Link href={`/jobs/${job.slug}`} className="relative flex gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary/40">
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-lg font-extrabold uppercase text-primary" aria-hidden>
         {org.trim().slice(0, 1)}
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex items-baseline justify-between gap-2">
-          <h3 className="min-w-0 truncate text-sm font-bold leading-snug">
-            <Link href={`/jobs/${job.slug}`} className={stretched}>
-              {job.title}
-            </Link>
-          </h3>
+          <h3 className="min-w-0 truncate text-sm font-bold leading-snug">{job.title}</h3>
           <span className="shrink-0 text-2xs text-muted-foreground">{posted(job.published_at)}</span>
         </div>
         <p className="mt-0.5 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
@@ -204,7 +200,7 @@ export function JobPeekRow({ job }: { job: JobCardData }) {
           className={cn("mt-1 block truncate text-sm font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-primary")}
         />
       </div>
-    </article>
+    </Link>
   );
 }
 

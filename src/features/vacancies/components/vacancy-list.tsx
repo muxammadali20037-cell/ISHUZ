@@ -85,7 +85,7 @@ export function VacancyList({ items, filter }: { items: VacancyListItem[]; filte
       ) : !visible.length ? (
         <EmptyState icon={Briefcase} title={t("vacancies.list.empty_filtered_title")} description={t("vacancies.list.empty_filtered_desc")} action={{ label: t("vacancies.list.tabs.all"), href: "/employer/vacancies" }} />
       ) : (
-        <ul className="grid gap-3 lg:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
           {visible.map((v) => (
             <li key={v.id}>
               <VacancyRow item={v} busy={actions.busyId === v.id} onPublish={() => actions.publish(v.id)} onDuplicate={() => actions.duplicate(v.id)} onConfirm={(kind) => setConfirm({ kind, item: v })} />

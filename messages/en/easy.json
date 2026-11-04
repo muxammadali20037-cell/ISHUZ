@@ -932,7 +932,9 @@
     "cta_worker_title": "Let employers find you",
     "cta_worker_desc": "Post a listing about yourself — employers will contact you.",
     "cta_employer_title": "Find the right employee",
-    "cta_employer_desc": "Post a vacancy — candidates' applications will appear here."
+    "cta_employer_desc": "Post a vacancy — candidates' applications will appear here.",
+    "mode_worker": "Job seeker",
+    "mode_employer": "Employer"
   },
   "activity": {
     "title": "My activity",

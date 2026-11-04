@@ -92,11 +92,11 @@ test("chiqish: sarlavhada yana 'Kirish', kabinet kirishni taklif qiladi", async 
   await page.goto("/cabinet");
   await expect(page.getByRole("heading", { name: "Hisobga kiring" })).toBeVisible();
   await expect(page.getByRole("main").getByRole("link", { name: "Hisobga kirish" })).toHaveAttribute("href", "/auth?next=%2Fcabinet");
-  // kompyuterda: avatar menyusi orqali chiqish
+  // kompyuterda: yon menyu pastidagi foydalanuvchi kartasi orqali chiqish (yuqori panel yo'q — "SAT MASTER" uslubi)
   await loginAs(context, USERS.workerA);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("/");
-  await page.getByRole("banner").getByRole("button").last().click();
+  await page.locator("aside").first().getByRole("button").last().click();
   await page.getByRole("menuitem", { name: "Chiqish" }).click();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
 });
