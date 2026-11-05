@@ -49,32 +49,30 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
   const session = user;
   // telefonda bosh sahifa paneli: logo · hudud · chat · bildirishnomalar (til — Profil → Sozlamalar, avatar — pastki "Profil")
   const showPlace = !!place && pathname === "/";
-  // mehmon bosh sahifasida sarlavha hero bilan bir to'q ko'k maydonda ("SAT MASTER" uslubi)
-  const onNavy = !!site && pathname === "/";
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header
-      className={cn("@container sticky top-0 z-40", onNavy ? "bg-navy text-navy-foreground" : "border-b border-border bg-card", side && "lg:hidden")}
+      className={cn("@container sticky top-0 z-40 border-b border-border bg-card", side && "lg:hidden")}
       style={{ paddingTop: "var(--safe-top)" }}
     >
       {/* yon menyu bo'lsa (kompyuter): panel to'liq kenglikda, logotip menyu ustida */}
-      <div className={cn("container-app flex items-center gap-3", site ? "h-16" : "h-14")}>
+      <div className={cn("container-app flex items-center gap-2 sm:gap-3", site ? "h-16" : "h-14")}>
         <Link
           href="/"
           className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight"
           aria-label={BRAND.name}
         >
-          <BrandMark className="size-9 rounded-md" />
+          <BrandMark className="size-9" />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
           <span
             className={cn(
-              session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "text-lg @max-[22rem]:hidden",
+              session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "whitespace-nowrap text-base sm:text-lg @max-[22rem]:hidden",
               // sayt menyusi (lg–xl): nom o'rniga faqat belgi — to'rt bo'lim va o'ngdagi tugmalar sig'sin
               site && "lg:max-xl:hidden",
               showPlace && "max-md:hidden",
             )}
           >
-            <BrandWordmark onDark={onNavy} />
+            <BrandWordmark />
             {/* shior sarlavhada yo'q (2026-10-31): to'rt bo'limli menyu va "Ish joylashtirish" sig'sin — shior footer'da */}
           </span>
         </Link>
@@ -109,7 +107,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               </Link>
             </Button>
           ) : null}
-          <LanguageSelect tone={onNavy ? "dark" : "light"} className={showPlace && session ? "max-md:hidden" : undefined} />
+          <LanguageSelect className={showPlace && session ? "max-md:hidden" : undefined} />
           {session ? (
             <>
               <Button asChild variant="ghost" size="icon" className="relative @max-[22rem]:hidden" aria-label={t("common.nav.messages")}>
@@ -147,7 +145,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
             </>
           ) : (
             <>
-              <Button asChild variant={onNavy ? "ghost" : "soft"} className={cn("h-11 px-4", onNavy && "text-navy-foreground hover:bg-navy-foreground/10")}>
+              <Button asChild variant="soft" className="h-11 px-3 sm:px-4">
                 <LoginLink>{t("common.nav.login")}</LoginLink>
               </Button>
               {site ? (

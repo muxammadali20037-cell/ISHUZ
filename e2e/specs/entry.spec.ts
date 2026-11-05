@@ -33,23 +33,19 @@ test.describe("kirish", () => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("To'g'ri ish. To'g'ri inson. Bitta platformada.");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping. Yoki jamoangizga odam toping.");
     const jobs = await activeJobs();
-    const [today] = await sql<{ n: string }>(
-      "select count(*) as n from public.vacancies where status = 'active' and (expires_at is null or expires_at > now()) and published_at >= date_trunc('day', now() at time zone 'Asia/Tashkent') at time zone 'Asia/Tashkent'",
-    );
-    await expect(main.getByText(`Bugun ${today!.n} ta yangi e'lon`)).toBeVisible();
-    await expect(main.getByRole("button", { name: /^Ish qidiraman/ })).toBeVisible();
-    // haqiqiy raqam (telefonda — tugmalar ostida; kompyuterda — o'ngdagi kartada)
+    // haqiqiy raqam — sarlavha ustida (telefonda ham)
     await expect(main.getByText(`${jobs} ta faol vakansiya`).first()).toBeVisible();
-    await expect(main.getByRole("button", { name: /^Ish beruvchiman/ })).toBeVisible();
-    await expect(page.getByRole("search", { name: "Ish qidirish" }).getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" })).toBeVisible();
-    await expect(main.getByRole("heading", { level: 2, name: "Yangi ishlar" })).toBeVisible();
-    const cards = main.getByRole("region", { name: "Yangi ishlar" }).locator("article");
+    await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toBeVisible();
+    await expect(main.getByRole("button", { name: /^Menga ishchi kerak/ })).toBeVisible();
+    await expect(page.getByRole("search", { name: "Ish qidirish" }).getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
+    await expect(main.getByRole("heading", { level: 2, name: "Yangi vakansiyalar" })).toBeVisible();
+    const cards = main.getByRole("region", { name: "Yangi vakansiyalar" }).locator("article");
     await expect(cards.first()).toBeVisible();
     expect(await cards.count()).toBeLessThanOrEqual(6);
-    // yakuniy chaqiruv: ish qidirish va ariza — bepul; kirish — sarlavhada
-    await expect(main.getByText("Ish qidirish va ariza yuborish — bepul.", { exact: false })).toBeVisible();
+    // ro'yxatdan o'tmasdan ko'rish mumkin; kirish — sarlavhada
+    await expect(main.getByText("Ro'yxatdan o'tmasdan ham ko'rishingiz mumkin.", { exact: false })).toBeVisible();
     await expect(page.getByRole("banner").getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", /^\/auth/);
     // faqat ko'rish rejimni tanlamaydi
     expect(await cookie(context, "ib_mode")).toBeUndefined();
@@ -61,14 +57,14 @@ test.describe("kirish", () => {
   test("ikki yo'l: 'Ish qidiraman' → ish qidiruvchi bosh sahifasi; 'Ish beruvchiman' → ish beruvchi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Ish qidiraman/ }).click();
+    await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
     expect(await cookie(context, "ib_mode")).toBe("worker");
 
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Ish beruvchiman/ }).click();
+    await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
     expect(await cookie(context, "ib_mode")).toBe("employer");
   });
@@ -98,7 +94,7 @@ test.describe("kirish", () => {
     expect(await page.evaluate(() => document.documentElement.classList.contains("no-splash"))).toBe(false);
     // kontent ostida allaqachon chizilgan; splash bosishlarni o'tkazib yuboradi (sun'iy kutish yo'q)
     expect(await splash.evaluate((el) => [getComputedStyle(el).display, getComputedStyle(el).pointerEvents])).toEqual(["flex", "none"]);
-    await page.getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" }).fill("kassir");
+    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).fill("kassir");
     await expect(splash).toBeHidden({ timeout: 2500 });
     // shu sessiyada qayta ochilsa — yo'q
     await page.reload();

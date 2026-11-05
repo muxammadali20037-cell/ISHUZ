@@ -4,13 +4,14 @@ import { test } from "@playwright/test";
 import { asGuest, asMode, stack } from "../support";
 
 /**
- * Logotip (2026-10): ochilish ekrani, birinchi ochilishdagi brend kartasi, sarlavha belgisi va qo'l siqish harakati kadrlari.
+ * Logotip "Darvoza" (2026-11-05): ochilish ekrani, birinchi ochilishdagi brend kartasi, sarlavha va footer.
  *   SHOTS_TAG=after npx playwright test -c e2e/screens/shots.config.ts e2e/screens/logo.shots.ts
+ * Logo fayllarining o'zi (SVG/PNG, favicon, ilova belgilari) — public/brand, scripts/brand/build-brand.py.
  */
 const TAG = process.env.SHOTS_TAG ?? "after";
-const OUT = path.join(__dirname, "../../docs/screenshots/logo-2026-10");
+const OUT = path.join(__dirname, "../../docs/screenshots/brand-2026-11");
 
-test("logotip: ochilish ekrani, brend kartasi, sarlavha, harakat kadrlari", async ({ browser }) => {
+test("logotip: ochilish ekrani, brend kartasi, sarlavha, footer", async ({ browser }) => {
   fs.mkdirSync(OUT, { recursive: true });
   const ctx = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 }, storageState: { cookies: [], origins: [] } });
   // splash avtomatlashtirilgan brauzerda o'chiq — oddiy foydalanuvchi kabi
@@ -23,20 +24,6 @@ test("logotip: ochilish ekrani, brend kartasi, sarlavha, harakat kadrlari", asyn
   await p.screenshot({ path: path.join(OUT, `${TAG}-1-start-language-390.jpg`), type: "jpeg", quality: 80 });
   await ctx.close();
 
-  // qo'l siqish: brend kartasidagi logotip ketma-ket kadrlarda (yuqori aniqlikda, siklning boshida — siqish shu paytda)
-  const big = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 }, deviceScaleFactor: 3 });
-  const b = await big.newPage();
-  await b.goto("/start/til");
-  const logo = b.locator("main svg[role='img']").first();
-  await logo.waitFor();
-  // gidratsiyadan keyin svg qayta yaratiladi (harakat yoqiladi) — o'shandan boshlab kadrlar
-  await b.waitForFunction(() => !!document.querySelector("main svg[role='img'] feDisplacementMap"));
-  for (let i = 0; i < 12; i++) {
-    await logo.screenshot({ path: path.join(OUT, `${TAG}-frame-${String(i).padStart(2, "0")}.png`) });
-    await b.waitForTimeout(110);
-  }
-  await big.close();
-
   const home = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
   await asGuest(home);
   await asMode(home, "worker");
@@ -44,5 +31,6 @@ test("logotip: ochilish ekrani, brend kartasi, sarlavha, harakat kadrlari", asyn
   await h.goto("/");
   await h.waitForTimeout(800);
   await h.screenshot({ path: path.join(OUT, `${TAG}-2-header-390.jpg`), type: "jpeg", quality: 80, clip: { x: 0, y: 0, width: 390, height: 120 } });
+  await h.getByRole("contentinfo").screenshot({ path: path.join(OUT, `${TAG}-3-footer-390.jpg`), type: "jpeg", quality: 80 });
   await home.close();
 });

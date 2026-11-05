@@ -74,6 +74,8 @@ export function toCardData(row: VacancySearchRow): VacancyCardData {
     is_government: row.is_government,
     opportunity_type: row.opportunity_type,
     is_paid: row.is_paid,
+    category_slug: row.category_slug,
+    experience_min_months: row.experience_min_months,
   };
 }
 

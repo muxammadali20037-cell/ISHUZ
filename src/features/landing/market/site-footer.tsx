@@ -2,7 +2,7 @@ import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
 import { billingEnabled } from "@/lib/features";
-import { BrandMark } from "@/components/shared/brand-mark";
+import { BrandLogo } from "@/components/shared/brand-logo";
 import { LanguageSelect } from "@/components/shared/language-switcher";
 import { BRAND } from "@/config/brand";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
@@ -37,7 +37,7 @@ export async function SiteFooter() {
         { href: "/companies", label: t("common.site.nav_companies") },
         { href: seek.daily, label: t("welcome.market.f_daily") },
         { href: seek.remote, label: t("welcome.market.f_remote") },
-        { href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("welcome.market.f_professions") },
+        { href: "/kasblar", label: t("welcome.market.f_professions") },
       ],
     },
     {
@@ -66,9 +66,8 @@ export async function SiteFooter() {
     <footer className="page-with-tabbar mt-8 bg-navy text-navy-foreground md:pb-0">
       <div className="container-app grid grid-cols-1 gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] lg:py-14">
         <div>
-          <Link href="/" className="inline-flex min-h-11 items-center gap-2 text-xl font-extrabold tracking-tight" aria-label={BRAND.name}>
-            <BrandMark className="size-11 rounded-xl" />
-            <span>{BRAND.name}</span>
+          <Link href="/" className="inline-flex min-h-11 items-center" aria-label={BRAND.name}>
+            <BrandLogo onDark className="text-2xl" />
           </Link>
           <p className="mt-2 text-base font-semibold">{t("common.site.tagline")}</p>
           <p className="mt-1 max-w-xs text-sm leading-relaxed text-navy-muted">{t("welcome.market.footer_about")}</p>

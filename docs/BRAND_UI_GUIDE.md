@@ -14,16 +14,18 @@ Bu hujjat ilovaning yagona ko'rinish qoidalarini beradi. Qoidalar faqat yozib qo
 
 **Bitta aksent.** Brend rangi — ko'k (`primary`). Qolgan ranglar faqat **ma'no** uchun ishlatiladi, bezak uchun emas.
 
-COBALT SUN palitrasi (2026-10, `docs/REDESIGN_2026-10.md`).
+Palitra (2026-11-05, bosh mahsulot spetsifikatsiyasi): asosiy ko'k `#1455D9`, yorqin ko'k `#3478F6` (fokus halqasi, qorong'i
+mavzudagi belgi), yashil `#16A36A` (faqat belgi/nuqta urg'usi; matnda — `success` `#137A53`), fon `#F7F9FC`, matn `#101828`,
+ikkinchi darajali matn `#636C81` (spetsifikatsiyadagi `#667085` ning AA varianti), chegara `#E5EAF2`. Aniq qiymatlar — `globals.css`.
 
 | Token | Yorug' | Qorong'i | Qachon |
 |---|---|---|---|
-| `primary` | `#2457f5` | `#7a9bff` | Asosiy tugma, faol holat, havola, tanlangan chip |
-| `primary-soft` | `#eef3ff` | `#1b2a50` | Ikonka plitasi, tanlangan qator foni, ma'lumot paneli |
-| `foreground` | `#15213b` | `#e7ecf5` | Asosiy matn |
-| `muted-foreground` | `#5f6b7f` | `#9aa6bc` | Ikkinchi darajali matn, izoh (ochiq fonlarda ham ≥ 4.8:1) |
-| `background` / `card` | `#f6f8fc` / `#ffffff` | `#0e1729` / `#152036` | Sahifa foni / karta va forma sirti |
-| `border` / `input` | `#e4e9f2` / `#d5dce8` | `#26334d` / `#2f3e5c` | Chegara, ajratgich / forma maydoni chegarasi |
+| `primary` | `#1455d9` | `#6b93f2` | Asosiy tugma, faol holat, havola, tanlangan chip |
+| `primary-soft` | `#eaf1fe` | `#1d2c4f` | Ikonka plitasi, tanlangan qator foni, ma'lumot paneli |
+| `foreground` | `#101828` | `#e8ecf5` | Asosiy matn |
+| `muted-foreground` | `#636c81` | `#93a0b8` | Ikkinchi darajali matn, izoh (ochiq fonlarda ham ≥ 4.6:1) |
+| `background` / `card` | `#f7f9fc` / `#ffffff` | `#101827` / `#16213a` | Sahifa foni / karta va forma sirti |
+| `border` / `input` | `#e5eaf2` / `#d7deea` | `#26324d` / `#34425f` | Chegara, ajratgich / forma maydoni chegarasi |
 | `highlight` | `#ffc83d` | `#ffc83d` | **Kam ishlatiladigan sariq urg'u:** faqat TOP belgisi (`bg-highlight text-highlight-foreground`) |
 | `success` | `#137a53` | `#34c38a` | **Faqat natija:** saqlandi, joylandi, tasdiqlandi, "Qidiruvda ko'rinadi" |
 | `warning` | `#b45309` | `#f59e0b` | **Faqat ogohlantirish:** muddat tugayapti, tekshiruvda, chegirma muddati |
@@ -73,17 +75,24 @@ Gradient faqat `globals.css` dagi tasdiqlangan utilitalarda — komponentlarda x
 - Yangi joyga gradient kerak bo'lsa — avval shu jadvalga utilita sifatida qo'shiladi, keyin ishlatiladi. Yaltirash, kamalak
   ranglar va 3D tugmalar qaytarilmaydi (egasining qarori, 2026-10-22).
 
-### 1.2 Logotip (2026-10, egasi bergan)
+### 1.2 Logotip — "Darvoza" (2026-11-05)
 
-- Manba: `scripts/brand/logo-source.png` (yozuv va qo'l berib so'rashayotgan ishchi bilan ish beruvchi). Barcha fayllar shu
-  manbadan `python3 scripts/brand/build-logo.py` bilan yasaladi: `public/brand/*` (shaffof qatlamlar, siljish xaritasi),
-  `public/icons/*` (ilova belgilari — to'liq logo oq fonda), `src/app/favicon.ico` va `public/icon.svg` (faqat odamlar).
-- `BrandLogo` (`components/shared/brand-logo.tsx`): `full` — butun logo (ochilish ekrani, birinchi ochilishdagi brend kartasi),
-  `mark` — faqat odamlar (sarlavha, footer, kirish). **Qo'llar siqiladi** — SVG siljish filtri faqat qo'llar va bilaklarni
-  qimirlatadi (gavda va yozuv joyida), keyin kichik sariq uchqun; sarlavhada uzun tanaffus bilan (7 s). Reduced-motion — harakatsiz.
-- Logo ko'k, shuning uchun har doim **oq plitada** (`bg-logo-tile`, qorong'i mavzuda ham oq). Ko'k sirt ustiga to'g'ridan-to'g'ri
-  qo'yilmaydi.
-- Sarlavhada belgi yonida matnli nom ("Ish topdim") qoladi: 40 px da logodagi yozuv o'qilmaydi.
+Egasi: "logotipni ham o'zgartirish kerak". Avvalgi rasm-logo (qo'l berib so'rashayotgan ikki odam) kichik o'lchamda
+o'qilmasdi va faqat rastr edi. Yangi belgi — sodda vektor:
+
+- **Belgi:** yuqori uchi o'tkir ravoq (O'zbekiston peshtoqlari — "imkoniyat darvozasi") va ichida oq belgi (✓ — "topdim").
+  Ma'nosi: ish (darvoza ortidagi joy), imkoniyat, ishonch (✓), mahalliy o'ziga xoslik. 16 px faviconda ham o'qiladi.
+- **Yozuv:** "Ish topdim" — Geist SemiBold, "topdim" asosiy ko'k rangda. Brend nomi o'zgarmagan.
+- **Ko'rinishlar** (`python3 scripts/brand/build-brand.py && node scripts/brand/rasterize.mjs`):
+  `public/brand/ishtopdim-logo-stacked.svg` (asosiy, tik), `ishtopdim-logo.svg` (gorizontal), `ishtopdim-logo-on-dark.svg`
+  (to'q fon), `ishtopdim-mark.svg` / `ishtopdim-mark-on-dark.svg` (faqat belgi), `ishtopdim-app-icon.svg` (ilova belgisi),
+  PNG — `ishtopdim-logo*.png`; `public/icons/*` (192/512, maskable, apple-touch), `src/app/favicon.ico` (16/32/48),
+  `public/icon.svg`; ijtimoiy tarmoq rasmi — `public/brand/og-default.png` (1200×630). Yozuv fayllarda konturga aylantirilgan.
+- **Komponentlar:** `BrandMark` (`tone`: `brand` — ko'k ravoq, oq ✓; `light` — to'q sirtda oq ravoq; `tile` — ilova plitasi),
+  `BrandLogo` (`horizontal` | `stacked`, `onDark`). Rasm yuklanmaydi — inline SVG, ikkala mavzuda tokenlar bilan
+  (`--brand`: yorug' `#1455D9`, qorong'i `#3478F6`).
+- Qoidalar: belgini cho'zmang, burmang, soya yoki gradient bermang; atrofida kamida ravoq kengligining ¼ qismicha bo'sh joy.
+  Ko'k fonda — faqat `light` ko'rinish (oq ravoq).
 
 ## 2. Shrift
 

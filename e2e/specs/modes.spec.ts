@@ -13,14 +13,14 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await asGuest(context);
   await page.goto("/");
   // bosh sahifa: sarlavha, ikki aniq yo'l, shu yerning o'zida qidiruv va haqiqiy e'lonlar (rejim almashtirgich yo'q)
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("To'g'ri ish. To'g'ri inson. Bitta platformada.");
-  await expect(page.getByRole("searchbox", { name: "Qanday ish qidiryapsiz?" })).toBeVisible();
-  await expect(page.getByRole("heading", { level: 2, name: "Yangi ishlar" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping. Yoki jamoangizga odam toping.");
+  await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "Yangi vakansiyalar" })).toBeVisible();
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
   // ko'rish rejim tanlovini o'zi yozmaydi (tanlov faqat foydalanuvchi bosganda)
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
 
-  await page.getByRole("main").getByRole("button", { name: /^Ish qidiraman/ }).click();
+  await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
   await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
   await expect(windows(page)).toHaveCount(3);

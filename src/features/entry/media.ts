@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { publicEnv } from "@/lib/env-public";
+import { CATALOG_SLOTS, type CatalogSlot } from "@/features/catalog/catalog";
 
 /**
  * Kirish ekranlaridagi rasmlar (T4) va bosh ekran sarlavhalarining fon suratlari (premium 2026-10): admin panelda
@@ -22,6 +23,8 @@ export const ENTRY_SLOTS = [
   "hero_employer",
   "hero_guest",
   "home_photo",
+  // kasblar katalogi kartalari (2026-11-05): har soha uchun surat (features/catalog/catalog.ts)
+  ...CATALOG_SLOTS,
 ] as const;
 export type EntrySlot = (typeof ENTRY_SLOTS)[number];
 
@@ -30,10 +33,15 @@ export const SLOT_GROUPS = {
   // bosh ekran sarlavhalarining fon surati (premium 2026-10): yuklanmasa — ko'k brend sirti
   hero: ["hero_seeker", "hero_employer", "hero_guest", "home_photo"],
   entry: ["intro_jobs", "intro_workers", "intro_ai", "role_worker", "role_employer"],
+  // bosh sahifa va /kasblar: suratli soha kartalari (4:3). Yuklanmasa — o'rnatilgan surat yoki "Boshqa kasblar" ro'yxatida
+  catalog: CATALOG_SLOTS,
 } as const satisfies Record<string, readonly EntrySlot[]>;
 
 /** Admin va hujjat uchun: tavsiya etilgan nisbat va o'lcham (ekranda shu nisbatda kesiladi) */
+const CATALOG_SPEC = Object.fromEntries(CATALOG_SLOTS.map((s) => [s, { ratio: "4:3" as const, size: "1200×900" }])) as Record<CatalogSlot, { ratio: "4:3"; size: string }>;
+
 export const SLOT_SPEC: Record<EntrySlot, { ratio: "4:3" | "1:1" | "16:9" | "4:5"; size: string }> = {
+  ...CATALOG_SPEC,
   intro_jobs: { ratio: "4:3", size: "1200×900" },
   intro_workers: { ratio: "4:3", size: "1200×900" },
   intro_ai: { ratio: "4:3", size: "1200×900" },
@@ -42,8 +50,8 @@ export const SLOT_SPEC: Record<EntrySlot, { ratio: "4:3" | "1:1" | "16:9" | "4:5
   hero_seeker: { ratio: "16:9", size: "1920×1080" },
   hero_employer: { ratio: "16:9", size: "1920×1080" },
   hero_guest: { ratio: "16:9", size: "1920×1080" },
-  // bosh sahifa (mehmon) hero'sining o'ng tomonidagi ko'k shakl ichidagi surat (2026-11): tik kadr, odam markazda.
-  // Yuklanmasa — o'sha joyda haqiqiy yangi vakansiyalar ro'yxati
+  // bosh sahifa (mehmon) hero'sining o'ng tomonidagi katta surat (2026-11): tik kadr, odam markazda.
+  // Yuklanmasa — o'rnatilgan surat (egasi bergan, src/assets/photos/hero-construction.jpg)
   home_photo: { ratio: "4:5", size: "1200×1500" },
 };
 

@@ -19,7 +19,7 @@ export interface SiteNavConfig {
 /**
  * Sayt menyusi (2026-10-31 auditi, egasining spetsifikatsiyasi): Ish qidirish · Kompaniyalar · Kasblar · Ish beruvchilar uchun.
  * "Bosh sahifa" — logotip; "Biz haqimizda", "Yordam", narxlar — footer va telefon menyusida. "Ish qidirish" — to'liq filtrli
- * ro'yxat (/jobs), "Kasblar" — soha → kasb → hudud bo'yicha bosqichli tanlash (/search?mode=jobs).
+ * ro'yxat (/jobs), "Kasblar" — suratli kasblar katalogi (/kasblar, 2026-11-05); bosqichli tanlash (/search) — undan va qidiruvdan.
  */
 type Key = "jobs" | "companies" | "professions" | "employers";
 
@@ -27,7 +27,7 @@ function items(): { key: Key; href: string }[] {
   return [
     { key: "jobs", href: "/jobs" },
     { key: "companies", href: "/companies" },
-    { key: "professions", href: "/search?mode=jobs" },
+    { key: "professions", href: "/kasblar" },
     { key: "employers", href: "/for-employers" },
   ];
 }
@@ -35,7 +35,7 @@ function items(): { key: Key; href: string }[] {
 function activeKey(pathname: string, mode: string | null): Key | null {
   if (pathname.startsWith("/jobs") || pathname.startsWith("/students")) return "jobs";
   if (pathname.startsWith("/companies") || pathname.startsWith("/company/")) return "companies";
-  if (pathname.startsWith("/search") && mode !== "workers") return "professions";
+  if (pathname.startsWith("/kasblar") || (pathname.startsWith("/search") && mode !== "workers")) return "professions";
   if (pathname.startsWith("/for-employers") || pathname.startsWith("/workers") || pathname.startsWith("/listing") || (pathname.startsWith("/search") && mode === "workers"))
     return "employers";
   return null;
@@ -63,11 +63,7 @@ function DesktopLinks({ mode }: { mode: string | null }) {
             aria-current={active === it.key ? "page" : undefined}
             className={cn(
               "flex min-h-11 items-center whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors",
-              pathname === "/"
-                ? "text-navy-muted hover:bg-navy-foreground/10 hover:text-navy-foreground"
-                : active === it.key
-                  ? "text-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground",
+              active === it.key ? "text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
             {t(LABEL[it.key])}
@@ -100,13 +96,12 @@ export function SiteNavLinks() {
 /** Telefon va planshetda (lg dan tor): sayt bo'limlari menyusi. Pastki menyu (ilova bo'limlari) o'z joyida qoladi */
 export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
   const { t } = useT();
-  const onNavy = usePathname() === "/";
   // "Ish qidirish" — pastki menyuda bor; bu yerda qolgan bo'limlar + biz haqimizda, narxlar (yoqilgan bo'lsa), yordam
   const extra = items().filter((it) => it.key !== "jobs");
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className={cn("lg:hidden", onNavy && "text-navy-foreground hover:bg-navy-foreground/10")} aria-label={t("common.site.menu")}>
+        <Button variant="ghost" size="icon" className="lg:hidden" aria-label={t("common.site.menu")}>
           <Menu className="size-5" />
         </Button>
       </DropdownMenuTrigger>

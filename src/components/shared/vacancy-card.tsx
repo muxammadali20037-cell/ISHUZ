@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Clock, CalendarDays, FileCheck2, Utensils, BadgeCheck, Bookmark, Wifi, Landmark } from "lucide-react";
+import { MapPin, Clock, CalendarDays, FileCheck2, Utensils, BadgeCheck, Bookmark, Wifi, Landmark, BriefcaseBusiness } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatRelative, formatWorkTime } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -46,6 +46,9 @@ export interface VacancyCardData {
   opportunity_type?: Enums<"opportunity_type"> | null;
   /** false — haq to'lanmaydi (faqat stajirovka/amaliyot/shogirdlik) */
   is_paid?: boolean | null;
+  /** soha (kartadagi soha belgisi) va talab qilinadigan tajriba (oy; 0 — tajribasiz) */
+  category_slug?: string | null;
+  experience_min_months?: number | null;
 }
 
 export function VacancyCard({
@@ -66,6 +69,10 @@ export function VacancyCard({
   const district = locale === "ru" ? v.district_name_ru : v.district_name_uz;
   const location = v.is_remote ? t("enums.employment_type.remote") : [district, region].filter(Boolean).join(", ");
   const time = v.work_time_from && v.work_time_to ? `${formatWorkTime(v.work_time_from)}–${formatWorkTime(v.work_time_to)}` : null;
+  // talab qilinadigan tajriba (0 — tajribasiz); qadamlar qidiruv kartasi bilan bir xil
+  const expStep = [60, 36, 24, 12, 6].find((m) => (v.experience_min_months ?? 0) >= m) ?? 6;
+  const experience =
+    v.experience_min_months == null ? null : v.experience_min_months === 0 ? t("easy.card.no_experience") : t("easy.card.experience", { value: tEnum("experience_min_months", String(expStep)) });
 
   return (
     <article className={cn("relative rounded-2xl border border-border/70 bg-card p-4 shadow-sm transition-shadow hover:shadow-md", v.is_featured && "border-primary/40", className)}>
@@ -108,6 +115,11 @@ export function VacancyCard({
         <span className="inline-flex items-center gap-1">
           <CalendarDays className="size-4" /> {tEnum("work_schedule", v.schedule)}
         </span>
+        {experience ? (
+          <span className="inline-flex items-center gap-1">
+            <BriefcaseBusiness className="size-4" /> {experience}
+          </span>
+        ) : null}
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
