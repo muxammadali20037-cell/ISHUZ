@@ -84,7 +84,7 @@ export function LoginMethods({
         <EntryScreen left={backHref ? <EntryBack href={backHref} label={t("common.actions.back")} /> : null}>
           <div className="flex flex-1 flex-col">
             <div className="flex flex-col items-center pt-6 text-center">
-              <BrandMark className="size-16" />
+              <BrandMark className="size-16" sizes="64px" />
               <span className="mt-3 text-2xl font-extrabold tracking-tight">
                 <BrandWordmark />
               </span>

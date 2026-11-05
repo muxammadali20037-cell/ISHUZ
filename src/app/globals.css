@@ -5,7 +5,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   ISH TOPDIM tokenlari (2026-11, bosh mahsulot spetsifikatsiyasi + "Darvoza" logotipi)
+   ISH TOPDIM tokenlari (2026-11, bosh mahsulot spetsifikatsiyasi)
    Asosiy ko'k #1455D9 — harakat va brend; yorqin ko'k #3478F6 — fokus halqasi, qorong'i mavzudagi belgi;
    yashil #16A36A — faqat belgi/nuqta urg'usi (matnda — #137A53); sariq #FFC83D — kam, TOP/yangi belgisi.
    Fon #F7F9FC, sirt #FFFFFF, matn #101828, ikkinchi darajali matn #636C81 (#667085 ning AA varianti), chegara #E5EAF2.

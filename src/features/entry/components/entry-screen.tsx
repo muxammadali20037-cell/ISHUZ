@@ -79,7 +79,7 @@ export function EntryBrand({ name, slogan, live, photo = null }: { name: ReactNo
   return (
     <div className={cn("hero-surface rounded-2xl px-5 py-6 text-center shadow-lg", photo && "has-photo")}>
       <HeroBackdrop src={photo} />
-      {/* "Darvoza" belgisi va yozuv — och sarlavhada rangli, surat ustida oq */}
+      {/* belgi va yozuv — och sarlavhada rangli, surat ustida yozuv oq */}
       <BrandLogo layout="stacked" onDark={!!photo} className="mx-auto text-3xl" label={typeof name === "string" ? name : undefined} />
       <p className="mt-3 text-sm font-semibold text-hero-muted">{slogan}</p>
       {live ? (

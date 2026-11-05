@@ -62,7 +62,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight"
           aria-label={BRAND.name}
         >
-          <BrandMark className="size-9" />
+          <BrandMark className="size-9" sizes="36px" />
           {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
           <span
             className={cn(

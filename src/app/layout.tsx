@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: t("common.meta.keywords"),
     applicationName: BRAND.name,
     manifest: "/manifest.webmanifest",
-    icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
+    icons: { icon: [{ url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }, { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
     openGraph: { type: "website", siteName: BRAND.name, images: [DEFAULT_OG_IMAGE], locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
     appleWebApp: { capable: true, statusBarStyle: "default", title: BRAND.name },
     verification: {

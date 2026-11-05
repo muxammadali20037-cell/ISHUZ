@@ -1,26 +1,27 @@
 """
-"Ish topdim" brend fayllari (2026-11, "Darvoza" belgisi): python3 scripts/brand/build-brand.py && node scripts/brand/rasterize.mjs
+"Ish topdim" brend fayllari (2026-11-05, egasi bergan belgi): python3 scripts/brand/build-brand.py && node scripts/brand/rasterize.mjs
 
-Belgi: yuqori uchi o'tkir ravoq (O'zbekiston peshtoqlari) — "imkoniyat darvozasi"; ichida oq belgi (✓) — "topdim".
-Sodda geometriya (64 birlikli kvadrat): 16 px da ham o'qiladi, gradient va soya yo'q.
+Belgi — egasi bergan rasm (oq plita ichida ko'k odam va yuqoriga strelka), o'zgartirilmaydi:
+  scripts/brand/source/ishtopdim-mark-original.png (1254×1254, qora fonda) — yagona manba.
+Skript plita atrofidagi qora fonni shaffof qiladi va plitani kvadrat qilib kesadi.
 
 Natija:
-  public/brand/ishtopdim-mark.svg            — belgi (ko'k ravoq, oq ✓), shaffof fon
-  public/brand/ishtopdim-mark-on-dark.svg    — to'q fon uchun (oq ravoq, ko'k ✓)
-  public/brand/ishtopdim-app-icon.svg        — ilova belgisi (ko'k plita, oq ravoq)
+  public/brand/ishtopdim-mark.png            — belgi (512×512, shaffof fon)
+  src/assets/brand/ishtopdim-mark.png        — xuddi shu belgi, saytdagi komponent uchun (next/image)
   public/brand/ishtopdim-logo.svg            — gorizontal logo (belgi + "Ish topdim")
   public/brand/ishtopdim-logo-on-dark.svg    — gorizontal, to'q fon uchun
   public/brand/ishtopdim-logo-stacked.svg    — asosiy (tik) logo
-  public/icon.svg                            — favicon (SVG)
-Yozuv Geist SemiBold konturlari (fontTools) — fayl shriftsiz ham bir xil ko'rinadi.
-PNG va favicon.ico — scripts/brand/rasterize.mjs (sharp).
-
-Komponent (src/components/shared/brand-mark.tsx) xuddi shu ARCH / CHECK geometriyasini ishlatadi — o'zgartirsangiz, ikkalasini ham.
+  public/brand/og-default.svg                — ijtimoiy tarmoqlar uchun standart rasm
+Yozuv Geist SemiBold konturlari (fontTools) — fayl shriftsiz ham bir xil ko'rinadi; belgi SVG ichiga PNG qilib joylanadi.
+PNG, ilova belgilari va favicon.ico — scripts/brand/rasterize.mjs (sharp).
 """
 from __future__ import annotations
 
+import base64
+import io
 import os
 
+from PIL import Image
 from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
@@ -36,24 +37,44 @@ INK = "#101828"
 NAVY = "#0B1736"
 ON_DARK_ACCENT = "#8FB4FF"
 
-ARCH = "M9 59Q9 61 11 61H53Q55 61 55 59V31C55 19.5 45.5 10.5 32 3C18.5 10.5 9 19.5 9 31Z"
-CHECK = "M21 42L29.5 50.5L44 33"
-CHECK_W = 6.5
+SOURCE = os.path.join(ROOT, "scripts/brand/source/ishtopdim-mark-original.png")
+# egasi bergan rasm: oq plita qora fonda (1254×1254, shaffoflik yo'q). Plita markazi ≈ (627, 625):
+# kvadrat kesim — yarim tomoni 580 px (plita 1139×1148 px, chetida 1–2% bo'sh joy qoladi)
+CROP = (47, 45, 1207, 1205)
 
 
-def mark(arch: str, check: str) -> str:
-    return (
-        f'<path d="{ARCH}" fill="{arch}"/>'
-        f'<path d="{CHECK}" fill="none" stroke="{check}" stroke-width="{CHECK_W}" stroke-linecap="round" stroke-linejoin="round"/>'
-    )
+def mark_image() -> Image.Image:
+    """Plita atrofidagi qora fonni shaffof qiladi (rasmning o'zi — plita va ichidagi belgi — o'zgarmaydi).
+    Fon = chetdan boshlanib tutashgan qora piksellar; plita chegarasidagi silliqlash piksellari oq rangda, shaffofligi yorqinligidan."""
+    import numpy as np
+    from scipy import ndimage
+
+    rgb = np.asarray(Image.open(SOURCE).convert("RGB")).astype(np.float32)
+    lum = rgb.mean(axis=2)
+    dark = lum < 40
+    lab, _ = ndimage.label(dark)
+    border = set(np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))) - {0}
+    bg = np.isin(lab, list(border))
+    edge = ndimage.binary_dilation(bg, iterations=4) & ~bg
+    alpha = np.where(bg, 0.0, 255.0)
+    alpha[edge] = np.clip(lum[edge] / 250.0, 0, 1) * 255.0
+    out = rgb.copy()
+    out[edge] = 255.0  # chegara — oq plita qirrasi
+    rgba = np.dstack([out, alpha]).round().astype(np.uint8)
+    return Image.fromarray(rgba, "RGBA").crop(CROP)
 
 
-def tile(bg: str = PRIMARY, scale: float = 0.72) -> str:
-    # ilova belgisi: plita ichida oq ravoq va ko'k ✓ (optik markaz biroz pastda)
-    return (
-        f'<rect width="64" height="64" rx="14" fill="{bg}"/>'
-        f'<g transform="translate(32 33) scale({scale}) translate(-32 -32)">{mark("#FFFFFF", bg)}</g>'
-    )
+_MARK_URI: str | None = None
+
+
+def mark(*_: str) -> str:
+    """Belgi 64×64 birlikli kvadratda (SVG ichida PNG; 256 px — logo fayllari uchun yetarli)."""
+    global _MARK_URI
+    if _MARK_URI is None:
+        buf = io.BytesIO()
+        mark_image().resize((256, 256), Image.LANCZOS).save(buf, "PNG", optimize=True)
+        _MARK_URI = "data:image/png;base64," + base64.b64encode(buf.getvalue()).decode()
+    return f'<image width="64" height="64" href="{_MARK_URI}"/>'
 
 
 def text_paths(parts: list[tuple[str, str]], size: float, tracking_em: float = -0.02) -> tuple[str, float, float, float]:
@@ -128,7 +149,7 @@ def og_card() -> str:
     sub, _, _, _ = text_paths([("Vakansiyalar va ishchilar — butun O'zbekiston bo'ylab", "#636C81")], 30, 0)
     body = (
         f'<rect width="{w}" height="{h}" fill="#EDF3FE"/>'
-        f'<g transform="translate(860 150) scale(4.4)" opacity="0.98">{mark(PRIMARY, "#FFFFFF")}</g>'
+        f'<g transform="translate(850 150) scale(4.6)">{mark()}</g>'
         f'<g transform="translate(80 72)">{logo_inner}</g>'
         f'<g transform="translate(80 268)">{l1}</g><g transform="translate(80 356)">{l2}</g><g transform="translate(80 444)">{l3}</g>'
         f'<g transform="translate(82 530)">{sub}</g>'
@@ -138,10 +159,17 @@ def og_card() -> str:
 
 def main() -> None:
     os.makedirs(OUT, exist_ok=True)
+    m = mark_image()
+    m.resize((512, 512), Image.LANCZOS).save(os.path.join(OUT, "ishtopdim-mark.png"), optimize=True)
+    os.makedirs(os.path.join(ROOT, "src/assets/brand"), exist_ok=True)
+    m.resize((256, 256), Image.LANCZOS).save(os.path.join(ROOT, "src/assets/brand/ishtopdim-mark.png"), optimize=True)
+    # eski vektor belgilar ("Darvoza") — endi ishlatilmaydi
+    for old in ("ishtopdim-mark.svg", "ishtopdim-mark-on-dark.svg", "ishtopdim-app-icon.svg"):
+        if os.path.exists(os.path.join(OUT, old)):
+            os.remove(os.path.join(OUT, old))
+    if os.path.exists(os.path.join(ROOT, "public/icon.svg")):
+        os.remove(os.path.join(ROOT, "public/icon.svg"))
     files = {
-        "ishtopdim-mark.svg": svg(64, 64, mark(PRIMARY, "#FFFFFF"), "Ish topdim"),
-        "ishtopdim-mark-on-dark.svg": svg(64, 64, mark("#FFFFFF", PRIMARY), "Ish topdim"),
-        "ishtopdim-app-icon.svg": svg(64, 64, tile(), "Ish topdim"),
         "ishtopdim-logo.svg": horizontal(INK, PRIMARY, PRIMARY, "#FFFFFF"),
         "ishtopdim-logo-on-dark.svg": horizontal("#FFFFFF", ON_DARK_ACCENT, "#FFFFFF", PRIMARY),
         "ishtopdim-logo-stacked.svg": stacked(),
@@ -150,9 +178,6 @@ def main() -> None:
     for name, content in files.items():
         with open(os.path.join(OUT, name), "w", encoding="utf-8") as f:
             f.write(content)
-    # favicon (SVG): faqat belgi — kichik o'lchamda eng aniq
-    with open(os.path.join(ROOT, "public/icon.svg"), "w", encoding="utf-8") as f:
-        f.write(files["ishtopdim-mark.svg"])
     print("ok:", ", ".join(files))
 
 

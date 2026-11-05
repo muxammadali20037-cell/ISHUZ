@@ -25,7 +25,7 @@ export function BrandLogo({
       aria-label={label}
       role={label ? "img" : undefined}
     >
-      <BrandMark tone={onDark ? "light" : "brand"} className={stacked ? "size-20" : "size-9"} />
+      <BrandMark className={stacked ? "size-20" : "size-9"} sizes={stacked ? "80px" : "36px"} />
       <span className={onDark ? "text-navy-foreground" : "text-foreground"} aria-hidden={label ? true : undefined}>
         <BrandWordmark onDark={onDark} />
       </span>
