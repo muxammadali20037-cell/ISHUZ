@@ -58,11 +58,13 @@
    * .btn-light): komponentlarda xom gradient/hex yo'q (brand-guard.test.ts). Tugma va belgilar — "toza" uslub (2026-10-22,
    * egasi tanlagan A varianti): bitta brend rangi, tekis sirt; yaltirash, gradient, 3D chekka va kamalak ranglar yo'q.
    */
-  --hero-from: #101b35;
-  --hero-via: #132042;
-  --hero-to: #172746;
-  --hero-fg: #ffffff;
-  --hero-muted: #e3e9f5; /* hero sirtining barcha nuqtalarida ≥ 4.5:1 */
+  /* 2026-11-05: bosh ekran sarlavhalari och ko'k (bosh sahifa hero'si bilan bir xil); admin surati bo'lsa — .has-photo
+     (pastda) to'q parda va oq matnga qaytaradi */
+  --hero-from: #edf3fe;
+  --hero-via: #edf3fe;
+  --hero-to: #edf3fe;
+  --hero-fg: #101828;
+  --hero-muted: #525c70; /* och ko'k ustida 6:1 */
   --glow: rgb(53 106 230 / 0.30);
   --radius: 0.625rem;
   --shadow-sm: 0 1px 2px rgb(21 33 59 / 0.04);
@@ -132,11 +134,11 @@ html.tg-fullscreen {
   --navy-foreground: #ffffff;
   --navy-muted: #c9d3e6;
   --navy-line: #1f2c49;
-  --hero-from: #0b1222;
-  --hero-via: #0f1830;
-  --hero-to: #16213a;
+  --hero-from: #121d35;
+  --hero-via: #121d35;
+  --hero-to: #121d35;
   --hero-fg: #ffffff;
-  --hero-muted: #eef2ff;
+  --hero-muted: #c9d3e6;
   --glow: rgb(122 155 255 / 0.32);
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 1px 3px rgb(0 0 0 / 0.35);
@@ -387,6 +389,12 @@ html.no-splash .splash { display: none; }
   overflow: hidden;
   color: var(--hero-fg);
   background-color: var(--hero-from);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+/* admin surati bor sarlavha: surat ustida to'q parda — matn oq (har ikki mavzuda) */
+.has-photo {
+  --hero-fg: #ffffff;
+  --hero-muted: #e3e9f5;
 }
 /* Sarlavha fon surati (admin yuklasa): surat + ko'k parda. Parda hisob-kitobi: eng oq piksel ustida ham oq matn ≥ 5:1,
    och matn (hero-muted) ≥ 4.5:1 (telefonda bir xil parda; kompyuterda matn chapda — o'ng tomon ochiqroq, surat ko'rinadi) */
@@ -404,23 +412,28 @@ html.no-splash .splash { display: none; }
 @media (min-width: 64rem) {
   .hero-scrim { background: linear-gradient(90deg, rgb(13 31 117 / 0.88) 0%, rgb(20 52 194 / 0.82) 48%, rgb(20 52 194 / 0.5) 100%); }
 }
-.has-photo .hero-glass { background-color: rgb(13 31 117 / 0.6); }
-
-/* hero ustidagi shaffof tugma/chip */
+/* sarlavha ustidagi panel/chip: och sarlavhada — oq karta; surat ustida — shaffof to'q */
 .hero-glass {
-  background-color: rgb(255 255 255 / 0.14);
-  border: 1px solid rgb(255 255 255 / 0.28);
+  background-color: var(--card);
+  border: 1px solid var(--border);
   color: var(--hero-fg);
 }
-.hero-glass:hover { background-color: rgb(255 255 255 / 0.22); }
+.hero-glass:hover { background-color: var(--background); }
+.has-photo .hero-glass { background-color: rgb(13 31 117 / 0.6); border-color: rgb(255 255 255 / 0.28); }
+.has-photo .hero-glass:hover { background-color: rgb(13 31 117 / 0.7); }
 
-/* Ko'k sarlavha ustidagi asosiy amal ("Vakansiya joylash", "Ish qidiraman"): oq, tekis (ko'k sirtda ko'k tugma ko'rinmaydi) */
+/* Sarlavhadagi asosiy amal ("Vakansiya joylash"): och sarlavhada — asosiy ko'k tugma; surat ustida — oq, tekis */
 .btn-light {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.btn-light:hover { background-color: var(--primary-hover); }
+.has-photo .btn-light {
   background-color: #ffffff;
   color: #1434c2;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.18);
 }
-.btn-light:hover { background-color: #eef3ff; }
+.has-photo .btn-light:hover { background-color: #eef3ff; }
 
 /* "AI bilan qidirish" qatori: misol o'zi yozilib turadi — yonib-o'chadigan kursor (AI qatorining yagona harakati) */
 .type-caret::after {

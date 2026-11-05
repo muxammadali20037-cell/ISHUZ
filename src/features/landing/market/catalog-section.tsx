@@ -14,8 +14,9 @@ import type { MarketCounts } from "./model";
  * "Ommabop kasblar" — suratli katalog (egasi, 2026-11-05). Surati bor sohalar — kartalar (telefon 2, planshet 3, kompyuter 4
  * ustun); qolganlari — oxirgi "Boshqa kasblar" kartasida nomlari bilan (har biri o'z sohasiga havola) va /kasblar sahifasiga.
  * Sonlar — bazadan (xato bo'lsa ko'rsatilmaydi). Hech bir surat bo'lmasa ham bo'lim ishlaydi: faqat "Boshqa kasblar" kartasi.
+ * `embedded` — ish qidiruvchi bosh sahifasi ichida (o'z konteyneri va katta oraliqlarsiz, ixcham sarlavha).
  */
-export async function PhotoCatalog({ media, counts }: { media: EntryMedia; counts: MarketCounts | null }) {
+export async function PhotoCatalog({ media, counts, embedded = false }: { media: EntryMedia; counts: MarketCounts | null; embedded?: boolean }) {
   const [{ t }, items, categories] = await Promise.all([getT(), getCatalogItems(media, counts), getCategories()]);
   if (!items.length) return null;
   const withPhoto = items.filter((i) => i.photo);
@@ -25,9 +26,10 @@ export async function PhotoCatalog({ media, counts }: { media: EntryMedia; count
   const tail = tailSpan(withPhoto.length);
   const countLabel = (count: string) => t("welcome.market.cat_count", { count });
   return (
-    <section id="sohalar" aria-labelledby="home-categories" className="container-app scroll-mt-20 py-10 sm:py-14">
+    <section id="sohalar" aria-labelledby="home-categories" className={embedded ? "scroll-mt-20" : "container-app scroll-mt-20 py-10 sm:py-14"}>
       <SectionHead
         id="home-categories"
+        compact={embedded}
         title={t("welcome.catalog.title")}
         subtitle={t("welcome.catalog.subtitle")}
         action={

@@ -78,3 +78,4 @@ va 8 ta ish joyi surati. To'liq hisobot va qolgan bosqichlar — `docs/MAHSULOT_
 | Vakansiyalar | "Tanlangan vakansiyalar" to'ri (qoida ekranda yozilgan) va "Yangi vakansiyalar" ro'yxati (xato ≠ bo'sh) |
 | Ishonch | faqat tasdiqlangan kompaniyalar + uchta haqiqiy himoya qoidasi |
 | Sarlavha | bosh sahifada ham oq (to'q ko'k emas); "Kasblar" menyusi → `/kasblar` |
+| Rol bosh sahifalari | "Ish izlovchi" / "Ish beruvchi" sarlavhalari, ish beruvchi paneli va kirish ekranidagi brend kartasi ham och ko'k (`.hero-surface` tokenlari); admin surati bo'lsa — avvalgidek to'q parda va oq matn (`.has-photo`). Ish izlovchi bosh sahifasida ro'yxatdan keyin suratli "Ommabop kasblar" |
