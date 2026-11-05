@@ -7,7 +7,6 @@ import { BRAND } from "@/config/brand";
 import { SeekerHome } from "./seeker-home";
 import { EmployerHome } from "./employer-home";
 import { MarketHome } from "./market/market-home";
-import type { LatestTab } from "./market/model";
 
 /**
  * Bosh sahifa. Rejim tanlanmagan (mehmon yoki yangi foydalanuvchi) — marketplace ko'rinishi (market/market-home): sarlavha,
@@ -16,7 +15,7 @@ import type { LatestTab } from "./market/model";
  * (tasdiq bilan): kirgan foydalanuvchi rolini kirishda tanlaydi, keyin — Kabinetim → "Rolni o'zgartirish".
  * Pastki qism (footer) — hammasida bir xil, <main> dan tashqarida (app/page.tsx → Shell).
  */
-export async function HomePage({ session, mode, tab = "all" }: { session: SessionContext | null; mode: AppMode | null; tab?: LatestTab }) {
+export async function HomePage({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
   const { t } = await getT();
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
   const jsonLd = JSON.stringify([
@@ -35,7 +34,7 @@ export async function HomePage({ session, mode, tab = "all" }: { session: Sessio
     return (
       <>
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-        <MarketHome session={session} tab={tab} />
+        <MarketHome />
       </>
     );
   }

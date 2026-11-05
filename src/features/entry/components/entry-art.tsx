@@ -1,4 +1,7 @@
-import { BriefcaseBusiness, UsersRound } from "lucide-react";
+import Image from "next/image";
+import { BriefcaseBusiness, ImageOff, UsersRound } from "lucide-react";
+import { BUILTIN_CATALOG_PHOTOS, HERO_PHOTO } from "@/features/catalog/photos";
+import type { CatalogKey } from "@/features/catalog/catalog";
 import { Photo } from "@/components/shared/photo";
 import { WindowArtwork } from "@/features/home-windows/window-art";
 import { MatchArt } from "@/features/intro/intro-art";
@@ -17,9 +20,10 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
     case "hero_seeker":
     case "hero_employer":
     case "hero_guest":
-    case "home_photo":
       // suratsiz — ko'k brend sirti (bosh ekrandagidek)
       return <span className="hero-surface block size-full" />;
+    case "home_photo":
+      return <Image src={HERO_PHOTO} alt="" sizes="320px" className="size-full object-cover" />;
     case "role_worker":
     case "role_employer": {
       const Icon = slot === "role_worker" ? BriefcaseBusiness : UsersRound;
@@ -27,6 +31,17 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
         // "toza" uslub (2026-10-22): ikkala rol ham bir xil — och ko'k plita, ko'k belgi (biri ikkinchisidan ustun ko'rinmaydi)
         <span className="flex size-full items-center justify-center bg-primary-soft text-primary" aria-hidden>
           <Icon className="size-1/2" strokeWidth={1.8} />
+        </span>
+      );
+    }
+    default: {
+      // kasblar katalogi: o'rnatilgan surat yoki "surat yo'q" (bunday soha saytda "Boshqa kasblar" ro'yxatida)
+      const photo = BUILTIN_CATALOG_PHOTOS[slot.slice(4) as CatalogKey];
+      return photo ? (
+        <Image src={photo} alt="" sizes="320px" className="size-full object-cover" />
+      ) : (
+        <span className="flex size-full items-center justify-center bg-muted text-muted-foreground" aria-hidden>
+          <ImageOff className="size-8" strokeWidth={1.6} />
         </span>
       );
     }

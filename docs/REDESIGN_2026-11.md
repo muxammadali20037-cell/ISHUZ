@@ -63,3 +63,19 @@ uning kodidan (`src/app/globals.css`, `components/layout/app-shell.tsx`, `route-
 | Qobiq (telefon) | yuqori panel + pastki 5 tab (11 px yozuv, faol — ko'k) |
 | Mehmon bosh sahifasi | sarlavha va hero bitta to'q ko'k maydonda, markazda katta sarlavha, ikki tugma, haqiqiy raqamlar belgilar bilan; maydondan chiqib turgan ramkada qidiruv va eng yangi 3 vakansiya |
 | Tezlik | har sahifa uchun yuklanish skeleti (`app/loading.tsx` — menyu joyida qoladi), shuning uchun dinamik sahifalar ham oldindan yuklanadi va bosilganda darhol javob beradi; `staleTimes.dynamic = 30` — ochilgan sahifaga 30 s ichida qaytish oniy; sahifa almashish animatsiyasi olib tashlandi |
+
+## Logotip, ranglar va haqiqiy suratlar (egasi, 2026-11-05) — tarmoq `claude/brend-foto`
+
+Egasi: "logotipni ham o'zgartirish kerak", "REAL PHOTOGRAPHY & VISUAL JOB CATALOG REQUIREMENTS", bosh mahsulot spetsifikatsiyasi
+va 8 ta ish joyi surati. To'liq hisobot va qolgan bosqichlar — `docs/MAHSULOT_REJA_2026-11.md`.
+
+| Qism | Nima o'zgardi |
+|---|---|
+| Logotip | "Darvoza": peshtoq ravog'i + ✓ (vektor, 16 px da ham o'qiladi); asosiy, gorizontal, to'q fon, belgi, favicon, ilova belgilari, OG rasmi — `docs/BRAND_UI_GUIDE.md` 1.2 |
+| Ranglar | `#1455D9` asosiy, `#3478F6` fokus, `#16A36A` yashil belgi, fon `#F7F9FC`, matn `#101828`, ikkinchi matn `#636C81` (AA) |
+| Bosh sahifa | och ko'k hero va katta haqiqiy surat; "Ish toping. Yoki jamoangizga odam toping."; "Men ish qidiryapman" / "Menga ishchi kerak"; qidiruv: kasb · hudud · ish turi |
+| Kasblar katalogi | suratli kartalar (4:3) bosh sahifada va `/kasblar` da; surati yo'q sohalar — "Boshqa kasblar"; admin har soha uchun surat yuklay oladi |
+| Vakansiyalar | "Tanlangan vakansiyalar" to'ri (qoida ekranda yozilgan) va "Yangi vakansiyalar" ro'yxati (xato ≠ bo'sh) |
+| Ishonch | faqat tasdiqlangan kompaniyalar + uchta haqiqiy himoya qoidasi |
+| Sarlavha | bosh sahifada ham oq (to'q ko'k emas); "Kasblar" menyusi → `/kasblar` |
+| Rol bosh sahifalari | "Ish izlovchi" / "Ish beruvchi" sarlavhalari, ish beruvchi paneli va kirish ekranidagi brend kartasi ham och ko'k (`.hero-surface` tokenlari); admin surati bo'lsa — avvalgidek to'q parda va oq matn (`.has-photo`). Ish izlovchi bosh sahifasida ro'yxatdan keyin suratli "Ommabop kasblar" |

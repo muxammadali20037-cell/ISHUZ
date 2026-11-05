@@ -5,36 +5,36 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   ISH TOPDIM · COBALT SUN tokenlari (2026-10 redizayn)
-   Asosiy ko'k #2457F5 — harakat; sariq #FFC83D — kam, faqat urg'u (ustida to'q matn);
-   fon #F6F8FC, sirt #FFFFFF, matn #15213B. Kontrast (WCAG AA): primary/oq 5.6, matn/fon 15.1,
-   muted/fon 4.7; yashil va qizil och fondagi matn uchun biroz to'qlashtirilgan (≥ 4.8).
-   Radius 8–14 px, soyalar juda yengil.
+   ISH TOPDIM tokenlari (2026-11, bosh mahsulot spetsifikatsiyasi + "Darvoza" logotipi)
+   Asosiy ko'k #1455D9 — harakat va brend; yorqin ko'k #3478F6 — fokus halqasi, qorong'i mavzudagi belgi;
+   yashil #16A36A — faqat belgi/nuqta urg'usi (matnda — #137A53); sariq #FFC83D — kam, TOP/yangi belgisi.
+   Fon #F7F9FC, sirt #FFFFFF, matn #101828, ikkinchi darajali matn #636C81 (#667085 ning AA varianti), chegara #E5EAF2.
+   Kontrast (WCAG AA) — brand-contrast.test.ts tekshiradi. Radius 2–12 px, soyalar juda yengil.
    ============================================================ */
 :root {
-  --background: #f5f7fb;
-  --foreground: #172033;
+  --background: #f7f9fc;
+  --foreground: #101828;
   --card: #ffffff;
-  --card-foreground: #172033;
+  --card-foreground: #101828;
   --popover: #ffffff;
-  --popover-foreground: #172033;
-  --primary: #3164dc; /* namunadagi #356ae6 — AA (och ko'k fonda ≥ 4.5:1) uchun bir pog'ona to'qroq */
-  --primary-hover: #2a58c9;
+  --popover-foreground: #101828;
+  --primary: #1455d9; /* brend ko'ki (2026-11 bosh spetsifikatsiya): oq ustida 6.3:1, primary-soft ustida 5.6:1 */
+  --primary-hover: #1048b8;
   --primary-foreground: #ffffff;
-  --primary-soft: #ebf1fd;
+  --primary-soft: #eaf1fe;
   --secondary: #eef2f8;
-  --secondary-foreground: #172033;
+  --secondary-foreground: #101828;
   --muted: #eef2f8;
-  --muted-foreground: #5f6b7f; /* oq ustida 5.4:1, fon ustida 5.1:1, secondary va primary-soft ustida ≥ 4.8:1 */
-  --accent: #ebf1fd;
-  --accent-foreground: #2a58c9;
+  --muted-foreground: #636c81; /* spetsifikatsiyadagi #667085 ning AA varianti: oq 5.3, fon 5.0, secondary va primary-soft ustida ≥ 4.6:1 */
+  --accent: #eaf1fe;
+  --accent-foreground: #1048b8;
   /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
   --highlight: #ffc83d;
-  --highlight-foreground: #172033;
+  --highlight-foreground: #101828;
   --highlight-soft: #fff4d6;
   --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
   --success: #137a53; /* asos #16865C; och fonda matn uchun 4.8:1 */
-  --success-soft: #e7f6ef;
+  --success-soft: #e8f6ef;
   --success-foreground: #ffffff;
   --warning: #b45309;
   --warning-soft: #fdf3e2;
@@ -47,7 +47,7 @@
   --destructive-foreground: #ffffff;
   --border: #e5eaf2;
   --input: #d7deea;
-  --ring: #3164dc;
+  --ring: #3478f6;
   /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
   --navy: #101b35;
   --navy-foreground: #ffffff;
@@ -58,14 +58,14 @@
    * .btn-light): komponentlarda xom gradient/hex yo'q (brand-guard.test.ts). Tugma va belgilar — "toza" uslub (2026-10-22,
    * egasi tanlagan A varianti): bitta brend rangi, tekis sirt; yaltirash, gradient, 3D chekka va kamalak ranglar yo'q.
    */
-  --hero-from: #101b35;
-  --hero-via: #132042;
-  --hero-to: #172746;
-  --hero-fg: #ffffff;
-  --hero-muted: #e3e9f5; /* hero sirtining barcha nuqtalarida ≥ 4.5:1 */
+  /* 2026-11-05: bosh ekran sarlavhalari och ko'k (bosh sahifa hero'si bilan bir xil); admin surati bo'lsa — .has-photo
+     (pastda) to'q parda va oq matnga qaytaradi */
+  --hero-from: #edf3fe;
+  --hero-via: #edf3fe;
+  --hero-to: #edf3fe;
+  --hero-fg: #101828;
+  --hero-muted: #525c70; /* och ko'k ustida 6:1 */
   --glow: rgb(53 106 230 / 0.30);
-  /* logotip plitasi: logo ko'k, shuning uchun har ikki mavzuda oq fon */
-  --logo-tile: #ffffff;
   --radius: 0.625rem;
   --shadow-sm: 0 1px 2px rgb(21 33 59 / 0.04);
   --shadow-md: 0 1px 3px rgb(21 33 59 / 0.06), 0 1px 2px rgb(21 33 59 / 0.04);
@@ -81,6 +81,11 @@
   --sidebar-active: #1d2d52;
   --sidebar-accent: #6d9eff;
   --border-strong: #cfd7e4;
+  /* brend belgisi (logo ravog'i) va yashil urg'u (#16A36A — faqat belgi/nuqta, matn uchun emas: oq ustida 3.2:1) */
+  --brand: #1455d9;
+  --brand-green: #16a36a;
+  /* bosh sahifa birinchi ekrani: och ko'k fon (matn 16:1, muted 4.6:1, primary 5.5:1) */
+  --hero-soft: #edf3fe;
 }
 
 /* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
@@ -129,11 +134,11 @@ html.tg-fullscreen {
   --navy-foreground: #ffffff;
   --navy-muted: #c9d3e6;
   --navy-line: #1f2c49;
-  --hero-from: #0b1222;
-  --hero-via: #0f1830;
-  --hero-to: #16213a;
+  --hero-from: #121d35;
+  --hero-via: #121d35;
+  --hero-to: #121d35;
   --hero-fg: #ffffff;
-  --hero-muted: #eef2ff;
+  --hero-muted: #c9d3e6;
   --glow: rgb(122 155 255 / 0.32);
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-md: 0 1px 3px rgb(0 0 0 / 0.35);
@@ -142,6 +147,9 @@ html.tg-fullscreen {
   --sidebar-active: #1a2742;
   --sidebar-accent: #6d9eff;
   --border-strong: #34425f;
+  --brand: #3478f6;
+  --brand-green: #2fbf84;
+  --hero-soft: #121d35;
 }
 
 @theme inline {
@@ -194,7 +202,9 @@ html.tg-fullscreen {
   --color-sidebar-accent: var(--sidebar-accent);
   --color-border-strong: var(--border-strong);
   --color-hero-fg: var(--hero-fg);
-  --color-logo-tile: var(--logo-tile);
+  --color-brand: var(--brand);
+  --color-brand-green: var(--brand-green);
+  --color-hero-soft: var(--hero-soft);
   --color-hero-muted: var(--hero-muted);
   /* 2 · 4 · 6 · 8 · 12 · 14 px — kartalar 12–14, tugma va maydonlar 8–12 (haddan tashqari yumaloq emas) */
   /* namunadagi kabi ixcham burchaklar: tugma va maydon 6 px, karta 10–12 px */
@@ -301,15 +311,8 @@ html.tg-fullscreen {
 }
 html.no-splash .splash { display: none; }
 .splash-logo { display: flex; flex-direction: column; align-items: center; gap: 18px; animation: splash-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.15) both; }
-/* logotip oq plitada (logo ko'k — qorong'i mavzuda ham oq fon) */
-.splash-mark {
-  display: flex;
-  width: min(260px, 70vw);
-  padding: 18px 20px;
-  border-radius: 24px;
-  background: var(--logo-tile);
-  box-shadow: 0 18px 40px -18px var(--glow), 0 2px 6px rgb(21 33 59 / 0.08);
-}
+/* ochilish ekranidagi logo (belgi + yozuv) */
+.splash-mark { display: flex; justify-content: center; }
 .splash-slogan::before { content: attr(data-t); }
 .splash-slogan { font-size: 0.95rem; font-weight: 600; color: var(--muted-foreground); animation: splash-fade 0.2s ease-in 0.95s forwards; }
 .splash-bar {
@@ -386,6 +389,12 @@ html.no-splash .splash { display: none; }
   overflow: hidden;
   color: var(--hero-fg);
   background-color: var(--hero-from);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+/* admin surati bor sarlavha: surat ustida to'q parda — matn oq (har ikki mavzuda) */
+.has-photo {
+  --hero-fg: #ffffff;
+  --hero-muted: #e3e9f5;
 }
 /* Sarlavha fon surati (admin yuklasa): surat + ko'k parda. Parda hisob-kitobi: eng oq piksel ustida ham oq matn ≥ 5:1,
    och matn (hero-muted) ≥ 4.5:1 (telefonda bir xil parda; kompyuterda matn chapda — o'ng tomon ochiqroq, surat ko'rinadi) */
@@ -403,23 +412,28 @@ html.no-splash .splash { display: none; }
 @media (min-width: 64rem) {
   .hero-scrim { background: linear-gradient(90deg, rgb(13 31 117 / 0.88) 0%, rgb(20 52 194 / 0.82) 48%, rgb(20 52 194 / 0.5) 100%); }
 }
-.has-photo .hero-glass { background-color: rgb(13 31 117 / 0.6); }
-
-/* hero ustidagi shaffof tugma/chip */
+/* sarlavha ustidagi panel/chip: och sarlavhada — oq karta; surat ustida — shaffof to'q */
 .hero-glass {
-  background-color: rgb(255 255 255 / 0.14);
-  border: 1px solid rgb(255 255 255 / 0.28);
+  background-color: var(--card);
+  border: 1px solid var(--border);
   color: var(--hero-fg);
 }
-.hero-glass:hover { background-color: rgb(255 255 255 / 0.22); }
+.hero-glass:hover { background-color: var(--background); }
+.has-photo .hero-glass { background-color: rgb(13 31 117 / 0.6); border-color: rgb(255 255 255 / 0.28); }
+.has-photo .hero-glass:hover { background-color: rgb(13 31 117 / 0.7); }
 
-/* Ko'k sarlavha ustidagi asosiy amal ("Vakansiya joylash", "Ish qidiraman"): oq, tekis (ko'k sirtda ko'k tugma ko'rinmaydi) */
+/* Sarlavhadagi asosiy amal ("Vakansiya joylash"): och sarlavhada — asosiy ko'k tugma; surat ustida — oq, tekis */
 .btn-light {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+.btn-light:hover { background-color: var(--primary-hover); }
+.has-photo .btn-light {
   background-color: #ffffff;
   color: #1434c2;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.18);
 }
-.btn-light:hover { background-color: #eef3ff; }
+.has-photo .btn-light:hover { background-color: #eef3ff; }
 
 /* "AI bilan qidirish" qatori: misol o'zi yozilib turadi — yonib-o'chadigan kursor (AI qatorining yagona harakati) */
 .type-caret::after {

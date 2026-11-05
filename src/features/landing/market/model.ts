@@ -45,35 +45,6 @@ export function heroSearchHref(input: HeroSearchInput, regionSlugs: readonly str
   return findHref(params);
 }
 
-/** "Yangi ishlar" filtrlari: hammasi mavjud qidiruv bajaradigan filtrlar ("Doimiy" — oddiy qidiruvda yo'q, shuning uchun yo'q) */
-export const LATEST_TABS = ["all", "daily", "remote", "noexp"] as const;
-export type LatestTab = (typeof LATEST_TABS)[number];
-
-export function parseLatestTab(raw: string | string[] | undefined): LatestTab {
-  const v = Array.isArray(raw) ? raw[0] : raw;
-  return (LATEST_TABS as readonly string[]).includes(v ?? "") ? (v as LatestTab) : "all";
-}
-
-/** Filtr → qidiruv parametrlari (bosh sahifa ro'yxati va "Barcha ishlarni ko'rish" bir xil so'rov) */
-export function latestTabFind(tab: LatestTab): { params: FindParams; remote: boolean } {
-  const base: FindParams = { ...EMPTY_FIND, mode: "jobs", any: true, region: "all" };
-  switch (tab) {
-    case "daily":
-      return { params: { ...base, any: false, pay: "daily" }, remote: false };
-    case "remote":
-      return { params: { ...base, region: "remote" }, remote: true };
-    case "noexp":
-      return { params: { ...base, noexp: true }, remote: false };
-    default:
-      return { params: base, remote: false };
-  }
-}
-
-/** Bosh sahifadagi filtr havolasi: o'sha sahifa, ro'yxat bo'limiga */
-export function latestTabHref(tab: LatestTab): string {
-  return tab === "all" ? "/#yangi-ishlar" : `/?ish=${tab}#yangi-ishlar`;
-}
-
 export interface MarketCounts {
   /** categories.id → faol vakansiyalar soni */
   categories: Record<string, number>;
@@ -95,6 +66,3 @@ export function parseMarketCounts(json: unknown): MarketCounts | null {
   }
   return { categories: out, employers: emp };
 }
-
-/** Bosh sahifada birinchi ko'rinadigan sohalar soni (qolgani — "Barcha kategoriyalar" ichida) */
-export const CATEGORY_PREVIEW = 12;

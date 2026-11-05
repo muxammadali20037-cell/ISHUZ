@@ -28,17 +28,29 @@ import { getEntryStats } from "./entry-queries";
 import { getEntryMedia } from "@/features/entry/queries";
 import { entryMediaUrl } from "@/features/entry/media";
 import { HeroBackdrop } from "@/components/shared/hero-backdrop";
+import { PhotoCatalog } from "./market/catalog-section";
+import { getMarketCounts } from "./market/queries";
 
 /**
  * Ish qidiruvchi bosh sahifasi — mini-ilova uslubi (premium 2026-10; mehmon ham — ro'yxatdan o'tmasdan ko'radi):
- *  1) chuqur ko'k sarlavha: salomlashuv, "O'zingizga mos ishni toping", bugungi haqiqiy son, oq qidiruv kartasi va jonli AI qatori;
+ *  1) och ko'k sarlavha (2026-11-05, bosh sahifa hero'si bilan bir xil): salomlashuv, "O'zingizga mos ishni toping", bugungi
+ *     haqiqiy son, oq qidiruv kartasi va jonli AI qatori;
  *  2) sarlavha ustiga chiqib turadigan xizmatlar to'ri (yaltiroq belgilar): CV, kunlik, yaqin atrofda, masofaviy, tajribasiz,
  *     talabalar, Telegram xabar, barcha kasblar;
  *  3) darhol haqiqiy vakansiyalar (390×844 da birinchi vakansiyaning nomi, maoshi va hududi ko'rinadi).
+ *  4) ro'yxatdan keyin — suratli kasblar katalogi ("Ommabop kasblar").
  * Kompyuterda: sarlavha va xizmatlar keng, ostida ro'yxat (2 ustun) va o'ngda yordamchi panel. Telefonda panel ro'yxatdan keyin.
  */
 export async function SeekerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
-  const [{ t, name }, place, home, stats, media, world] = await Promise.all([getT(), getHomePlace(), getHomeSettings(), getEntryStats(), getEntryMedia(), getMyInterests(session?.userId)]);
+  const [{ t, name }, place, home, stats, media, world, counts] = await Promise.all([
+    getT(),
+    getHomePlace(),
+    getHomeSettings(),
+    getEntryStats(),
+    getEntryMedia(),
+    getMyInterests(session?.userId),
+    getMarketCounts(),
+  ]);
   const photo = entryMediaUrl(media.hero_seeker);
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const quick = Object.fromEntries(seekerQuickFilters(where).map((c) => [c.key, c.href])) as Record<"daily" | "noexp" | "remote" | "students", string>;
@@ -82,7 +94,7 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
                 {t("easy.start.seeker_title")}
               </h1>
               {stats && stats.vacancies > 0 ? (
-                <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-black/15 px-2.5 py-1 text-xs font-semibold text-hero-fg lg:hidden">
+                <p className="hero-glass mt-2 inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold lg:hidden">
                   <span className="entry-live" aria-hidden />
                   {stats.today > 0 ? t("easy.services.today", { count: num(stats.today) }) : t("easy.services.total", { count: num(stats.vacancies) })}
                 </p>
@@ -154,6 +166,9 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
           </Suspense>
         </aside>
       </div>
+
+      {/* suratli kasblar katalogi (2026-11-05) — mehmon bosh sahifasidagi bilan bir xil, ro'yxatdan keyin */}
+      <PhotoCatalog media={media} counts={counts} embedded />
     </div>
   );
 }

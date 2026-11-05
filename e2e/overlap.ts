@@ -135,7 +135,10 @@ export async function findLayoutIssues(page: Page, scope = "body"): Promise<Layo
     }
 
     // 4) belgilar (svg, rasm) begona yozuv bilan kesishgan (belgi plitasi yozuvni to'ssa — 1-tekshiruv "covered" ushlaydi)
-    const icons = Array.from(root.querySelectorAll("svg, img, .entry-live")).filter((e) => !hidden(e) && !e.closest("svg svg"));
+    // katta surat (≥ 200×200, masalan hero yoki katalog kartasi) — belgi emas, fon: ustidagi shaffof bo'lmagan karta yozuvi
+    // o'qiladi; yozuvni haqiqatan to'sib qo'ysa — 1-tekshiruv ("covered") ushlaydi
+    const photo = (e: Element) => e.tagName === "IMG" && e.getBoundingClientRect().width * e.getBoundingClientRect().height >= 40000;
+    const icons = Array.from(root.querySelectorAll("svg, img, .entry-live")).filter((e) => !hidden(e) && !e.closest("svg svg") && !photo(e));
     for (const ic of icons) {
       const ir = ic.getBoundingClientRect();
       if (ir.width < 6 || ir.height < 6) continue;

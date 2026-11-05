@@ -2,7 +2,7 @@ import { BrandLogo } from "./brand-logo";
 import { getT } from "@/lib/i18n/server";
 
 /**
- * Ochilish ekrani: "Ish topdim" logotipi (qo'l siqishayotgan odamlar harakatda) va shior, keyin yumshoq yo'qoladi (~1.4 s).
+ * Ochilish ekrani: "Ish topdim" logotipi ("Darvoza" belgisi va yozuv) va shior, keyin yumshoq yo'qoladi (~1.4 s).
  * - faqat ilova ochilganda, sessiyada bir marta (SPLASH_BOOT `<head>` da — qayta yuklashda miltillamaydi);
  * - kontent ostida darhol chiziladi, splash bosishni to'smaydi (pointer-events: none), sun'iy kutish yo'q;
  * - harakat kamaytirilgan qurilmada, admin panelda va avtomatlashtirilgan brauzerda (navigator.webdriver) ko'rsatilmaydi.
@@ -13,9 +13,8 @@ export async function Splash() {
   return (
     <div className="splash" aria-hidden="true">
       <div className="splash-logo">
-        {/* egasi bergan logotip: qo'l berib so'rashayotgan odamlar — qo'llar siqiladi (BrandLogo) */}
         <span className="splash-mark">
-          <BrandLogo variant="full" period={2.4} />
+          <BrandLogo layout="stacked" />
         </span>
         <span className="splash-slogan" data-t={t("welcome.splash.slogan")} />
       </div>

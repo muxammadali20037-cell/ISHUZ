@@ -332,7 +332,7 @@ export function SideNav({
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-navy lg:flex" style={{ paddingTop: "var(--safe-top)" }}>
       <div className="flex h-16 shrink-0 items-center gap-2 px-5">
         <Link href="/" className="flex min-h-11 min-w-0 items-center gap-2 rounded-md" aria-label={BRAND.name}>
-          <BrandMark className="size-8 rounded-md" />
+          <BrandMark className="size-8" tone="light" />
           <span className="truncate font-display text-md font-semibold tracking-tight text-navy-foreground">{BRAND.name}</span>
         </Link>
         <Link

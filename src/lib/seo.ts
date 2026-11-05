@@ -17,3 +17,6 @@ export function localeAlternates(path: string, locale: Locale): NonNullable<Meta
     languages: { uz: path, "uz-Cyrl": withLang(path, "oz"), ru: withLang(path, "ru"), en: withLang(path, "en"), "x-default": path },
   };
 }
+
+/** Standart ijtimoiy tarmoq rasmi (logo + shior, scripts/brand/build-brand.py): sahifa o'z rasmini bermasa — shu */
+export const DEFAULT_OG_IMAGE = { url: "/brand/og-default.png", width: 1200, height: 630, alt: "Ish topdim" } as const;

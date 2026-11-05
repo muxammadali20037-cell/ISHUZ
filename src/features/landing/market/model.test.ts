@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { parseFindParams } from "@/features/find/params";
-import { heroSearchHref, latestTabFind, latestTabHref, parseLatestTab, parseMarketCounts } from "./model";
+import { heroSearchHref, parseMarketCounts } from "./model";
 
 const REGIONS = ["tashkent_city", "samarkand"];
 const params = (href: string) => parseFindParams(Object.fromEntries(new URL(href, "http://x").searchParams));
@@ -34,24 +34,6 @@ describe("bosh sahifa qidiruv paneli → /search", () => {
 
   it("bitta harfli matn kasb deb olinmaydi — barcha kasblar", () => {
     expect(params(heroSearchHref({ q: "a", region: "all", type: "", salary: "" }, REGIONS))).toMatchObject({ q: "", any: true });
-  });
-});
-
-describe("'Yangi ishlar' filtrlari", () => {
-  it("faqat ma'lum qiymatlar, qolgani — 'all'", () => {
-    expect(parseLatestTab("daily")).toBe("daily");
-    expect(parseLatestTab(["remote", "x"])).toBe("remote");
-    expect(parseLatestTab("permanent")).toBe("all");
-    expect(parseLatestTab(undefined)).toBe("all");
-  });
-
-  it("har filtr — mavjud qidiruv: kunlik (pay), masofaviy (region=remote), tajribasiz (noexp)", () => {
-    expect(latestTabFind("daily").params).toMatchObject({ pay: "daily", region: "all" });
-    expect(latestTabFind("remote")).toMatchObject({ remote: true, params: { region: "remote", any: true } });
-    expect(latestTabFind("noexp").params).toMatchObject({ noexp: true, any: true });
-    expect(latestTabFind("all").params).toMatchObject({ any: true, region: "all", pay: null, noexp: false });
-    expect(latestTabHref("all")).toBe("/#yangi-ishlar");
-    expect(latestTabHref("noexp")).toBe("/?ish=noexp#yangi-ishlar");
   });
 });
 

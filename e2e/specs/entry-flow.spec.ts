@@ -327,7 +327,7 @@ test.describe("kirish oqimi", () => {
     const p = await bot.newPage();
     await p.goto("/");
     expect(path(p)).toBe("/");
-    await expect(p.getByRole("heading", { level: 1 })).toHaveText("To'g'ri ish. To'g'ri inson. Bitta platformada.");
+    await expect(p.getByRole("heading", { level: 1 })).toHaveText("Ish toping. Yoki jamoangizga odam toping.");
     await bot.close();
   });
 

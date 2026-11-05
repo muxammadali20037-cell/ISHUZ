@@ -43,7 +43,7 @@ for (const vp of VIEWPORTS) {
 
     // 1. bosh sahifa (birinchi ochilish): "Ish qidiraman"; kasb bo'yicha — "Barcha kasblar"
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Ish qidiraman/ }).click();
+    await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
     await page.getByRole("main").getByRole("link", { name: "Barcha kasblar", exact: true }).click();
     await page.waitForURL(/\/search\?mode=jobs$/);
 

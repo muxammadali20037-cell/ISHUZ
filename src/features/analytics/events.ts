@@ -22,6 +22,7 @@ export const CLIENT_EVENTS = [
   "entry_quick",
   "entry_role",
   "home_category",
+  "catalog_category",
   "home_chip",
   "home_cta",
   "home_filters",

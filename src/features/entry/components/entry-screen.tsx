@@ -72,17 +72,15 @@ export function EntryIcon({ children }: { children: ReactNode }) {
 }
 
 /**
- * Birinchi ekrandagi brend kartasi: chuqur ko'k sirt, oq "Ish topdim" belgisi, shior va (bo'lsa) haqiqiy jonli son.
+ * Birinchi ekrandagi brend kartasi: chuqur ko'k sirt, oq "Ish topdim" logotipi, shior va (bo'lsa) haqiqiy jonli son.
  * Foydalanuvchi ilovani birinchi ochganda nima ekanini va u "tirik" ekanini bir qarashda ko'radi.
  */
 export function EntryBrand({ name, slogan, live, photo = null }: { name: ReactNode; slogan: string; live?: string | null; photo?: string | null }) {
   return (
     <div className={cn("hero-surface rounded-2xl px-5 py-6 text-center shadow-lg", photo && "has-photo")}>
       <HeroBackdrop src={photo} />
-      {/* egasi bergan logotip oq plitada; qo'l berib so'rashayotgan odamlar harakatda */}
-      <span className="mx-auto flex w-52 rounded-2xl bg-logo-tile px-4 py-3 shadow-lg">
-        <BrandLogo variant="full" label={typeof name === "string" ? name : undefined} />
-      </span>
+      {/* "Darvoza" belgisi va yozuv — och sarlavhada rangli, surat ustida oq */}
+      <BrandLogo layout="stacked" onDark={!!photo} className="mx-auto text-3xl" label={typeof name === "string" ? name : undefined} />
       <p className="mt-3 text-sm font-semibold text-hero-muted">{slogan}</p>
       {live ? (
         <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-bold text-foreground shadow-sm">

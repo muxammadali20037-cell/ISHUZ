@@ -9,6 +9,7 @@ import { SPLASH_BOOT, Splash } from "@/components/shared/splash";
 import { Providers } from "./providers";
 import "./globals.css";
 import { BRAND } from "@/config/brand";
+import { DEFAULT_OG_IMAGE } from "@/lib/seo";
 import { ADMIN_LINK_PATH } from "@/features/auth/admin-login";
 import { adminBaseUrl } from "@/features/auth/admin-password";
 
@@ -30,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
     applicationName: BRAND.name,
     manifest: "/manifest.webmanifest",
     icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
-    openGraph: { type: "website", siteName: BRAND.name, locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
+    openGraph: { type: "website", siteName: BRAND.name, images: [DEFAULT_OG_IMAGE], locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
     appleWebApp: { capable: true, statusBarStyle: "default", title: BRAND.name },
     verification: {
       google: GOOGLE_SITE_VERIFICATION,
@@ -41,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#101b35" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
     { media: "(prefers-color-scheme: dark)", color: "#0b1222" },
   ],
   width: "device-width",
