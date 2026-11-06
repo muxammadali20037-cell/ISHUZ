@@ -183,9 +183,9 @@ export function ChannelComposer({ media, ready, canPin }: { media: ComposerMedia
           {t("admin.telegram.preview")}
         </h2>
         <div className="rounded-2xl bg-primary-soft/70 p-4 dark:bg-muted">
-          <div className="max-w-[340px] overflow-hidden rounded-2xl rounded-bl-md bg-card shadow-sm">
+          <div className={cn("overflow-hidden rounded-2xl rounded-bl-md bg-card shadow-sm", selected?.kind === "video" ? "max-w-[280px]" : "max-w-[340px]")}>
             {selected ? (
-              <div className={cn("relative bg-muted", selected.kind === "video" ? "aspect-[9/16] max-h-[420px]" : "aspect-[4/5]")}>
+              <div className={cn("relative bg-muted", selected.kind === "video" ? "aspect-[9/16]" : "aspect-[4/5]")}>
                 <Image src={selected.poster} alt="" fill sizes="340px" className="object-cover" />
                 {selected.kind === "album" && selected.count > 1 ? (
                   <span className="absolute right-2 top-2 rounded-full bg-black/60 px-2 py-0.5 text-xs font-medium text-white">1/{selected.count}</span>

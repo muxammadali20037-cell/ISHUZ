@@ -34,6 +34,11 @@ test("admin: kanal sahifasi — holat, tayyor izoh, belgilar chegarasi, ko'rinis
   await expect(preview.getByText("O‘ZBEKISTON, KELING, BIRGALIKDA QURAMIZ!", { exact: false })).toBeVisible();
   await expect(preview.getByText("1:24")).toBeVisible();
 
+  // «Qanday ishlaydi» videosi — o'z izohi va davomiyligi bilan
+  await page.getByRole("radio", { name: /«Qanday ishlaydi» videosi/ }).click();
+  await expect(text).toHaveValue(/^ISH TOPDIM qanday ishlaydi\? — 1 daqiqada/);
+  await expect(preview.getByText("0:57")).toBeVisible();
+
   // albomga o'tilsa — izoh ham almashadi (admin matnni o'zgartirmagan)
   await page.getByRole("radio", { name: /«Qanday ishlaydi» rasmlari/ }).click();
   await expect(text).toHaveValue(/^ISH TOPDIM qanday ishlaydi\?/);

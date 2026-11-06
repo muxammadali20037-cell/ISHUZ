@@ -1,9 +1,9 @@
 /**
- * Rasmiy Telegram kanal uchun tayyor materiallar (egasi, 2026-11-06): manifest video va ikki rasm-albom.
+ * Rasmiy Telegram kanal uchun tayyor materiallar (egasi, 2026-11-06): manifest video, «Qanday ishlaydi» videosi va ikki rasm-albom.
  * Fayllar — public/media/kanal (sayt orqali ochiq; Telegram ularni URL bo'yicha o'zi yuklab oladi: video ≤ 20 MB, rasm ≤ 5 MB).
  * Matnlar — kanal tilida (o'zbekcha), admin yuborishdan oldin tahrirlay oladi.
  */
-export type ChannelMediaId = "manifest" | "how_it_works" | "together";
+export type ChannelMediaId = "manifest" | "how_video" | "how_it_works" | "together";
 
 export interface ChannelMedia {
   id: ChannelMediaId;
@@ -37,6 +37,19 @@ Bizga qo‘shiling:
 
 #IshTopdim #BirgalikdaQuramiz`;
 
+const HOW_VIDEO_CAPTION = `ISH TOPDIM qanday ishlaydi? — 1 daqiqada 👇
+
+🔍 Ish izlovchi: kasb va hududni tanlaysiz → vakansiyani ochasiz → ariza yuborasiz.
+🏢 Ish beruvchi: vakansiya joylaysiz → arizalarni ko‘rasiz → ishchilar ro‘yxatidan qidirasiz.
+🤖 Telegram bot @ishberuvchi_bot orqali 2 daqiqada CV.
+
+Videoda — saytning haqiqiy ekranlari, e’lonlar namuna sifatida.
+
+🌐 Sayt: ishuz.vercel.app
+💬 Savollaringizni izohlarda yozing.
+
+#IshTopdim`;
+
 const HOW_CAPTION = `ISH TOPDIM qanday ishlaydi? 👇
 
 Ish izlayotgan bo‘lsangiz: kasb, hudud va ish turini tanlaysiz, vakansiyani ochasiz, ariza yuborasiz.
@@ -65,6 +78,16 @@ export const CHANNEL_MEDIA: ChannelMedia[] = [
     height: 1920,
     duration: 84,
     caption: MANIFEST_CAPTION,
+  },
+  {
+    id: "how_video",
+    kind: "video",
+    files: ["/media/kanal/qanday-ishlaydi.mp4"],
+    poster: "/media/kanal/qanday-ishlaydi-video.jpg",
+    width: 1080,
+    height: 1920,
+    duration: 57,
+    caption: HOW_VIDEO_CAPTION,
   },
   {
     id: "how_it_works",

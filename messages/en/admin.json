@@ -1003,6 +1003,7 @@
     "confirm_title": "Post to the channel?",
     "confirm_desc": "The post goes live in the official channel right away. Afterwards it can only be edited or deleted in Telegram itself.",
     "preview": "Preview",
-    "preview_empty": "Write some text or pick media"
+    "preview_empty": "Write some text or pick media",
+    "media_how_video": "“How it works” video"
   }
 }
