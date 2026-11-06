@@ -26,12 +26,17 @@ test("admin: kanal sahifasi — holat, tayyor izoh, belgilar chegarasi, ko'rinis
   await expect(send).toBeDisabled();
   await expect(page.getByText("Yuborish uchun avval botni kanalga admin qiling.")).toBeVisible();
 
-  // standart — manifest video, matn uning tayyor izohi bilan
+  // standart — «Telegramda — bepul» reklamasi, matn uning tayyor izohi bilan
   const text = page.getByRole("textbox", { name: "Post matni" });
-  await expect(page.getByRole("radio", { name: /«Birgalikda quramiz» videosi/ })).toBeChecked();
-  await expect(text).toHaveValue(/^🇺🇿 O‘ZBEKISTON, KELING, BIRGALIKDA QURAMIZ!/);
+  await expect(page.getByRole("radio", { name: /«Telegramda — bepul» reklamasi/ })).toBeChecked();
+  await expect(text).toHaveValue(/^📲 Endi hammasi — Telegramda\. Hozircha bepul!/);
   const preview = page.getByRole("region", { name: "Ko'rinishi" });
-  await expect(preview.getByText("O‘ZBEKISTON, KELING, BIRGALIKDA QURAMIZ!", { exact: false })).toBeVisible();
+  await expect(preview.getByText("Endi hammasi — Telegramda.", { exact: false })).toBeVisible();
+  await expect(preview.getByText("0:59")).toBeVisible();
+
+  // manifest video
+  await page.getByRole("radio", { name: /«Birgalikda quramiz» videosi/ }).click();
+  await expect(text).toHaveValue(/^🇺🇿 O‘ZBEKISTON, KELING, BIRGALIKDA QURAMIZ!/);
   await expect(preview.getByText("1:24")).toBeVisible();
 
   // «Qanday ishlaydi» videosi — o'z izohi va davomiyligi bilan

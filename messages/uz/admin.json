@@ -1004,6 +1004,7 @@
     "confirm_desc": "Post rasmiy kanalda darhol chiqadi. Keyin uni faqat Telegram'ning o'zida tahrirlash yoki o'chirish mumkin.",
     "preview": "Ko'rinishi",
     "preview_empty": "Matn yozing yoki material tanlang",
-    "media_how_video": "«Qanday ishlaydi» videosi"
+    "media_how_video": "«Qanday ishlaydi» videosi",
+    "media_telegram_free": "«Telegramda — bepul» reklamasi"
   }
 }

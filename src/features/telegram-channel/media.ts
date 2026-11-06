@@ -1,9 +1,10 @@
 /**
- * Rasmiy Telegram kanal uchun tayyor materiallar (egasi, 2026-11-06): manifest video, «Qanday ishlaydi» videosi va ikki rasm-albom.
+ * Rasmiy Telegram kanal uchun tayyor materiallar (egasi, 2026-11-06): «Telegramda — bepul» reklamasi, manifest video,
+ * «Qanday ishlaydi» videosi va ikki rasm-albom.
  * Fayllar — public/media/kanal (sayt orqali ochiq; Telegram ularni URL bo'yicha o'zi yuklab oladi: video ≤ 20 MB, rasm ≤ 5 MB).
  * Matnlar — kanal tilida (o'zbekcha), admin yuborishdan oldin tahrirlay oladi.
  */
-export type ChannelMediaId = "manifest" | "how_video" | "how_it_works" | "together";
+export type ChannelMediaId = "telegram_free" | "manifest" | "how_video" | "how_it_works" | "together";
 
 export interface ChannelMedia {
   id: ChannelMediaId;
@@ -37,6 +38,22 @@ Bizga qo‘shiling:
 
 #IshTopdim #BirgalikdaQuramiz`;
 
+const TELEGRAM_FREE_CAPTION = `📲 Endi hammasi — Telegramda. Hozircha bepul!
+
+1️⃣ Telegramda @ishberuvchi_bot ni oching
+2️⃣ «📱 Ilovani ochish» tugmasini bosing — ro‘yxatdan o‘tish shart emas
+
+🔍 Ish izlovchi: kasb va hududni tanlang → vakansiyani oching → ariza yuboring
+🏢 Ish beruvchi: vakansiya joylang → yangi ariza haqida bot darhol xabar beradi
+📝 CV yo‘qmi? Bot 2 daqiqada tayyor PDF CV tuzib beradi
+
+Videoda e’lonlar — namuna.
+
+👉 @ishberuvchi_bot
+💬 Savollaringizni izohlarda yozing.
+
+#IshTopdim`;
+
 const HOW_VIDEO_CAPTION = `ISH TOPDIM qanday ishlaydi? — 1 daqiqada 👇
 
 🔍 Ish izlovchi: kasb va hududni tanlaysiz → vakansiyani ochasiz → ariza yuborasiz.
@@ -69,6 +86,16 @@ Nimadir noto‘g‘ri bo‘lsa — ayting. Yaxshi g‘oya bo‘lsa — baham ko�
 💬 Izohlarda yozing — har bir taklif loyihani yaxshilaydi.`;
 
 export const CHANNEL_MEDIA: ChannelMedia[] = [
+  {
+    id: "telegram_free",
+    kind: "video",
+    files: ["/media/kanal/telegramda-bepul.mp4"],
+    poster: "/media/kanal/telegramda-bepul.jpg",
+    width: 1080,
+    height: 1920,
+    duration: 59,
+    caption: TELEGRAM_FREE_CAPTION,
+  },
   {
     id: "manifest",
     kind: "video",
