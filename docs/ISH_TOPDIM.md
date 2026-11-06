@@ -40,6 +40,11 @@ AI: `GEMINI_API_KEY` (yoki `ANTHROPIC_API_KEY`), ixtiyoriy `GEMINI_MODEL`. Kasb 
 
 Admin: `ADMIN_HOST=admin.<domen>` (bo'sh bo'lsa panel asosiy domenda `/admin` da — faqat lokal uchun).
 
+Rasmiy Telegram kanal (admin → «Telegram kanal», `/admin/telegram`): kanal `SOCIAL_TELEGRAM_URL` dan olinadi
+(`https://t.me/<kanal>`), xohlasangiz alohida `TELEGRAM_CHANNEL_ID` (`@kanal` yoki `-100…`). Bot kanalda admin bo'lishi
+va «Xabar joylash» huquqiga ega bo'lishi kerak (qadash uchun — «Xabarlarni tahrirlash» ham). Sahifa holatni o'zi
+tekshiradi; tayyor video/rasmlar — `public/media/kanal` (Telegram ularni sayt manzilidan URL bo'yicha oladi).
+
 Kalitlarni hech qachon chatga yoki kodga yozmang — faqat Vercel → Settings → Environment Variables.
 
 ## 4. Tashqi sozlamalar

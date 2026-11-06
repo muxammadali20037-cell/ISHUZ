@@ -25,6 +25,8 @@ const serverSchema = z.object({
   LEGAL_OPERATOR: z.string().optional(),
   /** Footer'dagi rasmiy ijtimoiy tarmoqlar (to'liq https havola; bo'lmasa ko'rsatilmaydi — soxta havola yo'q) */
   SOCIAL_TELEGRAM_URL: z.string().url().optional(),
+  /** bot post yuboradigan kanal: @username yoki -100… (bo'lmasa — SOCIAL_TELEGRAM_URL dagi t.me/<username>) */
+  TELEGRAM_CHANNEL_ID: z.string().optional(),
   SOCIAL_INSTAGRAM_URL: z.string().url().optional(),
   SOCIAL_FACEBOOK_URL: z.string().url().optional(),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
@@ -80,6 +82,7 @@ export function getServerEnv() {
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || undefined,
     LEGAL_OPERATOR: process.env.LEGAL_OPERATOR || undefined,
     SOCIAL_TELEGRAM_URL: process.env.SOCIAL_TELEGRAM_URL || undefined,
+    TELEGRAM_CHANNEL_ID: process.env.TELEGRAM_CHANNEL_ID || undefined,
     SOCIAL_INSTAGRAM_URL: process.env.SOCIAL_INSTAGRAM_URL || undefined,
     SOCIAL_FACEBOOK_URL: process.env.SOCIAL_FACEBOOK_URL || undefined,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,

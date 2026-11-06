@@ -36,7 +36,8 @@
     "security": "Security",
     "home": "Home page",
     "entry": "Entry screens",
-    "account": "Sign-in methods"
+    "account": "Sign-in methods",
+    "telegram": "Telegram channel"
   },
   "common": {
     "done": "Done",
@@ -70,7 +71,10 @@
     "password_too_simple": "Password is too simple — use different characters",
     "password_contains_email": "Don't include your email name in the password",
     "password_weak": "This password was rejected as weak — choose another",
-    "email_taken": "This email belongs to another account"
+    "email_taken": "This email belongs to another account",
+    "channel_post_failed": "Telegram didn't accept the post. Check that the bot is a channel admin and try again.",
+    "channel_not_configured": "No channel is set",
+    "telegram_not_configured": "The Telegram bot isn't connected"
   },
   "table": {
     "range": "{from}–{to} / {total}"
@@ -963,5 +967,42 @@
     "confirm_label": "Repeat the password",
     "save": "Save",
     "saved": "Saved. You can now also sign in with email and password."
+  },
+  "telegram": {
+    "title": "Telegram channel",
+    "subtitle": "Post to the official channel through the bot: text, a ready video or photos",
+    "status_title": "Channel status",
+    "state_no_token": "The Telegram bot isn't connected (TELEGRAM_BOT_TOKEN isn't set)",
+    "state_no_channel": "No channel is set",
+    "no_channel_hint": "Set TELEGRAM_CHANNEL_ID (@channel_name or -100…) or SOCIAL_TELEGRAM_URL (https://t.me/channel_name).",
+    "state_ready": "Bot {bot} can post to {channel}",
+    "state_not_admin": "Bot {bot} isn't an admin of {channel} yet",
+    "state_unreachable": "Couldn't reach the channel or Telegram: {channel}",
+    "howto_1": "Open the channel in Telegram → Manage channel → Administrators → Add admin.",
+    "howto_2": "Find {bot} and turn on “Post messages” (pinning also needs “Edit messages of others”).",
+    "howto_3": "Save, then refresh this page.",
+    "pin_hint": "To pin posts, give the bot the “Edit messages of others” right.",
+    "field_media": "Media",
+    "media_manifest": "“Let's build together” video",
+    "media_how_it_works": "“How it works” photos",
+    "media_together": "“Together” photos",
+    "media_none": "Text only",
+    "kind_video": "Video, vertical",
+    "kind_album": "Album, {count} photos",
+    "field_text": "Post text",
+    "caption_hint": "Caption under the photo or video — Telegram allows up to 1024 characters.",
+    "too_long": "Text is too long: {limit} characters max",
+    "pin": "Pin in the channel",
+    "pin_desc": "The post stays at the top of the channel (no extra notification to subscribers).",
+    "send_note": "All subscribers see the post right away.",
+    "not_ready": "Make the bot a channel admin before sending.",
+    "send": "Send to channel",
+    "sent": "Posted to the channel",
+    "sent_pinned": "Posted and pinned",
+    "open_post": "Open the post in Telegram",
+    "confirm_title": "Post to the channel?",
+    "confirm_desc": "The post goes live in the official channel right away. Afterwards it can only be edited or deleted in Telegram itself.",
+    "preview": "Preview",
+    "preview_empty": "Write some text or pick media"
   }
 }

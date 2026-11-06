@@ -16,6 +16,7 @@ export type NavIcon =
   | "skills"
   | "regions"
   | "notifications"
+  | "telegram"
   | "audit"
   | "settings"
   | "payments"
@@ -89,6 +90,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/matching", key: "matching", icon: "matching", perm: "analytics.view" },
       { href: "/admin/queues", key: "queues", icon: "queues", perm: "audit.view" },
       { href: "/admin/notifications", key: "notifications", icon: "notifications", perm: "notifications.broadcast" },
+      { href: "/admin/telegram", key: "telegram", icon: "telegram", perm: "notifications.broadcast" },
       { href: "/admin/payments", key: "payments", icon: "payments", perm: "settings.manage" },
       { href: "/admin/audit", key: "audit", icon: "audit", perm: "audit.view" },
       { href: "/admin/security", key: "security", icon: "security", perm: "security.view" },
