@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { BadgeCheck, BriefcaseBusiness, CheckCircle2, ChevronRight, Clock, MapPin, Phone, Send, Wallet } from "lucide-react";
+import { BadgeCheck, BriefcaseBusiness, CheckCircle2, ChevronRight, CircleMinus, Clock, MapPin, Phone, Send, Wallet, XCircle } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate, formatMoney, formatPhone, postedDay } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
@@ -13,6 +13,8 @@ import { cn } from "@/lib/utils";
 import { isCityRegion } from "@/lib/geo/city";
 import { SaveButton } from "@/features/saved/components/save-button";
 import { CategoryIcon } from "@/components/shared/category-icon";
+import { STATUS_TONE } from "@/features/applications/types";
+import { TONE_BADGE } from "@/features/applications/components/tone";
 
 interface PlaceNames {
   region_name_uz: string | null;
@@ -137,7 +139,14 @@ const actionCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-cente
 const metaCls = "flex shrink-0 items-center gap-1";
 const chipCls = "min-w-0 truncate rounded-md bg-secondary px-2 py-1 text-sm font-medium text-foreground/80";
 // o'z arizasi holati (ariza tugmasi o'rnida): bosilsa — "Arizalarim"
-const appliedCls = "press relative z-10 inline-flex min-h-11 min-w-0 items-center gap-1.5 rounded-lg bg-success-soft px-3 text-sm font-bold text-success hover:bg-success-soft/70";
+// Rang holatga qarab, arizalar sahifasidagi bilan bir xil (`STATUS_TONE`): rad etilgan — qizil, qaytarib olingan — kulrang,
+// faqat taklif/ishga olindi — yashil. Avval hamma holat yashil "✓" bilan chiqardi (audit: rad etilgan ham yashil edi).
+const appliedCls = "press relative z-10 inline-flex min-h-11 min-w-0 items-center gap-1.5 rounded-lg px-3 text-sm font-bold hover:opacity-85";
+function AppliedIcon({ status }: { status: Enums<"application_status"> }) {
+  const tone = STATUS_TONE[status];
+  const Icon = tone === "success" ? CheckCircle2 : tone === "destructive" ? XCircle : tone === "muted" ? CircleMinus : Clock;
+  return <Icon className="size-4 shrink-0" aria-hidden />;
+}
 const saveCls = "absolute right-1.5 top-1.5 z-10";
 
 /** Kartaning amali (kichik, ikkilamchi): raqam bo'lsa — "Qo'ng'iroq", bo'lmasa — "Ariza yuborish" / "Bog'lanish" (G3) */
@@ -297,8 +306,8 @@ export function JobResultCard({
           {applied ? (
             <>
               {job.phone ? <CardAction phone={job.phone} action={{ href: `/jobs/${job.slug}`, label: t("easy.card.apply") }} /> : null}
-              <Link href="/applications" prefetch={false} className={appliedCls}>
-                <CheckCircle2 className="size-4 shrink-0" aria-hidden />
+              <Link href="/applications" prefetch={false} className={cn(appliedCls, TONE_BADGE[STATUS_TONE[applied]])} data-status={applied}>
+                <AppliedIcon status={applied} />
                 <span className="truncate">{t("easy.card.applied_status", { status: tEnum("application_status", applied) })}</span>
               </Link>
             </>
