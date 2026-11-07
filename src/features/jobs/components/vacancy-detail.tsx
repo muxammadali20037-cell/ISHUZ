@@ -110,11 +110,13 @@ export async function VacancyDetail({
   const requiredSkills = v.skills.filter((s) => s.is_required);
   const niceSkills = v.skills.filter((s) => !s.is_required);
   const contactProfileId = session && !isManager ? v.owner_profile_id : null;
-  // E'londagi aloqa raqami: ish beruvchi rozilik bergan bo'lsa — hammaga (mehmonga ham); rad etgan bo'lsa — ko'rsatilmaydi
+  // E'londagi aloqa raqami: ish beruvchi rozilik bergan bo'lsa. 0074: faqat kirgan foydalanuvchiga va kunlik limit ichida
+  // (ommaviy yig'ishga qarshi); mehmonga — "kirish" taklifi.
   const supabase = await createClient();
-  const { data: adPhone } = isManager ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
+  const { data: adPhone } = isManager || !session ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
+  const guestNext = !session && !isManager ? `/jobs/${v.slug}` : null;
   // kompaniya faqat Telegram bergan bo'lsa ham (telefonsiz) — "Telegram'da yozish" mehmonga ham ko'rinadi
-  const showContact = !isManager && (!!adPhone || !!contactProfileId || !!telegramUsername(company?.telegram));
+  const showContact = !isManager && (!!adPhone || !!contactProfileId || !!guestNext || !!telegramUsername(company?.telegram));
 
   const hasBenefits = v.officialTerms.length > 0 || v.benefits.length > 0;
   const placeLine = v.is_remote ? `${t("jobs.detail.remote")}${locationText ? ` · ${locationText}` : ""}` : locationText || t("common.labels.not_specified");
@@ -125,7 +127,7 @@ export async function VacancyDetail({
     { id: "manzil", label: t("jobs.detail.location") },
     { id: "kompaniya", label: t("jobs.detail.tab_company") },
   ];
-  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} /> : null;
+  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} guestNext={guestNext} /> : null;
 
   const experienceText = v.experience_min_months === 0 ? t("easy.card.no_experience") : tEnum("experience_min_months", String(experienceKey));
   // "Nima uchun sizga mos?" — faqat ish izlovchi profili bo'lsa va haqiqiy sabablar bilan (soxta foiz yo'q)
