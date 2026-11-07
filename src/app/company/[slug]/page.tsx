@@ -13,6 +13,9 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   const { slug } = await params;
   const [company, { t, locale }] = await Promise.all([getCompanyBySlug(slug), getT()]);
   if (!company || company.is_blocked) return { title: t("common.errors.not_found"), robots: { index: false } };
+  // Faol vakansiyasiz kompaniya sahifasi qidiruv tizimiga kiritilmaydi (bo'sh/sinov kompaniyalar indeksga tushmasin);
+  // sahifa ochiq qoladi, havolalar kuzatiladi.
+  const active = await getCompanyVacancies(company.id, 1);
   const title = t("employer.company.meta_title", { name: company.name });
   const description = company.about?.slice(0, 160) || t("employer.company.meta_description", { name: company.name });
   return {
@@ -20,6 +23,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     description,
     alternates: localeAlternates(`/company/${company.slug}`, locale),
     openGraph: { title, description, type: "profile", url: `/company/${company.slug}`, images: company.logo_url ? [{ url: company.logo_url }] : undefined },
+    robots: active.length === 0 ? { index: false, follow: true } : undefined,
   };
 }
 
