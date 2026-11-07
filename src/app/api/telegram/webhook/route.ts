@@ -11,6 +11,7 @@ import { miniAppBaseUrl } from "@/lib/telegram/bot";
 import { ensureTelegramProfile, normalizeContactPhone } from "@/features/auth/telegram-session";
 import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendLanguagePicker, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
 import { logSecurityEvent } from "@/lib/security/events";
+import { reportError } from "@/lib/monitoring";
 import type { createAdminClient as CreateAdmin } from "@/lib/supabase/admin";
 
 export const runtime = "nodejs";
@@ -82,11 +83,29 @@ async function handleLink(admin: Admin, chatId: number, from: { id: number; user
 }
 
 /**
+ * Update qayta ishlanmay qoldi: xato logga (monitoring uni ushlaydi) va bazaga yoziladi. Urinishlar qolgan bo'lsa — 500,
+ * Telegram update'ni qayta yuboradi; qolmagan bo'lsa (yoki 0075 qo'llanmagan bo'lsa) — 200.
+ */
+async function webhookFailure(updateId: number, where: string, e: unknown) {
+  const message = e instanceof Error ? e.message : String(e);
+  await reportError(e, { where: `telegram-webhook:${where}`, extra: { update_id: updateId } });
+  let retry = false;
+  try {
+    const { data, error } = await createAdminClient().rpc("telegram_update_failed", { p_update_id: updateId, p_error: `${where}: ${message}` });
+    retry = !error && data === true;
+  } catch {
+    retry = false;
+  }
+  return retry ? NextResponse.json({ ok: false, error: "internal", retry: true }, { status: 500 }) : NextResponse.json({ ok: true, error: "internal" });
+}
+
+/**
  * Telegram Bot webhook (setWebhook secret_token bilan).
  * /start [login] → salomlashish + "Ilovani ochish" tugmasi; raqam ulanmagan bo'lsa "📱 Raqamni yuborish" (request_contact).
  * contact (faqat o'z raqami) → telegram_accounts.phone — saytda shu raqam bilan kirishda kod bot orqali keladi.
  * /cv, /jobs, /pdf va inline tugmalar (callback_query) → bot ichida CV to'ldirish, PDF, mos ishlar (features/bot).
- * Har doim 200 (Telegram qayta yubormasin).
+ * Javob: muvaffaqiyat va e'tiborsiz update — 200. Qayta ishlashda xato — `webhookFailure`: 3 urinishgacha 500 (Telegram
+ * qayta yuboradi, update yo'qolmaydi), keyin 200 (bitta buzuq update bot navbatini to'xtatmasin). 0075 migratsiyasi.
  */
 export async function POST(req: NextRequest) {
   const { TELEGRAM_WEBHOOK_SECRET } = getServerEnv();
@@ -140,8 +159,7 @@ export async function POST(req: NextRequest) {
       await handleBotCallback(ctx, callback.id, callback.data, callback.message?.message_id ?? null);
       return NextResponse.json({ ok: true, callback: true });
     } catch (e) {
-      console.error("[telegram webhook] callback", e instanceof Error ? e.message : e);
-      return NextResponse.json({ ok: true, error: "internal" });
+      return webhookFailure(parsed.data.update_id, "callback", e);
     }
   }
 
@@ -272,7 +290,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true, command: command?.name ?? null, linked: !!account });
   } catch (e) {
-    console.error("[telegram webhook]", e instanceof Error ? e.message : e);
-    return NextResponse.json({ ok: true, error: "internal" });
+    return webhookFailure(parsed.data.update_id, "message", e);
   }
 }
