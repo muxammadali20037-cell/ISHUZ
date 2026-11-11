@@ -6,9 +6,9 @@ const worker = { workerOnboarded: true, employerOnboarded: false };
 const newcomer = { workerOnboarded: false, employerOnboarded: false };
 
 describe("kirish oqimi: keyingi qadam", () => {
-  it("yangi mehmon: avval til, keyin tanishtiruv, keyin kirish", () => {
-    expect(nextEntryStep(fresh)).toBe("language");
-    expect(nextEntryStep({ ...fresh, localeChosen: true })).toBe("intro");
+  it("yangi mehmon: bitta xush kelibsiz ekrani (til + rol), keyin — kirish faqat kerak bo'lganda", () => {
+    expect(nextEntryStep(fresh)).toBe("welcome");
+    expect(nextEntryStep({ ...fresh, localeChosen: true })).toBe("welcome");
     expect(nextEntryStep({ ...fresh, localeChosen: true, introDone: true })).toBe("login");
   });
 
@@ -34,12 +34,12 @@ describe("kirish oqimi: keyingi qadam", () => {
 });
 
 describe("bosh sahifa: qachon oqimga o'tkaziladi", () => {
-  it("birinchi ochilish — til, keyin tanishtiruv", () => {
-    expect(homeEntryStep(fresh)).toBe("language");
-    expect(homeEntryStep({ ...fresh, localeChosen: true })).toBe("intro");
+  it("birinchi ochilish — xush kelibsiz ekrani (til + rol)", () => {
+    expect(homeEntryStep(fresh)).toBe("welcome");
+    expect(homeEntryStep({ ...fresh, localeChosen: true })).toBe("welcome");
   });
 
-  it("tanishtiruvni ko'rgan mehmon kirishga majburlanmaydi (bosh sahifa ochiq)", () => {
+  it("xush kelibsiz ekranini o'tgan mehmon kirishga majburlanmaydi (bosh sahifa ochiq)", () => {
     expect(homeEntryStep({ ...fresh, localeChosen: true, introDone: true })).toBeNull();
   });
 
@@ -58,8 +58,7 @@ describe("bosh sahifa: qachon oqimga o'tkaziladi", () => {
 
 describe("qadam manzillari", () => {
   it("har qadam o'z sahifasiga; kirishdan keyin oqimga qaytiladi", () => {
-    expect(entryPath("language", { mode: null })).toBe("/start/til");
-    expect(entryPath("intro", { mode: null })).toBe("/start/tanishtiruv");
+    expect(entryPath("welcome", { mode: null })).toBe("/start/til");
     expect(entryPath("login", { mode: null })).toBe("/auth?next=%2Fstart");
     expect(entryPath("role", { mode: null })).toBe("/start/rol");
   });
