@@ -86,3 +86,20 @@ export function professionCandidates(text: string): string[] {
   out.push(...cyrillicCandidates(text));
   return [...new Set(out)].slice(0, 14);
 }
+
+/**
+ * Hudud nomi kasb sifatida qidirilmasin: tushunilgan viloyat/tuman nomining so'zlaridan (qo'shimchasi bilan yoki qo'shimchasiz)
+ * iborat bo'lak kasb nomzodi bo'lmaydi. Aks holda "Samarqandda" so'zi "Samarqand qog'ozi ustasi" kasbiga o'xshab ketadi va
+ * hech qanday kasb aytilmagan so'rov kasbli bo'lib qoladi. Boshqa so'z qatnashgan bo'lak ("samarqand qog'ozi ustasi") qoladi.
+ */
+export function withoutPlaceOnly(candidates: string[], placeNames: string[]): string[] {
+  const placeWords = placeNames
+    .flatMap((n) => normalizeText(n).split(" "))
+    // ruscha sifat shakli: "samarkandskaya" → "samarkand" ("в Самарканде" shu o'zakdan)
+    .flatMap((w) => [w, w.replace(/(skiy|skaya|skoe|skogo|skoy)$/, "")])
+    .filter((w) => w.length >= 4);
+  if (!placeWords.length) return candidates;
+  // "samarqandda" — nom + qo'shimcha; "samarkande" (ruscha kelishik) — nomning oxirgi harflarisiz boshi bilan solishtiriladi
+  const isPlaceWord = (w: string) => placeWords.some((pw) => pw.startsWith(w) || w.startsWith(pw.slice(0, Math.max(4, pw.length - 2))));
+  return candidates.filter((c) => normalizeText(c).split(" ").some((w) => w.length >= 3 && !isPlaceWord(w)));
+}

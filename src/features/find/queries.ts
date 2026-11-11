@@ -14,7 +14,7 @@ import type { TrailItem } from "@/features/professions/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
 import { getCategories } from "@/lib/reference";
 import type { JobCardData } from "./components/result-cards";
-import { detectIntent, professionCandidates, type FindMode } from "./intent";
+import { detectIntent, professionCandidates, withoutPlaceOnly, type FindMode } from "./intent";
 import { EMPLOYER_KIND_TYPE, hasSectionFilter, type FindParams } from "./params";
 
 export const PAGE_SIZE = 20;
@@ -44,7 +44,9 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   const mode = detectIntent(q);
   const dict = await getSearchDictionary();
   const u = understandQuery(q, dict);
-  const candidates = professionCandidates(q).slice(0, 12);
+  // hudud nomi kasb sifatida qidirilmaydi ("Samarqandda" ≠ "Samarqand qog'ozi ustasi") — intent.ts
+  const places = [u.region, ...u.districts].flatMap((p) => (p ? [p.name_uz, p.name_ru] : [])).filter((n): n is string => !!n);
+  const candidates = withoutPlaceOnly(professionCandidates(q), places).slice(0, 12);
   const db = anon();
   const results = await Promise.all(candidates.map((c) => db.rpc("search_profession_nodes", { p_query: c.slice(0, 80), p_limit: 3 }).then((r) => ({ c, hits: r.data ?? [] }))));
   let best: { id: string; score: number } | null = null;

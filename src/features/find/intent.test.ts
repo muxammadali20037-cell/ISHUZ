@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detectIntent, professionCandidates, stripSuffix } from "./intent";
+import { detectIntent, professionCandidates, stripSuffix, withoutPlaceOnly } from "./intent";
 
 describe("detectIntent", () => {
   it.each([
@@ -56,5 +56,28 @@ describe("stripSuffix", () => {
   });
   it("qisqa so'zlarni buzmaydi", () => {
     expect(stripSuffix("ota")).toEqual([]);
+  });
+});
+
+describe("withoutPlaceOnly — hudud nomi kasb sifatida qidirilmaydi", () => {
+  const SAM = ["Samarqand viloyati", "Самаркандская область"];
+  it("faqat hudud so'zidan iborat bo'laklar tashlanadi (qo'shimchali, qo'shimchasiz, kirill, ruscha kelishik)", () => {
+    expect(withoutPlaceOnly(professionCandidates("Samarqandda"), SAM)).toEqual([]);
+    expect(withoutPlaceOnly(professionCandidates("Самарқандда"), SAM)).toEqual([]);
+    expect(withoutPlaceOnly(professionCandidates("в Самарканде"), SAM)).toEqual([]);
+    expect(withoutPlaceOnly(professionCandidates("Chilonzorda"), ["Toshkent shahri", "город Ташкент", "Chilonzor tumani", "Чиланзарский район"])).toEqual([]);
+  });
+  it("kasb so'zi qatnashgan bo'laklar qoladi", () => {
+    const out = withoutPlaceOnly(professionCandidates("Samarqandda oshpaz"), SAM);
+    expect(out).toContain("oshpaz");
+    expect(out).toContain("samarqandda oshpaz");
+    expect(out).not.toContain("samarqandda");
+    expect(out).not.toContain("samarqand");
+    expect(withoutPlaceOnly(professionCandidates("samarqand qog'ozi ustasi"), SAM)).toContain("samarqand qog'ozi ustasi");
+  });
+  it("hudud tushunilmagan bo'lsa — hech narsa o'zgarmaydi; o'xshash boshlanadigan kasb tashlanmaydi", () => {
+    const c = professionCandidates("buxgalter");
+    expect(withoutPlaceOnly(c, [])).toEqual(c);
+    expect(withoutPlaceOnly(c, ["Buxoro viloyati", "Бухарская область"])).toContain("buxgalter");
   });
 });
