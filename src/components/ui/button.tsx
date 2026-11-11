@@ -23,7 +23,7 @@ const buttonVariants = cva(
       size: {
         default: "h-11 px-5 text-md",
         sm: "tap-target relative h-9 px-3.5 text-sm",
-        lg: "h-12 px-6 text-md",
+        lg: "h-13 px-6 text-md", // 52 px — mobil asosiy CTA (docs/DESIGN_SYSTEM.md §4)
         xl: "h-14 px-7 text-base rounded-lg",
         icon: "h-11 w-11",
         "icon-sm": "tap-target relative h-9 w-9",

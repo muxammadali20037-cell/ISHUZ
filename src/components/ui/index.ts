@@ -14,3 +14,6 @@ export * from "./tabs";
 export * from "./toast";
 export * from "./dropdown-menu";
 export * from "./misc";
+export * from "./alert";
+export * from "./table";
+export * from "./stat-card";
