@@ -68,7 +68,7 @@ export default async function CatalogPage() {
                     data-track-to={c.slug}
                     className="group flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/40 sm:p-4"
                   >
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden>
+                    <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
                       <CategoryIcon name={c.icon} className="size-5" />
                     </span>
                     <span className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export default async function CatalogPage() {
                         <span className="mt-0.5 block text-sm text-muted-foreground">{n > 0 ? countLabel(num(n)) : t("welcome.catalog.no_jobs")}</span>
                       ) : null}
                     </span>
-                    <ChevronRight className="size-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" aria-hidden />
+                    <ChevronRight className="size-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary-ink" aria-hidden />
                   </Link>
                 </li>
               );

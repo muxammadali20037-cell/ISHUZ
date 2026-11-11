@@ -36,7 +36,7 @@ export function ServiceTiles({ items, label, className }: { items: ServiceTile[]
               <span
                 className={cn(
                   "flex size-12 shrink-0 items-center justify-center rounded-2xl",
-                  it.featured ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary",
+                  it.featured ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary-ink",
                 )}
                 aria-hidden
               >

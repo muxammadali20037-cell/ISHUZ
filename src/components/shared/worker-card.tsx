@@ -105,7 +105,7 @@ export function WorkerCard({
       <div className="mt-2 flex items-center gap-1.5 text-xs">
         <span className={cn("size-2 rounded-full", statusDot[w.status])} />
         <span className="text-muted-foreground">{tEnum("worker_status_short", w.status)}</span>
-        {w.phone_verified ? <ShieldCheck className="ml-1 size-3.5 text-primary" aria-label={t("common.labels.verified")} /> : null}
+        {w.phone_verified ? <ShieldCheck className="ml-1 size-3.5 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
         {w.has_portfolio ? <Images className="size-3.5 text-muted-foreground" aria-label={t("enums.portfolio_type.image")} /> : null}
       </div>
 
@@ -138,7 +138,7 @@ export function WorkerCard({
             onToggleSave(w.id, !w.is_saved);
           }}
         >
-          <Bookmark className={cn("size-5", w.is_saved && "fill-primary text-primary")} />
+          <Bookmark className={cn("size-5", w.is_saved && "fill-primary text-primary-ink")} />
         </Button>
       ) : null}
     </article>

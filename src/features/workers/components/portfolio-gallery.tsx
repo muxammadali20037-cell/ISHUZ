@@ -29,7 +29,7 @@ export function PortfolioGallery({ items }: { items: CandidatePortfolioItem[] })
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-4 sm:p-5">
       <h2 className="mb-3 flex items-center gap-2 text-base font-bold">
-        <Images className="size-4.5 text-primary" />
+        <Images className="size-4.5 text-primary-ink" />
         {t("workers.candidate.portfolio")}
       </h2>
       <ul className="space-y-5">
@@ -73,7 +73,7 @@ export function PortfolioGallery({ items }: { items: CandidatePortfolioItem[] })
                 {item.media.map((m, i) => (
                   <li key={m.path}>
                     <a href={m.url} target="_blank" rel="noopener noreferrer" className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-medium hover:bg-secondary">
-                      <FileText className="size-4 text-primary" />
+                      <FileText className="size-4 text-primary-ink" />
                       {t("workers.candidate.open_file")}
                       {item.media.length > 1 ? ` ${i + 1}` : ""}
                     </a>
@@ -83,7 +83,7 @@ export function PortfolioGallery({ items }: { items: CandidatePortfolioItem[] })
             ) : null}
 
             {item.link_url ? (
-              <a href={item.link_url} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-medium text-primary hover:bg-secondary">
+              <a href={item.link_url} target="_blank" rel="noopener noreferrer nofollow" className="mt-3 inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-3 text-sm font-medium text-primary-ink hover:bg-secondary">
                 <ExternalLink className="size-4" />
                 {t("workers.candidate.open_link")}
               </a>

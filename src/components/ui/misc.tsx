@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "./button";
 
 function Spinner({ className }: { className?: string }) {
-  return <Loader2 className={cn("size-6 animate-spin text-primary", className)} aria-label="Loading" />;
+  return <Loader2 className={cn("size-6 animate-spin text-primary-ink", className)} aria-label="Loading" />;
 }
 
 function PageSpinner() {
@@ -33,7 +33,7 @@ function EmptyState({
   return (
     <div className={cn("flex flex-col items-center justify-center rounded-2xl border border-dashed border-border px-6 py-12 text-center", className)}>
       {Icon ? (
-        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+        <div className="mb-4 flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
           <Icon className="size-7" />
         </div>
       ) : null}
@@ -92,7 +92,7 @@ function Stepper({ current, total, label, className, centered = false }: { curre
       <div className={cn("mx-auto w-full max-w-60 space-y-2 text-center", className)}>
         <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
           {label ? `${label} ` : null}
-          <span className="tabular text-primary">
+          <span className="tabular text-primary-ink">
             {current} / {total}
           </span>
         </p>
@@ -108,7 +108,7 @@ function Stepper({ current, total, label, className, centered = false }: { curre
     <div className={cn("space-y-2", className)}>
       <div className="flex items-center justify-between text-sm">
         <span className="font-medium text-muted-foreground">{label}</span>
-        <span className="tabular font-semibold text-primary">
+        <span className="tabular font-semibold text-primary-ink">
           {current} / {total}
         </span>
       </div>
@@ -142,7 +142,7 @@ function SectionHeader({ title, href, linkLabel, className }: { title: string; h
       <h2 className="min-w-0 text-section font-semibold text-foreground">{title}</h2>
       {href && linkLabel ? (
         // bosish maydoni ≥ 44 px (matn kichik bo'lsa ham), sarlavha bilan bir chiziqda
-        <Link href={href} className="-my-2 inline-flex min-h-11 shrink-0 items-center text-sm font-medium text-primary hover:underline">
+        <Link href={href} className="-my-2 inline-flex min-h-11 shrink-0 items-center text-sm font-medium text-primary-ink hover:underline">
           {linkLabel}
         </Link>
       ) : null}

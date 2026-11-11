@@ -123,7 +123,7 @@ export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
           <Link href="/help">{t("common.site.nav_help")}</Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="min-h-11 text-base font-bold text-primary focus:text-primary">
+        <DropdownMenuItem asChild className="min-h-11 text-base font-bold text-primary-ink focus:text-primary-ink">
           <Link href="/post/vacancy" data-track="home_post_vacancy" data-track-to="site_menu">
             {t("common.site.post_job")}
           </Link>

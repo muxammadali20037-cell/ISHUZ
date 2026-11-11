@@ -30,7 +30,7 @@ export default async function EntryDonePage() {
             <EntrySubmit>{t("welcome.entry.done.cta")}</EntrySubmit>
             <Link
               href={employer ? "/company/settings" : "/profile"}
-              className="inline-flex h-14 items-center justify-center rounded-xl bg-primary-soft px-5 text-base font-bold text-primary hover:bg-primary-soft/70"
+              className="inline-flex h-14 items-center justify-center rounded-xl bg-primary-soft px-5 text-base font-bold text-primary-ink hover:bg-primary-soft/70"
             >
               {t("welcome.entry.done.edit")}
             </Link>

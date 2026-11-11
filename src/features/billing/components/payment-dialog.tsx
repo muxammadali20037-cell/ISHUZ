@@ -89,7 +89,7 @@ export function PublishModeNote({ vacancyId }: { vacancyId: string }) {
   const discounted = q.mode === "payment_required" && q.discount_percent > 0;
   return (
     <div className="mb-2 space-y-2">
-      <p className="rounded-xl bg-primary-soft/60 px-3 py-2 text-sm font-medium text-primary">
+      <p className="rounded-xl bg-primary-soft/60 px-3 py-2 text-sm font-medium text-primary-ink">
         {t(`billing.mode.${discounted ? "payment_discount" : q.mode}`, {
           date,
           hours: q.free_hours,

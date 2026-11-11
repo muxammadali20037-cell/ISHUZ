@@ -73,7 +73,7 @@ export function AiFinder({
             <Search className="size-5 shrink-0" aria-hidden />
             <span className="min-w-0 flex-1 truncate">{defaultMode === "workers" ? t("easy.finder.placeholder_workers") : t("easy.finder.placeholder_jobs")}</span>
             <span className="sr-only">{t("easy.finder.card_open")}</span>
-            <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
+            <ArrowRight className="size-5 shrink-0 text-primary-ink" aria-hidden />
           </button>
           <ul className="mt-3 flex flex-wrap gap-2">
             {examples.map((ex) => (
@@ -81,7 +81,7 @@ export function AiFinder({
                 <button
                   type="button"
                   onClick={() => openWith(ex)}
-                  className="press inline-flex min-h-11 items-center rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary hover:border-primary/60"
+                  className="press inline-flex min-h-11 items-center rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary-ink hover:border-primary/60"
                 >
                   {ex}
                 </button>
@@ -103,7 +103,7 @@ export function AiFinder({
           <span className="@container min-w-0 flex-1">
             <span className="flex min-w-0 items-center gap-1.5 text-sm font-bold text-foreground">
               <span className="truncate">{t("easy.finder.inline_button")}</span>
-              <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary @max-[11rem]:hidden">{t("easy.finder.bar_badge")}</span>
+              <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary-ink @max-[11rem]:hidden">{t("easy.finder.bar_badge")}</span>
             </span>
             <span className="block truncate text-sm text-muted-foreground" aria-hidden>
               <TypedExamples examples={examples} />
@@ -128,7 +128,7 @@ export function AiFinder({
           type="button"
           onClick={() => openWith()}
           data-track="ai_finder_open"
-          className={cn("press inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full py-1 pl-1 pr-3.5 text-sm font-bold text-primary hover:bg-primary-soft", className)}
+          className={cn("press inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full py-1 pl-1 pr-3.5 text-sm font-bold text-primary-ink hover:bg-primary-soft", className)}
         >
           <AiAvatar size="sm" className="rounded-full" />
           {t("easy.finder.inline_button")}

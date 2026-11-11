@@ -41,5 +41,7 @@
     "why": "Ish beruvchilar siz bilan shu raqam orqali bog'lanadi.",
     "other_way": "Raqamni qo'lda kiritish",
     "employer_hint": "Nomzodlar shu raqamga qo'ng'iroq qiladi."
-  }
+  },
+  "guest_hint": "Ish beruvchining telefon raqamini ko'rish uchun kiring. Kirish Telegram orqali, bir daqiqa.",
+  "guest_login": "Kirish"
 }

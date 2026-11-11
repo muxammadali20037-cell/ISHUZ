@@ -118,7 +118,7 @@ export function CategoryManager({ categories, canManage }: { categories: Categor
           <NameFields value={catForm} onChange={(v) => setCatForm({ ...catForm, ...v })} errors={errors} autoSlug={!catForm.id} />
           <Field label={t("admin.categories.icon")} htmlFor="cat-icon">
             <div className="flex items-center gap-3">
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary"><CategoryIcon name={catForm.icon} className="size-6" /></span>
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink"><CategoryIcon name={catForm.icon} className="size-6" /></span>
               <Select id="cat-icon" value={catForm.icon ?? ""} onChange={(e) => setCatForm({ ...catForm, icon: e.target.value })} options={CATEGORY_ICONS.map((i) => ({ value: i, label: i }))} placeholder="—" />
             </div>
           </Field>
@@ -189,7 +189,7 @@ function CategoryRows({
         </Td>
         <Td>
           <div className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-lg bg-primary-soft text-primary"><CategoryIcon name={c.icon} className="size-4.5" /></span>
+            <span className="flex size-9 items-center justify-center rounded-lg bg-primary-soft text-primary-ink"><CategoryIcon name={c.icon} className="size-4.5" /></span>
             <div className="min-w-0">
               <p className="font-medium">{c.name_uz}</p>
               <p className="text-xs text-muted-foreground">{c.name_ru}</p>

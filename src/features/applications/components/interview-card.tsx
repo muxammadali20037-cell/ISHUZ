@@ -22,7 +22,7 @@ export function InterviewCard({
   return (
     <section className="rounded-2xl border border-primary/30 bg-primary-soft/40 p-4">
       <p className="flex items-center gap-2 text-sm font-semibold">
-        <CalendarClock className="size-4 text-primary" /> {t("applications.interview.card_title")}
+        <CalendarClock className="size-4 text-primary-ink" /> {t("applications.interview.card_title")}
       </p>
       <p className="mt-2 text-lg font-bold">{formatDate(at, locale, "EEEE, d MMMM · HH:mm")}</p>
       {place ? (

@@ -31,7 +31,7 @@ function QuickChip({
       aria-pressed={active}
       className={cn(
         "inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-3.5 text-sm font-medium transition-colors [&_svg]:size-4",
-        active ? "border-primary/40 bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-secondary",
+        active ? "border-primary/40 bg-primary-soft text-primary-ink" : "border-border bg-card text-foreground hover:border-primary/40 hover:bg-secondary",
       )}
     >
       {icon}
@@ -180,7 +180,7 @@ export function FiltersBar({ refs }: { refs: JobsFilterRefs }) {
               {c.label}
             </FilterChip>
           ))}
-          <button type="button" onClick={() => push(clearFilters(params))} className="h-8 px-2 text-sm font-medium text-primary hover:underline">
+          <button type="button" onClick={() => push(clearFilters(params))} className="h-8 px-2 text-sm font-medium text-primary-ink hover:underline">
             {t("common.actions.clear_all")}
           </button>
         </div>

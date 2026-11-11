@@ -123,7 +123,7 @@ export function AlertToggle({
   return (
     <div className={compact ? "" : "mt-6"}>
       <Button size="xl" variant="outline" className="h-auto min-h-14 w-full whitespace-normal border-2 py-3 text-lg" disabled={pending} onClick={() => save(true)}>
-        <BellRing className="size-6 shrink-0 text-primary" aria-hidden /> {pending ? t("easy.wizard.saving") : label}
+        <BellRing className="size-6 shrink-0 text-primary-ink" aria-hidden /> {pending ? t("easy.wizard.saving") : label}
       </Button>
       <p className="mt-2 text-center text-sm text-muted-foreground">{t("easy.alerts.hint")}</p>
       {error ? <p className="mt-2 text-base font-semibold text-destructive" role="alert">{error}</p> : null}

@@ -23,7 +23,7 @@ const ALLOW: Record<string, { rules: Rule[]; why: string }> = {
   "features/workers/components/portfolio-gallery.tsx": { rules: ["white"], why: "to'liq ekranli qora foto ko'rgich (mavzudan mustaqil)" },
 };
 
-type Rule = "palette" | "hex" | "gradient" | "blur" | "radius" | "px-text" | "shadow" | "white";
+type Rule = "palette" | "hex" | "gradient" | "blur" | "radius" | "px-text" | "shadow" | "white" | "blue-text";
 
 const RULES: Record<Rule, { re: RegExp; hint: string }> = {
   palette: {
@@ -39,6 +39,8 @@ const RULES: Record<Rule, { re: RegExp; hint: string }> = {
   // qorong'i mavzuda primary/success/destructive fonlari och rangga o'tadi — ustidagi matn *-foreground tokeni bo'lishi shart.
   // Istisno: foto/video ustidagi qora parda (shu qatorda bg-black bor)
   white: { re: /\b(?:text|bg|border)-white\b/, hint: "oq o'rniga *-foreground tokeni (qorong'i mavzuda ham o'qiladi)" },
+  // 2.0: #276FE5 Cloud fonda matn sifatida 4.3:1 (AA dan o'tmaydi) — ko'k matn faqat to'qroq --primary-ink orqali
+  "blue-text": { re: /(?<![\w-])text-primary(?![\w-])/, hint: "ko'k matn uchun text-primary-ink (text-primary — Cloud fonda AA dan o'tmaydi)" },
 };
 
 function walk(dir: string, out: string[] = []): string[] {

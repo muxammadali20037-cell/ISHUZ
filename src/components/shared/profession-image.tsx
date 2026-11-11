@@ -29,7 +29,7 @@ export function ProfessionImage({
         <img src={url} alt={label ? `${name} — ${label}` : name} loading="lazy" className="size-full object-cover" />
       ) : (
         <div className="flex size-full items-center justify-center bg-primary-soft" role="img" aria-label={name}>
-          <CategoryIcon name={icon} className={cn("size-1/2 max-h-16 max-w-16 text-primary", iconClassName)} />
+          <CategoryIcon name={icon} className={cn("size-1/2 max-h-16 max-w-16 text-primary-ink", iconClassName)} />
         </div>
       )}
       {label && url ? (

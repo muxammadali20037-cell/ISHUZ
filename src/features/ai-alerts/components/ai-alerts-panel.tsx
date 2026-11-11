@@ -189,7 +189,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                     <span className="inline-flex items-center gap-1">
                       <Building2 className="size-4" /> {h.who || "—"}
-                      {h.verified ? <BadgeCheck className="size-4 text-primary" aria-label={t("common.labels.verified")} /> : null}
+                      {h.verified ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
                     </span>
                     {h.region ? (
                       <span className="inline-flex items-center gap-1">

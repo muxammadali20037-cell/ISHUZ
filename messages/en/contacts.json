@@ -41,5 +41,7 @@
     "why": "Employers will contact you on this number.",
     "other_way": "Enter the number manually",
     "employer_hint": "Candidates will call this number."
-  }
+  },
+  "guest_hint": "Sign in to see the employer's phone number. Sign-in is via Telegram and takes a minute.",
+  "guest_login": "Sign in"
 }

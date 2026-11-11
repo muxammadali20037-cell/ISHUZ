@@ -52,7 +52,7 @@ export function ModeSwitch({ mode, className }: { mode: AppMode; className?: str
               data-track-to={it.mode}
               className={cn(
                 "flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 text-base font-bold transition-colors max-[339px]:px-1",
-                on ? "bg-card text-primary shadow-sm" : "text-muted-foreground hover:text-foreground",
+                on ? "bg-card text-primary-ink shadow-sm" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {/* tor ekranda ikonka joy olmasin — yozuv to'liq ko'rinsin ("Работодатель" 360 px da kesilardi) */}

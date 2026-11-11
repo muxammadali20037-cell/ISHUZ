@@ -17,16 +17,16 @@ import { cn } from "@/lib/utils";
 import type { NotificationIcon as IconKey } from "../render";
 
 const ICONS: Record<IconKey, { icon: LucideIcon; tone: string }> = {
-  application: { icon: FileText, tone: "bg-primary-soft text-primary" },
+  application: { icon: FileText, tone: "bg-primary-soft text-primary-ink" },
   // holat yangilandi (ko'rildi, tanlovga olindi, rad etildi…) — xato emas, oddiy xabar
-  status: { icon: ClipboardCheck, tone: "bg-primary-soft text-primary" },
+  status: { icon: ClipboardCheck, tone: "bg-primary-soft text-primary-ink" },
   offer: { icon: Handshake, tone: "bg-success-soft text-success" },
   offer_response: { icon: Reply, tone: "bg-success-soft text-success" },
-  message: { icon: MessageCircle, tone: "bg-primary-soft text-primary" },
+  message: { icon: MessageCircle, tone: "bg-primary-soft text-primary-ink" },
   interview: { icon: CalendarClock, tone: "bg-success-soft text-success" },
   expiring: { icon: Hourglass, tone: "bg-warning-soft text-warning" },
-  match_vacancy: { icon: Sparkles, tone: "bg-primary-soft text-primary" },
-  match_worker: { icon: UserCheck, tone: "bg-primary-soft text-primary" },
+  match_vacancy: { icon: Sparkles, tone: "bg-primary-soft text-primary-ink" },
+  match_worker: { icon: UserCheck, tone: "bg-primary-soft text-primary-ink" },
   verification: { icon: BadgeCheck, tone: "bg-success-soft text-success" },
   review: { icon: Star, tone: "bg-warning-soft text-warning" },
   system: { icon: Megaphone, tone: "bg-secondary text-secondary-foreground" },

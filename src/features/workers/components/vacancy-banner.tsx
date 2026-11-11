@@ -30,7 +30,7 @@ export function VacancyBanner({ params, vacancies, vacancy }: { params: WorkerSe
     return (
       <div className="flex flex-col gap-2 rounded-2xl border border-border/70 bg-card p-3 sm:flex-row sm:items-center sm:gap-3">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <Sparkles className="size-4 text-primary" />
+          <Sparkles className="size-4 text-primary-ink" />
           <span>{t("workers.banner.hint")}</span>
         </div>
         <div className="sm:ml-auto sm:w-72">

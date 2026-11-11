@@ -12,8 +12,16 @@ import {
   CardTitle,
   Checkbox,
   Chip,
+  Alert,
   Dialog,
   DialogContent,
+  StatCard,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
   DialogTrigger,
   EmptyState,
   Input,
@@ -27,20 +35,23 @@ import {
 import { Field } from "@/components/ui/label";
 
 /**
- * Brend UI to'plami — faqat ishlab chiquvchi uchun (docs/BRAND_UI_GUIDE.md). Foydalanuvchi menyusida yo'q, indekslanmaydi.
+ * Brend UI to'plami — faqat ishlab chiquvchi uchun (docs/DESIGN_SYSTEM.md). Foydalanuvchi menyusida yo'q, indekslanmaydi.
  * Production'da 404; lokal E2E stendida UI_KIT_PREVIEW=1 bilan ochiladi (skrinshot va a11y tekshiruvi uchun).
  */
 export const metadata: Metadata = { title: "UI kit", robots: { index: false, follow: false } };
 
 const COLORS = [
-  ["primary", "bg-primary", "Yagona aksent: asosiy tugma, faol holat, havola"],
+  ["navy", "bg-navy", "Midnight Navy: sarlavha zonalari, admin sidebar"],
+  ["primary", "bg-primary", "Professional Blue: asosiy tugma, faol holat"],
+  ["primary-ink", "bg-primary-ink", "Ko'k matn va ikonka (text-primary-ink) — AA"],
   ["primary-soft", "bg-primary-soft", "Aksent foni: ikonka plitasi, tanlangan qator"],
   ["foreground", "bg-foreground", "Asosiy matn"],
   ["muted-foreground", "bg-muted-foreground", "Ikkinchi darajali matn (AA ≥ 4.5:1)"],
   ["card", "bg-card", "Karta va forma sirti"],
   ["background", "bg-background", "Sahifa foni"],
   ["border", "bg-border", "Chegara va ajratgich"],
-  ["success", "bg-success", "Faqat natija: saqlandi, joylandi, tasdiqlandi"],
+  ["brand-green", "bg-brand-green", "Success: faqat belgi, nuqta, progress (matn emas)"],
+  ["success", "bg-success", "Muvaffaqiyat matni: qabul qilindi, tasdiqlandi"],
   ["warning", "bg-warning", "Faqat ogohlantirish: muddat, chegirma, tekshiruv"],
   ["destructive", "bg-destructive", "Faqat xato va o'chirish"],
 ] as const;
@@ -58,12 +69,12 @@ const TYPE = [
 ] as const;
 
 const RADII = [
-  ["rounded-xs", "xs · 5"],
-  ["rounded-sm", "sm · 8"],
-  ["rounded-md", "md · 12"],
-  ["rounded-lg", "lg · 14"],
-  ["rounded-xl", "xl · 18"],
-  ["rounded-2xl", "2xl · 24"],
+  ["rounded-xs", "xs · 4"],
+  ["rounded-sm", "sm · 6"],
+  ["rounded-md", "md · 10 (tugma, maydon)"],
+  ["rounded-lg", "lg · 12 (karta)"],
+  ["rounded-xl", "xl · 14"],
+  ["rounded-2xl", "2xl · 16 (panel)"],
   ["rounded-full", "full"],
 ] as const;
 
@@ -85,9 +96,9 @@ export default async function UiKitPage() {
   return (
     <main className="mx-auto max-w-4xl space-y-12 px-4 py-8 sm:px-6">
       <header>
-        <p className="text-sm font-semibold text-primary">Ish topdim</p>
+        <p className="text-sm font-semibold text-primary-ink">Ish topdim</p>
         <h1 className="text-3xl font-extrabold tracking-tight">Brend UI to&apos;plami</h1>
-        <p className="mt-1 text-muted-foreground">Tokenlar, shrift, radius va komponent holatlari. Qoidalar — docs/BRAND_UI_GUIDE.md.</p>
+        <p className="mt-1 text-muted-foreground">Tokenlar, shrift, radius va komponent holatlari. Qoidalar — docs/DESIGN_SYSTEM.md.</p>
       </header>
 
       <Section id="colors" title="Ranglar">
@@ -104,7 +115,7 @@ export default async function UiKitPage() {
         </ul>
       </Section>
 
-      <Section id="type" title="Shrift: Manrope (lotin + kirill)">
+      <Section id="type" title="Shrift: Inter Variable (lotin + kirill)">
         <ul className="space-y-2">
           {TYPE.map(([cls, label]) => (
             <li key={cls} className="flex flex-wrap items-baseline gap-x-4 border-b border-border pb-2">
@@ -216,7 +227,7 @@ export default async function UiKitPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                   <Briefcase className="size-5" />
                 </span>
                 Buxgalter
@@ -248,6 +259,53 @@ export default async function UiKitPage() {
             </div>
           </DialogContent>
         </Dialog>
+      </Section>
+
+      <Section id="feedback" title="Xabar bloklari">
+        <div className="space-y-3">
+          <Alert title="Profilingiz 60% to'ldirilgan">Tajriba va ko&apos;nikmalarni qo&apos;shsangiz, mos ishlar ko&apos;proq chiqadi.</Alert>
+          <Alert tone="success" title="Ariza yuborildi" />
+          <Alert tone="warning" title="Ishga kirish uchun pul to'lamang">Ish beruvchi pul so&apos;rasa — shikoyat qiling.</Alert>
+          <Alert tone="destructive" title="Saqlanmadi" action={<Button size="sm" variant="outline">Qayta urinish</Button>}>
+            Internet aloqasini tekshiring.
+          </Alert>
+        </div>
+      </Section>
+
+      <Section id="stats" title="Ko'rsatkich kartalari (faqat haqiqiy son; noma'lum — tire)">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <StatCard label="Faol e'lonlar" value={3} icon={<Briefcase />} />
+          <StatCard label="Arizalar" value={0} hint="so'nggi 30 kun" />
+          <StatCard label="Ko'rishlar" value={null} hint="hali yig'ilmagan" />
+        </div>
+      </Section>
+
+      <Section id="table" title="Jadval">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nomzod</TableHead>
+              <TableHead>Holat</TableHead>
+              <TableHead>Sana</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell>Namuna nomzod</TableCell>
+              <TableCell>
+                <Badge variant="primary">Saralangan</Badge>
+              </TableCell>
+              <TableCell className="tabular-nums">11.11.2026</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Namuna nomzod 2</TableCell>
+              <TableCell>
+                <Badge variant="destructive">Rad etildi</Badge>
+              </TableCell>
+              <TableCell className="tabular-nums">10.11.2026</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
       </Section>
     </main>
   );

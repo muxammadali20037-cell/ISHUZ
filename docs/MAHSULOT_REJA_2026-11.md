@@ -38,7 +38,7 @@ faqat ruxsat bilan — bazada majburlangan), SEO (sarlavha/tavsif, sitemap, robo
 
 ## 2-bosqich — brend va dizayn tizimi (bajarildi)
 
-- **Logotip "Darvoza"** — `docs/BRAND_UI_GUIDE.md` 1.2: ravoq (peshtoq) + ✓; asosiy (tik), gorizontal, to'q fon uchun, faqat
+- **Logotip** (kechqurun egasi bergan belgi bilan almashtirildi — `docs/BRAND_UI_GUIDE.md` 1.2; avval "Darvoza") — `docs/BRAND_UI_GUIDE.md` 1.2: ravoq (peshtoq) + ✓; asosiy (tik), gorizontal, to'q fon uchun, faqat
   belgi, favicon (SVG + ICO 16/32/48), ilova belgilari (192/512, maskable, iPhone), OG rasmi. Hammasi bitta skriptdan
   (`scripts/brand/build-brand.py`, `rasterize.mjs`), yozuv konturda. Komponentlar — inline SVG (rasm yuklanmaydi).
   Ko'rib chiqish uchun yana 2 variant tayyorlangan ("Qidirdim → topdim" lupa va "Odam va o'sish belgisi"); egasi boshqasini

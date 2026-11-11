@@ -12,7 +12,7 @@ export async function VerificationAiNotes({ review }: { review: Json | null }) {
   return (
     <div className="space-y-1 text-xs">
       <p className="flex items-center gap-1 font-semibold">
-        <Sparkles className="size-3.5 text-primary" aria-hidden /> {t("admin.verify_ai.title")}
+        <Sparkles className="size-3.5 text-primary-ink" aria-hidden /> {t("admin.verify_ai.title")}
       </p>
       {r.rules?.length ? (
         <ul className="list-disc pl-4 text-warning">

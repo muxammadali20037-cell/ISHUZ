@@ -73,7 +73,7 @@ export function Step6Education({ draft }: { draft: EducationDraft }) {
             <div key={item.id} className="space-y-4 rounded-2xl border border-border bg-card p-4">
               <div className="flex items-center justify-between">
                 <p className="flex items-center gap-2 text-sm font-semibold">
-                  <GraduationCap className="size-4 text-primary" />
+                  <GraduationCap className="size-4 text-primary-ink" />
                   {t("onboarding.worker.education.entry_n", { n: i + 1 })}
                 </p>
                 <Button type="button" variant="ghost" size="icon-sm" onClick={() => remove(i)} aria-label={t("common.actions.delete")}>

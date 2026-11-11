@@ -25,7 +25,7 @@ export function ChangeSheet({ modeHref, professionHref, regionHref, compact }: {
       <Button
         type="button"
         variant={compact ? "ghost" : "outline"}
-        className={compact ? "h-11 px-2.5 text-sm font-semibold text-primary" : "h-12 px-4 text-base"}
+        className={compact ? "h-11 px-2.5 text-sm font-semibold text-primary-ink" : "h-12 px-4 text-base"}
         onClick={() => setOpen(true)}
       >
         <Pencil className={compact ? "size-4" : "size-5"} aria-hidden /> {t("easy.search.change")}
@@ -33,13 +33,13 @@ export function ChangeSheet({ modeHref, professionHref, regionHref, compact }: {
       <Sheet title={t("easy.search.change")}>
         <div className="grid gap-3 pb-2">
           <Link href={professionHref} className={item} onClick={() => setOpen(false)}>
-            <Pencil className="size-5 text-primary" aria-hidden /> {t("easy.search.change_profession")}
+            <Pencil className="size-5 text-primary-ink" aria-hidden /> {t("easy.search.change_profession")}
           </Link>
           <Link href={regionHref} className={item} onClick={() => setOpen(false)}>
-            <MapPin className="size-5 text-primary" aria-hidden /> {t("easy.search.change_region")}
+            <MapPin className="size-5 text-primary-ink" aria-hidden /> {t("easy.search.change_region")}
           </Link>
           <Link href={modeHref} className={item} onClick={() => setOpen(false)}>
-            <Users className="size-5 text-primary" aria-hidden /> {t("easy.search.change_mode")}
+            <Users className="size-5 text-primary-ink" aria-hidden /> {t("easy.search.change_mode")}
           </Link>
         </div>
       </Sheet>

@@ -50,7 +50,7 @@ export default async function AdminModerationPage({ searchParams }: { searchPara
       />
       <div className="mb-4 flex flex-wrap gap-2 text-sm">
         {([null, "vacancy", "worker"] as const).map((e) => (
-          <Link key={e ?? "all"} href={href({ entity: e, page: null, view: null })} className={entity === e ? "rounded-lg bg-primary-soft px-3 py-1.5 font-semibold text-primary" : "rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-secondary"}>
+          <Link key={e ?? "all"} href={href({ entity: e, page: null, view: null })} className={entity === e ? "rounded-lg bg-primary-soft px-3 py-1.5 font-semibold text-primary-ink" : "rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-secondary"}>
             {t(`admin.moderation.entity.${e ?? "all"}`)}
           </Link>
         ))}
@@ -101,7 +101,7 @@ export default async function AdminModerationPage({ searchParams }: { searchPara
                   </div>
                   <div className="flex flex-col items-end gap-2">
                     <ModerationActions entity={r.entity} id={r.id} title={r.title || "—"} state={r.state} />
-                    <Link href={href({ view: view === key ? null : key, page: page > 1 ? String(page) : null })} className="text-xs font-medium text-primary hover:underline">
+                    <Link href={href({ view: view === key ? null : key, page: page > 1 ? String(page) : null })} className="text-xs font-medium text-primary-ink hover:underline">
                       {view === key ? t("admin.moderation.hide_history") : t("admin.moderation.history")}
                     </Link>
                   </div>

@@ -59,7 +59,7 @@ export function AiQuickFill({ kind, onReady }: { kind: "worker" | "vacancy"; onR
     <div className="space-y-3">
       <div role="radiogroup" aria-label={t("easy.ai.choose")} className="flex gap-1 rounded-2xl bg-secondary p-1">
         {tab("manual", <PenLine className="size-5" aria-hidden />, t("easy.ai.manual"))}
-        {tab("ai", <Sparkles className="size-5 text-primary" aria-hidden />, t("easy.ai.quick"))}
+        {tab("ai", <Sparkles className="size-5 text-primary-ink" aria-hidden />, t("easy.ai.quick"))}
       </div>
       {mode === "ai" ? (
         <div className="space-y-3 rounded-2xl border-2 border-primary/30 bg-primary-soft/40 p-4">
@@ -105,7 +105,7 @@ export function AiReadyBanner({ questions, onEdit }: { questions: { label: strin
   return (
     <div className="space-y-3 rounded-2xl border-2 border-primary/40 bg-primary-soft/50 p-4" role="status">
       <p className="flex items-start gap-2 text-lg font-bold">
-        <Sparkles className="mt-1 size-5 shrink-0 text-primary" aria-hidden /> {t("easy.ai.ready")}
+        <Sparkles className="mt-1 size-5 shrink-0 text-primary-ink" aria-hidden /> {t("easy.ai.ready")}
       </p>
       <p className="text-base text-muted-foreground">{t("easy.ai.ready_note")}</p>
       {questions.length ? (
@@ -122,7 +122,7 @@ export function AiReadyBanner({ questions, onEdit }: { questions: { label: strin
           </ul>
         </div>
       ) : null}
-      <button type="button" onClick={onEdit} className="inline-flex min-h-12 items-center gap-2 text-base font-semibold text-primary hover:underline">
+      <button type="button" onClick={onEdit} className="inline-flex min-h-12 items-center gap-2 text-base font-semibold text-primary-ink hover:underline">
         <PenLine className="size-4" aria-hidden /> {t("easy.wizard.change")}
       </button>
     </div>

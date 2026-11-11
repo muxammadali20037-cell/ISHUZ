@@ -32,7 +32,7 @@ export default async function SavedPage() {
       <div className="container-narrow space-y-5 py-8 text-lg">
         <h1 className="text-3xl font-extrabold">{t("easy.saved.page_title")}</h1>
         <div className="space-y-4 rounded-2xl border border-border bg-card p-6">
-          <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+          <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
             <Bookmark className="size-7" />
           </span>
           <p className="text-muted-foreground">{t("easy.saved.guest_desc")}</p>
@@ -55,7 +55,7 @@ export default async function SavedPage() {
   const count = worker ? (jobs?.items.length ?? 0) : (workers?.items.length ?? 0);
   const empty = (
     <div className="space-y-3 rounded-2xl border-2 border-dashed border-border p-6 text-center">
-      <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary" aria-hidden>
+      <span className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink" aria-hidden>
         <Bookmark className="size-8" />
       </span>
       <p className="text-xl font-bold">{worker ? t("easy.saved.empty_jobs_title") : t("easy.saved.empty_workers_title")}</p>

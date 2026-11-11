@@ -133,7 +133,7 @@ export function AdminPasswordLogin({ next, recoverHref, methodsHref }: { next: s
               {error}
             </p>
           ) : null}
-          <Link href={recoverHref} className="inline-flex min-h-11 items-center text-base font-semibold text-primary hover:underline">
+          <Link href={recoverHref} className="inline-flex min-h-11 items-center text-base font-semibold text-primary-ink hover:underline">
             {t("auth.admin.forgot")}
           </Link>
         </div>

@@ -37,7 +37,7 @@ function Header({ slug, title, heading }: { slug: string; title: string; heading
         <ArrowLeft className="size-5" aria-hidden /> {title}
       </Link>
       <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-        <Sparkles className="size-6 text-primary" aria-hidden /> {heading}
+        <Sparkles className="size-6 text-primary-ink" aria-hidden /> {heading}
       </h1>
     </div>
   );
@@ -116,9 +116,9 @@ export async function FitView({ slug, title, fit, applied }: { slug: string; tit
           <ul className="divide-y divide-border">
             {fit.missing.map((m) => (
               <li key={m}>
-                <Link href={FIX_HREF[m] ?? "/profile"} className="flex min-h-12 items-center justify-between gap-3 py-2 font-semibold hover:text-primary">
+                <Link href={FIX_HREF[m] ?? "/profile"} className="flex min-h-12 items-center justify-between gap-3 py-2 font-semibold hover:text-primary-ink">
                   {t(`jobs.fit.missing_${m}`)}
-                  <span className="inline-flex shrink-0 items-center gap-1 text-sm text-primary">
+                  <span className="inline-flex shrink-0 items-center gap-1 text-sm text-primary-ink">
                     {t("jobs.fit.add")} <ChevronRight className="size-4" aria-hidden />
                   </span>
                 </Link>

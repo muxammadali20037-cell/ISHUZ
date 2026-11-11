@@ -107,7 +107,7 @@ export async function LegalPage({ doc }: { doc: Doc }) {
             {SUPPORT_EMAIL ? (
               <li>
                 Email:{" "}
-                <a className="text-primary hover:underline" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="text-primary-ink hover:underline" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
               </li>
@@ -115,7 +115,7 @@ export async function LegalPage({ doc }: { doc: Doc }) {
             {bot ? (
               <li>
                 Telegram:{" "}
-                <a className="text-primary hover:underline" href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer">
+                <a className="text-primary-ink hover:underline" href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer">
                   @{bot}
                 </a>
               </li>
@@ -124,7 +124,7 @@ export async function LegalPage({ doc }: { doc: Doc }) {
         </section>
         <p className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm">
           {RELATED[doc].map((r) => (
-            <Link key={r} href={PATH[r]} className="font-medium text-primary hover:underline">
+            <Link key={r} href={PATH[r]} className="font-medium text-primary-ink hover:underline">
               {L[r].title} →
             </Link>
           ))}

@@ -35,7 +35,7 @@ export async function SectionCard({
       <CardContent className="p-4 sm:p-5">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="flex items-center gap-2 text-base font-semibold">
-            {Icon ? <Icon className="size-4.5 text-primary" /> : null}
+            {Icon ? <Icon className="size-4.5 text-primary-ink" /> : null}
             {title}
           </h2>
           <Link href={editHref} className="-mr-2 flex size-10 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label={t("profile.view.edit_section")}>
@@ -188,7 +188,7 @@ export async function PortfolioSection({ data }: { data: WorkerProfileFull }) {
         })}
       </div>
       {data.portfolio.length > 6 ? (
-        <Link href="/profile/portfolio" className="mt-3 inline-block text-sm font-medium text-primary hover:underline">
+        <Link href="/profile/portfolio" className="mt-3 inline-block text-sm font-medium text-primary-ink hover:underline">
           {t("profile.portfolio.view_all")} ({data.portfolio.length})
         </Link>
       ) : null}

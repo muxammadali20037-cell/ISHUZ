@@ -357,7 +357,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
               {g.items.map((m) => (
                 <Fragment key={m.client_id ?? m.id}>
                   {firstUnreadId !== null && m.id === firstUnreadId ? (
-                    <div className="my-2 flex items-center gap-3 text-2xs font-semibold uppercase tracking-wide text-primary">
+                    <div className="my-2 flex items-center gap-3 text-2xs font-semibold uppercase tracking-wide text-primary-ink">
                       <span className="h-px flex-1 bg-primary/30" />
                       {t("chat.room.new_messages")}
                       <span className="h-px flex-1 bg-primary/30" />

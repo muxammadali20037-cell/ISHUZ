@@ -155,15 +155,30 @@ test("e'lon joylash: internet uzilsa — tushunarli xato, tugma qayta ishlaydi, 
 });
 
 test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'smaydi", async ({ page, context }) => {
+  test.setTimeout(150_000); // 20 aylanishning har birida o'lchov (CI'da sekin)
   await asGuest(context);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
-  const metric = async () => {
+  const read = async () => {
     await page.evaluate(() => new Promise((r) => setTimeout(r, 300)));
     await cdp.send("HeapProfiler.collectGarbage");
     const { metrics } = await cdp.send("Performance.getMetrics");
     const get = (n: string) => metrics.find((m) => m.name === n)?.value ?? 0;
     return { listeners: get("JSEventListeners"), nodes: get("Nodes") };
+  };
+  // O'lchov sahifa "tinchiganda": kechiktirib yuklanadigan orolchalar (idle'da ulanadigan komponentlar) sekin CI'da
+  // 1-o'lchovdan keyin ulanib, keyingi o'lchovlar "o'sgan" ko'rinardi (CI 2026-11: 465 → 591, mahalliy stendda 465 → 465,
+  // 6× sekinlashtirilganda ham o'sish yo'q). Ketma-ket ikki o'qish teng bo'lguncha kutiladi (ko'pi bilan ~6 s);
+  // chegaralar (25% / 50% / 10%) o'zgarmaydi.
+  const metric = async () => {
+    await page.waitForLoadState("networkidle");
+    let prev = await read();
+    for (let k = 0; k < 12; k++) {
+      const cur = await read();
+      if (cur.listeners === prev.listeners && cur.nodes === prev.nodes) return cur;
+      prev = cur;
+    }
+    return prev;
   };
   // bosh sahifa bo'limlari oqim bilan keladi (ro'yxat, kasblar, qo'shimcha) — o'lchov faqat to'liq chizilgan sahifada
   // (aks holda 1-o'lchov yarim sahifada olinib, keyingilar "o'sgan" ko'rinadi)
@@ -181,19 +196,20 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
     await page.waitForURL(/\/search/);
     await page.locator("header a[href='/']").first().click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");
-    if (i === 1 || i === 10 || i === 20) {
-      await homeReady();
-      samples.push({ round: i, ...(await metric()) });
-    }
+    // har bir aylanish o'lchanadi: CI'da beqarorlik qaysi qadamda paydo bo'lishini ko'rish uchun (xato matnida chiqadi)
+    await homeReady();
+    samples.push({ round: i, ...(await metric()) });
   }
   record("navigation-leaks", samples);
-  const [a, b, c] = samples;
+  const curve = samples.map((s) => `${s.round}:${s.listeners}/${s.nodes}`).join(" ");
+  const pick = (r: number) => samples.find((s) => s.round === r)!;
+  const [a, b, c] = [pick(1), pick(10), pick(20)];
   // 1-dan 20-gacha: tinglovchilar 25% dan, DOM tugunlari 50% dan ortiq o'smasin
-  expect(c!.listeners).toBeLessThanOrEqual(a!.listeners * 1.25);
-  expect(c!.nodes).toBeLessThanOrEqual(a!.nodes * 1.5);
+  expect(c!.listeners, curve).toBeLessThanOrEqual(a!.listeners * 1.25);
+  expect(c!.nodes, curve).toBeLessThanOrEqual(a!.nodes * 1.5);
   // 10-dan 20-gacha deyarli o'zgarmaydi (to'xtovsiz o'sish yo'q)
-  expect(c!.listeners).toBeLessThanOrEqual(b!.listeners * 1.1);
-  expect(c!.nodes).toBeLessThanOrEqual(b!.nodes * 1.1);
+  expect(c!.listeners, curve).toBeLessThanOrEqual(b!.listeners * 1.1);
+  expect(c!.nodes, curve).toBeLessThanOrEqual(b!.nodes * 1.1);
 });
 
 /** Bosish/yozish kechikishi (INP qoidasi bo'yicha: faqat haqiqiy o'zaro ta'sirlar) — CPU 4× sekin */

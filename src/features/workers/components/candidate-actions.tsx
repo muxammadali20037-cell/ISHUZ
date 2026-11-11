@@ -90,7 +90,7 @@ export function CandidateActions(props: Props) {
       aria-pressed={isSaved}
       aria-label={isSaved ? t("workers.actions.unsave") : t("workers.actions.save")}
     >
-      <Bookmark className={cn("size-5", isSaved && "fill-primary text-primary")} />
+      <Bookmark className={cn("size-5", isSaved && "fill-primary text-primary-ink")} />
       {!compact ? (isSaved ? t("workers.actions.saved") : t("workers.actions.save")) : null}
     </Button>
   );
@@ -250,7 +250,7 @@ function OfferSheetBody({
           {!vacancies.length ? (
             <p className="mb-2 rounded-xl bg-secondary/70 p-3 text-sm text-muted-foreground">
               {t("workers.offer.no_vacancies")}{" "}
-              <Link href="/employer/vacancies/new" className="font-medium text-primary underline-offset-2 hover:underline">
+              <Link href="/employer/vacancies/new" className="font-medium text-primary-ink underline-offset-2 hover:underline">
                 {t("workers.offer.post_vacancy")}
               </Link>
             </p>
@@ -363,7 +363,7 @@ function SaveSheetBody({ workerId, folders, onSaved, close }: { workerId: string
           {folders.length ? (
             <div className="mt-2 flex flex-wrap gap-1.5">
               {folders.map((f) => (
-                <button key={f} type="button" onClick={() => setFolder(f)} className={cn("h-8 rounded-full border px-3 text-xs font-medium", folder === f ? "border-primary bg-primary-soft text-primary" : "border-border bg-card hover:bg-secondary")}>
+                <button key={f} type="button" onClick={() => setFolder(f)} className={cn("h-8 rounded-full border px-3 text-xs font-medium", folder === f ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card hover:bg-secondary")}>
                   {f}
                 </button>
               ))}

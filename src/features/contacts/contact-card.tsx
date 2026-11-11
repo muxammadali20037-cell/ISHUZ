@@ -51,7 +51,7 @@ export async function ContactCard({ profileId, hint }: { profileId: string; hint
           href={`https://t.me/${data.telegram_username}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary hover:bg-primary-soft/40"
+          className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary-ink hover:bg-primary-soft/40"
         >
           <Send className="size-4" /> {t("contacts.write_telegram")}
         </a>

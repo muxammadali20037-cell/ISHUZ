@@ -31,7 +31,7 @@ export async function ClosedVacancy({ stub }: { stub: VacancyStub }) {
               <Link href={`/company/${stub.company.slug}`} className="font-semibold text-foreground hover:underline">
                 {stub.company.name}
               </Link>
-              {stub.company.verified ? <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.closed.verified")} /> : null}
+              {stub.company.verified ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.closed.verified")} /> : null}
             </p>
           ) : null}
           {place ? (
@@ -68,7 +68,7 @@ export async function ClosedVacancy({ stub }: { stub: VacancyStub }) {
                 <Link href={`/jobs/${v.slug}`} className="press flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:border-primary/50">
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-base font-bold leading-snug">{v.title}</span>
-                    <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="block truncate text-sm font-bold text-primary" />
+                    <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="block truncate text-sm font-bold text-primary-ink" />
                     <span className="block truncate text-sm text-muted-foreground">
                       {v.is_remote
                         ? t("jobs.detail.remote")

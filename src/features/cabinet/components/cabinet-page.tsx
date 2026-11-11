@@ -92,7 +92,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
 
         {worker ? (
           <article className="space-y-3 rounded-2xl border border-border bg-card p-5">
-            <p className="text-base font-bold uppercase tracking-wide text-primary">{t("easy.cabinet.worker_listing")}</p>
+            <p className="text-base font-bold uppercase tracking-wide text-primary-ink">{t("easy.cabinet.worker_listing")}</p>
             <h3 className="text-xl font-bold">{worker.headline || "—"}</h3>
             {worker.regionName ? (
               <p className="text-muted-foreground">{[name(worker.regionName), worker.districtName ? name(worker.districtName) : t(isCityRegion({ slug: worker.regionSlug, name_uz: worker.regionName?.name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].join(" · ")}</p>
@@ -134,7 +134,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
 
         {vacancies.length ? (
           <div className="space-y-3">
-            <p className="pt-2 text-base font-bold uppercase tracking-wide text-primary">{t("easy.cabinet.vacancies")}</p>
+            <p className="pt-2 text-base font-bold uppercase tracking-wide text-primary-ink">{t("easy.cabinet.vacancies")}</p>
             {vacancies.map((v) => {
               const editable = v.status !== "hidden";
               const open = v.status === "active" || v.status === "paused" || v.status === "pending_review";
@@ -206,7 +206,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
           {/* joriy rejimning e'loni (rejim tanlanmagan bo'lsa — ikkalasi, bir xil neytral ko'rinish) */}
           {newListings.map((l) => (
             <Link key={l.href} href={l.href} className="press flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 font-semibold hover:border-primary/50">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
                 <l.icon className="size-5" />
               </span>
               {l.label}
@@ -226,7 +226,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
               .map((l) => (
                 <li key={l.href}>
                   <Link href={l.href} className="flex min-h-14 items-center gap-3 px-4 py-3 font-medium hover:bg-secondary/60">
-                    <l.icon className="size-6 shrink-0 text-primary" aria-hidden />
+                    <l.icon className="size-6 shrink-0 text-primary-ink" aria-hidden />
                     <span className="flex-1">{l.label}</span>
                     <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
                   </Link>

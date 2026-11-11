@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
 import { cookies } from "next/headers";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { clientMessages } from "@/lib/i18n/translate";
@@ -30,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: t("common.meta.keywords"),
     applicationName: BRAND.name,
     manifest: "/manifest.webmanifest",
-    icons: { icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
+    icons: { icon: [{ url: "/icons/favicon-48.png", sizes: "48x48", type: "image/png" }, { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" }], apple: "/icons/apple-touch-icon.png" },
     openGraph: { type: "website", siteName: BRAND.name, images: [DEFAULT_OG_IMAGE], locale: locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ", alternateLocale: ["uz_UZ", "ru_RU", "en_US"].filter((l) => l !== (locale === "ru" ? "ru_RU" : locale === "en" ? "en_US" : "uz_UZ")) },
     appleWebApp: { capable: true, statusBarStyle: "default", title: BRAND.name },
     verification: {
@@ -59,7 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const adminLink = JSON.stringify(`${adminBaseUrl()}${ADMIN_LINK_PATH}`).replace(/</g, "\\u003c");
   return (
     // "oz" — ilova ichki kodi, BCP-47 da yo'q: ekran o'qigichi o'zbek kirill matnini taniy olishi uchun "uz-Cyrl"
-    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={`${GeistSans.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
+    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={theme === "dark" ? "dark" : undefined} suppressHydrationWarning>
       <head>
         {/* Telegram Mini App SDK faqat Telegram ichida (gidratsiyadan oldin, avvalgidek). Oddiy brauzerda yuklanmaydi —
             tashqi skript kutilmagani uchun sahifa darhol "jonlanadi" (bosishlar kechikmaydi) */}

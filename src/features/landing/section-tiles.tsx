@@ -54,9 +54,9 @@ function SectionList({ title, rows }: { title: string; rows: SectionRow[] }) {
               title={r.title}
               data-track="home_section"
               data-track-to={r.key}
-              className="press flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold hover:bg-secondary hover:text-primary"
+              className="press flex min-h-11 w-full min-w-0 items-center gap-2 rounded-lg px-2 text-sm font-semibold hover:bg-secondary hover:text-primary-ink"
             >
-              <r.icon className="size-4 shrink-0 text-primary" aria-hidden />
+              <r.icon className="size-4 shrink-0 text-primary-ink" aria-hidden />
               <span className="min-w-0 flex-1 truncate">{r.label}</span>
               {r.title ? <span className="sr-only">{r.title}</span> : null}
               {r.count !== null ? <span className="shrink-0 text-sm font-medium tabular text-muted-foreground">{num(r.count)}</span> : null}

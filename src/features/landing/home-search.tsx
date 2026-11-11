@@ -13,7 +13,7 @@ export interface HomeChip {
 }
 
 const chipCls =
-  "press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary";
+  "press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 text-sm font-semibold text-foreground hover:border-primary/50 hover:text-primary-ink";
 
 /**
  * Bosh sahifa qidiruvi: matn → /search (kasb, lavozim yoki kompaniya; serverda tushuniladi). Mijoz routeri bilan —
@@ -66,7 +66,7 @@ export async function HomeSearch({
         <ul className="flex gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
           <li className="flex">
             <Link href={place.href} prefetch={false} className={chipCls} aria-label={t("easy.start.place_label", { place: place.label })}>
-              <MapPin className="size-4 shrink-0 text-primary" aria-hidden /> {place.label}
+              <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden /> {place.label}
             </Link>
           </li>
           {chips.map((c) => (
@@ -137,9 +137,9 @@ export async function SeekerSearch({
             href={place.href}
             prefetch={false}
             aria-label={t("easy.start.place_label", { place: place.label })}
-            className="hidden h-11 max-w-60 shrink-0 items-center gap-1.5 border-l border-border px-3 text-base font-semibold text-foreground hover:text-primary md:inline-flex"
+            className="hidden h-11 max-w-60 shrink-0 items-center gap-1.5 border-l border-border px-3 text-base font-semibold text-foreground hover:text-primary-ink md:inline-flex"
           >
-            <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
+            <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
             <span className="truncate">{place.label}</span>
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           </Link>
@@ -150,7 +150,7 @@ export async function SeekerSearch({
             data-track="home_filters"
             aria-label={t("easy.start.filters")}
             title={t("easy.start.filters")}
-            className="press inline-flex h-11 w-11 shrink-0 items-center justify-center gap-1.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-primary md:w-auto md:border-l md:border-border md:px-3 md:text-base md:font-semibold md:text-foreground"
+            className="press inline-flex h-11 w-11 shrink-0 items-center justify-center gap-1.5 rounded-xl text-muted-foreground hover:bg-secondary hover:text-primary-ink md:w-auto md:border-l md:border-border md:px-3 md:text-base md:font-semibold md:text-foreground"
           >
             <SlidersHorizontal className="size-5 shrink-0" aria-hidden />
             <span className="hidden md:inline" aria-hidden>

@@ -29,7 +29,7 @@ function BuiltinArt({ slot }: { slot: EntrySlot }) {
       const Icon = slot === "role_worker" ? BriefcaseBusiness : UsersRound;
       return (
         // "toza" uslub (2026-10-22): ikkala rol ham bir xil — och ko'k plita, ko'k belgi (biri ikkinchisidan ustun ko'rinmaydi)
-        <span className="flex size-full items-center justify-center bg-primary-soft text-primary" aria-hidden>
+        <span className="flex size-full items-center justify-center bg-primary-soft text-primary-ink" aria-hidden>
           <Icon className="size-1/2" strokeWidth={1.8} />
         </span>
       );

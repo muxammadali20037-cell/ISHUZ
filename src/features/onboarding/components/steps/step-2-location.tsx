@@ -148,7 +148,7 @@ export function Step2Location({ draft, regions, districts }: { draft: LocationDr
             return (
               <Chip key={r.id} size="sm" selected={browseRegion === r.id} onClick={() => setBrowseRegion(r.id)} className="shrink-0">
                 {name(r)}
-                {count ? <span className={cn("rounded-full px-1.5 text-2xs", browseRegion === r.id ? "bg-primary-foreground/20" : "bg-primary-soft text-primary")}>{count}</span> : null}
+                {count ? <span className={cn("rounded-full px-1.5 text-2xs", browseRegion === r.id ? "bg-primary-foreground/20" : "bg-primary-soft text-primary-ink")}>{count}</span> : null}
               </Chip>
             );
           })}
@@ -268,7 +268,7 @@ function GeoCard({ hasGeo }: { hasGeo: boolean }) {
   return (
     <div className="rounded-2xl border border-border bg-card p-4">
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
           <MapPin className="size-5" />
         </span>
         <div className="min-w-0 flex-1">

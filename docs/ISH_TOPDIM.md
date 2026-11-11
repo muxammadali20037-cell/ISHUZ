@@ -19,7 +19,7 @@ kerak bo'lgan joylarni tushuntiradi.
 | Aqlli qidiruv | Avval lug'at qoidalari, kerak bo'lsa AI (qat'iy sxema). Natija faqat bazadan. Kunlik maosh oylikka tenglashtirilmaydi. AI ishlamasa — qoidalar. | `src/features/find/smart.ts`, `ai-search.ts` |
 | Admin panel | Alohida host, TOTP (aal2), rollar (super_admin, admin, moderator, support, analyst), moderatsiya navbati, ish beruvchilar, moslik qoidalari, navbatlar monitoringi, statistika (Toshkent vaqti) + CSV. | `src/app/admin/*`, `src/proxy.ts`, `0052`, `0053` |
 | Statistika | Faqat haqiqiy hodisalar. «Qo'ng'iroq» bosilishi ishga olish emas; Telegram'da yetkazilgan xabar «o'qilgan» emas (ochilish faqat havola orqali). | `admin_stats_v2`, `/api/e` |
-| Brend | «Ish topdim», yangi belgi (portfel + belgi), sahifalar orasida yo'nalishli o'tishlar. | `public/icon.svg`, `src/app/template.tsx` |
+| Brend | «Ish topdim», belgi — oq plitadagi ko'k odam va yuqoriga strelka (egasi, 2026-11-05), sahifalar orasida yo'nalishli o'tishlar. | `public/brand/ishtopdim-mark.png`, `docs/BRAND_UI_GUIDE.md` 1.2, `src/app/template.tsx` |
 | Tezlik va 1 mln foydalanuvchi | Brauzerga faqat joriy til; Telegram SDK faqat Telegram ichida; ma'lumotnomalar keshda; RLS qoidalarida `(select auth.uid())`; qidiruv kasb indeksidan foydalanadi. 1 mln ma'lumotda o'lchovlar va qoidalar — `docs/SCALE.md`. | `0055_scale_rls_initplan.sql`, `npm run db:load` |
 | Harakat va ovoz | Ro'yxatlar birin-ketin «sakrab» chiqadi va «tiq-tiq» chaladi (kasb qidiruvi, hududlar, natijalar), asosiy tugmalarda «voup», bosilganda «prujina» va Telegram'da tebranish; havola bosilishi bilan tepada «yuklanmoqda» chizig'i. Ovozlar fayl emas — Web Audio bilan sintez qilinadi; yuqori paneldagi tugma bilan o'chiriladi; «harakatni kamaytirish» sozlamasida animatsiya yo'q. | `src/lib/sfx.ts`, `src/components/shared/{sfx-listener,pop-sounds,sound-toggle,nav-progress}.tsx`, `globals.css` (`.pop-list`, `.press`) |
 | AI yordamchi · PRO (pullik) | Ikkala rol uchun: «Menga ish topsin» (mos vakansiya) va «Menga ishchi topsin» (mos ishchi e'loni). O'z so'zi bilan yoziladi, AI kasb/hudud/tajriba/maosh mezonlarini ajratadi; mos e'lon ochilishi (moderatsiyadan o'tishi) bilan Telegram'ga darhol xabar. Bitta obuna (`price_ai_alerts`, sukut 15 000 so'm / `ai_alerts_days` 30 kun) ikkala yo'lni qamraydi; `ai_alerts_paid=false` — bepul. Bosh sahifa va Kabinetimda ko'zga tashlanadigan karta. Ish beruvchiga ishchining telefoni yuborilmaydi. Har biriga 3 tadan kuzatuv. | `0054_ai_worker_alerts.sql`, `src/features/ai-alerts/*`, `/ai-alerts?role=worker|employer` |
@@ -39,6 +39,11 @@ Majburiy: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE
 AI: `GEMINI_API_KEY` (yoki `ANTHROPIC_API_KEY`), ixtiyoriy `GEMINI_MODEL`. Kasb rasmlari: `IMAGE_GEN_API_KEY`.
 
 Admin: `ADMIN_HOST=admin.<domen>` (bo'sh bo'lsa panel asosiy domenda `/admin` da — faqat lokal uchun).
+
+Rasmiy Telegram kanal (admin → «Telegram kanal», `/admin/telegram`): kanal `SOCIAL_TELEGRAM_URL` dan olinadi
+(`https://t.me/<kanal>`), xohlasangiz alohida `TELEGRAM_CHANNEL_ID` (`@kanal` yoki `-100…`). Bot kanalda admin bo'lishi
+va «Xabar joylash» huquqiga ega bo'lishi kerak (qadash uchun — «Xabarlarni tahrirlash» ham). Sahifa holatni o'zi
+tekshiradi; tayyor video/rasmlar — `public/media/kanal` (Telegram ularni sayt manzilidan URL bo'yicha oladi).
 
 Kalitlarni hech qachon chatga yoki kodga yozmang — faqat Vercel → Settings → Environment Variables.
 

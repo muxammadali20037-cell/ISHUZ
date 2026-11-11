@@ -84,12 +84,12 @@ export async function DirectionBrowser({
             d.count === 0 && !active && "opacity-70",
           )}
         >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
             <CategoryIcon name={d.icon ?? category.icon} className="size-5" />
           </span>
           <span className="min-w-0 flex-1">
             <span className="block font-semibold leading-snug">{name(d)}</span>
-            <span className={cn("block text-sm", d.count ? "font-medium text-primary" : "text-muted-foreground")}>{countLabel(d.count)}</span>
+            <span className={cn("block text-sm", d.count ? "font-medium text-primary-ink" : "text-muted-foreground")}>{countLabel(d.count)}</span>
           </span>
           {d.has_children ? <ChevronRight className="size-5 shrink-0 text-muted-foreground" /> : null}
         </Link>
@@ -101,7 +101,7 @@ export async function DirectionBrowser({
     <section className="mt-4 rounded-2xl border border-border bg-secondary/40 p-4 sm:p-5" aria-label={t("jobs.directions.title")}>
       {/* Yo'l: Tibbiyot › Shifokorlar › ... */}
       <nav className="mb-3 flex flex-wrap items-center gap-1 text-sm" aria-label={t("jobs.directions.path")}>
-        <Link href={hrefFor(null)} className={cn("inline-flex items-center gap-1.5 font-bold", currentSlug ? "text-primary hover:underline" : "text-foreground")}>
+        <Link href={hrefFor(null)} className={cn("inline-flex items-center gap-1.5 font-bold", currentSlug ? "text-primary-ink hover:underline" : "text-foreground")}>
           <CategoryIcon name={category.icon} className="size-4" /> {name(category)}
         </Link>
         {trail.map((x) => {
@@ -110,7 +110,7 @@ export async function DirectionBrowser({
             <span key={x.id} className="inline-flex items-center gap-1">
               <ChevronRight className="size-4 text-muted-foreground" />
               {s ? (
-                <Link href={hrefFor(s)} className={cn(s === currentSlug ? "font-semibold text-foreground" : "text-primary hover:underline")}>
+                <Link href={hrefFor(s)} className={cn(s === currentSlug ? "font-semibold text-foreground" : "text-primary-ink hover:underline")}>
                   {name(x)}
                 </Link>
               ) : (
@@ -122,7 +122,7 @@ export async function DirectionBrowser({
       </nav>
 
       <h2 className="mb-3 flex items-center gap-2 text-lg font-bold">
-        <LayoutGrid className="size-5 text-primary" />
+        <LayoutGrid className="size-5 text-primary-ink" />
         {level ? t("jobs.directions.inside", { name: name(level) }) : t("jobs.directions.title")}
       </h2>
 

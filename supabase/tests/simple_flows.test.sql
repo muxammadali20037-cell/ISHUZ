@@ -107,9 +107,12 @@ create temp table wid on commit drop as select id from public.worker_profiles wh
 grant select on wid to anon, authenticated;
 
 select pg_temp.anon();
-select pg_temp.ok((select count(*) from public.simple_search_workers((select node from fx), (select region from fx), (select district from fx)) where first_name = 'Ali' and phone = '+998907000001') = 1, 'mehmon: kasb + hudud + tuman bo''yicha topadi, rozilik bilan telefon ko''rinadi');
+select pg_temp.ok((select count(*) from public.simple_search_workers((select node from fx), (select region from fx), (select district from fx)) where first_name = 'Ali' and phone is null) = 1, 'mehmon: kasb + hudud + tuman bo''yicha topadi; 0074: ro''yxatda telefon yo''q');
 select pg_temp.ok((select count(*) from public.simple_search_workers((select node from fx), (select region from fx), (select other_district from fx)) where first_name = 'Ali') = 0, 'boshqa tumanda chiqmaydi');
-select pg_temp.ok((select count(*) from public.simple_worker_listing((select id from wid)) where phone = '+998907000001') = 1, 'e''lon sahifasi: mehmonga ochiq, telefon bilan');
+select pg_temp.ok((select count(*) from public.simple_worker_listing((select id from wid)) where phone is null) = 1, 'e''lon sahifasi: mehmonga ochiq, 0074: telefonsiz');
+select pg_temp.login('5f000000-0000-0000-0000-000000000002');
+select pg_temp.ok((select count(*) from public.simple_worker_listing((select id from wid)) where phone = '+998907000001') = 1, 'e''lon sahifasi: kirgan foydalanuvchiga rozilik bilan telefon ko''rinadi');
+select pg_temp.anon();
 
 -- rozilik olib tashlansa — telefon yashirinadi
 select pg_temp.login('5f000000-0000-0000-0000-000000000001');
@@ -152,8 +155,11 @@ update public.app_settings set value = 'false'::jsonb where key = 'listings_paid
 select pg_temp.login('5f000000-0000-0000-0000-000000000002');
 select pg_temp.ok((select public.save_simple_vacancy((select p from vac_args)) ->> 'state') = 'active', 'bepul rejimda e''lon darhol joylandi');
 select pg_temp.anon();
-select pg_temp.ok((select count(*) from public.simple_search_vacancies((select node from fx), (select region from fx), (select district from fx)) where employer_name = 'Kafe egasi' and phone = '+998901112233') = 1, 'mehmon vakansiyani rozilik bilan telefon bilan topadi');
-select pg_temp.ok((select public.simple_vacancy_phone((select id from public.vacancies where client_ref = '7a000000-0000-4000-8000-000000000001'))) = '+998901112233', 'vakansiya sahifasi telefoni');
+select pg_temp.ok((select count(*) from public.simple_search_vacancies((select node from fx), (select region from fx), (select district from fx)) where employer_name = 'Kafe egasi' and phone is null) = 1, 'mehmon vakansiyani topadi; 0074: ro''yxatda telefon yo''q');
+select pg_temp.ok((select public.simple_vacancy_phone((select id from public.vacancies where client_ref = '7a000000-0000-4000-8000-000000000001'))) is null, '0074: mehmonga vakansiya sahifasida ham telefon yo''q');
+select pg_temp.login('5f000000-0000-0000-0000-000000000001');
+select pg_temp.ok((select public.simple_vacancy_phone((select id from public.vacancies where client_ref = '7a000000-0000-4000-8000-000000000001'))) = '+998901112233', 'vakansiya sahifasi telefoni: kirgan foydalanuvchiga');
+select pg_temp.anon();
 select pg_temp.ok((select count(*) from public.simple_search_vacancies((select node from fx), (select region from fx), (select other_district from fx)) where employer_name = 'Kafe egasi') = 0, 'boshqa tumanda chiqmaydi');
 select pg_temp.fails($$select * from public.vacancy_contacts$$, 'mehmon vacancy_contacts jadvalini o''qiy olmaydi', '42501');
 

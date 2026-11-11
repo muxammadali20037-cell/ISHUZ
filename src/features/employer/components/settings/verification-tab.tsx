@@ -30,7 +30,7 @@ function Timeline({ status, reviewNote }: { status: VerificationStatus; reviewNo
             className={cn(
               "flex size-9 shrink-0 items-center justify-center rounded-full border-2",
               s.state === "done" && "border-success bg-success text-success-foreground",
-              s.state === "active" && "border-primary bg-primary-soft text-primary",
+              s.state === "active" && "border-primary bg-primary-soft text-primary-ink",
               s.state === "todo" && "border-border text-muted-foreground",
               s.state === "error" && "border-destructive bg-destructive-soft text-destructive",
             )}

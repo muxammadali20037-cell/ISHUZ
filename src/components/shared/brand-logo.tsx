@@ -3,7 +3,7 @@ import { BrandMark } from "./brand-mark";
 import { BrandWordmark } from "./brand-wordmark";
 
 /**
- * To'liq logo: belgi + "Ish topdim" yozuvi (Geist, sarlavha shrifti). "stacked" — asosiy (tik) ko'rinish: ochilish ekrani,
+ * To'liq logo: belgi + "Ish topdim" yozuvi (Inter, sarlavha shrifti). "stacked" — asosiy (tik) ko'rinish: ochilish ekrani,
  * kirish; "horizontal" — sarlavha va footer. Fayl ko'rinishlari (SVG/PNG) — public/brand (scripts/brand/build-brand.py).
  */
 export function BrandLogo({
@@ -25,7 +25,7 @@ export function BrandLogo({
       aria-label={label}
       role={label ? "img" : undefined}
     >
-      <BrandMark tone={onDark ? "light" : "brand"} className={stacked ? "size-20" : "size-9"} />
+      <BrandMark className={stacked ? "size-20" : "size-9"} sizes={stacked ? "80px" : "36px"} />
       <span className={onDark ? "text-navy-foreground" : "text-foreground"} aria-hidden={label ? true : undefined}>
         <BrandWordmark onDark={onDark} />
       </span>

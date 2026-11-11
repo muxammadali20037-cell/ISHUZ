@@ -50,7 +50,7 @@ export function CategoryPhotoCard({ item, countLabel, sizes, priority = false }:
           {item.count ? <span className="mt-0.5 block text-sm text-muted-foreground">{countLabel(num(item.count))}</span> : null}
         </span>
         <span
-          className="hidden size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground sm:flex"
+          className="hidden size-9 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-ink transition-colors group-hover:bg-primary group-hover:text-primary-foreground sm:flex"
           aria-hidden
         >
           <ArrowUpRight className="size-4.5" />

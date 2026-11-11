@@ -38,14 +38,17 @@ const PAIRS: [string, string][] = [
   ["muted-foreground", "card"],
   ["muted-foreground", "secondary"],
   ["secondary-foreground", "secondary"],
-  ["primary", "card"],
-  ["primary", "background"],
+  ["primary-ink", "card"],
+  ["primary-ink", "background"],
   ["primary-foreground", "primary"],
-  ["primary", "primary-soft"],
+  // 2.0: ko'k matn faqat --primary-ink orqali (text-primary-ink); --primary (#276FE5) — tugma foni
+  ["accent-foreground", "accent"],
+  ["primary-ink", "secondary"],
+  ["primary-ink", "primary-soft"],
   ["muted-foreground", "primary-soft"],
   ["foreground", "hero-soft"],
   ["muted-foreground", "hero-soft"],
-  ["primary", "hero-soft"],
+  ["primary-ink", "hero-soft"],
   ["foreground", "primary-soft"],
   ["success-foreground", "success"],
   ["success", "success-soft"],
@@ -67,6 +70,43 @@ const PAIRS: [string, string][] = [
   ["hero-muted", "hero-via"],
   ["hero-muted", "hero-to"],
 ];
+
+/** Matn bo'lmagan UI elementlari (tugma chegarasi, fokus halqasi, faol chiziq): WCAG 1.4.11 — kamida 3:1 */
+const UI_PAIRS: [string, string][] = [
+  ["primary", "background"],
+  ["primary", "card"],
+  ["ring", "background"],
+  ["brand-green", "card"],
+];
+
+describe("UI elementlari kontrasti (≥ 3:1)", () => {
+  const light = block(":root");
+  const dark = { ...light, ...block(".dark") };
+  for (const [theme, tokens] of [
+    ["yorug'", light],
+    ["qorong'i", dark],
+  ] as const) {
+    it(`${theme} mavzu`, () => {
+      const low = UI_PAIRS.map(([fg, bg]) => ({ pair: `${fg} / ${bg}`, ratio: contrast(tokens[fg]!, tokens[bg]!) }))
+        .filter((p) => p.ratio < 3)
+        .map((p) => `${p.pair}: ${p.ratio.toFixed(2)}`);
+      expect(low).toEqual([]);
+    });
+  }
+});
+
+describe("2.0 palitrasi (docs/DESIGN_SYSTEM.md)", () => {
+  const light = block(":root");
+  it("talabdagi asosiy ranglar o'z joyida", () => {
+    expect(light.navy?.toLowerCase()).toBe("#101d35");
+    expect(light.primary?.toLowerCase()).toBe("#276fe5");
+    expect(light.background?.toLowerCase()).toBe("#f4f6fa");
+    expect(light.card?.toLowerCase()).toBe("#ffffff");
+    expect(light["brand-green"]?.toLowerCase()).toBe("#16a378");
+    expect(light.foreground?.toLowerCase()).toBe("#172033");
+    expect(light.border?.toLowerCase()).toBe("#e5eaf0");
+  });
+});
 
 describe("brend ranglari kontrasti (AA ≥ 4.5:1)", () => {
   const light = block(":root");

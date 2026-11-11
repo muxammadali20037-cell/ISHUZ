@@ -27,7 +27,7 @@ export function OfferCard({ offer, className }: { offer: ReceivedOffer; classNam
           <h3 className="line-clamp-2 text-base font-semibold leading-snug">{title}</h3>
           <p className="mt-0.5 flex items-center gap-1 truncate text-sm text-muted-foreground">
             {sender}
-            {offer.company?.verification_status === "verified" ? <BadgeCheck className="size-4 shrink-0 text-primary" aria-label={t("common.labels.verified")} /> : null}
+            {offer.company?.verification_status === "verified" ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
           </p>
         </div>
       </div>

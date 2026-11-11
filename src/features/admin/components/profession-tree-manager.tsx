@@ -104,13 +104,13 @@ export function ProfessionTreeManager({
   return (
     <div className="space-y-4">
       <nav className="flex flex-wrap items-center gap-1 text-sm" aria-label="breadcrumb">
-        <Link href={hrefFor(null)} className="rounded-lg px-1.5 py-1 font-medium text-primary hover:bg-primary-soft">
+        <Link href={hrefFor(null)} className="rounded-lg px-1.5 py-1 font-medium text-primary-ink hover:bg-primary-soft">
           {t("admin.professions.root")}
         </Link>
         {trail.map((c) => (
           <span key={c.id} className="inline-flex items-center gap-1">
             <ChevronRight className="size-3.5 text-muted-foreground" />
-            <Link href={hrefFor(c.id)} className="rounded-lg px-1.5 py-1 text-primary hover:bg-primary-soft">
+            <Link href={hrefFor(c.id)} className="rounded-lg px-1.5 py-1 text-primary-ink hover:bg-primary-soft">
               {c.name}
             </Link>
           </span>
@@ -137,7 +137,7 @@ export function ProfessionTreeManager({
             {nodes.map((n) => (
               <tr key={n.id} className={n.is_active ? undefined : "opacity-50"}>
                 <Td>
-                  <Link href={hrefFor(n.id)} className="font-medium hover:text-primary hover:underline">
+                  <Link href={hrefFor(n.id)} className="font-medium hover:text-primary-ink hover:underline">
                     {name(n)}
                   </Link>
                   <div className="text-xs text-muted-foreground">

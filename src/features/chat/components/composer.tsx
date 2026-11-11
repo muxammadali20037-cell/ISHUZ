@@ -204,7 +204,7 @@ export function Composer({ disabled, disabledNotice, disabledAction, onSendText,
                 type="button"
                 onClick={() => setRecording(true)}
                 disabled={busy}
-                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary transition-colors hover:bg-primary/15 disabled:opacity-50"
+                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-ink transition-colors hover:bg-primary/15 disabled:opacity-50"
                 aria-label={t("chat.composer.record")}
               >
                 <Mic className="size-5" />

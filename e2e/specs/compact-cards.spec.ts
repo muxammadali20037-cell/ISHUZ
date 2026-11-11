@@ -96,11 +96,9 @@ test("ish e'lonlari: 390×844 da kamida 3 ta karta to'liq; karta bosilsa e'lon o
   await expect(card).toContainText("Bugun");
   await expect(card.getByRole("link", { name: "Batafsil" })).toHaveCount(0);
 
-  // raqam ochiq e'lon — kichik "Qo'ng'iroq qilish" (nomida raqam), qolganlarida — "Ariza yuborish"
-  const call = page.locator("main article").filter({ hasText: TITLES[0] }).getByRole("link", { name: /^Qo'ng'iroq qilish: \+998 90 111 22 33$/ });
-  await expect(call).toHaveText("Qo'ng'iroq");
-  await expect(call).toHaveAttribute("href", "tel:+998901112233");
-  expect(await onTop(page, "main article a[href^='tel:']")).toBe(true);
+  // 0074: ro'yxatda telefon yo'q (raqam ochiq e'londa ham) — ommaviy yig'ishga qarshi; hamma kartada "Ariza yuborish"
+  await expect(page.locator("main article a[href^='tel:']")).toHaveCount(0);
+  await expect(page.locator("main article").filter({ hasText: TITLES[0] }).getByRole("link", { name: "Ariza yuborish" })).toBeVisible();
   await expect(card.getByRole("link", { name: "Ariza yuborish" })).toBeVisible();
   expect(await onTop(page, "main article a[href$='?apply=1']")).toBe(true);
   expect(await onTop(page, "main article button[aria-pressed]")).toBe(true);

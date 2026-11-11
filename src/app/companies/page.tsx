@@ -128,7 +128,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Se
                         <span className="min-w-0 flex-1">
                           <span className="flex items-center gap-1.5">
                             <span className="truncate text-base font-bold">{c.name}</span>
-                            {c.verified ? <BadgeCheck className="size-4 shrink-0 text-primary" aria-label={t("welcome.companies.verified")} /> : null}
+                            {c.verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("welcome.companies.verified")} /> : null}
                           </span>
                           {industry ? <span className="block truncate text-sm text-muted-foreground">{industry}</span> : null}
                           {place ? (
@@ -141,7 +141,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Se
                       </span>
                       {c.about ? <span className="line-clamp-2 text-sm text-muted-foreground">{c.about}</span> : null}
                       <span className="mt-auto flex items-center justify-between gap-2 pt-1">
-                        <span className="text-sm font-bold text-primary">{t("welcome.companies.jobs", { count: c.activeJobs })}</span>
+                        <span className="text-sm font-bold text-primary-ink">{t("welcome.companies.jobs", { count: c.activeJobs })}</span>
                         {c.isGovernment ? (
                           <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground">
                             <Landmark className="size-3.5" aria-hidden />

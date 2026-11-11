@@ -998,6 +998,35 @@ export type Database = {
           },
         ];
       };
+      contact_reveals: {
+        Row: {
+          revealed_at: string;
+          target_id: string;
+          target_kind: string;
+          viewer_profile_id: string;
+        };
+        Insert: {
+          revealed_at?: string;
+          target_id: string;
+          target_kind: string;
+          viewer_profile_id: string;
+        };
+        Update: {
+          revealed_at?: string;
+          target_id?: string;
+          target_kind?: string;
+          viewer_profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contact_reveals_viewer_profile_id_fkey";
+            columns: ["viewer_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       contact_requests: {
         Row: {
           created_at: string;
@@ -3199,14 +3228,23 @@ export type Database = {
       };
       telegram_updates: {
         Row: {
+          attempts: number;
+          failed_at: string | null;
+          last_error: string | null;
           received_at: string;
           update_id: number;
         };
         Insert: {
+          attempts?: number;
+          failed_at?: string | null;
+          last_error?: string | null;
           received_at?: string;
           update_id: number;
         };
         Update: {
+          attempts?: number;
+          failed_at?: string | null;
+          last_error?: string | null;
           received_at?: string;
           update_id?: number;
         };
@@ -4481,6 +4519,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      contact_reveal_allowed: { Args: { p_kind: string; p_owner: string; p_target: string }; Returns: boolean };
       contact_status_for: { Args: { p_owner: string }; Returns: string };
       create_payment: {
         Args: {
@@ -5097,6 +5136,7 @@ export type Database = {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
       };
+      purge_contact_reveals: { Args: Record<PropertyKey, never>; Returns: number };
       purge_analytics: { Args: Record<PropertyKey, never>; Returns: undefined };
       purge_old_notifications: {
         Args: Record<PropertyKey, never>;
@@ -5900,6 +5940,7 @@ export type Database = {
           isSetofReturn: true;
         };
       };
+      telegram_update_failed: { Args: { p_error: string; p_update_id: number }; Returns: boolean };
       telegram_update_first_seen: { Args: { p_update_id: number }; Returns: boolean };
       touch_last_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
       unread_counts: {

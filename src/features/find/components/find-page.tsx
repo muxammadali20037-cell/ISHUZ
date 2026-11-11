@@ -72,7 +72,7 @@ export async function FindStart({ params }: { params: FindParams }) {
             {examples.map((ex) => (
               // prefetch yo'q: bu manzil serverda boshqa URL'ga yo'naltiriladi — oldindan yuklash foydasiz, Next router esa
               // bunday javobni ochiq ushlab turadi (HTTP/1.1 da xostga 6 ta ulanish — to'lsa, sahifa qotadi; e2e: a11y "qorong'i mavzu")
-              <Link key={ex} href={`/search?q=${encodeURIComponent(ex)}`} prefetch={false} className="inline-flex min-h-12 items-center rounded-full border border-primary/40 bg-primary-soft/50 px-4 text-base font-semibold text-primary hover:bg-primary-soft">
+              <Link key={ex} href={`/search?q=${encodeURIComponent(ex)}`} prefetch={false} className="inline-flex min-h-12 items-center rounded-full border border-primary/40 bg-primary-soft/50 px-4 text-base font-semibold text-primary-ink hover:bg-primary-soft">
                 «{ex}»
               </Link>
             ))}
@@ -338,7 +338,7 @@ export async function FindResultsView({
       ) : null}
 
       {/* telefonda — ro'yxat ostida; kompyuterda — o'ng panelda */}
-      <Link href={isJobs ? "/post/worker" : "/post/vacancy"} className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-center text-base font-semibold text-primary hover:bg-primary-soft lg:hidden">
+      <Link href={isJobs ? "/post/worker" : "/post/vacancy"} className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-center text-base font-semibold text-primary-ink hover:bg-primary-soft lg:hidden">
         {isJobs ? t("easy.search.post_workers") : t("easy.search.post_jobs")} <ArrowRight className="size-5 shrink-0" aria-hidden />
       </Link>
         </div>
@@ -393,7 +393,7 @@ async function ActiveFilters({ params, hasProfession }: { params: FindParams; ha
           href={f.href}
           prefetch={false}
           aria-label={t("easy.search.filter_remove", { label: f.label })}
-          className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-primary/40 bg-primary-soft/60 px-3 text-sm font-semibold text-primary hover:bg-primary-soft"
+          className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-primary/40 bg-primary-soft/60 px-3 text-sm font-semibold text-primary-ink hover:bg-primary-soft"
         >
           <span>{f.label}</span>
           <X className="size-4 shrink-0" aria-hidden />

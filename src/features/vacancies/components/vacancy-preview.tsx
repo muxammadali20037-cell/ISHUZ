@@ -56,7 +56,7 @@ export function VacancyPreview({ vacancy: v, benefits, className }: { vacancy: V
           <h2 className="text-lg font-bold leading-snug sm:text-xl">{v.title}</h2>
           <p className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
             {v.company?.name ?? t("vacancies.preview.employer_person")}
-            {v.company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("common.labels.verified")} /> : null}
+            {v.company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
           </p>
           <div className="mt-2">
             <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="text-base sm:text-lg" />

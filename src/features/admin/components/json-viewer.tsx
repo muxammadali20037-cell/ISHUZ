@@ -13,7 +13,7 @@ export function JsonViewer({ value, label, defaultOpen = false, className }: { v
   const short = text.length <= 60 && !text.includes("\n");
   return (
     <div className={cn("min-w-0", className)}>
-      <button type="button" onClick={() => setOpen((o) => !o)} className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline" aria-expanded={open}>
+      <button type="button" onClick={() => setOpen((o) => !o)} className="inline-flex items-center gap-1 text-xs font-medium text-primary-ink hover:underline" aria-expanded={open}>
         {open ? <ChevronDown className="size-3.5" /> : <ChevronRight className="size-3.5" />}
         {label}
         {!open && short ? <code className="ml-1 rounded bg-secondary px-1 py-0.5 text-2xs text-muted-foreground">{text}</code> : null}

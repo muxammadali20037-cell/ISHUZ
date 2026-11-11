@@ -108,7 +108,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
                   href={post.href}
                   aria-current={postActive ? "page" : undefined}
                   data-track="nav_post"
-                  className="press flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary"
+                  className="press flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary-ink"
                 >
                   <span className="flex h-8 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground" aria-hidden>
                     <Plus className="size-5" strokeWidth={2.5} />
@@ -124,7 +124,7 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
             <li key={item.href} className="flex-1">
               <Link
                 href={item.href}
-                className={cn("press relative flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary" : "text-muted-foreground hover:text-foreground")}
+                className={cn("press relative flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary-ink" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
                 <span className="flex h-8 items-center" aria-hidden>
@@ -165,7 +165,7 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
               title={t(item.labelKey)}
               className={cn(
                 "relative flex min-h-11 min-w-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors lg:px-4",
-                active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                active ? "bg-primary-soft text-primary-ink" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
               <item.icon className="size-4.5" aria-hidden />
@@ -332,7 +332,7 @@ export function SideNav({
     <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-navy lg:flex" style={{ paddingTop: "var(--safe-top)" }}>
       <div className="flex h-16 shrink-0 items-center gap-2 px-5">
         <Link href="/" className="flex min-h-11 min-w-0 items-center gap-2 rounded-md" aria-label={BRAND.name}>
-          <BrandMark className="size-8" tone="light" />
+          <BrandMark className="size-8" sizes="32px" />
           <span className="truncate font-display text-md font-semibold tracking-tight text-navy-foreground">{BRAND.name}</span>
         </Link>
         <Link

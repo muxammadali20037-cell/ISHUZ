@@ -48,7 +48,7 @@ export async function Review({ draft, reference }: { draft: WorkerDraft; referen
             <p className="truncate text-base font-semibold">{fullName(p.first_name, p.last_name) || none}</p>
             <p className="truncate text-sm text-muted-foreground">{w?.headline || none}</p>
           </div>
-          <span className="tabular text-lg font-bold text-primary">{completeness}%</span>
+          <span className="tabular text-lg font-bold text-primary-ink">{completeness}%</span>
         </div>
         <Progress value={completeness} className="mt-3" tone={completeness >= 70 ? "success" : "primary"} />
         <p className="mt-1.5 text-xs text-muted-foreground">{t("onboarding.worker.review.completeness_hint")}</p>
@@ -164,10 +164,10 @@ function Section({ step, title, editLabel, children }: { step: number; title: st
     <section className="rounded-2xl border border-border bg-card">
       <div className="flex items-center justify-between gap-3 border-b border-border px-4 py-3">
         <h2 className="text-sm font-semibold">
-          <span className="mr-2 inline-flex size-5 items-center justify-center rounded-full bg-primary-soft text-2xs font-bold text-primary">{step}</span>
+          <span className="mr-2 inline-flex size-5 items-center justify-center rounded-full bg-primary-soft text-2xs font-bold text-primary-ink">{step}</span>
           {title}
         </h2>
-        <Link href={stepHref(step)} className="inline-flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-medium text-primary hover:bg-primary-soft">
+        <Link href={stepHref(step)} className="inline-flex h-9 items-center gap-1 rounded-lg px-2 text-sm font-medium text-primary-ink hover:bg-primary-soft">
           <Pencil className="size-3.5" />
           {editLabel}
         </Link>

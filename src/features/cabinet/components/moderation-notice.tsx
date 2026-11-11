@@ -20,7 +20,7 @@ export function ModerationNotice({ entity, id, info, editHref }: { entity: "vaca
     return (
       <div className="rounded-2xl bg-primary-soft/60 p-3 text-base">
         <p className="flex items-start gap-2">
-          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden /> {t("easy.moderation.verification_desc")}
+          <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden /> {t("easy.moderation.verification_desc")}
         </p>
         <Button asChild variant="outline" className="mt-2 min-h-12 text-base">
           <Link href="/cabinet/verification">{t("easy.moderation.verify_cta")}</Link>

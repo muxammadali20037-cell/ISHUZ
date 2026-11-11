@@ -2,7 +2,7 @@ import { BrandLogo } from "./brand-logo";
 import { getT } from "@/lib/i18n/server";
 
 /**
- * Ochilish ekrani: "Ish topdim" logotipi ("Darvoza" belgisi va yozuv) va shior, keyin yumshoq yo'qoladi (~1.4 s).
+ * Ochilish ekrani: "Ish topdim" logotipi (belgi va yozuv) va shior, keyin yumshoq yo'qoladi (~1.4 s).
  * - faqat ilova ochilganda, sessiyada bir marta (SPLASH_BOOT `<head>` da — qayta yuklashda miltillamaydi);
  * - kontent ostida darhol chiziladi, splash bosishni to'smaydi (pointer-events: none), sun'iy kutish yo'q;
  * - harakat kamaytirilgan qurilmada, admin panelda va avtomatlashtirilgan brauzerda (navigator.webdriver) ko'rsatilmaydi.

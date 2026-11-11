@@ -50,7 +50,7 @@ export function JoinCompany({ token }: { token: string | null }) {
 
   return (
     <div className="rounded-2xl border border-border/70 bg-card p-6 text-center shadow-sm sm:p-8">
-      <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+      <div className="mx-auto flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
         <Building2 className="size-7" />
       </div>
       <h1 className="mt-4 text-xl font-bold sm:text-2xl">{t("employer.join.title")}</h1>

@@ -79,7 +79,7 @@ export function NearMeButton({ base, regions, districts, className }: { base: Fi
       disabled={busy}
       aria-busy={busy}
       data-track="near_me"
-      className={cn("press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-primary/40 bg-primary-soft/50 px-4 py-3 text-left text-lg font-semibold text-primary hover:bg-primary-soft", className)}
+      className={cn("press flex min-h-14 w-full items-center gap-3 rounded-2xl border-2 border-primary/40 bg-primary-soft/50 px-4 py-3 text-left text-lg font-semibold text-primary-ink hover:bg-primary-soft", className)}
     >
       {busy ? <Loader2 className="size-6 shrink-0 animate-spin" aria-hidden /> : <LocateFixed className="size-6 shrink-0" aria-hidden />}
       <span className="flex-1">{busy ? t("easy.near.locating") : t("easy.near.button")}</span>

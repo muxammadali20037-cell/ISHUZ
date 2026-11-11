@@ -63,7 +63,7 @@ export default async function AdminReportsPage({ searchParams }: { searchParams:
                 <Badge variant="outline" size="sm">{t(`admin.reports.target_${r.target_type}`)}</Badge>
                 <div className="mt-1 text-sm">
                   {r.target.href ? (
-                    <Link href={r.target.href} target={r.target.href.startsWith("/admin") ? undefined : "_blank"} className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
+                    <Link href={r.target.href} target={r.target.href.startsWith("/admin") ? undefined : "_blank"} className="inline-flex items-center gap-1 font-medium text-primary-ink hover:underline">
                       <span className="truncate">{r.target.label ?? r.target.id.slice(0, 12)}</span>
                       <ExternalLink className="size-3 shrink-0" />
                     </Link>

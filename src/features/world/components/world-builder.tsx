@@ -125,7 +125,7 @@ export function WorldBuilder({
                       >
                         {on ? <Check className="size-3.5" strokeWidth={3} /> : null}
                       </span>
-                      <span className={cn("flex size-12 items-center justify-center rounded-2xl text-primary", on ? "bg-card" : "bg-primary-soft")} aria-hidden>
+                      <span className={cn("flex size-12 items-center justify-center rounded-2xl text-primary-ink", on ? "bg-card" : "bg-primary-soft")} aria-hidden>
                         <CategoryIcon name={c.icon} className="size-6" />
                       </span>
                       <span className="mt-2.5 text-sm font-semibold leading-tight">{c.name}</span>
@@ -167,9 +167,9 @@ export function WorldBuilder({
                       )}
                     >
                       <input type="radio" name="world-region" className="sr-only" checked={on} onChange={() => setRegion(r.slug)} />
-                      <MapPin className={cn("size-4 shrink-0", on ? "text-primary" : "text-muted-foreground")} aria-hidden />
+                      <MapPin className={cn("size-4 shrink-0", on ? "text-primary-ink" : "text-muted-foreground")} aria-hidden />
                       <span className="min-w-0 flex-1 leading-tight">{r.name}</span>
-                      {on ? <Check className="size-4 shrink-0 text-primary" strokeWidth={3} aria-hidden /> : null}
+                      {on ? <Check className="size-4 shrink-0 text-primary-ink" strokeWidth={3} aria-hidden /> : null}
                     </label>
                   </li>
                 );
@@ -198,7 +198,7 @@ export function WorldBuilder({
           </p>
           <ul className="mt-5 flex max-w-xl flex-wrap justify-center gap-2">
             {chosen.map((c) => (
-              <li key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary">
+              <li key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary-ink">
                 <CategoryIcon name={c.icon} className="size-4" />
                 {c.name}
               </li>
@@ -245,7 +245,7 @@ function NextStep({ href, icon: Icon, title, desc }: { href: string; icon: typeo
   return (
     <li className="flex">
       <Link href={href} className="press flex w-full items-start gap-3 rounded-2xl border border-border bg-card p-4 hover:border-primary/50">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
           <Icon className="size-5" />
         </span>
         <span className="min-w-0">

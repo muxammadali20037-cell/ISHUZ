@@ -27,7 +27,7 @@ export async function ProfileShortcuts({ workerId }: { workerId: string }) {
           href={i.href}
           className={`flex items-center gap-3 rounded-2xl border p-4 shadow-sm transition-colors hover:border-primary/50 ${i.hot ? "border-primary bg-primary-soft/50" : "border-border bg-card"}`}
         >
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
             <i.icon className="size-5" />
           </span>
           <span className="min-w-0 flex-1">

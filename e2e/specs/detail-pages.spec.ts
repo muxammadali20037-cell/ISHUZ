@@ -85,10 +85,12 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   await expect(page).toHaveURL(/#manzil$/);
   await expect(main.getByRole("heading", { level: 2, name: "Manzil" })).toBeInViewport();
 
-  // qo'ng'iroq — bo'limlardan oldin
-  const call = main.getByRole("link", { name: "Qo'ng'iroq qilish" }).first();
+  // aloqa bloki — bo'limlardan oldin. 0074: mehmonga raqam ochilmaydi (ommaviy yig'ishga qarshi), o'rniga "Kirish"
+  const guestLogin = main.locator("[data-contact-guest]").getByRole("link", { name: "Kirish" });
   const about = main.getByRole("heading", { level: 2, name: "Vazifalar" });
-  expect((await call.boundingBox())!.y).toBeLessThan((await about.boundingBox())!.y);
+  expect((await guestLogin.boundingBox())!.y).toBeLessThan((await about.boundingBox())!.y);
+  await expect(guestLogin).toHaveAttribute("href", `/auth?next=${encodeURIComponent(`/jobs/${v!.slug}`)}`);
+  await expect(main.locator("a[href^='tel:']")).toHaveCount(0);
 
   // o'xshash vakansiya — ixcham qator
   const similar = main.getByRole("link", { name: new RegExp(OTHER.replace(/[()]/g, "\\$&")) });
@@ -104,6 +106,20 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   await loginAs(context, USERS.workerB);
   await page.reload();
   await expect(page.getByRole("main").locator("header").first()).toContainText("Dilnoza opa");
+});
+
+test("0074: vakansiya raqami kirgan foydalanuvchiga ochiladi, mehmonga — yo'q", async ({ page, context }) => {
+  const [v] = await sql<{ slug: string; id: string }>("select slug, id from public.vacancies where title = $1", [TITLE]);
+  await sql("delete from public.contact_reveals where viewer_profile_id = $1", [USERS.workerB]);
+  await loginAs(context, USERS.workerB);
+  await asMode(context, "worker");
+  await page.goto(`/jobs/${v!.slug}`);
+  const call = page.getByRole("main").getByRole("link", { name: "Qo'ng'iroq qilish" }).first();
+  await expect(call).toHaveAttribute("href", "tel:+998901112233");
+  await expect(page.getByRole("main").locator("[data-contact-guest]")).toHaveCount(0);
+  // ko'rish jurnalga yozildi (limit uchun)
+  const [log] = await sql<{ n: string }>("select count(*)::text as n from public.contact_reveals where viewer_profile_id = $1 and target_id = $2", [USERS.workerB, v!.id]);
+  expect(log!.n).toBe("1");
 });
 
 test("'Orqaga': qidiruvdan kelganda — o'sha natijalarga; havola orqali ochilganda — ish ro'yxatiga (/jobs)", async ({ page, context }) => {

@@ -6,7 +6,7 @@ const badgeVariants = cva("inline-flex items-center gap-1 rounded-lg px-2 py-0.5
   variants: {
     variant: {
       default: "bg-secondary text-secondary-foreground",
-      primary: "bg-primary-soft text-primary",
+      primary: "bg-primary-soft text-primary-ink",
       success: "bg-success-soft text-success",
       warning: "bg-warning-soft text-warning",
       destructive: "bg-destructive-soft text-destructive",

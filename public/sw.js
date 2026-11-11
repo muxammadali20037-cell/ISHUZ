@@ -1,7 +1,7 @@
 /* Ish beruvchi service worker — faqat ilova qobig'i va oflayn sahifa.
  * Ma'lumotlar (Supabase, /api, sahifa HTML) keshlanmaydi: har doim yangi, maxfiy ma'lumot qurilmada qolmaydi. */
-const VERSION = "ishtopdim-v3";
-const PRECACHE = ["/offline.html", "/icons/icon-192.png", "/icons/icon-512.png", "/icon.svg", "/manifest.webmanifest"];
+const VERSION = "ishtopdim-v4";
+const PRECACHE = ["/offline.html", "/icons/icon-192.png", "/icons/icon-512.png", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(caches.open(VERSION).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
