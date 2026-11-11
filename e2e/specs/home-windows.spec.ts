@@ -3,7 +3,7 @@ import { USERS, asGuest, asMode, loginAs, next, pickProfession, pickWholeRegion,
 
 /**
  * D3/R-C · bosh sahifadagi tezkor bo'limlar va "Kunlik ishlar":
- *  - ish beruvchi bosh sahifasi: admin sozlaydigan rasmli oynalar (xodim topish, yaqin atrofdagilar, e'lon berish);
+ *  - ish beruvchi bosh sahifasi (2.0): oynalar yo'q — qidiruv ostida 4 ta tez yo'l (kunlik ishchilar, yaqin, tajribali, masofaviy);
  *  - ish izlovchi bosh sahifasi (2.0, 2026-11): oynalar yo'q — qidiruv ostida 4 ta tez yo'l (kunlik, yaqin, masofaviy, tajribasiz);
  *  - ish beruvchi oddiy formada "Kunlik" haq tanlaydi → bazada kunlik → "Kunlik ish" tez yo'li faqat kunliklarni ko'rsatadi.
  */
@@ -60,17 +60,18 @@ test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qid
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
-test("bosh sahifa (ish beruvchi): xodim topish, yaqin atrofdagi ishchilar, ish e'loni berish", async ({ page, context }) => {
+test("bosh sahifa (ish beruvchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l, 'Barcha nomzodlar' va 'Vakansiya joylash'", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  const links = page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link");
-  await expect(links).toHaveCount(3);
-  await expect(links.nth(0)).toContainText("Endi xodim topish oson");
-  await expect(links.nth(1)).toContainText("Yaqin atrofdagi ishchilar");
-  await expect(links.nth(2)).toContainText("Ish e'loni bering");
+  await expect(page.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
+  const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
+  await expect(links).toHaveText(["Kunlik ishchilar", "Yaqin atrofda", "Tajribali", "Masofaviy"]);
+  await expect(page.getByRole("main").getByRole("link", { name: "Barcha nomzodlar" })).toHaveAttribute("href", "/search?mode=workers&region=all&any=1");
+  await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toHaveAttribute("href", "/post/vacancy");
   await links.nth(0).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishchi qidiraman");
+  await page.waitForURL(/\/search\?mode=workers&region=all&pay=daily&any=1$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Ishchilar");
 });
 
 test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat kunliklar", async ({ page, context }) => {

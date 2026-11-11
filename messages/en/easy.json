@@ -1031,6 +1031,14 @@
     "shortcuts": "Quick search",
     "all_filters": "Search with filters",
     "alert_title": "We'll tell you about new jobs",
-    "alert_desc": "Describe the job you need — we'll message you on Telegram as soon as a match appears"
+    "alert_desc": "Describe the job you need — we'll message you on Telegram as soon as a match appears",
+    "e_title": "What kind of employee do you need?",
+    "e_hint": "Write it in your own words — for example “salesperson in Chilanzar” or “a worker for a day”.",
+    "e_placeholder": "For example: salesperson",
+    "e_all": "All candidates",
+    "e_alert_title": "We'll tell you about matching candidates",
+    "e_alert_desc": "Describe who you need — we'll message you on Telegram as soon as a matching ad appears",
+    "e_post_hint": "3 minutes: job → conditions → ad. Suitable workers will apply themselves.",
+    "e_greeting": "Hello, {name}!"
   }
 }

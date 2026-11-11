@@ -65,7 +65,7 @@ test.describe("kirish", () => {
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/");
     await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
     expect(await cookie(context, "ib_mode")).toBe("employer");
   });
 

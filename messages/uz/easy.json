@@ -1031,6 +1031,14 @@
     "shortcuts": "Tez qidiruv",
     "all_filters": "Filtrlar bilan qidirish",
     "alert_title": "Yangi ish chiqsa — xabar beramiz",
-    "alert_desc": "Qanday ish kerakligini yozing, mos e'lon chiqishi bilan Telegram'da xabar keladi"
+    "alert_desc": "Qanday ish kerakligini yozing, mos e'lon chiqishi bilan Telegram'da xabar keladi",
+    "e_title": "Qanday xodim kerak?",
+    "e_hint": "O'z so'zingiz bilan yozing — masalan: «Chilonzorda sotuvchi» yoki «kunlik ishchi».",
+    "e_placeholder": "Masalan: sotuvchi",
+    "e_all": "Barcha nomzodlar",
+    "e_alert_title": "Mos nomzod chiqsa — xabar beramiz",
+    "e_alert_desc": "Qanday xodim kerakligini yozing, mos ishchi e'loni chiqishi bilan Telegram'da xabar keladi",
+    "e_post_hint": "3 daqiqa: kasb → shartlar → e'lon. Mos ishchilar o'zlari ariza yuboradi.",
+    "e_greeting": "Assalomu alaykum, {name}!"
   }
 }
