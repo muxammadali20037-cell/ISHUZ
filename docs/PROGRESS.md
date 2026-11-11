@@ -123,3 +123,18 @@ testlar saqlanadi. Birinchi ekran — ish izlovchi bosh sahifasi ("umuman adashm
 
 **Keyingi aniq vazifa:** qobiqlar (mobilda hamburger va pastki menyu birga chiqmasin), keyin ish beruvchi bosh sahifasi
 va natijalar sahifasi — shu sodda uslubda noldan.
+
+## AI HR yordamchi — 0 va 1-bosqich: audit, suhbat dvigateli (2026-11-11)
+
+To'liq reja va holat: `docs/AI_ASSISTANT.md`.
+
+**Bajarildi:** audit; suhbat dvigateli (`src/features/assistant/`): model suhbat kontekstini o'qiydi, qidiruv asbobini
+chaqiradi, bazadan haqiqiy e'lonlar olinadi, javob oqim bilan keladi; AI ishlamasa — lug'at va shablon javob (4 tilda);
+`POST /api/assistant` (NDJSON oqimi, CSRF/limit/blok himoyasi). `aiFind` yadrosi alohida modulga chiqarildi.
+
+**Testlar:** Vitest 752 o'tdi (24 ta yangi); E2E `assistant-api.spec.ts` 5/5; AI qidiruv spec'lari 16/16 (refaktordan keyin).
+
+**Qolgan muammo:** haqiqiy Claude bilan suhbat stendda sinalmagan (kalit faqat prod'da). Oyna (UI) hali eski — foydalanuvchi
+yangi dvigatelni 2-bosqichdan keyin ko'radi.
+
+**Keyingi aniq vazifa:** 2-bosqich — suhbat oynasini yangi dvigatelga ulash (oqimli matn, yozish indikatori, tavsiya savollar).
