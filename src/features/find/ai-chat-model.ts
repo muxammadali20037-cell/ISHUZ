@@ -63,7 +63,8 @@ export function speechLang(locale: string): string {
 // ---------------------------------------------------------------------------
 
 export const CHAT_TTL_MS = 30 * 60 * 1000;
-export const CHAT_KEEP = 5;
+/** ekranda va xotirada turadigan savol-javoblar soni (suhbat konteksti uchun yetarli, xotira to'lmaydi) */
+export const CHAT_KEEP = 8;
 
 export interface StoredChat<T> {
   at: number;
@@ -71,7 +72,8 @@ export interface StoredChat<T> {
 }
 
 export function chatStorageKey(mode: FinderMode): string {
-  return `ib_ai_chat_v1:${mode}`;
+  // v2 (2026-11): javob matni va tavsiya savollar qo'shildi — eski shakldagi suhbat o'qilmaydi
+  return `ib_ai_chat_v2:${mode}`;
 }
 
 /** Saqlangan suhbat: muddati o'tgan yoki buzilgan bo'lsa — bo'sh */

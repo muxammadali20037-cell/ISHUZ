@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { AiAvatar } from "@/components/shared/ai-avatar";
-import { useVoice } from "@/features/find/components/ai-chat";
+import { useVoice } from "@/features/find/components/ai-voice";
 
 const MIN_LENGTH = 15;
 

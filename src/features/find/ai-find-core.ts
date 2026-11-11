@@ -1,75 +1,37 @@
-"use server";
+import "server-only";
 
-import { headers } from "next/headers";
-import { z } from "zod";
 import { getT } from "@/lib/i18n/server";
 import { formatMoneyShort } from "@/lib/format";
 import { getDistricts, getRegions } from "@/lib/reference";
-import { allowRate } from "@/lib/rate-limit";
-import { clientIp, ipBucket, subjectHash } from "@/lib/security/request";
-import { getSession } from "@/features/auth/session";
+import type { SessionContext } from "@/features/auth/session";
 import { savedIdSet } from "@/features/saved/queries";
-import type { ActionResult } from "@/features/auth/actions";
 import { trackServer } from "@/features/analytics/server";
 import { aiProviderConfigured } from "@/lib/ai/json";
 import { smartResolveQuery } from "./ai-search";
 import type { AppliedFilters } from "./ai-chat-model";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
-import { findJobs, findJobsByText, findWorkers, getNodeInfo, type WorkerRow } from "./queries";
+import { findJobs, findJobsByText, findWorkers, getNodeInfo } from "./queries";
 import { textKeywords } from "./ai-keywords";
 import type { JobCardData } from "./components/result-cards";
-
-const input = z.object({
-  text: z.string().trim().min(2).max(300),
-  mode: z.enum(["jobs", "workers"]).nullable(),
-});
+import type { WorkerRow } from "./queries";
+import type { AiFindResult } from "./ai-find-types";
 
 const SHOW = 10;
 
-export interface AiFindResult {
-  mode: "jobs" | "workers";
-  /** matndan nima tushunildi (foydalanuvchiga ko'rsatiladi) */
-  understood: string[];
-  /** kasb aniqlanmadi — ro'yxatdan tanlash taklif qilinadi */
-  needProfession: boolean;
-  /** "ai" — sun'iy intellekt tahlil qildi; "rules" — lug'at bilan tushunildi (AI kerak bo'lmadi yoki ulanmagan) */
-  source: "ai" | "rules";
-  aiAvailable: boolean;
-  /** qo'llangan shartlar — AI yordamchi aniqlashtirish takliflarini takrorlamaydi */
-  applied: AppliedFilters;
-  /** oddiy qidiruv yoki — kasb aniqlanmaganda — e'lon matnlari bo'yicha topilganlar (bir xil karta shakli) */
-  jobs: JobCardData[];
-  workers: WorkerRow[];
-  images: Record<string, string>;
-  photos: Record<string, string>;
-  /** natijadagi saqlanganlar ("Saqlash" belgisi holati) */
-  saved: string[];
-  total: number;
-  /** to'liq natijalar sahifasi (filtrlar, sahifalar) */
-  href: string;
-  /**
-   * Aniq so'rov bo'yicha bo'sh chiqqanda qidiruv qanday kengaytirildi (foydalanuvchiga ochiq aytiladi):
-   * masalan "Chilonzorda yo'q — butun Toshkent bo'yicha". Natija topilmasa — bo'sh.
-   */
-  relaxed: string[];
-  /** hech narsa topilmadi: yangi mos e'lon chiqsa Telegram'ga xabar (yozgan matni tayyor) va o'zi e'lon berishi */
-  alertHref: string;
-  postHref: string;
-}
+export type AiFindOutcome = { ok: true; data: AiFindResult } | { ok: false; error: "search_failed" };
 
 /**
- * "O'zingizga mosini toping" (lupa tugmasi): qisqa matn → maqsad, kasb, hudud, kunlik/oylik, maosh (lug'at, kerak bo'lsa AI) →
- * bazadagi haqiqiy e'lonlar, qidiruv sahifasidagi tartibda saralangan (ajratilgan, tuman, yangi). Natija ilova ichida ko'rsatiladi.
+ * Matn → bazadagi haqiqiy e'lonlar (AI qidiruvning yadrosi): lug'at (kerak bo'lsa AI) bilan tushunish → qidiruv → bo'sh chiqsa
+ * birma-bir kengaytirish → kasb aniqlanmasa e'lon matnlaridan qidirish. Hech narsa o'ylab topilmaydi.
+ * Chaqiruvchilar: `aiFind` server amali (bir martalik qidiruv) va AI yordamchi (suhbat, src/features/assistant) — yordamchi
+ * so'rovni o'zi tozalab beradi, shuning uchun `ai: false` (ikkinchi AI chaqiruvi kerak emas).
+ * Limit va kirish tekshiruvi — chaqiruvchida.
  */
-export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> {
-  const parsed = input.safeParse(raw);
-  if (!parsed.success) return { ok: false, error: "validation" };
-  const session = await getSession();
-  const key = session ? `ai_find:${session.userId}` : `ai_find_ip:${subjectHash("ip", ipBucket(clientIp(await headers())))}`;
-  if (!(await allowRate(key, 30, 3600))) return { ok: false, error: "rate_limited" };
-
+export async function runAiFind(input: { text: string; mode: "jobs" | "workers" | null; session: SessionContext | null; ai?: boolean }): Promise<AiFindOutcome> {
+  const { session } = input;
+  const parsed = { data: { text: input.text, mode: input.mode } };
   const { t, name, tEnum, locale } = await getT();
-  const r = await smartResolveQuery(parsed.data.text, session?.userId ?? null, parsed.data.mode);
+  const r = await smartResolveQuery(parsed.data.text, session?.userId ?? null, parsed.data.mode, { ai: input.ai !== false });
   const mode = parsed.data.mode ?? r.mode ?? "jobs";
   const regions = await getRegions();
   const region = r.regionSlug ? (regions.find((x) => x.slug === r.regionSlug) ?? null) : null;
@@ -102,11 +64,12 @@ export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> 
   const applied: AppliedFilters = { daily: params.pay === "daily", noexp: params.noexp, exp: params.exp, remote: r.remote, shift: params.schedule === "shift" };
   const alertHref = `/ai-alerts?${new URLSearchParams({ role: mode === "workers" ? "employer" : "worker", q: parsed.data.text })}`;
   const postHref = mode === "workers" ? "/post/vacancy" : "/post/worker";
-  const base = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, alertHref, postHref };
+  const baseCommon = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, alertHref, postHref };
   // kasb aniqlanmadi (kunlik ishlar bundan mustasno). Boshqa shart tushunilgan bo'lsa (hudud, maosh, grafik, tajriba, masofaviy) —
   // shu shartlar bilan barcha kasblar bo'yicha qidiriladi; hech narsa tushunilmagan bo'lsa (masalan "qwerty") — aniq savol
   const needProfession = !node && params.pay !== "daily";
   const hasOther = !!(region || r.remote || params.salary || params.schedule || params.noexp || params.exp);
+  const base = { ...baseCommon, flags: { profession: !!node, filters: hasOther || params.pay === "daily" } };
 
   // Kasblar ro'yxatida yo'q so'z (kompaniya nomi, erkin lavozim: "korzinkaga ishga kirmoqchiman") — "tushunmadim" deb to'xtamaymiz:
   // matndagi kalit so'zlar bo'yicha e'lonlarning sarlavhasi, tavsifi va kompaniya nomidan qidiramiz — avval tushunilgan hududda,
@@ -132,6 +95,7 @@ export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> 
         data: {
           ...base,
           understood: [...understood, `«${word}»`],
+          flags: { profession: true, filters: base.flags.filters },
           needProfession: false,
           relaxed: [t("easy.finder.relaxed_text", { word }), ...(scope.widened && region ? [t("easy.finder.relaxed_region", { region: name(region) })] : [])],
           jobs: shown,

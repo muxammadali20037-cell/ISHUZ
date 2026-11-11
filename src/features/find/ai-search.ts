@@ -73,9 +73,10 @@ export interface SmartResolved extends SmartFilters {
  * Matn → maqsad, kasb, hudud va filtrlar. Avval lug'at qoidalari; kerak bo'lsa AI (qat'iy sxema),
  * AI so'zlari yana lug'at orqali ID'ga bog'lanadi. AI ishlamasa — faqat qoidalar.
  */
-export async function smartResolveQuery(q: string, userId: string | null, modeHint: FindMode | null = null): Promise<SmartResolved> {
+export async function smartResolveQuery(q: string, userId: string | null, modeHint: FindMode | null = null, opts: { ai?: boolean } = {}): Promise<SmartResolved> {
   const rules = await resolveFindQuery(q);
-  const ai = needsAi(q, rules) ? await aiParseSearch(q, userId) : null;
+  // opts.ai === false — chaqiruvchi (AI yordamchi) matnni o'zi tozalab bergan: ikkinchi AI chaqiruvi qilinmaydi
+  const ai = opts.ai !== false && needsAi(q, rules) ? await aiParseSearch(q, userId) : null;
 
   let nodeId = rules.nodeId;
   if (!nodeId && ai) {
