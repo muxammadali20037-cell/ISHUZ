@@ -6,7 +6,7 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | --- | --- | --- |
 | Barqarorlashtirish (Next 16.4.5, 0074–0075, health, Sentry) | Kod tayyor, CI yashil · **ega amali kutilmoqda** | 2026-11-07 |
 | 0. Audit | ✅ Tugadi | 2026-11-11 |
-| 1. Dizayn tizimi | Davom etmoqda: 1-qadam (tokenlar) ✅ | 2026-11-11 |
+| 1. Dizayn tizimi | Davom etmoqda: 1-qadam (tokenlar) ✅, 2-qadam (komponentlar) ✅ | 2026-11-11 |
 | 2. Ochiq sayt | — | |
 | 3. Kirish va onboarding | — | |
 | 4. Ish izlovchi | — | |
@@ -59,3 +59,22 @@ yangilandi va o'tdi.
 
 **Keyingi aniq vazifa:** 1-bosqich, 2-qadam — `src/components/ui` komponentlarini spetsifikatsiyaga keltirish
 (tugma balandliklari 44/36/52, karta, input) va yangi komponentlar: status-badge, empty-state, alert, table, drawer.
+
+## 1-bosqich, 2-qadam — Komponentlar (2026-11-11)
+
+**Bajarildi:**
+- Yangi komponentlar: `Alert` (ma'lumot / muvaffaqiyat / ogohlantirish / xato; xato va ogohlantirish `role="alert"`),
+  `Table` (tor ekranda o'z ichida suriladi, `scope="col"`), `StatCard` (faqat haqiqiy son; noma'lum — "—").
+- Tugma: `lg` = 52 px (mobil asosiy CTA). Qolgan o'lchamlar talabga allaqachon mos edi (44 / 36).
+- Mavjud va qayta ishlatiladigan: `Sheet` (pastki varaq / drawer), `EmptyState`, `Stepper`, `PageHeader`, `Badge`,
+  arizalar uchun `StatusBadge` — yangisi yaratilmadi (takror bo'lmasin).
+- Komponentlar ko'rgazmasi `/dev/ui` yangilandi (yangi palitra, radius, shrift, yangi komponentlar). Prod'da 404.
+
+**Yaratilgan fayllar:** `src/components/ui/alert.tsx`, `table.tsx`, `stat-card.tsx`, `primitives-2.test.tsx`.
+**O'zgartirilgan:** `src/components/ui/index.ts`, `button.tsx`, `src/app/dev/ui/page.tsx`.
+
+**Testlar:** 7 ta yangi Vitest (rol, halollik, jadval); qo'riqchi test; 390 va 1280 px skrinshotlar ko'rib chiqildi.
+
+**Keyingi aniq vazifa:** 1-bosqich, 3-qadam — qobiqlar: mobilda hamburger va pastki menyu birga chiqmasin; ish izlovchi
+(Bosh sahifa · Qidiruv · Saqlangan · Arizalar · Profil) va ish beruvchi (Panel · Ishlar · Nomzodlar · Xabarlar · Kompaniya)
+pastki menyulari; kompyuterda kabinet sidebar'i (`src/components/shared/app-shell.tsx`).
