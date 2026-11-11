@@ -125,7 +125,8 @@ test("suhbat: salomlashuv va misol → javob; aniqlashtirish (+ Kunlik) faqat ku
   // foydalanuvchi xabari va javob
   await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toBeVisible();
   await expect(dialog.getByText(/^Tushundim:/)).toContainText("Buxgalter");
-  await expect(dialog.getByText("2 ta mos e'lon topdim")).toBeVisible();
+  // yordamchining tabiiy javobi (son — bazadan), keyin "Tushundim" va kartalar
+  await expect(dialog.locator("[data-ai-reply]")).toContainText("2 ta e'lon topdim");
   await expect(dialog.locator("article")).toHaveCount(2);
 
   // aniqlashtirish: oxirgi so'rovga "kunlik" qo'shiladi — oldingi javob ixchamlashadi, yangisida faqat kunlik
@@ -162,7 +163,7 @@ test("suhbat saqlanadi: e'lon ochilib, orqaga qaytilganda oynada oldingi javob t
   await expect(dialogOf(page).locator("article")).toHaveCount(1);
 });
 
-test("ovoz bilan: aytilgan gap maydonga yoziladi va yuboriladi (Web Speech API bor brauzerda)", async ({ page, context }) => {
+test("ovoz bilan: aytilgan gap maydonga yoziladi, tekshirib-tuzatib yuboriladi (Web Speech API bor brauzerda)", async ({ page, context }) => {
   await vacancy("Buxgalter", "Buxgalter");
   // brauzerning nutqni tanish xizmati o'rniga sinov: start() — "Toshkentda buxgalter" yakuniy natija, keyin tugash
   await context.addInitScript(() => {
@@ -193,10 +194,21 @@ test("ovoz bilan: aytilgan gap maydonga yoziladi va yuboriladi (Web Speech API b
   await page.goto("/");
   await fab(page).click();
   const dialog = dialogOf(page);
-  await dialog.getByRole("button", { name: "Ovoz bilan aytish" }).click();
-  await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toBeVisible();
-  await expect(dialog.locator("article")).toHaveCount(1);
+  // maydon bo'sh — asosiy tugma katta mikrofon (≥ 48px); matn yozilsa — "Yuborish"
+  const mic = dialog.getByRole("button", { name: "Ovoz bilan aytish" });
+  expect((await mic.boundingBox())!.width).toBeGreaterThanOrEqual(48);
+  await mic.click();
+  // aytilgan gap maydonga yoziladi — o'zi yuborilmaydi: foydalanuvchi tekshiradi, tuzatadi va yuboradi
+  const field = dialog.getByLabel("Nima qidiryapsiz?");
+  await expect(field).toHaveValue("Toshkentda buxgalter");
+  await expect(dialog.getByText("Matnni tekshiring — kerak bo'lsa tuzating, keyin yuboring")).toBeVisible();
+  await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toHaveCount(0);
   expect(await page.evaluate(() => (window as unknown as { __speechLang: string }).__speechLang)).toBe("uz-UZ");
+  await field.fill("Toshkent shahrida buxgalter");
+  await dialog.getByRole("button", { name: "Topish" }).click();
+  await expect(dialog.getByText("Siz: Toshkent shahrida buxgalter")).toBeVisible();
+  await expect(dialog.locator("article")).toHaveCount(1);
+  await expect(field).toHaveValue("");
 });
 
 test("ovozli kiritish qo'llanmasa — mikrofon tugmasi yo'q", async ({ page, context }) => {

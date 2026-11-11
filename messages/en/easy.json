@@ -671,14 +671,16 @@
     "pick_from_list": "Pick a profession from the list",
     "errors": {
       "search_failed": "Search is temporarily unavailable. Please try again.",
-      "validation": "Type at least 2 letters"
+      "validation": "Type at least 2 letters",
+      "timeout": "The answer took too long. Please try again.",
+      "unavailable": "The assistant couldn't answer just now. Please try again."
     },
     "inline_button": "Search with AI",
     "assistant_title": "AI assistant",
     "assistant_desc_jobs": "Write in plain words — I'll search real listings",
     "assistant_desc_workers": "Describe who you need — I'll search real workers",
-    "greeting_jobs": "Hi! What job are you looking for? Write the profession, area, pay or “daily” — I'll show matching listings right here.",
-    "greeting_workers": "Hi! Who do you need? Write the profession, area and experience — I'll show matching workers right here.",
+    "greeting_jobs": "Hello! I'm the AI assistant. What job are you looking for? Type the job and district, or tap the microphone and say it — I'll search the real ads in our database.",
+    "greeting_workers": "Hello! I'm the AI assistant. What kind of employee do you need? Type the job and area, or tap the microphone and say it — I'll search the real candidates in our database.",
     "try_label": "For example, tap:",
     "you": "You",
     "thinking_understand": "Understanding your request…",
@@ -699,7 +701,7 @@
     "new_chat": "New chat",
     "voice_start": "Speak",
     "voice_stop": "Stop",
-    "voice_listening": "Listening — go ahead…",
+    "voice_listening": "Speak — I'm listening… Your voice is not stored.",
     "voice_error": "Couldn't recognise your voice. Type it or try again.",
     "voice_denied": "No microphone access. Allow it in browser settings or type instead.",
     "disclaimer": "Only real listings. The decision is yours.",
@@ -723,7 +725,18 @@
     "empty_alert": "Notify me about new ones",
     "empty_post_worker": "Post an ad about myself",
     "empty_post_vacancy": "Post a vacancy",
-    "widened": "Search widened"
+    "widened": "Search widened",
+    "stop_answer": "Stop the answer",
+    "stopped": "Stopped",
+    "suggest_label": "You can also ask:",
+    "copy": "Copy",
+    "copied": "Copied",
+    "speak": "Read aloud",
+    "voice_reply": "Voice answers",
+    "voice_speaking": "Reading the answer aloud…",
+    "voice_stop_speaking": "Stop the voice",
+    "voice_review": "Check the text — fix it if needed, then send",
+    "voice_no_voice": "This device has no voice for this language — the answer is in text"
   },
   "mode": {
     "chooser_title": "What are you looking for?",

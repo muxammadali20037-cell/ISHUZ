@@ -37,8 +37,8 @@ describe("AI yordamchi: aniqlashtirish", () => {
 
 describe("AI yordamchi: suhbatni saqlash", () => {
   const now = 1_800_000_000_000;
-  it("oxirgi 5 ta xabar saqlanadi va qayta o'qiladi", () => {
-    const turns = Array.from({ length: 8 }, (_, i) => ({ id: i }));
+  it("oxirgi CHAT_KEEP ta savol-javob saqlanadi va qayta o'qiladi", () => {
+    const turns = Array.from({ length: CHAT_KEEP + 3 }, (_, i) => ({ id: i }));
     const back = parseStoredChat<{ id: number }>(serializeChat(turns, now), now + 1000);
     expect(back).toHaveLength(CHAT_KEEP);
     expect(back[0]!.id).toBe(3);
