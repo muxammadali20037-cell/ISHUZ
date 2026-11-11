@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, loginAs, sql, stack } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql, stack } from "../support";
 
 /** C8.9 · sozlamalar, yordam, huquqiy sahifalar, admin: eskirgan yo'riqnoma, boshi berk yo'llar, til va tor ekran xatolari */
 
@@ -94,4 +94,59 @@ test.describe("admin panel (lokal stend, aal2 sinov sessiyasi)", () => {
     // maydon yozuv bilan ustma-ust emas: yonida (o'ngda) yoki ostida
     expect(i.x >= l.x + l.width || i.y >= l.y + l.height).toBe(true);
   });
+});
+
+test("cookie siyosati: sahifa 4 tilda, footer'da havola; maxfiylik siyosati AI yordamchi va mikrofon haqida aytadi", async ({ page, context }) => {
+  await asGuest(context);
+  for (const [locale, title] of [
+    ["uz", "Cookie fayllari siyosati"],
+    ["oz", "Cookie файллари сиёсати"],
+    ["ru", "Политика использования cookie"],
+    ["en", "Cookie Policy"],
+  ] as const) {
+    await context.addCookies([{ name: "ishuz_locale", value: locale, domain: host, path: "/" }]);
+    await page.goto("/cookies");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    // har bir ishlatiladigan cookie nomi ro'yxatda
+    for (const name of ["ib_mode", "ishuz_locale", "ib_place", "ib_consent", "ib_aid", "ib_app"]) await expect(page.getByRole("main").getByText(name).first()).toBeVisible();
+  }
+  await context.addCookies([{ name: "ishuz_locale", value: "uz", domain: host, path: "/" }]);
+  await page.goto("/privacy");
+  const main = page.getByRole("main");
+  await expect(main.getByText(/Mikrofon faqat siz tugmani bosganingizda/)).toBeVisible();
+  await expect(main.getByText(/AI yordamchi: unga yozgan yoki aytgan matningiz/)).toBeVisible();
+  await expect(main.getByRole("link", { name: /Cookie fayllari siyosati/ })).toHaveAttribute("href", "/cookies");
+  // footer (mehmon bosh sahifasi)
+  await context.clearCookies({ name: "ib_mode" });
+  await page.goto("/");
+  await expect(page.getByRole("contentinfo").getByRole("link", { name: "Cookie fayllari" })).toHaveAttribute("href", "/cookies");
+});
+
+test("cookie eslatmasi: birinchi tashrifda pastki menyu ustida, ekranni to'smaydi; 'Tushunarli' → 1 yil ko'rinmaydi", async ({ browser, baseURL }) => {
+  // playwright'da navigator.webdriver=true — eslatma ko'rsatilmaydi (testlar uchun); shu testda u o'chiriladi
+  const ctx = await browser.newContext({ baseURL, viewport: { width: 390, height: 844 }, locale: "uz-UZ" });
+  await ctx.addInitScript(() => Object.defineProperty(Navigator.prototype, "webdriver", { get: () => false, configurable: true }));
+  await asGuest(ctx);
+  await asMode(ctx, "worker");
+  // testlar uchun asGuest "ko'rilgan" belgisini qo'yadi — bu test uni olib tashlaydi (birinchi tashrif)
+  await ctx.clearCookies({ name: "ib_consent" });
+  const page = await ctx.newPage();
+  await page.goto("/");
+  const notice = page.locator("[data-cookie-notice]");
+  await expect(notice).toBeVisible();
+  await expect(notice.getByRole("link", { name: "Batafsil" })).toHaveAttribute("href", "/cookies");
+  // pastki menyu bilan ustma-ust emas: eslatmaning pasti menyuning tepasidan yuqorida
+  const nav = page.getByRole("navigation").last();
+  const [n, b] = await Promise.all([notice.boundingBox(), nav.boundingBox()]);
+  expect(n!.y + n!.height).toBeLessThanOrEqual(b!.y + 1);
+  // sahifa mazmuni bosiladi (eslatma faqat pastda)
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await notice.getByRole("button", { name: "Tushunarli" }).click();
+  await expect(notice).toHaveCount(0);
+  const consent = (await ctx.cookies()).find((c) => c.name === "ib_consent");
+  expect(consent?.value).toBe("1");
+  expect(consent!.expires - Date.now() / 1000).toBeGreaterThan(360 * 24 * 3600);
+  await page.reload();
+  await expect(page.locator("[data-cookie-notice]")).toHaveCount(0);
+  await ctx.close();
 });

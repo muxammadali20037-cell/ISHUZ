@@ -25,7 +25,14 @@ export default defineConfig({
   use: {
     baseURL: app,
     // tanishtiruv (birinchi ochilish) "ko'rilgan": yangi kontekstli testlar sahifaning o'zini tekshiradi; uni intro.spec ochadi
-    storageState: { cookies: [{ name: "ib_intro", value: "1", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" }], origins: [] },
+    storageState: {
+      cookies: [
+        { name: "ib_intro", value: "1", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" },
+        // cookie eslatmasi ko'rilgan (uni alohida test tekshiradi — settings-legal.spec)
+        { name: "ib_consent", value: "1", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" },
+      ],
+      origins: [],
+    },
     locale: "uz-UZ",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",

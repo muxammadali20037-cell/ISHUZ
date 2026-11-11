@@ -198,7 +198,8 @@
     "privacy": "Privacy policy",
     "support": "Help",
     "rights": "© {year} Ish topdim. All rights reserved.",
-    "deletion": "Delete account"
+    "deletion": "Delete account",
+    "cookies": "Cookies"
   },
   "report_sent": "Report sent. Our moderators will review it.",
   "report_desc": "Why are you reporting this?",
@@ -241,5 +242,11 @@
     "nav_for_employers": "For employers",
     "post_job": "Post a job"
   },
-  "report_login": "Log in to send a report"
+  "report_login": "Log in to send a report",
+  "cookies": {
+    "title": "Cookie notice",
+    "text": "We use cookies to run the site and remember your choices (language, role, region). No ad trackers.",
+    "more": "Learn more",
+    "ok": "Got it"
+  }
 }

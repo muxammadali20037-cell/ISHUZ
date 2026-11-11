@@ -11,9 +11,9 @@ import { getServerEnv } from "@/lib/env";
 import { localeAlternates } from "@/lib/seo";
 import { Shell } from "@/components/shared/shell";
 
-type Doc = "privacy" | "deletion" | "terms";
-const PATH: Record<Doc, string> = { privacy: "/privacy", deletion: "/account-deletion", terms: "/terms" };
-const RELATED: Record<Doc, Doc[]> = { privacy: ["terms", "deletion"], terms: ["privacy", "deletion"], deletion: ["privacy", "terms"] };
+type Doc = "privacy" | "deletion" | "terms" | "cookies";
+const PATH: Record<Doc, string> = { privacy: "/privacy", deletion: "/account-deletion", terms: "/terms", cookies: "/cookies" };
+const RELATED: Record<Doc, Doc[]> = { privacy: ["cookies", "terms", "deletion"], terms: ["privacy", "deletion"], deletion: ["privacy", "terms"], cookies: ["privacy", "terms"] };
 
 /** Ofertadagi {price_*} kabi o'rinlar — joriy narxlar app_settings'dan (admin o'zgartirsa, sahifa ham o'zgaradi) */
 async function priceVars(locale: Awaited<ReturnType<typeof getLocale>>): Promise<Record<string, string>> {

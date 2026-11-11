@@ -1,5 +1,5 @@
 {
-  "updated": "Oxirgi yangilanish: 2026-yil 7-oktabr",
+  "updated": "Oxirgi yangilanish: 2026-yil 11-noyabr",
   "contact_title": "Aloqa",
   "contact_body": "Savol yoki so'rovlar bo'yicha yozing:",
   "contact_none": "Aloqa manzili hozircha e'lon qilinmagan. Hisobingizga kira olsangiz, «Sozlamalar» → «Hisobni o'chirish» orqali uni o'zingiz darhol o'chirishingiz mumkin.",
@@ -10,7 +10,7 @@
     "sections": [
       [
         "Qaysi ma'lumotlar yig'iladi",
-        "- Hisob: telefon raqami (majburiy), ism-familiya yoki kompaniya nomi, tanlangan til. Telegram orqali kirsangiz — Telegram identifikatori va foydalanuvchi nomi.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, rasm va portfolio fayllari.\n- Joylashuv: viloyat va tuman. «Joylashuvimni aniqlash» tugmasini bossangiz — telefoningiz GPS koordinatasi (faqat ruxsatingiz bilan).\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chat xabarlari, saqlangan qidiruvlar, AI qidiruvga yozgan so'rovlaringiz va bildirishnomalar.\n- To'lovlar: summa, xizmat turi, sana va holat. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (90 kun saqlanadi) va xavfsizlik jurnallari.\nBiz kontaktlar ro'yxati, SMS, qo'ng'iroqlar tarixi, kamera yoki mikrofonga kirmaymiz. Ilovada reklama va reklama kuzatuvchilari yo'q."
+        "- Hisob: telefon raqami (majburiy), ism-familiya yoki kompaniya nomi, tanlangan til. Telegram orqali kirsangiz — Telegram identifikatori va foydalanuvchi nomi.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, rasm va portfolio fayllari.\n- Joylashuv: viloyat va tuman. «Joylashuvimni aniqlash» tugmasini bossangiz — telefoningiz GPS koordinatasi (faqat ruxsatingiz bilan).\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chat xabarlari, saqlangan qidiruvlar, AI qidiruvga yozgan so'rovlaringiz va bildirishnomalar.\n- To'lovlar: summa, xizmat turi, sana va holat. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (90 kun saqlanadi) va xavfsizlik jurnallari. Cookie va brauzer xotirasi haqida — alohida «Cookie fayllari siyosati».\n- AI yordamchi: unga yozgan yoki aytgan matningiz javob berish uchun AI xizmatiga uzatiladi, lekin bizning serverda saqlanmaydi (suhbat faqat qurilmangizda, 30 daqiqa).\nBiz kontaktlar ro'yxati, SMS, qo'ng'iroqlar tarixi va kameraga kirmaymiz. Mikrofon faqat siz tugmani bosganingizda, brauzer ruxsati bilan ishlaydi: ovozni matnga brauzeringiz aylantiradi, ovoz yozuvi bizga yuborilmaydi va saqlanmaydi. Ilovada reklama va reklama kuzatuvchilari yo'q."
       ],
       [
         "Ma'lumotlar nima uchun ishlatiladi",
@@ -22,7 +22,7 @@
       ],
       [
         "Xizmat ko'rsatuvchilar va ma'lumotlar qayerda saqlanadi",
-        "Platforma quyidagi xizmatlardan foydalanadi. Ular ma'lumotlarni faqat shu xizmatni ko'rsatish uchun qayta ishlaydi:\n- Supabase — ma'lumotlar bazasi va fayllar. Serverlar Hindistonda (Mumbay) joylashgan.\n- Vercel — sayt xostingi (global tarmoq).\n- Telegram — kirish va bildirishnomalar.\n- Payme va Click — to'lovlar (O'zbekiston).\n- Anthropic (Claude) va Google (Gemini) — faqat AI funksiyalaridan foydalanganingizda yozgan matningizni tahlil qilish uchun.\nRo'yxatdan o'tish orqali siz ma'lumotlaringizning shu xizmatlar serverlariga, shu jumladan O'zbekistondan tashqariga uzatilishiga rozilik bildirasiz. Ma'lumotlarni O'zbekistondagi serverlarga ko'chirsak, shu sahifada e'lon qilamiz."
+        "Platforma quyidagi xizmatlardan foydalanadi. Ular ma'lumotlarni faqat shu xizmatni ko'rsatish uchun qayta ishlaydi:\n- Supabase — ma'lumotlar bazasi va fayllar. Serverlar Hindistonda (Mumbay) joylashgan.\n- Vercel — sayt xostingi (global tarmoq).\n- Telegram — kirish va bildirishnomalar.\n- Payme va Click — to'lovlar (O'zbekiston).\n- Anthropic (Claude) va Google (Gemini) — faqat AI funksiyalaridan foydalanganingizda: yozgan matningiz, e'loningizdagi kasb va hudud (telefon raqamsiz) hamda topilgan e'lonlarning ochiq ma'lumotlari javob tayyorlash uchun uzatiladi.\nRo'yxatdan o'tish orqali siz ma'lumotlaringizning shu xizmatlar serverlariga, shu jumladan O'zbekistondan tashqariga uzatilishiga rozilik bildirasiz. Ma'lumotlarni O'zbekistondagi serverlarga ko'chirsak, shu sahifada e'lon qilamiz."
       ],
       [
         "Saqlash muddati",
@@ -114,6 +114,37 @@
       [
         "O'zgarishlar",
         "Shartlar o'zgarsa, shu sahifada yangilanish sanasi bilan e'lon qilinadi. O'zgarishdan keyin platformadan foydalanishni davom ettirsangiz, yangi shartlarni qabul qilgan hisoblanasiz."
+      ]
+    ]
+  },
+  "cookies": {
+    "title": "Cookie fayllari siyosati",
+    "description": "«Ish topdim» qaysi cookie fayllarini va brauzer xotirasini nima uchun ishlatadi, ular qancha saqlanadi va ularni qanday boshqarish mumkin.",
+    "intro": "Cookie — sayt brauzeringizda saqlaydigan kichik matn fayli. Biz cookie'larni faqat saytning ishlashi va tanlovlaringizni eslab qolish uchun ishlatamiz. Reklama cookie'lari, boshqa saytlarga kuzatuvchilar va statistika uchun uchinchi tomon cookie'lari yo'q.",
+    "sections": [
+      [
+        "Zarur cookie'lar (saytsiz ishlamaydi)",
+        "- sb-… (bir nechta) — kirgan hisobingizning sessiyasi (Supabase). Chiqquncha yoki ~1 yil. Bo'lmasa — kirish ishlamaydi.\n- ib_mode — tanlagan rolingiz (ish qidiryapman / ishchi qidiryapman): sayt faqat sizga keraklisini ko'rsatadi. 1 yil.\n- ib_intro, ib_entry — xush kelibsiz ekrani ko'rilgani va kirish oqimi qaysi qadamda to'xtagani. 1 yil / 30 kun.\n- ib_app — ilova Google Play'dan ochilganini belgilaydi (ilova ichida to'lov tugmalari ko'rsatilmaydi). 1 yil.\n- ib_consent — cookie haqidagi eslatmani ko'rganingiz. 1 yil."
+      ],
+      [
+        "Qulaylik cookie'lari (tanlovlaringiz)",
+        "- ishuz_locale — sayt tili (o'zbek lotin/kirill, rus, ingliz). 1 yil.\n- ib_place — eslab qolingan viloyat va tuman (qidiruv shu hududdan boshlanadi). 1 yil.\n- ib_name — kirish oynasida yozgan ismingiz (hali kirmagan bo'lsangiz ham qayta so'ralmasin). 1 yil.\n- ib_aid — tasodifiy anonim identifikator: kirmagan foydalanuvchining sayt bo'ylab harakatini (masalan, «qidiruv → e'lon → ariza») sanash uchun. Unda telefon, ism yoki IP yo'q. 1 yil."
+      ],
+      [
+        "Brauzer xotirasi (localStorage va sessionStorage)",
+        "Cookie emas, lekin shunga o'xshash: faqat sizning qurilmangizda saqlanadi, serverga yuborilmaydi.\n- E'lon qoralamalari (ib_draft:…) — formani to'ldirayotganda sahifa yopilib ketsa, yozganlaringiz yo'qolmaydi.\n- AI yordamchi suhbati (ib_ai_chat…) — shu tabda 30 daqiqa: e'lon ochib qaytganingizda javob joyida turadi.\n- «Ovoz bilan javob» tanlovi (ib_ai_speak), ochilish ekrani bir marta ko'rsatilgani (ib_splash), oxirgi to'lov usuli (ib_pay_provider), oxirgi ochilgan kasblar va shu kabi kichik qulayliklar."
+      ],
+      [
+        "Nima YO'Q",
+        "- Reklama va reklama tarmoqlarining cookie'lari yo'q.\n- Google Analytics, Facebook Pixel va boshqa saytlararo kuzatuvchilar yo'q.\n- Cookie orqali ma'lumotlaringiz hech kimga sotilmaydi va berilmaydi."
+      ],
+      [
+        "Rozilik",
+        "Zarur cookie'lar saytning ishlashi uchun kerak va rozilik talab qilmaydi. Qulaylik cookie'lari faqat siz tanlov qilganingizda (til, rol, hudud) qo'yiladi — tanlovning o'zi rozilik hisoblanadi. Birinchi tashrifda pastda qisqa eslatma ko'rsatiladi."
+      ],
+      [
+        "Cookie'larni boshqarish va o'chirish",
+        "- Brauzer sozlamalarida cookie'larni ko'rish va o'chirish mumkin (Chrome: Sozlamalar → Maxfiylik → Cookie fayllar; Safari: Sozlamalar → Safari → Barcha ma'lumotlarni o'chirish).\n- O'chirilsa, sayt sizni tanimaydi: qayta kirish, til va rolni qayta tanlash kerak bo'ladi.\n- Zarur cookie'larni bloklasangiz, kirish va e'lon berish ishlamaydi; e'lonlarni ko'rish va qidirish ishlayveradi."
       ]
     ]
   }

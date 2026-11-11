@@ -57,6 +57,7 @@ export async function SiteFooter() {
         { href: "/help", label: t("common.footer.support") },
         { href: "/terms", label: t("common.footer.terms") },
         { href: "/privacy", label: t("common.footer.privacy") },
+        { href: "/cookies", label: t("common.footer.cookies") },
         { href: "/account-deletion", label: t("common.footer.deletion") },
       ],
     },
