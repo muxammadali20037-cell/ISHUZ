@@ -5,51 +5,52 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
-   ISH TOPDIM tokenlari (2026-11, bosh mahsulot spetsifikatsiyasi)
-   Asosiy ko'k #1455D9 — harakat va brend; yorqin ko'k #3478F6 — fokus halqasi, qorong'i mavzudagi belgi;
-   yashil #16A36A — faqat belgi/nuqta urg'usi (matnda — #137A53); sariq #FFC83D — kam, TOP/yangi belgisi.
-   Fon #F7F9FC, sirt #FFFFFF, matn #101828, ikkinchi darajali matn #636C81 (#667085 ning AA varianti), chegara #E5EAF2.
-   Kontrast (WCAG AA) — brand-contrast.test.ts tekshiradi. Radius 2–12 px, soyalar juda yengil.
+   ISH TOPDIM 2.0 tokenlari (2026-11-11, docs/DESIGN_SYSTEM.md)
+   Midnight Navy #101D35 · Professional Blue #276FE5 (tugma, faol holat) · Cloud #F4F6FA (fon) · oq sirt ·
+   matn #172033 · ikkinchi darajali matn #56657A · chegara #E5EAF0 · Success #16A378 (faqat belgi; matn — #0E7A5A).
+   Ko'k MATN uchun --primary-ink (#1F5FCC): #276FE5 Cloud fonda 4.3:1 — AA dan o'tmaydi.
+   Kontrast (WCAG AA) — brand-contrast.test.ts tekshiradi. Radius 10–16 px, soyalar juda yengil.
    ============================================================ */
 :root {
-  --background: #f7f9fc;
-  --foreground: #101828;
+  --background: #f4f6fa; /* Cloud */
+  --foreground: #172033;
   --card: #ffffff;
-  --card-foreground: #101828;
+  --card-foreground: #172033;
   --popover: #ffffff;
-  --popover-foreground: #101828;
-  --primary: #1455d9; /* brend ko'ki (2026-11 bosh spetsifikatsiya): oq ustida 6.3:1, primary-soft ustida 5.6:1 */
-  --primary-hover: #1048b8;
+  --popover-foreground: #172033;
+  --primary: #276fe5; /* Professional Blue (2.0): tugma foni, faol holat; oq matn ustida 4.7:1. Ko'k MATN — --primary-ink */
+  --primary-ink: #1f5fcc; /* ko'k matn/ikonka: Cloud fonda 5.4:1 (#276FE5 Cloud'da 4.3 — AA dan o'tmaydi) */
+  --primary-hover: #1f5fcc;
   --primary-foreground: #ffffff;
-  --primary-soft: #eaf1fe;
-  --secondary: #eef2f8;
-  --secondary-foreground: #101828;
-  --muted: #eef2f8;
-  --muted-foreground: #636c81; /* spetsifikatsiyadagi #667085 ning AA varianti: oq 5.3, fon 5.0, secondary va primary-soft ustida ≥ 4.6:1 */
-  --accent: #eaf1fe;
-  --accent-foreground: #1048b8;
+  --primary-soft: #eaf1fd;
+  --secondary: #edf1f6;
+  --secondary-foreground: #172033;
+  --muted: #edf1f6;
+  --muted-foreground: #56657a; /* talabdagi #64748B ning AA varianti: oq 5.9, Cloud 5.5 (#64748B Cloud'da 4.4) */
+  --accent: #eaf1fd;
+  --accent-foreground: #1f5fcc;
   /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
   --highlight: #ffc83d;
-  --highlight-foreground: #101828;
+  --highlight-foreground: #172033;
   --highlight-soft: #fff4d6;
   --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
-  --success: #137a53; /* asos #16865C; och fonda matn uchun 4.8:1 */
-  --success-soft: #e8f6ef;
+  --success: #0e7a5a; /* Success #16A378 ning matn varianti: oq 5.3, Cloud 4.9. #16A378 — faqat belgi (--brand-green) */
+  --success-soft: #e7f6f0;
   --success-foreground: #ffffff;
-  --warning: #b45309;
+  --warning: #b54708;
   --warning-soft: #fdf3e2;
   --warning-foreground: #ffffff;
   --info: #0369a1;
   --info-soft: #e0f2fe;
   --info-foreground: #ffffff;
-  --destructive: #c42719; /* asos #D92D20; och fonda matn uchun 5.1:1 */
+  --destructive: #b42318; /* oq 6.6, Cloud 6.1 */
   --destructive-soft: #fcecec;
   --destructive-foreground: #ffffff;
-  --border: #e5eaf2;
-  --input: #d7deea;
-  --ring: #3478f6;
+  --border: #e5eaf0;
+  --input: #d5dce6;
+  --ring: #276fe5;
   /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
-  --navy: #101b35;
+  --navy: #101d35; /* Midnight Navy */
   --navy-foreground: #ffffff;
   --navy-muted: #c9d3e6;
   --navy-line: #22355c;
@@ -60,16 +61,16 @@
    */
   /* 2026-11-05: bosh ekran sarlavhalari och ko'k (bosh sahifa hero'si bilan bir xil); admin surati bo'lsa — .has-photo
      (pastda) to'q parda va oq matnga qaytaradi */
-  --hero-from: #edf3fe;
-  --hero-via: #edf3fe;
-  --hero-to: #edf3fe;
-  --hero-fg: #101828;
+  --hero-from: #eaf1fd;
+  --hero-via: #eaf1fd;
+  --hero-to: #eaf1fd;
+  --hero-fg: #172033;
   --hero-muted: #525c70; /* och ko'k ustida 6:1 */
   --glow: rgb(53 106 230 / 0.30);
   --radius: 0.625rem;
-  --shadow-sm: 0 1px 2px rgb(21 33 59 / 0.04);
-  --shadow-md: 0 1px 3px rgb(21 33 59 / 0.06), 0 1px 2px rgb(21 33 59 / 0.04);
-  --shadow-lg: 0 6px 16px rgb(21 33 59 / 0.08), 0 2px 4px rgb(21 33 59 / 0.04);
+  --shadow-sm: 0 1px 2px rgb(16 29 53 / 0.06);
+  --shadow-md: 0 1px 3px rgb(16 29 53 / 0.06), 0 1px 2px rgb(16 29 53 / 0.04);
+  --shadow-lg: 0 8px 24px rgb(16 29 53 / 0.12);
   --tabbar-height: 58px;
   color-scheme: light;
   /*
@@ -80,12 +81,12 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --sidebar-active: #1d2d52;
   --sidebar-accent: #6d9eff;
-  --border-strong: #cfd7e4;
+  --border-strong: #cdd5e1;
   /* brend belgisi (logo ravog'i) va yashil urg'u (#16A36A — faqat belgi/nuqta, matn uchun emas: oq ustida 3.2:1) */
-  --brand: #1455d9;
-  --brand-green: #16a36a;
+  --brand: #276fe5;
+  --brand-green: #16a378;
   /* bosh sahifa birinchi ekrani: och ko'k fon (matn 16:1, muted 4.6:1, primary 5.5:1) */
-  --hero-soft: #edf3fe;
+  --hero-soft: #eaf1fd;
 }
 
 /* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
@@ -103,6 +104,7 @@ html.tg-fullscreen {
   --popover-foreground: #e8ecf5;
   --primary: #6b93f2;
   --primary-hover: #7da1f4;
+  --primary-ink: #6b93f2;
   --primary-foreground: #0b1222;
   --primary-soft: #1d2c4f;
   --secondary: #1c2843;
@@ -153,9 +155,10 @@ html.tg-fullscreen {
 }
 
 @theme inline {
-  /* 2026-11 (egasi: "SAT MASTER" bilan bir xil): matn — Inter, sarlavhalar — Geist (kirill harflari — Inter) */
+  /* 2.0: bitta shrift oilasi — Inter Variable (lotin, kirill: o'zbek va rus). Sarlavhalar ham Inter (avval Geist edi:
+     kirill sarlavhalarda shrift aralashardi). --font-display nomi saqlandi — komponentlar o'zgarmaydi. */
   --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: var(--font-geist-sans), "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
   /* og'irliklar: Inter'da 700/800 og'ir ko'rinadi — namunadagidek yengilroq (bold → 600, extrabold → 700) */
   --font-weight-bold: 600;
   --font-weight-extrabold: 700;
@@ -168,6 +171,7 @@ html.tg-fullscreen {
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-ink: var(--primary-ink);
   --color-primary-soft: var(--primary-soft);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
@@ -206,14 +210,14 @@ html.tg-fullscreen {
   --color-brand-green: var(--brand-green);
   --color-hero-soft: var(--hero-soft);
   --color-hero-muted: var(--hero-muted);
-  /* 2 · 4 · 6 · 8 · 12 · 14 px — kartalar 12–14, tugma va maydonlar 8–12 (haddan tashqari yumaloq emas) */
-  /* namunadagi kabi ixcham burchaklar: tugma va maydon 6 px, karta 10–12 px */
-  --radius-xs: 2px;
-  --radius-sm: 4px;
-  --radius-md: 6px;
-  --radius-lg: 8px;
-  --radius-xl: 10px;
-  --radius-2xl: 12px;
+  /* 2.0 (docs/DESIGN_SYSTEM.md §4): tugma va maydon 10 px (rounded-md), karta 12 px (rounded-lg), katta panel 16 px
+     (rounded-2xl). Butun shkala bir xil siljiydi — komponent klasslari o'zgarmaydi. */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);

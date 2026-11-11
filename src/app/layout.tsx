@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { GeistSans } from "geist/font/sans";
 import { cookies } from "next/headers";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { clientMessages } from "@/lib/i18n/translate";
@@ -59,7 +58,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const adminLink = JSON.stringify(`${adminBaseUrl()}${ADMIN_LINK_PATH}`).replace(/</g, "\\u003c");
   return (
     // "oz" — ilova ichki kodi, BCP-47 da yo'q: ekran o'qigichi o'zbek kirill matnini taniy olishi uchun "uz-Cyrl"
-    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={`${GeistSans.variable} ${theme === "dark" ? "dark" : ""}`} suppressHydrationWarning>
+    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={theme === "dark" ? "dark" : undefined} suppressHydrationWarning>
       <head>
         {/* Telegram Mini App SDK faqat Telegram ichida (gidratsiyadan oldin, avvalgidek). Oddiy brauzerda yuklanmaydi —
             tashqi skript kutilmagani uchun sahifa darhol "jonlanadi" (bosishlar kechikmaydi) */}
