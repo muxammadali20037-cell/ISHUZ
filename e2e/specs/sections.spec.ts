@@ -4,7 +4,7 @@ import { asGuest, asMode, sql } from "../support";
 /**
  * S2 / 2026-10 · bo'limlar: bosilsa — o'sha bo'lim natijalari, faol filtr chip sifatida ko'rinadi va olib tashlanadi.
  * Ish qidiruvchi (2.0, 2026-11): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtr oynasida.
- * Ish beruvchi — bosh sahifada "Kunlik ishchilar" (soni bazadagi bilan bir xil). /ai — aqlli qidiruv va "Sizga mos".
+ * Ish beruvchi (2.0) — bosh sahifada "Kunlik ishchilar" tez yo'li. /ai — aqlli qidiruv va "Sizga mos".
  */
 
 const EMP = "7e2e0000-0000-4000-8000-000000000066";
@@ -94,13 +94,12 @@ test.describe("bo'limlar", () => {
     await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(0);
   });
 
-  test("ish beruvchi: 'Kunlik ishchilar' — soni va natijasi (kunlik to'lovga yoki bugun tayyor)", async ({ page, context }) => {
+  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchilar' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({ page, context }) => {
     await asGuest(context);
     await asMode(context, "employer");
     await page.goto("/");
-    const [c] = await sql<Record<string, string>>("select * from public.worker_section_counts(null, null)");
-    await expect(tile(page, "Kunlik ishchilar")).toContainText(new Intl.NumberFormat("ru-RU").format(Number(c!.daily)));
-    await tile(page, "Kunlik ishchilar").click();
+    await expect(sections(page)).toHaveCount(0);
+    await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Kunlik ishchilar", exact: true }).click();
     await page.waitForURL(/mode=workers.*pay=daily/);
     await expect(page.locator("main article").filter({ hasText: "Yuk tashuvchi (kunlik)" })).toHaveCount(1);
     await expect(page.getByRole("group", { name: "Faol filtrlar" }).getByRole("link", { name: /Kunlik ishchilar/ })).toBeVisible();

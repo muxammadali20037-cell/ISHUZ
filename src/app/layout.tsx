@@ -5,6 +5,7 @@ import { clientMessages } from "@/lib/i18n/translate";
 import { getServerEnv } from "@/lib/env";
 import { CelebrationListener } from "@/components/shared/celebration-listener";
 import { SPLASH_BOOT, Splash } from "@/components/shared/splash";
+import { CookieNotice } from "@/components/shared/cookie-notice";
 import { Providers } from "./providers";
 import "./globals.css";
 import { BRAND } from "@/config/brand";
@@ -83,6 +84,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Splash />
         <Providers locale={locale} messages={clientMessages(locale)}>
           {children}
+          <CookieNotice />
           <CelebrationListener />
         </Providers>
       </body>

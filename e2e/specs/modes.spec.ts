@@ -54,9 +54,10 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await modeRadio(page, "Ish beruvchi").click();
   await dialog.getByRole("button", { name: "Ha, o'tish" }).click();
   await expect(modeRadio(page, "Ish beruvchi")).toHaveAttribute("aria-checked", "true");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
-  await expect(windows(page).nth(0)).toContainText("Endi xodim topish oson");
-  await expect(page.getByText("Endi o'zingizga mos ish topish oson")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+  // 2.0: ish beruvchi bosh sahifasi — nomzod qidiruvi va tez yo'llar (ish izlovchi yo'llari yo'q)
+  await expect(shortcuts(page)).toHaveText(["Kunlik ishchilar", "Yaqin atrofda", "Tajribali", "Masofaviy"]);
+  await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   // ish beruvchi menyusi (2026-10): Boshqaruv · Vakansiyalar · Nomzodlar · Profil
@@ -95,7 +96,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await page.getByText("Ishchi qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL((u) => new URL(u).pathname === "/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
     const [after] = await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [RET]);
@@ -144,7 +145,8 @@ test("AI qidiruv: rejim tanlangan bo'lsa — faqat shu rejim ichida qidiradi", a
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  await page.getByRole("button", { name: "AI bilan qidirish" }).click();
+  // 2.0: ish beruvchi bosh sahifasida ham yagona AI qidiruv maydoni — bo'sh "Topish" yordamchini ochadi
+  await page.locator("form[data-ai-field][data-hydrated] button[type='submit']").click();
   const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
   await expect(dialog.getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
   await expect(dialog.getByRole("radio")).toHaveCount(0);

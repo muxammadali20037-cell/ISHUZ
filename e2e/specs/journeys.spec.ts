@@ -89,7 +89,7 @@ for (const vp of [
     await page.goto("/");
     // birinchi ochilish: bosh sahifa — "Ish beruvchiman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
     await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
     await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
     await page.waitForURL(/\/post\/vacancy/);
     await pickProfession(page, "Buxgalter", "Buxgalter");

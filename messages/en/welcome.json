@@ -128,6 +128,14 @@
       "employer_note": "Verify your company and post vacancies from your dashboard.",
       "cta": "Go to home",
       "edit": "Edit profile"
+    },
+    "welcome": {
+      "title": "What are you looking for?",
+      "subtitle": "One tap — the app shows only what you need. No sign-in required.",
+      "worker_desc": "Vacancies, daily work, AI assistant",
+      "employer_desc": "Ready workers, post a vacancy",
+      "go": "Start",
+      "how": "How does it work?"
     }
   },
   "market": {

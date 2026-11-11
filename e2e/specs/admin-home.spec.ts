@@ -7,8 +7,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 /**
  * D6 · admin → "Bosh sahifa": oynalar matni, tartibi, ko'rinishi, rasmi va lupa tugmasi admin panelda sozlanadi;
  * saqlangach saytda darhol (kesh yangilanadi) ko'rinadi, har o'zgarish audit jurnaliga yoziladi.
- * 2.0 (2026-11): oynalar faqat ish beruvchi bosh sahifasida; ish izlovchi bosh sahifasi — bitta qidiruv maydoni
- * (AI yoqilgan bo'lsa — AI maydoni, o'chirilsa — oddiy matnli qidiruv).
+ * 2.0 (2026-11): oynalar bosh sahifalarda ko'rsatilmaydi (admin muharriri qayta qurilguncha qoladi); ikkala bosh sahifa —
+ * bitta qidiruv maydoni (AI yoqilgan bo'lsa — AI maydoni, o'chirilsa — oddiy matnli qidiruv).
  */
 
 const STORAGE = path.join(__dirname, "../.stack/storage");
@@ -95,17 +95,17 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await page.getByRole("button", { name: "Saqlash" }).click();
   await expect(page.getByText("Bosh sahifa yangilandi").first()).toBeVisible();
 
-  // sayt (mehmon, ish beruvchi rejimida, alohida kontekst): yangi sarlavha, 2 ta oyna, 2-oynada yuklangan rasm
+  // sayt (mehmon, ish beruvchi rejimida, alohida kontekst) — 2.0: oynalar bosh sahifada ko'rsatilmaydi (admin muharriri
+  // saqlaydi, lekin sayt sodda: bitta AI qidiruv maydoni)
   const base = page.url().replace(/\/admin.*$/, "");
   const guestCtx = await browser.newContext({ baseURL: base, viewport: { width: 390, height: 844 } });
   const guest = await guestCtx.newPage();
   await asGuest(guestCtx);
   await asMode(guestCtx, "employer");
   await guest.goto("/");
-  await expect(windowsOf(guest)).toHaveCount(2);
-  await expect(windowsOf(guest).nth(0)).toContainText("Ishchi kerakmi? Shu yerda toping");
-  await expect(windowsOf(guest).nth(1).locator("img")).toHaveAttribute("src", new RegExp(file.replace(/[.]/g, "\\.")));
-  await expect(guest.getByRole("button", { name: "AI bilan qidirish" })).toBeVisible();
+  await expect(guest.getByRole("heading", { level: 1, name: "Qanday xodim kerak?" })).toBeVisible();
+  await expect(windowsOf(guest)).toHaveCount(0);
+  await expect(guest.locator("form[data-ai-field]")).toBeVisible();
 
   // ish izlovchi bosh sahifasi (2.0): oynalar yo'q, bitta AI qidiruv maydoni
   const seekerCtx = await browser.newContext({ baseURL: base, viewport: { width: 390, height: 844 } });
@@ -117,12 +117,13 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await expect(seeker.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
   await expect(seeker.locator("form[data-ai-field]")).toBeVisible();
 
-  // AI qidiruv o'chiriladi — ish beruvchida tugma yo'qoladi; ish izlovchida o'rnida oddiy matnli qidiruv qoladi
+  // AI qidiruv o'chiriladi — ikkala bosh sahifada ham o'rnida oddiy matnli qidiruv qoladi
   const aiSwitch = page.getByRole("switch", { name: "«AI bilan qidirish» tugmasi (qidiruv yonida)" });
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "false");
   await guest.reload();
-  await expect(guest.getByRole("button", { name: "AI bilan qidirish" })).toHaveCount(0);
+  await expect(guest.locator("form[data-ai-field]")).toHaveCount(0);
+  await expect(guest.getByRole("searchbox", { name: "Nomzod qidirish" })).toBeVisible();
   await seeker.reload();
   await expect(seeker.locator("form[data-ai-field]")).toHaveCount(0);
   await expect(seeker.getByRole("searchbox", { name: "Ish qidirish" })).toBeVisible();
@@ -137,16 +138,13 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "true");
   await guest.reload();
-  await expect(guest.getByRole("button", { name: "AI bilan qidirish" })).toBeVisible();
+  await expect(guest.locator("form[data-ai-field]")).toBeVisible();
   await seeker.reload();
   await expect(seeker.locator("form[data-ai-field]")).toBeVisible();
   await seekerCtx.close();
   await page.getByRole("button", { name: "Standartga qaytarish" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Standartga qaytarish" }).click();
   await expect(page.getByRole("listitem", { name: /-oyna$/ })).toHaveCount(6);
-  await guest.reload();
-  await expect(windowsOf(guest)).toHaveCount(3);
-  await expect(windowsOf(guest).nth(0)).toContainText("Endi xodim topish oson");
   await guestCtx.close();
 });
 

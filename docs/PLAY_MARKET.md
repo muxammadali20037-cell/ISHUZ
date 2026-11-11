@@ -10,12 +10,15 @@ Tayyor narsalar (shu repoda):
 |---|---|
 | Manifest, ikonkalar (512, maskable), service worker | `public/manifest.webmanifest`, `public/icons`, `public/sw.js` |
 | Digital Asset Links (brauzer panelini yashirish) | `/.well-known/assetlinks.json` ← Vercel env `ANDROID_SHA256_CERT_FINGERPRINTS` |
-| Maxfiylik siyosati (uz/ru/en) | `https://SAYT/privacy` |
+| Maxfiylik siyosati (uz/oz/ru/en) | `https://SAYT/privacy` |
+| Cookie fayllari siyosati (uz/oz/ru/en) | `https://SAYT/cookies` |
 | Foydalanish shartlari va ommaviy oferta (narxlar, to'lovni qaytarish) | `https://SAYT/terms` |
 | Hisobni o'chirish sahifasi (Play talabi) | `https://SAYT/account-deletion` |
-| Ikona 512×512 | `docs/play-store/icon-512.png` |
-| Feature graphic 1024×500 | `docs/play-store/feature-graphic-uz.png`, `feature-graphic-ru.png` |
-| Telefon skrinshotlari 1080×1920 (6 ta) | `docs/play-store/screenshots-uz/`, `screenshots-ru/` |
+| Ikona 512×512 (ilovaning o'z belgisi, oq fon) | `docs/play-store/icon-512.png` |
+| Feature graphic 1024×500 (2.0 dizayn) | `docs/play-store/feature-graphic-uz.png`, `feature-graphic-ru.png` |
+| Telefon skrinshotlari 1080×1920 (6 ta, 2.0 dizayn) | `docs/play-store/screenshots-uz/`, `screenshots-ru/` |
+
+Rasmlarni qayta yasash (dizayn o'zgarganda, lokal stendda): `npx playwright test -c e2e/screens/shots.config.ts e2e/screens/play-store.shots.ts`.
 
 Paket nomi: **`uz.ishtopdim.app`** (`ANDROID_PACKAGE_NAME`). Play'ga birinchi yuklangandan keyin paket nomini **o'zgartirib bo'lmaydi** — agar ilova avval `uz.ishberuvchi.app` bilan yuklangan bo'lsa, `ANDROID_PACKAGE_NAME=uz.ishberuvchi.app` qoldiring.
 Brend: **«Ish topdim»**, paket: `uz.ishtopdim.app` (Vercel'da `ANDROID_PACKAGE_NAME`). Ilova nomi va ikonkasini keyin o'zgartirsa bo'ladi, paketni — yo'q.
@@ -25,7 +28,8 @@ Brend: **«Ish topdim»**, paket: `uz.ishtopdim.app` (Vercel'da `ANDROID_PACKAGE
 - [ ] Brend nomi va paket nomi tanlandi
 - [ ] O'z domeningiz ulandi (`APP_URL`, `NEXT_PUBLIC_APP_URL`)
 - [ ] Vercel env: `SUPPORT_EMAIL` (majburiy — Play va huquqiy sahifalar uchun), `LEGAL_OPERATOR` (MChJ/YaTT nomi, STIR, manzil — kompaniya ochilgach)
-- [ ] `https://SAYT/privacy`, `/terms`, `/account-deletion` ochiladi va email ko'rinadi
+- [ ] `https://SAYT/privacy`, `/cookies`, `/terms`, `/account-deletion` ochiladi va email ko'rinadi
+- [ ] Ilova ichida AI yordamchi (matn) ishlaydi; ovozli kiritish TWA (Chrome) ichida ishlaydi — Play tekshiruvchisi uchun «Microphone — only on tap, not stored» izohi tayyor (pastda)
 - [ ] Tekshiruvchi (Google reviewer) uchun test hisobi: telefon raqami va SMS kodi (yoki doimiy test kodi)
 - [ ] 12 ta tester Gmail manzili (shaxsiy hisob uchun)
 
@@ -59,7 +63,7 @@ Payme/Click tugmasi ilovada bo'lsa, ilova rad etilishi yoki o'chirilishi mumkin.
    - **Package ID:** `uz.ishtopdim.app`
    - **Start URL:** `/?app=android` (ilova ichida to'lov tugmalarini yashirish uchun)
    - **App name:** `Ish topdim`, **Launcher name:** `Ish topdim`
-   - **Theme / navigation color:** `#2457f5`, **background:** `#f6f8fc`
+   - **Theme / navigation color:** `#276fe5`, **background:** `#f4f6fa` (manifest bilan bir xil)
    - **Signing key:** "Create new" (yangi kalit).
 4. **Download** → zip ichida `.aab`, `signing.keystore` va `signing-key-info.txt` bo'ladi.
    ⚠️ `signing.keystore` va parolni **xavfsiz joyda saqlang**. Yo'qolsa, ilovani yangilab bo'lmaydi. Uni repoga qo'ymang.
@@ -162,9 +166,12 @@ telefon skrinshotlari `screenshots-uz/01…06.jpg` (ruscha tarjimaga — `screen
 | Rasmlar va fayllar (portfolio, logotip) | Ha | Ilova funksiyasi | Yo'q |
 | Xarid tarixi (xizmat to'lovlari) | Ha | Ilova funksiyasi | Yo'q |
 | Ilova faoliyati (qidiruv so'rovlari, AI qidiruv matnlari) | Ha | Ilova funksiyasi, analitika | Ha |
+| AI yordamchi suhbati (yozilgan/aytilgan matn) | Ha — ishlov berish uchun AI xizmatiga uzatiladi, serverda **saqlanmaydi** | Ilova funksiyasi | Yo'q |
+| Ovoz yozuvi (mikrofon) | **Yo'q** — ovozni matnga brauzer aylantiradi, audio serverga yuborilmaydi | — | — |
 
 - Ma'lumotlar uchinchi shaxslarga **sotilmaydi** va **berilmaydi**. Xizmat ko'rsatuvchilar (xosting, Telegram, to'lov tizimlari) Google qoidasiga ko'ra "sharing" hisoblanmaydi.
 - Uzatishda shifrlanadi (HTTPS) — **Ha**.
+- **Mikrofon (RECORD_AUDIO):** TWA'da ruxsat Chrome orqali so'raladi; ilova manifestida alohida ruxsat yo'q. Tekshiruvchi so'rasa: «Ovozli qidiruv — faqat foydalanuvchi mikrofon tugmasini bosganda, brauzerning nutqni tanish xizmati; audio bizning serverga yuborilmaydi va saqlanmaydi» (maxfiylik siyosatida yozilgan).
 - Foydalanuvchi ma'lumotlarini o'chirishni so'rashi mumkin — **Ha**.
 
 ## 4. Yuklash va test
