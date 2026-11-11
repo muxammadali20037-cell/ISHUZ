@@ -1,6 +1,7 @@
 # Dizayn tizimi — Ish topdim 2.0
 
-Holat: **maqsad belgilandi, kodga hali qo'llanmagan** (1-bosqich). Hozirgi tokenlar `src/app/globals.css` da.
+Holat: **ranglar, shrift va radius kodga qo'llandi** (1-bosqich, 1-qadam, 2026-11-11) — `src/app/globals.css`.
+Komponentlar va qobiqlar keyingi qadamlarda. Kontrast `src/lib/brand-contrast.test.ts` da avtomatik tekshiriladi.
 Bu hujjat `docs/BRAND_UI_GUIDE.md` o'rnini egallaydi (u Manrope shriftini aytadi, kod esa Inter ishlatadi — eskirgan).
 
 ## 1. Vizual yo'nalish
@@ -22,19 +23,20 @@ variant qo'shildi. Faqat tokenlar ishlatiladi, komponentda hex yozilmaydi.
 | --- | --- | --- | --- |
 | `--navy` | `#101D35` | Sarlavha zonalari, admin sidebar, logo | oq matn 16.8:1 |
 | `--primary` | `#276FE5` | Asosiy tugma foni, havola, faol holat | oq matn 4.7:1 ✓ |
-| `--primary-text` | `#1F5FCC` | Cloud fonda va och ko'k fonda ko'k **matn** | Cloud 5.4:1 ✓ (`#276FE5` Cloud'da 4.3 — o'tmaydi) |
+| `--primary-ink` | `#1F5FCC` | Cloud fonda va och ko'k fonda ko'k **matn** | Cloud 5.4:1 ✓ (`#276FE5` Cloud'da 4.3 — o'tmaydi) |
 | `--primary-soft` | `#EAF1FD` | Tanlangan chip, faol menyu foni | |
 | `--background` | `#F4F6FA` (Cloud) | Sahifa foni | |
 | `--card` | `#FFFFFF` | Kartalar, formalar | |
 | `--foreground` | `#172033` | Asosiy matn | Cloud 15:1 ✓ |
 | `--muted-foreground` | `#56657A` | Ikkinchi darajali matn | oq 5.9, Cloud 5.5 ✓ (talabdagi `#64748B` Cloud'da 4.4 — o'tmaydi) |
 | `--border` | `#E5EAF0` | Chegaralar, ajratgichlar | dekorativ |
-| `--success` | `#16A378` | Muvaffaqiyat ikonkasi, nuqta, progress | matn sifatida 3.2:1 — **faqat matn emas** |
-| `--success-text` | `#0E7A5A` | "Qabul qilindi", "Tasdiqlangan" matni | oq 5.3, Cloud 4.9 ✓ |
-| `--warning-text` | `#B54708` | "Suhbat", "Kutilmoqda" | oq 5.4 ✓ |
+| `--brand-green` | `#16A378` | Muvaffaqiyat ikonkasi, nuqta, progress | matn sifatida 3.2:1 — **faqat matn emas** |
+| `--success` | `#0E7A5A` | "Qabul qilindi", "Tasdiqlangan" matni | oq 5.3, Cloud 4.9 ✓ |
+| `--warning` | `#B54708` | "Suhbat", "Kutilmoqda" | oq 5.4 ✓ |
 | `--destructive` | `#B42318` | "Rad etildi", xatolar | oq 6.6 ✓ |
 
 Qoidalar:
+- Ko'k matn va ikonka — faqat `text-primary-ink` klassi; `bg-primary` / `border-primary` — tugma va chegaralar.
 - Yashil faqat muvaffaqiyat va tasdiq uchun. Rad etilgan ariza hech qachon yashil emas.
 - Ariza holatlari ranglari qat'iy (`STATUS_TONE`): yangi/ko'rildi — neytral yoki ko'k, saralangan — ko'k, suhbat — sariq,
   taklif va qabul — yashil, rad — qizil, qaytarib olingan — kulrang.
