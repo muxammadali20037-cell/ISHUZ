@@ -1,9 +1,7 @@
 import "server-only";
 
 import { cookies } from "next/headers";
-import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createPublicClient } from "@/lib/supabase/public";
 import { getDistricts, getRegions, type District, type Region } from "@/lib/reference";
 import type { SessionContext } from "@/features/auth/session";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
@@ -144,50 +142,4 @@ export async function getNewWorkers(place: HomePlace, limit = 6): Promise<FeedRe
     }
   }
   return { ok: false, errorId: "unreachable" };
-}
-
-export interface PopularProfession extends Named {
-  id: string;
-  icon: string | null;
-}
-
-const POPULAR = 10;
-
-/** Faol e'lonlari eng ko'p kasblar: oxirgi 500 ta faol e'lon bo'yicha (soni ko'rsatilmaydi — taxminiy tartib uchun) */
-async function loadPopular(): Promise<PopularProfession[]> {
-  const { data, error } = await createPublicClient()
-    .from("vacancies")
-    .select("profession_node_id, profession_nodes(id, name_uz, name_ru, name_en, icon, selectable, is_active)")
-    .eq("status", "active")
-    .not("profession_node_id", "is", null)
-    .order("published_at", { ascending: false })
-    .limit(500);
-  // xato keshlanmasin
-  if (error) throw new Error(`home_popular: ${error.message}`);
-  const by = new Map<string, { node: PopularProfession; n: number }>();
-  for (const row of data ?? []) {
-    const node = row.profession_nodes;
-    if (!node || !node.selectable || !node.is_active) continue;
-    const cur = by.get(node.id);
-    if (cur) cur.n += 1;
-    else by.set(node.id, { node: { id: node.id, name_uz: node.name_uz, name_ru: node.name_ru, name_en: node.name_en, icon: node.icon }, n: 1 });
-  }
-  return [...by.values()]
-    .sort((a, b) => b.n - a.n || a.node.name_uz.localeCompare(b.node.name_uz))
-    .slice(0, POPULAR)
-    .map((x) => x.node);
-}
-
-// bozor paneli bilan bir xil kesh qoidasi: MARKET_CACHE_SECONDS=0 — keshsiz (E2E stend)
-const TTL = Number(process.env.MARKET_CACHE_SECONDS ?? 600);
-const cachedPopular = unstable_cache(loadPopular, ["home-popular-professions-v1"], { revalidate: TTL > 0 ? TTL : 600, tags: ["market"] });
-
-/** Xato bo'lsa — bo'sh (bo'lim ko'rsatilmaydi, qolgan sahifa ishlaydi) */
-export async function getPopularProfessions(): Promise<PopularProfession[]> {
-  try {
-    return TTL > 0 ? await cachedPopular() : await loadPopular();
-  } catch (error) {
-    console.warn("[home] popular", error instanceof Error ? error.message : error);
-    return [];
-  }
 }

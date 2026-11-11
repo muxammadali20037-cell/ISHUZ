@@ -49,7 +49,7 @@ test("navigatsiya: sahifa almashganda bosish bloklangan vaqt (View Transition)",
   await page.waitForLoadState("networkidle");
   const lost: number[] = [];
   for (const [from, to] of [
-    ["main a[href='/search?mode=jobs']", /mode=jobs/],
+    ["main a[data-track='direction_select']", /mode=jobs/], // 2.0: "Filtrlar bilan qidirish"
     ["header a[href='/']", (u: URL) => u.pathname === "/"],
   ] as const) {
     const t0 = Date.now();
@@ -192,7 +192,7 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   await homeReady();
   const samples: { round: number; listeners: number; nodes: number }[] = [];
   for (let i = 1; i <= 20; i++) {
-    await page.locator("main a[data-track='direction_select'][href='/search?mode=jobs']").click();
+    await page.locator("main a[data-track='direction_select']").click(); // 2.0: "Filtrlar bilan qidirish"
     await page.waitForURL(/\/search/);
     await page.locator("header a[href='/']").first().click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");

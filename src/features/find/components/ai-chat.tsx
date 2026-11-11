@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore, useTransition, type KeyboardEvent, type ReactNode, type RefObject } from "react";
-import { ArrowRight, ArrowUp, BriefcaseBusiness, ListFilter, Mic, Plus, RotateCcw, Search, Square, UsersRound } from "lucide-react";
+import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, Info, ListFilter, Mic, Plus, RotateCcw, Search, Square, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { Button } from "@/components/ui/button";
@@ -125,7 +125,7 @@ export function useAiChat(defaultMode: FinderMode) {
     setRestoredId(stored.at(-1)?.id ?? null);
   };
 
-  return { mode, setMode, turns, pending, ask, refine, clear, reload, restoredId };
+  return { mode, setMode, turns, pending, ask, refine, clear, reload, restoredId, ready };
 }
 
 export type AiChatState = ReturnType<typeof useAiChat>;
@@ -220,6 +220,29 @@ function Understood({ result }: { result: AiFindResult }) {
   );
 }
 
+/** Hech narsa topilmadi: "yo'q" bilan tugamaydi — yangi e'lon chiqsa Telegram xabari (yozgan matni tayyor) va o'zi e'lon berish */
+function EmptyActions({ result }: { result: AiFindResult }) {
+  const { t } = useT();
+  // sessionStorage'dan tiklangan eski javobda bu havolalar bo'lmasligi mumkin
+  const alertHref = result.alertHref ?? (result.mode === "workers" ? "/ai-alerts?role=employer" : "/ai-alerts?role=worker");
+  const postHref = result.postHref ?? (result.mode === "workers" ? "/post/vacancy" : "/post/worker");
+  return (
+    <div className="flex flex-col gap-2 pt-1 sm:flex-row" data-ai-empty-actions>
+      {/* uzun tarjima (ruscha, katta shrift) tugmadan chiqib ketmasin: matn ikki qatorga o'tadi */}
+      <Button asChild className="h-auto min-h-11 whitespace-normal py-2 text-base">
+        <Link href={alertHref}>
+          <BellRing className="size-5 shrink-0" aria-hidden /> {t("easy.finder.empty_alert")}
+        </Link>
+      </Button>
+      <Button asChild variant="outline" className="h-auto min-h-11 whitespace-normal bg-card py-2 text-base">
+        <Link href={postHref}>
+          <Plus className="size-5 shrink-0" aria-hidden /> {result.mode === "workers" ? t("easy.finder.empty_post_vacancy") : t("easy.finder.empty_post_worker")}
+        </Link>
+      </Button>
+    </div>
+  );
+}
+
 /** Yordamchining javobi: tushunilgani, topilgan soni, kartalar (faqat oxirgi javobda), aniqlashtirish */
 function Answer({ turn, latest, chat }: { turn: AiTurn & { result: AiFindResult }; latest: boolean; chat: AiChatState }) {
   const { t } = useT();
@@ -240,6 +263,7 @@ function Answer({ turn, latest, chat }: { turn: AiTurn & { result: AiFindResult 
               <ListFilter className="size-5" aria-hidden /> {t("easy.finder.pick_from_list")}
             </Link>
           </Button>
+          <EmptyActions result={r} />
         </Bubble>
       </div>
     );
@@ -250,12 +274,31 @@ function Answer({ turn, latest, chat }: { turn: AiTurn & { result: AiFindResult 
       <AssistantHead note={note} />
       <Bubble className="space-y-2">
         <Understood result={r} />
+        {r.relaxed?.length ? (
+          <ul className="space-y-1" aria-label={t("easy.finder.widened")} data-ai-relaxed>
+            {r.relaxed.map((note) => (
+              <li key={note} className="flex gap-2 rounded-md bg-primary-soft px-3 py-2 text-sm text-foreground">
+                <Info className="mt-0.5 size-4 shrink-0 text-primary-ink" aria-hidden />
+                {note}
+              </li>
+            ))}
+          </ul>
+        ) : null}
         {count ? (
-          <p className="font-bold">{r.mode === "workers" ? t("easy.finder.found_workers_chat", { count: r.total }) : t("easy.finder.found_jobs_chat", { count: r.total })}</p>
+          <>
+            <p className="font-bold">{r.mode === "workers" ? t("easy.finder.found_workers_chat", { count: r.total }) : t("easy.finder.found_jobs_chat", { count: r.total })}</p>
+            {/* aynan so'ralgani topilmadi (qidiruv kengaytirildi): aynan shunaqasi chiqsa xabar olish — yozgan matni tayyor turadi */}
+            {latest && r.relaxed?.length && r.alertHref ? (
+              <Link href={r.alertHref} data-ai-relaxed-alert className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink hover:underline">
+                <BellRing className="size-4 shrink-0" aria-hidden /> {t("easy.finder.relaxed_alert")}
+              </Link>
+            ) : null}
+          </>
         ) : (
           <>
             <p className="text-lg font-bold">{r.mode === "workers" ? t("easy.finder.empty_workers") : t("easy.finder.empty_jobs")}</p>
-            <p className="text-muted-foreground">{t("easy.finder.empty_desc")}</p>
+            <p className="text-muted-foreground">{t("easy.finder.empty_honest")}</p>
+            <EmptyActions result={r} />
           </>
         )}
         {!latest || !count ? (
@@ -557,8 +600,29 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
 }
 
 /** /ai sahifasi uchun: suhbat sahifaning o'zida (oyna emas), yozish maydoni pastda yopishgan */
-export function AiChatPanel({ defaultMode, locked, examples }: { defaultMode: FinderMode; locked: boolean; examples: { jobs: string[]; workers: string[] } }) {
+export function AiChatPanel({
+  defaultMode,
+  locked,
+  examples,
+  initialQuery,
+}: {
+  defaultMode: FinderMode;
+  locked: boolean;
+  examples: { jobs: string[]; workers: string[] };
+  /** /ai?q=… — bosh sahifadagi maydondan kelgan matn (skriptlar yuklanmasdan yuborilgan): bir marta, o'zi so'raladi */
+  initialQuery?: string;
+}) {
   const chat = useAiChat(defaultMode);
+  const { ready, ask } = chat;
+  const asked = useRef(false);
+  useEffect(() => {
+    if (!ready || asked.current || !initialQuery) return;
+    asked.current = true;
+    // manzildan ?q= olib tashlanadi — sahifa yangilansa yoki orqaga qaytilsa savol qayta yuborilmaydi
+    window.history.replaceState(null, "", window.location.pathname);
+    ask(initialQuery);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `ask` har chizishda yangi; savol faqat bir marta yuboriladi (asked)
+  }, [ready, initialQuery]);
   return (
     <section className="rounded-2xl border border-border bg-card shadow-sm">
       <div className="space-y-4 p-4 sm:p-5">

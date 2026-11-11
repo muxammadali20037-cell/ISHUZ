@@ -1,143 +1,94 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, BellRing, CalendarDays, ChevronRight, FileUser, GraduationCap, Laptop, LayoutGrid, MapPin, SearchX, Sparkles, Sprout } from "lucide-react";
+import { ArrowRight, BellRing, CalendarDays, ChevronRight, FileUser, Laptop, MapPin, SearchX, Sprout } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CategoryIcon } from "@/components/shared/category-icon";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
-import { ServiceTiles, type ServiceTile } from "@/components/shared/service-tiles";
 import { cn } from "@/lib/utils";
 import { SeekerActivity } from "./seeker-dashboard";
-import { MyWorld } from "@/features/world/components/my-world";
-import { getMyInterests } from "@/features/world/queries";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
-import { AiProRow } from "@/features/ai-alerts/components/ai-pro-card";
-import { HomeQuickLinks } from "@/features/home-windows/home-windows";
 import { getHomeSettings } from "@/features/home-windows/queries";
-import { windowsFor } from "@/features/home-windows/model";
 import { SeekerSearch } from "./home-search";
-import { getHomePlace, getPopularProfessions, getSeekerFeed, type HomePlace } from "./home-queries";
+import { AiFinder } from "@/features/find/components/ai-finder";
+import { getHomePlace, getSeekerFeed, type HomePlace } from "./home-queries";
 import { placeChooserHref, seekerFiltersHref, seekerQuickFilters } from "./quick-filters";
-import { SeekerSectionList } from "./section-tiles";
-import { getEntryStats } from "./entry-queries";
-import { getEntryMedia } from "@/features/entry/queries";
-import { entryMediaUrl } from "@/features/entry/media";
-import { HeroBackdrop } from "@/components/shared/hero-backdrop";
-import { PhotoCatalog } from "./market/catalog-section";
-import { getMarketCounts } from "./market/queries";
+import { MyWorld } from "@/features/world/components/my-world";
 
 /**
- * Ish qidiruvchi bosh sahifasi — mini-ilova uslubi (premium 2026-10; mehmon ham — ro'yxatdan o'tmasdan ko'radi):
- *  1) och ko'k sarlavha (2026-11-05, bosh sahifa hero'si bilan bir xil): salomlashuv, "O'zingizga mos ishni toping", bugungi
- *     haqiqiy son, oq qidiruv kartasi va jonli AI qatori;
- *  2) sarlavha ustiga chiqib turadigan xizmatlar to'ri (yaltiroq belgilar): CV, kunlik, yaqin atrofda, masofaviy, tajribasiz,
- *     talabalar, Telegram xabar, barcha kasblar;
- *  3) darhol haqiqiy vakansiyalar (390×844 da birinchi vakansiyaning nomi, maoshi va hududi ko'rinadi).
- *  4) ro'yxatdan keyin — suratli kasblar katalogi ("Ommabop kasblar").
- * Kompyuterda: sarlavha va xizmatlar keng, ostida ro'yxat (2 ustun) va o'ngda yordamchi panel. Telefonda panel ro'yxatdan keyin.
+ * Ish qidiruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "soddalashtir, umuman adashmasin"). Mehmon ham ko'radi.
+ *  1) bitta savol va BITTA qidiruv maydoni: o'z so'zi bilan yozadi (o'zbek lotin/kirill, rus, xato bilan) — AI tushunadi va
+ *     bazadan topadi; aniq topilmasa qidiruvni o'zi kengaytiradi va buni ochiq aytadi (src/features/find/ai-find.ts);
+ *  2) 4 ta tez yo'l: kunlik ish, yaqin atrofda, masofaviy, tajribasiz;
+ *  3) arizalar holati (kirgan ish izlovchi, ma'lumot bo'lsa);
+ *  4) yangi ishlar ro'yxati; kompyuterda o'ngda — "O'zim haqimda e'lon" va "Yangi ish chiqsa xabar".
+ *  5) kirgan foydalanuvchi — eng pastda "Mening dunyom" (qiziqishlari bo'yicha ishlar va bugungi reja): shaxsiy qism, birinchi
+ *     ekranni band qilmaydi; mehmonga ko'rsatilmaydi.
+ * Olib tashlandi: fon surati, nol ko'rsatkichlar, 8 ta plitka, bo'limlar, ommabop kasblar, katalog — bir ekranda bitta vazifa.
+ * Admin AI'ni o'chirgan bo'lsa — oddiy matnli qidiruv (/search).
  */
 export async function SeekerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
-  const [{ t, name }, place, home, stats, media, world, counts] = await Promise.all([
-    getT(),
-    getHomePlace(),
-    getHomeSettings(),
-    getEntryStats(),
-    getEntryMedia(),
-    getMyInterests(session?.userId),
-    getMarketCounts(),
-  ]);
-  const photo = entryMediaUrl(media.hero_seeker);
+  const [{ t, name }, place, home] = await Promise.all([getT(), getHomePlace(), getHomeSettings()]);
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const quick = Object.fromEntries(seekerQuickFilters(where).map((c) => [c.key, c.href])) as Record<"daily" | "noexp" | "remote" | "students", string>;
-  const hasCv = !!session?.workerId;
   const firstName = session?.profile.first_name?.trim();
-  const tiles: ServiceTile[] = [
-    hasCv
-      ? { key: "cv", href: "/profile/cv", label: t("easy.services.cv_mine"), hint: t("easy.services.cv_mine_hint"), icon: FileUser, featured: true, track: "home_service" }
-      : { key: "cv", href: "/post/worker", label: t("easy.services.cv"), hint: t("easy.services.cv_hint"), icon: FileUser, featured: true, track: "home_service" },
-    { key: "daily", href: quick.daily, label: t("easy.services.daily"), hint: t("easy.services.daily_hint"), icon: CalendarDays, track: "home_service" },
-    { key: "near", href: findHref(EMPTY_FIND, { mode: "jobs", near: true }), label: t("easy.services.near"), hint: t("easy.services.near_hint"), icon: MapPin, track: "home_service" },
-    { key: "remote", href: quick.remote, label: t("easy.services.remote"), hint: t("easy.services.remote_hint"), icon: Laptop, track: "home_service" },
-    { key: "noexp", href: quick.noexp, label: t("easy.services.noexp"), hint: t("easy.services.noexp_hint"), icon: Sprout, track: "home_service" },
-    { key: "students", href: quick.students, label: t("easy.services.students"), hint: t("easy.services.students_hint"), icon: GraduationCap, track: "home_service" },
-    { key: "alerts", href: "/ai-alerts", label: t("easy.services.alerts"), hint: t("easy.services.alerts_hint"), icon: BellRing, track: "home_service" },
-    // kirgan foydalanuvchi: oxirgi plitka — "Mening dunyom" (telefonda birinchi ekranda; to'liq bo'lim ro'yxatdan keyin)
-    world.supported && session
-      ? {
-          key: "world",
-          href: world.categories.length ? "#mening-dunyom" : "/dunyo",
-          label: t("easy.world.my_world"),
-          hint: world.categories.length ? t("easy.world.tile_hint", { count: world.categories.length }) : t("easy.world.strip_desc"),
-          icon: Sparkles,
-          track: "home_service",
-        }
-      : { key: "all", href: findHref(EMPTY_FIND, { mode: "jobs" }), label: t("easy.services.all"), hint: t("easy.services.all_hint"), icon: LayoutGrid, track: "home_service" },
+  const shortcuts = [
+    { key: "daily", href: quick.daily, label: t("easy.services.daily"), icon: CalendarDays },
+    { key: "near", href: findHref(EMPTY_FIND, { mode: "jobs", near: true }), label: t("easy.services.near"), icon: MapPin },
+    { key: "remote", href: quick.remote, label: t("easy.services.remote"), icon: Laptop },
+    { key: "noexp", href: quick.noexp, label: t("easy.services.noexp"), icon: Sprout },
   ];
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        {/* flush — sahifaning eng tepasi (kirgan foydalanuvchi): telefonda sarlavha chetdan-chetga */}
-        <section
-          aria-labelledby="home-title"
-          className={cn("hero-surface px-4 pb-16 pt-5 sm:rounded-2xl sm:px-6 sm:pt-6 lg:px-8 lg:pb-20 lg:pt-8", flush ? "-mx-4 -mt-4 sm:mx-0 sm:mt-0" : "rounded-2xl", photo && "has-photo")}
-        >
-          <HeroBackdrop src={photo} />
-          <div className="lg:grid lg:grid-cols-[minmax(0,1fr)_15rem] lg:items-end lg:gap-10">
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-hero-muted">{firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}</p>
-              <h1 id="home-title" className="mt-0.5 text-2xl font-extrabold leading-tight tracking-tight text-hero-fg sm:text-3xl lg:text-4xl">
-                {t("easy.start.seeker_title")}
-              </h1>
-              {stats && stats.vacancies > 0 ? (
-                <p className="hero-glass mt-2 inline-flex items-center gap-2 rounded-full px-2.5 py-1 text-xs font-semibold lg:hidden">
-                  <span className="entry-live" aria-hidden />
-                  {stats.today > 0 ? t("easy.services.today", { count: num(stats.today) }) : t("easy.services.total", { count: num(stats.vacancies) })}
-                </p>
-              ) : null}
-              <div className="mt-4">
-                <SeekerSearch
-                  label={t("easy.start.search_label")}
-                  placeholder={t("easy.start.search_placeholder")}
-                  place={{ label: placeText(place, name, t("easy.location.whole_country")), href: placeChooserHref("jobs"), ...where }}
-                  filtersHref={seekerFiltersHref(where)}
-                  ai={home.aiButton}
-                />
-              </div>
-            </div>
-            {/* kompyuterda o'ngda: haqiqiy raqamlar (bazadan, ~10 daqiqada yangilanadi) — ishonch uchun, soxta "10 000+" yo'q */}
-            {stats ? (
-              <dl className="hero-glass hidden space-y-3 rounded-2xl p-4 lg:block">
-                {(
-                  [
-                    ["stat_vacancies", stats.vacancies],
-                    ["stat_today", stats.today],
-                    ["stat_workers", stats.workers],
-                  ] as const
-                ).map(([key, value]) => (
-                  <div key={key} className="flex items-baseline justify-between gap-3 border-b border-hero-fg/15 pb-2.5 last:border-0 last:pb-0">
-                    <dt className="text-sm font-semibold text-hero-muted">{t(`welcome.market.${key}`)}</dt>
-                    <dd className="tabular text-2xl font-extrabold text-hero-fg">{num(value)}</dd>
-                  </div>
-                ))}
-              </dl>
-            ) : null}
-          </div>
-        </section>
-        {/* xizmatlar sarlavha ustiga chiqib turadi */}
-        <ServiceTiles items={tiles} label={t("easy.services.label")} className="relative z-10 -mt-11 lg:-mt-12 lg:mx-4" />
-      </div>
-
-      {/* "Mening dunyom" (2026-11): qiziqishlar bo'yicha ishlar va kunlik reja; tanlanmagan bo'lsa — "Dunyongizni yarating" */}
-      <div id="mening-dunyom" className="scroll-mt-20 empty:hidden max-lg:order-last">
-        <Suspense fallback={null}>
-          <MyWorld session={session} />
-        </Suspense>
-      </div>
+      <section
+        aria-labelledby="home-title"
+        data-home="seeker-v2"
+        className={cn("border-border bg-card px-4 py-6 sm:rounded-2xl sm:border sm:px-8 sm:py-8", flush ? "-mx-4 -mt-4 border-b sm:mx-0 sm:mt-0" : "rounded-2xl border")}
+      >
+        <p className="text-sm font-medium text-muted-foreground">{firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}</p>
+        <h1 id="home-title" className="mt-1 text-2xl font-bold leading-tight tracking-tight text-navy dark:text-foreground sm:text-3xl">
+          {t("easy.home2.title")}
+        </h1>
+        <p className="mt-1 text-base text-muted-foreground">{t("easy.home2.hint")}</p>
+        <div className="mt-4 max-w-3xl">
+          {home.aiButton ? (
+            <AiFinder variant="field" defaultMode="jobs" locked fieldLabel={t("easy.home2.title")} placeholder={t("easy.home2.placeholder")} submitLabel={t("easy.home2.submit")} />
+          ) : (
+            <SeekerSearch
+              label={t("easy.start.search_label")}
+              placeholder={t("easy.start.search_placeholder")}
+              place={{ label: placeText(place, name, t("easy.location.whole_country")), href: placeChooserHref("jobs"), ...where }}
+              filtersHref={seekerFiltersHref(where)}
+              ai={false}
+            />
+          )}
+        </div>
+        <nav aria-label={t("easy.home2.shortcuts")} className="mt-4">
+          <ul className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            {shortcuts.map(({ key, href, label, icon: Icon }) => (
+              <li key={key} className="flex">
+                <Link
+                  href={href}
+                  prefetch={false}
+                  data-track="home_service"
+                  data-track-to={key}
+                  className="press inline-flex min-h-11 w-full items-center gap-2 rounded-md border border-border bg-background px-3.5 text-sm font-semibold hover:border-primary/50 hover:text-primary-ink"
+                >
+                  <Icon className="size-4 shrink-0 text-primary-ink" aria-hidden /> {label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {/* "direction_select" — admin tahlilidagi voronka qadami (avval "Barcha kasblar" havolasida edi) */}
+          <Link href={seekerFiltersHref(where)} prefetch={false} data-track="direction_select" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+            {t("easy.home2.all_filters")} <ChevronRight className="size-4" aria-hidden />
+          </Link>
+        </nav>
+      </section>
 
       {/* kirgan ish izlovchi: arizalar holati va saqlanganlar (faqat ma'lumot bo'lsa) */}
       {session?.workerId ? (
@@ -147,33 +98,42 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
       ) : null}
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
-        {/* ro'yxat oqim bilan keladi: qidiruv qatori darhol ishlaydi */}
         <Suspense fallback={<FeedSkeleton />}>
           <SeekerFeed session={session} place={place} />
         </Suspense>
-        <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-5">
+        <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-3">
           <ResumeCard />
-          {/* bo'limlar (sonlari bilan): ish beruvchi turi, ommaviy, TOP, yaqin atrofda — ixcham ro'yxat, ro'yxatdan keyin */}
-          <Suspense fallback={null}>
-            <SeekerSectionList place={place} />
-          </Suspense>
-          <Suspense fallback={null}>
-            <PopularProfessions place={place} />
-          </Suspense>
-          <HomeQuickLinks windows={windowsFor("worker", home.windows)} stacked />
-          <Suspense fallback={null}>
-            <AiProRow userId={session?.userId ?? null} role="worker" />
-          </Suspense>
+          <AlertCard />
         </aside>
       </div>
 
-      {/* suratli kasblar katalogi (2026-11-05) — mehmon bosh sahifasidagi bilan bir xil, ro'yxatdan keyin */}
-      <PhotoCatalog media={media} counts={counts} embedded />
+      {/* shaxsiy qism — faqat kirgan foydalanuvchiga, ro'yxatdan keyin (birinchi ekran: qidiruv va yangi ishlar) */}
+      {session ? (
+        <Suspense fallback={null}>
+          <MyWorld session={session} />
+        </Suspense>
+      ) : null}
     </div>
   );
 }
 
-const num = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
+/** "Yangi ish chiqsa — Telegram'da xabar": o'z so'zi bilan kuzatuv (AI) */
+async function AlertCard() {
+  const { t } = await getT();
+  return (
+    <Link href="/ai-alerts?role=worker" className="press flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/40">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
+        <BellRing className="size-5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block font-bold">{t("easy.home2.alert_title")}</span>
+        <span className="block text-sm leading-snug text-muted-foreground">{t("easy.home2.alert_desc")}</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+    </Link>
+  );
+}
+
 
 type NameFn = (row: { name_uz: string; name_ru: string; name_en?: string | null; name_oz?: string | null } | null | undefined) => string;
 
@@ -270,56 +230,6 @@ function FeedSkeleton() {
         ))}
       </div>
     </div>
-  );
-}
-
-/** Faol e'lonlari ko'p kasblar — bir bosishda shu kasb natijalari (eslab qolingan hududda) */
-async function PopularProfessions({ place }: { place: HomePlace }) {
-  const [{ t, name }, list] = await Promise.all([getT(), getPopularProfessions()]);
-  // ro'yxat bo'lmasa ham kasblar daraxtiga kirish qoladi (bosqichma-bosqich tanlash va qidirish)
-  if (!list.length) {
-    return (
-      <Link
-        href={findHref(EMPTY_FIND, { mode: "jobs" })}
-        prefetch={false}
-        data-track="direction_select"
-        className="press flex min-h-12 items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 text-base font-semibold text-primary-ink hover:border-primary/40"
-      >
-        {t("easy.start.all_professions")} <ChevronRight className="size-5 shrink-0" aria-hidden />
-      </Link>
-    );
-  }
-  const where = { region: place.region?.slug ?? "all", district: place.region ? (place.district?.id ?? "all") : null };
-  return (
-    <section aria-labelledby="home-professions">
-      <div className="flex items-end justify-between gap-3">
-        <h2 id="home-professions" className="text-base font-bold">
-          {t("easy.start.professions_title")}
-        </h2>
-        <Link
-          href={findHref(EMPTY_FIND, { mode: "jobs" })}
-          prefetch={false}
-          data-track="direction_select"
-          className="inline-flex min-h-11 shrink-0 items-center gap-1 text-base font-semibold text-primary-ink hover:underline"
-        >
-          {t("easy.start.all_professions")} <ChevronRight className="size-4" aria-hidden />
-        </Link>
-      </div>
-      <ul className="mt-2 flex flex-wrap gap-2">
-        {list.map((p) => (
-          <li key={p.id} className="flex max-w-full">
-            <Link
-              href={findHref(EMPTY_FIND, { mode: "jobs", p: p.id, ...where })}
-              prefetch={false}
-              className="press inline-flex min-h-11 max-w-full items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm font-semibold hover:border-primary/40 hover:text-primary-ink"
-            >
-              <CategoryIcon name={p.icon} className="size-4 shrink-0 text-primary-ink" />
-              <span className="truncate">{name(p)}</span>
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </section>
   );
 }
 

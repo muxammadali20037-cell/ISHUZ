@@ -7,6 +7,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  */
 
 const windows = (page: Page) => page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link");
+// 2.0: ish izlovchi bosh sahifasida rasmli oynalar o'rnida — qidiruv ostidagi 4 ta tez yo'l
+const shortcuts = (page: Page) => page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
@@ -21,12 +23,10 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
 
   await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
   await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
-  await expect(windows(page)).toHaveCount(3);
-  await expect(windows(page).nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
-  await expect(windows(page).nth(1)).toContainText("Kunlik ishlar");
-  await expect(windows(page).nth(2)).toContainText("Yaqin atrofdagi ishlar");
+  await expect(shortcuts(page)).toHaveText(["Kunlik ish", "Yaqin atrofda", "Masofaviy", "Tajribasiz"]);
+  await expect(windows(page)).toHaveCount(0);
   // ishchi topish va vakansiya berish — ish izlovchiga ko'rsatilmaydi
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
@@ -84,7 +84,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await loginAs(context, RET);
     await asMode(context, "worker");
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
 
     await page.goto("/cabinet");
@@ -171,7 +171,7 @@ test.describe("yaqin atrofda", () => {
     await context.grantPermissions(["geolocation"]);
     await context.setGeolocation(CHILONZOR);
     await page.goto("/");
-    await windows(page).filter({ hasText: "Yaqin atrofdagi ishlar" }).click();
+    await shortcuts(page).filter({ hasText: "Yaqin atrofda" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Yaqin atrofdagi ishlarni ko'rsatamiz" })).toBeVisible();
     await page.getByRole("button", { name: "Joylashuvni aniqlash" }).click();
     await page.waitForURL(/region=tashkent_city&district=[0-9a-f-]{36}&any=1/);

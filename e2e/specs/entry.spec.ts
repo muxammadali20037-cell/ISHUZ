@@ -58,7 +58,7 @@ test.describe("kirish", () => {
     await asGuest(context);
     await page.goto("/");
     await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
     expect(await cookie(context, "ib_mode")).toBe("worker");
 
     await asGuest(context);

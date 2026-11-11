@@ -26,10 +26,10 @@ const money = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
  * Telegram'ga xabar. Ikki yo'l: "Menga ish topsin" (mos vakansiya — kim joylagani bilan) va "Menga ishchi topsin"
  * (mos ishchi e'loni). Obuna bitta — ikkala yo'lni qamraydi.
  */
-export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worker" | "employer" }) {
+export function AiAlertsPanel({ data, role, initialText = "" }: { data: AiAlertsData; role: "worker" | "employer"; initialText?: string }) {
   const { t } = useT();
   const router = useRouter();
-  const [text, setText] = useState("");
+  const [text, setText] = useState(initialText);
   const [pending, start] = useTransition();
   const examples = [t("saved.ai_alerts.example_1"), t("saved.ai_alerts.example_2"), t("saved.ai_alerts.example_3")];
 

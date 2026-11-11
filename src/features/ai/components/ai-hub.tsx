@@ -14,7 +14,7 @@ import { AiChatPanel } from "@/features/find/components/ai-chat";
  *  3) AI PRO kuzatuv (/ai-alerts); 4) AI bilan e'lon tuzish — faqat AI provayder sozlangan bo'lsa.
  * Hisoblanmagan foiz yoki soxta va'da yo'q.
  */
-export async function AiHub({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
+export async function AiHub({ session, mode, query }: { session: SessionContext | null; mode: AppMode | null; query?: string }) {
   const { t } = await getT();
   const employer = mode === "employer";
   const matchesHref = !session
@@ -53,6 +53,7 @@ export async function AiHub({ session, mode }: { session: SessionContext | null;
       <AiChatPanel
         defaultMode={employer ? "workers" : "jobs"}
         locked={mode !== null}
+        initialQuery={query}
         examples={{
           jobs: [t("easy.finder.example_j1"), t("easy.finder.example_j2"), t("easy.finder.example_j3")],
           workers: [t("easy.finder.example_w1"), t("easy.finder.example_w2"), t("easy.finder.example_w3")],

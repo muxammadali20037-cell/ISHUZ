@@ -61,7 +61,9 @@ jobs:
       DATABASE_URL: postgres://postgres:postgres@127.0.0.1:5432/ishuz_test
     steps:
       - uses: actions/checkout@v4
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+      # psql odatda runner'da tayyor turadi; yo'q bo'lsagina o'rnatiladi (apt ko'zgusi ishlamay qolsa CI shu qadamda yiqilmasin)
+      - name: psql
+        run: command -v psql >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client)
       - run: bash scripts/db-test.sh
 
   e2e:
@@ -88,13 +90,20 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client
+      # psql odatda runner'da tayyor turadi; yo'q bo'lsagina o'rnatiladi (apt ko'zgusi ishlamay qolsa CI shu qadamda yiqilmasin)
+      - name: psql
+        run: command -v psql >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client)
       - name: PostgREST 12.2.3 (nazorat yig'indisi bilan)
         run: |
           curl -fsSL -o /tmp/pgrst.tar.xz https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz
           echo "9f71269e61ac3a940281e93ff415760f5957e430e475ba4c3889f3ede7d5527c  /tmp/pgrst.tar.xz" | sha256sum -c -
           tar -xJf /tmp/pgrst.tar.xz -C /tmp && sudo install /tmp/postgrest /usr/local/bin/postgrest
-      - run: npx playwright install --with-deps chromium
+      # Brauzer alohida, tizim kutubxonalari alohida: apt ko'zgusi vaqtincha ishlamasa ham ish to'xtamaydi — runner tasviridagi
+      # kutubxonalar ishlatiladi. Ular yetmasa brauzer ishga tushmaydi va testlar ochiq yiqiladi (hech narsa yashirilmaydi).
+      - name: Chromium
+        run: |
+          npx playwright install chromium
+          sudo env "PATH=$PATH" npx playwright install-deps chromium || echo "::warning::apt ko'zgusi ishlamadi — runner'dagi tizim kutubxonalari ishlatiladi"
       - name: Stend (toza baza + barcha migratsiyalar + build)
         run: bash e2e/stack/up.sh
       - name: Playwright

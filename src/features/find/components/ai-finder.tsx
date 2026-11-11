@@ -20,18 +20,27 @@ import { AiModeSwitch, AiPromptBox, AiThread, useAiChat } from "./ai-chat";
  *               (misol bosilsa — oyna ochiladi va shu so'rov darhol yuboriladi);
  *  - "cta"    — mehmon bosh sahifasidagi AI bo'limi uchun asosiy tugma ("AI yordamchini sinab ko'ring");
  *  - "bar"    — bosh ekrandagi "jonli" AI qatori: aylanib turadigan rangli chegara, yaltiroq belgi va o'zi yozilib-o'chib
- *               turadigan misollar (prefers-reduced-motion — harakatsiz, birinchi misol).
+ *               turadigan misollar (prefers-reduced-motion — harakatsiz, birinchi misol);
+ *  - "field"  — 2.0 bosh sahifasining YAGONA qidiruv maydoni: foydalanuvchi o'z so'zi bilan yozadi (har qanday til, xato bilan),
+ *               "Topish" — oyna ochiladi va matn darhol AI'ga yuboriladi; natija bosqichlarsiz shu yerda.
  */
 export function AiFinder({
   defaultMode,
   locked = false,
   variant = "inline",
   className,
+  fieldLabel,
+  placeholder,
+  submitLabel,
 }: {
   defaultMode: "jobs" | "workers";
   locked?: boolean;
-  variant?: "inline" | "card" | "cta" | "bar";
+  variant?: "inline" | "card" | "cta" | "bar" | "field";
   className?: string;
+  /** "field" uchun: maydon nomi (ekran o'qigich), misol matni va tugma yozuvi */
+  fieldLabel?: string;
+  placeholder?: string;
+  submitLabel?: string;
 }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
@@ -50,10 +59,54 @@ export function AiFinder({
     setOpen(true);
     if (example) chat.ask(example);
   };
+  // skriptlar yuklanib bo'lganini bildiradi (sekin telefon: undan oldin bosilsa — forma /ai?q=… ga oddiy yo'l bilan ketadi)
+  const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   return (
     <>
-      {variant === "card" ? (
+      {variant === "field" ? (
+        <form
+          // skriptlar hali yuklanmagan bo'lsa ham boshi berk yo'q: matn AI sahifasiga boradi va o'sha yerda javob beriladi
+          action="/ai"
+          method="get"
+          role="search"
+          aria-label={fieldLabel}
+          data-ai-field
+          data-hydrated={hydrated ? "" : undefined}
+          className={cn("flex items-center gap-1.5 rounded-xl border border-border bg-card p-1.5 shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/30", className)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            // maydon boshqarilmaydi (uncontrolled): skriptlar yuklanishidan oldin yozilgan matn ham yo'qolmaydi
+            const form = e.currentTarget;
+            const q = String(new FormData(form).get("q") ?? "").replace(/\s+/g, " ").trim();
+            form.reset();
+            // bo'sh yuborilsa ham — yordamchi misollar bilan ochiladi (nima yozishni bilmaganlar uchun)
+            openWith(q.length >= 2 ? q : undefined);
+          }}
+        >
+          {/* tor telefonda (≤ 380px) belgi yashiriladi — yozish maydoniga joy qoladi */}
+          <Search className="ml-2 size-5 shrink-0 text-muted-foreground max-[380px]:hidden" aria-hidden />
+          <input
+            name="q"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            maxLength={300}
+            aria-label={fieldLabel}
+            placeholder={placeholder}
+            className="h-12 min-w-0 flex-1 bg-transparent px-1 text-base text-foreground outline-none placeholder:text-muted-foreground max-[380px]:pl-2"
+          />
+          <button
+            type="submit"
+            data-track="ai_finder_open"
+            className="press inline-flex h-12 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3.5 text-base font-semibold text-primary-foreground hover:bg-primary-hover sm:px-5"
+          >
+            <Sparkles className="size-5" aria-hidden />
+            {/* yozuv har doim ko'rinadi (320px da ham): faqat belgi bo'lsa tugma nima qilishi tushunarsiz */}
+            {submitLabel}
+          </button>
+        </form>
+      ) : variant === "card" ? (
         <section aria-labelledby="ai-card-title" className={cn("rounded-2xl border border-primary/25 bg-primary-soft p-4", className)}>
           <div className="flex items-center gap-3">
             <AiAvatar />

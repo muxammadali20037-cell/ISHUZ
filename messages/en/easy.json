@@ -711,7 +711,19 @@
     "composer_placeholder_jobs": "Job, area, pay…",
     "composer_placeholder_workers": "Who you need: job, area…",
     "cta_button": "Try the AI assistant",
-    "bar_badge": "New"
+    "bar_badge": "New",
+    "relaxed_district": "Nothing in {district} yet — showing all of {region}",
+    "relaxed_region": "Nothing in {region} yet — showing all of Uzbekistan",
+    "relaxed_filters": "Nothing matched the extra conditions — they were removed",
+    "relaxed_parent": "Nothing for “{from}” yet — showing jobs in “{to}”",
+    "relaxed_profession": "I couldn't pin down the profession — here is what matches your other conditions",
+    "relaxed_text": "Found by the word “{word}” in ad texts (there is no exact profession in the list)",
+    "relaxed_alert": "Notify me on Telegram when exactly what I asked for appears",
+    "empty_honest": "Nothing matching anywhere in Uzbekistan yet. To get a Telegram message when something new appears, tap the button below.",
+    "empty_alert": "Notify me about new ones",
+    "empty_post_worker": "Post an ad about myself",
+    "empty_post_vacancy": "Post a vacancy",
+    "widened": "Search widened"
   },
   "mode": {
     "chooser_title": "What are you looking for?",
@@ -997,5 +1009,15 @@
     "all_new": "All new jobs",
     "strip_desc": "Pick your interests — 1 minute",
     "tile_hint": "{count} fields · today's plan"
+  },
+  "home2": {
+    "title": "What job are you looking for?",
+    "hint": "Write it in your own words — for example “cook in Chilanzar” or “daily work”.",
+    "placeholder": "For example: cook",
+    "submit": "Find",
+    "shortcuts": "Quick search",
+    "all_filters": "Search with filters",
+    "alert_title": "We'll tell you about new jobs",
+    "alert_desc": "Describe the job you need — we'll message you on Telegram as soon as a match appears"
   }
 }

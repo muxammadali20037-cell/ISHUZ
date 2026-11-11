@@ -81,12 +81,18 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
   ] as const) {
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
-    await page.getByRole("button", { name: "AI bilan qidirish" }).first().click();
+    // 2.0: bosh sahifaning yagona qidiruv maydoni — yozadi va "Topish" (skriptlar yuklangach: [data-hydrated])
+    const field = page.locator("form[data-ai-field][data-hydrated]");
+    await field.getByRole("searchbox").fill("Toshkentda omborchi");
+    await field.getByRole("button", { name: "Topish" }).click();
     const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
-    await dialog.getByLabel("Nima qidiryapsiz?").fill("Toshkentda omborchi");
-    await dialog.getByRole("button", { name: "Topish" }).click();
     await expect(dialog.getByText(/^Tushundim:/).last()).toBeVisible();
     if (zoom) await zoomText(page, zoom);
+    expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
+    // hech narsa topilmagan javob: "xabar olish" va "e'lon berish" tugmalari ham sig'adi (uzun yozuv tugmadan chiqmaydi)
+    await dialog.getByLabel("Nima qidiryapsiz?").fill("elektrik kerak");
+    await dialog.getByRole("button", { name: "Topish" }).click();
+    await expect(dialog.locator("[data-ai-empty-actions]")).toBeVisible();
     expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
     await page.keyboard.press("Escape");
   }
