@@ -150,3 +150,40 @@ kerak (`docs/AI_ASSISTANT.md` → "Halol eslatma"). Ovoz brauzerga bog'liq (Tele
 
 **Keyingi aniq vazifa:** ega qarori bilan — serverda nutq xizmati (hamma qurilmada ovoz); suhbat matnini e'lon formasiga
 ko'chirish; keyin 2.0 qayta qurish davomi (qobiqlar, ish beruvchi bosh sahifasi).
+
+## AI HR yordamchi saytga chiqarildi (2026-11-11)
+
+Ega ruxsati bilan PR #9 `main`ga qo'shildi (`4137b44`). Ega keyingi nashrlar uchun doimiy ruxsat berdi ("so'rama"):
+CI yashil bo'lsa chiqariladi; baza migratsiyasi va destruktiv amallar — avvalgidek faqat ega bilan.
+
+## 2.0: ish beruvchi paneli, xush kelibsiz ekrani, cookie, Play Market (2026-11-11)
+
+**Bajarildi:**
+- **Ish beruvchi bosh sahifasi va paneli noldan** (`employer-head.tsx`, `employer-home.tsx`, `employer-dashboard.tsx`): bitta
+  savol "Qanday xodim kerak?", yagona AI qidiruv maydoni (nomzodlar ichidan), 4 ta tez yo'l (Kunlik ishchilar · Yaqin atrofda ·
+  Tajribali · Masofaviy), "Barcha nomzodlar", katta "Vakansiya joylash". Panelda keyin: ko'rsatkichlar, yangi arizalar, nomzodlar,
+  faol vakansiyalar, bo'limlar. Olib tashlandi: fon surati, 8 ta plitka, admin oynalari, arizalar holati qatori, ikkinchi matnli
+  qidiruv, AI PRO kartasi. O'lik kod o'chirildi (`service-tiles`, `section-tiles`, `home-windows` komponenti, `hero-backdrop`,
+  `PipelineTiles`, `AiProRow`, hero rasm joylari).
+- **Kirish soddalashtirildi** (`welcome-screen.tsx`): til → 3 slayd → rol o'rniga BITTA ekran — til qatori (bosilsa darhol) va
+  ikkita rasmli karta "Ish qidiryapman" / "Ishchi qidiryapman" (egasi bergan suratlar; admin almashtira oladi) — bir bosishda o'z
+  bosh sahifasiga, kirishsiz. Slaydlar ixtiyoriy ("Qanday ishlaydi?"). JS'siz ham ishlaydi (`/start/loading.tsx` olib tashlandi —
+  oqimli chizish formani yashirardi).
+- **Cookie:** `/cookies` sahifasi (4 tilda: har bir cookie, maqsadi, muddati; brauzer xotirasi; nima yo'q; boshqarish),
+  bir martalik eslatma (pastki menyu ustida, `ib_consent`, 1 yil, testlarda ko'rsatilmaydi), footer havolasi, sitemap/robots.
+  Maxfiylik siyosati yangilandi: AI yordamchi suhbati (serverda saqlanmaydi, AI xizmatiga uzatiladi), mikrofon (faqat tugma
+  bosilganda, ovoz saqlanmaydi), cookie havolasi; sana 2026-11-11.
+- **Play Market:** do'kon ikonasi (ilovaning o'z belgisi), feature graphic va 6 ta skrinshot (uz, ru) 2.0 dizaynda —
+  `e2e/screens/play-store.shots.ts` bilan qayta yasaladi; `docs/PLAY_MARKET.md` yangilandi (ranglar, cookie, Data safety:
+  AI suhbati va mikrofon qatorlari, tekshiruvchiga izoh); manifestga `screenshots` (`public/store`).
+
+**Testlar:** Vitest 762; E2E 257/257 (yangi: xush kelibsiz ekrani 3 ta, cookie 2 ta; yangilandi: entry-flow, home-windows,
+admin-home, modes, sections, journeys, entry).
+
+**Qolgan muammo / ega amali:**
+- Play Console: hisob, `.aab` (PWABuilder), imzo barmoq izi → Vercel `ANDROID_SHA256_CERT_FINGERPRINTS`, test hisobi —
+  `docs/PLAY_MARKET.md` 0–4 bo'limlar. Shaxsiy hisobda 12 tester / 14 kun.
+- Admin → "Bosh sahifa" oynalari muharriri saytga ta'sir qilmaydi — admin panel qayta qurilganda olib tashlanadi.
+
+**Keyingi aniq vazifa:** qobiqlar (mobil hamburger + pastki menyu), natijalar va e'lon sahifalari — 2.0 uslubida; admin
+panelni tozalash.
