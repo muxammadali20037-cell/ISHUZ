@@ -195,19 +195,20 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
     await page.waitForURL(/\/search/);
     await page.locator("header a[href='/']").first().click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");
-    if (i === 1 || i === 10 || i === 20) {
-      await homeReady();
-      samples.push({ round: i, ...(await metric()) });
-    }
+    // har bir aylanish o'lchanadi: CI'da beqarorlik qaysi qadamda paydo bo'lishini ko'rish uchun (xato matnida chiqadi)
+    await homeReady();
+    samples.push({ round: i, ...(await metric()) });
   }
   record("navigation-leaks", samples);
-  const [a, b, c] = samples;
+  const curve = samples.map((s) => `${s.round}:${s.listeners}/${s.nodes}`).join(" ");
+  const pick = (r: number) => samples.find((s) => s.round === r)!;
+  const [a, b, c] = [pick(1), pick(10), pick(20)];
   // 1-dan 20-gacha: tinglovchilar 25% dan, DOM tugunlari 50% dan ortiq o'smasin
-  expect(c!.listeners).toBeLessThanOrEqual(a!.listeners * 1.25);
-  expect(c!.nodes).toBeLessThanOrEqual(a!.nodes * 1.5);
+  expect(c!.listeners, curve).toBeLessThanOrEqual(a!.listeners * 1.25);
+  expect(c!.nodes, curve).toBeLessThanOrEqual(a!.nodes * 1.5);
   // 10-dan 20-gacha deyarli o'zgarmaydi (to'xtovsiz o'sish yo'q)
-  expect(c!.listeners).toBeLessThanOrEqual(b!.listeners * 1.1);
-  expect(c!.nodes).toBeLessThanOrEqual(b!.nodes * 1.1);
+  expect(c!.listeners, curve).toBeLessThanOrEqual(b!.listeners * 1.1);
+  expect(c!.nodes, curve).toBeLessThanOrEqual(b!.nodes * 1.1);
 });
 
 /** Bosish/yozish kechikishi (INP qoidasi bo'yicha: faqat haqiqiy o'zaro ta'sirlar) — CPU 4× sekin */
