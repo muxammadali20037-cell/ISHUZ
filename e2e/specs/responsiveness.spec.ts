@@ -155,6 +155,7 @@ test("e'lon joylash: internet uzilsa — tushunarli xato, tugma qayta ishlaydi, 
 });
 
 test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'smaydi", async ({ page, context }) => {
+  test.setTimeout(150_000); // 20 aylanishning har birida o'lchov (CI'da sekin)
   await asGuest(context);
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
