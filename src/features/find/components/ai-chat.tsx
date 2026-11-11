@@ -8,7 +8,8 @@ import { callAction } from "@/lib/action-call";
 import { Button } from "@/components/ui/button";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { cn } from "@/lib/utils";
-import { aiFind, type AiFindResult } from "../ai-find";
+import { aiFind } from "../ai-find";
+import type { AiFindResult } from "../ai-find-types";
 import { CHAT_KEEP, REFINE_WORDS, chatStorageKey, parseStoredChat, refineOptions, refineQuery, serializeChat, speechLang, type FinderMode, type RefineKey } from "../ai-chat-model";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 
