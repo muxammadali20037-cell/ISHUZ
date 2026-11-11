@@ -15,7 +15,9 @@ import { aiProviderConfigured } from "@/lib/ai/json";
 import { smartResolveQuery } from "./ai-search";
 import type { AppliedFilters } from "./ai-chat-model";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
-import { findJobs, findWorkers, getNodeInfo, type JobRow, type WorkerRow } from "./queries";
+import { findJobs, findJobsByText, findWorkers, getNodeInfo, type WorkerRow } from "./queries";
+import { textKeywords } from "./ai-keywords";
+import type { JobCardData } from "./components/result-cards";
 
 const input = z.object({
   text: z.string().trim().min(2).max(300),
@@ -35,7 +37,8 @@ export interface AiFindResult {
   aiAvailable: boolean;
   /** qo'llangan shartlar — AI yordamchi aniqlashtirish takliflarini takrorlamaydi */
   applied: AppliedFilters;
-  jobs: JobRow[];
+  /** oddiy qidiruv yoki — kasb aniqlanmaganda — e'lon matnlari bo'yicha topilganlar (bir xil karta shakli) */
+  jobs: JobCardData[];
   workers: WorkerRow[];
   images: Record<string, string>;
   photos: Record<string, string>;
@@ -44,6 +47,14 @@ export interface AiFindResult {
   total: number;
   /** to'liq natijalar sahifasi (filtrlar, sahifalar) */
   href: string;
+  /**
+   * Aniq so'rov bo'yicha bo'sh chiqqanda qidiruv qanday kengaytirildi (foydalanuvchiga ochiq aytiladi):
+   * masalan "Chilonzorda yo'q — butun Toshkent bo'yicha". Natija topilmasa — bo'sh.
+   */
+  relaxed: string[];
+  /** hech narsa topilmadi: yangi mos e'lon chiqsa Telegram'ga xabar (yozgan matni tayyor) va o'zi e'lon berishi */
+  alertHref: string;
+  postHref: string;
 }
 
 /**
@@ -89,30 +100,123 @@ export async function aiFind(raw: unknown): Promise<ActionResult<AiFindResult>> 
   ].filter((x): x is string => !!x);
 
   const applied: AppliedFilters = { daily: params.pay === "daily", noexp: params.noexp, exp: params.exp, remote: r.remote, shift: params.schedule === "shift" };
-  const base: Omit<AiFindResult, "needProfession" | "href"> = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, jobs: [], workers: [], images: {}, photos: {}, saved: [], total: 0 };
-  // kasb aniqlanmadi (kunlik ishlar bundan mustasno) — taxminiy ro'yxat emas, aniq savol
-  if (!node && params.pay !== "daily") {
-    return { ok: true, data: { ...base, needProfession: true, href: findHref({ ...params, p: null, region: null, district: null }) } };
+  const alertHref = `/ai-alerts?${new URLSearchParams({ role: mode === "workers" ? "employer" : "worker", q: parsed.data.text })}`;
+  const postHref = mode === "workers" ? "/post/vacancy" : "/post/worker";
+  const base = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, alertHref, postHref };
+  // kasb aniqlanmadi (kunlik ishlar bundan mustasno). Boshqa shart tushunilgan bo'lsa (hudud, maosh, grafik, tajriba, masofaviy) —
+  // shu shartlar bilan barcha kasblar bo'yicha qidiriladi; hech narsa tushunilmagan bo'lsa (masalan "qwerty") — aniq savol
+  const needProfession = !node && params.pay !== "daily";
+  const hasOther = !!(region || r.remote || params.salary || params.schedule || params.noexp || params.exp);
+
+  // Kasblar ro'yxatida yo'q so'z (kompaniya nomi, erkin lavozim: "korzinkaga ishga kirmoqchiman") — "tushunmadim" deb to'xtamaymiz:
+  // matndagi kalit so'zlar bo'yicha e'lonlarning sarlavhasi, tavsifi va kompaniya nomidan qidiramiz — avval tushunilgan hududda,
+  // bo'lmasa butun O'zbekistonda. Topilgani haqiqiy e'lonlar; qaysi so'z bo'yicha topilgani ochiq aytiladi.
+  if (needProfession && mode === "jobs") {
+    const names = [region?.name_uz, region?.name_ru, region?.name_en, district?.name_uz, district?.name_ru].filter((x): x is string => !!x);
+    const words = textKeywords(parsed.data.text, names);
+    const scopes = [
+      { place: { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: r.remote }, where: { region: params.region, district: params.district }, widened: false },
+      ...(region && !r.remote ? [{ place: { regionId: null, districtId: null, remote: false }, where: { region: "all", district: null }, widened: true }] : []),
+    ];
+    for (const scope of words.length ? scopes : []) {
+      const tries = await Promise.all(words.map((w) => findJobsByText({ ...params, p: null, q: w, page: 1 }, scope.place, SHOW)));
+      const i = tries.findIndex((x) => x.ok && x.items.length > 0);
+      const hit = tries[i];
+      if (!hit?.ok) continue; // topilmadi yoki texnik xato — keyingi yo'l (xato "yo'q" deb ko'rsatilmaydi: pastda oddiy qidiruv bor)
+      const word = words[i]!;
+      const shown = hit.items.slice(0, SHOW);
+      const saved = await savedIdSet(session, "vacancy", shown.map((x) => x.id));
+      void trackServer("ai_find", session?.userId ?? null, { source: r.source, mode, results: hit.total, relaxed: scope.widened ? 2 : 1, text: true });
+      return {
+        ok: true,
+        data: {
+          ...base,
+          understood: [...understood, `«${word}»`],
+          needProfession: false,
+          relaxed: [t("easy.finder.relaxed_text", { word }), ...(scope.widened && region ? [t("easy.finder.relaxed_region", { region: name(region) })] : [])],
+          jobs: shown,
+          workers: [],
+          saved: [...saved],
+          images: hit.images,
+          photos: hit.photos ?? {},
+          total: hit.total,
+          href: findHref({ ...params, p: null, q: word, ...scope.where }),
+        },
+      };
+    }
   }
 
-  const place = { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: r.remote };
-  const res = mode === "jobs" ? await findJobs(params, place) : await findWorkers(params, place);
+  if (needProfession && !hasOther) {
+    return { ok: true, data: { ...base, needProfession: true, relaxed: [], jobs: [], workers: [], images: {}, photos: {}, saved: [], total: 0, href: findHref({ ...params, p: null, region: null, district: null }) } };
+  }
+
+  const run = (p: FindParams, pl: Parameters<typeof findJobs>[1]) => (mode === "jobs" ? findJobs(p, pl) : findWorkers(p, pl));
+  let cur: FindParams = needProfession ? { ...params, p: null } : params;
+  let place = { regionId: region?.id ?? null, districtId: district?.id ?? null, remote: r.remote };
+  let res = await run(cur, place);
   if (!res.ok) return { ok: false, error: "search_failed" };
-  void trackServer("ai_find", session?.userId ?? null, { source: r.source, mode, results: res.total });
+
+  // Bo'sh chiqsa — "yo'q" deb to'xtamaymiz: shartlarni birma-bir kengaytiramiz va buni ochiq aytamiz (hech narsa o'ylab topilmaydi)
+  const relaxed: string[] = [];
+  const steps: { applies: () => boolean; apply: () => void; note: () => string }[] = [
+    {
+      applies: () => !!place.districtId && !!region,
+      apply: () => {
+        cur = { ...cur, district: "all" };
+        place = { ...place, districtId: null };
+      },
+      note: () => t("easy.finder.relaxed_district", { district: district ? name(district) : "", region: region ? name(region) : "" }),
+    },
+    {
+      applies: () => !!place.regionId && !place.remote,
+      apply: () => {
+        cur = { ...cur, region: "all", district: null };
+        place = { ...place, regionId: null, districtId: null };
+      },
+      note: () => t("easy.finder.relaxed_region", { region: region ? name(region) : "" }),
+    },
+    {
+      applies: () => !!(cur.salary || cur.schedule || cur.noexp || cur.exp || cur.pay),
+      apply: () => {
+        cur = { ...cur, salary: null, schedule: null, noexp: false, exp: false, pay: null };
+      },
+      note: () => t("easy.finder.relaxed_filters"),
+    },
+    {
+      applies: () => !!node && node.trail.length > 1 && cur.p === node.id,
+      apply: () => {
+        cur = { ...cur, p: node!.trail.at(-2)!.id };
+      },
+      note: () => t("easy.finder.relaxed_parent", { from: name(node!.trail.at(-1)!), to: name(node!.trail.at(-2)!) }),
+    },
+  ];
+  for (const step of steps) {
+    if (res.total > 0) break;
+    if (!step.applies()) continue;
+    step.apply();
+    const next = await run(cur, place);
+    if (!next.ok) return { ok: false, error: "search_failed" };
+    res = next;
+    relaxed.push(step.note());
+  }
+  if (res.total > 0 && needProfession) relaxed.unshift(t("easy.finder.relaxed_profession"));
+
+  void trackServer("ai_find", session?.userId ?? null, { source: r.source, mode, results: res.total, relaxed: relaxed.length });
   const shown = res.items.slice(0, SHOW);
   const saved = await savedIdSet(session, mode === "jobs" ? "vacancy" : "worker", shown.map((i) => i.id));
   return {
     ok: true,
     data: {
       ...base,
-      needProfession: false,
-      jobs: mode === "jobs" ? (shown as JobRow[]) : [],
+      needProfession: needProfession && res.total === 0,
+      relaxed: res.total > 0 ? relaxed : [],
+      jobs: mode === "jobs" ? (shown as JobCardData[]) : [],
       workers: mode === "workers" ? (shown as WorkerRow[]) : [],
       saved: [...saved],
       images: res.images,
       photos: "photos" in res ? (res.photos ?? {}) : {},
       total: res.total,
-      href: findHref(params),
+      href: findHref(needProfession && res.total === 0 ? { ...params, p: null, region: null, district: null } : cur),
     },
   };
 }
