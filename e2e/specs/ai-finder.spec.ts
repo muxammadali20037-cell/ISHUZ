@@ -89,8 +89,16 @@ test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq ta
 
   await dialog.getByLabel("Nima qidiryapsiz?").fill("qwerty asdf");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.getByText("Kasbni aniqlay olmadim")).toBeVisible();
+  await expect(dialog.locator("[data-ai-reply]").last()).toContainText(/tushunmadim|aniqlay olmadim/);
   await expect(dialog.getByRole("link", { name: "Kasbni ro'yxatdan tanlash" })).toHaveAttribute("href", /\/search\?mode=jobs/);
+  // tushunilmagan matn uchun "yangisi chiqsa xabar olish" taklif qilinmaydi (nimani kuzatish noma'lum)
+  await expect(dialog.locator("[data-ai-empty-actions]")).toHaveCount(0);
+
+  // hol-ahvol — qidiruv emas, suhbat
+  await dialog.getByLabel("Nima qidiryapsiz?").fill("nima gap");
+  await dialog.getByRole("button", { name: "Topish" }).click();
+  await expect(dialog.locator("[data-ai-reply]").last()).toContainText("Men Ish topdim AI yordamchisiman");
+  await expect(dialog.locator("[data-ai-reply]").last()).not.toContainText("tushunmadim");
 });
 
 test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ishchilar ichida", async ({ page, context }) => {

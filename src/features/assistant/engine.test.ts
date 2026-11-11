@@ -168,6 +168,17 @@ describe("AI ishlamasa — lug'at va shablon bilan to'liq javob", () => {
     expect(r.events.at(-1)).toEqual({ type: "error", code: "unavailable" });
   });
 
+  it("hol-ahvol ('nima gap', 'qalaysiz', 'как дела') — qidiruvsiz, suhbatdek javob; 'qanday ish bor' esa qidiruv", async () => {
+    for (const text of ["nima gap", "Salom, nima gaplar?", "qalaysiz", "Қалайсиз?", "как дела?", "what's up"]) {
+      const r = await run([user(text)], {});
+      expect(r.find, text).not.toHaveBeenCalled();
+      expect(r.text, text).not.toMatch(/tushunmadim|aniqlay olmadim|понял|tell which/i);
+      expect(r.text, text).toMatch(/AI yordamchi|AI ёрдамчи|ИИ-помощник|AI assistant/);
+    }
+    const search = await run([user("qanday ish bor")], {});
+    expect(search.find).toHaveBeenCalled();
+  });
+
   it("salomlashuv va rahmat — qidiruvsiz, tilga mos; sun'iy intellekt ekanini aytadi", async () => {
     const hi = await run([user("Salom")], {});
     expect(hi.find).not.toHaveBeenCalled();

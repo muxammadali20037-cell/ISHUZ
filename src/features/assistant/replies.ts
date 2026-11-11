@@ -9,25 +9,29 @@ import type { AssistantLang, AssistantRole } from "./types";
 type Variants = readonly string[];
 const pick = (list: Variants, turn: number) => list[turn % list.length]!;
 
-const GREETING = /^(salom|assalomu alaykum|assalom|va alaykum|hello|hi|hey|привет|здравствуйте|добрый день|салом|ассалому алайкум)[\s!.,]*$/iu;
+const GREETING = /^(salom|salomlar|assalomu alaykum|assalom|va alaykum|hello|hi|hey|привет|здравствуйте|добрый день|добрый вечер|салом|ассалому алайкум)[\s!.,]*$/iu;
 const THANKS = /^(rahmat|katta rahmat|raxmat|thanks|thank you|thx|спасибо|большое спасибо|раҳмат|рахмат|катта раҳмат)[\s!.,]*$/iu;
+/** hol-ahvol so'rash ("nima gap", "qalaysiz", "как дела") — qidiruv emas, suhbat */
+const HOWDY = /^(salom[\s,!]*)?(nima gap(lar)?|nima yangilik(lar)?|qalay(siz|san)?|yaxshimi(siz|san)?|ishlar qalay|qanday(siz|san)?|ahvol(lar)? qalay|нима гап(лар)?|қалай(сиз|сан)?|яхшимисиз|ишлар қалай|как дела|как ты|как вы|что нового|как жизнь|what'?s up|how are you|how is it going|how are things)[\s!.,?]*$/iu;
 const WHO = /(sen kimsan|siz kimsiz|kimsan|robotmisan|odammisiz|are you (a )?(human|bot|ai|robot)|who are you|ты кто|вы кто|ты бот|вы бот|ты человек|сен кимсан|сиз кимсиз|роботмисан)/iu;
 
-export type SmallTalk = "greeting" | "thanks" | "who" | null;
+export type SmallTalk = "greeting" | "howdy" | "thanks" | "who" | null;
 
 export function smallTalk(text: string): SmallTalk {
   const s = text.trim();
   if (s.length > 60) return null;
   if (WHO.test(s)) return "who";
+  if (HOWDY.test(s)) return "howdy";
   if (GREETING.test(s)) return "greeting";
   if (THANKS.test(s)) return "thanks";
   return null;
 }
 
-const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks" | "who" | "found" | "widened" | "none" | "unclear" | "failed", Variants>>> = {
+const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "howdy" | "thanks" | "who" | "found" | "widened" | "none" | "unclear" | "failed", Variants>>> = {
   uz: {
     seeker: {
       greeting: ["Assalomu alaykum! Men Ish topdim AI yordamchisiman. Qanday ish qidiryapsiz — kasb va tumaningizni yozsangiz, bazadan qarab beraman."],
+      howdy: ["Yaxshi, rahmat! Men Ish topdim AI yordamchisiman — ish topishda yordam beraman. Qanday ish qidiryapsiz?", "Hammasi joyida, rahmat. Sizga qanday ish kerak — kasb va tumanni yozing, bazadan qarab beraman."],
       thanks: ["Arzimaydi. Yana qaysi ish bo'yicha qarab beray?", "Marhamat. Boshqa hudud yoki kasb bo'yicha ham qidirib ko'raymi?"],
       who: ["Men sun'iy intellektman — Ish topdim platformasining AI yordamchisi. Bazadagi haqiqiy e'lonlardan sizga mos ishni topishga yordam beraman. Qanday ish kerak?"],
       found: ["So'rovingiz bo'yicha {n} ta e'lon topdim — pastda ko'rsatdim. Maosh yoki ish vaqti bo'yicha aniqlashtiraymi?", "Bazada {n} ta mos e'lon bor, eng yangilari pastda. Qaysi biri bo'yicha batafsil aytay?", "{n} ta e'lon chiqdi. Xohlasangiz, tuman yoki maosh bo'yicha toraytiraman."],
@@ -38,6 +42,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
     },
     employer: {
       greeting: ["Assalomu alaykum! Men Ish topdim AI yordamchisiman. Qanday xodim kerak — kasbi va hududini yozsangiz, bazadagi nomzodlardan qarab beraman."],
+      howdy: ["Yaxshi, rahmat! Men Ish topdim AI yordamchisiman — xodim topishda yordam beraman. Qanday xodim kerak?", "Hammasi joyida, rahmat. Sizga qanday xodim kerak — kasb va hududni yozing, nomzodlardan qarab beraman."],
       thanks: ["Arzimaydi. Yana qaysi lavozim bo'yicha nomzod qidiray?", "Marhamat. Boshqa hudud bo'yicha ham qarab beraymi?"],
       who: ["Men sun'iy intellektman — Ish topdim platformasining AI yordamchisi. Bazadagi haqiqiy nomzodlarni topishga yordam beraman; kimni ishga olishni o'zingiz hal qilasiz. Qanday xodim kerak?"],
       found: ["So'rovingiz bo'yicha {n} ta nomzod topdim — pastda. Tajriba yoki hudud bo'yicha toraytiraymi?", "Bazada {n} ta mos nomzod bor. Tanlov o'zingizda — xohlasangiz, talablarni aniqlashtiramiz."],
@@ -50,6 +55,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
   oz: {
     seeker: {
       greeting: ["Ассалому алайкум! Мен Ish topdim AI ёрдамчисиман. Қандай иш қидиряпсиз — касб ва туманингизни ёзсангиз, базадан қараб бераман."],
+      howdy: ["Яхши, раҳмат! Мен Ish topdim AI ёрдамчисиман — иш топишда ёрдам бераман. Қандай иш қидиряпсиз?", "Ҳаммаси жойида, раҳмат. Сизга қандай иш керак — касб ва туманни ёзинг, базадан қараб бераман."],
       thanks: ["Арзимайди. Яна қайси иш бўйича қараб берай?", "Марҳамат. Бошқа ҳудуд ёки касб бўйича ҳам қидириб кўрайми?"],
       who: ["Мен сунъий интеллектман — Ish topdim платформасининг AI ёрдамчиси. Базадаги ҳақиқий эълонлардан сизга мос ишни топишга ёрдам бераман. Қандай иш керак?"],
       found: ["Сўровингиз бўйича {n} та эълон топдим — пастда кўрсатдим. Маош ёки иш вақти бўйича аниқлаштирайми?", "Базада {n} та мос эълон бор, энг янгилари пастда. Қайси бири бўйича батафсил айтай?"],
@@ -60,6 +66,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
     },
     employer: {
       greeting: ["Ассалому алайкум! Мен Ish topdim AI ёрдамчисиман. Қандай ходим керак — касби ва ҳудудини ёзсангиз, базадаги номзодлардан қараб бераман."],
+      howdy: ["Яхши, раҳмат! Мен Ish topdim AI ёрдамчисиман — ходим топишда ёрдам бераман. Қандай ходим керак?", "Ҳаммаси жойида, раҳмат. Сизга қандай ходим керак — касб ва ҳудудни ёзинг, номзодлардан қараб бераман."],
       thanks: ["Арзимайди. Яна қайси лавозим бўйича номзод қидирай?"],
       who: ["Мен сунъий интеллектман — Ish topdim платформасининг AI ёрдамчиси. Базадаги ҳақиқий номзодларни топишга ёрдам бераман; кимни ишга олишни ўзингиз ҳал қиласиз. Қандай ходим керак?"],
       found: ["Сўровингиз бўйича {n} та номзод топдим — пастда. Тажриба ёки ҳудуд бўйича торайтирайми?"],
@@ -72,6 +79,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
   ru: {
     seeker: {
       greeting: ["Здравствуйте! Я ИИ-помощник Ish topdim. Какую работу вы ищете? Напишите профессию и район — посмотрю в базе."],
+      howdy: ["Всё хорошо, спасибо! Я ИИ-помощник Ish topdim — помогаю найти работу. Какую работу вы ищете?", "Всё в порядке, спасибо. Какая работа вам нужна — напишите профессию и район, посмотрю в базе."],
       thanks: ["Пожалуйста. Посмотреть что-нибудь ещё?", "Рад помочь. Поискать в другом районе или по другой профессии?"],
       who: ["Я искусственный интеллект — помощник платформы Ish topdim. Помогаю найти подходящую работу среди настоящих объявлений в базе. Какая работа вам нужна?"],
       found: ["По вашему запросу нашлось объявлений: {n} — они ниже. Уточнить по зарплате или графику?", "В базе есть подходящие объявления: {n}. Самые новые показал ниже. О каком рассказать подробнее?"],
@@ -82,6 +90,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
     },
     employer: {
       greeting: ["Здравствуйте! Я ИИ-помощник Ish topdim. Какой сотрудник вам нужен? Напишите профессию и район — посмотрю кандидатов в базе."],
+      howdy: ["Всё хорошо, спасибо! Я ИИ-помощник Ish topdim — помогаю найти сотрудников. Какой сотрудник вам нужен?", "Всё в порядке, спасибо. Какой сотрудник нужен — напишите профессию и район, посмотрю кандидатов."],
       thanks: ["Пожалуйста. Поискать кандидатов на другую должность?"],
       who: ["Я искусственный интеллект — помощник платформы Ish topdim. Помогаю находить настоящих кандидатов в базе; решение о найме принимаете вы. Какой сотрудник нужен?"],
       found: ["По вашему запросу нашлось кандидатов: {n} — они ниже. Сузить по опыту или району?"],
@@ -94,6 +103,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
   en: {
     seeker: {
       greeting: ["Hello! I'm the Ish topdim AI assistant. What kind of work are you looking for? Tell me the job and the district and I'll check the database."],
+      howdy: ["I'm doing well, thanks! I'm the Ish topdim AI assistant — I help people find work. What job are you looking for?", "All good, thank you. What kind of work do you need — tell me the job and the district and I'll check the database."],
       thanks: ["You're welcome. Shall I look for anything else?", "Glad to help. Want me to try another district or job?"],
       who: ["I'm an AI — the assistant of the Ish topdim platform. I help you find suitable work among the real ads in our database. What job do you need?"],
       found: ["I found {n} ads for your request — they are below. Should I narrow it down by salary or schedule?", "There are {n} matching ads in the database; the newest are below. Which one would you like to know more about?"],
@@ -104,6 +114,7 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "thanks
     },
     employer: {
       greeting: ["Hello! I'm the Ish topdim AI assistant. What kind of employee do you need? Tell me the job and the district and I'll check the candidates in the database."],
+      howdy: ["I'm doing well, thanks! I'm the Ish topdim AI assistant — I help employers find staff. What kind of employee do you need?", "All good, thank you. What employee do you need — tell me the job and the area and I'll check the candidates."],
       thanks: ["You're welcome. Shall I look for candidates for another role?"],
       who: ["I'm an AI — the assistant of the Ish topdim platform. I help you find real candidates in our database; the hiring decision is yours. What kind of employee do you need?"],
       found: ["I found {n} candidates for your request — they are below. Should I narrow it down by experience or district?"],

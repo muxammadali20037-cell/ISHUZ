@@ -343,6 +343,8 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
   const options = r && count && latest && !pending ? refineOptions(r.mode, r.applied) : [];
   const suggestions = latest && !pending ? (turn.suggestions ?? []) : [];
   const unclear = !!r && r.needProfession && r.total === 0;
+  /** hech narsa tushunilmadi ("qwerty"): hudud, maosh, grafik ham yo'q — kuzatuvga qo'yadigan narsa yo'q */
+  const nothingUnderstood = unclear && !r.flags?.filters;
 
   const copy = () => {
     void navigator.clipboard?.writeText(reply).then(
@@ -393,6 +395,8 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
           </Link>
         ) : null}
         {/* hech narsa topilmadi: "yo'q" bilan tugamaydi — keyingi qadam tugmalari */}
+        {/* kasb tushunilmadi — ro'yxatdan tanlash; so'rov tushunilib (hech bo'lmasa hudud yoki shart), lekin topilmadi — yangisi
+            chiqsa xabar olish va o'zi e'lon berish; hech narsa tushunilmagan ("qwerty") — faqat ro'yxat */}
         {r && !pending && r.total === 0 ? (
           <>
             {unclear ? (
@@ -402,7 +406,7 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
                 </Link>
               </Button>
             ) : null}
-            <EmptyActions result={r} />
+            {nothingUnderstood ? null : <EmptyActions result={r} />}
           </>
         ) : null}
         {r && count && !latest ? (
