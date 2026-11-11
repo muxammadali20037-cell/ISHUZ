@@ -124,17 +124,29 @@ testlar saqlanadi. Birinchi ekran — ish izlovchi bosh sahifasi ("umuman adashm
 **Keyingi aniq vazifa:** qobiqlar (mobilda hamburger va pastki menyu birga chiqmasin), keyin ish beruvchi bosh sahifasi
 va natijalar sahifasi — shu sodda uslubda noldan.
 
-## AI HR yordamchi — 0 va 1-bosqich: audit, suhbat dvigateli (2026-11-11)
+## 2.0 bosh sahifa saytga chiqarildi (2026-11-11)
 
-To'liq reja va holat: `docs/AI_ASSISTANT.md`.
+Ega ruxsati bilan PR #8 `main`ga qo'shildi (`1d5c564`), Vercel prod — READY, `/api/health` — ok.
 
-**Bajarildi:** audit; suhbat dvigateli (`src/features/assistant/`): model suhbat kontekstini o'qiydi, qidiruv asbobini
-chaqiradi, bazadan haqiqiy e'lonlar olinadi, javob oqim bilan keladi; AI ishlamasa — lug'at va shablon javob (4 tilda);
-`POST /api/assistant` (NDJSON oqimi, CSRF/limit/blok himoyasi). `aiFind` yadrosi alohida modulga chiqarildi.
+## AI HR yordamchi — 0–5-bosqich (2026-11-11)
 
-**Testlar:** Vitest 752 o'tdi (24 ta yangi); E2E `assistant-api.spec.ts` 5/5; AI qidiruv spec'lari 16/16 (refaktordan keyin).
+To'liq reja, arxitektura, maxfiylik va cheklovlar: `docs/AI_ASSISTANT.md`.
 
-**Qolgan muammo:** haqiqiy Claude bilan suhbat stendda sinalmagan (kalit faqat prod'da). Oyna (UI) hali eski — foydalanuvchi
-yangi dvigatelni 2-bosqichdan keyin ko'radi.
+**Bajarildi:**
+- **Suhbat dvigateli** (`src/features/assistant/`): model suhbat kontekstini o'qiydi, qidiruv asbobini chaqiradi, bazadan
+  haqiqiy e'lonlar olinadi, javob oqim bilan keladi; AI ishlamasa — lug'at va shablon javob (4 tilda). `POST /api/assistant`.
+- **Suhbat oynasi** (`ai-chat.tsx`): oqimli javob, yozish indikatori, to'xtatish, tavsiya savollar, xatolar va qayta urinish,
+  tarix (qurilmada), nusxa olish, keyingi qadam havolalari.
+- **Ish izlovchi / ish beruvchi:** profil konteksti, rezyume va vakansiya matni, suhbat savollari, nomzod qidirish.
+- **Ovoz** (`ai-voice.ts`, `speech.ts`): katta mikrofon, holatlar, aytilgan matnni tekshirish, javobni o'qib berish va to'xtatish.
+- **Tuzatildi (yo'l-yo'lakay topilgan):** hudud nomi kasb deb tushunilardi ("Samarqandda" → "Qog'ozgar"); mikrofon
+  to'xtatilganda matn tekshirilmasdan yuborilib ketishi mumkin edi (tugma qayta ishlatilishi).
 
-**Keyingi aniq vazifa:** 2-bosqich — suhbat oynasini yangi dvigatelga ulash (oqimli matn, yozish indikatori, tavsiya savollar).
+**Testlar:** Vitest 770+ o'tdi; E2E `assistant-api.spec.ts` (6), `assistant-chat.spec.ts` (6), AI qidiruv spec'lari; to'liq E2E
+va CI natijasi — PR'da.
+
+**Qolgan muammo:** haqiqiy Claude bilan suhbat stendda sinalmagan (kalit faqat prod'da) — chiqarilgandan keyin jonli tekshiruv
+kerak (`docs/AI_ASSISTANT.md` → "Halol eslatma"). Ovoz brauzerga bog'liq (Telegram ichida ishlamaydi, o'zbekcha ovoz kam).
+
+**Keyingi aniq vazifa:** ega qarori bilan — serverda nutq xizmati (hamma qurilmada ovoz); suhbat matnini e'lon formasiga
+ko'chirish; keyin 2.0 qayta qurish davomi (qobiqlar, ish beruvchi bosh sahifasi).

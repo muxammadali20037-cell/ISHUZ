@@ -50,11 +50,14 @@ Brauzer (suhbat oynasi)                Server                                   
 - API kaliti faqat serverda (`ANTHROPIC_API_KEY`), brauzerga chiqmaydi.
 - **Suhbat matni serverda saqlanmaydi.** Tarix foydalanuvchi qurilmasida (brauzer xotirasi); serverga har safar faqat oxirgi
   12 ta xabar kontekst uchun yuboriladi. Jurnalga faqat tokenlar soni, kechikish va xato kodi yoziladi.
+- AI provayderiga (Anthropic) boradigan ma'lumot: suhbatning oxirgi xabarlari, kirgan foydalanuvchining ismi (familiyasiz) va
+  o'z e'lonidagi kasb/hudud/tajriba, hamda bazadan topilgan e'lonlarning ommaviy maydonlari. Telefon raqamlar bormaydi.
 - Suhbatlarni serverda saqlash (qurilmalar orasida davom ettirish) — alohida rozilik va migratsiya bilan, keyingi qaror.
-- Limit: kirgan foydalanuvchi — soatiga 60, mehmon (IP) — 30 ta xabar; umumiy kunlik AI byudjeti (`assistant_chat`).
+- Limit: kirgan foydalanuvchi — soatiga 80, mehmon (IP bo'yicha, ko'p odam bitta IP ortida bo'lishi mumkin) — 150 ta xabar;
+  umumiy kunlik AI byudjeti (`assistant_chat`) — tugasa lug'at javobi.
 - Foydalanuvchi matni va asbob natijasi — "ma'lumot, buyruq emas" (prompt in'eksiyasiga qarshi); asbob nomi va kiritmasi
   serverda tekshiriladi; rolga ruxsat etilmagan asbob bajarilmaydi.
-- Ovoz (6-bosqich): mikrofon faqat ruxsat bilan; ovoz yozuvi saqlanmaydi.
+- Ovoz: mikrofon faqat ruxsat bilan; ovoz yozuvi saqlanmaydi va serverga yuborilmaydi.
 
 ## 4. Bosqichlar
 
@@ -62,23 +65,66 @@ Brauzer (suhbat oynasi)                Server                                   
 |---|---|---|
 | 0 | Audit va arxitektura | ✅ bajarildi |
 | 1 | Suhbat dvigateli (server) + API + testlar | ✅ bajarildi (2026-11-11) |
-| 2 | Suhbat oynasi (UI): oqimli javob, yozish indikatori, tarix, tavsiya savollar | ⏳ keyingi |
-| 3 | Ish izlovchi yordamchisi: profil va moslik sabablari, rezyume yordami, ariza | ⏳ |
-| 4 | Ish beruvchi yordamchisi: vakansiya tuzish, nomzodlarni taqqoslash, suhbat savollari | ⏳ |
-| 5 | Ovozli suhbat: katta mikrofon, holatlar, matnni tahrirlash, o'qib berish | ⏳ |
+| 2 | Suhbat oynasi (UI): oqimli javob, yozish indikatori, tarix, tavsiya savollar, to'xtatish | ✅ bajarildi (2026-11-11) |
+| 3 | Ish izlovchi yordamchisi: profil konteksti, rezyume yordami, keyingi qadam | ✅ asosiy qismi bajarildi |
+| 4 | Ish beruvchi yordamchisi: nomzod qidirish, vakansiya matni, suhbat savollari | ✅ asosiy qismi bajarildi |
+| 5 | Ovozli suhbat: katta mikrofon, holatlar, matnni tahrirlash, o'qib berish | ✅ brauzer ovozi bilan bajarildi |
 
-### 1-bosqich natijasi
+### 1-bosqich — suhbat dvigateli
 
 **Yaratilgan:** `src/features/assistant/` — `types.ts`, `language.ts`, `prompt.ts`, `tools.ts`, `replies.ts`, `engine.ts`,
 `server.ts`; `src/app/api/assistant/route.ts`; `src/features/find/ai-find-core.ts`, `ai-find-types.ts`.
-**O'zgartirilgan:** `src/features/find/ai-find.ts` (yupqa o'ram), `ai-search.ts` (`ai: false` — ikkinchi AI chaqiruvisiz),
-`src/lib/ai/json.ts` (`assistant_chat` byudjeti).
-**Testlar:** Vitest — 24 ta yangi (til, dvigatel skriptli model bilan, shablonlar, ko'rsatma, himoya); E2E — 5 ta
-(`assistant-api.spec.ts`: bazadan natija, 4 til, halol "yo'q", ish beruvchi rejimi, himoya).
+**O'zgartirilgan:** `ai-search.ts` (`ai: false` — ikkinchi AI chaqiruvisiz), `src/lib/ai/json.ts` (`assistant_chat` byudjeti).
+**Testlar:** Vitest (til, dvigatel skriptli model bilan, shablonlar, ko'rsatma, himoya); E2E `assistant-api.spec.ts` (6 ta).
+
+### 2-bosqich — suhbat oynasi
+
+Bitta komponent ikki joyda: bosh sahifadagi oyna va `/ai` sahifasi (`src/features/find/components/ai-chat.tsx`).
+- Javob matni **oqim bilan** chiqadi; kutilayotganda — uch nuqta va holat ("So'zlaringizni tushunmoqdaman…", "…saralamoqdaman…").
+- Avval yordamchining gapi, keyin "Tushundim" belgilari, kengaytirish izohlari va bazadagi kartalar.
+- **To'xtatish:** javob kelayotganda yuborish tugmasi o'rnida "Javobni to'xtatish"; kelgan qismi qoladi.
+- **Tavsiya savollar** (bosiladi) va natija bo'lsa — toraytirish tugmalari ("+ Kunlik" …).
+- **Xatolar:** limit, vaqt tugashi, internet — tushunarli matn va "Qayta urinish" (xato xabari o'rnini yangi javob oladi);
+  javob o'rtasida uzilsa — kelgan qismi qoladi.
+- **Tarix:** shu qurilmada, shu tabda, 30 daqiqa (8 ta savol-javob); serverga faqat oxirgi 6 ta savol-javob kontekst uchun.
+- Eski `aiFind` server amali olib tashlandi (uning yadrosi — `runAiFind` — dvigatel ichida ishlaydi).
+
+### 3–4-bosqich — ish izlovchi va ish beruvchi
+
+- **Profil konteksti** (faqat kirgan foydalanuvchi va AI javob berayotganda, `server.ts`): ish izlovchining o'z e'lonidagi kasb,
+  hudud, tajriba, kutilayotgan maosh; ish beruvchining faol vakansiyalari nomi. Yordamchi so'ramasdan mosini qidira oladi va
+  nega mos kelishini shu ma'lumotga tayanib tushuntiradi. Telefon, familiya, manzil berilmaydi.
+- **Rezyume / vakansiya matni / suhbat savollari:** model foydalanuvchi aytgan faktlardan tuzadi (o'ylab topmaydi). Uzun javobda
+  "Nusxa olish" va keyingi qadam: "O'zim haqimda e'lon berish" yoki "Vakansiya joylash".
+- **Nomzodlarni taqqoslash:** faqat ommaviy ma'lumot (kasb, hudud, tajriba darajasi, kutilayotgan maosh) bo'yicha; tanlov —
+  ish beruvchida. Jins, yosh, millat va shu kabilar bo'yicha saralash taqiqlangan (ko'rsatmada).
+- **Suhbat konteksti AI'siz ham:** "oshpaz kerak" → "Samarqandda" → "5 mln dan" — shartlar oldingi xabarlardagi kasb bilan
+  birga qidiriladi (`engine.ts`, `flags`). Hudud nomi endi kasb sifatida tushunilmaydi (`intent.ts: withoutPlaceOnly`).
+- **Hali yo'q (keyingi):** suhbatdagi matnni e'lon formasiga avtomatik ko'chirish; ariza yuborishni suhbat ichidan boshlash;
+  moslik dvigatelining (`src/features/matching`) aniq sabablarini kartada ko'rsatish.
+
+### 5-bosqich — ovozli suhbat (alohida modul: `src/features/find/components/ai-voice.ts`, `src/features/assistant/speech.ts`)
+
+- **Katta mikrofon:** maydon bo'sh bo'lsa asosiy tugma — mikrofon (48 px); matn yozilsa — "Yuborish" (messenjerlardagi kabi).
+- **Holatlar:** tinglayapti (qizil hoshiya, pulsli "To'xtatish", "Gapiring — eshityapman… Ovoz saqlanmaydi."), ishlayapti
+  (yozish indikatori), o'qib beryapti ("Javobni o'qib beryapman…" + "Ovozni to'xtatish"), xato (ruxsat yo'q / tanib bo'lmadi).
+- **Tekshirish va tahrirlash:** aytilgan gap maydonga yoziladi va **o'zi yuborilmaydi** — foydalanuvchi ko'radi, tuzatadi, yuboradi.
+- **O'qib berish:** "Ovoz bilan javob" kaliti (qurilmada eslab qolinadi) yoki har javob ostidagi "O'qib berish". Tilga mos ovoz
+  tanlanadi; qurilmada shu til uchun ovoz bo'lmasa — boshqa til ovozi bilan buzib o'qilmaydi, "ovoz yo'q" deb aytiladi.
+- **Ovozli va matnli suhbat birga:** bitta suhbat, bitta tarix; yangi savol yuborilsa yoki mikrofon bosilsa o'qish to'xtaydi.
+- **Maxfiylik:** mikrofon faqat tugma bosilganda va brauzer ruxsati bilan; ovoz bizning serverga yuborilmaydi va saqlanmaydi
+  (matnga brauzerning o'zi aylantiradi — Chrome'da bu Google xizmati orqali).
+- **Cheklovlar (halol):** (1) Telegram ichidagi oyna va ayrim brauzerlar ovozni tanimaydi — u yerda mikrofon tugmasi ko'rinmaydi,
+  matnli suhbat ishlaydi; (2) o'zbekcha o'qiydigan ovoz ko'p telefonlarda yo'q; (3) o'zbek tilini tanish sifati brauzerga bog'liq.
+  Hammasida bir xil ishlashi uchun serverda pullik nutq xizmati kerak — 5-bo'limdagi ega qarori.
+
+**Testlar (2–5-bosqich):** Vitest — oqim o'quvchi, ovoz tanlash, kontekst; E2E `assistant-chat.spec.ts` (6 ta: suhbat, AI
+oqimi, xatolar, to'xtatish, o'qib berish, mikrofon), `ai-finder.spec.ts`, `ai-search-relax.spec.ts` yangilandi.
 
 **Halol eslatma:** stendda AI kaliti yo'q, shuning uchun haqiqiy Claude bilan suhbat bu yerda sinab ko'rilmadi — dvigatel
-skriptli model bilan, lug'at yo'li esa brauzer testlari bilan tekshirildi. Haqiqiy model bilan birinchi sinov — chiqarilgandan
-keyin (xato bo'lsa foydalanuvchi baribir lug'at javobini oladi).
+skriptli model bilan, oyna esa almashtirilgan oqim bilan tekshirildi. Chiqarilgandan keyin tekshirish: yordamchiga
+"rezyume yozishga yordam bering" deb yozing. Javob ostida **"Sun'iy intellekt tahlil qildi"** chiqsa — Claude ishlayapti;
+**"So'zlaringizdan tushunildi"** va "kasbni tushunmadim" chiqsa — AI yo'li ishlamayapti (admin → AI statistikasi → xato matni).
 
 ## 5. Ega hal qiladigan savollar
 
