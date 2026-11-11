@@ -64,11 +64,12 @@ export async function runAiFind(input: { text: string; mode: "jobs" | "workers" 
   const applied: AppliedFilters = { daily: params.pay === "daily", noexp: params.noexp, exp: params.exp, remote: r.remote, shift: params.schedule === "shift" };
   const alertHref = `/ai-alerts?${new URLSearchParams({ role: mode === "workers" ? "employer" : "worker", q: parsed.data.text })}`;
   const postHref = mode === "workers" ? "/post/vacancy" : "/post/worker";
-  const base = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, alertHref, postHref };
+  const baseCommon = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, alertHref, postHref };
   // kasb aniqlanmadi (kunlik ishlar bundan mustasno). Boshqa shart tushunilgan bo'lsa (hudud, maosh, grafik, tajriba, masofaviy) —
   // shu shartlar bilan barcha kasblar bo'yicha qidiriladi; hech narsa tushunilmagan bo'lsa (masalan "qwerty") — aniq savol
   const needProfession = !node && params.pay !== "daily";
   const hasOther = !!(region || r.remote || params.salary || params.schedule || params.noexp || params.exp);
+  const base = { ...baseCommon, flags: { profession: !!node, filters: hasOther || params.pay === "daily" } };
 
   // Kasblar ro'yxatida yo'q so'z (kompaniya nomi, erkin lavozim: "korzinkaga ishga kirmoqchiman") — "tushunmadim" deb to'xtamaymiz:
   // matndagi kalit so'zlar bo'yicha e'lonlarning sarlavhasi, tavsifi va kompaniya nomidan qidiramiz — avval tushunilgan hududda,
@@ -94,6 +95,7 @@ export async function runAiFind(input: { text: string; mode: "jobs" | "workers" 
         data: {
           ...base,
           understood: [...understood, `«${word}»`],
+          flags: { profession: true, filters: base.flags.filters },
           needProfession: false,
           relaxed: [t("easy.finder.relaxed_text", { word }), ...(scope.widened && region ? [t("easy.finder.relaxed_region", { region: name(region) })] : [])],
           jobs: shown,

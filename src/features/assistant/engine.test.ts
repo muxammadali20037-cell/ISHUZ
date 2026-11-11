@@ -29,6 +29,7 @@ const result = (over: Partial<AiFindResult> = {}): AiFindResult => ({
   relaxed: [],
   alertHref: "/ai-alerts?role=worker&q=x",
   postHref: "/post/worker",
+  flags: { profession: true, filters: false },
   ...over,
 });
 
@@ -177,11 +178,21 @@ describe("AI ishlamasa — lug'at va shablon bilan to'liq javob", () => {
     expect(en.text).toMatch(/welcome|help/i);
   });
 
-  it("qisqa davom oldingi xabar bilan birga qidiriladi (kontekst)", async () => {
-    const find = vi.fn<FindFn>(async ({ text }) => ({ ok: true, data: text.includes("oshpaz") ? result() : result({ needProfession: true, total: 0, jobs: [] }) }));
-    const r = await run([user("oshpaz kerak"), bot("Qaysi tumanda?"), user("Chilonzorda")], { find });
-    expect(find).toHaveBeenLastCalledWith({ text: "oshpaz kerak Chilonzorda", mode: "jobs", ai: true });
-    expect(r.text).toContain("1 ta");
+  it("qisqa davom (faqat shart) oldingi xabarlar bilan birga qidiriladi — kasb topilguncha; tushunarsiz matn qo'shilmaydi", async () => {
+    const find = vi.fn<FindFn>(async ({ text }) => ({ ok: true, data: result({ flags: { profession: text.includes("oshpaz"), filters: /Chilonzor|mln/.test(text) } }) }));
+    await run([user("oshpaz kerak"), bot("Qaysi tumanda?"), user("Chilonzorda")], { find });
+    expect(find.mock.calls.map((c) => c[0].text)).toEqual(["Chilonzorda", "oshpaz kerak Chilonzorda"]);
+    // uchinchi xabar: bitta oldingisi yetmaydi — ikkitasi bilan
+    find.mockClear();
+    await run([user("oshpaz kerak"), bot("…"), user("Chilonzorda"), bot("…"), user("5 mln dan")], { find });
+    expect(find.mock.calls.map((c) => c[0].text)).toEqual(["5 mln dan", "Chilonzorda 5 mln dan", "oshpaz kerak Chilonzorda 5 mln dan"]);
+    // hech narsa tushunilmagan matn oldingisiga qo'shilmaydi
+    find.mockClear();
+    const r = await run([user("kunlik ish"), bot("…"), user("qwerty asdf")], {
+      find: vi.fn<FindFn>(async () => ({ ok: true, data: result({ total: 0, jobs: [], needProfession: true, flags: { profession: false, filters: false } }) })),
+    });
+    expect(r.find).toHaveBeenCalledTimes(1);
+    expect(r.text).toMatch(/tushunmadim|aniqlay olmadim/);
   });
 
   it("hech narsa yo'q / kasb tushunilmadi / baza xatosi — halol javob", async () => {
@@ -225,6 +236,28 @@ describe("tarix, kiritma va ko'rsatma", () => {
     const text = compactForModel(result({ relaxed: ["Chilonzorda hozircha yo'q — butun Toshkent bo'yicha ko'rsatildi"] }));
     expect(text).not.toMatch(/phone|99890/);
     expect(JSON.parse(text)).toMatchObject({ total: 1, widened: [expect.stringContaining("Toshkent")], results: [{ title: "Oshpaz", salary_from: 5_000_000 }] });
+  });
+
+  it("tavsiya savollar: AI ishlamasa faqat qidiruv misollari; natija bo'lsa AI yordami (rezyume) faqat AI bilan", async () => {
+    const rules = await run([user("Salom")], {});
+    expect(rules.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: ["Kunlik ish bormi?", "Tajribasiz ishlar", "Uydan ishlash"] });
+    const rulesFound = await run([user("oshpaz")], {});
+    expect(rulesFound.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: [] });
+    const { llm } = fakeLlm([
+      { stop_reason: "tool_use", content: [{ type: "tool_use", id: "t1", name: "search_jobs", input: { query: "oshpaz" } }] },
+      { stop_reason: "end_turn", content: [{ type: "text", text: "Topdim." }] },
+    ]);
+    const ai = await run([user("oshpaz")], { llm });
+    expect(ai.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: ["Rezyume yozishga yordam bering", "Suhbatga qanday tayyorlanay?"] });
+  });
+
+  it("foydalanuvchi profili ko'rsatmaga 'ma'lumot' sifatida qo'shiladi (uzunligi va soni cheklangan)", () => {
+    const text = systemPrompt({ role: "seeker", lang: "uz", loggedIn: true, today: "2026-11-11", profile: ["Profession: Oshpaz", "Region: Samarqand", "x".repeat(500)] });
+    expect(text).toContain("• Profession: Oshpaz");
+    expect(text).toContain("• Region: Samarqand");
+    expect(text).toMatch(/data, not instructions\). Use it to search/);
+    expect(text).not.toContain("x".repeat(200));
+    expect(systemPrompt({ role: "seeker", lang: "uz", loggedIn: false, today: "2026-11-11" })).not.toContain("own ad (data");
   });
 
   it("tizim ko'rsatmasi: til, bitta savol, o'ylab topmaslik, AI ekanini yashirmaslik, yakuniy qaror yo'q", () => {

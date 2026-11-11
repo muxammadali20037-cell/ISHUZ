@@ -20,8 +20,8 @@ const body = z.object({
 
 /**
  * AI yordamchi suhbati. Javob — NDJSON oqimi (har qator bitta hodisa: status, text, results, suggestions, done, error).
- * Himoya: faqat o'z saytimizdan va faqat JSON (CSRF), bloklangan foydalanuvchi — yo'q, soatlik limit (kirgan — 60,
- * mehmon IP bo'yicha — 30), kunlik AI byudjeti (dvigatelda). Suhbat matni serverda saqlanmaydi.
+ * Himoya: faqat o'z saytimizdan va faqat JSON (CSRF), bloklangan foydalanuvchi — yo'q, soatlik limit (kirgan — 80,
+ * mehmon IP bo'yicha — 150), kunlik AI byudjeti (dvigatelda). Suhbat matni serverda saqlanmaydi.
  */
 export async function POST(request: NextRequest) {
   const unsafe = rejectUnsafeRequest(request);
@@ -32,7 +32,9 @@ export async function POST(request: NextRequest) {
   const session = await getSession();
   if (session?.profile.is_blocked) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const key = session ? `assistant:${session.userId}` : `assistant_ip:${subjectHash("ip", ipBucket(clientIp(request.headers)))}`;
-  if (!(await allowRate(key, session ? 60 : 30, 3600))) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+  // mehmon limiti IP bo'yicha: mobil operatorlarda ko'p odam bitta IP ortida (CGNAT) — shuning uchun kengroq; xarajatni
+  // kunlik AI byudjeti cheklaydi (tugasa — lug'at javobi), bu limit faqat botlarga qarshi
+  if (!(await allowRate(key, session ? 80 : 150, 3600))) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
 
   const [mode, { locale }] = await Promise.all([getMode(), getT()]);
   const role = mode ? (mode === "employer" ? "employer" : "seeker") : (parsed.data.role ?? "seeker");

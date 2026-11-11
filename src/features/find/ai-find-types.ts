@@ -31,4 +31,10 @@ export interface AiFindResult {
   /** hech narsa topilmadi: yangi mos e'lon chiqsa Telegram'ga xabar (yozgan matni tayyor) va o'zi e'lon berishi */
   alertHref: string;
   postHref: string;
+  /**
+   * Matndan nima tushunildi (suhbat konteksti uchun): `profession` — kasb yoki e'lon matnidagi kalit so'z topildi;
+   * `filters` — hudud, maosh, grafik, tajriba, kunlik yoki masofaviy shartlardan biri bor. Ikkalasi ham false — matn
+   * qidiruv so'rovi sifatida tushunilmadi.
+   */
+  flags: { profession: boolean; filters: boolean };
 }

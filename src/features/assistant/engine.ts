@@ -73,6 +73,11 @@ export interface EngineInput {
   siteLocale: AssistantLang;
   firstName?: string | null;
   loggedIn: boolean;
+  /**
+   * Foydalanuvchining o'z e'lonidan qisqa ma'lumot (kasb, hudud, tajriba; ish beruvchida — faol vakansiyalari nomi) —
+   * yordamchi so'ramasdan mosini qidira olishi uchun. Ism, telefon va boshqa shaxsiy ma'lumot berilmaydi.
+   */
+  profile?: string[];
   emit: Emit;
   /** brauzer ulanishni uzdi — ish to'xtatiladi */
   signal?: AbortSignal;
@@ -83,6 +88,8 @@ export const TOTAL_MS = 30_000;
 export const MAX_ROUNDS = 3;
 export const MAX_TOOL_CALLS_PER_ROUND = 2;
 const MAX_TOKENS = 1500;
+/** AI'siz kontekst: nechta oldingi foydalanuvchi xabari bilan birga qidirib ko'riladi */
+const CONTEXT_MESSAGES = 3;
 
 /** Tarixni tozalash: faqat oxirgi bir nechta xabar, uzunligi cheklangan, boshida va oxirida foydalanuvchi xabari */
 export function sanitizeHistory(messages: ChatMessage[]): ChatMessage[] {
@@ -127,17 +134,25 @@ async function rulesTurn(ctx: Ctx, deps: EngineDeps): Promise<void> {
   const talk = smallTalk(last);
   if (talk) {
     emit({ type: "text", delta: smallTalkReply(talk, lang, role, turn) });
-    emit({ type: "suggestions", items: suggestionsFor(null, lang, role) });
+    emit({ type: "suggestions", items: suggestionsFor(null, lang, role, false) });
     emit({ type: "done", source: "rules", lang });
     return;
   }
   emit({ type: "status", stage: "searching" });
   let res = await deps.find({ text: last.slice(0, 300), mode: ctx.mode, ai: true });
-  // qisqa davom ("Chilonzorda", "5 mln dan") o'zi tushunarsiz bo'lsa — oldingi xabar bilan birga qidiriladi (suhbat konteksti)
-  const prev = userTexts.at(-2);
-  if (res.ok && res.data.needProfession && res.data.total === 0 && prev && !smallTalk(prev) && last.split(" ").length <= 4) {
-    const joined = await deps.find({ text: `${prev} ${last}`.slice(0, 300), mode: ctx.mode, ai: true });
-    if (joined.ok && (joined.data.total > 0 || !joined.data.needProfession)) res = joined;
+  // Suhbat konteksti (AI'siz): xabarda kasb yo'q, lekin shart bor ("Chilonzorda", "5 mln dan", "kunlik") — bu oldingi so'rovning
+  // davomi: oldingi xabarlar (ko'pi bilan 3 ta) bilan birga qidiriladi, kasb topilguncha. Hech narsa tushunilmagan matn
+  // ("qwerty") oldingisiga qo'shilmaydi — "tushunmadim" deb aytiladi.
+  if (res.ok && !res.data.flags.profession && res.data.flags.filters) {
+    const earlier = userTexts.slice(0, -1).filter((x) => !smallTalk(x)).slice(-CONTEXT_MESSAGES);
+    for (let n = 1; n <= earlier.length; n++) {
+      const joined = await deps.find({ text: [...earlier.slice(-n), last].join(" ").slice(0, 300), mode: ctx.mode, ai: true });
+      if (!joined.ok) break;
+      if (joined.data.flags.profession) {
+        res = joined;
+        break;
+      }
+    }
   }
   if (ctx.signal?.aborted) return;
   if (!res.ok) {
@@ -146,7 +161,7 @@ async function rulesTurn(ctx: Ctx, deps: EngineDeps): Promise<void> {
   }
   emit({ type: "results", data: res.data });
   emit({ type: "text", delta: searchReply(res.data, lang, role, turn) });
-  emit({ type: "suggestions", items: suggestionsFor(res.data, lang, role) });
+  emit({ type: "suggestions", items: suggestionsFor(res.data, lang, role, false) });
   emit({ type: "done", source: "rules", lang });
 }
 
@@ -154,7 +169,7 @@ async function aiTurn(ctx: Ctx, deps: EngineDeps, llm: LlmClient): Promise<void>
   const { emit, lang, role } = ctx;
   const now = deps.now ?? Date.now;
   const started = now();
-  const system = systemPrompt({ role, lang, firstName: ctx.firstName, loggedIn: ctx.loggedIn, today: (deps.today ?? (() => new Date().toISOString().slice(0, 10)))() });
+  const system = systemPrompt({ role, lang, firstName: ctx.firstName, loggedIn: ctx.loggedIn, profile: ctx.profile, today: (deps.today ?? (() => new Date().toISOString().slice(0, 10)))() });
   const convo: LlmTurn[] = ctx.history.map((m) => ({ role: m.role, content: m.text }));
   const usage = { inputTokens: 0, outputTokens: 0 };
   let wroteText = false;
@@ -215,7 +230,7 @@ async function aiTurn(ctx: Ctx, deps: EngineDeps, llm: LlmClient): Promise<void>
     }
     // model matn yozmay to'xtagan bo'lsa (kamdan-kam) — foydalanuvchi javobsiz qolmaydi: natija bo'yicha tayyor gap
     if (!wroteText) emit({ type: "text", delta: lastData ? searchReply(lastData, lang, role, ctx.turn) : searchReply(null, lang, role, ctx.turn) });
-    emit({ type: "suggestions", items: suggestionsFor(lastData, lang, role) });
+    emit({ type: "suggestions", items: suggestionsFor(lastData, lang, role, true) });
     emit({ type: "done", source: "ai", lang });
     await deps.log?.({ ok: true, latencyMs: now() - started, ...usage, error: null });
   } catch (e) {

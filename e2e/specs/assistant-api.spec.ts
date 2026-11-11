@@ -61,7 +61,8 @@ test("ish izlovchi: matn → bazadagi haqiqiy e'lon (kengaytirish bilan), o'zbek
   expect(data.relaxed.join(" ")).toContain("butun O'zbekiston bo'yicha ko'rsatildi");
   expect(textOf(ev)).toContain("1 ta");
   expect(textOf(ev)).toContain("kengaytirdim");
-  expect((ev.find((e) => e.type === "suggestions")!.items as string[]).length).toBeGreaterThan(0);
+  // natija bor va AI ulanmagan: toraytirish tugmalarini oyna o'zi ko'rsatadi — AI kerak bo'ladigan savol taklif qilinmaydi
+  expect(ev.find((e) => e.type === "suggestions")!.items).toEqual([]);
   expect(ev.at(-1)).toEqual({ type: "done", source: "rules", lang: "uz" });
 });
 
@@ -93,6 +94,27 @@ test("hech narsa yo'q — halol javob, o'ylab topilgan e'lon yo'q", async ({ pag
   expect(data.jobs).toEqual([]);
   expect(data.alertHref).toContain("/ai-alerts?role=worker");
   expect(textOf(ev)).toMatch(/yo'q|topilmadi/);
+  expect(ev.find((e) => e.type === "suggestions")!.items).toEqual(["Kunlik ish bormi?", "Tajribasiz ishlar", "Uydan ishlash"]);
+});
+
+test("suhbat konteksti (AI'siz): 'oshpaz kerak' → 'Samarqandda' — kasb oldingi xabardan olinadi", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await page.goto("/ai");
+  const ev = events(
+    (
+      await chat(page, [
+        { role: "user", text: "oshpaz kerak" },
+        { role: "assistant", text: "Qaysi hududda?" },
+        { role: "user", text: "Samarqandda" },
+      ])
+    ).lines,
+  );
+  const data = ev.find((e) => e.type === "results")!.data as { understood: string[]; jobs: Array<{ title: string }>; relaxed: string[] };
+  expect(data.understood).toEqual(expect.arrayContaining(["Oshpaz"]));
+  expect(data.understood.join(" ")).toContain("Samarqand");
+  expect(data.jobs.map((j) => j.title)).toEqual([TITLE]);
+  expect(data.relaxed).toEqual([]);
 });
 
 test("ish beruvchi rejimi: nomzodlar ichidan qidiradi (rejim so'rovdagi rol bilan almashtirilmaydi)", async ({ page, context }) => {
