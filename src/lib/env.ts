@@ -33,6 +33,8 @@ const serverSchema = z.object({
   SOCIAL_FACEBOOK_URL: z.string().url().optional(),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
+  /** Claude modeli; bo'lmasa src/lib/ai/client.ts dagi standart (claude-sonnet-5-5) */
+  ANTHROPIC_MODEL: z.string().optional(),
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().optional(),
@@ -89,6 +91,7 @@ export function getServerEnv() {
     SOCIAL_INSTAGRAM_URL: process.env.SOCIAL_INSTAGRAM_URL || undefined,
     SOCIAL_FACEBOOK_URL: process.env.SOCIAL_FACEBOOK_URL || undefined,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
+    ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
     GEMINI_BASE_URL: testOnlyOverride(process.env.GEMINI_BASE_URL),
