@@ -98,7 +98,12 @@ jobs:
           curl -fsSL -o /tmp/pgrst.tar.xz https://github.com/PostgREST/postgrest/releases/download/v12.2.3/postgrest-v12.2.3-linux-static-x64.tar.xz
           echo "9f71269e61ac3a940281e93ff415760f5957e430e475ba4c3889f3ede7d5527c  /tmp/pgrst.tar.xz" | sha256sum -c -
           tar -xJf /tmp/pgrst.tar.xz -C /tmp && sudo install /tmp/postgrest /usr/local/bin/postgrest
-      - run: npx playwright install --with-deps chromium
+      # Brauzer alohida, tizim kutubxonalari alohida: apt ko'zgusi vaqtincha ishlamasa ham ish to'xtamaydi — runner tasviridagi
+      # kutubxonalar ishlatiladi. Ular yetmasa brauzer ishga tushmaydi va testlar ochiq yiqiladi (hech narsa yashirilmaydi).
+      - name: Chromium
+        run: |
+          npx playwright install chromium
+          sudo env "PATH=$PATH" npx playwright install-deps chromium || echo "::warning::apt ko'zgusi ishlamadi — runner'dagi tizim kutubxonalari ishlatiladi"
       - name: Stend (toza baza + barcha migratsiyalar + build)
         run: bash e2e/stack/up.sh
       - name: Playwright
