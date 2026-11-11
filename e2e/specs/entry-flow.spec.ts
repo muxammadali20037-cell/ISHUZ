@@ -427,13 +427,13 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
     await guest.close();
   });
 
-  test("bosh ekran foni: admin surat yuklasa — sarlavhada surat va ko'k parda; olib tashlansa — ko'k fon", async ({ page, context, browser }) => {
+  test("bosh ekran foni (ish beruvchi): admin surat yuklasa — sarlavhada surat va parda; olib tashlansa — ko'k fon; ish izlovchi 2.0 sahifasi suratsiz", async ({ page, context, browser }) => {
     test.setTimeout(120_000);
     const sharp = (await import("sharp")).default;
     await loginAs(context, USERS.workerB, "aal2");
     await page.goto("/admin/entry");
     await expect(page.getByRole("heading", { level: 2, name: "Bosh ekran fonlari" })).toBeVisible();
-    const slot = page.getByTestId("entry-slot-hero_seeker");
+    const slot = page.getByTestId("entry-slot-hero_employer");
     await expect(slot.getByText("O'rnatilgan tasvir", { exact: true })).toBeVisible();
     const photo = await sharp({ create: { width: 1920, height: 1080, channels: 3, background: { r: 240, g: 240, b: 235 } } }).jpeg().toBuffer();
     await expect(async () => {
@@ -446,25 +446,25 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
     await expect(slot.locator("img")).toHaveAttribute("src", /\/site-media\/entry\/v-[0-9a-f]{64}\.webp$/, { timeout: 15_000 });
     const file = (await slot.locator("img").getAttribute("src"))!.split("/").pop()!;
 
-    // ish qidiruvchi bosh sahifasi: sarlavhada surat (birinchi ekran — darhol yuklanadi), ustida parda; oq sarlavha o'qiladi
+    // ish beruvchi bosh sahifasi: sarlavhada surat (birinchi ekran — darhol yuklanadi), ustida parda
     const guest = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
     await asGuest(guest);
-    await asMode(guest, "worker");
+    await asMode(guest, "employer");
     const g = await guest.newPage();
     await g.goto("/");
     const hero = g.locator("main .hero-surface");
     await expect(hero).toHaveClass(/has-photo/);
     await expect(hero.locator(`img[src$="${file}"]`)).toBeVisible();
     await expect(hero.locator(".hero-scrim")).toHaveCount(1);
-    await expect(g.getByRole("heading", { level: 1, name: "O'zingizga mos ishni toping" })).toBeVisible();
-    // ish beruvchi foni yuklanmagan — u yerda ko'k
-    const emp = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
-    await asGuest(emp);
-    await asMode(emp, "employer");
-    const e = await emp.newPage();
-    await e.goto("/");
-    await expect(e.locator("main .hero-surface")).not.toHaveClass(/has-photo/);
-    await emp.close();
+    // 2.0 (2026-11-11): ish izlovchi bosh sahifasi — fon suratsiz, sodda sarlavha
+    const seeker = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
+    await asGuest(seeker);
+    await asMode(seeker, "worker");
+    const sp = await seeker.newPage();
+    await sp.goto("/");
+    await expect(sp.locator("[data-home='seeker-v2']")).toBeVisible();
+    await expect(sp.locator('main img[src*="/site-media/entry/"]')).toHaveCount(0);
+    await seeker.close();
 
     await slot.getByRole("button", { name: "O'rnatilgan tasvirga qaytish" }).click();
     await expect(slot.getByText("O'rnatilgan tasvir", { exact: true })).toBeVisible();
@@ -482,7 +482,8 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
     await expect(page.locator('[data-testid^="entry-slot-tile_"]')).toHaveCount(0);
     await expect(page.getByRole("heading", { level: 2, name: "Bosh sahifa — katta plitkalar" })).toHaveCount(0);
 
-    for (const mode of ["worker", "employer"] as const) {
+    // 2.0: ish izlovchi bosh sahifasida bo'limlar ro'yxati yo'q (soddalashtirildi) — faqat ish beruvchi tekshiriladi
+    for (const mode of ["employer"] as const) {
       const guest = await browser.newContext({ baseURL: stack.app });
       await asMode(guest, mode);
       await asGuest(guest);

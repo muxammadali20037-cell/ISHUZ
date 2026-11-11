@@ -8,10 +8,10 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  */
 const PATHS = [
   { mode: "worker", name: /^O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
-  { mode: "worker", name: /^Barcha kasblar$/, url: /\/search\?mode=jobs$/, heading: /^Ish qidiraman/ },
+  // 2.0 (2026-11-11): ish qidiruvchi bosh sahifasida 4 ta tez yo'l va "Filtrlar bilan qidirish"
   { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
-  { mode: "worker", name: /^Talabalar$/, url: /\/students$/, heading: /Talabalar/ },
-  { mode: "worker", name: /^Filtrlar$/, url: /\/search\?mode=jobs&region=all&any=1$/, heading: /Ish e'lonlari/ },
+  { mode: "worker", name: /^Tajribasiz$/, url: /\/search\?mode=jobs&region=all&noexp=1&any=1$/, heading: /Ish e'lonlari/ },
+  { mode: "worker", name: /^Filtrlar bilan qidirish$/, url: /\/search\?mode=jobs&region=all&any=1$/, heading: /Ish e'lonlari/ },
   { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
   { mode: "employer", name: /^Tajribali/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
 ] as const;
@@ -61,49 +61,28 @@ test("bosh sahifa: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbg
   }
 });
 
-test("bosh sahifa: bitta h1; rangli katta sirt faqat sarlavha (hero); qidiruv va xizmatlar birinchi ekranda, AI bonusi ro'yxatdan keyin", async ({ page, context }) => {
+test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 ta tez yo'l; fon surati, nol raqamlar va plitkalar yo'q", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
-  // premium (2026-10): to'liq rangli katta sirt — faqat bitta sarlavha (.hero-surface); boshqa joyda faqat tugmalar (< 80 px)
-  await expect(page.locator("main .hero-surface")).toHaveCount(1);
-  const big = await page.evaluate(() => {
-    const brand = [getComputedStyle(document.documentElement).getPropertyValue("--primary").trim(), getComputedStyle(document.documentElement).getPropertyValue("--success").trim()];
-    const toHex = (rgb: string) => {
-      const m = rgb.match(/\d+/g);
-      return m ? `#${m.slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}` : "";
-    };
-    return Array.from(document.querySelectorAll<HTMLElement>("main *"))
-      .filter((el) => !el.closest(".hero-surface") && brand.includes(toHex(getComputedStyle(el).backgroundColor)) && el.getBoundingClientRect().height >= 80)
-      .map((el) => `${el.tagName}.${el.className.toString().slice(0, 60)}`);
-  });
-  expect(big).toEqual([]);
-  // qidiruv, tez filtrlar va hudud birinchi ekranda (390×844); hudud — telefonda yuqori panelda
-  const search = await page.getByRole("searchbox", { name: "Ish qidirish" }).boundingBox();
-  expect(search!.y + search!.height).toBeLessThan(400);
-  await expect(page.getByRole("searchbox", { name: "Ish qidirish" })).toHaveAttribute("placeholder", "Kasb yoki ish nomi");
-  // xizmatlar to'ri: 8 ta, shu tartibda (mehmonda — "CV yaratish")
-  const services = page.getByRole("navigation", { name: "Xizmatlar" }).getByRole("link");
-  // telefonda faqat nom ko'rinadi (izoh — kompyuterda): ko'rinadigan matn bo'yicha
-  await expect(services).toHaveCount(8);
-  expect((await services.allInnerTexts()).map((x) => x.trim())).toEqual(["CV yaratish", "Kunlik ish", "Yaqin atrofda", "Masofaviy", "Tajribasiz", "Talabalar", "Telegram xabar", "Kasblar"]);
-  await expect(services.first()).toHaveAttribute("href", "/post/worker");
-  expect((await services.last().boundingBox())!.y).toBeLessThan(844);
-  await expect(page.getByRole("banner").getByRole("link", { name: "Hudud: Butun O'zbekiston. O'zgartirish" })).toBeVisible();
-  // AI qatori Suspense ichida oqim bilan keladi — o'lchashdan oldin joyiga tushishini kutamiz
-  const ai = page.getByRole("link", { name: /AI yordamchi/ });
-  await expect(ai).toBeVisible();
-  // ro'yxat ham alohida Suspense bo'lagi: React ochilishni biroz kechiktirishi mumkin (sekin CI) — u ham joyiga tushsin
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+  // bitta qidiruv: yozilgan matn AI yordamchiga ketadi (alohida "AI qatori" va ikkinchi maydon yo'q)
+  const search = page.getByRole("search", { name: "Qanday ish qidiryapsiz?" });
+  await expect(search).toHaveCount(1);
+  await expect(page.getByRole("main").getByRole("searchbox")).toHaveCount(1);
+  const box = (await search.boundingBox())!;
+  expect(box.y + box.height).toBeLessThan(400);
+  // tez yo'llar: 4 ta, shu tartibda, birinchi ekranda
+  const quick = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem");
+  expect((await quick.allInnerTexts()).map((x) => x.trim())).toEqual(["Kunlik ish", "Yaqin atrofda", "Masofaviy", "Tajribasiz"]);
+  expect((await quick.last().boundingBox())!.y).toBeLessThan(844);
+  // olib tashlanganlar: fon surati, "Faol vakansiyalar 0" kabi raqamlar, 8 ta plitka, ko'p bo'limli yon panel
+  await expect(page.locator("main .hero-surface")).toHaveCount(0);
+  await expect(page.locator("[data-home='seeker-v2'] img")).toHaveCount(0);
+  await expect(page.getByRole("navigation", { name: "Xizmatlar" })).toHaveCount(0);
+  await expect(page.getByText("Faol vakansiyalar")).toHaveCount(0);
   await expect(page.locator("#home-feed")).toBeVisible();
-  const order = await page.evaluate(() => {
-    const y = (sel: string) => document.querySelector(sel)?.getBoundingClientRect().top ?? -1;
-    // AI PRO qatori — yordamchi panelda (xizmatlar to'ridagi "Telegram xabar" emas)
-    return { list: y("#home-feed"), ai: y("main aside a[href^='/ai-alerts']") };
-  });
-  expect(order.list).toBeGreaterThan(0);
-  expect(order.ai).toBeGreaterThan(order.list);
 });
 
 test("bosh sahifa (390×844, kirgan ish qidiruvchi): birinchi vakansiyaning nomi, maoshi va hududi birinchi ekranda", async ({ page, context }) => {
@@ -127,9 +106,9 @@ test("bosh sahifa (390×844, kirgan ish qidiruvchi): birinchi vakansiyaning nomi
       expect(box.y).toBeGreaterThanOrEqual(0);
       expect(box.y + box.height).toBeLessThanOrEqual(navTop);
     }
-    // suzuvchi AI tugmasi yo'q; AI qidiruv — qidiruv blokida
+    // suzuvchi AI tugmasi yo'q; AI qidiruv — bosh sahifaning yagona qidiruv maydoni
     await expect(page.locator(".ai-fab")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "AI bilan qidirish" })).toBeVisible();
+    await expect(page.locator("form[data-ai-field]")).toBeVisible();
   } finally {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   }

@@ -2,8 +2,10 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
- * D3/R-C · bosh sahifadagi tezkor bo'limlar (admin sozlaydi; xodim topish, mos ish, kunlik ishlar) va "Kunlik ishlar":
- * ish beruvchi oddiy formada "Kunlik" haq tanlaydi → bazada kunlik → "Kunlik ishlar" oynasi faqat kunliklarni ko'rsatadi.
+ * D3/R-C · bosh sahifadagi tezkor bo'limlar va "Kunlik ishlar":
+ *  - ish beruvchi bosh sahifasi: admin sozlaydigan rasmli oynalar (xodim topish, yaqin atrofdagilar, e'lon berish);
+ *  - ish izlovchi bosh sahifasi (2.0, 2026-11): oynalar yo'q — qidiruv ostida 4 ta tez yo'l (kunlik, yaqin, masofaviy, tajribasiz);
+ *  - ish beruvchi oddiy formada "Kunlik" haq tanlaydi → bazada kunlik → "Kunlik ish" tez yo'li faqat kunliklarni ko'rsatadi.
  */
 
 async function nodeId(name: string) {
@@ -23,36 +25,39 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (ish izlovchi): uchta tezkor bo'lim — ixcham qator, e'lonlar ro'yxatidan keyin; har biri o'z bo'limiga olib boradi", async ({ page, context }) => {
+test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qidiruv ostida, e'lonlardan oldin; har biri bir bosishda natijaga olib boradi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  const windows = page.getByRole("region", { name: "Tezkor bo'limlar" });
-  const links = windows.getByRole("link");
-  await expect(links).toHaveCount(3);
-  await expect(links.nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
-  await expect(links.nth(1)).toContainText("Kunlik ishlar");
-  await expect(links.nth(2)).toContainText("Yaqin atrofdagi ishlar");
-  // R-C: birinchi ekranni qidiruv va e'lonlar egallaydi — oynalar ro'yxatdan keyin, ixcham (rasm chapda, nomi yonida)
-  const first = links.nth(0);
-  const art = (await first.locator("svg").boundingBox())!;
-  const title = (await first.getByText("Endi o'zingizga mos ish topish oson").boundingBox())!;
-  expect(art.x + art.width).toBeLessThanOrEqual(title.x + 1);
-  expect(art.width).toBeLessThanOrEqual(56);
-  expect((await first.boundingBox())!.height).toBeLessThanOrEqual(96);
+  // 2.0: ish izlovchi bosh sahifasida admin oynalari ko'rsatilmaydi (bitta vazifa — qidiruv)
+  await expect(page.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
+  const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
+  await expect(links).toHaveCount(4);
+  await expect(links.nth(0)).toHaveText("Kunlik ish");
+  await expect(links.nth(1)).toHaveText("Yaqin atrofda");
+  await expect(links.nth(2)).toHaveText("Masofaviy");
+  await expect(links.nth(3)).toHaveText("Tajribasiz");
+  // qidiruv maydoni tepada, tez yo'llar uning ostida va e'lonlar ro'yxatidan oldin; har biri barmoq bilan bosishga qulay (≥ 44px)
+  const field = (await page.locator("form[data-ai-field]").boundingBox())!;
   const feed = (await page.locator("#home-feed").boundingBox())!;
-  expect((await first.boundingBox())!.y).toBeGreaterThan(feed.y);
-  expect((await page.getByRole("searchbox", { name: "Ish qidirish" }).boundingBox())!.y).toBeLessThan(400);
+  expect(field.y).toBeLessThan(400);
+  for (let i = 0; i < 4; i++) {
+    const box = (await links.nth(i).boundingBox())!;
+    expect(box.y).toBeGreaterThan(field.y);
+    expect(box.y + box.height).toBeLessThanOrEqual(feed.y);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+  }
   // telefonda sahifa yonga siljimaydi
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 
+  // kunlik ishlar: kasb ham, hudud ham so'ralmaydi — darhol natijalar
   await links.nth(0).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish qidiraman");
+  await page.waitForURL(/\/search\?mode=jobs&region=all&pay=daily$/);
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Kunlik ishlar");
   await page.goBack();
-  await page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link").nth(1).click();
-  // kunlik ishlar: kasb so'ralmaydi — darhol hudud
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qaysi viloyatda?");
-  await expect(page.getByText("Ish e'lonlari · Kunlik ishlar")).toBeVisible();
+  await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Masofaviy", exact: true }).click();
+  await page.waitForURL(/\/search\?mode=jobs&region=remote/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
 test("bosh sahifa (ish beruvchi): xodim topish, yaqin atrofdagi ishchilar, ish e'loni berish", async ({ page, context }) => {
@@ -100,13 +105,11 @@ test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat
   );
   expect(v).toEqual({ salary_type: "daily", salary_from: 250000 });
 
-  // mehmon "Kunlik ishlar" oynasidan: hudud → butun shahar → faqat kunlik e'lon
+  // mehmon bosh sahifadagi "Kunlik ish" tez yo'lidan: bir bosishda natijalar — faqat kunlik e'lon
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  await page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link", { name: /Kunlik ishlar/ }).click();
-  await page.getByRole("link", { name: "Toshkent shahri", exact: true }).click();
-  await page.getByRole("link", { name: /^Butun shahar/ }).click();
+  await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Kunlik ish", exact: true }).click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Kunlik ishlar");
   const cards = page.locator("main article");
   await expect(cards).toHaveCount(1);
