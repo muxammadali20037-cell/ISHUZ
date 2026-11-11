@@ -10,6 +10,11 @@ import { USERS, asGuest, asMode, sql } from "../support";
  *  - ovoz: mikrofon holatlari, ruxsat berilmagani, javobni o'qib berish va to'xtatish, qurilmada ovoz yo'qligi.
  */
 
+// Bir nechta testda server javobi almashtiriladi (page.route). Ilovaning service worker'i sahifani boshqaruvga olgach,
+// Playwright so'rovni ushlamay qolishi mumkin (vaqtga bog'liq — to'liq to'plamda bir marta haqiqiy serverga o'tib ketdi),
+// shuning uchun bu faylda service worker o'chirilgan. Suhbatning o'zi service worker'ga bog'liq emas (POST keshlanmaydi).
+test.use({ serviceWorkers: "block" });
+
 const DAILY = "Yuk tashuvchi (AI suhbat)";
 
 const main = (page: Page) => page.getByRole("main");
