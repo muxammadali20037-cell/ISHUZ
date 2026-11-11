@@ -64,7 +64,7 @@ export async function SeekerActivity({ workerId }: { workerId: string }) {
             <ul className="divide-y divide-border">
               {recent.map((a) => (
                 <li key={a.id}>
-                  <Link href={`/applications/${a.id}`} className="flex items-center gap-3 py-3 hover:text-primary">
+                  <Link href={`/applications/${a.id}`} className="flex items-center gap-3 py-3 hover:text-primary-ink">
                     <Initial text={a.vacancy!.company?.name ?? a.vacancy!.title} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-base font-semibold">{a.vacancy!.title}</span>
@@ -87,7 +87,7 @@ export async function SeekerActivity({ workerId }: { workerId: string }) {
             <ul className="divide-y divide-border">
               {savedTop.map((j) => (
                 <li key={j.id}>
-                  <Link href={`/jobs/${j.slug}`} className="flex items-center gap-3 py-3 hover:text-primary">
+                  <Link href={`/jobs/${j.slug}`} className="flex items-center gap-3 py-3 hover:text-primary-ink">
                     <Initial text={j.employer_name ?? j.title} />
                     <span className="min-w-0 flex-1">
                       <span className="block truncate text-base font-semibold">{j.title}</span>
@@ -118,7 +118,7 @@ function Panel({ title, href, all, children }: { title: string; href: string; al
     <div className="rounded-2xl border border-border bg-card p-5">
       <div className="flex items-center justify-between gap-3">
         <h3 className="text-lg font-bold">{title}</h3>
-        <Link href={href} className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary hover:underline">
+        <Link href={href} className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
           {all} <ArrowRight className="size-4" aria-hidden />
         </Link>
       </div>
@@ -129,7 +129,7 @@ function Panel({ title, href, all, children }: { title: string; href: string; al
 
 function Initial({ text }: { text: string }) {
   return (
-    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-base font-extrabold uppercase text-primary" aria-hidden>
+    <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-base font-extrabold uppercase text-primary-ink" aria-hidden>
       {text.trim().slice(0, 1)}
     </span>
   );
@@ -139,7 +139,7 @@ function Empty({ text, href, cta }: { text: string; href: string; cta: string })
   return (
     <div className="py-6 text-center">
       <p className="text-sm text-muted-foreground">{text}</p>
-      <Link href={href} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary hover:underline">
+      <Link href={href} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
         {cta} <ArrowRight className="size-4" aria-hidden />
       </Link>
     </div>

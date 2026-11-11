@@ -44,7 +44,7 @@ export async function HomeWindows({ windows }: { windows: HomeWindow[] }) {
                   )}
                 </div>
                 <div className="flex flex-1 flex-col px-3 py-2.5 sm:px-4 sm:py-3">
-                  <span className="break-words text-base font-bold leading-tight group-hover:text-primary sm:text-lg sm:leading-snug">{title}</span>
+                  <span className="break-words text-base font-bold leading-tight group-hover:text-primary-ink sm:text-lg sm:leading-snug">{title}</span>
                   {desc ? <span className="mt-0.5 hidden break-words text-sm leading-snug text-muted-foreground sm:line-clamp-2">{desc}</span> : null}
                 </div>
               </Link>

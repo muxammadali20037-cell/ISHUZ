@@ -58,7 +58,7 @@ export function CompanyInfoTab({ company, myRole, refs }: { company: CompanyRow;
       <div className="flex flex-wrap items-center gap-2 text-sm">
         <span className="text-muted-foreground">{t("employer.settings.your_role")}:</span>
         {myRole ? <Badge variant="primary">{tEnum("company_member_role", myRole)}</Badge> : null}
-        <Link href={`/company/${company.slug}`} className="ml-auto inline-flex items-center gap-1 font-medium text-primary hover:underline">
+        <Link href={`/company/${company.slug}`} className="ml-auto inline-flex items-center gap-1 font-medium text-primary-ink hover:underline">
           {t("employer.settings.public_page")} <ExternalLink className="size-3.5" />
         </Link>
       </div>

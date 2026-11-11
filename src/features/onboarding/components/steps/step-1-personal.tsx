@@ -239,7 +239,7 @@ export function PhoneField({ contacts }: { contacts: DraftContacts | null }) {
             {countdown > 0 ? (
               <span className="tabular text-muted-foreground">{t("auth.resend_in", { seconds: countdown })}</span>
             ) : (
-              <button type="button" className="font-medium text-primary" onClick={send} disabled={pending}>
+              <button type="button" className="font-medium text-primary-ink" onClick={send} disabled={pending}>
                 {t("auth.resend")}
               </button>
             )}

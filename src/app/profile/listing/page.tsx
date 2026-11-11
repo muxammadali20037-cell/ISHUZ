@@ -55,7 +55,7 @@ export default async function ListingPage() {
             {steps.map((s, i) => (
               <li key={s.href}>
                 <Link href={s.href} className="flex items-center gap-3 p-4 hover:bg-secondary/60">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">{i + 1}</span>
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary-ink">{i + 1}</span>
                   <span className="flex-1 font-medium">{s.label}</span>
                   <ChevronRight className="size-5 text-muted-foreground" />
                 </Link>

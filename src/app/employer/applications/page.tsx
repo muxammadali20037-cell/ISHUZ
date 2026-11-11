@@ -39,7 +39,7 @@ export default async function EmployerApplicationsPage({ searchParams }: { searc
   const chip = (on: boolean) =>
     cn(
       "press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border px-4 text-sm font-semibold",
-      on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/50 hover:text-primary",
+      on ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/50 hover:text-primary-ink",
     );
   return (
     <Shell forceRole="employer">

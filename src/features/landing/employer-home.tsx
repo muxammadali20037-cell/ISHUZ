@@ -89,7 +89,7 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
           {session ? (
             // kirgan, lekin ish beruvchi profili yo'q: bir daqiqalik to'ldirish (arizalar va vakansiyalar shundan keyin)
             <Link href="/onboarding/employer" className="press flex min-h-16 items-center gap-3 rounded-xl border border-primary/40 bg-primary-soft/40 px-4 py-3 hover:border-primary">
-              <Building2 className="size-5 shrink-0 text-primary" aria-hidden />
+              <Building2 className="size-5 shrink-0 text-primary-ink" aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block font-bold">{t("easy.start.finish_company_title")}</span>
                 <span className="block text-sm leading-snug text-muted-foreground">{t("easy.start.finish_company_desc")}</span>
@@ -140,7 +140,7 @@ async function NewWorkers({ session, place }: { session: SessionContext | null; 
           {t("easy.start.new_workers_title")}
         </h2>
         {more ? (
-          <Link href={feed.allHref} className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-1 text-base font-semibold text-primary hover:underline">
+          <Link href={feed.allHref} className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
             {t("easy.start.see_all")} <ChevronRight className="size-4" aria-hidden />
           </Link>
         ) : null}

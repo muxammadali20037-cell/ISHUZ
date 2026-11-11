@@ -44,7 +44,7 @@ export function TelegramCard({ linked, botUsername }: { linked: Linked; botUsern
   if (linked) {
     return (
       <div className="flex items-start gap-3">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
           <Send className="size-5" />
         </span>
         <div className="min-w-0 flex-1">

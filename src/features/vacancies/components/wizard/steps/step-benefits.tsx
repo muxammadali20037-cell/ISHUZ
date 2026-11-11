@@ -44,7 +44,7 @@ export function StepBenefits({ mode, vacancy, refs }: StepProps) {
               role="checkbox"
               aria-checked={active}
               onClick={() => toggle(b.code)}
-              className={cn("flex min-h-14 items-center gap-2 rounded-2xl border bg-card px-3 py-2 text-left text-sm font-medium transition-colors", active ? "border-primary bg-primary-soft/60 text-primary" : "border-border hover:border-primary/40 hover:bg-secondary")}
+              className={cn("flex min-h-14 items-center gap-2 rounded-2xl border bg-card px-3 py-2 text-left text-sm font-medium transition-colors", active ? "border-primary bg-primary-soft/60 text-primary-ink" : "border-border hover:border-primary/40 hover:bg-secondary")}
             >
               <span className={cn("flex size-6 shrink-0 items-center justify-center rounded-md border", active ? "border-primary bg-primary text-primary-foreground" : "border-input bg-card")}>{active ? <Check className="size-4" strokeWidth={3} /> : null}</span>
               {name(b)}

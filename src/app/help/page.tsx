@@ -21,7 +21,7 @@ export default async function HelpPage() {
     <Shell>
       <div className="container-narrow space-y-7 py-5 sm:py-8">
         <header className="flex items-start gap-4">
-          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
             <LifeBuoy className="size-7" />
           </span>
           <div>
@@ -33,12 +33,12 @@ export default async function HelpPage() {
         {guides.map((g) => (
           <section key={g.title} className="rounded-2xl border border-border bg-card p-5">
             <h2 className="flex items-center gap-2 text-lg font-bold">
-              <g.icon className="size-5 text-primary" /> {g.title}
+              <g.icon className="size-5 text-primary-ink" /> {g.title}
             </h2>
             <ol className="mt-3 space-y-2.5">
               {g.steps.map((s, i) => (
                 <li key={i} className="flex gap-3 text-md">
-                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary">{i + 1}</span>
+                  <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-bold text-primary-ink">{i + 1}</span>
                   <span className="pt-0.5">{s}</span>
                 </li>
               ))}
@@ -48,7 +48,7 @@ export default async function HelpPage() {
 
         <section className="rounded-2xl border border-border bg-card p-5">
           <h2 className="flex items-center gap-2 text-lg font-bold">
-            <ShieldCheck className="size-5 text-primary" /> {t("welcome.help.safety_title")}
+            <ShieldCheck className="size-5 text-primary-ink" /> {t("welcome.help.safety_title")}
           </h2>
           <ul className="mt-3 list-disc space-y-2 pl-5 text-md">
             <li>{t("welcome.help.safety_1")}</li>
@@ -62,11 +62,11 @@ export default async function HelpPage() {
 
         <p className="text-sm text-muted-foreground">
           {t("welcome.help.more")}{" "}
-          <Link href="/privacy" className="font-medium text-primary hover:underline">
+          <Link href="/privacy" className="font-medium text-primary-ink hover:underline">
             {t("common.footer.privacy")}
           </Link>
           {" · "}
-          <Link href="/terms" className="font-medium text-primary hover:underline">
+          <Link href="/terms" className="font-medium text-primary-ink hover:underline">
             {t("common.footer.terms")}
           </Link>
         </p>

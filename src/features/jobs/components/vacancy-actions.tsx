@@ -150,7 +150,7 @@ export function VacancyActions({ vacancy, viewer, layout = "card" }: VacancyActi
   };
 
   const saveLabel = saved ? t("jobs.detail.saved") : t("jobs.detail.save");
-  const saveIcon = <Bookmark className={cn("size-5", saved && "fill-primary text-primary")} />;
+  const saveIcon = <Bookmark className={cn("size-5", saved && "fill-primary text-primary-ink")} />;
 
   return (
     <>
@@ -223,7 +223,7 @@ export function VacancyActions({ vacancy, viewer, layout = "card" }: VacancyActi
                 <Link href={`/applications/${done}`}>{t("jobs.apply.success_action")}</Link>
               </Button>
               {viewer.kind === "no_worker" ? (
-                <Link href="/post/worker" className="mt-3 rounded-xl bg-primary-soft/60 px-4 py-3 text-sm font-semibold text-primary">
+                <Link href="/post/worker" className="mt-3 rounded-xl bg-primary-soft/60 px-4 py-3 text-sm font-semibold text-primary-ink">
                   {t("jobs.apply.quick_profile_cta")}
                 </Link>
               ) : null}
@@ -244,7 +244,7 @@ export function VacancyActions({ vacancy, viewer, layout = "card" }: VacancyActi
           >
             {viewer.kind === "no_worker" ? (
               <p className="mb-3 flex items-start gap-2 rounded-xl bg-primary-soft/60 px-3 py-2.5 text-sm">
-                <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden />
+                <Info className="mt-0.5 size-4 shrink-0 text-primary-ink" aria-hidden />
                 {t("jobs.apply.quick_note")}
               </p>
             ) : null}

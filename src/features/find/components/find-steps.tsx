@@ -132,7 +132,7 @@ export function FindSteps({
           {myPlaceInfo ? (
             <li className="sm:col-span-2">
               <Link href={findHref(cur, { region: myPlaceInfo.region.slug, district: myPlaceInfo.district?.id ?? "all", page: 1 })} className={cn(bigLink, "border-primary/40")}>
-                <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
+                <MapPin className="size-6 shrink-0 text-primary-ink" aria-hidden />
                 <span className="flex-1">
                   <span className="block text-base font-normal text-muted-foreground">{t("easy.near.your_area")}</span>
                   <span className="block">{[name(myPlaceInfo.region), myPlaceInfo.district ? name(myPlaceInfo.district) : null].filter(Boolean).join(" · ")}</span>
@@ -143,7 +143,7 @@ export function FindSteps({
           ) : null}
           <li className="sm:col-span-2">
             <Link href={regionHref("all")} className={cn(bigLink, "border-primary/40")}>
-              <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
+              <Globe2 className="size-6 shrink-0 text-primary-ink" aria-hidden />
               <span className="flex-1">{t("easy.location.whole_country")}</span>
               <PendingChevron />
             </Link>
@@ -153,13 +153,13 @@ export function FindSteps({
               {/* tumanlar ro'yxati shu sahifada (ma'lumotnoma yuklanmagan bo'lsa — serverdan) */}
               {districts.length ? (
                 <StepLink href={regionHref(r.slug)} onGo={show} className={bigLink}>
-                  <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
+                  <MapPin className="size-6 shrink-0 text-primary-ink" aria-hidden />
                   <span className="flex-1">{name(r)}</span>
                   <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
                 </StepLink>
               ) : (
                 <Link href={regionHref(r.slug)} className={bigLink}>
-                  <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
+                  <MapPin className="size-6 shrink-0 text-primary-ink" aria-hidden />
                   <span className="flex-1">{name(r)}</span>
                   <PendingChevron />
                 </Link>
@@ -168,7 +168,7 @@ export function FindSteps({
           ))}
           <li className="sm:col-span-2">
             <Link href={regionHref("remote")} className={bigLink}>
-              <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
+              <Globe2 className="size-6 shrink-0 text-primary-ink" aria-hidden />
               <span className="flex-1">
                 <span className="block">{t("easy.location.remote")}</span>
                 <span className="block text-base font-normal text-muted-foreground">{t("easy.location.remote_desc")}</span>
@@ -223,7 +223,7 @@ function stepOf(p: FindParams, hasNode: boolean, regionKnown: boolean, isRegion:
 function PendingChevron() {
   const { pending } = useLinkStatus();
   return pending ? (
-    <Loader2 className="size-5 shrink-0 animate-spin text-primary" data-step-loading aria-hidden />
+    <Loader2 className="size-5 shrink-0 animate-spin text-primary-ink" data-step-loading aria-hidden />
   ) : (
     <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
   );

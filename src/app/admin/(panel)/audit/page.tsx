@@ -91,7 +91,7 @@ export default async function AdminAuditPage({ searchParams }: { searchParams: P
               return (
                 <div className="text-xs">
                   <span className="text-muted-foreground">{r.target_type}</span>{" "}
-                  {href ? <Link href={href} className="text-primary hover:underline">{r.target_id?.slice(0, 8)}</Link> : <code>{r.target_id?.slice(0, 8) ?? "—"}</code>}
+                  {href ? <Link href={href} className="text-primary-ink hover:underline">{r.target_id?.slice(0, 8)}</Link> : <code>{r.target_id?.slice(0, 8) ?? "—"}</code>}
                 </div>
               );
             },

@@ -60,9 +60,9 @@ export function WizardFrame({
     <div className="container-narrow overflow-x-clip pb-44 pt-4 text-lg sm:pt-8" inert={busy || undefined} aria-busy={busy || undefined}>
       <header className="mb-6 space-y-3">
         <div className="flex items-center justify-between gap-3">
-          <p className="text-base font-bold uppercase tracking-wide text-primary">{title}</p>
+          <p className="text-base font-bold uppercase tracking-wide text-primary-ink">{title}</p>
           {!loggedIn ? (
-            <Link href={loginHref} onClick={onLogin} className="inline-flex min-h-12 items-center gap-1.5 rounded-xl px-3 text-base font-semibold text-primary hover:bg-primary-soft">
+            <Link href={loginHref} onClick={onLogin} className="inline-flex min-h-12 items-center gap-1.5 rounded-xl px-3 text-base font-semibold text-primary-ink hover:bg-primary-soft">
               <LogIn className="size-5" aria-hidden /> {t("easy.wizard.login")}
             </Link>
           ) : null}

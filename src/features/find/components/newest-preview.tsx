@@ -43,7 +43,7 @@ export function NewestPreview({ preview }: { preview: SearchPreview }) {
       {items.length ? (
         <>
           <h2 id="newest-title" className="flex items-center gap-2 pt-1 text-xl font-bold">
-            <Sparkles className="size-5 text-primary" aria-hidden /> {jobs ? t("easy.search.newest_jobs") : t("easy.search.newest_workers")}
+            <Sparkles className="size-5 text-primary-ink" aria-hidden /> {jobs ? t("easy.search.newest_jobs") : t("easy.search.newest_workers")}
           </h2>
           <ul className="space-y-2">
             {jobs

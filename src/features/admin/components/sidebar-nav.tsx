@@ -59,7 +59,7 @@ export function SidebarNav({ groups, counts, onNavigate }: { groups: NavGroup[];
                     aria-current={active ? "page" : undefined}
                     className={cn(
                       "flex h-10 items-center gap-2.5 rounded-xl px-3 text-sm font-medium transition-colors",
-                      active ? "bg-primary-soft text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                      active ? "bg-primary-soft text-primary-ink" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
                     )}
                   >
                     <Icon className="size-4.5 shrink-0" strokeWidth={active ? 2.25 : 1.9} />

@@ -59,7 +59,7 @@ export function MfaForm({ next = "/admin" }: { next?: string }) {
   return (
     <div className="space-y-5 rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex items-center gap-3">
-        <ShieldCheck className="size-8 text-primary" aria-hidden />
+        <ShieldCheck className="size-8 text-primary-ink" aria-hidden />
         <div>
           <h1 className="text-xl font-bold">{t("admin.mfa.title")}</h1>
           <p className="text-sm text-muted-foreground">{t("admin.mfa.subtitle")}</p>

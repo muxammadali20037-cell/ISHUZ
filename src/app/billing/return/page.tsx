@@ -51,7 +51,7 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
   }
   const money = (n: number) => formatMoney(n, locale);
   const Icon = status === "paid" ? CheckCircle2 : status === "pending" ? Clock : XCircle;
-  const tone = status === "paid" ? "bg-success-soft text-success" : status === "pending" ? "bg-primary-soft text-primary" : "bg-destructive-soft text-destructive";
+  const tone = status === "paid" ? "bg-success-soft text-success" : status === "pending" ? "bg-primary-soft text-primary-ink" : "bg-destructive-soft text-destructive";
   const title =
     status === "paid"
       ? topup
@@ -141,7 +141,7 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
             <Link href="/">{t("billing.return.to_home")}</Link>
           </Button>
           {p && status === "paid" ? (
-            <Link href="/billing" className="mt-1 inline-flex min-h-11 items-center justify-center font-semibold text-primary underline-offset-4 hover:underline">
+            <Link href="/billing" className="mt-1 inline-flex min-h-11 items-center justify-center font-semibold text-primary-ink underline-offset-4 hover:underline">
               {t("billing.checkout.history_link")}
             </Link>
           ) : null}

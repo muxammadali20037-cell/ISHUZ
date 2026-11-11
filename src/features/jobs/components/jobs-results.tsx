@@ -42,9 +42,9 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
 
   const understoodNote = params.from ? (
     <p className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-primary-soft/60 px-3 py-2 text-sm">
-      <Sparkles className="size-4 shrink-0 text-primary" />
+      <Sparkles className="size-4 shrink-0 text-primary-ink" />
       <span className="min-w-0">{t("jobs.search.understood", { query: params.from })}</span>
-      <Link href={jobsHref({ ...DEFAULT_JOBS_PARAMS, q: params.from, exact: true })} className="font-semibold text-primary hover:underline">
+      <Link href={jobsHref({ ...DEFAULT_JOBS_PARAMS, q: params.from, exact: true })} className="font-semibold text-primary-ink hover:underline">
         {t("jobs.search.search_exact")}
       </Link>
     </p>
@@ -91,7 +91,7 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
           </p>
           {smartName ? (
             <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <Sparkles className="size-3.5 text-primary" /> {t("jobs.search.smart_category", { name: smartName })}
+              <Sparkles className="size-3.5 text-primary-ink" /> {t("jobs.search.smart_category", { name: smartName })}
             </p>
           ) : null}
         </div>

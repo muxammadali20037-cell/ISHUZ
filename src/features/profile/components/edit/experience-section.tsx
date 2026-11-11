@@ -79,7 +79,7 @@ export function ExperienceSection({ items }: { items: WorkerExperienceRow[] }) {
         <ul className="divide-y divide-border">
           {items.map((e) => (
             <li key={e.id} className="flex items-start gap-3 py-3">
-              <span className={cn("mt-1 flex size-9 shrink-0 items-center justify-center rounded-lg", e.is_current ? "bg-primary-soft text-primary" : "bg-secondary text-muted-foreground")}>
+              <span className={cn("mt-1 flex size-9 shrink-0 items-center justify-center rounded-lg", e.is_current ? "bg-primary-soft text-primary-ink" : "bg-secondary text-muted-foreground")}>
                 <Building2 className="size-4.5" />
               </span>
               <div className="min-w-0 flex-1">

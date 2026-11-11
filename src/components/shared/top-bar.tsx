@@ -91,7 +91,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               aria-label={t("easy.start.place_label", { place: place.label })}
               className="press flex min-h-11 max-w-full items-center gap-1 rounded-lg px-1.5 text-base font-semibold hover:bg-secondary md:hidden"
             >
-              <MapPin className="size-4 shrink-0 text-primary" aria-hidden />
+              <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
               <span className="truncate">{place.label}</span>
               <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
             </Link>

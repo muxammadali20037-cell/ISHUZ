@@ -94,7 +94,7 @@ export function IntroSlides({ slides, initialStep = 0 }: { slides: IntroSlide[];
             <h1 className="mt-7 text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">{s.title}</h1>
             <p className="mt-2 text-base leading-relaxed text-muted-foreground">{s.text}</p>
             {s.stat ? (
-              <p className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-primary-soft px-3 py-1.5 text-sm font-bold text-primary">
+              <p className="mt-4 inline-flex items-center gap-2 self-start rounded-full bg-primary-soft px-3 py-1.5 text-sm font-bold text-primary-ink">
                 <span className="entry-live" aria-hidden />
                 {s.stat}
               </p>

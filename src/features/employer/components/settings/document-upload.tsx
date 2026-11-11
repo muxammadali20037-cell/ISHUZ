@@ -57,7 +57,7 @@ export function DocumentUpload({ userId, value, onChange, disabled }: { userId: 
         <ul className="divide-y divide-border rounded-xl border border-border">
           {value.map((d) => (
             <li key={d.path} className="flex items-center gap-2 px-3 py-2 text-sm">
-              <FileText className="size-4 shrink-0 text-primary" />
+              <FileText className="size-4 shrink-0 text-primary-ink" />
               <span className="min-w-0 flex-1 truncate">{d.name}</span>
               <button type="button" onClick={() => void remove(d)} disabled={disabled || busy} className="rounded-md p-1.5 text-muted-foreground hover:bg-secondary hover:text-foreground disabled:opacity-50" aria-label={t("common.actions.delete")}>
                 <X className="size-4" />

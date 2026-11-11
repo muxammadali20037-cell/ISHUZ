@@ -28,7 +28,7 @@ export function StatTile({
 }) {
   const tones = {
     default: "bg-secondary text-foreground",
-    primary: "bg-primary-soft text-primary",
+    primary: "bg-primary-soft text-primary-ink",
     warning: "bg-warning-soft text-warning",
     destructive: "bg-destructive-soft text-destructive",
     success: "bg-success-soft text-success",

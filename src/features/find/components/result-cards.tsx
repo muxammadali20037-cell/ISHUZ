@@ -135,7 +135,7 @@ const cardCls = "relative rounded-xl border border-border bg-card px-4 py-3 tran
 const stretched = "after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
 const thumbCls = "size-12 shrink-0 rounded-lg";
 // amal: ikkilamchi (kartada bitta asosiy narsa — ma'lumot), lekin bosish maydoni ≥ 44 px
-const actionCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-primary/30 bg-card px-3 text-base font-semibold text-primary hover:border-primary hover:bg-primary-soft";
+const actionCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-primary/30 bg-card px-3 text-base font-semibold text-primary-ink hover:border-primary hover:bg-primary-soft";
 const metaCls = "flex shrink-0 items-center gap-1";
 const chipCls = "min-w-0 truncate rounded-md bg-secondary px-2 py-1 text-sm font-medium text-foreground/80";
 // o'z arizasi holati (ariza tugmasi o'rnida): bosilsa — "Arizalarim"
@@ -187,7 +187,7 @@ export function JobPeekRow({ job }: { job: JobCardData }) {
   const org = job.employer_name ?? job.title;
   return (
     <Link href={`/jobs/${job.slug}`} className="relative flex gap-3 rounded-lg border border-border bg-card p-3 transition-colors hover:border-primary/40">
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-lg font-extrabold uppercase text-primary" aria-hidden>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-lg font-extrabold uppercase text-primary-ink" aria-hidden>
         {org.trim().slice(0, 1)}
       </span>
       <div className="min-w-0 flex-1">
@@ -197,7 +197,7 @@ export function JobPeekRow({ job }: { job: JobCardData }) {
         </div>
         <p className="mt-0.5 flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
           {job.employer_name ? <span className="truncate">{job.employer_name}</span> : null}
-          {job.employer_verified ? <BadgeCheck className="size-3.5 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
+          {job.employer_verified ? <BadgeCheck className="size-3.5 shrink-0 text-primary-ink" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
           {job.employer_name ? <span aria-hidden>·</span> : null}
           <span className="truncate">{shortPlace(job, job.is_remote)}</span>
         </p>
@@ -206,7 +206,7 @@ export function JobPeekRow({ job }: { job: JobCardData }) {
           to={job.salary_to}
           type={job.salary_type}
           negotiable={job.salary_negotiable}
-          className={cn("mt-1 block truncate text-sm font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-primary")}
+          className={cn("mt-1 block truncate text-sm font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-primary-ink")}
         />
       </div>
     </Link>
@@ -263,7 +263,7 @@ export function JobResultCard({
           <OrgMark name={job.employer_name} />
           <span className="truncate">{job.employer_name}</span>
           {/* faqat moderator tasdiqlagan kompaniya (companies.verification_status = verified) */}
-          {job.employer_verified ? <BadgeCheck className="size-4 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
+          {job.employer_verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
         </p>
       ) : null}
       {/* bitta qator: hudud (qisqa: tuman birinchi; to'liq — title va ekran o'qigichida) · grafik · tajriba */}
@@ -349,7 +349,7 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
               {fullName}
             </Link>
           </h3>
-          <p className="truncate text-base font-semibold text-primary">{profession}</p>
+          <p className="truncate text-base font-semibold text-primary-ink">{profession}</p>
           <p className="mt-0.5 truncate text-sm text-muted-foreground">
             {place(worker, false)}
             {worker.remote_ok ? ` · ${t("easy.card.remote")}` : ""}
@@ -357,7 +357,7 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
           {salaryAmount ? (
             // ikonka + summa: "Желаемая зарплата: …" kabi uzun yozuv summani kesib qo'ymasin; to'liq matn — ekran o'qigichi uchun
             <p className="flex min-w-0 items-center gap-1 text-sm font-semibold" title={`${t("easy.card.salary_expected", { amount: salaryAmount })}${salarySuffix}`}>
-              <Wallet className="size-4 shrink-0 text-primary" aria-hidden />
+              <Wallet className="size-4 shrink-0 text-primary-ink" aria-hidden />
               <span className="sr-only">
                 {t("easy.card.salary_expected", { amount: salaryAmount })}
                 {salarySuffix}
@@ -375,7 +375,7 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
         {saved !== undefined ? <SaveButton kind="worker" id={worker.id} initial={saved} label={fullName} refresh={savedRefresh} className="relative z-10" /> : null}
         {/* qisqa: ikonka + "3+ yil" (pastki qator bitta qatorga sig'sin, ru/en da ham); to'liq "Tajriba: …" — ekran o'qigichi uchun */}
         <span className={cn(chipCls, "flex items-center gap-1")} title={expText}>
-          <BriefcaseBusiness className="size-4 shrink-0 text-primary" aria-hidden />
+          <BriefcaseBusiness className="size-4 shrink-0 text-primary-ink" aria-hidden />
           <span className="sr-only">{expText}</span>
           <span className="truncate" aria-hidden>
             {exp ? t(`easy.card.exp_short.${exp}`) : "—"}
@@ -393,7 +393,7 @@ export function JobCompactRow({ job }: { job: JobCardData }) {
   const place = usePlace();
   return (
     <Link href={`/jobs/${job.slug}`} className={compactRow}>
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
         <CategoryIcon name={job.category_icon} className="size-6" />
       </span>
       <span className="min-w-0 flex-1">
@@ -415,13 +415,13 @@ export function WorkerCompactRow({ worker }: { worker: WorkerCardData }) {
   const exp = levelToExperience(worker.experience_level);
   return (
     <Link href={`/listing/${worker.id}`} className={compactRow}>
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
         <CategoryIcon name={worker.category_icon} className="size-6" />
       </span>
       <span className="min-w-0 flex-1">
         <span className="block truncate text-lg font-bold leading-snug">
           {worker.first_name}
-          {worker.last_initial ? ` ${worker.last_initial}.` : ""} · <span className="text-primary">{profession}</span>
+          {worker.last_initial ? ` ${worker.last_initial}.` : ""} · <span className="text-primary-ink">{profession}</span>
         </span>
         <span className="block truncate text-base">{t("easy.card.experience", { value: exp ? t(`easy.worker.exp.${exp}`) : "—" })}</span>
         <span className="block truncate text-sm text-muted-foreground">{place(worker, false)}</span>

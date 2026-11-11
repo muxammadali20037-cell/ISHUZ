@@ -36,7 +36,7 @@ async function WorldInvite({ plan }: { plan: DailyStep[] | null }) {
   return (
     <section aria-labelledby="world-invite" className={cn("grid gap-4", plan && "lg:grid-cols-[minmax(0,1fr)_22rem]")}>
       <div className="relative overflow-hidden rounded-2xl border border-primary/25 bg-primary-soft p-5 sm:p-6">
-        <p className="inline-flex items-center gap-1.5 text-sm font-bold text-primary">
+        <p className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-ink">
           <Sparkles className="size-4" aria-hidden />
           {t("easy.world.my_world")}
         </p>
@@ -47,7 +47,7 @@ async function WorldInvite({ plan }: { plan: DailyStep[] | null }) {
         <ul className="mt-4 flex flex-wrap gap-2" aria-hidden>
           {sample.map((c) => (
             <li key={c.id} className="inline-flex items-center gap-1.5 rounded-full bg-card px-3 py-1.5 text-sm font-semibold shadow-sm">
-              <CategoryIcon name={c.icon} className="size-4 text-primary" />
+              <CategoryIcon name={c.icon} className="size-4 text-primary-ink" />
               {name(c)}
             </li>
           ))}
@@ -87,7 +87,7 @@ async function WorldHome({ categories, plan }: { categories: Category[]; plan: D
     <section aria-labelledby="world-title" className="space-y-4">
       <div className={cn("grid gap-4", plan && "lg:grid-cols-[minmax(0,1fr)_22rem]")}>
         <div className="flex flex-col rounded-2xl border border-border bg-card p-5 sm:p-6">
-          <p className="inline-flex items-center gap-1.5 text-sm font-bold text-primary">
+          <p className="inline-flex items-center gap-1.5 text-sm font-bold text-primary-ink">
             <Sparkles className="size-4" aria-hidden />
             {t("easy.world.my_world")}
           </p>
@@ -103,7 +103,7 @@ async function WorldHome({ categories, plan }: { categories: Category[]; plan: D
                   href={`/jobs?category=${c.slug}${place.region ? `&region=${place.region.slug}` : ""}`}
                   className="press flex w-full items-center gap-2.5 rounded-xl border border-border bg-background p-2.5 hover:border-primary/50"
                 >
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden>
+                  <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
                     <CategoryIcon name={c.icon} className="size-4.5" />
                   </span>
                   <span className="min-w-0">
@@ -138,14 +138,14 @@ async function WorldHome({ categories, plan }: { categories: Category[]; plan: D
             <li key={c.id} className="flex">
               <div className="flex w-full flex-col rounded-2xl border border-border bg-card p-4">
                 <div className="flex items-center gap-3">
-                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+                  <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
                     <CategoryIcon name={c.icon} className="size-5" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <h3 className="truncate text-base font-bold">{name(c)}</h3>
                     {res ? <p className="text-xs text-muted-foreground">{t("easy.world.jobs_count", { count: num(res.total) })}</p> : null}
                   </div>
-                  <Link href={href} className="inline-flex min-h-11 items-center gap-0.5 text-sm font-semibold text-primary hover:underline">
+                  <Link href={href} className="inline-flex min-h-11 items-center gap-0.5 text-sm font-semibold text-primary-ink hover:underline">
                     {t("easy.world.all")} <ChevronRight className="size-4" aria-hidden />
                   </Link>
                 </div>
@@ -156,7 +156,7 @@ async function WorldHome({ categories, plan }: { categories: Category[]; plan: D
                       const fresh = !!v.published_at && v.published_at >= today;
                       return (
                         <li key={v.id}>
-                          <Link href={`/jobs/${v.slug}`} className="block py-2.5 hover:text-primary">
+                          <Link href={`/jobs/${v.slug}`} className="block py-2.5 hover:text-primary-ink">
                             <span className="flex items-center gap-2">
                               <span className="min-w-0 flex-1 truncate text-sm font-semibold">{v.title}</span>
                               {fresh ? <span className="shrink-0 rounded-full bg-success-soft px-2 py-0.5 text-2xs font-bold text-success">{t("easy.world.new")}</span> : null}
@@ -203,7 +203,7 @@ async function DailyPlan({ steps }: { steps: DailyStep[] }) {
         <h2 id="world-plan" className="text-lg font-bold">
           {t("easy.world.plan_title")}
         </h2>
-        <span className="tabular text-sm font-bold text-primary">
+        <span className="tabular text-sm font-bold text-primary-ink">
           {done} / {steps.length}
         </span>
       </div>
@@ -224,10 +224,10 @@ async function DailyPlan({ steps }: { steps: DailyStep[] }) {
                 <span className="sr-only">{t("easy.world.plan_done")}</span>
               </p>
             ) : (
-              <Link href={s.href} className="group flex min-h-10 items-center gap-2.5 rounded-lg text-sm font-semibold hover:text-primary">
+              <Link href={s.href} className="group flex min-h-10 items-center gap-2.5 rounded-lg text-sm font-semibold hover:text-primary-ink">
                 <span className="size-6 shrink-0 rounded-full border-2 border-border group-hover:border-primary" aria-hidden />
                 <span className="min-w-0 flex-1">{label(s)}</span>
-                <ChevronRight className="size-4 shrink-0 text-muted-foreground group-hover:text-primary" aria-hidden />
+                <ChevronRight className="size-4 shrink-0 text-muted-foreground group-hover:text-primary-ink" aria-hidden />
               </Link>
             )}
           </li>

@@ -86,7 +86,7 @@ export function LocateAsk<D extends GeoDistrict>({
         {subtitle ? <p className="mt-1 text-muted-foreground">{subtitle}</p> : null}
       </div>
       <div className="flex flex-col items-center rounded-2xl border border-border bg-card px-5 py-8 text-center">
-        <span className="flex size-16 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+        <span className="flex size-16 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
           <MapPin className="size-8" />
         </span>
         <p className="mt-4 max-w-xs text-sm text-muted-foreground">{t("common.locate.privacy")}</p>
@@ -149,7 +149,7 @@ export function ChoiceList({
                 <span className="block">{o.label}</span>
                 {o.hint ? <span className="block text-xs font-normal text-muted-foreground">{o.hint}</span> : null}
               </span>
-              {selected ? <Check className="size-5 shrink-0 text-primary" /> : null}
+              {selected ? <Check className="size-5 shrink-0 text-primary-ink" /> : null}
             </button>
           );
         })}

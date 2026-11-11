@@ -38,7 +38,7 @@ export async function EmployerCallCard({
       <p className="text-base">{t("contacts.guest_hint")}</p>
       <Link
         href={`/auth?next=${encodeURIComponent(guestNext)}`}
-        className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary hover:bg-primary-soft/40"
+        className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary-ink hover:bg-primary-soft/40"
       >
         <LogIn className="size-4" aria-hidden /> {t("contacts.guest_login")}
       </Link>
@@ -79,7 +79,7 @@ export async function EmployerCallCard({
           data-contact="telegram"
           className={
             phone
-              ? "flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary hover:bg-primary-soft/40"
+              ? "flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary-ink hover:bg-primary-soft/40"
               : "flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-sm hover:bg-primary-hover"
           }
         >

@@ -135,7 +135,7 @@ export function AiModeSwitch({ chat, locked }: { chat: AiChatState; locked: bool
   const { t } = useT();
   if (locked) {
     return (
-      <p className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary">
+      <p className="inline-flex items-center gap-2 rounded-full bg-primary-soft px-3 py-1.5 text-sm font-semibold text-primary-ink">
         {chat.mode === "workers" ? <UsersRound className="size-4" aria-hidden /> : <BriefcaseBusiness className="size-4" aria-hidden />}
         {chat.mode === "workers" ? t("easy.mode.finder_in_workers") : t("easy.mode.finder_in_jobs")}
       </p>
@@ -160,7 +160,7 @@ export function AiModeSwitch({ chat, locked }: { chat: AiChatState; locked: bool
             chat.mode === m ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
           )}
         >
-          <Icon className={cn("size-5 shrink-0", chat.mode === m && "text-primary")} aria-hidden /> {label}
+          <Icon className={cn("size-5 shrink-0", chat.mode === m && "text-primary-ink")} aria-hidden /> {label}
         </button>
       ))}
     </div>
@@ -195,7 +195,7 @@ function Thinking({ mode }: { mode: FinderMode }) {
     <div className="ai-bubble-in space-y-2" role="status">
       <AssistantHead busy />
       <Bubble className="inline-flex items-center gap-3 text-muted-foreground">
-        <span className="ai-dots text-primary" aria-hidden>
+        <span className="ai-dots text-primary-ink" aria-hidden>
           <span />
           <span />
           <span />
@@ -212,7 +212,7 @@ function Understood({ result }: { result: AiFindResult }) {
     <p className="flex flex-wrap items-center gap-1.5 text-base font-semibold">
       {t("easy.finder.understood")}
       {result.understood.map((u) => (
-        <span key={u} className="inline-flex min-h-7 items-center rounded-full border border-primary/25 bg-card px-2.5 text-sm font-semibold text-primary">
+        <span key={u} className="inline-flex min-h-7 items-center rounded-full border border-primary/25 bg-card px-2.5 text-sm font-semibold text-primary-ink">
           {u}
         </span>
       ))}
@@ -259,7 +259,7 @@ function Answer({ turn, latest, chat }: { turn: AiTurn & { result: AiFindResult 
           </>
         )}
         {!latest || !count ? (
-          <Link href={r.href} className="inline-flex min-h-11 items-center gap-1 font-semibold text-primary hover:underline">
+          <Link href={r.href} className="inline-flex min-h-11 items-center gap-1 font-semibold text-primary-ink hover:underline">
             {t("easy.finder.open_results")} <ArrowRight className="size-4" aria-hidden />
           </Link>
         ) : null}
@@ -302,7 +302,7 @@ function Answer({ turn, latest, chat }: { turn: AiTurn & { result: AiFindResult 
                   disabled={chat.pending}
                   onClick={() => chat.refine(turn, key)}
                   aria-label={t("easy.finder.refine_add", { label })}
-                  className="press inline-flex min-h-11 items-center gap-1.5 rounded-full border border-primary/30 bg-card px-3.5 text-sm font-semibold text-primary hover:bg-primary-soft disabled:opacity-50"
+                  className="press inline-flex min-h-11 items-center gap-1.5 rounded-full border border-primary/30 bg-card px-3.5 text-sm font-semibold text-primary-ink hover:bg-primary-soft disabled:opacity-50"
                 >
                   <Plus className="size-4" aria-hidden /> {label}
                 </button>
@@ -341,7 +341,7 @@ export function AiThread({ chat, examples, scrollOnRestore = true }: { chat: AiC
                 type="button"
                 disabled={chat.pending}
                 onClick={() => chat.ask(ex)}
-                className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft px-3.5 text-base font-semibold text-primary hover:border-primary/60"
+                className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft px-3.5 text-base font-semibold text-primary-ink hover:border-primary/60"
               >
                 <Search className="size-4 shrink-0" aria-hidden />
                 {ex}
@@ -370,7 +370,7 @@ export function AiThread({ chat, examples, scrollOnRestore = true }: { chat: AiC
         {chat.turns.map((turn) => (
           <li key={turn.id} ref={turn.id === last?.id ? lastRef : undefined} className="scroll-mt-16 space-y-4">
             <div className="ai-bubble-in flex justify-end">
-              <p className={cn("max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-base [overflow-wrap:anywhere]", turn.refine ? "border border-primary/30 bg-primary-soft font-semibold text-primary" : "bg-primary text-primary-foreground")}>
+              <p className={cn("max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-base [overflow-wrap:anywhere]", turn.refine ? "border border-primary/30 bg-primary-soft font-semibold text-primary-ink" : "bg-primary text-primary-foreground")}>
                 <span className="sr-only">{t("easy.finder.you")}: </span>
                 {turn.display}
               </p>

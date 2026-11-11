@@ -156,7 +156,7 @@ export default async function AdminVacanciesPage({ searchParams }: { searchParam
                 <StatusBadge status={detail.status} label={tEnum("vacancy_status", detail.status)} />
                 {detail.requires_review ? <Badge variant="warning">{t("admin.vacancies.requires_review")}</Badge> : null}
                 {detail.status === "active" ? (
-                  <Link href={`/jobs/${detail.slug}`} target="_blank" className="inline-flex items-center gap-1 text-sm text-primary hover:underline">
+                  <Link href={`/jobs/${detail.slug}`} target="_blank" className="inline-flex items-center gap-1 text-sm text-primary-ink hover:underline">
                     <ExternalLink className="size-3.5" /> /jobs/{detail.slug}
                   </Link>
                 ) : null}

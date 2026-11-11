@@ -58,10 +58,10 @@ export function CategoryForm({
                 }}
                 className={cn(
                   "relative flex min-h-12 items-center gap-2.5 rounded-xl border p-2.5 text-left text-sm font-medium transition-colors",
-                  selected ? "border-primary bg-primary-soft text-primary" : "border-border bg-card hover:border-primary/40 hover:bg-secondary",
+                  selected ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card hover:border-primary/40 hover:bg-secondary",
                 )}
               >
-                <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", selected ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary")}>
+                <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", selected ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary-ink")}>
                   <CategoryIcon name={c.icon} className="size-4.5" />
                 </span>
                 <span className="min-w-0 flex-1 leading-tight">{name(c)}</span>

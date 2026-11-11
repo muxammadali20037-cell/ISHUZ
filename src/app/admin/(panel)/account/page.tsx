@@ -39,7 +39,7 @@ export default async function AdminAccountPage({ searchParams }: { searchParams:
   return (
     <div className="max-w-2xl space-y-6">
       <AdminPageHeader title={t("admin.account.title")} subtitle={t("admin.account.subtitle")} />
-      {setup === "1" ? <p className="rounded-xl bg-primary-soft p-3 text-sm font-medium text-primary">{t("admin.account.setup_hint")}</p> : null}
+      {setup === "1" ? <p className="rounded-xl bg-primary-soft p-3 text-sm font-medium text-primary-ink">{t("admin.account.setup_hint")}</p> : null}
       <section className="rounded-2xl border border-border/70 bg-card p-4">
         <h2 className="text-base font-semibold">{t("admin.account.methods")}</h2>
         <ul className="mt-3 space-y-2">

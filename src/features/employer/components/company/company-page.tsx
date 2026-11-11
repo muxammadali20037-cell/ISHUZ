@@ -39,7 +39,7 @@ export async function CompanyPage({ company, vacancies, rating, canManage }: { c
                 </span>
               ) : null}
               {verified && company.is_government ? (
-                <span className="inline-flex items-center gap-1 rounded-lg bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary">
+                <span className="inline-flex items-center gap-1 rounded-lg bg-primary-soft px-2 py-0.5 text-xs font-semibold text-primary-ink">
                   <Landmark className="size-4" /> {t("jobs.government.badge")}
                 </span>
               ) : null}

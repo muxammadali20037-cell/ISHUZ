@@ -74,7 +74,7 @@ export async function RecentApplicationsSection({
                 <td className="max-w-0 px-5 py-3">
                   <span className="flex min-w-0 items-center gap-2.5">
                     <Avatar src={a.avatar_url} fallback={initials(a.first_name, a.last_name)} size="sm" alt="" />
-                    <Link href={a.href} className="truncate text-base font-semibold after:absolute after:inset-0 after:content-[''] hover:text-primary">
+                    <Link href={a.href} className="truncate text-base font-semibold after:absolute after:inset-0 after:content-[''] hover:text-primary-ink">
                       {a.name}
                     </Link>
                     <MatchScore score={a.match_score} size="sm" />

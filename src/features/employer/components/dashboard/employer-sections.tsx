@@ -20,7 +20,7 @@ export async function EmployerSections() {
         {items.map(({ href, icon: Icon, key }) => (
           <li key={key}>
             <Link href={href} className="flex min-h-14 items-center gap-3 px-4 py-2.5 transition-colors hover:bg-secondary/60">
-              <Icon className="size-5 shrink-0 text-primary" aria-hidden />
+              <Icon className="size-5 shrink-0 text-primary-ink" aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block font-semibold">{t(`employer.sections.${key}`)}</span>
                 <span className="line-clamp-2 text-sm text-muted-foreground">{t(`employer.sections.${key}_desc`)}</span>

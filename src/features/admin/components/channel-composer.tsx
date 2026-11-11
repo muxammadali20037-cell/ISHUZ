@@ -158,7 +158,7 @@ export function ChannelComposer({ media, ready, canPin }: { media: ComposerMedia
           <div role="status" className="rounded-xl border border-success/40 bg-success-soft p-3.5 text-sm">
             <p className="font-medium">{sent.pinned ? t("admin.telegram.sent_pinned") : t("admin.telegram.sent")}</p>
             {sent.link ? (
-              <a href={sent.link} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 font-medium text-primary underline-offset-4 hover:underline">
+              <a href={sent.link} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex items-center gap-1 font-medium text-primary-ink underline-offset-4 hover:underline">
                 {t("admin.telegram.open_post")}
                 <ExternalLink className="size-3.5" aria-hidden />
               </a>

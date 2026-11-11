@@ -86,7 +86,7 @@ export function WalletTopup({ wallet, providers }: { wallet: WalletInfo; provide
               }}
               className={cn(
                 "press flex min-h-14 flex-col items-center justify-center rounded-2xl border-2 px-3 py-2 text-lg font-bold tabular",
-                on ? "border-primary bg-primary-soft text-primary" : "border-border bg-card hover:border-primary/50",
+                on ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card hover:border-primary/50",
               )}
             >
               {money(p)}

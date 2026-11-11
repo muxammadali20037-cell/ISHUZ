@@ -43,7 +43,7 @@ export default async function BillingPage() {
         {data.walletState === "ready" && data.wallet ? (
           <section aria-labelledby="wallet-title" className="space-y-4 rounded-2xl border border-border bg-card p-5 sm:p-6">
             <div className="flex items-start gap-3">
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
                 <Wallet className="size-7" />
               </span>
               <div className="min-w-0">

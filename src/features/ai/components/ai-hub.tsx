@@ -64,7 +64,7 @@ export async function AiHub({ session, mode }: { session: SessionContext | null;
         {cards.map((c) => (
           <li key={c.key} className="flex">
             <Link href={c.href} data-track="ai_hub" data-track-to={c.key} className="press flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 hover:border-primary/50">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
                 <c.icon className="size-5" />
               </span>
               <span className="min-w-0 flex-1">

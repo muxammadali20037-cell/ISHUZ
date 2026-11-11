@@ -48,7 +48,7 @@ export function RegionPicker({
           {allowRemote ? (
             <li className="sm:col-span-2">
               <button type="button" onClick={() => onChange({ regionId: null, districtId: null, districtChosen: true, remote: true })} className={listBtn(false)}>
-                <Globe2 className="size-6 shrink-0 text-primary" aria-hidden />
+                <Globe2 className="size-6 shrink-0 text-primary-ink" aria-hidden />
                 <span className="min-w-0 flex-1">
                   <span className="block">{t("easy.location.remote")}</span>
                   <span className="block text-base font-normal text-muted-foreground">{t("easy.location.remote_desc")}</span>
@@ -60,7 +60,7 @@ export function RegionPicker({
           {regions.map((r) => (
             <li key={r.id}>
               <button type="button" onClick={() => onChange({ regionId: r.id, districtId: null, districtChosen: false, remote: false })} className={listBtn(false)}>
-                <MapPin className="size-6 shrink-0 text-primary" aria-hidden />
+                <MapPin className="size-6 shrink-0 text-primary-ink" aria-hidden />
                 <span className="min-w-0 flex-1">{name(r)}</span>
                 <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
               </button>
@@ -93,7 +93,7 @@ export function RegionPicker({
               <span className="block">{t(isCityRegion(region) ? "easy.location.whole_city" : "easy.location.whole_region")}</span>
               <span className="block text-base font-normal text-muted-foreground">{t(isCityRegion(region) ? "easy.location.whole_city_desc" : "easy.location.whole_region_desc")}</span>
             </span>
-            {wholeOn ? <Check className="size-6 shrink-0 text-primary" strokeWidth={3} aria-hidden /> : null}
+            {wholeOn ? <Check className="size-6 shrink-0 text-primary-ink" strokeWidth={3} aria-hidden /> : null}
           </button>
         </li>
         {list.map((d) => {
@@ -102,7 +102,7 @@ export function RegionPicker({
             <li key={d.id}>
               <button type="button" role="radio" aria-checked={on} onClick={() => onChange({ ...value, districtId: d.id, districtChosen: true })} className={listBtn(on)}>
                 <span className="min-w-0 flex-1">{name(d)}</span>
-                {on ? <Check className="size-6 shrink-0 text-primary" strokeWidth={3} aria-hidden /> : null}
+                {on ? <Check className="size-6 shrink-0 text-primary-ink" strokeWidth={3} aria-hidden /> : null}
               </button>
             </li>
           );
@@ -112,7 +112,7 @@ export function RegionPicker({
   );
 }
 
-const changeBtn = "min-h-12 rounded-xl px-1 text-base font-semibold text-primary underline-offset-4 hover:underline";
+const changeBtn = "min-h-12 rounded-xl px-1 text-base font-semibold text-primary-ink underline-offset-4 hover:underline";
 
 function listBtn(on: boolean) {
   return cn(

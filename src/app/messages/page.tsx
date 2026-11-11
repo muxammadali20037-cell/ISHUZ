@@ -85,7 +85,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
                         aria-current={f === x.key ? "page" : undefined}
                         className={cn(
                           "press inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full border px-4 text-sm font-semibold",
-                          f === x.key ? "border-primary bg-primary-soft text-primary" : "border-border bg-card text-foreground hover:border-primary/50",
+                          f === x.key ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card text-foreground hover:border-primary/50",
                         )}
                       >
                         {x.label}
@@ -100,7 +100,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
         {all.length && !items.length ? (
           <div className="rounded-2xl border border-dashed border-border bg-card p-6 text-center">
             <p className="font-semibold">{t("chat.list.no_results")}</p>
-            <Link href="/messages" className="mt-2 inline-flex min-h-11 items-center font-semibold text-primary hover:underline">
+            <Link href="/messages" className="mt-2 inline-flex min-h-11 items-center font-semibold text-primary-ink hover:underline">
               {t("chat.list.clear")}
             </Link>
           </div>

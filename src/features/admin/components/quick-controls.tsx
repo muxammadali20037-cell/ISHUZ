@@ -33,7 +33,7 @@ export function QuickControls({ items, canManage }: { items: QuickControl[]; can
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5" aria-labelledby="quick-controls-title">
       <div className="flex items-center gap-2">
-        <SlidersHorizontal className="size-5 text-primary" aria-hidden />
+        <SlidersHorizontal className="size-5 text-primary-ink" aria-hidden />
         <h2 id="quick-controls-title" className="text-base font-semibold">
           {t("admin.quick.title")}
         </h2>

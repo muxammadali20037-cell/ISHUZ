@@ -20,7 +20,7 @@ export function RequestContactButton({ profileId, initial, size = "sm" }: { prof
   if (status === "pending") {
     return (
       <p className={size === "xl" ? "flex items-center gap-2 rounded-xl bg-card px-4 py-3 text-base font-semibold" : "flex items-center gap-2 text-sm font-medium text-foreground/80"}>
-        <Clock3 className="size-4 shrink-0 text-primary" /> {t("contacts.request.pending")}
+        <Clock3 className="size-4 shrink-0 text-primary-ink" /> {t("contacts.request.pending")}
       </p>
     );
   }

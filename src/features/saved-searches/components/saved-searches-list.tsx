@@ -35,7 +35,7 @@ export function SavedSearchesList({ items }: { items: SavedSearchItem[] }) {
       {items.map((s) => (
         <li key={s.id} className="flex items-center gap-2 px-3 py-2.5">
           <button type="button" onClick={() => open(s)} disabled={pending} className="flex min-h-11 min-w-0 flex-1 items-center gap-3 rounded-xl px-1 text-left active:scale-[0.99]">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
               <Search className="size-4" />
             </span>
             <span className="min-w-0 flex-1">
@@ -53,7 +53,7 @@ export function SavedSearchesList({ items }: { items: SavedSearchItem[] }) {
             aria-label={s.notify ? t("saved.searches.turn_off") : t("saved.searches.turn_on")}
             onClick={() => run(() => setSavedSearchNotify({ id: s.id, notify: !s.notify }))}
           >
-            {s.notify ? <Bell className="size-4 text-primary" /> : <BellOff className="size-4 text-muted-foreground" />}
+            {s.notify ? <Bell className="size-4 text-primary-ink" /> : <BellOff className="size-4 text-muted-foreground" />}
           </Button>
           <Button type="button" size="icon-sm" variant="ghost" disabled={pending} aria-label={t("common.actions.delete")} onClick={() => run(() => deleteSavedSearch({ id: s.id }), t("saved.searches.removed"))}>
             <Trash2 className="size-4 text-muted-foreground" />

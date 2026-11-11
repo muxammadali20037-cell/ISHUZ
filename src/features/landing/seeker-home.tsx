@@ -209,7 +209,7 @@ async function SeekerFeed({ session, place }: { session: SessionContext | null; 
           {feed.kind === "match" ? t("easy.start.match_title") : t("easy.start.new_title")}
         </h2>
         {more ? (
-          <Link href={feed.allHref} className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-0.5 text-base font-semibold text-primary hover:underline">
+          <Link href={feed.allHref} className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-0.5 text-base font-semibold text-primary-ink hover:underline">
             {t("easy.start.see_all")} <ChevronRight className="size-4" aria-hidden />
           </Link>
         ) : null}
@@ -283,7 +283,7 @@ async function PopularProfessions({ place }: { place: HomePlace }) {
         href={findHref(EMPTY_FIND, { mode: "jobs" })}
         prefetch={false}
         data-track="direction_select"
-        className="press flex min-h-12 items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 text-base font-semibold text-primary hover:border-primary/40"
+        className="press flex min-h-12 items-center justify-between gap-3 rounded-xl border border-border bg-card px-4 text-base font-semibold text-primary-ink hover:border-primary/40"
       >
         {t("easy.start.all_professions")} <ChevronRight className="size-5 shrink-0" aria-hidden />
       </Link>
@@ -300,7 +300,7 @@ async function PopularProfessions({ place }: { place: HomePlace }) {
           href={findHref(EMPTY_FIND, { mode: "jobs" })}
           prefetch={false}
           data-track="direction_select"
-          className="inline-flex min-h-11 shrink-0 items-center gap-1 text-base font-semibold text-primary hover:underline"
+          className="inline-flex min-h-11 shrink-0 items-center gap-1 text-base font-semibold text-primary-ink hover:underline"
         >
           {t("easy.start.all_professions")} <ChevronRight className="size-4" aria-hidden />
         </Link>
@@ -311,9 +311,9 @@ async function PopularProfessions({ place }: { place: HomePlace }) {
             <Link
               href={findHref(EMPTY_FIND, { mode: "jobs", p: p.id, ...where })}
               prefetch={false}
-              className="press inline-flex min-h-11 max-w-full items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm font-semibold hover:border-primary/40 hover:text-primary"
+              className="press inline-flex min-h-11 max-w-full items-center gap-2 rounded-lg border border-border bg-card px-3 text-sm font-semibold hover:border-primary/40 hover:text-primary-ink"
             >
-              <CategoryIcon name={p.icon} className="size-4 shrink-0 text-primary" />
+              <CategoryIcon name={p.icon} className="size-4 shrink-0 text-primary-ink" />
               <span className="truncate">{name(p)}</span>
             </Link>
           </li>
@@ -328,7 +328,7 @@ async function ResumeCard() {
   const { t } = await getT();
   return (
     <Link href="/post/worker" className="press flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/40">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden>
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
         <FileUser className="size-5" />
       </span>
       <span className="min-w-0 flex-1">

@@ -53,7 +53,7 @@ export const toast = {
 };
 
 const icons = { success: CheckCircle2, error: AlertCircle, info: Info };
-const tones = { success: "text-success", error: "text-destructive", info: "text-primary" };
+const tones = { success: "text-success", error: "text-destructive", info: "text-primary-ink" };
 const timerTones = { success: "bg-success/40", error: "bg-destructive/40", info: "bg-primary/40" };
 
 export function Toaster() {

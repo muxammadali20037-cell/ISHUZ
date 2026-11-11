@@ -67,7 +67,7 @@ export function DocumentAttachment({ message, mine }: { message: ChatMessage; mi
   const size = formatBytes(meta?.size);
   const inner = (
     <>
-      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", mine ? "bg-primary-foreground/15" : "bg-primary-soft text-primary")}>
+      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", mine ? "bg-primary-foreground/15" : "bg-primary-soft text-primary-ink")}>
         <FileText className="size-5" />
       </span>
       <span className="min-w-0 flex-1">
@@ -113,7 +113,7 @@ export function LocationAttachment({ message, mine }: { message: ChatMessage; mi
       rel="noopener noreferrer"
       className={cn("flex w-60 max-w-full items-center gap-3 rounded-xl border p-2.5", mine ? "border-primary-foreground/20 bg-primary-foreground/10" : "border-border bg-secondary/60")}
     >
-      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", mine ? "bg-primary-foreground/15" : "bg-primary-soft text-primary")}>
+      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-lg", mine ? "bg-primary-foreground/15" : "bg-primary-soft text-primary-ink")}>
         <MapPin className="size-5" />
       </span>
       <span className="min-w-0 flex-1">
@@ -121,7 +121,7 @@ export function LocationAttachment({ message, mine }: { message: ChatMessage; mi
         <span className={cn("block truncate text-xs tabular", mine ? "text-primary-foreground/90" : "text-muted-foreground")}>
           {message.lat.toFixed(5)}, {message.lng.toFixed(5)}
         </span>
-        <span className={cn("mt-0.5 flex items-center gap-1 text-xs font-medium", mine ? "text-primary-foreground" : "text-primary")}>
+        <span className={cn("mt-0.5 flex items-center gap-1 text-xs font-medium", mine ? "text-primary-foreground" : "text-primary-ink")}>
           {t("chat.room.open_map")} <ExternalLink className="size-3" />
         </span>
       </span>

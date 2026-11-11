@@ -26,7 +26,7 @@ function Avatar({
       className={cn("relative flex shrink-0 overflow-hidden bg-primary-soft", square ? "rounded-xl" : "rounded-full", sizes[size], className)}
     >
       {src ? <AvatarPrimitive.Image src={src} alt={alt} className="aspect-square size-full object-cover" /> : null}
-      <AvatarPrimitive.Fallback delayMs={src ? 300 : 0} className="flex size-full items-center justify-center font-semibold uppercase text-primary">
+      <AvatarPrimitive.Fallback delayMs={src ? 300 : 0} className="flex size-full items-center justify-center font-semibold uppercase text-primary-ink">
         {fallback}
       </AvatarPrimitive.Fallback>
     </AvatarPrimitive.Root>

@@ -56,7 +56,7 @@ export async function ProfileHeader({ session, mode }: { session: SessionContext
           <div className="flex items-center justify-between gap-3 text-sm font-semibold">
             <span>{t("easy.cabinet.header.completeness", { value: completeness })}</span>
             {completeness < 100 ? (
-              <Link href="/profile" className="inline-flex min-h-11 items-center text-primary hover:underline">
+              <Link href="/profile" className="inline-flex min-h-11 items-center text-primary-ink hover:underline">
                 {t("easy.cabinet.header.complete_cta")}
               </Link>
             ) : null}

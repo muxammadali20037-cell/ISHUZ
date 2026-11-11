@@ -149,7 +149,7 @@ export function MembersTab({ companyId, userId, myRole, members, invites }: { co
 
       <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5">
         <h2 className="flex items-center gap-2 text-lg font-bold">
-          <UserPlus className="size-5 text-primary" /> {t("employer.members.invite_title")}
+          <UserPlus className="size-5 text-primary-ink" /> {t("employer.members.invite_title")}
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">{isAdmin ? t("employer.members.invite_desc") : t("employer.members.admin_only")}</p>
         {isAdmin ? (
@@ -164,7 +164,7 @@ export function MembersTab({ companyId, userId, myRole, members, invites }: { co
             </div>
             {createdLink ? (
               <div className="mt-4 rounded-xl bg-primary-soft/60 p-3">
-                <p className="mb-2 text-xs font-medium text-primary">{t("employer.members.invite_link")}</p>
+                <p className="mb-2 text-xs font-medium text-primary-ink">{t("employer.members.invite_link")}</p>
                 <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
                   <code className="min-w-0 flex-1 truncate rounded-lg bg-card px-3 py-2 text-xs">{createdLink}</code>
                   <CopyLinkButton value={createdLink} />

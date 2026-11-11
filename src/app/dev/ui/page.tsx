@@ -85,7 +85,7 @@ export default async function UiKitPage() {
   return (
     <main className="mx-auto max-w-4xl space-y-12 px-4 py-8 sm:px-6">
       <header>
-        <p className="text-sm font-semibold text-primary">Ish topdim</p>
+        <p className="text-sm font-semibold text-primary-ink">Ish topdim</p>
         <h1 className="text-3xl font-extrabold tracking-tight">Brend UI to&apos;plami</h1>
         <p className="mt-1 text-muted-foreground">Tokenlar, shrift, radius va komponent holatlari. Qoidalar — docs/BRAND_UI_GUIDE.md.</p>
       </header>
@@ -216,7 +216,7 @@ export default async function UiKitPage() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                   <Briefcase className="size-5" />
                 </span>
                 Buxgalter

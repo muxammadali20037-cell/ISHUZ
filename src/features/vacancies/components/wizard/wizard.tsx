@@ -153,7 +153,7 @@ function StatusNotice({ vacancy }: { vacancy: VacancyFull }) {
   if (!key) return null;
   const destructive = vacancy.status === "rejected";
   return (
-    <div className={cn("mt-4 flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm", destructive ? "bg-destructive-soft text-destructive" : "bg-primary-soft text-primary")}>
+    <div className={cn("mt-4 flex items-start gap-2 rounded-xl px-3 py-2.5 text-sm", destructive ? "bg-destructive-soft text-destructive" : "bg-primary-soft text-primary-ink")}>
       <Info className="mt-0.5 size-4 shrink-0" />
       <div>
         <p>{t(key)}</p>

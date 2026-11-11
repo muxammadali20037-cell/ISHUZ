@@ -31,7 +31,7 @@ export default async function StudentsPage() {
     <Shell>
       <div className="container-app space-y-7 py-5 sm:py-8">
         <header className="flex items-start gap-4">
-          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+          <span className="flex size-14 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
             <GraduationCap className="size-7" />
           </span>
           <div>
@@ -43,7 +43,7 @@ export default async function StudentsPage() {
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((i) => (
             <Link key={i.href} href={i.href} className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4 shadow-sm transition-colors hover:border-primary">
-              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+              <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                 <i.icon className="size-6" />
               </span>
               <span className="min-w-0 flex-1">

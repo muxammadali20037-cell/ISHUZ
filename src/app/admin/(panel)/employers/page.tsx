@@ -187,7 +187,7 @@ export default async function AdminEmployersPage({ searchParams }: { searchParam
               {detail.companies ? (
                 <DetailSection title={t("admin.employers.company")}>
                   <DetailRow label={t("admin.employers.company")}>
-                    <Link href={`/company/${detail.companies.slug}`} target="_blank" className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <Link href={`/company/${detail.companies.slug}`} target="_blank" className="inline-flex items-center gap-1 text-primary-ink hover:underline">
                       {detail.companies.name} <ExternalLink className="size-3.5" />
                     </Link>
                   </DetailRow>
@@ -195,7 +195,7 @@ export default async function AdminEmployersPage({ searchParams }: { searchParam
                   <DetailRow label={t("admin.employers.tin")}>{detail.companies.tin ?? "—"}</DetailRow>
                   <DetailRow label={t("common.labels.phone")}>{detail.companies.phone ? formatPhone(detail.companies.phone) : "—"}</DetailRow>
                   <DetailRow label="Telegram">{detail.companies.telegram ?? "—"}</DetailRow>
-                  <DetailRow label={t("admin.employers.website")}>{detail.companies.website ? <a href={detail.companies.website} target="_blank" rel="noreferrer" className="text-primary hover:underline">{detail.companies.website}</a> : "—"}</DetailRow>
+                  <DetailRow label={t("admin.employers.website")}>{detail.companies.website ? <a href={detail.companies.website} target="_blank" rel="noreferrer" className="text-primary-ink hover:underline">{detail.companies.website}</a> : "—"}</DetailRow>
                   <DetailRow label={t("admin.employers.address")}>{detail.companies.address ?? "—"}</DetailRow>
                   <DetailRow label={t("admin.employers.size")}>{detail.companies.size ? tEnum("company_size", detail.companies.size) : "—"}</DetailRow>
                   <DetailRow label={t("admin.employers.members")}>
