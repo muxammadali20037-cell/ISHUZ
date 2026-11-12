@@ -1,5 +1,25 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · "Tez va qulay e'lon — AI yordamchi bilan" (ish izlovchi) (`claude/post-ai-chat`)
+
+### Mahsulot
+- Ega: "kuryerlikdan ish qidirmoqchiman desa, e'lon uchun kerakli narsalarni AI o'zi so'rasin". E'lon berish (va
+  o'zgartirish) sahifasining 1-qadamida suhbat: foydalanuvchi bir gap yozadi → yordamchi yetishmayotganlarini **birma-bir**
+  so'raydi: kasb (bir nechta mos kelsa — "Aniqrog'i qaysi biri?" tugmalari: piyoda, moto, ekspress kuryer…), viloyat, tuman
+  (yoki "Butun viloyat"), tajriba, grafik (yoki "Farqi yo'q"), maosh (yoki "Kelishiladi"), ism va telefon (faqat noma'lum
+  bo'lsa), o'zi haqida (yoki "Javoblarimdan tuzib ber" — faqat aytilgan faktlardan). Har javobni tugma yoki matn bilan
+  berish mumkin ("Toshkent, Chilonzor", "3 yil", "6 mln"); tushunilmasa — savol qayta beriladi.
+- Birinchi gapdan tushunilganlar qayta so'ralmaydi ("Samarqandda oshpaz, 3 yil tajriba" → faqat tuman va qolganlari).
+- Oxirida qisqa xulosa va "Tekshirish va joylash" — qoralama to'ldiriladi, tekshirish sahifasi ochiladi; hech narsa o'zi
+  joylanmaydi. AI kaliti ishlamasa ham suhbat to'liq ishlaydi (lug'at va ma'lumotnoma); AI bo'lsa — uzun birinchi gapdan ism
+  va "o'zim haqimda" ham olinadi (faqat matndagi faktlar).
+- "kuryerlikdan" kabi qo'shma qo'shimchali so'z endi "kuryer" deb tushuniladi (avval "Kuryerlik xizmati dispetcheri" ga
+  tushardi) — bu AI qidiruvni ham tuzatadi.
+
+### Xavfsizlik
+- Har bir javob taqiqlangan mazmunga tekshiriladi (e'longa ham, AI'ga ham bormaydi); yangi qoida: "giyohvand … sotaman /
+  tarqataman / yetkazaman" (lotin va kirill). Soatlik limit: kirgan foydalanuvchi 120, mehmon 60 xabar.
+
 ## 2026-11-12 · AI yordamchi namuna e'lonlarni ko'rsatadi; "… kerak" statistika emas, qidiruv (`claude/ai-demo-samples`)
 
 ### Mahsulot

@@ -46,12 +46,22 @@ const STOP = new Set(
 /** Qo'shimchalar: "buxgalterlik" → "buxgalter", "haydovchilar" → "haydovchi", "Toshkentda" → "toshkent" */
 const SUFFIXES = ["chilikka", "chiligi", "chilik", "likka", "ligi", "lik", "larni", "larga", "larda", "lari", "lar", "ni", "ga", "da", "dan", "ning", "a", "u", "om", "ov"];
 
+/** "-lik/-chilik" (kasb nomidan yasalgan so'z): kelishik qo'shimchasidan keyin ham olib tashlanadi */
+const DERIVED = ["chilik", "lik"];
+
 export function stripSuffix(token: string): string[] {
   const out: string[] = [];
   for (const suf of SUFFIXES) {
     if (token.length - suf.length >= 4 && token.endsWith(suf)) out.push(token.slice(0, -suf.length));
   }
-  return out;
+  // qo'shma qo'shimcha: "kuryerlikdan" → "kuryerlik" → "kuryer", "oshpazlikka" → "oshpaz" (aks holda "kuryerlik" so'zi
+  // "Kuryerlik xizmati dispetcheri" kasbiga tushib qolardi)
+  for (const stem of [...out]) {
+    for (const suf of DERIVED) {
+      if (stem.length - suf.length >= 4 && stem.endsWith(suf)) out.push(stem.slice(0, -suf.length));
+    }
+  }
+  return [...new Set(out)];
 }
 
 /** Rus/kirill so'zlari asl yozuvida ham qidiriladi (ruscha nomlar bazada kirillcha): "водителем" → "водител" */

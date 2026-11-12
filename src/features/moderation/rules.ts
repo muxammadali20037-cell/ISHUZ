@@ -57,6 +57,8 @@ const RULES: Rule[] = [
   { id: "drugs_courier", category: "illegal_activity", severity: "block", re: /\b(zakladk|zakladchik|kladmen|klad\s*men)[a-z']*\b/ },
   { id: "drugs_names", category: "illegal_activity", severity: "block", re: /\b(mefedron|amfetamin|geroin|kokain|gashish|marixuana|marihuana|ekstazi|anasha)[a-z']*\b/ },
   { id: "drugs_trade", category: "illegal_activity", severity: "block", re: /\bnarko(tik|tiki|tiklar|tiklarni|tikov)?\b.{0,20}\b(sot|tarqat|kuryer|kurer|dostav|yetkaz)/ },
+  // "giyohvand (modda) sotaman / tarqataman / yetkazaman" (kirill matn ham lotinga o'tkazib tekshiriladi)
+  { id: "drugs_trade_uz", category: "illegal_activity", severity: "block", re: /\bgiyohvand[a-z']*\b.{0,25}\b(sot|tarqat|kuryer|kurer|yetkaz|dostav)/ },
   { id: "cards_buy", category: "illegal_activity", severity: "block", re: new RegExp(`\\b(karta|kartalar|plastik|bank\\s*kart)${W}\\b.{0,25}\\b(sotib\\s*olamiz|sotib\\s*olaman|ijaraga|arendaga|arenda|kuplyu|pokupa|skupka|skupaem|oformi[a-z]*\\s+na\\s+seb)`) },
   { id: "cards_drop", category: "illegal_activity", severity: "block", re: /\b(obnal|obnalichk|otmyv|dropper|drop\s*(kart|schet|akkaunt))[a-z']*\b|\bpul\s*yuvish|\bkart[uyaie]?\s+na\s+seb[a-z]*/ },
   { id: "accounts_buy", category: "illegal_activity", severity: "block", re: new RegExp(`\\b(akkaunt|account|sim\\s*kart)${W}\\b.{0,15}\\b(sotib\\s*olamiz|sotamiz|kuplyu|skupka|skupaem)`) },

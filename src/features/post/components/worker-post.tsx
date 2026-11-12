@@ -1,6 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  useTransition,
+} from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -15,18 +22,43 @@ import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
 import { publishWorkerListing } from "../actions";
 import { parseMoney } from "../money";
-import { EMPTY_PLACE, SCHEDULES, SIMPLE_EXPERIENCE, type ListingStateInfo, type PostViewer, type WorkerDraft } from "../types";
+import {
+  EMPTY_PLACE,
+  SCHEDULES,
+  SIMPLE_EXPERIENCE,
+  type ListingStateInfo,
+  type PostViewer,
+  type WorkerDraft,
+} from "../types";
 import { clearEditedErrors } from "../field-errors";
 import { useDraft, useStep } from "../use-draft";
 import { WORKER_DRAFT_RULES } from "../draft-rules";
 import { track } from "@/features/analytics/client";
-import { BigCheckbox, MoneyInput, PhoneInput, VerifiedPhone, bigInput } from "./inputs";
+import {
+  BigCheckbox,
+  MoneyInput,
+  PhoneInput,
+  VerifiedPhone,
+  bigInput,
+} from "./inputs";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
-import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
+import { AiReadyBanner } from "./ai-quick-fill";
+import { ListingChat } from "./listing-chat";
+import type { ChatCollected } from "../chat-logic";
 import { AvatarUpload } from "@/features/profile/components/edit/avatar-upload";
 import { RegionPicker, placeLabel } from "./region-picker";
-import { ChoiceButtons, ChosenLine, CustomProfessionCard, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, professionLabels, scrollToError } from "./wizard-frame";
+import {
+  ChoiceButtons,
+  ChosenLine,
+  CustomProfessionCard,
+  FieldError,
+  LocalChangesNotice,
+  ReviewRow,
+  WizardFrame,
+  professionLabels,
+  scrollToError,
+} from "./wizard-frame";
 
 const TOTAL = 4;
 const PATH = "/post/worker";
@@ -48,7 +80,18 @@ const emptyDraft = (): WorkerDraft => ({
   showPhone: false,
 });
 
-type Errors = Partial<Record<"profession" | "place" | "firstName" | "phone" | "about" | "experience" | "form", string>>;
+type Errors = Partial<
+  Record<
+    | "profession"
+    | "place"
+    | "firstName"
+    | "phone"
+    | "about"
+    | "experience"
+    | "form",
+    string
+  >
+>;
 
 /** qoralama kaliti → xato kaliti (field-errors.ts) */
 const FIELD_ERROR = {
@@ -73,7 +116,6 @@ export function WorkerPost({
   prefill,
   existing,
   pricedDays,
-  aiEnabled = false,
   customAllowed = false,
 }: {
   categories: Category[];
@@ -83,13 +125,21 @@ export function WorkerPost({
   prefill: Partial<WorkerDraft>;
   existing: boolean;
   pricedDays: number;
-  aiEnabled?: boolean;
   /** baza "Kasbim topilmadi" ni qo'llaydimi (0057) */
   customAllowed?: boolean;
 }) {
   const { t, name, tEnum, locale } = useT();
   const router = useRouter();
-  const { draft, update: rawUpdate, ready, clear, reset, restored, dismissRestored, prepareAuthHandoff } = useDraft<WorkerDraft>({
+  const {
+    draft,
+    update: rawUpdate,
+    ready,
+    clear,
+    reset,
+    restored,
+    dismissRestored,
+    prepareAuthHandoff,
+  } = useDraft<WorkerDraft>({
     entity: "worker",
     userId: viewer.userId,
     makeInitial: () => ({ ...emptyDraft(), ...prefill }),
@@ -106,11 +156,33 @@ export function WorkerPost({
     [rawUpdate],
   );
   const [pending, start] = useTransition();
-  const [result, setResult] = useState<(ListingStateInfo & { workerId: string }) | null>(null);
+  const [result, setResult] = useState<
+    (ListingStateInfo & { workerId: string }) | null
+  >(null);
   const [moreOpen, setMoreOpen] = useState(!!(draft.salary || draft.schedule));
   const [imageUrl, setImageUrl] = useState<string | null>(null);
+  // "Tez va qulay e'lon — AI bilan" suhbati ochiq: oddiy kasb ro'yxati yashiriladi (ekran ikkiga bo'linmasin)
+  const [chatActive, setChatActive] = useState(false);
 
-  const { category, professionName, professionTrail } = professionLabels(draft, categories, name, t("professions.custom_badge"));
+  /** suhbatda yig'ilganlar → qoralama; aytilmagan ixtiyoriy narsalar (grafik, maosh) avvalgicha qoladi */
+  const fromChat = (c: ChatCollected): Partial<WorkerDraft> => ({
+    profession: c.profession,
+    custom: null,
+    place: c.place,
+    experience: c.experience,
+    schedule: c.schedule && c.schedule !== "any" ? c.schedule : draft.schedule,
+    salary: /^\d+$/.test(c.salary) ? c.salary : draft.salary,
+    ...(c.firstName ? { firstName: c.firstName, lastName: c.lastName } : {}),
+    ...(c.phone ? { phone: c.phone } : {}),
+    about: c.about,
+  });
+
+  const { category, professionName, professionTrail } = professionLabels(
+    draft,
+    categories,
+    name,
+    t("professions.custom_badge"),
+  );
   const phone = viewer.loggedIn ? viewer.phone : normalizePhone(draft.phone);
 
   // tanlangan kasb rasmi (bo'lsa) — tekshirish sahifasida ko'rsatiladi
@@ -137,7 +209,10 @@ export function WorkerPost({
     }
     if (step === TOTAL && !tracked.current.review) {
       tracked.current.review = true;
-      track("post_review", { entity: "worker", source: draft.source ?? "manual" });
+      track("post_review", {
+        entity: "worker",
+        source: draft.source ?? "manual",
+      });
     }
   }, [ready, step, draft.source]);
 
@@ -149,19 +224,33 @@ export function WorkerPost({
 
   const validate = (s: number): Errors => {
     const e: Errors = {};
-    if (s >= 1 && !draft.profession && !draft.custom) e.profession = t("easy.fields.profession");
-    if (s >= 2 && (!draft.place.regionId || !draft.place.districtChosen)) e.place = draft.place.regionId ? t("easy.fields.district") : t("easy.fields.region");
+    if (s >= 1 && !draft.profession && !draft.custom)
+      e.profession = t("easy.fields.profession");
+    if (s >= 2 && (!draft.place.regionId || !draft.place.districtChosen))
+      e.place = draft.place.regionId
+        ? t("easy.fields.district")
+        : t("easy.fields.region");
     if (s >= 3) {
-      if (draft.firstName.trim().length < 2) e.firstName = t("easy.fields.first_name");
-      if (!viewer.loggedIn && !normalizePhone(draft.phone)) e.phone = t("easy.fields.phone");
-      if (viewer.loggedIn && !viewer.phone) e.phone = t("easy.errors.phone_required");
+      if (draft.firstName.trim().length < 2)
+        e.firstName = t("easy.fields.first_name");
+      if (!viewer.loggedIn && !normalizePhone(draft.phone))
+        e.phone = t("easy.fields.phone");
+      if (viewer.loggedIn && !viewer.phone)
+        e.phone = t("easy.errors.phone_required");
       if (draft.about.trim().length < 10) e.about = t("easy.fields.about");
       if (!draft.experience) e.experience = t("easy.fields.experience");
     }
     return e;
   };
 
-  const stepOf = (e: Errors) => (e.profession ? 1 : e.place ? 2 : e.firstName || e.phone || e.about || e.experience ? 3 : null);
+  const stepOf = (e: Errors) =>
+    e.profession
+      ? 1
+      : e.place
+        ? 2
+        : e.firstName || e.phone || e.about || e.experience
+          ? 3
+          : null;
 
   const next = () => {
     const e = validate(step);
@@ -192,22 +281,24 @@ export function WorkerPost({
       return;
     }
     start(async () => {
-      const res = await callAction(() => publishWorkerListing({
-        professionNodeId: draft.profession?.id ?? null,
-        customProfession: draft.profession ? null : (draft.custom ?? null),
-        headline: professionName,
-        regionId: draft.place.regionId!,
-        districtId: draft.place.districtId,
-        remoteOk: draft.remoteOk,
-        firstName: draft.firstName.trim(),
-        lastName: draft.lastName.trim(),
-        about: draft.about.trim(),
-        experience: draft.experience!,
-        salary: parseMoney(draft.salary),
-        schedule: draft.schedule || null,
-        showPhone: draft.showPhone,
-        source: draft.source ?? "manual",
-      }));
+      const res = await callAction(() =>
+        publishWorkerListing({
+          professionNodeId: draft.profession?.id ?? null,
+          customProfession: draft.profession ? null : (draft.custom ?? null),
+          headline: professionName,
+          regionId: draft.place.regionId!,
+          districtId: draft.place.districtId,
+          remoteOk: draft.remoteOk,
+          firstName: draft.firstName.trim(),
+          lastName: draft.lastName.trim(),
+          about: draft.about.trim(),
+          experience: draft.experience!,
+          salary: parseMoney(draft.salary),
+          schedule: draft.schedule || null,
+          showPhone: draft.showPhone,
+          source: draft.source ?? "manual",
+        }),
+      );
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
         const msg = t(key);
@@ -234,7 +325,9 @@ export function WorkerPost({
     photo: { field: "about", step: 3 },
   };
   const editFlagged = (fields: string[]) => {
-    const hits = fields.map((f) => FLAG_TO_FIELD[f] ?? FLAG_TO_FIELD.description!);
+    const hits = fields.map(
+      (f) => FLAG_TO_FIELD[f] ?? FLAG_TO_FIELD.description!,
+    );
     const e: Errors = { form: t("easy.moderation.edit_hint") };
     for (const h of hits) e[h.field] = t("easy.moderation.field_flagged");
     setResult(null);
@@ -253,7 +346,14 @@ export function WorkerPost({
   }, [draft.profession, draft.place, regions]);
 
   if (result) {
-    if (["moderation_pending", "review", "rejected", "verification_pending"].includes(result.state)) {
+    if (
+      [
+        "moderation_pending",
+        "review",
+        "rejected",
+        "verification_pending",
+      ].includes(result.state)
+    ) {
       return (
         <ModerationOutcome
           entity="worker"
@@ -278,8 +378,15 @@ export function WorkerPost({
           title={t("easy.worker.done_title")}
           description={t("easy.worker.done_desc")}
           actions={[
-            { label: t("easy.worker.done_matches"), href: searchHref, primary: true },
-            { label: t("easy.worker.done_view"), href: `/listing/${result.workerId}` },
+            {
+              label: t("easy.worker.done_matches"),
+              href: searchHref,
+              primary: true,
+            },
+            {
+              label: t("easy.worker.done_view"),
+              href: `/listing/${result.workerId}`,
+            },
           ]}
         />
       );
@@ -287,9 +394,17 @@ export function WorkerPost({
     return (
       <PublishResult
         tone="payment"
-        title={result.state === "payment_required" ? t("easy.worker.pay_title") : t("easy.worker.saved_title")}
+        title={
+          result.state === "payment_required"
+            ? t("easy.worker.pay_title")
+            : t("easy.worker.saved_title")
+        }
         description={t("easy.worker.pay_desc", { days: pricedDays })}
-        payment={result.state === "payment_required" ? { purpose: "worker_listing", targetId: result.workerId } : undefined}
+        payment={
+          result.state === "payment_required"
+            ? { purpose: "worker_listing", targetId: result.workerId }
+            : undefined
+        }
         actions={[{ label: t("easy.worker.done_view"), href: "/cabinet" }]}
       />
     );
@@ -302,18 +417,31 @@ export function WorkerPost({
     const q: { label: string; onClick: () => void }[] = [];
     if (e.profession) q.push({ label: e.profession, onClick: () => goTo(1) });
     if (e.place) q.push({ label: e.place, onClick: () => goTo(2) });
-    for (const k of ["firstName", "phone", "about", "experience"] as const) if (e[k]) q.push({ label: e[k]!, onClick: () => goTo(3) });
+    for (const k of ["firstName", "phone", "about", "experience"] as const)
+      if (e[k]) q.push({ label: e[k]!, onClick: () => goTo(3) });
     return q;
   })();
 
-  const stepNames = [t("easy.wizard.steps.profession"), t("easy.wizard.steps.location"), t("easy.wizard.steps.about"), t("easy.wizard.steps.review")];
+  const stepNames = [
+    t("easy.wizard.steps.profession"),
+    t("easy.wizard.steps.location"),
+    t("easy.wizard.steps.about"),
+    t("easy.wizard.steps.review"),
+  ];
   const loginHref = `/auth?${new URLSearchParams({ next: `${PATH}?step=${step}` }).toString()}`;
-  const hasAnswers = !!(draft.profession || draft.custom || draft.place.regionId || draft.about);
+  const hasAnswers = !!(
+    draft.profession ||
+    draft.custom ||
+    draft.place.regionId ||
+    draft.about
+  );
 
   return (
     <WizardFrame
       busy={!ready}
-      title={existing ? t("easy.worker.edit_title") : t("easy.worker.page_title")}
+      title={
+        existing ? t("easy.worker.edit_title") : t("easy.worker.page_title")
+      }
       step={step}
       total={TOTAL}
       stepName={stepNames[step - 1]!}
@@ -323,82 +451,168 @@ export function WorkerPost({
       onBack={step > 1 ? () => goTo(step - 1) : undefined}
       backHref="/"
       onNext={step < TOTAL ? next : publish}
-      nextLabel={step < TOTAL ? undefined : !viewer.loggedIn ? t("easy.wizard.login_to_publish") : existing ? t("easy.wizard.save_changes") : t("easy.wizard.publish")}
+      nextLabel={
+        step < TOTAL
+          ? undefined
+          : !viewer.loggedIn
+            ? t("easy.wizard.login_to_publish")
+            : existing
+              ? t("easy.wizard.save_changes")
+              : t("easy.wizard.publish")
+      }
       nextIcon={step < TOTAL}
       pending={pending}
     >
-      {restored && existing ? <LocalChangesNotice onKeep={dismissRestored} onDiscard={() => (reset(), setErrors({}), go(1, true))} /> : null}
-      {step > 1 && step < TOTAL && (draft.profession || draft.custom) ? <ChosenLine label={t("easy.wizard.steps.profession")} value={professionTrail} /> : null}
+      {restored && existing ? (
+        <LocalChangesNotice
+          onKeep={dismissRestored}
+          onDiscard={() => (reset(), setErrors({}), go(1, true))}
+        />
+      ) : null}
+      {step > 1 && step < TOTAL && (draft.profession || draft.custom) ? (
+        <ChosenLine
+          label={t("easy.wizard.steps.profession")}
+          value={professionTrail}
+        />
+      ) : null}
 
       {step === 1 ? (
         <section className="space-y-3">
-          {aiEnabled && !existing ? (
-            <AiQuickFill
-              kind="worker"
-              onReady={(d) => {
-                update({ ...mergeAiDraft(draft, d.worker ?? {}), source: "ai", step: TOTAL });
-                setErrors({});
-                go(TOTAL);
-              }}
-            />
-          ) : null}
-          {!draft.profession && draft.custom ? (
-            <CustomProfessionCard text={draft.custom.text} sector={category ? name(category) : null} badge={t("professions.custom_badge")} hint={t("easy.wizard.custom_note")} />
-          ) : null}
-          <ProfessionPicker
-            categories={categories}
-            value={draft.profession}
-            onChange={(p) => {
-              update({ profession: p, custom: null });
+          <ListingChat
+            regions={regions}
+            districts={districts}
+            knownFirstName={draft.firstName || viewer.firstName}
+            needPhone={!viewer.loggedIn && !normalizePhone(draft.phone)}
+            onActiveChange={setChatActive}
+            onFinish={(c) => {
+              update({ ...fromChat(c), source: "ai", step: TOTAL });
               setErrors({});
+              setChatActive(false);
+              go(TOTAL);
             }}
-            onCustom={
-              customAllowed
-                ? (text, categoryId) => {
-                    update({ profession: null, custom: { text: text.trim().replace(/\s+/g, " ").slice(0, 120), categoryId } });
-                    setErrors({});
-                    goTo(2);
-                  }
-                : undefined
-            }
-            title={t("easy.worker.profession_title")}
-            subtitle={t("easy.worker.profession_subtitle")}
           />
-          <FieldError message={errors.profession} />
-          {hasAnswers ? (
-            <button type="button" onClick={() => (reset(), setErrors({}), go(1, true))} className="inline-flex min-h-12 items-center gap-2 text-base font-medium text-muted-foreground hover:text-foreground">
-              <RotateCcw className="size-4" aria-hidden /> {t("easy.wizard.start_over")}
-            </button>
-          ) : null}
+          {chatActive ? null : (
+            <>
+              {!draft.profession && draft.custom ? (
+                <CustomProfessionCard
+                  text={draft.custom.text}
+                  sector={category ? name(category) : null}
+                  badge={t("professions.custom_badge")}
+                  hint={t("easy.wizard.custom_note")}
+                />
+              ) : null}
+              <ProfessionPicker
+                categories={categories}
+                value={draft.profession}
+                onChange={(p) => {
+                  update({ profession: p, custom: null });
+                  setErrors({});
+                }}
+                onCustom={
+                  customAllowed
+                    ? (text, categoryId) => {
+                        update({
+                          profession: null,
+                          custom: {
+                            text: text
+                              .trim()
+                              .replace(/\s+/g, " ")
+                              .slice(0, 120),
+                            categoryId,
+                          },
+                        });
+                        setErrors({});
+                        goTo(2);
+                      }
+                    : undefined
+                }
+                title={t("easy.worker.profession_title")}
+                subtitle={t("easy.worker.profession_subtitle")}
+              />
+              <FieldError message={errors.profession} />
+              {hasAnswers ? (
+                <button
+                  type="button"
+                  onClick={() => (reset(), setErrors({}), go(1, true))}
+                  className="inline-flex min-h-12 items-center gap-2 text-base font-medium text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw className="size-4" aria-hidden />{" "}
+                  {t("easy.wizard.start_over")}
+                </button>
+              ) : null}
+            </>
+          )}
         </section>
       ) : null}
 
       {step === 2 ? (
         <section className="space-y-4">
-          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.location.worker_title")}</h1>
-          <RegionPicker regions={regions} districts={districts} value={draft.place} onChange={(place) => (update({ place }), setErrors({}))} invalid={!!errors.place} />
+          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">
+            {t("easy.location.worker_title")}
+          </h1>
+          <RegionPicker
+            regions={regions}
+            districts={districts}
+            value={draft.place}
+            onChange={(place) => (update({ place }), setErrors({}))}
+            invalid={!!errors.place}
+          />
           <FieldError message={errors.place} />
           {draft.place.regionId ? (
-            <BigCheckbox id="remote-ok" checked={draft.remoteOk} onChange={(v) => update({ remoteOk: v })} title={t("easy.location.worker_remote")} />
+            <BigCheckbox
+              id="remote-ok"
+              checked={draft.remoteOk}
+              onChange={(v) => update({ remoteOk: v })}
+              title={t("easy.location.worker_remote")}
+            />
           ) : null}
         </section>
       ) : null}
 
       {step === 3 ? (
         <section className="space-y-6">
-          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.worker.about_title")}</h1>
+          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">
+            {t("easy.worker.about_title")}
+          </h1>
           <div>
-            <label htmlFor="first-name" className="mb-2 block text-lg font-semibold">
+            <label
+              htmlFor="first-name"
+              className="mb-2 block text-lg font-semibold"
+            >
               {t("easy.worker.first_name")}
             </label>
-            <Input id="first-name" autoComplete="given-name" value={draft.firstName} onChange={(e) => update({ firstName: e.target.value.slice(0, 60) })} invalid={!!errors.firstName} aria-describedby="first-name-err" className={bigInput} />
+            <Input
+              id="first-name"
+              autoComplete="given-name"
+              value={draft.firstName}
+              onChange={(e) =>
+                update({ firstName: e.target.value.slice(0, 60) })
+              }
+              invalid={!!errors.firstName}
+              aria-describedby="first-name-err"
+              className={bigInput}
+            />
             <FieldError id="first-name-err" message={errors.firstName} />
           </div>
           <div>
-            <label htmlFor="last-name" className="mb-2 block text-lg font-semibold">
-              {t("easy.worker.last_name")} <span className="text-base font-normal text-muted-foreground">({t("easy.wizard.optional")})</span>
+            <label
+              htmlFor="last-name"
+              className="mb-2 block text-lg font-semibold"
+            >
+              {t("easy.worker.last_name")}{" "}
+              <span className="text-base font-normal text-muted-foreground">
+                ({t("easy.wizard.optional")})
+              </span>
             </label>
-            <Input id="last-name" autoComplete="family-name" value={draft.lastName} onChange={(e) => update({ lastName: e.target.value.slice(0, 60) })} className={bigInput} />
+            <Input
+              id="last-name"
+              autoComplete="family-name"
+              value={draft.lastName}
+              onChange={(e) =>
+                update({ lastName: e.target.value.slice(0, 60) })
+              }
+              className={bigInput}
+            />
           </div>
           <div>
             <label htmlFor="phone" className="mb-2 block text-lg font-semibold">
@@ -412,8 +626,17 @@ export function WorkerPost({
               )
             ) : (
               <>
-                <PhoneInput id="phone" value={draft.phone} onChange={(v) => update({ phone: v })} invalid={!!errors.phone} describedBy="phone-hint" />
-                <p id="phone-hint" className="mt-2 text-base text-muted-foreground">
+                <PhoneInput
+                  id="phone"
+                  value={draft.phone}
+                  onChange={(v) => update({ phone: v })}
+                  invalid={!!errors.phone}
+                  describedBy="phone-hint"
+                />
+                <p
+                  id="phone-hint"
+                  className="mt-2 text-base text-muted-foreground"
+                >
                   {t("easy.worker.phone_hint")}
                 </p>
               </>
@@ -444,44 +667,93 @@ export function WorkerPost({
               value={draft.experience}
               invalid={!!errors.experience}
               onChange={(v) => update({ experience: v })}
-              options={SIMPLE_EXPERIENCE.map((e) => ({ value: e, label: t(`easy.worker.exp.${e}`) }))}
+              options={SIMPLE_EXPERIENCE.map((e) => ({
+                value: e,
+                label: t(`easy.worker.exp.${e}`),
+              }))}
             />
             <FieldError message={errors.experience} />
           </div>
 
           <div className="rounded-2xl border border-border bg-card">
-            <button type="button" aria-expanded={moreOpen} onClick={() => setMoreOpen((o) => !o)} className="flex min-h-14 w-full items-center justify-between gap-3 px-4 text-left">
+            <button
+              type="button"
+              aria-expanded={moreOpen}
+              onClick={() => setMoreOpen((o) => !o)}
+              className="flex min-h-14 w-full items-center justify-between gap-3 px-4 text-left"
+            >
               <span>
-                <span className="block text-lg font-semibold">{t("easy.worker.more")}</span>
-                <span className="block text-base text-muted-foreground">{t("easy.worker.more_hint")}</span>
+                <span className="block text-lg font-semibold">
+                  {t("easy.worker.more")}
+                </span>
+                <span className="block text-base text-muted-foreground">
+                  {t("easy.worker.more_hint")}
+                </span>
               </span>
-              <ChevronDown className={cn("size-6 shrink-0 transition-transform", moreOpen && "rotate-180")} aria-hidden />
+              <ChevronDown
+                className={cn(
+                  "size-6 shrink-0 transition-transform",
+                  moreOpen && "rotate-180",
+                )}
+                aria-hidden
+              />
             </button>
             {moreOpen ? (
               <div className="space-y-5 border-t border-border p-4">
                 {viewer.userId ? (
                   <div>
-                    <p className="mb-1 text-lg font-semibold">{t("easy.photo.own_title")}</p>
-                    <p className="mb-2 text-base text-muted-foreground">{t("easy.photo.own_hint")}</p>
-                    <AvatarUpload userId={viewer.userId} avatarUrl={viewer.avatarUrl} fallback={(draft.firstName || "?").slice(0, 1).toUpperCase()} />
+                    <p className="mb-1 text-lg font-semibold">
+                      {t("easy.photo.own_title")}
+                    </p>
+                    <p className="mb-2 text-base text-muted-foreground">
+                      {t("easy.photo.own_hint")}
+                    </p>
+                    <AvatarUpload
+                      userId={viewer.userId}
+                      avatarUrl={viewer.avatarUrl}
+                      fallback={(draft.firstName || "?")
+                        .slice(0, 1)
+                        .toUpperCase()}
+                    />
                   </div>
                 ) : null}
                 <div>
-                  <label htmlFor="salary" className="mb-2 block text-lg font-semibold">
+                  <label
+                    htmlFor="salary"
+                    className="mb-2 block text-lg font-semibold"
+                  >
                     {t("easy.worker.salary")}
                   </label>
-                  <MoneyInput id="salary" value={draft.salary} onChange={(v) => update({ salary: v })} placeholder={t("easy.worker.salary_placeholder")} />
+                  <MoneyInput
+                    id="salary"
+                    value={draft.salary}
+                    onChange={(v) => update({ salary: v })}
+                    placeholder={t("easy.worker.salary_placeholder")}
+                  />
                 </div>
                 <div>
-                  <p className="mb-2 text-lg font-semibold">{t("easy.worker.schedule")}</p>
+                  <p className="mb-2 text-lg font-semibold">
+                    {t("easy.worker.schedule")}
+                  </p>
                   <ChoiceButtons
                     label={t("easy.worker.schedule")}
                     value={draft.schedule}
                     onChange={(v) => update({ schedule: v })}
-                    options={[{ value: "" as const, label: t("easy.worker.schedule_any") }, ...SCHEDULES.map((s) => ({ value: s, label: tEnum("work_schedule", s) }))]}
+                    options={[
+                      {
+                        value: "" as const,
+                        label: t("easy.worker.schedule_any"),
+                      },
+                      ...SCHEDULES.map((s) => ({
+                        value: s,
+                        label: tEnum("work_schedule", s),
+                      })),
+                    ]}
                   />
                 </div>
-                <p className="rounded-xl bg-secondary p-3 text-base text-muted-foreground">{t("easy.worker.photo_note")}</p>
+                <p className="rounded-xl bg-secondary p-3 text-base text-muted-foreground">
+                  {t("easy.worker.photo_note")}
+                </p>
               </div>
             ) : null}
           </div>
@@ -490,45 +762,124 @@ export function WorkerPost({
 
       {step === TOTAL ? (
         <section className="space-y-5">
-          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.worker.review_title")}</h1>
-          {draft.source === "ai" ? <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} /> : null}
+          <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">
+            {t("easy.worker.review_title")}
+          </h1>
+          {draft.source === "ai" ? (
+            <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} />
+          ) : null}
           <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-            <ProfessionImage url={imageUrl} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
-            <p className="text-base text-muted-foreground">{t("easy.wizard.image_note")}</p>
+            <ProfessionImage
+              url={imageUrl}
+              icon={category?.icon}
+              name={professionName}
+              label={t("easy.image.label")}
+              className="aspect-[4/3] w-32 shrink-0 sm:w-40"
+            />
+            <p className="text-base text-muted-foreground">
+              {t("easy.wizard.image_note")}
+            </p>
           </div>
           <div className="rounded-2xl border border-border bg-card px-4">
-            <ReviewRow label={t("easy.wizard.steps.profession")} onChange={() => goTo(1)} changeLabel={t("easy.wizard.change")}>
+            <ReviewRow
+              label={t("easy.wizard.steps.profession")}
+              onChange={() => goTo(1)}
+              changeLabel={t("easy.wizard.change")}
+            >
               {/* asosiysi — kasb nomi; soha yo'li ostida kichik (uzun "A › B › C" uch qatorga cho'zilmaydi) */}
               {professionName || "—"}
-              {professionTrail && professionTrail !== professionName ? <span className="block text-base font-normal text-muted-foreground">{professionTrail}</span> : null}
+              {professionTrail && professionTrail !== professionName ? (
+                <span className="block text-base font-normal text-muted-foreground">
+                  {professionTrail}
+                </span>
+              ) : null}
             </ReviewRow>
-            <ReviewRow label={t("easy.wizard.steps.location")} onChange={() => goTo(2)} changeLabel={t("easy.wizard.change")}>
+            <ReviewRow
+              label={t("easy.wizard.steps.location")}
+              onChange={() => goTo(2)}
+              changeLabel={t("easy.wizard.change")}
+            >
               {placeLabel(draft.place, regions, districts, name, t)}
-              {draft.remoteOk ? <span className="block text-base font-normal text-muted-foreground">{t("easy.location.worker_remote")}</span> : null}
+              {draft.remoteOk ? (
+                <span className="block text-base font-normal text-muted-foreground">
+                  {t("easy.location.worker_remote")}
+                </span>
+              ) : null}
             </ReviewRow>
-            <ReviewRow label={t("easy.worker.first_name")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
-              {[draft.firstName, draft.lastName].filter((x) => x.trim()).join(" ") || "—"}
+            <ReviewRow
+              label={t("easy.worker.first_name")}
+              onChange={() => goTo(3)}
+              changeLabel={t("easy.wizard.change")}
+            >
+              {[draft.firstName, draft.lastName]
+                .filter((x) => x.trim())
+                .join(" ") || "—"}
             </ReviewRow>
-            <ReviewRow label={t("easy.worker.phone")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
-              <span className="tabular">{phone ? formatPhone(phone) : "—"}</span>
+            <ReviewRow
+              label={t("easy.worker.phone")}
+              onChange={() => goTo(3)}
+              changeLabel={t("easy.wizard.change")}
+            >
+              <span className="tabular">
+                {phone ? formatPhone(phone) : "—"}
+              </span>
             </ReviewRow>
-            <ReviewRow label={t("easy.worker.about")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
-              <span className="whitespace-pre-line font-normal">{draft.about || "—"}</span>
+            <ReviewRow
+              label={t("easy.worker.about")}
+              onChange={() => goTo(3)}
+              changeLabel={t("easy.wizard.change")}
+            >
+              <span className="whitespace-pre-line font-normal">
+                {draft.about || "—"}
+              </span>
             </ReviewRow>
-            <ReviewRow label={t("easy.worker.experience")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
-              {draft.experience ? t(`easy.worker.exp.${draft.experience}`) : "—"}
+            <ReviewRow
+              label={t("easy.worker.experience")}
+              onChange={() => goTo(3)}
+              changeLabel={t("easy.wizard.change")}
+            >
+              {draft.experience
+                ? t(`easy.worker.exp.${draft.experience}`)
+                : "—"}
             </ReviewRow>
             {draft.salary || draft.schedule ? (
-              <ReviewRow label={t("easy.worker.more")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
-                {[parseMoney(draft.salary) ? formatMoney(parseMoney(draft.salary), locale) : null, draft.schedule ? tEnum("work_schedule", draft.schedule) : null].filter(Boolean).join(" · ")}
+              <ReviewRow
+                label={t("easy.worker.more")}
+                onChange={() => goTo(3)}
+                changeLabel={t("easy.wizard.change")}
+              >
+                {[
+                  parseMoney(draft.salary)
+                    ? formatMoney(parseMoney(draft.salary), locale)
+                    : null,
+                  draft.schedule
+                    ? tEnum("work_schedule", draft.schedule)
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .join(" · ")}
               </ReviewRow>
             ) : null}
           </div>
-          <BigCheckbox id="show-phone" checked={draft.showPhone} onChange={(v) => update({ showPhone: v })} title={t("easy.worker.consent_title")} description={draft.showPhone ? t("easy.worker.consent_desc") : t("easy.worker.consent_off")} />
+          <BigCheckbox
+            id="show-phone"
+            checked={draft.showPhone}
+            onChange={(v) => update({ showPhone: v })}
+            title={t("easy.worker.consent_title")}
+            description={
+              draft.showPhone
+                ? t("easy.worker.consent_desc")
+                : t("easy.worker.consent_off")
+            }
+          />
           {!viewer.loggedIn ? (
             <div className="rounded-2xl border-2 border-primary/40 bg-primary-soft/50 p-4">
-              <p className="text-lg font-bold">{t("easy.wizard.login_needed_title")}</p>
-              <p className="mt-1 text-base">{t("easy.wizard.login_needed_desc")}</p>
+              <p className="text-lg font-bold">
+                {t("easy.wizard.login_needed_title")}
+              </p>
+              <p className="mt-1 text-base">
+                {t("easy.wizard.login_needed_desc")}
+              </p>
             </div>
           ) : null}
           <FieldError message={errors.form} />

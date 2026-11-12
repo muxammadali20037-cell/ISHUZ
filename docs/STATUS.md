@@ -37,6 +37,7 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
   sahifalar (`/privacy`, `/terms`, `/cookies`), 4 til.
 - Kirish: Telegram bot orqali bir martalik kod; Mini App ichida initData; admin — email + parol + autentifikator.
 - Ish izlovchi: profil, rezyume (PDF), ariza, saqlanganlar, AI yordamchi (Claude; AI o'chiq bo'lsa — qoidalar rejimi), ovozli qidiruv.
+- Ish izlovchi e'loni: "Tez va qulay e'lon — AI yordamchi bilan" — bir gapdan boshlab kerakli narsalar birma-bir so'raladi.
 - Ish beruvchi: kompaniya, vakansiya joylash (moderatsiya bilan), nomzodlar qidiruvi, arizalar, takliflar.
 - Universal ustalar (`/ustalar`, 0076 qo'llangach): katalog, usta e'lonlari (moderatsiya bilan), so'rovlar, sharhlar, usta kabineti.
 - Namuna vakansiyalar (0077 qo'llangach): har sohada 4 tadan, haqiqiy e'lon yo'q joyda "Namuna" belgisi bilan; `/jobs/namuna`;
