@@ -138,3 +138,89 @@ beradi — u HTTP holatiga ta'sir qilmaydi.
 | `*_security_definer_function_executable` | Ilova chaqiradigan RPC'lar — ichida huquq tekshiriladi; RLS qoidalarida ishlatiladiganlarini yopib bo'lmaydi |
 | `rls_enabled_no_policy` (7) | Faqat server (service role) ishlatadigan jadvallar — brauzerdan yopiq bo'lishi kerak |
 | `auth_leaked_password_protection` | Parol yo'q (telefon kodi / Telegram) |
+
+## 8. HTTP yuklama testi va sig'im taxmini (2026-11-12)
+
+1–7-bo'limlar bazani o'lchagan edi. Bu bo'lim **ilovani** o'lchaydi: bir vaqtda N ta ulanish asosiy sahifalarga so'rov
+yuboradi (`load/http-load.mjs`, autocannon). Tahlil (2026-11-12) talab qilgan "10 / 50 / 100 ming parallel foydalanuvchi"
+sinovi prod'da o'tkazilmaydi — pul (Vercel/Supabase) va firewall bloklanishi; staging yo'q. Shuning uchun o'lchov lokal
+stendda, 1 mln foydalanuvchilik bazada (§1 seed'i, 150 ming faol vakansiya).
+
+### 8.1. Muhit va cheklovlar (halol)
+
+- Bitta `next start` jarayoni (production build), PostgREST, lokal Postgres — **2 vCPU, yuklama generatori ham shu mashinada**.
+  Shuning uchun raqamlar pessimistik: prod'da Vercel har funksiya nusxasiga alohida CPU beradi va nusxalarni o'zi ko'paytiradi.
+- Prod'dagidek kesh (`MARKET_CACHE_SECONDS` standart): `bash load/stand-app.sh` stend build'ini prod sozlamalari bilan
+  `:3301` da ko'taradi (oddiy stend statistika keshini ataylab o'chiradi — testlar uchun).
+- Mehmon (cookie'siz, faqat tanishuv o'tilgan). Kirgan foydalanuvchi sahifalari o'lchanmadi (sessiya bilan alohida oqim).
+- Takrorlash: `bash e2e/stack/up.sh` → `psql …/ishuz_e2e -f scripts/load/seed-1m.sql` → `bash load/stand-app.sh` →
+  `BASE=http://localhost:3301 CONN=50,200,500 DUR=15 SLUG=<faol slug> OUT=docs/load/http-<sana>.json node load/http-load.mjs`.
+
+### 8.2. Topilgan va tuzatilgan (bitta ulanish, so'rov boshiga)
+
+| Sahifa | Avval | Sabab | Keyin |
+|---|---:|---|---:|
+| `/` (ish izlovchi, mehmon) | **215 ms** | "Yangi e'lonlar": `simple_search_vacancies` filtrsiz — 150 ming faol qatorni o'qib, `featured_now` hisoblab saralaydi (~200 ms, indeks ishlamaydi) — har mehmon ochilishida | **28 ms** — hudud bo'yicha 60 s kesh (`unstable_cache`, teg `public-feed`); e'lon joylansa/yopilsa `updateTag` darhol yangilaydi |
+| `/jobs/<slug>` | **186 ms** | "O'xshash vakansiyalar": `search_vacancies_v2` soha bo'yicha, "relevant" saralash + umumiy son (~150–200 ms) — har sahifada | **30 ms** — soha bo'yicha 60 s kesh, o'sha teg |
+| `/kasblar` | 322 ms (keshsiz stend) | `home_market_counts()` — 150 ming faol vakansiyada 390 ms | 27 ms — prod'da allaqachon 10 daqiqa keshda edi; stend sozlamasi chalg'itgan |
+| `/jobs` (ro'yxat, filtrsiz) | 76 ms | `search_vacancies_v2` barcha faol bo'yicha sahifalash + umumiy son | o'zgarmadi — keyingi qadam (8.4) |
+| `/jobs?q=…`, `/api/professions/search` | 33 / 10 ms | indekslar ishlaydi | — |
+
+Kesh faqat ochiq, foydalanuvchiga bog'liq bo'lmagan ro'yxatlarga qo'yildi; kirgan foydalanuvchining "Sizga mos" ro'yxati
+(kasb bo'yicha, indeksli) va saqlangan/ariza belgilari avvalgidek har so'rovda hisoblanadi. `MARKET_CACHE_SECONDS=0` (E2E) —
+keshsiz, testlar o'z ma'lumotini darhol ko'radi. Fayllar: `src/features/landing/home-queries.ts`, `src/features/jobs/queries.ts`,
+`src/features/find/queries.ts` (`findJobs/findWorkers` — ixtiyoriy mijoz), `src/lib/supabase/public.ts` (`PUBLIC_FEED_TAG`,
+`ReadClient`), `src/features/post/actions.ts`, `src/features/vacancies/actions.ts` (`updateTag`).
+
+### 8.3. Parallel yuklama (tuzatishdan keyin, 15 s har biri)
+
+| Sahifa | Ulanish | So'rov/s | p50 | p97.5 | p99 | Xato |
+|---|---:|---:|---:|---:|---:|---:|
+| `/` | 50 | 40 | 1.2 s | 1.5 s | 1.5 s | 0 |
+| `/` | 200 | 28 | 1.1 s | 11.6 s | 13.5 s | 0 |
+| `/` | 500 | 32 | 1.2 s | 11.2 s | 13.7 s | 0 |
+| `/jobs` | 50 | 16 | 2.0 s | 11.6 s | 13.6 s | 0 |
+| `/jobs` | 200 | 17 | 2.0 s | 11.8 s | 13.4 s | 0 |
+| `/jobs` | 500 | 8 | 1.6 s | 13.3 s | 14.1 s | 0 |
+| `/jobs?q=shifokor` | 50 | 22 | 1.5 s | 10.5 s | 13.5 s | 0 |
+| `/jobs?q=shifokor` | 200 | 20 | 1.5 s | 11.6 s | 13.1 s | 0 |
+| `/jobs?q=shifokor` | 500 | 11 | 1.4 s | 12.8 s | 14.5 s | 0 |
+| `/jobs?q=sotuvchi&region=tashkent_city` | 50 | 20 | 2.4 s | 2.7 s | 3.2 s | 0 |
+| `/jobs?q=sotuvchi&region=tashkent_city` | 200 | 20 | 1.6 s | 10.6 s | 12.8 s | 0 |
+| `/jobs?q=sotuvchi&region=tashkent_city` | 500 | 10 | 1.2 s | 13.4 s | 14.0 s | 0 |
+| `/jobs/<slug>` | 50 | 25 | 1.6 s | 3.4 s | 3.8 s | 0 |
+| `/jobs/<slug>` | 200 | 26 | 1.8 s | 11.3 s | 13.5 s | 0 |
+| `/jobs/<slug>` | 500 | 18 | 1.6 s | 13.3 s | 14.5 s | 0 |
+| `/api/professions/search?q=shif` | 50 | 199 | 241 ms | 320 ms | 342 ms | 0 |
+| `/api/professions/search?q=shif` | 200 | 191 | 392 ms | 1.7 s | 8.1 s | 0 |
+| `/api/professions/search?q=shif` | 500 | 194 | 391 ms | 2.3 s | 8.2 s | 0 |
+| `/kasblar` | 50 | 27 | 1.8 s | 2.1 s | 2.1 s | 0 |
+| `/kasblar` | 200 | 26 | 1.4 s | 10.7 s | 13.4 s | 0 |
+| `/kasblar` | 500 | 18 | 1.3 s | 12.6 s | 14.1 s | 0 |
+| `/api/health` | 50 | 328 | 145 ms | 217 ms | 225 ms | 0 |
+| `/api/health` | 200 | 300 | 303 ms | 567 ms | 6.6 s | 0 |
+| `/api/health` | 500 | 270 | 280 ms | 1.1 s | 7.4 s | 0 |
+
+Xom natija: `docs/load/http-2026-11-12.json`. O'qish:
+- **Xato, timeout, 2xx bo'lmagan javob — 0** (500 ulanishda ham). Ilova yiqilmaydi, navbatga qo'yadi.
+- Bitta Node jarayoni (2 vCPU, generator bilan birga) **~30–40 sahifa/s** yoki **~200 API javob/s** beradi; undan ortig'i
+  navbatda kutadi (p97.5 10 s+). Bu bitta nusxaning chegarasi, saytning emas.
+- Sahifa chizish (React SSR, 300–480 KB HTML) — asosiy CPU xarajati. `/jobs` ro'yxati eng og'iri (DB 70 ms + chizish).
+
+### 8.4. "100 ming bir vaqtda" uchun nima kerak (taxmin, kafolat emas)
+
+Hisob: 1 mln ro'yxatdan o'tgan ≠ 1 mln bir vaqtda. Ish e'lonlari saytlarida kunlik faol foydalanuvchi ro'yxatning 3–8 %,
+bir vaqtda — kunlikning 3–5 %, har biri ~30 s da bir sahifa. 1 mln ro'yxat → ~50 ming kunlik → **~2 ming bir vaqtda →
+~70 sahifa/s** (tepalikda 2–3 baravar). 100 ming bir vaqtda = ~3 300 sahifa/s — bu O'zbekiston miqyosida butun bozor
+bir onda kirgani; unga **arxitektura** bilan tayyorlanadi, kod bilan emas:
+
+| Qadam | Nima beradi | Kim |
+|---|---|---|
+| Supabase compute Small → Medium/Large, pooler (transaction mode) | Baza CPU va ulanishlar — hozirgi asosiy chegara. Ilova so'rovlari 1–17 ms; 70 sahifa/s ≈ 1 baza yadrosi; 3 300/s ≈ 30–50 yadro (yoki o'qish replikasi + kesh) | ega (tarif) |
+| Mehmon sahifalarini CDN'da keshlash (`/`, `/jobs?…` birinchi sahifa, `/kasblar`, `/company/*`) — `s-maxage=60, stale-while-revalidate` | Mehmon trafigi (SEO, reklama) bazaga umuman bormaydi; hozir `private, no-store` (sessiya cookie tufayli) — mehmon/kirgan ajratish kerak | kod (keyingi bosqich) |
+| `search_vacancies_v2/v3`, `simple_search_vacancies`: filtrsiz tarmoqni indeks tartibida ikkiga bo'lish (featured / oddiy), umumiy sonni 5000+ da to'xtatish | `/jobs` ro'yxati 70 ms → ~5 ms 150 ming faol vakansiyada | kod (migratsiya 0076, parity testlari bilan) |
+| Staging (alohida Supabase loyiha + Vercel preview) | Shu testni haqiqiy infratuzilmada 1 000 → 10 000 ulanishda o'tkazish | ega |
+| Vercel Pro (Hobby'da funksiya parallelligi va kunlik limit cheklangan) | Nusxalar soni va 60 s funksiya vaqti | ega (tarif) |
+
+Bugungi holat uchun xulosa: haqiqiy ma'lumot hajmi (yuzlab vakansiya) va kutilayotgan trafik (ming kunlik) uchun **hozirgi
+tarif yetadi**; birinchi o'sish belgisi — `/api/health` dagi `db.ms` ning doimiy 300 ms+ bo'lishi va Supabase panelidagi CPU 60 %+.

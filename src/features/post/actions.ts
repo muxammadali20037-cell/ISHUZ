@@ -1,9 +1,10 @@
 "use server";
 
 import { after } from "next/server";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
+import { PUBLIC_FEED_TAG } from "@/lib/supabase/public";
 import { getSession } from "@/features/auth/session";
 import type { ActionResult } from "@/features/auth/actions";
 import { errorCode } from "@/lib/utils";
@@ -91,6 +92,7 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
     if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
     await runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 });
   });
+  updateTag(PUBLIC_FEED_TAG);
   revalidatePath("/", "layout");
   return { ok: true, data: { ...info, workerId: res.worker_id } };
 }
@@ -169,6 +171,7 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
     if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
     await runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 });
   });
+  updateTag(PUBLIC_FEED_TAG);
   revalidatePath("/", "layout");
   return { ok: true, data: { ...info, vacancyId: res.vacancy_id, slug: res.slug } };
 }
@@ -199,6 +202,7 @@ export async function markFoundJob(): Promise<ActionResult> {
     await trackServer("outcome_found_job", session.userId);
     await trackServer("outcome_report", session.userId, { kind: "found_job" });
   });
+  updateTag(PUBLIC_FEED_TAG);
   revalidatePath("/", "layout");
   return { ok: true };
 }
@@ -216,6 +220,7 @@ export async function markFoundWorker(input: unknown): Promise<ActionResult> {
     await trackServer("outcome_found_worker", session.userId);
     await trackServer("outcome_report", session.userId, { kind: "found_worker" });
   });
+  updateTag(PUBLIC_FEED_TAG);
   revalidatePath("/", "layout");
   return { ok: true };
 }

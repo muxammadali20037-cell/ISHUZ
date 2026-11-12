@@ -2,13 +2,14 @@
 
 import { randomUUID } from "node:crypto";
 import { safeFilterValue } from "@/lib/security/postgrest";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, updateTag } from "next/cache";
 import { after } from "next/server";
 import type { ActionResult } from "@/features/auth/actions";
 import { moderateNow } from "@/features/moderation/service";
 import { runBackgroundTickSafe } from "@/features/notifications/tick";
 import { getSession, type SessionContext } from "@/features/auth/session";
 import { createClient, type SupabaseServerClient } from "@/lib/supabase/server";
+import { PUBLIC_FEED_TAG } from "@/lib/supabase/public";
 import { errorCode } from "@/lib/utils";
 import type { Database } from "@/types/database.types";
 import { customSkillSchema, saveStepInputSchema, statusChangeSchema, titleSchema, vacancyIdSchema, type StepPayload } from "./schema";
@@ -28,6 +29,7 @@ async function employerCtx(): Promise<CtxResult> {
 }
 
 function revalidateVacancy(id?: string) {
+  updateTag(PUBLIC_FEED_TAG); // ochiq ro'yxatlar keshi: bosh sahifa "Yangi e'lonlar", "O'xshash vakansiyalar"
   revalidatePath("/employer");
   revalidatePath("/employer/vacancies");
   revalidatePath("/employer/vacancies/new");

@@ -5,6 +5,7 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | Bosqich | Holat | Sana |
 | --- | --- | --- |
 | Barqarorlashtirish (Next 16.4.5, 0074–0075, health, Sentry) | Kod tayyor, CI yashil · **ega amali kutilmoqda** | 2026-11-07 |
+| Bozorga tayyorlik: prod tekshiruv skripti, HTTP yuklama testi, ochiq ro'yxatlar keshi, STATUS.md | ✅ Tugadi | 2026-11-12 |
 | 0. Audit | ✅ Tugadi | 2026-11-11 |
 | 1. Dizayn tizimi | Davom etmoqda: 1-qadam (tokenlar) ✅, 2-qadam (komponentlar) ✅ | 2026-11-11 |
 | 2. Ochiq sayt | — | |
@@ -15,6 +16,37 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | 7. Backend integratsiyasi | — | |
 | 8. AI | — | |
 | 9. QA va prod | — | |
+
+## Bozorga tayyorlik — prod tekshiruvi, yuklama testi, hujjatlar (2026-11-12)
+
+Egasi yuborgan tashqi tahlilga javob (P0: prod holati, yuklama testi; P1: hujjatlar). Kod bilan solishtirildi:
+tahlil to'g'ri — hisobot 2026-10-14 holatini (64 migratsiya) tasvirlaydi, `main` da 75 ta; prod bazada 0069–0075 yo'q
+(prod'da `/companies` "Ro'yxat vaqtincha ochilmadi" — tekshirildi).
+
+**Bajarildi:**
+- `scripts/prod-check.sh` (`npm run prod:check`) — prod'ni tashqaridan, faqat o'qib tekshiradi: health + deep (CRON_SECRET bilan —
+  qaysi migratsiya yo'q), 9 ta ochiq sahifa (baza xatosi matnlarini ham tutadi), robots/sitemap/manifest/assetlinks, Telegram
+  webhook va Payme/Click kirish nuqtalari (deploy va himoya), Telegram `getWebhookInfo` (token berilsa), xavfsizlik sarlavhalari.
+  Lokal stendda sinaldi: FAIL=0, WARN=2 (assetlinks bo'sh, bot token yo'q — kutilgan).
+- `load/http-load.mjs` (`npm run load:http`, autocannon) — HTTP yuklama testi; prod manzilini qabul qilmaydi.
+  `load/stand-app.sh` — stend build'ini prod kesh sozlamalari bilan `:3301` da ko'taradi (`build` — qayta build).
+- O'lchov 1 mln foydalanuvchilik bazada (150 ming faol vakansiya): 50/200/500 ulanishda xato 0; bitta Node jarayoni ~30–40 sahifa/s.
+  Ikkita issiq nuqta topildi va tuzatildi: mehmon bosh sahifasi 215 → 28 ms, vakansiya sahifasi 186 → 30 ms (ochiq ro'yxatlar
+  60 s keshda, e'lon joylansa/yopilsa `updateTag(PUBLIC_FEED_TAG)` darhol yangilaydi). Batafsil: `docs/SCALE.md` §8.
+- `docs/STATUS.md` — joriy holatning yagona sahifasi (kod/prod, testlar, nima ishlaydi, ega amallari, sig'im, hujjatlar xaritasi,
+  yo'l xaritasi bo'yicha fikr). Eski hisobotga "tarixiy" banner; README va RELEASE_CHECKLIST yangilandi.
+
+**O'zgartirilgan fayllar:** `src/features/landing/home-queries.ts`, `src/features/jobs/queries.ts`, `src/features/find/queries.ts`,
+`src/lib/supabase/public.ts`, `src/features/post/actions.ts`, `src/features/vacancies/actions.ts`, `scripts/prod-check.sh`,
+`load/http-load.mjs`, `load/stand-app.sh`, `package.json` (autocannon dev), `docs/STATUS.md`, `docs/SCALE.md`,
+`docs/load/http-2026-11-12.json`, `docs/PROFESSIONALIZATION_REPORT.md`, `docs/RELEASE_CHECKLIST.md`, `README.md`.
+
+**Testlar:** Vitest 762 / 18 skip; E2E 257/257 (toza stend); typecheck, lint 0 xato. Kesh yoqilgan rejimda (`:3301`) home va
+detail speclari qo'lda o'tkazildi — faqat SQL orqali to'g'ridan-to'g'ri qo'shilgan e'lonni "darhol" kutgan 1 ta test 60 s kesh tufayli
+kutadi (loyihada e'lon faqat action orqali joylanadi — u keshni darhol yangilaydi; moderatsiya/cron orqali faollashganlar ≤ 60 s).
+
+**Qolgan muammolar / keyingi qadam:** `docs/STATUS.md` §4 (ega amallari, birinchisi — 0069–0075) va `docs/SCALE.md` §8.4
+(`/jobs` ro'yxati uchun qidiruv funksiyasini indeks tartibiga o'tkazish — migratsiya 0076; mehmon sahifalarini CDN keshi).
 
 ## 0-bosqich — Audit (2026-11-11)
 

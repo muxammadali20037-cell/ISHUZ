@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · Bozorga tayyorlik: prod tekshiruvi, HTTP yuklama testi, ochiq ro'yxatlar keshi (`claude/market-readiness`)
+
+### Tezlik
+- Mehmon bosh sahifasi va vakansiya sahifasi katta bazada 7× tezroq: "Yangi e'lonlar / Yangi ishchilar" va "O'xshash vakansiyalar"
+  ro'yxatlari 60 s keshda (foydalanuvchiga bog'liq emas); e'lon joylansa, yopilsa yoki holati o'zgarsa darhol yangilanadi.
+
+### Vositalar
+- `npm run prod:check` — prod'ni tashqaridan tekshirish (health, migratsiyalar, sahifalar, Telegram, to'lov, sarlavhalar).
+- `npm run load:http` — HTTP yuklama testi (lokal stend / staging), `load/stand-app.sh` — prod kesh bilan stend.
+
+### Hujjatlar
+- `docs/STATUS.md` — joriy holat (bitta sahifa); `docs/SCALE.md` §8 — HTTP yuklama testi va sig'im taxmini;
+  eski hisobotlar tarixiy deb belgilandi.
+
 ## 2026-11-11 · 2.0: ish beruvchi paneli, xush kelibsiz ekrani, cookie, Play Market (`claude/v2-employer-entry-play`)
 
 ### Mahsulot
