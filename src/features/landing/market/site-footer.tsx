@@ -69,7 +69,7 @@ export async function SiteFooter() {
   const linkCls = "inline-flex min-h-11 items-center text-base text-navy-muted hover:text-navy-foreground hover:underline";
   return (
     <footer className="page-with-tabbar mt-8 bg-navy text-navy-foreground md:pb-0">
-      <div className="container-app grid grid-cols-1 gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] lg:py-14">
+      <div className="container-wide grid grid-cols-1 gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] lg:py-14">
         <div>
           <Link href="/" className="inline-flex min-h-11 items-center" aria-label={BRAND.name}>
             <BrandLogo onDark className="text-2xl" />
@@ -120,7 +120,7 @@ export async function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-navy-line">
-        <p className="container-app py-5 text-sm text-navy-muted">{t("common.footer.rights", { year: new Date().getFullYear() })}</p>
+        <p className="container-wide py-5 text-sm text-navy-muted">{t("common.footer.rights", { year: new Date().getFullYear() })}</p>
       </div>
     </footer>
   );

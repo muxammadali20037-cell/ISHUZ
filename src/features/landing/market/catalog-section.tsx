@@ -26,7 +26,7 @@ export async function PhotoCatalog({ media, counts, embedded = false }: { media:
   const tail = tailSpan(withPhoto.length);
   const countLabel = (count: string) => t("welcome.market.cat_count", { count });
   return (
-    <section id="sohalar" aria-labelledby="home-categories" className={embedded ? "scroll-mt-20" : "container-app scroll-mt-20 py-10 sm:py-14"}>
+    <section id="sohalar" aria-labelledby="home-categories" className={embedded ? "scroll-mt-20" : "container-wide scroll-mt-20 py-10 sm:py-14"}>
       <SectionHead
         id="home-categories"
         compact={embedded}
@@ -39,7 +39,7 @@ export async function PhotoCatalog({ media, counts, embedded = false }: { media:
           </Link>
         }
       />
-      <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4">
+      <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 lg:grid-cols-4 3xl:grid-cols-6">
         {withPhoto.map((item, i) => (
           <li key={item.key} className="flex">
             <CategoryPhotoCard item={item} countLabel={countLabel} sizes="(min-width: 1024px) 280px, (min-width: 768px) 30vw, 50vw" priority={i < 2} />

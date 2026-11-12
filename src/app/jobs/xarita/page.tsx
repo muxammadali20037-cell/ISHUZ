@@ -61,7 +61,7 @@ export default async function JobsMapPage({ searchParams }: { searchParams: Sear
 
   return (
     <>
-      <div className="container-app space-y-5 py-5 sm:py-8" data-jobs-map>
+      <div className="container-wide space-y-5 py-5 sm:py-8" data-jobs-map>
         <header className="max-w-3xl">
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{t("map.title")}</h1>
           <p className="mt-1 text-base text-muted-foreground">{t("map.subtitle")}</p>

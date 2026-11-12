@@ -56,7 +56,7 @@ export default async function MastersHomePage() {
 
   return (
     <MastersShell>
-      <div className="container-app space-y-8 py-4 sm:py-6">
+      <div className="container-wide space-y-8 py-4 sm:py-6">
         <section
           className="relative overflow-hidden rounded-2xl bg-primary px-5 py-7 text-primary-foreground sm:px-8 sm:py-10"
           data-masters-hero
@@ -122,7 +122,7 @@ export default async function MastersHomePage() {
             {t("masters.categories_title")}
           </h2>
           <ul
-            className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
+            className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 3xl:grid-cols-8"
             data-masters-categories
           >
             {withCount.map(({ c, n }) => (
@@ -179,7 +179,7 @@ export default async function MastersHomePage() {
                 </Link>
               </div>
               {s.result ? (
-                <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <ul className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6">
                   {s.result.items.map((m, i) => (
                     <li key={m.id} className="flex">
                       <MasterCard m={m} priority={i < 2} />

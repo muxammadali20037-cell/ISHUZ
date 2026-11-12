@@ -56,7 +56,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
       style={{ paddingTop: "var(--safe-top)" }}
     >
       {/* yon menyu bo'lsa (kompyuter): panel to'liq kenglikda, logotip menyu ustida */}
-      <div className={cn("container-app flex items-center gap-2 sm:gap-3", site ? "h-16" : "h-14")}>
+      <div className={cn("container-wide flex items-center gap-2 sm:gap-3", site ? "h-16" : "h-14")}>
         <Link
           href="/"
           className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight"

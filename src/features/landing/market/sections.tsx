@@ -26,7 +26,7 @@ const btnOutline = "press inline-flex min-h-12 items-center justify-center gap-2
 /** Vakansiyalar bo'limi skeleti: kartalar/qatorlar balandligiga yaqin — kontent kelganda sahifa siljimaydi */
 export function ListSkeleton({ grid = false }: { grid?: boolean }) {
   return (
-    <div className="container-app py-10 sm:py-14" aria-hidden>
+    <div className="container-wide py-10 sm:py-14" aria-hidden>
       <Skeleton className="h-8 w-56" />
       <Skeleton className="mt-2 h-5 w-80 max-w-full" />
       <div className={cn("mt-6 grid gap-3 sm:gap-4", grid ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-4" : "grid-cols-1")}>
@@ -44,7 +44,7 @@ export async function EmployerBand() {
   const workers = findHref(EMPTY_FIND, { mode: "workers", any: true, region: "all" });
   const benefits = [t("welcome.market.emp_b1"), t("welcome.market.emp_b2"), t("welcome.market.emp_b3"), t("welcome.market.emp_b4")];
   return (
-    <section aria-labelledby="home-employers" className="container-app py-10 sm:py-14">
+    <section aria-labelledby="home-employers" className="container-wide py-10 sm:py-14">
       <div className="grid grid-cols-1 gap-6 rounded-2xl bg-navy p-5 text-navy-foreground sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-center lg:p-10">
         <div>
           <h2 id="home-employers" className="text-2xl font-semibold tracking-tight sm:text-3xl">
@@ -109,7 +109,7 @@ export async function HowItWorks() {
     },
   ];
   return (
-    <section aria-labelledby="home-how" className="container-app py-10 sm:py-14">
+    <section aria-labelledby="home-how" className="container-wide py-10 sm:py-14">
       <SectionHead id="home-how" title={t("welcome.market.how_title")} />
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {cols.map((c) => (

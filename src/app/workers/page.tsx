@@ -38,7 +38,7 @@ export default async function WorkersPage({ searchParams }: { searchParams: Prom
 
   return (
     <Shell>
-      <div className="container-app py-4 md:py-6">
+      <div className="container-wide py-4 md:py-6">
         <WorkersSearch
           params={params}
           reference={{

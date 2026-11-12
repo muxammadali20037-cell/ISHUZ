@@ -72,7 +72,7 @@ export default async function MastersSearchPage({
 
   return (
     <MastersShell>
-      <div className="container-app space-y-5 py-4 sm:py-6">
+      <div className="container-wide space-y-5 py-4 sm:py-6">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
             {current ? (
@@ -198,7 +198,7 @@ export default async function MastersSearchPage({
         ) : result.items.length ? (
           <>
             <ul
-              className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 3xl:grid-cols-5 4xl:grid-cols-6"
               data-masters-results
             >
               {result.items.map((m, i) => (

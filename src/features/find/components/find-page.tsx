@@ -178,7 +178,7 @@ export async function FindResultsView({
   if (params.mass) keep.push(["mass", "1"]);
 
   return (
-    <div className="container-app py-3 text-lg sm:py-6">
+    <div className="container-wide py-3 text-lg sm:py-6">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-3">
           {/* J1 (ishgo uslubi): tepada qidiruv va Filtr, ostida qisqa xulosa, soni va "O'zgartirish" (kasb · hudud · rejim) */}
@@ -254,7 +254,7 @@ export async function FindResultsView({
         </section>
       ) : null}
       {!res.ok || (!res.items.length && params.page > 1) ? null : res.items.length ? (
-        <ul className="pop-list grid grid-cols-1 gap-3">
+        <ul className="pop-list grid grid-cols-1 gap-3 2xl:grid-cols-2 3xl:grid-cols-3 4xl:grid-cols-4">
           {isJobs
             ? (res.items as Parameters<typeof JobResultCard>[0]["job"][]).map((job) => (
                 <li key={job.id}>
@@ -316,7 +316,7 @@ export async function FindResultsView({
 
       {/* ish topilmadi: ostida namuna e'lonlar (tanlangan kasb sohasidan) — alohida blok, "Namuna" belgisi bilan */}
       {isJobs && res.ok && !res.items.length && params.page === 1 ? (
-        <DemoVacanciesBlock category={node?.categorySlug ?? null} region={params.region && params.region !== "all" ? params.region : null} limit={4} columns="" />
+        <DemoVacanciesBlock category={node?.categorySlug ?? null} region={params.region && params.region !== "all" ? params.region : null} limit={4} columns="2xl:grid-cols-2 3xl:grid-cols-3 4xl:grid-cols-4" />
       ) : null}
 
       {pages > 1 ? (

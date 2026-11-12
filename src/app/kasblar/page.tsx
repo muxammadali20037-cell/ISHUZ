@@ -36,7 +36,7 @@ export default async function CatalogPage() {
   const countLabel = (count: string) => t("welcome.market.cat_count", { count });
   return (
     <Shell footer={<SiteFooter />}>
-      <div className="container-app py-8 sm:py-12">
+      <div className="container-wide py-8 sm:py-12">
         <header className="max-w-2xl">
           <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t("welcome.catalog.page_title")}</h1>
           <p className="mt-2 text-lg leading-relaxed text-muted-foreground">{t("welcome.catalog.page_subtitle")}</p>
@@ -56,7 +56,7 @@ export default async function CatalogPage() {
           <h2 id="all-fields" className="text-2xl font-semibold tracking-tight">
             {t("welcome.catalog.page_all_title")}
           </h2>
-          <ul className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5">
             {all.map((c) => {
               const n = countOf(c.id);
               return (
