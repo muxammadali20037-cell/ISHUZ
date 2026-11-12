@@ -1,5 +1,14 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · AI yordamchi — "ChatGPT kabi" ish maydoni (`claude/ai-workspace`)
+
+### Mahsulot
+- **/ai sahifasi qayta qurildi:** chapda "Yangi suhbat", bo'limlar va **so'nggi suhbatlar** (qurilmada, 7 kun), profil;
+  o'rtada suhbat — ism bilan salomlashuv, **"Bugungi ishlar"** (mos vakansiyalar soni, profil to'liqligi, arizalar — faqat
+  bazadan) va **"Sizga mos ishlar"** kartalari; o'ngda karyera, tezkor imkoniyatlar va kunlik maslahat. Telefonda panel pastdan.
+- **Jarayon ko'rinib turadi:** har javobda "Tushunildi → Bazadan qidirildi · N ta → Javob: sun'iy intellekt / oddiy rejim".
+- AI ulanmagan rejimda "menga mos ish toping" — kasb so'raladi; maslahat savollariga AI yo'qligi halol aytiladi.
+
 ## 2026-11-12 · Bozorga tayyorlik: prod tekshiruvi, HTTP yuklama testi, ochiq ro'yxatlar keshi (`claude/market-readiness`)
 
 ### Tezlik

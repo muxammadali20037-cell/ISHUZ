@@ -237,10 +237,11 @@ test("/ai sahifasi: suhbat sahifaning o'zida (oyna emas), natija shu yerda", asy
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/ai");
-  await expect(page.getByRole("heading", { level: 1, name: "AI yordamchi" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Ish topdim AI" })).toBeVisible();
   await page.getByLabel("Nima qidiryapsiz?").fill("Toshkentda buxgalter");
-  await page.getByRole("button", { name: "Topish" }).click();
+  await page.getByRole("button", { name: "Topish", exact: true }).click();
   await expect(page.getByText(/^Tushundim:/)).toContainText("Buxgalter");
+  // natija kartasi suhbatda (salomlashuvdagi "Yangi ishlar" ro'yxati yo'qoladi)
   await expect(page.locator("main article")).toHaveCount(1);
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });

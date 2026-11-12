@@ -92,7 +92,8 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
     // hech narsa topilmagan javob: "xabar olish" va "e'lon berish" tugmalari ham sig'adi (uzun yozuv tugmadan chiqmaydi)
     await dialog.getByLabel("Nima qidiryapsiz?").fill("elektrik kerak");
     await dialog.getByRole("button", { name: "Topish" }).click();
-    await expect(dialog.locator("[data-ai-empty-actions]")).toBeVisible();
+    // avvalgi aylanadagi suhbat tabda saqlanadi (30 daqiqa) — eski javobning tugmalari ham turadi; oxirgisi tekshiriladi
+    await expect(dialog.locator("[data-ai-empty-actions]").last()).toBeVisible();
     expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
     await page.keyboard.press("Escape");
   }
