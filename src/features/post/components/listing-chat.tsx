@@ -472,9 +472,10 @@ export function ListingChat({
       <div className="flex items-start gap-3">
         <AiAvatar size="md" className="shrink-0" />
         <div className="min-w-0">
-          <h2 id="ai-chat-title" className="text-lg font-bold leading-snug">
+          {/* sarlavha emas: sahifaning asosiy sarlavhasi (h1) — kasb savoli; karta uning ustida turadi */}
+          <p id="ai-chat-title" className="text-lg font-bold leading-snug">
             {t("easy.aichat.title")}
-          </h2>
+          </p>
           <p className="text-base text-muted-foreground">
             {started
               ? t("easy.aichat.progress", {

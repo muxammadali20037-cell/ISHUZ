@@ -19,7 +19,9 @@ test("mehmon: 'kuryerlikdan ish qidirmoqchiman' → kasb variantlari → joy, ta
   await asMode(context, "worker");
   await page.goto("/post/worker");
   await formReady(page);
-  await expect(chat(page).getByRole("heading", { name: "Tez va qulay e'lon — AI yordamchi bilan" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Tez va qulay e'lon — AI yordamchi bilan" })).toBeVisible();
+  // sahifaning asosiy sarlavhasi — kasb savoli (karta sarlavha tartibini buzmaydi)
+  await expect(page.getByRole("heading", { level: 1 }).or(page.getByRole("heading", { level: 2 })).first()).toContainText("Qaysi kasb bo'yicha ish qidiryapsiz?");
   // oddiy usul ham shu sahifada
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
 
