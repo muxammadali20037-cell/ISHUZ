@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, User, Users, type LucideIcon } from "lucide-react";
+import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -359,6 +359,17 @@ export function SideNav({
       )}
       <nav aria-label={t("easy.side.label")} className="flex-1 space-y-5 overflow-y-auto px-3 pb-4">
         <ul className="space-y-0.5">{main.map(link)}</ul>
+        {/* "Universal ustalar" — alohida mini-ilova, turkuaz rangda ajralib turadi */}
+        <Link
+          href="/ustalar"
+          data-track="masters_entry"
+          data-masters-entry
+          aria-current={pathname.startsWith("/ustalar") ? "page" : undefined}
+          className="flex h-11 items-center gap-3 rounded-md bg-accent-bright/15 px-3 text-sm font-semibold text-accent-bright ring-1 ring-accent-bright/40 transition-colors hover:bg-accent-bright/25"
+        >
+          <Wrench className="size-4 shrink-0" aria-hidden />
+          <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
+        </Link>
         <div>
           <p className="mb-1.5 px-3 text-xs font-medium text-navy-muted/60">{t("easy.side.more")}</p>
           <ul className="space-y-0.5">{more.map(link)}</ul>

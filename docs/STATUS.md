@@ -4,24 +4,24 @@ Bitta sahifa: kod qayerda, prod qayerda, nima ishlaydi, nima egasini kutyapti. H
 Eski hisobotlar (`PROFESSIONALIZATION_REPORT.md`, `AUDIT_*.md`, `MASTER_SPEC_STATUS.md`, `SCALE.md` 1–7) o'z sanasidagi
 tarix — ulardagi raqamlar (migratsiya soni, test soni) hozirgi holatni ko'rsatmaydi.
 
-Yangilangan: **2026-11-12** · `main` relizi prod'da: `60231d6` (`/api/health` → ok).
+Yangilangan: **2026-11-12** (kechki) · oxirgi relizlar: AI ish maydoni (#13), Universal ustalar (#14).
 
 ## 1. Kod va baza
 
 | | Kod (`main`) | Prod baza (Supabase `oquqqubmicldvreeqgsg`) |
 |---|---|---|
-| Migratsiyalar | **0001 … 0075** (75 ta) | **0001 … 0068** (hujjatlar bo'yicha; aniq ro'yxat — `/api/health?deep=1`) — `0069–0075` qo'llanmagan |
-| Natija | Vercel avtomatik deploy, `/api/health` ok | `/companies` → "Ro'yxat vaqtincha ochilmadi" (0071 yo'q); maosh/ma'lumot filtrlari (0070), telefon maxfiyligi (0074), Telegram qayta urinish (0075) ishlamaydi |
+| Migratsiyalar | **0001 … 0076** (76 ta) | **0001 … 0068** (hujjatlar bo'yicha; aniq ro'yxat — `/api/health?deep=1`) — `0069–0076` qo'llanmagan |
+| Natija | Vercel avtomatik deploy, `/api/health` ok | `/companies` → "Ro'yxat vaqtincha ochilmadi" (0071 yo'q); maosh/ma'lumot filtrlari (0070), telefon maxfiyligi (0074), Telegram qayta urinish (0075) ishlamaydi; `/ustalar` → "Bo'lim tayyorlanmoqda" (0076 yo'q) |
 
 **Birinchi navbatdagi ega amali:** `docs/RELEASE_CHECKLIST.md` §1–3 — zaxira nusxa → `scripts/prod-migration-check.sql` →
-0069…0075 ni tartib bilan SQL Editor'da. Keyin `CRON_SECRET=… bash scripts/prod-check.sh` — "deep" qatori PASS bo'lishi kerak.
+0069…0076 ni tartib bilan SQL Editor'da. Keyin `CRON_SECRET=… bash scripts/prod-check.sh` — "deep" qatori PASS bo'lishi kerak.
 
 ## 2. Tekshiruv (oxirgi to'liq o'tkazish — 2026-11-12, lokal stend + GitHub CI)
 
 | Tekshiruv | Natija |
 |---|---|
-| Vitest (birlik) | 762 o'tdi / 18 skip (eskirgan TS moslash, ma'lum) |
-| Brauzer E2E (Playwright, toza baza) | 257 / 257 |
+| Vitest (birlik) | 776 o'tdi / 18 skip (eskirgan TS moslash, ma'lum) |
+| Brauzer E2E (Playwright, toza baza) | 277 / 277 |
 | SQL migratsiyalar + RLS testlari (CI) | o'tdi |
 | Lint, typecheck, build | 0 xato |
 | Xavfsizlik testlari | o'chirilmagan, hammasi o'tadi (`docs/SECURITY_TEST_REPORT.md` tartibi) |
@@ -38,6 +38,7 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 - Kirish: Telegram bot orqali bir martalik kod; Mini App ichida initData; admin — email + parol + autentifikator.
 - Ish izlovchi: profil, rezyume (PDF), ariza, saqlanganlar, AI yordamchi (Claude; AI o'chiq bo'lsa — qoidalar rejimi), ovozli qidiruv.
 - Ish beruvchi: kompaniya, vakansiya joylash (moderatsiya bilan), nomzodlar qidiruvi, arizalar, takliflar.
+- Universal ustalar (`/ustalar`, 0076 qo'llangach): katalog, usta e'lonlari (moderatsiya bilan), so'rovlar, sharhlar, usta kabineti.
 - Admin: moderatsiya, ma'lumotnomalar, foydalanuvchilar, xavfsizlik jurnali, statistika.
 - Infratuzilma: `/api/health` (uptime uchun), shifrlangan kunlik zaxira (GitHub Actions), Sentry (DSN berilsa).
 
@@ -45,7 +46,7 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 
 | # | Amal | Nega kerak | Qayerda yozilgan |
 |---|---|---|---|
-| 1 | Prod bazaga 0069–0075 | `/companies`, filtrlar, telefon maxfiyligi, Telegram qayta urinish | `RELEASE_CHECKLIST.md` §1–3 |
+| 1 | Prod bazaga 0069–0076 | `/companies`, filtrlar, telefon maxfiyligi, Telegram qayta urinish, **Universal ustalar** | `RELEASE_CHECKLIST.md` §1–3, `MASTERS.md` §5 |
 | 2 | `SENTRY_DSN` + uptime monitor | Xatolar va yiqilishlar ko'rinmaydi | `RELEASE_CHECKLIST.md` §5 |
 | 3 | Telegram: `POST /api/telegram/setup` (CRON_SECRET bilan) va bot `/start` tekshiruvi | Kirish kodlari va bildirishnomalar shu orqali | `ISH_TOPDIM.md` |
 | 4 | To'lovlar: Payme/Click merchant hisoblari, `PAYME_*`/`CLICK_*` env; "pullik" tugmalar admin'da | Pullik xizmatlar yoqilmagan — kod bor, haqiqiy pul bilan sinalmagan | `PROFESSIONALIZATION_REPORT.md` (to'lov matritsasi) |
@@ -72,9 +73,9 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 | `STATUS.md` (shu) | joriy holat |
 | `PROGRESS.md`, `CHANGELOG.md` | har reliz |
 | `RELEASE_CHECKLIST.md` | reliz tartibi (joriy) |
-| `AI_ASSISTANT.md`, `PLAY_MARKET.md`, `SECURITY_RUNBOOK.md`, `ADMIN_LOGIN.md`, `ISH_TOPDIM.md` | joriy qo'llanmalar |
+| `AI_ASSISTANT.md`, `MASTERS.md`, `PLAY_MARKET.md`, `SECURITY_RUNBOOK.md`, `ADMIN_LOGIN.md`, `ISH_TOPDIM.md` | joriy qo'llanmalar |
 | `SCALE.md` §1–7 (2026-10), `PERFORMANCE_BASELINE.md` (2026-10-12) | o'lchovlar o'z sanasida; §8 — 2026-11-12 |
-| `ROUTES_MAP.md`, `DATABASE_SCHEMA.md` | avtomatik (`scripts/gen-docs.py`), 2026-11-11 |
+| `ROUTES_MAP.md`, `DATABASE_SCHEMA.md` | avtomatik (`scripts/gen-docs.py`), 2026-11-12 |
 | `PROFESSIONALIZATION_REPORT.md` (2026-10-14, 64 migratsiya), `AUDIT_2026-10-31.md`, `PRODUCT_AUDIT_2026-10.md`, `MASTER_SPEC_STATUS.md`, `REDESIGN_*.md`, `SECURITY_TEST_REPORT.md` | tarix — o'sha sanadagi holat |
 
 ## 7. Yo'l xaritasi bo'yicha fikr (2026-11-12 tahliliga javob)

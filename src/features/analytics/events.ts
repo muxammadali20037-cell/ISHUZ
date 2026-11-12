@@ -37,6 +37,8 @@ export const CLIENT_EVENTS = [
   "save_toggle",
   "search_all",
   "site_nav",
+  // "Universal ustalar" bo'limiga kirish (bosh sahifa kartasi, yon menyu)
+  "masters_entry",
 ] as const;
 
 export const SERVER_EVENTS = [

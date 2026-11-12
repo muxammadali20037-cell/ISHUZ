@@ -1,5 +1,5 @@
 {
-  "updated": "Oxirgi yangilanish: 2026-yil 11-noyabr",
+  "updated": "2026-11-12",
   "contact_title": "Aloqa",
   "contact_body": "Savol yoki so'rovlar bo'yicha yozing:",
   "contact_none": "Aloqa manzili hozircha e'lon qilinmagan. Hisobingizga kira olsangiz, «Sozlamalar» → «Hisobni o'chirish» orqali uni o'zingiz darhol o'chirishingiz mumkin.",
@@ -10,7 +10,7 @@
     "sections": [
       [
         "Qaysi ma'lumotlar yig'iladi",
-        "- Hisob: telefon raqami (majburiy), ism-familiya yoki kompaniya nomi, tanlangan til. Telegram orqali kirsangiz — Telegram identifikatori va foydalanuvchi nomi.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, rasm va portfolio fayllari.\n- Joylashuv: viloyat va tuman. «Joylashuvimni aniqlash» tugmasini bossangiz — telefoningiz GPS koordinatasi (faqat ruxsatingiz bilan).\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chat xabarlari, saqlangan qidiruvlar, AI qidiruvga yozgan so'rovlaringiz va bildirishnomalar.\n- To'lovlar: summa, xizmat turi, sana va holat. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (90 kun saqlanadi) va xavfsizlik jurnallari. Cookie va brauzer xotirasi haqida — alohida «Cookie fayllari siyosati».\n- AI yordamchi: unga yozgan yoki aytgan matningiz javob berish uchun AI xizmatiga uzatiladi, lekin bizning serverda saqlanmaydi (suhbat faqat qurilmangizda, 30 daqiqa).\nBiz kontaktlar ro'yxati, SMS, qo'ng'iroqlar tarixi va kameraga kirmaymiz. Mikrofon faqat siz tugmani bosganingizda, brauzer ruxsati bilan ishlaydi: ovozni matnga brauzeringiz aylantiradi, ovoz yozuvi bizga yuborilmaydi va saqlanmaydi. Ilovada reklama va reklama kuzatuvchilari yo'q."
+        "- Hisob: telefon raqami (majburiy), ism-familiya yoki kompaniya nomi, tanlangan til. Telegram orqali kirsangiz — Telegram identifikatori va foydalanuvchi nomi.\n- Rezyume (o'zingiz kiritasiz): tug'ilgan sana, jins, kasb, tajriba, ta'lim, ko'nikmalar, tillar, kutilgan maosh, rasm va portfolio fayllari.\n- Joylashuv: viloyat va tuman. «Joylashuvimni aniqlash» tugmasini bossangiz — telefoningiz GPS koordinatasi (faqat ruxsatingiz bilan).\n- Ish beruvchi: kompaniya nomi, logotipi, manzili, STIR (ixtiyoriy) va vakansiyalar.\n- Faoliyat: arizalar, takliflar, chat xabarlari, saqlangan qidiruvlar, AI qidiruvga yozgan so'rovlaringiz va bildirishnomalar.\n- To'lovlar: summa, xizmat turi, sana va holat. Bank karta ma'lumotlari Payme/Click tomonida qoladi, bizga kelmaydi.\n- Texnik: qidiruv so'rovlari (90 kun saqlanadi) va xavfsizlik jurnallari. Cookie va brauzer xotirasi haqida — alohida «Cookie fayllari siyosati».\n- AI yordamchi: unga yozgan yoki aytgan matningiz javob berish uchun AI xizmatiga uzatiladi, lekin bizning serverda saqlanmaydi (suhbat faqat qurilmangizda, 30 daqiqa).\nBiz kontaktlar ro'yxati, SMS, qo'ng'iroqlar tarixi va kameraga kirmaymiz. Mikrofon faqat siz tugmani bosganingizda, brauzer ruxsati bilan ishlaydi: ovozni matnga brauzeringiz aylantiradi, ovoz yozuvi bizga yuborilmaydi va saqlanmaydi. Ilovada reklama va reklama kuzatuvchilari yo'q.\n- «Universal ustalar» bo'limi: usta e'lonidagi ism, xizmat tavsifi, hudud, ish vaqti, narx, rasmlar va telefon raqami. Ustaga so'rov yuborsangiz — ismingiz, telefon raqamingiz va xabaringiz."
       ],
       [
         "Ma'lumotlar nima uchun ishlatiladi",
@@ -18,7 +18,7 @@
       ],
       [
         "Ma'lumotlarni kim ko'radi",
-        "- Ish qidirish e'loningiz faol bo'lsa, ish beruvchilar rezyumeingizni ko'radi. E'lonni istalgan vaqtda yashirishingiz mumkin.\n- Telefon raqamingiz faqat o'zingiz tanlagan tartibda ko'rinadi: ariza yuborgan ish beruvchingizga, so'rov orqali yoki hammaga.\n- Aniq GPS joylashuvingiz hech kimga ko'rsatilmaydi: boshqalar faqat tuman va taxminiy masofani (butun km) ko'radi.\n- Vakansiyalar va kompaniya sahifalari hamma uchun ochiq.\n- Chat xabarlarini faqat suhbat ishtirokchilari ko'radi."
+        "- Ish qidirish e'loningiz faol bo'lsa, ish beruvchilar rezyumeingizni ko'radi. E'lonni istalgan vaqtda yashirishingiz mumkin.\n- Telefon raqamingiz faqat o'zingiz tanlagan tartibda ko'rinadi: ariza yuborgan ish beruvchingizga, so'rov orqali yoki hammaga.\n- Aniq GPS joylashuvingiz hech kimga ko'rsatilmaydi: boshqalar faqat tuman va taxminiy masofani (butun km) ko'radi.\n- Vakansiyalar va kompaniya sahifalari hamma uchun ochiq.\n- Chat xabarlarini faqat suhbat ishtirokchilari ko'radi.\n- «Universal ustalar»: usta telefoni e'londa faqat usta o'zi rozilik bersa ko'rsatiladi; rozilikni istalgan vaqtda olib tashlash mumkin. Ustaga yuborgan so'rovingizni (ism, telefon, xabar) faqat o'sha usta ko'radi. Sharhlar ochiq — ismingiz va familiyangizning birinchi harfi bilan."
       ],
       [
         "Xizmat ko'rsatuvchilar va ma'lumotlar qayerda saqlanadi",

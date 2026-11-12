@@ -44,6 +44,8 @@ export NEXT_DIST_DIR=".next-e2e" NEXT_TELEMETRY_DISABLED=1
 unset MARKET_CACHE_SECONDS
 
 if [ "${1:-}" = "build" ]; then
+  # build ichiga yoziladigan ommaviy manzil — asosiy stend (:3300), E2E shu build bilan ishlaydi
+  export NEXT_PUBLIC_APP_URL="http://localhost:${E2E_APP_PORT:-3300}" APP_URL="http://localhost:${E2E_APP_PORT:-3300}"
   stop_group "$ST/app.pid" && echo "stend ilovasi (:3300) to'xtatildi — build'dan keyin qayta ko'taring" || true
   stop_group "$PIDFILE" || true
   npx next build > "$ST/build-load.log" 2>&1 || { tail -40 "$ST/build-load.log"; exit 1; }

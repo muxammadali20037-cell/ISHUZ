@@ -3,7 +3,7 @@
 > Avtomatik yaratilgan: barcha migratsiyalar (`supabase/migrations`) qo'llangan lokal bazadan (skript: `scripts/gen-docs.py`).
 > Prod baza bilan farq bo'lishi mumkin: prod'dagi holatni `scripts/prod-migration-check.sql` ko'rsatadi.
 
-Jami: **83 jadval** (RLS yoqilgan: 83), **297 funksiya**, **37 enum**.
+Jami: **87 jadval** (RLS yoqilgan: 87), **312 funksiya**, **39 enum**.
 
 Ustunlar: `ust.` — ustunlar soni, `RLS` — qator darajasidagi himoya, `sit.` — siyosatlar, `FK` — tashqi kalitlar, `ind.` — indekslar.
 
@@ -150,6 +150,15 @@ Ustunlar: `ust.` — ustunlar soni, `RLS` — qator darajasidagi himoya, `sit.` 
 | `analytics_events` | 6 | ha | 0 | 1 | 4 |
 | `app_settings` | 4 | ha | 5 | 0 | 1 |
 
+## Boshqa (4)
+
+| Jadval | ust. | RLS | sit. | FK | ind. |
+| --- | --- | --- | --- | --- | --- |
+| `master_categories` | 9 | ha | 2 | 0 | 2 |
+| `master_listings` | 30 | ha | 4 | 4 | 7 |
+| `master_requests` | 8 | ha | 2 | 2 | 2 |
+| `master_reviews` | 6 | ha | 2 | 2 | 3 |
+
 ## Enum turlari
 
 | Enum | Qiymatlar |
@@ -169,6 +178,8 @@ Ustunlar: `ust.` — ustunlar soni, `RLS` — qator darajasidagi himoya, `sit.` 
 | `experience_level` | none, lt_6m, 6_12m, 1_2y, 2_3y, 3_5y, 5y_plus |
 | `gender` | male, female |
 | `language_level` | a1, a2, b1, b2, c1, c2, native |
+| `master_listing_status` | draft, pending_review, active, hidden, rejected |
+| `master_request_status` | new, seen, done |
 | `message_type` | text, image, document, location, voice, system |
 | `notification_type` | application_received, application_status, offer_received, offer_response, new_message, interview_invite, vacancy_expiring, new_matching_vacancy, new_matching_worker, verification_result, review_received, system |
 | `offer_status` | sent, viewed, accepted, declined, expired, withdrawn |

@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Menu } from "lucide-react";
+import { Menu, Wrench } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -48,6 +48,22 @@ const LABEL: Record<Key, string> = {
   employers: "common.site.nav_for_employers",
 };
 
+/** "Universal ustalar" — alohida mini-ilova (turkuaz), sayt bo'limlaridan ajralib turadi */
+function MastersLink() {
+  const { t } = useT();
+  return (
+    <Link
+      href="/ustalar"
+      data-track="site_nav"
+      data-track-to="masters"
+      data-masters-entry
+      className="theme-masters ml-1 flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-md bg-primary-soft px-3 text-sm font-semibold text-primary-ink ring-1 ring-primary/30 transition-colors hover:ring-primary/60"
+    >
+      <Wrench className="size-4" aria-hidden /> {t("masters.name")}
+    </Link>
+  );
+}
+
 function DesktopLinks({ mode }: { mode: string | null }) {
   const { t } = useT();
   const pathname = usePathname();
@@ -70,6 +86,9 @@ function DesktopLinks({ mode }: { mode: string | null }) {
           </Link>
         </li>
       ))}
+      <li>
+        <MastersLink />
+      </li>
     </ul>
   );
 }
@@ -111,6 +130,11 @@ export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
             <Link href={it.href}>{t(LABEL[it.key])}</Link>
           </DropdownMenuItem>
         ))}
+        <DropdownMenuItem asChild className="theme-masters min-h-11 text-base font-semibold text-primary-ink">
+          <Link href="/ustalar" data-track="site_nav" data-track-to="masters" data-masters-entry>
+            <Wrench className="size-4" aria-hidden /> {t("masters.name")}
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild className="min-h-11 text-base font-semibold">
           <Link href="/about">{t("common.site.nav_about")}</Link>
         </DropdownMenuItem>

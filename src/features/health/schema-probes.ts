@@ -25,6 +25,7 @@ export const SCHEMA_PROBES: readonly Probe[] = [
   { migration: "0073", run: (db) => db.from("profile_interests").select("profile_id").limit(0) },
   { migration: "0074", run: (db) => db.from("contact_reveals").select("target_id").limit(0) },
   { migration: "0075", run: (db) => db.from("telegram_updates").select("attempts").limit(0) },
+  { migration: "0076", run: (db) => db.from("master_listings").select("id").limit(0) },
 ];
 
 export type SchemaReport = { ok: boolean; missing: string[]; errors: string[] };
