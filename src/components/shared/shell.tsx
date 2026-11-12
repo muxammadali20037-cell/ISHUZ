@@ -1,3 +1,5 @@
+import { getServerEnv } from "@/lib/env";
+import { socialLinks } from "@/lib/social";
 import type { ReactNode } from "react";
 import { getSession } from "@/features/auth/session";
 import { unreadCounts } from "./unread-counts";
@@ -25,6 +27,7 @@ export async function Shell({ children, forceRole, hideNav, footer }: { children
   // ish qidiruvchi rejimi: telefonda bosh sahifa panelidagi hudud (eslab qolingan; bo'lmasa — butun O'zbekiston)
   const place = mode === "worker" && !hideNav ? await placeLabel() : null;
   const chrome: FrameChrome = {
+    social: socialLinks(getServerEnv()),
     top: {
       role,
       mode,

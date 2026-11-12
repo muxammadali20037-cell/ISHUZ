@@ -39,6 +39,8 @@ export GEMINI_API_KEY="" ANTHROPIC_API_KEY="" IMAGE_GEN_API_KEY="" TELEGRAM_BOT_
 export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAYME_TEST=1
 export CLICK_SERVICE_ID="e2e-service" CLICK_MERCHANT_ID="e2e-merchant" CLICK_SECRET_KEY="e2e-click-key-not-secret"
 export SUPER_ADMIN_PHONES="" ADMIN_HOST="" SUPER_ADMIN_EMAILS="owner@e2e.uz"
+# rasmiy ijtimoiy tarmoqlar (ochiq havolalar; prod'dagi bilan bir xil) — sayt pastki qismi, yon menyu, kabinet, yordam
+export SOCIAL_TELEGRAM_URL="https://t.me/ish_topdim_uz" SOCIAL_INSTAGRAM_URL="https://www.instagram.com/ishtopdim/"
 export NEXT_DIST_DIR=".next-e2e" NEXT_TELEMETRY_DISABLED=1
 # prod'dagidek: statistika 10 daqiqa keshda
 unset MARKET_CACHE_SECONDS

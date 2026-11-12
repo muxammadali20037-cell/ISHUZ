@@ -249,7 +249,8 @@ test.describe("bosh sahifa (marketplace)", () => {
     expect(hrefs.length).toBeGreaterThan(10);
     for (const href of [...new Set(hrefs)]) {
       expect(href, "bo'sh havola").not.toBe("");
-      if (href.startsWith("mailto:") || href.startsWith("https://t.me/")) continue;
+      // tashqi sahifalar (Telegram, Instagram — social-links.spec) stenddan ochilmaydi: faqat saytning o'z havolalari tekshiriladi
+      if (href.startsWith("mailto:") || /^https:\/\//.test(href)) continue;
       const res = await page.request.get(href);
       expect(res.status(), href).toBeLessThan(400);
     }

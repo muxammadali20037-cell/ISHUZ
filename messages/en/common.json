@@ -248,5 +248,9 @@
     "text": "We use cookies to run the site and remember your choices (language, role, region). No ad trackers.",
     "more": "Learn more",
     "ok": "Got it"
+  },
+  "social": {
+    "title": "Follow us",
+    "open": "Open our {network} page {handle}"
   }
 }

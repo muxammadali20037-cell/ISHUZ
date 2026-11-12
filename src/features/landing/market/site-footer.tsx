@@ -1,3 +1,5 @@
+import { socialLinks } from "@/lib/social";
+import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
@@ -22,11 +24,7 @@ interface FooterLink {
 export async function SiteFooter() {
   const { t } = await getT();
   const { SUPPORT_EMAIL, TELEGRAM_BOT_USERNAME, SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL } = getServerEnv();
-  const social = [
-    { href: SOCIAL_TELEGRAM_URL, label: "Telegram" },
-    { href: SOCIAL_INSTAGRAM_URL, label: "Instagram" },
-    { href: SOCIAL_FACEBOOK_URL, label: "Facebook" },
-  ].filter((x): x is { href: string; label: string } => !!x.href);
+  const social = socialLinks({ SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL });
   const bot = TELEGRAM_BOT_USERNAME?.replace(/^@/, "") || null;
   const seek = Object.fromEntries(seekerQuickFilters({ region: null, district: null }).map((f) => [f.key, f.href])) as Record<"salary" | "noexp" | "daily" | "remote", string>;
   const columns: { title: string; links: FooterLink[] }[] = [
@@ -86,17 +84,7 @@ export async function SiteFooter() {
               {t("welcome.market.f_telegram")} · @{bot}
             </a>
           ) : null}
-          {social.length ? (
-            <ul className="mt-2 flex flex-wrap gap-x-4" aria-label={t("welcome.market.f_social")}>
-              {social.map((x) => (
-                <li key={x.label}>
-                  <a href={x.href} target="_blank" rel="noopener noreferrer" className={linkCls}>
-                    {x.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          ) : null}
+          <SocialLinks links={social} tone="dark" title={t("welcome.market.f_social")} className="mt-4" />
         </div>
         {columns.map((c) => (
           <nav key={c.title} aria-label={c.title}>

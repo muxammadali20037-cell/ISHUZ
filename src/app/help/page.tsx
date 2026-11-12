@@ -1,3 +1,6 @@
+import { getServerEnv } from "@/lib/env";
+import { socialLinks } from "@/lib/social";
+import { SocialLinks } from "@/components/shared/social-links";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Building2, Flag, LifeBuoy, ShieldCheck, UserSearch } from "lucide-react";
@@ -29,6 +32,9 @@ export default async function HelpPage() {
             <p className="mt-1 text-muted-foreground">{t("welcome.help.subtitle")}</p>
           </div>
         </header>
+
+        {/* rasmiy Telegram kanal va Instagram: yangiliklar va savollar */}
+        <SocialLinks links={socialLinks(getServerEnv())} className="rounded-2xl border border-border bg-card p-5" />
 
         {guides.map((g) => (
           <section key={g.title} className="rounded-2xl border border-border bg-card p-5">
