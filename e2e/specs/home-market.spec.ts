@@ -44,8 +44,10 @@ test.describe("bosh sahifa (marketplace)", () => {
     const nav = banner.getByRole("navigation", { name: "Sayt bo'limlari" });
     // oxirida — alohida bo'limlar: "AI yordamchi" (suhbat oynasi) va "Universal ustalar" (turkuaz rangda ajralib turadi)
     // (joy tor: "AI" qisqa nom bilan, ustalar — belgi bilan; to'liq nomlar aria-label'da — ekran o'qigichi va sichqoncha uchun)
-    const names = await nav.getByRole("link").evaluateAll((els) => els.map((el) => el.getAttribute("aria-label") ?? (el.textContent ?? "").trim()));
-    expect(names).toEqual(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "AI yordamchi", "Universal ustalar"]);
+    // evaluateAll kutmaydi — menyu chizilguncha qayta so'raladi (CI'da sekinroq)
+    await expect
+      .poll(() => nav.getByRole("link").evaluateAll((els) => els.map((el) => el.getAttribute("aria-label") ?? (el.textContent ?? "").trim())))
+      .toEqual(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "AI yordamchi", "Universal ustalar"]);
     await expect(nav.getByRole("link", { name: "AI yordamchi" })).toHaveText("AI");
     await expect(nav.getByRole("link", { name: "AI yordamchi" })).toHaveAttribute("href", "/ai");
     await expect(nav.getByRole("link", { name: "Universal ustalar" })).toHaveAttribute("href", "/ustalar");
