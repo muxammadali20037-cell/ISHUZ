@@ -20,6 +20,10 @@ import { placeChooserHref, seekerFiltersHref, seekerQuickFilters } from "./quick
 import { MyWorld } from "@/features/world/components/my-world";
 import { MastersEntry } from "@/features/masters/components/masters-entry";
 import { AiEntry } from "@/features/ai/components/ai-entry";
+import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
+
+/** bosh sahifa ro'yxatida haqiqiy e'lon shundan kam bo'lsa — ostida namuna e'lonlar bloki */
+const DEMO_BELOW = 4;
 
 /**
  * Ish qidiruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "soddalashtir, umuman adashmasin"). Mehmon ham ko'radi.
@@ -212,6 +216,13 @@ async function SeekerFeed({ session, place }: { session: SessionContext | null; 
             {t("easy.start.all_jobs", { count: feed.total >= 5000 ? "5 000+" : feed.total })} <ArrowRight className="size-5" aria-hidden />
           </Link>
         </Button>
+      ) : null}
+      {/* haqiqiy e'lon yo'q yoki juda kam: ostida "Namuna e'lonlar" (alohida jadval, "Namuna" belgisi bilan) — ilova bo'sh
+          ko'rinmasin. Haqiqiy e'lonlar ko'paygach bu blok chizilmaydi; namunalar olib tashlangan bo'lsa ham */}
+      {feed.items.length < DEMO_BELOW ? (
+        <Suspense fallback={null}>
+          <DemoVacanciesBlock region={place.region?.slug ?? null} limit={6} className="mt-6" columns="md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2" />
+        </Suspense>
       ) : null}
     </section>
   );

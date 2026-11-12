@@ -48,6 +48,9 @@ SQL
 echo "→ baza: $E2E_DB (barcha migratsiyalar)"
 DATABASE_URL="$E2E_PG/$E2E_DB" bash scripts/db-local.sh >/dev/null
 psql "$E2E_PG/$E2E_DB" -v ON_ERROR_STOP=1 -q -f e2e/stack/seed.sql
+# namuna (demo) vakansiyalar (0077) stendda o'chirilgan holatda boshlanadi: boshqa testlarning bo'sh holatlari o'zgarmasin.
+# demo-vacancies.spec.ts o'zi yaratadi va oxirida olib tashlaydi.
+psql "$E2E_PG/$E2E_DB" -v ON_ERROR_STOP=1 -q -c "select public.demo_vacancies_remove()" >/dev/null
 # 0056 pre-request (rol yangi yaratilgan bo'lsa ham)
 psql "$E2E_PG/postgres" -q -c "alter role authenticator set pgrst.db_pre_request = 'public.api_pre_request'" >/dev/null
 

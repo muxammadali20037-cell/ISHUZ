@@ -88,7 +88,9 @@ export function RequestForm({
             ? t("masters.request.own")
             : res.error === "rate_limited"
               ? t("masters.request.limit")
-              : t("masters.request.error"),
+              : res.error === "prohibited"
+                ? t("masters.request.prohibited")
+                : t("masters.request.error"),
       });
   };
 
@@ -186,7 +188,9 @@ export function ReviewForm({ listingId }: { listingId: string }) {
         text:
           res.error === "own"
             ? t("masters.review.own")
-            : t("masters.review.error"),
+            : res.error === "prohibited"
+              ? t("masters.review.prohibited")
+              : t("masters.review.error"),
       });
   };
 

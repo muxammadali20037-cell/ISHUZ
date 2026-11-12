@@ -15,6 +15,34 @@ import {
   getMasterModerationQueue,
 } from "@/features/masters/queries";
 import { cn } from "@/lib/utils";
+import { vacancyPhotoUrl } from "@/features/post/photo";
+import { checkMasterText } from "@/features/masters/content-check";
+
+/** tezkor tekshiruv qoidasi → admin uchun tushunarli nom (messages: masters.admin.flag.*) */
+const FLAG_LABEL: Record<string, string> = {
+  sale: "sale",
+  scam_prepay: "prepay",
+  sex_hint: "adult",
+  political: "politics",
+  religious: "religion",
+  dating: "dating",
+  gambling: "gambling",
+  pyramid: "pyramid",
+  weapons: "weapons",
+  extremism_hint: "extremism",
+  spam_links: "spam",
+  spam_short_link: "spam",
+  spam_phones: "spam",
+  spam_caps: "spam",
+  spam_repeat: "spam",
+  spam_emoji: "spam",
+  prompt_injection: "injection",
+};
+
+function flagsOf(l: { display_name: string; title: string; description: string; services: string[]; service_area: string | null }): string[] {
+  const { flags } = checkMasterText({ displayName: l.display_name, title: l.title, description: l.description, services: l.services, serviceArea: l.service_area });
+  return [...new Set(flags.map((f) => FLAG_LABEL[f] ? f : "other"))].filter((f, i, a) => a.findIndex((x) => (FLAG_LABEL[x] ?? "other") === (FLAG_LABEL[f] ?? "other")) === i);
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -126,11 +154,46 @@ export default async function AdminMastersPage({
                     </p>
                   </div>
                 </div>
+                {/* tezkor tekshiruv ogohlantirishlari (savdo, oldindan to'lov, ko'p havola …): qaror — moderatorda */}
+                {flagsOf(l).length ? (
+                  <p
+                    role="note"
+                    data-masters-flags={flagsOf(l).join(",")}
+                    className="rounded-lg border border-warning/40 bg-warning-soft px-3 py-2 text-sm font-semibold"
+                  >
+                    {t("masters.admin.flags", {
+                      list: flagsOf(l)
+                        .map((f) => t(`masters.admin.flag.${FLAG_LABEL[f] ?? "other"}`))
+                        .join(", "),
+                    })}
+                  </p>
+                ) : null}
                 <p className="whitespace-pre-wrap text-base">{l.description}</p>
                 {l.services.length ? (
                   <p className="text-sm text-muted-foreground">
                     {l.services.join(" · ")}
                   </p>
+                ) : null}
+                {/* rasmlar — tasdiqlashdan oldin moderator ko'rishi shart (rasmda taqiqlangan mazmun bo'lishi mumkin) */}
+                {l.photos.length ? (
+                  <ul className="flex flex-wrap gap-2" data-masters-queue-photos>
+                    {l.photos.map((p) => {
+                      const src = vacancyPhotoUrl(p);
+                      return src ? (
+                        <li key={p}>
+                          <a href={src} target="_blank" rel="noopener noreferrer" className="block">
+                            {/* eslint-disable-next-line @next/next/no-img-element -- moderatsiya: asl rasm, optimallashtirishsiz */}
+                            <img
+                              src={src}
+                              alt={t("masters.admin.photo_alt", { title: l.title })}
+                              className="size-28 rounded-lg border border-border object-cover"
+                              loading="lazy"
+                            />
+                          </a>
+                        </li>
+                      ) : null;
+                    })}
+                  </ul>
                 ) : null}
                 {l.reject_reason ? (
                   <p className="text-sm text-destructive">

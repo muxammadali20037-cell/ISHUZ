@@ -22,6 +22,7 @@ import { MarketAside } from "./market-aside";
 import { AiFinder } from "./ai-finder";
 import { getHomeSettings } from "@/features/home-windows/queries";
 import { getJobSections, getWorkerSections } from "@/features/landing/sections";
+import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
 
 function StepShell({ back, title, children, summary }: { back: string | null; title: string; children: ReactNode; summary?: ReactNode }) {
   return (
@@ -312,6 +313,11 @@ export async function FindResultsView({
           ) : null}
         </section>
       )}
+
+      {/* ish topilmadi: ostida namuna e'lonlar (tanlangan kasb sohasidan) — alohida blok, "Namuna" belgisi bilan */}
+      {isJobs && res.ok && !res.items.length && params.page === 1 ? (
+        <DemoVacanciesBlock category={node?.categorySlug ?? null} region={params.region && params.region !== "all" ? params.region : null} limit={4} columns="" />
+      ) : null}
 
       {pages > 1 ? (
         <nav className="flex items-center justify-between gap-3" aria-label="pagination">

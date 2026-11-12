@@ -1257,6 +1257,102 @@ export type Database = {
           },
         ];
       };
+      demo_vacancies: {
+        Row: {
+          category_id: string;
+          created_at: string;
+          district_id: string | null;
+          employment_type: Database["public"]["Enums"]["employment_type"];
+          experience_min_months: number;
+          id: string;
+          is_remote: boolean;
+          profession_node_id: string | null;
+          region_id: string | null;
+          salary_from: number | null;
+          salary_negotiable: boolean;
+          salary_to: number | null;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          sort_order: number;
+          title_en: string | null;
+          title_ru: string | null;
+          title_uz: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          category_id: string;
+          created_at?: string;
+          district_id?: string | null;
+          employment_type?: Database["public"]["Enums"]["employment_type"];
+          experience_min_months?: number;
+          id?: string;
+          is_remote?: boolean;
+          profession_node_id?: string | null;
+          region_id?: string | null;
+          salary_from?: number | null;
+          salary_negotiable?: boolean;
+          salary_to?: number | null;
+          salary_type?: Database["public"]["Enums"]["salary_type"];
+          schedule?: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          sort_order?: number;
+          title_en?: string | null;
+          title_ru?: string | null;
+          title_uz: string;
+        };
+        Update: {
+          category_id?: string;
+          created_at?: string;
+          district_id?: string | null;
+          employment_type?: Database["public"]["Enums"]["employment_type"];
+          experience_min_months?: number;
+          id?: string;
+          is_remote?: boolean;
+          profession_node_id?: string | null;
+          region_id?: string | null;
+          salary_from?: number | null;
+          salary_negotiable?: boolean;
+          salary_to?: number | null;
+          salary_type?: Database["public"]["Enums"]["salary_type"];
+          schedule?: Database["public"]["Enums"]["work_schedule"];
+          slug?: string;
+          sort_order?: number;
+          title_en?: string | null;
+          title_ru?: string | null;
+          title_uz?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "demo_vacancies_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "demo_vacancies_district_id_fkey";
+            columns: ["district_id"];
+            isOneToOne: false;
+            referencedRelation: "districts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "demo_vacancies_profession_node_id_fkey";
+            columns: ["profession_node_id"];
+            isOneToOne: false;
+            referencedRelation: "profession_nodes";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "demo_vacancies_region_id_fkey";
+            columns: ["region_id"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       device_tokens: {
         Row: {
           created_at: string;
@@ -4930,6 +5026,84 @@ export type Database = {
       current_profile_id: { Args: Record<PropertyKey, never>; Returns: string };
       current_worker_id: { Args: Record<PropertyKey, never>; Returns: string };
       delete_message: { Args: { p_message_id: number }; Returns: undefined };
+      demo_privileged: { Args: Record<PropertyKey, never>; Returns: boolean };
+      demo_vacancies_public: {
+        Args: {
+          p_category?: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_query?: string;
+          p_region?: string;
+        };
+        Returns: {
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employment_type: Database["public"]["Enums"]["employment_type"];
+          experience_min_months: number;
+          id: string;
+          is_remote: boolean;
+          lat: number;
+          lng: number;
+          profession_node_id: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          title_en: string;
+          title_ru: string;
+          title_uz: string;
+          total_count: number;
+        }[];
+      };
+      demo_vacancies_remove: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+      demo_vacancies_seed: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
+      demo_vacancy_public: {
+        Args: { p_slug: string };
+        Returns: {
+          category_icon: string;
+          category_name_en: string;
+          category_name_ru: string;
+          category_name_uz: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employment_type: Database["public"]["Enums"]["employment_type"];
+          experience_min_months: number;
+          id: string;
+          is_remote: boolean;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          title_en: string;
+          title_ru: string;
+          title_uz: string;
+        }[];
+      };
       dispatch_app_cron: { Args: { p_path: string }; Returns: number };
       dispatch_profession_images_cron: {
         Args: Record<PropertyKey, never>;
@@ -5145,6 +5319,10 @@ export type Database = {
       master_moderate: {
         Args: { p_action: string; p_id: string; p_reason?: string };
         Returns: Database["public"]["Enums"]["master_listing_status"];
+      };
+      master_photos_ok: {
+        Args: { p_owner: string; p_photos: string[] };
+        Returns: boolean;
       };
       master_privileged: { Args: Record<PropertyKey, never>; Returns: boolean };
       master_request_create: {

@@ -10,11 +10,11 @@ Yangilangan: **2026-11-12** (kechki) · oxirgi relizlar: AI ish maydoni (#13), U
 
 | | Kod (`main`) | Prod baza (Supabase `oquqqubmicldvreeqgsg`) |
 |---|---|---|
-| Migratsiyalar | **0001 … 0076** (76 ta) | **0001 … 0068** (hujjatlar bo'yicha; aniq ro'yxat — `/api/health?deep=1`) — `0069–0076` qo'llanmagan |
+| Migratsiyalar | **0001 … 0077** (77 ta) | **0001 … 0068** (hujjatlar bo'yicha; aniq ro'yxat — `/api/health?deep=1`) — `0069–0077` qo'llanmagan |
 | Natija | Vercel avtomatik deploy, `/api/health` ok | `/companies` → "Ro'yxat vaqtincha ochilmadi" (0071 yo'q); maosh/ma'lumot filtrlari (0070), telefon maxfiyligi (0074), Telegram qayta urinish (0075) ishlamaydi; `/ustalar` → "Bo'lim tayyorlanmoqda" (0076 yo'q) |
 
 **Birinchi navbatdagi ega amali:** `docs/RELEASE_CHECKLIST.md` §1–3 — zaxira nusxa → `scripts/prod-migration-check.sql` →
-0069…0076 ni tartib bilan SQL Editor'da. Keyin `CRON_SECRET=… bash scripts/prod-check.sh` — "deep" qatori PASS bo'lishi kerak.
+`supabase/prod/pending.sql` (0069…0077 bitta faylda) — SQL Editor'da bir marta. Keyin `CRON_SECRET=… bash scripts/prod-check.sh` — "deep" qatori PASS bo'lishi kerak.
 
 ## 2. Tekshiruv (oxirgi to'liq o'tkazish — 2026-11-12, lokal stend + GitHub CI)
 
@@ -39,6 +39,8 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 - Ish izlovchi: profil, rezyume (PDF), ariza, saqlanganlar, AI yordamchi (Claude; AI o'chiq bo'lsa — qoidalar rejimi), ovozli qidiruv.
 - Ish beruvchi: kompaniya, vakansiya joylash (moderatsiya bilan), nomzodlar qidiruvi, arizalar, takliflar.
 - Universal ustalar (`/ustalar`, 0076 qo'llangach): katalog, usta e'lonlari (moderatsiya bilan), so'rovlar, sharhlar, usta kabineti.
+- Namuna vakansiyalar (0077 qo'llangach): har sohada 4 tadan, haqiqiy e'lon yo'q joyda "Namuna" belgisi bilan; `/jobs/namuna`;
+  admin → "Namuna e'lonlar" — bir bosishda olib tashlash (`docs/DEMO_VACANCIES.md`).
 - Admin: moderatsiya, ma'lumotnomalar, foydalanuvchilar, xavfsizlik jurnali, statistika.
 - Infratuzilma: `/api/health` (uptime uchun), shifrlangan kunlik zaxira (GitHub Actions), Sentry (DSN berilsa).
 
@@ -46,7 +48,7 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 
 | # | Amal | Nega kerak | Qayerda yozilgan |
 |---|---|---|---|
-| 1 | Prod bazaga 0069–0076 — **bitta fayl: `supabase/prod/pending.sql`** (SQL Editor'ga qo'yib Run) | `/companies`, filtrlar, telefon maxfiyligi, Telegram qayta urinish, **Universal ustalar** | `RELEASE_CHECKLIST.md` §3, `MASTERS.md` §5 |
+| 1 | Prod bazaga 0069–0077 — **bitta fayl: `supabase/prod/pending.sql`** (SQL Editor'ga qo'yib Run) | `/companies`, filtrlar, telefon maxfiyligi, Telegram qayta urinish, **Universal ustalar**, **namuna vakansiyalar** | `RELEASE_CHECKLIST.md` §3, `MASTERS.md` §5 |
 | 2 | `SENTRY_DSN` + uptime monitor | Xatolar va yiqilishlar ko'rinmaydi | `RELEASE_CHECKLIST.md` §5 |
 | 3 | Telegram: `POST /api/telegram/setup` (CRON_SECRET bilan) va bot `/start` tekshiruvi | Kirish kodlari va bildirishnomalar shu orqali | `ISH_TOPDIM.md` |
 | 4 | To'lovlar: Payme/Click merchant hisoblari, `PAYME_*`/`CLICK_*` env; "pullik" tugmalar admin'da | Pullik xizmatlar yoqilmagan — kod bor, haqiqiy pul bilan sinalmagan | `PROFESSIONALIZATION_REPORT.md` (to'lov matritsasi) |

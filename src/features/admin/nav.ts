@@ -28,7 +28,8 @@ export type NavIcon =
   | "home"
   | "entry"
   | "account"
-  | "masters";
+  | "masters"
+  | "demo";
 
 export interface NavItem {
   href: string;
@@ -72,6 +73,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { href: "/admin/moderation", key: "moderation", icon: "moderation", perm: "vacancies.moderate" },
       { href: "/admin/vacancies", key: "vacancies", icon: "vacancies", perm: "vacancies.view", badge: "vacancies" },
       { href: "/admin/ustalar", key: "masters", icon: "masters", perm: "vacancies.moderate" },
+      { href: "/admin/namuna", key: "demo", icon: "demo", perm: "vacancies.moderate" },
       { href: "/admin/reports", key: "reports", icon: "reports", perm: "reports.view", badge: "reports" },
       { href: "/admin/reviews", key: "reviews", icon: "reviews", badge: "reviews" },
     ],

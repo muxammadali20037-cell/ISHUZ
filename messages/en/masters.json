@@ -96,7 +96,8 @@
     "sent_desc": "The master will see your request in their cabinet and contact you.",
     "error": "Could not send. Please try again.",
     "own": "This is your listing.",
-    "limit": "Too many requests. Please try again later."
+    "limit": "Too many requests. Please try again later.",
+    "prohibited": "The message contains prohibited content — not sent."
   },
   "review": {
     "title": "Leave a review",
@@ -106,7 +107,8 @@
     "send": "Send",
     "sent": "Your review is saved. Thank you!",
     "own": "You cannot review your own listing.",
-    "error": "Could not save. Please try again."
+    "error": "Could not save. Please try again.",
+    "prohibited": "The review contains prohibited content — not saved."
   },
   "form": {
     "title_new": "Post a master listing",
@@ -149,7 +151,9 @@
       "title_short": "At least 3 characters",
       "description_short": "At least 10 characters",
       "price_order": "“to” must not be less than “from”",
-      "generic": "Could not save. Please try again."
+      "generic": "Could not save. Please try again.",
+      "prohibited": "The listing contains prohibited content (for example, intimate services, drugs, selling cards or accounts, forged documents). Such listings are not published — please fix the text.",
+      "rate_limited": "Too many attempts. Please try again later."
     },
     "district": "District (optional)",
     "whole_region": "Whole region",
@@ -212,7 +216,24 @@
     "phone_public_yes": "phone public",
     "phone_public_no": "phone hidden",
     "stats": "Active: {active} · Under review: {pending} · Demo: {demo}",
-    "not_ready": "This section is not enabled in the database yet: migration 0076 has not been applied (or the database did not respond). Once it is applied, listings and the demo controls will appear here."
+    "not_ready": "This section is not enabled in the database yet: migration 0076 has not been applied (or the database did not respond). Once it is applied, listings and the demo controls will appear here.",
+    "flags": "Attention, please check: {list}",
+    "photo_alt": "Photo of listing “{title}”",
+    "flag": {
+      "sale": "selling goods",
+      "prepay": "asks for prepayment",
+      "adult": "18+ hint",
+      "politics": "political topic",
+      "religion": "religious promotion",
+      "dating": "dating",
+      "gambling": "gambling",
+      "pyramid": "pyramid / network marketing",
+      "weapons": "weapons",
+      "extremism": "signs of extremism",
+      "spam": "spam signs",
+      "injection": "attempt to bypass the check",
+      "other": "other sign"
+    }
   },
   "nav_hint": "New",
   "entry_desc": "Plumber, electrician, air conditioner technician and more",

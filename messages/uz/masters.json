@@ -96,7 +96,8 @@
     "sent_desc": "Usta so'rovingizni kabinetida ko'radi va siz bilan bog'lanadi.",
     "error": "Yuborib bo'lmadi. Qayta urinib ko'ring.",
     "own": "Bu sizning e'loningiz.",
-    "limit": "Juda ko'p so'rov. Birozdan keyin urinib ko'ring."
+    "limit": "Juda ko'p so'rov. Birozdan keyin urinib ko'ring.",
+    "prohibited": "Xabarda taqiqlangan mazmun bor — yuborilmadi."
   },
   "review": {
     "title": "Sharh qoldirish",
@@ -106,7 +107,8 @@
     "send": "Yuborish",
     "sent": "Sharhingiz saqlandi. Rahmat!",
     "own": "O'z e'loningizga sharh yozib bo'lmaydi.",
-    "error": "Saqlab bo'lmadi. Qayta urinib ko'ring."
+    "error": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
+    "prohibited": "Sharhda taqiqlangan mazmun bor — saqlanmadi."
   },
   "form": {
     "title_new": "Usta e'loni joylash",
@@ -149,7 +151,9 @@
       "title_short": "Kamida 3 ta belgi",
       "description_short": "Kamida 10 ta belgi",
       "price_order": "«gacha» «dan»dan kam bo'lmasin",
-      "generic": "Saqlab bo'lmadi. Qayta urinib ko'ring."
+      "generic": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
+      "prohibited": "E'londa taqiqlangan mazmun bor (masalan, intim xizmat, giyohvand moddalar, karta yoki akkaunt savdosi, soxta hujjat). Bunday e'lonlar joylanmaydi — matnni tuzating.",
+      "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring."
     },
     "district": "Tuman (ixtiyoriy)",
     "whole_region": "Butun viloyat",
@@ -212,7 +216,24 @@
     "phone_public_yes": "telefon ochiq",
     "phone_public_no": "telefon yopiq",
     "stats": "Faol: {active} · Moderatsiyada: {pending} · Demo: {demo}",
-    "not_ready": "Bu bo'lim bazada hali yoqilmagan: 0076 migratsiyasi qo'llanmagan (yoki baza javob bermadi). Migratsiya qo'llangach, e'lonlar va demo tugmalari shu yerda paydo bo'ladi."
+    "not_ready": "Bu bo'lim bazada hali yoqilmagan: 0076 migratsiyasi qo'llanmagan (yoki baza javob bermadi). Migratsiya qo'llangach, e'lonlar va demo tugmalari shu yerda paydo bo'ladi.",
+    "flags": "Diqqat, tekshiring: {list}",
+    "photo_alt": "«{title}» e'loni rasmi",
+    "flag": {
+      "sale": "mahsulot savdosi",
+      "prepay": "oldindan to'lov so'ralgan",
+      "adult": "18+ ishora",
+      "politics": "siyosiy mavzu",
+      "religion": "diniy targ'ibot",
+      "dating": "tanishuv",
+      "gambling": "qimor",
+      "pyramid": "piramida / tarmoq marketingi",
+      "weapons": "qurol",
+      "extremism": "ekstremizm ishorasi",
+      "spam": "spam belgilari",
+      "injection": "tekshiruvni chetlab o'tishga urinish",
+      "other": "boshqa belgi"
+    }
   },
   "nav_hint": "Yangi",
   "entry_desc": "Santexnik, elektrik, konditsioner ustasi va boshqa xizmatlar",

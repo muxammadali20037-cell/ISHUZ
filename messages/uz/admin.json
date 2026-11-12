@@ -38,7 +38,8 @@
     "entry": "Kirish ekranlari",
     "account": "Kirish usullari",
     "telegram": "Telegram kanal",
-    "masters": "Universal ustalar"
+    "masters": "Universal ustalar",
+    "demo": "Namuna e'lonlar"
   },
   "common": {
     "done": "Bajarildi",

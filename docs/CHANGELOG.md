@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · Namuna vakansiyalar — barcha sohalar bo'yicha (`claude/demo-vacancies`)
+
+### Mahsulot
+- **Har sohada 4 tadan namuna vakansiya** (38 soha, 152 ta): haqiqiy e'lon yo'q joyda — bosh sahifa, `/jobs` va qidiruvning bo'sh
+  holatida — "Namuna" belgisi bilan alohida blokda. `/jobs/namuna` — hammasi; har namuna sahifasida "haqiqiy ish emas" ogohlantirishi.
+- **Bir bosishda olib tashlash:** admin → "Namuna e'lonlar". Qaytarish ham bor.
+- Namunalar haqiqiy e'lonlar bilan aralashmaydi: ariza, xabarnoma, statistika, sitemap'ga tushmaydi; kompaniya va telefon yo'q.
+
+### Xavfsizlik (Universal ustalar)
+- Usta e'loni, mijoz so'rovi va sharh matni saqlanishidan oldin tekshiriladi: aniq taqiqlangan mazmun (intim xizmat, giyohvand
+  moddalar, karta/akkaunt savdosi, soxta hujjat, buzib kirish, ekstremizm) saqlanmaydi; shubhali belgilar (savdo, oldindan
+  to'lov, spam …) admin navbatida ogohlantirish bo'lib chiqadi. Admin navbatida har e'lonning rasmlari ko'rinadi.
+
+### Baza
+- `0077_demo_vacancies.sql` (alohida jadval) — `supabase/prod/pending.sql` ga qo'shildi. 0076 va 0077: demo/namuna faqat
+  birinchi o'rnatishda yaratiladi (fayl qayta qo'yilsa, olib tashlanganlari qaytmaydi).
+
 ## 2026-11-12 · "AI yordamchi" bo'limi menyularda; prod baza uchun bitta fayl (`claude/ai-entry-everywhere`)
 
 ### Mahsulot

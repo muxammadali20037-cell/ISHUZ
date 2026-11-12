@@ -21,6 +21,9 @@
 -- ---------------------------------------------------------------------------------------------------
 -- 1. Turlar va jadvallar
 -- ---------------------------------------------------------------------------------------------------
+-- Birinchi o'rnatishmi (jadval hali yo'q)? Faqat shunda fayl oxirida demo e'lonlar yaratiladi (pastga qarang).
+select set_config('ishuz.masters_first_install', (to_regclass('public.master_listings') is null)::text, false);
+
 do $$ begin
   if not exists (select 1 from pg_type where typname = 'master_listing_status') then
     create type public.master_listing_status as enum ('draft', 'pending_review', 'active', 'hidden', 'rejected');
@@ -498,11 +501,13 @@ grant execute on function public.master_demo_remove() to authenticated;
 
 -- Egasi talabi: dastlab har kategoriyada 4 ta demo e'lon ko'rinsin (olib tashlash: admin → Ustalar → "Demo e'lonlarni olib tashlash"
 -- yoki SQL: select public.master_demo_remove();).
--- Faqat birinchi o'rnatishda (jadval bo'sh): fayl tasodifan qayta ishga tushirilsa, olib tashlangan demo e'lonlar haqiqiy
--- e'lonlar yoniga qaytib qolmaydi. Qaytarish kerak bo'lsa — admin tugmasi yoki select public.master_demo_seed();
+-- Faqat birinchi o'rnatishda (jadval shu ishga tushirishda yaratilgan): fayl takror ishga tushirilsa (masalan,
+-- supabase/prod/pending.sql qayta qo'yilsa), olib tashlangan demo e'lonlar qaytib qolmaydi — haqiqiy e'lon hali bo'lmasa ham.
+-- Qaytarish kerak bo'lsa — admin tugmasi yoki select public.master_demo_seed();
 do $$
 begin
-  if not exists (select 1 from public.master_listings) then
+  if coalesce(current_setting('ishuz.masters_first_install', true), 'false') = 'true' then
     perform public.master_demo_seed();
   end if;
+  perform set_config('ishuz.masters_first_install', 'false', false);
 end $$;
