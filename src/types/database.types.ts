@@ -19,6 +19,7 @@ export type Database = {
           role: Database["public"]["Enums"]["admin_role"];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           created_by?: string | null;
@@ -60,6 +61,7 @@ export type Database = {
           profile_id: string;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           paid_until: string;
           profile_id: string;
@@ -86,6 +88,7 @@ export type Database = {
           created_at: string;
           vacancy_id: string;
         };
+        ComputedFields: never;
         Insert: {
           alert_id: string;
           created_at?: string;
@@ -135,6 +138,7 @@ export type Database = {
           salary_min: number | null;
           schedules: Database["public"]["Enums"]["work_schedule"][];
         };
+        ComputedFields: never;
         Insert: {
           category_id?: string | null;
           created_at?: string;
@@ -222,6 +226,7 @@ export type Database = {
           output_tokens: number | null;
           provider: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           error?: string | null;
@@ -256,6 +261,7 @@ export type Database = {
           created_at: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           alert_id: string;
           created_at?: string;
@@ -304,6 +310,7 @@ export type Database = {
           salary_max: number | null;
           schedules: Database["public"]["Enums"]["work_schedule"][];
         };
+        ComputedFields: never;
         Insert: {
           category_id?: string | null;
           created_at?: string;
@@ -384,6 +391,7 @@ export type Database = {
           profile_id: string | null;
           props: NonNullable<Json>;
         };
+        ComputedFields: never;
         Insert: {
           anon_id?: string | null;
           created_at?: string;
@@ -417,6 +425,7 @@ export type Database = {
           updated_at: string;
           value: NonNullable<Json>;
         };
+        ComputedFields: never;
         Insert: {
           is_public?: boolean;
           key: string;
@@ -441,6 +450,7 @@ export type Database = {
           note: string | null;
           to_status: Database["public"]["Enums"]["application_status"];
         };
+        ComputedFields: never;
         Insert: {
           actor_id?: string | null;
           application_id: string;
@@ -486,6 +496,7 @@ export type Database = {
           created_at: string;
           id: string;
         };
+        ComputedFields: never;
         Insert: {
           application_id: string;
           author_id?: string | null;
@@ -532,6 +543,7 @@ export type Database = {
           viewed_at: string | null;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           cover_message?: string | null;
           created_at?: string;
@@ -590,6 +602,7 @@ export type Database = {
           target_type: string;
           user_agent: string | null;
         };
+        ComputedFields: never;
         Insert: {
           action: string;
           actor_id?: string | null;
@@ -633,6 +646,7 @@ export type Database = {
           name_uz: string;
           sort_order: number;
         };
+        ComputedFields: never;
         Insert: {
           code: string;
           is_active?: boolean;
@@ -658,6 +672,7 @@ export type Database = {
           free_worker_listing_used_at: string | null;
           profile_id: string;
         };
+        ComputedFields: never;
         Insert: {
           free_promotion_used_at?: string | null;
           free_vacancy_used_at?: string | null;
@@ -689,6 +704,7 @@ export type Database = {
           telegram_user_id: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           data?: NonNullable<Json>;
           flow?: string;
@@ -729,6 +745,7 @@ export type Database = {
           sort_order: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           icon?: string | null;
@@ -782,6 +799,7 @@ export type Database = {
           verified_at: string | null;
           website: string | null;
         };
+        ComputedFields: never;
         Insert: {
           about?: string | null;
           address?: string | null;
@@ -873,6 +891,7 @@ export type Database = {
           role: Database["public"]["Enums"]["company_member_role"];
           token: string;
         };
+        ComputedFields: never;
         Insert: {
           accepted_at?: string | null;
           accepted_by?: string | null;
@@ -927,6 +946,7 @@ export type Database = {
           profile_id: string;
           role: Database["public"]["Enums"]["company_member_role"];
         };
+        ComputedFields: never;
         Insert: {
           company_id: string;
           created_at?: string;
@@ -971,6 +991,7 @@ export type Database = {
           grantee_profile_id: string;
           owner_profile_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           grantee_profile_id: string;
@@ -998,35 +1019,6 @@ export type Database = {
           },
         ];
       };
-      contact_reveals: {
-        Row: {
-          revealed_at: string;
-          target_id: string;
-          target_kind: string;
-          viewer_profile_id: string;
-        };
-        Insert: {
-          revealed_at?: string;
-          target_id: string;
-          target_kind: string;
-          viewer_profile_id: string;
-        };
-        Update: {
-          revealed_at?: string;
-          target_id?: string;
-          target_kind?: string;
-          viewer_profile_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "contact_reveals_viewer_profile_id_fkey";
-            columns: ["viewer_profile_id"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       contact_requests: {
         Row: {
           created_at: string;
@@ -1036,6 +1028,7 @@ export type Database = {
           responded_at: string | null;
           status: Database["public"]["Enums"]["contact_request_status"];
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: string;
@@ -1069,6 +1062,36 @@ export type Database = {
           },
         ];
       };
+      contact_reveals: {
+        Row: {
+          revealed_at: string;
+          target_id: string;
+          target_kind: string;
+          viewer_profile_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          revealed_at?: string;
+          target_id: string;
+          target_kind: string;
+          viewer_profile_id: string;
+        };
+        Update: {
+          revealed_at?: string;
+          target_id?: string;
+          target_kind?: string;
+          viewer_profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "contact_reveals_viewer_profile_id_fkey";
+            columns: ["viewer_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       conversation_members: {
         Row: {
           conversation_id: string;
@@ -1078,6 +1101,7 @@ export type Database = {
           last_read_at: string | null;
           profile_id: string;
         };
+        ComputedFields: never;
         Insert: {
           conversation_id: string;
           is_blocked?: boolean;
@@ -1120,6 +1144,7 @@ export type Database = {
           last_message_at: string | null;
           last_message_preview: string | null;
         };
+        ComputedFields: never;
         Insert: {
           application_id?: string | null;
           created_at?: string;
@@ -1167,6 +1192,7 @@ export type Database = {
           vacancy_id: string | null;
           worker_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           category_id?: string | null;
           context: string;
@@ -1240,6 +1266,7 @@ export type Database = {
           profile_id: string;
           token: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: string;
@@ -1284,6 +1311,7 @@ export type Database = {
           source: string | null;
           source_updated_at: string | null;
         };
+        ComputedFields: never;
         Insert: {
           id?: string;
           is_active?: boolean;
@@ -1349,6 +1377,7 @@ export type Database = {
           verification_status: Database["public"]["Enums"]["verification_status"];
           verified_at: string | null;
         };
+        ComputedFields: never;
         Insert: {
           about?: string | null;
           company_id?: string | null;
@@ -1439,6 +1468,7 @@ export type Database = {
           viewed_at: string | null;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           company_id?: string | null;
           created_at?: string;
@@ -1514,6 +1544,7 @@ export type Database = {
           name_uz: string;
           sort_order: number;
         };
+        ComputedFields: never;
         Insert: {
           code: string;
           is_active?: boolean;
@@ -1541,6 +1572,7 @@ export type Database = {
           phone: string;
           telegram_user_id: number;
         };
+        ComputedFields: never;
         Insert: {
           attempts?: number;
           code_hash: string;
@@ -1571,6 +1603,264 @@ export type Database = {
           },
         ];
       };
+      master_categories: {
+        Row: {
+          icon: string;
+          id: string;
+          is_active: boolean;
+          name_en: string;
+          name_oz: string;
+          name_ru: string;
+          name_uz: string;
+          slug: string;
+          sort_order: number;
+        };
+        ComputedFields: never;
+        Insert: {
+          icon?: string;
+          id?: string;
+          is_active?: boolean;
+          name_en: string;
+          name_oz: string;
+          name_ru: string;
+          name_uz: string;
+          slug: string;
+          sort_order?: number;
+        };
+        Update: {
+          icon?: string;
+          id?: string;
+          is_active?: boolean;
+          name_en?: string;
+          name_oz?: string;
+          name_ru?: string;
+          name_uz?: string;
+          slug?: string;
+          sort_order?: number;
+        };
+        Relationships: [];
+      };
+      master_listings: {
+        Row: {
+          category_id: string;
+          created_at: string;
+          description: string;
+          display_name: string;
+          district_id: string | null;
+          experience_years: number;
+          id: string;
+          is_demo: boolean;
+          owner_profile_id: string | null;
+          phone: string | null;
+          phone_clicks_count: number;
+          phone_public: boolean;
+          photos: string[];
+          price_from: number | null;
+          price_negotiable: boolean;
+          price_to: number | null;
+          published_at: string | null;
+          rating_avg: number | null;
+          rating_count: number;
+          region_id: string | null;
+          reject_reason: string | null;
+          service_area: string | null;
+          services: string[];
+          slug: string;
+          status: Database["public"]["Enums"]["master_listing_status"];
+          title: string;
+          updated_at: string;
+          views_count: number;
+          work_from: string | null;
+          work_to: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          category_id: string;
+          created_at?: string;
+          description: string;
+          display_name: string;
+          district_id?: string | null;
+          experience_years?: number;
+          id?: string;
+          is_demo?: boolean;
+          owner_profile_id?: string | null;
+          phone?: string | null;
+          phone_clicks_count?: number;
+          phone_public?: boolean;
+          photos?: string[];
+          price_from?: number | null;
+          price_negotiable?: boolean;
+          price_to?: number | null;
+          published_at?: string | null;
+          rating_avg?: number | null;
+          rating_count?: number;
+          region_id?: string | null;
+          reject_reason?: string | null;
+          service_area?: string | null;
+          services?: string[];
+          slug: string;
+          status?: Database["public"]["Enums"]["master_listing_status"];
+          title: string;
+          updated_at?: string;
+          views_count?: number;
+          work_from?: string | null;
+          work_to?: string | null;
+        };
+        Update: {
+          category_id?: string;
+          created_at?: string;
+          description?: string;
+          display_name?: string;
+          district_id?: string | null;
+          experience_years?: number;
+          id?: string;
+          is_demo?: boolean;
+          owner_profile_id?: string | null;
+          phone?: string | null;
+          phone_clicks_count?: number;
+          phone_public?: boolean;
+          photos?: string[];
+          price_from?: number | null;
+          price_negotiable?: boolean;
+          price_to?: number | null;
+          published_at?: string | null;
+          rating_avg?: number | null;
+          rating_count?: number;
+          region_id?: string | null;
+          reject_reason?: string | null;
+          service_area?: string | null;
+          services?: string[];
+          slug?: string;
+          status?: Database["public"]["Enums"]["master_listing_status"];
+          title?: string;
+          updated_at?: string;
+          views_count?: number;
+          work_from?: string | null;
+          work_to?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "master_listings_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "master_categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "master_listings_district_id_fkey";
+            columns: ["district_id"];
+            isOneToOne: false;
+            referencedRelation: "districts";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "master_listings_owner_profile_id_fkey";
+            columns: ["owner_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "master_listings_region_id_fkey";
+            columns: ["region_id"];
+            isOneToOne: false;
+            referencedRelation: "regions";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      master_requests: {
+        Row: {
+          client_name: string;
+          client_phone: string;
+          client_profile_id: string | null;
+          created_at: string;
+          id: string;
+          listing_id: string;
+          message: string | null;
+          status: Database["public"]["Enums"]["master_request_status"];
+        };
+        ComputedFields: never;
+        Insert: {
+          client_name: string;
+          client_phone: string;
+          client_profile_id?: string | null;
+          created_at?: string;
+          id?: string;
+          listing_id: string;
+          message?: string | null;
+          status?: Database["public"]["Enums"]["master_request_status"];
+        };
+        Update: {
+          client_name?: string;
+          client_phone?: string;
+          client_profile_id?: string | null;
+          created_at?: string;
+          id?: string;
+          listing_id?: string;
+          message?: string | null;
+          status?: Database["public"]["Enums"]["master_request_status"];
+        };
+        Relationships: [
+          {
+            foreignKeyName: "master_requests_client_profile_id_fkey";
+            columns: ["client_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "master_requests_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "master_listings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      master_reviews: {
+        Row: {
+          author_profile_id: string;
+          created_at: string;
+          id: string;
+          listing_id: string;
+          rating: number;
+          text: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          author_profile_id: string;
+          created_at?: string;
+          id?: string;
+          listing_id: string;
+          rating: number;
+          text?: string | null;
+        };
+        Update: {
+          author_profile_id?: string;
+          created_at?: string;
+          id?: string;
+          listing_id?: string;
+          rating?: number;
+          text?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "master_reviews_author_profile_id_fkey";
+            columns: ["author_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "master_reviews_listing_id_fkey";
+            columns: ["listing_id"];
+            isOneToOne: false;
+            referencedRelation: "master_listings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       match_jobs: {
         Row: {
           attempts: number;
@@ -1585,6 +1875,7 @@ export type Database = {
           started_at: string | null;
           status: string;
         };
+        ComputedFields: never;
         Insert: {
           attempts?: number;
           created_at?: string;
@@ -1624,6 +1915,7 @@ export type Database = {
           vacancy_id: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           notification_id?: number | null;
@@ -1684,6 +1976,7 @@ export type Database = {
           updated_at: string;
           vacancy_ids: string[];
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           enabled?: boolean;
@@ -1750,6 +2043,7 @@ export type Database = {
           vacancy_id: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           complete?: boolean;
           computed_at?: string;
@@ -1803,6 +2097,7 @@ export type Database = {
           sender_id: string | null;
           type: Database["public"]["Enums"]["message_type"];
         };
+        ComputedFields: never;
         Insert: {
           attachment_meta?: Json | null;
           attachment_path?: string | null;
@@ -1865,6 +2160,7 @@ export type Database = {
           user_message: string | null;
           version: number;
         };
+        ComputedFields: never;
         Insert: {
           actor_id?: string | null;
           category?: string | null;
@@ -1930,6 +2226,7 @@ export type Database = {
           tg_status: string;
           type: Database["public"]["Enums"]["notification_type"];
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           dedupe_key?: string | null;
@@ -1997,6 +2294,7 @@ export type Database = {
           vacancy_id: string | null;
           worker_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           amount: number;
           cancel_reason?: number | null;
@@ -2061,39 +2359,6 @@ export type Database = {
           },
         ];
       };
-      profile_interests: {
-        Row: {
-          category_id: string;
-          created_at: string;
-          profile_id: string;
-        };
-        Insert: {
-          category_id: string;
-          created_at?: string;
-          profile_id: string;
-        };
-        Update: {
-          category_id?: string;
-          created_at?: string;
-          profile_id?: string;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "profile_interests_category_id_fkey";
-            columns: ["category_id"];
-            isOneToOne: false;
-            referencedRelation: "categories";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "profile_interests_profile_id_fkey";
-            columns: ["profile_id"];
-            isOneToOne: false;
-            referencedRelation: "profiles";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
       profession_images: {
         Row: {
           attempts: number;
@@ -2107,6 +2372,7 @@ export type Database = {
           storage_path: string | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           attempts?: number;
           created_at?: string;
@@ -2166,6 +2432,7 @@ export type Database = {
           subcategory_id: string | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           aliases?: string[];
           category_id: string;
@@ -2255,6 +2522,7 @@ export type Database = {
           telegram_username: string | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           email?: string | null;
           phone?: string | null;
@@ -2283,6 +2551,40 @@ export type Database = {
           },
         ];
       };
+      profile_interests: {
+        Row: {
+          category_id: string;
+          created_at: string;
+          profile_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          category_id: string;
+          created_at?: string;
+          profile_id: string;
+        };
+        Update: {
+          category_id?: string;
+          created_at?: string;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profile_interests_category_id_fkey";
+            columns: ["category_id"];
+            isOneToOne: false;
+            referencedRelation: "categories";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "profile_interests_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       profiles: {
         Row: {
           active_role: Database["public"]["Enums"]["app_role"] | null;
@@ -2301,6 +2603,7 @@ export type Database = {
           sessions_revoked_at: string | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           active_role?: Database["public"]["Enums"]["app_role"] | null;
           avatar_url?: string | null;
@@ -2343,6 +2646,7 @@ export type Database = {
           key: string;
           window_start: string;
         };
+        ComputedFields: never;
         Insert: {
           count?: number;
           key: string;
@@ -2368,6 +2672,7 @@ export type Database = {
           soato: string | null;
           sort_order: number;
         };
+        ComputedFields: never;
         Insert: {
           country_code?: string;
           id?: string;
@@ -2408,6 +2713,7 @@ export type Database = {
           target_type: Database["public"]["Enums"]["report_target"];
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           details?: string | null;
@@ -2466,6 +2772,7 @@ export type Database = {
           text: string | null;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           application_id?: string | null;
           author_profile_id: string;
@@ -2532,51 +2839,6 @@ export type Database = {
           },
         ];
       };
-      wallet_ledger: {
-        Row: {
-          created_at: string;
-          delta: number;
-          id: number;
-          kind: string;
-          payment_id: string | null;
-          profile_id: string;
-        };
-        Insert: {
-          created_at?: string;
-          delta: number;
-          id?: never;
-          kind: string;
-          payment_id?: string | null;
-          profile_id: string;
-        };
-        Update: {
-          created_at?: string;
-          delta?: number;
-          id?: never;
-          kind?: string;
-          payment_id?: string | null;
-          profile_id?: string;
-        };
-        Relationships: [];
-      };
-      wallets: {
-        Row: {
-          balance: number;
-          profile_id: string;
-          updated_at: string;
-        };
-        Insert: {
-          balance?: number;
-          profile_id: string;
-          updated_at?: string;
-        };
-        Update: {
-          balance?: number;
-          profile_id?: string;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
       saved_items: {
         Row: {
           created_at: string;
@@ -2585,6 +2847,7 @@ export type Database = {
           vacancy_id: string | null;
           worker_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: never;
@@ -2643,6 +2906,7 @@ export type Database = {
           schedules: Database["public"]["Enums"]["work_schedule"][];
           subcategory_id: string | null;
         };
+        ComputedFields: never;
         Insert: {
           category_id?: string | null;
           created_at?: string;
@@ -2719,6 +2983,7 @@ export type Database = {
           vacancy_id: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           folder?: string | null;
@@ -2756,6 +3021,7 @@ export type Database = {
           note: string | null;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           employer_profile_id: string;
@@ -2798,6 +3064,7 @@ export type Database = {
           scope: string;
           understood: NonNullable<Json>;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           id?: never;
@@ -2833,7 +3100,7 @@ export type Database = {
           action_taken: string;
           actor_id: string | null;
           created_at: string;
-          details: Json;
+          details: NonNullable<Json>;
           event_type: string;
           id: string;
           reason_code: string;
@@ -2844,11 +3111,12 @@ export type Database = {
           severity: string;
           subject_hash: string | null;
         };
+        ComputedFields: never;
         Insert: {
           action_taken?: string;
           actor_id?: string | null;
           created_at?: string;
-          details?: Json;
+          details?: NonNullable<Json>;
           event_type: string;
           id?: string;
           reason_code: string;
@@ -2863,7 +3131,7 @@ export type Database = {
           action_taken?: string;
           actor_id?: string | null;
           created_at?: string;
-          details?: Json;
+          details?: NonNullable<Json>;
           event_type?: string;
           id?: string;
           reason_code?: string;
@@ -2891,12 +3159,13 @@ export type Database = {
           state: string;
           subject: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           enforced?: boolean;
           event_id?: string | null;
           expires_at: string;
-          id?: number;
+          id?: never;
           lifted_at?: string | null;
           lifted_by?: string | null;
           reason_code: string;
@@ -2910,7 +3179,7 @@ export type Database = {
           enforced?: boolean;
           event_id?: string | null;
           expires_at?: string;
-          id?: number;
+          id?: never;
           lifted_at?: string | null;
           lifted_by?: string | null;
           reason_code?: string;
@@ -2935,6 +3204,7 @@ export type Database = {
           skill_id: string;
           sort_order: number;
         };
+        ComputedFields: never;
         Insert: {
           question_id: string;
           skill_id: string;
@@ -2977,6 +3247,7 @@ export type Database = {
           title_ru: string;
           title_uz: string;
         };
+        ComputedFields: never;
         Insert: {
           category_id: string;
           created_at?: string;
@@ -3037,6 +3308,7 @@ export type Database = {
           slug: string;
           usage_count: number;
         };
+        ComputedFields: never;
         Insert: {
           category_id?: string | null;
           created_at?: string;
@@ -3096,6 +3368,7 @@ export type Database = {
           sort_order: number;
           updated_at: string;
         };
+        ComputedFields: never;
         Insert: {
           aliases?: string[];
           category_id: string;
@@ -3148,6 +3421,7 @@ export type Database = {
           telegram_user_id: number;
           username: string | null;
         };
+        ComputedFields: never;
         Insert: {
           bot_started?: boolean;
           chat_verified_at?: string | null;
@@ -3198,6 +3472,7 @@ export type Database = {
           used_at: string | null;
           used_by: number | null;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           expires_at: string;
@@ -3234,6 +3509,7 @@ export type Database = {
           received_at: string;
           update_id: number;
         };
+        ComputedFields: never;
         Insert: {
           attempts?: number;
           failed_at?: string | null;
@@ -3256,6 +3532,7 @@ export type Database = {
           profile_id: string;
           role: Database["public"]["Enums"]["app_role"];
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           profile_id: string;
@@ -3341,6 +3618,7 @@ export type Database = {
           work_time_from: string | null;
           work_time_to: string | null;
         };
+        ComputedFields: never;
         Insert: {
           address?: string | null;
           age_max?: number | null;
@@ -3526,6 +3804,7 @@ export type Database = {
           benefit_code: string;
           vacancy_id: string;
         };
+        ComputedFields: never;
         Insert: {
           benefit_code: string;
           vacancy_id: string;
@@ -3558,6 +3837,7 @@ export type Database = {
           updated_at: string;
           vacancy_id: string;
         };
+        ComputedFields: never;
         Insert: {
           phone: string;
           show_phone?: boolean;
@@ -3586,6 +3866,7 @@ export type Database = {
           min_level: Database["public"]["Enums"]["language_level"];
           vacancy_id: string;
         };
+        ComputedFields: never;
         Insert: {
           language_code: string;
           min_level?: Database["public"]["Enums"]["language_level"];
@@ -3619,6 +3900,7 @@ export type Database = {
           skill_id: string;
           vacancy_id: string;
         };
+        ComputedFields: never;
         Insert: {
           is_required?: boolean;
           skill_id: string;
@@ -3662,6 +3944,7 @@ export type Database = {
           submitted_data: NonNullable<Json>;
           type: Database["public"]["Enums"]["verification_type"];
         };
+        ComputedFields: never;
         Insert: {
           ai_review?: Json | null;
           company_id?: string | null;
@@ -3716,6 +3999,76 @@ export type Database = {
           },
         ];
       };
+      wallet_ledger: {
+        Row: {
+          created_at: string;
+          delta: number;
+          id: number;
+          kind: string;
+          payment_id: string | null;
+          profile_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          created_at?: string;
+          delta: number;
+          id?: never;
+          kind: string;
+          payment_id?: string | null;
+          profile_id: string;
+        };
+        Update: {
+          created_at?: string;
+          delta?: number;
+          id?: never;
+          kind?: string;
+          payment_id?: string | null;
+          profile_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wallet_ledger_payment_id_fkey";
+            columns: ["payment_id"];
+            isOneToOne: false;
+            referencedRelation: "payments";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "wallet_ledger_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      wallets: {
+        Row: {
+          balance: number;
+          profile_id: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          balance?: number;
+          profile_id: string;
+          updated_at?: string;
+        };
+        Update: {
+          balance?: number;
+          profile_id?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "wallets_profile_id_fkey";
+            columns: ["profile_id"];
+            isOneToOne: true;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       web_login_requests: {
         Row: {
           confirmed_at: string | null;
@@ -3728,6 +4081,7 @@ export type Database = {
           token_hash: string;
           user_agent: string | null;
         };
+        ComputedFields: never;
         Insert: {
           confirmed_at?: string | null;
           consumed_at?: string | null;
@@ -3763,6 +4117,7 @@ export type Database = {
           started_year: number | null;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           ended_year?: number | null;
@@ -3807,6 +4162,7 @@ export type Database = {
           started_on: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           achievements?: string | null;
           company_name: string;
@@ -3850,6 +4206,7 @@ export type Database = {
           updated_at: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           lat: number;
           lng: number;
@@ -3878,6 +4235,7 @@ export type Database = {
           level: Database["public"]["Enums"]["language_level"];
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           language_code: string;
           level?: Database["public"]["Enums"]["language_level"];
@@ -3910,6 +4268,7 @@ export type Database = {
           district_id: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           district_id: string;
           worker_id: string;
@@ -3947,6 +4306,7 @@ export type Database = {
           type: Database["public"]["Enums"]["portfolio_type"];
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           description?: string | null;
@@ -3993,6 +4353,7 @@ export type Database = {
           work_time_to: string | null;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           availability?: Database["public"]["Enums"]["availability"];
           employment_types?: Database["public"]["Enums"]["employment_type"][];
@@ -4036,6 +4397,7 @@ export type Database = {
           node_id: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           created_at?: string;
           experience_level?: Database["public"]["Enums"]["experience_level"];
@@ -4105,6 +4467,7 @@ export type Database = {
           views_count: number;
           work_format: Database["public"]["Enums"]["work_format"];
         };
+        ComputedFields: never;
         Insert: {
           about?: string | null;
           area_hint?: string | null;
@@ -4234,6 +4597,7 @@ export type Database = {
           skill_id: string;
           worker_id: string;
         };
+        ComputedFields: never;
         Insert: {
           level?: Database["public"]["Enums"]["skill_level"];
           skill_id: string;
@@ -4325,7 +4689,12 @@ export type Database = {
         Returns: string;
       };
       admin_moderation_queue: {
-        Args: { p_entity?: string; p_limit?: number; p_offset?: number; p_tab?: string };
+        Args: {
+          p_entity?: string;
+          p_limit?: number;
+          p_offset?: number;
+          p_tab?: string;
+        };
         Returns: Json;
       };
       admin_profession_node_stats: {
@@ -4354,7 +4723,10 @@ export type Database = {
         };
         Returns: undefined;
       };
-      admin_revoke_user_sessions: { Args: { p_profile_id: string }; Returns: number };
+      admin_revoke_user_sessions: {
+        Args: { p_profile_id: string };
+        Returns: number;
+      };
       admin_search_insights: {
         Args: { p_days?: number; p_limit?: number };
         Returns: {
@@ -4375,12 +4747,18 @@ export type Database = {
         };
         Returns: number;
       };
-      admin_set_security_enforce: { Args: { p_enforce: boolean }; Returns: undefined };
+      admin_set_security_enforce: {
+        Args: { p_enforce: boolean };
+        Returns: undefined;
+      };
       admin_set_user_block: {
         Args: { p_block: boolean; p_profile_id: string; p_reason?: string };
         Returns: undefined;
       };
-      admin_set_vacancy_featured: { Args: { p_days: number; p_vacancy_id: string }; Returns: undefined };
+      admin_set_vacancy_featured: {
+        Args: { p_days: number; p_vacancy_id: string };
+        Returns: undefined;
+      };
       admin_set_vacancy_status: {
         Args: {
           p_note?: string;
@@ -4519,7 +4897,10 @@ export type Database = {
         };
         Returns: Json;
       };
-      contact_reveal_allowed: { Args: { p_kind: string; p_owner: string; p_target: string }; Returns: boolean };
+      contact_reveal_allowed: {
+        Args: { p_kind: string; p_owner: string; p_target: string };
+        Returns: boolean;
+      };
       contact_status_for: { Args: { p_owner: string }; Returns: string };
       create_payment: {
         Args: {
@@ -4541,6 +4922,7 @@ export type Database = {
         Args: { p_role?: string; p_token_hash: string };
         Returns: string;
       };
+      create_topup: { Args: { p_amount: number }; Returns: Json };
       current_employer_id: {
         Args: Record<PropertyKey, never>;
         Returns: string;
@@ -4602,6 +4984,19 @@ export type Database = {
         Args: { p_worker_id: string };
         Returns: string;
       };
+      find_duplicate_vacancy: {
+        Args: {
+          p_company: string;
+          p_district: string;
+          p_id: string;
+          p_owner: string;
+          p_region: string;
+          p_remote: boolean;
+          p_salary_type: Database["public"]["Enums"]["salary_type"];
+          p_title: string;
+        };
+        Returns: string;
+      };
       get_contact: {
         Args: { p_profile_id: string };
         Returns: {
@@ -4619,7 +5014,10 @@ export type Database = {
       home_market_counts: { Args: Record<PropertyKey, never>; Returns: Json };
       is_active_user: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_admin: { Args: Record<PropertyKey, never>; Returns: boolean };
-      is_allowed_media_url: { Args: { p_bucket: string; p_owner: string; p_url: string }; Returns: boolean };
+      is_allowed_media_url: {
+        Args: { p_bucket: string; p_owner: string; p_url: string };
+        Returns: boolean;
+      };
       is_blocked: { Args: { pid: string }; Returns: boolean };
       is_client_write: { Args: Record<PropertyKey, never>; Returns: boolean };
       is_company_admin: { Args: { p_company_id: string }; Returns: boolean };
@@ -4660,6 +5058,108 @@ export type Database = {
       mark_saved_search_seen: {
         Args: { p_search_id: string };
         Returns: undefined;
+      };
+      master_category_counts: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          active_count: number;
+          category_id: string;
+          real_count: number;
+        }[];
+      };
+      master_demo_remove: { Args: Record<PropertyKey, never>; Returns: number };
+      master_demo_seed: { Args: Record<PropertyKey, never>; Returns: number };
+      master_listing_hit: {
+        Args: { p_id: string; p_kind: string };
+        Returns: undefined;
+      };
+      master_listing_public: {
+        Args: { p_slug: string };
+        Returns: {
+          avatar_url: string;
+          category_id: string;
+          category_slug: string;
+          description: string;
+          display_name: string;
+          district_id: string;
+          experience_years: number;
+          id: string;
+          is_demo: boolean;
+          owner_profile_id: string;
+          phone: string;
+          phone_public: boolean;
+          photos: string[];
+          price_from: number;
+          price_negotiable: boolean;
+          price_to: number;
+          published_at: string;
+          rating_avg: number;
+          rating_count: number;
+          region_id: string;
+          service_area: string;
+          services: string[];
+          slug: string;
+          title: string;
+          views_count: number;
+          work_from: string;
+          work_to: string;
+        }[];
+      };
+      master_listings_public: {
+        Args: {
+          p_category?: string;
+          p_limit?: number;
+          p_min_experience?: number;
+          p_offset?: number;
+          p_query?: string;
+          p_region?: string;
+          p_sort?: string;
+        };
+        Returns: {
+          avatar_url: string;
+          category_id: string;
+          category_slug: string;
+          display_name: string;
+          district_id: string;
+          experience_years: number;
+          id: string;
+          is_demo: boolean;
+          phone_public: boolean;
+          photos: string[];
+          price_from: number;
+          price_negotiable: boolean;
+          price_to: number;
+          published_at: string;
+          rating_avg: number;
+          rating_count: number;
+          region_id: string;
+          service_area: string;
+          services: string[];
+          slug: string;
+          title: string;
+          total_count: number;
+          work_from: string;
+          work_to: string;
+        }[];
+      };
+      master_moderate: {
+        Args: { p_action: string; p_id: string; p_reason?: string };
+        Returns: Database["public"]["Enums"]["master_listing_status"];
+      };
+      master_privileged: { Args: Record<PropertyKey, never>; Returns: boolean };
+      master_request_create: {
+        Args: {
+          p_client?: string;
+          p_listing: string;
+          p_message?: string;
+          p_name: string;
+          p_phone: string;
+        };
+        Returns: string;
+      };
+      master_review_add: {
+        Args: { p_listing: string; p_rating: number; p_text?: string };
+        Returns: string;
       };
       match_explain: {
         Args: { p_vacancy_id: string; p_worker_id: string };
@@ -4773,11 +5273,11 @@ export type Database = {
           unread_count: number;
         }[];
       };
+      my_duplicate_vacancy: { Args: { p_vacancy_id: string }; Returns: string };
       my_listing_state: {
         Args: { p_entity: string; p_id: string };
         Returns: Json;
       };
-      my_duplicate_vacancy: { Args: { p_vacancy_id: string }; Returns: string };
       my_listing_states: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -4786,134 +5286,16 @@ export type Database = {
           info: Json;
         }[];
       };
-      my_wallet: { Args: Record<PropertyKey, never>; Returns: Json };
-      create_topup: { Args: { p_amount: number }; Returns: Json };
-      simple_search_vacancies_v3: {
-        Args: {
-          p_district_id?: string;
-          p_employer_type?: Database["public"]["Enums"]["employer_type"];
-          p_featured?: boolean;
-          p_limit?: number;
-          p_mass?: boolean;
-          p_no_experience?: boolean;
-          p_offset?: number;
-          p_profession_node_id?: string;
-          p_region_id?: string;
-          p_remote?: boolean;
-          p_salary_min?: number;
-          p_salary_type?: Database["public"]["Enums"]["salary_type"];
-          p_schedule?: Database["public"]["Enums"]["work_schedule"];
-        };
+      my_saved_searches: {
+        Args: Record<PropertyKey, never>;
         Returns: {
-          category_icon: string;
-          category_slug: string;
-          district_name_en: string;
-          district_name_oz: string;
-          district_name_ru: string;
-          district_name_uz: string;
-          employer_name: string;
-          employer_verified: boolean;
-          experience_min_months: number;
+          created_at: string;
           id: string;
-          is_featured: boolean;
-          is_government: boolean;
-          is_remote: boolean;
-          phone: string;
-          profession_name_en: string;
-          profession_name_ru: string;
-          profession_name_uz: string;
-          profession_node_id: string;
-          published_at: string;
-          region_name_en: string;
-          region_name_oz: string;
-          region_name_ru: string;
-          region_name_uz: string;
-          region_wide: boolean;
-          salary_from: number;
-          salary_negotiable: boolean;
-          salary_to: number;
-          salary_type: Database["public"]["Enums"]["salary_type"];
-          schedule: Database["public"]["Enums"]["work_schedule"];
-          slug: string;
-          summary: string;
-          title: string;
-          total_count: number;
-          work_time_from: string;
-          work_time_to: string;
+          label: string;
+          new_count: number;
+          notify: boolean;
+          query_string: string;
         }[];
-      };
-      simple_search_workers_v2: {
-        Args: {
-          p_daily?: boolean;
-          p_district_id?: string;
-          p_experienced?: boolean;
-          p_limit?: number;
-          p_offset?: number;
-          p_profession_node_id?: string;
-          p_region_id?: string;
-          p_remote?: boolean;
-        };
-        Returns: {
-          about: string;
-          avatar_url: string;
-          category_icon: string;
-          category_slug: string;
-          district_name_en: string;
-          district_name_oz: string;
-          district_name_ru: string;
-          district_name_uz: string;
-          experience_level: Database["public"]["Enums"]["experience_level"];
-          first_name: string;
-          headline: string;
-          id: string;
-          is_promoted: boolean;
-          last_active_at: string;
-          last_initial: string;
-          phone: string;
-          profession_name_en: string;
-          profession_name_ru: string;
-          profession_name_uz: string;
-          profession_node_id: string;
-          region_name_en: string;
-          region_name_oz: string;
-          region_name_ru: string;
-          region_name_uz: string;
-          region_wide: boolean;
-          remote_ok: boolean;
-          salary_expected: number;
-          total_count: number;
-        }[];
-      };
-      vacancy_employer_kind: {
-        Args: {
-          p_company_id: string;
-          p_employer_type: Database["public"]["Enums"]["employer_type"];
-          p_is_government: boolean;
-        };
-        Returns: Database["public"]["Enums"]["employer_type"];
-      };
-      vacancy_section_counts: {
-        Args: { p_district_id?: string; p_region_id?: string };
-        Returns: {
-          company: number;
-          daily: number;
-          entrepreneur: number;
-          featured: number;
-          government: number;
-          mass: number;
-          no_experience: number;
-          person: number;
-          remote: number;
-          today: number;
-          total: number;
-        }[];
-      };
-      wallet_pay: {
-        Args: {
-          p_purpose: Database["public"]["Enums"]["payment_purpose"];
-          p_target_id: string | null;
-        };
-        Returns: Json;
       };
       my_saved_vacancies: {
         Args: { p_limit?: number };
@@ -4946,11 +5328,11 @@ export type Database = {
           salary_negotiable: boolean;
           salary_to: number;
           salary_type: Database["public"]["Enums"]["salary_type"];
+          saved_at: string;
           schedule: Database["public"]["Enums"]["work_schedule"];
           slug: string;
           summary: string;
           title: string;
-          saved_at: string;
           work_time_from: string;
           work_time_to: string;
         }[];
@@ -4987,17 +5369,7 @@ export type Database = {
           saved_at: string;
         }[];
       };
-      my_saved_searches: {
-        Args: Record<PropertyKey, never>;
-        Returns: {
-          created_at: string;
-          id: string;
-          label: string;
-          new_count: number;
-          notify: boolean;
-          query_string: string;
-        }[];
-      };
+      my_wallet: { Args: Record<PropertyKey, never>; Returns: Json };
       normalize_search_text: { Args: { p: string }; Returns: string };
       notification_open: { Args: { p_token: string }; Returns: string };
       notify: {
@@ -5058,7 +5430,10 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
-      preview_telegram_link_token: { Args: { p_telegram_user_id: number; p_token_hash: string }; Returns: Json };
+      preview_telegram_link_token: {
+        Args: { p_telegram_user_id: number; p_token_hash: string };
+        Returns: Json;
+      };
       process_match_job: { Args: { p_job_id: number }; Returns: Json };
       process_match_jobs: { Args: { p_limit?: number }; Returns: number };
       profession_direction_counts: {
@@ -5117,7 +5492,12 @@ export type Database = {
       };
       promote_worker: { Args: Record<PropertyKey, never>; Returns: string };
       public_companies: {
-        Args: { p_limit?: number; p_offset?: number; p_query?: string; p_region_id?: string };
+        Args: {
+          p_limit?: number;
+          p_offset?: number;
+          p_query?: string;
+          p_region_id?: string;
+        };
         Returns: {
           about: string;
           active_jobs: number;
@@ -5136,8 +5516,11 @@ export type Database = {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
       };
-      purge_contact_reveals: { Args: Record<PropertyKey, never>; Returns: number };
       purge_analytics: { Args: Record<PropertyKey, never>; Returns: undefined };
+      purge_contact_reveals: {
+        Args: Record<PropertyKey, never>;
+        Returns: number;
+      };
       purge_old_notifications: {
         Args: Record<PropertyKey, never>;
         Returns: number;
@@ -5398,6 +5781,7 @@ export type Database = {
           p_category_id?: string;
           p_company_id?: string;
           p_district_ids?: string[];
+          p_education?: Database["public"]["Enums"]["education_level"];
           p_employment_types?: Database["public"]["Enums"]["employment_type"][];
           p_experience_max_months?: number;
           p_government_only?: boolean;
@@ -5405,12 +5789,11 @@ export type Database = {
           p_limit?: number;
           p_no_experience?: boolean;
           p_offset?: number;
-          p_salary_max?: number;
-          p_education?: Database["public"]["Enums"]["education_level"];
           p_opportunity_types?: Database["public"]["Enums"]["opportunity_type"][];
           p_profession_node_id?: string;
           p_query?: string;
           p_region_id?: string;
+          p_salary_max?: number;
           p_salary_min?: number;
           p_schedules?: Database["public"]["Enums"]["work_schedule"][];
           p_sort?: string;
@@ -5601,10 +5984,19 @@ export type Database = {
           work_format: Database["public"]["Enums"]["work_format"];
         }[];
       };
-      security_account_restricted: { Args: { p_profile_id: string }; Returns: boolean };
-      security_active_restriction: { Args: { p_scope: string; p_subject: string }; Returns: Json };
+      security_account_restricted: {
+        Args: { p_profile_id: string };
+        Returns: boolean;
+      };
+      security_active_restriction: {
+        Args: { p_scope: string; p_subject: string };
+        Returns: Json;
+      };
       security_alert_admins: { Args: { p_event_id: string }; Returns: number };
-      security_hit: { Args: { p_key: string; p_window_seconds: number }; Returns: number };
+      security_hit: {
+        Args: { p_key: string; p_window_seconds: number };
+        Returns: number;
+      };
       security_log_event: {
         Args: {
           p_action_taken?: string;
@@ -5635,8 +6027,18 @@ export type Database = {
         };
         Returns: Json;
       };
-      security_revoke_sessions: { Args: { p_profile_id: string; p_reason_code: string; p_request_id?: string }; Returns: Json };
-      security_revoke_sessions_internal: { Args: { p_profile_id: string }; Returns: number };
+      security_revoke_sessions: {
+        Args: {
+          p_profile_id: string;
+          p_reason_code: string;
+          p_request_id?: string;
+        };
+        Returns: Json;
+      };
+      security_revoke_sessions_internal: {
+        Args: { p_profile_id: string };
+        Returns: number;
+      };
       send_message: {
         Args: {
           p_attachment_meta?: Json;
@@ -5659,10 +6061,6 @@ export type Database = {
           p_worker_id: string;
         };
         Returns: string;
-      };
-      set_my_interests: {
-        Args: { p_category_ids: string[] };
-        Returns: number;
       };
       set_application_status: {
         Args: {
@@ -5689,6 +6087,7 @@ export type Database = {
         };
         Returns: Json;
       };
+      set_my_interests: { Args: { p_category_ids: string[] }; Returns: number };
       set_vacancy_status: {
         Args: {
           p_status: Database["public"]["Enums"]["vacancy_status"];
@@ -5714,7 +6113,10 @@ export type Database = {
           title: string;
         }[];
       };
-      simple_listing_features: { Args: Record<PropertyKey, never>; Returns: Json };
+      simple_listing_features: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
       simple_search_vacancies: {
         Args: {
           p_district_id?: string;
@@ -5816,8 +6218,104 @@ export type Database = {
           work_time_to: string;
         }[];
       };
+      simple_search_vacancies_v3: {
+        Args: {
+          p_district_id?: string;
+          p_employer_type?: Database["public"]["Enums"]["employer_type"];
+          p_featured?: boolean;
+          p_limit?: number;
+          p_mass?: boolean;
+          p_no_experience?: boolean;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+          p_salary_min?: number;
+          p_salary_type?: Database["public"]["Enums"]["salary_type"];
+          p_schedule?: Database["public"]["Enums"]["work_schedule"];
+        };
+        Returns: {
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          employer_name: string;
+          employer_verified: boolean;
+          experience_min_months: number;
+          id: string;
+          is_featured: boolean;
+          is_government: boolean;
+          is_remote: boolean;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          published_at: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          salary_from: number;
+          salary_negotiable: boolean;
+          salary_to: number;
+          salary_type: Database["public"]["Enums"]["salary_type"];
+          schedule: Database["public"]["Enums"]["work_schedule"];
+          slug: string;
+          summary: string;
+          title: string;
+          total_count: number;
+          work_time_from: string;
+          work_time_to: string;
+        }[];
+      };
       simple_search_workers: {
         Args: {
+          p_district_id?: string;
+          p_experienced?: boolean;
+          p_limit?: number;
+          p_offset?: number;
+          p_profession_node_id?: string;
+          p_region_id?: string;
+          p_remote?: boolean;
+        };
+        Returns: {
+          about: string;
+          avatar_url: string;
+          category_icon: string;
+          category_slug: string;
+          district_name_en: string;
+          district_name_oz: string;
+          district_name_ru: string;
+          district_name_uz: string;
+          experience_level: Database["public"]["Enums"]["experience_level"];
+          first_name: string;
+          headline: string;
+          id: string;
+          is_promoted: boolean;
+          last_active_at: string;
+          last_initial: string;
+          phone: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          profession_node_id: string;
+          region_name_en: string;
+          region_name_oz: string;
+          region_name_ru: string;
+          region_name_uz: string;
+          region_wide: boolean;
+          remote_ok: boolean;
+          salary_expected: number;
+          total_count: number;
+        }[];
+      };
+      simple_search_workers_v2: {
+        Args: {
+          p_daily?: boolean;
           p_district_id?: string;
           p_experienced?: boolean;
           p_limit?: number;
@@ -5892,8 +6390,20 @@ export type Database = {
         }[];
       };
       slugify: { Args: { input: string }; Returns: string };
-      stale_raw_media: { Args: { p_limit?: number }; Returns: { bucket_id: string; name: string }[] };
-      stale_raw_vacancy_photos: { Args: { p_limit?: number }; Returns: { bucket_id: string; name: string }[] };
+      stale_raw_media: {
+        Args: { p_limit?: number };
+        Returns: {
+          bucket_id: string;
+          name: string;
+        }[];
+      };
+      stale_raw_vacancy_photos: {
+        Args: { p_limit?: number };
+        Returns: {
+          bucket_id: string;
+          name: string;
+        }[];
+      };
       submit_employer_verification: {
         Args: {
           p_document_paths?: string[];
@@ -5911,7 +6421,10 @@ export type Database = {
         };
         Returns: string;
       };
-      telegram_auth_lookup: { Args: { p_telegram_user_id: number }; Returns: Json };
+      telegram_auth_lookup: {
+        Args: { p_telegram_user_id: number };
+        Returns: Json;
+      };
       telegram_blocked: { Args: { p_profile_id: string }; Returns: undefined };
       telegram_outbox_claim: {
         Args: { p_limit?: number };
@@ -5940,8 +6453,14 @@ export type Database = {
           isSetofReturn: true;
         };
       };
-      telegram_update_failed: { Args: { p_error: string; p_update_id: number }; Returns: boolean };
-      telegram_update_first_seen: { Args: { p_update_id: number }; Returns: boolean };
+      telegram_update_failed: {
+        Args: { p_error: string; p_update_id: number };
+        Returns: boolean;
+      };
+      telegram_update_first_seen: {
+        Args: { p_update_id: number };
+        Returns: boolean;
+      };
       touch_last_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
       unread_counts: {
         Args: Record<PropertyKey, never>;
@@ -5952,13 +6471,46 @@ export type Database = {
           offers: number;
         }[];
       };
+      vacancy_employer_kind: {
+        Args: {
+          p_company_id: string;
+          p_employer_type: Database["public"]["Enums"]["employer_type"];
+          p_is_government: boolean;
+        };
+        Returns: Database["public"]["Enums"]["employer_type"];
+      };
       vacancy_managers: { Args: { p_vacancy_id: string }; Returns: string[] };
-      vacancy_publish_mode: { Args: { p_vacancy_id: string }; Returns: string };
       vacancy_public_stub: { Args: { p_slug: string }; Returns: Json };
+      vacancy_publish_mode: { Args: { p_vacancy_id: string }; Returns: string };
       vacancy_publish_quote: { Args: { p_vacancy_id: string }; Returns: Json };
       vacancy_risk_flags: {
         Args: { p_description: string; p_title: string };
         Returns: string[];
+      };
+      vacancy_section_counts: {
+        Args: { p_district_id?: string; p_region_id?: string };
+        Returns: {
+          company: number;
+          daily: number;
+          entrepreneur: number;
+          featured: number;
+          government: number;
+          mass: number;
+          no_experience: number;
+          person: number;
+          remote: number;
+          today: number;
+          total: number;
+        }[];
+      };
+      vacancy_title_key: { Args: { p_title: string }; Returns: string };
+      wallet_enabled: { Args: Record<PropertyKey, never>; Returns: boolean };
+      wallet_pay: {
+        Args: {
+          p_purpose: Database["public"]["Enums"]["payment_purpose"];
+          p_target_id: string | null;
+        };
+        Returns: Json;
       };
       withdraw_offer: { Args: { p_offer_id: string }; Returns: undefined };
       worker_access_ok: { Args: { p_worker_id: string }; Returns: boolean };
@@ -6047,6 +6599,9 @@ export type Database = {
         "none" | "lt_6m" | "6_12m" | "1_2y" | "2_3y" | "3_5y" | "5y_plus";
       gender: "male" | "female";
       language_level: "a1" | "a2" | "b1" | "b2" | "c1" | "c2" | "native";
+      master_listing_status:
+        "draft" | "pending_review" | "active" | "hidden" | "rejected";
+      master_request_status: "new" | "seen" | "done";
       message_type:
         "text" | "image" | "document" | "location" | "voice" | "system";
       notification_type:
@@ -6306,6 +6861,14 @@ export const Constants = {
       ],
       gender: ["male", "female"],
       language_level: ["a1", "a2", "b1", "b2", "c1", "c2", "native"],
+      master_listing_status: [
+        "draft",
+        "pending_review",
+        "active",
+        "hidden",
+        "rejected",
+      ],
+      master_request_status: ["new", "seen", "done"],
       message_type: [
         "text",
         "image",

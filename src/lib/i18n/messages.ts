@@ -23,6 +23,7 @@ import uzContacts from "../../../messages/uz/contacts.json";
 import uzCv from "../../../messages/uz/cv.json";
 import uzBot from "../../../messages/uz/bot.json";
 import uzLegal from "../../../messages/uz/legal.json";
+import uzMasters from "../../../messages/uz/masters.json";
 import uzProfessions from "../../../messages/uz/professions.json";
 import uzVacancies from "../../../messages/uz/vacancies.json";
 import uzOffers from "../../../messages/uz/offers.json";
@@ -49,6 +50,7 @@ import ruContacts from "../../../messages/ru/contacts.json";
 import ruCv from "../../../messages/ru/cv.json";
 import ruBot from "../../../messages/ru/bot.json";
 import ruLegal from "../../../messages/ru/legal.json";
+import ruMasters from "../../../messages/ru/masters.json";
 import ruProfessions from "../../../messages/ru/professions.json";
 import ruVacancies from "../../../messages/ru/vacancies.json";
 import ruOffers from "../../../messages/ru/offers.json";
@@ -75,6 +77,7 @@ import enContacts from "../../../messages/en/contacts.json";
 import enCv from "../../../messages/en/cv.json";
 import enBot from "../../../messages/en/bot.json";
 import enLegal from "../../../messages/en/legal.json";
+import enMasters from "../../../messages/en/masters.json";
 import enProfessions from "../../../messages/en/professions.json";
 import enVacancies from "../../../messages/en/vacancies.json";
 import enOffers from "../../../messages/en/offers.json";
@@ -101,6 +104,7 @@ import ozContacts from "../../../messages/oz/contacts.json";
 import ozCv from "../../../messages/oz/cv.json";
 import ozBot from "../../../messages/oz/bot.json";
 import ozLegal from "../../../messages/oz/legal.json";
+import ozMasters from "../../../messages/oz/masters.json";
 import ozProfessions from "../../../messages/oz/professions.json";
 import ozVacancies from "../../../messages/oz/vacancies.json";
 import ozOffers from "../../../messages/oz/offers.json";
@@ -135,6 +139,7 @@ export const messages = {
     cv: uzCv,
     bot: uzBot,
     legal: uzLegal,
+    masters: uzMasters,
     professions: uzProfessions,
   },
   ru: {
@@ -162,6 +167,7 @@ export const messages = {
     cv: ruCv,
     bot: ruBot,
     legal: ruLegal,
+    masters: ruMasters,
     professions: ruProfessions,
   },
   oz: {
@@ -183,6 +189,7 @@ export const messages = {
     cv: ozCv,
     bot: ozBot,
     legal: ozLegal,
+    masters: ozMasters,
     professions: ozProfessions,
     vacancies: ozVacancies,
     offers: ozOffers,
@@ -216,6 +223,7 @@ export const messages = {
     cv: enCv,
     bot: enBot,
     legal: enLegal,
+    masters: enMasters,
     professions: enProfessions,
   },
 } satisfies Record<Locale, Record<string, unknown>>;

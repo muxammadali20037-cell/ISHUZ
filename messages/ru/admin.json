@@ -37,7 +37,8 @@
     "home": "Главная страница",
     "entry": "Экраны входа",
     "account": "Способы входа",
-    "telegram": "Telegram-канал"
+    "telegram": "Telegram-канал",
+    "masters": "Универсальные мастера"
   },
   "common": {
     "done": "Готово",

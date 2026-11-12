@@ -39,7 +39,11 @@ select p.id as parent, c.id as child, p.category_id, p.name_uz as parent_name,
   (select id from public.regions where slug = 'tashkent_city') as region
 from public.profession_nodes c join public.profession_nodes p on p.id = c.parent_id
 where c.selectable and c.is_active and p.is_active
-order by p.depth, p.sort_order nulls last, c.sort_order nulls last limit 1;
+  -- bola kasb nomi ota kasb nomi ichida bo'lmasin ("Zargarlik" ⊃ "Zargar"): aks holda "eski e'lon nomi bola kasbga mos emas"
+  -- tekshiruvi ma'nosini yo'qotadi. Tartib to'liq aniqlangan (slug) — bir xil sort_order'li juftliklar orasida tanlov
+  -- bazaning jismoniy tartibiga bog'liq bo'lib qolmasin (2026-11-12: shu sabab test goh o'tib, goh yiqilardi).
+  and position(lower(c.name_uz) in lower(p.name_uz)) = 0 and position(lower(c.name_ru) in lower(p.name_ru)) = 0
+order by p.depth, p.sort_order nulls last, c.sort_order nulls last, p.slug, c.slug limit 1;
 grant select on fx to anon, authenticated;
 select pg_temp.ok((select parent is not null and child is not null from fx), 'kasb daraxti tayyor');
 

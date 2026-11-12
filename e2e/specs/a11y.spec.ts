@@ -62,6 +62,12 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "
   { name: "employer-vacancies", url: async () => (await vacancySlug(), "/employer/vacancies"), user: USERS.employer, mode: "employer" },
   // AI yordamchi sahifasi (suhbat sahifaning o'zida, yozish maydoni pastda yopishgan)
   { name: "ai-hub", url: async () => "/ai", mode: "worker" },
+  // "Universal ustalar" (turkuaz mavzu): katalog, qidiruv, usta sahifasi (demo), e'lon formasi, kabinet
+  { name: "masters-home", url: async () => "/ustalar" },
+  { name: "masters-search", url: async () => "/ustalar/qidiruv?k=ac" },
+  { name: "masters-detail", url: async () => "/ustalar/demo-ac-1" },
+  { name: "masters-form", url: async () => "/ustalar/elon", user: USERS.workerA },
+  { name: "masters-cabinet", url: async () => "/ustalar/kabinet", user: USERS.workerA },
   // brend UI to'plami (faqat UI_KIT_PREVIEW=1 bilan) — barcha komponent holatlari bir sahifada
   { name: "ui-kit", url: async () => "/dev/ui" },
 ];

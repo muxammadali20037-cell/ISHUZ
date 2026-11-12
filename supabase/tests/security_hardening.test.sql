@@ -147,13 +147,15 @@ select pg_temp.ok((select public.admin_security_overview(24) ? 'recent'), 'B: ad
 -- 0066: simple_search_vacancies_v3 / simple_search_workers_v2 — v2/v1 bilan bir xil ochiq maydonlar (telefon — o'sha rozilik qoidasi);
 --       vacancy_section_counts / worker_section_counts — faqat yig'ma sonlar (shaxsiy ma'lumot yo'q)
 -- 0069: vacancy_public_stub — avval ommaviy bo'lgan yopilgan vakansiyaning nomi, kompaniyasi, hududi, sohasi (maxfiy maydonsiz)
+-- 0076: master_listings_public (telefonsiz ro'yxat), master_listing_public (telefon faqat egasi roziligi bilan),
+--       master_category_counts (faqat sonlar) — "Universal ustalar"ning ommaviy o'qish funksiyalari
 select pg_temp.superuser();
 select pg_temp.ok((
   select coalesce(string_agg(p.proname, ',' order by p.proname), '')
   from pg_proc p
   where p.pronamespace = 'public'::regnamespace and p.prosecdef and p.prorettype <> 'trigger'::regtype
     and has_function_privilege('anon', p.oid, 'execute')
-) = 'ai_alerts_paid,api_pre_request,billing_enabled,can_edit_vacancy,can_view_worker,compute_match,current_worker_id,has_admin_permission,is_active_user,is_admin,is_allowed_media_url,is_company_member,listings_paid,notification_open,profile_rating,record_vacancy_view,salary_insight,simple_search_vacancies,simple_search_vacancies_v2,simple_search_vacancies_v3,simple_search_workers,simple_search_workers_v2,simple_vacancy_phone,simple_worker_listing,vacancy_public_stub,vacancy_section_counts,worker_section_counts',
+) = 'ai_alerts_paid,api_pre_request,billing_enabled,can_edit_vacancy,can_view_worker,compute_match,current_worker_id,has_admin_permission,is_active_user,is_admin,is_allowed_media_url,is_company_member,listings_paid,master_category_counts,master_listing_public,master_listings_public,notification_open,profile_rating,record_vacancy_view,salary_insight,simple_search_vacancies,simple_search_vacancies_v2,simple_search_vacancies_v3,simple_search_workers,simple_search_workers_v2,simple_vacancy_phone,simple_worker_listing,vacancy_public_stub,vacancy_section_counts,worker_section_counts',
   'B: anon uchun ochiq SECURITY DEFINER funksiyalar faqat ruxsat etilgan ro''yxat');
 
 -- ===================================================================================
