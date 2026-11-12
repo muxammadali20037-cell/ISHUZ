@@ -35,7 +35,9 @@
     "no_rating": "No ratings yet",
     "call": "Call",
     "request": "Send a request",
-    "open": "Open listing"
+    "open": "Open listing",
+    "contact_phone": "You can call",
+    "contact_request": "Contact via request"
   },
   "results": {
     "title": "Masters",

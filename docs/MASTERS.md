@@ -44,7 +44,9 @@ Vakansiyalar (`vacancies`) bilan hech qanday umumiy jadval yo'q. Rasmlar vakansi
   moderatsiya talab qilmaydi.
 - **Telefon.** Ommaviy o'qish faqat `SECURITY DEFINER` funksiyalar orqali: ro'yxatda (`master_listings_public`) telefon ustuni
   umuman yo'q; e'lon sahifasida (`master_listing_public`) — faqat `phone_public = true` bo'lsa. Mehmon (`anon`) jadvalga kira
-  olmaydi. Rozilik bo'lmasa mijoz faqat so'rov yuboradi.
+  olmaydi. Rozilik bo'lmasa mijoz faqat so'rov yuboradi. **Kartada raqamning o'zi yo'q** — faqat bog'lanish usuli: "Qo'ng'iroq
+  qilish mumkin" (rozilik bor) yoki "Bog'lanish — so'rov orqali". Sabab: ro'yxat sahifalaridan raqamlarni ommaviy yig'ib olish
+  (spam qo'ng'iroqlar) oldini olish va telefon bosishlarini hisoblash; vakansiyalardagi qoida (0074) bilan bir xil.
 - **Reyting faqat haqiqiy sharhdan.** `rating_avg`/`rating_count` ni trigger hisoblaydi; egasi o'zgartira olmaydi, o'ziga sharh
   yoza olmaydi; mehmon yoza olmaydi; demo e'longa sharh yo'q. Soxta sharh yoki baho yaratadigan kod yo'q.
 - **Hisoblagichlar.** Ko'rish va telefon bosish — `master_listing_hit`, faqat server kaliti bilan chaqiriladi: ilova IP + e'lon

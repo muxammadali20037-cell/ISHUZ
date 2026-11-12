@@ -35,7 +35,9 @@
     "no_rating": "Hali baho yo'q",
     "call": "Qo'ng'iroq",
     "request": "So'rov yuborish",
-    "open": "E'lonni ochish"
+    "open": "E'lonni ochish",
+    "contact_phone": "Qo'ng'iroq qilish mumkin",
+    "contact_request": "Bog'lanish — so'rov orqali"
   },
   "results": {
     "title": "Ustalar",

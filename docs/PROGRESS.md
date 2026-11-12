@@ -59,6 +59,11 @@ tanlov to'liq aniqlangan (slug bo'yicha) va bunday juftlik olinmaydi. Tekshiruvn
   e'lonlarni haqiqiylar yoniga qaytarmaydi.
 - SQL test: oddiy foydalanuvchi demo'ni boshqara olmaydi; operator yo'li ishlaydi (+5 tekshiruv).
 
+**Karta: bog'lanish usuli (#16).** Egasi talabida kartada "telefon" ham bor edi. Raqamning o'zi ro'yxatda ko'rsatilmaydi (ommaviy
+yig'ib olishdan himoya, 0074 qoidasi bilan bir xil), lekin endi har haqiqiy kartada bog'lanish usuli ko'rinadi: "Qo'ng'iroq qilish
+mumkin" (usta rozi) yoki "Bog'lanish — so'rov orqali". Raqam — e'lon sahifasida, bir bosishda. E2E: ikkala holat va ro'yxatda
+raqam yo'qligi tekshiriladi.
+
 **Qolgan (ega):** prod bazaga 0076 (u qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi). Keyingi qadamlar — `MASTERS.md` §7.
 
 ## AI ish maydoni — "ChatGPT kabi" /ai (2026-11-12)

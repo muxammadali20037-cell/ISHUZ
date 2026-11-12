@@ -171,6 +171,10 @@ test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; t
   await expect(cards.first()).toContainText(TITLE);
   await expect(cards.first()).not.toContainText("Demo");
   await expect(cards.first().locator("img")).toHaveCount(1);
+  // kartada bog'lanish usuli ko'rinadi (raqamning o'zi emas): rozilik yo'q — faqat so'rov; demo kartada bu qator yo'q
+  await expect(cards.first().locator("[data-master-contact='request']")).toHaveText("Bog'lanish — so'rov orqali");
+  await expect(guest.locator("[data-masters-results] [data-demo] [data-master-contact]")).toHaveCount(0);
+  await expect(guest.locator("[data-masters-results]")).not.toContainText("+998");
   await cards.first().locator("h3 a").click();
   await expect(guest.locator("[data-masters-detail]")).toBeVisible();
   await expect(guest.locator("[data-masters-phone]")).toHaveCount(0);
@@ -203,7 +207,10 @@ test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; t
   const [after] = await sql<{ status: string; phone_public: boolean }>("select status::text, phone_public from public.master_listings where slug = $1", [row!.slug]);
   expect(after).toEqual({ status: "active", phone_public: true });
 
-  // 7) endi telefon ko'rinadi (rozilik bilan), bosish hisoblanadi
+  // 7) endi telefon ko'rinadi (rozilik bilan), bosish hisoblanadi. Kartada — "qo'ng'iroq qilish mumkin", raqamning o'zi yo'q
+  await guest.goto("/ustalar/qidiruv?k=ac");
+  await expect(guest.locator("[data-masters-results] [data-master-card]").first().locator("[data-master-contact='phone']")).toHaveText("Qo'ng'iroq qilish mumkin");
+  await expect(guest.locator("[data-masters-results]")).not.toContainText("765 43 21");
   await guest.goto(`/ustalar/${row!.slug}`);
   const call = guest.locator("[data-masters-phone]");
   await expect(call).toHaveAttribute("href", "tel:+998907654321");
