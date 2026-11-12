@@ -44,12 +44,20 @@ Egasi talabi va maketi bo'yicha. To'liq tavsif: `docs/MASTERS.md`.
 `src/features/health/schema-probes.ts`, `scripts/prod-migration-check.sql`, `src/types/database.types.ts`, `messages/*/{masters,admin,legal}.json`,
 `e2e/specs/{masters,a11y}.spec.ts`, `e2e/screens/masters.shots.ts`, `docs/{MASTERS,STATUS,RELEASE_CHECKLIST,ROUTES_MAP,DATABASE_SCHEMA}.md`.
 
-**Testlar:** SQL 56 tekshiruv (to'liq SQL to'plami toza bazada o'tdi); Vitest 776 / 18 skip; E2E 277/277 (5 ta yangi ssenariy +
+**Testlar:** SQL 61 tekshiruv (to'liq SQL to'plami toza bazada o'tdi); Vitest 776 / 18 skip; E2E 277/277 (5 ta yangi ssenariy +
 5 ta a11y sahifa); lint, typecheck 0 xato.
 
 **Yo'l-yo'lakay tuzatildi:** `supabase/tests/scale_rls.test.sql` — sinov ma'lumoti uchun kasb juftligi bir xil `sort_order`'li
 qatorlar orasidan tasodifiy tanlanardi; "Zargarlik / Zargar" tushsa test yiqilardi (ota nomi bola nomini o'z ichiga oladi). Endi
 tanlov to'liq aniqlangan (slug bo'yicha) va bunday juftlik olinmaydi. Tekshiruvning o'zi o'zgarmadi.
+
+**Relizdan keyingi mustahkamlash (#15, 0076 hali prod'ga qo'llanmagan — fayl joyida tuzatildi):**
+- `master_privileged()`: baza operatori vositasi `SET ROLE postgres` qilgan bo'lsa ham (ba'zi CLI/boshqaruv vositalari) migratsiya
+  oxiridagi demo seed "forbidden" bilan to'xtab qolmaydi. API orqali bu qiymatga yetib bo'lmaydi (authenticator faqat anon /
+  authenticated / service_role ga o'tadi). Testda tasdiqlandi: eski funksiya shu holatda rad etardi.
+- Fayl oxiridagi demo seed — faqat birinchi o'rnatishda (jadval bo'sh): tasodifiy takror ishga tushirish olib tashlangan demo
+  e'lonlarni haqiqiylar yoniga qaytarmaydi.
+- SQL test: oddiy foydalanuvchi demo'ni boshqara olmaydi; operator yo'li ishlaydi (+5 tekshiruv).
 
 **Qolgan (ega):** prod bazaga 0076 (u qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi). Keyingi qadamlar — `MASTERS.md` §7.
 

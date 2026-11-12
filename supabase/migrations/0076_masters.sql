@@ -441,11 +441,13 @@ end $$;
 revoke all on function public.master_moderate(uuid, text, text) from public, anon;
 grant execute on function public.master_moderate(uuid, text, text) to authenticated;
 
--- Server kaliti (service_role), migratsiya/superuser (SET ROLE yo'q) yoki moderatsiya huquqli admin.
+-- Server kaliti (service_role), baza operatori (migratsiya, SQL Editor, psql) yoki moderatsiya huquqli admin.
 -- SET ROLE qiymati ("role" sozlamasi) SECURITY DEFINER ichida ham o'qiladi — current_user esa definer bo'lib qoladi.
+-- Operator: SET ROLE yo'q ('none') yoki vosita o'zi "SET ROLE postgres" qilgan (ba'zi CLI/boshqaruv vositalari shunday ishlaydi).
+-- API orqali kelgan so'rovda bu qiymat faqat anon / authenticated / service_role bo'la oladi (authenticator boshqasiga o'ta olmaydi).
 create or replace function public.master_privileged()
 returns boolean language sql stable security definer set search_path = public as $$
-  select coalesce(current_setting('role', true), 'none') in ('service_role', 'none', '')
+  select coalesce(current_setting('role', true), 'none') in ('service_role', 'none', '', 'postgres', 'supabase_admin')
       or public.has_admin_permission('vacancies.moderate');
 $$;
 revoke all on function public.master_privileged() from public, anon, authenticated;
@@ -495,5 +497,12 @@ revoke all on function public.master_demo_remove() from public, anon;
 grant execute on function public.master_demo_remove() to authenticated;
 
 -- Egasi talabi: dastlab har kategoriyada 4 ta demo e'lon ko'rinsin (olib tashlash: admin → Ustalar → "Demo e'lonlarni olib tashlash"
--- yoki SQL: select public.master_demo_remove();)
-select public.master_demo_seed();
+-- yoki SQL: select public.master_demo_remove();).
+-- Faqat birinchi o'rnatishda (jadval bo'sh): fayl tasodifan qayta ishga tushirilsa, olib tashlangan demo e'lonlar haqiqiy
+-- e'lonlar yoniga qaytib qolmaydi. Qaytarish kerak bo'lsa — admin tugmasi yoki select public.master_demo_seed();
+do $$
+begin
+  if not exists (select 1 from public.master_listings) then
+    perform public.master_demo_seed();
+  end if;
+end $$;
