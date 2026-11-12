@@ -59,10 +59,15 @@ tanlov to'liq aniqlangan (slug bo'yicha) va bunday juftlik olinmaydi. Tekshiruvn
   e'lonlarni haqiqiylar yoniga qaytarmaydi.
 - SQL test: oddiy foydalanuvchi demo'ni boshqara olmaydi; operator yo'li ishlaydi (+5 tekshiruv).
 
-**Karta: bog'lanish usuli (#16).** Egasi talabida kartada "telefon" ham bor edi. Raqamning o'zi ro'yxatda ko'rsatilmaydi (ommaviy
+**Karta: bog'lanish usuli (#17).** Egasi talabida kartada "telefon" ham bor edi. Raqamning o'zi ro'yxatda ko'rsatilmaydi (ommaviy
 yig'ib olishdan himoya, 0074 qoidasi bilan bir xil), lekin endi har haqiqiy kartada bog'lanish usuli ko'rinadi: "Qo'ng'iroq qilish
 mumkin" (usta rozi) yoki "Bog'lanish — so'rov orqali". Raqam — e'lon sahifasida, bir bosishda. E2E: ikkala holat va ro'yxatda
 raqam yo'qligi tekshiriladi.
+
+**0076 ni alohida qo'llash tekshirildi (2026-11-12).** Prod'ga o'xshash bazada (faqat 0001–0068, `scripts/prod-migration-check.sql`
+0069–0076 ni "YO'Q" deb ko'rsatgan holat) **faqat 0076** qo'llandi (sessiyada `role=postgres` bilan ham): 12 kategoriya, 48 demo
+e'lon, `masters.test.sql` 61/61. Keyin 0069–0075 qo'llandi — xatosiz, to'liq SQL to'plami (39 fayl) o'tdi. Demak tartib muhim emas:
+egasi Ustalarni yoqish uchun avval 0076 ni, qolganlarini keyin qo'llashi mumkin.
 
 **Qolgan (ega):** prod bazaga 0076 (u qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi). Keyingi qadamlar — `MASTERS.md` §7.
 

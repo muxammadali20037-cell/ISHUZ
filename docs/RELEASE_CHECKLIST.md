@@ -45,7 +45,8 @@ joylab **Run**. Xato chiqsa — to'xtang, keyingisiga o'tmang, xato matnini yubo
 | 0076_masters | "Universal ustalar": alohida jadvallar, RLS, moderatsiya, 12 kategoriya, 48 ta demo e'lon | `/ustalar`, `/admin/ustalar` |
 
 **Muhim:** 0074 avvalgi migratsiyalardagi funksiya ta'riflari asosida yozilgan — undan oldin 0069–0073 qo'llangan bo'lishi shart.
-0076 mustaqil (boshqa migratsiyalarga bog'liq emas). U qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi. Demo
+0076 mustaqil (boshqa migratsiyalarga bog'liq emas; 0001–0068 li bazada alohida qo'llab tekshirilgan — uni 0069–0075 dan oldin
+ham, keyin ham qo'llash mumkin). U qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi. Demo
 e'lonlarni keyin olib tashlash: admin → Universal ustalar → "Demo e'lonlarni olib tashlash" yoki `select public.master_demo_remove();`
 (`docs/MASTERS.md` §4).
 
