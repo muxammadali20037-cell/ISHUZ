@@ -30,8 +30,19 @@ Natijada har bir migratsiya "bor" yoki "YO'Q". Ikkinchi jadval — faol vakansiy
 
 ## 3. Migratsiyalarni qo'llash
 
-Faqat "YO'Q" bo'lganlarini, **raqam tartibida**, bittadan: SQL Editor'ga `supabase/migrations/00NN_*.sql` faylini to'liq
-joylab **Run**. Xato chiqsa — to'xtang, keyingisiga o'tmang, xato matnini yuboring.
+**Eng oson yo'l — bitta fayl (2026-11-12 dan):** `supabase/prod/pending.sql`. Unda prod'da hali yo'q barcha migratsiyalar
+tartib bilan, bitta tranzaksiyada (xato bo'lsa hech narsa o'zgarmaydi). Takror ishga tushirish zarar qilmaydi.
+
+1. GitHub'da `supabase/prod/pending.sql` ni oching → **Raw** → hammasini belgilab nusxalang (Ctrl+A, Ctrl+C).
+2. Supabase → **SQL Editor** → **New query** → joylang (Ctrl+V) → **Run**.
+3. Pastda jadval chiqadi — har qatorda **"bor"** bo'lishi kerak. Xato chiqsa, matnini yuboring.
+
+Fayl avtomatik yaratiladi (`npm run prod:pending`) va har o'zgarishda CI'da prod'ga o'xshash bazada sinaladi
+(`scripts/prod-pending-test.sh`: qo'llanadi, takror qo'llanadi, natija to'liq migratsiyalar bazasi bilan bir xil).
+Ega qo'llaganini aytgach `scripts/gen-prod-pending.mjs` dagi `APPLIED_UNTIL` ko'tariladi.
+
+**Bittalab qo'llash (eski yo'l, kerak bo'lsa):** faqat "YO'Q" bo'lganlarini, **raqam tartibida**: SQL Editor'ga
+`supabase/migrations/00NN_*.sql` faylini to'liq joylab **Run**. Xato chiqsa — to'xtang, keyingisiga o'tmang, xato matnini yuboring.
 
 | Migratsiya | Nima qiladi | Kod nimani kutadi |
 | --- | --- | --- |

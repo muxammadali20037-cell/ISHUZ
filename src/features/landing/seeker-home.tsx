@@ -19,6 +19,7 @@ import { getHomePlace, getSeekerFeed, type HomePlace } from "./home-queries";
 import { placeChooserHref, seekerFiltersHref, seekerQuickFilters } from "./quick-filters";
 import { MyWorld } from "@/features/world/components/my-world";
 import { MastersEntry } from "@/features/masters/components/masters-entry";
+import { AiEntry } from "@/features/ai/components/ai-entry";
 
 /**
  * Ish qidiruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "soddalashtir, umuman adashmasin"). Mehmon ham ko'radi.
@@ -89,8 +90,12 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
             {t("easy.home2.all_filters")} <ChevronRight className="size-4" aria-hidden />
           </Link>
         </nav>
-        {/* "Universal ustalar" — alohida bo'lim, turkuaz rangda ajralib turadi */}
-        <MastersEntry title={t("masters.name")} desc={t("masters.entry_desc")} className="mt-3 max-w-3xl" />
+        {/* alohida bo'limlar: "AI yordamchi" (suhbat oynasi, /ai) va "Universal ustalar" (turkuaz) — bir qatorda; telefonda ixcham
+            plitka (faqat nom): birinchi e'lon birinchi ekranda qolsin (home.spec) */}
+        <div className="mt-3 grid max-w-3xl grid-cols-2 gap-2" data-home-sections>
+          <AiEntry dense title={t("easy.aiws.nav.ai")} desc={t("easy.aiws.entry_desc")} />
+          <MastersEntry dense title={t("masters.name")} desc={t("masters.entry_desc")} />
+        </div>
       </section>
 
       {/* kirgan ish izlovchi: arizalar holati va saqlanganlar (faqat ma'lumot bo'lsa) */}

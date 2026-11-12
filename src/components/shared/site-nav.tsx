@@ -3,7 +3,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { Menu, Wrench } from "lucide-react";
+import { Menu, Sparkles, Wrench } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -57,9 +57,13 @@ function MastersLink() {
       data-track="site_nav"
       data-track-to="masters"
       data-masters-entry
-      className="theme-masters ml-1 flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-md bg-primary-soft px-3 text-sm font-semibold text-primary-ink ring-1 ring-primary/30 transition-colors hover:ring-primary/60"
+      aria-label={t("masters.name")}
+      title={t("masters.name")}
+      className="theme-masters ml-1 flex min-h-11 min-w-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-md bg-primary-soft px-2.5 text-sm font-semibold text-primary-ink ring-1 ring-primary/30 transition-colors hover:ring-primary/60"
     >
-      <Wrench className="size-4" aria-hidden /> {t("masters.name")}
+      {/* faqat belgi: to'rt bo'lim va "AI" bilan bir qatorga barcha tillarda sig'ishi uchun (kirill va ruscha nomlar uzunroq).
+          To'liq nom — aria-label va title; nomli havola — telefon menyusida va sahifa pastki qismida */}
+      <Wrench className="size-4" aria-hidden />
     </Link>
   );
 }
@@ -78,7 +82,7 @@ function DesktopLinks({ mode }: { mode: string | null }) {
             data-track-to={it.key}
             aria-current={active === it.key ? "page" : undefined}
             className={cn(
-              "flex min-h-11 items-center whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors",
+              "flex min-h-11 items-center whitespace-nowrap rounded-md px-2.5 text-sm font-medium transition-colors",
               active === it.key ? "text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
           >
@@ -86,7 +90,24 @@ function DesktopLinks({ mode }: { mode: string | null }) {
           </Link>
         </li>
       ))}
+      {/* "AI yordamchi" — suhbat oynasi (/ai): bo'limlardan keyin, ko'k belgi bilan */}
       <li>
+        <Link
+          href="/ai"
+          data-track="ai_entry"
+          data-track-to="site"
+          data-ai-entry
+          aria-current={pathname === "/ai" ? "page" : undefined}
+          aria-label={t("easy.aiws.nav.ai")}
+          title={t("easy.aiws.nav.ai")}
+          className="ml-1 flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-md bg-primary-soft px-2.5 text-sm font-semibold text-primary-ink ring-1 ring-primary/30 transition-colors hover:ring-primary/60"
+        >
+          {/* to'rt bo'lim bilan bir qatorga sig'ishi uchun qisqa nom ("AI"); to'liq nom — aria-label va title */}
+          <Sparkles className="size-4" aria-hidden /> {t("easy.nav.tab_ai")}
+        </Link>
+      </li>
+      {/* lg–xl (1024–1279): joy yetmaydi — "Universal ustalar" bu qatorda xl dan */}
+      <li className="max-xl:hidden">
         <MastersLink />
       </li>
     </ul>
@@ -130,6 +151,11 @@ export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
             <Link href={it.href}>{t(LABEL[it.key])}</Link>
           </DropdownMenuItem>
         ))}
+        <DropdownMenuItem asChild className="min-h-11 text-base font-semibold text-primary-ink focus:text-primary-ink">
+          <Link href="/ai" data-track="ai_entry" data-track-to="site_menu">
+            <Sparkles className="size-4" aria-hidden /> {t("easy.aiws.nav.ai")}
+          </Link>
+        </DropdownMenuItem>
         <DropdownMenuItem asChild className="theme-masters min-h-11 text-base font-semibold text-primary-ink">
           <Link href="/ustalar" data-track="site_nav" data-track-to="masters" data-masters-entry>
             <Wrench className="size-4" aria-hidden /> {t("masters.name")}

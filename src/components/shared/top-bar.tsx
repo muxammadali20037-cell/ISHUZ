@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, ChevronDown, MapPin, MessageCircle, Plus } from "lucide-react";
+import { Bell, Bookmark, ChevronDown, MapPin, MessageCircle, Plus, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -107,6 +107,14 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               </Link>
             </Button>
           ) : null}
+          {/* telefonda (md dan tor): "AI yordamchi" — har sahifadan bir bosishda; kompyuterda u menyuda (yon yoki yuqori) */}
+          {pathname === "/ai" ? null : (
+            <Button asChild variant="ghost" size="icon" className="text-primary-ink md:hidden" aria-label={t("easy.aiws.nav.ai")}>
+              <Link href="/ai" data-track="ai_entry" data-track-to="topbar" data-ai-entry>
+                <Sparkles className="size-5" />
+              </Link>
+            </Button>
+          )}
           <LanguageSelect className={showPlace && session ? "max-md:hidden" : undefined} />
           {session ? (
             <>

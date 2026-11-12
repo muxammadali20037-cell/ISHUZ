@@ -1,5 +1,17 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · "AI yordamchi" bo'limi menyularda; prod baza uchun bitta fayl (`claude/ai-entry-everywhere`)
+
+### Mahsulot
+- **"AI yordamchi" endi nomli bo'lim:** kompyuterda chap yon menyuda va yuqori menyuda, telefonda yuqori paneldagi belgi va bosh
+  sahifadagi karta, "Kabinetim"da karta. Bosilganda `/ai` — suhbat oynasi (chap panel, so'nggi suhbatlar, jarayon izi).
+  Avval sahifa bor edi, lekin unga olib boradigan nomli tugma yo'q edi.
+- Bosh sahifada ikki bo'lim kartasi yonma-yon: "AI yordamchi" va "Universal ustalar".
+
+### Baza
+- **`supabase/prod/pending.sql`** — prod'da hali yo'q barcha migratsiyalar (0069…0076) bitta faylda: ega SQL Editor'ga bir marta
+  qo'yadi. Bitta tranzaksiya, takror ishga tushirish xavfsiz; CI'da prod'ga o'xshash bazada sinaladi.
+
 ## 2026-11-12 · Universal ustalar — xizmat ko'rsatuvchi ustalar bozori (`claude/universal-masters`)
 
 ### Mahsulot

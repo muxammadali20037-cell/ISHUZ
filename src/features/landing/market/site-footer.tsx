@@ -38,6 +38,9 @@ export async function SiteFooter() {
         { href: seek.daily, label: t("welcome.market.f_daily") },
         { href: seek.remote, label: t("welcome.market.f_remote") },
         { href: "/kasblar", label: t("welcome.market.f_professions") },
+        // alohida bo'limlar (sarlavhada joy tor bo'lganda ham nomi bilan topilsin)
+        { href: "/ai", label: t("easy.aiws.nav.ai") },
+        { href: "/ustalar", label: t("masters.name") },
       ],
     },
     {

@@ -65,6 +65,8 @@ jobs:
       - name: psql
         run: command -v psql >/dev/null || (sudo apt-get update -qq && sudo apt-get install -y -qq postgresql-client)
       - run: bash scripts/db-test.sh
+      # prod uchun bitta fayl (supabase/prod/pending.sql): dolzarbmi, prod'ga o'xshash bazada qo'llanadimi, takror ishga tushirish xavfsizmi
+      - run: bash scripts/prod-pending-test.sh
 
   e2e:
     name: Browser E2E (izolyatsiyalangan lokal stend)

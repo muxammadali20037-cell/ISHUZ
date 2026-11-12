@@ -11,6 +11,7 @@ import { savedIdSet } from "@/features/saved/queries";
 import { EmployerDashboard } from "@/features/employer/components/dashboard/employer-dashboard";
 import { getHomePlace, getNewWorkers, type HomePlace } from "./home-queries";
 import { EmployerHead } from "./employer-head";
+import { AiEntry } from "@/features/ai/components/ai-entry";
 
 /**
  * Ish beruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "ish beruvchilar panelini ham soddalashtir"). Profili tayyor ish beruvchi —
@@ -49,6 +50,8 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
           </Suspense>
         </div>
         <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-3">
+          {/* "AI yordamchi" — suhbat oynasi (/ai): nomzod topish, vakansiya matni, suhbat savollari */}
+          <AiEntry title={t("easy.aiws.nav.ai")} desc={t("easy.aiws.entry_desc_employer")} />
           <EmployerAlertCard />
         </aside>
       </div>
