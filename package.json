@@ -13,6 +13,8 @@
     "db:local": "bash scripts/db-local.sh",
     "db:test": "bash scripts/db-test.sh",
     "db:load": "bash scripts/load-test.sh",
+    "load:http": "node load/http-load.mjs",
+    "prod:check": "bash scripts/prod-check.sh",
     "db:types": "supabase gen types typescript --db-url \"${DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/ishuz_dev}\" --schema public > src/types/database.types.ts && prettier --write src/types/database.types.ts",
     "db:seed-demo": "psql \"${DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/ishuz_dev}\" -v ON_ERROR_STOP=1 -f supabase/seed-demo.sql"
   },
@@ -52,6 +54,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^6.1.1",
+    "autocannon": "^8.0.0",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
     "pg": "^8.23.0",

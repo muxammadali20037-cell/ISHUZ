@@ -61,6 +61,10 @@ curl -H "Authorization: Bearer $CRON_SECRET" "https://ishuz.vercel.app/api/healt
 
 `deep` javobida `missing` bo'sh bo'lmasa — o'sha migratsiyalar prod'da yo'q (3-qadamga qayting).
 
+Hammasini bitta buyruq bilan (faqat o'qiydi): `CRON_SECRET=… bash scripts/prod-check.sh` — health, deep, ochiq sahifalar,
+robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari, xavfsizlik sarlavhalari.
+`TELEGRAM_BOT_TOKEN=…` ham berilsa, Telegram'dagi webhook manzili va oxirgi xatosi ko'rsatiladi (qiymatlar chop etilmaydi).
+
 ## 5. Monitoring (bir marta sozlanadi)
 
 - **Sentry**: sentry.io da bepul loyiha (platforma: Next.js) → DSN ni Vercel → Project → Settings → Environment Variables
@@ -73,7 +77,7 @@ curl -H "Authorization: Bearer $CRON_SECRET" "https://ishuz.vercel.app/api/healt
 - [ ] CI yashil, hech bir test o'chirilmagan yoki o'tkazib yuborilmagan
 - [ ] Zaxira nusxa bugungi
 - [ ] `prod-migration-check.sql` — hammasi "bor"
-- [ ] `/api/health` → `ok`, `/api/health?deep=1` → `missing: []`
+- [ ] `bash scripts/prod-check.sh` → FAIL=0 (`/api/health` ok, deep `missing: []`, sahifalar 200)
 - [ ] Bosh sahifa, `/jobs`, bitta vakansiya, `/companies` qo'lda ochib ko'rildi
 - [ ] Telegram bot `/start` javob beradi
 - [ ] `docs/CHANGELOG.md` yangilandi

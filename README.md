@@ -38,7 +38,9 @@ npm run db:types                  # src/types/database.types.ts ni yangilash (lo
 
 Yoki Supabase Dashboard → SQL Editor da `supabase/migrations/0001…0058` fayllarini tartib bilan ishga tushiring (har biri bitta tranzaksiya).
 
-> Production/staging/lokal holati (qaysi migratsiya qo'llangan, nima tashqi sozlama kutyapti) — [`docs/PROFESSIONALIZATION_REPORT.md`](docs/PROFESSIONALIZATION_REPORT.md) → "Reliz holati". Eski hisobotlar (`MASTER_SPEC_STATUS.md` va boshq.) sanasi bilan tarix sifatida qoladi.
+> Production/lokal holati (qaysi migratsiya qo'llangan, nima egasini kutyapti, testlar) — [`docs/STATUS.md`](docs/STATUS.md);
+> reliz tartibi — [`docs/RELEASE_CHECKLIST.md`](docs/RELEASE_CHECKLIST.md); prod'ni tashqaridan tekshirish — `bash scripts/prod-check.sh`.
+> Eski hisobotlar (`PROFESSIONALIZATION_REPORT.md`, `MASTER_SPEC_STATUS.md` va boshq.) sanasi bilan tarix sifatida qoladi.
 
 Lokal PostgreSQL bilan sxema/RLS testlari (Supabase stub bilan, Docker shart emas):
 

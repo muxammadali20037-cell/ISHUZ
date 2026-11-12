@@ -1,5 +1,8 @@
 # "Ish topdim" — professionallashtirish hisoboti
 
+> **Tarixiy hujjat.** 2026-10-14 holati (migratsiyalar 0001…0064, 604 birlik testi, 134 E2E). Hozirgi holat — migratsiyalar
+> soni, prod baza, testlar, ega amallari — [`STATUS.md`](STATUS.md); reliz tartibi — [`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md).
+
 Sana: 2026-10-11 (C8.10 va D bilan yangilandi: 2026-10-12; 0059/0060 production'da, E va F: 2026-10-13; G va 0061–0064 production'da, H — ixcham kartalar, I — ixcham e'lon sahifalari, J — natijalar sahifasi ishgo uslubida: 2026-10-14) · Audit tayanchi: `506473a` · Ushbu hisobot holati: branch `claude/gallant-thompson-q70fo3` = `main`.
 Ish jurnali: [PROFESSIONALIZATION_PROGRESS.md](PROFESSIONALIZATION_PROGRESS.md). Eski hisobotlar (`MASTER_SPEC_STATUS.md`,
 `SECURITY_TEST_REPORT.md`, `SCALE.md`) o'z sanasidagi tarix sifatida qoldi — joriy holat shu faylda.
