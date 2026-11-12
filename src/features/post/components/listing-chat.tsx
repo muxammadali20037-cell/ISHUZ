@@ -465,7 +465,7 @@ export function ListingChat({
 
   return (
     <section
-      className="space-y-3 rounded-2xl border-2 border-primary/30 bg-primary-soft/40 p-4"
+      className="space-y-3 rounded-2xl border-2 border-ai/30 bg-ai-soft/60 p-4"
       aria-labelledby="ai-chat-title"
       data-listing-chat
     >

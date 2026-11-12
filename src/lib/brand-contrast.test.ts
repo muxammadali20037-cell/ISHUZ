@@ -62,6 +62,12 @@ const PAIRS: [string, string][] = [
   ["info-foreground", "info"],
   ["info", "info-soft"],
   ["info", "card"],
+  // "AI yordamchi" (to'q sariq): matn kartada, fonda va och sariq fonda; tugma ustidagi matn; yon menyuda (navy)
+  ["ai", "card"],
+  ["ai", "background"],
+  ["ai", "ai-soft"],
+  ["ai-foreground", "ai"],
+  ["ai-bright", "navy"],
   ["card", "muted-foreground"],
   // premium bosh ekran sirti (.hero-surface): oq va och matn uchala rang nuqtasida
   ["hero-fg", "hero-from"],

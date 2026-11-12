@@ -1,3 +1,4 @@
+import { NewBadge } from "@/components/shared/new-badge";
 import Link from "next/link";
 import { ChevronRight, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,16 +17,20 @@ export function AiEntry({ title, desc, className, to = "home", dense = false }: 
       data-track-to={to}
       data-ai-entry
       className={cn(
-        "press flex items-center rounded-xl border border-primary/30 bg-primary-soft text-primary-ink hover:border-primary/60",
+        // AI — to'q sariq (Universal ustalar kartasi turkuaz): ikkalasi ham boshqa kartalardan ajralib turadi
+        "press flex items-center rounded-xl border border-ai/30 bg-ai-soft text-ai hover:border-ai/60",
         dense ? "min-h-11 gap-2 px-2.5 py-2 sm:min-h-14 sm:gap-3 sm:px-3.5 sm:py-2.5" : "min-h-14 gap-3 px-3.5 py-2.5",
         className,
       )}
     >
-      <span className={cn("flex shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground", dense ? "size-8 sm:size-10" : "size-10")} aria-hidden>
+      <span className={cn("flex shrink-0 items-center justify-center rounded-lg bg-ai text-ai-foreground", dense ? "size-8 sm:size-10" : "size-10")} aria-hidden>
         <Sparkles className={dense ? "size-4 sm:size-5" : "size-5"} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className={cn("block font-bold", dense ? "text-sm leading-tight sm:text-base sm:leading-normal" : "text-base")}>{title}</span>
+        <span className={cn("flex items-center gap-1.5 font-bold", dense ? "text-sm leading-tight sm:text-base sm:leading-normal" : "text-base")}>
+          {title}
+          <NewBadge feature="ai" className={dense ? "max-sm:hidden" : undefined} />
+        </span>
         {desc ? <span className={cn("text-sm text-foreground/80", dense ? "hidden sm:block" : "block")}>{desc}</span> : null}
       </span>
       <ChevronRight className={cn("size-5 shrink-0", dense && "hidden sm:block")} aria-hidden />

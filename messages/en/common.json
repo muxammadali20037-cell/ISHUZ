@@ -252,5 +252,8 @@
   "social": {
     "title": "Follow us",
     "open": "Open our {network} page {handle}"
+  },
+  "badge": {
+    "new": "New"
   }
 }

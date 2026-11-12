@@ -1,11 +1,13 @@
 "use client";
 
 import { SocialLinks } from "./social-links";
+import { NewBadge } from "./new-badge";
+import type { NewFeature } from "@/config/new-features";
 import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MapPinned, MessageCircle, Plus, Search, Settings, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -179,7 +181,12 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
               {...(item === AI_NAV ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "top" } : {})}
               className={cn(
                 "relative flex min-h-11 min-w-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors",
-                active ? "bg-primary-soft text-primary-ink" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                // "AI yordamchi" — to'q sariq (boshqa bo'limlardan ajralib turadi)
+                item === AI_NAV
+                  ? cn("text-ai ring-1 ring-ai/30", active ? "bg-ai-soft" : "hover:bg-ai-soft")
+                  : active
+                    ? "bg-primary-soft text-primary-ink"
+                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
               <item.icon className="size-4.5" aria-hidden />
@@ -269,6 +276,8 @@ interface SideItem {
   icon: LucideIcon;
   badgeKey?: "messages" | "applications" | "offers" | "notifications";
   match: (path: string) => boolean;
+  /** muhim yangi bo'lim — "Yangi" belgisi (muddati config/new-features.ts da) */
+  fresh?: NewFeature;
 }
 
 function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
@@ -281,7 +290,7 @@ function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
     return {
       main: [
         { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
-        { ...AI_NAV, match: isAiPath },
+        { ...AI_NAV, match: isAiPath, fresh: "ai" },
         { href: "/employer/vacancies", labelKey: "easy.side.my_vacancies", icon: BriefcaseBusiness, match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/post/vacancy") },
         { href: "/employer/applications", labelKey: "easy.side.applications", icon: Inbox, badgeKey: "applications", match: (p) => p.startsWith("/employer/applications") },
         {
@@ -300,13 +309,15 @@ function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
   return {
     main: [
       { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" },
-      { ...AI_NAV, match: isAiPath },
+      { ...AI_NAV, match: isAiPath, fresh: "ai" },
       {
         href: "/jobs",
         labelKey: "easy.side.vacancies",
         icon: Search,
-        match: (p) => p.startsWith("/jobs") || p.startsWith("/search") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
+        match: (p) => (p.startsWith("/jobs") && !p.startsWith("/jobs/xarita")) || p.startsWith("/search") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
       },
+      // yaqin atrofdagi ishlar — Yandex xaritasida (yangi)
+      { href: "/jobs/xarita", labelKey: "easy.side.map", icon: MapPinned, match: (p) => p.startsWith("/jobs/xarita"), fresh: "map" },
       { href: "/applications", labelKey: "easy.side.my_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
       { href: "/saved", labelKey: "easy.side.saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
       messages,
@@ -339,19 +350,26 @@ export function SideNav({
   const link = (item: SideItem) => {
     const active = item.match(pathname);
     const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
+    // "AI yordamchi" — to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
+    const ai = item.href === AI_NAV.href;
     return (
       <li key={item.href}>
         <Link
           href={item.href}
           aria-current={active ? "page" : undefined}
-          {...(item.href === AI_NAV.href ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "side" } : {})}
+          {...(ai ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "side" } : {})}
           className={cn(
             "flex h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors",
-            active ? "bg-sidebar-active font-medium text-navy-foreground" : "text-navy-muted hover:bg-navy-foreground/5 hover:text-navy-foreground",
+            ai
+              ? cn("font-semibold text-ai-bright ring-1 ring-ai-bright/40", active ? "bg-ai-bright/25" : "bg-ai-bright/15 hover:bg-ai-bright/25")
+              : active
+                ? "bg-sidebar-active font-medium text-navy-foreground"
+                : "text-navy-muted hover:bg-navy-foreground/5 hover:text-navy-foreground",
           )}
         >
-          <item.icon className={cn("size-4 shrink-0", active ? "text-sidebar-accent" : "opacity-80")} aria-hidden />
+          <item.icon className={cn("size-4 shrink-0", ai ? "" : active ? "text-sidebar-accent" : "opacity-80")} aria-hidden />
           <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
+          {item.fresh ? <NewBadge feature={item.fresh} tone="dark" /> : null}
           {badge ? (
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-semibold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span>
           ) : null}
@@ -403,6 +421,7 @@ export function SideNav({
         >
           <Wrench className="size-4 shrink-0" aria-hidden />
           <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
+          <NewBadge feature="masters" tone="dark" />
         </Link>
         <div>
           <p className="mb-1.5 px-3 text-xs font-medium text-navy-muted/60">{t("easy.side.more")}</p>

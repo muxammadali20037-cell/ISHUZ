@@ -1,3 +1,4 @@
+import { NewBadge } from "@/components/shared/new-badge";
 import Link from "next/link";
 import { ChevronRight, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -49,7 +50,7 @@ export function MastersEntry({
       <span className="min-w-0 flex-1">
         <span
           className={cn(
-            "block font-bold",
+            "flex items-center gap-1.5 font-bold",
             compact
               ? "text-sm"
               : dense
@@ -58,6 +59,7 @@ export function MastersEntry({
           )}
         >
           {title}
+          {compact ? null : <NewBadge feature="masters" className={dense ? "max-sm:hidden" : undefined} />}
         </span>
         {desc && !compact ? (
           <span

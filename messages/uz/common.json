@@ -252,5 +252,8 @@
   "social": {
     "title": "Biz ijtimoiy tarmoqlarda",
     "open": "{network} sahifamizni ochish {handle}"
+  },
+  "badge": {
+    "new": "Yangi"
   }
 }

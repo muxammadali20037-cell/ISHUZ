@@ -974,7 +974,8 @@
     "cta_employer_title": "Find the right employee",
     "cta_employer_desc": "Post a vacancy — candidates' applications will appear here.",
     "mode_worker": "Job seeker",
-    "mode_employer": "Employer"
+    "mode_employer": "Employer",
+    "map": "Jobs on the map"
   },
   "activity": {
     "title": "My activity",
