@@ -748,7 +748,10 @@
       "note": "from active ads",
       "jobs": "See vacancies",
       "workers": "See candidates"
-    }
+    },
+    "demos_exact": "Sample ads — not real",
+    "demos_category": "Sample ads from this field — not real",
+    "demos_all": "All samples"
   },
   "mode": {
     "chooser_title": "What are you looking for?",

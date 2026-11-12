@@ -1,3 +1,4 @@
+import type { DemoSamples } from "@/features/demo-vacancies/types";
 import type { AppliedFilters } from "./ai-chat-model";
 import type { JobCardData } from "./components/result-cards";
 import type { WorkerRow } from "./queries";
@@ -37,4 +38,9 @@ export interface AiFindResult {
    * qidiruv so'rovi sifatida tushunilmadi.
    */
   flags: { profession: boolean; filters: boolean };
+  /**
+   * Haqiqiy vakansiya topilmadi (faqat ish qidirishda, kasb tushunilganda) — shu kasb yoki soha bo'yicha namuna e'lonlar.
+   * Ular haqiqiy emas: `total` ga kirmaydi, kartada "Namuna" belgisi, ariza yo'q.
+   */
+  demos?: DemoSamples | null;
 }

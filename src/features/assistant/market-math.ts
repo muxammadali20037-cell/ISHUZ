@@ -32,6 +32,8 @@ export interface MarketStats {
   seekers: number;
   /** oylik maosh oralig'i (kamida 3 ta e'lon bo'lsa) */
   salary: SalarySummary | null;
+  /** shu kasb bo'yicha namuna e'lonlar soni — haqiqiy emas, yuqoridagi sonlarga kirmaydi (0 — yo'q yoki o'chirilgan) */
+  demos?: number;
   /** shu kasb (va hudud) bo'yicha vakansiyalar va nomzodlar ro'yxati */
   jobsHref: string;
   workersHref: string;

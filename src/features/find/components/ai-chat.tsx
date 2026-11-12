@@ -30,6 +30,7 @@ import {
   type StoredConversation,
 } from "../ai-chat-model";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
+import { DemoJobCard } from "@/features/demo-vacancies/components/demo-job-card";
 import { useSpeaker, useVoice } from "./ai-voice";
 
 /**
@@ -672,6 +673,23 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
             </Button>
           ) : null}
         </>
+      ) : null}
+
+      {/* haqiqiy e'lon yo'q — namunalar alohida, sarlavhasi bilan (haqiqiy deb ko'rsatilmaydi, natijalar soniga kirmaydi) */}
+      {latest && r && !pending && r.total === 0 && r.demos?.items.length ? (
+        <section className="space-y-2" aria-label={r.demos.exact ? t("easy.finder.demos_exact") : t("easy.finder.demos_category")} data-ai-demos>
+          <p className="text-sm font-semibold text-muted-foreground">{r.demos.exact ? t("easy.finder.demos_exact") : t("easy.finder.demos_category")}</p>
+          <ul className="grid grid-cols-1 gap-3">
+            {r.demos.items.map((job) => (
+              <li key={job.id} className="flex [&>article]:w-full">
+                <DemoJobCard job={job} className="w-full" />
+              </li>
+            ))}
+          </ul>
+          <Link href={r.demos.href} data-ai-demos-all className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+            {t("easy.finder.demos_all")} <ArrowRight className="size-4" aria-hidden />
+          </Link>
+        </section>
       ) : null}
 
       {options.length ? (

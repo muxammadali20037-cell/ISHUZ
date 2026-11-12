@@ -96,6 +96,11 @@ export function compactForModel(data: AiFindResult): string {
     profession_unclear: data.needProfession || undefined,
     results: data.mode === "workers" ? workers : jobs,
     note: data.total === 0 ? "Nothing found. Say so honestly; the app shows a Telegram alert button and a 'post your own ad' button." : undefined,
+    sample_ads_shown: data.total === 0 && data.demos?.items.length ? data.demos.items.length : undefined,
+    sample_ads_note:
+      data.total === 0 && data.demos?.items.length
+        ? `There are no real ads. The app shows ${data.demos.items.length} SAMPLE ads (marked "Namuna") ${data.demos.exact ? "for this job" : "from the same field"} under your message. Say clearly that they are samples, not real jobs, and nobody can apply to them; never count them as vacancies.`
+        : undefined,
   });
 }
 
@@ -110,6 +115,7 @@ export function compactStatsForModel(d: MarketStats | null): string {
     active_vacancies: d.vacancies,
     job_seeker_ads: d.seekers,
     monthly_salary_uzs: d.salary ? { ads_counted: d.salary.n, min: d.salary.min, median: d.salary.median, max: d.salary.max } : null,
+    sample_ads_not_counted: d.demos || undefined,
     shown_to_user_as_card: true,
     note: "Counted from active ads on the Ish topdim platform only — not the whole labour market. Salary range only from ads stating a monthly salary; null means fewer than 3 such ads. Do not invent other numbers.",
   });

@@ -99,3 +99,44 @@ test("maslahat AI'siz ham ishlaydi: 'Maosh va talab' tez tugmasi, karyera rejasi
   const chips = main(page).locator("[data-ai-suggestions]").getByRole("button");
   await expect(chips).toHaveText(["Oshpaz maoshi qancha?", "Kunlik ish bormi?"]);
 });
+
+test.describe("namuna e'lonlar AI yordamchida", () => {
+  test.beforeAll(async () => {
+    await sql("select public.demo_vacancies_seed()");
+  });
+  test.afterAll(async () => {
+    await sql("select public.demo_vacancies_remove()");
+  });
+
+  test("'Maosh va talab' dan keyin 'avto instruktor kerak' — qidiruv; haqiqiy e'lon yo'q — namunalar 'haqiqiy emas' deb ko'rsatiladi", async ({ page, context }) => {
+    await open(page, context);
+    await page.locator("[data-ai-quick]:visible [data-quick='stats']").first().click();
+    await expect(replies(page).last()).toContainText("Qaysi kasb bo'yicha ko'raylik?");
+
+    await say(page, "avto instruktor kerak");
+    // statistika emas — qidiruv: haqiqiy e'lon 0, namunalar alohida bo'limda
+    await expect(replies(page).last()).toContainText("Haqiqiy e'lon hozircha yo'q. Quyida shu kasb bo'yicha namuna e'lonlar — ular haqiqiy emas");
+    await expect(replies(page).last()).not.toContainText("Faol vakansiyalar");
+    const demos = main(page).locator("[data-ai-demos]");
+    await expect(demos).toBeVisible();
+    await expect(demos).toContainText("Namuna e'lonlar — haqiqiy emas");
+    const card = demos.locator("[data-demo-card]").first();
+    await expect(card).toContainText("Avtoinstruktor");
+    await expect(card.locator("[data-demo-badge]")).toHaveText("Namuna");
+    await expect(demos.locator("[data-ai-demos-all]")).toHaveAttribute("href", "/jobs/namuna?soha=education");
+    // ariza tugmasi yo'q; bosilsa — namuna ekani tushuntirilgan sahifa
+    await expect(card.getByRole("button", { name: /Ariza/ })).toHaveCount(0);
+    await card.getByRole("link").first().click();
+    await page.waitForURL(/\/jobs\/namuna\/namuna-[a-z0-9-]+$/);
+    await expect(page.locator("[data-demo-banner]")).toBeVisible();
+  });
+
+  test("statistika: haqiqiy e'lon yo'q — namunalar alohida qatorda, sonlarga qo'shilmaydi", async ({ page, context }) => {
+    await open(page, context);
+    await say(page, "avtoinstruktor maoshi qancha?");
+    await expect(replies(page).last()).toContainText("Faol vakansiyalar: 0 ta");
+    await expect(replies(page).last()).toContainText("Namuna e'lonlar: 1 ta — ular haqiqiy emas");
+    await expect(main(page).locator("[data-ai-stats]")).toHaveCount(0);
+    await expect(main(page).locator("[data-ai-suggestions]").getByRole("button").first()).toHaveText("Avtoinstruktor bo'yicha ishlar");
+  });
+});

@@ -20,6 +20,9 @@ export interface AiUsage {
 }
 
 export async function logAiUsage(u: AiUsage): Promise<void> {
+  // xato Vercel jurnalida ham ko'rinsin (nega AI o'rniga "oddiy rejim" javob berdi): faqat xususiyat, model va xato matni —
+  // kalit yoki foydalanuvchi matni yozilmaydi
+  if (!u.ok) console.warn(`[ai] ${u.feature} ${u.provider}/${u.model ?? "-"} failed after ${Math.round(u.latencyMs)}ms: ${(u.error ?? "error").slice(0, 200)}`);
   try {
     await createAdminClient()
       .from("ai_usage_log")

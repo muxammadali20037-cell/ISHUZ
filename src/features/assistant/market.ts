@@ -3,6 +3,7 @@ import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { findJobs, findWorkers, resolveFindQuery } from "@/features/find/queries";
 import { createPublicClient } from "@/lib/supabase/public";
 import { getRegions } from "@/lib/reference";
+import { demoSamplesFor } from "@/features/demo-vacancies/samples";
 import { statsSubject, summarizeSalaries, type MarketStats } from "./market-math";
 
 export type { MarketStats };
@@ -24,7 +25,7 @@ export async function marketStats(text: string): Promise<MarketOutcome> {
     const region = q.regionSlug ? ((await getRegions()).find((r) => r.slug === q.regionSlug) ?? null) : null;
     const place = { regionId: region?.id ?? null, districtId: null, remote: false };
     const [node, jobs, workers, tree] = await Promise.all([
-      db.from("profession_nodes").select("name_uz, name_ru, name_en").eq("id", q.nodeId).maybeSingle(),
+      db.from("profession_nodes").select("name_uz, name_ru, name_en, categories(slug)").eq("id", q.nodeId).maybeSingle(),
       findJobs({ ...EMPTY_FIND, mode: "jobs", p: q.nodeId }, place, 1, db),
       findWorkers({ ...EMPTY_FIND, mode: "workers", p: q.nodeId }, place, 1, db),
       db.from("profession_nodes").select("id").contains("path", [q.nodeId]).limit(500),
@@ -39,7 +40,12 @@ export async function marketStats(text: string): Promise<MarketOutcome> {
       .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`)
       .limit(2000);
     if (region) salaries = salaries.eq("region_id", region.id);
-    const { data: rows, error } = await salaries;
+    const category = (node.data.categories as { slug: string } | null)?.slug ?? null;
+    const [{ data: rows, error }, demos] = await Promise.all([
+      salaries,
+      // namunalar faqat haqiqiy e'lon yo'q bo'lsa eslatiladi va hech qachon sonlarga qo'shilmaydi
+      jobs.total === 0 ? demoSamplesFor({ nodeId: q.nodeId, categorySlug: category, ids, limit: 60 }) : Promise.resolve(null),
+    ]);
     if (error) return { ok: false };
     return {
       ok: true,
@@ -49,6 +55,7 @@ export async function marketStats(text: string): Promise<MarketOutcome> {
         vacancies: jobs.total,
         seekers: workers.total,
         salary: summarizeSalaries(rows ?? []),
+        demos: demos?.exact ? demos.items.length : 0,
         jobsHref: findHref({ ...EMPTY_FIND, mode: "jobs", p: q.nodeId, region: region?.slug ?? "all" }),
         workersHref: findHref({ ...EMPTY_FIND, mode: "workers", p: q.nodeId, region: region?.slug ?? "all" }),
       },

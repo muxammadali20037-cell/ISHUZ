@@ -12,6 +12,7 @@ import type { AppliedFilters } from "./ai-chat-model";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
 import { findJobs, findJobsByText, findWorkers, getNodeInfo } from "./queries";
 import { textKeywords } from "./ai-keywords";
+import { demoSamplesFor } from "@/features/demo-vacancies/samples";
 import type { JobCardData } from "./components/result-cards";
 import type { WorkerRow } from "./queries";
 import type { AiFindResult } from "./ai-find-types";
@@ -167,7 +168,11 @@ export async function runAiFind(input: { text: string; mode: "jobs" | "workers" 
 
   void trackServer("ai_find", session?.userId ?? null, { source: r.source, mode, results: res.total, relaxed: relaxed.length });
   const shown = res.items.slice(0, SHOW);
-  const saved = await savedIdSet(session, mode === "jobs" ? "vacancy" : "worker", shown.map((i) => i.id));
+  // haqiqiy vakansiya yo'q — shu kasb (yoki soha) bo'yicha namunalar alohida ko'rsatiladi (hisobga kirmaydi)
+  const [saved, demos] = await Promise.all([
+    savedIdSet(session, mode === "jobs" ? "vacancy" : "worker", shown.map((i) => i.id)),
+    mode === "jobs" && res.total === 0 && node ? demoSamplesFor({ nodeId: node.id, categorySlug: node.categorySlug, region: region?.slug ?? null }) : Promise.resolve(null),
+  ]);
   return {
     ok: true,
     data: {
@@ -181,6 +186,7 @@ export async function runAiFind(input: { text: string; mode: "jobs" | "workers" 
       photos: "photos" in res ? (res.photos ?? {}) : {},
       total: res.total,
       href: findHref(needProfession && res.total === 0 ? { ...params, p: null, region: null, district: null } : cur),
+      demos,
     },
   };
 }

@@ -3,7 +3,7 @@ import { adviceReply } from "./advice";
 import { conversationLanguage } from "./language";
 import { statsSubject, type MarketStats } from "./market-math";
 import { systemPrompt } from "./prompt";
-import { adviceSuggestions, isStatsQuestion, searchReply, smallTalk, smallTalkReply, statsAskReply, statsReply, statsSuggestions, suggestionsFor } from "./replies";
+import { adviceSuggestions, demoNote, isSearchRequest, isStatsQuestion, searchReply, smallTalk, smallTalkReply, statsAskReply, statsReply, statsSuggestions, suggestionsFor } from "./replies";
 import { compactForModel, compactStatsForModel, parseToolCall, toolsFor, type ToolDef } from "./tools";
 import { HISTORY_MESSAGES, MESSAGE_MAX_CHARS, type AssistantLang, type AssistantRole, type ChatMessage, type Emit } from "./types";
 
@@ -148,7 +148,8 @@ async function rulesTurn(ctx: Ctx, deps: EngineDeps): Promise<void> {
   const talk = smallTalk(last);
   const prev = earlier.at(-1);
   const asked = isStatsQuestion(last);
-  const followUp = !asked && !talk && !!prev && isStatsQuestion(prev) && last.length <= FOLLOW_UP_MAX;
+  // davomi faqat qisqa javob bo'lsa ("buxgalter", "Samarqandda-chi?"); "avto instruktor kerak" — yangi qidiruv
+  const followUp = !asked && !talk && !!prev && isStatsQuestion(prev) && last.length <= FOLLOW_UP_MAX && !isSearchRequest(last);
   if (deps.stats && (asked || followUp)) {
     emit({ type: "status", stage: "searching" });
     let res = await deps.stats(last.slice(0, 200));
@@ -213,7 +214,9 @@ async function rulesTurn(ctx: Ctx, deps: EngineDeps): Promise<void> {
     return;
   }
   emit({ type: "results", data: res.data });
-  emit({ type: "text", delta: searchReply(res.data, lang, role, turn) });
+  const note = demoNote(res.data, lang);
+  // namunalar ko'rsatilsa — "topilmadi" matni o'rniga bitta aniq javob (haqiqiy e'lon yo'q + namunalar haqiqiy emas + xabar olish)
+  emit({ type: "text", delta: note ?? searchReply(res.data, lang, role, turn) });
   emit({ type: "suggestions", items: suggestionsFor(res.data, lang, role, false) });
   emit({ type: "done", source: "rules", lang });
 }
