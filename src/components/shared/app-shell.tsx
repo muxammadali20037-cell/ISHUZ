@@ -1,7 +1,7 @@
 "use client";
 
 import { SocialLinks } from "./social-links";
-import { NewBadge } from "./new-badge";
+import { NewDot } from "./new-badge";
 import type { NewFeature } from "@/config/new-features";
 import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
@@ -276,7 +276,7 @@ interface SideItem {
   icon: LucideIcon;
   badgeKey?: "messages" | "applications" | "offers" | "notifications";
   match: (path: string) => boolean;
-  /** muhim yangi bo'lim — "Yangi" belgisi (muddati config/new-features.ts da) */
+  /** muhim yangi bo'lim — yozuvsiz yonib-o'chuvchi nuqta (muddati config/new-features.ts da) */
   fresh?: NewFeature;
 }
 
@@ -361,7 +361,11 @@ export function SideNav({
           className={cn(
             "flex h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors",
             ai
-              ? cn("font-semibold text-ai-bright ring-1 ring-ai-bright/40", active ? "bg-ai-bright/25" : "bg-ai-bright/15 hover:bg-ai-bright/25")
+              ? cn(
+                  // bo'rtib turadi: rangli halqa + yumshoq to'q sariq soya, ustiga kelganda biroz ko'tariladi
+                  "font-semibold text-ai-bright shadow-md shadow-ai-bright/20 ring-1 ring-ai-bright/40 transition hover:-translate-y-px",
+                  active ? "bg-ai-bright/25" : "bg-ai-bright/15 hover:bg-ai-bright/25",
+                )
               : active
                 ? "bg-sidebar-active font-medium text-navy-foreground"
                 : "text-navy-muted hover:bg-navy-foreground/5 hover:text-navy-foreground",
@@ -369,7 +373,7 @@ export function SideNav({
         >
           <item.icon className={cn("size-4 shrink-0", ai ? "" : active ? "text-sidebar-accent" : "opacity-80")} aria-hidden />
           <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
-          {item.fresh ? <NewBadge feature={item.fresh} tone="dark" /> : null}
+          {item.fresh ? <NewDot feature={item.fresh} className={ai ? undefined : "text-sidebar-accent"} /> : null}
           {badge ? (
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-semibold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span>
           ) : null}
@@ -417,11 +421,11 @@ export function SideNav({
           data-track="masters_entry"
           data-masters-entry
           aria-current={pathname.startsWith("/ustalar") ? "page" : undefined}
-          className="flex h-11 items-center gap-3 rounded-md bg-accent-bright/15 px-3 text-sm font-semibold text-accent-bright ring-1 ring-accent-bright/40 transition-colors hover:bg-accent-bright/25"
+          className="flex h-11 items-center gap-3 rounded-md bg-accent-bright/15 px-3 text-sm font-semibold text-accent-bright shadow-md shadow-accent-bright/20 ring-1 ring-accent-bright/40 transition hover:-translate-y-px hover:bg-accent-bright/25"
         >
           <Wrench className="size-4 shrink-0" aria-hidden />
           <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
-          <NewBadge feature="masters" tone="dark" />
+          <NewDot feature="masters" />
         </Link>
         <div>
           <p className="mb-1.5 px-3 text-xs font-medium text-navy-muted/60">{t("easy.side.more")}</p>

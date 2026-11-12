@@ -1,6 +1,6 @@
 /**
- * "Yangi" belgisi: muhim yangi bo'limlar menyuda va bosh sahifada ajralib turadi. Belgi muddati tugagach o'zi yo'qoladi
- * (eskirgan "Yangi" yozuvi qolib ketmasin). Sana — shu kungacha (UTC) ko'rsatiladi.
+ * Yangi bo'lim belgisi (NewDot — yozuvsiz yonib-o'chuvchi nuqta): muhim yangi bo'limlar menyuda va bosh sahifada ajralib
+ * turadi. Belgi muddati tugagach o'zi yo'qoladi (eskirgan belgi qolib ketmasin). Sana — shu kungacha (UTC) ko'rsatiladi.
  */
 export const NEW_FEATURES = {
   /** AI yordamchi (/ai): suhbat, statistika, karyera, tez e'lon */

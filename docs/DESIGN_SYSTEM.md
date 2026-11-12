@@ -31,9 +31,9 @@ variant qo'shildi. Faqat tokenlar ishlatiladi, komponentda hex yozilmaydi.
 | `--muted-foreground` | `#56657A` | Ikkinchi darajali matn | oq 5.9, Cloud 5.5 ✓ (talabdagi `#64748B` Cloud'da 4.4 — o'tmaydi) |
 | `--border` | `#E5EAF0` | Chegaralar, ajratgichlar | dekorativ |
 | `--brand-green` | `#16A378` | Muvaffaqiyat ikonkasi, nuqta, progress | matn sifatida 3.2:1 — **faqat matn emas** |
-| `--ai` | `#C2410C` (qorong'ida `#FB923C`) | **AI yordamchi** bo'limi: menyudagi havola, kartalar, AI belgisi, "Yangi" belgisi | oq matn 5.2:1, karta 5.2, Cloud 4.8 ✓ |
+| `--ai` | `#C2410C` (qorong'ida `#FB923C`) | **AI yordamchi** bo'limi: menyudagi havola, kartalar, AI belgisi | oq matn 5.2:1, karta 5.2, Cloud 4.8 ✓ |
 | `--ai-soft` | `#FFF1E6` | AI kartasi foni | `--ai` matn 4.7:1 ✓ |
-| `--ai-bright` | `#FB923C` | AI yordamchi va "Yangi" belgisi — to'q ko'k yon menyuda | navy ustida 7.4:1 ✓ |
+| `--ai-bright` | `#FB923C` | AI yordamchi — to'q ko'k yon menyuda | navy ustida 7.4:1 ✓ |
 | `--success` | `#0E7A5A` | "Qabul qilindi", "Tasdiqlangan" matni | oq 5.3, Cloud 4.9 ✓ |
 | `--warning` | `#B54708` | "Suhbat", "Kutilmoqda" | oq 5.4 ✓ |
 | `--destructive` | `#B42318` | "Rad etildi", xatolar | oq 6.6 ✓ |

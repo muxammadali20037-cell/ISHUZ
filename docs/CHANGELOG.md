@@ -1,5 +1,13 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · "Yangi" yozuvi o'rniga yozuvsiz nuqta; AI va ustalar bo'rtib turadi (`claude/standout-no-badge`)
+
+- Ega: "yangi degan so'zlar kerak emas, qandaydir bo'rtib chiqib tursa bo'ldi; ranglar yomon emas". "YANGI" yozuvli
+  belgilar olib tashlandi. O'rniga kichik yonib-o'chuvchi nuqta (`NewDot`, `.new-dot`, rangi — bo'lim rangi; harakatni
+  kamaytirish sozlamasida to'lqinsiz) — AI yordamchi, Universal ustalar, "Ishlar xaritada" va bosh sahifadagi "Xaritada
+  ko'rish". AI yordamchi va Universal ustalar yon menyuda va kartalarda rangli soya bilan bo'rtib turadi (ustiga kelganda
+  biroz ko'tariladi). Ranglar o'zgarmadi. Nuqtalar 2027-01-15 da o'zi yo'qoladi; "Yangi" so'zi faqat ekran o'quvchiga.
+
 ## 2026-11-12 · AI yordamchi to'q sariq rangda; muhim yangi bo'limlarda "Yangi" belgisi (`claude/ai-orange`)
 
 - Ega: "AI yordamchi boshqacha, orange rangda ajralib tursin; muhim yangiliklar ham ajralib tursin". Yangi rang tokenlari

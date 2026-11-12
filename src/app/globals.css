@@ -379,6 +379,16 @@ html.no-splash .splash { display: none; }
 }
 
 /*
+ * Yangi bo'lim belgisi (NewDot): yozuvsiz kichik nuqta — rangi atrofdagi matn rangi, atrofida yumshoq to'lqin.
+ * prefers-reduced-motion — to'lqin yo'q, nuqta qoladi.
+ */
+.new-dot { position: relative; display: inline-block; flex-shrink: 0; width: 8px; height: 8px; border-radius: 999px; background: currentColor; }
+.new-dot::after { content: ""; position: absolute; inset: -3px; border-radius: inherit; border: 2px solid currentColor; opacity: 0; animation: entry-pulse 1.8s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .new-dot::after { animation: none; }
+}
+
+/*
  * AI yordamchi: belgisi (ko'k plita + uchqun), "o'ylayapti" holatida atrofida yumshoq halqa, uch nuqta va xabar pufakchalari
  * pastdan chiqishi. Faqat tokenlar (gradient yo'q); prefers-reduced-motion — harakat yo'q.
  */

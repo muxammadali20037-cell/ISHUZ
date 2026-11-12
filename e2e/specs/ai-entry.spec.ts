@@ -50,12 +50,16 @@ test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; bosh 
   await page.goto("/");
   const side = page.getByRole("navigation", { name: "Kabinet menyusi" });
   await expect(side.getByRole("link").nth(0)).toHaveText("Bosh sahifa");
-  // AI yordamchi — to'q sariq rangda ajralib turadi, yonida "Yangi" belgisi
-  await expect(side.getByRole("link").nth(1)).toHaveText("AI yordamchiYangi");
-  await expect(side.getByRole("link").nth(1).locator("[data-new-badge=ai]")).toBeVisible();
+  // AI yordamchi — to'q sariq rangda ajralib turadi, yonida yozuvsiz yonib-o'chuvchi nuqta ("Yangi" faqat ekran o'quvchiga)
+  await expect(side.getByRole("link").nth(1)).toHaveText(/^AI yordamchi/);
+  const aiDot = side.getByRole("link").nth(1).locator("[data-new-dot=ai]");
+  await expect(aiDot).toBeVisible();
+  // yozuvli belgi emas — kichik nuqta
+  expect((await aiDot.boundingBox())?.width ?? 99).toBeLessThanOrEqual(12);
   // "Yaqin atrofdagi ishlar" (xarita) — yangi bo'lim, ham yon menyuda
   await expect(side.getByRole("link", { name: /^Ishlar xaritada/ })).toHaveAttribute("href", "/jobs/xarita");
-  await expect(side.locator("[data-masters-entry] [data-new-badge=masters]")).toBeVisible();
+  await expect(side.locator("[data-masters-entry] [data-new-dot=masters]")).toBeVisible();
+  await expect(side.locator("[data-new-dot=map]")).toBeVisible();
   await side.getByRole("link", { name: /^AI yordamchi/ }).click();
   await page.waitForURL(/\/ai$/);
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();

@@ -1,4 +1,4 @@
-import { NewBadge } from "@/components/shared/new-badge";
+import { NewDot } from "@/components/shared/new-badge";
 import Link from "next/link";
 import { ChevronRight, Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -27,7 +27,7 @@ export function MastersEntry({
       data-track="masters_entry"
       data-masters-entry
       className={cn(
-        "theme-masters press flex items-center gap-3 rounded-xl border border-primary/30 bg-primary-soft text-primary-ink hover:border-primary/60",
+        "theme-masters press flex items-center gap-3 rounded-xl border border-primary/30 bg-primary-soft text-primary-ink shadow-md shadow-primary/10 hover:border-primary/60",
         compact
           ? "min-h-11 px-3 text-sm font-semibold"
           : dense
@@ -59,7 +59,7 @@ export function MastersEntry({
           )}
         >
           {title}
-          {compact ? null : <NewBadge feature="masters" className={dense ? "max-sm:hidden" : undefined} />}
+          {compact ? null : <NewDot feature="masters" />}
         </span>
         {desc && !compact ? (
           <span
