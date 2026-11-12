@@ -194,8 +194,8 @@ const quickTest = async ({ page, context }: Ctx) => {
   if (!narrow(page)) {
     await page.locator("[data-ai-promo]").getByRole("button", { name: "Boshlash" }).click();
     await expect(page.locator("[data-ai-you]").last()).toHaveText(/Menga qaysi kasb mos keladi\?/);
-    // maslahat — faqat sun'iy intellekt: AI yo'qligi halol aytiladi
-    await expect(page.locator("[data-ai-reply]").last()).toContainText(/sun'iy intellekt/i);
+    // maslahat AI'siz ham boshi berk emas: bosqichma-bosqich karyera rejasi
+    await expect(page.locator("[data-ai-reply]").last()).toContainText("Karyerani bosqichma-bosqich quramiz:");
   }
 };
 

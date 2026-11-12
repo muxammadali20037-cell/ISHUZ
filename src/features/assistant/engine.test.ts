@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import type { AiFindResult } from "@/features/find/ai-find-types";
-import { runAssistant, sanitizeHistory, type EngineDeps, type FindFn, type LlmClient, type LlmMessage, type LlmParams } from "./engine";
-import { compactForModel, parseToolCall } from "./tools";
+import { runAssistant, sanitizeHistory, type EngineDeps, type FindFn, type LlmClient, type LlmMessage, type LlmParams, type StatsFn } from "./engine";
+import type { MarketStats } from "./market-math";
+import { isStatsQuestion, statsReply } from "./replies";
+import { compactForModel, compactStatsForModel, parseToolCall } from "./tools";
 import { systemPrompt } from "./prompt";
 import type { AssistantEvent, ChatMessage } from "./types";
 
@@ -179,16 +181,28 @@ describe("AI ishlamasa — lug'at va shablon bilan to'liq javob", () => {
     expect(search.find).toHaveBeenCalled();
   });
 
-  it("AI'siz: 'menga mos ish toping' — kasb so'raladi (soxta qidiruv yo'q); maslahat savollari — AI yo'qligi halol aytiladi", async () => {
+  it("AI'siz: 'menga mos ish toping' — kasb so'raladi (soxta qidiruv yo'q); maslahat savollari — amaliy yo'riqnoma (boshi berk emas)", async () => {
     for (const [text, role] of [["Menga mos ish toping", "seeker"], ["Vakansiyamga mos nomzod toping", "employer"], ["Найдите мне подходящую работу", "seeker"], ["Find me a suitable job", "seeker"]] as const) {
       const r = await run([user(text)], {}, role);
       expect(r.find, text).not.toHaveBeenCalled();
       expect(r.text, text).toMatch(/kasb|профессии|profession/i);
     }
-    for (const text of ["Karyeramni rivojlantirish uchun nima qilishim kerak?", "Ish suhbatiga tayyorlanishga yordam bering", "Nomzod uchun suhbat savollarini tuzing", "Help me prepare for a job interview", "Помогите подготовиться к собеседованию"]) {
-      const r = await run([user(text)], {});
+    for (const [text, role, expected] of [
+      ["Karyeramni rivojlantirish uchun nima qilishim kerak?", "seeker", /^Karyerani bosqichma-bosqich quramiz:\n1\./],
+      ["Ish suhbatiga tayyorlanishga yordam bering", "seeker", /^Suhbatga tayyorgarlik — 6 qadam/],
+      ["Rezyume yozishga yordam bering", "seeker", /^Rezyumeni 5 qismdan tuzing/],
+      ["Nomzod uchun suhbat savollarini tuzing", "employer", /^Suhbat savollari \(istalgan lavozim uchun\)/],
+      ["Vakansiya matnini tuzishga yordam bering", "employer", /^Yaxshi vakansiya matni/],
+      ["Help me prepare for a job interview", "seeker", /^Interview preparation — 6 steps/],
+      ["Помогите подготовиться к собеседованию", "seeker", /^Подготовка к собеседованию/],
+      ["Резюме ёзишга ёрдам беринг", "seeker", /^Резюмени 5 қисмдан тузинг/],
+    ] as const) {
+      const r = await run([user(text)], {}, role);
       expect(r.find, text).not.toHaveBeenCalled();
-      expect(r.text, text).toMatch(/sun'iy intellekt|искусственный интеллект|artificial intelligence/i);
+      expect(r.text, text).toMatch(expected);
+      // "AI ulanmagan" degan boshi berk javob yo'q; keyingi qadam tugmalari bor
+      expect(r.text, text).not.toMatch(/ulanmagan|не подключ|not connected/i);
+      expect((r.events.find((e) => e.type === "suggestions") as { items: string[] }).items.length, text).toBe(2);
     }
     // oddiy qidiruv o'zgarmaydi
     expect((await run([user("Toshkentda sotuvchi")], {})).find).toHaveBeenCalled();
@@ -252,7 +266,9 @@ describe("tarix, kiritma va ko'rsatma", () => {
   });
 
   it("asbob kiritmasi tekshiriladi", () => {
-    expect(parseToolCall("seeker", "search_jobs", { query: "  oshpaz   Chilonzor " })).toEqual({ mode: "jobs", query: "oshpaz Chilonzor" });
+    expect(parseToolCall("seeker", "search_jobs", { query: "  oshpaz   Chilonzor " })).toEqual({ tool: "search", mode: "jobs", query: "oshpaz Chilonzor" });
+    expect(parseToolCall("employer", "market_stats", { query: "sotuvchi" })).toBeNull(); // statistika ulanmagan
+    expect(parseToolCall("employer", "market_stats", { query: "sotuvchi  Samarqand" }, true)).toEqual({ tool: "stats", query: "sotuvchi Samarqand" });
     expect(parseToolCall("seeker", "search_workers", { query: "oshpaz" })).toBeNull();
     expect(parseToolCall("employer", "search_workers", { query: "x" })).toBeNull();
     expect(parseToolCall("seeker", "search_jobs", { q: "oshpaz" })).toBeNull();
@@ -266,7 +282,7 @@ describe("tarix, kiritma va ko'rsatma", () => {
 
   it("tavsiya savollar: AI ishlamasa faqat qidiruv misollari; natija bo'lsa AI yordami (rezyume) faqat AI bilan", async () => {
     const rules = await run([user("Salom")], {});
-    expect(rules.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: ["Kunlik ish bormi?", "Tajribasiz ishlar", "Uydan ishlash"] });
+    expect(rules.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: ["Kunlik ish bormi?", "Tajribasiz ishlar", "Oshpaz maoshi qancha?"] });
     const rulesFound = await run([user("oshpaz")], {});
     expect(rulesFound.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: [] });
     const { llm } = fakeLlm([
@@ -300,5 +316,88 @@ describe("tarix, kiritma va ko'rsatma", () => {
     expect(employer).toContain("Russian");
     expect(employer).toMatch(/interview questions/);
     expect(employer).toMatch(/gender, age, nationality/);
+  });
+});
+
+const stats = (over: Partial<MarketStats> = {}): MarketStats => ({
+  profession: { uz: "Oshpaz", ru: "Повар", en: "Cook" },
+  region: { uz: "Samarqand viloyati", ru: "Самаркандская область", en: "Samarkand region" },
+  vacancies: 12,
+  seekers: 4,
+  salary: { n: 9, min: 3_000_000, median: 4_500_000, max: 8_000_000 },
+  jobsHref: "/search?mode=jobs&p=x&region=samarkand",
+  workersHref: "/search?mode=workers&p=x&region=samarkand",
+  ...over,
+});
+
+describe("bozor statistikasi (maosh, talab) — faqat bazadagi faol e'lonlardan", () => {
+  it("statistika savoli tanib olinadi; oddiy qidiruv emas", () => {
+    for (const q of ["Oshpaz maoshi qancha?", "haydovchi oyligi qancha", "o'rtacha maosh sotuvchi", "o‘rtacha oylik buxgalter", "dasturchi statistika", "mehnat bozori qanday", "oshpaz qancha oladi", "Ошпаз маоши қанча?", "Сколько получает повар в Ташкенте?", "средняя зарплата водителя", "рынок труда бухгалтер", "How much does a cook earn?", "average salary for drivers", "Kasbim bo'yicha maosh qancha va talab qanday?", "Xodimga qancha maosh taklif qilay? Bozordagi maoshni ko'rsating", "Какую зарплату предложить сотруднику? Покажите средние зарплаты на рынке", "What salary should I offer? Show me the average salary on the market", "Касбим бўйича маош қанча ва талаб қандай?"])
+      expect(isStatsQuestion(q), q).toBe(true);
+    for (const q of ["oshpaz Chilonzor 5 mln", "Toshkentda sotuvchi", "зарплата от 5 млн повар", "maoshi yuqori ish", "Kunlik ish bormi?", "salom"]) expect(isStatsQuestion(q), q).toBe(false);
+  });
+
+  it("AI'siz: kasb aytilgan — bazadan sonlar, karta hodisasi, maosh oralig'i, halol izoh; qidiruv chaqirilmaydi", async () => {
+    const st = vi.fn<StatsFn>(async () => ({ ok: true, data: stats() }));
+    const r = await run([user("Samarqandda oshpaz maoshi qancha?")], { stats: st });
+    expect(st).toHaveBeenCalledWith("Samarqandda oshpaz maoshi qancha?");
+    expect(r.find).not.toHaveBeenCalled();
+    expect(r.types).toEqual(["status", "stats", "text", "suggestions", "done"]);
+    expect(r.text).toContain("Oshpaz — Samarqand viloyati:");
+    expect(r.text).toContain("Faol vakansiyalar: 12 ta");
+    expect(r.text).toContain("Ish izlovchilar e'lonlari: 4 ta");
+    expect(r.text).toContain("Oylik maosh (9 ta e'londa): 3 mln so'm – 8 mln so'm, o'rtasi 4,5 mln so'm");
+    expect(r.text).toContain("talab yaxshi");
+    expect(r.text).toContain("butun mehnat bozori emas");
+    expect(r.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: ["Oshpaz bo'yicha ishlar Samarqand viloyati", "Rezyume qanday yoziladi?"] });
+  });
+
+  it("AI'siz: kasb yo'q — oldingi xabar bilan birga; baribir yo'q — kasb misol bilan so'raladi", async () => {
+    const st = vi.fn<StatsFn>(async (t) => ({ ok: true, data: /oshpaz/i.test(t) ? stats({ region: null }) : null }));
+    const follow = await run([user("oshpaz maoshi qancha"), bot("…"), user("Samarqandda-chi?")], { stats: st });
+    expect(st).toHaveBeenLastCalledWith("Samarqandda-chi? oshpaz maoshi qancha");
+    expect(follow.text).toContain("Oshpaz — butun O'zbekiston:");
+    const ask = await run([user("statistika")], { stats: vi.fn<StatsFn>(async () => ({ ok: true, data: null })) });
+    expect(ask.text).toMatch(/^Qaysi kasb bo'yicha ko'raylik\?/);
+    // faqat so'roq (kasb ham, joy ham yo'q) — oldingi suhbat kasbi takrorlanmaydi, kasb so'raladi
+    const again = vi.fn<StatsFn>(async (t) => ({ ok: true, data: /oshpaz/i.test(t) ? stats() : null }));
+    const askAgain = await run([user("oshpaz maoshi qancha"), bot("…"), user("statistika")], { stats: again });
+    expect(again).toHaveBeenCalledTimes(1);
+    expect(askAgain.text).toMatch(/^Qaysi kasb bo'yicha ko'raylik\?/);
+    expect(ask.find).not.toHaveBeenCalled();
+    const failed = await run([user("oshpaz maoshi qancha")], { stats: vi.fn<StatsFn>(async () => ({ ok: false })) });
+    expect(failed.events.at(-1)).toEqual({ type: "error", code: "search_failed" });
+  });
+
+  it("namuna kichik bo'lsa — xulosa va o'ylab topilgan maosh yo'q; ruscha, inglizcha va kirillda", () => {
+    const small = statsReply(stats({ vacancies: 2, seekers: 1, salary: null, region: null }), "uz", "seeker");
+    expect(small).toContain("kamida 3 ta kerak");
+    expect(small).not.toMatch(/talab yaxshi|teng|ko'p —/);
+    expect(statsReply(stats(), "ru", "employer")).toContain("Зарплата в месяц (по 9 объявл.): 3 млн сум – 8 млн сум, середина 4,5 млн сум");
+    expect(statsReply(stats(), "ru", "employer")).toContain("Кандидатов меньше");
+    expect(statsReply(stats(), "en", "seeker")).toContain("Cook — Samarkand region:");
+    expect(statsReply(stats(), "en", "seeker")).toContain("4.5M UZS");
+    expect(statsReply(stats(), "oz", "seeker")).toContain("Ошпаз — Самарқанд вилояти:");
+    expect(statsReply(stats({ vacancies: 0, seekers: 0, salary: null }), "uz", "seeker")).toContain("hozircha faol e'lon yo'q");
+  });
+
+  it("AI bilan: model market_stats asbobini chaqiradi → karta hodisasi va sonlar modelga (ixcham, shaxsiy ma'lumotsiz)", async () => {
+    const { llm, calls } = fakeLlm([
+      { stop_reason: "tool_use", content: [{ type: "tool_use", id: "s1", name: "market_stats", input: { query: "oshpaz Samarqand" } }] },
+      { stop_reason: "end_turn", content: [{ type: "text", text: "Samarqandda oshpazga talab yaxshi." }] },
+    ]);
+    const st = vi.fn<StatsFn>(async () => ({ ok: true, data: stats() }));
+    const r = await run([user("Samarqandda oshpaz bo'lsam qancha topaman?")], { llm, stats: st });
+    expect(calls[0]!.tools.map((t) => t.name)).toEqual(["search_jobs", "market_stats"]);
+    expect(st).toHaveBeenCalledWith("oshpaz Samarqand");
+    expect(r.types).toContain("stats");
+    const toolResult = (calls[1]!.messages.at(-1)!.content as Array<{ content: string }>)[0]!.content;
+    expect(JSON.parse(toolResult)).toMatchObject({ active_vacancies: 12, job_seeker_ads: 4, monthly_salary_uzs: { median: 4_500_000 } });
+    expect(r.events.find((e) => e.type === "suggestions")).toEqual({ type: "suggestions", items: ["Oshpaz bo'yicha ishlar Samarqand viloyati", "Rezyume qanday yoziladi?"] });
+    // statistika ulanmagan — asbob berilmaydi
+    const { llm: llm2, calls: calls2 } = fakeLlm([{ stop_reason: "end_turn", content: [{ type: "text", text: "Salom." }] }]);
+    await run([user("salom")], { llm: llm2 });
+    expect(calls2[0]!.tools.map((t) => t.name)).toEqual(["search_jobs"]);
+    expect(JSON.parse(compactStatsForModel(null))).toMatchObject({ profession_unclear: true });
   });
 });

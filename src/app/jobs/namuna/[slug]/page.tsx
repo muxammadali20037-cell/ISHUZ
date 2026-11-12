@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BellRing, BriefcaseBusiness, ChevronLeft, ChevronRight, FileUser, FlaskConical } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
-import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
 import { SalaryText } from "@/components/shared/salary-text";
 import { getDemoVacancy } from "@/features/demo-vacancies/queries";
@@ -53,7 +52,7 @@ export default async function DemoVacancyPage({ params }: { params: Params }) {
     { href: "/post/vacancy", icon: BriefcaseBusiness, title: t("demo.detail.employer_title"), desc: t("demo.detail.employer_desc") },
   ];
   return (
-    <Shell>
+    <>
       <div className="container-narrow space-y-5 py-5 sm:py-8" data-demo-detail={v.slug}>
         <Link href={v.category_slug ? `/jobs/namuna?soha=${v.category_slug}` : "/jobs/namuna"} className="inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
           <ChevronLeft className="size-4" aria-hidden /> {t("demo.detail.back")}
@@ -119,6 +118,6 @@ export default async function DemoVacancyPage({ params }: { params: Params }) {
           </Button>
         </section>
       </div>
-    </Shell>
+    </>
   );
 }

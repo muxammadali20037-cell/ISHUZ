@@ -7,6 +7,9 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | Barqarorlashtirish (Next 16.4.5, 0074–0075, health, Sentry) | Kod tayyor, CI yashil · **ega amali kutilmoqda** | 2026-11-07 |
 | Bozorga tayyorlik: prod tekshiruv skripti, HTTP yuklama testi, ochiq ro'yxatlar keshi, STATUS.md | ✅ Tugadi | 2026-11-12 |
 | AI ish maydoni ("ChatGPT kabi" /ai): chap panel, so'nggi suhbatlar, bugungi ishlar, jarayon izi | ✅ Tugadi | 2026-11-12 |
+| AI: nomli bo'lim (menyular, bosh sahifa), bozor statistikasi, karyera va maslahat AI'siz ham | ✅ Tugadi | 2026-11-12 |
+| Namuna vakansiyalar (barcha sohalar, 0077) + ustalarda noqonuniy mazmun tekshiruvi | Kod tayyor · **0077 — ega amali** | 2026-11-12 |
+| Yaqin atrofdagi ishlar xaritasi (Yandex, `/jobs/xarita`) | ✅ Tugadi (kalitsiz vidjet) | 2026-11-12 |
 | Universal ustalar: ikki tomonlama bozor (0076), katalog, e'lon formasi, kabinet, moderatsiya, demo | Kod tayyor · **0076 — ega amali** | 2026-11-12 |
 | 0. Audit | ✅ Tugadi | 2026-11-11 |
 | 1. Dizayn tizimi | Davom etmoqda: 1-qadam (tokenlar) ✅, 2-qadam (komponentlar) ✅ | 2026-11-11 |

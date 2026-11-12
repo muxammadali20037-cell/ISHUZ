@@ -736,7 +736,19 @@
     "voice_speaking": "Reading the answer aloud…",
     "voice_stop_speaking": "Stop the voice",
     "voice_review": "Check the text — fix it if needed, then send",
-    "voice_no_voice": "This device has no voice for this language — the answer is in text"
+    "voice_no_voice": "This device has no voice for this language — the answer is in text",
+    "stats": {
+      "label": "Market snapshot",
+      "all": "All of Uzbekistan",
+      "vacancies": "Vacancies",
+      "seekers": "Job seekers",
+      "median": "Median pay",
+      "range": "Range: {min} – {max} ({count} ads)",
+      "no_salary": "Too few ads with a salary",
+      "note": "from active ads",
+      "jobs": "See vacancies",
+      "workers": "See candidates"
+    }
   },
   "mode": {
     "chooser_title": "What are you looking for?",
@@ -1120,7 +1132,8 @@
       "answered_ai": "Reply: artificial intelligence",
       "answered_rules": "Reply: basic mode",
       "stopped": "Stopped",
-      "failed": "Error"
+      "failed": "Error",
+      "counted": "Counted from the database"
     },
     "promo_title": "Grow your career",
     "promo_desc": "Find out with the AI assistant which profession and direction suit you.",
@@ -1138,7 +1151,8 @@
       "post": "Post a vacancy",
       "candidates": "Find a candidate",
       "vacancy_text": "Vacancy text",
-      "questions": "Interview questions"
+      "questions": "Interview questions",
+      "stats": "Pay and demand"
     },
     "quick_prompt": {
       "find": "Find me a suitable job",
@@ -1146,7 +1160,9 @@
       "interview": "Help me prepare for a job interview",
       "candidates": "Find a candidate for my vacancy",
       "vacancy_text": "Help me write the vacancy text",
-      "questions": "Write interview questions for a candidate"
+      "questions": "Write interview questions for a candidate",
+      "stats": "How much does my job pay and is it in demand?",
+      "stats_employer": "What salary should I offer? Show me the average salary on the market"
     },
     "tip_title": "Tip of the day",
     "tip_1": "To find a good job, state the exact profession and district — the search gets precise.",

@@ -94,7 +94,7 @@ test("hech narsa yo'q — halol javob, o'ylab topilgan e'lon yo'q", async ({ pag
   expect(data.jobs).toEqual([]);
   expect(data.alertHref).toContain("/ai-alerts?role=worker");
   expect(textOf(ev)).toMatch(/yo'q|topilmadi/);
-  expect(ev.find((e) => e.type === "suggestions")!.items).toEqual(["Kunlik ish bormi?", "Tajribasiz ishlar", "Uydan ishlash"]);
+  expect(ev.find((e) => e.type === "suggestions")!.items).toEqual(["Kunlik ish bormi?", "Tajribasiz ishlar", "Oshpaz maoshi qancha?"]);
 });
 
 test("suhbat konteksti (AI'siz): 'oshpaz kerak' → 'Samarqandda' — kasb oldingi xabardan olinadi", async ({ page, context }) => {

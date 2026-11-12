@@ -9,6 +9,8 @@ import { AiAvatar } from "@/components/shared/ai-avatar";
 import { cn } from "@/lib/utils";
 import { readEvents } from "@/features/assistant/stream";
 import { MESSAGE_MAX_CHARS, type AssistantLang, type ChatMessage } from "@/features/assistant/types";
+import { formatSum, localName, type MarketStats } from "@/features/assistant/market-math";
+import { latinToCyrillic } from "@/lib/i18n/translit";
 import type { AiFindResult } from "../ai-find-types";
 import {
   CHAT_KEEP,
@@ -55,6 +57,8 @@ export interface AiTurn {
   reply?: string;
   /** bazadan topilganlar (qidiruv bo'lgan bo'lsa) */
   result?: AiFindResult;
+  /** bozor holati (kasb bo'yicha statistika; solishtirishda — 2 ta) — sonlar bazadan */
+  stats?: MarketStats[];
   /** bosiladigan keyingi savollar */
   suggestions?: string[];
   /** "ai" — sun'iy intellekt javobi; "rules" — lug'at va shablon (AI ulanmagan yoki ishlamadi) */
@@ -249,6 +253,9 @@ export function useAiChat(defaultMode: FinderMode) {
             case "results":
               patch(id, (x) => ({ ...x, result: e.data }));
               break;
+            case "stats":
+              patch(id, (x) => ({ ...x, stats: [...(x.stats ?? []), e.data].slice(-3) }));
+              break;
             case "suggestions":
               patch(id, (x) => ({ ...x, suggestions: e.items.slice(0, 3) }));
               break;
@@ -410,7 +417,8 @@ function Trace({ turn }: { turn: AiTurn }) {
   const steps: { key: string; text: string; state: "done" | "active" | "error" }[] = [];
   if (pending && turn.stage === "thinking" && !turn.reply) steps.push({ key: "understand", text: t("easy.aiws.trace.understanding"), state: "active" });
   else steps.push({ key: "understand", text: t("easy.aiws.trace.understood"), state: "done" });
-  if (pending && turn.stage === "searching" && !r) steps.push({ key: "search", text: t("easy.aiws.trace.searching"), state: "active" });
+  if (pending && turn.stage === "searching" && !r && !turn.stats?.length) steps.push({ key: "search", text: t("easy.aiws.trace.searching"), state: "active" });
+  else if (turn.stats?.length && !r) steps.push({ key: "search", text: t("easy.aiws.trace.counted"), state: "done" });
   else if (r) steps.push({ key: "search", text: count || r.total ? t("easy.aiws.trace.searched", { count: r.total || count }) : t("easy.aiws.trace.searched_none"), state: "done" });
   if (pending) {
     if (turn.reply) steps.push({ key: "answer", text: t("easy.aiws.trace.writing"), state: "active" });
@@ -437,6 +445,53 @@ function Trace({ turn }: { turn: AiTurn }) {
         </li>
       ))}
     </ol>
+  );
+}
+
+/** Bozor holati kartasi: faol vakansiyalar, ish izlovchilar, oylik maosh oralig'i — bazadan (sonlar o'ylab topilmaydi) */
+function StatsCard({ data, lang }: { data: MarketStats; lang: AssistantLang }) {
+  const { t } = useT();
+  const name = (n: MarketStats["profession"]) => (lang === "oz" ? latinToCyrillic(n.uz) : localName(n, lang));
+  const sum = (x: number) => formatSum(x, lang);
+  // telefonda — qatorlar (nom chapda, son o'ngda), kengroq ekranda — uchta katak
+  const cell = "flex items-baseline justify-between gap-3 rounded-lg bg-secondary px-3 py-2 sm:block sm:px-2.5";
+  return (
+    <section className="space-y-2 rounded-xl border border-border bg-card p-3" aria-label={t("easy.finder.stats.label")} data-ai-stats>
+      <p className="text-sm font-semibold [overflow-wrap:anywhere]">
+        {name(data.profession)} · {data.region ? name(data.region) : t("easy.finder.stats.all")}
+      </p>
+      <dl className="grid grid-cols-1 gap-1.5 sm:grid-cols-3 sm:gap-2 sm:text-center">
+        <div className={cell}>
+          <dt className="text-sm text-muted-foreground sm:text-xs">{t("easy.finder.stats.vacancies")}</dt>
+          <dd className="text-lg font-bold tabular-nums" data-ai-stats-vacancies>
+            {data.vacancies}
+          </dd>
+        </div>
+        <div className={cell}>
+          <dt className="text-sm text-muted-foreground sm:text-xs">{t("easy.finder.stats.seekers")}</dt>
+          <dd className="text-lg font-bold tabular-nums" data-ai-stats-seekers>
+            {data.seekers}
+          </dd>
+        </div>
+        <div className={cell}>
+          <dt className="text-sm text-muted-foreground sm:text-xs">{t("easy.finder.stats.median")}</dt>
+          <dd className="text-base font-bold tabular-nums" data-ai-stats-salary>
+            {data.salary ? sum(data.salary.median) : "—"}
+          </dd>
+        </div>
+      </dl>
+      <p className="text-xs text-muted-foreground">
+        {data.salary ? t("easy.finder.stats.range", { min: sum(data.salary.min), max: sum(data.salary.max), count: data.salary.n }) : t("easy.finder.stats.no_salary")} · {t("easy.finder.stats.note")}
+      </p>
+      <div className="flex flex-wrap gap-x-4">
+        <Link href={data.jobsHref} data-ai-stats-jobs className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+          {t("easy.finder.stats.jobs")} <ArrowRight className="size-4" aria-hidden />
+        </Link>
+        <Link href={data.workersHref} data-ai-stats-workers className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+          {t("easy.finder.stats.workers")} <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      </div>
+    </section>
   );
 }
 
@@ -528,6 +583,8 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
             </span>
           </p>
         ) : null}
+        {/* hech qanday e'lon yo'q — karta emas, matnning o'zi yetarli (bo'sh ro'yxatga havola foydasiz) */}
+        {turn.stats?.filter((d) => d.vacancies + d.seekers > 0).map((d, i) => <StatsCard key={`${d.jobsHref}-${i}`} data={d} lang={turn.lang ?? locale} />)}
         {r && !unclear ? <Understood result={r} /> : null}
         {r?.relaxed?.length ? (
           <ul className="space-y-1" aria-label={t("easy.finder.widened")} data-ai-relaxed>
@@ -583,8 +640,8 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
                 {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />} {copied ? t("easy.finder.copied") : t("easy.finder.copy")}
               </button>
             ) : null}
-            {/* AI tuzib bergan uzun matn (rezyume, vakansiya): keyingi qadam — shu matn bilan e'lon berish */}
-            {reply.length > 240 && turn.source === "ai" ? (
+            {/* uzun matn (rezyume, vakansiya, yo'riqnoma): keyingi qadam — e'lon berish */}
+            {reply.length > 240 && !turn.stats?.length ? (
               <Link href={turn.mode === "workers" ? "/post/vacancy" : "/post/worker"} className={cn(tool, "text-primary-ink")}>
                 <Plus className="size-4" aria-hidden /> {turn.mode === "workers" ? t("easy.finder.empty_post_vacancy") : t("easy.finder.empty_post_worker")}
               </Link>

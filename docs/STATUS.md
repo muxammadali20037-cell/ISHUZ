@@ -41,6 +41,10 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 - Universal ustalar (`/ustalar`, 0076 qo'llangach): katalog, usta e'lonlari (moderatsiya bilan), so'rovlar, sharhlar, usta kabineti.
 - Namuna vakansiyalar (0077 qo'llangach): har sohada 4 tadan, haqiqiy e'lon yo'q joyda "Namuna" belgisi bilan; `/jobs/namuna`;
   admin → "Namuna e'lonlar" — bir bosishda olib tashlash (`docs/DEMO_VACANCIES.md`).
+- Yaqin atrofdagi ishlar xaritasi (`/jobs/xarita`): Yandex xarita vidjeti (kalitsiz), raqamli ro'yxat va masofa; joylashuv
+  koordinatasi serverga yuborilmaydi (faqat eng yaqin tuman).
+- AI yordamchi: bozor statistikasi ("… maoshi qancha?" — faol vakansiyalar, ish izlovchilar, oylik maosh oralig'i bazadan),
+  karyera rejasi va maslahat AI kaliti bo'lmasa ham bosqichma-bosqich (`AI_ASSISTANT.md` §6b).
 - Admin: moderatsiya, ma'lumotnomalar, foydalanuvchilar, xavfsizlik jurnali, statistika.
 - Infratuzilma: `/api/health` (uptime uchun), shifrlangan kunlik zaxira (GitHub Actions), Sentry (DSN berilsa).
 
@@ -57,6 +61,7 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 | 7 | Staging muhit (alohida Supabase + Vercel preview) | Haqiqiy Telegram oqimi va yuklama testi prod'ga tegmasdan | `SCALE.md` §8 |
 | 8 | Haqiqiy foydalanuvchi bilan sinov (kirish → profil → ariza; kompaniya → vakansiya → nomzod) | Avtomatik testlar stendda; prod'da real oqim bir marta qo'lda o'tilishi kerak | `RELEASE_CHECKLIST.md` §6 |
 | 9 | GitHub: **Settings → General → Default branch** ni `main` ga o'tkazish (hozir `claude/gallant-thompson-q70fo3`) | Sayt `main` dan chiqadi, lekin GitHub'dagi "Compare & pull request" tugmasi va rejali ishlar (kunlik zaxira nusxa) eski tarmoqqa qaraydi — #12, #16, #18 shu sababli o'sha tarmoqqa ochilgan (saytga ta'sir qilmagan) | shu yer |
+| 10 | (ixtiyoriy) Yandex Maps JavaScript API kaliti | Hozir xarita — kalitsiz Yandex vidjeti (belgilar va ro'yxat ishlaydi). Kalit bilan belgini bosganda e'lon ochiladigan interaktiv xarita qilish mumkin | `CHANGELOG.md` (2026-11-12, xarita) |
 
 **PR'larni birlashtirish.** Ega ruxsati bilan (2026-11) PR'larni CI yashil bo'lgach Claude o'zi `main` ga birlashtiradi — GitHub'da
 "Merge" bosish shart emas. Agar ega o'zi bossa: avval sahifadagi barcha tekshiruvlar yashil bo'lishini kutish kerak (#17 tekshiruvlar

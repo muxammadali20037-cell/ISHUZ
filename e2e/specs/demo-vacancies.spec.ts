@@ -48,6 +48,7 @@ test("bosh sahifa: haqiqiy e'lon yo'q — 'Namuna e'lonlar' bloki; karta → nam
   const title = (await cards.first().getByRole("heading", { level: 3 }).innerText()).trim();
   await cards.first().getByRole("link").click();
   await page.waitForURL(/\/jobs\/namuna\/namuna-[a-z0-9-]+$/);
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
   await expect(page.locator("[data-demo-banner]")).toContainText("Bu namuna e'lon");
   await expect(page.locator("[data-demo-banner]")).toContainText("Haqiqiy ish emas");
@@ -113,6 +114,7 @@ test("/jobs va /search: hech narsa topilmasa — o'sha sohadan namunalar; /jobs/
   expect(Number(n)).toBe(Number(c) * 4);
   await page.goto("/jobs/namuna");
   await expect(page.getByRole("heading", { level: 1, name: "Namuna e'lonlar" })).toBeVisible();
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator("[data-demo-note]")).toContainText("ariza yuborib bo'lmaydi");
   await expect(page.locator("[data-demo-count]")).toHaveText(`${n} ta namuna`);
   await expect(page.locator("[data-demo-card]")).toHaveCount(24);

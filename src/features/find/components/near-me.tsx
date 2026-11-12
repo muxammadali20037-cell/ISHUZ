@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, LocateFixed, Loader2 } from "lucide-react";
+import { ArrowLeft, LocateFixed, Loader2, MapPinned } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { toast } from "@/components/ui/toast";
@@ -43,6 +43,11 @@ export function NearMe({ base, regions, districts }: { base: FindParams; regions
         onLocated={(d) => void go(d)}
         onManual={() => router.replace(findHref(base, { near: false, any: !base.p, region: null, district: null, page: 1 }))}
       />
+      {base.mode !== "workers" ? (
+        <Link href="/jobs/xarita" prefetch={false} data-map-entry className="inline-flex min-h-11 items-center gap-1.5 text-base font-semibold text-primary-ink hover:underline">
+          <MapPinned className="size-5" aria-hidden /> {t("map.entry")}
+        </Link>
+      ) : null}
     </div>
   );
 }
