@@ -69,6 +69,47 @@ const STATS = new RegExp(
   "iu",
 );
 
+/**
+ * Qidiruv niyati: "oshpaz kerak", "ish bormi", "izlayapman", "нужен повар", "ищу работу", "need a driver". Statistika savolidan
+ * keyin shunday xabar kelsa — bu yangi qidiruv (davomi emas): "avto instruktor kerak" e'lonlarni ko'rsatadi, statistikani emas.
+ */
+const SEARCH_INTENT = new RegExp(
+  [
+    `\\bkerak`, `bormi`, `izla`, `qidir`, `ishga\\s+(olaman|olamiz|kir)`, `ish\\s+(ber|top)`,
+    `керак`, `борми`, `изла`, `қидир`,
+    `нуж(ен|на|ны|но)`, `ищу`, `ищем`, `требуется`, `есть\\s+ли`, `найд`, `найти`,
+    `\\bneed`, `looking\\s+for`, `hiring`, `\\bfind\\b`, `any\\s+(job|work|vacanc)`,
+  ].join("|"),
+  "iu",
+);
+
+export function isSearchRequest(text: string): boolean {
+  return SEARCH_INTENT.test(text);
+}
+
+const DEMO_NOTE: Record<AssistantLang, { exact: string; category: string }> = {
+  uz: {
+    exact: "Haqiqiy e'lon hozircha yo'q. Quyida shu kasb bo'yicha namuna e'lonlar — ular haqiqiy emas, ilova qanday ishlashini ko'rsatadi (ariza yuborib bo'lmaydi). Haqiqiy e'lon chiqsa xabar olish uchun «Yangisi chiqsa xabar olish» tugmasini bosing.",
+    category: "Haqiqiy e'lon hozircha yo'q. Quyida shu sohadagi namuna e'lonlar — ular haqiqiy emas, ilova qanday ishlashini ko'rsatadi (ariza yuborib bo'lmaydi). Haqiqiy e'lon chiqsa xabar olish uchun «Yangisi chiqsa xabar olish» tugmasini bosing.",
+  },
+  oz: { exact: "", category: "" },
+  ru: {
+    exact: "Настоящих объявлений пока нет. Ниже — образцы по этой профессии: они не настоящие и показывают, как работает приложение (откликнуться нельзя). Чтобы узнать о настоящем объявлении, включите уведомление кнопкой ниже.",
+    category: "Настоящих объявлений пока нет. Ниже — образцы из этой сферы: они не настоящие и показывают, как работает приложение (откликнуться нельзя). Чтобы узнать о настоящем объявлении, включите уведомление кнопкой ниже.",
+  },
+  en: {
+    exact: "There are no real ads yet. Below are sample ads for this job — they are not real and show how the app works (you can't apply). To hear about a real ad, turn on the alert with the button below.",
+    category: "There are no real ads yet. Below are sample ads from this field — they are not real and show how the app works (you can't apply). To hear about a real ad, turn on the alert with the button below.",
+  },
+};
+DEMO_NOTE.oz = { exact: latinToCyrillic(DEMO_NOTE.uz.exact), category: latinToCyrillic(DEMO_NOTE.uz.category) };
+
+/** Haqiqiy natija 0, namunalar ko'rsatildi — buni ochiq aytish (namunani haqiqiy ish deb ko'rsatmaslik) */
+export function demoNote(data: AiFindResult, lang: AssistantLang): string | null {
+  if (data.total > 0 || !data.demos?.items.length) return null;
+  return data.demos.exact ? DEMO_NOTE[lang].exact : DEMO_NOTE[lang].category;
+}
+
 export function isStatsQuestion(text: string): boolean {
   return text.length <= 200 && STATS.test(text);
 }
@@ -217,6 +258,7 @@ const ST = {
     salary: "Oylik maosh ({n} ta e'londa): {min} – {max}, o'rtasi {median}",
     no_salary: "Maosh oralig'ini hisoblash uchun oylik maosh yozilgan e'lonlar kam (kamida 3 ta kerak).",
     empty: "Bu kasb bo'yicha hozircha faol e'lon yo'q.",
+    demos: "Namuna e'lonlar: {n} ta — ular haqiqiy emas (ilova qanday ishlashini ko'rsatadi) va yuqoridagi sonlarga kirmagan.",
     hot_seeker: "Ish beruvchilar ish izlovchilardan ko'proq — bu kasbga talab yaxshi.",
     hot_employer: "Nomzodlar vakansiyalardan kam — maoshni bozordagidan past qo'ymang va arizalarga tez javob bering.",
     crowded_seeker: "Ish izlovchilar ko'p — rezyumeni yaxshi yozish va tez ariza yuborish muhim.",
@@ -231,6 +273,7 @@ const ST = {
     salary: "Зарплата в месяц (по {n} объявл.): {min} – {max}, середина {median}",
     no_salary: "Для диапазона зарплат мало объявлений с месячной зарплатой (нужно минимум 3).",
     empty: "По этой профессии пока нет активных объявлений.",
+    demos: "Образцы объявлений: {n} — они не настоящие (показывают, как работает приложение) и не входят в цифры выше.",
     hot_seeker: "Работодателей больше, чем соискателей — спрос на профессию хороший.",
     hot_employer: "Кандидатов меньше, чем вакансий — не ставьте зарплату ниже рынка и отвечайте на отклики быстро.",
     crowded_seeker: "Соискателей много — важно хорошее резюме и быстрый отклик.",
@@ -245,6 +288,7 @@ const ST = {
     salary: "Monthly salary (from {n} ads): {min} – {max}, middle {median}",
     no_salary: "Too few ads with a monthly salary to show a range (at least 3 are needed).",
     empty: "There are no active ads for this job yet.",
+    demos: "Sample ads: {n} — they are not real (they show how the app works) and are not counted above.",
     hot_seeker: "There are more employers than job seekers — demand for this job is good.",
     hot_employer: "There are fewer candidates than vacancies — don't set pay below the market and reply to applications quickly.",
     crowded_seeker: "Many people are looking — a good CV and a quick application matter.",
@@ -267,6 +311,7 @@ export function statsReply(d: MarketStats, lang: AssistantLang, role: AssistantR
     lines.push(`• ${fill(st(lang, "salary"), { n: d.salary.n, min: sum(d.salary.min), max: sum(d.salary.max), median: sum(d.salary.median) })}`);
   } else if (d.vacancies > 0) lines.push(st(lang, "no_salary"));
   if (d.vacancies + d.seekers === 0) lines.push(st(lang, "empty"));
+  if (d.vacancies === 0 && d.demos) lines.push(fill(st(lang, "demos"), { n: d.demos }));
   else if (d.vacancies + d.seekers >= 10) {
     const employer = role === "employer";
     const key: StKey = d.vacancies >= d.seekers * 2 ? (employer ? "hot_employer" : "hot_seeker") : d.seekers >= d.vacancies * 2 ? (employer ? "crowded_employer" : "crowded_seeker") : "even";

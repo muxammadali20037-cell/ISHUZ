@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import type { AiFindResult } from "@/features/find/ai-find-types";
 import { runAssistant, sanitizeHistory, type EngineDeps, type FindFn, type LlmClient, type LlmMessage, type LlmParams, type StatsFn } from "./engine";
 import type { MarketStats } from "./market-math";
-import { isStatsQuestion, statsReply } from "./replies";
+import { isSearchRequest, isStatsQuestion, statsReply } from "./replies";
 import { compactForModel, compactStatsForModel, parseToolCall } from "./tools";
 import { systemPrompt } from "./prompt";
 import type { AssistantEvent, ChatMessage } from "./types";
@@ -399,5 +399,45 @@ describe("bozor statistikasi (maosh, talab) — faqat bazadagi faol e'lonlardan"
     await run([user("salom")], { llm: llm2 });
     expect(calls2[0]!.tools.map((t) => t.name)).toEqual(["search_jobs"]);
     expect(JSON.parse(compactStatsForModel(null))).toMatchObject({ profession_unclear: true });
+  });
+});
+
+const demoCard = (slug: string, title: string) =>
+  ({ id: slug, slug, title_uz: title, title_ru: null, title_en: null, category_slug: "talim", category_icon: null, profession_node_id: "n-avto", region_name_uz: "Xorazm viloyati", region_name_ru: null, region_name_en: null, region_name_oz: null, district_name_uz: null, district_name_ru: null, district_name_en: null, district_name_oz: null, lat: null, lng: null, is_remote: false, salary_from: 3_500_000, salary_to: 8_000_000, salary_type: "monthly", salary_negotiable: false, schedule: "5_2", employment_type: "full_time", experience_min_months: 12 }) as NonNullable<AiFindResult["demos"]>["items"][number];
+
+describe("namuna e'lonlar va statistikadan keyingi qidiruv", () => {
+  it("statistika savolidan keyin 'avto instruktor kerak' — yangi qidiruv (statistika emas)", async () => {
+    expect(isSearchRequest("avto instruktor kerak")).toBe(true);
+    expect(isSearchRequest("нужен повар")).toBe(true);
+    expect(isSearchRequest("buxgalter")).toBe(false);
+    expect(isSearchRequest("Samarqandda-chi?")).toBe(false);
+    const st = vi.fn<StatsFn>(async () => ({ ok: true, data: null }));
+    const r = await run([user("Kasbim bo'yicha maosh qancha va talab qanday?"), bot("Qaysi kasb bo'yicha ko'raylik?"), user("avto instruktor kerak")], { stats: st });
+    expect(st).not.toHaveBeenCalled();
+    expect(r.find).toHaveBeenCalledWith({ text: "avto instruktor kerak", mode: "jobs", ai: true });
+    expect(r.types).toContain("results");
+    // qisqa javob (kasb nomi) — hali ham statistikaning davomi
+    const st2 = vi.fn<StatsFn>(async () => ({ ok: true, data: stats({ region: null }) }));
+    const r2 = await run([user("Kasbim bo'yicha maosh qancha va talab qanday?"), bot("Qaysi kasb bo'yicha ko'raylik?"), user("oshpaz")], { stats: st2 });
+    expect(st2).toHaveBeenCalledWith("oshpaz");
+    expect(r2.find).not.toHaveBeenCalled();
+  });
+
+  it("haqiqiy e'lon 0, namunalar bor — javobda ochiq aytiladi (haqiqiy deb ko'rsatilmaydi), modelga ham shunday", async () => {
+    const empty = result({ jobs: [], total: 0, demos: { items: [demoCard("namuna-talim-1", "Avtoinstruktor")], exact: true, href: "/jobs/namuna?soha=talim" } });
+    const r = await run([user("avto instruktor kerak")], { find: vi.fn<FindFn>(async () => ({ ok: true, data: empty })) });
+    expect(r.text).toContain("Haqiqiy e'lon hozircha yo'q. Quyida shu kasb bo'yicha namuna e'lonlar — ular haqiqiy emas");
+    const ru = await run([user("нужен автоинструктор")], { find: vi.fn<FindFn>(async () => ({ ok: true, data: { ...empty, demos: { ...empty.demos!, exact: false } } })) });
+    expect(ru.text).toContain("Ниже — образцы из этой сферы: они не настоящие");
+    const model = JSON.parse(compactForModel(empty));
+    expect(model).toMatchObject({ total: 0, sample_ads_shown: 1 });
+    expect(model.sample_ads_note).toContain("not real jobs");
+    // haqiqiy natija bor — namuna eslatilmaydi
+    expect(JSON.parse(compactForModel(result({ demos: empty.demos }))).sample_ads_shown).toBeUndefined();
+    // statistika: namunalar alohida qatorda, sonlarga qo'shilmaydi
+    const text = statsReply(stats({ vacancies: 0, seekers: 0, salary: null, demos: 1 }), "uz", "seeker");
+    expect(text).toContain("Faol vakansiyalar: 0 ta");
+    expect(text).toContain("Namuna e'lonlar: 1 ta — ular haqiqiy emas");
+    expect(statsReply(stats({ demos: 2 }), "uz", "seeker")).not.toContain("Namuna");
   });
 });

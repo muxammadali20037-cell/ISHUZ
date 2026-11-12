@@ -748,7 +748,10 @@
       "note": "faol e'lonlar bo'yicha",
       "jobs": "Vakansiyalarni ko'rish",
       "workers": "Nomzodlarni ko'rish"
-    }
+    },
+    "demos_exact": "Namuna e'lonlar — haqiqiy emas",
+    "demos_category": "Shu sohadagi namuna e'lonlar — haqiqiy emas",
+    "demos_all": "Barcha namunalar"
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",

@@ -9,6 +9,8 @@ export interface DemoVacancy {
   title_en: string | null;
   category_slug: string | null;
   category_icon: string | null;
+  /** namuna qaysi kasbga tegishli (AI yordamchi shu kasb so'ralganda ko'rsatadi) */
+  profession_node_id?: string | null;
   region_name_uz: string | null;
   region_name_ru: string | null;
   region_name_en: string | null;
@@ -41,3 +43,15 @@ export interface DemoVacancyList {
 }
 
 export const DEMO_VACANCIES_PAGE = 24;
+
+/**
+ * Haqiqiy e'lon topilmaganda ko'rsatiladigan namunalar (AI yordamchi, qidiruv): avval shu kasb (va ichidagi kasblar), bo'lmasa
+ * shu soha. Ular haqiqiy emas — statistikaga va natijalar soniga kirmaydi.
+ */
+export interface DemoSamples {
+  items: DemoVacancy[];
+  /** true — aynan so'ralgan kasb bo'yicha; false — shu sohadagi boshqa kasblar */
+  exact: boolean;
+  /** namunalar sahifasi (shu soha filtri bilan) */
+  href: string;
+}

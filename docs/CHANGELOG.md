@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · AI yordamchi namuna e'lonlarni ko'rsatadi; "… kerak" statistika emas, qidiruv (`claude/ai-demo-samples`)
+
+### Mahsulot
+- Ega: "Namuna e'lonlarda Avtoinstruktor bor, AI esa 0 ta deydi". Endi haqiqiy vakansiya topilmasa (ish qidirishda, kasb
+  tushunilganda) AI javobi ostida **shu kasb bo'yicha namuna e'lonlar** chiqadi (bo'lmasa shu sohadagilar) — "Namuna e'lonlar —
+  haqiqiy emas" sarlavhasi, "Namuna" belgisi, ariza tugmasi yo'q; javob matni ham buni ochiq aytadi. Namunalar natijalar soniga
+  va statistikaga **kirmaydi**; statistika javobida alohida qator: "Namuna e'lonlar: 1 ta — haqiqiy emas".
+- "Maosh va talab" savolidan keyin "avto instruktor kerak" kabi xabar statistikaning davomi deb olinardi (0 ta deb javob). Endi
+  "kerak", "bormi", "izlayapman", "нужен", "ищу", "need" kabi so'zli xabar — yangi qidiruv.
+- AI modeli ham biladi: namunalar haqiqiy ish emas, sanalmaydi, ularga ariza tavsiya qilinmaydi.
+
+### Kuzatuv
+- AI chaqiruvi xato bersa (javob "oddiy rejim"da chiqadi) — sababi Vercel jurnalida ham yoziladi (`[ai] … failed …`; kalit va
+  foydalanuvchi matni yozilmaydi). Admin bosh sahifasidagi "AI holati" kartasida ham ko'rinadi.
+
 ## 2026-11-12 · Yaqin atrofdagi ishlar xaritasi (Yandex) va AI: bozor statistikasi, karyera (`claude/jobs-map`)
 
 ### Mahsulot

@@ -185,6 +185,9 @@ Egasi: "AI mukammal ishlasin, ketma-ketlik bilan, hech qayerda boshi berk bo'lma
   karyera, vakansiya matni, suhbat savollari, xodim topish) — endi "AI ulanmagan" emas, **bosqichma-bosqich amaliy yo'riqnoma**
   (`advice.ts`, 4 tilda) va keyingi qadam tugmalari. Matnlarda raqam yoki "bazada bor" degan da'vo yo'q.
 - AI ish maydonida yangi tez tugma: **"Maosh va talab"** (ikkala rol).
+- **Namuna e'lonlar** (0077): haqiqiy vakansiya 0 ta bo'lsa — shu kasb (yoki soha) namunalari alohida "haqiqiy emas" bo'limida
+  (`AiFindResult.demos`, `demo-vacancies/samples.ts`); statistikaga va `total` ga kirmaydi. Statistika savolidan keyin qidiruv
+  niyatli xabar ("… kerak", "нужен …") — davomi emas, yangi qidiruv (`isSearchRequest`).
 Testlar: `engine.test.ts` (statistika va maslahat — 6 ta yangi), `e2e/specs/assistant-stats.spec.ts` (sonlar bazadagi e'lonlar
 bilan solishtiriladi).
 
