@@ -40,6 +40,7 @@ export const CLIENT_EVENTS = [
   // "Universal ustalar" bo'limiga kirish (bosh sahifa kartasi, yon menyu)
   "masters_entry",
   "ai_entry",
+  "social_open",
 ] as const;
 
 export const SERVER_EVENTS = [

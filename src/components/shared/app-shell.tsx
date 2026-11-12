@@ -1,5 +1,7 @@
 "use client";
 
+import { SocialLinks } from "./social-links";
+import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -323,10 +325,12 @@ export function SideNav({
   counts,
   mode = null,
   user,
+  social = [],
 }: {
   mode?: NavMode;
   counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>>;
   user?: TopBarUser | null;
+  social?: SocialLink[];
 }) {
   const pathname = usePathname();
   const { t } = useT();
@@ -404,6 +408,8 @@ export function SideNav({
           <p className="mb-1.5 px-3 text-xs font-medium text-navy-muted/60">{t("easy.side.more")}</p>
           <ul className="space-y-0.5">{more.map(link)}</ul>
         </div>
+        {/* rasmiy Telegram kanal va Instagram — bosilsa yangi oynada */}
+        <SocialLinks links={social} tone="dark" compact />
       </nav>
       {user ? (
         <div className="shrink-0 space-y-2 border-t border-navy-line px-3 py-3">

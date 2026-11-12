@@ -1,5 +1,6 @@
 "use client";
 
+import type { SocialLink } from "@/lib/social";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { cn } from "@/lib/utils";
 import { TopBar, type TopBarProps } from "./top-bar";
@@ -8,6 +9,8 @@ import { BottomNav, SideNav } from "./app-shell";
 /** Qobiq ma'lumoti (serverda Shell tayyorlaydi): yuqori panel va pastki menyu */
 export interface FrameChrome {
   top: TopBarProps;
+  /** rasmiy Telegram va Instagram (yon menyuda) */
+  social?: SocialLink[];
 }
 
 /*
@@ -58,7 +61,7 @@ export function AppFrame({
   return (
     <div className={cn("flex min-h-dvh flex-col", side && "lg:pl-64")}>
       {chrome ? <TopBar {...chrome.top} side={side} /> : null}
-      {side && chrome ? <SideNav mode={chrome.top.mode} counts={chrome.top.counts} user={chrome.top.user} /> : null}
+      {side && chrome ? <SideNav mode={chrome.top.mode} counts={chrome.top.counts} user={chrome.top.user} social={chrome.social} /> : null}
       {/* pastki qism bo'lsa — pastki menyu uchun joy o'sha yerda (aks holda kontent ostida) */}
       <main className={cn("min-w-0 flex-1", hideNav || footer ? "" : "page-with-tabbar md:pb-8", side && "lg:pt-2")}>{children}</main>
       {footer}

@@ -1,3 +1,6 @@
+import { getServerEnv } from "@/lib/env";
+import { socialLinks } from "@/lib/social";
+import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Bell, BellRing, Bookmark, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Repeat, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
@@ -222,6 +225,9 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         <AiEntry title={t("easy.aiws.nav.ai")} desc={t(mode === "employer" ? "easy.aiws.entry_desc_employer" : "easy.aiws.entry_desc")} to="cabinet" />
         <MastersEntry title={t("masters.name")} desc={t("masters.entry_desc")} />
       </div>
+
+      {/* telefonda yon menyu yo'q — rasmiy Telegram va Instagram shu yerda */}
+      <SocialLinks links={socialLinks(getServerEnv())} className="rounded-2xl border border-border bg-card p-4" />
 
       {(["activity", "account"] as const).map((group) => (
         <section key={group} className="space-y-2" aria-labelledby={`links-${group}`}>

@@ -1,5 +1,12 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · Telegram va Instagram havolalari ko'rinadigan joylarda (`claude/social-links`)
+
+- Ega: "instagram ishtopdim, telegram ish_topdim_uz — bosilsa olib boradigan qilib qo'shib qo'y". Rasmiy sahifalar (Vercel'dagi
+  `SOCIAL_TELEGRAM_URL`, `SOCIAL_INSTAGRAM_URL`) endi belgili tugmalar: sayt pastki qismi (@manzil bilan), kompyuterdagi chap
+  yon menyu ("Biz ijtimoiy tarmoqlarda"), telefonda kabinet sahifasi va "Yordam" sahifasi. Bosilsa yangi oynada ochiladi.
+- Sozlanmagan tarmoq ko'rsatilmaydi (soxta havola yo'q); faqat `https://` havolalar.
+
 ## 2026-11-12 · AI yordamchi sahifasi butun ekranni egallaydi (`claude/ai-fullscreen`)
 
 - Ega skrinshoti: `/ai` katta monitorda o'rtada kichik oyna edi. Endi kompyuterda suhbat oynasi ekran balandligini to'ldiradi

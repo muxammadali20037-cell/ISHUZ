@@ -248,5 +248,9 @@
     "text": "Sayt ishlashi va tanlovlaringizni (til, rol, hudud) eslab qolish uchun cookie ishlatamiz. Reklama kuzatuvchilari yo'q.",
     "more": "Batafsil",
     "ok": "Tushunarli"
+  },
+  "social": {
+    "title": "Biz ijtimoiy tarmoqlarda",
+    "open": "{network} sahifamizni ochish {handle}"
   }
 }
