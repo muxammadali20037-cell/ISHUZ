@@ -90,9 +90,22 @@ export async function SeekerHome({ session, flush = false }: { session: SessionC
             ))}
           </ul>
           {/* "direction_select" — admin tahlilidagi voronka qadami (avval "Barcha kasblar" havolasida edi) */}
-          <Link href={seekerFiltersHref(where)} prefetch={false} data-track="direction_select" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
-            {t("easy.home2.all_filters")} <ChevronRight className="size-4" aria-hidden />
-          </Link>
+          <div className="mt-3 flex flex-wrap gap-x-5">
+            <Link href={seekerFiltersHref(where)} prefetch={false} data-track="direction_select" className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+              {t("easy.home2.all_filters")} <ChevronRight className="size-4" aria-hidden />
+            </Link>
+            {/* yaqin atrofdagi ishlar — Yandex xaritasida (eslab qolingan hudud bilan) */}
+            <Link
+              href={place.region ? `/jobs/xarita?region=${encodeURIComponent(place.region.slug)}${place.district ? `&district=${place.district.id}` : ""}` : "/jobs/xarita"}
+              prefetch={false}
+              data-track="home_service"
+              data-track-to="map"
+              data-map-entry
+              className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline"
+            >
+              <MapPin className="size-4" aria-hidden /> {t("map.entry")}
+            </Link>
+          </div>
         </nav>
         {/* alohida bo'limlar: "AI yordamchi" (suhbat oynasi, /ai) va "Universal ustalar" (turkuaz) — bir qatorda; telefonda ixcham
             plitka (faqat nom): birinchi e'lon birinchi ekranda qolsin (home.spec) */}

@@ -17,6 +17,9 @@ export interface CspOptions {
   https?: boolean;
 }
 
+/** Yandex xarita vidjeti manbalari (frame-src) */
+export const YANDEX_MAP_FRAMES = ["https://yandex.ru", "https://yandex.uz", "https://yandex.com"] as const;
+
 /** Telegram Web (brauzer) Mini App'ni iframe ichida ochadi; mobil/desktop ilovalar — o'z webview'i */
 export const TELEGRAM_FRAME_ANCESTORS = ["https://web.telegram.org", "https://webk.telegram.org", "https://webz.telegram.org"] as const;
 
@@ -40,7 +43,8 @@ export function buildCsp({ supabaseUrl, admin = false, dev = false, https = !dev
     ["object-src", "'none'"],
     ["form-action", "'self'"],
     ["frame-ancestors", admin ? "'none'" : list("'self'", ...TELEGRAM_FRAME_ANCESTORS)],
-    ["frame-src", "'self'"],
+    // Yandex xarita vidjeti (/jobs/xarita): API kalitsiz iframe; yandex.ru hududga qarab yandex.uz ga yo'naltirishi mumkin
+    ["frame-src", list("'self'", ...YANDEX_MAP_FRAMES)],
     ["script-src", list("'self'", "'unsafe-inline'", dev && "'unsafe-eval'", "https://telegram.org")],
     ["style-src", "'self' 'unsafe-inline'"],
     ["img-src", list("'self'", "data:", "blob:", sb, "https://t.me", "https://*.telesco.pe")],

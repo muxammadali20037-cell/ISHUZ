@@ -25,6 +25,8 @@ describe("buildCsp", () => {
   it("asosiy sayt: faqat o'zi va Telegram Web ramkaga oladi; admin — hech kim", () => {
     expect(dir(csp, "frame-ancestors")).toBe("frame-ancestors 'self' https://web.telegram.org https://webk.telegram.org https://webz.telegram.org");
     expect(dir(buildCsp({ supabaseUrl: SB, admin: true }), "frame-ancestors")).toBe("frame-ancestors 'none'");
+    // ramkaga faqat o'zimiz va Yandex xarita vidjeti olinadi (/jobs/xarita)
+    expect(dir(csp, "frame-src")).toBe("frame-src 'self' https://yandex.ru https://yandex.uz https://yandex.com");
   });
 
   it("prod: http so'rovlar https ga; dev: eval va ws (HMR)", () => {
