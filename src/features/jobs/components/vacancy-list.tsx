@@ -9,7 +9,7 @@ export type VacancyListLayout = "list" | "grid" | "row";
 
 const LAYOUTS: Record<VacancyListLayout, string> = {
   list: "space-y-3",
-  grid: "grid gap-3 md:grid-cols-2",
+  grid: "grid gap-3 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4",
   row: "-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-1 scrollbar-none sm:mx-0 sm:px-0",
 };
 

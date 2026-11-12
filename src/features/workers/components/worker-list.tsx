@@ -31,7 +31,7 @@ export function WorkerList({ rows, vacancyId, hideMatch }: { rows: WorkerCardDat
   };
 
   return (
-    <ul className="space-y-3">
+    <ul className="grid grid-cols-1 gap-3 2xl:grid-cols-2 4xl:grid-cols-3">
       {rows.map((w) => {
         const isSaved = overrides[w.id] ?? w.is_saved;
         return (

@@ -65,7 +65,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Se
 
   return (
     <Shell>
-      <div className="container-app py-6 sm:py-10">
+      <div className="container-wide py-6 sm:py-10">
         <header className="max-w-2xl">
           <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("welcome.companies.title")}</h1>
           <p className="mt-2 text-lg text-muted-foreground">{t("welcome.companies.lead")}</p>
@@ -113,7 +113,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Se
             <p className="mt-5 text-sm text-muted-foreground" aria-live="polite">
               {t("welcome.companies.count", { count: result.total })}
             </p>
-            <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5">
               {result.items.map((c) => {
                 const industry = catName(c.industryCategoryId);
                 const place = regionName(c.regionId);

@@ -42,7 +42,7 @@ export async function MarketHero({ stats, counts, media, ai = false }: { stats: 
   const employers = counts && counts.employers > 0 ? counts.employers : 0;
   return (
     <section aria-labelledby="hero-title" className="border-b border-border bg-hero-soft">
-      <div className="container-app grid grid-cols-1 gap-10 pb-10 pt-8 sm:pb-14 sm:pt-12 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-center lg:gap-12 lg:pb-16 lg:pt-14">
+      <div className="container-wide grid grid-cols-1 gap-10 pb-10 pt-8 sm:pb-14 sm:pt-12 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-center lg:gap-12 lg:pb-16 lg:pt-14">
         <div className="min-w-0">
           {vacancies ? (
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 text-sm font-medium text-foreground">

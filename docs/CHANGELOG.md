@@ -1,5 +1,13 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · Katta monitorlarda ekran to'liq ishlatiladi (`claude/wide-screens`)
+
+- Ega: "nimaga haqiqiy saytlarga o'xshab butun ekranni egallamayapti" (2560 px monitor). Ro'yxat va bosh sahifalar endi
+  `container-wide` da: 1536 px dan 1440, 1920 px dan 1760, 2400 px dan 2080 px gacha kengayadi (avval hamma joyda 1152 px).
+  Kartalar ustunlari ko'payadi: bosh sahifa lentasi 3–4, qidiruv natijalari 2–4, namunalar 4–5, kompaniyalar va kasblar 4–5,
+  ustalar 5–8, nomzodlar 2–3. Bosh sahifa qidiruv kartasi katta ekranda ikki ustun (o'ngda AI yordamchi va Universal ustalar).
+- Matnli sahifalar (vakansiya, profil, kompaniya) — avvalgicha 1152 px: juda uzun qator o'qishga noqulay.
+- Yangi o'lchamlar: `3xl` (1920 px), `4xl` (2400 px). 1440 px va undan kichik ekranlarda hech narsa o'zgarmadi.
 ## 2026-11-12 · "Tez va qulay e'lon — AI yordamchi bilan" (ish izlovchi) (`claude/post-ai-chat`)
 
 ### Mahsulot

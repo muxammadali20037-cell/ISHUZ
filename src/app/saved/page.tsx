@@ -69,7 +69,7 @@ export default async function SavedPage() {
   );
 
   return (
-    <div className="container-app space-y-6 py-5 sm:py-8">
+    <div className="container-wide space-y-6 py-5 sm:py-8">
       <div>
         <h1 className="text-3xl font-extrabold">{t("easy.saved.page_title")}</h1>
         {count ? <p className="mt-1 text-lg text-muted-foreground">{worker ? t("easy.saved.jobs_count", { count }) : t("easy.saved.workers_count", { count })}</p> : null}
@@ -78,7 +78,7 @@ export default async function SavedPage() {
       {legacyJobs?.length ? (
         <SavedList items={legacyJobs} onEmpty={empty} />
       ) : count ? (
-        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4">
           {jobs?.items.map((job) => (
             <li key={job.id}>
               <JobResultCard job={job} imageUrl={job.profession_node_id ? jobs.images[job.profession_node_id] : null} saved savedRefresh />

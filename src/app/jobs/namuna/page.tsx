@@ -38,7 +38,7 @@ export default async function DemoVacanciesPage({ searchParams }: { searchParams
   };
   return (
     <>
-      <div className="container-app space-y-5 py-5 sm:py-8" data-demo-list>
+      <div className="container-wide space-y-5 py-5 sm:py-8" data-demo-list>
         <header className="max-w-3xl">
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
             <FlaskConical className="size-6 shrink-0 text-muted-foreground" aria-hidden /> {t("demo.list_title")}
@@ -73,7 +73,7 @@ export default async function DemoVacanciesPage({ searchParams }: { searchParams
             <p className="text-sm font-semibold" data-demo-count>
               {t("demo.list_count", { count: list.total })}
             </p>
-            <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
+            <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5">
               {list.items.map((job) => (
                 <li key={job.id} className="flex [&>article]:w-full">
                   <DemoJobCard job={job} />

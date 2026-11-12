@@ -53,7 +53,7 @@ export async function FeaturedJobs() {
   const { t, tEnum, name, locale } = tr;
   const catName = new Map(categories.map((c) => [c.slug, name(c)]));
   return (
-    <section id="tanlangan" aria-labelledby="home-featured" className="container-app scroll-mt-20 py-10 sm:py-14">
+    <section id="tanlangan" aria-labelledby="home-featured" className="container-wide scroll-mt-20 py-10 sm:py-14">
       <SectionHead
         id="home-featured"
         title={t("welcome.jobs.featured_title")}
@@ -65,7 +65,7 @@ export async function FeaturedJobs() {
           </Link>
         }
       />
-      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+      <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4 4xl:grid-cols-5">
         {picked.items.map((v) => {
           const place = placeOf(v, t, locale);
           const exp = experienceOf(v, t, tEnum);
@@ -122,7 +122,7 @@ export async function LatestJobs() {
   const [{ t, tEnum, locale }, res] = await Promise.all([getT(), searchVacancyCardsWithTotal({ p_sort: "newest", p_limit: 6 })]);
   const items = res?.items ?? [];
   return (
-    <section id="yangi-ishlar" aria-labelledby="home-latest" className="container-app scroll-mt-20 py-10 sm:py-14">
+    <section id="yangi-ishlar" aria-labelledby="home-latest" className="container-wide scroll-mt-20 py-10 sm:py-14">
       <SectionHead
         id="home-latest"
         title={t("welcome.jobs.latest_title")}
@@ -229,7 +229,7 @@ export async function TrustedEmployers() {
     { icon: LockKeyhole, title: t("welcome.trust.privacy_title"), desc: t("welcome.trust.privacy_desc") },
   ];
   return (
-    <section aria-labelledby="home-trust" className="container-app py-10 sm:py-14">
+    <section aria-labelledby="home-trust" className="container-wide py-10 sm:py-14">
       <SectionHead
         id="home-trust"
         title={shown.length ? t("welcome.trust.title") : t("welcome.trust.title_rules")}

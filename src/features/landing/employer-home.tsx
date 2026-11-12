@@ -32,7 +32,7 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
     <div className="flex flex-col gap-6">
       <EmployerHead flush={flush} greeting={firstName ? t("easy.home2.e_greeting", { name: firstName }) : t("easy.services.greeting_guest")} place={place} postHref="/post/vacancy" />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] 3xl:grid-cols-[minmax(0,1fr)_22rem]">
         <div className="min-w-0 space-y-5">
           {session ? (
             // kirgan, lekin ish beruvchi profili yo'q: bir daqiqalik to'ldirish (arizalar va vakansiyalar shundan keyin)
@@ -108,7 +108,7 @@ async function NewWorkers({ session, place }: { session: SessionContext | null; 
       </div>
       <p className="mt-0.5 text-sm text-muted-foreground">{t("easy.start.new_reason", { place: feed.region ? name(feed.region) : t("easy.location.whole_country") })}</p>
       {feed.items.length ? (
-        <ul className="pop-list mt-3 grid grid-cols-1 gap-3">
+        <ul className="pop-list mt-3 grid grid-cols-1 gap-3 2xl:grid-cols-2 4xl:grid-cols-3">
           {feed.items.map((w) => (
             <li key={w.id}>
               <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? feed.images[w.profession_node_id] : null} saved={saved.has(w.id)} />
