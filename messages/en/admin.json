@@ -37,7 +37,8 @@
     "home": "Home page",
     "entry": "Entry screens",
     "account": "Sign-in methods",
-    "telegram": "Telegram channel"
+    "telegram": "Telegram channel",
+    "masters": "Universal masters"
   },
   "common": {
     "done": "Done",

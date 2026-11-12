@@ -19,7 +19,9 @@ export function VacancyAiComposer() {
     setText(value);
     setError(null);
     startTransition(async () => {
-      const res = await callAction(() => createVacancyFromText({ text: value }));
+      const res = await callAction(() =>
+        createVacancyFromText({ text: value }),
+      );
       if (!res.ok || !res.data) {
         const code = res.ok ? "ai_failed" : res.error;
         const key = `ai.errors.${code}`;

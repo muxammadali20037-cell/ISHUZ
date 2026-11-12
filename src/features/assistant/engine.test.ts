@@ -179,6 +179,21 @@ describe("AI ishlamasa — lug'at va shablon bilan to'liq javob", () => {
     expect(search.find).toHaveBeenCalled();
   });
 
+  it("AI'siz: 'menga mos ish toping' — kasb so'raladi (soxta qidiruv yo'q); maslahat savollari — AI yo'qligi halol aytiladi", async () => {
+    for (const [text, role] of [["Menga mos ish toping", "seeker"], ["Vakansiyamga mos nomzod toping", "employer"], ["Найдите мне подходящую работу", "seeker"], ["Find me a suitable job", "seeker"]] as const) {
+      const r = await run([user(text)], {}, role);
+      expect(r.find, text).not.toHaveBeenCalled();
+      expect(r.text, text).toMatch(/kasb|профессии|profession/i);
+    }
+    for (const text of ["Karyeramni rivojlantirish uchun nima qilishim kerak?", "Ish suhbatiga tayyorlanishga yordam bering", "Nomzod uchun suhbat savollarini tuzing", "Help me prepare for a job interview", "Помогите подготовиться к собеседованию"]) {
+      const r = await run([user(text)], {});
+      expect(r.find, text).not.toHaveBeenCalled();
+      expect(r.text, text).toMatch(/sun'iy intellekt|искусственный интеллект|artificial intelligence/i);
+    }
+    // oddiy qidiruv o'zgarmaydi
+    expect((await run([user("Toshkentda sotuvchi")], {})).find).toHaveBeenCalled();
+  });
+
   it("salomlashuv va rahmat — qidiruvsiz, tilga mos; sun'iy intellekt ekanini aytadi", async () => {
     const hi = await run([user("Salom")], {});
     expect(hi.find).not.toHaveBeenCalled();

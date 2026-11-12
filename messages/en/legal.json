@@ -1,5 +1,5 @@
 {
-  "updated": "Last updated: November 11, 2026",
+  "updated": "2026-11-12",
   "contact_title": "Contact",
   "contact_body": "For questions or requests, write to:",
   "contact_none": "A contact address has not been published yet. If you can sign in, delete your account yourself: “Settings” → “Delete account”.",
@@ -10,7 +10,7 @@
     "sections": [
       [
         "What we collect",
-        "- Account: phone number (required), first and last name or company name, chosen language. If you sign in with Telegram — your Telegram ID and username.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, photo and portfolio files.\n- Location: region and district. If you tap \"Detect my location\" — your phone's GPS coordinates (only with your permission).\n- Employers: company name, logo, address, tax ID (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches, AI search requests and notifications.\n- Payments: amount, service, date and status. Card details stay with Payme/Click and never reach us.\n- Technical: search queries (kept 90 days) and security logs. Cookies and browser storage are described in the separate Cookie Policy.\n- AI assistant: the text you type or say to it is sent to the AI provider to produce an answer, but is not stored on our server (the conversation stays only on your device, for 30 minutes).\nWe do not access your contacts, SMS, call log or camera. The microphone works only when you tap the button and with your browser's permission: your browser converts speech to text; the audio is never sent to us or stored. The app has no ads and no ad trackers."
+        "- Account: phone number (required), first and last name or company name, chosen language. If you sign in with Telegram — your Telegram ID and username.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, photo and portfolio files.\n- Location: region and district. If you tap \"Detect my location\" — your phone's GPS coordinates (only with your permission).\n- Employers: company name, logo, address, tax ID (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches, AI search requests and notifications.\n- Payments: amount, service, date and status. Card details stay with Payme/Click and never reach us.\n- Technical: search queries (kept 90 days) and security logs. Cookies and browser storage are described in the separate Cookie Policy.\n- AI assistant: the text you type or say to it is sent to the AI provider to produce an answer, but is not stored on our server (the conversation stays only on your device, for 30 minutes).\nWe do not access your contacts, SMS, call log or camera. The microphone works only when you tap the button and with your browser's permission: your browser converts speech to text; the audio is never sent to us or stored. The app has no ads and no ad trackers.\n- The “Universal masters” section: the name in a master's listing, service description, area, working hours, price, photos and phone number. If you send a request to a master — your name, phone number and message."
       ],
       [
         "Why we use it",
@@ -18,7 +18,7 @@
       ],
       [
         "Who sees your data",
-        "- While your job-seeker listing is active, employers can see your resume. You can hide it at any time.\n- Your phone number is shown only as you choose: to employers you applied to, on request, or to everyone.\n- Your exact GPS location is never shown: others only see the district and an approximate distance (whole km).\n- Vacancies and company pages are public.\n- Chat messages are visible only to the participants."
+        "- While your job-seeker listing is active, employers can see your resume. You can hide it at any time.\n- Your phone number is shown only as you choose: to employers you applied to, on request, or to everyone.\n- Your exact GPS location is never shown: others only see the district and an approximate distance (whole km).\n- Vacancies and company pages are public.\n- Chat messages are visible only to the participants.\n- “Universal masters”: a master's phone is shown in the listing only with the master's own consent; consent can be withdrawn at any time. Your request to a master (name, phone, message) is seen only by that master. Reviews are public — with your first name and the first letter of your last name."
       ],
       [
         "Service providers and where data is stored",
@@ -132,7 +132,7 @@
       ],
       [
         "Browser storage (localStorage and sessionStorage)",
-        "Not cookies, but similar: stored only on your device and never sent to the server.\n- Ad drafts (ib_draft:…) — if the page closes while you fill in a form, your text is not lost.\n- AI assistant conversation (ib_ai_chat…) — in this tab for 30 minutes: when you come back from an ad, the answer is still there.\n- The “Voice answers” choice (ib_ai_speak), the one-time splash mark (ib_splash), the last payment method (ib_pay_provider), recently opened professions and similar small conveniences."
+        "Not cookies, but similar: stored only on your device and never sent to the server.\n- Ad drafts (ib_draft:…) — if the page closes while you fill in a form, your text is not lost.\n- AI assistant conversation (ib_ai_chat…) — in this tab for 30 minutes: when you come back from an ad, the answer is still there.\n- “Recent chats” on the AI assistant page (ib_ai_convs…) — the last 10 chats, for up to 7 days, only on this device; you delete them yourself.\n- The “Voice answers” choice (ib_ai_speak), the one-time splash mark (ib_splash), the last payment method (ib_pay_provider), recently opened professions and similar small conveniences."
       ],
       [
         "What we do NOT use",

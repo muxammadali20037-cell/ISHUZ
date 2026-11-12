@@ -42,7 +42,9 @@ test.describe("bosh sahifa (marketplace)", () => {
     await page.goto("/");
     const banner = page.getByRole("banner");
     const nav = banner.getByRole("navigation", { name: "Sayt bo'limlari" });
-    await expect(nav.getByRole("link")).toHaveText(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun"]);
+    // oxirida — "Universal ustalar" (alohida bo'lim, turkuaz rangda ajralib turadi)
+    await expect(nav.getByRole("link")).toHaveText(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Universal ustalar"]);
+    await expect(nav.getByRole("link", { name: "Universal ustalar" })).toHaveAttribute("href", "/ustalar");
     // to'lovlar o'chiq stendda — "Xizmatlar" (narxlar) yo'q: o'lik havola ko'rsatilmaydi
     await expect(nav.getByRole("link", { name: "Xizmatlar" })).toHaveCount(0);
     // "Ro'yxatdan o'tish" — "Kirish" oqimining o'zi (telefon raqami); alohida havola — telefon menyusida
@@ -75,7 +77,8 @@ test.describe("bosh sahifa (marketplace)", () => {
     const menuButton = page.getByRole("banner").getByRole("button", { name: "Menyu" });
     await menuButton.click();
     const menu = page.getByRole("menu");
-    await expect(menu.getByRole("menuitem")).toHaveText(["Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Biz haqimizda", "Yordam", "Ish joylashtirish", "Ro'yxatdan o'tish"]);
+    await expect(menu.getByRole("menuitem")).toHaveText(["Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Universal ustalar", "Biz haqimizda", "Yordam", "Ish joylashtirish", "Ro'yxatdan o'tish"]);
+    await expect(menu.getByRole("menuitem", { name: "Universal ustalar" })).toHaveAttribute("href", "/ustalar");
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();
     await expect(menuButton).toBeFocused();

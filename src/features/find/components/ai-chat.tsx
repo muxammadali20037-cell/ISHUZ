@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
-import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, Check, Copy, Info, ListFilter, MessageCircle, Mic, Plus, RotateCcw, Search, Square, UsersRound, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
+import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, Check, ChevronRight, Copy, Info, ListFilter, MessageCircle, Mic, Plus, RotateCcw, Search, Square, UsersRound, Volume2, VolumeX } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { AiAvatar } from "@/components/shared/ai-avatar";
@@ -10,7 +10,23 @@ import { cn } from "@/lib/utils";
 import { readEvents } from "@/features/assistant/stream";
 import { MESSAGE_MAX_CHARS, type AssistantLang, type ChatMessage } from "@/features/assistant/types";
 import type { AiFindResult } from "../ai-find-types";
-import { CHAT_KEEP, REFINE_WORDS, chatStorageKey, parseStoredChat, refineOptions, refineQuery, serializeChat, type FinderMode, type RefineKey } from "../ai-chat-model";
+import {
+  CHAT_KEEP,
+  REFINE_WORDS,
+  chatStorageKey,
+  conversationTitle,
+  conversationsStorageKey,
+  parseStoredChat,
+  parseStoredConversations,
+  refineOptions,
+  refineQuery,
+  serializeChat,
+  serializeConversations,
+  upsertConversation,
+  type FinderMode,
+  type RefineKey,
+  type StoredConversation,
+} from "../ai-chat-model";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 import { useSpeaker, useVoice } from "./ai-voice";
 
@@ -72,6 +88,45 @@ function storageWrite(mode: FinderMode, turns: AiTurn[]) {
   }
 }
 
+// So'nggi suhbatlar ro'yxati (localStorage, 7 kun, 10 ta) — /ai chap paneli. Joriy suhbat raqami — shu tabda (sessionStorage).
+export type AiConversation = StoredConversation<AiTurn>;
+const convIdKey = (mode: FinderMode) => `ib_ai_conv_id:${mode}`;
+
+function conversationsRead(mode: FinderMode): AiConversation[] {
+  try {
+    return parseStoredConversations<AiTurn>(localStorage.getItem(conversationsStorageKey(mode)), Date.now());
+  } catch {
+    return [];
+  }
+}
+
+function conversationsWrite(mode: FinderMode, list: AiConversation[]) {
+  try {
+    if (list.length) localStorage.setItem(conversationsStorageKey(mode), serializeConversations(list));
+    else localStorage.removeItem(conversationsStorageKey(mode));
+  } catch {
+    // ro'yxat shunchaki saqlanmaydi
+  }
+}
+
+function convIdRead(mode: FinderMode): number | null {
+  try {
+    const n = Number(sessionStorage.getItem(convIdKey(mode)));
+    return Number.isFinite(n) && n > 0 ? n : null;
+  } catch {
+    return null;
+  }
+}
+
+function convIdWrite(mode: FinderMode, id: number | null) {
+  try {
+    if (id) sessionStorage.setItem(convIdKey(mode), String(id));
+    else sessionStorage.removeItem(convIdKey(mode));
+  } catch {
+    // jim
+  }
+}
+
 export function useAiChat(defaultMode: FinderMode) {
   const { t } = useT();
   const [mode, setModeState] = useState<FinderMode>(defaultMode);
@@ -79,6 +134,9 @@ export function useAiChat(defaultMode: FinderMode) {
   const [ready, setReady] = useState(false);
   /** qurilmadan tiklangan oxirgi xabar — sahifada u uchun ekran avtomatik surilmaydi */
   const [restoredId, setRestoredId] = useState<number | null>(null);
+  /** qurilmada saqlangan so'nggi suhbatlar va joriy suhbat raqami */
+  const [storedConvs, setStoredConvs] = useState<AiConversation[]>([]);
+  const [convId, setConvIdState] = useState<number | null>(null);
   const seq = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
   const speaker = useSpeaker();
@@ -91,13 +149,31 @@ export function useAiChat(defaultMode: FinderMode) {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- tashqi xotiradan bir martalik tiklash
     setTurns((cur) => (cur.length ? cur : stored));
     setRestoredId(stored.at(-1)?.id ?? null);
+    setStoredConvs(conversationsRead(defaultMode));
+    // joriy suhbat raqami: saqlangan yoki birinchi savolning raqami (eski yozuvlar uchun)
+    setConvIdState(stored.length ? (convIdRead(defaultMode) ?? stored[0]!.id) : null);
     setReady(true);
   }, [defaultMode]);
 
-  // javob oqib kelayotganda har bo'lakda xotiraga yozilmaydi — faqat tugagach
+  // So'nggi suhbatlar ro'yxati: saqlanganlar + joriy suhbat (tugagan savol-javoblari bilan). Savol raqamlari vaqt tamg'asi —
+  // "at" shundan olinadi (chizish paytida Date.now() chaqirilmaydi).
+  const conversations = useMemo(() => {
+    const done = turns.filter((x) => x.status !== "pending");
+    if (!convId || !done.length) return storedConvs;
+    return upsertConversation(storedConvs, { id: convId, title: conversationTitle(done[0]!.query), at: done.at(-1)!.id, turns: done });
+  }, [storedConvs, turns, convId]);
+
+  // javob oqib kelayotganda har bo'lakda xotiraga yozilmaydi — faqat tugagach: joriy suhbat (tab) va so'nggi suhbatlar ro'yxati (qurilma)
   useEffect(() => {
-    if (ready && !pending) storageWrite(mode, turns);
-  }, [ready, pending, mode, turns]);
+    if (!ready || pending) return;
+    storageWrite(mode, turns);
+    conversationsWrite(mode, conversations);
+  }, [ready, pending, mode, turns, conversations]);
+
+  const setConvId = (id: number | null) => {
+    setConvIdState(id);
+    convIdWrite(mode, id);
+  };
 
   // oyna yopilsa — kutilayotgan javob bekor qilinadi
   useEffect(() => () => abortRef.current?.abort(), []);
@@ -127,6 +203,7 @@ export function useAiChat(defaultMode: FinderMode) {
         { role: "assistant" as const, text: x.reply?.trim() || "—" },
       ]);
     setTurns((cur) => [...cur, { id, query: q, display: opts?.display ?? q, refine: opts?.refine, mode: m, status: "pending" as const, stage: "thinking" as const }].slice(-CHAT_KEEP));
+    if (!convId) setConvId(id);
 
     const ctrl = new AbortController();
     abortRef.current = ctrl;
@@ -217,13 +294,44 @@ export function useAiChat(defaultMode: FinderMode) {
     if (m === mode || pending) return;
     speaker.stop();
     setModeState(m);
-    setTurns(storageRead(m));
+    const stored = storageRead(m);
+    setTurns(stored);
+    setStoredConvs(conversationsRead(m));
+    setConvIdState(stored.length ? (convIdRead(m) ?? stored[0]!.id) : null);
   };
 
+  /** Yangi suhbat: joriy suhbat ro'yxatda qoladi (yozilgan bo'lsa), ekran bo'shaydi */
   const clear = () => {
     if (pending) return;
     speaker.stop();
+    setStoredConvs(conversations);
     setTurns([]);
+    setConvId(null);
+  };
+
+  /** So'nggi suhbatlardan birini ochish */
+  const openConversation = (id: number) => {
+    if (pending) return;
+    const conv = conversations.find((c) => c.id === id);
+    if (!conv) return;
+    speaker.stop();
+    // joriy suhbat (bo'lsa) ro'yxatda qolsin — endi u "saqlangan"ga aylanadi
+    setStoredConvs(conversations);
+    seq.current = Math.max(seq.current, ...conv.turns.map((x) => x.id));
+    setTurns(conv.turns);
+    setRestoredId(conv.turns.at(-1)?.id ?? null);
+    setConvId(id);
+  };
+
+  /** Suhbatni qurilmadan o'chirish; joriy bo'lsa — ekran ham bo'shaydi (ro'yxat effektda qayta yoziladi) */
+  const deleteConversation = (id: number) => {
+    if (pending) return;
+    setStoredConvs((cur) => cur.filter((c) => c.id !== id));
+    if (id === convId) {
+      speaker.stop();
+      setTurns([]);
+      setConvId(null);
+    }
   };
 
   /** Shu sahifadagi boshqa AI oynasi suhbatni davom ettirgan bo'lishi mumkin — ochilganda qurilmadagisi olinadi */
@@ -237,7 +345,7 @@ export function useAiChat(defaultMode: FinderMode) {
   /** suhbat tili (oxirgi javobdan) — ovozli kiritish shu tilda tinglaydi */
   const lang = turns.findLast((x) => x.lang)?.lang ?? null;
 
-  return { mode, setMode, turns, pending, ask, retry, stop, refine, clear, reload, restoredId, ready, speaker, lang };
+  return { mode, setMode, turns, pending, ask, retry, stop, refine, clear, reload, restoredId, ready, speaker, lang, conversations, convId, openConversation, deleteConversation };
 }
 
 export type AiChatState = ReturnType<typeof useAiChat>;
@@ -287,6 +395,48 @@ function AssistantHead({ busy, note }: { busy?: boolean; note?: string | null })
       <span className="text-sm font-bold">{t("easy.finder.assistant_title")}</span>
       {note ? <span className="min-w-0 truncate text-sm text-muted-foreground">· {note}</span> : null}
     </div>
+  );
+}
+
+/**
+ * Jarayon izi — yordamchi hozir nima qilayotgani (va qilgani) ko'rinib turadi: tushunish → bazadan qidirish (nechta topildi) → javob.
+ * Faqat haqiqiy bosqichlar: qidiruv bo'lmagan javobda "qidirildi" chiqmaydi; manba (AI yoki oddiy rejim) yashirilmaydi.
+ */
+function Trace({ turn }: { turn: AiTurn }) {
+  const { t } = useT();
+  const pending = turn.status === "pending";
+  const r = turn.result ?? null;
+  const count = r ? r.jobs.length + r.workers.length : 0;
+  const steps: { key: string; text: string; state: "done" | "active" | "error" }[] = [];
+  if (pending && turn.stage === "thinking" && !turn.reply) steps.push({ key: "understand", text: t("easy.aiws.trace.understanding"), state: "active" });
+  else steps.push({ key: "understand", text: t("easy.aiws.trace.understood"), state: "done" });
+  if (pending && turn.stage === "searching" && !r) steps.push({ key: "search", text: t("easy.aiws.trace.searching"), state: "active" });
+  else if (r) steps.push({ key: "search", text: count || r.total ? t("easy.aiws.trace.searched", { count: r.total || count }) : t("easy.aiws.trace.searched_none"), state: "done" });
+  if (pending) {
+    if (turn.reply) steps.push({ key: "answer", text: t("easy.aiws.trace.writing"), state: "active" });
+  } else if (turn.status === "error") steps.push({ key: "answer", text: t("easy.aiws.trace.failed"), state: "error" });
+  else if (turn.stopped) steps.push({ key: "answer", text: t("easy.aiws.trace.stopped"), state: "done" });
+  else if (turn.source) steps.push({ key: "answer", text: turn.source === "ai" ? t("easy.aiws.trace.answered_ai") : t("easy.aiws.trace.answered_rules"), state: "done" });
+  return (
+    <ol className="flex flex-wrap items-center gap-x-1 gap-y-1 text-xs font-semibold text-muted-foreground" aria-label={t("easy.aiws.trace.label")} data-ai-trace>
+      {steps.map((st, i) => (
+        <li key={st.key} className="flex items-center gap-1" data-state={st.state}>
+          {i > 0 ? <ChevronRight className="size-3 opacity-50" aria-hidden /> : null}
+          {st.state === "active" ? (
+            <span className="ai-dots text-primary-ink" aria-hidden>
+              <span />
+              <span />
+              <span />
+            </span>
+          ) : st.state === "error" ? (
+            <Info className="size-3.5 text-destructive" aria-hidden />
+          ) : (
+            <Check className="size-3.5 text-success" aria-hidden />
+          )}
+          <span className={cn(st.state === "active" && "text-foreground", st.state === "error" && "text-destructive")}>{st.text}</span>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -360,6 +510,7 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
   return (
     <div className="ai-bubble-in space-y-3">
       <AssistantHead busy={pending} note={note} />
+      <Trace turn={turn} />
       <Bubble className="space-y-2">
         {reply ? (
           <p data-ai-reply className={cn("whitespace-pre-wrap [overflow-wrap:anywhere]", pending && "type-caret")}>
@@ -512,7 +663,7 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
 }
 
 /** Suhbat oqimi: salomlashuv va misollar (bo'sh bo'lsa) yoki xabarlar; yangi xabar ko'rinadigan joyga suriladi */
-export function AiThread({ chat, examples, scrollOnRestore = true }: { chat: AiChatState; examples: string[]; scrollOnRestore?: boolean }) {
+export function AiThread({ chat, examples, scrollOnRestore = true, bar: showBar = true }: { chat: AiChatState; examples: string[]; scrollOnRestore?: boolean; /** yuqori qator ("Ovoz bilan javob", "Yangi suhbat") — /ai sahifasida sarlavhada bor */ bar?: boolean }) {
   const { t } = useT();
   const lastRef = useRef<HTMLLIElement>(null);
   const last = chat.turns.at(-1);
@@ -527,7 +678,7 @@ export function AiThread({ chat, examples, scrollOnRestore = true }: { chat: AiC
 
   // yuqori qator: "Ovoz bilan javob" (qurilma qo'llasa) va "Yangi suhbat"
   const bar =
-    speaker.supported || chat.turns.length ? (
+    showBar && (speaker.supported || chat.turns.length) ? (
       <div className="flex items-center justify-between gap-2">
         {speaker.supported ? (
           <button
@@ -592,7 +743,7 @@ export function AiThread({ chat, examples, scrollOnRestore = true }: { chat: AiC
         {chat.turns.map((turn) => (
           <li key={turn.id} ref={turn.id === last?.id ? lastRef : undefined} className="scroll-mt-16 space-y-4">
             <div className="ai-bubble-in flex justify-end">
-              <p className={cn("max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-base [overflow-wrap:anywhere]", turn.refine ? "border border-primary/30 bg-primary-soft font-semibold text-primary-ink" : "bg-primary text-primary-foreground")}>
+              <p data-ai-you className={cn("max-w-[85%] rounded-2xl rounded-br-md px-4 py-2.5 text-base [overflow-wrap:anywhere]", turn.refine ? "border border-primary/30 bg-primary-soft font-semibold text-primary-ink" : "bg-primary text-primary-foreground")}>
                 <span className="sr-only">{t("easy.finder.you")}: </span>
                 {turn.display}
               </p>
@@ -600,6 +751,7 @@ export function AiThread({ chat, examples, scrollOnRestore = true }: { chat: AiC
             {turn.status === "error" ? (
               <div className="ai-bubble-in space-y-2">
                 <AssistantHead />
+                <Trace turn={turn} />
                 <Bubble className="space-y-2 bg-destructive-soft text-destructive">
                   <p role="alert">{turn.error}</p>
                   <Button type="button" variant="outline" className="h-11 bg-card text-base" disabled={chat.pending} onClick={() => chat.retry(turn)}>

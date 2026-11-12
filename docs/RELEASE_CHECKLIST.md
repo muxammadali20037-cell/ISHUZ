@@ -42,8 +42,12 @@ joylab **Run**. Xato chiqsa — to'xtang, keyingisiga o'tmang, xato matnini yubo
 | 0073_profile_interests | "Mening dunyom" qiziqishlari | `/dunyo` |
 | 0074_contact_privacy | Ro'yxatlarda telefon yo'q; raqam faqat kirganlarga, limit bilan; Telegram telefon ustuni yopiq | qidiruv, vakansiya sahifasi |
 | 0075_telegram_update_retry | Webhook xatosida update yo'qolmaydi (3 urinish) | `/api/telegram/webhook` |
+| 0076_masters | "Universal ustalar": alohida jadvallar, RLS, moderatsiya, 12 kategoriya, 48 ta demo e'lon | `/ustalar`, `/admin/ustalar` |
 
 **Muhim:** 0074 avvalgi migratsiyalardagi funksiya ta'riflari asosida yozilgan — undan oldin 0069–0073 qo'llangan bo'lishi shart.
+0076 mustaqil (boshqa migratsiyalarga bog'liq emas). U qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi. Demo
+e'lonlarni keyin olib tashlash: admin → Universal ustalar → "Demo e'lonlarni olib tashlash" yoki `select public.master_demo_remove();`
+(`docs/MASTERS.md` §4).
 
 Qaytarish (faqat favqulodda, ega ruxsati bilan): `supabase/rollbacks/00NN_*.down.sql`.
 

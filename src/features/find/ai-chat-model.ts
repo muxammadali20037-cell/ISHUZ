@@ -92,3 +92,64 @@ export function parseStoredChat<T>(raw: string | null, now: number): T[] {
 export function serializeChat<T>(turns: T[], now: number): string {
   return JSON.stringify({ at: now, turns: turns.slice(-CHAT_KEEP) } satisfies StoredChat<T>);
 }
+
+// ---------------------------------------------------------------------------
+// So'nggi suhbatlar (localStorage): /ai sahifasidagi chap panel. Faqat shu qurilmada, serverga yuborilmaydi.
+// Eng ko'pi CONVERSATIONS_KEEP ta, har biri CONVERSATION_TTL_MS gacha; sarlavha — birinchi savol.
+// Xato (maxfiy rejim, to'lgan xotira, buzilgan yozuv) jim o'tkaziladi — suhbat shunchaki ro'yxatda ko'rinmaydi.
+// ---------------------------------------------------------------------------
+
+export const CONVERSATIONS_KEEP = 10;
+export const CONVERSATION_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const TITLE_MAX = 60;
+
+export interface StoredConversation<T> {
+  id: number;
+  title: string;
+  /** oxirgi yangilanish vaqti */
+  at: number;
+  turns: T[];
+}
+
+export function conversationsStorageKey(mode: FinderMode): string {
+  return `ib_ai_convs_v1:${mode}`;
+}
+
+/** Ro'yxat sarlavhasi: birinchi savol, bir qatorda, 60 belgigacha */
+export function conversationTitle(firstQuery: string): string {
+  const s = firstQuery.replace(/\s+/g, " ").trim();
+  if (s.length <= TITLE_MAX) return s;
+  const cut = s.slice(0, TITLE_MAX);
+  const space = cut.lastIndexOf(" ");
+  return `${space > 24 ? cut.slice(0, space) : cut}…`;
+}
+
+export function parseStoredConversations<T>(raw: string | null, now: number): StoredConversation<T>[] {
+  if (!raw) return [];
+  try {
+    const data = JSON.parse(raw) as unknown;
+    if (!Array.isArray(data)) return [];
+    return data
+      .filter(
+        (c): c is StoredConversation<T> =>
+          !!c && typeof c === "object" && typeof (c as StoredConversation<T>).id === "number" && typeof (c as StoredConversation<T>).at === "number" && Array.isArray((c as StoredConversation<T>).turns),
+      )
+      .filter((c) => now - c.at <= CONVERSATION_TTL_MS && c.at <= now + 60_000 && c.turns.length > 0)
+      .map((c) => ({ ...c, title: typeof c.title === "string" ? c.title : "", turns: c.turns.slice(-CHAT_KEEP) }))
+      .sort((a, b) => b.at - a.at)
+      .slice(0, CONVERSATIONS_KEEP);
+  } catch {
+    return [];
+  }
+}
+
+/** Suhbatni ro'yxatga yozadi (bor bo'lsa — yangilaydi), eng yangisi birinchi; chegaradan ortig'i tushib qoladi */
+export function upsertConversation<T>(list: StoredConversation<T>[], conv: StoredConversation<T>): StoredConversation<T>[] {
+  if (!conv.turns.length) return list.filter((c) => c.id !== conv.id);
+  const rest = list.filter((c) => c.id !== conv.id);
+  return [{ ...conv, turns: conv.turns.slice(-CHAT_KEEP) }, ...rest].sort((a, b) => b.at - a.at).slice(0, CONVERSATIONS_KEEP);
+}
+
+export function serializeConversations<T>(list: StoredConversation<T>[]): string {
+  return JSON.stringify(list.slice(0, CONVERSATIONS_KEEP));
+}

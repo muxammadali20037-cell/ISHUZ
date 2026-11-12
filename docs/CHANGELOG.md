@@ -1,5 +1,29 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · Universal ustalar — xizmat ko'rsatuvchi ustalar bozori (`claude/universal-masters`)
+
+### Mahsulot
+- **Yangi bo'lim `/ustalar`** (turkuaz, alohida mini-ilova): 12 xizmat kategoriyasi, qidiruv va filtrlar, usta kartalari, e'lon sahifasi.
+- **Ustalar e'lon joylaydi** (kategoriya, tavsif, tajriba, hudud, narx, ish vaqti, rasmlar) va **kabinetda boshqaradi**: holatlar,
+  ko'rishlar, telefon bosishlar, mijoz so'rovlari, reyting.
+- **Mijoz** ustaga qo'ng'iroq qiladi (usta telefonni ochiq ko'rsatishga rozi bo'lsa) yoki so'rov yuboradi; kirgan foydalanuvchi sharh yozadi.
+- **Moderatsiya:** yangi va o'zgartirilgan e'lonlar admin tasdig'idan keyin chiqadi; rad etish sababi egasiga ko'rinadi.
+- **Demo e'lonlar:** har kategoriyada 4 tadan, "Demo" belgisi bilan, telefonsiz va reytingsiz; admin bir bosishda olib tashlaydi.
+- **Kirish:** sayt menyusi, yon menyu, bosh sahifa va "Kabinetim" sahifasida turkuaz "Universal ustalar".
+- 0076 hali qo'llanmagan bazada bo'lim "Bo'lim tayyorlanmoqda" deb ochiladi (xato ekrani yo'q); admin sahifasi buni aniq aytadi.
+
+### Baza
+- `0076_masters.sql` — **prod'ga egasi qo'llaydi** (`docs/RELEASE_CHECKLIST.md`). Qaytarish: `supabase/rollbacks/0076_masters.down.sql`.
+
+## 2026-11-12 · AI yordamchi — "ChatGPT kabi" ish maydoni (`claude/ai-workspace`)
+
+### Mahsulot
+- **/ai sahifasi qayta qurildi:** chapda "Yangi suhbat", bo'limlar va **so'nggi suhbatlar** (qurilmada, 7 kun), profil;
+  o'rtada suhbat — ism bilan salomlashuv, **"Bugungi ishlar"** (mos vakansiyalar soni, profil to'liqligi, arizalar — faqat
+  bazadan) va **"Sizga mos ishlar"** kartalari; o'ngda karyera, tezkor imkoniyatlar va kunlik maslahat. Telefonda panel pastdan.
+- **Jarayon ko'rinib turadi:** har javobda "Tushunildi → Bazadan qidirildi · N ta → Javob: sun'iy intellekt / oddiy rejim".
+- AI ulanmagan rejimda "menga mos ish toping" — kasb so'raladi; maslahat savollariga AI yo'qligi halol aytiladi.
+
 ## 2026-11-12 · Bozorga tayyorlik: prod tekshiruvi, HTTP yuklama testi, ochiq ro'yxatlar keshi (`claude/market-readiness`)
 
 ### Tezlik

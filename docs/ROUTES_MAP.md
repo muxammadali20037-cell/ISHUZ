@@ -4,9 +4,9 @@
 > "Kirish" ustuni sahifa kodidagi himoya chaqiruvidan aniqlangan (`requireSession` / `requireEmployer` / `requireWorker`),
 > admin bo'limi `src/app/admin/(panel)/layout.tsx` da himoyalangan. Qo'lda tahrirlamang — skriptni qayta ishga tushiring.
 
-Jami: **102 sahifa**, **24 API / maxsus marshrut**.
+Jami: **110 sahifa**, **25 API / maxsus marshrut**.
 
-## A. Ochiq sayt (14)
+## A. Ochiq sayt (21)
 
 | Marshrut | Kirish | Fayl |
 | --- | --- | --- |
@@ -14,6 +14,7 @@ Jami: **102 sahifa**, **24 API / maxsus marshrut**.
 | `/about` | ochiq | `src/app/about/page.tsx` |
 | `/companies` | ochiq | `src/app/companies/page.tsx` |
 | `/company/[slug]` | ochiq; mehmonga alohida ko'rinish | `src/app/company/[slug]/page.tsx` |
+| `/cookies` | ochiq | `src/app/cookies/page.tsx` |
 | `/dunyo` | kirgan foydalanuvchi | `src/app/dunyo/page.tsx` |
 | `/for-employers` | ochiq | `src/app/for-employers/page.tsx` |
 | `/help` | ochiq | `src/app/help/page.tsx` |
@@ -24,6 +25,12 @@ Jami: **102 sahifa**, **24 API / maxsus marshrut**.
 | `/privacy` | ochiq | `src/app/privacy/page.tsx` |
 | `/students` | ochiq | `src/app/students/page.tsx` |
 | `/terms` | ochiq | `src/app/terms/page.tsx` |
+| `/ustalar` | ochiq | `src/app/ustalar/page.tsx` |
+| `/ustalar/[slug]` | ochiq; mehmonga alohida ko'rinish | `src/app/ustalar/[slug]/page.tsx` |
+| `/ustalar/elon` | kirgan foydalanuvchi | `src/app/ustalar/elon/page.tsx` |
+| `/ustalar/elon/[id]` | kirgan foydalanuvchi | `src/app/ustalar/elon/[id]/page.tsx` |
+| `/ustalar/kabinet` | kirgan foydalanuvchi | `src/app/ustalar/kabinet/page.tsx` |
+| `/ustalar/qidiruv` | ochiq | `src/app/ustalar/qidiruv/page.tsx` |
 
 ## Kirish va onboarding (12)
 
@@ -106,7 +113,7 @@ Jami: **102 sahifa**, **24 API / maxsus marshrut**.
 | `/search` | ochiq; mehmonga alohida ko'rinish | `src/app/search/page.tsx` |
 | `/settings` | kirgan foydalanuvchi | `src/app/settings/page.tsx` |
 
-## D. Admin paneli (27)
+## D. Admin paneli (28)
 
 | Marshrut | Kirish | Fayl |
 | --- | --- | --- |
@@ -134,6 +141,7 @@ Jami: **102 sahifa**, **24 API / maxsus marshrut**.
 | `/admin/skills` | admin (rol + aal2) | `src/app/admin/(panel)/skills/page.tsx` |
 | `/admin/telegram` | admin (rol + aal2) | `src/app/admin/(panel)/telegram/page.tsx` |
 | `/admin/users` | admin (rol + aal2) | `src/app/admin/(panel)/users/page.tsx` |
+| `/admin/ustalar` | admin (rol + aal2) | `src/app/admin/(panel)/ustalar/page.tsx` |
 | `/admin/vacancies` | admin (rol + aal2) | `src/app/admin/(panel)/vacancies/page.tsx` |
 | `/admin/verifications` | admin (rol + aal2) | `src/app/admin/(panel)/verifications/page.tsx` |
 | `/admin/workers` | admin (rol + aal2) | `src/app/admin/(panel)/workers/page.tsx` |
@@ -144,6 +152,7 @@ Jami: **102 sahifa**, **24 API / maxsus marshrut**.
 | --- |
 | `/.well-known/assetlinks.json` |
 | `/admin/analytics/export` |
+| `/api/assistant` |
 | `/api/auth/admin/password` |
 | `/api/auth/admin/recover` |
 | `/api/auth/phone-code/send` |

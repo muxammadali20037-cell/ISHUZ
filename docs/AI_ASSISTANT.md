@@ -126,11 +126,40 @@ skriptli model bilan, oyna esa almashtirilgan oqim bilan tekshirildi. Chiqarilga
 "rezyume yozishga yordam bering" deb yozing. Javob ostida **"Sun'iy intellekt tahlil qildi"** chiqsa — Claude ishlayapti;
 **"So'zlaringizdan tushunildi"** va "kasbni tushunmadim" chiqsa — AI yo'li ishlamayapti (admin → AI statistikasi → xato matni).
 
+### 6-bosqich — AI ish maydoni, "ChatGPT kabi" (2026-11-12, `src/features/ai/`)
+
+Egasi yuborgan maket bo'yicha `/ai` sahifasi qayta qurildi (`components/ai-workspace.tsx` — server, `ai-workspace-client.tsx` — mijoz):
+
+- **Chap panel:** "Yangi suhbat", bo'limlar (mehmonga va telefon panelida; kirgan foydalanuvchining bo'limlari kompyuterda sayt
+  yon menyusida — takrorlanmaydi), **so'nggi suhbatlar** (qurilmada, `localStorage` `ib_ai_convs_v1:<rejim>`, 10 ta, 7 kun;
+  ochish, o'chirish; `ai-chat-model.ts` — `parseStoredConversations`, `upsertConversation`), profil kartasi (mehmonga — "Kirish").
+  Telefonda panel pastdan chiqadi (`Sheet`).
+- **Suhbat:** sarlavha (holat: "Sun'iy intellekt · tayyor" / "Oddiy rejim (AI ulanmagan)" / "Javob yozilmoqda…"), ovoz
+  kaliti, menyu (yangi suhbat, o'chirish, ovoz). Bo'sh holat: salomlashuv ism bilan, **"Bugungi ishlar"** va **"Sizga mos ishlar"**
+  (`workspace-data.ts`): faqat bazadan — profilga mos vakansiyalar soni (bosh sahifa ro'yxati bilan bir manba), profil
+  to'liqligi (`worker_dashboard_stats.completeness`), ko'rib chiqilayotgan arizalar; ish beruvchida — yangi arizalar, faol
+  vakansiyalar, yangi nomzodlar; mehmonga — kirish qadami. So'rov xato bersa — o'sha qator yo'q (soxta raqam yo'q).
+- **Jarayon izi** (`Trace`, `ai-chat.tsx`, `[data-ai-trace]`): "Tushunilmoqda… → Bazadan qidirilmoqda… → Javob yozilmoqda…" va
+  tugagach "Tushunildi · Bazadan qidirildi · N ta · Javob: sun'iy intellekt / oddiy rejim". Bosh sahifadagi oynada ham.
+- **O'ng panel:** "Karyerangizni rivojlantiring" (savol yuboradi), tezkor imkoniyatlar (CV, ish qidirish, karyera maslahati,
+  suhbatga tayyorgarlik, AI PRO kuzatuv; ish beruvchida — vakansiya joylash, nomzod topish, vakansiya matni, suhbat savollari),
+  kunlik maslahat (3 ta, o'qlar bilan). Telefonda tezkor imkoniyatlar — salomlashuv ostida chiplar.
+- **AI'siz rejim halol:** "Menga mos ish toping" kabi umumiy iltimos — kasb so'raladi (lug'at "mos" so'zini kasbga o'xshatib
+  soxta qidirmaydi); karyera/rezyume/suhbat savollari — "bu savolga sun'iy intellekt javob beradi, hozir ulanmagan" (`replies.ts`:
+  `FORME`, `ADVICE`). AI ulanganda bular Claude'ga boradi.
+- Maketdan farqlar (qoida — soxta ma'lumot yo'q): "5 ta yangi vakansiya", "CV 80 %" — faqat haqiqiy qiymat; Beeline/Uzcard/Click
+  logotiplari o'rniga bazadagi haqiqiy e'lonlar; "Karyera markazi" bo'limi yo'q — "Kasblar va karyera" (`/kasblar`); fayl
+  biriktirish tugmasi yo'q (bunday imkoniyat yo'q).
+
+**Testlar:** Vitest — suhbatlar ro'yxati (3), `FORME`/`ADVICE` (engine, 1); E2E `ai-workspace.spec.ts` — 5 ta ssenariy × telefon
+va kompyuter (mehmon, ish izlovchi — bazadagi qiymat bilan solishtiriladi, suhbat va ro'yxat, tezkor imkoniyat, ish beruvchi).
+Skrinshotlar: `docs/screenshots/ai-workspace-2026-11/` (`e2e/screens/ai-workspace.shots.ts`).
+
 ## 5. Ega hal qiladigan savollar
 
 1. **Ovozli javob (o'qib berish):** brauzerning o'z ovozi bepul, lekin o'zbekcha ovoz ko'p telefonlarda yo'q. Tabiiy
    o'zbekcha ovoz uchun pullik xizmat (masalan ElevenLabs) va uning kaliti kerak.
 2. **Telegram ichida ovozli kiritish:** Telegram Mini App ichidagi brauzer mikrofonni matnga aylantira olmaydi — u yerda
    ham ishlashi uchun serverda nutqni tanish xizmati (pullik) kerak.
-3. **Suhbat tarixini serverda saqlash:** hozir faqat qurilmada. Qurilmalar orasida davom ettirish kerak bo'lsa — rozilik
+3. **Suhbat tarixini serverda saqlash:** hozir faqat qurilmada (so'nggi 10 ta suhbat, 7 kun — chap panelda). Qurilmalar orasida davom ettirish kerak bo'lsa — rozilik
    oynasi va yangi jadval (migratsiya) bilan qilinadi.

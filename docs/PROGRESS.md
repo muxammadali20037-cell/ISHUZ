@@ -6,6 +6,8 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | --- | --- | --- |
 | Barqarorlashtirish (Next 16.4.5, 0074–0075, health, Sentry) | Kod tayyor, CI yashil · **ega amali kutilmoqda** | 2026-11-07 |
 | Bozorga tayyorlik: prod tekshiruv skripti, HTTP yuklama testi, ochiq ro'yxatlar keshi, STATUS.md | ✅ Tugadi | 2026-11-12 |
+| AI ish maydoni ("ChatGPT kabi" /ai): chap panel, so'nggi suhbatlar, bugungi ishlar, jarayon izi | ✅ Tugadi | 2026-11-12 |
+| Universal ustalar: ikki tomonlama bozor (0076), katalog, e'lon formasi, kabinet, moderatsiya, demo | Kod tayyor · **0076 — ega amali** | 2026-11-12 |
 | 0. Audit | ✅ Tugadi | 2026-11-11 |
 | 1. Dizayn tizimi | Davom etmoqda: 1-qadam (tokenlar) ✅, 2-qadam (komponentlar) ✅ | 2026-11-11 |
 | 2. Ochiq sayt | — | |
@@ -16,6 +18,60 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | 7. Backend integratsiyasi | — | |
 | 8. AI | — | |
 | 9. QA va prod | — | |
+
+## Universal ustalar — xizmat ko'rsatuvchi ustalar bozori (2026-11-12)
+
+Egasi talabi va maketi bo'yicha. To'liq tavsif: `docs/MASTERS.md`.
+
+**Bajarildi:**
+- Baza (`0076_masters.sql`): `master_categories` (12), `master_listings`, `master_requests`, `master_reviews` — vakansiyalardan alohida;
+  RLS; holatlar va qayta moderatsiya triggerlari; telefon faqat rozilik bilan va faqat e'lon sahifasida; reyting faqat sharhdan;
+  rasm yo'li tekshiruvi; hisoblagichlar; demo e'lonlar (48, `is_demo`) va ularni bir buyruqda olib tashlash.
+- Sahifalar: `/ustalar` (turkuaz mini-ilova: sarlavha, qidiruv, katalog), `/ustalar/qidiruv` (filtrlar), `/ustalar/[slug]` (telefon yoki
+  so'rov, sharhlar), `/ustalar/elon` va `/elon/[id]` (forma, rasmlar), `/ustalar/kabinet` (holatlar, statistika, so'rovlar),
+  `/admin/ustalar` (moderatsiya, demo boshqaruvi).
+- Kirish: sayt menyusi, yon menyu, bosh sahifa va "Kabinetim" (telefonda yon menyu yo'q) — turkuaz "Universal ustalar".
+- 0076 qo'llanmagan baza (prod'dagi deploy oynasi): `/ustalar` va `/ustalar/qidiruv` — "Bo'lim tayyorlanmoqda", `/admin/ustalar` —
+  "0076 migratsiyasi qo'llanmagan" izohi (demo tugmalari yashirin). Stendda jadvallarni vaqtincha olib tashlab tekshirildi.
+- 4 til (`messages/*/masters.json`), maxfiylik siyosati (usta va mijoz ma'lumotlari), sitemap/robots.
+- Maketdagi soxta reyting, "Tasdiqlangan", telefon raqamlari va "50 000+ mijoz" kabi raqamlar **qo'yilmadi** — demo e'lonlar "Demo"
+  belgisi bilan, telefonsiz va reytingsiz.
+
+**Fayllar:** `supabase/migrations/0076_masters.sql`, `supabase/rollbacks/0076_masters.down.sql`, `supabase/tests/masters.test.sql`,
+`src/features/masters/*`, `src/app/ustalar/*`, `src/app/admin/(panel)/ustalar/page.tsx`, `src/app/globals.css` (`.theme-masters`),
+`src/components/shared/{app-shell,site-nav}.tsx`, `src/features/landing/seeker-home.tsx`, `src/features/cabinet/components/cabinet-page.tsx`,
+`src/features/admin/{nav.ts,components/sidebar-nav.tsx}`,
+`src/features/health/schema-probes.ts`, `scripts/prod-migration-check.sql`, `src/types/database.types.ts`, `messages/*/{masters,admin,legal}.json`,
+`e2e/specs/{masters,a11y}.spec.ts`, `e2e/screens/masters.shots.ts`, `docs/{MASTERS,STATUS,RELEASE_CHECKLIST,ROUTES_MAP,DATABASE_SCHEMA}.md`.
+
+**Testlar:** SQL 56 tekshiruv (to'liq SQL to'plami toza bazada o'tdi); Vitest 776 / 18 skip; E2E 277/277 (5 ta yangi ssenariy +
+5 ta a11y sahifa); lint, typecheck 0 xato.
+
+**Yo'l-yo'lakay tuzatildi:** `supabase/tests/scale_rls.test.sql` — sinov ma'lumoti uchun kasb juftligi bir xil `sort_order`'li
+qatorlar orasidan tasodifiy tanlanardi; "Zargarlik / Zargar" tushsa test yiqilardi (ota nomi bola nomini o'z ichiga oladi). Endi
+tanlov to'liq aniqlangan (slug bo'yicha) va bunday juftlik olinmaydi. Tekshiruvning o'zi o'zgarmadi.
+
+**Qolgan (ega):** prod bazaga 0076 (u qo'llanmaguncha `/ustalar` "Bo'lim tayyorlanmoqda" deb ochiladi). Keyingi qadamlar — `MASTERS.md` §7.
+
+## AI ish maydoni — "ChatGPT kabi" /ai (2026-11-12)
+
+Egasi yuborgan maket bo'yicha. Batafsil: `docs/AI_ASSISTANT.md` 6-bosqich.
+
+**Bajarildi:** `/ai` — uch ustun (chap: yangi suhbat, bo'limlar, so'nggi suhbatlar, profil; o'rta: suhbat, salomlashuv,
+"Bugungi ishlar" va "Sizga mos ishlar" faqat bazadan; o'ng: karyera, tezkor imkoniyatlar, maslahat), telefonda panel pastdan;
+har javobda jarayon izi (tushunildi → bazadan qidirildi · N → javob: AI/oddiy rejim); suhbatlar qurilmada (10 ta, 7 kun);
+AI'siz rejimda umumiy va maslahat savollariga halol javob. 4 til.
+
+**Fayllar:** `src/features/ai/components/ai-workspace.tsx`, `ai-workspace-client.tsx`, `src/features/ai/workspace-data.ts`,
+`src/features/find/ai-chat-model.ts` (+test), `src/features/find/components/ai-chat.tsx` (suhbatlar, `Trace`, `bar` prop,
+`data-ai-you`), `src/features/assistant/replies.ts` (+engine test), `src/app/ai/page.tsx` (eski `ai-hub.tsx` o'chirildi),
+`messages/*/easy.json` (`aiws`), `messages/*/legal.json` (cookie: `ib_ai_convs`), `e2e/specs/ai-workspace.spec.ts`,
+`e2e/screens/ai-workspace.shots.ts`, `ai-finder/sections/assistant-chat/layout-overlap` speclari yangilandi.
+
+**Testlar:** Vitest 766 / 18 skip; E2E 267/267 (10 ta yangi); lint, typecheck 0 xato.
+
+**Qolgan:** suhbatlarni serverda saqlash (rozilik + migratsiya) — egasi qarori; haqiqiy Claude bilan prod'da tekshirish
+("Sun'iy intellekt" yozuvi).
 
 ## Bozorga tayyorlik — prod tekshiruvi, yuklama testi, hujjatlar (2026-11-12)
 

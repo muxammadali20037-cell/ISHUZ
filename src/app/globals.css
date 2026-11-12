@@ -84,6 +84,8 @@
   --border-strong: #cdd5e1;
   /* brend belgisi (logo ravog'i) va yashil urg'u (#16A36A — faqat belgi/nuqta, matn uchun emas: oq ustida 3.2:1) */
   --brand: #276fe5;
+  --brand-accent: #0f766e; /* "Universal ustalar" bo'limi belgisi (turkuaz) — menyuda ajralib turadi */
+  --accent-bright: #2dd4bf; /* o'sha turkuaz — to'q ko'k yon menyuda (navy ustida 9:1) */
   --brand-green: #16a378;
   /* bosh sahifa birinchi ekrani: och ko'k fon (matn 16:1, muted 4.6:1, primary 5.5:1) */
   --hero-soft: #eaf1fd;
@@ -150,6 +152,8 @@ html.tg-fullscreen {
   --sidebar-accent: #6d9eff;
   --border-strong: #34425f;
   --brand: #3478f6;
+  --brand-accent: #2dd4bf;
+  --accent-bright: #2dd4bf;
   --brand-green: #2fbf84;
   --hero-soft: #121d35;
 }
@@ -208,6 +212,8 @@ html.tg-fullscreen {
   --color-hero-fg: var(--hero-fg);
   --color-brand: var(--brand);
   --color-brand-green: var(--brand-green);
+  --color-brand-accent: var(--brand-accent);
+  --color-accent-bright: var(--accent-bright);
   --color-hero-soft: var(--hero-soft);
   --color-hero-muted: var(--hero-muted);
   /* 2.0 (docs/DESIGN_SYSTEM.md §4): tugma va maydon 10 px (rounded-md), karta 12 px (rounded-lg), katta panel 16 px
@@ -457,6 +463,25 @@ html.no-splash .splash { display: none; }
   background-color: var(--card);
   box-shadow: 0 1px 2px rgb(21 33 59 / 0.05), 0 6px 16px -10px rgb(21 33 59 / 0.18);
 }
+/* "Universal ustalar" moduli — turkuaz mavzu (2026-11): faqat /ustalar ichida; asosiy sayt ko'k bo'lib qoladi.
+   Kontrast: #0f766e oq ustida 5.9:1, Cloud #f4f6fa ustida 5.5:1 (AA); qorong'i mavzuda ochroq turkuaz. */
+.theme-masters {
+  --primary: #0f766e;
+  --primary-hover: #115e59;
+  --primary-ink: #0f766e;
+  --primary-soft: #e6f6f4;
+  --ring: #0f766e;
+  --brand-accent: #14b8a6;
+}
+.dark .theme-masters {
+  --primary: #2dd4bf;
+  --primary-hover: #5eead4;
+  --primary-ink: #5eead4;
+  --primary-soft: #134e4a;
+  --ring: #2dd4bf;
+  --brand-accent: #2dd4bf;
+}
+
 .dark .tile-raise { box-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 6px 16px -10px rgb(0 0 0 / 0.6); }
 
 /* Bo'limlar ketma-ket ko'tarilib chiqadi (birinchi ochilishda bir marta) */
