@@ -10,8 +10,10 @@ import { asGuest, asMode, sql } from "../support";
 const EMP = "7e2e0000-0000-4000-8000-000000000066";
 const WRK = "7e2e0000-0000-4000-8000-000000000067";
 
-const sections = (page: Page) => page.getByRole("region", { name: "Bo'limlar", exact: true });
-const tile = (page: Page, name: string) => sections(page).getByRole("link", { name: new RegExp(`^${name}`) });
+const sections = (page: Page) =>
+  page.getByRole("region", { name: "Bo'limlar", exact: true });
+const tile = (page: Page, name: string) =>
+  sections(page).getByRole("link", { name: new RegExp(`^${name}`) });
 
 test.describe("bo'limlar", () => {
   test.beforeAll(async () => {
@@ -27,7 +29,9 @@ test.describe("bo'limlar", () => {
        on conflict (profile_id) do update set employer_type = excluded.employer_type`,
       [EMP],
     );
-    await sql("delete from public.vacancies where owner_profile_id = $1", [EMP]);
+    await sql("delete from public.vacancies where owner_profile_id = $1", [
+      EMP,
+    ]);
     await sql(
       `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, experience_min_months, positions_count, published_at, expires_at)
        select $1, t.title, r.id, 'Sinov e''loni: ' || t.title || ', ish vaqti 9 dan 18 gacha', 'active', 250000, t.pay::public.salary_type, 0, t.pos, now(), now() + interval '10 days'
@@ -35,7 +39,9 @@ test.describe("bo'limlar", () => {
        where r.slug = 'tashkent_city'`,
       [EMP],
     );
-    await sql("delete from public.worker_profiles where profile_id = $1", [WRK]);
+    await sql("delete from public.worker_profiles where profile_id = $1", [
+      WRK,
+    ]);
     await sql(
       `insert into public.worker_profiles (profile_id, headline, category_id, region_id, experience_level, onboarding_completed_at, is_public)
        select $1, 'Yuk tashuvchi (kunlik)', c.id, r.id, 'none', now(), true from public.categories c, public.regions r where c.slug = 'sales' and r.slug = 'tashkent_city'`,
@@ -48,11 +54,18 @@ test.describe("bo'limlar", () => {
     );
   });
   test.afterAll(async () => {
-    await sql("delete from public.vacancies where owner_profile_id = $1", [EMP]);
-    await sql("delete from public.worker_profiles where profile_id = $1", [WRK]);
+    await sql("delete from public.vacancies where owner_profile_id = $1", [
+      EMP,
+    ]);
+    await sql("delete from public.worker_profiles where profile_id = $1", [
+      WRK,
+    ]);
   });
 
-  test("ish qidiruvchi (2.0): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtrda", async ({ page, context }) => {
+  test("ish qidiruvchi (2.0): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtrda", async ({
+    page,
+    context,
+  }) => {
     await asGuest(context);
     await asMode(context, "worker");
     await page.goto("/");
@@ -61,62 +74,127 @@ test.describe("bo'limlar", () => {
     await expect(sections(page)).toHaveCount(0);
     await expect(page.locator("#home-sections")).toHaveCount(0);
     // "Filtrlar bilan qidirish" → natijalar; filtr oynasida ish beruvchi turi (YaTT va boshqalar), ommaviy va TOP bo'limlari
-    await page.getByRole("main").getByRole("link", { name: "Filtrlar bilan qidirish" }).click();
+    await page
+      .getByRole("main")
+      .getByRole("link", { name: "Filtrlar bilan qidirish" })
+      .click();
     await page.waitForURL(/\/search\?mode=jobs&region=all&any=1$/);
     await page.getByRole("button", { name: /^Filtr/ }).click();
     const dialog = page.getByRole("dialog");
-    await expect(dialog.getByText("Yakka tartibdagi tadbirkorlar")).toBeVisible();
-    await expect(dialog.getByRole("checkbox", { name: /^Ommaviy/ })).toBeVisible();
-    await expect(dialog.getByRole("checkbox", { name: "TOP e'lonlar" })).toBeVisible();
+    await expect(
+      dialog.getByText("Yakka tartibdagi tadbirkorlar"),
+    ).toBeVisible();
+    await expect(
+      dialog.getByRole("checkbox", { name: /^Ommaviy/ }),
+    ).toBeVisible();
+    await expect(
+      dialog.getByRole("checkbox", { name: "TOP e'lonlar" }),
+    ).toBeVisible();
     // tanlansa — o'sha bo'lim natijalari
     await dialog.getByRole("checkbox", { name: /^Ommaviy/ }).check();
-    await dialog.getByRole("button", { name: /^Natijalarni ko'rish \(\d+\)$/ }).click();
+    await dialog
+      .getByRole("button", { name: /^Natijalarni ko'rish \(\d+\)$/ })
+      .click();
     await page.waitForURL(/mass=1/);
     const cards = page.locator("main article");
-    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(1);
-    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(0);
+    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(
+      1,
+    );
+    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(
+      0,
+    );
   });
 
-  test("bo'lim natijalari: YaTT e'lonlari, chip bilan; chip olib tashlansa — barcha kasblar; ommaviy — 5+ o'rin", async ({ page, context }) => {
+  test("bo'lim natijalari: YaTT e'lonlari, chip bilan; chip olib tashlansa — barcha kasblar; ommaviy — 5+ o'rin", async ({
+    page,
+    context,
+  }) => {
     await asGuest(context);
     await asMode(context, "worker");
     await page.goto("/search?mode=jobs&region=all&etype=ie&any=1");
     const cards = page.locator("main article");
-    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(1);
-    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(1);
+    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(
+      1,
+    );
+    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(
+      1,
+    );
     const chips = page.getByRole("group", { name: "Faol filtrlar" });
     await chips.getByRole("link", { name: /YaTT/ }).click();
-    await page.waitForURL((u) => !new URL(u).searchParams.has("etype") && new URL(u).searchParams.get("any") === "1");
+    await page.waitForURL(
+      (u) =>
+        !new URL(u).searchParams.has("etype") &&
+        new URL(u).searchParams.get("any") === "1",
+    );
 
     // ommaviy: 5+ o'rin
     await page.goto("/search?mode=jobs&region=all&mass=1&any=1");
-    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(1);
-    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(0);
+    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(
+      1,
+    );
+    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(
+      0,
+    );
   });
 
-  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchilar' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({ page, context }) => {
+  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchilar' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
+    page,
+    context,
+  }) => {
     await asGuest(context);
     await asMode(context, "employer");
     await page.goto("/");
     await expect(sections(page)).toHaveCount(0);
-    await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Kunlik ishchilar", exact: true }).click();
+    await page
+      .getByRole("navigation", { name: "Tez qidiruv" })
+      .getByRole("link", { name: "Kunlik ishchilar", exact: true })
+      .click();
     await page.waitForURL(/mode=workers.*pay=daily/);
-    await expect(page.locator("main article").filter({ hasText: "Yuk tashuvchi (kunlik)" })).toHaveCount(1);
-    await expect(page.getByRole("group", { name: "Faol filtrlar" }).getByRole("link", { name: /Kunlik ishchilar/ })).toBeVisible();
+    await expect(
+      page
+        .locator("main article")
+        .filter({ hasText: "Yuk tashuvchi (kunlik)" }),
+    ).toHaveCount(1);
+    await expect(
+      page
+        .getByRole("group", { name: "Faol filtrlar" })
+        .getByRole("link", { name: /Kunlik ishchilar/ }),
+    ).toBeVisible();
   });
 
-  test("AI bo'limi: oddiy so'z bilan suhbat — natija shu sahifada; 'Sizga mos' mehmonda — kirishga", async ({ page, context }) => {
+  test("AI bo'limi: oddiy so'z bilan suhbat — natija shu sahifada; 'Sizga mos' mehmonda — kirishga", async ({
+    page,
+    context,
+  }) => {
     await asGuest(context);
     await asMode(context, "worker");
     await page.goto("/ai");
-    await expect(page.getByRole("heading", { level: 1, name: "AI yordamchi" })).toBeVisible();
-    await expect(page.getByRole("link", { name: /Sizga mos e'lonlar/ })).toHaveAttribute("href", "/auth?next=%2Fcabinet%2Fmatches");
-    await expect(page.getByRole("link", { name: /AI PRO kuzatuv/ })).toHaveAttribute("href", "/ai-alerts");
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Ish topdim AI" }),
+    ).toBeVisible();
+    // mehmon: bo'limlar chap panelda (telefonda — "Bo'limlar va suhbatlar" tugmasi bilan pastdan); kirish talab qiladiganlari — /auth?next=
+    const narrow = (page.viewportSize()?.width ?? 1280) < 1024;
+    if (narrow) await page.locator("[data-ai-open-sidebar]").click();
+    const panel = narrow
+      ? page.getByRole("dialog")
+      : page.locator("[data-ai-sidebar]");
+    await expect(
+      panel.getByRole("link", { name: "Mos ishlar" }),
+    ).toHaveAttribute("href", "/auth?next=%2Fcabinet%2Fmatches");
+    await expect(
+      panel.getByRole("link", { name: "Arizalarim" }),
+    ).toHaveAttribute("href", "/auth?next=%2Fapplications");
+    if (narrow) await page.keyboard.press("Escape");
+    await expect(
+      page.locator("[data-ai-quick] [data-quick='alerts']").first(),
+    ).toHaveAttribute("href", "/ai-alerts");
     await page.getByLabel("Nima qidiryapsiz?").fill("omborchi");
-    await page.getByRole("button", { name: "Topish" }).click();
+    await page.getByRole("button", { name: "Topish", exact: true }).click();
     // so'z kasbga aylandi ("Omborchi"), hudud aytilmagan — butun O'zbekiston bo'yicha; natija shu sahifada
     await expect(page.getByText(/^Tushundim:/)).toContainText("Omborchi");
-    await expect(page.locator("main article").filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(1);
+    await expect(
+      page.locator("main article").filter({ hasText: "YaTT omborchi kunlik" }),
+    ).toHaveCount(1);
     await expect(page.getByRole("dialog")).toHaveCount(0);
   });
 });

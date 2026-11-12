@@ -132,7 +132,7 @@
       ],
       [
         "Browser storage (localStorage and sessionStorage)",
-        "Not cookies, but similar: stored only on your device and never sent to the server.\n- Ad drafts (ib_draft:…) — if the page closes while you fill in a form, your text is not lost.\n- AI assistant conversation (ib_ai_chat…) — in this tab for 30 minutes: when you come back from an ad, the answer is still there.\n- The “Voice answers” choice (ib_ai_speak), the one-time splash mark (ib_splash), the last payment method (ib_pay_provider), recently opened professions and similar small conveniences."
+        "Not cookies, but similar: stored only on your device and never sent to the server.\n- Ad drafts (ib_draft:…) — if the page closes while you fill in a form, your text is not lost.\n- AI assistant conversation (ib_ai_chat…) — in this tab for 30 minutes: when you come back from an ad, the answer is still there.\n- “Recent chats” on the AI assistant page (ib_ai_convs…) — the last 10 chats, for up to 7 days, only on this device; you delete them yourself.\n- The “Voice answers” choice (ib_ai_speak), the one-time splash mark (ib_splash), the last payment method (ib_pay_provider), recently opened professions and similar small conveniences."
       ],
       [
         "What we do NOT use",

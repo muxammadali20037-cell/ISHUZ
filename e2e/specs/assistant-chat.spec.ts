@@ -23,7 +23,7 @@ const replies = (page: Page) => main(page).locator("[data-ai-reply]");
 
 async function say(page: Page, text: string) {
   await field(page).fill(text);
-  await main(page).getByRole("button", { name: "Topish" }).click();
+  await main(page).getByRole("button", { name: "Topish", exact: true }).click();
 }
 
 const ndjson = (events: unknown[]) => events.map((e) => JSON.stringify(e)).join("\n") + "\n";
@@ -90,7 +90,8 @@ test("suhbat: salomlashuv qidiruvsiz; tavsiya savoli bosiladi → javob matni va
   await expect(replies(page)).toHaveCount(3);
   await main(page).getByRole("button", { name: "Yangi suhbat" }).click();
   await expect(replies(page)).toHaveCount(0);
-  await expect(main(page).getByText(/Men AI yordamchiman/)).toBeVisible();
+  // ish maydoni (2026-11): bo'sh suhbat — salomlashuv va "Bugungi ishlar"
+  await expect(main(page).locator("[data-ai-welcome]")).toBeVisible();
 });
 
 test("AI javobi (oqim): uzun matn qatorlari bilan, nusxa olish, tavsiya; keyingi xabarda oldingi savol-javob kontekst sifatida yuboriladi", async ({ page, context }) => {
@@ -167,7 +168,7 @@ test("javobni to'xtatish: kutish holati ko'rinadi, 'To'xtatish' bosilsa — suhb
   // javob kutilayotganda yuborish tugmasi o'rnida — to'xtatish
   await expect(main(page).getByRole("button", { name: "Topish" })).toHaveCount(0);
   await main(page).getByRole("button", { name: "Javobni to'xtatish" }).click();
-  await expect(main(page).getByText("To'xtatildi")).toBeVisible();
+  await expect(main(page).getByText("To'xtatildi").last()).toBeVisible();
   await expect(main(page).locator("form[data-voice]")).toHaveAttribute("data-voice", "idle");
   release();
   await page.unroute("**/api/assistant");
@@ -286,7 +287,7 @@ test("mikrofon: tinglash holati aniq ko'rinadi va to'xtatiladi; ruxsat berilmasa
   await expect(field(page)).toHaveValue("kunlik ish bormi");
   // o'zi yuborilmaydi — foydalanuvchi yuboradi
   await expect(replies(page)).toHaveCount(0);
-  await main(page).getByRole("button", { name: "Topish" }).click();
+  await main(page).getByRole("button", { name: "Topish", exact: true }).click();
   await expect(main(page).getByText("Siz: kunlik ish bormi")).toBeVisible();
   await expect(main(page).locator("article")).toHaveCount(1);
 

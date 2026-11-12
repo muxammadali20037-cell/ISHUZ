@@ -6,6 +6,7 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | --- | --- | --- |
 | Barqarorlashtirish (Next 16.4.5, 0074–0075, health, Sentry) | Kod tayyor, CI yashil · **ega amali kutilmoqda** | 2026-11-07 |
 | Bozorga tayyorlik: prod tekshiruv skripti, HTTP yuklama testi, ochiq ro'yxatlar keshi, STATUS.md | ✅ Tugadi | 2026-11-12 |
+| AI ish maydoni ("ChatGPT kabi" /ai): chap panel, so'nggi suhbatlar, bugungi ishlar, jarayon izi | ✅ Tugadi | 2026-11-12 |
 | 0. Audit | ✅ Tugadi | 2026-11-11 |
 | 1. Dizayn tizimi | Davom etmoqda: 1-qadam (tokenlar) ✅, 2-qadam (komponentlar) ✅ | 2026-11-11 |
 | 2. Ochiq sayt | — | |
@@ -16,6 +17,26 @@ Har bir bosqichdan keyin yangilanadi. Reja — `docs/IMPLEMENTATION_PLAN.md`.
 | 7. Backend integratsiyasi | — | |
 | 8. AI | — | |
 | 9. QA va prod | — | |
+
+## AI ish maydoni — "ChatGPT kabi" /ai (2026-11-12)
+
+Egasi yuborgan maket bo'yicha. Batafsil: `docs/AI_ASSISTANT.md` 6-bosqich.
+
+**Bajarildi:** `/ai` — uch ustun (chap: yangi suhbat, bo'limlar, so'nggi suhbatlar, profil; o'rta: suhbat, salomlashuv,
+"Bugungi ishlar" va "Sizga mos ishlar" faqat bazadan; o'ng: karyera, tezkor imkoniyatlar, maslahat), telefonda panel pastdan;
+har javobda jarayon izi (tushunildi → bazadan qidirildi · N → javob: AI/oddiy rejim); suhbatlar qurilmada (10 ta, 7 kun);
+AI'siz rejimda umumiy va maslahat savollariga halol javob. 4 til.
+
+**Fayllar:** `src/features/ai/components/ai-workspace.tsx`, `ai-workspace-client.tsx`, `src/features/ai/workspace-data.ts`,
+`src/features/find/ai-chat-model.ts` (+test), `src/features/find/components/ai-chat.tsx` (suhbatlar, `Trace`, `bar` prop,
+`data-ai-you`), `src/features/assistant/replies.ts` (+engine test), `src/app/ai/page.tsx` (eski `ai-hub.tsx` o'chirildi),
+`messages/*/easy.json` (`aiws`), `messages/*/legal.json` (cookie: `ib_ai_convs`), `e2e/specs/ai-workspace.spec.ts`,
+`e2e/screens/ai-workspace.shots.ts`, `ai-finder/sections/assistant-chat/layout-overlap` speclari yangilandi.
+
+**Testlar:** Vitest 766 / 18 skip; E2E 267/267 (10 ta yangi); lint, typecheck 0 xato.
+
+**Qolgan:** suhbatlarni serverda saqlash (rozilik + migratsiya) — egasi qarori; haqiqiy Claude bilan prod'da tekshirish
+("Sun'iy intellekt" yozuvi).
 
 ## Bozorga tayyorlik — prod tekshiruvi, yuklama testi, hujjatlar (2026-11-12)
 

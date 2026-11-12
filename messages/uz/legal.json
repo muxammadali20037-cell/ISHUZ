@@ -132,7 +132,7 @@
       ],
       [
         "Brauzer xotirasi (localStorage va sessionStorage)",
-        "Cookie emas, lekin shunga o'xshash: faqat sizning qurilmangizda saqlanadi, serverga yuborilmaydi.\n- E'lon qoralamalari (ib_draft:…) — formani to'ldirayotganda sahifa yopilib ketsa, yozganlaringiz yo'qolmaydi.\n- AI yordamchi suhbati (ib_ai_chat…) — shu tabda 30 daqiqa: e'lon ochib qaytganingizda javob joyida turadi.\n- «Ovoz bilan javob» tanlovi (ib_ai_speak), ochilish ekrani bir marta ko'rsatilgani (ib_splash), oxirgi to'lov usuli (ib_pay_provider), oxirgi ochilgan kasblar va shu kabi kichik qulayliklar."
+        "Cookie emas, lekin shunga o'xshash: faqat sizning qurilmangizda saqlanadi, serverga yuborilmaydi.\n- E'lon qoralamalari (ib_draft:…) — formani to'ldirayotganda sahifa yopilib ketsa, yozganlaringiz yo'qolmaydi.\n- AI yordamchi suhbati (ib_ai_chat…) — shu tabda 30 daqiqa: e'lon ochib qaytganingizda javob joyida turadi.\n- AI yordamchi sahifasidagi «So'nggi suhbatlar» (ib_ai_convs…) — oxirgi 10 ta suhbat, 7 kungacha, faqat shu qurilmada; ro'yxatdan o'zingiz o'chirasiz.\n- «Ovoz bilan javob» tanlovi (ib_ai_speak), ochilish ekrani bir marta ko'rsatilgani (ib_splash), oxirgi to'lov usuli (ib_pay_provider), oxirgi ochilgan kasblar va shu kabi kichik qulayliklar."
       ],
       [
         "Nima YO'Q",
