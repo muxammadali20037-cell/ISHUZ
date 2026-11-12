@@ -4,7 +4,7 @@ Bitta sahifa: kod qayerda, prod qayerda, nima ishlaydi, nima egasini kutyapti. H
 Eski hisobotlar (`PROFESSIONALIZATION_REPORT.md`, `AUDIT_*.md`, `MASTER_SPEC_STATUS.md`, `SCALE.md` 1–7) o'z sanasidagi
 tarix — ulardagi raqamlar (migratsiya soni, test soni) hozirgi holatni ko'rsatmaydi.
 
-Yangilangan: **2026-11-12** (kechki) · oxirgi relizlar: AI ish maydoni (#13), Universal ustalar (#14).
+Yangilangan: **2026-11-12** (kechki) · oxirgi relizlar: AI ish maydoni (#13), Universal ustalar (#14, #15, #17) · prod'da `c7ac0c8`.
 
 ## 1. Kod va baza
 
@@ -54,6 +54,11 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 | 6 | `SUPPORT_EMAIL` env | Huquqiy sahifalarda aloqa manzili yo'q | `PLAY_MARKET.md` |
 | 7 | Staging muhit (alohida Supabase + Vercel preview) | Haqiqiy Telegram oqimi va yuklama testi prod'ga tegmasdan | `SCALE.md` §8 |
 | 8 | Haqiqiy foydalanuvchi bilan sinov (kirish → profil → ariza; kompaniya → vakansiya → nomzod) | Avtomatik testlar stendda; prod'da real oqim bir marta qo'lda o'tilishi kerak | `RELEASE_CHECKLIST.md` §6 |
+| 9 | GitHub: **Settings → General → Default branch** ni `main` ga o'tkazish (hozir `claude/gallant-thompson-q70fo3`) | Sayt `main` dan chiqadi, lekin GitHub'dagi "Compare & pull request" tugmasi va rejali ishlar (kunlik zaxira nusxa) eski tarmoqqa qaraydi — #12, #16, #18 shu sababli o'sha tarmoqqa ochilgan (saytga ta'sir qilmagan) | shu yer |
+
+**PR'larni birlashtirish.** Ega ruxsati bilan (2026-11) PR'larni CI yashil bo'lgach Claude o'zi `main` ga birlashtiradi — GitHub'da
+"Merge" bosish shart emas. Agar ega o'zi bossa: avval sahifadagi barcha tekshiruvlar yashil bo'lishini kutish kerak (#17 tekshiruvlar
+tugamasdan birlashtirilgan; kod lokal to'liq tekshirilgan edi va `main` dagi CI keyin yashil chiqdi).
 
 ## 5. Sig'im: bugun nima yetadi, 1 mln uchun nima kerak
 
