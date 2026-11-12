@@ -18,6 +18,7 @@ import { isCityRegion } from "@/lib/geo/city";
 import type { AppMode } from "@/features/mode/mode";
 import { ProfileHeader } from "./profile-header";
 import { MastersEntry } from "@/features/masters/components/masters-entry";
+import { AiEntry } from "@/features/ai/components/ai-entry";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
@@ -217,7 +218,10 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
       </section>
 
       {/* "Universal ustalar" — alohida bo'lim (turkuaz). Telefonda yon menyu yo'q: kirgan foydalanuvchi (ikkala rejim) shu yerdan kiradi */}
-      <MastersEntry title={t("masters.name")} desc={t("masters.entry_desc")} />
+      <div className="grid gap-2 sm:grid-cols-2">
+        <AiEntry title={t("easy.aiws.nav.ai")} desc={t(mode === "employer" ? "easy.aiws.entry_desc_employer" : "easy.aiws.entry_desc")} to="cabinet" />
+        <MastersEntry title={t("masters.name")} desc={t("masters.entry_desc")} />
+      </div>
 
       {(["activity", "account"] as const).map((group) => (
         <section key={group} className="space-y-2" aria-labelledby={`links-${group}`}>

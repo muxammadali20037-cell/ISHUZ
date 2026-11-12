@@ -81,7 +81,8 @@ qiymatlar chiqadi (reyting — sharhlardan, telefon — rozilik bilan).
 1. Kod `main` da — sahifalar bor, lekin **0076 qo'llanmaguncha** `/ustalar` "Bo'lim tayyorlanmoqda" holatida ochiladi (kategoriyalar
    ham shu migratsiyada), forma saqlanmaydi, admin sahifasi "0076 migratsiyasi qo'llanmagan" deb ko'rsatadi. Xato ekrani chiqmaydi;
    stendda jadvalni vaqtincha olib tashlab tekshirilgan.
-2. Egasi: `docs/RELEASE_CHECKLIST.md` — zaxira nusxa → 0069…0075 (hali qo'llanmagan) → **0076**. 0076 mustaqil (0069–0075 ga
+2. Egasi: `docs/RELEASE_CHECKLIST.md` §3 — zaxira nusxa → **`supabase/prod/pending.sql`** (0069…0076 bitta faylda). Bittalab
+   qo'llansa: 0069…0075 (hali qo'llanmagan) → **0076**. 0076 mustaqil (0069–0075 ga
    bog'liq emas: faqat prod'da allaqachon bor 0001–0068 dagi narsalarga tayanadi), lekin tartibni saqlagan ma'qul. Fayl takror ishga tushirilsa ham xato
    bermaydi; oxiridagi demo e'lonlar faqat birinchi o'rnatishda (jadval bo'sh bo'lsa) qo'shiladi.
 3. Tekshirish: `CRON_SECRET=… npm run prod:check` → deep PASS; `/ustalar` da 12 kategoriya va 48 demo e'lon.

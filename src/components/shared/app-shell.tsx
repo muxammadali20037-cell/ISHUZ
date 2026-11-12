@@ -3,7 +3,7 @@
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MessageCircle, Plus, Search, Settings, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -32,6 +32,14 @@ interface NavItem {
  * Takliflar (ish beruvchidan) — "Arizalar" bilan birga. Eski manzillar (/search, /cabinet, /saved, /applications, /employer…) o'zgarmagan.
  */
 const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages"];
+
+/**
+ * "AI yordamchi" — alohida bo'lim (2026-11-12, egasi: "AI yordamchi bo'limi qani — bossa ChatGPT kabi ochilsin"): kompyuterda
+ * yon menyu va yuqori menyuda "Bosh sahifa"dan keyin; telefonda — yuqori paneldagi belgi (top-bar) va bosh sahifadagi karta
+ * (pastki menyuda joy yo'q: 5 ta katak, 320 px da oltinchisi sig'maydi).
+ */
+const isAiPath = (p: string) => p === "/ai";
+const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath };
 
 function mainNav(mode: NavMode): NavItem[] {
   if (mode === "employer") {
@@ -149,13 +157,16 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
 export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   const pathname = usePathname();
   const { t } = useT();
-  const items = mainNav(mode);
+  // "AI yordamchi" — birinchi bo'limdan keyin; /ai ochiq bo'lsa faqat u belgilanadi (telefonda /ai — "Ishlar"/"Profil" ichida)
+  const [first, ...rest] = mainNav(mode);
+  const items: NavItem[] = first ? [first, AI_NAV, ...rest] : [AI_NAV];
+  const onAi = isAiPath(pathname);
   const [navRef, compact] = useFitLabels(items.map((i) => t(i.labelKey)).join("|"));
   return (
     <nav ref={navRef} aria-label={t("common.nav.main_label")} className="hidden md:block">
     <ul className="flex items-center gap-1">
       {items.map((item) => {
-        const active = item.match ? item.match(pathname) : pathname === item.href;
+        const active = item === AI_NAV ? onAi : !onAi && (item.match ? item.match(pathname) : pathname === item.href);
         const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
         return (
           <li key={item.href}>
@@ -163,20 +174,36 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
               href={item.href}
               aria-current={active ? "page" : undefined}
               title={t(item.labelKey)}
+              {...(item === AI_NAV ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "top" } : {})}
               className={cn(
-                "relative flex min-h-11 min-w-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors lg:px-4",
+                "relative flex min-h-11 min-w-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors",
                 active ? "bg-primary-soft text-primary-ink" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
               <item.icon className="size-4.5" aria-hidden />
               {/* planshetda (md) va joy yetmaganda (uzun nomlar, o'ng tomonda "Vakansiya joylash") — faqat belgi: menyu o'ngdagi
                   tugmalar ostiga kirib, ularni to'smaydi; nom ekran o'quvchisi va title uchun saqlanadi */}
-              <span className={compact ? "sr-only" : "sr-only lg:not-sr-only"}>{t(item.labelKey)}</span>
+              {/* "AI yordamchi" nomi kompyuterda doim ko'rinadi (joy yetmasa ham): yangi bo'lim faqat belgi bo'lib qolmasin */}
+              <span className={compact && item !== AI_NAV ? "sr-only" : "sr-only lg:not-sr-only"}>{t(item.labelKey)}</span>
               {badge ? <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span> : null}
             </Link>
           </li>
         );
       })}
+      {/* "Universal ustalar" (turkuaz) — planshetda belgi bilan; kompyuterda nomli bo'limlar sig'ishi uchun bu yerda yo'q:
+          kirgan foydalanuvchida yon menyuda, mehmonda — bosh sahifadagi kartada */}
+      <li className="lg:hidden">
+        <Link
+          href="/ustalar"
+          data-track="masters_entry"
+          data-masters-entry
+          title={t("masters.name")}
+          className="theme-masters flex size-11 items-center justify-center rounded-xl bg-primary-soft text-primary-ink ring-1 ring-primary/30 transition-colors hover:ring-primary/60"
+        >
+          <Wrench className="size-4.5" aria-hidden />
+          <span className="sr-only">{t("masters.name")}</span>
+        </Link>
+      </li>
     </ul>
     </nav>
   );
@@ -252,6 +279,7 @@ function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
     return {
       main: [
         { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
+        { ...AI_NAV, match: isAiPath },
         { href: "/employer/vacancies", labelKey: "easy.side.my_vacancies", icon: BriefcaseBusiness, match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/post/vacancy") },
         { href: "/employer/applications", labelKey: "easy.side.applications", icon: Inbox, badgeKey: "applications", match: (p) => p.startsWith("/employer/applications") },
         {
@@ -262,7 +290,7 @@ function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
         },
         messages,
         { href: "/company/settings", labelKey: "easy.side.company", icon: Building2, match: (p) => p.startsWith("/company") },
-        { href: "/cabinet", labelKey: "easy.side.profile", icon: User, match: (p) => p.startsWith("/cabinet") || p.startsWith("/profile") || p.startsWith("/billing") || p.startsWith("/ai") || p.startsWith("/offers") },
+        { href: "/cabinet", labelKey: "easy.side.profile", icon: User, match: (p) => p.startsWith("/cabinet") || p.startsWith("/profile") || p.startsWith("/billing") || p.startsWith("/ai-alerts") || p.startsWith("/offers") },
       ],
       more,
     };
@@ -270,11 +298,12 @@ function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
   return {
     main: [
       { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" },
+      { ...AI_NAV, match: isAiPath },
       {
         href: "/jobs",
         labelKey: "easy.side.vacancies",
         icon: Search,
-        match: (p) => p.startsWith("/jobs") || p.startsWith("/search") || p.startsWith("/listing") || p.startsWith("/students") || p === "/ai" || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
+        match: (p) => p.startsWith("/jobs") || p.startsWith("/search") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
       },
       { href: "/applications", labelKey: "easy.side.my_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
       { href: "/saved", labelKey: "easy.side.saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
@@ -311,6 +340,7 @@ export function SideNav({
         <Link
           href={item.href}
           aria-current={active ? "page" : undefined}
+          {...(item.href === AI_NAV.href ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "side" } : {})}
           className={cn(
             "flex h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors",
             active ? "bg-sidebar-active font-medium text-navy-foreground" : "text-navy-muted hover:bg-navy-foreground/5 hover:text-navy-foreground",

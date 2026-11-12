@@ -155,6 +155,18 @@ Egasi yuborgan maket bo'yicha `/ai` sahifasi qayta qurildi (`components/ai-works
 va kompyuter (mehmon, ish izlovchi — bazadagi qiymat bilan solishtiriladi, suhbat va ro'yxat, tezkor imkoniyat, ish beruvchi).
 Skrinshotlar: `docs/screenshots/ai-workspace-2026-11/` (`e2e/screens/ai-workspace.shots.ts`).
 
+### 6a — bo'limga kirish (2026-11-12)
+
+Egasi: "AI yordamchi bo'limi qani — qo'shib ber, bossa ChatGPT kabi ochilsin". Sahifa bor edi, lekin unga faqat bosh sahifadagi
+qidiruv maydoni orqali o'tilardi — menyuda nomli bo'lim yo'q edi. Endi `/ai` ga:
+- **kompyuter, kirgan foydalanuvchi:** chap yon menyuda "Bosh sahifa"dan keyin (ikkala rejim);
+- **kompyuter, mehmon:** yuqori menyuda (nomi doim ko'rinadi); rejim tanlanmagan mehmon — sayt menyusida;
+- **telefon:** yuqori paneldagi belgi (har sahifadan) va bosh sahifadagi karta; pastki menyu o'zgarmagan (5 katak — oltinchisi
+  320 px da sig'maydi; suzuvchi tugma yo'q — u yozuvni to'sadi, `layout-overlap` qoidasi);
+- **"Kabinetim":** karta (ish beruvchida o'z matni).
+Komponent: `src/features/ai/components/ai-entry.tsx`; menyu: `app-shell.tsx` (`AI_NAV`), `top-bar.tsx`, `site-nav.tsx`.
+Test: `e2e/specs/ai-entry.spec.ts` (4 ssenariy).
+
 ## 5. Ega hal qiladigan savollar
 
 1. **Ovozli javob (o'qib berish):** brauzerning o'z ovozi bepul, lekin o'zbekcha ovoz ko'p telefonlarda yo'q. Tabiiy

@@ -46,7 +46,7 @@ robots/sitemap/manifest/assetlinks, Telegram webhook va to'lov kirish nuqtalari,
 
 | # | Amal | Nega kerak | Qayerda yozilgan |
 |---|---|---|---|
-| 1 | Prod bazaga 0069–0076 | `/companies`, filtrlar, telefon maxfiyligi, Telegram qayta urinish, **Universal ustalar** | `RELEASE_CHECKLIST.md` §1–3, `MASTERS.md` §5 |
+| 1 | Prod bazaga 0069–0076 — **bitta fayl: `supabase/prod/pending.sql`** (SQL Editor'ga qo'yib Run) | `/companies`, filtrlar, telefon maxfiyligi, Telegram qayta urinish, **Universal ustalar** | `RELEASE_CHECKLIST.md` §3, `MASTERS.md` §5 |
 | 2 | `SENTRY_DSN` + uptime monitor | Xatolar va yiqilishlar ko'rinmaydi | `RELEASE_CHECKLIST.md` §5 |
 | 3 | Telegram: `POST /api/telegram/setup` (CRON_SECRET bilan) va bot `/start` tekshiruvi | Kirish kodlari va bildirishnomalar shu orqali | `ISH_TOPDIM.md` |
 | 4 | To'lovlar: Payme/Click merchant hisoblari, `PAYME_*`/`CLICK_*` env; "pullik" tugmalar admin'da | Pullik xizmatlar yoqilmagan — kod bor, haqiqiy pul bilan sinalmagan | `PROFESSIONALIZATION_REPORT.md` (to'lov matritsasi) |

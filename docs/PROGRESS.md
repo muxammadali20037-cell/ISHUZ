@@ -293,3 +293,28 @@ admin-home, modes, sections, journeys, entry).
 
 **Keyingi aniq vazifa:** qobiqlar (mobil hamburger + pastki menyu), natijalar va e'lon sahifalari — 2.0 uslubida; admin
 panelni tozalash.
+
+## "AI yordamchi" bo'limi menyularda; prod uchun bitta fayl (2026-11-12, kechki)
+
+Egasi (skrinshotlar bilan): "hech nima o'zgarmagan-ku… AI yordamchi bo'limi qani, qo'shib ber, bosganda xuddi ChatGPT'ga o'xshab
+kiradigan qil… hammasini main'ga chiqar".
+
+**Tekshiruv natijasi:** kod `main` da va saytda edi; skrinshotlar deploydan oldin (10:29–10:31) olingan. Lekin haqiqiy kamchilik:
+`/ai` ga olib boradigan nomli bo'lim yo'q edi (faqat bosh sahifadagi qidiruv maydoni orqali). Bazada vakansiya yo'q —
+"Hozircha faol vakansiya yo'q".
+
+**Qilindi:**
+- `AI_NAV` (`app-shell.tsx`): yon menyu (ikkala rejim) va yuqori menyu; `/ai` ochiqligida faqat u belgilanadi.
+  Yuqori menyuda "AI yordamchi" nomi kompyuterda doim ko'rinadi (joy yetmasa boshqalari belgiga aylanadi); besh bo'lim nomi
+  bilan sig'ishi uchun bo'shliq `px-3`; "Universal ustalar" belgisi bu qatorda faqat planshetda (kompyuterda — yon menyu/karta).
+- Telefon: yuqori panelda belgi (`top-bar.tsx`, md dan tor), pastki menyu o'zgarmagan. Suzuvchi tugma qo'yilmadi (yozuvni to'sadi).
+- Kartalar: `AiEntry` — bosh sahifa (ish izlovchi, ish beruvchi), "Kabinetim". Bosh sahifada ikki bo'lim (AI yordamchi, Universal
+  ustalar) bir qatorda; telefonda ixcham plitka (`dense`) — birinchi e'lon birinchi ekranda qoladi (`home.spec`).
+- Sayt menyusi (rejimsiz mehmon): to'rt bo'limdan keyin "AI" (qisqa nom, to'liq nomi aria-label'da) va ustalar belgisi (xl dan).
+  To'rt tilda 1024–1536 px da o'lchandi — sig'adi (kirillcha eng tor: 2 px zaxira). Telefon menyusi va sahifa pastki qismida —
+  to'liq nomlar bilan.
+- `supabase/prod/pending.sql` + `scripts/gen-prod-pending.mjs`, `scripts/prod-pending-test.sh` (CI, SQL ishi),
+  `scripts/schema-fingerprint.sql`, `src/lib/prod-pending.test.ts`. 0069–0076 takror ishga tushirishga chidamli ekani tekshirildi
+  (sxema barmoq izi 2357 qator — o'zgarmaydi).
+
+**Testlar:** E2E `ai-entry.spec.ts` (4), `home-market.spec.ts` yangilandi; Vitest +2.

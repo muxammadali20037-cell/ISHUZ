@@ -1157,6 +1157,8 @@
     "tip_3_employer": "Check the experience and district in the candidate's profile — match reasons are shown on the card.",
     "tip_next": "Next tip",
     "tip_prev": "Previous tip",
-    "tip_n": "Tip {n}"
+    "tip_n": "Tip {n}",
+    "entry_desc": "In a chat: job search, CV, career advice",
+    "entry_desc_employer": "In a chat: finding candidates, vacancy text, interview questions"
   }
 }

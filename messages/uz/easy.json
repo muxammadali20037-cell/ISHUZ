@@ -1157,6 +1157,8 @@
     "tip_3_employer": "Nomzod profilidagi tajriba va hududga qarang — moslik sabablari kartada ko'rsatiladi.",
     "tip_next": "Keyingi maslahat",
     "tip_prev": "Oldingi maslahat",
-    "tip_n": "{n}-maslahat"
+    "tip_n": "{n}-maslahat",
+    "entry_desc": "Suhbat orqali: ish topish, CV, karyera maslahati",
+    "entry_desc_employer": "Suhbat orqali: nomzod topish, vakansiya matni, suhbat savollari"
   }
 }
