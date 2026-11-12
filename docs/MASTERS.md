@@ -80,13 +80,15 @@ qiymatlar chiqadi (reyting — sharhlardan, telefon — rozilik bilan).
    ham shu migratsiyada), forma saqlanmaydi, admin sahifasi "0076 migratsiyasi qo'llanmagan" deb ko'rsatadi. Xato ekrani chiqmaydi;
    stendda jadvalni vaqtincha olib tashlab tekshirilgan.
 2. Egasi: `docs/RELEASE_CHECKLIST.md` — zaxira nusxa → 0069…0075 (hali qo'llanmagan) → **0076**. 0076 mustaqil (0069–0075 ga
-   bog'liq emas), lekin tartibni saqlagan ma'qul.
+   bog'liq emas: faqat prod'da allaqachon bor 0001–0068 dagi narsalarga tayanadi), lekin tartibni saqlagan ma'qul. Fayl takror ishga tushirilsa ham xato
+   bermaydi; oxiridagi demo e'lonlar faqat birinchi o'rnatishda (jadval bo'sh bo'lsa) qo'shiladi.
 3. Tekshirish: `CRON_SECRET=… npm run prod:check` → deep PASS; `/ustalar` da 12 kategoriya va 48 demo e'lon.
 4. Qaytarish (favqulodda): `supabase/rollbacks/0076_masters.down.sql` — usta e'lonlari, so'rovlar va sharhlar o'chadi.
 
 ## 6. Testlar
 
-- SQL (`supabase/tests/masters.test.sql`, 56 tekshiruv): RLS, holat o'tishlari, telefon maxfiyligi, rasm yo'li, sharh/reyting, demo.
+- SQL (`supabase/tests/masters.test.sql`, 61 tekshiruv): RLS, holat o'tishlari, telefon maxfiyligi, rasm yo'li, sharh/reyting, demo,
+  baza operatori (migratsiya/SQL Editor) yo'li.
 - Vitest (`schema.test.ts`, 10): forma sxemasi, qidiruv parametrlari, xizmatlar ro'yxati.
 - E2E (`e2e/specs/masters.spec.ts`, 5 ssenariy): katalog va demo; usta e'loni → moderatsiya → tasdiq → katalog → so'rov → sharh →
   statistika; rad etish va qayta moderatsiya, yashirish, o'chirish; xavfsizlik (begona e'lon, mehmon, admin sahifasi, HTML'da telefon

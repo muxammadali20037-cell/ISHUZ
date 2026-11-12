@@ -149,4 +149,18 @@ select pg_temp.login('c7600000-0000-0000-0000-00000000000c');
 select pg_temp.ok((select public.master_demo_remove()) = 48, 'admin demo e''lonlarni bir buyruqda olib tashladi');
 select pg_temp.ok((select count(*) from public.master_listings) = 1, 'haqiqiy e''lon qoldi');
 
+-- oddiy foydalanuvchi (admin emas): funksiyani chaqira oladi, lekin ichki tekshiruvdan o'tmaydi
+select pg_temp.login('c7600000-0000-0000-0000-00000000000b');
+select pg_temp.fails($$select public.master_demo_seed()$$, 'oddiy foydalanuvchi demo e''lon yarata olmaydi', 'forbidden');
+select pg_temp.fails($$select public.master_demo_remove()$$, 'oddiy foydalanuvchi demo e''lonlarni o''chira olmaydi', 'forbidden');
+
+-- baza operatori: vosita "SET ROLE postgres" qilgan bo'lsa ham (ba'zi CLI/boshqaruv vositalari) migratsiya oxiridagi seed va
+-- qo'lda buyruqlar ishlaydi — egasi 0076 ni qo'llaganda "forbidden" bilan to'xtab qolmasin
+select pg_temp.superuser();
+set role postgres;
+select pg_temp.ok((select public.master_demo_seed()) = 48, 'operator (SET ROLE postgres) demo e''lonlarni qaytaradi');
+select pg_temp.ok((select public.master_demo_remove()) = 48, 'operator (SET ROLE postgres) demo e''lonlarni olib tashlaydi');
+reset role;
+select pg_temp.ok((select count(*) from public.master_listings) = 1, 'operator buyruqlari haqiqiy e''longa tegmadi');
+
 rollback;
