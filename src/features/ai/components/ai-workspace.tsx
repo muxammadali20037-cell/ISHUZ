@@ -161,6 +161,12 @@ export async function AiWorkspace({
           prompt: t("easy.aiws.quick_prompt.questions"),
         },
         {
+          key: "stats",
+          label: t("easy.aiws.quick.stats"),
+          icon: "stats",
+          prompt: t("easy.aiws.quick_prompt.stats_employer"),
+        },
+        {
           key: "alerts",
           label: t("easy.aihub.pro_title"),
           icon: "alerts",
@@ -191,6 +197,12 @@ export async function AiWorkspace({
           label: t("easy.aiws.quick.interview"),
           icon: "interview",
           prompt: t("easy.aiws.quick_prompt.interview"),
+        },
+        {
+          key: "stats",
+          label: t("easy.aiws.quick.stats"),
+          icon: "stats",
+          prompt: t("easy.aiws.quick_prompt.stats"),
         },
         {
           key: "alerts",

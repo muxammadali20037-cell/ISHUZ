@@ -736,7 +736,19 @@
     "voice_speaking": "Javobni o'qib beryapman…",
     "voice_stop_speaking": "Ovozni to'xtatish",
     "voice_review": "Matnni tekshiring — kerak bo'lsa tuzating, keyin yuboring",
-    "voice_no_voice": "Bu qurilmada shu til uchun ovoz yo'q — javob matnda"
+    "voice_no_voice": "Bu qurilmada shu til uchun ovoz yo'q — javob matnda",
+    "stats": {
+      "label": "Bozor holati",
+      "all": "Butun O'zbekiston",
+      "vacancies": "Vakansiyalar",
+      "seekers": "Ish izlovchilar",
+      "median": "Oylik (o'rtasi)",
+      "range": "Oraliq: {min} – {max} ({count} ta e'lon)",
+      "no_salary": "Maosh oralig'i uchun e'lonlar kam",
+      "note": "faol e'lonlar bo'yicha",
+      "jobs": "Vakansiyalarni ko'rish",
+      "workers": "Nomzodlarni ko'rish"
+    }
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",
@@ -1120,7 +1132,8 @@
       "answered_ai": "Javob: sun'iy intellekt",
       "answered_rules": "Javob: oddiy rejim",
       "stopped": "To'xtatildi",
-      "failed": "Xato"
+      "failed": "Xato",
+      "counted": "Bazadan hisoblandi"
     },
     "promo_title": "Karyerangizni rivojlantiring",
     "promo_desc": "Qaysi kasb va yo'nalish sizga mosligini AI yordamchi bilan aniqlang.",
@@ -1138,7 +1151,8 @@
       "post": "Vakansiya joylash",
       "candidates": "Nomzod topish",
       "vacancy_text": "Vakansiya matni",
-      "questions": "Suhbat savollari"
+      "questions": "Suhbat savollari",
+      "stats": "Maosh va talab"
     },
     "quick_prompt": {
       "find": "Menga mos ish toping",
@@ -1146,7 +1160,9 @@
       "interview": "Ish suhbatiga tayyorlanishga yordam bering",
       "candidates": "Vakansiyamga mos nomzod toping",
       "vacancy_text": "Vakansiya matnini tuzishga yordam bering",
-      "questions": "Nomzod uchun suhbat savollarini tuzing"
+      "questions": "Nomzod uchun suhbat savollarini tuzing",
+      "stats": "Kasbim bo'yicha maosh qancha va talab qanday?",
+      "stats_employer": "Xodimga qancha maosh taklif qilay? Bozordagi maoshni ko'rsating"
     },
     "tip_title": "Bugungi maslahat",
     "tip_1": "Yaxshi ish topish uchun aniq kasb va hududni yozing — qidiruv shunda aniq bo'ladi.",

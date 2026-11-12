@@ -1,19 +1,22 @@
 import type { AiFindResult } from "@/features/find/ai-find-types";
+import { adviceReply } from "./advice";
 import { conversationLanguage } from "./language";
+import { statsSubject, type MarketStats } from "./market-math";
 import { systemPrompt } from "./prompt";
-import { searchReply, smallTalk, smallTalkReply, suggestionsFor } from "./replies";
-import { compactForModel, parseToolCall, toolsFor, type ToolDef } from "./tools";
+import { adviceSuggestions, isStatsQuestion, searchReply, smallTalk, smallTalkReply, statsAskReply, statsReply, statsSuggestions, suggestionsFor } from "./replies";
+import { compactForModel, compactStatsForModel, parseToolCall, toolsFor, type ToolDef } from "./tools";
 import { HISTORY_MESSAGES, MESSAGE_MAX_CHARS, type AssistantLang, type AssistantRole, type ChatMessage, type Emit } from "./types";
 
 /**
  * Suhbat dvigateli (Conversation Engine) — bitta foydalanuvchi xabariga javob:
  *
- *   AI ulangan → model suhbat kontekstini o'qiydi → kerak bo'lsa `search_jobs` / `search_workers` asbobini chaqiradi →
- *   server bazadan HAQIQIY e'lonlarni oladi (kartalar shu ma'lumotdan chiziladi) → model natijaga tayanib qisqa, tabiiy javob
- *   yozadi (oqim bilan chiqadi).
+ *   AI ulangan → model suhbat kontekstini o'qiydi → kerak bo'lsa `search_jobs` / `search_workers` (bazadan HAQIQIY e'lonlar,
+ *   kartalar shu ma'lumotdan chiziladi) yoki `market_stats` (kasb bo'yicha vakansiyalar, ish izlovchilar soni va maosh oralig'i —
+ *   bazadan hisoblanadi) asbobini chaqiradi → model natijaga tayanib qisqa, tabiiy javob yozadi (oqim bilan chiqadi).
  *
  *   AI ulanmagan / kunlik byudjet tugagan / xato yoki vaqt tugadi (javob boshlanmasdan) → lug'at va shablon: xuddi shu bazaviy
- *   qidiruv va foydalanuvchi tilidagi tayyor javob. Foydalanuvchi hech qachon javobsiz qolmaydi.
+ *   qidiruv, bozor statistikasi, amaliy maslahat (rezyume, suhbat, karyera, vakansiya matni) va foydalanuvchi tilidagi tayyor
+ *   javob. Foydalanuvchi hech qachon javobsiz yoki "boshi berk" javob bilan qolmaydi.
  *
  * Bu fayl sof (server modullarini import qilmaydi): model, qidiruv, byudjet va jurnal tashqaridan beriladi — test qilinadi.
  * Suhbat matni serverda saqlanmaydi (jurnalga faqat tokenlar soni va kechikish yoziladi).
@@ -53,6 +56,8 @@ export interface LlmClient {
 }
 
 export type FindFn = (input: { text: string; mode: "jobs" | "workers"; ai: boolean }) => Promise<{ ok: true; data: AiFindResult } | { ok: false }>;
+/** kasb (va hudud) bo'yicha bozor holati; data: null — kasb tushunilmadi */
+export type StatsFn = (text: string) => Promise<{ ok: true; data: MarketStats | null } | { ok: false }>;
 
 export interface EngineDeps {
   /** null — AI kaliti sozlanmagan */
@@ -61,6 +66,8 @@ export interface EngineDeps {
   /** kunlik AI byudjeti (xarajat himoyasi): false — AI chaqirilmaydi, lug'at bilan javob beriladi */
   budget: () => Promise<boolean>;
   find: FindFn;
+  /** bozor statistikasi (berilmasa — statistika so'rovi oddiy qidiruv sifatida ishlanadi) */
+  stats?: StatsFn;
   log?: (u: { ok: boolean; latencyMs: number; inputTokens: number; outputTokens: number; error: string | null }) => void | Promise<void>;
   now?: () => number;
   today?: () => string;
@@ -126,12 +133,59 @@ interface Ctx extends EngineInput {
   mode: "jobs" | "workers";
 }
 
-/** AI'siz javob: salomlashuv/rahmat — tayyor gap; aks holda bazadan qidiruv va shablon javob */
+/** Statistika so'rovining davomi ("oshpaz" yoki "Samarqandda-chi?" — oldingi xabar "… maoshi qancha?" edi) */
+const FOLLOW_UP_MAX = 40;
+
+/**
+ * AI'siz javob: bozor statistikasi savoli — bazadan hisob; salomlashuv/rahmat — tayyor gap; maslahat (rezyume, suhbat,
+ * karyera, vakansiya matni) — amaliy yo'riqnoma; aks holda bazadan qidiruv va shablon javob.
+ */
 async function rulesTurn(ctx: Ctx, deps: EngineDeps): Promise<void> {
   const { emit, lang, role, turn } = ctx;
   const userTexts = ctx.history.filter((m) => m.role === "user").map((m) => m.text);
   const last = userTexts.at(-1)!;
+  const earlier = userTexts.slice(0, -1).filter((x) => !smallTalk(x)).slice(-CONTEXT_MESSAGES);
   const talk = smallTalk(last);
+  const prev = earlier.at(-1);
+  const asked = isStatsQuestion(last);
+  const followUp = !asked && !talk && !!prev && isStatsQuestion(prev) && last.length <= FOLLOW_UP_MAX;
+  if (deps.stats && (asked || followUp)) {
+    emit({ type: "status", stage: "searching" });
+    let res = await deps.stats(last.slice(0, 200));
+    // kasb shu xabarda yo'q, lekin joy yoki boshqa so'z bor ("Samarqandda maosh qancha?", "Toshkentda-chi?") — oldingi xabarlar
+    // bilan birga (eng yaqinidan). Faqat so'roqning o'zi ("statistika", "kasbim bo'yicha maosh qancha") — kasb so'raladi.
+    const hasSubject = /\p{L}{2,}/u.test(statsSubject(last));
+    for (let i = earlier.length - 1; hasSubject && res.ok && !res.data && i >= 0; i--) {
+      const joined = await deps.stats(`${last} ${earlier[i]}`.slice(0, 200));
+      if (!joined.ok) break;
+      if (joined.data) res = joined;
+    }
+    if (ctx.signal?.aborted) return;
+    if (!res.ok) {
+      emit({ type: "error", code: "search_failed" });
+      return;
+    }
+    if (res.data) {
+      emit({ type: "stats", data: res.data });
+      emit({ type: "text", delta: statsReply(res.data, lang, role) });
+      emit({ type: "suggestions", items: statsSuggestions(res.data, lang, role) });
+      emit({ type: "done", source: "rules", lang });
+      return;
+    }
+    if (asked) {
+      emit({ type: "text", delta: statsAskReply(lang, role, turn) });
+      emit({ type: "suggestions", items: suggestionsFor(null, lang, role, false) });
+      emit({ type: "done", source: "rules", lang });
+      return;
+    }
+    // davom etuvchi xabardan ham kasb chiqmadi — oddiy qidiruv sifatida
+  }
+  if (talk === "advice") {
+    emit({ type: "text", delta: adviceReply(last, lang, role) });
+    emit({ type: "suggestions", items: adviceSuggestions(lang, role) });
+    emit({ type: "done", source: "rules", lang });
+    return;
+  }
   if (talk) {
     emit({ type: "text", delta: smallTalkReply(talk, lang, role, turn) });
     emit({ type: "suggestions", items: suggestionsFor(null, lang, role, false) });
@@ -144,7 +198,6 @@ async function rulesTurn(ctx: Ctx, deps: EngineDeps): Promise<void> {
   // davomi: oldingi xabarlar (ko'pi bilan 3 ta) bilan birga qidiriladi, kasb topilguncha. Hech narsa tushunilmagan matn
   // ("qwerty") oldingisiga qo'shilmaydi — "tushunmadim" deb aytiladi.
   if (res.ok && !res.data.flags.profession && res.data.flags.filters) {
-    const earlier = userTexts.slice(0, -1).filter((x) => !smallTalk(x)).slice(-CONTEXT_MESSAGES);
     for (let n = 1; n <= earlier.length; n++) {
       const joined = await deps.find({ text: [...earlier.slice(-n), last].join(" ").slice(0, 300), mode: ctx.mode, ai: true });
       if (!joined.ok) break;
@@ -175,7 +228,9 @@ async function aiTurn(ctx: Ctx, deps: EngineDeps, llm: LlmClient): Promise<void>
   let wroteText = false;
   let needGap = false;
   let lastData: AiFindResult | null = null;
+  let lastStats: MarketStats | null = null;
   let sentResults = false;
+  const withStats = !!deps.stats;
 
   try {
     emit({ type: "status", stage: "thinking" });
@@ -188,7 +243,7 @@ async function aiTurn(ctx: Ctx, deps: EngineDeps, llm: LlmClient): Promise<void>
           max_tokens: MAX_TOKENS,
           output_config: { effort: "low" },
           system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
-          tools: toolsFor(role),
+          tools: toolsFor(role, withStats),
           ...(round === MAX_ROUNDS - 1 ? { tool_choice: { type: "none" as const } } : {}),
           messages: convo,
         },
@@ -210,9 +265,23 @@ async function aiTurn(ctx: Ctx, deps: EngineDeps, llm: LlmClient): Promise<void>
       emit({ type: "status", stage: "searching" });
       const results: Array<{ type: "tool_result"; tool_use_id: string; content: string; is_error?: boolean }> = [];
       for (const call of message.content.filter((b) => b.type === "tool_use" && b.id)) {
-        const parsed = calls.includes(call) ? parseToolCall(role, call.name ?? "", call.input) : null;
+        const parsed = calls.includes(call) ? parseToolCall(role, call.name ?? "", call.input, withStats) : null;
         if (!parsed) {
           results.push({ type: "tool_result", tool_use_id: call.id!, content: "This tool call is not available. Answer without it.", is_error: true });
+          continue;
+        }
+        if (parsed.tool === "stats") {
+          const st = await deps.stats!(parsed.query);
+          if (!st.ok) {
+            results.push({ type: "tool_result", tool_use_id: call.id!, content: "The statistics query failed. Tell the user to try again in a moment; do not invent numbers.", is_error: true });
+            continue;
+          }
+          if (st.data) {
+            lastStats = st.data;
+            sentResults = true;
+            emit({ type: "stats", data: st.data });
+          }
+          results.push({ type: "tool_result", tool_use_id: call.id!, content: compactStatsForModel(st.data) });
           continue;
         }
         const found = await deps.find({ text: parsed.query, mode: parsed.mode, ai: false });
@@ -229,8 +298,8 @@ async function aiTurn(ctx: Ctx, deps: EngineDeps, llm: LlmClient): Promise<void>
       needGap = wroteText;
     }
     // model matn yozmay to'xtagan bo'lsa (kamdan-kam) — foydalanuvchi javobsiz qolmaydi: natija bo'yicha tayyor gap
-    if (!wroteText) emit({ type: "text", delta: lastData ? searchReply(lastData, lang, role, ctx.turn) : searchReply(null, lang, role, ctx.turn) });
-    emit({ type: "suggestions", items: suggestionsFor(lastData, lang, role, true) });
+    if (!wroteText) emit({ type: "text", delta: lastData ? searchReply(lastData, lang, role, ctx.turn) : lastStats ? statsReply(lastStats, lang, role) : searchReply(null, lang, role, ctx.turn) });
+    emit({ type: "suggestions", items: !lastData && lastStats ? statsSuggestions(lastStats, lang, role) : suggestionsFor(lastData, lang, role, true) });
     emit({ type: "done", source: "ai", lang });
     await deps.log?.({ ok: true, latencyMs: now() - started, ...usage, error: null });
   } catch (e) {

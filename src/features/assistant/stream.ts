@@ -46,6 +46,11 @@ function isEvent(e: unknown): e is AssistantEvent {
       const d = o.data as Record<string, unknown> | null;
       return !!d && typeof d === "object" && Array.isArray(d.jobs) && Array.isArray(d.workers) && typeof d.total === "number" && Array.isArray(d.understood);
     }
+    case "stats": {
+      const d = o.data as Record<string, unknown> | null;
+      const p = d?.profession as Record<string, unknown> | undefined;
+      return !!d && typeof d === "object" && !!p && typeof p.uz === "string" && typeof d.vacancies === "number" && typeof d.seekers === "number" && typeof d.jobsHref === "string" && typeof d.workersHref === "string";
+    }
     case "suggestions":
       return Array.isArray(o.items) && o.items.every((x) => typeof x === "string");
     case "done":

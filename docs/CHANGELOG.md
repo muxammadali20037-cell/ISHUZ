@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · Yaqin atrofdagi ishlar xaritasi (Yandex) va AI: bozor statistikasi, karyera (`claude/jobs-map`)
+
+### Mahsulot
+- **`/jobs/xarita` — yaqin atrofdagi ishlar Yandex xaritasida.** Hudud va tuman tanlanadi yoki "Mening joylashuvim" bosiladi
+  (koordinata serverga yuborilmaydi: brauzer eng yaqin tumanni topadi, faqat tuman saqlanadi). Xaritada ko'k belgilar — haqiqiy
+  e'lonlar (aniq manzil bo'lsa — o'sha nuqta, bo'lmasa — tuman markazi, ro'yxatda "taxminan" deb yoziladi), kulrang — namuna.
+  Ostida raqamlangan ro'yxat (masofa bilan), "Yandex Xaritada ochish". Kirish: bosh sahifada "Xaritada ko'rish", "Yaqin atrofda"
+  bo'limi, sayt pastki qismi.
+- **AI yordamchi — bozor statistikasi:** "oshpaz maoshi qancha?" → bazadagi faol vakansiyalar, ish izlovchilar soni va oylik maosh
+  oralig'i kartasi (kamida 3 ta e'lon bo'lsa; aks holda halol "e'lonlar kam"). AI ulangan bo'lsa — `market_stats` asbobi.
+- **Maslahat AI'siz ham ishlaydi:** rezyume, suhbatga tayyorgarlik, karyera rejasi, vakansiya matni, suhbat savollari — bosqichma-
+  bosqich yo'riqnoma ("AI ulanmagan" degan boshi berk javob o'rniga). Yangi tez tugma "Maosh va talab".
+
+### Xavfsizlik
+- CSP `frame-src`: faqat o'z sayt va Yandex xarita vidjeti (`yandex.ru`, `yandex.uz`, `yandex.com`); test bilan qotirilgan.
+
 ## 2026-11-12 · Namuna vakansiyalar — barcha sohalar bo'yicha (`claude/demo-vacancies`)
 
 ### Mahsulot

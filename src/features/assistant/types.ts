@@ -1,4 +1,5 @@
 import type { AiFindResult } from "@/features/find/ai-find-types";
+import type { MarketStats } from "./market-math";
 
 /** Kim bilan gaplashilyapti: ish izlovchi yoki ish beruvchi (rejimdan; tanlanmagan mehmon — ish izlovchi) */
 export type AssistantRole = "seeker" | "employer";
@@ -17,6 +18,7 @@ export interface ChatMessage {
  *  - status: yordamchi nima qilyapti ("o'ylayapti" / "bazadan qidiryapti") — yozish indikatori uchun;
  *  - text: javob matnining navbatdagi bo'lagi (oqim bilan chiqadi);
  *  - results: bazadan topilgan HAQIQIY e'lonlar (kartalar shu ma'lumotdan chiziladi — model matnidan emas);
+ *  - stats: kasb (va hudud) bo'yicha bozor holati — bazadagi faol e'lonlardan hisoblangan sonlar (karta shundan chiziladi);
  *  - suggestions: bosiladigan keyingi savollar;
  *  - done: javob tugadi (source: "ai" — sun'iy intellekt, "rules" — lug'at va shablon: AI ulanmagan yoki ishlamadi);
  *  - error: xato kodi (limit, vaqt tugadi va h.k.) — foydalanuvchiga tushunarli matn brauzerda tanlanadi.
@@ -25,6 +27,7 @@ export type AssistantEvent =
   | { type: "status"; stage: "thinking" | "searching" }
   | { type: "text"; delta: string }
   | { type: "results"; data: AiFindResult }
+  | { type: "stats"; data: MarketStats }
   | { type: "suggestions"; items: string[] }
   | { type: "done"; source: "ai" | "rules"; lang: AssistantLang }
   | { type: "error"; code: "rate_limited" | "unavailable" | "timeout" | "validation" | "search_failed" };

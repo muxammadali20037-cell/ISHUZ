@@ -167,6 +167,27 @@ qidiruv maydoni orqali o'tilardi — menyuda nomli bo'lim yo'q edi. Endi `/ai` g
 Komponent: `src/features/ai/components/ai-entry.tsx`; menyu: `app-shell.tsx` (`AI_NAV`), `top-bar.tsx`, `site-nav.tsx`.
 Test: `e2e/specs/ai-entry.spec.ts` (4 ssenariy).
 
+### 6b — bozor statistikasi, karyera va maslahat "boshi berk"siz (2026-11-12)
+
+Egasi: "AI mukammal ishlasin, ketma-ketlik bilan, hech qayerda boshi berk bo'lmasin; statistika, karyera qurishda ham".
+- **Bozor statistikasi** (`src/features/assistant/market.ts`, sof hisob — `market-math.ts`): "oshpaz maoshi qancha",
+  "Samarqandda haydovchi statistika", "сколько получает повар", "average salary for drivers" → kasb (va hudud) bo'yicha
+  **faol vakansiyalar soni, ish izlovchilar e'lonlari soni va oylik maosh oralig'i** (eng past – eng yuqori, o'rtasi/mediana).
+  Hammasi bazadagi haqiqiy faol e'lonlardan: maosh faqat oylik va aniq yozilgan e'lonlardan, **kamida 3 ta** bo'lsa (aks holda
+  "e'lonlar kam" deyiladi — taxmin yo'q); xulosa ("talab yaxshi" / "raqobat katta") faqat 10 tadan ko'p e'lon bo'lsa. Javob
+  oxirida halol izoh: "platformadagi faol e'lonlar bo'yicha — butun mehnat bozori emas". Namuna vakansiyalar hisobga kirmaydi.
+- Suhbatda **karta** (`data-ai-stats`): uchta son, maosh oralig'i, shu kasb bo'yicha vakansiyalar va nomzodlar ro'yxatiga havola.
+  Jarayon izida "Bazadan hisoblandi".
+- **AI ulangan:** modelga `market_stats` asbobi (ikkala rol); ko'rsatma — maosh, talab, raqobat, "qancha maosh taklif qilay",
+  karyera rejasi uchun avval shu asbob; raqam faqat asbob natijasidan. Ikki kasbni solishtirish — ikki chaqiruv (2 ta karta).
+- **AI'siz (kalit yo'q, byudjet tugagan, xato):** statistika baribir bazadan; kasb aytilmasa — misol bilan so'raladi, keyingi qisqa
+  xabar ("buxgalter", "Samarqandda-chi?") oldingisi bilan birga tushuniladi. Maslahat savollari (rezyume, suhbatga tayyorgarlik,
+  karyera, vakansiya matni, suhbat savollari, xodim topish) — endi "AI ulanmagan" emas, **bosqichma-bosqich amaliy yo'riqnoma**
+  (`advice.ts`, 4 tilda) va keyingi qadam tugmalari. Matnlarda raqam yoki "bazada bor" degan da'vo yo'q.
+- AI ish maydonida yangi tez tugma: **"Maosh va talab"** (ikkala rol).
+Testlar: `engine.test.ts` (statistika va maslahat — 6 ta yangi), `e2e/specs/assistant-stats.spec.ts` (sonlar bazadagi e'lonlar
+bilan solishtiriladi).
+
 ## 5. Ega hal qiladigan savollar
 
 1. **Ovozli javob (o'qib berish):** brauzerning o'z ovozi bepul, lekin o'zbekcha ovoz ko'p telefonlarda yo'q. Tabiiy

@@ -66,9 +66,9 @@ test("suhbat: salomlashuv qidiruvsiz; tavsiya savoli bosiladi → javob matni va
   await expect(replies(page).last()).toContainText("Men Ish topdim AI yordamchisiman");
   await expect(main(page).locator("article")).toHaveCount(0);
   await expect(main(page).getByText(/^Tushundim:/)).toHaveCount(0);
-  // AI ulanmagan: faqat qidiruv misollari taklif qilinadi (bajarib bo'lmaydigan "rezyume yozib ber" yo'q)
+  // AI ulanmagan: AI'siz bajariladigan narsalar taklif qilinadi — qidiruv misollari va bozor statistikasi (bazadan)
   const chips = main(page).locator("[data-ai-suggestions]").getByRole("button");
-  await expect(chips).toHaveText(["Kunlik ish bormi?", "Tajribasiz ishlar", "Uydan ishlash"]);
+  await expect(chips).toHaveText(["Kunlik ish bormi?", "Tajribasiz ishlar", "Oshpaz maoshi qancha?"]);
 
   await chips.first().click();
   await expect(main(page).getByText("Siz: Kunlik ish bormi?")).toBeVisible();

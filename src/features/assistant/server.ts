@@ -9,6 +9,7 @@ import { runAiFind } from "@/features/find/ai-find-core";
 import { createClient } from "@/lib/supabase/server";
 import { getDistricts, getRegions } from "@/lib/reference";
 import { runAssistant, type LlmClient } from "./engine";
+import { marketStats } from "./market";
 import type { AssistantLang, AssistantRole, ChatMessage, Emit } from "./types";
 
 const FEATURE = "assistant_chat";
@@ -94,6 +95,7 @@ export async function runAssistantOnServer(input: { messages: ChatMessage[]; rol
         const res = await runAiFind({ text, mode, session: input.session, ai });
         return res.ok ? { ok: true, data: res.data } : { ok: false };
       },
+      stats: (text) => marketStats(text),
       log: (u) => logAiUsage({ feature: FEATURE, provider: "anthropic", model: AI_MODEL, ok: u.ok, latencyMs: u.latencyMs, inputTokens: u.inputTokens, outputTokens: u.outputTokens, error: u.error }),
     },
   );

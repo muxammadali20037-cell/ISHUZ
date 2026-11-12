@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
+  BarChart3,
   BellRing,
   Bookmark,
   BriefcaseBusiness,
@@ -79,7 +80,8 @@ export type IconKey =
   | "login"
   | "profile"
   | "profession"
-  | "alerts";
+  | "alerts"
+  | "stats";
 
 const ICONS: Record<IconKey | BriefIcon, LucideIcon> = {
   home: Home,
@@ -101,6 +103,7 @@ const ICONS: Record<IconKey | BriefIcon, LucideIcon> = {
   profile: UserRound,
   profession: Compass,
   alerts: BellRing,
+  stats: BarChart3,
 };
 
 export interface NavItem {
