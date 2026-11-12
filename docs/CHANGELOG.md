@@ -1,5 +1,14 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · AI yordamchi to'q sariq rangda; muhim yangi bo'limlarda "Yangi" belgisi (`claude/ai-orange`)
+
+- Ega: "AI yordamchi boshqacha, orange rangda ajralib tursin; muhim yangiliklar ham ajralib tursin". Yangi rang tokenlari
+  `--ai`, `--ai-soft`, `--ai-bright` (kontrast testlari bilan, docs/DESIGN_SYSTEM.md). AI yordamchi endi hamma joyda to'q sariq:
+  yon menyu (turkuaz "Universal ustalar" kabi ajratilgan), yuqori menyu, telefon sarlavhasidagi belgi, bosh sahifa va kabinet
+  kartasi, AI belgisi (suhbatda), "Tez va qulay e'lon" kartasi.
+- "Yangi" belgisi: AI yordamchi, Universal ustalar, yon menyudagi yangi "Ishlar xaritada" (ish izlovchi), bosh sahifadagi
+  "Xaritada ko'rish". Belgilar 2027-01-15 da o'zi yo'qoladi (`src/config/new-features.ts`).
+
 ## 2026-11-12 · Telegram va Instagram havolalari ko'rinadigan joylarda (`claude/social-links`)
 
 - Ega: "instagram ishtopdim, telegram ish_topdim_uz — bosilsa olib boradigan qilib qo'shib qo'y". Rasmiy sahifalar (Vercel'dagi

@@ -86,6 +86,12 @@
   --brand: #276fe5;
   --brand-accent: #0f766e; /* "Universal ustalar" bo'limi belgisi (turkuaz) — menyuda ajralib turadi */
   --accent-bright: #2dd4bf; /* o'sha turkuaz — to'q ko'k yon menyuda (navy ustida 9:1) */
+  /* "AI yordamchi" — to'q sariq (orange): menyuda va kartalarda ajralib turadi. --ai: matn va tugma foni (oq ustida 5.2:1),
+     --ai-soft: och fon, --ai-bright: to'q ko'k yon menyuda (navy ustida 7.4:1). "Yangi" belgisi ham shu rangda */
+  --ai: #c2410c;
+  --ai-foreground: #ffffff;
+  --ai-soft: #fff1e6;
+  --ai-bright: #fb923c;
   --brand-green: #16a378;
   /* bosh sahifa birinchi ekrani: och ko'k fon (matn 16:1, muted 4.6:1, primary 5.5:1) */
   --hero-soft: #eaf1fd;
@@ -154,6 +160,10 @@ html.tg-fullscreen {
   --brand: #3478f6;
   --brand-accent: #2dd4bf;
   --accent-bright: #2dd4bf;
+  --ai: #fb923c;
+  --ai-foreground: #1c1006;
+  --ai-soft: #36200f;
+  --ai-bright: #fb923c;
   --brand-green: #2fbf84;
   --hero-soft: #121d35;
 }
@@ -217,6 +227,10 @@ html.tg-fullscreen {
   --color-brand-green: var(--brand-green);
   --color-brand-accent: var(--brand-accent);
   --color-accent-bright: var(--accent-bright);
+  --color-ai: var(--ai);
+  --color-ai-foreground: var(--ai-foreground);
+  --color-ai-soft: var(--ai-soft);
+  --color-ai-bright: var(--ai-bright);
   --color-hero-soft: var(--hero-soft);
   --color-hero-muted: var(--hero-muted);
   /* 2.0 (docs/DESIGN_SYSTEM.md §4): tugma va maydon 10 px (rounded-md), karta 12 px (rounded-lg), katta panel 16 px
@@ -371,7 +385,7 @@ html.no-splash .splash { display: none; }
 .ai-orb { position: relative; isolation: isolate; }
 .ai-orb[data-busy="true"]::after {
   content: ""; position: absolute; inset: -3px; z-index: -1; border-radius: inherit;
-  border: 2px solid var(--primary); opacity: 0; animation: ai-ring 1.4s ease-out infinite;
+  border: 2px solid var(--ai); opacity: 0; animation: ai-ring 1.4s ease-out infinite;
 }
 .ai-dots { display: inline-flex; align-items: center; gap: 4px; }
 .ai-dots > span { width: 6px; height: 6px; border-radius: 999px; background: currentColor; opacity: 0.35; animation: ai-dot 1.1s ease-in-out infinite; }

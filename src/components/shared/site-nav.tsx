@@ -100,7 +100,7 @@ function DesktopLinks({ mode }: { mode: string | null }) {
           aria-current={pathname === "/ai" ? "page" : undefined}
           aria-label={t("easy.aiws.nav.ai")}
           title={t("easy.aiws.nav.ai")}
-          className="ml-1 flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-md bg-primary-soft px-2.5 text-sm font-semibold text-primary-ink ring-1 ring-primary/30 transition-colors hover:ring-primary/60"
+          className="ml-1 flex min-h-11 items-center gap-1.5 whitespace-nowrap rounded-md bg-ai-soft px-2.5 text-sm font-semibold text-ai ring-1 ring-ai/30 transition-colors hover:ring-ai/60"
         >
           {/* to'rt bo'lim bilan bir qatorga sig'ishi uchun qisqa nom ("AI"); to'liq nom — aria-label va title */}
           <Sparkles className="size-4" aria-hidden /> {t("easy.nav.tab_ai")}
