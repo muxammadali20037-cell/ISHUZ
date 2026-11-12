@@ -1,5 +1,11 @@
 # O'zgarishlar jurnali
 
+## 2026-11-12 · AI yordamchi sahifasi butun ekranni egallaydi (`claude/ai-fullscreen`)
+
+- Ega skrinshoti: `/ai` katta monitorda o'rtada kichik oyna edi. Endi kompyuterda suhbat oynasi ekran balandligini to'ldiradi
+  (yozish maydoni pastda, ChatGPT kabi), 1536 px dan keng ekranda sahifa butun kenglikni egallaydi; yon panellar 1920 px dan
+  kengroq. Xabarlar ustuni o'qish qulay bo'lishi uchun 1024 px dan oshmaydi; yangi suhbatda salomlashuv o'rtada.
+
 ## 2026-11-12 · Katta monitorlarda ekran to'liq ishlatiladi (`claude/wide-screens`)
 
 - Ega: "nimaga haqiqiy saytlarga o'xshab butun ekranni egallamayapti" (2560 px monitor). Ro'yxat va bosh sahifalar endi

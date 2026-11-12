@@ -189,11 +189,12 @@ export function AiWorkspaceClient(props: Props) {
 
   return (
     <div
-      className="container-app py-3 lg:py-5"
+      className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:py-5 2xl:max-w-none"
       data-ai-workspace
       data-role={props.role}
     >
-      <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)_288px] lg:items-start lg:gap-5 xl:grid-cols-[260px_minmax(0,1fr)_300px]">
+      {/* ChatGPT kabi: kompyuterda suhbat oynasi ekran balandligini to'ldiradi, katta monitorda — kengligini ham */}
+      <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)_288px] lg:items-start lg:gap-5 xl:grid-cols-[260px_minmax(0,1fr)_300px] 3xl:grid-cols-[300px_minmax(0,1fr)_340px] 3xl:gap-6">
         <aside
           className="hidden lg:sticky lg:top-20 lg:block"
           aria-label={t("easy.aiws.sidebar")}
@@ -203,8 +204,9 @@ export function AiWorkspaceClient(props: Props) {
         </aside>
 
         <section
-          className="min-w-0 rounded-2xl border border-border bg-card shadow-sm"
+          className="min-w-0 rounded-2xl border border-border bg-card shadow-sm lg:flex lg:min-h-[calc(100dvh-7.5rem)] lg:flex-col"
           aria-label={t("easy.aiws.title")}
+          data-ai-chat-panel
         >
           {/* telefon va planshet: bo'limlar va suhbatlar — pastdan chiqadigan panel */}
           <div className="flex items-center justify-between gap-2 border-b border-border px-2 py-1.5 lg:hidden">
@@ -230,7 +232,8 @@ export function AiWorkspaceClient(props: Props) {
 
           <ChatHeader chat={chat} aiConfigured={props.aiConfigured} />
 
-          <div className="space-y-5 px-3 py-4 sm:px-5">
+          {/* xabarlar ustuni juda keng bo'lib ketmaydi (o'qish qulay) — panel esa butun joyni egallaydi */}
+          <div className={cn("w-full space-y-5 px-3 py-4 sm:px-5 lg:flex-1 2xl:mx-auto 2xl:max-w-5xl", !chat.turns.length && "lg:flex lg:flex-col lg:justify-center")}>
             {chat.turns.length ? (
               <AiThread
                 chat={chat}
@@ -244,7 +247,9 @@ export function AiWorkspaceClient(props: Props) {
           </div>
 
           <div className="sticky bottom-[calc(var(--tabbar-height)+var(--safe-bottom))] z-10 rounded-b-2xl border-t border-border bg-card px-3 pb-1.5 pt-3 sm:px-4 md:bottom-0">
-            <AiPromptBox chat={chat} id="ai-ws-text" />
+            <div className="2xl:mx-auto 2xl:max-w-5xl">
+              <AiPromptBox chat={chat} id="ai-ws-text" />
+            </div>
           </div>
         </section>
 
