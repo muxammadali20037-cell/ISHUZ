@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { BadgeCheck, Clock, MapPin, Star } from "lucide-react";
+import {
+  BadgeCheck,
+  Clock,
+  MapPin,
+  MessageSquare,
+  Phone,
+  Star,
+} from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatMoneyShort } from "@/lib/format";
 import { getRegions } from "@/lib/reference";
@@ -41,7 +48,8 @@ export function priceText(
 
 /**
  * Usta kartasi: rasm (ish namunasi yoki egasining tasdiqlangan surati), ism, sarlavha, kategoriya, tajriba, hudud, ish vaqti,
- * narx, reyting (faqat haqiqiy sharh bo'lsa), demo belgisi. Telefon kartada yo'q — faqat e'lon sahifasida (rozilik bilan).
+ * narx, reyting (faqat haqiqiy sharh bo'lsa), demo belgisi, bog'lanish usuli ("Qo'ng'iroq qilish mumkin" yoki "so'rov orqali").
+ * Telefon raqamining o'zi kartada yo'q — faqat e'lon sahifasida (rozilik bilan).
  */
 export async function MasterCard({
   m,
@@ -154,6 +162,22 @@ export async function MasterCard({
             />{" "}
             {priceText(t, locale, m)}
           </li>
+          {/* bog'lanish usuli: raqamning o'zi kartada yo'q (ommaviy yig'ib olishdan himoya) — e'lon sahifasida, egasi rozi bo'lsa */}
+          {!m.is_demo ? (
+            <li
+              className="flex items-center gap-1.5 font-semibold text-primary-ink"
+              data-master-contact={m.phone_public ? "phone" : "request"}
+            >
+              {m.phone_public ? (
+                <Phone className="size-4 shrink-0" aria-hidden />
+              ) : (
+                <MessageSquare className="size-4 shrink-0" aria-hidden />
+              )}{" "}
+              {m.phone_public
+                ? t("masters.card.contact_phone")
+                : t("masters.card.contact_request")}
+            </li>
+          ) : null}
         </ul>
       </div>
     </article>

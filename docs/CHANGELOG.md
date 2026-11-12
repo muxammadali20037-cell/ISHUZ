@@ -11,6 +11,7 @@
 - **Demo e'lonlar:** har kategoriyada 4 tadan, "Demo" belgisi bilan, telefonsiz va reytingsiz; admin bir bosishda olib tashlaydi.
 - **Kirish:** sayt menyusi, yon menyu, bosh sahifa va "Kabinetim" sahifasida turkuaz "Universal ustalar".
 - 0076 hali qo'llanmagan bazada bo'lim "Bo'lim tayyorlanmoqda" deb ochiladi (xato ekrani yo'q); admin sahifasi buni aniq aytadi.
+- Usta kartasida bog'lanish usuli: "Qo'ng'iroq qilish mumkin" yoki "Bog'lanish — so'rov orqali" (raqamning o'zi — e'lon sahifasida).
 
 ### Baza
 - `0076_masters.sql` — **prod'ga egasi qo'llaydi** (`docs/RELEASE_CHECKLIST.md`). Qaytarish: `supabase/rollbacks/0076_masters.down.sql`.
