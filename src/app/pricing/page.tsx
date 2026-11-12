@@ -41,7 +41,7 @@ export default async function PricingPage() {
         <ul className="mt-6 space-y-3">
           {rows.map((r) => (
             <li key={r.title} className="flex items-start gap-4 rounded-2xl border border-border bg-card p-4">
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                 <r.icon className="size-5" />
               </span>
               <div className="min-w-0 flex-1">

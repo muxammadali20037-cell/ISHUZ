@@ -48,7 +48,7 @@ function FilterChip({ children, onRemove, className }: { children: React.ReactNo
   const { t } = useT();
   const text = typeof children === "string" ? children : "";
   return (
-    <span className={cn("inline-flex h-8 items-center gap-1 rounded-full bg-primary-soft pl-3 pr-1.5 text-sm font-medium text-primary", className)}>
+    <span className={cn("inline-flex h-8 items-center gap-1 rounded-full bg-primary-soft pl-3 pr-1.5 text-sm font-medium text-primary-ink", className)}>
       {children}
       <button type="button" onClick={onRemove} className="rounded-full p-0.5 hover:bg-primary/15" aria-label={text ? `${t("common.actions.remove")}: ${text}` : t("common.actions.remove")}>
         <X className="size-3.5" />

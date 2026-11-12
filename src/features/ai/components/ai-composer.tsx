@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { AiAvatar } from "@/components/shared/ai-avatar";
-import { useVoice } from "@/features/find/components/ai-chat";
+import { useVoice } from "@/features/find/components/ai-voice";
 
 const MIN_LENGTH = 15;
 
@@ -54,7 +54,7 @@ export function AiComposer({
 
   return (
     <div className="container-narrow py-5 sm:py-8">
-      <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft py-1 pl-1 pr-3 text-xs font-semibold text-primary">
+      <span className="inline-flex items-center gap-2 rounded-full bg-primary-soft py-1 pl-1 pr-3 text-xs font-semibold text-primary-ink">
         <AiAvatar size="sm" className="rounded-full" />
         {t("ai.badge")}
       </span>
@@ -77,7 +77,7 @@ export function AiComposer({
           ))}
         </div>
         {voice.supported ? (
-          <p className="flex items-start gap-2 rounded-xl bg-primary-soft px-3 py-2.5 text-sm font-semibold leading-snug text-primary">
+          <p className="flex items-start gap-2 rounded-xl bg-primary-soft px-3 py-2.5 text-sm font-semibold leading-snug text-primary-ink">
             <Mic className="mt-0.5 size-4 shrink-0" aria-hidden />
             {t("ai.voice_hint")}
           </p>
@@ -112,7 +112,7 @@ export function AiComposer({
           ) : null}
         </div>
         {voice.listening ? (
-          <p className="text-sm font-semibold text-primary" aria-live="polite">
+          <p className="text-sm font-semibold text-primary-ink" aria-live="polite">
             {t("ai.voice_listening")}
           </p>
         ) : voice.error ? (

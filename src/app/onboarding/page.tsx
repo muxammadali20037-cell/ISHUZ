@@ -28,7 +28,7 @@ export default async function OnboardingPage() {
     <Shell hideNav>
       <div className="container-narrow py-8 sm:py-14">
         <div className="text-center sm:text-left">
-          <p className="text-sm font-semibold text-primary">{firstName ? t("onboarding.role.greeting", { name: firstName }) : t("auth.welcome_title")}</p>
+          <p className="text-sm font-semibold text-primary-ink">{firstName ? t("onboarding.role.greeting", { name: firstName }) : t("auth.welcome_title")}</p>
           <h1 className="mt-1 text-2xl font-bold sm:text-3xl">{t("auth.choose_role_title")}</h1>
           <p className="mt-1.5 text-md text-muted-foreground">{t("auth.choose_role_subtitle")}</p>
         </div>
@@ -42,7 +42,7 @@ export default async function OnboardingPage() {
             ] as const
           ).map((c) => (
             <Link key={c.href} href={c.href} className="press group flex flex-col rounded-2xl border border-border bg-card p-6 shadow-sm hover:border-primary/50 active:scale-[0.98] sm:p-7">
-              <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary" aria-hidden>
+              <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
                 <c.icon className="size-7" />
               </span>
               <span className="mt-5 text-xl font-bold sm:text-2xl">{c.title}</span>

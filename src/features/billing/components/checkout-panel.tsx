@@ -186,7 +186,7 @@ export function CheckoutPanel({
         ) : wallet ? (
           <p className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-secondary px-3 py-2 text-sm">
             <span>{t("billing.checkout.balance_low", { amount: money(wallet.balance) })}</span>
-            <Link href="/billing" className="font-semibold text-primary underline-offset-4 hover:underline">
+            <Link href="/billing" className="font-semibold text-primary-ink underline-offset-4 hover:underline">
               {t("billing.checkout.topup_link")}
             </Link>
           </p>
@@ -230,10 +230,10 @@ export function CheckoutPanel({
         ) : null}
       </ul>
       <p className="flex flex-wrap gap-x-4 gap-y-1 text-sm">
-        <Link href="/billing" className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/billing" className="inline-flex min-h-11 items-center font-semibold text-primary-ink underline-offset-4 hover:underline">
           {t("billing.checkout.history_link")}
         </Link>
-        <Link href="/help" className="inline-flex min-h-11 items-center font-semibold text-primary underline-offset-4 hover:underline">
+        <Link href="/help" className="inline-flex min-h-11 items-center font-semibold text-primary-ink underline-offset-4 hover:underline">
           {t("billing.checkout.help")}
         </Link>
       </p>

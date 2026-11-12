@@ -18,7 +18,7 @@ export async function CategoryGrid() {
             href={`/jobs?category=${c.slug}`}
             className="flex min-h-[60px] items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-sm transition-colors hover:border-primary/40 hover:bg-primary-soft/40"
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
               <CategoryIcon name={c.icon} className="size-5" />
             </span>
             <span className="text-sm font-medium leading-tight">{name(c)}</span>

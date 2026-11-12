@@ -23,7 +23,7 @@ export function VacancyDescription({ text, className }: { text: string | null | 
         if (b.type === "list") {
           const Tag = b.ordered ? "ol" : "ul";
           return (
-            <Tag key={i} className={cn("space-y-1 pl-5", b.ordered ? "list-decimal" : "list-disc marker:text-primary")}>
+            <Tag key={i} className={cn("space-y-1 pl-5", b.ordered ? "list-decimal" : "list-disc marker:text-primary-ink")}>
               {b.items.map((item, j) => (
                 <li key={j}>
                   <Inlines inlines={item} />

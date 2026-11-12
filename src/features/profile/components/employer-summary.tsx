@@ -85,7 +85,7 @@ export async function EmployerSummary({ session, data }: { session: SessionConte
             <span className="block font-semibold">{t("profile.employer.create_worker")}</span>
             <span className="block text-sm text-muted-foreground">{t("profile.employer.create_worker_hint")}</span>
           </span>
-          <ArrowRight className="size-5 shrink-0 text-primary" />
+          <ArrowRight className="size-5 shrink-0 text-primary-ink" />
         </Link>
       ) : null}
       <CrossRoleCard role="employer" />

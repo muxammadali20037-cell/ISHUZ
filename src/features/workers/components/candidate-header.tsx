@@ -27,7 +27,7 @@ export async function CandidateHeader({ candidate, phoneVerified }: { candidate:
           <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <h1 className="text-xl font-bold sm:text-2xl">{displayName}</h1>
             {phoneVerified ? (
-              <span className="inline-flex items-center gap-1 text-xs font-medium text-primary" title={t("workers.candidate.verified_phone")}>
+              <span className="inline-flex items-center gap-1 text-xs font-medium text-primary-ink" title={t("workers.candidate.verified_phone")}>
                 <ShieldCheck className="size-4" aria-hidden />
                 <span className="sr-only">{t("workers.candidate.verified_phone")}</span>
               </span>

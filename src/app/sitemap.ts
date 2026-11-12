@@ -30,6 +30,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry(base, "/kasblar", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
     entry(base, "/for-employers", { lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
     entry(base, "/privacy", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
+    entry(base, "/cookies", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
     entry(base, "/terms", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),
   ];
   try {
@@ -58,9 +59,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       ...listing,
       ...(vacancies.data ?? []).map((v) => entry(base, `/jobs/${v.slug}`, { lastModified: new Date(v.updated_at), changeFrequency: "daily", priority: 0.8 })),
       ...(companies.data ?? [])
-        .filter((c) => c.slug)
-        // faol vakansiyasi bor kompaniya muhimroq (avval xato: to'plam bo'shmi-yo'qmi tekshirilardi, kompaniyaning o'zi emas)
-        .map((c) => entry(base, `/company/${c.slug}`, { lastModified: new Date(c.updated_at), changeFrequency: "weekly", priority: withJobs.has(c.id) ? 0.5 : 0.3 })),
+        // faqat faol vakansiyasi bor kompaniyalar: bo'sh va sinov kompaniyalar (prod 2026-11: "index", "motorix") indeksga
+        // tushmaydi — ularning sahifasi ham noindex (company/[slug] metadata)
+        .filter((c) => c.slug && withJobs.has(c.id))
+        .map((c) => entry(base, `/company/${c.slug}`, { lastModified: new Date(c.updated_at), changeFrequency: "weekly", priority: 0.5 })),
     ];
   } catch (error) {
     console.error("[sitemap]", error instanceof Error ? error.message : error);

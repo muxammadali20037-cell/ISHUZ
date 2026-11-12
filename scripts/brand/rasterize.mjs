@@ -1,4 +1,4 @@
-// PNG ilova belgilari va favicon.ico — public/brand/*.svg dan (avval: python3 scripts/brand/build-brand.py)
+// PNG ilova belgilari va favicon.ico — public/brand/ishtopdim-mark.png dan, logo PNG — public/brand/*.svg dan (avval: python3 scripts/brand/build-brand.py)
 // node scripts/brand/rasterize.mjs
 import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
@@ -9,32 +9,31 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..")
 const brand = (f) => path.join(root, "public/brand", f);
 const icons = (f) => path.join(root, "public/icons", f);
 
-const PRIMARY = "#1455D9";
-const markSvg = await readFile(brand("ishtopdim-mark.svg"), "utf8");
-const inner = markSvg.replace(/^.*?<\/title>/s, "").replace(/<\/svg>\s*$/, "");
+// belgi — egasi bergan rasm (build-brand.py kesib, 512×512 qilib saqlaydi)
+const MARK = brand("ishtopdim-mark.png");
 
-/** belgi (oq ravoq, ko'k ✓) to'liq kvadrat fonda; `inset` — belgi egallaydigan ulush */
-const square = (size, inset, { rx = 0 } = {}) =>
-  Buffer.from(
-    `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64">` +
-      `<rect width="64" height="64" rx="${rx}" fill="${PRIMARY}"/>` +
-      `<g transform="translate(32 33) scale(${inset}) translate(-32 -32)">${inner.replace(/fill="#1455D9"/, 'fill="#FFFFFF"').replace(/stroke="#FFFFFF"/, `stroke="${PRIMARY}"`)}</g></svg>`,
-  );
+/** belgi kvadrat fonda: `inset` — belgi egallaydigan ulush; `bg` bo'lmasa — shaffof */
+const square = async (size, inset, bg) => {
+  const inner = Math.round(size * inset);
+  const m = await sharp(MARK).resize(inner, inner, { kernel: "lanczos3" }).png().toBuffer();
+  const pad = Math.floor((size - inner) / 2);
+  return sharp({ create: { width: size, height: size, channels: 4, background: bg ?? { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: m, left: pad, top: pad }])
+    .png({ compressionLevel: 9 });
+};
 
-const png = (buf, size, out) => sharp(buf, { density: 384 }).resize(size, size).png({ compressionLevel: 9 }).toFile(out);
-
-// "any": burchaklari yumaloq plita (shaffof chet); maskable: to'liq kvadrat, belgi xavfsiz zonada (≤ 80%)
-await png(square(512, 0.72, { rx: 14 }), 512, icons("icon-512.png"));
-await png(square(192, 0.72, { rx: 14 }), 192, icons("icon-192.png"));
-await png(square(512, 0.56), 512, icons("maskable-512.png"));
-await png(square(192, 0.56), 192, icons("maskable-192.png"));
-// iOS o'zi yumaloqlaydi — shaffoflik yo'q
-await png(square(180, 0.66), 180, icons("apple-touch-icon.png"));
-await png(Buffer.from(markSvg), 48, icons("favicon-48.png"));
+// "any": plita o'zi (shaffof chet); maskable: to'liq oq kvadrat, belgi xavfsiz zonada (≤ 80%)
+await (await square(512, 1)).toFile(icons("icon-512.png"));
+await (await square(192, 1)).toFile(icons("icon-192.png"));
+await (await square(512, 0.74, "#FFFFFF")).toFile(icons("maskable-512.png"));
+await (await square(192, 0.74, "#FFFFFF")).toFile(icons("maskable-192.png"));
+// iOS o'zi yumaloqlaydi — shaffoflik yo'q (oq fon)
+await (await square(180, 0.9, "#FFFFFF")).toFile(icons("apple-touch-icon.png"));
+await (await square(48, 1)).toFile(icons("favicon-48.png"));
 
 // favicon.ico: 16, 32, 48 — har biri alohida chiziladi (kichrayganda xira bo'lmasin)
 const sizes = [16, 32, 48];
-const bufs = await Promise.all(sizes.map((s) => sharp(Buffer.from(markSvg), { density: 384 }).resize(s, s).png().toBuffer()));
+const bufs = await Promise.all(sizes.map((s) => sharp(MARK).resize(s, s, { kernel: "lanczos3" }).png().toBuffer()));
 const header = Buffer.alloc(6);
 header.writeUInt16LE(0, 0);
 header.writeUInt16LE(1, 2);

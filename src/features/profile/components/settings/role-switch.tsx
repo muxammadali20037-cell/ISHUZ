@@ -68,9 +68,9 @@ export function RoleSwitch({ roles, activeRole }: { roles: string[]; activeRole:
             </span>
             <span className="flex-1">
               <span className="block text-sm font-semibold">{label}</span>
-              {active ? <span className="block text-xs text-primary">{t("profile.settings.role_current")}</span> : null}
+              {active ? <span className="block text-xs text-primary-ink">{t("profile.settings.role_current")}</span> : null}
             </span>
-            {active ? <Check className="size-4 text-primary" strokeWidth={3} /> : null}
+            {active ? <Check className="size-4 text-primary-ink" strokeWidth={3} /> : null}
           </button>
         );
       })}

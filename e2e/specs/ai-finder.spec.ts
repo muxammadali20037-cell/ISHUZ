@@ -22,7 +22,10 @@ async function vacancy(title: string, profession: string, salaryType: "monthly" 
   return v!.slug;
 }
 
-const fab = (page: Page) => page.getByRole("button", { name: "AI bilan qidirish" });
+// 2.0: ish izlovchi bosh sahifasida — yagona qidiruv maydonining "Topish" tugmasi (bo'sh bosilsa — yordamchi misollar bilan
+// ochiladi); boshqa sahifalarda — "AI bilan qidirish" tugmasi
+// [data-hydrated] — skriptlar yuklanib bo'lgan (undan oldin bosilsa forma /ai?q=… sahifasiga ketadi — alohida testda)
+const fab = (page: Page) => page.locator("form[data-ai-field][data-hydrated] button[type='submit']").or(page.getByRole("button", { name: "AI bilan qidirish" })).first();
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -31,23 +34,23 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("AI tugmasi qidiruv blokida (suzuvchi emas): sahifa aylantirilganda ekranni to'smaydi, vakansiya sahifasida yo'q", async ({ page, context }) => {
+test("AI qidiruv — bosh sahifaning yagona qidiruv maydoni (suzuvchi emas): aylantirilganda ekranni to'smaydi, vakansiya sahifasida yo'q", async ({ page, context }) => {
   const slug = await vacancy("Buxgalter", "Buxgalter");
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  // qidiruv blokining ichida (bir xil ota konteyner), pozitsiyasi oddiy — fixed/sticky emas
-  const box = (await fab(page).boundingBox())!;
-  const search = (await page.getByRole("search", { name: "Ish qidirish" }).boundingBox())!;
-  expect(box.y).toBeGreaterThan(search.y);
-  expect(box.y).toBeLessThan(search.y + search.height + 60);
+  const field = page.getByRole("search", { name: "Qanday ish qidiryapsiz?" });
+  await expect(field).toBeVisible();
+  // tugma maydonning ichida, pozitsiyasi oddiy — fixed/sticky emas
+  await expect(field.locator("button[type='submit']")).toHaveCount(1);
   expect(await fab(page).evaluate((el) => getComputedStyle(el).position)).toBe("static");
   await page.mouse.wheel(0, 2000);
   await expect(fab(page)).not.toBeInViewport();
   // vakansiya sahifasida "Ariza yuborish" paneli ustida hech narsa yo'q
   await page.goto(`/jobs/${slug}`);
   await expect(page.getByRole("button", { name: "Ariza yuborish" }).last()).toBeVisible();
-  await expect(fab(page)).toHaveCount(0);
+  await expect(page.locator("form[data-ai-field]")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "AI bilan qidirish" })).toHaveCount(0);
 });
 
 test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosilsa — sahifasi ochiladi", async ({ page, context }) => {
@@ -86,8 +89,16 @@ test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq ta
 
   await dialog.getByLabel("Nima qidiryapsiz?").fill("qwerty asdf");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.getByText("Kasbni aniqlay olmadim")).toBeVisible();
+  await expect(dialog.locator("[data-ai-reply]").last()).toContainText(/tushunmadim|aniqlay olmadim/);
   await expect(dialog.getByRole("link", { name: "Kasbni ro'yxatdan tanlash" })).toHaveAttribute("href", /\/search\?mode=jobs/);
+  // tushunilmagan matn uchun "yangisi chiqsa xabar olish" taklif qilinmaydi (nimani kuzatish noma'lum)
+  await expect(dialog.locator("[data-ai-empty-actions]")).toHaveCount(0);
+
+  // hol-ahvol — qidiruv emas, suhbat
+  await dialog.getByLabel("Nima qidiryapsiz?").fill("nima gap");
+  await dialog.getByRole("button", { name: "Topish" }).click();
+  await expect(dialog.locator("[data-ai-reply]").last()).toContainText("Men Ish topdim AI yordamchisiman");
+  await expect(dialog.locator("[data-ai-reply]").last()).not.toContainText("tushunmadim");
 });
 
 test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ishchilar ichida", async ({ page, context }) => {
@@ -122,7 +133,8 @@ test("suhbat: salomlashuv va misol → javob; aniqlashtirish (+ Kunlik) faqat ku
   // foydalanuvchi xabari va javob
   await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toBeVisible();
   await expect(dialog.getByText(/^Tushundim:/)).toContainText("Buxgalter");
-  await expect(dialog.getByText("2 ta mos e'lon topdim")).toBeVisible();
+  // yordamchining tabiiy javobi (son — bazadan), keyin "Tushundim" va kartalar
+  await expect(dialog.locator("[data-ai-reply]")).toContainText("2 ta e'lon topdim");
   await expect(dialog.locator("article")).toHaveCount(2);
 
   // aniqlashtirish: oxirgi so'rovga "kunlik" qo'shiladi — oldingi javob ixchamlashadi, yangisida faqat kunlik
@@ -159,7 +171,7 @@ test("suhbat saqlanadi: e'lon ochilib, orqaga qaytilganda oynada oldingi javob t
   await expect(dialogOf(page).locator("article")).toHaveCount(1);
 });
 
-test("ovoz bilan: aytilgan gap maydonga yoziladi va yuboriladi (Web Speech API bor brauzerda)", async ({ page, context }) => {
+test("ovoz bilan: aytilgan gap maydonga yoziladi, tekshirib-tuzatib yuboriladi (Web Speech API bor brauzerda)", async ({ page, context }) => {
   await vacancy("Buxgalter", "Buxgalter");
   // brauzerning nutqni tanish xizmati o'rniga sinov: start() — "Toshkentda buxgalter" yakuniy natija, keyin tugash
   await context.addInitScript(() => {
@@ -190,10 +202,21 @@ test("ovoz bilan: aytilgan gap maydonga yoziladi va yuboriladi (Web Speech API b
   await page.goto("/");
   await fab(page).click();
   const dialog = dialogOf(page);
-  await dialog.getByRole("button", { name: "Ovoz bilan aytish" }).click();
-  await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toBeVisible();
-  await expect(dialog.locator("article")).toHaveCount(1);
+  // maydon bo'sh — asosiy tugma katta mikrofon (≥ 48px); matn yozilsa — "Yuborish"
+  const mic = dialog.getByRole("button", { name: "Ovoz bilan aytish" });
+  expect((await mic.boundingBox())!.width).toBeGreaterThanOrEqual(48);
+  await mic.click();
+  // aytilgan gap maydonga yoziladi — o'zi yuborilmaydi: foydalanuvchi tekshiradi, tuzatadi va yuboradi
+  const field = dialog.getByLabel("Nima qidiryapsiz?");
+  await expect(field).toHaveValue("Toshkentda buxgalter");
+  await expect(dialog.getByText("Matnni tekshiring — kerak bo'lsa tuzating, keyin yuboring")).toBeVisible();
+  await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toHaveCount(0);
   expect(await page.evaluate(() => (window as unknown as { __speechLang: string }).__speechLang)).toBe("uz-UZ");
+  await field.fill("Toshkent shahrida buxgalter");
+  await dialog.getByRole("button", { name: "Topish" }).click();
+  await expect(dialog.getByText("Siz: Toshkent shahrida buxgalter")).toBeVisible();
+  await expect(dialog.locator("article")).toHaveCount(1);
+  await expect(field).toHaveValue("");
 });
 
 test("ovozli kiritish qo'llanmasa — mikrofon tugmasi yo'q", async ({ page, context }) => {

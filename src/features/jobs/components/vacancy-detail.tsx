@@ -43,7 +43,7 @@ function Section({ id, title, icon: Icon, children, className }: { id?: string; 
   return (
     <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={`scroll-mt-20 border-t border-border pt-5 mt-5 first-of-type:mt-4 ${className ?? ""}`}>
       <h2 id={id ? `${id}-title` : undefined} className="mb-3 flex items-center gap-2 text-lg font-bold">
-        {Icon ? <Icon className="size-4.5 text-primary" aria-hidden /> : null}
+        {Icon ? <Icon className="size-4.5 text-primary-ink" aria-hidden /> : null}
         {title}
       </h2>
       {children}
@@ -110,11 +110,13 @@ export async function VacancyDetail({
   const requiredSkills = v.skills.filter((s) => s.is_required);
   const niceSkills = v.skills.filter((s) => !s.is_required);
   const contactProfileId = session && !isManager ? v.owner_profile_id : null;
-  // E'londagi aloqa raqami: ish beruvchi rozilik bergan bo'lsa — hammaga (mehmonga ham); rad etgan bo'lsa — ko'rsatilmaydi
+  // E'londagi aloqa raqami: ish beruvchi rozilik bergan bo'lsa. 0074: faqat kirgan foydalanuvchiga va kunlik limit ichida
+  // (ommaviy yig'ishga qarshi); mehmonga — "kirish" taklifi.
   const supabase = await createClient();
-  const { data: adPhone } = isManager ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
+  const { data: adPhone } = isManager || !session ? { data: null } : await supabase.rpc("simple_vacancy_phone", { p_vacancy_id: v.id });
+  const guestNext = !session && !isManager ? `/jobs/${v.slug}` : null;
   // kompaniya faqat Telegram bergan bo'lsa ham (telefonsiz) — "Telegram'da yozish" mehmonga ham ko'rinadi
-  const showContact = !isManager && (!!adPhone || !!contactProfileId || !!telegramUsername(company?.telegram));
+  const showContact = !isManager && (!!adPhone || !!contactProfileId || !!guestNext || !!telegramUsername(company?.telegram));
 
   const hasBenefits = v.officialTerms.length > 0 || v.benefits.length > 0;
   const placeLine = v.is_remote ? `${t("jobs.detail.remote")}${locationText ? ` · ${locationText}` : ""}` : locationText || t("common.labels.not_specified");
@@ -125,14 +127,14 @@ export async function VacancyDetail({
     { id: "manzil", label: t("jobs.detail.location") },
     { id: "kompaniya", label: t("jobs.detail.tab_company") },
   ];
-  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} /> : null;
+  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} guestNext={guestNext} /> : null;
 
   const experienceText = v.experience_min_months === 0 ? t("easy.card.no_experience") : tEnum("experience_min_months", String(experienceKey));
   // "Nima uchun sizga mos?" — faqat ish izlovchi profili bo'lsa va haqiqiy sabablar bilan (soxta foiz yo'q)
   const matchCard = viewer.match ? (
     <section aria-labelledby="match-title" className="rounded-2xl border border-primary/20 bg-primary-soft p-5">
       <h2 id="match-title" className="mb-3 flex items-center gap-2 text-lg font-bold">
-        <Sparkles className="size-5 text-primary" aria-hidden />
+        <Sparkles className="size-5 text-primary-ink" aria-hidden />
         {t("jobs.detail.match_why")}
       </h2>
       <MatchRing score={viewer.match.score} />
@@ -140,7 +142,7 @@ export async function VacancyDetail({
       <p className="mt-3 text-xs text-muted-foreground">{t("jobs.detail.match_hint")}</p>
       <Link
         href={`/jobs/${v.slug}/moslik`}
-        className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-card px-4 text-sm font-semibold text-primary shadow-sm hover:bg-card/80"
+        className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-card px-4 text-sm font-semibold text-primary-ink shadow-sm hover:bg-card/80"
       >
         {t("jobs.fit.open")} <ChevronRight className="size-4" aria-hidden />
       </Link>
@@ -189,9 +191,9 @@ export async function VacancyDetail({
               <div className="min-w-0 flex-1">
                 <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
                   {company ? (
-                    <Link href={`/company/${company.slug}`} className="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary hover:underline">
+                    <Link href={`/company/${company.slug}`} className="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary-ink hover:underline">
                       {company.name}
-                      {company.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} /> : null}
+                      {company.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
                     </Link>
                   ) : (
                     <span className="font-semibold">{companyName}</span>
@@ -281,7 +283,7 @@ export async function VacancyDetail({
                   <li key={sec.id} className="flex">
                     <a
                       href={`#${sec.id}`}
-                      className="press inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-secondary px-4 text-sm font-semibold text-foreground hover:bg-primary-soft hover:text-primary"
+                      className="press inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-secondary px-4 text-sm font-semibold text-foreground hover:bg-primary-soft hover:text-primary-ink"
                     >
                       {sec.label}
                     </a>
@@ -374,14 +376,14 @@ export async function VacancyDetail({
 
             <Section id="manzil" title={t("jobs.detail.location")}>
               <p className="flex items-start gap-1.5 text-base">
-                {v.is_remote ? <Wifi className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden /> : <MapPin className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />}
+                {v.is_remote ? <Wifi className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden /> : <MapPin className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden />}
                 <span className="min-w-0">
                   {placeLine}
                   {v.address && !v.is_remote ? <span className="block text-sm text-muted-foreground">{v.address}</span> : null}
                 </span>
               </p>
               {mapHref ? (
-                <a href={mapHref} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary hover:underline">
+                <a href={mapHref} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
                   {t("jobs.detail.map")} <ExternalLink className="size-4" aria-hidden />
                 </a>
               ) : null}
@@ -393,12 +395,12 @@ export async function VacancyDetail({
                 <div className="min-w-0 flex-1">
                   <p className="flex items-center gap-1 font-semibold">
                     {companyName}
-                    {company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("jobs.detail.company_verified")} /> : null}
+                    {company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
                   </p>
                   {company?.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
                   {company?.about ? <p className="mt-1.5 text-sm text-foreground/90">{descriptionExcerpt(company.about, 600)}</p> : null}
                   {company ? (
-                    <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary hover:underline">
+                    <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
                       {t("jobs.detail.company_page")} <ChevronRight className="size-4" aria-hidden />
                     </Link>
                   ) : null}

@@ -3,7 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import { createPublicClient } from "@/lib/supabase/public";
+import { createPublicClient, PUBLIC_FEED_TAG } from "@/lib/supabase/public";
 import { getDistricts, getRegions, type District, type Region } from "@/lib/reference";
 import type { SessionContext } from "@/features/auth/session";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
@@ -12,6 +12,56 @@ import { findJobs, findWorkers, type JobRow, type WorkerRow } from "@/features/f
 
 /** Bosh sahifadagi ro'yxat hajmi: telefonda 3–4 ta ekranga sig'adi, qolgani — "Barcha vakansiyalar" */
 export const HOME_LIST = 8;
+
+/**
+ * Mehmon ro'yxati keshi ("Yangi e'lonlar" / "Yangi ishchilar" — hudud bo'yicha bir xil, foydalanuvchiga bog'liq emas).
+ * Yuklama testi (docs/SCALE.md §8): 150 ming faol vakansiyada filtrsiz "eng yangi 8 ta" so'rovi ~200 ms — har bir mehmon
+ * ochilishida takrorlanardi. Endi hudud bo'yicha 60 s keshda; e'lon joylansa/yopilsa updateTag(PUBLIC_FEED_TAG) darhol yangilaydi.
+ * MARKET_CACHE_SECONDS=0 (E2E stend) — keshsiz. Xato keshlanmaydi (throw → chaqiruvchi { ok:false }).
+ */
+const FEED_TTL = Number(process.env.MARKET_CACHE_SECONDS ?? 600) > 0 ? 60 : 0;
+
+class FeedError extends Error {
+  constructor(readonly errorId: string) {
+    super(`feed ${errorId}`);
+  }
+}
+
+async function loadNewJobs(regionId: string | null, districtId: string | null, limit: number): Promise<JobFeedRows> {
+  const res = await findJobs({ ...EMPTY_FIND, mode: "jobs", any: true }, { regionId, districtId, remote: false }, limit, createPublicClient());
+  if (!res.ok) throw new FeedError(res.errorId);
+  return { items: res.items, total: res.total, images: res.images, photos: res.photos ?? {} };
+}
+
+async function loadNewWorkers(regionId: string | null, districtId: string | null, limit: number): Promise<WorkerFeedRows> {
+  const res = await findWorkers({ ...EMPTY_FIND, mode: "workers", any: true }, { regionId, districtId, remote: false }, limit, createPublicClient());
+  if (!res.ok) throw new FeedError(res.errorId);
+  return { items: res.items, total: res.total, images: res.images };
+}
+
+type JobFeedRows = { items: JobRow[]; total: number; images: Record<string, string>; photos: Record<string, string> };
+type WorkerFeedRows = { items: WorkerRow[]; total: number; images: Record<string, string> };
+
+const cachedNewJobs = unstable_cache(loadNewJobs, ["home-new-jobs-v1"], { revalidate: FEED_TTL || 60, tags: [PUBLIC_FEED_TAG] });
+const cachedNewWorkers = unstable_cache(loadNewWorkers, ["home-new-workers-v1"], { revalidate: FEED_TTL || 60, tags: [PUBLIC_FEED_TAG] });
+
+async function newJobs(regionId: string | null, districtId: string | null, limit: number): Promise<FeedResult<JobFeedRows>> {
+  try {
+    return FEED_TTL > 0 ? await cachedNewJobs(regionId, districtId, limit) : await loadNewJobs(regionId, districtId, limit);
+  } catch (e) {
+    if (e instanceof FeedError) return { ok: false, errorId: e.errorId };
+    throw e;
+  }
+}
+
+async function newWorkers(regionId: string | null, districtId: string | null, limit: number): Promise<FeedResult<WorkerFeedRows>> {
+  try {
+    return FEED_TTL > 0 ? await cachedNewWorkers(regionId, districtId, limit) : await loadNewWorkers(regionId, districtId, limit);
+  } catch (e) {
+    if (e instanceof FeedError) return { ok: false, errorId: e.errorId };
+    throw e;
+  }
+}
 
 export interface HomePlace {
   region: Region | null;
@@ -96,8 +146,8 @@ export async function getSeekerFeed(session: SessionContext | null, place: HomeP
     }
   }
   for (const where of place.region ? [place, { region: null, district: null }] : [place]) {
-    const res = await findJobs({ ...EMPTY_FIND, mode: "jobs", any: true }, { regionId: where.region?.id ?? null, districtId: where.district?.id ?? null, remote: false }, HOME_LIST);
-    if (!res.ok) return res;
+    const res = await newJobs(where.region?.id ?? null, where.district?.id ?? null, HOME_LIST);
+    if (!("items" in res)) return res;
     if (res.items.length || !where.region) {
       return {
         ok: true,
@@ -105,7 +155,7 @@ export async function getSeekerFeed(session: SessionContext | null, place: HomeP
         items: res.items,
         total: res.total,
         images: res.images,
-        photos: res.photos ?? {},
+        photos: res.photos,
         profession: null,
         region: where.region,
         district: where.district,
@@ -130,8 +180,8 @@ export interface WorkerFeed {
 /** Ish beruvchi (mehmon yoki profil to'ldirilmagan): eng yangi ochiq ishchi e'lonlari — hududda, bo'lmasa butun O'zbekiston */
 export async function getNewWorkers(place: HomePlace, limit = 6): Promise<FeedResult<WorkerFeed>> {
   for (const where of place.region ? [place, { region: null, district: null }] : [place]) {
-    const res = await findWorkers({ ...EMPTY_FIND, mode: "workers", any: true }, { regionId: where.region?.id ?? null, districtId: where.district?.id ?? null, remote: false }, limit);
-    if (!res.ok) return res;
+    const res = await newWorkers(where.region?.id ?? null, where.district?.id ?? null, limit);
+    if (!("items" in res)) return res;
     if (res.items.length || !where.region) {
       return {
         ok: true,
@@ -144,50 +194,4 @@ export async function getNewWorkers(place: HomePlace, limit = 6): Promise<FeedRe
     }
   }
   return { ok: false, errorId: "unreachable" };
-}
-
-export interface PopularProfession extends Named {
-  id: string;
-  icon: string | null;
-}
-
-const POPULAR = 10;
-
-/** Faol e'lonlari eng ko'p kasblar: oxirgi 500 ta faol e'lon bo'yicha (soni ko'rsatilmaydi — taxminiy tartib uchun) */
-async function loadPopular(): Promise<PopularProfession[]> {
-  const { data, error } = await createPublicClient()
-    .from("vacancies")
-    .select("profession_node_id, profession_nodes(id, name_uz, name_ru, name_en, icon, selectable, is_active)")
-    .eq("status", "active")
-    .not("profession_node_id", "is", null)
-    .order("published_at", { ascending: false })
-    .limit(500);
-  // xato keshlanmasin
-  if (error) throw new Error(`home_popular: ${error.message}`);
-  const by = new Map<string, { node: PopularProfession; n: number }>();
-  for (const row of data ?? []) {
-    const node = row.profession_nodes;
-    if (!node || !node.selectable || !node.is_active) continue;
-    const cur = by.get(node.id);
-    if (cur) cur.n += 1;
-    else by.set(node.id, { node: { id: node.id, name_uz: node.name_uz, name_ru: node.name_ru, name_en: node.name_en, icon: node.icon }, n: 1 });
-  }
-  return [...by.values()]
-    .sort((a, b) => b.n - a.n || a.node.name_uz.localeCompare(b.node.name_uz))
-    .slice(0, POPULAR)
-    .map((x) => x.node);
-}
-
-// bozor paneli bilan bir xil kesh qoidasi: MARKET_CACHE_SECONDS=0 — keshsiz (E2E stend)
-const TTL = Number(process.env.MARKET_CACHE_SECONDS ?? 600);
-const cachedPopular = unstable_cache(loadPopular, ["home-popular-professions-v1"], { revalidate: TTL > 0 ? TTL : 600, tags: ["market"] });
-
-/** Xato bo'lsa — bo'sh (bo'lim ko'rsatilmaydi, qolgan sahifa ishlaydi) */
-export async function getPopularProfessions(): Promise<PopularProfession[]> {
-  try {
-    return TTL > 0 ? await cachedPopular() : await loadPopular();
-  } catch (error) {
-    console.warn("[home] popular", error instanceof Error ? error.message : error);
-    return [];
-  }
 }

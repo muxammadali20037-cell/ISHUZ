@@ -2,8 +2,6 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { HeroBackdrop } from "@/components/shared/hero-backdrop";
-import { BrandLogo } from "@/components/shared/brand-logo";
 
 /**
  * Kirish oqimi ekranlari uchun umumiy qolip (mobil ilova kabi): tepada — orqaga / o'tkazib yuborish, o'rtada — asosiy mazmun,
@@ -68,26 +66,5 @@ export function EntryIcon({ children }: { children: ReactNode }) {
     <span className="mx-auto flex size-20 items-center justify-center rounded-2xl bg-primary text-primary-foreground [&_svg]:size-10" aria-hidden>
       {children}
     </span>
-  );
-}
-
-/**
- * Birinchi ekrandagi brend kartasi: chuqur ko'k sirt, oq "Ish topdim" logotipi, shior va (bo'lsa) haqiqiy jonli son.
- * Foydalanuvchi ilovani birinchi ochganda nima ekanini va u "tirik" ekanini bir qarashda ko'radi.
- */
-export function EntryBrand({ name, slogan, live, photo = null }: { name: ReactNode; slogan: string; live?: string | null; photo?: string | null }) {
-  return (
-    <div className={cn("hero-surface rounded-2xl px-5 py-6 text-center shadow-lg", photo && "has-photo")}>
-      <HeroBackdrop src={photo} />
-      {/* "Darvoza" belgisi va yozuv — och sarlavhada rangli, surat ustida oq */}
-      <BrandLogo layout="stacked" onDark={!!photo} className="mx-auto text-3xl" label={typeof name === "string" ? name : undefined} />
-      <p className="mt-3 text-sm font-semibold text-hero-muted">{slogan}</p>
-      {live ? (
-        <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-bold text-foreground shadow-sm">
-          <span className="entry-live" aria-hidden />
-          {live}
-        </p>
-      ) : null}
-    </div>
   );
 }

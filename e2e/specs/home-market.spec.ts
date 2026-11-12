@@ -233,6 +233,8 @@ test.describe("bosh sahifa (marketplace)", () => {
     await page.goto("/");
     const footer = page.getByRole("contentinfo");
     await expect(footer.getByRole("link", { name: "Narxlar" })).toHaveCount(0);
+    // pastki qism kechroq chiziladi (birinchi ekrandan keyin) — havolalar paydo bo'lishini kutamiz
+    await expect(footer.getByRole("link").nth(10)).toBeAttached();
     const hrefs = await footer.getByRole("link").evaluateAll((els) => els.map((el) => el.getAttribute("href") ?? ""));
     expect(hrefs.length).toBeGreaterThan(10);
     for (const href of [...new Set(hrefs)]) {

@@ -11,9 +11,9 @@ import { getServerEnv } from "@/lib/env";
 import { localeAlternates } from "@/lib/seo";
 import { Shell } from "@/components/shared/shell";
 
-type Doc = "privacy" | "deletion" | "terms";
-const PATH: Record<Doc, string> = { privacy: "/privacy", deletion: "/account-deletion", terms: "/terms" };
-const RELATED: Record<Doc, Doc[]> = { privacy: ["terms", "deletion"], terms: ["privacy", "deletion"], deletion: ["privacy", "terms"] };
+type Doc = "privacy" | "deletion" | "terms" | "cookies";
+const PATH: Record<Doc, string> = { privacy: "/privacy", deletion: "/account-deletion", terms: "/terms", cookies: "/cookies" };
+const RELATED: Record<Doc, Doc[]> = { privacy: ["cookies", "terms", "deletion"], terms: ["privacy", "deletion"], deletion: ["privacy", "terms"], cookies: ["privacy", "terms"] };
 
 /** Ofertadagi {price_*} kabi o'rinlar — joriy narxlar app_settings'dan (admin o'zgartirsa, sahifa ham o'zgaradi) */
 async function priceVars(locale: Awaited<ReturnType<typeof getLocale>>): Promise<Record<string, string>> {
@@ -107,7 +107,7 @@ export async function LegalPage({ doc }: { doc: Doc }) {
             {SUPPORT_EMAIL ? (
               <li>
                 Email:{" "}
-                <a className="text-primary hover:underline" href={`mailto:${SUPPORT_EMAIL}`}>
+                <a className="text-primary-ink hover:underline" href={`mailto:${SUPPORT_EMAIL}`}>
                   {SUPPORT_EMAIL}
                 </a>
               </li>
@@ -115,7 +115,7 @@ export async function LegalPage({ doc }: { doc: Doc }) {
             {bot ? (
               <li>
                 Telegram:{" "}
-                <a className="text-primary hover:underline" href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer">
+                <a className="text-primary-ink hover:underline" href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer">
                   @{bot}
                 </a>
               </li>
@@ -124,7 +124,7 @@ export async function LegalPage({ doc }: { doc: Doc }) {
         </section>
         <p className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-sm">
           {RELATED[doc].map((r) => (
-            <Link key={r} href={PATH[r]} className="font-medium text-primary hover:underline">
+            <Link key={r} href={PATH[r]} className="font-medium text-primary-ink hover:underline">
               {L[r].title} →
             </Link>
           ))}

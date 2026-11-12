@@ -1,5 +1,5 @@
 import { getT } from "@/lib/i18n/server";
-import { publicEnv } from "@/lib/env";
+import { getServerEnv, publicEnv } from "@/lib/env";
 import type { SessionContext } from "@/features/auth/session";
 import type { AppMode } from "@/features/mode/mode";
 import { ModeSwitch } from "@/features/mode/components/mode-switch";
@@ -18,8 +18,19 @@ import { MarketHome } from "./market/market-home";
 export async function HomePage({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
   const { t } = await getT();
   const base = publicEnv.NEXT_PUBLIC_APP_URL.replace(/\/$/, "");
+  // rasmiy ijtimoiy tarmoqlar (footer bilan bir xil manba: SOCIAL_*_URL) — qidiruv tizimlari brendni ular bilan bog'laydi
+  const { SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL } = getServerEnv();
+  const sameAs = [SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL].filter((x): x is string => !!x);
   const jsonLd = JSON.stringify([
-    { "@context": "https://schema.org", "@type": "Organization", name: BRAND.name, url: base, logo: `${base}/icons/icon-512.png`, description: t("common.meta.org_description") },
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      name: BRAND.name,
+      url: base,
+      logo: `${base}/icons/icon-512.png`,
+      description: t("common.meta.org_description"),
+      ...(sameAs.length ? { sameAs } : {}),
+    },
     {
       "@context": "https://schema.org",
       "@type": "WebSite",

@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prefCookie } from "@/lib/security/cookies";
 import { safeInternalPath } from "@/lib/security/safe-path";
-import { LOCALES } from "@/lib/i18n/config";
+import { LOCALES, LOCALE_COOKIE } from "@/lib/i18n/config";
 import { setLocale } from "@/features/auth/actions";
 import { chooseMode } from "@/features/mode/actions";
 import { getSession } from "@/features/auth/session";
@@ -26,19 +26,38 @@ function resumeTo(form: FormData): string {
   return safeInternalPath(typeof next === "string" ? next : null, "") || "/start";
 }
 
-/** 2-ekran: til (cookie + kirgan bo'lsa profil) → tanishtiruv. JS'siz ham ishlaydi */
-export async function pickLanguage(form: FormData): Promise<void> {
-  const locale = z.enum(LOCALES).safeParse(form.get("locale"));
-  if (!locale.success) redirect("/start/til");
-  await setLocale(locale.data);
-  await markInFlow();
-  redirect(resumeTo(form));
+/**
+ * Xush kelibsiz ekrani (2.0): rol tanlandi — til (tanlanmagan bo'lsa joriy sahifa tili) va "tanishtiruv o'tilgan" belgisi
+ * saqlanadi, rejim (chooseMode) qo'yiladi va rolning bosh sahifasiga o'tiladi. Kirish talab qilinmaydi. JS'siz ham ishlaydi.
+ */
+export async function pickWelcomeRole(form: FormData): Promise<void> {
+  const mode = z.enum(["worker", "employer"]).safeParse(form.get("mode"));
+  if (!mode.success) redirect("/start/til");
+  const jar = await cookies();
+  if (!jar.get(LOCALE_COOKIE)?.value) {
+    const locale = z.enum(LOCALES).safeParse(form.get("locale"));
+    await setLocale(locale.success ? locale.data : "uz");
+  }
+  const res = await chooseMode(mode.data);
+  if (!res.ok) redirect("/start/til?error=1");
+  jar.set(INTRO_COOKIE, "1", prefCookie(YEAR));
+  // kirgan, lekin profili yo'q foydalanuvchi — oqim davom etadi (profil); mehmon — darhol bosh sahifa
+  const session = await getSession();
+  if (session && !session.workerOnboarded && !session.employerOnboarded) {
+    await markInFlow();
+    redirect(resumeTo(form));
+  }
+  jar.delete(ENTRY_COOKIE);
+  const next = form.get("next");
+  redirect(safeInternalPath(typeof next === "string" ? next : null, "") || dashboardPath(mode.data, !!session?.employerOnboarded));
 }
 
 /** Tanishtiruv tugadi yoki o'tkazib yuborildi — shundagina "ko'rilgan" deb belgilanadi (oyna ochilishi emas) */
 export async function finishIntro(form: FormData): Promise<void> {
   const jar = await cookies();
   jar.set(INTRO_COOKIE, "1", prefCookie(YEAR));
+  // 2.0: slaydlar ixtiyoriy ("Qanday ishlaydi?") — rol hali tanlanmagan bo'lsa, xush kelibsiz ekraniga (rol tanlash) qaytiladi
+  if (!(await getMode())) redirect("/start/til");
   await markInFlow();
   redirect(resumeTo(form));
 }

@@ -27,6 +27,7 @@ export async function asGuest(ctx: BrowserContext) {
   await ctx.addCookies([
     { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
     { name: "ib_intro", value: "1", domain: host, path: "/" },
+    { name: "ib_consent", value: "1", domain: host, path: "/" },
     ...(mode ? [{ name: "ib_mode", value: mode.value, domain: host, path: "/" }] : []),
   ]);
 }

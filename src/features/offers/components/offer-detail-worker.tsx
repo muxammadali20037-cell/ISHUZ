@@ -40,10 +40,10 @@ export async function OfferDetailWorker({ offer }: { offer: OfferDetail }) {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("offers.detail.from")}</p>
                 <p className="flex items-center gap-1 text-base font-semibold">
                   {sender}
-                  {offer.company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary" aria-label={t("common.labels.verified")} /> : null}
+                  {offer.company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
                 </p>
                 {offer.company ? (
-                  <Link href={`/company/${offer.company.slug}`} className="text-sm text-primary hover:underline">
+                  <Link href={`/company/${offer.company.slug}`} className="text-sm text-primary-ink hover:underline">
                     {t("common.nav.company")}
                   </Link>
                 ) : null}

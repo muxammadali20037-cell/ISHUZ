@@ -74,7 +74,7 @@ export default async function ListingPage({ params }: Params) {
 
         {/* I1: ixcham — surat/kasb belgisi ism yonida (katta bo'sh rasm o'rniga), ma'lumotlar ikki ustunda */}
         <article className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
-          <p className="text-sm font-bold uppercase tracking-wide text-primary">{t("easy.listing.title")}</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-primary-ink">{t("easy.listing.title")}</p>
           <div className="mt-2 flex items-center gap-3">
             <Photo
               src={w.avatar_url}
@@ -85,14 +85,14 @@ export default async function ListingPage({ params }: Params) {
             />
             <div className="min-w-0">
               <h1 className="break-words text-2xl font-extrabold leading-tight">{fullName}</h1>
-              <p className="break-words text-lg font-semibold text-primary">{profession}</p>
+              <p className="break-words text-lg font-semibold text-primary-ink">{profession}</p>
             </div>
           </div>
           <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
             <div className="col-span-2">
               <dt className="text-sm text-muted-foreground">{t("easy.listing.location")}</dt>
               <dd className="flex items-start gap-1.5 text-base font-semibold leading-snug">
-                <MapPin className="mt-0.5 size-4.5 shrink-0 text-primary" aria-hidden />
+                <MapPin className="mt-0.5 size-4.5 shrink-0 text-primary-ink" aria-hidden />
                 <span>
                   {[region, district ?? t(isCityRegion({ name_uz: w.region_name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].filter(Boolean).join(" · ")}
                   {w.remote_ok ? <span className="font-normal text-muted-foreground"> · {t("easy.card.remote")}</span> : null}

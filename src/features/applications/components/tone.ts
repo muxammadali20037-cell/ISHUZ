@@ -3,7 +3,7 @@ import type { StatusTone } from "../types";
 /** Holat rang sxemasi (Badge fon/matn) */
 export const TONE_BADGE: Record<StatusTone, string> = {
   info: "bg-info-soft text-info",
-  primary: "bg-primary-soft text-primary",
+  primary: "bg-primary-soft text-primary-ink",
   success: "bg-success-soft text-success",
   destructive: "bg-destructive-soft text-destructive",
   muted: "bg-secondary text-muted-foreground",
@@ -21,7 +21,7 @@ export const TONE_DOT: Record<StatusTone, string> = {
 /** Timeline: joriy qadam (bo'sh aylana + halqa) */
 export const TONE_RING: Record<StatusTone, string> = {
   info: "border-info text-info ring-info/15",
-  primary: "border-primary text-primary ring-primary/15",
+  primary: "border-primary text-primary-ink ring-primary/15",
   success: "border-success text-success ring-success/15",
   destructive: "border-destructive text-destructive ring-destructive/15",
   muted: "border-muted-foreground text-muted-foreground ring-muted-foreground/15",

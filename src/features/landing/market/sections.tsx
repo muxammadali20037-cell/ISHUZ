@@ -21,7 +21,7 @@ function ModeButton({ mode, next, track, className, children }: { mode: "worker"
 }
 
 const btnPrimary = "press inline-flex min-h-12 items-center justify-center gap-2 rounded-md bg-primary px-5 text-md font-semibold text-primary-foreground hover:bg-primary-hover";
-const btnOutline = "press inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border-strong bg-card px-5 text-md font-semibold text-foreground hover:border-primary/50 hover:text-primary";
+const btnOutline = "press inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-border-strong bg-card px-5 text-md font-semibold text-foreground hover:border-primary/50 hover:text-primary-ink";
 
 /** Vakansiyalar bo'limi skeleti: kartalar/qatorlar balandligiga yaqin — kontent kelganda sahifa siljimaydi */
 export function ListSkeleton({ grid = false }: { grid?: boolean }) {
@@ -118,7 +118,7 @@ export async function HowItWorks() {
             <ol className="mt-4 flex-1 space-y-3">
               {c.steps.map((s, i) => (
                 <li key={s} className="flex items-start gap-3">
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary" aria-hidden>
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sm font-semibold text-primary-ink" aria-hidden>
                     {i + 1}
                   </span>
                   <span className="pt-1 text-base font-medium leading-snug">{s}</span>

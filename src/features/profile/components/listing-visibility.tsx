@@ -114,7 +114,7 @@ export function ListingVisibility({
       {mode !== "hidden" ? <ListingPayCard workerId={workerId} listedUntil={listedUntil} /> : null}
       {listedUntil ? <ListingTerm until={listedUntil} active={mode === "search"} onExtend={() => requestPayment({ purpose: "worker_listing", targetId: workerId })} /> : null}
       <p className="flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary-soft/60 p-3 text-sm text-foreground">
-        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary" />
+        <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary-ink" />
         {t("profile.listing.phone_note")}
       </p>
       {mode !== "hidden" ? (

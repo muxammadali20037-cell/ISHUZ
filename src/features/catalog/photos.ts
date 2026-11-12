@@ -14,6 +14,8 @@ import type { CatalogKey } from "./catalog";
  * "Qurilish" surati bosh sahifa hero'sida — katalogda takrorlanmaydi (admin alohida surat yuklasa, katalogda ham chiqadi).
  */
 export const HERO_PHOTO: StaticImageData = heroConstruction;
+/** Xush kelibsiz ekranidagi "Ishchi qidiryapman" kartasi: do'kon boshqaruvchisi (egasi bergan "savdo" surati) */
+export const EMPLOYER_PHOTO: StaticImageData = sales;
 
 export const BUILTIN_CATALOG_PHOTOS: Partial<Record<CatalogKey, StaticImageData>> = {
   medicine,

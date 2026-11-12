@@ -12,12 +12,14 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /** /ai — pastki menyudagi "AI": aqlli qidiruv, sizga mos e'lonlar, AI PRO, AI bilan e'lon tuzish (mehmon ham ko'radi) */
-export default async function AiPage() {
-  const [session, mode] = await Promise.all([getSession(), getMode()]);
+export default async function AiPage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
+  const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
   if (session?.profile.is_blocked) redirect("/blocked");
+  // ?q= — bosh sahifadagi qidiruv maydonidan (sahifa to'liq yuklanmasdan "Topish" bosilganda): savol shu yerda o'zi yuboriladi
+  const q = typeof params.q === "string" ? params.q.replace(/\s+/g, " ").trim().slice(0, 300) : "";
   return (
     <Shell>
-      <AiHub session={session} mode={mode} />
+      <AiHub session={session} mode={mode} query={q.length >= 2 ? q : undefined} />
     </Shell>
   );
 }

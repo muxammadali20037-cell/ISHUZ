@@ -29,7 +29,7 @@ export function ApplicationCard({ item, className }: { item: WorkerApplicationIt
           {company ? (
             <p className="mt-0.5 flex items-center gap-1 truncate text-sm text-muted-foreground">
               {company}
-              {v?.company?.verification_status === "verified" ? <BadgeCheck className="size-4 shrink-0 text-primary" aria-label={t("common.labels.verified")} /> : null}
+              {v?.company?.verification_status === "verified" ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
             </p>
           ) : null}
         </div>

@@ -72,11 +72,11 @@ export function SaveButton({
         "press flex size-11 shrink-0 items-center justify-center rounded-lg border transition-colors",
         variant === "ghost"
           ? saved
-            ? "border-transparent bg-primary-soft text-primary"
-            : "border-transparent text-muted-foreground hover:bg-secondary hover:text-primary"
+            ? "border-transparent bg-primary-soft text-primary-ink"
+            : "border-transparent text-muted-foreground hover:bg-secondary hover:text-primary-ink"
           : saved
-            ? "border-primary bg-primary-soft text-primary"
-            : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary",
+            ? "border-primary bg-primary-soft text-primary-ink"
+            : "border-border bg-card text-muted-foreground hover:border-primary/50 hover:text-primary-ink",
         className,
       )}
     >

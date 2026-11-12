@@ -7,6 +7,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  */
 
 const windows = (page: Page) => page.getByRole("region", { name: "Tezkor bo'limlar" }).getByRole("link");
+// 2.0: ish izlovchi bosh sahifasida rasmli oynalar o'rnida — qidiruv ostidagi 4 ta tez yo'l
+const shortcuts = (page: Page) => page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
@@ -21,12 +23,10 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
 
   await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
   await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
-  await expect(windows(page)).toHaveCount(3);
-  await expect(windows(page).nth(0)).toContainText("Endi o'zingizga mos ish topish oson");
-  await expect(windows(page).nth(1)).toContainText("Kunlik ishlar");
-  await expect(windows(page).nth(2)).toContainText("Yaqin atrofdagi ishlar");
+  await expect(shortcuts(page)).toHaveText(["Kunlik ish", "Yaqin atrofda", "Masofaviy", "Tajribasiz"]);
+  await expect(windows(page)).toHaveCount(0);
   // ishchi topish va vakansiya berish — ish izlovchiga ko'rsatilmaydi
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
@@ -54,9 +54,10 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await modeRadio(page, "Ish beruvchi").click();
   await dialog.getByRole("button", { name: "Ha, o'tish" }).click();
   await expect(modeRadio(page, "Ish beruvchi")).toHaveAttribute("aria-checked", "true");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
-  await expect(windows(page).nth(0)).toContainText("Endi xodim topish oson");
-  await expect(page.getByText("Endi o'zingizga mos ish topish oson")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+  // 2.0: ish beruvchi bosh sahifasi — nomzod qidiruvi va tez yo'llar (ish izlovchi yo'llari yo'q)
+  await expect(shortcuts(page)).toHaveText(["Kunlik ishchilar", "Yaqin atrofda", "Tajribali", "Masofaviy"]);
+  await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   // ish beruvchi menyusi (2026-10): Boshqaruv · Vakansiyalar · Nomzodlar · Profil
@@ -84,7 +85,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await loginAs(context, RET);
     await asMode(context, "worker");
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
 
     await page.goto("/cabinet");
@@ -95,7 +96,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await page.getByText("Ishchi qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL((u) => new URL(u).pathname === "/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Xodim toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
     const [after] = await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [RET]);
@@ -144,7 +145,8 @@ test("AI qidiruv: rejim tanlangan bo'lsa — faqat shu rejim ichida qidiradi", a
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  await page.getByRole("button", { name: "AI bilan qidirish" }).click();
+  // 2.0: ish beruvchi bosh sahifasida ham yagona AI qidiruv maydoni — bo'sh "Topish" yordamchini ochadi
+  await page.locator("form[data-ai-field][data-hydrated] button[type='submit']").click();
   const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
   await expect(dialog.getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
   await expect(dialog.getByRole("radio")).toHaveCount(0);
@@ -171,7 +173,7 @@ test.describe("yaqin atrofda", () => {
     await context.grantPermissions(["geolocation"]);
     await context.setGeolocation(CHILONZOR);
     await page.goto("/");
-    await windows(page).filter({ hasText: "Yaqin atrofdagi ishlar" }).click();
+    await shortcuts(page).filter({ hasText: "Yaqin atrofda" }).click();
     await expect(page.getByRole("heading", { level: 1, name: "Yaqin atrofdagi ishlarni ko'rsatamiz" })).toBeVisible();
     await page.getByRole("button", { name: "Joylashuvni aniqlash" }).click();
     await page.waitForURL(/region=tashkent_city&district=[0-9a-f-]{36}&any=1/);

@@ -1,5 +1,5 @@
 {
-  "updated": "Last updated: October 7, 2026",
+  "updated": "Last updated: November 11, 2026",
   "contact_title": "Contact",
   "contact_body": "For questions or requests, write to:",
   "contact_none": "A contact address has not been published yet. If you can sign in, delete your account yourself: “Settings” → “Delete account”.",
@@ -10,7 +10,7 @@
     "sections": [
       [
         "What we collect",
-        "- Account: phone number (required), first and last name or company name, chosen language. If you sign in with Telegram — your Telegram ID and username.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, photo and portfolio files.\n- Location: region and district. If you tap \"Detect my location\" — your phone's GPS coordinates (only with your permission).\n- Employers: company name, logo, address, tax ID (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches, AI search requests and notifications.\n- Payments: amount, service, date and status. Card details stay with Payme/Click and never reach us.\n- Technical: search queries (kept 90 days) and security logs.\nWe do not access your contacts, SMS, call log, camera or microphone. The app has no ads and no ad trackers."
+        "- Account: phone number (required), first and last name or company name, chosen language. If you sign in with Telegram — your Telegram ID and username.\n- Resume (entered by you): date of birth, gender, profession, experience, education, skills, languages, expected salary, photo and portfolio files.\n- Location: region and district. If you tap \"Detect my location\" — your phone's GPS coordinates (only with your permission).\n- Employers: company name, logo, address, tax ID (optional) and vacancies.\n- Activity: applications, offers, chat messages, saved searches, AI search requests and notifications.\n- Payments: amount, service, date and status. Card details stay with Payme/Click and never reach us.\n- Technical: search queries (kept 90 days) and security logs. Cookies and browser storage are described in the separate Cookie Policy.\n- AI assistant: the text you type or say to it is sent to the AI provider to produce an answer, but is not stored on our server (the conversation stays only on your device, for 30 minutes).\nWe do not access your contacts, SMS, call log or camera. The microphone works only when you tap the button and with your browser's permission: your browser converts speech to text; the audio is never sent to us or stored. The app has no ads and no ad trackers."
       ],
       [
         "Why we use it",
@@ -22,7 +22,7 @@
       ],
       [
         "Service providers and where data is stored",
-        "The platform uses the following services. They process data only to provide their service:\n- Supabase — database and files. Servers are located in India (Mumbai).\n- Vercel — website hosting (global network).\n- Telegram — sign-in and notifications.\n- Payme and Click — payments (Uzbekistan).\n- Anthropic (Claude) and Google (Gemini) — only to analyse the text you enter when you use AI features.\nBy registering you agree to the transfer of your data to these providers' servers, including outside Uzbekistan. If we move the data to servers in Uzbekistan, we will announce it on this page."
+        "The platform uses the following services. They process data only to provide their service:\n- Supabase — database and files. Servers are located in India (Mumbai).\n- Vercel — website hosting (global network).\n- Telegram — sign-in and notifications.\n- Payme and Click — payments (Uzbekistan).\n- Anthropic (Claude) and Google (Gemini) — only when you use AI features: your text, the profession and region from your own ad (without the phone number) and the public fields of the ads found are sent to produce an answer.\nBy registering you agree to the transfer of your data to these providers' servers, including outside Uzbekistan. If we move the data to servers in Uzbekistan, we will announce it on this page."
       ],
       [
         "Retention",
@@ -114,6 +114,37 @@
       [
         "Changes",
         "If the terms change, they are published on this page with the update date. By continuing to use the platform after changes you accept the new terms."
+      ]
+    ]
+  },
+  "cookies": {
+    "title": "Cookie Policy",
+    "description": "Which cookies and browser storage Ish topdim uses, why, how long they are kept and how to manage them.",
+    "intro": "A cookie is a small text file a website stores in your browser. We use cookies only to make the site work and to remember your choices. There are no advertising cookies, no cross-site trackers and no third-party analytics cookies.",
+    "sections": [
+      [
+        "Necessary cookies (the site does not work without them)",
+        "- sb-… (several) — the session of your signed-in account (Supabase). Until you sign out or ~1 year. Without them sign-in does not work.\n- ib_mode — the role you chose (looking for a job / looking for staff): the site shows only what you need. 1 year.\n- ib_intro, ib_entry — the welcome screen was seen; which step the sign-in flow stopped at. 1 year / 30 days.\n- ib_app — marks that the app was opened from Google Play (payment buttons are not shown inside the app). 1 year.\n- ib_consent — you have seen the cookie notice. 1 year."
+      ],
+      [
+        "Convenience cookies (your choices)",
+        "- ishuz_locale — site language (Uzbek Latin/Cyrillic, Russian, English). 1 year.\n- ib_place — remembered region and district (search starts there). 1 year.\n- ib_name — the name you typed in the sign-in window (so we don't ask again). 1 year.\n- ib_aid — a random anonymous identifier used to count a guest's path through the site (for example “search → ad → application”). It contains no phone, name or IP. 1 year."
+      ],
+      [
+        "Browser storage (localStorage and sessionStorage)",
+        "Not cookies, but similar: stored only on your device and never sent to the server.\n- Ad drafts (ib_draft:…) — if the page closes while you fill in a form, your text is not lost.\n- AI assistant conversation (ib_ai_chat…) — in this tab for 30 minutes: when you come back from an ad, the answer is still there.\n- The “Voice answers” choice (ib_ai_speak), the one-time splash mark (ib_splash), the last payment method (ib_pay_provider), recently opened professions and similar small conveniences."
+      ],
+      [
+        "What we do NOT use",
+        "- No advertising cookies and no ad-network cookies.\n- No Google Analytics, Facebook Pixel or other cross-site trackers.\n- Your data is never sold or shared through cookies."
+      ],
+      [
+        "Consent",
+        "Necessary cookies are required for the site to work and need no consent. Convenience cookies are set only when you make a choice (language, role, region) — the choice itself is the consent. On your first visit a short notice is shown at the bottom."
+      ],
+      [
+        "Managing and deleting cookies",
+        "- You can view and delete cookies in your browser settings (Chrome: Settings → Privacy → Cookies; Safari: Settings → Safari → Clear all data).\n- After deleting them the site will not recognise you: you will need to sign in and choose the language and role again.\n- If you block necessary cookies, sign-in and posting will not work; browsing and searching ads will keep working."
       ]
     ]
   }

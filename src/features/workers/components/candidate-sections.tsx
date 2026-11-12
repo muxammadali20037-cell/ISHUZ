@@ -12,7 +12,7 @@ export function Section({ title, icon: Icon, children, className }: { title: str
   return (
     <section className={cn("rounded-2xl border border-border/70 bg-card p-4 sm:p-5", className)}>
       <h2 className="mb-3 flex items-center gap-2 text-base font-bold">
-        {Icon ? <Icon className="size-4.5 text-primary" /> : null}
+        {Icon ? <Icon className="size-4.5 text-primary-ink" /> : null}
         {title}
       </h2>
       {children}

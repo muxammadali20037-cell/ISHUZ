@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { isCronAuthorized } from "@/features/notifications/cron-auth";
 import { runBackgroundTick } from "@/features/notifications/tick";
+import { reportError } from "@/lib/monitoring";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,7 +18,7 @@ async function handle(req: NextRequest) {
     const result = await runBackgroundTick({ moderation: 8, matchJobs: 20, telegram: 200, budgetMs: 50_000 });
     return NextResponse.json({ ok: true, ...result, at: new Date().toISOString() });
   } catch (e) {
-    console.error("[cron tick]", e instanceof Error ? e.message : e);
+    await reportError(e, { where: "cron-tick" });
     return NextResponse.json({ ok: false, error: "internal" }, { status: 500 });
   }
 }

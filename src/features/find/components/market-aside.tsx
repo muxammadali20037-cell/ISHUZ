@@ -57,7 +57,7 @@ export async function MarketAside({ mode }: { mode: "jobs" | "workers" }) {
                   <Avatar src={c.logoUrl} fallback={c.name.slice(0, 2)} square size="lg" alt="" className="size-12" />
                   <span className="flex max-w-full items-center gap-1 text-sm font-semibold">
                     <span className="truncate">{c.name}</span>
-                    {c.verified ? <BadgeCheck className="size-4 shrink-0 text-primary" aria-label={t("jobs.detail.company_verified")} /> : null}
+                    {c.verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
                   </span>
                   <span className="rounded-full bg-secondary px-2 py-0.5 text-xs font-medium">{t("easy.market.jobs_count", { count: c.count })}</span>
                 </Link>

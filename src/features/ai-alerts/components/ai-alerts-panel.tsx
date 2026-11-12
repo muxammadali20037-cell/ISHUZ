@@ -26,10 +26,10 @@ const money = (n: number) => new Intl.NumberFormat("ru-RU").format(n);
  * Telegram'ga xabar. Ikki yo'l: "Menga ish topsin" (mos vakansiya — kim joylagani bilan) va "Menga ishchi topsin"
  * (mos ishchi e'loni). Obuna bitta — ikkala yo'lni qamraydi.
  */
-export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worker" | "employer" }) {
+export function AiAlertsPanel({ data, role, initialText = "" }: { data: AiAlertsData; role: "worker" | "employer"; initialText?: string }) {
   const { t } = useT();
   const router = useRouter();
-  const [text, setText] = useState("");
+  const [text, setText] = useState(initialText);
   const [pending, start] = useTransition();
   const examples = [t("saved.ai_alerts.example_1"), t("saved.ai_alerts.example_2"), t("saved.ai_alerts.example_3")];
 
@@ -189,7 +189,7 @@ export function AiAlertsPanel({ data, role }: { data: AiAlertsData; role: "worke
                   <p className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
                     <span className="inline-flex items-center gap-1">
                       <Building2 className="size-4" /> {h.who || "—"}
-                      {h.verified ? <BadgeCheck className="size-4 text-primary" aria-label={t("common.labels.verified")} /> : null}
+                      {h.verified ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
                     </span>
                     {h.region ? (
                       <span className="inline-flex items-center gap-1">

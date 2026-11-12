@@ -49,7 +49,7 @@ export function StepWorkFormat({ mode, vacancy, refs }: StepProps) {
                 <span className="block font-semibold">{tEnum("work_format", o.value)}</span>
                 <span className="block text-xs text-muted-foreground">{o.desc}</span>
               </span>
-              {active ? <Check className="size-5 text-primary" strokeWidth={3} /> : null}
+              {active ? <Check className="size-5 text-primary-ink" strokeWidth={3} /> : null}
             </button>
           );
         })}

@@ -19,9 +19,8 @@ export const ENTRY_SLOTS = [
   "intro_ai",
   "role_worker",
   "role_employer",
-  "hero_seeker",
-  "hero_employer",
-  "hero_guest",
+  // hero_seeker / hero_employer / hero_guest (2026-10 fon suratlari) 2.0 ekranlarida yo'q — joylari olib tashlandi; bazadagi
+  // eski qiymat e'tiborsiz qoldiriladi
   "home_photo",
   // kasblar katalogi kartalari (2026-11-05): har soha uchun surat (features/catalog/catalog.ts)
   ...CATALOG_SLOTS,
@@ -31,7 +30,7 @@ export type EntrySlot = (typeof ENTRY_SLOTS)[number];
 /** Admin sahifasidagi guruhlar (har joy — bitta guruhda) */
 export const SLOT_GROUPS = {
   // bosh ekran sarlavhalarining fon surati (premium 2026-10): yuklanmasa — ko'k brend sirti
-  hero: ["hero_seeker", "hero_employer", "hero_guest", "home_photo"],
+  hero: ["home_photo"],
   entry: ["intro_jobs", "intro_workers", "intro_ai", "role_worker", "role_employer"],
   // bosh sahifa va /kasblar: suratli soha kartalari (4:3). Yuklanmasa — o'rnatilgan surat yoki "Boshqa kasblar" ro'yxatida
   catalog: CATALOG_SLOTS,
@@ -47,9 +46,6 @@ export const SLOT_SPEC: Record<EntrySlot, { ratio: "4:3" | "1:1" | "16:9" | "4:5
   intro_ai: { ratio: "4:3", size: "1200×900" },
   role_worker: { ratio: "1:1", size: "800×800" },
   role_employer: { ratio: "1:1", size: "800×800" },
-  hero_seeker: { ratio: "16:9", size: "1920×1080" },
-  hero_employer: { ratio: "16:9", size: "1920×1080" },
-  hero_guest: { ratio: "16:9", size: "1920×1080" },
   // bosh sahifa (mehmon) hero'sining o'ng tomonidagi katta surat (2026-11): tik kadr, odam markazda.
   // Yuklanmasa — o'rnatilgan surat (egasi bergan, src/assets/photos/hero-construction.jpg)
   home_photo: { ratio: "4:5", size: "1200×1500" },

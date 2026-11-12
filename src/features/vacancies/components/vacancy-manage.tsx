@@ -165,7 +165,7 @@ export function VacancyManage({
               {APP_STATUSES.filter((s) => stats.by_status[s]).map((s) => (
                 <Link key={s} href={`${applicationsHref}?status=${s}`} className="inline-flex h-8 items-center gap-1.5 rounded-full border border-border bg-card px-3 text-sm hover:bg-secondary">
                   {t(`enums.application_status.${s}`)}
-                  <span className="tabular font-semibold text-primary">{stats.by_status[s]}</span>
+                  <span className="tabular font-semibold text-primary-ink">{stats.by_status[s]}</span>
                 </Link>
               ))}
             </div>

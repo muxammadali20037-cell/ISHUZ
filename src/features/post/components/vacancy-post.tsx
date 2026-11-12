@@ -507,7 +507,7 @@ export function VacancyPost({
             ) : salaryPeriod && editId ? (
               <p className="mb-3 text-base text-muted-foreground">
                 {t("easy.vacancy.salary_period_note")}{" "}
-                <a href={`/employer/vacancies/${editId}/edit`} className="font-semibold text-primary underline underline-offset-4">
+                <a href={`/employer/vacancies/${editId}/edit`} className="font-semibold text-primary-ink underline underline-offset-4">
                   {t("easy.vacancy.detailed_edit")}
                 </a>
               </p>

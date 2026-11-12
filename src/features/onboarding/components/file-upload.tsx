@@ -104,14 +104,14 @@ export function FileUpload({
         })}
         {Array.from({ length: uploading }).map((_, i) => (
           <div key={`up-${i}`} className="flex aspect-square items-center justify-center rounded-xl border border-dashed border-border bg-secondary/60">
-            <Loader2 className="size-6 animate-spin text-primary" />
+            <Loader2 className="size-6 animate-spin text-primary-ink" />
           </div>
         ))}
         {canAdd ? (
           <button
             type="button"
             onClick={() => inputRef.current?.click()}
-            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
+            className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary-ink"
           >
             <Plus className="size-6" />
             <span className="text-xs font-medium">{t("common.actions.upload")}</span>

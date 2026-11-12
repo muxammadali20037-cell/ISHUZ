@@ -34,7 +34,7 @@ export async function CandidatesPicker({ vacancies }: { vacancies: MyVacancy[] }
             {vacancies.map((v) => (
               <li key={v.id}>
                 <Link href={`/workers?vacancy=${v.id}`} className="flex items-center gap-3 rounded-2xl border border-border/70 bg-card p-4 transition-shadow hover:shadow-md">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                     <Briefcase className="size-5" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -46,7 +46,7 @@ export async function CandidatesPicker({ vacancies }: { vacancies: MyVacancy[] }
                       {formatRelative(v.published_at ?? v.created_at, locale)}
                     </p>
                   </div>
-                  <span className="hidden text-sm font-medium text-primary sm:inline">{t("workers.candidates.view_candidates")}</span>
+                  <span className="hidden text-sm font-medium text-primary-ink sm:inline">{t("workers.candidates.view_candidates")}</span>
                   <ChevronRight className="size-5 text-muted-foreground" />
                 </Link>
               </li>

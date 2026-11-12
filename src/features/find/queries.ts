@@ -5,6 +5,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { publicEnv } from "@/lib/env";
 import { createClient } from "@/lib/supabase/server";
+import type { ReadClient } from "@/lib/supabase/public";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { Json } from "@/types/database.types";
 import { getSearchDictionary } from "@/features/search/dictionary";
@@ -14,7 +15,7 @@ import type { TrailItem } from "@/features/professions/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
 import { getCategories } from "@/lib/reference";
 import type { JobCardData } from "./components/result-cards";
-import { detectIntent, professionCandidates, type FindMode } from "./intent";
+import { detectIntent, professionCandidates, withoutPlaceOnly, type FindMode } from "./intent";
 import { EMPLOYER_KIND_TYPE, hasSectionFilter, type FindParams } from "./params";
 
 export const PAGE_SIZE = 20;
@@ -44,7 +45,9 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   const mode = detectIntent(q);
   const dict = await getSearchDictionary();
   const u = understandQuery(q, dict);
-  const candidates = professionCandidates(q).slice(0, 12);
+  // hudud nomi kasb sifatida qidirilmaydi ("Samarqandda" ≠ "Samarqand qog'ozi ustasi") — intent.ts
+  const places = [u.region, ...u.districts].flatMap((p) => (p ? [p.name_uz, p.name_ru] : [])).filter((n): n is string => !!n);
+  const candidates = withoutPlaceOnly(professionCandidates(q), places).slice(0, 12);
   const db = anon();
   const results = await Promise.all(candidates.map((c) => db.rpc("search_profession_nodes", { p_query: c.slice(0, 80), p_limit: 3 }).then((r) => ({ c, hits: r.data ?? [] }))));
   let best: { id: string; score: number } | null = null;
@@ -131,9 +134,12 @@ interface Place {
   remote: boolean;
 }
 
-/** `limit` — sahifa hajmi (standart PAGE_SIZE; qidiruv boshidagi "Yangi e'lonlar" — bir nechta) */
-export async function findJobs(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<JobRow>> {
-  const supabase = await createClient();
+/**
+ * `limit` — sahifa hajmi (standart PAGE_SIZE; qidiruv boshidagi "Yangi e'lonlar" — bir nechta).
+ * `db` — berilsa shu mijoz (unstable_cache ichida cookies() chaqirib bo'lmaydi; natija anon uchun ham bir xil — funksiya SECURITY DEFINER).
+ */
+export async function findJobs(params: FindParams, place: Place, limit = PAGE_SIZE, db?: ReadClient): Promise<FindOutcome<JobRow>> {
+  const supabase = db ?? (await createClient());
   const args = {
     p_profession_node_id: params.p ?? undefined,
     p_region_id: place.regionId ?? undefined,
@@ -170,7 +176,7 @@ export async function findJobs(params: FindParams, place: Place, limit = PAGE_SI
 }
 
 /** Kasb rasmlari va ish joyi suratlari; `pageOnly` — umumiy son noma'lum (faqat shu sahifadagilar) */
-async function withMedia(supabase: Awaited<ReturnType<typeof createClient>>, items: JobRow[], pageOnly: boolean): Promise<FindOutcome<JobRow>> {
+async function withMedia(supabase: ReadClient, items: JobRow[], pageOnly: boolean): Promise<FindOutcome<JobRow>> {
   const [images, photoRows] = await Promise.all([
     getProfessionImages(items.map((r) => r.profession_node_id)),
     items.length ? supabase.from("vacancies").select("id, photo_path").in("id", items.map((r) => r.id)).not("photo_path", "is", null) : Promise.resolve({ data: [] }),
@@ -242,8 +248,8 @@ export async function findJobsByText(params: FindParams, place: Place, limit = P
   return { ok: true, items, total: params.pay === "daily" ? items.length : Number(data?.[0]?.total_count ?? 0), images: {}, photos };
 }
 
-export async function findWorkers(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<WorkerRow>> {
-  const supabase = await createClient();
+export async function findWorkers(params: FindParams, place: Place, limit = PAGE_SIZE, db?: ReadClient): Promise<FindOutcome<WorkerRow>> {
+  const supabase = db ?? (await createClient());
   const args = {
     p_profession_node_id: params.p ?? undefined,
     p_region_id: place.regionId ?? undefined,

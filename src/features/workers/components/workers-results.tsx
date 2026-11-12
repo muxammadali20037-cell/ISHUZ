@@ -43,9 +43,9 @@ export async function WorkersResults({
   }
   const understoodNote = params.from ? (
     <p className="mb-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-xl bg-primary-soft/60 px-3 py-2 text-sm">
-      <Sparkles className="size-4 shrink-0 text-primary" />
+      <Sparkles className="size-4 shrink-0 text-primary-ink" />
       <span className="min-w-0">{t("workers.search.understood", { query: params.from })}</span>
-      <Link href={buildWorkersUrl({ ...EMPTY_WORKER_SEARCH, vacancy: params.vacancy, q: params.from, exact: true }, {})} className="font-semibold text-primary hover:underline">
+      <Link href={buildWorkersUrl({ ...EMPTY_WORKER_SEARCH, vacancy: params.vacancy, q: params.from, exact: true }, {})} className="font-semibold text-primary-ink hover:underline">
         {t("workers.search.search_exact")}
       </Link>
     </p>

@@ -264,7 +264,7 @@ function Review({
 function Section({ icon, title, children }: { icon: ReactNode; title: string; children: ReactNode }) {
   return (
     <section className="rounded-2xl border border-border bg-card p-4">
-      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground [&_svg]:size-4 [&_svg]:text-primary">
+      <p className="mb-2 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground [&_svg]:size-4 [&_svg]:text-primary-ink">
         {icon}
         {title}
       </p>

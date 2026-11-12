@@ -116,7 +116,7 @@ export function StepSkills({ mode, vacancy, suggestedSkills }: SkillsStepProps) 
         {selected.length ? (
           <div className="flex flex-wrap gap-2">
             {selected.map((s) => (
-              <span key={s.id} className={cn("inline-flex h-11 items-center gap-1 rounded-full border pl-1 pr-1 text-sm font-medium", s.isRequired ? "border-primary bg-primary text-primary-foreground" : "border-primary/40 bg-primary-soft text-primary")}>
+              <span key={s.id} className={cn("inline-flex h-11 items-center gap-1 rounded-full border pl-1 pr-1 text-sm font-medium", s.isRequired ? "border-primary bg-primary text-primary-foreground" : "border-primary/40 bg-primary-soft text-primary-ink")}>
                 <button type="button" onClick={() => toggleRequired(s.id)} className="inline-flex h-9 items-center gap-1.5 rounded-full px-3" title={t(s.isRequired ? "vacancies.wizard.skills.required" : "vacancies.wizard.skills.preferred")}>
                   {s.isRequired ? null : <Star className="size-3.5" />}
                   {name(s)}

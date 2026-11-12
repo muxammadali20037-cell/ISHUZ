@@ -2,9 +2,9 @@ import { expect, test, type Page } from "@playwright/test";
 import { asGuest, asMode, sql } from "../support";
 
 /**
- * S2 / 2026-10 · bosh sahifa bo'limlari: har bo'lim soni bazadagi bilan bir xil, bosilsa — o'sha bo'lim natijalari, faol filtr
- * chip sifatida ko'rinadi va olib tashlanadi; soni 0 bo'lgan kichik bo'lim ko'rsatilmaydi. Ish qidiruvchida — ixcham ro'yxat
- * (ro'yxatdan keyin / o'ng panelda, katta plitkalar yo'q). Ish beruvchi — kunlik ishchilar. /ai — aqlli qidiruv va "Sizga mos".
+ * S2 / 2026-10 · bo'limlar: bosilsa — o'sha bo'lim natijalari, faol filtr chip sifatida ko'rinadi va olib tashlanadi.
+ * Ish qidiruvchi (2.0, 2026-11): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtr oynasida.
+ * Ish beruvchi (2.0) — bosh sahifada "Kunlik ishchilar" tez yo'li. /ai — aqlli qidiruv va "Sizga mos".
  */
 
 const EMP = "7e2e0000-0000-4000-8000-000000000066";
@@ -52,31 +52,35 @@ test.describe("bo'limlar", () => {
     await sql("delete from public.worker_profiles where profile_id = $1", [WRK]);
   });
 
-  test("ish qidiruvchi: bo'lim sonlari bazadagi bilan bir xil; 0 ta bo'lim ko'rinmaydi", async ({ page, context }) => {
+  test("ish qidiruvchi (2.0): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtrda", async ({ page, context }) => {
     await asGuest(context);
     await asMode(context, "worker");
     await page.goto("/");
-    const [c] = await sql<Record<string, string>>("select * from public.vacancy_section_counts(null, null)");
-    await expect(tile(page, "Kunlik ishlar")).toContainText(new Intl.NumberFormat("ru-RU").format(Number(c!.daily)));
-    await expect(tile(page, "YaTT")).toContainText(String(c!.entrepreneur));
-    await expect(tile(page, "Ommaviy")).toContainText(String(c!.mass));
-    await expect(tile(page, "Yaqin atrofda")).toBeVisible();
-    await expect(tile(page, "Barcha sohalar")).toBeVisible();
-    // TOP — faqat admin belgilagan e'lon bo'lsa
-    if (Number(c!.featured) === 0) await expect(tile(page, "TOP")).toHaveCount(0);
-    // 2026-10: birinchi ekranni katta plitkalar egallamaydi — bo'limlar ro'yxatdan keyin (telefonda), rasmsiz
+    // bosh sahifa — bitta qidiruv va yangi ishlar; bo'limlar plitkasi/ro'yxati yo'q (bir ekranda bitta vazifa)
     await expect(page.locator("#home-feed")).toBeVisible();
-    const order = await page.evaluate(() => ({ sections: document.querySelector("#home-sections")!.getBoundingClientRect().top, feed: document.querySelector("#home-feed")!.getBoundingClientRect().top }));
-    expect(order.sections).toBeGreaterThan(order.feed);
-    await expect(sections(page).locator("img")).toHaveCount(0);
+    await expect(sections(page)).toHaveCount(0);
+    await expect(page.locator("#home-sections")).toHaveCount(0);
+    // "Filtrlar bilan qidirish" → natijalar; filtr oynasida ish beruvchi turi (YaTT va boshqalar), ommaviy va TOP bo'limlari
+    await page.getByRole("main").getByRole("link", { name: "Filtrlar bilan qidirish" }).click();
+    await page.waitForURL(/\/search\?mode=jobs&region=all&any=1$/);
+    await page.getByRole("button", { name: /^Filtr/ }).click();
+    const dialog = page.getByRole("dialog");
+    await expect(dialog.getByText("Yakka tartibdagi tadbirkorlar")).toBeVisible();
+    await expect(dialog.getByRole("checkbox", { name: /^Ommaviy/ })).toBeVisible();
+    await expect(dialog.getByRole("checkbox", { name: "TOP e'lonlar" })).toBeVisible();
+    // tanlansa — o'sha bo'lim natijalari
+    await dialog.getByRole("checkbox", { name: /^Ommaviy/ }).check();
+    await dialog.getByRole("button", { name: /^Natijalarni ko'rish \(\d+\)$/ }).click();
+    await page.waitForURL(/mass=1/);
+    const cards = page.locator("main article");
+    await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(1);
+    await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(0);
   });
 
-  test("bo'lim → natijalar: YaTT e'lonlari, chip bilan; chip olib tashlansa — barcha kasblar", async ({ page, context }) => {
+  test("bo'lim natijalari: YaTT e'lonlari, chip bilan; chip olib tashlansa — barcha kasblar; ommaviy — 5+ o'rin", async ({ page, context }) => {
     await asGuest(context);
     await asMode(context, "worker");
-    await page.goto("/");
-    await tile(page, "YaTT").click();
-    await page.waitForURL(/etype=ie/);
+    await page.goto("/search?mode=jobs&region=all&etype=ie&any=1");
     const cards = page.locator("main article");
     await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(1);
     await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(1);
@@ -85,20 +89,17 @@ test.describe("bo'limlar", () => {
     await page.waitForURL((u) => !new URL(u).searchParams.has("etype") && new URL(u).searchParams.get("any") === "1");
 
     // ommaviy: 5+ o'rin
-    await page.goto("/");
-    await tile(page, "Ommaviy").click();
-    await page.waitForURL(/mass=1/);
+    await page.goto("/search?mode=jobs&region=all&mass=1&any=1");
     await expect(cards.filter({ hasText: "YaTT qadoqlovchilar" })).toHaveCount(1);
     await expect(cards.filter({ hasText: "YaTT omborchi kunlik" })).toHaveCount(0);
   });
 
-  test("ish beruvchi: 'Kunlik ishchilar' — soni va natijasi (kunlik to'lovga yoki bugun tayyor)", async ({ page, context }) => {
+  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchilar' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({ page, context }) => {
     await asGuest(context);
     await asMode(context, "employer");
     await page.goto("/");
-    const [c] = await sql<Record<string, string>>("select * from public.worker_section_counts(null, null)");
-    await expect(tile(page, "Kunlik ishchilar")).toContainText(new Intl.NumberFormat("ru-RU").format(Number(c!.daily)));
-    await tile(page, "Kunlik ishchilar").click();
+    await expect(sections(page)).toHaveCount(0);
+    await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Kunlik ishchilar", exact: true }).click();
     await page.waitForURL(/mode=workers.*pay=daily/);
     await expect(page.locator("main article").filter({ hasText: "Yuk tashuvchi (kunlik)" })).toHaveCount(1);
     await expect(page.getByRole("group", { name: "Faol filtrlar" }).getByRole("link", { name: /Kunlik ishchilar/ })).toBeVisible();

@@ -211,7 +211,7 @@ export function ProfessionPicker({
               onClick={() => setCustomSector(c.id)}
               className={cn("flex min-w-0 items-center gap-2 rounded-2xl border p-3 text-left text-sm font-medium [overflow-wrap:anywhere]", customSector === c.id ? "border-primary bg-primary-soft" : "border-border bg-card hover:border-primary/50")}
             >
-              <CategoryIcon name={c.icon} className="size-4 shrink-0 text-primary" /> <span className="min-w-0">{name(c)}</span>
+              <CategoryIcon name={c.icon} className="size-4 shrink-0 text-primary-ink" /> <span className="min-w-0">{name(c)}</span>
             </button>
           ))}
         </div>
@@ -271,7 +271,7 @@ export function ProfessionPicker({
                   onClick={() => (sec ? openSector(sec.id) : setQuery(o.query ?? ""))}
                   className="flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-left font-medium transition-colors hover:border-primary/50"
                 >
-                  {sec ? <CategoryIcon name={sec.icon} className="size-5 shrink-0 text-primary" /> : <Search className="size-5 shrink-0 text-primary" />}
+                  {sec ? <CategoryIcon name={sec.icon} className="size-5 shrink-0 text-primary-ink" /> : <Search className="size-5 shrink-0 text-primary-ink" />}
                   <span>{t(`professions.ambiguous.${ambiguity.key}.${o.key}`)}</span>
                 </button>
               );
@@ -304,7 +304,7 @@ export function ProfessionPicker({
                       }}
                       className="flex w-full items-center gap-3 rounded-2xl border border-border bg-card p-4 text-left transition-colors hover:border-primary/50 hover:bg-primary-soft/40"
                     >
-                      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                         <CategoryIcon name={h.icon ?? sec?.icon} className="size-5" />
                       </span>
                       <span className="min-w-0 flex-1">
@@ -323,7 +323,7 @@ export function ProfessionPicker({
             <p className="rounded-2xl border border-dashed border-border p-5 text-center text-sm text-muted-foreground">{t("professions.no_results")}</p>
           )}
           {onCustom ? (
-            <button type="button" onClick={() => setCustom(query.trim())} className="w-full rounded-2xl border border-dashed border-primary/40 p-4 text-left text-sm font-semibold text-primary hover:bg-primary-soft/40">
+            <button type="button" onClick={() => setCustom(query.trim())} className="w-full rounded-2xl border border-dashed border-primary/40 p-4 text-left text-sm font-semibold text-primary-ink hover:bg-primary-soft/40">
               {t("professions.custom_cta", { text: query.trim() })}
             </button>
           ) : null}
@@ -339,7 +339,7 @@ export function ProfessionPicker({
                     type="button"
                     onClick={c.onClick}
                     disabled={i === crumbs.length - 1}
-                    className={cn("rounded-lg px-1.5 py-1", i === crumbs.length - 1 ? "font-semibold text-foreground" : "text-primary hover:bg-primary-soft")}
+                    className={cn("rounded-lg px-1.5 py-1", i === crumbs.length - 1 ? "font-semibold text-foreground" : "text-primary-ink hover:bg-primary-soft")}
                   >
                     {c.label}
                   </button>
@@ -359,7 +359,7 @@ export function ProfessionPicker({
                     {recent.map((r) => {
                       const last = r.trail.at(-1);
                       return last ? (
-                        <button key={r.id} type="button" onClick={() => select(r)} className="rounded-full border border-primary/30 bg-primary-soft/50 px-4 py-2 text-sm font-semibold text-primary hover:bg-primary-soft">
+                        <button key={r.id} type="button" onClick={() => select(r)} className="rounded-full border border-primary/30 bg-primary-soft/50 px-4 py-2 text-sm font-semibold text-primary-ink hover:bg-primary-soft">
                           {name(last)}
                         </button>
                       ) : null;
@@ -375,7 +375,7 @@ export function ProfessionPicker({
                     onClick={() => openSector(c.id)}
                     className="flex min-h-[112px] flex-col items-start justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-[0.98]"
                   >
-                    <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+                    <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
                       <CategoryIcon name={c.icon} className="size-6" />
                     </span>
                     {/* uzun so'z (telekommunikatsiya, программирование) plitkadan chiqmasin: kenglik — plitka, so'z kerak bo'lsa bo'linadi */}
@@ -443,7 +443,7 @@ export function ProfessionPicker({
         </>
       )}
       {onCustom && hits === null ? (
-        <button type="button" onClick={() => setCustom(query.trim())} className="inline-flex min-h-11 items-center text-base font-medium text-primary underline-offset-4 hover:underline">
+        <button type="button" onClick={() => setCustom(query.trim())} className="inline-flex min-h-11 items-center text-base font-medium text-primary-ink underline-offset-4 hover:underline">
           {t("professions.custom_link")}
         </button>
       ) : null}
@@ -503,7 +503,7 @@ function SelectedCard({ value, categories, onChange, onEdit }: { value: PickedPr
   return (
     <div className="space-y-4">
       <div className="rounded-2xl border-2 border-primary bg-primary-soft/40 p-5">
-        <p className="text-xs font-semibold uppercase tracking-wide text-primary">{t("professions.selected")}</p>
+        <p className="text-xs font-semibold uppercase tracking-wide text-primary-ink">{t("professions.selected")}</p>
         <div className="mt-2 flex items-start gap-3">
           <span className="flex size-12 shrink-0 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
             <CategoryIcon name={sector?.icon} className="size-6" />
@@ -512,7 +512,7 @@ function SelectedCard({ value, categories, onChange, onEdit }: { value: PickedPr
             <p className="text-xl font-bold leading-snug">{last ? name(last) : ""}</p>
             <p className="mt-1 text-sm text-muted-foreground">{[sector ? name(sector) : null, ...value.trail.slice(0, -1).map((x) => name(x))].filter(Boolean).join(" › ")}</p>
           </div>
-          <button type="button" onClick={onEdit} className="inline-flex shrink-0 items-center gap-1 rounded-xl px-3 py-2 text-sm font-semibold text-primary hover:bg-primary-soft">
+          <button type="button" onClick={onEdit} className="inline-flex shrink-0 items-center gap-1 rounded-xl px-3 py-2 text-sm font-semibold text-primary-ink hover:bg-primary-soft">
             <X className="size-4" /> {t("professions.change")}
           </button>
         </div>

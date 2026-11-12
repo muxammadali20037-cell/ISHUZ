@@ -2,9 +2,9 @@ import { expect, test, type BrowserContext, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql, stack } from "../support";
 
 /**
- * T · kirish oqimi (11 ekran): splash → TIL (birinchi amal) → tanishtiruv (3) → kirish usuli → rol → telefon → kod →
- * profil → "Profilingiz tayyor!" → rolning bosh sahifasi. Qaytgan foydalanuvchi, robot va to'g'ridan-to'g'ri havola —
- * oqimsiz. Stendda Telegram bot kaliti yo'q: kod yuborish/tekshirish javoblari kerak joyda test ichida beriladi, server
+ * T · kirish oqimi (2.0): xush kelibsiz ekrani (til + rol, rasmlar bilan) → rolning bosh sahifasi (kirishsiz). Kirish —
+ * kerak bo'lganda: rol → usul → telefon → kod → profil → "Profilingiz tayyor!". Qaytgan foydalanuvchi, robot va
+ * to'g'ridan-to'g'ri havola — oqimsiz. Stendda Telegram bot kaliti yo'q: kod yuborish/tekshirish javoblari kerak joyda test ichida beriladi, server
  * tekshiruvi esa haqiqiy endpoint'da alohida ko'rsatiladi.
  */
 
@@ -28,7 +28,7 @@ async function freshUser(id: string, phone: string, first: string, last: string)
   await sql("update public.profiles set active_role = null, first_name = $2, last_name = $3 where id = $1", [id, first, last]);
 }
 
-/** Oqim o'rtasida kirgan foydalanuvchi: til va tanishtiruv o'tilgan, oqim boshlangan, rol hali yo'q */
+/** Oqim o'rtasida kirgan foydalanuvchi: xush kelibsiz ekrani o'tilgan, oqim boshlangan, rol hali yo'q */
 async function loginMidFlow(ctx: BrowserContext, userId: string) {
   await ctx.clearCookies();
   await loginAs(ctx, userId);
@@ -36,43 +36,65 @@ async function loginMidFlow(ctx: BrowserContext, userId: string) {
 }
 
 test.describe("kirish oqimi", () => {
-  test("yangi foydalanuvchi: avval til; ruscha tanlansa keyingi ekranlar ruscha, tanlov saqlanadi", async ({ page, context }) => {
+  test("yangi foydalanuvchi (2.0): bitta xush kelibsiz ekrani — til qatori va ikkita rasmli karta; 'Ish qidiryapman' → ish izlovchi bosh sahifasi, kirish so'ralmaydi", async ({ page, context }) => {
     await context.clearCookies();
     await page.goto("/");
     await page.waitForURL("**/start/til");
-    await expect(page.getByRole("heading", { level: 1, name: "Tilni tanlang" })).toBeVisible();
-    // tanlanmaguncha "Davom etish" faol emas
-    await expect(page.getByRole("button", { name: "Davom etish" })).toBeDisabled();
-    for (const name of ["O'zbekcha", "Ўзбекча", "Русский", "English"]) await expect(page.getByText(name, { exact: true })).toBeVisible();
-
-    await page.getByText("Русский", { exact: true }).click();
-    // ekran darhol tanlangan tilga o'tadi
-    await expect(page.getByRole("heading", { level: 1, name: "Выберите язык" })).toBeVisible();
-    await page.getByRole("button", { name: "Продолжить" }).click();
-    await page.waitForURL("**/start/tanishtiruv");
-    await expect(page.getByRole("heading", { level: 1, name: "Найти работу стало проще" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Siz nima qidiryapsiz?" })).toBeVisible();
+    // til — bir qator: bosilgan til darhol qo'llanadi ("Davom etish" yo'q)
+    const langs = page.getByTestId("welcome-languages");
+    for (const name of ["O'zbekcha", "Ўзбекча", "Русский", "English"]) await expect(langs.getByText(name, { exact: true })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Davom etish" })).toHaveCount(0);
+    await langs.getByText("Русский", { exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Что вы ищете?" })).toBeVisible();
     expect(await cookie(context, "ishuz_locale")).toBe("ru");
-    // tanishtiruv faqat oxirida yoki o'tkazib yuborilganda "ko'rilgan" bo'ladi
-    expect(await cookie(context, "ib_intro")).toBeUndefined();
+    await langs.getByText("O'zbekcha", { exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Siz nima qidiryapsiz?" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Пропустить" }).click();
-    await page.waitForURL(/\/auth\?next=%2Fstart$/);
-    // kirishning birinchi qadami — rol
-    await expect(page.getByRole("heading", { level: 1, name: "Выберите свою роль" })).toBeVisible();
+    // ikkita rasmli karta (admin surat yuklamagan — o'rnatilgan suratlar), har biri ≥ 44px
+    const roles = page.locator("form[data-welcome-roles]");
+    await expect(roles.getByRole("button", { name: /Ish qidiryapman/ })).toBeVisible();
+    await expect(roles.getByRole("button", { name: /Ishchi qidiryapman/ })).toBeVisible();
+    await expect(roles.locator("img")).toHaveCount(2);
+    // tanishtiruv slaydlari ixtiyoriy; kirish ham
+    await expect(page.getByRole("link", { name: "Qanday ishlaydi?" })).toHaveAttribute("href", "/start/tanishtiruv?next=%2Fstart%2Ftil");
+    await expect(page.getByRole("link", { name: /Kirish$/ })).toHaveAttribute("href", "/auth");
+
+    await roles.getByRole("button", { name: /Ish qidiryapman/ }).click();
+    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+    expect(await cookie(context, "ib_mode")).toBe("worker");
     expect(await cookie(context, "ib_intro")).toBe("1");
-
-    // mehmon kirishga majburlanmaydi: bosh sahifa endi oqimsiz, o'sha tilda
+    // oqim tugadi: bosh sahifa endi oqimsiz ochiladi
     await page.goto("/");
     expect(path(page)).toBe("/");
-    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+    await expect(page.locator("html")).toHaveAttribute("lang", "uz");
   });
 
-  test("tanishtiruv: 3 qadam, Keyingi / Oldingi / nuqtalar / klaviatura; birinchisida orqaga — til; 'Boshlash' → kirish usuli", async ({ page, context }) => {
+  test("xush kelibsiz: 'Ishchi qidiryapman' → ish beruvchi bosh sahifasi; JS'siz ham ishlaydi (oddiy forma)", async ({ browser, baseURL }) => {
+    const ctx = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+    await asGuest(ctx);
+    const page = await ctx.newPage();
+    await page.goto("/start/til");
+    await expect(page.getByRole("heading", { level: 1, name: "Siz nima qidiryapsiz?" })).toBeVisible();
+    // JS'siz til — oddiy havola (?lang=)
+    await page.getByTestId("welcome-languages").getByText("Русский", { exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Что вы ищете?" })).toBeVisible();
+    await page.locator("form[data-welcome-roles]").getByRole("button", { name: /Ищу сотрудников|Ishchi qidiryapman/ }).click();
+    await page.waitForURL((u) => new URL(u).pathname === "/");
+    // (bosh sahifaning o'zi oqim bilan chiziladi — JS'siz to'liq ko'rinmasligi mumkin; muhimi: forma ishladi, rol va til saqlandi)
+    const cookies = await ctx.cookies();
+    expect(cookies.find((c) => c.name === "ib_mode")?.value).toBe("employer");
+    expect(cookies.find((c) => c.name === "ishuz_locale")?.value).toBe("ru");
+    expect(cookies.find((c) => c.name === "ib_intro")?.value).toBe("1");
+    await ctx.close();
+  });
+
+  test("tanishtiruv (ixtiyoriy): 3 qadam, Keyingi / Oldingi / nuqtalar / klaviatura; 'Boshlash' va 'O'tkazib yuborish' — rol tanlanmagan bo'lsa xush kelibsiz ekraniga", async ({ page, context }) => {
     await context.clearCookies();
     await page.goto("/start/til");
-    await page.getByText("O'zbekcha", { exact: true }).click();
-    await page.getByRole("button", { name: "Davom etish" }).click();
-    await page.waitForURL("**/start/tanishtiruv");
+    await page.getByRole("link", { name: "Qanday ishlaydi?" }).click();
+    await page.waitForURL("**/start/tanishtiruv**");
     const h1 = page.getByRole("heading", { level: 1 });
     await expect(h1).toHaveText("Ish topish endi osonroq");
     await page.getByRole("link", { name: "Keyingi" }).click();
@@ -85,20 +107,14 @@ test.describe("kirish oqimi", () => {
     await expect(h1).toHaveText("AI yordamchingiz har doim yoningizda");
     // oxirgi qadamda "O'tkazib yuborish" yo'q — "Boshlash"
     await expect(page.getByRole("button", { name: "O'tkazib yuborish" })).toHaveCount(0);
-    // birinchi slayddagi "orqaga" — til tanlashga
-    await page.getByRole("link", { name: "1-qadam, jami 3" }).click();
-    await page.getByRole("link", { name: "Oldingi" }).click();
-    await page.waitForURL("**/start/til");
-    await expect(page.getByTestId("lang-uz")).toBeChecked();
-    await page.getByRole("button", { name: "Davom etish" }).click();
-    await page.waitForURL("**/start/tanishtiruv");
-    for (const title of ["Ishchi topish bir joyda", "AI yordamchingiz har doim yoningizda"]) {
-      await page.getByRole("link", { name: "Keyingi" }).click();
-      await expect(h1).toHaveText(title);
-    }
     await page.getByRole("button", { name: "Boshlash" }).click();
-    await page.waitForURL(/\/auth\?next=%2Fstart$/);
+    await page.waitForURL("**/start/til");
     expect(await cookie(context, "ib_intro")).toBe("1");
+    await expect(page.getByRole("heading", { level: 1, name: "Siz nima qidiryapsiz?" })).toBeVisible();
+    // o'tkazib yuborish ham xush kelibsiz ekraniga
+    await page.getByRole("link", { name: "Qanday ishlaydi?" }).click();
+    await page.getByRole("button", { name: "O'tkazib yuborish" }).click();
+    await page.waitForURL("**/start/til");
   });
 
   test("kirish: avval rol (har safar, oxirgi tanlov belgilangan), keyin usul — faqat ishlaydiganlari (Google yo'q, bot sozlanmagan — Telegram ham yo'q)", async ({ page, context }) => {
@@ -427,54 +443,26 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
     await guest.close();
   });
 
-  test("bosh ekran foni: admin surat yuklasa — sarlavhada surat va ko'k parda; olib tashlansa — ko'k fon", async ({ page, context, browser }) => {
-    test.setTimeout(120_000);
-    const sharp = (await import("sharp")).default;
+  test("bosh ekran foni: 2.0 — bosh sahifalarda fon surati yo'q, admin'da fon surati joylari ham yo'q (faqat mehmon sahifasining katta surati)", async ({ page, context, browser }) => {
     await loginAs(context, USERS.workerB, "aal2");
     await page.goto("/admin/entry");
-    await expect(page.getByRole("heading", { level: 2, name: "Bosh ekran fonlari" })).toBeVisible();
-    const slot = page.getByTestId("entry-slot-hero_seeker");
-    await expect(slot.getByText("O'rnatilgan tasvir", { exact: true })).toBeVisible();
-    const photo = await sharp({ create: { width: 1920, height: 1080, channels: 3, background: { r: 240, g: 240, b: 235 } } }).jpeg().toBuffer();
-    await expect(async () => {
-      const chooser = page.waitForEvent("filechooser", { timeout: 2000 }).catch(() => null);
-      await slot.getByRole("button", { name: "Rasm yuklash" }).click();
-      const c = await chooser;
-      if (!c) throw new Error("fayl tanlash oynasi ochilmadi");
-      await c.setFiles({ name: "hero.jpg", mimeType: "image/jpeg", buffer: photo });
-    }).toPass({ timeout: 15_000 });
-    await expect(slot.locator("img")).toHaveAttribute("src", /\/site-media\/entry\/v-[0-9a-f]{64}\.webp$/, { timeout: 15_000 });
-    const file = (await slot.locator("img").getAttribute("src"))!.split("/").pop()!;
-
-    // ish qidiruvchi bosh sahifasi: sarlavhada surat (birinchi ekran — darhol yuklanadi), ustida parda; oq sarlavha o'qiladi
-    const guest = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
-    await asGuest(guest);
-    await asMode(guest, "worker");
-    const g = await guest.newPage();
-    await g.goto("/");
-    const hero = g.locator("main .hero-surface");
-    await expect(hero).toHaveClass(/has-photo/);
-    await expect(hero.locator(`img[src$="${file}"]`)).toBeVisible();
-    await expect(hero.locator(".hero-scrim")).toHaveCount(1);
-    await expect(g.getByRole("heading", { level: 1, name: "O'zingizga mos ishni toping" })).toBeVisible();
-    // ish beruvchi foni yuklanmagan — u yerda ko'k
-    const emp = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
-    await asGuest(emp);
-    await asMode(emp, "employer");
-    const e = await emp.newPage();
-    await e.goto("/");
-    await expect(e.locator("main .hero-surface")).not.toHaveClass(/has-photo/);
-    await emp.close();
-
-    await slot.getByRole("button", { name: "O'rnatilgan tasvirga qaytish" }).click();
-    await expect(slot.getByText("O'rnatilgan tasvir", { exact: true })).toBeVisible();
-    await g.reload();
-    await expect(g.locator("main .hero-surface")).not.toHaveClass(/has-photo/);
-    await expect(g.locator(`main .hero-surface img`)).toHaveCount(0);
-    await guest.close();
+    await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    for (const slot of ["hero_seeker", "hero_employer", "hero_guest"]) await expect(page.getByTestId(`entry-slot-${slot}`)).toHaveCount(0);
+    await expect(page.getByTestId("entry-slot-home_photo")).toBeVisible();
+    for (const mode of ["worker", "employer"] as const) {
+      const c = await browser.newContext({ baseURL: stack.app, viewport: { width: 390, height: 844 } });
+      await asGuest(c);
+      await asMode(c, mode);
+      const p = await c.newPage();
+      await p.goto("/");
+      await expect(p.locator(`[data-home='${mode === "worker" ? "seeker" : "employer"}-v2']`)).toBeVisible();
+      await expect(p.locator("main .hero-surface")).toHaveCount(0);
+      await expect(p.locator('main img[src*="/site-media/entry/"]')).toHaveCount(0);
+      await c.close();
+    }
   });
 
-  test("2026-10: bosh sahifalarda katta rasmli plitkalar yo'q — admin'da ularning rasm joylari ham yo'q, bo'limlar ixcham ro'yxat", async ({ page, context, browser }) => {
+  test("2.0: bosh sahifalarda katta plitkalar ham, bo'limlar ro'yxati ham yo'q — admin'da ularning rasm joylari ham yo'q", async ({ page, context, browser }) => {
     await loginAs(context, USERS.workerB, "aal2");
     await page.goto("/admin/entry");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
@@ -488,9 +476,8 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
       await asGuest(guest);
       const g = await guest.newPage();
       await g.goto("/");
-      const sections = g.getByRole("region", { name: "Bo'limlar", exact: true });
-      await expect(sections).toBeVisible();
-      await expect(sections.locator("img")).toHaveCount(0);
+      await expect(g.getByRole("region", { name: "Bo'limlar", exact: true })).toHaveCount(0);
+      await expect(g.getByRole("navigation", { name: "Xizmatlar" })).toHaveCount(0);
       await expect(g.locator('main img[src*="/site-media/entry/"]')).toHaveCount(0);
       await guest.close();
     }

@@ -1,34 +1,15 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
 import { getT } from "@/lib/i18n/server";
-import { LOCALE_COOKIE } from "@/lib/i18n/config";
-import { EntryBrand, EntryHeading, EntryScreen } from "@/features/entry/components/entry-screen";
-import { getEntryStats } from "@/features/landing/entry-queries";
-import { BRAND } from "@/config/brand";
-import { getEntryMedia } from "@/features/entry/queries";
-import { entryMediaUrl } from "@/features/entry/media";
-import { LanguagePicker } from "@/features/entry/components/language-picker";
+import { safeInternalPath } from "@/lib/security/safe-path";
+import { WelcomeScreen } from "@/features/entry/components/welcome-screen";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
-  return { title: t("welcome.entry.language.title"), robots: { index: false } };
+  return { title: t("welcome.entry.welcome.title"), robots: { index: false } };
 }
 
-/** 2-ekran (birinchi amal): til. Tanlov cookie + profilda saqlanadi; keyingi ekranlar shu tilda */
-export default async function LanguagePage() {
-  const [{ t, locale }, jar, stats, media] = await Promise.all([getT(), cookies(), getEntryStats(), getEntryMedia()]);
-  return (
-    <EntryScreen>
-      <div className="pt-1">
-        <EntryBrand
-          name={BRAND.name}
-          slogan={t("welcome.splash.slogan")}
-          photo={entryMediaUrl(media.hero_guest)}
-          live={stats && stats.today > 0 ? t("welcome.entry.today", { count: new Intl.NumberFormat("ru-RU").format(stats.today) }) : null}
-        />
-        <EntryHeading className="mt-6" title={t("welcome.entry.language.title")} subtitle={t("welcome.entry.language.subtitle")} />
-      </div>
-      <LanguagePicker current={locale} chosen={!!jar.get(LOCALE_COOKIE)?.value} />
-    </EntryScreen>
-  );
+/** Birinchi ochilish (2.0): xush kelibsiz ekrani — til va rol bitta joyda; ?lang= (JS'siz til) proxy'da o'qiladi */
+export default async function WelcomePage({ searchParams }: { searchParams: Promise<{ error?: string; next?: string }> }) {
+  const sp = await searchParams;
+  return <WelcomeScreen error={!!sp.error} next={safeInternalPath(sp.next, "") || null} />;
 }

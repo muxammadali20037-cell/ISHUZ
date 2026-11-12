@@ -58,7 +58,7 @@ export async function MyVacanciesSection({ userId, companyId, limit = 5, title }
             {vacancies.map((v) => (
               <tr key={v.id} className="relative transition-colors hover:bg-secondary/60">
                 <td className="max-w-0 px-4 py-3">
-                  <Link href={`/employer/vacancies/${v.id}`} className="block truncate text-base font-semibold after:absolute after:inset-0 after:content-[''] hover:text-primary">
+                  <Link href={`/employer/vacancies/${v.id}`} className="block truncate text-base font-semibold after:absolute after:inset-0 after:content-[''] hover:text-primary-ink">
                     {v.title}
                   </Link>
                 </td>

@@ -75,24 +75,24 @@ Gradient faqat `globals.css` dagi tasdiqlangan utilitalarda — komponentlarda x
 - Yangi joyga gradient kerak bo'lsa — avval shu jadvalga utilita sifatida qo'shiladi, keyin ishlatiladi. Yaltirash, kamalak
   ranglar va 3D tugmalar qaytarilmaydi (egasining qarori, 2026-10-22).
 
-### 1.2 Logotip — "Darvoza" (2026-11-05)
+### 1.2 Logotip (2026-11-05, egasi bergan belgi)
 
-Egasi: "logotipni ham o'zgartirish kerak". Avvalgi rasm-logo (qo'l berib so'rashayotgan ikki odam) kichik o'lchamda
-o'qilmasdi va faqat rastr edi. Yangi belgi — sodda vektor:
+Egasi (2026-11-05 kechqurun): "mana shu logotipdan foydalaning, endi xuddi shu bo'lsin", so'ng "mana logotipi" — tekis
+(yaltirashsiz) varianti; sayt va video uchun. Kunduzi qilingan vektor "Darvoza" belgisi (ravoq + ✓) shu belgi bilan almashtirildi.
 
-- **Belgi:** yuqori uchi o'tkir ravoq (O'zbekiston peshtoqlari — "imkoniyat darvozasi") va ichida oq belgi (✓ — "topdim").
-  Ma'nosi: ish (darvoza ortidagi joy), imkoniyat, ishonch (✓), mahalliy o'ziga xoslik. 16 px faviconda ham o'qiladi.
+- **Belgi:** oq plita ichida ko'k odam (bosh + to'lqin) va yuqoriga ko'tarilgan strelka — "ish topdim, oldinga".
+  Egasi bergan rasm **o'zgartirilmaydi** (rang, shakl — asl holicha). Yagona manba:
+  `scripts/brand/source/ishtopdim-mark-original.png` (1254×1254, qora fonda); skript faqat plita atrofidagi qora fonni
+  shaffof qiladi va kvadrat kesadi. Plita oq bo'lgani uchun och va to'q fonda bir xil ishlaydi (alohida "to'q fon" varianti yo'q).
 - **Yozuv:** "Ish topdim" — Geist SemiBold, "topdim" asosiy ko'k rangda. Brend nomi o'zgarmagan.
-- **Ko'rinishlar** (`python3 scripts/brand/build-brand.py && node scripts/brand/rasterize.mjs`):
-  `public/brand/ishtopdim-logo-stacked.svg` (asosiy, tik), `ishtopdim-logo.svg` (gorizontal), `ishtopdim-logo-on-dark.svg`
-  (to'q fon), `ishtopdim-mark.svg` / `ishtopdim-mark-on-dark.svg` (faqat belgi), `ishtopdim-app-icon.svg` (ilova belgisi),
-  PNG — `ishtopdim-logo*.png`; `public/icons/*` (192/512, maskable, apple-touch), `src/app/favicon.ico` (16/32/48),
-  `public/icon.svg`; ijtimoiy tarmoq rasmi — `public/brand/og-default.png` (1200×630). Yozuv fayllarda konturga aylantirilgan.
-- **Komponentlar:** `BrandMark` (`tone`: `brand` — ko'k ravoq, oq ✓; `light` — to'q sirtda oq ravoq; `tile` — ilova plitasi),
-  `BrandLogo` (`horizontal` | `stacked`, `onDark`). Rasm yuklanmaydi — inline SVG, ikkala mavzuda tokenlar bilan
-  (`--brand`: yorug' `#1455D9`, qorong'i `#3478F6`).
-- Qoidalar: belgini cho'zmang, burmang, soya yoki gradient bermang; atrofida kamida ravoq kengligining ¼ qismicha bo'sh joy.
-  Ko'k fonda — faqat `light` ko'rinish (oq ravoq).
+- **Fayllar** (`python3 scripts/brand/build-brand.py && node scripts/brand/rasterize.mjs`): `public/brand/ishtopdim-mark.png`
+  (512, shaffof), `ishtopdim-logo.svg/png` (gorizontal), `ishtopdim-logo-on-dark.svg/png`, `ishtopdim-logo-stacked.svg`
+  (asosiy, tik) — belgi SVG ichida PNG, yozuv konturga aylantirilgan; `public/icons/*` (192/512 — plita o'zi, maskable va
+  apple-touch — oq fonda), `src/app/favicon.ico` (16/32/48), ijtimoiy tarmoq rasmi `public/brand/og-default.png` (1200×630).
+- **Komponentlar:** `BrandMark` (next/image, `src/assets/brand/ishtopdim-mark.png`; `sizes` — ko'rsatiladigan o'lcham),
+  `BrandLogo` (`horizontal` | `stacked`, `onDark` — faqat yozuv rangi).
+- Qoidalar: belgini cho'zmang, qirqmang, rangini o'zgartirmang, ustiga soya yoki ramka qo'shmang; atrofida kamida plita
+  kengligining ⅛ qismicha bo'sh joy.
 
 ## 2. Shrift
 

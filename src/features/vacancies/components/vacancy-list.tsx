@@ -72,7 +72,7 @@ export function VacancyList({ items, filter }: { items: VacancyListItem[]; filte
                   aria-current={active ? "page" : undefined}
                 >
                   {t(`vacancies.list.tabs.${f}`)}
-                  <span className={cn("tabular rounded-md px-1.5 text-xs", active ? "bg-primary-soft text-primary" : "bg-card/60")}>{counts[f]}</span>
+                  <span className={cn("tabular rounded-md px-1.5 text-xs", active ? "bg-primary-soft text-primary-ink" : "bg-card/60")}>{counts[f]}</span>
                 </Link>
               );
             })}
@@ -145,7 +145,7 @@ function VacancyRow({
           </div>
           {/* bosish maydoni 44 px: havola butun qator kengligida (menyu tugmasi alohida ustunda), qisqartirish ichki span'da */}
           <h3 className="mt-2 text-base font-semibold leading-snug">
-            <Link href={manageHref} className="tap-target relative block hover:text-primary">
+            <Link href={manageHref} className="tap-target relative block hover:text-primary-ink">
               <span className="line-clamp-2">{v.title}</span>
             </Link>
           </h3>
@@ -215,7 +215,7 @@ function VacancyRow({
         <span className="inline-flex items-center gap-1">
           <Eye className="size-4" /> {t("vacancies.list.views", { count: v.views_count })}
         </span>
-        <Link href={`${manageHref}/applications`} className="tap-target relative inline-flex items-center gap-1 font-medium text-primary hover:underline">
+        <Link href={`${manageHref}/applications`} className="tap-target relative inline-flex items-center gap-1 font-medium text-primary-ink hover:underline">
           <Users className="size-4" /> {t("vacancies.list.applications", { count: v.applications_count })}
         </Link>
         {v.published_at ? (

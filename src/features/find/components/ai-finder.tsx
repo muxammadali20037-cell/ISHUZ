@@ -20,18 +20,27 @@ import { AiModeSwitch, AiPromptBox, AiThread, useAiChat } from "./ai-chat";
  *               (misol bosilsa — oyna ochiladi va shu so'rov darhol yuboriladi);
  *  - "cta"    — mehmon bosh sahifasidagi AI bo'limi uchun asosiy tugma ("AI yordamchini sinab ko'ring");
  *  - "bar"    — bosh ekrandagi "jonli" AI qatori: aylanib turadigan rangli chegara, yaltiroq belgi va o'zi yozilib-o'chib
- *               turadigan misollar (prefers-reduced-motion — harakatsiz, birinchi misol).
+ *               turadigan misollar (prefers-reduced-motion — harakatsiz, birinchi misol);
+ *  - "field"  — 2.0 bosh sahifasining YAGONA qidiruv maydoni: foydalanuvchi o'z so'zi bilan yozadi (har qanday til, xato bilan),
+ *               "Topish" — oyna ochiladi va matn darhol AI'ga yuboriladi; natija bosqichlarsiz shu yerda.
  */
 export function AiFinder({
   defaultMode,
   locked = false,
   variant = "inline",
   className,
+  fieldLabel,
+  placeholder,
+  submitLabel,
 }: {
   defaultMode: "jobs" | "workers";
   locked?: boolean;
-  variant?: "inline" | "card" | "cta" | "bar";
+  variant?: "inline" | "card" | "cta" | "bar" | "field";
   className?: string;
+  /** "field" uchun: maydon nomi (ekran o'qigich), misol matni va tugma yozuvi */
+  fieldLabel?: string;
+  placeholder?: string;
+  submitLabel?: string;
 }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
@@ -50,10 +59,54 @@ export function AiFinder({
     setOpen(true);
     if (example) chat.ask(example);
   };
+  // skriptlar yuklanib bo'lganini bildiradi (sekin telefon: undan oldin bosilsa — forma /ai?q=… ga oddiy yo'l bilan ketadi)
+  const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   return (
     <>
-      {variant === "card" ? (
+      {variant === "field" ? (
+        <form
+          // skriptlar hali yuklanmagan bo'lsa ham boshi berk yo'q: matn AI sahifasiga boradi va o'sha yerda javob beriladi
+          action="/ai"
+          method="get"
+          role="search"
+          aria-label={fieldLabel}
+          data-ai-field
+          data-hydrated={hydrated ? "" : undefined}
+          className={cn("flex items-center gap-1.5 rounded-xl border border-border bg-card p-1.5 shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/30", className)}
+          onSubmit={(e) => {
+            e.preventDefault();
+            // maydon boshqarilmaydi (uncontrolled): skriptlar yuklanishidan oldin yozilgan matn ham yo'qolmaydi
+            const form = e.currentTarget;
+            const q = String(new FormData(form).get("q") ?? "").replace(/\s+/g, " ").trim();
+            form.reset();
+            // bo'sh yuborilsa ham — yordamchi misollar bilan ochiladi (nima yozishni bilmaganlar uchun)
+            openWith(q.length >= 2 ? q : undefined);
+          }}
+        >
+          {/* tor telefonda (≤ 380px) belgi yashiriladi — yozish maydoniga joy qoladi */}
+          <Search className="ml-2 size-5 shrink-0 text-muted-foreground max-[380px]:hidden" aria-hidden />
+          <input
+            name="q"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            maxLength={300}
+            aria-label={fieldLabel}
+            placeholder={placeholder}
+            className="h-12 min-w-0 flex-1 bg-transparent px-1 text-base text-foreground outline-none placeholder:text-muted-foreground max-[380px]:pl-2"
+          />
+          <button
+            type="submit"
+            data-track="ai_finder_open"
+            className="press inline-flex h-12 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3.5 text-base font-semibold text-primary-foreground hover:bg-primary-hover sm:px-5"
+          >
+            <Sparkles className="size-5" aria-hidden />
+            {/* yozuv har doim ko'rinadi (320px da ham): faqat belgi bo'lsa tugma nima qilishi tushunarsiz */}
+            {submitLabel}
+          </button>
+        </form>
+      ) : variant === "card" ? (
         <section aria-labelledby="ai-card-title" className={cn("rounded-2xl border border-primary/25 bg-primary-soft p-4", className)}>
           <div className="flex items-center gap-3">
             <AiAvatar />
@@ -73,7 +126,7 @@ export function AiFinder({
             <Search className="size-5 shrink-0" aria-hidden />
             <span className="min-w-0 flex-1 truncate">{defaultMode === "workers" ? t("easy.finder.placeholder_workers") : t("easy.finder.placeholder_jobs")}</span>
             <span className="sr-only">{t("easy.finder.card_open")}</span>
-            <ArrowRight className="size-5 shrink-0 text-primary" aria-hidden />
+            <ArrowRight className="size-5 shrink-0 text-primary-ink" aria-hidden />
           </button>
           <ul className="mt-3 flex flex-wrap gap-2">
             {examples.map((ex) => (
@@ -81,7 +134,7 @@ export function AiFinder({
                 <button
                   type="button"
                   onClick={() => openWith(ex)}
-                  className="press inline-flex min-h-11 items-center rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary hover:border-primary/60"
+                  className="press inline-flex min-h-11 items-center rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary-ink hover:border-primary/60"
                 >
                   {ex}
                 </button>
@@ -103,7 +156,7 @@ export function AiFinder({
           <span className="@container min-w-0 flex-1">
             <span className="flex min-w-0 items-center gap-1.5 text-sm font-bold text-foreground">
               <span className="truncate">{t("easy.finder.inline_button")}</span>
-              <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary @max-[11rem]:hidden">{t("easy.finder.bar_badge")}</span>
+              <span className="shrink-0 rounded-full bg-primary-soft px-1.5 text-2xs font-bold uppercase leading-4 text-primary-ink @max-[11rem]:hidden">{t("easy.finder.bar_badge")}</span>
             </span>
             <span className="block truncate text-sm text-muted-foreground" aria-hidden>
               <TypedExamples examples={examples} />
@@ -128,7 +181,7 @@ export function AiFinder({
           type="button"
           onClick={() => openWith()}
           data-track="ai_finder_open"
-          className={cn("press inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full py-1 pl-1 pr-3.5 text-sm font-bold text-primary hover:bg-primary-soft", className)}
+          className={cn("press inline-flex min-h-11 shrink-0 items-center gap-2 whitespace-nowrap rounded-full py-1 pl-1 pr-3.5 text-sm font-bold text-primary-ink hover:bg-primary-soft", className)}
         >
           <AiAvatar size="sm" className="rounded-full" />
           {t("easy.finder.inline_button")}

@@ -81,9 +81,9 @@ export async function MarketHero({ stats, counts, media, ai = false }: { stats: 
                     <TileButton
                       data-track="entry_quick"
                       data-track-to={c.key}
-                      className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 text-sm font-medium text-foreground hover:border-primary/50 hover:text-primary"
+                      className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-3.5 text-sm font-medium text-foreground hover:border-primary/50 hover:text-primary-ink"
                     >
-                      <c.icon className="size-4 shrink-0 text-primary" aria-hidden />
+                      <c.icon className="size-4 shrink-0 text-primary-ink" aria-hidden />
                       {c.label}
                     </TileButton>
                   </form>
@@ -115,7 +115,7 @@ export async function MarketHero({ stats, counts, media, ai = false }: { stats: 
           ) : null}
           {employers ? (
             <div className="absolute -right-4 top-8 flex items-center gap-3 rounded-xl border border-border bg-card p-3 pr-4 shadow-lg">
-              <span className="flex size-10 items-center justify-center rounded-lg bg-primary-soft text-primary" aria-hidden>
+              <span className="flex size-10 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
                 <BriefcaseBusiness className="size-5" />
               </span>
               <span>
@@ -145,7 +145,7 @@ function HeroTitle({ text }: { text: string }) {
       ) : null}
       {line.split(/(\[[^\]]+\])/).map((part, j) =>
         part.startsWith("[") && part.endsWith("]") ? (
-          <span key={j} className="text-primary">
+          <span key={j} className="text-primary-ink">
             {part.slice(1, -1)}
           </span>
         ) : (
@@ -166,7 +166,7 @@ function RoleCta({ mode, primary, icon: Icon, label }: { mode: AppMode; primary?
         data-track-to={mode}
         className={cn(
           "press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-6 text-md font-semibold transition-colors sm:w-auto",
-          primary ? "bg-primary text-primary-foreground hover:bg-primary-hover" : "border border-border-strong bg-card text-foreground hover:border-primary/50 hover:text-primary",
+          primary ? "bg-primary text-primary-foreground hover:bg-primary-hover" : "border border-border-strong bg-card text-foreground hover:border-primary/50 hover:text-primary-ink",
         )}
       >
         <Icon className="size-5 shrink-0" aria-hidden />

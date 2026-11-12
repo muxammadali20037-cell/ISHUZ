@@ -174,7 +174,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <>
                     <DetailRow label={t("common.labels.phone")}>
                       {detail.phone ? (
-                        <a href={`tel:${detail.phone}`} className="tabular text-primary hover:underline">{formatPhone(detail.phone)}</a>
+                        <a href={`tel:${detail.phone}`} className="tabular text-primary-ink hover:underline">{formatPhone(detail.phone)}</a>
                       ) : "—"}
                       {detail.phone_verified_at ? <Badge variant="success" size="sm" className="ml-1.5">{t("common.labels.verified")}</Badge> : null}
                     </DetailRow>
@@ -188,7 +188,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                 )}
                 <DetailRow label="Telegram">
                   {detail.telegram?.username || detail.telegram_username ? (
-                    <a href={`https://t.me/${(detail.telegram?.username ?? detail.telegram_username ?? "").replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                    <a href={`https://t.me/${(detail.telegram?.username ?? detail.telegram_username ?? "").replace(/^@/, "")}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-primary-ink hover:underline">
                       <Send className="size-3.5" />@{(detail.telegram?.username ?? detail.telegram_username ?? "").replace(/^@/, "")}
                     </a>
                   ) : detail.telegram ? (
@@ -218,7 +218,7 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <DetailRow label={t("admin.workers.onboarded")}><BoolBadge value={!!detail.worker.onboarding_completed_at} yes={t("common.labels.yes")} no={t("common.labels.no")} /></DetailRow>
                   <DetailRow label={t("admin.users.applications")}>{detail.counts.applications}</DetailRow>
                   <DetailRow label="">
-                    <Link href={`/workers/${detail.worker.id}`} className="inline-flex items-center gap-1 text-primary hover:underline" target="_blank">
+                    <Link href={`/workers/${detail.worker.id}`} className="inline-flex items-center gap-1 text-primary-ink hover:underline" target="_blank">
                       <ExternalLink className="size-3.5" /> {t("admin.workers.open_public")}
                     </Link>
                   </DetailRow>
@@ -231,11 +231,11 @@ export default async function AdminUsersPage({ searchParams }: { searchParams: P
                   <DetailRow label={t("admin.employers.col_verification")}><StatusBadge status={detail.employer.verification_status} label={tEnum("verification_status", detail.employer.verification_status)} size="sm" /></DetailRow>
                   <DetailRow label={t("admin.employers.company")}>
                     {detail.employer.company ? (
-                      <Link href={`/company/${detail.employer.company.slug}`} className="text-primary hover:underline" target="_blank">{detail.employer.company.name}</Link>
+                      <Link href={`/company/${detail.employer.company.slug}`} className="text-primary-ink hover:underline" target="_blank">{detail.employer.company.name}</Link>
                     ) : "—"}
                   </DetailRow>
                   <DetailRow label={t("admin.users.vacancies")}>
-                    <Link href={`/admin/vacancies?q=${detail.id}`} className="text-primary hover:underline">{detail.counts.vacancies}</Link>
+                    <Link href={`/admin/vacancies?q=${detail.id}`} className="text-primary-ink hover:underline">{detail.counts.vacancies}</Link>
                   </DetailRow>
                 </DetailSection>
               ) : null}

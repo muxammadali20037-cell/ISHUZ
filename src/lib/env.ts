@@ -12,6 +12,8 @@ const serverSchema = z.object({
   TELEGRAM_BOT_USERNAME: z.string().optional(),
   TELEGRAM_WEBHOOK_SECRET: z.string().optional(),
   CRON_SECRET: z.string().optional(),
+  /** Xato monitoringi (Sentry, faqat server). Bo'lmasa o'chiq — `src/lib/monitoring.ts` */
+  SENTRY_DSN: z.string().url().optional(),
   /** Google Play (TWA): paket nomi va imzo sertifikati SHA-256 barmoq izlari (vergul bilan) */
   ANDROID_PACKAGE_NAME: z.string().default("uz.ishtopdim.app"),
   ANDROID_SHA256_CERT_FINGERPRINTS: z.string().optional(),
@@ -25,10 +27,14 @@ const serverSchema = z.object({
   LEGAL_OPERATOR: z.string().optional(),
   /** Footer'dagi rasmiy ijtimoiy tarmoqlar (to'liq https havola; bo'lmasa ko'rsatilmaydi — soxta havola yo'q) */
   SOCIAL_TELEGRAM_URL: z.string().url().optional(),
+  /** bot post yuboradigan kanal: @username yoki -100… (bo'lmasa — SOCIAL_TELEGRAM_URL dagi t.me/<username>) */
+  TELEGRAM_CHANNEL_ID: z.string().optional(),
   SOCIAL_INSTAGRAM_URL: z.string().url().optional(),
   SOCIAL_FACEBOOK_URL: z.string().url().optional(),
   /** AI yordamchi (Claude). Bo'lmasa AI tugmalari ko'rinmaydi */
   ANTHROPIC_API_KEY: z.string().optional(),
+  /** Claude modeli; bo'lmasa src/lib/ai/client.ts dagi standart (claude-sonnet-5-5) */
+  ANTHROPIC_MODEL: z.string().optional(),
   /** Google Gemini (bepul limit): bo'lsa AI uchun birinchi navbatda shu ishlatiladi */
   GEMINI_API_KEY: z.string().optional(),
   GEMINI_MODEL: z.string().optional(),
@@ -72,6 +78,7 @@ export function getServerEnv() {
     TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME,
     TELEGRAM_WEBHOOK_SECRET: process.env.TELEGRAM_WEBHOOK_SECRET,
     CRON_SECRET: process.env.CRON_SECRET,
+    SENTRY_DSN: process.env.SENTRY_DSN || undefined,
     ANDROID_PACKAGE_NAME: process.env.ANDROID_PACKAGE_NAME || undefined,
     ANDROID_SHA256_CERT_FINGERPRINTS: process.env.ANDROID_SHA256_CERT_FINGERPRINTS,
     APP_URL: process.env.APP_URL ?? process.env.NEXT_PUBLIC_APP_URL,
@@ -80,9 +87,11 @@ export function getServerEnv() {
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || undefined,
     LEGAL_OPERATOR: process.env.LEGAL_OPERATOR || undefined,
     SOCIAL_TELEGRAM_URL: process.env.SOCIAL_TELEGRAM_URL || undefined,
+    TELEGRAM_CHANNEL_ID: process.env.TELEGRAM_CHANNEL_ID || undefined,
     SOCIAL_INSTAGRAM_URL: process.env.SOCIAL_INSTAGRAM_URL || undefined,
     SOCIAL_FACEBOOK_URL: process.env.SOCIAL_FACEBOOK_URL || undefined,
     ANTHROPIC_API_KEY: process.env.ANTHROPIC_API_KEY || undefined,
+    ANTHROPIC_MODEL: process.env.ANTHROPIC_MODEL || undefined,
     GEMINI_API_KEY: process.env.GEMINI_API_KEY || undefined,
     GEMINI_MODEL: process.env.GEMINI_MODEL || undefined,
     GEMINI_BASE_URL: testOnlyOverride(process.env.GEMINI_BASE_URL),

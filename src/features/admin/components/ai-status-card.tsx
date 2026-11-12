@@ -46,7 +46,7 @@ export function AiStatusCard({ status, canTest }: { status: AiStatus; canTest: b
   return (
     <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm sm:p-5" aria-labelledby="ai-status-title">
       <div className="flex flex-wrap items-center gap-2">
-        <Bot className="size-5 text-primary" aria-hidden />
+        <Bot className="size-5 text-primary-ink" aria-hidden />
         <h2 id="ai-status-title" className="text-base font-semibold">
           {t("admin.ai.title")}
         </h2>

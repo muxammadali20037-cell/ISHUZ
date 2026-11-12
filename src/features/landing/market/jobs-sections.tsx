@@ -59,7 +59,7 @@ export async function FeaturedJobs() {
         title={t("welcome.jobs.featured_title")}
         subtitle={picked.verified ? t("welcome.jobs.featured_rule_verified") : t("welcome.jobs.featured_rule_salary")}
         action={
-          <Link href={picked.verified ? "/jobs?verified=1" : "/jobs"} prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 text-md font-semibold text-primary hover:underline">
+          <Link href={picked.verified ? "/jobs?verified=1" : "/jobs"} prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 text-md font-semibold text-primary-ink hover:underline">
             {t("welcome.jobs.all")}
             <ArrowRight className="size-4.5" aria-hidden />
           </Link>
@@ -84,7 +84,7 @@ export async function FeaturedJobs() {
                 </h3>
                 <p className="mt-1 flex min-w-0 items-center gap-1 text-sm font-medium text-foreground">
                   <span className="truncate">{v.company_name ?? t("common.role.employer")}</span>
-                  {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
+                  {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
                 </p>
                 {place ? (
                   <p className="mt-0.5 flex min-w-0 items-center gap-1 text-sm text-muted-foreground">
@@ -94,7 +94,7 @@ export async function FeaturedJobs() {
                 ) : null}
                 <ul className="mb-4 mt-3 flex flex-wrap gap-1.5" aria-label={t("welcome.jobs.tags_label")}>
                   {v.is_featured ? <li className="rounded-md bg-highlight px-2 py-1 text-xs font-semibold text-highlight-foreground">{t("easy.card.featured")}</li> : null}
-                  <li className="rounded-md bg-primary-soft px-2 py-1 text-xs font-medium text-primary">{tEnum("employment_type", v.employment_type)}</li>
+                  <li className="rounded-md bg-primary-soft px-2 py-1 text-xs font-medium text-primary-ink">{tEnum("employment_type", v.employment_type)}</li>
                   {cat ? <li className="rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">{cat}</li> : null}
                   {exp ? <li className="rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground">{exp}</li> : null}
                 </ul>
@@ -128,7 +128,7 @@ export async function LatestJobs() {
         title={t("welcome.jobs.latest_title")}
         subtitle={t("welcome.jobs.latest_subtitle")}
         action={
-          <Link href="/jobs?sort=newest" prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 text-md font-semibold text-primary hover:underline">
+          <Link href="/jobs?sort=newest" prefetch={false} className="inline-flex min-h-11 items-center gap-1.5 text-md font-semibold text-primary-ink hover:underline">
             {t("welcome.jobs.all_new")}
             <ArrowRight className="size-4.5" aria-hidden />
           </Link>
@@ -169,7 +169,7 @@ export async function LatestJobs() {
                       <span className="inline-flex min-w-0 items-center gap-1">
                         <Building2 className="size-3.5 shrink-0" aria-hidden />
                         <span className="truncate">{v.company_name ?? t("common.role.employer")}</span>
-                        {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
+                        {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" role="img" aria-label={t("jobs.detail.company_verified")} /> : null}
                       </span>
                       {place ? (
                         <span className="inline-flex min-w-0 items-center gap-1">
@@ -236,7 +236,7 @@ export async function TrustedEmployers() {
         subtitle={shown.length ? t("welcome.trust.subtitle") : undefined}
         action={
           shown.length ? (
-            <Link href="/companies" className="inline-flex min-h-11 items-center gap-1.5 text-md font-semibold text-primary hover:underline">
+            <Link href="/companies" className="inline-flex min-h-11 items-center gap-1.5 text-md font-semibold text-primary-ink hover:underline">
               {t("welcome.trust.all_companies")}
               <ArrowRight className="size-4.5" aria-hidden />
             </Link>
@@ -256,7 +256,7 @@ export async function TrustedEmployers() {
                 <span className="min-w-0 flex-1">
                   <span className="flex min-w-0 items-center gap-1 font-semibold">
                     <span className="truncate">{c.name}</span>
-                    <BadgeCheck className="size-4 shrink-0 text-primary" role="img" aria-label={t("jobs.detail.company_verified")} />
+                    <BadgeCheck className="size-4 shrink-0 text-primary-ink" role="img" aria-label={t("jobs.detail.company_verified")} />
                   </span>
                   <span className="mt-0.5 block text-sm text-muted-foreground">{t("welcome.trust.company_jobs", { count: num(c.activeJobs) })}</span>
                 </span>

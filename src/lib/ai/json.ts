@@ -29,6 +29,8 @@ const AI_DAILY_BUDGET: Record<string, number> = {
   draft_worker: 3000,
   search_parse: 8000,
   verification_review: 500,
+  // AI yordamchi (suhbat): bitta javob 1–3 model chaqiruvi; chegaradan oshsa yordamchi lug'at va shablon bilan javob beradi
+  assistant_chat: 6000,
   other: 2000,
 };
 const AI_DAILY_BUDGET_TOTAL = 12000;
@@ -44,6 +46,11 @@ async function withinDailyBudget(feature: string): Promise<boolean> {
     }
   }
   return one.ok && all.ok;
+}
+
+/** aiJson'dan tashqari AI chaqiruvlari (oqimli suhbat) uchun o'sha kunlik byudjet: false — AI chaqirilmasin */
+export function aiBudgetAllows(feature: string): Promise<boolean> {
+  return withinDailyBudget(feature);
 }
 
 export function isAiBusy(error: unknown): boolean {

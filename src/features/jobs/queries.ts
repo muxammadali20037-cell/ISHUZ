@@ -3,7 +3,9 @@ import "server-only";
 import { cache } from "react";
 import { after } from "next/server";
 import { z } from "zod";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient, PUBLIC_FEED_TAG, type ReadClient } from "@/lib/supabase/public";
 import { normalizeVacancySlug } from "./slug";
 import { getBenefits, getCategories, getDistricts, getRegions, getSubcategories } from "@/lib/reference";
 import type { SessionContext } from "@/features/auth/session";
@@ -115,7 +117,7 @@ export const professionNodeIdBySlug = cache(async (slug: string): Promise<string
  * Vakansiya qidiruvi: search_vacancies_v2 (yo'nalish filtri bilan). Baza hali eski bo'lsa (0038/0033 qo'llanmagan)
  * PostgREST PGRST202 qaytaradi — eski funksiya bilan qayta so'raymiz, qidiruv ishlashda davom etadi.
  */
-async function rpcSearch(supabase: Awaited<ReturnType<typeof createClient>>, args: SearchVacanciesArgs) {
+async function rpcSearch(supabase: ReadClient, args: SearchVacanciesArgs) {
   // maksimal maosh / ma'lumoti filtri tanlangan — v3 (0070); v3 yo'q bazada ularsiz davom etadi
   const { p_salary_max, p_education, ...v2args } = args;
   if (p_salary_max !== undefined || p_education !== undefined) {
@@ -163,8 +165,8 @@ export async function countVacancies(params: JobsSearchParams): Promise<number> 
 }
 
 /** Kichik ro'yxatlar (bosh sahifa bo'limlari, o'xshash vakansiyalar). Xatoda bo'sh ro'yxat. */
-export async function searchVacancyCards(args: SearchVacanciesArgs): Promise<VacancyCardData[]> {
-  const supabase = await createClient();
+export async function searchVacancyCards(args: SearchVacanciesArgs, db?: ReadClient): Promise<VacancyCardData[]> {
+  const supabase = db ?? (await createClient());
   const { data, error } = await rpcSearch(supabase, args);
   if (error) {
     console.error("[jobs] search_vacancies", error.message);
@@ -319,9 +321,17 @@ export async function getVacancyViewerState(vacancy: VacancyDetail, session: Ses
 }
 
 /** O'xshash vakansiyalar: shu kategoriya, joriysidan tashqari */
+// "O'xshash vakansiyalar" soha bo'yicha bir xil (foydalanuvchiga bog'liq emas): 60 s kesh, e'lon joylansa/yopilsa darhol yangilanadi.
+// Yuklama testi (docs/SCALE.md §8): 150 ming faol vakansiyada soha bo'yicha "relevant" saralash ~150–200 ms — har bir vakansiya
+// sahifasi ochilishida takrorlanardi. MARKET_CACHE_SECONDS=0 (E2E stend) — keshsiz. Bo'sh natija ham keshlanadi (haqiqiy holat).
+const SIMILAR_TTL = Number(process.env.MARKET_CACHE_SECONDS ?? 600) > 0 ? 60 : 0;
+const loadSimilarCards = (categoryId: string, limit: number) =>
+  searchVacancyCards({ p_category_id: categoryId, p_sort: "relevant", p_limit: limit, p_offset: 0 }, createPublicClient());
+const cachedSimilarCards = unstable_cache(loadSimilarCards, ["similar-vacancies-v1"], { revalidate: SIMILAR_TTL || 60, tags: [PUBLIC_FEED_TAG] });
+
 export async function getSimilarVacancies(vacancy: VacancyDetail, limit = 5): Promise<VacancyCardData[]> {
   if (!vacancy.category_id) return [];
-  const items = await searchVacancyCards({ p_category_id: vacancy.category_id, p_sort: "relevant", p_limit: limit + 1, p_offset: 0 });
+  const items = SIMILAR_TTL > 0 ? await cachedSimilarCards(vacancy.category_id, limit + 1) : await loadSimilarCards(vacancy.category_id, limit + 1);
   return items.filter((v) => v.id !== vacancy.id).slice(0, limit);
 }
 

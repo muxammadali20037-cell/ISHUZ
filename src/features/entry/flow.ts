@@ -2,13 +2,14 @@ import { safeInternalPath } from "@/lib/security/safe-path";
 import type { AppMode } from "@/features/mode/mode";
 
 /**
- * Kirish oqimi (T1): yangi foydalanuvchi — til → tanishtiruv → rol → kirish usuli → telefon/kod → profil → "Profilingiz tayyor!"
- * → o'z rolining bosh sahifasi. Qaysi qadam kerakligini faqat shu funksiya hal qiladi (bosh sahifa, /start, kirishdan keyin):
+ * Kirish oqimi (2.0): yangi foydalanuvchi — BITTA xush kelibsiz ekrani (til + rol, rasmlar bilan) → o'z rolining bosh sahifasi.
+ * Kirish — faqat kerak bo'lganda (e'lon berish, ariza): rol → kirish usuli → telefon/kod → profil → "Profilingiz tayyor!".
+ * Tanishtiruv slaydlari (/start/tanishtiruv) ixtiyoriy — xush kelibsiz ekranidagi "Qanday ishlaydi?" havolasi. Qaysi qadam kerakligini faqat shu funksiya hal qiladi (bosh sahifa, /start, kirishdan keyin):
  * redirect sikli va qayta-qayta tanishtiruv bo'lmasligi uchun bitta joyda.
  *
  * - Qaytgan foydalanuvchi (kamida bitta roli tayyor) — hech qanday qadamsiz bosh sahifaga.
  * - Qidiruv robotlari — hech qachon (sahifa mazmuni darhol).
- * - Mehmon tanishtiruvdan keyin kirishga majburlanmaydi: bosh sahifa va e'lonlar ochiq; kirish — o'zi xohlaganda.
+ * - Mehmon kirishga majburlanmaydi: bosh sahifa va e'lonlar ochiq; kirish — o'zi xohlaganda.
  * - Kirgan, lekin profili hali yo'q foydalanuvchi oqimga faqat uni boshlagan bo'lsa qaytariladi (ENTRY_COOKIE) — masalan,
  *   vakansiyadan tezkor ariza bergan odamni bosh sahifada profil to'ldirishga majburlamaymiz.
  */
@@ -19,13 +20,14 @@ export const ENTRY_COOKIE = "ib_entry";
 /** Qidiruv robotlari va havola ko'rib chiquvchilar */
 export const BOT_UA = /bot|crawl|spider|slurp|lighthouse|facebookexternalhit|preview|embedly|whatsapp|vkshare/i;
 
-export type EntryStep = "language" | "intro" | "login" | "role" | "profile" | "done";
+/** "welcome" (2.0, 2026-11): til va rol — BITTA ekranda (/start/til); tanishtiruv slaydlari ixtiyoriy ("Qanday ishlaydi?") */
+export type EntryStep = "welcome" | "login" | "role" | "profile" | "done";
 
 export interface EntryState {
   bot: boolean;
   /** til cookie'si bor (foydalanuvchi tanlagan yoki kirishda profildan yozilgan) */
   localeChosen: boolean;
-  /** tanishtiruv oxirigacha ko'rilgan yoki ongli ravishda o'tkazib yuborilgan */
+  /** xush kelibsiz ekrani o'tilgan (rol tanlangan) yoki tanishtiruv ko'rilgan / o'tkazib yuborilgan */
   introDone: boolean;
   mode: AppMode | null;
   session: { workerOnboarded: boolean; employerOnboarded: boolean } | null;
@@ -40,8 +42,8 @@ export function isNewcomer(s: Pick<EntryState, "session">): boolean {
 
 export function nextEntryStep(s: EntryState): EntryStep {
   if (s.bot || !isNewcomer(s)) return "done";
-  if (!s.localeChosen) return "language";
-  if (!s.introDone) return "intro";
+  // birinchi ochilish: til + rol bitta ekranda; u o'tilgach (introDone) mehmon bosh sahifaga, kirgan — profilga
+  if (!s.introDone) return "welcome";
   if (!s.session) return "login";
   if (!s.mode) return "role";
   return "profile";
@@ -53,7 +55,7 @@ export function nextEntryStep(s: EntryState): EntryStep {
  */
 export function homeEntryStep(s: EntryState): EntryStep | null {
   const step = nextEntryStep(s);
-  if (step === "language" || step === "intro") return step;
+  if (step === "welcome") return step;
   if (s.session && s.inFlow && (step === "role" || step === "profile")) return step;
   return null;
 }
@@ -71,10 +73,8 @@ export function entryPath(step: EntryStep, ctx: { mode: AppMode | null; employer
   const next = safeInternalPath(ctx.next ?? null, "") || null;
   const resume = next ? `/start?next=${encodeURIComponent(next)}` : "/start";
   switch (step) {
-    case "language":
+    case "welcome":
       return "/start/til";
-    case "intro":
-      return "/start/tanishtiruv";
     case "login":
       return `/auth?next=${encodeURIComponent(resume)}`;
     case "role":

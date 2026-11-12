@@ -33,7 +33,7 @@ export function PublishResult({
   return (
     <div className="container-narrow py-8 text-lg sm:py-12" role="status" aria-live="polite">
       <div className={cn("rounded-2xl border-2 p-6 text-center sm:p-8", tone === "success" ? "border-success bg-success-soft" : "border-primary/40 bg-primary-soft/60")}>
-        <Icon className={cn("mx-auto size-16", tone === "success" ? "text-success" : "text-primary")} aria-hidden />
+        <Icon className={cn("mx-auto size-16", tone === "success" ? "text-success" : "text-primary-ink")} aria-hidden />
         <h1 className="mt-4 text-2xl font-extrabold leading-tight sm:text-3xl">{title}</h1>
         <p className="mx-auto mt-2 max-w-md text-lg text-foreground/80">{description}</p>
       </div>

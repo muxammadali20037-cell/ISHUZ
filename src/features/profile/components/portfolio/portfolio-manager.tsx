@@ -66,7 +66,7 @@ export function PortfolioManager({ items, userId, recommendedCategory }: { items
                         </Badge>
                         {item.media.length ? <span>{t("profile.portfolio.files_count", { count: item.media.length })}</span> : null}
                         {item.link_url ? (
-                          <a href={item.link_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary hover:underline">
+                          <a href={item.link_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 text-primary-ink hover:underline">
                             <ExternalLink className="size-3" /> {t("profile.portfolio.open_link")}
                           </a>
                         ) : null}

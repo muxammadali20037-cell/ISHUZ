@@ -205,7 +205,7 @@ function RegionRows({
               <Td><code className="text-xs">{d.slug}</code></Td>
               <Td>
                 {d.lat !== null && d.lng !== null ? (
-                  <a href={`https://www.openstreetmap.org/?mlat=${d.lat}&mlon=${d.lng}#map=13/${d.lat}/${d.lng}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline tabular">
+                  <a href={`https://www.openstreetmap.org/?mlat=${d.lat}&mlon=${d.lng}#map=13/${d.lat}/${d.lng}`} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary-ink hover:underline tabular">
                     <MapPin className="size-3" /> {d.lat.toFixed(4)}, {d.lng.toFixed(4)}
                   </a>
                 ) : (

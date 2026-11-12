@@ -185,3 +185,23 @@ test("desktop: ariza sahifasida amallar o'ng ustunda, sahifa boshida", async ({ 
   expect(write.x).toBeGreaterThan(timeline.x + 250);
   expect(write.y).toBeLessThan(450);
 });
+
+// Audit (2026-11): qidiruv kartasida o'z arizasi holati hamma vaqt yashil "✓" bilan chiqardi — "Rad etildi" ham.
+// Endi rang arizalar sahifasidagi bilan bir xil: rad etilgan — qizil, yashil faqat taklif va ishga olinganda.
+test("qidiruv kartasi: rad etilgan ariza yashil emas, qizil ko'rinadi", async ({ page, context }) => {
+  const { vacancy, workerId } = await setup();
+  await sql("insert into public.applications (vacancy_id, worker_id, status) values ($1, $2, 'rejected')", [(await sql<{ id: string }>("select id from public.vacancies where slug = $1", [vacancy.slug]))[0]!.id, workerId]);
+  const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
+  await loginAs(context, USERS.workerB);
+  await page.goto(`/search?mode=jobs&p=${n!.id}&region=all`);
+  const badge = page.locator('a[href="/applications"][data-status="rejected"]').first();
+  await expect(badge).toBeVisible();
+  await expect(badge).toContainText("Rad etildi");
+  const [color, success, danger] = await Promise.all([
+    badge.evaluate((e) => getComputedStyle(e).color),
+    page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--success").trim()),
+    page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--destructive").trim()),
+  ]);
+  expect(hex(color)).not.toBe(success);
+  expect(hex(color)).toBe(danger);
+});

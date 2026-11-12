@@ -73,7 +73,7 @@ function CategorySection({ draft, patch, reference }: SectionProps) {
               onClick={() => patch({ category: active ? null : c.slug, subcategory: null, profession: null })}
               className={cn(
                 "flex min-h-11 items-center gap-2 rounded-xl border px-3 py-2 text-left text-sm font-medium transition-colors",
-                active ? "border-primary bg-primary-soft text-primary" : "border-border bg-card hover:bg-secondary",
+                active ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card hover:bg-secondary",
               )}
             >
               <CategoryIcon name={c.icon} className="size-5 shrink-0" />
@@ -106,7 +106,7 @@ function RegionSection({ draft, patch, reference }: SectionProps) {
           <div className="mb-2 flex items-center justify-between">
             <SectionTitle className="mb-0">{t("workers.filters.districts")}</SectionTitle>
             {draft.district.length ? (
-              <button type="button" className="text-xs font-medium text-primary" onClick={() => patch({ district: [] })}>
+              <button type="button" className="text-xs font-medium text-primary-ink" onClick={() => patch({ district: [] })}>
                 {t("workers.filters.all_districts")}
               </button>
             ) : null}

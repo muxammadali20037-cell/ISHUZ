@@ -30,7 +30,7 @@ const TabsTrigger = React.forwardRef<React.ComponentRef<typeof TabsPrimitive.Tri
       className={cn(
         "flex-1 whitespace-nowrap px-3 py-2 text-sm font-medium text-muted-foreground transition-colors",
         "[[data-variant=pill]_&]:rounded-lg [[data-variant=pill]_&]:data-[state=active]:bg-card [[data-variant=pill]_&]:data-[state=active]:text-foreground [[data-variant=pill]_&]:data-[state=active]:shadow-sm",
-        "[[data-variant=underline]_&]:-mb-px [[data-variant=underline]_&]:border-b-2 [[data-variant=underline]_&]:border-transparent [[data-variant=underline]_&]:data-[state=active]:border-primary [[data-variant=underline]_&]:data-[state=active]:text-primary",
+        "[[data-variant=underline]_&]:-mb-px [[data-variant=underline]_&]:border-b-2 [[data-variant=underline]_&]:border-transparent [[data-variant=underline]_&]:data-[state=active]:border-primary [[data-variant=underline]_&]:data-[state=active]:text-primary-ink",
         className,
       )}
       {...props}

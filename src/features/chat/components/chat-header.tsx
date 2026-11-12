@@ -67,7 +67,7 @@ export function ChatHeader({
           </div>
           {view.context.title ? (
             view.context.href ? (
-              <Link href={view.context.href} className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary">
+              <Link href={view.context.href} className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary-ink">
                 <Briefcase className="size-3.5 shrink-0" />
                 <span className="truncate">
                   {contextLabel}: {view.context.title}

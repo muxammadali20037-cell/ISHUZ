@@ -198,7 +198,8 @@
     "privacy": "Maxfiylik siyosati",
     "support": "Yordam",
     "rights": "© {year} Ish topdim. Barcha huquqlar himoyalangan.",
-    "deletion": "Hisobni o'chirish"
+    "deletion": "Hisobni o'chirish",
+    "cookies": "Cookie fayllari"
   },
   "report_sent": "Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.",
   "report_desc": "Nima uchun shikoyat qilyapsiz?",
@@ -241,5 +242,11 @@
     "nav_for_employers": "Ish beruvchilar uchun",
     "post_job": "Ish joylashtirish"
   },
-  "report_login": "Shikoyat yuborish uchun kiring"
+  "report_login": "Shikoyat yuborish uchun kiring",
+  "cookies": {
+    "title": "Cookie haqida eslatma",
+    "text": "Sayt ishlashi va tanlovlaringizni (til, rol, hudud) eslab qolish uchun cookie ishlatamiz. Reklama kuzatuvchilari yo'q.",
+    "more": "Batafsil",
+    "ok": "Tushunarli"
+  }
 }

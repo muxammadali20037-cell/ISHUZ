@@ -70,9 +70,9 @@ export function ModeChooser({ next, heading = "h2", className }: { next?: Partia
               <WindowArtwork art={o.art} />
             </span>
             <span className="flex flex-1 flex-col gap-1 p-3 sm:p-4">
-              <span className="break-words text-lg font-extrabold leading-tight group-hover:text-primary sm:text-xl">{o.title}</span>
+              <span className="break-words text-lg font-extrabold leading-tight group-hover:text-primary-ink sm:text-xl">{o.title}</span>
               <span className="break-words text-sm leading-snug text-muted-foreground sm:text-base">{o.desc}</span>
-              <span className="mt-auto inline-flex items-center gap-1 pt-2 text-base font-bold text-primary">
+              <span className="mt-auto inline-flex items-center gap-1 pt-2 text-base font-bold text-primary-ink">
                 <ArrowRight className="size-5" aria-hidden />
               </span>
             </span>

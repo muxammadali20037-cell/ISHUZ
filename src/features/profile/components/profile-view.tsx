@@ -24,11 +24,11 @@ export async function WorkerProfileView({ session, workerId }: { session: Sessio
 
   const privacy = (
     <Link href="/settings" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 text-sm shadow-sm transition-colors hover:bg-secondary/60">
-      <Shield className="size-5 shrink-0 text-primary" />
+      <Shield className="size-5 shrink-0 text-primary-ink" />
       <span className="min-w-0 flex-1">
         {t("profile.view.privacy_hint", { setting: tEnum("phone_visibility", contacts?.phone_visibility ?? "applicants") })}
       </span>
-      <span className="shrink-0 font-medium text-primary">{t("profile.view.privacy_change")}</span>
+      <span className="shrink-0 font-medium text-primary-ink">{t("profile.view.privacy_change")}</span>
     </Link>
   );
 

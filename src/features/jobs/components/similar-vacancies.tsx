@@ -26,12 +26,12 @@ export async function SimilarVacancies({ vacancy }: { vacancy: VacancyDetail }) 
           return (
             <li key={v.id}>
               <Link href={`/jobs/${v.slug}`} className="press flex items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 hover:border-primary/50">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-base font-extrabold uppercase text-primary" aria-hidden>
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-base font-extrabold uppercase text-primary-ink" aria-hidden>
                   {(v.company_name ?? v.title).trim().slice(0, 1)}
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-base font-bold leading-snug">{v.title}</span>
-                  <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="block truncate text-sm font-bold text-primary" />
+                  <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="block truncate text-sm font-bold text-primary-ink" />
                   <span className="block truncate text-sm text-muted-foreground">
                     {place}
                     {v.company_name ? ` · ${v.company_name}` : ""}

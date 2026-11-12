@@ -84,7 +84,7 @@ export function LoginMethods({
         <EntryScreen left={backHref ? <EntryBack href={backHref} label={t("common.actions.back")} /> : null}>
           <div className="flex flex-1 flex-col">
             <div className="flex flex-col items-center pt-6 text-center">
-              <BrandMark className="size-16" />
+              <BrandMark className="size-16" sizes="64px" />
               <span className="mt-3 text-2xl font-extrabold tracking-tight">
                 <BrandWordmark />
               </span>
@@ -127,7 +127,7 @@ export function LoginMethods({
                   data-track-to="admin_password"
                   className="press flex min-h-16 items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 hover:border-primary/50"
                 >
-                  <KeyRound className="size-6 shrink-0 text-primary" aria-hidden />
+                  <KeyRound className="size-6 shrink-0 text-primary-ink" aria-hidden />
                   <span className="min-w-0 flex-1">
                     <span className="block text-base font-bold leading-tight">{t("auth.admin.menu")}</span>
                     <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{t("auth.admin.menu_desc")}</span>
@@ -136,7 +136,7 @@ export function LoginMethods({
               ) : null}
             </nav>
             {showBrowse ? (
-              <Link href="/" className="mx-auto mt-5 inline-flex min-h-11 items-center px-2 text-base font-semibold text-primary hover:underline">
+              <Link href="/" className="mx-auto mt-5 inline-flex min-h-11 items-center px-2 text-base font-semibold text-primary-ink hover:underline">
                 {t("auth.method.browse")}
               </Link>
             ) : null}
@@ -307,7 +307,7 @@ function PhoneLoginInner({ next, botUsername, initialPhone, backHref, tgFailed }
                   {t("auth.resend_in", { seconds: countdown })}
                 </span>
               ) : (
-                <button type="button" className="inline-flex min-h-11 items-center px-1 font-semibold text-primary" onClick={() => sendCode()} disabled={pending}>
+                <button type="button" className="inline-flex min-h-11 items-center px-1 font-semibold text-primary-ink" onClick={() => sendCode()} disabled={pending}>
                   {t("auth.resend")}
                 </button>
               )}
@@ -475,11 +475,11 @@ export function AgreeText({ text, terms, privacy }: { text: string; terms: strin
     <>
       {text.split(/(\u0001|\u0002)/).map((part, i) =>
         part === "\u0001" ? (
-          <Link key={i} href="/terms" target="_blank" className="font-medium text-primary underline-offset-2 hover:underline">
+          <Link key={i} href="/terms" target="_blank" className="font-medium text-primary-ink underline-offset-2 hover:underline">
             {terms}
           </Link>
         ) : part === "\u0002" ? (
-          <Link key={i} href="/privacy" target="_blank" className="font-medium text-primary underline-offset-2 hover:underline">
+          <Link key={i} href="/privacy" target="_blank" className="font-medium text-primary-ink underline-offset-2 hover:underline">
             {privacy}
           </Link>
         ) : (

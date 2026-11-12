@@ -86,7 +86,7 @@ export function VacancyCard({
           </div>
           <p className="mt-0.5 flex items-center gap-1 truncate text-sm text-muted-foreground">
             {v.company_name ?? t("common.role.employer")}
-            {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary" aria-label={t("common.labels.verified")} /> : null}
+            {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
           </p>
           {v.is_government ? (
             <Badge variant="primary" size="sm" className="mt-1 gap-1">
@@ -152,7 +152,7 @@ export function VacancyCard({
             onToggleSave(v.id, !v.is_saved);
           }}
         >
-          <Bookmark className={cn("size-5", v.is_saved && "fill-primary text-primary")} />
+          <Bookmark className={cn("size-5", v.is_saved && "fill-primary text-primary-ink")} />
         </Button>
       ) : null}
     </article>

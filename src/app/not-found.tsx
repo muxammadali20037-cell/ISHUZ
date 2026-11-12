@@ -7,7 +7,7 @@ export default async function NotFound() {
   const { t } = await getT();
   return (
     <div className="container-narrow flex min-h-dvh flex-col items-center justify-center py-10 text-center">
-      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary-soft text-primary">
+      <div className="mb-4 flex size-16 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
         <SearchX className="size-8" />
       </div>
       <h1 className="text-xl font-bold">{t("common.errors.not_found")}</h1>

@@ -36,7 +36,7 @@ export function QualityPanel({ mode, vacancy: v }: { mode: WizardMode; vacancy: 
     <section className="space-y-3" aria-label={t("vacancies.quality.title")}>
       <div className={cn("rounded-2xl border p-4", tone)}>
         <div className="flex items-center gap-2">
-          <Icon className={cn("size-5 shrink-0", level === "good" ? "text-success" : level === "ok" ? "text-primary" : "text-warning")} />
+          <Icon className={cn("size-5 shrink-0", level === "good" ? "text-success" : level === "ok" ? "text-primary-ink" : "text-warning")} />
           <p className="font-semibold">{t(`vacancies.quality.level.${level}`)}</p>
         </div>
         {tips.length ? (
@@ -47,7 +47,7 @@ export function QualityPanel({ mode, vacancy: v }: { mode: WizardMode; vacancy: 
                   {tip.severity === "risk" ? "⚠️ " : "💡 "}
                   {t(`vacancies.quality.tips.${tip.key}`)}
                 </span>
-                <Link href={wizardHref(mode, v.id, tip.step)} className="shrink-0 font-semibold text-primary hover:underline">
+                <Link href={wizardHref(mode, v.id, tip.step)} className="shrink-0 font-semibold text-primary-ink hover:underline">
                   {t("vacancies.quality.fix")}
                 </Link>
               </li>
@@ -68,7 +68,7 @@ export function QualityPanel({ mode, vacancy: v }: { mode: WizardMode; vacancy: 
               <ul className="mt-2 space-y-1">
                 {similar.map((s) => (
                   <li key={s.id}>
-                    <Link href={`/employer/vacancies/${s.id}`} className="text-sm font-medium text-primary hover:underline">
+                    <Link href={`/employer/vacancies/${s.id}`} className="text-sm font-medium text-primary-ink hover:underline">
                       {s.title}
                     </Link>
                     <span className="text-xs text-muted-foreground"> · {tEnum("vacancy_status", s.status)}</span>

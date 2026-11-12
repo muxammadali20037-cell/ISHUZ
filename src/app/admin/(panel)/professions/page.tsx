@@ -31,7 +31,7 @@ export default async function AdminProfessionsPage({ searchParams }: { searchPar
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => (
             <Link key={c.id} href={`/admin/professions?category=${c.id}`} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 font-medium hover:border-primary">
-              <CategoryIcon name={c.icon} className="size-5 text-primary" />
+              <CategoryIcon name={c.icon} className="size-5 text-primary-ink" />
               {name(c)}
             </Link>
           ))}

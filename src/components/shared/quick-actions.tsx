@@ -18,7 +18,7 @@ export async function QuickActions() {
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {items.map((i) => (
           <Link key={i.href} href={i.href} className="flex flex-col items-center gap-2.5 rounded-2xl border border-border bg-card p-4 text-center shadow-sm transition-colors hover:border-primary/40">
-            <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary">
+            <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
               <i.icon className="size-6" />
             </span>
             <span className="text-sm font-semibold leading-tight">{i.label}</span>
@@ -38,7 +38,7 @@ export async function CrossRoleCard({ role }: { role: "worker" | "employer" }) {
       href={worker ? (aiEnabled() ? "/employer/vacancies/new/ai" : "/employer/vacancies/new") : "/jobs"}
       className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary/40 hover:bg-primary-soft/30"
     >
-      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">{worker ? <Megaphone className="size-5" /> : <Search className="size-5" />}</span>
+      <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">{worker ? <Megaphone className="size-5" /> : <Search className="size-5" />}</span>
       <span className="min-w-0 flex-1">
         <span className="block font-semibold">{t(worker ? "welcome.cross.worker_title" : "welcome.cross.employer_title")}</span>
         <span className="block text-sm text-muted-foreground">{t(worker ? "welcome.cross.worker_desc" : "welcome.cross.employer_desc")}</span>

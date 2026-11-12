@@ -34,7 +34,7 @@ export function StepSalary({ mode, vacancy }: StepProps) {
         name="salaryNegotiable"
         render={({ field }) => (
           <label className="flex cursor-pointer items-center gap-3 rounded-2xl border border-border bg-card p-4 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary-soft/50">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
               <Handshake className="size-5" />
             </span>
             <span className="flex-1">

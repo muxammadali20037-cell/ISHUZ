@@ -71,7 +71,7 @@ export function EmployerTypeStep({
                 <Check className="size-3.5 text-primary-foreground" strokeWidth={3} aria-hidden />
               </RadioGroupPrimitive.Indicator>
             </RadioGroupPrimitive.Item>
-            <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary group-has-[[data-state=checked]]:bg-card" aria-hidden>
+            <span className="flex size-14 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink group-has-[[data-state=checked]]:bg-card" aria-hidden>
               <Icon className="size-7" strokeWidth={1.6} />
             </span>
             <span className="mt-3 text-base font-semibold leading-tight">{tEnum("employer_type", type)}</span>

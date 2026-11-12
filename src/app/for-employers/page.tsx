@@ -47,7 +47,7 @@ export default async function ForEmployersPage() {
     <Shell>
       <section className="border-b border-border bg-card">
         <div className="container-app py-10 sm:py-14">
-          <p className="text-sm font-bold uppercase tracking-wide text-primary">{t("welcome.employers.eyebrow")}</p>
+          <p className="text-sm font-bold uppercase tracking-wide text-primary-ink">{t("welcome.employers.eyebrow")}</p>
           <h1 className="mt-2 max-w-3xl text-3xl font-extrabold tracking-tight sm:text-5xl">{t("welcome.employers.title")}</h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-muted-foreground">{t("welcome.employers.lead")}</p>
           <div className="mt-6 flex flex-col gap-2 sm:flex-row">
@@ -66,7 +66,7 @@ export default async function ForEmployersPage() {
               {paid && billingEnabled() ? (
                 <>
                   {" "}
-                  <Link href="/pricing" className="font-semibold text-primary hover:underline">
+                  <Link href="/pricing" className="font-semibold text-primary-ink hover:underline">
                     {t("welcome.employers.price_link")}
                   </Link>
                 </>
@@ -85,7 +85,7 @@ export default async function ForEmployersPage() {
             {steps.map((s, i) => (
               <li key={s.title} className="rounded-2xl border border-border bg-card p-5">
                 <span className="flex items-center gap-3">
-                  <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary">
+                  <span className="flex size-10 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
                     <s.icon className="size-5" aria-hidden />
                   </span>
                   <span className="text-sm font-bold text-muted-foreground">{t("welcome.employers.step_n", { n: i + 1 })}</span>
@@ -104,7 +104,7 @@ export default async function ForEmployersPage() {
           <ul className="mt-5 grid gap-3 md:grid-cols-3">
             {tools.map((s) => (
               <li key={s.title} className="flex gap-3 rounded-2xl border border-border bg-card p-5">
-                <s.icon className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden />
+                <s.icon className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden />
                 <span>
                   <span className="block text-base font-bold">{s.title}</span>
                   <span className="mt-1 block text-base leading-relaxed text-muted-foreground">{s.text}</span>
@@ -122,7 +122,7 @@ export default async function ForEmployersPage() {
           <ul className="mt-5 grid gap-5 md:grid-cols-3">
             {trust.map((s) => (
               <li key={s.title}>
-                <s.icon className="size-6 text-primary" aria-hidden />
+                <s.icon className="size-6 text-primary-ink" aria-hidden />
                 <h3 className="mt-2 text-base font-bold">{s.title}</h3>
                 <p className="mt-1 text-base leading-relaxed text-muted-foreground">{s.text}</p>
               </li>

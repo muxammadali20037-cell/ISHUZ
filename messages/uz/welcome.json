@@ -128,6 +128,14 @@
       "employer_note": "Kompaniyani tasdiqlash va vakansiya joylash — panelingizda.",
       "cta": "Bosh sahifaga o'tish",
       "edit": "Profilni tahrirlash"
+    },
+    "welcome": {
+      "title": "Siz nima qidiryapsiz?",
+      "subtitle": "Bitta bosing — ilova faqat sizga keraklisini ko'rsatadi. Kirish shart emas.",
+      "worker_desc": "Vakansiyalar, kunlik ishlar, AI yordamchi",
+      "employer_desc": "Tayyor ishchilar, vakansiya joylash",
+      "go": "Boshlash",
+      "how": "Qanday ishlaydi?"
     }
   },
   "market": {

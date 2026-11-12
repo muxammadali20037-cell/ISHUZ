@@ -45,7 +45,7 @@ export function SalaryInsightHint({
       onClick={() => onApply(d.p25, d.p75)}
       className="flex w-full items-start gap-3 rounded-2xl border border-primary/30 bg-primary-soft/50 p-3 text-left text-sm transition-colors hover:bg-primary-soft active:scale-[0.99]"
     >
-      <TrendingUp className="mt-0.5 size-5 shrink-0 text-primary" />
+      <TrendingUp className="mt-0.5 size-5 shrink-0 text-primary-ink" />
       <span className="min-w-0">
         <span className="block font-semibold">
           {t("vacancies.quality.salary_range", { from: formatMoney(d.p25, locale), to: formatMoney(d.p75, locale) })}
