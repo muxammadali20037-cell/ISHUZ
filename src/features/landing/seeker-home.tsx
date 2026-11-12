@@ -1,4 +1,4 @@
-import { NewBadge } from "@/components/shared/new-badge";
+import { NewDot } from "@/components/shared/new-badge";
 import { Suspense } from "react";
 import Link from "next/link";
 import {
@@ -198,7 +198,7 @@ export async function SeekerHome({
                 className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline"
               >
                 <MapPin className="size-4" aria-hidden /> {t("map.entry")}
-                <NewBadge feature="map" className="ml-1" />
+                <NewDot feature="map" className="ml-1" />
               </Link>
             </div>
           </nav>
