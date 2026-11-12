@@ -3,7 +3,6 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, FlaskConical } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { getCategories } from "@/lib/reference";
-import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
 import { getDemoVacancies } from "@/features/demo-vacancies/queries";
 import { DEMO_VACANCIES_PAGE } from "@/features/demo-vacancies/types";
@@ -38,7 +37,7 @@ export default async function DemoVacanciesPage({ searchParams }: { searchParams
     return s ? `/jobs/namuna?${s}` : "/jobs/namuna";
   };
   return (
-    <Shell>
+    <>
       <div className="container-app space-y-5 py-5 sm:py-8" data-demo-list>
         <header className="max-w-3xl">
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight sm:text-3xl">
@@ -113,6 +112,6 @@ export default async function DemoVacanciesPage({ searchParams }: { searchParams
           </p>
         )}
       </div>
-    </Shell>
+    </>
   );
 }

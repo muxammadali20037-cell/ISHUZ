@@ -43,6 +43,8 @@ test("Toshkent · Chilonzor: raqamli belgilar ro'yxat bilan mos, yaqinidan uzog'
   const [chil] = await sql<{ id: string }>("select d.id from public.districts d join public.regions r on r.id = d.region_id where r.slug = 'tashkent_city' and d.name_uz = 'Chilonzor tumani'");
   await page.goto(`/jobs/xarita?region=tashkent_city&district=${chil!.id}`);
   await expect(page.getByRole("heading", { level: 1, name: "Yaqin atrofdagi ishlar — xaritada" })).toBeVisible();
+  // sayt sarlavhasi bitta (/jobs layout'i Shell beradi — sahifa ikkinchisini qo'shmaydi)
+  await expect(page.getByRole("banner")).toHaveCount(1);
   await expect(page.locator("[data-map-summary]")).toHaveText("Toshkent shahri · Chilonzor tumani: 4 ta faol e'lon");
 
   const items = page.locator("[data-map-list] > li");

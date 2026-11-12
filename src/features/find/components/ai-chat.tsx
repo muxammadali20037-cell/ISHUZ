@@ -453,27 +453,28 @@ function StatsCard({ data, lang }: { data: MarketStats; lang: AssistantLang }) {
   const { t } = useT();
   const name = (n: MarketStats["profession"]) => (lang === "oz" ? latinToCyrillic(n.uz) : localName(n, lang));
   const sum = (x: number) => formatSum(x, lang);
-  const cell = "rounded-lg bg-secondary px-2.5 py-2";
+  // telefonda — qatorlar (nom chapda, son o'ngda), kengroq ekranda — uchta katak
+  const cell = "flex items-baseline justify-between gap-3 rounded-lg bg-secondary px-3 py-2 sm:block sm:px-2.5";
   return (
     <section className="space-y-2 rounded-xl border border-border bg-card p-3" aria-label={t("easy.finder.stats.label")} data-ai-stats>
       <p className="text-sm font-semibold [overflow-wrap:anywhere]">
         {name(data.profession)} · {data.region ? name(data.region) : t("easy.finder.stats.all")}
       </p>
-      <dl className="grid grid-cols-3 gap-2 text-center">
+      <dl className="grid grid-cols-1 gap-1.5 sm:grid-cols-3 sm:gap-2 sm:text-center">
         <div className={cell}>
-          <dt className="text-xs text-muted-foreground">{t("easy.finder.stats.vacancies")}</dt>
+          <dt className="text-sm text-muted-foreground sm:text-xs">{t("easy.finder.stats.vacancies")}</dt>
           <dd className="text-lg font-bold tabular-nums" data-ai-stats-vacancies>
             {data.vacancies}
           </dd>
         </div>
         <div className={cell}>
-          <dt className="text-xs text-muted-foreground">{t("easy.finder.stats.seekers")}</dt>
+          <dt className="text-sm text-muted-foreground sm:text-xs">{t("easy.finder.stats.seekers")}</dt>
           <dd className="text-lg font-bold tabular-nums" data-ai-stats-seekers>
             {data.seekers}
           </dd>
         </div>
         <div className={cell}>
-          <dt className="text-xs text-muted-foreground">{t("easy.finder.stats.median")}</dt>
+          <dt className="text-sm text-muted-foreground sm:text-xs">{t("easy.finder.stats.median")}</dt>
           <dd className="text-base font-bold tabular-nums" data-ai-stats-salary>
             {data.salary ? sum(data.salary.median) : "—"}
           </dd>
@@ -582,7 +583,8 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
             </span>
           </p>
         ) : null}
-        {turn.stats?.map((d, i) => <StatsCard key={`${d.jobsHref}-${i}`} data={d} lang={turn.lang ?? locale} />)}
+        {/* hech qanday e'lon yo'q — karta emas, matnning o'zi yetarli (bo'sh ro'yxatga havola foydasiz) */}
+        {turn.stats?.filter((d) => d.vacancies + d.seekers > 0).map((d, i) => <StatsCard key={`${d.jobsHref}-${i}`} data={d} lang={turn.lang ?? locale} />)}
         {r && !unclear ? <Understood result={r} /> : null}
         {r?.relaxed?.length ? (
           <ul className="space-y-1" aria-label={t("easy.finder.widened")} data-ai-relaxed>

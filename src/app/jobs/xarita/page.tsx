@@ -4,7 +4,6 @@ import { BellRing, ChevronRight, ExternalLink, MapPin } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { localeAlternates } from "@/lib/seo";
 import { getDistricts, getRegions } from "@/lib/reference";
-import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
 import { getHomePlace } from "@/features/landing/home-queries";
 import { JobResultCard } from "@/features/find/components/result-cards";
@@ -61,7 +60,7 @@ export default async function JobsMapPage({ searchParams }: { searchParams: Sear
   };
 
   return (
-    <Shell>
+    <>
       <div className="container-app space-y-5 py-5 sm:py-8" data-jobs-map>
         <header className="max-w-3xl">
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">{t("map.title")}</h1>
@@ -214,7 +213,7 @@ export default async function JobsMapPage({ searchParams }: { searchParams: Sear
           </>
         )}
       </div>
-    </Shell>
+    </>
   );
 }
 
