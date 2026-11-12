@@ -58,6 +58,18 @@ Vakansiyalar (`vacancies`) bilan hech qanday umumiy jadval yo'q. Rasmlar vakansi
   `supabase/tests/security_hardening.test.sql` dagi ruxsat ro'yxatiga ongli qo'shilgan.
 - **Spam.** So'rov: mehmon IP bo'yicha soatiga 10, kirgan 20; sharh 20; e'lon saqlash 60 (ilovada `allowRate`).
 
+### Noqonuniy va keraksiz mazmun (2026-11-12)
+
+- **Matn tekshiruvi** (`src/features/masters/content-check.ts` — vakansiyalardagi qoidalar bilan bir xil, `moderation/rules.ts`):
+  e'lon (ism, sarlavha, tavsif, xizmatlar, hudud), mijoz so'rovi va sharh saqlanishidan oldin tekshiriladi. Aniq taqiqlangan
+  mazmun (intim xizmat, giyohvand moddalar, karta/akkaunt savdosi, soxta hujjat, buzib kirish, ekstremizm — kirill, ruscha va
+  "1nt1m" kabi yashirilgan yozuvlar ham) — **saqlanmaydi**, foydalanuvchiga sababi aytiladi.
+- **Shubhali belgilar** (mahsulot savdosi, oldindan to'lov, 18+ ishora, siyosat, qimor, spam …) — e'lon saqlanadi, lekin admin
+  navbatida sariq ogohlantirish bilan chiqadi. Yakuniy qaror — moderatorda (yangi e'lon baribir tasdiqsiz chiqmaydi).
+- **Rasmlar:** yuklashda tekshiriladi (fayl turi, o'lcham, EXIF olib tashlanadi, WebP), va admin navbatida **har e'lonning
+  rasmlari** ko'rinadi — tasdiqlashdan oldin ko'rib chiqiladi.
+- Testlar: Vitest `content-check.test.ts` (6), E2E `masters.spec.ts` "noqonuniy mazmun" ssenariysi.
+
 ## 4. Demo e'lonlar
 
 Egasi talabi bilan har kategoriyada **4 tadan** namuna e'lon (jami 48): `is_demo = true`, egasiz, **telefonsiz, reytingsiz,

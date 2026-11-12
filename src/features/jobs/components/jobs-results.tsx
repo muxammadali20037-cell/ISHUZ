@@ -15,6 +15,8 @@ import { Pagination } from "./pagination";
 import { SortSelect } from "./sort-select";
 import { VacancyList } from "./vacancy-list";
 import { JOBS_COUNT_CAP, resultCount } from "@/lib/result-count";
+import { getCategoryBySlug } from "@/lib/reference";
+import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
 
 /** Qidiruv natijalari: soni + saralash, kartalar, sahifalash / aqlli bo'sh holat */
 export async function JobsResults({ params }: { params: JobsSearchParams }) {
@@ -51,6 +53,7 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
   ) : null;
 
   if (!result.items.length) {
+    const demoCategory = params.category ? await getCategoryBySlug(params.category) : null;
     const options = jobsRelaxations(params);
     const counted = await Promise.all(options.map(async (o) => ({ ...o, count: await countVacancies(o.params) })));
     const suggestions: EmptySuggestion[] = counted
@@ -70,6 +73,14 @@ export async function JobsResults({ params }: { params: JobsSearchParams }) {
           suggestions={suggestions}
           countLabel={(count) => t("jobs.empty.count", { count })}
           fallback={options.length ? { label: t("jobs.empty.action"), href: jobsHref(clearFilters({ ...params, q: "" })) } : undefined}
+        />
+        {/* haqiqiy e'lon topilmadi: ostida namuna e'lonlar (soha tanlangan bo'lsa — o'sha sohadan); alohida blok, "Namuna" belgisi */}
+        <DemoVacanciesBlock
+          category={demoCategory?.slug ?? null}
+          categoryName={demoCategory ? name(demoCategory) : null}
+          region={params.region}
+          limit={demoCategory ? 4 : 6}
+          className="mt-8"
         />
       </div>
     );

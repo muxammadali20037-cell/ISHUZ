@@ -310,6 +310,41 @@ test("tahrirlash — qayta moderatsiya; admin rad etadi — sabab egasiga ko'rin
   await adminCtx.close();
 });
 
+test("noqonuniy mazmun: taqiqlangan e'lon saqlanmaydi; shubhali e'lon admin navbatida ogohlantirish va rasmlar bilan chiqadi", async ({ page, context }) => {
+  await sql("delete from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await fillListing(page, { phonePublic: false });
+  const form = page.locator("[data-masters-form]");
+  await form.getByLabel("Xizmat tavsifi").fill("Intim xizmat ko'rsatamiz, soatbay, uyga boramiz.");
+  await page.locator("[data-masters-submit]").click();
+  await expect(form.getByRole("alert")).toContainText("taqiqlangan mazmun bor");
+  expect((await sql<{ n: string }>("select count(*)::text as n from public.master_listings where owner_profile_id = $1", [USERS.workerA]))[0]!.n).toBe("0");
+
+  // shubhali (savdo + oldindan to'lov) — saqlanadi, moderatsiyaga boradi, admin ogohlantirishni va rasmni ko'radi
+  await fillListing(page, { phonePublic: false, withPhoto: true });
+  await form.getByLabel("Xizmat tavsifi").fill("Konditsionerlar sotiladi, optom narxda. O'rnatish uchun oldindan to'lov 50%.");
+  await page.locator("[data-masters-submit]").click();
+  await expect(page.locator("[data-masters-form-sent='pending_review']")).toBeVisible();
+
+  await sql(
+    `insert into public.admin_users (profile_id, role, permissions, is_active) values ($1, 'super_admin', '{}', true)
+     on conflict (profile_id) do update set is_active = true, role = 'super_admin'`,
+    [USERS.workerB],
+  );
+  try {
+    await loginAs(context, USERS.workerB, "aal2");
+    await page.goto("/admin/ustalar");
+    const item = page.locator("[data-masters-queue-item]").filter({ hasText: TITLE });
+    await expect(item.locator("[data-masters-flags]")).toContainText("mahsulot savdosi");
+    await expect(item.locator("[data-masters-flags]")).toContainText("oldindan to'lov so'ralgan");
+    await expect(item.locator("[data-masters-queue-photos] img")).toHaveCount(1);
+  } finally {
+    await sql("delete from public.admin_users where profile_id = $1", [USERS.workerB]);
+    await sql("delete from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
+  }
+});
+
 test("xavfsizlik: begona e'lonni tahrirlab bo'lmaydi; mehmon forma va kabinetga kira olmaydi; oddiy foydalanuvchi admin sahifasini ko'rmaydi", async ({ page, context, browser }) => {
   await sql(
     `insert into public.master_listings (owner_profile_id, category_id, slug, display_name, title, description, phone, phone_public, status, published_at)

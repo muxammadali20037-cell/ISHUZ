@@ -193,7 +193,7 @@ export function ListingForm({
     );
     setBusy(null);
     if (!res.ok || !res.data) {
-      setErrors({ form: t("masters.form.errors.generic") });
+      setErrors({ form: t(res.ok ? "masters.form.errors.generic" : res.error === "prohibited" ? "masters.form.errors.prohibited" : res.error === "rate_limited" ? "masters.form.errors.rate_limited" : "masters.form.errors.generic") });
       return;
     }
     setSent(res.data.status);

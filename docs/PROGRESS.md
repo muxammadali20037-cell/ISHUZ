@@ -318,3 +318,25 @@ kiradigan qil… hammasini main'ga chiqar".
   (sxema barmoq izi 2357 qator — o'zgarmaydi).
 
 **Testlar:** E2E `ai-entry.spec.ts` (4), `home-market.spec.ts` yangilandi; Vitest +2.
+
+## Namuna vakansiyalar — barcha sohalar (2026-11-12, kechki)
+
+Ega: "barcha sohalar bo'yicha qo'shgan bo'lsang tegma, qo'shmagan bo'lsang vakansiyalar qo'sh" (avvalroq: "har biriga 4 tadan …
+bir marta olib tashla desam olib tashlaysan"). Tekshiruv: sohalar bo'yicha namuna yo'q edi (faqat Universal ustalarda 48 ta demo).
+
+**Qilindi** (`docs/DEMO_VACANCIES.md`):
+- `0077_demo_vacancies.sql` — alohida jadval, RLS, ommaviy o'qish funksiyalari, `demo_vacancies_seed/remove` (admin, server,
+  operator); har faol sohada 4 tadan (ommabop kasblar, barcha viloyatlar, sohaga xos taxminiy maosh, 4-si "kelishiladi").
+- Ilova: `src/features/demo-vacancies/`, bosh sahifa (haqiqiy < 4 bo'lsa, haqiqiylardan keyin), `/jobs` va `/search` bo'sh holati,
+  `/jobs/namuna`, `/jobs/namuna/[slug]` (noindex), `/admin/namuna`. 4 til (`messages/*/demo.json`).
+- 0076 ham: demo e'lonlar faqat birinchi o'rnatishda (avval "jadval bo'sh bo'lsa" edi — haqiqiy e'lon hali yo'q bazada fayl
+  qayta qo'yilsa demo qaytardi). SQL testi qo'shildi.
+- `pending.sql` → 0069…0077; xavfsizlik testidagi ommaviy funksiyalar ro'yxati, health probe, prod-migration-check.
+
+**Testlar:** SQL `demo_vacancies.test.sql` (36 tekshiruv) + masters (+2); E2E `demo-vacancies.spec.ts` (5).
+
+**Xavfsizlik (Universal ustalar), shu PR'da:** ega — "keraksiz va noqonuniy e'lonlar joylanmasin, rasmlar ham". Vakansiyalarda AI +
+qoidalar moderatsiyasi bor edi; ustalar bo'limida faqat qo'lda moderatsiya edi. Endi `content-check.ts` (vakansiya qoidalari bilan
+bir xil): e'lon/so'rov/sharh — taqiqlangani saqlanmaydi, shubhalisi admin navbatida ogohlantirish bilan; navbatda rasmlar
+ko'rinadi. Vitest 6, E2E 1 ssenariy.
+

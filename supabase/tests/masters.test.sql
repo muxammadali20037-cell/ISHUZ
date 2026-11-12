@@ -163,4 +163,10 @@ select pg_temp.ok((select public.master_demo_remove()) = 48, 'operator (SET ROLE
 reset role;
 select pg_temp.ok((select count(*) from public.master_listings) = 1, 'operator buyruqlari haqiqiy e''longa tegmadi');
 
+-- migratsiya fayli takror ishga tushirilsa (demo olib tashlangan, haqiqiy e'lon ham yo'q) — demo qaytib qolmaydi
+delete from public.master_listings;
+\i supabase/migrations/0076_masters.sql
+select pg_temp.ok((select count(*) from public.master_listings) = 0, 'takror o''rnatish olib tashlangan demo e''lonlarni qaytarmaydi');
+select pg_temp.ok((select public.master_demo_seed()) = 48, 'qo''lda qaytarish ishlaydi');
+
 rollback;

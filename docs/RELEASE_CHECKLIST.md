@@ -54,6 +54,7 @@ Ega qo'llaganini aytgach `scripts/gen-prod-pending.mjs` dagi `APPLIED_UNTIL` ko'
 | 0074_contact_privacy | Ro'yxatlarda telefon yo'q; raqam faqat kirganlarga, limit bilan; Telegram telefon ustuni yopiq | qidiruv, vakansiya sahifasi |
 | 0075_telegram_update_retry | Webhook xatosida update yo'qolmaydi (3 urinish) | `/api/telegram/webhook` |
 | 0076_masters | "Universal ustalar": alohida jadvallar, RLS, moderatsiya, 12 kategoriya, 48 ta demo e'lon | `/ustalar`, `/admin/ustalar` |
+| 0077_demo_vacancies | Namuna vakansiyalar: alohida jadval (haqiqiy e'lonlar bilan aralashmaydi), har sohada 4 tadan | bosh sahifa / `/jobs` bo'sh holati, `/jobs/namuna`, `/admin/namuna` |
 
 **Muhim:** 0074 avvalgi migratsiyalardagi funksiya ta'riflari asosida yozilgan — undan oldin 0069–0073 qo'llangan bo'lishi shart.
 0076 mustaqil (boshqa migratsiyalarga bog'liq emas; 0001–0068 li bazada alohida qo'llab tekshirilgan — uni 0069–0075 dan oldin

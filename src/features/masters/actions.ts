@@ -20,6 +20,7 @@ import {
 } from "@/features/post/photo-finalize";
 import { getAdminActor } from "@/features/admin/context";
 import { MASTERS_TAG } from "./queries";
+import { checkMasterText } from "./content-check";
 import {
   masterListingSchema,
   masterRequestSchema,
@@ -81,6 +82,10 @@ export async function saveMasterListing(
   if (!(await allowRate(`masters_save:${session.userId}`, 60, 3600)))
     return { ok: false, error: "rate_limited" };
   const v: MasterListingInput = parsed.data;
+  // aniq taqiqlangan mazmun (intim xizmat, giyohvand moddalar, karta sotib olish, soxta hujjat …) — saqlanmaydi.
+  // Shubhali belgilar saqlanadi, admin navbatida ogohlantirish bo'lib chiqadi (e'lon baribir tasdiqsiz chiqmaydi)
+  if (checkMasterText({ displayName: v.displayName, title: v.title, description: v.description, services: v.services, serviceArea: v.serviceArea }).blocked)
+    return { ok: false, error: "prohibited" };
   // faqat tekshirilgan (v-…webp) rasm yo'llari, faqat o'z papkasidan
   if (v.photos.some((p) => !isVerifiedPhotoPath(session.userId, p)))
     return { ok: false, error: "photo_invalid" };
@@ -193,6 +198,7 @@ export async function deleteMasterListing(
 export async function createMasterRequest(input: unknown): Promise<ActionResult<{ id: string }>> {
   const parsed = masterRequestSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
+  if (checkMasterText({ name: parsed.data.name, message: parsed.data.message }).blocked) return { ok: false, error: "prohibited" };
   const session = await getSession();
   if (session?.profile.is_blocked) return { ok: false, error: "blocked" };
   const key = session ? `masters_req:${session.userId}` : `masters_req_ip:${await ipKey()}`;
@@ -231,6 +237,7 @@ export async function setMasterRequestStatus(
 export async function addMasterReview(input: unknown): Promise<ActionResult> {
   const parsed = masterReviewSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
+  if (checkMasterText({ text: parsed.data.text }).blocked) return { ok: false, error: "prohibited" };
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   if (!(await allowRate(`masters_review:${session.userId}`, 20, 3600)))
