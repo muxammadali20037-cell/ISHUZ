@@ -32,7 +32,7 @@ export function NearMe({ base, regions, districts }: { base: FindParams; regions
   const go = useGoNear(base, regions);
   return (
     <div className="container-narrow space-y-5 py-5 sm:py-8">
-      <Link href="/" className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-semibold">
+      <Link href="/" data-page-back className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-semibold">
         <ArrowLeft className="size-5" aria-hidden /> {t("easy.wizard.back")}
       </Link>
       <LocateAsk

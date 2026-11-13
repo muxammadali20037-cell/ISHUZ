@@ -378,6 +378,15 @@ html.no-splash .splash { display: none; }
   .entry-live::after, .intro-slide, .entry-done { animation: none; }
 }
 
+/* Umumiy "‹ Orqaga" (GlobalBack): sahifaning o'z "Orqaga"si bo'lsa — yashiriladi (ikkita bo'lmasin) */
+body:has([data-page-back]) [data-global-back] { display: none; }
+/* sarlavha yonidagi kichik "‹" (PageHeader) — umumiy "‹ Orqaga" bor bo'lsa ortiqcha: hamma joyda bir xil ko'rinish */
+body:has([data-global-back]) [data-header-back] { display: none; }
+/* tor telefonda (360–375 px) va katta shriftda: "‹ Orqaga" logotip o'rnida — panel yonga siljimasin */
+@container (max-width: 24rem) {
+  body:not(:has([data-page-back])) header:has([data-global-back]) [data-bar-logo] { display: none; }
+}
+
 /*
  * Yangi bo'lim belgisi (NewDot): yozuvsiz kichik nuqta — rangi atrofdagi matn rangi, atrofida yumshoq to'lqin.
  * prefers-reduced-motion — to'lqin yo'q, nuqta qoladi.

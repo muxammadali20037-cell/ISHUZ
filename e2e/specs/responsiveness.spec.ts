@@ -50,7 +50,8 @@ test("navigatsiya: sahifa almashganda bosish bloklangan vaqt (View Transition)",
   const lost: number[] = [];
   for (const [from, to] of [
     ["main a[data-track='direction_select']", /mode=jobs/], // 2.0: "Filtrlar bilan qidirish"
-    ["header a[href='/']", (u: URL) => u.pathname === "/"],
+    // logotip (yuqori panelda endi "‹ Orqaga" ham bor — u tarix bo'yicha qaytadi, bu yerda logotip bosiladi)
+    ["header a[data-bar-logo]", (u: URL) => u.pathname === "/"],
   ] as const) {
     const t0 = Date.now();
     await page.locator(from).first().click();
@@ -194,7 +195,7 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   for (let i = 1; i <= 20; i++) {
     await page.locator("main a[data-track='direction_select']").click(); // 2.0: "Filtrlar bilan qidirish"
     await page.waitForURL(/\/search/);
-    await page.locator("header a[href='/']").first().click(); // logotip
+    await page.locator("header a[data-bar-logo]").click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");
     // har bir aylanish o'lchanadi: CI'da beqarorlik qaysi qadamda paydo bo'lishini ko'rish uchun (xato matnida chiqadi)
     await homeReady();

@@ -254,7 +254,7 @@ function backLabel(text: string) {
 function Shell({ back, title, summary, children }: { back: ReactNode; title: string; summary?: string[]; children: ReactNode }) {
   return (
     <div className="container-narrow space-y-5 py-4 text-lg sm:py-8">
-      <div className="space-y-3">
+      <div className="space-y-3" data-page-back>
         <Button asChild variant="outline" className="h-12 px-4 text-base">
           {back}
         </Button>

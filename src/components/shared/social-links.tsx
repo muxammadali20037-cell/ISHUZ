@@ -23,7 +23,7 @@ export function SocialLinks({ links, tone = "light", compact = false, title, cla
         {links.map((l) => {
           const Icon = ICON[l.key];
           return (
-            <li key={l.key}>
+            <li key={l.key} className="min-w-0 max-w-full">
               <a
                 href={l.href}
                 target="_blank"
@@ -33,7 +33,8 @@ export function SocialLinks({ links, tone = "light", compact = false, title, cla
                 data-track-to={l.key}
                 aria-label={t("common.social.open", { network: socialLabel(l.key), handle: l.handle ?? "" }).trim()}
                 className={cn(
-                  "press inline-flex min-h-11 items-center gap-2 rounded-full text-sm font-semibold transition-colors",
+                  // katta shriftda tor ekranda ham sig'adi: @manzil qisqartiriladi (to'liq — aria-label'da)
+                  "press inline-flex min-h-11 max-w-full items-center gap-2 rounded-full text-sm font-semibold transition-colors",
                   compact ? "w-full justify-center px-2" : "px-3.5",
                   tone === "dark"
                     ? "bg-navy-foreground/10 text-navy-foreground hover:bg-navy-foreground/20"
@@ -41,8 +42,8 @@ export function SocialLinks({ links, tone = "light", compact = false, title, cla
                 )}
               >
                 <Icon className={cn("size-4 shrink-0", tone === "dark" ? "text-sidebar-accent" : "text-primary-ink")} aria-hidden />
-                <span>{socialLabel(l.key)}</span>
-                {!compact && l.handle ? <span className={cn("font-normal", tone === "dark" ? "text-navy-muted" : "text-muted-foreground")}>{l.handle}</span> : null}
+                <span className="shrink-0">{socialLabel(l.key)}</span>
+                {!compact && l.handle ? <span className={cn("min-w-0 truncate font-normal", tone === "dark" ? "text-navy-muted" : "text-muted-foreground")}>{l.handle}</span> : null}
               </a>
             </li>
           );
