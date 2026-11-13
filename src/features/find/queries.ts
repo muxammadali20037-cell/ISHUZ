@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomBytes } from "node:crypto";
+import { isProhibitedProfession } from "@/features/moderation/policy";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { publicEnv } from "@/lib/env";
@@ -53,7 +54,7 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   let best: { id: string; score: number } | null = null;
   for (const { c, hits } of results) {
     for (const h of hits) {
-      if (!h.selectable || h.score < 2) continue;
+      if (!h.selectable || h.score < 2 || isProhibitedProfession(h)) continue;
       // uzunroq (aniqroq) ibora va aniq moslik afzal
       const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01;
       if (!best || score > best.score) best = { id: h.id, score };

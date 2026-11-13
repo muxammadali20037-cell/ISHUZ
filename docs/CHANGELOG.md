@@ -1,5 +1,32 @@
 # O'zgarishlar jurnali
 
+## 2026-11-13 · Qat'iy taqiq: erotika, ekstremizm, noqonuniy, massaj/spa — e'lon yo'q, muallif bloklanadi (`claude/moderation-hard`)
+
+- Ega: "erotika, diniy ekstremizm, qonunga xilof barcha e'lonlar va so'zlar umuman ishlatilmasin; joylamoqchi bo'lsa o'sha
+  zahoti bloklansin; joylagandan keyin har bir so'z (ma'nosi yaqin bo'lsa ham) tekshirilsin — e'lon ham o'chirilsin, o'zi
+  ham bloklansin; massaj, spa kerak emas".
+- Qoidalar (`moderation/rules.ts`, `STRICT`): massaj (massaj, массаж, massage, masseur — tibbiy ham), spa (salon/markaz/
+  xodim konteksti; IT'dagi "SPA" emas), relaks salon, erotika so'zlari (erotika, porno, seks, intim, webcam model …),
+  pullik tanishuv, diniy ekstremizm va taqiqlangan tashkilotlar, diniy targ'ibot, giyohvand nomlari, qurol savdosi, qimor,
+  a'zo savdosi — kontekstsiz "block". Yolg'on topilmalarga qarshi testlar: "seksiya", "narkolog", "giyohvand moddalar
+  iste'mol qilmaydigan", ismlar (Shahid, Mujohid, Jihod), "React SPA", "masala", "masjid", "наша", "печенье", "ставка".
+- AI moderatsiya (`verdict.ts`): so'zni emas, MA'NONI baholaydi (jargon, evfemizm, raqam bilan yozish, kirill/rus/ingliz);
+  massaj va spa — istisnosiz rad.
+- Jazo (`moderation/policy.ts`, `enforce.ts`): og'ir toifada rad etilsa (qoida yoki AI) — hisob bloklanadi
+  (`profiles.is_blocked`, sabab `auto_moderation:…`), barcha ochiq e'lonlari yashiriladi (vakansiyalar → hidden, ishchi
+  e'loni → ommaviy emas, ustalar → rejected), xavfsizlik hodisasi `moderation.auto_ban` (admin ogohlantirishi). Hech narsa
+  o'chirilmaydi — admin "Blokdan chiqarish" bilan qaytaradi. Faol adminlar bloklanmaydi (hodisa yoziladi).
+- Qayerda: e'lon joylash (ishchi, vakansiya), AI suhbat va AI qoralama (yozayotganda), ustalar e'loni, so'rov va sharh.
+  Joylash "bloklangan" bilan tugaydi, keyingi sahifa — /blocked.
+- Eski e'lonlar (`moderation/sweep.ts`): fon navbatida kuchaytirilgan qoidalar bilan bir marta qayta tekshiriladi
+  (kursor app_settings'da, versiya `2026-11-13.strict`).
+- Kasblar katalogi: massaj/spa kasblari ko'rsatilmaydi va tanlanmaydi (ilovada darhol; bazada — 0078,
+  `supabase/prod/pending.sql`, ega qo'llaydi).
+- Testlar: rules (+47), policy, masters content-check; E2E `moderation-ban.spec.ts` (yozayotganda bloklash, joylangandan
+  keyin moderatsiyada, eski e'lonlar qayta tekshiruvi, toza e'lon bloklanmaydi), masters, post-ai-chat (holat qaytariladi).
+- Topilgan va tuzatilgan: 150% shrift + rus tilida Profildagi "AI-помощник"/"Универсальные мастера" kartalari va rejim
+  oynasi tugmalari yonga chiqardi (uzun so'z endi bo'linadi).
+
 ## 2026-11-13 · Mehmon bosh sahifasi soddalashtirildi — 2-bosqich (`claude/ux-simplify-2`)
 
 - Rejim tanlamagan mehmon sahifasi telefonda ~8 600 px dan ~4 500 px ga: hero (ikki yo'l + qidiruv) → ommabop kasblar →

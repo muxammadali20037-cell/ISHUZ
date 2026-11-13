@@ -33,6 +33,13 @@ async function settle(entity: Entity, id: string, state: string): Promise<Listin
   return data ? toListingStateInfo(data) : toListingStateInfo({ state });
 }
 
+/** Moderatsiya muallifni bloklagan bo'lsa (og'ir qoidabuzarlik) — joylash "bloklangan" bilan tugaydi */
+async function blockedNow(userId: string): Promise<boolean> {
+  const supabase = await createClient();
+  const { data } = await supabase.from("profiles").select("is_blocked").eq("id", userId).maybeSingle();
+  return !!data?.is_blocked;
+}
+
 /** Mavjud ishchi e'lonining batafsil qiymatlari (qisqa forma ularni jim almashtirmasligi uchun) */
 async function loadExistingWorker(supabase: Awaited<ReturnType<typeof createClient>>, workerId: string): Promise<ExistingWorker | null> {
   const [{ data: w }, { data: pref }] = await Promise.all([
@@ -87,6 +94,10 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
   if (error || !data) return { ok: false, error: errorCode(error) };
   const res = data as { worker_id: string; state: string };
   const info = await settle("worker", res.worker_id, res.state);
+  if (await blockedNow(session.userId)) {
+    revalidatePath("/", "layout");
+    return { ok: false, error: "blocked" };
+  }
   after(async () => {
     await trackServer("post_publish", session.userId, { entity: "worker", source: v.source ?? "manual", state: info.state });
     if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
@@ -166,6 +177,10 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
   if (error || !data) return { ok: false, error: errorCode(error) };
   const res = data as { vacancy_id: string; slug: string; state: string };
   const info = await settle("vacancy", res.vacancy_id, res.state);
+  if (await blockedNow(session.userId)) {
+    revalidatePath("/", "layout");
+    return { ok: false, error: "blocked" };
+  }
   after(async () => {
     await trackServer("post_publish", session.userId, { entity: "vacancy", source: v.source ?? "manual", state: info.state });
     if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);

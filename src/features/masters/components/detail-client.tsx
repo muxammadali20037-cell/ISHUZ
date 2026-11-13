@@ -90,7 +90,9 @@ export function RequestForm({
               ? t("masters.request.limit")
               : res.error === "prohibited"
                 ? t("masters.request.prohibited")
-                : t("masters.request.error"),
+                : res.error === "blocked"
+                  ? t("masters.blocked")
+                  : t("masters.request.error"),
       });
   };
 
@@ -190,7 +192,9 @@ export function ReviewForm({ listingId }: { listingId: string }) {
             ? t("masters.review.own")
             : res.error === "prohibited"
               ? t("masters.review.prohibited")
-              : t("masters.review.error"),
+              : res.error === "blocked"
+                ? t("masters.blocked")
+                : t("masters.review.error"),
       });
   };
 

@@ -4,11 +4,14 @@ import { checkMasterText } from "./content-check";
 describe("checkMasterText — ustalar e'lonlari, so'rovlar, sharhlar", () => {
   it("oddiy xizmat e'loni o'tadi (ogohlantirishsiz)", () => {
     const v = checkMasterText({ title: "Konditsioner o'rnatish va tozalash", description: "Split konditsionerlarni o'rnataman, freon quyaman. Kafolat 6 oy.", services: ["Tozalash", "Freon"] });
-    expect(v).toEqual({ blocked: false, category: null, flags: [] });
+    expect(v).toEqual({ blocked: false, category: null, rule: null, flags: [] });
   });
 
-  it("massaj terapevti kabi qonuniy xizmat bloklanmaydi", () => {
-    expect(checkMasterText({ title: "Davolovchi massaj", description: "Tibbiy massaj, bel og'rig'i uchun, uyga borib." }).blocked).toBe(false);
+  it("massaj — har qanday ko'rinishda taqiqlangan (ega, 2026-11-13: \"massaj, spa kerak emas\")", () => {
+    const v = checkMasterText({ title: "Davolovchi massaj", description: "Tibbiy massaj, bel og'rig'i uchun, uyga borib." });
+    expect(v.blocked).toBe(true);
+    expect(v.rule).toBe("strict_massage");
+    expect(v.category).toBe("sexual_services");
   });
 
   it("intim xizmat — bloklanadi (kirill va yashirilgan yozuvda ham)", () => {

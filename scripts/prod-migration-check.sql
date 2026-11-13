@@ -13,7 +13,8 @@ from (values
   ('0074', 'contact_reveals jadvali',                 to_regclass('public.contact_reveals') is not null),
   ('0075', 'telegram_updates.attempts ustuni',        exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'telegram_updates' and column_name = 'attempts')),
   ('0076', 'master_listings jadvali (Universal ustalar)', to_regclass('public.master_listings') is not null),
-  ('0077', 'demo_vacancies jadvali (namuna vakansiyalar)', to_regclass('public.demo_vacancies') is not null)
+  ('0077', 'demo_vacancies jadvali (namuna vakansiyalar)', to_regclass('public.demo_vacancies') is not null),
+  ('0078', 'massaj/spa kasblari katalogdan olingan',  not exists (select 1 from public.profession_nodes where is_active and (name_ru ~* 'массаж' or name_uz ~* 'massaj')))
 ) as m(migration, tekshiruv, bor)
 order by m.migration;
 

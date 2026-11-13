@@ -93,3 +93,26 @@ export async function draftData(page: Page, key: string): Promise<Record<string,
     return raw ? (JSON.parse(raw).data as Record<string, unknown>) : null;
   }, key);
 }
+
+/**
+ * Avtomatik bloklash testlari uchun (moderation/enforce.ts): foydalanuvchining holati (blok, ishchi e'loni ommaviyligi,
+ * vakansiyalar va ustalar e'lonlari holati) saqlanadi va qaytaruvchi funksiya beriladi — keyingi testlarga ta'sir qilmasin.
+ */
+export async function snapshotUser(id: string): Promise<() => Promise<void>> {
+  const [p] = await sql<{ is_blocked: boolean }>("select is_blocked from public.profiles where id = $1", [id]);
+  const workers = await sql<{ id: string; is_public: boolean }>("select id, is_public from public.worker_profiles where profile_id = $1", [id]);
+  const vacancies = await sql<{ id: string; status: string }>("select id, status::text as status from public.vacancies where owner_profile_id = $1", [id]);
+  const masters = await sql<{ id: string; status: string; reject_reason: string | null }>(
+    "select id, status::text as status, reject_reason from public.master_listings where owner_profile_id = $1",
+    [id],
+  );
+  return async () => {
+    await sql("update public.profiles set is_blocked = $2, blocked_reason = null, blocked_at = null where id = $1", [id, p?.is_blocked ?? false]);
+    for (const w of workers) await sql("update public.worker_profiles set is_public = $2 where id = $1", [w.id, w.is_public]);
+    for (const v of vacancies) await sql("update public.vacancies set status = $2::public.vacancy_status where id = $1", [v.id, v.status]);
+    for (const m of masters) {
+      await sql("update public.master_listings set status = $2::public.master_listing_status, reject_reason = $3 where id = $1", [m.id, m.status, m.reject_reason]);
+    }
+  };
+}
+

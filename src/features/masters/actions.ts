@@ -21,6 +21,7 @@ import {
 import { getAdminActor } from "@/features/admin/context";
 import { MASTERS_TAG } from "./queries";
 import { checkMasterText } from "./content-check";
+import { banIfRuleBlock } from "@/features/moderation/enforce";
 import {
   masterListingSchema,
   masterRequestSchema,
@@ -54,6 +55,9 @@ function revalidateMasters() {
 }
 
 /** Rasm: karantin yo'lini tekshirib qayta kodlash (vakansiya rasmlari bilan bir xil quvur) */
+/** checkMasterText natijasidan jazo uchun "block" topilmasi */
+const verdictBlock = (v: { category: string | null; rule: string | null }) => (v.category && v.rule ? { category: v.category, rule: v.rule } : null);
+
 export async function verifyMasterPhoto(
   input: unknown,
 ): Promise<ActionResult<{ path: string }>> {
@@ -84,8 +88,12 @@ export async function saveMasterListing(
   const v: MasterListingInput = parsed.data;
   // aniq taqiqlangan mazmun (intim xizmat, giyohvand moddalar, karta sotib olish, soxta hujjat …) — saqlanmaydi.
   // Shubhali belgilar saqlanadi, admin navbatida ogohlantirish bo'lib chiqadi (e'lon baribir tasdiqsiz chiqmaydi)
-  if (checkMasterText({ displayName: v.displayName, title: v.title, description: v.description, services: v.services, serviceArea: v.serviceArea }).blocked)
+  // og'ir qoidabuzarlikda (erotika, massaj/spa, ekstremizm, noqonuniy) — muallif darhol bloklanadi (ega, 2026-11-13)
+  const verdict = checkMasterText({ displayName: v.displayName, title: v.title, description: v.description, services: v.services, serviceArea: v.serviceArea });
+  if (verdict.blocked) {
+    if (await banIfRuleBlock(session.userId, verdictBlock(verdict), "master_listing")) return { ok: false, error: "blocked" };
     return { ok: false, error: "prohibited" };
+  }
   // faqat tekshirilgan (v-…webp) rasm yo'llari, faqat o'z papkasidan
   if (v.photos.some((p) => !isVerifiedPhotoPath(session.userId, p)))
     return { ok: false, error: "photo_invalid" };
@@ -198,9 +206,13 @@ export async function deleteMasterListing(
 export async function createMasterRequest(input: unknown): Promise<ActionResult<{ id: string }>> {
   const parsed = masterRequestSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
-  if (checkMasterText({ name: parsed.data.name, message: parsed.data.message }).blocked) return { ok: false, error: "prohibited" };
   const session = await getSession();
   if (session?.profile.is_blocked) return { ok: false, error: "blocked" };
+  const verdict = checkMasterText({ name: parsed.data.name, message: parsed.data.message });
+  if (verdict.blocked) {
+    if (await banIfRuleBlock(session?.userId, verdictBlock(verdict), "master_request")) return { ok: false, error: "blocked" };
+    return { ok: false, error: "prohibited" };
+  }
   const key = session ? `masters_req:${session.userId}` : `masters_req_ip:${await ipKey()}`;
   if (!(await allowRate(key, session ? 20 : 10, 3600))) return { ok: false, error: "rate_limited" };
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) return { ok: false, error: "unavailable" };
@@ -237,9 +249,13 @@ export async function setMasterRequestStatus(
 export async function addMasterReview(input: unknown): Promise<ActionResult> {
   const parsed = masterReviewSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
-  if (checkMasterText({ text: parsed.data.text }).blocked) return { ok: false, error: "prohibited" };
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
+  const verdict = checkMasterText({ text: parsed.data.text });
+  if (verdict.blocked) {
+    if (await banIfRuleBlock(session.userId, verdictBlock(verdict), "master_review")) return { ok: false, error: "blocked" };
+    return { ok: false, error: "prohibited" };
+  }
   if (!(await allowRate(`masters_review:${session.userId}`, 20, 3600)))
     return { ok: false, error: "rate_limited" };
   const supabase = await createClient();

@@ -2,12 +2,15 @@ import "server-only";
 
 import { createAdminClient } from "@/lib/supabase/admin";
 import { processModerationQueue } from "@/features/moderation/service";
+import { sweepPublishedContent } from "@/features/moderation/sweep";
 import { cleanupRawVacancyPhotos } from "@/features/post/photo-finalize";
 import { cleanupRawMedia } from "@/features/media/finalize";
 import { dispatchTelegramNotifications, type DispatchCounts } from "./telegram-dispatch";
 
 export interface TickResult {
   moderated: number;
+  /** kuchaytirilgan qoidalar bilan qayta tekshirilgan eski e'lonlar (moderation/sweep.ts) */
+  swept: number;
   matchJobs: number;
   telegram: DispatchCounts | null;
   photosRemoved: number;
@@ -25,11 +28,17 @@ export async function runBackgroundTick(opts: { moderation?: number; matchJobs?:
   const started = Date.now();
   const budget = opts.budgetMs ?? 50_000;
   const admin = createAdminClient();
-  const result: TickResult = { moderated: 0, matchJobs: 0, telegram: null, photosRemoved: 0 };
+  const result: TickResult = { moderated: 0, swept: 0, matchJobs: 0, telegram: null, photosRemoved: 0 };
   try {
     result.moderated = await processModerationQueue(opts.moderation ?? 8, Math.min(25_000, budget / 2));
   } catch (e) {
     console.error("[tick] moderation", e instanceof Error ? e.message : e);
+  }
+  try {
+    // joylangan e'lonlarni kuchaytirilgan qoidalar bilan bir marta qayta tekshirish (kichik bo'laklarda; tugagach — bo'sh)
+    result.swept = (await sweepPublishedContent(100, Math.min(8_000, budget / 5))).checked;
+  } catch (e) {
+    console.error("[tick] rules sweep", e instanceof Error ? e.message : e);
   }
   try {
     const { data } = await admin.rpc("process_match_jobs", { p_limit: opts.matchJobs ?? 20 });

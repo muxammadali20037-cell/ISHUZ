@@ -152,7 +152,7 @@
       "description_short": "Kamida 10 ta belgi",
       "price_order": "«gacha» «dan»dan kam bo'lmasin",
       "generic": "Saqlab bo'lmadi. Qayta urinib ko'ring.",
-      "prohibited": "E'londa taqiqlangan mazmun bor (masalan, intim xizmat, giyohvand moddalar, karta yoki akkaunt savdosi, soxta hujjat). Bunday e'lonlar joylanmaydi — matnni tuzating.",
+      "prohibited": "E'londa taqiqlangan mazmun bor (erotika, massaj yoki spa, diniy ekstremizm, giyohvand moddalar, karta yoki akkaunt savdosi, soxta hujjat). Bunday e'lonlar joylanmaydi.",
       "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring."
     },
     "district": "Tuman (ixtiyoriy)",
@@ -243,5 +243,6 @@
     "desc": "Santexnik, elektrik, konditsioner ustasi va boshqa xizmatlar — ish e'lonlaridan alohida",
     "all": "Barcha xizmatlar",
     "open": "Ustalarni ko'rish"
-  }
+  },
+  "blocked": "Taqiqlangan mazmun (erotika, massaj/spa, ekstremizm yoki qonunga xilof) uchun hisobingiz bloklandi."
 }
