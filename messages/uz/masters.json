@@ -238,5 +238,10 @@
   "nav_hint": "Yangi",
   "entry_desc": "Santexnik, elektrik, konditsioner ustasi va boshqa xizmatlar",
   "unavailable_title": "Bo'lim tayyorlanmoqda",
-  "unavailable_desc": "Universal ustalar tez orada ishga tushadi. Hozircha ish va xodim qidirishda davom etishingiz mumkin."
+  "unavailable_desc": "Universal ustalar tez orada ishga tushadi. Hozircha ish va xodim qidirishda davom etishingiz mumkin.",
+  "home": {
+    "desc": "Santexnik, elektrik, konditsioner ustasi va boshqa xizmatlar — ish e'lonlaridan alohida",
+    "all": "Barcha xizmatlar",
+    "open": "Ustalarni ko'rish"
+  }
 }

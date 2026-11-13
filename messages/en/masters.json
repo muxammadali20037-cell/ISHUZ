@@ -238,5 +238,10 @@
   "nav_hint": "New",
   "entry_desc": "Plumber, electrician, air conditioner technician and more",
   "unavailable_title": "This section is being prepared",
-  "unavailable_desc": "Universal masters will be available soon. Meanwhile you can keep searching for jobs and staff."
+  "unavailable_desc": "Universal masters will be available soon. Meanwhile you can keep searching for jobs and staff.",
+  "home": {
+    "desc": "Plumbers, electricians, AC technicians and other services — separate from job listings",
+    "all": "All services",
+    "open": "See handymen"
+  }
 }

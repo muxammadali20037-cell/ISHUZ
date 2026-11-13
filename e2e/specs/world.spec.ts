@@ -2,11 +2,12 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
- * "Mening dunyom" (2026-11, 0073): kirgan ish qidiruvchi qiziqishlarini tanlaydi → bosh sahifa shunga moslashadi.
+ * "Mening dunyom" (2026-11, 0073): kirgan ish qidiruvchi qiziqishlarini tanlaydi → Profil (Kabinetim) shunga moslashadi
+ * (2026-11-13: bosh sahifadan Profilga ko'chirildi — bosh sahifada faqat qidiruv va e'lonlar).
  *  - mehmon /dunyo → kirishga (qaytish manzili bilan);
  *  - bosh sahifada "Dunyongizni yarating" va "Bugungi rejangiz" (haqiqiy holat: 0 dan boshlanadi);
  *  - 2 soha + hudud → "Dunyongiz tayyor!" → bazada aynan 2 ta qiziqish, hudud eslab qolingan;
- *  - bosh sahifada "Mening dunyom": tanlangan sohalar havolalari, reja qadamida "Qiziqishlar" bajarilgan.
+ *  - Profilda "Mening dunyom": tanlangan sohalar havolalari, reja qadamida "Qiziqishlar" bajarilgan.
  */
 test.beforeEach(async () => {
   await sql("delete from public.profile_interests where profile_id = $1", [USERS.workerB]);
@@ -21,10 +22,12 @@ test("mehmon: /dunyo — kirishga yo'naltiriladi", async ({ page, context }) => 
   await expect(page).toHaveURL(/\/auth\?next=%2Fdunyo/);
 });
 
-test("dunyo yaratish: sohalar → hudud → tayyor; bosh sahifa moslashadi", async ({ page, context }) => {
+test("dunyo yaratish: sohalar → hudud → tayyor; Profil moslashadi", async ({ page, context }) => {
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
   await page.goto("/");
+  await expect(page.getByRole("main").getByText("Mening dunyom")).toHaveCount(0);
+  await page.goto("/cabinet");
   const main = page.getByRole("main");
   await expect(main.getByRole("heading", { name: "Dunyongizni yarating" })).toBeVisible();
   await expect(main.getByRole("heading", { name: "Bugungi rejangiz" })).toBeVisible();
@@ -49,6 +52,7 @@ test("dunyo yaratish: sohalar → hudud → tayyor; bosh sahifa moslashadi", asy
   expect((await context.cookies()).find((c) => c.name === "ib_place")?.value).toMatch(/^tashkent_city~all$/);
 
   await page.getByRole("link", { name: "Dunyomga kirish" }).click();
+  await page.waitForURL(/\/cabinet#dunyo$/);
   await expect(main.getByRole("heading", { name: /Sohalaringizda/ })).toBeVisible();
   await expect(main.getByRole("link", { name: new RegExp(`^${a!.name_uz}`) }).first()).toHaveAttribute("href", new RegExp(`category=${a!.slug}`));
   await expect(main.getByText("Qiziqishlaringizni tanlang")).toHaveClass(/line-through/);

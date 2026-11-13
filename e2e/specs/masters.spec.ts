@@ -68,11 +68,14 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  const entry = page.locator("main [data-masters-entry]").first();
-  await expect(entry).toContainText("Universal ustalar");
-  // alohida rang: asosiy ko'k emas (turkuaz mavzu)
+  // 3.0 (2026-11-13): bosh sahifada alohida bo'lim — sarlavha, xizmat turlari va "Ustalarni ko'rish"
+  const section = page.locator("main [data-masters-home]");
+  await expect(section).toContainText("Universal ustalar");
+  const entry = section.locator("[data-masters-entry]");
+  await expect(entry).toHaveText(/Ustalarni ko'rish/);
+  // alohida rang: asosiy ko'k emas (yashil mavzu)
   const [entryColor, blue] = await Promise.all([
-    entry.evaluate((el) => getComputedStyle(el).color),
+    section.getByRole("heading", { name: "Universal ustalar" }).evaluate((el) => getComputedStyle(el).color),
     page.evaluate(() => {
       const probe = document.createElement("span");
       probe.className = "text-primary-ink";

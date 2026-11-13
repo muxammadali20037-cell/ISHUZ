@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-13 · Bosh sahifa soddalashtirildi — 1-bosqich (`claude/ux-simplify`)
+
+- Ega: "ISH TOPDIM — complete UX/UI simplification": bosh sahifada faqat joylashuv, salomlashuv, katta qidiruv, tezkor
+  yo'llar, yangi e'lonlar va alohida "Universal ustalar". Audit va reja — `docs/UX_SIMPLIFICATION_2026-11.md`.
+- Ish izlovchi bosh sahifasi: 11 blokdan 4 ga. Kompyuterda joylashuv tanlovi salomlashuv ustida (telefonda — yuqori panelda).
+  Yangi ishlar to'liq kenglikda. Yangi `MastersHomeSection` — o'z yashil rangida: 7 ta xizmat turi (katalogdan) va
+  "Ustalarni ko'rish".
+- Ko'chirildi (o'chirilmadi): "Mening dunyom" va bugungi reja → Profil (`/cabinet#dunyo`, /dunyo tugagach shu yerga);
+  "Mening faoliyatim" → "Arizalar" va Profil sarlavhasi; "O'zim haqimda e'lon" → pastki menyu "E'lon"; "Yangi ish chiqsa
+  xabar" → Profil → AI PRO; AI kartasi → yuqori panel ✨ / yon menyu / Profil.
+- Ish beruvchi: "Bo'limlar" ro'yxati olib tashlandi (menyuni takrorlardi), mehmon-ish beruvchidagi AI va xabar kartalari ham;
+  "Universal ustalar" bo'limi qo'shildi.
+- Bugungi reja qadamlari 44 px (bosish maydoni). Testlar yangi tuzilishga moslandi (home, ai-entry, masters, world,
+  responsiveness).
+
 ## 2026-11-13 · Har bir sahifa tepasida "‹ Orqaga" (`claude/global-back`)
 
 - Ega: "orqaga qaytish topolmayapti — har bir oynaning tepasida kichkina orqaga chiqib tursin". Telegram ichida brauzerning

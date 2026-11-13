@@ -22,6 +22,7 @@ import type { AppMode } from "@/features/mode/mode";
 import { ProfileHeader } from "./profile-header";
 import { MastersEntry } from "@/features/masters/components/masters-entry";
 import { AiEntry } from "@/features/ai/components/ai-entry";
+import { MyWorld } from "@/features/world/components/my-world";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
@@ -198,6 +199,15 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
           </div>
         ) : null}
       </section>
+
+      {/* "Mening dunyom" va bugungi reja (2026-11-13: bosh sahifadan ko'chirildi — bosh sahifada faqat qidiruv va e'lonlar) */}
+      {mode !== "employer" ? (
+        <div id="dunyo" className="scroll-mt-20">
+          <Suspense fallback={null}>
+            <MyWorld session={session} />
+          </Suspense>
+        </div>
+      ) : null}
 
       <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
         <AiProCard userId={session.userId} only={mode} />

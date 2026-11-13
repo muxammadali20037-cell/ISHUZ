@@ -27,12 +27,9 @@ test("mehmon (ish izlovchi rejimi), kompyuter: yuqori menyuda 'AI yordamchi' —
   await expect(nav.getByRole("link", { name: "Universal ustalar" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "AI yordamchi" })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
-  // bosh sahifada ikki bo'lim kartasi: AI yordamchi va Universal ustalar
-  const cards = page.locator("main [data-home-sections] a");
-  await expect(cards).toHaveCount(2);
-  await expect(cards.nth(0)).toContainText("AI yordamchi");
-  await expect(cards.nth(0)).toContainText("Suhbat orqali: ish topish, CV, karyera maslahati");
-  await expect(cards.nth(1)).toContainText("Universal ustalar");
+  // 3.0 (2026-11-13): bosh sahifada AI kartasi yo'q (AI — menyuda); "Universal ustalar" — alohida yashil bo'lim
+  await expect(page.locator("main [data-ai-entry]")).toHaveCount(0);
+  await expect(page.locator("main [data-masters-home]")).toContainText("Universal ustalar");
 
   await nav.getByRole("link", { name: "AI yordamchi" }).click();
   await page.waitForURL(/\/ai$/);
@@ -43,7 +40,7 @@ test("mehmon (ish izlovchi rejimi), kompyuter: yuqori menyuda 'AI yordamchi' —
   await expect(nav.getByRole("link", { name: "Ishlar" })).not.toHaveAttribute("aria-current", "page");
 });
 
-test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; bosh sahifadagi karta ham ochadi", async ({ page, context }) => {
+test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; Profildagi karta ham ochadi", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -66,20 +63,21 @@ test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; bosh 
   await expect(side.getByRole("link", { name: /^AI yordamchi/ })).toHaveAttribute("aria-current", "page");
   await expect(side.getByRole("link", { name: "Vakansiyalar" })).not.toHaveAttribute("aria-current", "page");
 
-  await page.goto("/");
+  // bosh sahifada — faqat qidiruv va e'lonlar (3.0); AI kartasi Profilda
+  await page.goto("/cabinet");
   await page.locator("main [data-ai-entry]").click();
   await page.waitForURL(/\/ai$/);
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();
 });
 
-test("telefon: yuqori paneldagi belgi va bosh sahifadagi karta; pastki menyu o'zgarmagan", async ({ page, context }) => {
+test("telefon: yuqori paneldagi belgi (bosh sahifada alohida karta yo'q); pastki menyu o'zgarmagan", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const top = page.getByRole("banner").getByRole("link", { name: "AI yordamchi" });
   await expect(top).toBeVisible();
-  await expect(page.locator("main [data-ai-entry]")).toContainText("AI yordamchi");
+  await expect(page.locator("main [data-ai-entry]")).toHaveCount(0);
   // pastki menyu: 4 bo'lim + "E'lon" — oltinchi katak qo'shilmagan
   await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
   // boshqa sahifadan ham bir bosishda

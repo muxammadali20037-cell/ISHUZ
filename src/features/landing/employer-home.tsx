@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import Link from "next/link";
-import { ArrowRight, BellRing, Building2, ChevronRight, UsersRound } from "lucide-react";
+import { ArrowRight, Building2, ChevronRight, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { Button } from "@/components/ui/button";
@@ -11,7 +11,7 @@ import { savedIdSet } from "@/features/saved/queries";
 import { EmployerDashboard } from "@/features/employer/components/dashboard/employer-dashboard";
 import { getHomePlace, getNewWorkers, type HomePlace } from "./home-queries";
 import { EmployerHead } from "./employer-head";
-import { AiEntry } from "@/features/ai/components/ai-entry";
+import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 
 /**
  * Ish beruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "ish beruvchilar panelini ham soddalashtir"). Profili tayyor ish beruvchi —
@@ -19,7 +19,7 @@ import { AiEntry } from "@/features/ai/components/ai-entry";
  *  1) bitta savol "Qanday xodim kerak?" va BITTA qidiruv maydoni (AI: o'z so'zi bilan — bazadagi nomzodlardan topadi);
  *  2) 4 ta tez yo'l: kunlik ishchi, yaqin atrofda, tajribali, masofaviy; "Barcha nomzodlar";
  *  3) asosiy amal — "Vakansiya joylash" (ish beruvchining asl maqsadi);
- *  4) yangi nomzodlar ro'yxati; kompyuterda o'ngda — "Mos nomzod chiqsa xabar".
+ *  4) yangi nomzodlar ro'yxati; 5) "Universal ustalar" — alohida yashil bo'lim (2026-11-13).
  * Olib tashlandi: fon surati, 4 ta plitka, bo'limlar ro'yxati, admin oynalari, AI PRO kartasi — bir ekranda bitta vazifa.
  * Rejim faqat ko'rinishni tanlaydi: ruxsatlar serverda (requireEmployer, RLS) — rejim o'zgarsa ham kengaymaydi.
  */
@@ -32,7 +32,7 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
     <div className="flex flex-col gap-6">
       <EmployerHead flush={flush} greeting={firstName ? t("easy.home2.e_greeting", { name: firstName }) : t("easy.services.greeting_guest")} place={place} postHref="/post/vacancy" />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] 3xl:grid-cols-[minmax(0,1fr)_22rem]">
+      <div>
         <div className="min-w-0 space-y-5">
           {session ? (
             // kirgan, lekin ish beruvchi profili yo'q: bir daqiqalik to'ldirish (arizalar va vakansiyalar shundan keyin)
@@ -49,30 +49,14 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
             <NewWorkers session={session} place={place} />
           </Suspense>
         </div>
-        <aside aria-label={t("easy.start.more_title")} className="min-w-0 space-y-3">
-          {/* "AI yordamchi" — suhbat oynasi (/ai): nomzod topish, vakansiya matni, suhbat savollari */}
-          <AiEntry title={t("easy.aiws.nav.ai")} desc={t("easy.aiws.entry_desc_employer")} />
-          <EmployerAlertCard />
-        </aside>
       </div>
-    </div>
-  );
-}
 
-/** "Mos nomzod chiqsa — Telegram'da xabar": o'z so'zi bilan kuzatuv (AI) */
-async function EmployerAlertCard() {
-  const { t } = await getT();
-  return (
-    <Link href="/ai-alerts?role=employer" className="press flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/40">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
-        <BellRing className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-bold">{t("easy.home2.e_alert_title")}</span>
-        <span className="block text-sm leading-snug text-muted-foreground">{t("easy.home2.e_alert_desc")}</span>
-      </span>
-      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
-    </Link>
+      {/* "Universal ustalar" — alohida yashil bo'lim (2026-11-13). AI yordamchi — yuqori panelda (✨) va yon menyuda;
+          "Mos nomzod chiqsa xabar" — Profil → AI PRO */}
+      <Suspense fallback={null}>
+        <MastersHomeSection />
+      </Suspense>
+    </div>
   );
 }
 
