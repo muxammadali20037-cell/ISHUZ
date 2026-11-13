@@ -86,9 +86,18 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
 });
 
 test("bosh sahifa (3.0): faqat qidiruv, tez yo'llar, yangi ishlar va alohida 'Universal ustalar' — ortiqcha bloklar yo'q", async ({ page, context }) => {
+  // ro'yxat bo'sh bo'lmasin: bo'sh holatda "O'zim haqimda e'lon berish" — to'g'ri keyingi qadam (bu test kartalar haqida)
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  await sql(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, published_at, expires_at)
+     select $1, 'Kassir — 3.0 sinovi', r.id, 'Do''konga kassir kerak, 9 dan 18 gacha', 'active', 4000000, 'monthly', now(), now() + interval '10 days'
+     from public.regions r where r.slug = 'tashkent_city'`,
+    [USERS.employer],
+  );
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/");
+  await expect(page.locator("main article").first()).toBeVisible();
   const main = page.getByRole("main");
   await expect(main.locator("#home-feed")).toBeVisible();
   // ko'chirilganlar: "Mening dunyom" (Profilga), AI kartasi (menyuda), "Yangi ish chiqsa" (Profil → AI PRO), "O'zim haqimda e'lon" (pastki menyu)
@@ -103,6 +112,7 @@ test("bosh sahifa (3.0): faqat qidiruv, tez yo'llar, yangi ishlar va alohida 'Un
   expect((await masters.boundingBox())!.y).toBeGreaterThan(feedBottom.y);
   await masters.getByRole("link", { name: "Ustalarni ko'rish" }).click();
   await page.waitForURL(/\/ustalar$/);
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
 test("bosh sahifa (390×844, kirgan ish qidiruvchi): birinchi vakansiyaning nomi, maoshi va hududi birinchi ekranda", async ({ page, context }) => {
