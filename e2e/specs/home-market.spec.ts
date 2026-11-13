@@ -2,10 +2,10 @@ import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, sql } from "../support";
 
 /**
- * Bosh sahifa (mehmon, rejim tanlanmagan; 2026-11-05 — haqiqiy suratlar): sayt menyusi, uch maydonli qidiruv (mavjud /search
- * oqimiga), suratli kasblar katalogi (bazadagi sonlar bilan) va /kasblar, tanlangan vakansiyalar (qoida ochiq yozilgan),
- * yangi vakansiyalar ro'yxati (bo'sh va xato holatlari alohida), ishonch bo'limi, ish beruvchilar bo'limi, pastki qism
- * havolalari, SEO va 320–1440 px. Kirish oqimi va ikki yo'l — entry.spec.ts.
+ * Bosh sahifa (mehmon, rejim tanlanmagan; 3.0 — 2026-11-13 soddalashtirish): sayt menyusi, uch maydonli qidiruv (mavjud
+ * /search oqimiga), suratli kasblar katalogi (bazadagi sonlar bilan) va /kasblar, yangi vakansiyalar ro'yxati (bo'sh va xato
+ * holatlari alohida), alohida "Universal ustalar", pastki qism havolalari, SEO va 320–1440 px. Takror bo'limlar ("Tanlangan
+ * vakansiyalar", ishonch, ish beruvchilar bloki, "Qanday ishlaydi") yo'q. Kirish oqimi va ikki yo'l — entry.spec.ts.
  */
 
 const HOME_H1 = "Ish toping. Yoki jamoangizga odam toping.";
@@ -117,14 +117,18 @@ test.describe("bosh sahifa (marketplace)", () => {
     await expect(page.locator("main article").filter({ hasText: "Backend dasturchi" })).toHaveCount(1);
   });
 
-  test("qanday ishlaydi: ikki auditoriya, 4 + 4 qadam; takror 'Nega Ish topdim?' yo'q", async ({ page, context }) => {
+  test("3.0: faqat hero, kasblar, yangi vakansiyalar va 'Universal ustalar' — takror bo'limlar yo'q", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
-    const how = main(page).getByRole("region", { name: "Qanday ishlaydi" });
-    await expect(how.getByRole("listitem")).toHaveCount(8);
-    await expect(main(page).getByRole("heading", { name: "Nega Ish topdim?" })).toHaveCount(0);
+    for (const name of ["Tanlangan vakansiyalar", "Qanday ishlaydi", "Sizga kerakli xodimni toping.", "Xavfsiz va ishonchli", "Ishonchli ish beruvchilar"]) {
+      await expect(main(page).getByRole("region", { name, exact: true }), name).toHaveCount(0);
+    }
+    await expect(latest(page)).toBeVisible();
+    const masters = main(page).locator("[data-masters-home]");
+    await expect(masters.getByRole("heading", { name: "Universal ustalar" })).toBeVisible();
+    // tartib: yangi vakansiyalar, keyin ustalar
+    expect((await masters.boundingBox())!.y).toBeGreaterThan((await latest(page).boundingBox())!.y);
   });
-
   test("kasblar katalogi: suratli kartalar (tavsifli rasm, 4:3), son bazadan; surati yo'q soha — 'Boshqa kasblar' da", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
@@ -159,27 +163,6 @@ test.describe("bosh sahifa (marketplace)", () => {
     await page.waitForURL(/\/jobs\?category=logistics$/);
   });
 
-  test("tanlangan vakansiyalar: qoida ochiq yozilgan va bajariladi; kartada kompaniya, maosh, belgilar va saqlash", async ({ page, context }) => {
-    await asGuest(context);
-    await page.goto("/");
-    const featured = main(page).getByRole("region", { name: "Tanlangan vakansiyalar" });
-    const rule = featured.getByText(/^(Maoshi ochiq ko'rsatilgan e'lonlar|Tekshirilgan ish beruvchilardan, maoshi ochiq ko'rsatilgan e'lonlar)$/);
-    await expect(rule).toBeVisible();
-    const cards = featured.locator("article");
-    // to'r doim to'liq qatorlar: 2, 4 yoki 8 ta
-    expect([2, 4, 8]).toContain(await cards.count());
-    // har kartada maosh (qoida — maoshi ko'rsatilgan) va belgilar ro'yxati; "tekshirilgan" qoidasida — har birida tasdiq belgisi
-    const verifiedRule = (await rule.innerText()).startsWith("Tekshirilgan");
-    for (const card of await cards.all()) {
-      await expect(card).toContainText(/so'm/);
-      await expect(card.getByRole("list", { name: "Vakansiya belgilari" })).toBeVisible();
-      if (verifiedRule) await expect(card.getByRole("img", { name: "Tasdiqlangan kompaniya" })).toBeVisible();
-    }
-    // saqlash — mehmon kirishga yuboriladi (keyin shu joyga qaytadi)
-    await cards.first().getByRole("button", { name: /^Saqlash: / }).click();
-    await page.waitForURL(/\/auth\?next=/);
-  });
-
   test("yangi vakansiyalar: ro'yxat (kompaniya · joy · ish turi · maosh · sana), 'Barcha yangi vakansiyalar'", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
@@ -205,14 +188,12 @@ test.describe("bosh sahifa (marketplace)", () => {
       await expect(alert).toContainText("Ishlarni yuklab bo'lmadi");
       await expect(alert.getByRole("button", { name: "Qayta urinish" })).toBeVisible();
       await expect(latest(page).getByText("Hozircha bu bo'limda faol vakansiyalar yo'q.")).toHaveCount(0);
-      // tanlangan vakansiyalar ham o'sha so'rovdan — xatoda bo'lim umuman yo'q (soxta "bo'sh" emas)
-      await expect(main(page).getByRole("region", { name: "Tanlangan vakansiyalar" })).toHaveCount(0);
     } finally {
       await sql(`grant execute on function ${SIG} to public, anon, authenticated`);
     }
   });
 
-  test("raqamlar bazadan (birinchi ekranda, katta surat bilan) va ishonch bo'limi — haqiqiy himoya qoidalari", async ({ page, context }) => {
+  test("raqamlar bazadan (birinchi ekranda, katta surat bilan)", async ({ page, context }) => {
     await asGuest(context);
     await page.setViewportSize({ width: 1280, height: 900 });
     await page.goto("/");
@@ -224,18 +205,6 @@ test.describe("bosh sahifa (marketplace)", () => {
     await expect(hero.getByText("ish beruvchi xodim qidirmoqda")).toBeVisible();
     await expect(hero.getByText(fmt(e!.n), { exact: true })).toBeVisible();
     await expect(hero.getByRole("img", { name: "Qurilish maydonida sariq kaskadagi ishchi" })).toBeVisible();
-    const trust = main(page).getByRole("region", { name: /^(Ishonchli ish beruvchilar|Xavfsiz va ishonchli)$/ });
-    await expect(trust.getByText("Har bir e'lon tekshiriladi")).toBeVisible();
-    await expect(trust.getByText("Telefon raqamingiz himoyada")).toBeVisible();
-  });
-
-  test("ish beruvchilar bo'limi: 'Xodimlarni ko'rish' — ishchilar qidiruvi (ish beruvchi rejimida)", async ({ page, context }) => {
-    await asGuest(context);
-    await page.goto("/");
-    const band = main(page).getByRole("region", { name: "Sizga kerakli xodimni toping." });
-    await band.getByRole("button", { name: "Xodimlarni ko'rish" }).click();
-    await page.waitForURL(/\/search\?mode=workers&region=all&any=1$/);
-    expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   });
 
   test("pastki qism: barcha havolalar ishlaydigan sahifalarga (o'lik havola yo'q)", async ({ page, context }) => {

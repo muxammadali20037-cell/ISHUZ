@@ -69,7 +69,7 @@ test.describe("kirish", () => {
     expect(await cookie(context, "ib_mode")).toBe("employer");
   });
 
-  test("tezkor filtr: 'Kunlik ishlar' → kunlik ishlar natijasi; 'E'lon joylashtirish' → vakansiya e'loni (rejim shunga mos)", async ({ page, context }) => {
+  test("tezkor filtr: 'Kunlik ishlar' → kunlik ishlar natijasi; 'Menga ishchi kerak' → 'Vakansiya joylash' (rejim shunga mos)", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     await page.getByRole("main").getByRole("button", { name: "Kunlik ishlar", exact: true }).click();
@@ -80,9 +80,11 @@ test.describe("kirish", () => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^E'lon joylashtirish/ }).click();
+    // 3.0 (2026-11-13): alohida ish beruvchilar bloki yo'q — hero'dagi ikki yo'ldan biri, keyin ish beruvchi bosh sahifasi
+    await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
+    await expect.poll(() => cookie(context, "ib_mode")).toBe("employer");
+    await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
     await page.waitForURL(/\/post\/vacancy/);
-    expect(await cookie(context, "ib_mode")).toBe("employer");
   });
 
   test("ochilish ekrani: sessiyada bir marta, bosishni to'smaydi, ~1.3 s da yo'qoladi; harakat kamaytirilganda yo'q", async ({ page, context }) => {

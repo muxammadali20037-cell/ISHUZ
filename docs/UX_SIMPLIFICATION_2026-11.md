@@ -40,7 +40,8 @@ alohida yashil "Universal ustalar". Boshqa hamma narsa o'z bo'limida:
 ## 3. Bosqichlar
 
 1. ✅ Ish izlovchi va ish beruvchi bosh sahifasi (shu hujjat bilan birga).
-2. Mehmon bosh sahifasi: ikki yo'l + qidiruv → kasblar → bitta "Yangi vakansiyalar" ro'yxati → "Universal ustalar".
-   Takrorlar ("Tanlangan" + "Yangi" ikki ro'yxat, ish beruvchilar bloki hero'dagi tugmani takrorlaydi) olib tashlanadi.
-3. Kichik matnlar: pastki menyu yozuvlari va kartalardagi 2xs matnlar — kattaroq (o'qilishi).
+2. ✅ Mehmon bosh sahifasi: ikki yo'l + qidiruv → kasblar → bitta "Yangi vakansiyalar" ro'yxati → "Universal ustalar".
+   Takrorlar ("Tanlangan" + "Yangi" ikki ro'yxat, ish beruvchilar bloki, ishonch, "Qanday ishlaydi") olib tashlandi.
+3. Kichik matnlar: pastki menyu yozuvlari 11 px qoladi — 360 px ekranda ruscha "Вакансии/Кандидаты" 12 px da sig'maydi
+   (tekshirildi); kartalardagi 2xs matnlar keyingi bosqichda ko'rib chiqiladi.
 4. Har bosqichdan keyin: unit + to'liq E2E (telefon/kompyuter, 320–1440 px, a11y), CI yashil bo'lsa — chiqarish.
