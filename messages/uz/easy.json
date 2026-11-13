@@ -252,6 +252,7 @@
     "done_desc": "Ishchilar endi sizga qo'ng'iroq qilishi yoki ariza yuborishi mumkin.",
     "done_matches": "Mos ishchilarni ko'rish",
     "done_view": "E'lonimni ko'rish",
+    "done_seeker_view": "Ish izlovchilar qanday ko'radi",
     "review_state_title": "E'loningiz tekshiruvga yuborildi",
     "review_state_desc": "Hali qidiruvda ko'rinmaydi. Moderator tekshirgach e'lon joylanadi va sizga xabar keladi.",
     "pay_title": "E'loningiz tayyor! Joylash uchun to'lov qoldi",

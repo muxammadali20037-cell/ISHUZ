@@ -307,5 +307,10 @@
     "verified": "Verified employer",
     "meta_title": "{title} — vacancy closed",
     "private_employer": "Private employer"
+  },
+  "seeker_preview": {
+    "title": "This is how job seekers see your job",
+    "desc": "Preview only: buttons don't work here.",
+    "back": "Back to management"
   }
 }

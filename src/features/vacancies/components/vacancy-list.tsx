@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Plus, MoreVertical, Eye, Users, ExternalLink, Settings2, Pencil, Play, Pause, XCircle, Copy, Trash2, Briefcase, CalendarDays, Wifi, Lock } from "lucide-react";
+import { Plus, MoreVertical, Eye, Users, Settings2, Pencil, Play, Pause, XCircle, Copy, Trash2, Briefcase, CalendarDays, Wifi, Lock } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSepara
 import { SalaryText } from "@/components/shared/salary-text";
 import { STATUS_FILTERS, canClose, canDelete, canPause, canPublish, filterMatches, isEditable, isPublic, publishLabelKey, type StatusFilter } from "../status";
 import type { VacancyListItem } from "../types";
+import { seekerPreviewHref } from "../preview-href";
 import { VacancyStatusBadge } from "./status-badge";
 import { useVacancyActions } from "./use-vacancy-actions";
 
@@ -161,8 +162,8 @@ function VacancyRow({
           <DropdownMenuContent align="end" className="min-w-[12rem]">
             {isPublic(v.status) ? (
               <DropdownMenuItem asChild>
-                <Link href={`/jobs/${v.slug}`} target="_blank" rel="noopener noreferrer">
-                  <ExternalLink /> {t("vacancies.actions.view")}
+                <Link href={seekerPreviewHref(v.slug)}>
+                  <Eye /> {t("vacancies.actions.view")}
                 </Link>
               </DropdownMenuItem>
             ) : null}

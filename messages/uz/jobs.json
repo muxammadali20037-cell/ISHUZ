@@ -307,5 +307,10 @@
     "verified": "Tasdiqlangan ish beruvchi",
     "meta_title": "{title} — vakansiya yopilgan",
     "private_employer": "Xususiy ish beruvchi"
+  },
+  "seeker_preview": {
+    "title": "Ish izlovchilar e'loningizni shunday ko'radi",
+    "desc": "Bu faqat ko'rinish: tugmalar bu yerda ishlamaydi.",
+    "back": "Boshqaruvga qaytish"
   }
 }

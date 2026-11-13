@@ -320,7 +320,8 @@ export function VacancyPost({
           description={t("easy.vacancy.done_desc")}
           actions={[
             { label: t("easy.vacancy.done_matches"), href: searchHref, primary: true },
-            { label: t("easy.vacancy.done_view"), href: `/jobs/${result.slug}` },
+            // ish beruvchining birinchi savoli: "ish izlovchilarga qanday ko'rinyapti?" — holat, qidiruvdagi o'rni, karta, to'liq ko'rinish
+            { label: t("easy.vacancy.done_seeker_view"), href: `/employer/vacancies/${result.vacancyId}#korinish` },
           ]}
         />
       );
@@ -332,7 +333,7 @@ export function VacancyPost({
           title={t("easy.vacancy.review_state_title")}
           description={t("easy.vacancy.review_state_desc")}
           actions={[
-            { label: t("easy.vacancy.done_view"), href: `/employer/vacancies/${result.vacancyId}`, primary: true },
+            { label: t("easy.vacancy.done_view"), href: `/employer/vacancies/${result.vacancyId}#korinish`, primary: true },
             { label: t("easy.cabinet.title"), href: "/cabinet" },
           ]}
         />
