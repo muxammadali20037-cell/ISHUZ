@@ -3,10 +3,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
-  BellRing,
   CalendarDays,
+  ChevronDown,
   ChevronRight,
-  FileUser,
   Laptop,
   MapPin,
   SearchX,
@@ -20,7 +19,6 @@ import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
 import { cn } from "@/lib/utils";
-import { SeekerActivity } from "./seeker-dashboard";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { getHomeSettings } from "@/features/home-windows/queries";
@@ -32,24 +30,23 @@ import {
   seekerFiltersHref,
   seekerQuickFilters,
 } from "./quick-filters";
-import { MyWorld } from "@/features/world/components/my-world";
-import { MastersEntry } from "@/features/masters/components/masters-entry";
-import { AiEntry } from "@/features/ai/components/ai-entry";
+import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
 
 /** bosh sahifa ro'yxatida haqiqiy e'lon shundan kam bo'lsa — ostida namuna e'lonlar bloki */
 const DEMO_BELOW = 4;
 
 /**
- * Ish qidiruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "soddalashtir, umuman adashmasin"). Mehmon ham ko'radi.
- *  1) bitta savol va BITTA qidiruv maydoni: o'z so'zi bilan yozadi (o'zbek lotin/kirill, rus, xato bilan) — AI tushunadi va
- *     bazadan topadi; aniq topilmasa qidiruvni o'zi kengaytiradi va buni ochiq aytadi (src/features/find/ai-find.ts);
- *  2) 4 ta tez yo'l: kunlik ish, yaqin atrofda, masofaviy, tajribasiz;
- *  3) arizalar holati (kirgan ish izlovchi, ma'lumot bo'lsa);
- *  4) yangi ishlar ro'yxati; kompyuterda o'ngda — "O'zim haqimda e'lon" va "Yangi ish chiqsa xabar".
- *  5) kirgan foydalanuvchi — eng pastda "Mening dunyom" (qiziqishlari bo'yicha ishlar va bugungi reja): shaxsiy qism, birinchi
- *     ekranni band qilmaydi; mehmonga ko'rsatilmaydi.
- * Olib tashlandi: fon surati, nol ko'rsatkichlar, 8 ta plitka, bo'limlar, ommabop kasblar, katalog — bir ekranda bitta vazifa.
+ * Ish qidiruvchi bosh sahifasi — 3.0 (2026-11-13, ega: "bosh sahifada faqat eng muhim narsalar qolsin: joylashuv, salomlashuv,
+ * katta qidiruv, tezkor kategoriyalar, yangi ish e'lonlari, alohida Universal ustalar"). Mehmon ham ko'radi.
+ *  1) joylashuv (telefonda — yuqori panelda, kompyuterda — shu yerda) va salomlashuv;
+ *  2) bitta savol va BITTA qidiruv maydoni: o'z so'zi bilan yozadi — AI tushunadi va bazadan topadi (src/features/find/ai-find.ts);
+ *  3) 4 ta tez yo'l: kunlik ish, yaqin atrofda, masofaviy, tajribasiz; "Filtrlar bilan qidirish" va xarita — kichik havola;
+ *  4) yangi ishlar ro'yxati (to'liq kenglikda);
+ *  5) "Universal ustalar" — o'z yashil rangida, alohida bo'lim.
+ * Ko'chirildi (o'chirilmadi): "Mening dunyom" va bugungi reja — Profilga (Kabinetim); arizalar holati — "Arizalar" bo'limi va
+ * profil sarlavhasi; "O'zim haqimda e'lon" — pastki menyudagi "E'lon"; "Yangi ish chiqsa xabar" — Profil → AI PRO;
+ * AI yordamchi — yuqori panel (✨) va yon menyu.
  * Admin AI'ni o'chirgan bo'lsa — oddiy matnli qidiruv (/search).
  */
 export async function SeekerHome({
@@ -105,12 +102,22 @@ export async function SeekerHome({
         data-home="seeker-v2"
         className={cn(
           "border-border bg-card px-4 py-6 sm:rounded-2xl sm:border sm:px-8 sm:py-8",
-          // katta ekranda ikki ustun: chapda qidiruv, o'ngda AI yordamchi va Universal ustalar (bo'sh joy qolmasin)
-          "2xl:grid 2xl:grid-cols-[minmax(0,48rem)_minmax(0,1fr)] 2xl:items-center 2xl:gap-x-12",
           flush ? "-mx-4 -mt-4 border-b sm:mx-0 sm:mt-0" : "rounded-2xl border",
         )}
       >
         <div className="min-w-0">
+          {/* joylashuv: telefonda yuqori panelda (TopBar), planshet va kompyuterda — shu yerda, salomlashuv ustida */}
+          <Link
+            href={placeChooserHref("jobs")}
+            prefetch={false}
+            data-home-place
+            aria-label={t("easy.start.place_label", { place: placeText(place, name, t("easy.location.whole_country")) })}
+            className="press -ml-1.5 mb-1 hidden min-h-11 items-center gap-1 rounded-lg px-1.5 text-base font-semibold hover:bg-secondary md:inline-flex"
+          >
+            <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
+            <span className="truncate">{placeText(place, name, t("easy.location.whole_country"))}</span>
+            <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+          </Link>
           <p className="text-sm font-medium text-muted-foreground">
             {firstName
               ? t("easy.services.greeting", { name: firstName })
@@ -203,80 +210,17 @@ export async function SeekerHome({
             </div>
           </nav>
         </div>
-        {/* alohida bo'limlar: "AI yordamchi" (suhbat oynasi, /ai) va "Universal ustalar" (turkuaz) — bir qatorda; telefonda ixcham
-            plitka (faqat nom): birinchi e'lon birinchi ekranda qolsin (home.spec) */}
-        <div
-          className="mt-3 grid max-w-3xl grid-cols-2 gap-2 2xl:mt-0 2xl:w-full 2xl:max-w-xl 2xl:grid-cols-1 2xl:gap-3 2xl:justify-self-end"
-          data-home-sections
-        >
-          <AiEntry
-            dense
-            title={t("easy.aiws.nav.ai")}
-            desc={t("easy.aiws.entry_desc")}
-          />
-          <MastersEntry
-            dense
-            title={t("masters.name")}
-            desc={t("masters.entry_desc")}
-          />
-        </div>
       </section>
 
-      {/* kirgan ish izlovchi: arizalar holati va saqlanganlar (faqat ma'lumot bo'lsa) */}
-      {session?.workerId ? (
-        <Suspense fallback={null}>
-          <SeekerActivity workerId={session.workerId} />
-        </Suspense>
-      ) : null}
+      <Suspense fallback={<FeedSkeleton />}>
+        <SeekerFeed session={session} place={place} />
+      </Suspense>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_18rem] xl:grid-cols-[minmax(0,1fr)_20rem] 3xl:grid-cols-[minmax(0,1fr)_22rem]">
-        <Suspense fallback={<FeedSkeleton />}>
-          <SeekerFeed session={session} place={place} />
-        </Suspense>
-        <aside
-          aria-label={t("easy.start.more_title")}
-          className="min-w-0 space-y-3"
-        >
-          <ResumeCard />
-          <AlertCard />
-        </aside>
-      </div>
-
-      {/* shaxsiy qism — faqat kirgan foydalanuvchiga, ro'yxatdan keyin (birinchi ekran: qidiruv va yangi ishlar) */}
-      {session ? (
-        <Suspense fallback={null}>
-          <MyWorld session={session} />
-        </Suspense>
-      ) : null}
+      {/* "Universal ustalar" — ish e'lonlaridan alohida, o'z yashil rangida */}
+      <Suspense fallback={null}>
+        <MastersHomeSection />
+      </Suspense>
     </div>
-  );
-}
-
-/** "Yangi ish chiqsa — Telegram'da xabar": o'z so'zi bilan kuzatuv (AI) */
-async function AlertCard() {
-  const { t } = await getT();
-  return (
-    <Link
-      href="/ai-alerts?role=worker"
-      className="press flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/40"
-    >
-      <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink"
-        aria-hidden
-      >
-        <BellRing className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-bold">{t("easy.home2.alert_title")}</span>
-        <span className="block text-sm leading-snug text-muted-foreground">
-          {t("easy.home2.alert_desc")}
-        </span>
-      </span>
-      <ChevronRight
-        className="size-5 shrink-0 text-muted-foreground"
-        aria-hidden
-      />
-    </Link>
   );
 }
 
@@ -376,7 +320,7 @@ async function SeekerFeed({
         </p>
       ) : null}
       {feed.items.length ? (
-        <ul className="pop-list mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 4xl:grid-cols-4">
+        <ul className="pop-list mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4">
           {feed.items.map((job) => (
             <li key={job.id} className="flex [&>article]:w-full">
               <JobResultCard
@@ -427,7 +371,7 @@ async function SeekerFeed({
             region={place.region?.slug ?? null}
             limit={6}
             className="mt-6"
-            columns="md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3"
+            columns="md:grid-cols-2 2xl:grid-cols-3"
           />
         </Suspense>
       ) : null}
@@ -441,7 +385,7 @@ function FeedSkeleton() {
     <div aria-hidden className="min-w-0 space-y-3">
       <Skeleton className="h-6 w-40" />
       <Skeleton className="h-4 w-56" />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 4xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}
@@ -459,33 +403,5 @@ function FeedSkeleton() {
         ))}
       </div>
     </div>
-  );
-}
-
-/** "O'zim haqimda e'lon": ish beruvchilar qidiruvda topadi (ikkilamchi, oq karta — ro'yxatdan ustun emas) */
-async function ResumeCard() {
-  const { t } = await getT();
-  return (
-    <Link
-      href="/post/worker"
-      className="press flex min-h-16 items-center gap-3 rounded-xl border border-border bg-card px-4 py-3 hover:border-primary/40"
-    >
-      <span
-        className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink"
-        aria-hidden
-      >
-        <FileUser className="size-5" />
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block font-bold">{t("easy.start.post_resume")}</span>
-        <span className="block text-sm leading-snug text-muted-foreground">
-          {t("easy.start.post_resume_desc")}
-        </span>
-      </span>
-      <ChevronRight
-        className="size-5 shrink-0 text-muted-foreground"
-        aria-hidden
-      />
-    </Link>
   );
 }

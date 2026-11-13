@@ -216,7 +216,7 @@ async function DailyPlan({ steps }: { steps: DailyStep[] }) {
         {steps.map((s) => (
           <li key={s.key}>
             {s.done ? (
-              <p className="flex min-h-10 items-center gap-2.5 text-sm text-muted-foreground">
+              <p className="flex min-h-11 items-center gap-2.5 text-sm text-muted-foreground">
                 <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-success text-success-foreground" aria-hidden>
                   <Check className="size-3.5" strokeWidth={3} />
                 </span>
@@ -224,7 +224,7 @@ async function DailyPlan({ steps }: { steps: DailyStep[] }) {
                 <span className="sr-only">{t("easy.world.plan_done")}</span>
               </p>
             ) : (
-              <Link href={s.href} className="group flex min-h-10 items-center gap-2.5 rounded-lg text-sm font-semibold hover:text-primary-ink">
+              <Link href={s.href} className="group flex min-h-11 items-center gap-2.5 rounded-lg text-sm font-semibold hover:text-primary-ink">
                 <span className="size-6 shrink-0 rounded-full border-2 border-border group-hover:border-primary" aria-hidden />
                 <span className="min-w-0 flex-1">{label(s)}</span>
                 <ChevronRight className="size-4 shrink-0 text-muted-foreground group-hover:text-primary-ink" aria-hidden />

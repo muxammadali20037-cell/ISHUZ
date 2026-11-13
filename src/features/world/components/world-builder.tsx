@@ -221,7 +221,8 @@ export function WorldBuilder({
           ) : null}
           <div className="mt-auto w-full max-w-sm pt-8">
             <Button asChild size="lg" fullWidth className="h-14 text-base font-bold">
-              <Link href="/">
+              {/* "Mening dunyom" — Profilda (2026-11-13: bosh sahifada faqat qidiruv va e'lonlar) */}
+              <Link href="/cabinet#dunyo">
                 {t("easy.world.enter")} <ArrowRight className="size-5" />
               </Link>
             </Button>

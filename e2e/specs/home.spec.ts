@@ -7,7 +7,7 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  * e'lon berish → forma.
  */
 const PATHS = [
-  { mode: "worker", name: /^O'zim haqimda e'lon berish/, url: /\/post\/worker$/, heading: /kasb/i },
+  // 3.0 (2026-11-13): "O'zim haqimda e'lon berish" bosh sahifada yo'q — pastki menyudagi "E'lon" (navigatsiya testi)
   // 2.0 (2026-11-11): ish qidiruvchi bosh sahifasida 4 ta tez yo'l va "Filtrlar bilan qidirish"
   { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
   { mode: "worker", name: /^Tajribasiz$/, url: /\/search\?mode=jobs&region=all&noexp=1&any=1$/, heading: /Ish e'lonlari/ },
@@ -83,6 +83,36 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await expect(page.getByRole("navigation", { name: "Xizmatlar" })).toHaveCount(0);
   await expect(page.getByText("Faol vakansiyalar")).toHaveCount(0);
   await expect(page.locator("#home-feed")).toBeVisible();
+});
+
+test("bosh sahifa (3.0): faqat qidiruv, tez yo'llar, yangi ishlar va alohida 'Universal ustalar' — ortiqcha bloklar yo'q", async ({ page, context }) => {
+  // ro'yxat bo'sh bo'lmasin: bo'sh holatda "O'zim haqimda e'lon berish" — to'g'ri keyingi qadam (bu test kartalar haqida)
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  await sql(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, published_at, expires_at)
+     select $1, 'Kassir — 3.0 sinovi', r.id, 'Do''konga kassir kerak, 9 dan 18 gacha', 'active', 4000000, 'monthly', now(), now() + interval '10 days'
+     from public.regions r where r.slug = 'tashkent_city'`,
+    [USERS.employer],
+  );
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await page.goto("/");
+  await expect(page.locator("main article").first()).toBeVisible();
+  const main = page.getByRole("main");
+  await expect(main.locator("#home-feed")).toBeVisible();
+  // ko'chirilganlar: "Mening dunyom" (Profilga), AI kartasi (menyuda), "Yangi ish chiqsa" (Profil → AI PRO), "O'zim haqimda e'lon" (pastki menyu)
+  await expect(main.getByText("Mening dunyom")).toHaveCount(0);
+  await expect(main.locator("[data-ai-entry]")).toHaveCount(0);
+  await expect(main.getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveCount(0);
+  await expect(main.getByRole("link", { name: /^O'zim haqimda e'lon berish/ })).toHaveCount(0);
+  // "Universal ustalar" — ro'yxatdan keyin, o'z bo'limi: xizmat turlari va "Ustalarni ko'rish"
+  const masters = main.locator("[data-masters-home]");
+  await expect(masters.getByRole("heading", { name: "Universal ustalar" })).toBeVisible();
+  const feedBottom = (await main.locator("#home-feed").boundingBox())!;
+  expect((await masters.boundingBox())!.y).toBeGreaterThan(feedBottom.y);
+  await masters.getByRole("link", { name: "Ustalarni ko'rish" }).click();
+  await page.waitForURL(/\/ustalar$/);
+  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
 test("bosh sahifa (390×844, kirgan ish qidiruvchi): birinchi vakansiyaning nomi, maoshi va hududi birinchi ekranda", async ({ page, context }) => {

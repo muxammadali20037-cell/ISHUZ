@@ -12,7 +12,7 @@ import { MyVacanciesSection } from "./my-vacancies-section";
 import { RecentApplicationsSection } from "./recent-applications-section";
 import { CardsSectionSkeleton, RowsSectionSkeleton } from "./skeletons";
 import { KeyTiles, KeyTilesSkeleton } from "./stats-tiles";
-import { EmployerSections } from "./employer-sections";
+import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { VerificationBadge } from "./status-badge";
 import { EmployerHead } from "@/features/landing/employer-head";
 import { getHomePlace } from "@/features/landing/home-queries";
@@ -107,7 +107,13 @@ export async function EmployerDashboard({ session, embedded = false }: { session
         </Suspense>
       ) : null}
 
-      <EmployerSections />
+      {/* 2026-11-13: "Bo'limlar" ro'yxati olib tashlandi — o'sha bo'limlar pastki/yon menyuda va Profilda bor (takror edi).
+          "Universal ustalar" — alohida yashil bo'lim (bosh sahifa ichida) */}
+      {embedded ? (
+        <Suspense fallback={null}>
+          <MastersHomeSection />
+        </Suspense>
+      ) : null}
     </div>
   );
 }
