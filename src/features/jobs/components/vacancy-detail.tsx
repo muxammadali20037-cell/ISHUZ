@@ -154,6 +154,7 @@ export async function VacancyDetail({
       <div className="mb-2 flex items-center justify-between gap-2">
         {/* qidiruvdan kelgan bo'lsa — o'sha natijalarga (o'sha joyiga) qaytadi */}
         <BackLink
+          pageBack
           fallback="/jobs"
           className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
         >

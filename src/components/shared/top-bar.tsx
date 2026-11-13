@@ -8,6 +8,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { initials } from "@/lib/format";
 import { LanguageSelect } from "./language-switcher";
+import { GlobalBack } from "./global-back";
 import { DesktopNavLinks, postAction, type NavMode, type NavRole } from "./app-shell";
 import { UserMenu } from "./user-menu";
 import { SiteMenu, SiteNavLinks, type SiteNavConfig } from "./site-nav";
@@ -37,13 +38,15 @@ export interface TopBarProps {
   place?: { label: string; href: string } | null;
   /** kompyuterda chap yon menyu bor (kirgan foydalanuvchi): bo'lim havolalari faqat planshetda (md) */
   side?: boolean;
+  /** telefonda ichki sahifalarda "‹ Orqaga" (menyusiz ustalarda — yo'q: ularda pastda katta "Orqaga" tugmasi) */
+  back?: boolean;
 }
 
 /**
  * Yuqori panel (barcha sahifalarda). Mijoz komponenti: ma'lumot serverda (Shell) tayyorlanadi, shuning uchun sahifa
  * yuklanayotganda ham (loading.tsx) o'sha panel joyida qoladi — AppFrame.
  */
-export function TopBar({ role, counts, mode = null, user, site = null, place = null, side = false }: TopBarProps) {
+export function TopBar({ role, counts, mode = null, user, site = null, place = null, side = false, back = true }: TopBarProps) {
   const { t } = useT();
   const pathname = usePathname();
   const session = user;
@@ -57,8 +60,11 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
     >
       {/* yon menyu bo'lsa (kompyuter): panel to'liq kenglikda, logotip menyu ustida */}
       <div className={cn("container-wide flex items-center gap-2 sm:gap-3", site ? "h-16" : "h-14")}>
+        {/* telefonda ichki sahifalarda — "‹ Orqaga" logotip oldida (Telegram ichida brauzer tugmasi ko'rinmaydi) */}
+        {back ? <GlobalBack variant="bar" /> : null}
         <Link
           href="/"
+          data-bar-logo
           className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight"
           aria-label={BRAND.name}
         >

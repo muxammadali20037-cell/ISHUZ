@@ -33,7 +33,7 @@ function ScoreRing({ score }: { score: number }) {
 function Header({ slug, title, heading }: { slug: string; title: string; heading: string }) {
   return (
     <div className="space-y-2">
-      <Link href={`/jobs/${slug}`} className="-ml-2 inline-flex min-h-11 items-center gap-1 rounded-xl px-2 text-base font-semibold text-muted-foreground hover:text-foreground">
+      <Link href={`/jobs/${slug}`} data-page-back className="-ml-2 inline-flex min-h-11 items-center gap-1 rounded-xl px-2 text-base font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-5" aria-hidden /> {title}
       </Link>
       <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">

@@ -54,7 +54,7 @@ export default async function DemoVacancyPage({ params }: { params: Params }) {
   return (
     <>
       <div className="container-narrow space-y-5 py-5 sm:py-8" data-demo-detail={v.slug}>
-        <Link href={v.category_slug ? `/jobs/namuna?soha=${v.category_slug}` : "/jobs/namuna"} className="inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
+        <Link href={v.category_slug ? `/jobs/namuna?soha=${v.category_slug}` : "/jobs/namuna"} data-page-back className="inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
           <ChevronLeft className="size-4" aria-hidden /> {t("demo.detail.back")}
         </Link>
 

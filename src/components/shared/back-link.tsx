@@ -19,13 +19,27 @@ function canGoBackInApp(): boolean {
  * "Orqaga": sayt ichidan kelingan bo'lsa — aynan oldingi sahifaga (qidiruv natijalari, o'sha joyiga), aks holda
  * (havola orqali to'g'ridan-to'g'ri ochilgan) — `fallback` sahifaga. Oddiy havola sifatida ham ishlaydi (yangi oynada ochish).
  */
-export function BackLink({ fallback, className, children, label }: { fallback: string; className?: string; children: ReactNode; label?: string }) {
+export function BackLink({
+  fallback,
+  className,
+  children,
+  label,
+  pageBack,
+}: {
+  fallback: string;
+  className?: string;
+  children: ReactNode;
+  label?: string;
+  /** sahifaning o'z "Orqaga"si — umumiy (GlobalBack) yashiriladi */
+  pageBack?: boolean;
+}) {
   const router = useRouter();
   return (
     <Link
       href={fallback}
       className={className}
       aria-label={label}
+      data-page-back={pageBack || undefined}
       onClick={(e) => {
         if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
         if (canGoBackInApp()) {

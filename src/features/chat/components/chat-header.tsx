@@ -35,7 +35,7 @@ export function ChatHeader({
   return (
     <header className="shrink-0 border-b border-border/70 bg-card">
       <div className="mx-auto flex w-full max-w-3xl items-center gap-2 px-2 py-2 sm:px-4">
-        <Link href="/messages" className="flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-secondary" aria-label={t("chat.room.back")}>
+        <Link href="/messages" data-page-back className="flex size-10 shrink-0 items-center justify-center rounded-xl hover:bg-secondary" aria-label={t("chat.room.back")}>
           <ChevronLeft className="size-6" />
         </Link>
         {view.otherHref ? (

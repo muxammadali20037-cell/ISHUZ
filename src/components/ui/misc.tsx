@@ -54,7 +54,7 @@ function EmptyState({
   );
 }
 
-/** Sahifa sarlavhasi (mobil: orqaga tugmasi bilan) */
+/** Sahifa sarlavhasi (orqaga belgisi bilan — umumiy "‹ Orqaga" bor sahifada yashiriladi, globals.css) */
 function PageHeader({
   title,
   subtitle,
@@ -71,7 +71,7 @@ function PageHeader({
   return (
     <div className={cn("mb-6 flex items-start gap-3 lg:mb-8", className)}>
       {backHref ? (
-        <Link href={backHref} className="-ml-2 mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md hover:bg-secondary" aria-label="Back">
+        <Link href={backHref} data-header-back className="-ml-2 mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-md hover:bg-secondary" aria-label="Back">
           <ChevronLeft className="size-6" />
         </Link>
       ) : null}

@@ -7,6 +7,7 @@ import { LanguageSelect } from "@/components/shared/language-switcher";
 import { Avatar } from "@/components/ui/avatar";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { GlobalBack } from "@/components/shared/global-back";
 
 /**
  * "Universal ustalar" — alohida mini-ilova qobig'i (turkuaz mavzu): o'z sarlavhasi (Ish topdim'ga qaytish, nom, qidiruv,
@@ -123,6 +124,8 @@ export async function MastersShell({
           <LanguageSelect className="hidden shrink-0 sm:inline-flex" />
         </div>
       </header>
+      {/* ichki sahifalarda (usta, e'lon, kabinet, qidiruv) — oldingi sahifaga; mini-ilova bosh sahifasida yo'q */}
+      <GlobalBack variant="masters" />
       <main className={cn("flex-1", className)}>{children}</main>
       <footer className="border-t border-border py-3 text-center text-sm text-muted-foreground">
         <div className="container-app flex flex-wrap items-center justify-center gap-x-4 gap-y-2">

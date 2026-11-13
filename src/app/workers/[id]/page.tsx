@@ -100,7 +100,7 @@ export default async function CandidatePage({ params, searchParams }: { params: 
   return (
     <Shell>
       <div className="container-app py-4 pb-28 md:py-6 md:pb-8">
-        <Link href={backHref} className="mb-3 inline-flex h-10 items-center gap-1 rounded-xl pr-3 text-sm font-medium text-muted-foreground hover:text-foreground">
+        <Link href={backHref} data-page-back className="mb-3 inline-flex h-10 items-center gap-1 rounded-xl pr-3 text-sm font-medium text-muted-foreground hover:text-foreground">
           <ChevronLeft className="size-5" /> {t("workers.candidate.back")}
         </Link>
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_340px] md:gap-6">

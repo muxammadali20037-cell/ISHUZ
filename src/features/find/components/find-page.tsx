@@ -30,7 +30,7 @@ function StepShell({ back, title, children, summary }: { back: string | null; ti
       <div className="space-y-3">
         {back ? (
           <Button asChild variant="outline" className="h-12 px-4 text-base">
-            <Link href={back}>
+            <Link href={back} data-page-back>
               <ArrowLeft className="size-5" aria-hidden /> <BackLabel />
             </Link>
           </Button>

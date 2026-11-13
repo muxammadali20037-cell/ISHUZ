@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-13 · Har bir sahifa tepasida "‹ Orqaga" (`claude/global-back`)
+
+- Ega: "orqaga qaytish topolmayapti — har bir oynaning tepasida kichkina orqaga chiqib tursin". Telegram ichida brauzerning
+  orqaga tugmasi ko'rinmaydi. Endi har bir sahifada (bosh sahifa, ish beruvchi bosh sahifasi va ustalar bosh sahifasidan
+  tashqari) tepada kichik "‹ Orqaga" (`GlobalBack`): telefonda — yuqori panelda logotip oldida (birinchi ekrandagi e'lonlar
+  joyi o'zgarmaydi; tor ekran/katta shriftda logotip o'rnida), kompyuterda — sahifa tepasida qator, ustalar mini-ilovasida —
+  qator. Sayt ichidan kelingan bo'lsa — aynan oldingi sahifaga, havola orqali ochilgan bo'lsa — eng yaqin bo'lim sahifasiga
+  (masalan, /employer/vacancies).
+- Telegram/Instagram tugmasi katta shriftda tor ekranga sig'adi (@manzil qisqartiriladi).
+- Sahifaning o'z "Orqaga"si bo'lsa (`data-page-back`: vakansiya, e'lon, nomzod, namuna, moslik, chat, qidiruv qadamlari) —
+  umumiysi yashiriladi (ikkita bo'lmaydi). Sarlavha yonidagi kichik "‹" (PageHeader) — umumiy "‹ Orqaga" bor joyda yashirin,
+  hamma joyda bir xil ko'rinish. Menyusiz e'lon berish ustasida — pastdagi katta "Orqaga" tugmasi (avvalgidek).
+
 ## 2026-11-13 · Ish beruvchi o'z e'lonini ish izlovchi ko'zi bilan ko'radi (`claude/employer-preview`)
 
 - Ega: "ish beruvchi e'lon joylagandan keyin o'z e'lonini ish izlovchilar kabinetda qanday ko'rishini bilmoqchi".

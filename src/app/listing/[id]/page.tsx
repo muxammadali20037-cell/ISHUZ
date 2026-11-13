@@ -55,6 +55,7 @@ export default async function ListingPage({ params }: Params) {
       <div className="container-narrow space-y-3 py-3 text-lg sm:py-8">
         {/* qidiruvdan kelgan bo'lsa — o'sha natijalarga (o'sha joyiga) qaytadi */}
         <BackLink
+          pageBack
           fallback={w.is_owner ? "/cabinet" : "/search?mode=workers"}
           className="-ml-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-2 text-base font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
         >
