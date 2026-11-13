@@ -22,6 +22,7 @@ export const MODERATION_CATEGORIES = [
 export type ModerationCategory = (typeof MODERATION_CATEGORIES)[number];
 
 export interface RuleHit {
+  /** qoida nomi; "strict_" bilan boshlansa — qat'iy taqiq (muallif bloklanadi) */
   rule: string;
   category: ModerationCategory | "injection";
   severity: "block" | "flag";
@@ -40,7 +41,33 @@ type Rule = { id: string; category: RuleHit["category"]; severity: RuleHit["seve
 
 const W = "[a-z']*"; // so'z davomi (qo'shimchalar)
 
+/**
+ * Qat'iy taqiq (ega, 2026-11-13: "erotika, diniy ekstremizm, qonunga xilof so'zlar umuman ishlatilmasin; massaj, spa kerak
+ * emas — hammasi shundan boshlanadi"). Bu so'zlar kontekstidan qat'i nazar "block": e'lon joylanmaydi va muallif bloklanadi
+ * (enforce.ts). Yolg'on topilmalardan saqlanish: "seksiya" (bo'lim), "narkolog" (shifokor), "giyohvand moddalar iste'mol
+ * qilmaydigan" (talab), "Shahid"/"Mujohid" (ism), IT'dagi "SPA" — bu qoidalarga tushmaydi (testlar: rules.test.ts).
+ */
+const STRICT: Rule[] = [
+  // massaj va spa — har qanday ko'rinishda (massaj, массаж, massajchi, massage, masseur, spa-salon, "relaks salon")
+  { id: "strict_massage", category: "sexual_services", severity: "block", re: /\b(mas+a(j|zh)[a-z']*|mas+ag(e|i)[a-z']*|mas+eu(r|se)[a-z']*)\b/ },
+  { id: "strict_spa", category: "sexual_services", severity: "block", re: /(\bspa\b[\s-]{0,3}(salon|markaz|center|centr|tsentr|xona|kompleks|protsedur|procedur|xizmat|uslug|terapevt|master|ustas|relaks|relax|administrator|menejer|manager|xodim|ishchi|qiz|devushk|girl|operator)|\b(salon|markaz|centr|tsentr|center|kompleks|mehmonxona)[a-z']*[\s-]{1,3}spa\b|\b(relaks|relax)[a-z']*[\s-]{0,3}(salon|xona|room|markaz|centr|tsentr|center))/ },
+  // erotika va jinsiy mazmun — so'zning o'zi yetarli
+  { id: "strict_erotic", category: "sexual_services", severity: "block", re: /\b(erot[a-z']*|porn[a-z']*|seks|sex|sexy|seksi|seksual[a-z']*|sexual[a-z']*|intim[a-z']*|striptiz[a-z']*|striptease|strip-?klub|strip-?club|eskort[a-z']*|escort[a-z']*|vebkam[a-z']*|webcam[a-z']*|veb-?model[a-z']*|web-?model[a-z']*|onlyfans|nude|nudes|golaya|golye|yalang'?och[a-z']*|fohisha[a-z']*|jalab[a-z']*|prostitu[a-z']*|bordel[a-z']*|shlyux[a-z']*|shlyuh[a-z']*|putan[a-z']*|lyubovnits[a-z']*)\b/ },
+  { id: "strict_dating_paid", category: "sexual_services", severity: "block", re: /\b(vip\s*(qiz|devushk|girl)[a-z']*|sponsor\s*(izlay|ishchu|kerak)|soderzhank[a-z']*)\b/ },
+  // diniy ekstremizm, terror va zo'ravonlik (ism bo'lishi mumkin bo'lgan yalang'och shakllar — "Jihod", "Mujohid", "Shahid" — kirmaydi)
+  { id: "strict_extremism", category: "extremism", severity: "block", re: /\b((ji[xh]o?d|ji[xh]ad|dji[xh]ad|dzhihad|dzhixad)(ga|chi[a-z']*|iy[a-z']*|ist[a-z']*|da|ni|ning|qa)|g'azot[a-z']*|muqaddas\s+urush|xalifat[a-z']*|xalifalik|islomiy\s+davlat|igil|daish|isis|hizb[\s-]*ut[\s-]*tahrir|hizbut[a-z']*|akromiy[a-z']*|vah+obiy[a-z']*|vah+abit[a-z']*|salafiy[a-z']*|takfir[a-z']*|tablig'?i?\s+jamoat|nurchi[a-z']*|shahidlik[a-z']*|shahid\s+bo'l[a-z']*|mujohidlar[a-z']*|kofirlar(ni|ga|ning)?|terakt[a-z']*|terrorchi[a-z']*|terrorist[a-z']*|ekstremist[a-z']*|boyevik[a-z']*)\b/ },
+  // diniy targ'ibot (da'vat) — ish e'lonida joyi yo'q
+  { id: "strict_religious", category: "religious_propaganda", severity: "block", re: /(\bnamoz\s+o'qing|\bda'?vat\s*(qil|ga|chi)[a-z']*|\bimonga\s+keling|\ballohga\s+qayting|\btavba\s+qiling|\bmissioner[a-z']*|\bpropoved[a-z']*|\bxristian[a-z]*\s+bo'l|\bsektaga|\bsekta\s+a'zo)/ },
+  // giyohvand moddalar (nomlari; "narkolog", talablardagi "iste'mol qilmaydigan", ziravor "spice" kirmaydi)
+  { id: "strict_drugs", category: "illegal_activity", severity: "block", re: /\b(spays[a-z']*|kuritel[a-z']*\s+smes[a-z']*|metamfetamin[a-z']*|metadon[a-z']*|lsd|travk[ua]\s+(sot|prodam|prodaj))\b/ },
+  // qurol savdosi, qimor, a'zo savdosi
+  { id: "strict_weapons", category: "illegal_activity", severity: "block", re: /\b(qurol|oruzh|pistolet|patron|avtomat\s+kalashnikov|granat)[a-z']*\b.{0,20}\b(sotaman|sotamiz|sotiladi|sotib\s*olamiz|kuplyu|prodaj[a-z']*|prodam|prodayu|yetkazaman)\b/ },
+  { id: "strict_gambling", category: "illegal_activity", severity: "block", re: /\b(kazino|casino|1xbet|1x\s*bet|melbet|mostbet|bukmeker[a-z']*|ruletk[a-z']*|slot\s*(o'yin|mashin|avtomat)[a-z']*|onlayn\s+qimor|qimor[a-z']*)\b/ },
+  { id: "strict_organs", category: "illegal_activity", severity: "block", re: /\b(buyrak|buyragimni|pochk[ua]|pechen|organ(lar|larni|ni)?)\b.{0,15}\b(sotaman|sotamiz|sotiladi|sotib\s*olamiz|prodam|prodayu|kuplyu|donor\s+kerak)\b/ },
+];
+
 const RULES: Rule[] = [
+  ...STRICT,
   // --- jinsiy xizmatlar ---
   { id: "sex_intim_service", category: "sexual_services", severity: "block", re: new RegExp(`\\bintim${W}\\b.{0,20}\\b(xizmat|uslug|servis|service|dosug|vstrech|uchrashuv)`) },
   { id: "sex_escort", category: "sexual_services", severity: "block", re: /\b(eskort|escort)[a-z']*\b/ },
@@ -68,7 +95,6 @@ const RULES: Rule[] = [
   { id: "hacking_verb", category: "illegal_activity", severity: "block", re: new RegExp(`\\b(vzlom${W}|buzish|buzadigan|hack${W})\\b.{0,25}\\b(telegram|instagram|whatsapp|facebook|akkaunt|account|stranits|stranic|parol)`) },
   { id: "hacking_tools", category: "illegal_activity", severity: "block", re: /\b(karding|carding|phishing|fishing\s+(sayt|link|stranic)|ddos\s*(xizmat|uslug|atak))[a-z']*\b/ },
   { id: "scam_prepay", category: "illegal_activity", severity: "flag", re: /(oldindan\s*to'?lov|oldindan\s*pul|depozit|zalog|garov\s+pul|pullik\s+o'qish|forma\s+uchun\s+pul|predoplat|platnoe\s+obuchenie|vstupitel[a-z]*\s+vznos)/ },
-  { id: "weapons", category: "illegal_activity", severity: "flag", re: /\b(qurol|oruzh|pistolet|patron)[a-z']*\b.{0,15}\b(sot|kupl|prodaj)/ },
 
   // --- ekstremizm / zo'ravonlik ---
   { id: "extremism_jihad", category: "extremism", severity: "block", re: new RegExp(`\\b(jihod|jixod|dzhihad|djihad)${W}\\b.{0,20}\\b(qil|chaqir|safi|kel|qo'shil)`) },
@@ -79,12 +105,13 @@ const RULES: Rule[] = [
 
   // --- siyosiy / diniy (faqat signal) ---
   { id: "political", category: "political_content", severity: "flag", re: /\b(prezident|mirziyoyev|partiya|saylov|deputat|parlament|oppozitsiya|miting|namoyish|vybor|politik|siyosat|siyosiy)[a-z']*\b/ },
-  { id: "religious", category: "religious_propaganda", severity: "flag", re: /(\bnamoz\s+o'qing|\bda'vat|\bimonga\s+keling|\ballohga\s+qayting|\btavba\s+qiling|\bbid'at|\bmissioner|\bpropoved|\bxristian[a-z]*\s+bo'l)/ },
+  { id: "religious", category: "religious_propaganda", severity: "flag", re: /(\bda'vat|\bbid'at)/ },
 
   // --- spam / ishga aloqasiz ---
   { id: "sale", category: "unrelated", severity: "flag", re: /\b(sotiladi|sotaman|sotamiz|optom|prodayu|prodaetsya|prodam|kupite|skidk[a-z]*|aksiya)\b|\barzon\s+narx/ },
   { id: "dating", category: "unrelated", severity: "flag", re: /\b(tanishuv|tanishaman|tanishmoqchi|znakomstv|sovchi|kelin\s+izlay|kuyov\s+izlay)[a-z']*\b|\bish[ck]?u\s+devushk/ },
-  { id: "gambling", category: "spam", severity: "flag", re: /\b(kazino|casino|1xbet|melbet|mostbet|pin\s*-?\s*up|bukmeker|ruletk|stavk[a-z]*\s+(sport|qiling|qo'y))[a-z']*\b/ },
+  { id: "gambling", category: "spam", severity: "flag", re: /\b(pin\s*-?\s*up|stavk[a-z]*\s+(sport|qiling|qo'y))[a-z']*\b/ },
+  { id: "trafficking", category: "illegal_activity", severity: "flag", re: /\b(chet\s*elga|xorijga|turkiyaga|dubayga|dubaiga|za\s*granits[a-z]*|v\s+(turtsiy|dubai|oae))\b.{0,30}\b(qiz(lar)?|devushk[a-z]*|ayol(lar)?)\b.{0,20}\b(kerak|ishga|nujn)/ },
   { id: "pyramid", category: "spam", severity: "flag", re: /\b(setevoy\s+marketing|mlm|piramida|passiv\s+daromad|investitsiya\s+qiling|kripto[a-z]*\s+invest)/ },
 
   // --- tekshiruvni chetlab o'tishga urinish (buyruq emas, ma'lumot) ---

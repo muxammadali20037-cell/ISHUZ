@@ -27,9 +27,9 @@ export function AiEntry({ title, desc, className, to = "home", dense = false }: 
         <Sparkles className={dense ? "size-4 sm:size-5" : "size-5"} />
       </span>
       <span className="min-w-0 flex-1">
-        <span className={cn("flex items-center gap-1.5 font-bold", dense ? "text-sm leading-tight sm:text-base sm:leading-normal" : "text-base")}>
+        <span className={cn("block font-bold [overflow-wrap:anywhere]", dense ? "text-sm leading-tight sm:text-base sm:leading-normal" : "text-base")}>
           {title}
-          <NewDot feature="ai" />
+          <NewDot feature="ai" className="ml-1.5 align-middle" />
         </span>
         {desc ? <span className={cn("text-sm text-foreground/80", dense ? "hidden sm:block" : "block")}>{desc}</span> : null}
       </span>

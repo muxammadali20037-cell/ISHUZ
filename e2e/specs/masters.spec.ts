@@ -1,6 +1,6 @@
 import sharp from "sharp";
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, snapshotUser, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * "Universal ustalar" — ikki tomonlama bozor (0076), haqiqiy baza bilan:
@@ -313,16 +313,23 @@ test("tahrirlash — qayta moderatsiya; admin rad etadi — sabab egasiga ko'rin
   await adminCtx.close();
 });
 
-test("noqonuniy mazmun: taqiqlangan e'lon saqlanmaydi; shubhali e'lon admin navbatida ogohlantirish va rasmlar bilan chiqadi", async ({ page, context }) => {
+test("noqonuniy mazmun: taqiqlangan e'lon saqlanmaydi (muallif bloklanadi); shubhali e'lon admin navbatida ogohlantirish va rasmlar bilan chiqadi", async ({ page, context }) => {
   await sql("delete from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await fillListing(page, { phonePublic: false });
   const form = page.locator("[data-masters-form]");
-  await form.getByLabel("Xizmat tavsifi").fill("Intim xizmat ko'rsatamiz, soatbay, uyga boramiz.");
-  await page.locator("[data-masters-submit]").click();
-  await expect(form.getByRole("alert")).toContainText("taqiqlangan mazmun bor");
-  expect((await sql<{ n: string }>("select count(*)::text as n from public.master_listings where owner_profile_id = $1", [USERS.workerA]))[0]!.n).toBe("0");
+  const restore = await snapshotUser(USERS.workerA);
+  try {
+    // 2026-11-13: og'ir taqiq — e'lon saqlanmaydi va muallif o'sha zahoti bloklanadi (moderation-ban.spec.ts)
+    await form.getByLabel("Xizmat tavsifi").fill("Intim xizmat ko'rsatamiz, soatbay, uyga boramiz.");
+    await page.locator("[data-masters-submit]").click();
+    await expect(form.getByRole("alert")).toContainText("hisobingiz bloklandi");
+    expect((await sql<{ n: string }>("select count(*)::text as n from public.master_listings where owner_profile_id = $1", [USERS.workerA]))[0]!.n).toBe("0");
+    expect((await sql<{ b: boolean }>("select is_blocked as b from public.profiles where id = $1", [USERS.workerA]))[0]!.b).toBe(true);
+  } finally {
+    await restore();
+  }
 
   // shubhali (savdo + oldindan to'lov) — saqlanadi, moderatsiyaga boradi, admin ogohlantirishni va rasmni ko'radi
   await fillListing(page, { phonePublic: false, withPhoto: true });

@@ -14,6 +14,8 @@ export interface MasterTextVerdict {
   blocked: boolean;
   /** birinchi "block" topilmasi toifasi (foydalanuvchi xabari uchun) */
   category: RuleHit["category"] | null;
+  /** birinchi "block" qoidasi (jazo va jurnal uchun) */
+  rule: string | null;
   /** admin uchun ogohlantirishlar (takrorsiz qoida nomlari) */
   flags: string[];
 }
@@ -25,6 +27,7 @@ export function checkMasterText(fields: Record<string, string | string[] | null 
   return {
     blocked: !!res.block,
     category: res.block?.category ?? null,
+    rule: res.block?.rule ?? null,
     flags: [...new Set(res.hits.filter((h) => h.severity === "flag").map((h) => h.rule))],
   };
 }

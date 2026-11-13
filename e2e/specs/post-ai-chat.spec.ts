@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, formReady, loginAs } from "../support";
+import { USERS, asGuest, asMode, formReady, loginAs, snapshotUser, sql } from "../support";
 
 /**
  * "Tez va qulay e'lon — AI yordamchi bilan" (ish izlovchi, 1-qadam): bir gap → yordamchi kerakli narsalarni birma-bir so'raydi
@@ -78,16 +78,24 @@ test("mehmon: 'kuryerlikdan ish qidirmoqchiman' → kasb variantlari → joy, ta
   await expect(page.getByRole("button", { name: "Kirish va e'lonni joylash" })).toBeVisible();
 });
 
-test("kirgan ish izlovchi: ism va telefon profildan — so'ralmaydi; taqiqlangan matn qabul qilinmaydi; qaytadan boshlash", async ({ page, context }) => {
+test("kirgan ish izlovchi: taqiqlangan matn — hisob darhol bloklanadi; ism va telefon profildan — so'ralmaydi; qaytadan boshlash", async ({ page, context }) => {
   await loginAs(context, USERS.workerB, "aal2");
   await asMode(context, "worker");
+  // 2026-11-13 (ega): taqiqlangan mazmun bilan e'lon yozmoqchi bo'lgan foydalanuvchi o'sha zahoti bloklanadi
+  const restore = await snapshotUser(USERS.workerB);
+  try {
+    await page.goto("/post/worker");
+    await formReady(page);
+    await chat(page).getByLabel("AI yordamchiga yozing: qanday ish qidiryapsiz?").fill("giyohvand sotaman");
+    await chat(page).getByRole("button", { name: "Boshlash" }).click();
+    await expect(page.getByText("Hisobingiz bloklangan").first()).toBeVisible();
+    expect((await sql<{ b: boolean }>("select is_blocked as b from public.profiles where id = $1", [USERS.workerB]))[0]!.b).toBe(true);
+  } finally {
+    await restore();
+  }
+
   await page.goto("/post/worker");
   await formReady(page);
-  await chat(page).getByLabel("AI yordamchiga yozing: qanday ish qidiryapsiz?").fill("giyohvand sotaman");
-  await chat(page).getByRole("button", { name: "Boshlash" }).click();
-  await expect(lastBot(page)).toContainText("faqat ish va ishchi qidirish e'lonlarini qabul qiladi");
-  await chat(page).locator("[data-chat-restart]").click();
-  await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
 
   await chat(page).getByLabel("AI yordamchiga yozing: qanday ish qidiryapsiz?").fill("Samarqandda oshpaz bo'lib ishlamoqchiman, 3 yil tajribam bor");
   await chat(page).getByRole("button", { name: "Boshlash" }).click();
@@ -102,4 +110,7 @@ test("kirgan ish izlovchi: ism va telefon profildan — so'ralmaydi; taqiqlangan
   await expect(lastBot(page)).toContainText("Oxirgi savol");
   await answer(page, "Milliy taomlar, osh va somsa tayyorlayman");
   await expect(lastBot(page)).toContainText("Tayyor!");
+  // qaytadan boshlash — oddiy tanlovga qaytadi
+  await chat(page).locator("[data-chat-restart]").click();
+  await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
 });

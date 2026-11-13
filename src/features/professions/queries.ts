@@ -3,6 +3,7 @@ import "server-only";
 import { unstable_cache } from "next/cache";
 import { createPublicClient, REFERENCE_CACHE } from "@/lib/supabase/public";
 import type { ProfessionNode, ProfessionSearchHit, TrailItem } from "./types";
+import { isProhibitedProfession } from "@/features/moderation/policy";
 
 /**
  * Kasblar daraxti — ochiq ma'lumot. Cookie'siz anon client: javoblar CDN'da keshlanishi mumkin.
@@ -29,7 +30,8 @@ const loadProfessionChildren = unstable_cache(
     const { data: kids, error: kidsError } = await db.from("profession_nodes").select("parent_id").eq("is_active", true).in("parent_id", ids);
     if (kidsError) throw new Error(kidsError.message);
     const withKids = new Set((kids ?? []).map((k) => k.parent_id));
-    return data.map((n) => ({ ...n, has_children: withKids.has(n.id) }));
+    // taqiqlangan kasblar (massaj, spa …) katalogda ko'rsatilmaydi (moderation/policy.ts)
+    return data.filter((n) => !isProhibitedProfession(n)).map((n) => ({ ...n, has_children: withKids.has(n.id) }));
   },
   ["ref:profession_children"],
   REFERENCE_CACHE,
@@ -52,7 +54,7 @@ export async function searchProfessions(query: string, categoryId?: string | nul
     console.error("[professions] search", error.message);
     return [];
   }
-  return (data ?? []).map((h) => ({
+  return (data ?? []).filter((h) => !isProhibitedProfession(h)).map((h) => ({
     id: h.id,
     parent_id: h.parent_id,
     category_id: h.category_id,
@@ -107,7 +109,7 @@ export async function resolveProfessionNode(texts: Array<string | null | undefin
   for (const q of unique) {
     const { data } = await db.rpc("search_profession_nodes", { p_query: q.slice(0, 80), p_category_id: categoryId, p_limit: 3 });
     for (const h of data ?? []) {
-      if (!h.selectable || h.score < 2) continue;
+      if (!h.selectable || h.score < 2 || isProhibitedProfession(h)) continue;
       // uzunroq (aniqroq) ibora bo'yicha topilgani afzal
       const score = h.score + q.split(" ").length * 0.25 + h.depth * 0.05;
       if (!best || score > best.score) best = { id: h.id, score };

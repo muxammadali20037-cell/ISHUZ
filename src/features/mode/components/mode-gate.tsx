@@ -53,15 +53,15 @@ export function ModeGate({ variant, need, otherHref }: { variant: "search" | "po
           </h1>
           <p className="text-base leading-snug text-muted-foreground">{t(`easy.mode.${k.desc}`)}</p>
           <div className="grid gap-2 pt-2">
-            <Button type="button" size="xl" fullWidth className="h-14 text-lg" loading={pending} onClick={() => pick(need)}>
+            <Button type="button" size="xl" fullWidth className="h-auto min-h-14 whitespace-normal py-2 text-lg leading-tight" loading={pending} onClick={() => pick(need)}>
               {t(`easy.mode.${k.yes}`)}
             </Button>
             {variant === "post" ? (
-              <Button type="button" size="xl" variant="outline" fullWidth className="h-14 text-lg" disabled={pending} onClick={() => pick(other, otherHref)}>
+              <Button type="button" size="xl" variant="outline" fullWidth className="h-auto min-h-14 whitespace-normal py-2 text-lg leading-tight" disabled={pending} onClick={() => pick(other, otherHref)}>
                 {t(`easy.mode.${k.no}`)}
               </Button>
             ) : (
-              <Button asChild size="xl" variant="outline" fullWidth className="h-14 text-lg">
+              <Button asChild size="xl" variant="outline" fullWidth className="h-auto min-h-14 whitespace-normal py-2 text-lg leading-tight">
                 <Link href={otherHref}>{t(`easy.mode.${k.no}`)}</Link>
               </Button>
             )}

@@ -1,6 +1,7 @@
 "use server";
 
 import { headers } from "next/headers";
+import { isProhibitedProfession } from "@/features/moderation/policy";
 import { z } from "zod";
 import { createPublicClient } from "@/lib/supabase/public";
 import {
@@ -19,6 +20,7 @@ import { getSearchDictionary } from "@/features/search/dictionary";
 import { normalizeText, understandQuery } from "@/features/search/understand";
 import { professionCandidates, withoutPlaceOnly } from "@/features/find/intent";
 import { checkRules } from "@/features/moderation/rules";
+import { banIfRuleBlock } from "@/features/moderation/enforce";
 import { trackServer } from "@/features/analytics/server";
 import { mentionedInText } from "./ai-guard";
 import {
@@ -118,7 +120,7 @@ async function professionFrom(
   const best = new Map<string, { o: ProfessionOption; score: number; from: string; exact: boolean }>();
   for (const { c, hits } of results) {
     for (const h of hits) {
-      if (!h.selectable || h.score < 2) continue;
+      if (!h.selectable || h.score < 2 || isProhibitedProfession(h)) continue;
       const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01;
       // kasb nomi aynan shu so'z ("oshpaz" → "Oshpaz") — so'ralmaydi, darhol tanlanadi (keyin o'zgartirish mumkin)
       const exact = [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && normalizeText(n) === normalizeText(c));
@@ -195,9 +197,13 @@ export async function listingChatTurn(
   )
     return { ok: false, error: "rate_limited" };
   const { field, text, regionId, nodeId, locale } = parsed.data;
-  // taqiqlangan mazmun (qurol, giyohvand, kattalar xizmati…) — e'longa ham, AI'ga ham bormaydi
-  if (checkRules({ description: text }).block)
+  // taqiqlangan mazmun (qurol, giyohvand, kattalar xizmati, massaj/spa…) — e'longa ham, AI'ga ham bormaydi;
+  // og'ir toifada e'lon yozayotgan (kirgan) foydalanuvchi darhol bloklanadi (ega, 2026-11-13)
+  const block = checkRules({ description: text }).block;
+  if (block) {
+    if (await banIfRuleBlock(session?.userId, block, "listing_chat")) return { ok: false, error: "blocked" };
     return { ok: false, error: "prohibited" };
+  }
 
   try {
     const out: ChatTurnResult = { understood: false };

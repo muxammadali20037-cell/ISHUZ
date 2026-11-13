@@ -314,6 +314,9 @@ export async function publishVacancy(input: unknown): Promise<ActionResult<{ sta
     await moderateNow("vacancy", parsed.data.vacancyId, 12_000).catch(() => null);
     const { data: fresh } = await c.ctx.supabase.from("vacancies").select("status").eq("id", parsed.data.vacancyId).maybeSingle();
     if (fresh) status = fresh.status;
+    // og'ir qoidabuzarlik — muallif bloklandi (moderation/enforce.ts)
+    const { data: me } = await c.ctx.supabase.from("profiles").select("is_blocked").eq("id", c.ctx.session.userId).maybeSingle();
+    if (me?.is_blocked) return { ok: false, error: "blocked" };
   }
   after(() => runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 }));
   revalidateVacancy(parsed.data.vacancyId);

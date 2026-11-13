@@ -50,7 +50,8 @@ export function MastersEntry({
       <span className="min-w-0 flex-1">
         <span
           className={cn(
-            "flex items-center gap-1.5 font-bold",
+            // katta shrift va uzun so'zda ("Универсальные") ham sig'adi — so'z bo'linadi, karta yonga chiqmaydi
+            "block font-bold [overflow-wrap:anywhere]",
             compact
               ? "text-sm"
               : dense
@@ -59,7 +60,7 @@ export function MastersEntry({
           )}
         >
           {title}
-          {compact ? null : <NewDot feature="masters" />}
+          {compact ? null : <NewDot feature="masters" className="ml-1.5 align-middle" />}
         </span>
         {desc && !compact ? (
           <span

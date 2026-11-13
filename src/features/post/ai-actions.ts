@@ -16,6 +16,7 @@ import { getProfessionTrail } from "@/features/professions/queries";
 import type { PickedProfession } from "@/features/professions/types";
 import { resolveFindQuery } from "@/features/find/queries";
 import { checkRules } from "@/features/moderation/rules";
+import { banIfRuleBlock } from "@/features/moderation/enforce";
 import { trackServer } from "@/features/analytics/server";
 import { introducesNumbers, keepSalary, mentionedInText, mentionsExperience, mentionsSchedule } from "./ai-guard";
 import type { PlaceChoice, SimpleEmployerType, SimpleExperience, VacancyDraft, WorkerDraft } from "./types";
@@ -115,7 +116,11 @@ export async function aiDraftListing(input: unknown): Promise<ActionResult<AiDra
 
   // taqiqlangan mazmun AI'ga yuborilmaydi
   const rules = checkRules({ description: text });
-  if (rules.block) return { ok: false, error: "prohibited" };
+  if (rules.block) {
+    // og'ir toifa — e'lon yozmoqchi bo'lgan (kirgan) foydalanuvchi darhol bloklanadi (ega, 2026-11-13)
+    if (await banIfRuleBlock(session?.userId, rules.block, "ai_post")) return { ok: false, error: "blocked" };
+    return { ok: false, error: "prohibited" };
+  }
   after(() => trackServer("ai_draft_started", session?.userId ?? null, { kind }));
 
   try {

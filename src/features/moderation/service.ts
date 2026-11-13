@@ -8,6 +8,8 @@ import { runModerationEngine, type ModerationImage } from "./engine";
 import { imageSystemPrompt, imageVerdictSchema, moderationSystemPrompt, moderationUserPrompt, textVerdictSchema } from "./verdict";
 import { isTelegramGeneratedAvatar } from "./images";
 import { ContentMismatchError, fetchTrustedImage } from "@/lib/security/safe-fetch";
+import { banForViolation } from "./enforce";
+import { shouldBan } from "./policy";
 
 /**
  * Moderatsiya xizmati (faqat serverda, service role): bazadan aynan tekshiriladigan versiyani oladi,
@@ -79,6 +81,15 @@ async function settings(db: ReturnType<typeof createAdminClient>) {
   };
 }
 
+async function ownerOf(db: ReturnType<typeof createAdminClient>, entity: ModerationEntity, id: string): Promise<string | null> {
+  if (entity === "vacancy") {
+    const { data } = await db.from("vacancies").select("owner_profile_id").eq("id", id).maybeSingle();
+    return data?.owner_profile_id ?? null;
+  }
+  const { data } = await db.from("worker_profiles").select("profile_id").eq("id", id).maybeSingle();
+  return data?.profile_id ?? null;
+}
+
 export async function moderateEntity(entity: ModerationEntity, id: string, opts: { notify: boolean }): Promise<string | null> {
   const db = createAdminClient();
   const { data: raw } = await db.rpc("moderation_snapshot", { p_entity: entity, p_id: id });
@@ -141,6 +152,20 @@ export async function moderateEntity(entity: ModerationEntity, id: string, opts:
       p_model: result.source === "ai" ? "ai" : "rules", p_signals: result.signals.slice(0, 30), p_notify: opts.notify,
     });
     if (error) throw new Error(error.message);
+    // og'ir qoidabuzarlik (erotika, ekstremizm, noqonuniy, massaj/spa): e'lon rad etildi — muallif ham bloklanadi va
+    // boshqa e'lonlari yashiriladi (qoidalar darhol yoki AI ma'no bo'yicha; ega, 2026-11-13)
+    if (shouldBan({ decision, category: result.category })) {
+      const owner = await ownerOf(db, entity, id);
+      if (owner) {
+        await banForViolation({
+          profileId: owner,
+          category: result.category,
+          code: result.reasonCode,
+          source: result.source === "ai" ? "ai" : "rules",
+          entity,
+        });
+      }
+    }
     return state;
   } catch (e) {
     const message = e instanceof Error ? e.message : "error";

@@ -152,7 +152,7 @@
       "description_short": "At least 10 characters",
       "price_order": "“to” must not be less than “from”",
       "generic": "Could not save. Please try again.",
-      "prohibited": "The listing contains prohibited content (for example, intimate services, drugs, selling cards or accounts, forged documents). Such listings are not published — please fix the text.",
+      "prohibited": "The listing contains prohibited content (erotica, massage or spa, religious extremism, drugs, selling cards or accounts, fake documents). Such listings are not published.",
       "rate_limited": "Too many attempts. Please try again later."
     },
     "district": "District (optional)",
@@ -243,5 +243,6 @@
     "desc": "Plumbers, electricians, AC technicians and other services — separate from job listings",
     "all": "All services",
     "open": "See handymen"
-  }
+  },
+  "blocked": "Your account was blocked for prohibited content (erotica, massage/spa, extremism or illegal content)."
 }
