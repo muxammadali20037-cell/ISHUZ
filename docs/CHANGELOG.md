@@ -1,5 +1,14 @@
 # O'zgarishlar jurnali
 
+## 2026-11-13 · Mehmon bosh sahifasi soddalashtirildi — 2-bosqich (`claude/ux-simplify-2`)
+
+- Rejim tanlamagan mehmon sahifasi telefonda ~8 600 px dan ~4 500 px ga: hero (ikki yo'l + qidiruv) → ommabop kasblar →
+  bitta "Yangi vakansiyalar" ro'yxati → alohida yashil "Universal ustalar" → footer.
+- Olib tashlandi (takror yoki ikkinchi darajali): "Tanlangan vakansiyalar" (yangilari bilan ikkinchi ro'yxat), ishonch
+  bo'limi, ish beruvchilar bloki (hero'dagi "Menga ishchi kerak"ni takrorlardi), "Qanday ishlaydi" (birinchi ochilishda
+  /start tanishtiruvida bor). Ishlatilmay qolgan kod (`FeaturedJobs`, `TrustedEmployers`, `EmployerBand`, `HowItWorks`)
+  o'chirildi. Testlar moslandi (home-market, entry).
+
 ## 2026-11-13 · Bosh sahifa soddalashtirildi — 1-bosqich (`claude/ux-simplify`)
 
 - Ega: "ISH TOPDIM — complete UX/UI simplification": bosh sahifada faqat joylashuv, salomlashuv, katta qidiruv, tezkor

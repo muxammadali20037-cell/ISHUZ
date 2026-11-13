@@ -4,16 +4,19 @@ import { getHomeSettings } from "@/features/home-windows/queries";
 import { getEntryStats } from "../entry-queries";
 import { MarketHero } from "./hero";
 import { PhotoCatalog } from "./catalog-section";
-import { FeaturedJobs, LatestJobs, TrustedEmployers } from "./jobs-sections";
-import { EmployerBand, HowItWorks, ListSkeleton } from "./sections";
+import { LatestJobs } from "./jobs-sections";
+import { ListSkeleton } from "./sections";
+import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { getMarketCounts } from "./queries";
 
 /**
- * Bosh sahifa — mehmon yoki rejim tanlamagan foydalanuvchi (2026-11-05, egasi bergan tartib):
- * hero (katta haqiqiy surat, ikki yo'l, uch maydonli qidiruv) → ommabop kasblar (suratli katalog) → tanlangan vakansiyalar
- * (to'r) → yangi vakansiyalar (ro'yxat) → ishonchli ish beruvchilar va himoya qoidalari → ish beruvchilar uchun → qanday
- * ishlaydi → footer. Hamma son va ro'yxat — bazadan; bo'sh yoki xato bo'lsa — bo'lim yo'q yoki tushuntirish (soxta ma'lumot yo'q).
- * Rejim tanlangach — o'sha rolning bosh sahifasi (seeker-home / employer-home), avvalgidek.
+ * Bosh sahifa — mehmon yoki rejim tanlamagan foydalanuvchi. 3.0 (2026-11-13, ega: "bosh sahifada faqat eng muhim narsalar"):
+ * hero (ikki yo'l "Men ish qidiryapman / Menga ishchi kerak" va qidiruv) → ommabop kasblar (tezkor kategoriyalar) → yangi
+ * vakansiyalar (bitta ro'yxat) → "Universal ustalar" (alohida yashil bo'lim) → footer.
+ * Olib tashlandi (takror yoki ikkinchi darajali): "Tanlangan vakansiyalar" (yangilari bilan ikkinchi ro'yxat), ishonch bo'limi,
+ * ish beruvchilar bloki (hero'dagi "Menga ishchi kerak"ni takrorlardi), "Qanday ishlaydi" (birinchi ochilishda /start
+ * tanishtiruvida bor). Hamma son va ro'yxat — bazadan; bo'sh yoki xato bo'lsa — tushuntirish (soxta ma'lumot yo'q).
+ * Rejim tanlangach — o'sha rolning bosh sahifasi (seeker-home / employer-home).
  */
 export async function MarketHome() {
   const [stats, counts, media, home] = await Promise.all([getEntryStats(), getMarketCounts(), getEntryMedia(), getHomeSettings()]);
@@ -21,17 +24,14 @@ export async function MarketHome() {
     <>
       <MarketHero stats={stats} counts={counts} media={media} ai={home.aiButton} />
       <PhotoCatalog media={media} counts={counts} />
-      <Suspense fallback={<ListSkeleton grid />}>
-        <FeaturedJobs />
-      </Suspense>
       <Suspense fallback={<ListSkeleton />}>
         <LatestJobs />
       </Suspense>
-      <Suspense fallback={null}>
-        <TrustedEmployers />
-      </Suspense>
-      <EmployerBand />
-      <HowItWorks />
+      <div className="container-wide pb-10 sm:pb-14">
+        <Suspense fallback={null}>
+          <MastersHomeSection />
+        </Suspense>
+      </div>
     </>
   );
 }
