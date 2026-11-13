@@ -35,7 +35,7 @@
     "view_only": "Faqat ko'rish"
   },
   "actions": {
-    "view": "Ko'rish",
+    "view": "Ish izlovchi ko'zi bilan",
     "manage": "Boshqarish",
     "edit": "Tahrirlash",
     "publish": "E'lon qilish",
@@ -410,6 +410,26 @@
   "published_banner": {
     "title": "Vakansiyangiz joylandi! 🎉",
     "found": "Sizga mos {count} ta nomzod topildi — pastda ko'ring",
-    "none": "Mos nomzodlar paydo bo'lishi bilan xabar beramiz"
+    "none": "Mos nomzodlar paydo bo'lishi bilan xabar beramiz",
+    "see_as_seeker": "Ish izlovchilar qanday ko'radi",
+    "see_matching": "Mos nomzodlar"
+  },
+  "seeker_view": {
+    "title": "Ish izlovchilar qanday ko'radi",
+    "status": {
+      "visible": "E'loningiz ish izlovchilarga ko'rinmoqda: qidiruvda va e'lonlar ro'yxatida.",
+      "pending_review": "E'lon tekshiruvda. Tasdiqlangach ish izlovchilarga ko'rinadi.",
+      "draft": "Bu qoralama — hali joylanmagan. Ish izlovchilar ko'rmaydi.",
+      "paused": "E'lon to'xtatilgan — ish izlovchilar hozir ko'rmaydi.",
+      "ended": "E'lon yopilgan yoki muddati tugagan — ish izlovchilar ko'rmaydi.",
+      "hidden": "E'lon moderator tomonidan yashirilgan — ish izlovchilar ko'rmaydi."
+    },
+    "rank": "Ish izlovchi «{profession}» kasbini {place} bo'yicha qidirsa, e'loningiz {position}-o'rinda chiqadi (jami {total} ta e'lon).",
+    "rank_below": "Ish izlovchi «{profession}» kasbini {place} bo'yicha qidirsa, {total} ta e'lon chiqadi — sizniki birinchi {limit} tasidan keyin.",
+    "place_remote": "masofaviy ishlar",
+    "place_all": "butun O'zbekiston",
+    "card_label": "Ro'yxatda shunday chiqadi:",
+    "card_label_later": "Joylangach ro'yxatda shunday chiqadi:",
+    "open_preview": "To'liq e'lonni ish izlovchi ko'zi bilan ochish"
   }
 }

@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-13 · Ish beruvchi o'z e'lonini ish izlovchi ko'zi bilan ko'radi (`claude/employer-preview`)
+
+- Ega: "ish beruvchi e'lon joylagandan keyin o'z e'lonini ish izlovchilar kabinetda qanday ko'rishini bilmoqchi".
+- Boshqaruv sahifasida (`/employer/vacancies/[id]#korinish`) yangi blok "Ish izlovchilar qanday ko'radi":
+  ko'rinish holati (ko'rinmoqda / tekshiruvda / qoralama / to'xtatilgan / yopilgan / yashirilgan), ish izlovchi shu kasbni
+  shu hududda qidirganda e'lon nechanchi o'rinda chiqishi (o'sha qidiruv funksiyasi va tartibi, birinchi 50 ta ichida;
+  topilmasa o'rin aytilmaydi) va ro'yxatdagi kartaning o'zi (`src/features/vacancies/seeker-view.ts`).
+- `/jobs/[slug]?korinish=izlovchi` — faqat e'lon egasiga: sahifa ish izlovchi ko'radigandek (ariza, saqlash, aloqa),
+  ustida tushuntirish va "Boshqaruvga qaytish"; tugmalar o'chiq (`inert`), ko'rishlar soni oshmaydi. Boshqalarga parametr
+  ta'sir qilmaydi.
+- Kirish nuqtalari: e'lon joylangach (oddiy oqim) "Ish izlovchilar qanday ko'radi"; "Vakansiyangiz joylandi" bannerida;
+  boshqaruvdagi "Ish izlovchi ko'zi bilan" tugmasi va vakansiyalar ro'yxatidagi menyu.
+- E2E: `employer-seeker-view.spec.ts` (o'rin, karta, ko'rinish, tekshiruvdagi e'lon, begona foydalanuvchi), `journeys`.
+
 ## 2026-11-12 · "Yangi" yozuvi o'rniga yozuvsiz nuqta; AI va ustalar bo'rtib turadi (`claude/standout-no-badge`)
 
 - Ega: "yangi degan so'zlar kerak emas, qandaydir bo'rtib chiqib tursa bo'ldi; ranglar yomon emas". "YANGI" yozuvli

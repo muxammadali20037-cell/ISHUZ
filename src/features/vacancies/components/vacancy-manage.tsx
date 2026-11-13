@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, Users, ExternalLink, Pencil, Play, Pause, XCircle, Copy, Trash2, MoreVertical, CalendarDays, ShieldAlert, Lock, UserSearch } from "lucide-react";
+import { Eye, Users, Pencil, Play, Pause, XCircle, Copy, Trash2, MoreVertical, CalendarDays, ShieldAlert, Lock, UserSearch } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { formatDate } from "@/lib/format";
 import type { Benefit } from "@/lib/reference";
@@ -17,6 +17,7 @@ import { canClose, canDelete, canPause, canPublish, isEditable, isPublic, publis
 import type { ApplicationStats, ApplicationStatus, VacancyFull } from "../types";
 import { VacancyStatusBadge } from "./status-badge";
 import { VacancyPreview } from "./vacancy-preview";
+import { seekerPreviewHref } from "../preview-href";
 import { useVacancyActions } from "./use-vacancy-actions";
 
 const APP_STATUSES: ApplicationStatus[] = ["sent", "viewed", "shortlisted", "interview", "offered", "hired", "rejected", "withdrawn"];
@@ -29,12 +30,15 @@ export function VacancyManage({
   stats,
   workers,
   benefits,
+  seekerView,
 }: {
   vacancy: VacancyFull;
   access: VacancyAccess;
   stats: ApplicationStats;
   workers: WorkerCardData[];
   benefits: Benefit[];
+  /** "Ish izlovchilar qanday ko'radi" bloki (serverda yig'iladi) — amallar ostida, statistikadan oldin */
+  seekerView?: React.ReactNode;
 }) {
   const { t, locale } = useT();
   const router = useRouter();
@@ -116,8 +120,8 @@ export function VacancyManage({
         ) : null}
         {isPublic(v.status) ? (
           <Button asChild variant="ghost">
-            <Link href={`/jobs/${v.slug}`} target="_blank" rel="noopener noreferrer">
-              <ExternalLink className="size-4" /> {t("vacancies.actions.view")}
+            <Link href={seekerPreviewHref(v.slug)}>
+              <Eye className="size-4" /> {t("vacancies.actions.view")}
             </Link>
           </Button>
         ) : null}
@@ -147,6 +151,8 @@ export function VacancyManage({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
+
+      {seekerView}
 
       <section className="mt-8">
         <SectionHeader title={t("vacancies.manage.stats_title")} href={applicationsHref} linkLabel={t("vacancies.manage.all_applications")} />

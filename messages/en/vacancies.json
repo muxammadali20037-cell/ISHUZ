@@ -35,7 +35,7 @@
     "view_only": "View only"
   },
   "actions": {
-    "view": "View",
+    "view": "View as job seeker",
     "manage": "Manage",
     "edit": "Edit",
     "publish": "Publish",
@@ -410,6 +410,26 @@
   "published_banner": {
     "title": "Your job is live! 🎉",
     "found": "{count} matching candidates found — see below",
-    "none": "We'll notify you as soon as matching candidates appear"
+    "none": "We'll notify you as soon as matching candidates appear",
+    "see_as_seeker": "How job seekers see it",
+    "see_matching": "Matching candidates"
+  },
+  "seeker_view": {
+    "title": "How job seekers see it",
+    "status": {
+      "visible": "Your job is visible to job seekers: in search and in job lists.",
+      "pending_review": "Your job is under review. Job seekers will see it once approved.",
+      "draft": "This is a draft — not published yet. Job seekers can't see it.",
+      "paused": "Your job is paused — job seekers can't see it right now.",
+      "ended": "Your job is closed or expired — job seekers can't see it.",
+      "hidden": "Your job was hidden by a moderator — job seekers can't see it."
+    },
+    "rank": "When a job seeker searches for “{profession}” ({place}), your job shows up at #{position} (of {total}).",
+    "rank_below": "When a job seeker searches for “{profession}” ({place}), {total} jobs show up — yours is below the first {limit}.",
+    "place_remote": "remote jobs",
+    "place_all": "all of Uzbekistan",
+    "card_label": "In the list it looks like this:",
+    "card_label_later": "Once published, it will look like this in the list:",
+    "open_preview": "Open the full job as a job seeker"
   }
 }

@@ -126,6 +126,13 @@ for (const vp of [
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ salary_from: 4000000, salary_to: 6000000, salary_type: "monthly" });
 
+    // e'lon joylangach — "Ish izlovchilar qanday ko'radi": boshqaruv sahifasidagi blok (holat, ro'yxat kartasi)
+    if (rows[0]!.status === "active") {
+      await page.getByRole("link", { name: "Ish izlovchilar qanday ko'radi" }).click();
+      await page.waitForURL(/\/employer\/vacancies\/[0-9a-f-]{36}#korinish$/);
+      await expect(page.locator("[data-seeker-view=visible] [data-seeker-card]")).toContainText("Dilnoza opa");
+    }
+
     await page.goto("/cabinet");
     await expect(page.getByText("Buxgalter").first()).toBeVisible();
 
