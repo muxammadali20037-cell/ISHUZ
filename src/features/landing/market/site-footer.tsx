@@ -3,7 +3,6 @@ import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
 import { getT } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
-import { billingEnabled } from "@/lib/features";
 import { BrandLogo } from "@/components/shared/brand-logo";
 import { LanguageSelect } from "@/components/shared/language-switcher";
 import { BRAND } from "@/config/brand";
@@ -48,7 +47,8 @@ export async function SiteFooter() {
         { href: "/post/vacancy", label: t("welcome.market.f_post") },
         { href: findHref(EMPTY_FIND, { mode: "workers", any: true, region: "all" }), label: t("welcome.market.f_workers") },
         { href: "/for-employers", label: t("common.site.nav_for_employers") },
-        ...(billingEnabled() ? [{ href: "/pricing", label: t("welcome.market.f_pricing") }] : []),
+        // "Tariflar" (0080) — har doim: e'lon bepul bo'lsa ham halol ko'rsatadi (Oddiy — "Bepul")
+        { href: "/pricing", label: t("welcome.market.f_pricing") },
       ],
     },
     {

@@ -11,7 +11,8 @@ import { CheckoutPanel } from "./checkout-panel";
 
 export { InAppNote } from "./in-app-note";
 
-type Request = { purpose: CheckoutPurpose; targetId: string | null };
+/** upgrade — faol e'lonni kuchaytirish (Tezkor/Maksimal: muddat, TOP, AI PRO), 0080 */
+type Request = { purpose: CheckoutPurpose; targetId: string | null; upgrade?: boolean };
 
 // Istalgan joydan ochish: requestPayment({...}) — PaymentDialogHost providers'da bitta
 const listeners = new Set<(r: Request) => void>();
@@ -51,9 +52,9 @@ const TITLES = {
 function PaymentSheet({ req, onDone }: { req: Request; onDone: () => void }) {
   const { t } = useT();
   return (
-    <Sheet title={t(TITLES[req.purpose])}>
+    <Sheet title={req.upgrade ? t("billing.tiers.upgrade_sheet_title") : t(TITLES[req.purpose])}>
       <div className="px-5 pb-6">
-        <CheckoutPanel purpose={req.purpose} targetId={req.targetId} variant="sheet" onDone={onDone} />
+        <CheckoutPanel purpose={req.purpose} targetId={req.targetId} variant="sheet" upgrade={req.upgrade} onDone={onDone} />
       </div>
     </Sheet>
   );

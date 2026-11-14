@@ -102,9 +102,10 @@ test("ishchi e'loni: to'lov paneli shu ekranda — foyda, narx, kunlik narx, ish
   await expect(page.getByRole("heading", { level: 1, name: "E'loningiz tayyor! Joylash uchun to'lov qoldi" })).toBeVisible({ timeout: 30_000 });
   const checkout = page.getByTestId("checkout");
   await expect(checkout.getByText("10 kun ish beruvchilar qidiruvida")).toBeVisible();
-  await expect(checkout.getByTestId("checkout-price")).toHaveText("5 000 so'm");
-  await expect(checkout.getByText("10 000 so'm")).toBeVisible(); // asl narx (chizilgan)
-  await expect(checkout.getByText("kuniga 500 so'm")).toBeVisible();
+  // 0080: Oddiy 5 000 so'm, birinchi to'lovda −50% → 2 500 (tarif tanlovida — Oddiy sukut bo'yicha)
+  await expect(checkout.getByTestId("checkout-price")).toHaveText("2 500 so'm");
+  await expect(checkout.locator("[data-tiers] [data-tier]")).toHaveCount(3);
+  await expect(checkout.getByText("kuniga 300 so'm")).toBeVisible();
   await expect(checkout.getByText("Karta ma'lumotlari bizga kelmaydi — to'lov Payme yoki Click sahifasida")).toBeVisible();
   // hamyon bo'sh — "Balansdan to'lash" yo'q, balans yetmasligi aytiladi
   await expect(checkout.getByRole("button", { name: /Balansdan to'lash/ })).toHaveCount(0);
@@ -114,10 +115,10 @@ test("ishchi e'loni: to'lov paneli shu ekranda — foyda, narx, kunlik narx, ish
   await page.waitForURL(/checkout\.test\.paycom\.uz/);
   const params = paymeParams(page.url());
   expect(params.m).toBe("e2e-merchant");
-  expect(params.a).toBe("500000"); // 5 000 so'm tiyinda
+  expect(params.a).toBe("250000"); // 2 500 so'm tiyinda
   expect(params.c).toBe(`http://localhost:3300/billing/return?order=${params["ac.order_id"]}`);
 
-  await paymePays(request, params["ac.order_id"]!, 5000);
+  await paymePays(request, params["ac.order_id"]!, 2500);
   await page.goto(`/billing/return?order=${params["ac.order_id"]}`);
   await expect(page.getByRole("heading", { level: 1, name: "To'lov qabul qilindi!" })).toBeVisible();
   const receipt = page.getByRole("region", { name: "Chek" });
@@ -158,17 +159,17 @@ test("hamyon: to'ldirish (bonus bilan) → balansdan bir bosishda vakansiya joyl
 
   await postVacancy(page);
   const checkout = page.getByTestId("checkout");
-  await expect(checkout.getByTestId("checkout-price")).toHaveText("25 000 so'm", { timeout: 30_000 });
-  await expect(checkout.getByText("Balansingiz: 110 000 so'm · To'lovdan keyin qoladi: 85 000 so'm")).toBeVisible();
+  await expect(checkout.getByTestId("checkout-price")).toHaveText("15 000 so'm", { timeout: 30_000 });
+  await expect(checkout.getByText("Balansingiz: 110 000 so'm · To'lovdan keyin qoladi: 95 000 so'm")).toBeVisible();
   await expect(checkout.getByText(/Tekshiruvdan o'tmasa — tuzatib qayta yuborasiz, 10 kun ichida qayta to'lamaysiz/)).toBeVisible();
-  await checkout.getByRole("button", { name: /Balansdan to'lash · 25 000 so'm/ }).click();
+  await checkout.getByRole("button", { name: /Balansdan to'lash · 15 000 so'm/ }).click();
   await page.waitForURL(/\/billing\/return\?order=\d+/);
   await expect(page.getByRole("heading", { level: 1, name: "To'lov qabul qilindi!" })).toBeVisible();
   await expect(page.getByRole("region", { name: "Chek" })).toContainText("Hamyon");
   const [v] = await sql<{ status: string }>("select status from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   expect(v!.status).toBe("active");
   const [b] = await sql<{ balance: string }>("select balance::text from public.wallets where profile_id = $1", [USERS.employer]);
-  expect(b!.balance).toBe("85000");
+  expect(b!.balance).toBe("95000");
 });
 
 test("bekor bo'lgan to'lov: 'Qayta to'lash' shu xizmat oynasini ochadi; Click — oxirgi tanlangan usul birinchi", async ({ page, context }) => {
@@ -195,7 +196,7 @@ test("bekor bo'lgan to'lov: 'Qayta to'lash' shu xizmat oynasini ochadi; Click �
   const q = new URL(page.url()).searchParams;
   expect(q.get("service_id")).toBe("e2e-service");
   expect(q.get("merchant_id")).toBe("e2e-merchant");
-  expect(q.get("amount")).toBe("5000");
+  expect(q.get("amount")).toBe("2500");
   const orderNo = q.get("transaction_param")!;
 
   // Click serveri: Prepare → Complete (md5 imzo)
@@ -204,7 +205,7 @@ test("bekor bo'lgan to'lov: 'Qayta to'lash' shu xizmat oynasini ochadi; Click �
       .createHash("md5")
       .update([f.click_trans_id, f.service_id, CLICK_SECRET, f.merchant_trans_id, f.action === "1" ? f.merchant_prepare_id : "", f.amount, f.action, f.sign_time].join(""))
       .digest("hex");
-  const base = { click_trans_id: "777001", service_id: "e2e-service", click_paydoc_id: "1", merchant_trans_id: orderNo, amount: "5000", error: "0", error_note: "", sign_time: "2026-10-13 12:00:00" };
+  const base = { click_trans_id: "777001", service_id: "e2e-service", click_paydoc_id: "1", merchant_trans_id: orderNo, amount: "2500", error: "0", error_note: "", sign_time: "2026-10-13 12:00:00" };
   const prep = { ...base, action: "0" };
   const r1 = await (await page.request.post("/api/payments/click", { form: { ...prep, sign_string: sign(prep) } })).json();
   expect(r1.error).toBe(0);

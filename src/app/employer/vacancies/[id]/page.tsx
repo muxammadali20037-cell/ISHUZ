@@ -13,6 +13,7 @@ import { buildPromoCaption, buildPromoData, vacancyUrl } from "@/features/promo/
 import { PromoPanel } from "@/features/promo/promo-panel";
 import { getSeekerView } from "@/features/vacancies/seeker-view";
 import { SeekerViewPanel } from "@/features/vacancies/components/seeker-view-panel";
+import { enabledProviders } from "@/features/billing/providers";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { t } = await getT();
@@ -77,9 +78,18 @@ export default async function ManageVacancyPage({ params, searchParams }: { para
           workers={workers}
           benefits={benefits}
           seekerView={seekerView ? <SeekerViewPanel view={seekerView} /> : null}
+          canBoost={enabledProviders().length > 0}
+          featuredUntil={featuredUntil(res.vacancy)}
         />
         {caption ? <PromoPanel slug={res.vacancy.slug} caption={caption} url={vacancyUrl(res.vacancy.slug)} isActive={res.vacancy.status === "active"} /> : null}
       </div>
     </Shell>
   );
+}
+
+/** Hozir TOP'da bo'lsa — qachongacha (muddati o'tgan TOP ko'rsatilmaydi) */
+function featuredUntil(v: { is_featured: boolean; featured_until: string | null }): string | null {
+  if (!v.is_featured) return null;
+  if (!v.featured_until) return null;
+  return new Date(v.featured_until).getTime() > Date.now() ? v.featured_until : null;
 }

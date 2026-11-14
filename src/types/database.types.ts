@@ -2418,6 +2418,7 @@ export type Database = {
           id: string;
           order_no: number;
           paid_at: string | null;
+          plan: string;
           profile_id: string | null;
           provider: Database["public"]["Enums"]["payment_provider"] | null;
           provider_cancel_time: number | null;
@@ -2439,6 +2440,7 @@ export type Database = {
           id?: string;
           order_no?: never;
           paid_at?: string | null;
+          plan?: string;
           profile_id?: string | null;
           provider?: Database["public"]["Enums"]["payment_provider"] | null;
           provider_cancel_time?: number | null;
@@ -2459,6 +2461,7 @@ export type Database = {
           id?: string;
           order_no?: never;
           paid_at?: string | null;
+          plan?: string;
           profile_id?: string | null;
           provider?: Database["public"]["Enums"]["payment_provider"] | null;
           provider_cancel_time?: number | null;
@@ -5107,13 +5110,22 @@ export type Database = {
         Returns: boolean;
       };
       contact_status_for: { Args: { p_owner: string }; Returns: string };
-      create_payment: {
-        Args: {
-          p_purpose: Database["public"]["Enums"]["payment_purpose"];
-          p_target_id: string;
-        };
-        Returns: Json;
-      };
+      create_payment:
+        | {
+            Args: {
+              p_purpose: Database["public"]["Enums"]["payment_purpose"];
+              p_target_id: string;
+            };
+            Returns: Json;
+          }
+        | {
+            Args: {
+              p_plan: string;
+              p_purpose: Database["public"]["Enums"]["payment_purpose"];
+              p_target_id: string;
+            };
+            Returns: Json;
+          };
       create_review: {
         Args: {
           p_application_id?: string;
@@ -5259,10 +5271,9 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: number;
       };
-      extend_worker_listing_internal: {
-        Args: { p_worker_id: string };
-        Returns: string;
-      };
+      extend_worker_listing_internal:
+        | { Args: { p_worker_id: string }; Returns: string }
+        | { Args: { p_days: number; p_worker_id: string }; Returns: string };
       extend_worker_promotion_internal: {
         Args: { p_worker_id: string };
         Returns: string;
@@ -5799,6 +5810,7 @@ export type Database = {
           verified: boolean;
         }[];
       };
+      public_tariffs: { Args: Record<PropertyKey, never>; Returns: Json };
       publish_vacancy: {
         Args: { p_vacancy_id: string };
         Returns: Database["public"]["Enums"]["vacancy_status"];
@@ -6708,6 +6720,19 @@ export type Database = {
         };
         Returns: string;
       };
+      tariff_of: { Args: { p_kind: string; p_plan: string }; Returns: Json };
+      tariff_price: {
+        Args: {
+          p_plan: string;
+          p_purpose: Database["public"]["Enums"]["payment_purpose"];
+        };
+        Returns: number;
+      };
+      tariff_tiers: {
+        Args: { p_purpose: Database["public"]["Enums"]["payment_purpose"] };
+        Returns: Json;
+      };
+      tariffs_enabled: { Args: Record<PropertyKey, never>; Returns: boolean };
       telegram_auth_lookup: {
         Args: { p_telegram_user_id: number };
         Returns: Json;
@@ -6792,13 +6817,22 @@ export type Database = {
       };
       vacancy_title_key: { Args: { p_title: string }; Returns: string };
       wallet_enabled: { Args: Record<PropertyKey, never>; Returns: boolean };
-      wallet_pay: {
-        Args: {
-          p_purpose: Database["public"]["Enums"]["payment_purpose"];
-          p_target_id: string | null;
-        };
-        Returns: Json;
-      };
+      wallet_pay:
+        | {
+            Args: {
+              p_purpose: Database["public"]["Enums"]["payment_purpose"];
+              p_target_id: string | null;
+            };
+            Returns: Json;
+          }
+        | {
+            Args: {
+              p_plan: string;
+              p_purpose: Database["public"]["Enums"]["payment_purpose"];
+              p_target_id: string;
+            };
+            Returns: Json;
+          };
       withdraw_offer: { Args: { p_offer_id: string }; Returns: undefined };
       worker_access_ok: { Args: { p_worker_id: string }; Returns: boolean };
       worker_completeness: {

@@ -211,7 +211,8 @@ test.describe("bosh sahifa (marketplace)", () => {
     await asGuest(context);
     await page.goto("/");
     const footer = page.getByRole("contentinfo");
-    await expect(footer.getByRole("link", { name: "Narxlar" })).toHaveCount(0);
+    // "Tariflar" (0080) — har doim bor va ishlaydigan sahifa (pastdagi tekshiruv /pricing ni ham ochadi)
+    await expect(footer.getByRole("link", { name: "Tariflar" })).toHaveAttribute("href", "/pricing");
     // pastki qism kechroq chiziladi (birinchi ekrandan keyin) — havolalar paydo bo'lishini kutamiz
     await expect(footer.getByRole("link").nth(10)).toBeAttached();
     const hrefs = await footer.getByRole("link").evaluateAll((els) => els.map((el) => el.getAttribute("href") ?? ""));

@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Eye, Users, Pencil, Play, Pause, XCircle, Copy, Trash2, MoreVertical, CalendarDays, ShieldAlert, Lock, UserSearch } from "lucide-react";
+import { Eye, Users, Pencil, Play, Pause, XCircle, Copy, Trash2, MoreVertical, CalendarDays, ShieldAlert, Lock, UserSearch, Crown } from "lucide-react";
+import { requestPayment } from "@/features/billing/components/payment-dialog";
 import { useT } from "@/lib/i18n/client";
 import { formatDate } from "@/lib/format";
 import type { Benefit } from "@/lib/reference";
@@ -31,6 +32,8 @@ export function VacancyManage({
   workers,
   benefits,
   seekerView,
+  canBoost = false,
+  featuredUntil = null,
 }: {
   vacancy: VacancyFull;
   access: VacancyAccess;
@@ -39,6 +42,10 @@ export function VacancyManage({
   benefits: Benefit[];
   /** "Ish izlovchilar qanday ko'radi" bloki (serverda yig'iladi) — amallar ostida, statistikadan oldin */
   seekerView?: React.ReactNode;
+  /** Tezkor/Maksimal tariflar (0080): onlayn to'lov ulangan bo'lsa — faol vakansiyani TOP qilish */
+  canBoost?: boolean;
+  /** hozir TOP'da bo'lsa — qachongacha (serverda hisoblanadi) */
+  featuredUntil?: string | null;
 }) {
   const { t, locale } = useT();
   const router = useRouter();
@@ -70,6 +77,11 @@ export function VacancyManage({
         {v.expires_at && (v.status === "active" || v.status === "expired") ? (
           <span>
             {t("vacancies.manage.expires_at")}: {formatDate(v.expires_at, locale)}
+          </span>
+        ) : null}
+        {featuredUntil ? (
+          <span data-featured className="inline-flex items-center gap-1 rounded-full bg-warning-soft px-2 py-0.5 font-semibold text-warning">
+            <Crown className="size-4" aria-hidden /> {t("billing.tiers.top_until", { date: formatDate(featuredUntil, locale) })}
           </span>
         ) : null}
         <span>
@@ -116,6 +128,11 @@ export function VacancyManage({
             <Link href={`/employer/vacancies/${v.id}/edit`}>
               <Pencil className="size-4" /> {t("vacancies.actions.edit")}
             </Link>
+          </Button>
+        ) : null}
+        {canEdit && canBoost && v.status === "active" ? (
+          <Button variant="outline" data-boost onClick={() => requestPayment({ purpose: "vacancy_publish", targetId: v.id, upgrade: true })}>
+            <Crown className="size-4 text-warning" aria-hidden /> {t("billing.tiers.boost_cta")}
           </Button>
         ) : null}
         {isPublic(v.status) ? (

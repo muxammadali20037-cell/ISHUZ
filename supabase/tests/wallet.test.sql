@@ -98,17 +98,17 @@ insert into public.worker_profiles (profile_id) values (auth.uid());
 update public.worker_profiles set onboarding_completed_at = now(), is_public = true where profile_id = auth.uid();
 select pg_temp.ok((select not is_public from public.worker_profiles where profile_id = auth.uid()), 'to''lovsiz qidiruvda yo''q');
 create temp table s1 as select public.wallet_pay('worker_listing', public.current_worker_id()) as j;
-select pg_temp.ok((select (j ->> 'amount')::int = 5000 and (j ->> 'balance')::int = 155000 from s1), 'balansdan 5 000 (birinchi e''lon chegirmasi bilan), qoldiq 155 000');
+select pg_temp.ok((select (j ->> 'amount')::int = 2500 and (j ->> 'balance')::int = 157500 from s1), 'balansdan 2 500 (5 000, birinchi e''lon chegirmasi bilan), qoldiq 157 500');
 select pg_temp.ok((select is_public and listed_until > now() + interval '9 days' from public.worker_profiles where profile_id = auth.uid()), 'e''lon darhol 10 kunga qidiruvda');
 select pg_temp.ok((select status = 'paid' and provider = 'wallet' and paid_at is not null from public.payments where order_no = (select (j ->> 'order_no')::bigint from s1)), 'to''lov yozuvi: to''langan, hamyondan');
-select pg_temp.ok((select count(*) = 1 from public.wallet_ledger where profile_id = auth.uid() and kind = 'spend' and delta = -5000), 'tarixda sarf: −5 000');
+select pg_temp.ok((select count(*) = 1 from public.wallet_ledger where profile_id = auth.uid() and kind = 'spend' and delta = -2500), 'tarixda sarf: −2 500');
 
 -- begona ishchi e'loni — rad, balans o'zgarmaydi
 select pg_temp.login('63000000-0000-0000-0000-00000000000c');
 insert into public.worker_profiles (profile_id) values (auth.uid());
 select pg_temp.login('63000000-0000-0000-0000-00000000000a');
 select pg_temp.fails($$select public.wallet_pay('worker_listing', (select id from public.worker_profiles where profile_id = '63000000-0000-0000-0000-00000000000c'))$$, 'begona e''lon uchun to''lab bo''lmaydi', '42501');
-select pg_temp.ok(pg_temp.bal('63000000-0000-0000-0000-00000000000a') = 155000, 'rad etilganda balans o''zgarmadi');
+select pg_temp.ok(pg_temp.bal('63000000-0000-0000-0000-00000000000a') = 157500, 'rad etilganda balans o''zgarmadi');
 select pg_temp.fails($$select public.wallet_pay('wallet_topup', null)$$, 'balansdan balansni to''ldirib bo''lmaydi', 'validation');
 
 -- ===== yetmasa — hech narsa yozilmaydi; boshqa odamning hamyoni ko'rinmaydi =====
@@ -126,16 +126,16 @@ insert into public.vacancies (owner_profile_id, title, category_id, region_id)
 select auth.uid(), 'WL-Kassir-63', c.id, r.id from public.categories c, public.regions r where c.slug = 'restaurant' and r.slug = 'tashkent_city';
 select pg_temp.ok((select public.vacancy_publish_quote(id) ->> 'mode' from public.vacancies where title = 'WL-Kassir-63') = 'payment_required', 'vakansiya pullik');
 create temp table s2 as select public.wallet_pay('vacancy_publish', (select id from public.vacancies where title = 'WL-Kassir-63')) as j;
-select pg_temp.ok((select (j ->> 'amount')::int = 25000 and (j ->> 'balance')::int = 5000 from s2), 'balansdan 25 000, qoldiq 5 000');
+select pg_temp.ok((select (j ->> 'amount')::int = 15000 and (j ->> 'balance')::int = 15000 from s2), 'balansdan 15 000 (30 000, −50%), qoldiq 15 000');
 select pg_temp.ok((select status = 'active' and expires_at > now() + interval '9 days' from public.vacancies where title = 'WL-Kassir-63'), 'vakansiya darhol 10 kunga faol');
 select pg_temp.fails($$select public.wallet_pay('vacancy_publish', (select id from public.vacancies where title = 'WL-Kassir-63'))$$, 'shu vakansiya uchun qayta to''lov — rad', 'already_paid');
-select pg_temp.ok(pg_temp.bal('63000000-0000-0000-0000-00000000000b') = 5000, 'qayta to''lov rad etilganda balans o''zgarmadi');
+select pg_temp.ok(pg_temp.bal('63000000-0000-0000-0000-00000000000b') = 15000, 'qayta to''lov rad etilganda balans o''zgarmadi');
 select pg_temp.superuser();
 update public.vacancies set status = 'rejected' where title = 'WL-Kassir-63';
 select pg_temp.login('63000000-0000-0000-0000-00000000000b');
 select pg_temp.ok((select public.vacancy_publish_quote(id) ->> 'mode' from public.vacancies where title = 'WL-Kassir-63') = 'paid_window', 'rad etilgan pullik vakansiya: muddat ichida — to''langan holat');
 select public.publish_vacancy(id) from public.vacancies where title = 'WL-Kassir-63';
-select pg_temp.ok((select status = 'active' from public.vacancies where title = 'WL-Kassir-63') and pg_temp.bal('63000000-0000-0000-0000-00000000000b') = 5000,
+select pg_temp.ok((select status = 'active' from public.vacancies where title = 'WL-Kassir-63') and pg_temp.bal('63000000-0000-0000-0000-00000000000b') = 15000,
   'tuzatib qayta yuborildi — qayta to''lovsiz faol');
 
 -- ===== bloklangan =====
@@ -168,8 +168,12 @@ select pg_temp.ok((select count(*) = 1 from public.payments where profile_id = '
 select pg_temp.ok((select status = 'cancelled' and provider_state = -1 from public.payments where order_no = (select (j ->> 'order_no')::bigint from pp)), 'kutilayotgan to''lov bekor qilindi');
 select pg_temp.ok((public.payme_perform('w-tx9') -> 'error' ->> 'code') = '-31008', 'Payme o''chirilgan e''lon to''lovini bajara olmaydi');
 
--- ===== hamma narsa bepul bo'lsa — to'ldirish ma'nosiz =====
+-- ===== e'lonlar bepul, lekin tariflar (Tezkor/Maksimal, 0080) yoqilgan — hamyon ishlaydi; hammasi bepul bo'lsa — yo'q =====
 update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
+select pg_temp.login('63000000-0000-0000-0000-00000000000a');
+select pg_temp.ok((select (public.my_wallet() ->> 'enabled')::boolean), 'e''lon bepul, tariflar yoqilgan — hamyon yoqilgan (kuchaytirish uchun)');
+select pg_temp.superuser();
+update public.app_settings set value = 'false'::jsonb where key = 'tariffs_enabled';
 select pg_temp.login('63000000-0000-0000-0000-00000000000a');
 select pg_temp.ok((select not (public.my_wallet() ->> 'enabled')::boolean), 'pullik xizmat yo''q — hamyon o''chiq');
 select pg_temp.fails($$select public.create_topup(50000)$$, 'pullik xizmat yo''q — to''ldirib bo''lmaydi', 'billing_disabled');
