@@ -29,12 +29,15 @@ export async function banForViolation(v: Violation): Promise<boolean> {
     const db = createAdminClient();
     const { data: admin } = await db.from("admin_users").select("is_active").eq("profile_id", v.profileId).maybeSingle();
     const exempt = !!admin?.is_active;
+    let newly = false;
     if (!exempt) {
-      await db
+      const { data: changed } = await db
         .from("profiles")
         .update({ is_blocked: true, blocked_reason: banReason(v.category, v.code), blocked_at: new Date().toISOString() })
         .eq("id", v.profileId)
-        .eq("is_blocked", false);
+        .eq("is_blocked", false)
+        .select("id");
+      newly = (changed?.length ?? 0) > 0;
       await Promise.all([
         db.from("vacancies").update({ status: "hidden" }).eq("owner_profile_id", v.profileId).in("status", ["active", "pending_review", "paused"]),
         db.from("worker_profiles").update({ is_public: false }).eq("profile_id", v.profileId),
@@ -45,6 +48,8 @@ export async function banForViolation(v: Violation): Promise<boolean> {
           .in("status", ["active", "pending_review", "hidden"]),
       ]);
     }
+    // allaqachon bloklangan muallifning yana bir e'loni topilsa — e'lonlari yana yashiriladi, hodisa qayta yozilmaydi
+    if (!exempt && !newly) return true;
     await logSecurityEvent({
       type: "moderation.auto_ban",
       severity: "high",

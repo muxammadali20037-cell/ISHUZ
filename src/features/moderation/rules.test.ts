@@ -93,6 +93,12 @@ describe("qat'iy taqiq (ega, 2026-11-13): so'zning o'zi yetarli — e'lon joylan
     ["Massajchi qiz kerak", "strict_massage"],
     ["masaj qilaman", "strict_massage"],
     ["Massage therapist needed", "strict_massage"],
+    // kasb nomlari (katalog, qo'shimcha kasb, namuna sarlavha — eski e'lonlar qayta tekshiruvi: sweep.ts)
+    ["Massajchi / Массажист", "strict_massage"],
+    ["Spa massajchi / Спа-массажист", "strict_massage"],
+    ["Массажистка", "strict_massage"],
+    ["massajist", "strict_massage"],
+    ["Masajchi", "strict_massage"],
     ["Spa salonga administrator kerak", "strict_spa"],
     ["СПА-салон приглашает девушек", "strict_spa"],
     ["Relaks salonga qizlar kerak", "strict_spa"],
