@@ -208,7 +208,8 @@
     "pay_title": "Your listing is ready! Just pay to publish",
     "pay_desc": "Once paid, employers see your listing right away for {days} days.",
     "saved_title": "Your details are saved",
-    "edit_title": "Edit listing"
+    "edit_title": "Edit listing",
+    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: only profession, area, experience and salary. Your name, phone and photo are not shown there — employers contact you through the site."
   },
   "vacancy": {
     "page_title": "I'm looking for a worker",
@@ -1250,5 +1251,29 @@
       "validation": "The answer is empty or too long. Please write it shorter.",
       "blocked": "Your account is blocked"
     }
+  },
+  "chips": {
+    "seek_daily": "Day jobs",
+    "seek_near": "Jobs nearby",
+    "seek_remote": "Remote jobs",
+    "seek_noexp": "No-experience jobs",
+    "emp_daily": "Day workers",
+    "emp_near": "Workers nearby",
+    "emp_exp": "Experienced workers",
+    "emp_remote": "Remote workers"
+  },
+  "stories": {
+    "label": "Ish topdim news",
+    "open": "{title} — view",
+    "brand": "Ish topdim",
+    "close": "Close",
+    "pause": "Pause",
+    "play": "Resume",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "next": "Next",
+    "prev": "Previous",
+    "counter": "{n} / {total}",
+    "failed": "Couldn't load. Tap to go to the next one."
   }
 }

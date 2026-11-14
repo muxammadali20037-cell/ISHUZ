@@ -81,5 +81,15 @@
   "lang": {
     "title": "Tilni tanlang / Выберите язык / Choose language",
     "changed": "✅ Language: English"
+  },
+  "channel": {
+    "job_tag": "🟦 JOB",
+    "worker_tag": "🟩 WORKER",
+    "open_job": "Details and apply →",
+    "open_worker": "View worker →",
+    "remote": "Remote",
+    "negotiable": "Negotiable",
+    "experience": "Experience: {value}",
+    "salary_expect": "Expected salary: {value}"
   }
 }

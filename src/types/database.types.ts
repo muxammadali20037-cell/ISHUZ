@@ -774,6 +774,46 @@ export type Database = {
         };
         Relationships: [];
       };
+      channel_posts: {
+        Row: {
+          attempts: number;
+          chat_id: string;
+          created_at: string;
+          entity_id: string;
+          entity_type: string;
+          error: string | null;
+          id: number;
+          message_id: number | null;
+          posted_at: string | null;
+          status: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempts?: number;
+          chat_id: string;
+          created_at?: string;
+          entity_id: string;
+          entity_type: string;
+          error?: string | null;
+          id?: never;
+          message_id?: number | null;
+          posted_at?: string | null;
+          status?: string;
+        };
+        Update: {
+          attempts?: number;
+          chat_id?: string;
+          created_at?: string;
+          entity_id?: string;
+          entity_type?: string;
+          error?: string | null;
+          id?: never;
+          message_id?: number | null;
+          posted_at?: string | null;
+          status?: string;
+        };
+        Relationships: [];
+      };
       companies: {
         Row: {
           about: string | null;
@@ -3443,6 +3483,75 @@ export type Database = {
           },
           {
             foreignKeyName: "skills_created_by_fkey";
+            columns: ["created_by"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      stories: {
+        Row: {
+          audience: string;
+          caption: string | null;
+          created_at: string;
+          created_by: string | null;
+          cta_label: string | null;
+          cta_url: string | null;
+          duration_sec: number;
+          ends_at: string | null;
+          id: string;
+          is_active: boolean;
+          media_kind: string;
+          media_path: string;
+          poster_path: string | null;
+          sort_order: number;
+          starts_at: string;
+          title: string;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          audience?: string;
+          caption?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          cta_label?: string | null;
+          cta_url?: string | null;
+          duration_sec?: number;
+          ends_at?: string | null;
+          id?: string;
+          is_active?: boolean;
+          media_kind: string;
+          media_path: string;
+          poster_path?: string | null;
+          sort_order?: number;
+          starts_at?: string;
+          title: string;
+          updated_at?: string;
+        };
+        Update: {
+          audience?: string;
+          caption?: string | null;
+          created_at?: string;
+          created_by?: string | null;
+          cta_label?: string | null;
+          cta_url?: string | null;
+          duration_sec?: number;
+          ends_at?: string | null;
+          id?: string;
+          is_active?: boolean;
+          media_kind?: string;
+          media_path?: string;
+          poster_path?: string | null;
+          sort_order?: number;
+          starts_at?: string;
+          title?: string;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "stories_created_by_fkey";
             columns: ["created_by"];
             isOneToOne: false;
             referencedRelation: "profiles";

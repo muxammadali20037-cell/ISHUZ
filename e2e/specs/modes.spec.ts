@@ -25,7 +25,7 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
   await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
-  await expect(shortcuts(page)).toHaveText(["Kunlik ish", "Yaqin atrofda", "Masofaviy", "Tajribasiz"]);
+  await expect(shortcuts(page)).toHaveText(["Kunlik ish", "Yaqin atrofda ish", "Masofaviy ish", "Tajribasiz ish"]);
   await expect(windows(page)).toHaveCount(0);
   // ishchi topish va vakansiya berish — ish izlovchiga ko'rsatilmaydi
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
@@ -56,7 +56,7 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(modeRadio(page, "Ish beruvchi")).toHaveAttribute("aria-checked", "true");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
   // 2.0: ish beruvchi bosh sahifasi — nomzod qidiruvi va tez yo'llar (ish izlovchi yo'llari yo'q)
-  await expect(shortcuts(page)).toHaveText(["Kunlik ishchilar", "Yaqin atrofda", "Tajribali", "Masofaviy"]);
+  await expect(shortcuts(page)).toHaveText(["Kunlik ishchi", "Yaqin atrofdagi ishchi", "Tajribali ishchi", "Masofaviy ishchi"]);
   await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");

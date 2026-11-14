@@ -21,7 +21,7 @@ const STORAGE_DIR = process.env.STORAGE_DIR || path.resolve("e2e/.stack/storage"
 const LATENCY_MS = Number(process.env.E2E_DB_LATENCY_MS || 0);
 const LOG_REQUESTS = process.env.E2E_GATEWAY_LOG === "1";
 
-const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos", "site-media"]);
+const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos", "site-media", "story-videos"]);
 const RAW_PHOTO = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const RAW_MEDIA = new RegExp(`^(avatar|logo)/(${UUID})/${UUID}\\.(jpg|png|webp)$`);
@@ -231,6 +231,36 @@ async function handle(req, res) {
     });
   }
 
+  // Imzolangan yuklash (Supabase createSignedUploadUrl / uploadToSignedUrl):
+  //   POST /storage/v1/object/upload/sign/<bucket>/<nom>          — faqat service role; bir martalik token qaytaradi
+  //   PUT  /storage/v1/object/upload/sign/<bucket>/<nom>?token=…  — tokenli har kim (brauzer) shu bitta nomga yozadi
+  const signed = /^\/storage\/v1\/object\/upload\/sign\/([^/?]+)\/([^?]+)(?:\?(.*))?$/.exec(url);
+  if (signed) {
+    const bucket = signed[1];
+    const name = decodeURIComponent(signed[2]);
+    const file = path.join(STORAGE_DIR, bucket, name);
+    if (!file.startsWith(STORAGE_DIR + path.sep)) return json(res, 400, { message: "bad path" });
+    if (req.method === "POST") {
+      const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+      if (c?.role !== "service_role") return json(res, 403, { statusCode: "403", error: "Unauthorized", message: "forbidden" });
+      const token = sign({ url: `${bucket}/${name}`, exp: Math.floor(Date.now() / 1000) + 7200 }, SECRET);
+      return json(res, 200, { url: `/object/upload/sign/${bucket}/${signed[2]}?token=${token}` });
+    }
+    if (req.method === "PUT") {
+      const t = verify(new URLSearchParams(signed[3] || "").get("token") || "");
+      if (!t || t.url !== `${bucket}/${name}` || !(t.exp > Date.now() / 1000)) return json(res, 400, { statusCode: "400", error: "InvalidJWT", message: "invalid signature" });
+      if (fs.existsSync(file)) return json(res, 409, { statusCode: "409", error: "Duplicate", message: "The resource already exists" });
+      const chunks = [];
+      req.on("data", (d) => chunks.push(d));
+      req.on("end", () => {
+        fs.mkdirSync(path.dirname(file), { recursive: true });
+        fs.writeFileSync(file, fileFromMultipart(Buffer.concat(chunks), req.headers["content-type"]));
+        json(res, 200, { Key: `${bucket}/${name}` });
+      });
+      return;
+    }
+  }
+
   // DELETE /storage/v1/object/<bucket> {prefixes: [...]} — faqat service role (Supabase'da mijoz uchun siyosat hal qiladi)
   const rm = /^\/storage\/v1\/object\/([^/?]+)\/?$/.exec(url);
   if (rm && req.method === "DELETE") {
@@ -308,7 +338,7 @@ async function handle(req, res) {
     const readable = PUBLIC_BUCKETS.has(bucket) || (!st[1] && c?.role === "service_role");
     if (req.method === "GET" && readable && fs.existsSync(file)) {
       const ext = path.extname(file).toLowerCase();
-      const type = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".pdf": "application/pdf" }[ext] || "application/octet-stream";
+      const type = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp", ".pdf": "application/pdf", ".mp4": "video/mp4", ".webm": "video/webm", ".mov": "video/quicktime" }[ext] || "application/octet-stream";
       res.writeHead(200, { "content-type": type, "x-content-type-options": "nosniff" });
       return res.end(fs.readFileSync(file));
     }

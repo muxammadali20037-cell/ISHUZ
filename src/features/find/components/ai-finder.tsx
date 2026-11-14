@@ -84,8 +84,9 @@ export function AiFinder({
             openWith(q.length >= 2 ? q : undefined);
           }}
         >
-          {/* tor telefonda (≤ 380px) belgi yashiriladi — yozish maydoniga joy qoladi */}
-          <Search className="ml-2 size-5 shrink-0 text-muted-foreground max-[380px]:hidden" aria-hidden />
+          {/* lupa har doim ko'rinadi (ega, 2026-11-14: "telefonda qidiruv joyida lupa ko'rinmayapti") — bu qidiruv maydoni
+              ekanini birinchi qarashda bildiradi; tor telefonda joyni tugmadagi yulduzcha belgisi bo'shatadi */}
+          <Search data-search-icon className="ml-1.5 size-5 shrink-0 text-primary-ink sm:ml-2" aria-hidden />
           <input
             name="q"
             type="search"
@@ -94,14 +95,14 @@ export function AiFinder({
             maxLength={300}
             aria-label={fieldLabel}
             placeholder={placeholder}
-            className="h-12 min-w-0 flex-1 bg-transparent px-1 text-base text-foreground outline-none placeholder:text-muted-foreground max-[380px]:pl-2"
+            className="h-12 min-w-0 flex-1 bg-transparent px-1 text-base text-foreground outline-none placeholder:text-muted-foreground"
           />
           <button
             type="submit"
             data-track="ai_finder_open"
             className="press inline-flex h-12 shrink-0 items-center gap-1.5 rounded-md bg-primary px-3.5 text-base font-semibold text-primary-foreground hover:bg-primary-hover sm:px-5"
           >
-            <Sparkles className="size-5" aria-hidden />
+            <Sparkles className="size-5 max-[380px]:hidden" aria-hidden />
             {/* yozuv har doim ko'rinadi (320px da ham): faqat belgi bo'lsa tugma nima qilishi tushunarsiz */}
             {submitLabel}
           </button>

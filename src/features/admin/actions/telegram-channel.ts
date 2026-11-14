@@ -1,10 +1,12 @@
 "use server";
 
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { ActionResult } from "@/features/auth/actions";
 import { channelChatId, postToChannel } from "@/features/telegram-channel/channel";
-import { CAPTION_LIMIT, CHANNEL_MEDIA_IDS, TEXT_LIMIT, telegramLength } from "@/features/telegram-channel/media";
+import { CAPTION_LIMIT, CHANNEL_MEDIA_IDS, TEXT_LIMIT, channelChatIdFrom, telegramLength } from "@/features/telegram-channel/media";
+import { AUTOPOST_KEY } from "@/features/telegram-channel/autopost-settings";
 import { logAdmin, requirePerm } from "./guard";
 
 const schema = z
@@ -34,4 +36,35 @@ export async function sendChannelPost(input: unknown): Promise<ActionResult<{ li
     length: parsed.data.text.trim().length,
   });
   return { ok: true, data: { link: res.link, pinned: res.pinned } };
+}
+
+const autopostSchema = z.object({
+  jobs: z.boolean(),
+  workers: z.boolean(),
+  jobsChat: z.string().trim().max(100).nullable(),
+  workersChat: z.string().trim().max(100).nullable(),
+});
+
+/**
+ * Kanalga avtomatik e'lon sozlamasi (app_settings.channel_autopost): vakansiyalar ("ISH") va ishchi e'lonlari ("ISHCHI")
+ * alohida yoqiladi; xohlasa — har biri o'z kanaliga. Yozish — settings.manage (app_settings RLS), audit bilan.
+ */
+export async function saveChannelAutopost(input: unknown): Promise<ActionResult> {
+  const parsed = autopostSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
+  const chat = (v: string | null) => (v ? channelChatIdFrom(v) : null);
+  if ((parsed.data.jobsChat && !chat(parsed.data.jobsChat)) || (parsed.data.workersChat && !chat(parsed.data.workersChat))) return { ok: false, error: "channel_invalid" };
+  const guard = await requirePerm("settings.manage");
+  if (!guard.ok) return guard;
+  const value = { jobs: parsed.data.jobs, workers: parsed.data.workers, jobsChat: chat(parsed.data.jobsChat), workersChat: chat(parsed.data.workersChat) };
+  const supabase = await createClient();
+  const { data: before } = await supabase.from("app_settings").select("key, value").eq("key", AUTOPOST_KEY).maybeSingle();
+  const { data, error } = before
+    ? await supabase.from("app_settings").update({ value, is_public: false }).eq("key", AUTOPOST_KEY).select("key, value").maybeSingle()
+    : await supabase.from("app_settings").insert({ key: AUTOPOST_KEY, value, is_public: false }).select("key, value").maybeSingle();
+  if (error) return { ok: false, error: "generic" };
+  if (!data) return { ok: false, error: "forbidden" };
+  await logAdmin(supabase, "settings.update", "app_setting", AUTOPOST_KEY, before ? { value: before.value } : null, { value });
+  revalidatePath("/admin/telegram");
+  return { ok: true };
 }

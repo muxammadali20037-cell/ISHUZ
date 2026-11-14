@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import Link from "next/link";
 import { BadgeCheck, CalendarDays, ChevronRight, Laptop, MapPin, Plus, Sparkles } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 import { SeekerSearch } from "./home-search";
 import type { HomePlace } from "./home-queries";
 import { employerServiceHrefs, placeChooserHref } from "./quick-filters";
+import { StoriesRow } from "@/features/stories/components/stories-row";
 
 /**
  * Bosh qism (mehmon va panel uchun bir xil): salom, savol, AI qidiruv maydoni, 4 ta tez yo'l, "Vakansiya joylash".
@@ -20,10 +21,11 @@ export async function EmployerHead({ flush, greeting, place, postHref, extra }: 
   const hrefs = employerServiceHrefs(where);
   const placeLabel = place.region ? (place.district ? `${name(place.region)} · ${name(place.district)}` : name(place.region)) : t("easy.location.whole_country");
   const shortcuts = [
-    { key: "daily", href: hrefs.daily, label: t("easy.sections.daily_workers"), icon: CalendarDays },
-    { key: "near", href: hrefs.near, label: t("easy.sections.near"), icon: MapPin },
-    { key: "experienced", href: hrefs.experienced, label: t("easy.sections.experienced"), icon: BadgeCheck },
-    { key: "remote", href: hrefs.remote, label: t("easy.sections.remote"), icon: Laptop },
+    // har birida "ishchi" so'zi — ish beruvchi ishchi qidiradi (ega, 2026-11-14); ish izlovchida xuddi shu joyda "… ish"
+    { key: "daily", href: hrefs.daily, label: t("easy.chips.emp_daily"), icon: CalendarDays },
+    { key: "near", href: hrefs.near, label: t("easy.chips.emp_near"), icon: MapPin },
+    { key: "experienced", href: hrefs.experienced, label: t("easy.chips.emp_exp"), icon: BadgeCheck },
+    { key: "remote", href: hrefs.remote, label: t("easy.chips.emp_remote"), icon: Laptop },
   ];
   return (
     <section
@@ -31,6 +33,10 @@ export async function EmployerHead({ flush, greeting, place, postHref, extra }: 
       data-home="employer-v2"
       className={cn("border-border bg-card px-4 py-6 sm:rounded-2xl sm:border sm:px-8 sm:py-8", flush ? "-mx-4 -mt-4 border-b sm:mx-0 sm:mt-0" : "rounded-2xl border")}
     >
+      {/* "Ish Topdim" hikoyalari — eng tepada (bo'lmasa — joy ham qolmaydi) */}
+      <Suspense fallback={null}>
+        <StoriesRow mode="employer" className="mb-4" />
+      </Suspense>
       <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
         <p className="text-sm font-medium text-muted-foreground">{greeting}</p>
         {extra}
@@ -62,7 +68,7 @@ export async function EmployerHead({ flush, greeting, place, postHref, extra }: 
                 prefetch={false}
                 data-track="home_service"
                 data-track-to={key}
-                className="press inline-flex min-h-11 w-full items-center gap-2 rounded-md border border-border bg-background px-3.5 text-sm font-semibold hover:border-primary/50 hover:text-primary-ink"
+                className="press inline-flex min-h-11 w-full items-center gap-2 rounded-md border border-border bg-background px-3.5 py-1.5 text-sm font-semibold leading-tight hover:border-primary/50 hover:text-primary-ink"
               >
                 <Icon className="size-4 shrink-0 text-primary-ink" aria-hidden /> {label}
               </Link>

@@ -6,6 +6,7 @@ import { getSession } from "@/features/auth/session";
 import { trackServer } from "@/features/analytics/server";
 import { isClientEvent } from "@/features/analytics/events";
 import { sweepSoon } from "@/features/moderation/sweep-trigger";
+import { autopostSoon } from "@/features/telegram-channel/autopost-trigger";
 import { rejectUnsafeRequest } from "@/lib/security/guard";
 import { clientIp, ipBucket, subjectHash } from "@/lib/security/request";
 
@@ -30,6 +31,8 @@ export async function POST(request: NextRequest) {
   await trackServer(parsed.data.name, session?.userId ?? null, parsed.data.props, session ? null : anon);
   // eski e'lonlarni yangi qoidalar bilan tekshirish — javobdan keyin, cheklangan tezlikda (moderation/sweep-trigger.ts)
   sweepSoon();
+  // yangi tasdiqlangan e'lonlar Telegram kanalga — javobdan keyin, daqiqasiga ko'pi bilan bir marta
+  autopostSoon();
   const res = new NextResponse(null, { status: 204 });
   if (!existing) res.cookies.set(COOKIE, anon, { path: "/", maxAge: 60 * 60 * 24 * 365, sameSite: "lax", httpOnly: true, secure: request.nextUrl.protocol === "https:" });
   return res;

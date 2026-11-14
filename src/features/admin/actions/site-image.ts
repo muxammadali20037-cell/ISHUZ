@@ -15,7 +15,7 @@ const MAX_UPLOAD = 4 * 1024 * 1024;
  */
 export async function storeSiteImage(
   form: FormData,
-  opts: { folder: "windows" | "entry"; actorId: string; reason: string; maxSide: number },
+  opts: { folder: "windows" | "entry" | "stories"; actorId: string; reason: string; maxSide: number },
 ): Promise<ActionResult<{ path: string }>> {
   const file = form.get("file");
   if (!(file instanceof File) || file.size === 0 || file.size > MAX_UPLOAD) return { ok: false, error: "image_invalid" };
