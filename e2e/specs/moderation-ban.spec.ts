@@ -103,6 +103,79 @@ test("eski (joylangan) e'lonlar yangi qoidalar bilan qayta tekshiriladi: ustalar
   }
 });
 
+test("qayta tekshiruv e'lonning O'ZINI olib tashlaydi: admin muallif, qo'shimcha kasb 'Massajchi', namuna e'lon — toza e'lon qoladi", async ({ request }) => {
+  test.setTimeout(120_000);
+  const restoreEmployer = await snapshotUser(USERS.employer);
+  const restoreWorker = await snapshotUser(USERS.workerB);
+  const ids: { vacancies: string[]; worker?: string } = { vacancies: [] };
+  try {
+    const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+    const [massage] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Massajchi' limit 1");
+    const [seller] = await sql<{ id: string }>("select id from public.profession_nodes where selectable and is_active and name_uz = 'Sotuvchi' limit 1");
+    const [cat] = await sql<{ id: string }>("select id from public.categories where is_active order by sort_order limit 1");
+    // ish beruvchi — admin: bloklanmaydi, lekin taqiqlangan e'loni baribir ommadan olinadi
+    await sql(
+      `insert into public.admin_users (profile_id, role, permissions, is_active) values ($1, 'super_admin', '{}', true)
+       on conflict (profile_id) do update set is_active = true`,
+      [USERS.employer],
+    );
+    const [bad] = await sql<{ id: string }>(
+      `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_negotiable, published_at, expires_at)
+       values ($1, 'E2E eski: Massaj xonasiga usta kerak', $2, 'Kunduzgi smena', 'active', true, now(), now() + interval '10 days') returning id`,
+      [USERS.employer, r!.id],
+    );
+    const [clean] = await sql<{ id: string }>(
+      `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_negotiable, published_at, expires_at)
+       values ($1, 'E2E toza: do''konga sotuvchi kerak', $2, 'Kassa bilan ishlash', 'active', true, now(), now() + interval '10 days') returning id`,
+      [USERS.employer, r!.id],
+    );
+    ids.vacancies.push(bad!.id, clean!.id);
+    // ishchi: asosiy kasbi toza (Sotuvchi), qo'shimcha kasbi — Massajchi (eski katalogdan, 0078 gacha tanlangan)
+    const [w] = await sql<{ id: string }>(
+      `insert into public.worker_profiles (profile_id, headline, about, region_id, profession_node_id, experience_level, onboarding_completed_at, is_public)
+       values ($1, 'Sotuvchi', 'Do''konda ishlaganman', $2, $3, '1_2y', now(), true) returning id`,
+      [USERS.workerB, r!.id, seller!.id],
+    );
+    ids.worker = w!.id;
+    await sql("insert into public.worker_professions (worker_id, node_id) values ($1, $2)", [w!.id, massage!.id]);
+    // namuna (demo) e'lon — egasiz
+    await sql("delete from public.demo_vacancies where slug = 'namuna-e2e-massaj'");
+    await sql("insert into public.demo_vacancies (slug, category_id, title_uz, title_ru) values ('namuna-e2e-massaj', $1, 'Massajchi', 'Массажист')", [cat!.id]);
+
+    await sql("delete from public.app_settings where key = 'moderation_rules_sweep'");
+    await expect
+      .poll(
+        async () => {
+          await tick(request);
+          const [s] = await sql<{ v: string; w: boolean; d: string }>(
+            `select (select status::text from public.vacancies where id = $1) as v,
+                    (select is_public from public.worker_profiles where id = $2) as w,
+                    (select count(*)::text from public.demo_vacancies where slug = 'namuna-e2e-massaj') as d`,
+            [bad!.id, w!.id],
+          );
+          return `${s!.v}|${s!.w}|${s!.d}`;
+        },
+        { timeout: 60_000, intervals: [500, 1_000, 2_000] },
+      )
+      .toBe("hidden|false|0");
+
+    const [emp] = await sql<{ b: boolean }>("select is_blocked as b from public.profiles where id = $1", [USERS.employer]);
+    expect(emp!.b).toBe(false); // admin — bloklanmaydi
+    const [c] = await sql<{ s: string }>("select status::text as s from public.vacancies where id = $1", [clean!.id]);
+    expect(c!.s).toBe("active"); // toza e'lon tegilmaydi
+    const [wb] = await sql<{ b: boolean; reason: string }>("select is_blocked as b, blocked_reason as reason from public.profiles where id = $1", [USERS.workerB]);
+    expect(wb!.b).toBe(true);
+    expect(wb!.reason).toBe("auto_moderation:sexual_services:sweep_rule_strict_massage");
+  } finally {
+    await sql("delete from public.admin_users where profile_id = $1", [USERS.employer]);
+    await sql("delete from public.demo_vacancies where slug = 'namuna-e2e-massaj'");
+    if (ids.vacancies.length) await sql("delete from public.vacancies where id = any($1::uuid[])", [ids.vacancies]);
+    if (ids.worker) await sql("delete from public.worker_profiles where id = $1", [ids.worker]);
+    await restoreWorker();
+    await restoreEmployer();
+  }
+});
+
 test("toza e'lon (yolg'on topilma yo'q): 'Sport seksiyasiga murabbiy', 'React SPA' — bloklanmaydi", async ({ request }) => {
   const restore = await snapshotUser(USERS.employer);
   try {

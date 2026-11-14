@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-14 · Massaj e'lonlari to'liq olib tashlanadi — admin muallif, qo'shimcha kasb va namunalar ham (`claude/remove-massage`)
+
+- Ega: "massajchi ham kerak emas, ular e'londa bor — hammasini yo'q qil".
+- Topilgan teshiklar (`moderation/sweep.ts`): eski e'lonlar tekshiruvi faqat muallifni bloklash orqali yashirardi —
+  muallif faol admin bo'lsa (bloklanmaydi) yoki egasiz namuna bo'lsa, taqiqlangan e'lon ochiq qolardi; ishchining
+  qo'shimcha kasblari ("Sotuvchi" + "Massajchi"), namuna vakansiyalar va ustalar namunalari tekshirilmasdi; fon navbati
+  (pg_cron → tick) faqat navbatda ish bo'lsa chaqiriladi — yangi e'lon bo'lmasa tekshiruv umuman yurmasdi.
+- Endi: topilgan e'lonning O'ZI darhol ommadan olinadi (vakansiya → hidden, ishchi e'loni → ommaviy emas, usta → rejected,
+  namuna vakansiya → o'chiriladi), so'ng muallif bloklanadi (adminlar bundan mustasno). Versiya `2026-11-14.hide-items` —
+  hamma e'lonlar boshidan bir marta qayta o'tadi. Allaqachon bloklangan muallif uchun hodisa qayta yozilmaydi.
+- Ishga tushirish (`moderation/sweep-trigger.ts`): statistika hodisasi (`/api/e`) va holat tekshiruvi (`/api/health`) javobdan
+  keyin bir qadam yurgizadi — har server nusxasida bittadan, tugagach soatiga bir marta. Bazaga o'zgarish (migratsiya) kerak emas.
+- Testlar: rules (+5 kasb nomi), sweep-trigger (3), E2E `moderation-ban.spec.ts` (admin muallif, qo'shimcha kasb, namuna).
+
 ## 2026-11-13 · Qat'iy taqiq: erotika, ekstremizm, noqonuniy, massaj/spa — e'lon yo'q, muallif bloklanadi (`claude/moderation-hard`)
 
 - Ega: "erotika, diniy ekstremizm, qonunga xilof barcha e'lonlar va so'zlar umuman ishlatilmasin; joylamoqchi bo'lsa o'sha

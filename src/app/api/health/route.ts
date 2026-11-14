@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { isCronAuthorized } from "@/features/notifications/cron-auth";
 import { checkSchema } from "@/features/health/schema-probes";
+import { sweepSoon } from "@/features/moderation/sweep-trigger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -54,5 +55,7 @@ export async function GET(req: NextRequest) {
   }
 
   body.ms = Date.now() - started;
+  // uptime monitor ham eski e'lonlarni qayta tekshirishni yurgizadi (javobdan keyin; moderation/sweep-trigger.ts)
+  if (dbOk) sweepSoon();
   return NextResponse.json(body, { status, headers });
 }
