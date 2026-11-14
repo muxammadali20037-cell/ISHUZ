@@ -19,6 +19,12 @@ async function cleanup() {
 }
 
 test.beforeEach(async () => {
+  // ish beruvchi profili — spec yolg'iz ishga tushganda ham (boshqa speclar yaratishiga bog'liq emas)
+  await sql(
+    `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
+     values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
+    [USERS.employer],
+  );
   // prod holati: e'lon joylash bepul, tariflar yoqilgan
   await sql("update public.app_settings set value = 'false'::jsonb where key = 'listings_paid'");
   await cleanup();
@@ -108,5 +114,20 @@ test("ishchi e'loni: 'E'lonimni TOP qilish' → Maksimal — 7 kun TOP va 30 kun
     expect(w).toEqual({ top: true, ai: true });
   } finally {
     await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerA]);
+  }
+});
+
+test("narxlar yuklanmasa (baza hali yangilanmagan) — sahifa bo'sh qolmaydi: bepul qismi va e'lon tugmalari bor", async ({ page, context }) => {
+  // prod: kod 0080 dan oldin chiqishi mumkin — ega pending.sql ni qo'ygunicha "Tariflar" havolasi o'lik sahifaga olib bormasin
+  await sql("alter function public.public_tariffs() rename to public_tariffs_e2e_off");
+  try {
+    await asGuest(context);
+    await page.goto("/pricing");
+    await expect(page.getByText("Tariflar hozircha yuklanmadi")).toBeVisible();
+    await expect(page.locator("[data-tariff]")).toHaveCount(0);
+    await expect(page.getByText("har doim bepul")).toBeVisible();
+    await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash" })).toBeVisible();
+  } finally {
+    await sql("alter function public.public_tariffs_e2e_off() rename to public_tariffs");
   }
 });

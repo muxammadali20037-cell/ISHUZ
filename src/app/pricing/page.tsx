@@ -128,29 +128,27 @@ export default async function PricingPage() {
               </h2>
               {column("worker", data.worker)}
             </section>
-            <ul className="mt-10 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
-              <li className="flex items-start gap-2">
-                <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden /> {t("billing.tariffs.always_free")}
-              </li>
-              <li className="flex items-start gap-2">
-                <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden /> {t("billing.tariffs.how_to_buy")}
-              </li>
-              {!online ? (
-                <li className="flex items-start gap-2 sm:col-span-2">
-                  <BadgeCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" aria-hidden /> {t("billing.tariffs.online_soon")}
-                </li>
-              ) : null}
-            </ul>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg">
-                <Link href="/post/vacancy">{t("billing.tariffs.cta_employer")}</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/post/worker">{t("billing.tariffs.cta_worker")}</Link>
-              </Button>
-            </div>
           </>
         )}
+        {/* narxlar yuklanmasa ham (masalan, bazaga 0080 hali qo'yilmagan) — bepul qismi va e'lon tugmalari ko'rinadi */}
+        <ul className="mt-10 grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
+          <li className="flex items-start gap-2">
+            <BadgeCheck className="mt-0.5 size-4 shrink-0 text-success" aria-hidden /> {t("billing.tariffs.always_free")}
+          </li>
+          {/* "TOP qilish" tugmasi faqat onlayn to'lov ulanganda bor — ulanmagan bo'lsa, u haqida yozilmaydi */}
+          <li className="flex items-start gap-2">
+            <BadgeCheck className={cn("mt-0.5 size-4 shrink-0", online ? "text-success" : "text-muted-foreground")} aria-hidden />{" "}
+            {t(online ? "billing.tariffs.how_to_buy" : "billing.tariffs.online_soon")}
+          </li>
+        </ul>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Button asChild size="lg">
+            <Link href="/post/vacancy">{t("billing.tariffs.cta_employer")}</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline">
+            <Link href="/post/worker">{t("billing.tariffs.cta_worker")}</Link>
+          </Button>
+        </div>
       </div>
     </Shell>
   );
