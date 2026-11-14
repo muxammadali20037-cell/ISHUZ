@@ -5,6 +5,7 @@ import { processModerationQueue } from "@/features/moderation/service";
 import { sweepPublishedContent } from "@/features/moderation/sweep";
 import { cleanupRawVacancyPhotos } from "@/features/post/photo-finalize";
 import { cleanupRawMedia } from "@/features/media/finalize";
+import { runChannelAutopost } from "@/features/telegram-channel/autopost";
 import { dispatchTelegramNotifications, type DispatchCounts } from "./telegram-dispatch";
 
 export interface TickResult {
@@ -14,6 +15,8 @@ export interface TickResult {
   matchJobs: number;
   telegram: DispatchCounts | null;
   photosRemoved: number;
+  /** Telegram kanalga avtomatik yuborilgan vakansiya/ishchi e'lonlari (telegram-channel/autopost.ts) */
+  channelPosted: number;
 }
 
 const PHOTO_CLEANUP_EVERY_MS = 60 * 60_000;
@@ -28,7 +31,7 @@ export async function runBackgroundTick(opts: { moderation?: number; matchJobs?:
   const started = Date.now();
   const budget = opts.budgetMs ?? 50_000;
   const admin = createAdminClient();
-  const result: TickResult = { moderated: 0, swept: 0, matchJobs: 0, telegram: null, photosRemoved: 0 };
+  const result: TickResult = { moderated: 0, swept: 0, matchJobs: 0, telegram: null, photosRemoved: 0, channelPosted: 0 };
   try {
     result.moderated = await processModerationQueue(opts.moderation ?? 8, Math.min(25_000, budget / 2));
   } catch (e) {
@@ -51,6 +54,10 @@ export async function runBackgroundTick(opts: { moderation?: number; matchJobs?:
     result.telegram = await dispatchTelegramNotifications(admin, { limit: opts.telegram ?? 200, budgetMs: left });
   } catch (e) {
     console.error("[tick] telegram", e instanceof Error ? e.message : e);
+  }
+  if (Date.now() - started < budget) {
+    // yangi tasdiqlangan e'lonlar kanalga ("ISH" / "ISHCHI"); o'zi xato otmaydi
+    result.channelPosted = (await runChannelAutopost()).posted;
   }
   if (Date.now() - lastPhotoCleanup > PHOTO_CLEANUP_EVERY_MS && Date.now() - started < budget) {
     lastPhotoCleanup = Date.now();

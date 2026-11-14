@@ -1,0 +1,167 @@
+import { beforeEach, describe, expect, it, vi } from "vitest";
+
+/**
+ * Kanalga avtomatik e'lon (autopost.ts): har e'lon har kanalga bir marta, bir qadamda ko'pi bilan 4 ta, bloklangan muallif
+ * va kasbsiz e'lon yuborilmaydi, xato — cheklangan qayta urinish, kanal darajasidagi xato — qadam to'xtaydi.
+ * Supabase o'rniga — xotiradagi kichik soxta so'rov quruvchi (faqat kod ishlatadigan usullar).
+ */
+vi.mock("server-only", () => ({}));
+vi.hoisted(() => {
+  process.env.SUPABASE_SERVICE_ROLE_KEY = "test";
+});
+
+type Row = Record<string, unknown>;
+const tables: Record<string, Row[]> = {};
+let nextId = 1;
+
+function builder(table: string) {
+  const filters: ((r: Row) => boolean)[] = [];
+  let op: "select" | "insert" | "update" = "select";
+  let payload: Row | null = null;
+  let max = Infinity;
+  let single = false;
+  const api = {
+    select: () => api,
+    insert: (row: Row) => ((op = "insert"), (payload = row), api),
+    update: (patch: Row) => ((op = "update"), (payload = patch), api),
+    eq: (c: string, v: unknown) => (filters.push((r) => r[c] === v), api),
+    in: (c: string, vs: unknown[]) => (filters.push((r) => vs.includes(r[c])), api),
+    lt: (c: string, v: number) => (filters.push((r) => (r[c] as number) < v), api),
+    gte: (c: string, v: string) => (filters.push((r) => String(r[c]) >= v), api),
+    not: (c: string) => (filters.push((r) => r[c] !== null && r[c] !== undefined), api),
+    order: () => api,
+    limit: (n: number) => ((max = n), api),
+    maybeSingle: () => ((single = true), api),
+    then(resolve: (v: { data: unknown; error: unknown }) => void) {
+      const rows = (tables[table] ??= []);
+      if (op === "insert") {
+        const row = { id: nextId++, ...payload } as Row;
+        if (table === "channel_posts" && rows.some((r) => r.entity_type === row.entity_type && r.entity_id === row.entity_id && r.chat_id === row.chat_id)) {
+          return resolve({ data: null, error: { code: "23505", message: "duplicate" } });
+        }
+        rows.push({ created_at: new Date().toISOString(), ...row });
+        return resolve({ data: single ? row : [row], error: null });
+      }
+      const hit = rows.filter((r) => filters.every((f) => f(r))).slice(0, max);
+      if (op === "update") for (const r of hit) Object.assign(r, payload);
+      resolve({ data: single ? (hit[0] ?? null) : hit, error: null });
+    },
+  };
+  return api;
+}
+
+vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => ({ from: builder }) }));
+vi.mock("@/lib/env", () => ({ getServerEnv: () => ({ TELEGRAM_BOT_TOKEN: "x" }) }));
+vi.mock("@/lib/telegram/bot", () => ({ miniAppBaseUrl: () => "https://ishuz.vercel.app" }));
+const send = vi.fn();
+vi.mock("./channel", () => ({ channelChatId: () => "@main", sendChannelMessage: (x: unknown) => send(x) }));
+
+const { runChannelAutopost } = await import("./autopost");
+
+const now = () => new Date().toISOString();
+const old = new Date(Date.now() - 3 * 86_400_000).toISOString();
+
+function vacancy(id: string, over: Row = {}): Row {
+  return {
+    id,
+    slug: `v-${id}`,
+    title: `Sotuvchi ${id}`,
+    status: "active",
+    published_at: now(),
+    salary_from: 4_000_000,
+    salary_to: null,
+    salary_type: "monthly",
+    salary_negotiable: false,
+    schedule: "5_2",
+    is_remote: false,
+    custom_profession: null,
+    company: { name: "Baraka" },
+    region: { name_uz: "Toshkent shahri" },
+    district: null,
+    profession: { name_uz: "Sotuvchi" },
+    owner: { is_blocked: false },
+    ...over,
+  };
+}
+
+function worker(id: string, over: Row = {}): Row {
+  return {
+    id,
+    headline: null,
+    custom_profession: null,
+    experience_level: "1_2y",
+    is_public: true,
+    onboarding_completed_at: old,
+    updated_at: now(),
+    profession: { name_uz: "Oshpaz" },
+    region: { name_uz: "Samarqand viloyati" },
+    district: null,
+    prefs: { salary_expected: 5_000_000, salary_min: null, salary_type: "monthly", schedules: ["5_2"] },
+    owner: { is_blocked: false },
+    ...over,
+  };
+}
+
+beforeEach(() => {
+  for (const k of Object.keys(tables)) delete tables[k];
+  nextId = 1;
+  send.mockReset();
+  let m = 100;
+  send.mockImplementation(async () => ({ ok: true, messageId: m++ }));
+});
+
+describe("kanalga avtomatik e'lon", () => {
+  it("yangi vakansiya (ISH) va ishchi (ISHCHI) — har biri bir marta; ikkinchi qadamda takror yo'q", async () => {
+    tables.vacancies = [vacancy("a")];
+    tables.worker_profiles = [worker("w")];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 2, failed: 0 });
+    expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual([expect.stringContaining("ISH"), expect.stringContaining("ISHCHI")]);
+    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main", button: { url: "https://ishuz.vercel.app/jobs/v-a" } });
+    expect(tables.channel_posts!.map((r) => r.status)).toEqual(["posted", "posted"]);
+    expect(await runChannelAutopost()).toMatchObject({ posted: 0 });
+    expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it("eski (24 soatdan oldingi), yopilgan, bloklangan muallifniki va kasbsiz ishchi — yuborilmaydi", async () => {
+    tables.vacancies = [vacancy("old", { published_at: old }), vacancy("closed", { status: "expired" }), vacancy("bad", { owner: { is_blocked: true } })];
+    tables.worker_profiles = [worker("hidden", { is_public: false }), worker("noprof", { profession: null }), worker("blocked", { owner: { is_blocked: true } })];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 0, failed: 0 });
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("bir qadamda ko'pi bilan 4 ta, qolgani keyingisida", async () => {
+    tables.vacancies = ["1", "2", "3", "4", "5", "6"].map((id) => vacancy(id));
+    expect((await runChannelAutopost()).posted).toBe(4);
+    expect((await runChannelAutopost()).posted).toBe(2);
+    expect((await runChannelAutopost()).posted).toBe(0);
+  });
+
+  it("kanal darajasidagi xato (bot admin emas) — qadam to'xtaydi; keyin tuzalsa — qayta yuboriladi", async () => {
+    tables.vacancies = [vacancy("a"), vacancy("b")];
+    send.mockResolvedValueOnce({ ok: false, description: "Bad Request: not enough rights", channelLevel: true });
+    const r = await runChannelAutopost();
+    expect(r).toMatchObject({ posted: 0, failed: 1, stopped: expect.stringContaining("rights") });
+    expect(send).toHaveBeenCalledTimes(1);
+    // keyingi qadam: xatoli yozuv qayta urinadi, ikkinchisi ham ketadi
+    const r2 = await runChannelAutopost();
+    expect(r2.posted).toBe(2);
+    expect(tables.channel_posts!.every((p) => p.status === "posted")).toBe(true);
+    expect(tables.channel_posts!.find((p) => p.entity_id === "a")!.attempts).toBe(2);
+  });
+
+  it("vaqtinchalik xato — ko'pi bilan 3 marta urinadi", async () => {
+    tables.vacancies = [vacancy("a")];
+    send.mockResolvedValue({ ok: false, description: "timeout", channelLevel: false });
+    for (let i = 0; i < 5; i++) await runChannelAutopost();
+    expect(send).toHaveBeenCalledTimes(3);
+    expect(tables.channel_posts![0]).toMatchObject({ status: "failed", attempts: 3 });
+  });
+
+  it("sozlama: vakansiyalar o'chirilgan, ishchilar — alohida kanalga", async () => {
+    tables.app_settings = [{ key: "channel_autopost", value: { jobs: false, workers: true, workersChat: "https://t.me/ishchilar_kanal" } }];
+    tables.vacancies = [vacancy("a")];
+    tables.worker_profiles = [worker("w")];
+    expect((await runChannelAutopost()).posted).toBe(1);
+    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@ishchilar_kanal", button: { url: "https://ishuz.vercel.app/workers/w" } });
+  });
+});

@@ -117,3 +117,26 @@ export async function postToChannel(input: { text: string; mediaId: ChannelMedia
   const link = chatId.startsWith("@") ? `https://t.me/${chatId.slice(1)}/${messageId}` : null;
   return { ok: true, messageId, pinned, link };
 }
+
+/** Kanal darajasidagi xatolar (bot admin emas, kanal topilmadi, yozish taqiqlangan) — qayta urinish foydasiz */
+export function isChannelLevelError(description: string): boolean {
+  return /chat not found|not enough rights|need administrator rights|CHAT_WRITE_FORBIDDEN|bot was kicked|bot is not a member|have no rights|CHAT_ADMIN_REQUIRED/i.test(description);
+}
+
+/** Avtomatik e'lon: HTML matn va bitta havola tugmasi (sayt sahifasi) — kanal o'zi tanlanadi (vakansiya/ishchi) */
+export async function sendChannelMessage(input: {
+  chatId: string;
+  html: string;
+  button: { text: string; url: string };
+}): Promise<{ ok: true; messageId: number } | { ok: false; description: string; channelLevel: boolean }> {
+  const r = await tg<{ message_id: number }>("sendMessage", {
+    chat_id: input.chatId,
+    text: input.html,
+    parse_mode: "HTML",
+    link_preview_options: { is_disabled: true },
+    reply_markup: { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] },
+  });
+  if (r.ok) return { ok: true, messageId: r.result.message_id };
+  return { ok: false, description: r.description, channelLevel: r.description === "telegram_not_configured" || isChannelLevelError(r.description) };
+}
+

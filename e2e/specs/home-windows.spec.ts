@@ -34,9 +34,9 @@ test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qid
   const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
   await expect(links).toHaveCount(4);
   await expect(links.nth(0)).toHaveText("Kunlik ish");
-  await expect(links.nth(1)).toHaveText("Yaqin atrofda");
-  await expect(links.nth(2)).toHaveText("Masofaviy");
-  await expect(links.nth(3)).toHaveText("Tajribasiz");
+  await expect(links.nth(1)).toHaveText("Yaqin atrofda ish");
+  await expect(links.nth(2)).toHaveText("Masofaviy ish");
+  await expect(links.nth(3)).toHaveText("Tajribasiz ish");
   // qidiruv maydoni tepada, tez yo'llar uning ostida va e'lonlar ro'yxatidan oldin; har biri barmoq bilan bosishga qulay (≥ 44px)
   const field = (await page.locator("form[data-ai-field]").boundingBox())!;
   const feed = (await page.locator("#home-feed").boundingBox())!;
@@ -55,7 +55,7 @@ test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qid
   await page.waitForURL(/\/search\?mode=jobs&region=all&pay=daily$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Kunlik ishlar");
   await page.goBack();
-  await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Masofaviy", exact: true }).click();
+  await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Masofaviy ish", exact: true }).click();
   await page.waitForURL(/\/search\?mode=jobs&region=remote/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
@@ -66,7 +66,7 @@ test("bosh sahifa (ish beruvchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l, 'B
   await page.goto("/");
   await expect(page.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
   const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
-  await expect(links).toHaveText(["Kunlik ishchilar", "Yaqin atrofda", "Tajribali", "Masofaviy"]);
+  await expect(links).toHaveText(["Kunlik ishchi", "Yaqin atrofdagi ishchi", "Tajribali ishchi", "Masofaviy ishchi"]);
   await expect(page.getByRole("main").getByRole("link", { name: "Barcha nomzodlar" })).toHaveAttribute("href", "/search?mode=workers&region=all&any=1");
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toHaveAttribute("href", "/post/vacancy");
   await links.nth(0).click();

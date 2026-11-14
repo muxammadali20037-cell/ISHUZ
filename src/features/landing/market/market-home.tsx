@@ -8,6 +8,7 @@ import { LatestJobs } from "./jobs-sections";
 import { ListSkeleton } from "./sections";
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { getMarketCounts } from "./queries";
+import { StoriesRow } from "@/features/stories/components/stories-row";
 
 /**
  * Bosh sahifa — mehmon yoki rejim tanlamagan foydalanuvchi. 3.0 (2026-11-13, ega: "bosh sahifada faqat eng muhim narsalar"):
@@ -22,6 +23,10 @@ export async function MarketHome() {
   const [stats, counts, media, home] = await Promise.all([getEntryStats(), getMarketCounts(), getEntryMedia(), getHomeSettings()]);
   return (
     <>
+      {/* "Ish Topdim" hikoyalari — eng tepada (bo'lmasa — joy ham qolmaydi) */}
+      <Suspense fallback={null}>
+        <StoriesRow mode={null} band />
+      </Suspense>
       <MarketHero stats={stats} counts={counts} media={media} ai={home.aiButton} />
       <PhotoCatalog media={media} counts={counts} />
       <Suspense fallback={<ListSkeleton />}>

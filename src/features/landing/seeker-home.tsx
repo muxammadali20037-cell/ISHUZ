@@ -32,6 +32,7 @@ import {
 } from "./quick-filters";
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
+import { StoriesRow } from "@/features/stories/components/stories-row";
 
 /** bosh sahifa ro'yxatida haqiqiy e'lon shundan kam bo'lsa — ostida namuna e'lonlar bloki */
 const DEMO_BELOW = 4;
@@ -41,7 +42,8 @@ const DEMO_BELOW = 4;
  * katta qidiruv, tezkor kategoriyalar, yangi ish e'lonlari, alohida Universal ustalar"). Mehmon ham ko'radi.
  *  1) joylashuv (telefonda — yuqori panelda, kompyuterda — shu yerda) va salomlashuv;
  *  2) bitta savol va BITTA qidiruv maydoni: o'z so'zi bilan yozadi — AI tushunadi va bazadan topadi (src/features/find/ai-find.ts);
- *  3) 4 ta tez yo'l: kunlik ish, yaqin atrofda, masofaviy, tajribasiz; "Filtrlar bilan qidirish" va xarita — kichik havola;
+ *  3) 4 ta tez yo'l — har birida "ish" so'zi (ega, 2026-11-14: "ish izlovchida — ish, ish beruvchida — ishchi"): kunlik ish,
+ *     yaqin atrofda ish, masofaviy ish, tajribasiz ish; "Filtrlar bilan qidirish" va xarita — kichik havola;
  *  4) yangi ishlar ro'yxati (to'liq kenglikda);
  *  5) "Universal ustalar" — o'z yashil rangida, alohida bo'lim.
  * Ko'chirildi (o'chirilmadi): "Mening dunyom" va bugungi reja — Profilga (Kabinetim); arizalar holati — "Arizalar" bo'limi va
@@ -73,25 +75,25 @@ export async function SeekerHome({
     {
       key: "daily",
       href: quick.daily,
-      label: t("easy.services.daily"),
+      label: t("easy.chips.seek_daily"),
       icon: CalendarDays,
     },
     {
       key: "near",
       href: findHref(EMPTY_FIND, { mode: "jobs", near: true }),
-      label: t("easy.services.near"),
+      label: t("easy.chips.seek_near"),
       icon: MapPin,
     },
     {
       key: "remote",
       href: quick.remote,
-      label: t("easy.services.remote"),
+      label: t("easy.chips.seek_remote"),
       icon: Laptop,
     },
     {
       key: "noexp",
       href: quick.noexp,
-      label: t("easy.services.noexp"),
+      label: t("easy.chips.seek_noexp"),
       icon: Sprout,
     },
   ];
@@ -106,6 +108,10 @@ export async function SeekerHome({
         )}
       >
         <div className="min-w-0">
+          {/* "Ish Topdim" hikoyalari — eng tepada, kichik doirachalar (bo'lmasa — joy ham qolmaydi) */}
+          <Suspense fallback={null}>
+            <StoriesRow mode="seeker" className="mb-4" />
+          </Suspense>
           {/* joylashuv: telefonda yuqori panelda (TopBar), planshet va kompyuterda — shu yerda, salomlashuv ustida */}
           <Link
             href={placeChooserHref("jobs")}
@@ -169,7 +175,7 @@ export async function SeekerHome({
                     prefetch={false}
                     data-track="home_service"
                     data-track-to={key}
-                    className="press inline-flex min-h-11 w-full items-center gap-2 rounded-md border border-border bg-background px-3.5 text-sm font-semibold hover:border-primary/50 hover:text-primary-ink"
+                    className="press inline-flex min-h-11 w-full items-center gap-2 rounded-md border border-border bg-background px-3.5 py-1.5 text-sm font-semibold leading-tight hover:border-primary/50 hover:text-primary-ink"
                   >
                     <Icon
                       className="size-4 shrink-0 text-primary-ink"

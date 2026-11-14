@@ -861,6 +861,10 @@ export function WorkerPost({
               </ReviewRow>
             ) : null}
           </div>
+          {/* shaffoflik: e'lon kanalga ham tushadi (telegram-channel/autopost.ts) — faqat kasb, joy, tajriba, maosh */}
+          <p data-channel-note className="rounded-xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
+            {t("easy.worker.channel_note")}
+          </p>
           <BigCheckbox
             id="show-phone"
             checked={draft.showPhone}

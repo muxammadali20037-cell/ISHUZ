@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { isCronAuthorized } from "@/features/notifications/cron-auth";
 import { checkSchema } from "@/features/health/schema-probes";
 import { sweepSoon } from "@/features/moderation/sweep-trigger";
+import { autopostSoon } from "@/features/telegram-channel/autopost-trigger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -56,6 +57,10 @@ export async function GET(req: NextRequest) {
 
   body.ms = Date.now() - started;
   // uptime monitor ham eski e'lonlarni qayta tekshirishni yurgizadi (javobdan keyin; moderation/sweep-trigger.ts)
-  if (dbOk) sweepSoon();
+  if (dbOk) {
+    sweepSoon();
+    // yangi tasdiqlangan e'lonlar Telegram kanalga (telegram-channel/autopost-trigger.ts)
+    autopostSoon();
+  }
   return NextResponse.json(body, { status, headers });
 }

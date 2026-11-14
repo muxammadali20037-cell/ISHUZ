@@ -4,7 +4,7 @@ import { asGuest, asMode, sql } from "../support";
 /**
  * S2 / 2026-10 · bo'limlar: bosilsa — o'sha bo'lim natijalari, faol filtr chip sifatida ko'rinadi va olib tashlanadi.
  * Ish qidiruvchi (2.0, 2026-11): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtr oynasida.
- * Ish beruvchi (2.0) — bosh sahifada "Kunlik ishchilar" tez yo'li. /ai — aqlli qidiruv va "Sizga mos".
+ * Ish beruvchi (2.0) — bosh sahifada "Kunlik ishchi" tez yo'li. /ai — aqlli qidiruv va "Sizga mos".
  */
 
 const EMP = "7e2e0000-0000-4000-8000-000000000066";
@@ -137,7 +137,7 @@ test.describe("bo'limlar", () => {
     );
   });
 
-  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchilar' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
+  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchi' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
     page,
     context,
   }) => {
@@ -147,7 +147,7 @@ test.describe("bo'limlar", () => {
     await expect(sections(page)).toHaveCount(0);
     await page
       .getByRole("navigation", { name: "Tez qidiruv" })
-      .getByRole("link", { name: "Kunlik ishchilar", exact: true })
+      .getByRole("link", { name: "Kunlik ishchi", exact: true })
       .click();
     await page.waitForURL(/mode=workers.*pay=daily/);
     await expect(

@@ -81,5 +81,15 @@
   "lang": {
     "title": "Tilni tanlang / Выберите язык",
     "changed": "✅ Язык: русский"
+  },
+  "channel": {
+    "job_tag": "🟦 РАБОТА",
+    "worker_tag": "🟩 РАБОТНИК",
+    "open_job": "Подробнее и отклик →",
+    "open_worker": "Смотреть работника →",
+    "remote": "Удалённо",
+    "negotiable": "Договорная",
+    "experience": "Опыт: {value}",
+    "salary_expect": "Ожидаемая зарплата: {value}"
   }
 }

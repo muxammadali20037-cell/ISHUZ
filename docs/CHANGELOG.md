@@ -1,5 +1,24 @@
 # O'zgarishlar jurnali
 
+## 2026-11-14 · Hikoyalar, kanalga avtomatik e'lon, telefonda lupa, "ish/ishchi" tugmalari (`claude/launch-ready`, 0079)
+
+- Ega: "telefonda qidiruv joyida lupa ko'rinmayapti"; "ish izlovchida — ish, ish beruvchida — ishchi"; "rasmlar, videolar —
+  xuddi Instagramdagidek, Ish topdimning o'zi joylaydi"; "har bir joylangan rezyume kanalga tashlansin".
+- Qidiruv maydoni (AI): lupa endi har doim ko'rinadi (≤380px'da yashirilardi); tor telefonda joyni tugmadagi yulduzcha bo'shatadi.
+- Bosh sahifa tezkor tugmalari: ish izlovchida "Kunlik ish · Yaqin atrofda ish · Masofaviy ish · Tajribasiz ish",
+  ish beruvchida "Kunlik ishchi · Yaqin atrofdagi ishchi · Tajribali ishchi · Masofaviy ishchi" (`easy.chips.*`).
+- Hikoyalar (`features/stories`, admin → "Hikoyalar"): bosh sahifa tepasida doirachalar (mehmon, ish izlovchi, ish beruvchi;
+  kimga ko'rinishi tanlanadi), bosilsa to'liq ekranda — jarayon chizig'i, bosish/bosib turish/surish, klaviatura, ovoz,
+  ixtiyoriy reklama tugmasi (faqat sayt ichidagi yo'l yoki https). Rasm serverda WebP'ga qayta kodlanadi; video (MP4/WebM/MOV,
+  50 MB) admin brauzeridan bir martalik imzolangan havola bilan to'g'ridan-to'g'ri yuklanadi, server boshidagi baytlardan
+  tekshiradi (niqoblangan fayl — rad etiladi va o'chiriladi). Ko'rilganlar shu qurilmada eslanadi. Statistika: `story_view`, `story_cta`.
+- Telegram kanalga avtomatik e'lon (`telegram-channel/autopost.ts`, admin → "Telegram kanal" → "Avtomatik e'lonlar"):
+  yangi vakansiya — "🟦 ISH", ishchi e'loni — "🟩 ISHCHI"; telefon, ism, rasm, tavsif yo'q (sarlavhadagi raqam/@nik/havola
+  ham olib tashlanadi); har biri bir marta (`channel_posts`), qadamda ≤4 ta, bloklangan muallifniki yo'q, 3 marta qayta
+  urinish, kanal xatosida to'xtaydi. Alohida kanallar ixtiyoriy. Ishchi e'loni formasida — bu haqda ochiq yozuv.
+- 0079: `stories`, `channel_posts`, `story-videos` bucket. E2E shlyuzi imzolangan yuklashni qo'llaydi.
+- Testlar: stories model (7), kanal matni (5), kanal runner (6), E2E `stories.spec.ts` (2); mavjud testlar yangi yozuvlarga.
+
 ## 2026-11-14 · Massaj e'lonlari to'liq olib tashlanadi — admin muallif, qo'shimcha kasb va namunalar ham (`claude/remove-massage`)
 
 - Ega: "massajchi ham kerak emas, ular e'londa bor — hammasini yo'q qil".

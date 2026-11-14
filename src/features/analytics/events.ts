@@ -41,6 +41,9 @@ export const CLIENT_EVENTS = [
   "masters_entry",
   "ai_entry",
   "social_open",
+  // "Ish Topdim" hikoyalari (bosh sahifa tepasi): ochildi va reklama tugmasi bosildi
+  "story_view",
+  "story_cta",
 ] as const;
 
 export const SERVER_EVENTS = [

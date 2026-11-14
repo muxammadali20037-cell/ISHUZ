@@ -208,7 +208,8 @@
     "pay_title": "E'loningiz tayyor! Joylash uchun to'lov qoldi",
     "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ish beruvchilarga ko'rinadi.",
     "saved_title": "Ma'lumotlaringiz saqlandi",
-    "edit_title": "E'lonni o'zgartirish"
+    "edit_title": "E'lonni o'zgartirish",
+    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: faqat kasb, hudud, tajriba va maosh. Ismingiz, telefon raqamingiz va rasmingiz kanalda ko'rsatilmaydi — ish beruvchi siz bilan sayt orqali bog'lanadi."
   },
   "vacancy": {
     "page_title": "Ishchi qidiryapman",
@@ -1250,5 +1251,29 @@
       "validation": "Javob juda uzun yoki bo'sh. Qisqaroq yozing.",
       "blocked": "Hisobingiz bloklangan"
     }
+  },
+  "chips": {
+    "seek_daily": "Kunlik ish",
+    "seek_near": "Yaqin atrofda ish",
+    "seek_remote": "Masofaviy ish",
+    "seek_noexp": "Tajribasiz ish",
+    "emp_daily": "Kunlik ishchi",
+    "emp_near": "Yaqin atrofdagi ishchi",
+    "emp_exp": "Tajribali ishchi",
+    "emp_remote": "Masofaviy ishchi"
+  },
+  "stories": {
+    "label": "Ish topdim yangiliklari",
+    "open": "{title} — ko'rish",
+    "brand": "Ish topdim",
+    "close": "Yopish",
+    "pause": "To'xtatish",
+    "play": "Davom ettirish",
+    "mute": "Ovozni o'chirish",
+    "unmute": "Ovozni yoqish",
+    "next": "Keyingisi",
+    "prev": "Oldingisi",
+    "counter": "{n} / {total}",
+    "failed": "Yuklab bo'lmadi. Keyingisiga o'tish uchun bosing."
   }
 }

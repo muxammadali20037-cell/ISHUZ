@@ -81,5 +81,15 @@
   "lang": {
     "title": "Tilni tanlang / Выберите язык",
     "changed": "✅ Til: O'zbekcha"
+  },
+  "channel": {
+    "job_tag": "🟦 ISH",
+    "worker_tag": "🟩 ISHCHI",
+    "open_job": "Batafsil va ariza →",
+    "open_worker": "Ishchini ko'rish →",
+    "remote": "Masofaviy (uydan)",
+    "negotiable": "Kelishiladi",
+    "experience": "Tajriba: {value}",
+    "salary_expect": "Kutilayotgan maosh: {value}"
   }
 }

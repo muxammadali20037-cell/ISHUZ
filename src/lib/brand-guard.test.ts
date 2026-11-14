@@ -21,6 +21,10 @@ const ALLOW: Record<string, { rules: Rule[]; why: string }> = {
   "components/ui/checkbox.tsx": { rules: ["white"], why: "Switch tutqichi har ikki mavzuda oq (rangli/kulrang yo'lak ustida)" },
   "features/admin/components/mfa-form.tsx": { rules: ["white"], why: "QR kod faqat oq fonda o'qiladi" },
   "features/workers/components/portfolio-gallery.tsx": { rules: ["white"], why: "to'liq ekranli qora foto ko'rgich (mavzudan mustaqil)" },
+  "features/stories/components/story-viewer.tsx": {
+    rules: ["white", "gradient"],
+    why: "to'liq ekranli qora hikoya ko'rgich (Instagram'dagidek): foto/video ustidagi matn uchun qora parda — mavzudan mustaqil",
+  },
 };
 
 type Rule = "palette" | "hex" | "gradient" | "blur" | "radius" | "px-text" | "shadow" | "white" | "blue-text";
