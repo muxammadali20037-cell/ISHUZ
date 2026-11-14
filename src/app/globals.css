@@ -386,6 +386,11 @@ body:has([data-global-back]) [data-header-back] { display: none; }
 @container (max-width: 24rem) {
   body:not(:has([data-page-back])) header:has([data-global-back]) [data-bar-logo] { display: none; }
 }
+/* "‹ Orqaga" bor (telefon, sm dan kichik) — logotip yonida nom yozuvi ko'rsatilmaydi, faqat belgi: nom bilan
+   joy yetmay, logotip markazdan ikki tomonga toshib "Orqaga" ustiga chiqib qolardi (390–430 px, 2026-11-14 auditi) */
+@media (width < 40rem) {
+  body:not(:has([data-page-back])) header:has([data-global-back]) [data-bar-logo] > span { display: none; }
+}
 
 /*
  * Yangi bo'lim belgisi (NewDot): yozuvsiz kichik nuqta — rangi atrofdagi matn rangi, atrofida yumshoq to'lqin.
