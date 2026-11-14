@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asMode, loginAs } from "../support";
+import { USERS, asGuest, asMode, loginAs, stack } from "../support";
 
 /**
  * Har bir sahifa tepasida kichik "‹ Orqaga" (ega, 2026-11-13: "orqaga qaytish topolmayapti — har bir oynaning tepasida
@@ -51,4 +51,23 @@ test("o'z 'Orqaga'si bor sahifa (qidiruv qadami) — umumiy 'Orqaga' ko'rinmaydi
   await expect(page.locator("[data-page-back]").first()).toBeVisible();
   await expect(page.locator("[data-global-back]:visible")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(1);
+});
+
+test("telefonda 'Orqaga' va logotip ustma-ust tushmaydi (360–430 px va planshet)", async ({ browser }) => {
+  // audit 2026-11-14: 390–430 px da logotip nomi bilan markazdan toshib "Orqaga" ustiga chiqib "Orqa…" bo'lib qolardi
+  for (const width of [360, 390, 412, 430, 768]) {
+    const ctx = await browser.newContext({ baseURL: stack.app, viewport: { width, height: 800 } });
+    await asGuest(ctx);
+    const page = await ctx.newPage();
+    await page.goto("/pricing");
+    const back = page.locator("header [data-global-back]");
+    await expect(back.getByRole("link", { name: "Orqaga" })).toBeVisible();
+    const box = await back.boundingBox();
+    const logo = await page.locator("header [data-bar-logo]").boundingBox(); // ko'rinmasa — null
+    if (box && logo && logo.width > 0) expect(logo.x, `${width}px`).toBeGreaterThanOrEqual(box.x + box.width);
+    // "Orqaga" yozuvi to'liq, kesilmagan
+    const label = back.locator("span").first();
+    expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth), `${width}px`).toBe(true);
+    await ctx.close();
+  }
 });

@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-14 · Audit: telefonda "‹ Orqaga" va logotip ustma-ust tushmaydi (`claude/audit-back-logo`)
+
+- Reklamadan oldingi tekshiruv (ega: "barcha muammolarni hal qil … odamlarga judayam qulay qil"): 390–430 px telefonlarda
+  ichki sahifalarda logotip nomi bilan markazdan toshib "Orqaga" ustiga chiqib, "Orqa…" bo'lib qolardi. Endi telefonda
+  (640 px dan tor) "Orqaga" bor bo'lsa — faqat logotip belgisi; planshet va kompyuterda nom ham ko'rinadi.
+- Tekshirildi: 360/375/390/412/430/768/1024 px — ustma-ust yo'q; asosiy sahifalarda (bosh, tariflar, ishlar, kabinet,
+  ish beruvchi) gorizontal toshish va konsol xatosi yo'q.
+- "Tariflar" sahifasi narxlarni yuklay olmasa (prod'da 0080 hali qo'yilmagan) — bo'sh qolmaydi: "har doim bepul" qatori va
+  "Vakansiya joylash" / "E'lon berish" tugmalari ko'rinadi. Onlayn to'lov ulanmagan bo'lsa — yo'q "TOP qilish" tugmasi
+  haqida yozilmaydi ("Onlayn to'lov tez orada ulanadi").
+- Test: E2E `global-back.spec.ts` (+1: 360–768 px oralig'ida "Orqaga" kesilmaydi va logotip ustiga tushmaydi),
+  `tariffs.spec.ts` (+1: narxlar yuklanmasa; spec endi yolg'iz ham o'tadi — ish beruvchi profilini o'zi yaratadi).
+
 ## 2026-11-14 · Tariflar: Oddiy · Tezkor · Maksimal (`claude/tariffs`, 0080)
 
 - Ega: "tariflarni mukammal tuzib chiq — tarif ko'tarilgan sari imkoniyatlar kengayib borsin; narxni baland qo'yma".
