@@ -1,4 +1,4 @@
--- ISH.UZ · e'lonlar 10 kun, bepul e'lon yo'q: ish qidiruvchi 10 000, vakansiya 50 000 so'm;
+-- ISH.UZ · e'lonlar 10 kun, bepul e'lon yo'q: ish qidiruvchi 5 000, vakansiya 30 000 so'm (0080 — narxlar pasaytirildi);
 -- aksiya muddatida birinchi to'lovga 50% chegirma; ko'rish bepul
 \set ON_ERROR_STOP on
 \set QUIET on
@@ -56,10 +56,10 @@ insert into public.employer_profiles (profile_id, employer_type) values (auth.ui
 insert into public.vacancies (owner_profile_id, title, category_id, region_id)
 select auth.uid(), t, c.id, r.id from unnest(array['PL-Pishiriqchi-e9', 'PL-Ofitsiant-e9']) t, public.categories c, public.regions r where c.slug = 'restaurant' and r.slug = 'tashkent_city';
 select pg_temp.ok((select public.vacancy_publish_quote(id) ->> 'mode' from public.vacancies where title = 'PL-Pishiriqchi-e9') = 'payment_required', 'birinchi vakansiya ham pullik');
-select pg_temp.ok((select (q ->> 'price')::int = 25000 and (q ->> 'full_price')::int = 50000 and (q ->> 'discount_percent')::int = 50
-  from (select public.vacancy_publish_quote(id) q from public.vacancies where title = 'PL-Pishiriqchi-e9') x), 'birinchi vakansiya: 50 000 → 25 000 so''m (50%)');
+select pg_temp.ok((select (q ->> 'price')::int = 15000 and (q ->> 'full_price')::int = 30000 and (q ->> 'discount_percent')::int = 50
+  from (select public.vacancy_publish_quote(id) q from public.vacancies where title = 'PL-Pishiriqchi-e9') x), 'birinchi vakansiya: 30 000 → 15 000 so''m (50%)');
 select pg_temp.fails($$select public.publish_vacancy(id) from public.vacancies where title = 'PL-Pishiriqchi-e9'$$, 'to''lovsiz joylab bo''lmaydi', 'payment_required');
-select pg_temp.ok((public.create_payment('vacancy_publish', (select id from public.vacancies where title = 'PL-Pishiriqchi-e9')) ->> 'amount')::int = 25000, 'chegirmali to''lov yaratiladi');
+select pg_temp.ok((public.create_payment('vacancy_publish', (select id from public.vacancies where title = 'PL-Pishiriqchi-e9')) ->> 'amount')::int = 15000, 'chegirmali to''lov yaratiladi');
 select pg_temp.fails($$select public.create_payment('worker_promotion', null)$$, 'TOP uchun to''lov hali yopiq', 'billing_disabled');
 select pg_temp.superuser();
 update public.payments set status = 'paid', paid_at = now() where id = (select id from public.payments where vacancy_id = (select id from public.vacancies where title = 'PL-Pishiriqchi-e9'));
@@ -69,9 +69,9 @@ select pg_temp.superuser();
 select pg_temp.ok((select status = 'active' and expires_at between now() + interval '9 days 23 hours' and now() + interval '10 days 1 hour' from public.vacancies where title = 'PL-Pishiriqchi-e9'), 'to''lovdan keyin 10 kunga faol');
 
 select pg_temp.login('e9000000-0000-0000-0000-000000000001');
-select pg_temp.ok((select (q ->> 'price')::int = 50000 and (q ->> 'discount_percent')::int = 0
-  from (select public.vacancy_publish_quote(id) q from public.vacancies where title = 'PL-Ofitsiant-e9') x), 'ikkinchi vakansiya: chegirmasiz 50 000 so''m');
-select pg_temp.ok((public.create_payment('vacancy_publish', (select id from public.vacancies where title = 'PL-Ofitsiant-e9')) ->> 'amount')::int = 50000, 'ikkinchi to''lov 50 000');
+select pg_temp.ok((select (q ->> 'price')::int = 30000 and (q ->> 'discount_percent')::int = 0
+  from (select public.vacancy_publish_quote(id) q from public.vacancies where title = 'PL-Ofitsiant-e9') x), 'ikkinchi vakansiya: chegirmasiz 30 000 so''m');
+select pg_temp.ok((public.create_payment('vacancy_publish', (select id from public.vacancies where title = 'PL-Ofitsiant-e9')) ->> 'amount')::int = 30000, 'ikkinchi to''lov 30 000');
 select pg_temp.superuser();
 update public.payments set status = 'paid', paid_at = now() where id = (select id from public.payments where vacancy_id = (select id from public.vacancies where title = 'PL-Ofitsiant-e9'));
 select pg_temp.service();
@@ -98,9 +98,9 @@ select pg_temp.ok((select onboarding_completed_at is not null and not is_public 
 select pg_temp.fails($$update public.worker_profiles set is_public = true where profile_id = auth.uid()$$, 'to''lovsiz qidiruvga chiqib bo''lmaydi', 'listing_payment_required');
 update public.worker_profiles set listed_until = now() + interval '1 year' where profile_id = auth.uid();
 select pg_temp.ok((select listed_until is null from public.worker_profiles where profile_id = auth.uid()), 'listed_until ni o''zi yozolmaydi (update)');
-select pg_temp.ok((select (q ->> 'mode') = 'payment_required' and (q ->> 'price')::int = 5000 and (q ->> 'full_price')::int = 10000
-  from (select public.worker_listing_quote() q) x), 'birinchi e''lon: 10 000 → 5 000 so''m (50%)');
-select pg_temp.ok((public.create_payment('worker_listing', public.current_worker_id()) ->> 'amount')::int = 5000, 'chegirmali to''lov yaratildi');
+select pg_temp.ok((select (q ->> 'mode') = 'payment_required' and (q ->> 'price')::int = 2500 and (q ->> 'full_price')::int = 5000
+  from (select public.worker_listing_quote() q) x), 'birinchi e''lon: 5 000 → 2 500 so''m (50%)');
+select pg_temp.ok((public.create_payment('worker_listing', public.current_worker_id()) ->> 'amount')::int = 2500, 'chegirmali to''lov yaratildi');
 select pg_temp.superuser();
 update public.payments set status = 'paid', paid_at = now() where id = (select id from public.payments where purpose = 'worker_listing' and profile_id = 'e9000000-0000-0000-0000-000000000002');
 select pg_temp.service();
@@ -109,7 +109,7 @@ select pg_temp.superuser();
 select pg_temp.ok((select is_public and listed_until between now() + interval '9 days 23 hours' and now() + interval '10 days 1 hour' from public.worker_profiles where profile_id = 'e9000000-0000-0000-0000-000000000002'), 'to''lovdan keyin 10 kun qidiruvda');
 select pg_temp.login('e9000000-0000-0000-0000-000000000002');
 select pg_temp.ok((select public.worker_listing_quote() ->> 'mode') = 'paid_window', 'holat: faol');
-select pg_temp.ok((select (q ->> 'price')::int = 10000 and (q ->> 'discount_percent')::int = 0 from (select public.worker_listing_quote() q) x), 'keyingisi chegirmasiz 10 000 so''m');
+select pg_temp.ok((select (q ->> 'price')::int = 5000 and (q ->> 'discount_percent')::int = 0 from (select public.worker_listing_quote() q) x), 'keyingisi chegirmasiz 5 000 so''m');
 
 -- muddat tugadi → qidiruvdan chiqadi, xabar boradi
 select pg_temp.superuser();
@@ -123,11 +123,11 @@ select pg_temp.ok((select count(*) from public.notifications where profile_id = 
 -- qayta yoqish: to'lov kerak, chegirmasiz
 select pg_temp.login('e9000000-0000-0000-0000-000000000002');
 select pg_temp.fails($$update public.worker_profiles set is_public = true where profile_id = auth.uid()$$, 'qayta qidiruvga chiqish pullik', 'listing_payment_required');
-select pg_temp.ok((public.create_payment('worker_listing', public.current_worker_id()) ->> 'amount')::int = 10000, 'qayta to''lov 10 000');
+select pg_temp.ok((public.create_payment('worker_listing', public.current_worker_id()) ->> 'amount')::int = 5000, 'qayta to''lov 5 000');
 select pg_temp.superuser();
-update public.payments set status = 'paid', paid_at = now() where id = (select id from public.payments where purpose = 'worker_listing' and profile_id = 'e9000000-0000-0000-0000-000000000002' and amount = 10000);
+update public.payments set status = 'paid', paid_at = now() where id = (select id from public.payments where purpose = 'worker_listing' and profile_id = 'e9000000-0000-0000-0000-000000000002' and amount = 5000);
 select pg_temp.service();
-select public.apply_payment_internal((select id from public.payments where purpose = 'worker_listing' and profile_id = 'e9000000-0000-0000-0000-000000000002' and amount = 10000));
+select public.apply_payment_internal((select id from public.payments where purpose = 'worker_listing' and profile_id = 'e9000000-0000-0000-0000-000000000002' and amount = 5000));
 select pg_temp.superuser();
 select pg_temp.ok((select is_public and listed_until > now() + interval '9 days' from public.worker_profiles where profile_id = 'e9000000-0000-0000-0000-000000000002'), 'qayta to''lovdan keyin 10 kun qidiruvda');
 
@@ -148,8 +148,8 @@ select pg_temp.ok((select headline = 'Oshpaz' from public.worker_profiles where 
 select pg_temp.superuser();
 update public.app_settings set value = to_jsonb((now() - interval '1 minute')::text) where key = 'listing_discount_until';
 select pg_temp.login('e9000000-0000-0000-0000-000000000001');
-select pg_temp.ok((select (q ->> 'price')::int = 50000 and (q ->> 'discount_percent')::int = 0
-  from (select public.vacancy_publish_quote(id) q from public.vacancies where title = 'PL-Pishiriqchi-e9') x), 'aksiya tugagach narx 50 000');
+select pg_temp.ok((select (q ->> 'price')::int = 30000 and (q ->> 'discount_percent')::int = 0
+  from (select public.vacancy_publish_quote(id) q from public.vacancies where title = 'PL-Pishiriqchi-e9') x), 'aksiya tugagach narx 30 000');
 
 select pg_temp.superuser();
 rollback;

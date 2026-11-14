@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { CalendarClock, Eye, EyeOff, Megaphone, Send, PartyPopper, ShieldCheck } from "lucide-react";
+import { CalendarClock, Crown, Eye, EyeOff, Megaphone, Send, PartyPopper, ShieldCheck } from "lucide-react";
 import { DiscountBadge, InAppNote, requestPayment } from "@/features/billing/components/payment-dialog";
 import { useAndroidApp } from "@/lib/use-android-app";
 import { getWorkerListingQuote } from "@/features/billing/actions";
@@ -27,11 +27,14 @@ export function ListingVisibility({
   isPublic,
   status,
   listedUntil,
+  canBoost = false,
 }: {
   workerId: string;
   isPublic: boolean;
   status: "active" | "open" | "not_looking";
   listedUntil: string | null;
+  /** Tezkor/Maksimal tariflar (0080) — onlayn to'lov ulangan bo'lsa */
+  canBoost?: boolean;
 }) {
   const { t } = useT();
   const router = useRouter();
@@ -113,6 +116,17 @@ export function ListingVisibility({
       </div>
       {mode !== "hidden" ? <ListingPayCard workerId={workerId} listedUntil={listedUntil} /> : null}
       {listedUntil ? <ListingTerm until={listedUntil} active={mode === "search"} onExtend={() => requestPayment({ purpose: "worker_listing", targetId: workerId })} /> : null}
+      {canBoost && mode === "search" ? (
+        <Button
+          variant="outline"
+          size="lg"
+          className="h-auto min-h-12 w-full whitespace-normal py-2"
+          data-boost
+          onClick={() => requestPayment({ purpose: "worker_listing", targetId: workerId, upgrade: true })}
+        >
+          <Crown className="size-5 text-warning" aria-hidden /> {t("billing.tiers.boost_worker_cta")}
+        </Button>
+      ) : null}
       <p className="flex items-start gap-2 rounded-2xl border border-primary/20 bg-primary-soft/60 p-3 text-sm text-foreground">
         <ShieldCheck className="mt-0.5 size-4 shrink-0 text-primary-ink" />
         {t("profile.listing.phone_note")}

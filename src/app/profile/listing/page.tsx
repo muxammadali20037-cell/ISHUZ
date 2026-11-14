@@ -7,6 +7,7 @@ import { requireWorker } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { Progress } from "@/components/ui/progress";
 import { ListingVisibility } from "@/features/profile/components/listing-visibility";
+import { enabledProviders } from "@/features/billing/providers";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -66,7 +67,7 @@ export default async function ListingPage() {
 
         <section>
           <h2 className="mb-3 text-lg font-bold">{t("profile.listing.visibility")}</h2>
-          <ListingVisibility workerId={session.workerId} isPublic={!!w?.is_public} status={w?.status ?? "active"} listedUntil={w?.listed_until ?? null} />
+          <ListingVisibility workerId={session.workerId} isPublic={!!w?.is_public} status={w?.status ?? "active"} listedUntil={w?.listed_until ?? null} canBoost={enabledProviders().length > 0} />
         </section>
       </div>
     </Shell>

@@ -12,7 +12,8 @@ import { errorCode } from "@/lib/utils";
 import { isMissingRelation } from "@/features/saved/missing";
 import { checkoutUrl, enabledProviders } from "./providers";
 import { loadWallet } from "./queries";
-import type { CheckoutPurpose, CheckoutQuote, ListingQuote, PromotionQuote, VacancyQuote } from "./types";
+import type { CheckoutPurpose, CheckoutQuote, ListingQuote, PromotionQuote, TariffPlan, VacancyQuote } from "./types";
+import { parseTiers } from "./tiers";
 
 const uuid = z.uuid();
 
@@ -40,8 +41,15 @@ export async function getWorkerListingQuote(): Promise<ActionResult<ListingQuote
 }
 
 const purposeSchema = z.enum(["vacancy_publish", "worker_promotion", "worker_listing", "ai_alerts"]);
-// ai_alerts — obuna foydalanuvchining o'ziga (obyekt yo'q); qolganlari — e'lon yoki ishchi profili
-const targetSchema = z.object({ purpose: purposeSchema, targetId: uuid.nullish() }).refine((v) => v.purpose === "ai_alerts" || !!v.targetId, { message: "target" });
+// ai_alerts — obuna foydalanuvchining o'ziga (obyekt yo'q); qolganlari — e'lon yoki ishchi profili.
+// plan (0080): Oddiy · Tezkor · Maksimal — faqat vakansiya va ishchi e'loni uchun; narx doim serverda
+const targetSchema = z
+  .object({ purpose: purposeSchema, targetId: uuid.nullish(), plan: z.enum(["basic", "boost", "max"]).optional() })
+  .refine((v) => v.purpose === "ai_alerts" || !!v.targetId, { message: "target" })
+  .refine((v) => !v.plan || v.plan === "basic" || v.purpose === "vacancy_publish" || v.purpose === "worker_listing", { message: "plan" });
+
+/** Tezkor/Maksimal — daraja bilan (0080); "Oddiy" — eski 2 argumentli chaqiruv (0080 qo'llanmagan bazada ham ishlaydi) */
+const upgraded = (plan: TariffPlan | undefined): plan is "boost" | "max" => plan === "boost" || plan === "max";
 const checkoutSchema = z.intersection(targetSchema, z.object({ provider: z.enum(["payme", "click"]) }));
 
 const returnUrl = (orderNo: number) => `${getServerEnv().APP_URL.replace(/\/$/, "")}/billing/return?order=${orderNo}`;
@@ -57,7 +65,10 @@ export async function startCheckout(input: unknown): Promise<ActionResult<{ url:
   if (!session) return { ok: false, error: "not_authenticated" };
   const supabase = await createClient();
   const target = parsed.data.purpose === "ai_alerts" ? session.userId : parsed.data.targetId!;
-  const { data, error } = await supabase.rpc("create_payment", { p_purpose: parsed.data.purpose, p_target_id: target });
+  const { purpose, plan } = parsed.data;
+  const { data, error } = upgraded(plan)
+    ? await supabase.rpc("create_payment", { p_purpose: purpose, p_target_id: target, p_plan: plan })
+    : await supabase.rpc("create_payment", { p_purpose: purpose, p_target_id: target });
   if (error || !data) return { ok: false, error: errorCode(error) };
   const payment = data as { id: string; order_no: number; amount: number };
   return { ok: true, data: { url: checkoutUrl(parsed.data.provider, payment.order_no, payment.amount, returnUrl(payment.order_no), await getLocale()) } };
@@ -81,7 +92,7 @@ export async function getCheckout(input: unknown): Promise<ActionResult<Checkout
     ]);
     const val = (k: string, d: number) => Number(settings.data?.find((r) => r.key === k)?.value ?? d) || d;
     const price = val("price_ai_alerts", 15000);
-    quote = { mode: paid.data === false ? "free" : "payment_required", price, fullPrice: price, discountPercent: 0, discountUntil: null, days: val("ai_alerts_days", 30), hours: null };
+    quote = { mode: paid.data === false ? "free" : "payment_required", price, fullPrice: price, discountPercent: 0, discountUntil: null, days: val("ai_alerts_days", 30), hours: null, tiers: null };
   } else {
     const rpc =
       purpose === "vacancy_publish"
@@ -101,9 +112,12 @@ export async function getCheckout(input: unknown): Promise<ActionResult<Checkout
       discountUntil: typeof q.discount_until === "string" ? q.discount_until : null,
       days: num("lifetime_days"),
       hours: num("hours"),
+      // tariflar o'chirilgan bo'lsa — faqat eski bitta narx
+      tiers: q.tariffs_enabled === false ? null : parseTiers(q.tiers),
     };
   }
-  const wallet = quote.mode === "payment_required" ? (await loadWallet(supabase)).wallet : null;
+  // hamyon — to'lov kerak bo'lsa yoki kuchaytirish (Tezkor/Maksimal) mumkin bo'lsa
+  const wallet = quote.mode === "payment_required" || quote.tiers ? (await loadWallet(supabase)).wallet : null;
   return { ok: true, data: { purpose: purpose as CheckoutPurpose, ...quote, providers, wallet } };
 }
 
@@ -122,10 +136,10 @@ export async function payFromWallet(input: unknown): Promise<ActionResult<{ orde
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   const supabase = await createClient();
-  const { data, error, status } = await supabase.rpc("wallet_pay", {
-    p_purpose: parsed.data.purpose,
-    p_target_id: parsed.data.purpose === "ai_alerts" ? null : parsed.data.targetId!,
-  });
+  const { purpose, plan } = parsed.data;
+  const { data, error, status } = upgraded(plan)
+    ? await supabase.rpc("wallet_pay", { p_purpose: purpose, p_target_id: parsed.data.targetId!, p_plan: plan })
+    : await supabase.rpc("wallet_pay", { p_purpose: purpose, p_target_id: purpose === "ai_alerts" ? null : parsed.data.targetId! });
   if (error || !data) return { ok: false, error: walletError(error, status) };
   const res = data as { order_no: number; balance: number };
   for (const path of ["/", "/cabinet", "/billing", "/ai-alerts", "/profile/listing"]) revalidatePath(path);

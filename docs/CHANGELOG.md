@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-14 · Tariflar: Oddiy · Tezkor · Maksimal (`claude/tariffs`, 0080)
+
+- Ega: "tariflarni mukammal tuzib chiq — tarif ko'tarilgan sari imkoniyatlar kengayib borsin; narxni baland qo'yma".
+- Vakansiya: Oddiy — 10 kun (30 000; e'lon joylash bepul bo'lsa — bepul) · Tezkor — 15 kun + 3 kun TOP (49 000) ·
+  Maksimal — 30 kun + 10 kun TOP (99 000). Ishchi e'loni: Oddiy — 10 kun (5 000 / bepul) · Tezkor — 30 kun + 3 kun TOP
+  (12 000) · Maksimal — 30 kun + 7 kun TOP + 30 kun AI PRO (19 000). Birinchi to'lovga −50% (aksiya muddatida).
+  Oddiy narxlari pasaytirildi (50 000 → 30 000, 10 000 → 5 000) — faqat admin o'zgartirmagan bo'lsa.
+- TOP — haqiqiy ta'sir: vakansiya qidiruvda birinchi (is_featured/featured_until, "TOP" belgisi), ishchi — promoted_until.
+- E'lon bepul bo'lsa ham Tezkor/Maksimal — faol e'lonni kuchaytirish ("TOP qilish": vakansiya sahifasi, ishchi e'loni
+  sahifasi; faqat onlayn to'lov ulangan bo'lsa ko'rinadi). To'lov oynasida daraja tanlovi; narx doim serverda.
+- Baza: payments.plan; tariff_of / tariff_price / tariff_tiers / public_tariffs; create_payment va wallet_pay 3 argumentli
+  (eski 2 argumentli — Oddiy, eski ilova buzilmaydi); apply_payment_internal daraja bo'yicha; tariffs_enabled sozlamasi.
+- Ochiq "Tariflar" sahifasi (/pricing) qayta yozildi — bazadagi narxlar, halol "Bepul", har doim footerda.
+- Testlar: SQL `tariffs.test.sql` (yangi), wallet / paid_listings / security_hardening yangi narxlarga; unit `tiers.test.ts`;
+  E2E `tariffs.spec.ts` (3), payments.spec yangi narxlarga.
+
 ## 2026-11-14 · Hikoyalar, kanalga avtomatik e'lon, telefonda lupa, "ish/ishchi" tugmalari (`claude/launch-ready`, 0079)
 
 - Ega: "telefonda qidiruv joyida lupa ko'rinmayapti"; "ish izlovchida — ish, ish beruvchida — ishchi"; "rasmlar, videolar —

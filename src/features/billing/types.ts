@@ -39,6 +39,20 @@ export interface PromotionQuote {
 /** To'lov oynasi qaysi xizmat uchun ochiladi */
 export type CheckoutPurpose = "vacancy_publish" | "worker_promotion" | "worker_listing" | "ai_alerts";
 
+/** Tarif darajasi (0080): Oddiy · Tezkor · Maksimal */
+export type TariffPlan = "basic" | "boost" | "max";
+export const TARIFF_PLANS: readonly TariffPlan[] = ["basic", "boost", "max"] as const;
+
+/** Bitta daraja: narx (joriy foydalanuvchiga, chegirma bilan), to'liq narx, muddat, TOP va AI PRO kunlari */
+export interface Tier {
+  plan: TariffPlan;
+  price: number;
+  fullPrice: number;
+  days: number;
+  topDays: number;
+  aiDays: number;
+}
+
 /** Hamyon (0063): balans va to'ldirish qoidalari; migratsiya yo'q yoki pullik xizmat yo'q bo'lsa — null */
 export interface WalletInfo {
   balance: number;
@@ -61,4 +75,6 @@ export interface CheckoutQuote {
   hours: number | null;
   providers: PaymentProvider[];
   wallet: WalletInfo | null;
+  /** vakansiya va ishchi e'loni uchun uch daraja (0080 qo'llanmagan bo'lsa — null, eski bitta narx) */
+  tiers: Tier[] | null;
 }
