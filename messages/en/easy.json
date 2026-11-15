@@ -457,7 +457,7 @@
     "tab_vacancies": "Vacancies",
     "tab_candidates": "Candidates",
     "tab_home": "Home",
-    "tab_ai": "For you",
+    "tab_ai": "Helper",
     "tab_messages": "Messages",
     "tab_saved": "Saved",
     "tab_dashboard": "Dashboard",
@@ -620,7 +620,7 @@
     }
   },
   "aihub": {
-    "title": "All for you",
+    "title": "Helper",
     "subtitle": "Helps you find the right match faster. Results come only from real listings.",
     "search_title": "Search in plain words",
     "search_desc_jobs": "For example: \"evening shift cashier in Chilonzor\". We work out the job, area and terms.",
@@ -1086,7 +1086,7 @@
     "e_greeting": "Hello, {name}!"
   },
   "aiws": {
-    "title": "All for you",
+    "title": "Helper",
     "status_ai": "Artificial intelligence · ready",
     "status_rules": "Basic mode",
     "status_busy": "Writing a reply…",
@@ -1096,12 +1096,12 @@
     "menu_delete": "Delete chat",
     "menu_voice_on": "Voice reply: on",
     "menu_voice_off": "Voice reply: off",
-    "sidebar": "Sections and chats",
-    "open_sidebar": "Sections and chats",
+    "sidebar": "Chats",
+    "open_sidebar": "Chats",
     "new_chat": "New chat",
     "nav": {
       "home": "Home",
-      "ai": "All for you",
+      "ai": "Helper",
       "jobs": "Jobs",
       "matches": "Matching jobs",
       "applications": "My applications",

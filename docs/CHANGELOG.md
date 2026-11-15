@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-15 · "Yordamchi": alohida to'liq ekran, sodda tezkor imkoniyatlar (`claude/assistant-screen`)
+
+Ega: "Barchasi siz uchun o'rniga Yordamchi; alohida panelga kirganda tagida menyular ko'rinmasin — alohida katta ekranga
+kirsin; tezkor imkoniyatlar boshida ish qidirish, karyera maslahati, suhbat tursin; «Masalan, bosing» kerakmas; sodda qil".
+
+- **Nomi:** "Barchasi siz uchun" → **"Yordamchi"** (oz "Ёрдамчи", ru "Помощник", en "Helper") — menyular, sarlavha, bosh
+  sahifa bo'limlari.
+- **/ai — alohida to'liq ekran:** yuqori panel, chap yon menyu va pastki menyu yo'q (`Shell bare`). O'z sarlavhasi:
+  "‹" (oldingi sahifaga, to'g'ridan-to'g'ri ochilsa — bosh sahifaga), "Yordamchi" va holati, "Ovoz bilan javob",
+  "Suhbatlar" (telefonda pastdan chiqadi), suhbat ketayotganda "+" (yangi suhbat), menyu. Yozish maydoni ekran tagida.
+- **Tezkor imkoniyatlar:** boshida "Ish qidirish", "Karyera maslahati", "Suhbatga tayyorgarlik" (keyin CV, maosh, PRO
+  kuzatuv); ish beruvchida — "Nomzod topish", "Vakansiya matni", "Suhbat savollari". Telefonda — ikki ustunli oq plitkalar
+  (rangli belgilar), hammasi ko'rinadi, yonga surilmaydi.
+- **Olib tashlandi:** "Masalan, bosing:" misollari; "Suhbatlar" panelidagi sayt bo'limlari ro'yxati (ilovaga "‹" bilan).
+- Testlar: ai-entry, ai-workspace, sections, simple-mobile, ai-finder, home-market, layout-overlap yangilandi.
+
 ## 2026-11-15 · Yangi ranglar: ega yuborgan namuna rasmdagidek (tuzilish o'zgarmagan) (`claude/design-colors`)
 
 Ega: "tuzilishini o'zgartirma, faqat dizaynni shunga mosla — ranglarni" (namuna: navy banner, yorqin ko'k tugmalar, oq

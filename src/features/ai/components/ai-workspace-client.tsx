@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
   ArrowRight,
@@ -17,11 +16,11 @@ import {
   FileCheck2,
   FileUser,
   GraduationCap,
+  History,
   Home,
   Lightbulb,
   ListTodo,
   LogIn,
-  Menu,
   MessageSquareText,
   MoreHorizontal,
   PenLine,
@@ -38,6 +37,8 @@ import {
 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Fold } from "@/components/shared/fold";
+import { BackLink } from "@/components/shared/back-link";
+import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
@@ -107,13 +108,6 @@ const ICONS: Record<IconKey | BriefIcon, LucideIcon> = {
   stats: BarChart3,
 };
 
-export interface NavItem {
-  key: string;
-  href: string;
-  label: string;
-  icon: IconKey;
-}
-
 export interface QuickAction {
   key: string;
   label: string;
@@ -136,7 +130,6 @@ interface Props {
   role: "guest" | "worker" | "employer";
   locale: string;
   user: WorkspaceUser | null;
-  nav: NavItem[];
   quick: QuickAction[];
   promo: { title: string; desc: string; cta: string; prompt: string };
   tips: string[];
@@ -144,10 +137,9 @@ interface Props {
   aiConfigured: boolean;
   initialQuery?: string;
   defaultMode: FinderMode;
-  examples: string[];
 }
 
-/** /ai ish maydoni (mijoz tomoni): chap panel · suhbat · o'ng panel; telefonda chap panel pastdan chiqadi */
+/** /ai "Yordamchi" (mijoz tomoni): o'z sarlavhasi · suhbatlar · suhbat · o'ng panel; telefonda suhbatlar pastdan chiqadi */
 export function AiWorkspaceClient(props: Props) {
   const { t } = useT();
   const chat = useAiChat(props.defaultMode);
@@ -170,11 +162,10 @@ export function AiWorkspaceClient(props: Props) {
     document.getElementById("ai-ws-text")?.focus();
   };
 
-  // kompyuterda kirgan foydalanuvchining bo'limlari sayt yon menyusida (to'q ko'k) bor — chap panelda takrorlanmaydi;
-  // mehmonga (yon menyu yo'q) va telefon panelida — bo'limlar shu yerda
-  const sidebar = (showNav: boolean) => (
+  // "Suhbatlar": yangi suhbat, so'nggi suhbatlar va profil (kompyuterda chap ustun, telefonda pastdan chiqadi).
+  // Sayt bo'limlari bu yerda yo'q — "Yordamchi" alohida ekran, ilovaga "‹" bilan qaytiladi (ega, 2026-11-15)
+  const sidebar = (
     <Sidebar
-      nav={showNav ? props.nav : []}
       user={props.user}
       chat={chat}
       onNew={() => {
@@ -189,89 +180,48 @@ export function AiWorkspaceClient(props: Props) {
   );
 
   return (
-    <div
-      className="mx-auto w-full max-w-6xl px-4 py-3 sm:px-6 lg:py-5 2xl:max-w-none"
-      data-ai-workspace
-      data-role={props.role}
-    >
-      {/* ChatGPT kabi: kompyuterda suhbat oynasi ekran balandligini to'ldiradi, katta monitorda — kengligini ham */}
-      <div className="lg:grid lg:grid-cols-[248px_minmax(0,1fr)_288px] lg:items-start lg:gap-5 xl:grid-cols-[260px_minmax(0,1fr)_300px] 3xl:grid-cols-[300px_minmax(0,1fr)_340px] 3xl:gap-6">
-        <aside
-          className="hidden lg:sticky lg:top-20 lg:block"
-          aria-label={t("easy.aiws.sidebar")}
-          data-ai-sidebar
-        >
-          {sidebar(props.role === "guest")}
+    <div className="flex min-h-dvh flex-col bg-background" data-ai-workspace data-role={props.role}>
+      <ChatHeader chat={chat} aiConfigured={props.aiConfigured} onHistory={() => setDrawer(true)} />
+
+      {/* ChatGPT kabi: kompyuterda uch ustun (suhbatlar · suhbat · tezkor imkoniyatlar), telefonda — faqat suhbat, butun ekran */}
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col lg:grid lg:grid-cols-[248px_minmax(0,1fr)_288px] lg:items-start lg:gap-5 lg:px-6 lg:py-5 xl:grid-cols-[260px_minmax(0,1fr)_300px] 2xl:max-w-none 3xl:grid-cols-[300px_minmax(0,1fr)_340px] 3xl:gap-6">
+        <aside className="hidden lg:sticky lg:top-24 lg:block" aria-label={t("easy.aiws.sidebar")} data-ai-sidebar>
+          {sidebar}
         </aside>
 
         <section
-          className="min-w-0 rounded-2xl border border-border bg-card shadow-sm lg:flex lg:min-h-[calc(100dvh-7.5rem)] lg:flex-col"
+          className="flex min-w-0 flex-1 flex-col lg:min-h-[calc(100dvh-7rem)] lg:rounded-2xl lg:border lg:border-border lg:bg-card lg:shadow-sm"
           aria-label={t("easy.aiws.title")}
           data-ai-chat-panel
         >
-          {/* telefon va planshet: bo'limlar va suhbatlar — pastdan chiqadigan panel */}
-          <div className="flex items-center justify-between gap-2 border-b border-border px-2 py-1.5 lg:hidden">
-            <button
-              type="button"
-              onClick={() => setDrawer(true)}
-              className="press inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-foreground hover:bg-secondary"
-              aria-label={t("easy.aiws.open_sidebar")}
-              data-ai-open-sidebar
-            >
-              <Menu className="size-5" aria-hidden />{" "}
-              {t("easy.aiws.open_sidebar")}
-            </button>
-            <button
-              type="button"
-              onClick={chat.clear}
-              disabled={chat.pending || !chat.turns.length}
-              className="press inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold text-primary-ink hover:bg-secondary disabled:opacity-40"
-            >
-              <Plus className="size-5" aria-hidden /> {t("easy.aiws.new_chat")}
-            </button>
-          </div>
-
-          <ChatHeader chat={chat} aiConfigured={props.aiConfigured} />
-
           {/* xabarlar ustuni juda keng bo'lib ketmaydi (o'qish qulay) — panel esa butun joyni egallaydi */}
-          <div className={cn("w-full space-y-5 px-3 py-4 sm:px-5 lg:flex-1 2xl:mx-auto 2xl:max-w-5xl", !chat.turns.length && "lg:flex lg:flex-col lg:justify-center")}>
+          <div className={cn("w-full flex-1 space-y-5 px-4 py-4 sm:px-6 2xl:mx-auto 2xl:max-w-5xl", !chat.turns.length && "lg:flex lg:flex-col lg:justify-center")}>
             {chat.turns.length ? (
-              <AiThread
-                chat={chat}
-                examples={props.examples}
-                scrollOnRestore={false}
-                bar={false}
-              />
+              <AiThread chat={chat} examples={[]} scrollOnRestore={false} bar={false} />
             ) : (
               <Welcome {...props} chat={chat} onPrompt={run} />
             )}
           </div>
 
-          <div className="sticky bottom-[calc(var(--tabbar-height)+var(--safe-bottom))] z-10 rounded-b-2xl border-t border-border bg-card px-3 pb-1.5 pt-3 sm:px-4 md:bottom-0">
+          {/* yozish maydoni — ekran tagida (pastki menyu yo'q), tizim chizig'i ustida */}
+          <div
+            className="sticky bottom-0 z-10 border-t border-border bg-card px-3 pt-3 sm:px-4 lg:rounded-b-2xl"
+            style={{ paddingBottom: "calc(0.375rem + var(--safe-bottom))" }}
+          >
             <div className="2xl:mx-auto 2xl:max-w-5xl">
               <AiPromptBox chat={chat} id="ai-ws-text" />
             </div>
           </div>
         </section>
 
-        <aside className="hidden lg:sticky lg:top-20 lg:block" data-ai-rail>
-          <RightRail
-            quick={props.quick}
-            promo={props.promo}
-            tips={props.tips}
-            chat={chat}
-            onPrompt={run}
-          />
+        <aside className="hidden lg:sticky lg:top-24 lg:block" data-ai-rail>
+          <RightRail quick={props.quick} promo={props.promo} tips={props.tips} chat={chat} onPrompt={run} />
         </aside>
       </div>
 
       <Dialog open={drawer} onOpenChange={setDrawer}>
-        <Sheet
-          title={t("easy.aiws.sidebar")}
-          className="sm:max-w-sm"
-          data-ai-drawer
-        >
-          {sidebar(true)}
+        <Sheet title={t("easy.aiws.sidebar")} className="sm:max-w-sm" data-ai-drawer>
+          {sidebar}
         </Sheet>
       </Dialog>
     </div>
@@ -281,20 +231,17 @@ export function AiWorkspaceClient(props: Props) {
 /* ----------------------------------------------------------------------------------------------- chap panel */
 
 function Sidebar({
-  nav,
   user,
   chat,
   onNew,
   onOpen,
 }: {
-  nav: NavItem[];
   user: WorkspaceUser | null;
   chat: AiChatState;
   onNew: () => void;
   onOpen: (id: number) => void;
 }) {
   const { t } = useT();
-  const pathname = usePathname();
   return (
     <div className="flex flex-col gap-5">
       <Button
@@ -308,40 +255,6 @@ function Sidebar({
       >
         <Plus className="size-5" aria-hidden /> {t("easy.aiws.new_chat")}
       </Button>
-
-      {nav.length ? (
-        <nav aria-label={t("easy.aiws.sidebar")}>
-          <ul className="space-y-0.5">
-            {nav.map((item) => {
-              const Icon = ICONS[item.icon];
-              const active = item.href === pathname;
-              return (
-                <li key={item.key}>
-                  <Link
-                    href={item.href}
-                    aria-current={active ? "page" : undefined}
-                    className={cn(
-                      "press flex min-h-11 items-center gap-3 rounded-xl px-3 text-base font-semibold",
-                      active
-                        ? "bg-primary-soft text-primary-ink"
-                        : "text-foreground hover:bg-secondary",
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "size-5 shrink-0",
-                        active ? "text-primary-ink" : "text-muted-foreground",
-                      )}
-                      aria-hidden
-                    />
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      ) : null}
 
       <section
         aria-labelledby="ai-recent"
@@ -459,9 +372,12 @@ function Sidebar({
 function ChatHeader({
   chat,
   aiConfigured,
+  onHistory,
 }: {
   chat: AiChatState;
   aiConfigured: boolean;
+  /** telefonda "Suhbatlar" panelini ochadi */
+  onHistory: () => void;
 }) {
   const { t } = useT();
   const last = chat.turns.at(-1);
@@ -474,8 +390,18 @@ function ChatHeader({
       : t("easy.aiws.status_rules");
   const { speaker } = chat;
   return (
-    <div className="flex items-center gap-3 border-b border-border px-3 py-3 sm:px-5">
-      <AiAvatar busy={chat.pending} size="md" />
+    // alohida ekranning o'z sarlavhasi: "‹" (ilovaga qaytish) · Yordamchi · suhbatlar · menyu
+    <header className="sticky top-0 z-20 border-b border-border bg-card" style={{ paddingTop: "var(--safe-top)" }} data-ai-header>
+    <div className="mx-auto flex min-h-16 w-full max-w-6xl items-center gap-1 px-2 py-2 sm:gap-3 sm:px-4 lg:px-6 2xl:max-w-none">
+      <BackLink
+        fallback="/"
+        label={t("easy.wizard.back")}
+        className="press flex size-11 shrink-0 items-center justify-center rounded-xl text-foreground hover:bg-secondary"
+      >
+        <ChevronLeft className="size-6" aria-hidden />
+      </BackLink>
+      {/* telefonda belgi yo'q — joy "Ovoz bilan javob", "Suhbatlar" va menyu tugmalariga (salomlashuvda belgi bor) */}
+      <AiAvatar busy={chat.pending} size="md" className="max-sm:hidden" />
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-lg font-extrabold leading-tight">
           {t("easy.aiws.title")}
@@ -507,7 +433,7 @@ function ChatHeader({
           onClick={() => speaker.setEnabled(!speaker.enabled)}
           aria-label={t("easy.finder.voice_reply")}
           className={cn(
-            "press flex size-11 items-center justify-center rounded-xl",
+            "press flex size-11 shrink-0 items-center justify-center rounded-xl",
             speaker.enabled
               ? "bg-primary-soft text-primary-ink"
               : "text-muted-foreground hover:bg-secondary",
@@ -520,6 +446,28 @@ function ChatHeader({
           )}
         </button>
       ) : null}
+      {/* telefonda suhbat ketayotganda — "Yangi suhbat" bir bosishda (kompyuterda chap ustunda bor) */}
+      {chat.turns.length ? (
+        <button
+          type="button"
+          onClick={chat.clear}
+          disabled={chat.pending}
+          aria-label={t("easy.aiws.new_chat")}
+          className="press flex size-11 shrink-0 items-center justify-center rounded-xl text-primary-ink hover:bg-secondary disabled:opacity-40 lg:hidden"
+          data-ai-new-chat-top
+        >
+          <Plus className="size-5" aria-hidden />
+        </button>
+      ) : null}
+      <button
+        type="button"
+        onClick={onHistory}
+        aria-label={t("easy.aiws.open_sidebar")}
+        className="press flex size-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary lg:hidden"
+        data-ai-open-sidebar
+      >
+        <History className="size-5" aria-hidden />
+      </button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <button
@@ -561,6 +509,7 @@ function ChatHeader({
         </DropdownMenuContent>
       </DropdownMenu>
     </div>
+    </header>
   );
 }
 
@@ -571,7 +520,6 @@ function Welcome({
   user,
   data,
   quick,
-  examples,
   chat,
   onPrompt,
 }: Props & { chat: AiChatState; onPrompt: (p: string) => void }) {
@@ -680,30 +628,9 @@ function Welcome({
         </Fold>
       ) : null}
 
-      {/* telefon va planshet: tezkor imkoniyatlar — o'ng panel yo'q */}
+      {/* telefon va planshet: tezkor imkoniyatlar (o'ng panel yo'q). "Masalan, bosing" yo'q — ega, 2026-11-15: "kerakmas" */}
       <div className="lg:hidden">
         <QuickActions quick={quick} onPrompt={onPrompt} chat={chat} compact />
-      </div>
-
-      <div>
-        <p className="text-sm font-semibold text-muted-foreground">
-          {t("easy.finder.try_label")}
-        </p>
-        <ul className="mt-2 flex flex-wrap gap-2">
-          {examples.map((ex) => (
-            <li key={ex} className="flex">
-              <button
-                type="button"
-                disabled={chat.pending}
-                onClick={() => onPrompt(ex)}
-                className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-primary/30 bg-primary-soft px-3.5 text-left text-sm font-semibold text-primary-ink hover:border-primary/60 sm:text-base"
-              >
-                <Sparkles className="size-4 shrink-0" aria-hidden />
-                {ex}
-              </button>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   );
@@ -725,8 +652,9 @@ function QuickActions({
   const { t } = useT();
   const item =
     "press flex min-h-11 w-full items-center gap-3 rounded-xl px-2 text-left text-base font-semibold hover:bg-secondary disabled:opacity-50";
-  const chip =
-    "press inline-flex min-h-11 shrink-0 items-center gap-2 rounded-full border border-border bg-card px-3.5 text-sm font-semibold hover:border-primary/50 disabled:opacity-50";
+  // telefonda: ikki ustunli oq plitkalar (bosh sahifadagi tezkor yo'llar kabi) — hammasi ko'rinadi, yonga surilmaydi
+  const tile =
+    "press flex min-h-14 w-full min-w-0 items-center gap-2.5 rounded-xl border border-border/70 bg-card px-2.5 py-2 text-left text-sm font-semibold leading-tight shadow-sm hover:border-primary/50 disabled:opacity-50";
   return (
     <section
       aria-labelledby={compact ? "ai-quick-m" : "ai-quick"}
@@ -740,28 +668,15 @@ function QuickActions({
         <Zap className="size-5 text-warning" aria-hidden />{" "}
         {t("easy.aiws.quick_title")}
       </h2>
-      <ul
-        className={cn(
-          "mt-2",
-          compact
-            ? "-mx-3 flex gap-2 overflow-x-auto px-3 pb-1 [scrollbar-width:thin] sm:-mx-5 sm:px-5"
-            : "space-y-0.5",
-        )}
-      >
-        {quick.map((q) => {
+      <ul className={cn("mt-2", compact ? "grid grid-cols-2 gap-2" : "space-y-0.5")}>
+        {quick.map((q, i) => {
           const Icon = ICONS[q.icon];
           const inner: ReactNode = (
             <>
-              <span
-                className={cn(
-                  "flex shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink",
-                  compact ? "size-6" : "size-9",
-                )}
-                aria-hidden
-              >
-                <Icon className={compact ? "size-3.5" : "size-4"} />
+              <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", TINT_TILE[tintAt(i)])} aria-hidden>
+                <Icon className={compact ? "size-5" : "size-4"} />
               </span>
-              <span className="min-w-0 flex-1 truncate">{q.label}</span>
+              <span className={cn("min-w-0 flex-1", compact ? "[overflow-wrap:anywhere]" : "truncate")}>{q.label}</span>
               {!compact ? (
                 <ChevronRight
                   className="size-4 shrink-0 text-muted-foreground"
@@ -771,11 +686,11 @@ function QuickActions({
             </>
           );
           return (
-            <li key={q.key} className="flex shrink-0">
+            <li key={q.key} className="flex min-w-0">
               {q.href ? (
                 <Link
                   href={q.href}
-                  className={compact ? chip : item}
+                  className={compact ? tile : item}
                   data-quick={q.key}
                 >
                   {inner}
@@ -785,7 +700,7 @@ function QuickActions({
                   type="button"
                   onClick={() => onPrompt(q.prompt ?? q.label)}
                   disabled={chat.pending}
-                  className={compact ? chip : item}
+                  className={compact ? tile : item}
                   data-quick={q.key}
                 >
                   {inner}

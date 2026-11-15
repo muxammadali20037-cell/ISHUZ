@@ -38,7 +38,7 @@ interface NavItem {
 const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages"];
 
 /**
- * "Barchasi siz uchun" (avval "AI yordamchi") — alohida bo'lim: kompyuterda yon menyu va yuqori menyuda "Bosh sahifa"dan keyin;
+ * "Yordamchi" (avval "AI yordamchi", "Barchasi siz uchun") — alohida bo'lim: kompyuterda yon menyu va yuqori menyuda "Bosh sahifa"dan keyin;
  * telefonda — yuqori paneldagi belgi (top-bar) va bosh sahifa menyusida (pastki menyuda joy yo'q: 5 ta katak).
  */
 const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath };
@@ -292,7 +292,7 @@ export function SideNav({
   const link = (item: MenuItem) => {
     const active = item.match(pathname);
     const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
-    // "Barchasi siz uchun" — to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
+    // "Yordamchi" — to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
     const ai = item.tone === "ai";
     return (
       <li key={item.href}>

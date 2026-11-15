@@ -108,7 +108,7 @@ test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi
   await expect(main.getByText("Mening dunyom")).toHaveCount(0);
   await expect(main.getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveCount(0);
   await expect(main.getByRole("link", { name: /^O'zim haqimda e'lon berish/ })).toHaveCount(0);
-  // "Barchasi siz uchun" va "Universal ustalar" — faqat bo'limlar menyusida (katta bloklar telefonda yo'q)
+  // "Yordamchi" va "Universal ustalar" — faqat bo'limlar menyusida (katta bloklar telefonda yo'q)
   await expect(main.locator("[data-ai-entry]")).toHaveCount(1);
   await expect(main.locator("[data-home-menu] [data-ai-entry]")).toHaveCount(1);
   await expect(main.locator("[data-masters-home]")).toBeHidden();

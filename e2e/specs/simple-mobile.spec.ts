@@ -29,8 +29,8 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   await expect(jobs).toContainText("Vakansiyalar");
   await expect(jobs).toContainText("Barcha ishlarni ko'rish va qidirish");
   await expect(menu.locator('[data-menu-item="map"]')).toContainText("Yaqin atrofdagi ishlarni xaritada ko'rish");
-  // "AI" so'zi yo'q — "Barchasi siz uchun"
-  await expect(menu.locator('[data-menu-item="ai"]')).toContainText("Barchasi siz uchun");
+  // "AI" so'zi yo'q — "Yordamchi" (2026-11-15; avval "Barchasi siz uchun")
+  await expect(menu.locator('[data-menu-item="ai"]')).toContainText("Yordamchi");
   await expect(menu).not.toContainText("AI");
   for (const key of ["ai", "jobs", "map", "applications", "saved", "messages", "profile", "masters", "settings", "help"]) {
     await expect(menu.locator(`[data-menu-item="${key}"]`)).toBeVisible();
@@ -103,7 +103,7 @@ test("ish beruvchi, telefon: raqamlar va menyu; uzun ro'yxatlar telefonda yo'q (
   await p.goto("/");
   // kompyuterda — chap yon menyu bor, bosh sahifa menyusi yo'q
   await expect(p.locator("[data-home-menu]")).toBeHidden();
-  await expect(p.locator("aside").getByRole("link", { name: /^Barchasi siz uchun/ })).toBeVisible();
+  await expect(p.locator("aside").getByRole("link", { name: /^Yordamchi/ })).toBeVisible();
   await desk.close();
 });
 
@@ -119,11 +119,25 @@ test("kompyuterda yangi ishlar ochiq (yig'ish tugmasi yo'q)", async ({ browser }
   await desk.close();
 });
 
-test("'Barchasi siz uchun': bugungi ishlar yopiq — «Ochish» bilan ochiladi", async ({ page, context }) => {
+test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq — «Ochish» bilan ochiladi; tezkor imkoniyatlar to'liq", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/ai");
-  await expect(page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Yordamchi" })).toBeVisible();
+  // alohida ekran: yuqori panel, pastki menyu yo'q; yozish maydoni ekran tagida
+  await expect(page.locator("nav.bottom-nav")).toHaveCount(0);
+  await expect(page.locator("header [data-bar-logo]")).toHaveCount(0);
+  const composer = await page.getByLabel("Nima qidiryapsiz?").boundingBox();
+  expect(composer!.y + composer!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
+  // tezkor imkoniyatlar: boshida ish qidirish, karyera maslahati, suhbat — hammasi ekranda (yonga surilmaydi); "Masalan, bosing" yo'q
+  const quick = page.locator("[data-ai-quick]:visible");
+  await expect(quick.locator("[data-quick]").first()).toContainText("Ish qidirish");
+  await expect(quick.locator("[data-quick]").nth(1)).toContainText("Karyera maslahati");
+  await expect(quick.locator("[data-quick]").nth(2)).toContainText("Suhbatga tayyorgarlik");
+  for (const box of await quick.locator("[data-quick]").evaluateAll((els) => els.map((e) => e.getBoundingClientRect().right))) {
+    expect(box).toBeLessThanOrEqual(390);
+  }
+  await expect(page.getByText("Masalan, bosing:")).toHaveCount(0);
   const brief = fold(page, "ai-brief");
   const toggle = brief.locator("[data-fold-toggle]");
   await expect(toggle).toHaveAttribute("aria-expanded", "false");

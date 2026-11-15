@@ -457,7 +457,7 @@
     "tab_vacancies": "Vakansiyalar",
     "tab_candidates": "Nomzodlar",
     "tab_home": "Asosiy",
-    "tab_ai": "Siz uchun",
+    "tab_ai": "Yordamchi",
     "tab_messages": "Xabarlar",
     "tab_saved": "Saqlangan",
     "tab_dashboard": "Boshqaruv",
@@ -620,7 +620,7 @@
     }
   },
   "aihub": {
-    "title": "Barchasi siz uchun",
+    "title": "Yordamchi",
     "subtitle": "Sizga mosini tezroq topishga yordam beradi. Natijalar — faqat bazadagi haqiqiy e'lonlardan.",
     "search_title": "Oddiy so'z bilan qidiring",
     "search_desc_jobs": "Masalan: «Chilonzorda kechki smena kassir». Kasb, hudud va shartlarni o'zimiz tushunamiz.",
@@ -1086,7 +1086,7 @@
     "e_greeting": "Assalomu alaykum, {name}!"
   },
   "aiws": {
-    "title": "Barchasi siz uchun",
+    "title": "Yordamchi",
     "status_ai": "Sun'iy intellekt · tayyor",
     "status_rules": "Oddiy rejim",
     "status_busy": "Javob yozilmoqda…",
@@ -1096,12 +1096,12 @@
     "menu_delete": "Suhbatni o'chirish",
     "menu_voice_on": "Ovoz bilan javob: yoqilgan",
     "menu_voice_off": "Ovoz bilan javob: o'chiq",
-    "sidebar": "Bo'limlar va suhbatlar",
-    "open_sidebar": "Bo'limlar va suhbatlar",
+    "sidebar": "Suhbatlar",
+    "open_sidebar": "Suhbatlar",
     "new_chat": "Yangi suhbat",
     "nav": {
       "home": "Bosh sahifa",
-      "ai": "Barchasi siz uchun",
+      "ai": "Yordamchi",
       "jobs": "Vakansiyalar",
       "matches": "Mos ishlar",
       "applications": "Arizalarim",

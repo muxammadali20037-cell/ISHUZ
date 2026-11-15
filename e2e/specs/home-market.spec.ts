@@ -47,9 +47,9 @@ test.describe("bosh sahifa (marketplace)", () => {
     // evaluateAll kutmaydi — menyu chizilguncha qayta so'raladi (CI'da sekinroq)
     await expect
       .poll(() => nav.getByRole("link").evaluateAll((els) => els.map((el) => el.getAttribute("aria-label") ?? (el.textContent ?? "").trim())))
-      .toEqual(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Barchasi siz uchun", "Universal ustalar"]);
-    await expect(nav.getByRole("link", { name: "Barchasi siz uchun" })).toHaveText("Siz uchun");
-    await expect(nav.getByRole("link", { name: "Barchasi siz uchun" })).toHaveAttribute("href", "/ai");
+      .toEqual(["Ish qidirish", "Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Yordamchi", "Universal ustalar"]);
+    await expect(nav.getByRole("link", { name: "Yordamchi" })).toHaveText("Yordamchi");
+    await expect(nav.getByRole("link", { name: "Yordamchi" })).toHaveAttribute("href", "/ai");
     await expect(nav.getByRole("link", { name: "Universal ustalar" })).toHaveAttribute("href", "/ustalar");
     // to'lovlar o'chiq stendda — "Xizmatlar" (narxlar) yo'q: o'lik havola ko'rsatilmaydi
     await expect(nav.getByRole("link", { name: "Xizmatlar" })).toHaveCount(0);
@@ -83,8 +83,8 @@ test.describe("bosh sahifa (marketplace)", () => {
     const menuButton = page.getByRole("banner").getByRole("button", { name: "Menyu" });
     await menuButton.click();
     const menu = page.getByRole("menu");
-    await expect(menu.getByRole("menuitem")).toHaveText(["Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Barchasi siz uchun", "Universal ustalar", "Biz haqimizda", "Yordam", "Ish joylashtirish", "Ro'yxatdan o'tish"]);
-    await expect(menu.getByRole("menuitem", { name: "Barchasi siz uchun" })).toHaveAttribute("href", "/ai");
+    await expect(menu.getByRole("menuitem")).toHaveText(["Kompaniyalar", "Kasblar", "Ish beruvchilar uchun", "Yordamchi", "Universal ustalar", "Biz haqimizda", "Yordam", "Ish joylashtirish", "Ro'yxatdan o'tish"]);
+    await expect(menu.getByRole("menuitem", { name: "Yordamchi" })).toHaveAttribute("href", "/ai");
     await expect(menu.getByRole("menuitem", { name: "Universal ustalar" })).toHaveAttribute("href", "/ustalar");
     await page.keyboard.press("Escape");
     await expect(menu).toBeHidden();

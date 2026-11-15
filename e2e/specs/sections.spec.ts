@@ -170,21 +170,10 @@ test.describe("bo'limlar", () => {
     await asMode(context, "worker");
     await page.goto("/ai");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" }),
+      page.getByRole("heading", { level: 1, name: "Yordamchi" }),
     ).toBeVisible();
-    // mehmon: bo'limlar chap panelda (telefonda — "Bo'limlar va suhbatlar" tugmasi bilan pastdan); kirish talab qiladiganlari — /auth?next=
-    const narrow = (page.viewportSize()?.width ?? 1280) < 1024;
-    if (narrow) await page.locator("[data-ai-open-sidebar]").click();
-    const panel = narrow
-      ? page.getByRole("dialog")
-      : page.locator("[data-ai-sidebar]");
-    await expect(
-      panel.getByRole("link", { name: "Mos ishlar" }),
-    ).toHaveAttribute("href", "/auth?next=%2Fcabinet%2Fmatches");
-    await expect(
-      panel.getByRole("link", { name: "Arizalarim" }),
-    ).toHaveAttribute("href", "/auth?next=%2Fapplications");
-    if (narrow) await page.keyboard.press("Escape");
+    // alohida to'liq ekran (2026-11-15): pastki menyu yo'q
+    await expect(page.locator("nav.bottom-nav")).toHaveCount(0);
     await expect(
       page.locator("[data-ai-quick] [data-quick='alerts']").first(),
     ).toHaveAttribute("href", "/ai-alerts");
