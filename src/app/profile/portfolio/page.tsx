@@ -19,7 +19,7 @@ export default async function PortfolioPage() {
   return (
     <Shell>
       <div className="container-narrow py-4 sm:py-6">
-        <PageHeader title={t("profile.portfolio.title")} subtitle={t("profile.portfolio.subtitle")} backHref="/profile" />
+        <PageHeader title={t("profile.portfolio.title")} subtitle={t("profile.portfolio.subtitle")} hint backHref="/profile" />
         <PortfolioManager items={data?.portfolio ?? []} userId={session.userId} recommendedCategory={category?.portfolio_recommended ? name(category) : null} />
       </div>
     </Shell>

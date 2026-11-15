@@ -112,13 +112,13 @@
     },
     "role": {
       "title": "Choose your role",
-      "subtitle": "We'll tailor the app to you.",
+      "subtitle": "The app opens in this role.",
       "worker_title": "I'm looking for a job",
       "worker_desc": "Find new opportunities",
       "employer_title": "I'm hiring",
       "employer_desc": "Find people for my team",
       "continue": "Continue",
-      "note": "After you sign in, the app opens in this role. You can switch it with one tap at the top of the “Profile” page.",
+      "note": "You can switch the role later in “Profile”.",
       "error": "Your choice wasn't saved. Please try again."
     },
     "done": {
@@ -131,7 +131,7 @@
     },
     "welcome": {
       "title": "What are you looking for?",
-      "subtitle": "One tap — the app shows only what you need. No sign-in required.",
+      "subtitle": "No sign-in needed.",
       "worker_desc": "Vacancies, daily work, a helper",
       "employer_desc": "Ready workers, post a vacancy",
       "go": "Start",
@@ -430,7 +430,7 @@
     "alt_agriculture": "A farmer setting up drip irrigation in a cotton field",
     "alt_generic": "{name}: a photo from the workplace",
     "page_title": "Professions catalog",
-    "page_subtitle": "Pick a field to open all its active jobs. Numbers show the listings on the site right now.",
+    "page_subtitle": "Pick a field",
     "page_all_title": "All fields",
     "page_meta": "Jobs in construction, healthcare, education, retail, transport and more — the Ish topdim professions catalog.",
     "no_jobs": "No listings yet"

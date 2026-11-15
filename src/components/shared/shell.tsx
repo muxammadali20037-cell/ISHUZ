@@ -7,6 +7,7 @@ import type { NavRole } from "./app-shell";
 import { AppFrame, type FrameChrome } from "./app-frame";
 import { LastSeenPing } from "./last-seen-ping";
 import { DraftGuard } from "./draft-guard";
+import { getHomeSettings } from "@/features/home-windows/queries";
 import { getMode } from "@/features/mode/server";
 import { billingEnabled } from "@/lib/features";
 import { phoneLoginHref } from "@/features/entry/auth-links";
@@ -35,7 +36,7 @@ export async function Shell({
   footer?: ReactNode;
 }) {
   // sessiya va o'qilmaganlar soni parallel (ketma-ket ikki so'rov emas)
-  const [session, unread, mode] = await Promise.all([getSession(), unreadCounts(), getMode()]);
+  const [session, unread, mode, home] = await Promise.all([getSession(), unreadCounts(), getMode(), hideNav || bare ? null : getHomeSettings()]);
   const role: NavRole = forceRole ?? (session ? (mode === "employer" ? "employer" : "worker") : "guest");
   // ish qidiruvchi rejimi: telefonda bosh sahifa panelidagi hudud (eslab qolingan; bo'lmasa — butun O'zbekiston)
   const place = mode === "worker" && !hideNav && !bare ? await placeLabel() : null;
@@ -47,6 +48,8 @@ export async function Shell({
       counts: session ? unread : undefined,
       site: !session && !mode ? { pricing: billingEnabled(), registerHref: phoneLoginHref({ next: "/start", mode: null }) } : null,
       place,
+      // telefonda bosh sahifa sarlavhasidagi qidiruv (TopBar faqat "/" da ko'rsatadi); kesh — admin o'zgartirsa yangilanadi
+      search: home ? { ai: home.aiButton } : null,
       user: session
         ? {
             firstName: session.profile.first_name,

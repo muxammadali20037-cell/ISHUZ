@@ -104,12 +104,17 @@ export function NotificationList({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">{unread ? t("notifications.unread_count", { count: unread }) : t("notifications.page", { page })}</p>
-        <Button variant="ghost" size="sm" onClick={markAll} loading={pending} disabled={!unread}>
-          <CheckCheck className="size-4" /> {t("notifications.mark_all_read")}
-        </Button>
-      </div>
+      {/* bildirishnoma bo'lmasa — "1-sahifa" va o'chirilgan tugma ko'rsatilmaydi (ortiqcha yozuv yo'q) */}
+      {items.length ? (
+        <div className="flex items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">{unread ? t("notifications.unread_count", { count: unread }) : page > 1 ? t("notifications.page", { page }) : null}</p>
+          {unread ? (
+            <Button variant="ghost" size="sm" onClick={markAll} loading={pending}>
+              <CheckCheck className="size-4" /> {t("notifications.mark_all_read")}
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
 
       {!items.length ? (
         <EmptyState icon={Bell} title={t("notifications.empty_title")} description={t("notifications.empty_desc")} />

@@ -1,5 +1,32 @@
 # O'zgarishlar jurnali
 
+## 2026-11-15 · Qidiruv tepada, ortiqcha matnlar qisqardi, 100+100 sinov (`claude/top-search`)
+
+Ega: "Uzumnikiga o'xshatib qidiruvni tepaga chiqar (telefon), «masalan oshpaz» o'rniga «ish va ishchilar izlash» lupa
+oldida tursin, bosganda kvadratcha chiqmasin; ortiqcha so'z-matnlar juda ko'p — maksimal qulay va tushunarli bo'lsin;
+o'zing 100 ta vakansiya va 100 ta ishchi joylab, oddiy so'zlar bilan qidirib ko'r, kirishdan rol o'zgartirishgacha,
+tugmalargacha hammasini test qil".
+
+- **Qidiruv sarlavhada (telefon):** bosh sahifada (ish izlovchi ham, ish beruvchi ham) qidiruv maydoni yuqori panelning
+  o'zida, lupa va "Ish va ishchilar izlash" yozuvi bilan; sahifa ichidagi takror maydon telefonda yashirildi (kompyuterda
+  joyida). Yordamchi yoqilgan bo'lsa — yozilgani yordamchiga ketadi, o'chiq bo'lsa — oddiy qidiruv sahifasiga. Rejim
+  tanlanmagan mehmon sahifasi o'zgarmadi (u yerda hudud/kompaniya qidiruvi bor).
+- **Kvadratcha yo'q:** maydonni bosganda ichki kiritish joyi atrofida to'rtburchak halqa chiqmaydi — butun maydon
+  yumshoq ramka bilan ajraladi.
+- **Imlo xatosi bilan ham topadi:** kasb lug'atda aniq topilmasa, bitta-ikkita harf farqi bilan eng yaqin kasb olinadi
+  ("oshpz" → Oshpaz, "kasir" → Kassir, "elektirk" → Elektrik). Faqat butun so'zlar, 5 harfdan qisqasi tuzatilmaydi;
+  kasb bo'lmagan oddiy so'zlar ("kunlik", "restoran", "korzinkaga") kasbga aylanmaydi. Kasbning o'z nomi boshqa
+  kasbning sinonimidan ustun ("enaga" → Enaga, "Tarbiyachi yordamchisi" emas).
+- **Qisqa matnlar:** "Chat" → "Xabarlar"; yon menyu izohlari ("Barcha ishlar", "Yaqin atrofdagi ishlar"…), rol
+  almashtirish, sozlamalar, ish beruvchi ro'yxatdan o'tishi, til va rol tanlash ekranlari qisqardi; sahifa
+  sarlavhasi ostidagi ikkinchi darajali izohlar telefonda yashirildi; bildirishnomalarda bo'sh ro'yxatda ortiqcha
+  qator yo'q.
+- **100+100 sinov (faqat lokal stendda — jonli saytga soxta e'lon qo'yilmaydi):** `search-scale` 100 vakansiya va 100
+  ishchi joylaydi, sarlavhadagi qidiruvdan oddiy so'zlar bilan qidiradi ("oshpaz", "Chilonzorda oshpaz", "kunlik ish",
+  "haydovchi kerak", "Samarqandda sotuvchi", "oshpz", "повар нужен", "enaga kerak", "tajribali haydovchi"…) va topilgan
+  son bazadagiga tengligini, har kartochka so'ralgan kasb/joy bo'yichaligini tekshiradi. `all-links` — mehmon, ish
+  izlovchi, rol almashtirish, ish beruvchi: barcha ichki havolalar ochiladi.
+
 ## 2026-11-15 · E'lon berish soddalashtirildi: avval kasb, yordamchi — ixcham qator (`claude/simple-post`)
 
 Ega: "shu yerni ham soddalashtir — juda katta va tushunarsiz bo'lgan, ketma-ketligini to'g'irla, e'lon berishni osonlashtir"

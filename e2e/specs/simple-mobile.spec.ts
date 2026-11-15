@@ -27,8 +27,8 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   // har bir bo'lim — nomi va ostida kichik izoh (nima qiladi)
   const jobs = menu.locator('[data-menu-item="jobs"]');
   await expect(jobs).toContainText("Vakansiyalar");
-  await expect(jobs).toContainText("Barcha ishlarni ko'rish va qidirish");
-  await expect(menu.locator('[data-menu-item="map"]')).toContainText("Yaqin atrofdagi ishlarni xaritada ko'rish");
+  await expect(jobs).toContainText("Barcha ishlar");
+  await expect(menu.locator('[data-menu-item="map"]')).toContainText("Yaqin atrofdagi ishlar");
   // "AI" so'zi yo'q — "Yordamchi" (2026-11-15; avval "Barchasi siz uchun")
   await expect(menu.locator('[data-menu-item="ai"]')).toContainText("Yordamchi");
   await expect(menu).not.toContainText("AI");
@@ -75,7 +75,7 @@ test("rol almashtirish — bir bosishda: ish izlovchi → ish beruvchi va qaytib
     await asMode(context, "employer");
     await page.goto("/");
     const menu = page.locator("[data-home-menu]");
-    await expect(menu.locator('[data-menu-item="my_vacancies"]')).toContainText("Joylagan vakansiyalaringizni ko'rish");
+    await expect(menu.locator('[data-menu-item="my_vacancies"]')).toContainText("Joylagan vakansiyalar");
     await expect(menu.locator("[data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
     await menu.locator("[data-role-switch]").click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");

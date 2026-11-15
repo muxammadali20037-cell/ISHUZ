@@ -122,7 +122,7 @@
       "hired": "Ishga olingan"
     },
     "account": "Hisob",
-    "role_now": "Hozir: {role}. Bir bosishda almashtiriladi"
+    "role_now": "Hozir: {role}"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -754,7 +754,8 @@
     },
     "demos_exact": "Namuna e'lonlar — haqiqiy emas",
     "demos_category": "Shu sohadagi namuna e'lonlar — haqiqiy emas",
-    "demos_all": "Barcha namunalar"
+    "demos_all": "Barcha namunalar",
+    "top_placeholder": "Ish va ishchilar izlash"
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",
@@ -981,28 +982,28 @@
     "map": "Ishlar xaritada",
     "sections": "Bo'limlar",
     "hint": {
-      "home": "Bosh sahifani ochish",
-      "ai": "Sizga mos ishlar va maslahatlarni ko'rish",
-      "ai_employer": "Mos nomzodlar va maslahatlarni ko'rish",
-      "jobs": "Barcha ishlarni ko'rish va qidirish",
-      "map": "Yaqin atrofdagi ishlarni xaritada ko'rish",
-      "my_applications": "Yuborgan arizalaringiz va takliflarni ko'rish",
-      "saved": "Saqlab qo'ygan ishlaringizni ochish",
-      "messages": "Yozishmalaringizni ochish",
-      "profile": "Profil, e'lonlaringiz va hisobni ochish",
-      "my_vacancies": "Joylagan vakansiyalaringizni ko'rish",
-      "emp_applications": "Kelgan arizalarni ko'rish",
-      "candidates": "Ishchilarni qidirish va ko'rish",
-      "company": "Kompaniya ma'lumotlarini ochish",
-      "masters": "Usta topish yoki xizmat e'loni berish",
-      "settings": "Til, bildirishnomalar va hisob sozlamalari",
-      "help": "Savollarga javoblar va yordam olish"
+      "home": "Asosiy sahifa",
+      "ai": "Mos ishlar va maslahat",
+      "ai_employer": "Mos nomzodlar va maslahat",
+      "jobs": "Barcha ishlar",
+      "map": "Yaqin atrofdagi ishlar",
+      "my_applications": "Arizalar va takliflar",
+      "saved": "Saqlangan ishlar",
+      "messages": "Yozishmalar",
+      "profile": "E'lonlar va hisob",
+      "my_vacancies": "Joylagan vakansiyalar",
+      "emp_applications": "Kelgan arizalar",
+      "candidates": "Ishchi qidirish",
+      "company": "Kompaniya ma'lumotlari",
+      "masters": "Usta topish yoki xizmat berish",
+      "settings": "Til va bildirishnomalar",
+      "help": "Savol-javob"
     },
     "switch": {
       "to_employer": "Ish beruvchiga o'tish",
-      "to_employer_hint": "Ishchi qidirish va vakansiya joylash uchun",
+      "to_employer_hint": "Ishchi topish uchun",
       "to_worker": "Ish izlovchiga o'tish",
-      "to_worker_hint": "Ish qidirish va ariza yuborish uchun"
+      "to_worker_hint": "Ish topish uchun"
     }
   },
   "activity": {
@@ -1070,7 +1071,7 @@
   "home2": {
     "title": "Qanday ish qidiryapsiz?",
     "hint": "O'z so'zingiz bilan yozing — masalan: «Chilonzorda oshpaz» yoki «kunlik ish».",
-    "placeholder": "Masalan: oshpaz",
+    "placeholder": "Ish va ishchilar izlash",
     "submit": "Topish",
     "shortcuts": "Tez qidiruv",
     "all_filters": "Filtrlar bilan qidirish",
@@ -1078,7 +1079,7 @@
     "alert_desc": "Qanday ish kerakligini yozing, mos e'lon chiqishi bilan Telegram'da xabar keladi",
     "e_title": "Qanday xodim kerak?",
     "e_hint": "O'z so'zingiz bilan yozing — masalan: «Chilonzorda sotuvchi» yoki «kunlik ishchi».",
-    "e_placeholder": "Masalan: sotuvchi",
+    "e_placeholder": "Ish va ishchilar izlash",
     "e_all": "Barcha nomzodlar",
     "e_alert_title": "Mos nomzod chiqsa — xabar beramiz",
     "e_alert_desc": "Qanday xodim kerakligini yozing, mos ishchi e'loni chiqishi bilan Telegram'da xabar keladi",

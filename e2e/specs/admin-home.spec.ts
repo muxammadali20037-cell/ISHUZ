@@ -105,7 +105,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await guest.goto("/");
   await expect(guest.getByRole("heading", { level: 1, name: "Qanday xodim kerak?" })).toBeVisible();
   await expect(windowsOf(guest)).toHaveCount(0);
-  await expect(guest.locator("form[data-ai-field]")).toBeVisible();
+  await expect(guest.locator("form[data-ai-field]:visible")).toBeVisible();
 
   // ish izlovchi bosh sahifasi (2.0): oynalar yo'q, bitta AI qidiruv maydoni
   const seekerCtx = await browser.newContext({ baseURL: base, viewport: { width: 390, height: 844 } });
@@ -115,7 +115,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await seeker.goto("/");
   await expect(seeker.getByRole("heading", { level: 1, name: "Qanday ish qidiryapsiz?" })).toBeVisible();
   await expect(seeker.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
-  await expect(seeker.locator("form[data-ai-field]")).toBeVisible();
+  await expect(seeker.locator("form[data-ai-field]:visible")).toBeVisible();
 
   // AI qidiruv o'chiriladi — ikkala bosh sahifada ham o'rnida oddiy matnli qidiruv qoladi
   const aiSwitch = page.getByRole("switch", { name: "«AI bilan qidirish» tugmasi (qidiruv yonida)" });
@@ -123,10 +123,11 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await expect(aiSwitch).toHaveAttribute("aria-checked", "false");
   await guest.reload();
   await expect(guest.locator("form[data-ai-field]")).toHaveCount(0);
-  await expect(guest.getByRole("searchbox", { name: "Nomzod qidirish" })).toBeVisible();
+  // telefonda: sarlavhadagi qidiruv oddiy matnli bo'ladi (sahifadagisi telefonda ko'rinmaydi)
+  await expect(guest.getByRole("searchbox", { name: "Ish va ishchilar izlash" })).toBeVisible();
   await seeker.reload();
   await expect(seeker.locator("form[data-ai-field]")).toHaveCount(0);
-  await expect(seeker.getByRole("searchbox", { name: "Ish qidirish" })).toBeVisible();
+  await expect(seeker.getByRole("searchbox", { name: "Ish va ishchilar izlash" })).toBeVisible();
 
   const logs = await sql<{ target_id: string }>(
     "select target_id from public.audit_logs where actor_id = $1 and action = 'settings.update' and target_id in ('home_banners', 'ai_search_button') and created_at >= $2::timestamptz order by id",
@@ -138,9 +139,9 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "true");
   await guest.reload();
-  await expect(guest.locator("form[data-ai-field]")).toBeVisible();
+  await expect(guest.locator("form[data-ai-field]:visible")).toBeVisible();
   await seeker.reload();
-  await expect(seeker.locator("form[data-ai-field]")).toBeVisible();
+  await expect(seeker.locator("form[data-ai-field]:visible")).toBeVisible();
   await seekerCtx.close();
   await page.getByRole("button", { name: "Standartga qaytarish" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Standartga qaytarish" }).click();

@@ -58,7 +58,7 @@ export default async function MessagesPage({ searchParams }: { searchParams: Pro
   return (
     <Shell>
       <div className="container-narrow py-4 md:py-6">
-        <PageHeader title={t("chat.title")} subtitle={t("chat.description")} />
+        <PageHeader title={t("chat.title")} subtitle={t("chat.description")} hint />
         {all.length ? (
           <div className="mb-4 space-y-3">
             <Form action="/messages" role="search" aria-label={t("chat.list.search_label")}>

@@ -17,6 +17,7 @@ import { BrandMark } from "@/components/shared/brand-mark";
 import { BrandWordmark } from "@/components/shared/brand-wordmark";
 import { BRAND } from "@/config/brand";
 import { cn } from "@/lib/utils";
+import { TopSearch } from "@/features/find/components/top-search";
 
 /** Yuqori paneldagi foydalanuvchi (sessiyadan, serverda tayyorlanadi) */
 export interface TopBarUser {
@@ -40,18 +41,23 @@ export interface TopBarProps {
   side?: boolean;
   /** telefonda ichki sahifalarda "‹ Orqaga" (menyusiz ustalarda — yo'q: ularda pastda katta "Orqaga" tugmasi) */
   back?: boolean;
+  /** bosh sahifada telefonda sarlavha ostidagi doimiy qidiruv; ai — Yordamchi qidiruvi (admin o'chirmagan bo'lsa) */
+  search?: { ai: boolean } | null;
 }
 
 /**
  * Yuqori panel (barcha sahifalarda). Mijoz komponenti: ma'lumot serverda (Shell) tayyorlanadi, shuning uchun sahifa
  * yuklanayotganda ham (loading.tsx) o'sha panel joyida qoladi — AppFrame.
  */
-export function TopBar({ role, counts, mode = null, user, site = null, place = null, side = false, back = true }: TopBarProps) {
+export function TopBar({ role, counts, mode = null, user, site = null, place = null, side = false, back = true, search = null }: TopBarProps) {
   const { t } = useT();
   const pathname = usePathname();
   const session = user;
   // telefonda bosh sahifa paneli: logo · hudud · chat · bildirishnomalar (til — Profil → Sozlamalar, avatar — pastki "Profil")
   const showPlace = !!place && pathname === "/";
+  // Uzum kabi: telefonda bosh sahifada qidiruv sarlavhaning ichida (yopishib turadi) — "Ish va ishchilar izlash"
+  // (mehmon, rejim tanlanmagan — banner o'z qidiruvi bilan: kasb + hudud; u yerda takrorlanmaydi)
+  const showSearch = !!search && pathname === "/" && !site;
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header
@@ -179,6 +185,11 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           )}
         </div>
       </div>
+      {showSearch ? (
+        <div className="container-wide pb-2.5 lg:hidden" data-top-search-row>
+          <TopSearch mode={mode === "employer" ? "workers" : "jobs"} ai={search.ai} />
+        </div>
+      ) : null}
     </header>
   );
 }

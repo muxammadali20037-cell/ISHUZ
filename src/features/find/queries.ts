@@ -1,6 +1,7 @@
 import "server-only";
 
 import { randomBytes } from "node:crypto";
+import { unstable_cache } from "next/cache";
 import { isProhibitedProfession } from "@/features/moderation/policy";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
@@ -17,6 +18,7 @@ import { getProfessionImages } from "@/lib/profession-images/server";
 import { getCategories } from "@/lib/reference";
 import type { JobCardData } from "./components/result-cards";
 import { detectIntent, professionCandidates, withoutPlaceOnly, type FindMode } from "./intent";
+import { bestTypoMatch, type TypoEntry } from "./typo";
 import { EMPLOYER_KIND_TYPE, hasSectionFilter, type FindParams } from "./params";
 
 export const PAGE_SIZE = 20;
@@ -53,12 +55,23 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   const results = await Promise.all(candidates.map((c) => db.rpc("search_profession_nodes", { p_query: c.slice(0, 80), p_limit: 3 }).then((r) => ({ c, hits: r.data ?? [] }))));
   let best: { id: string; score: number } | null = null;
   for (const { c, hits } of results) {
+    const cn = normalizeText(c);
     for (const h of hits) {
       if (!h.selectable || h.score < 2 || isProhibitedProfession(h)) continue;
-      // uzunroq (aniqroq) ibora va aniq moslik afzal
-      const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01;
+      // uzunroq (aniqroq) ibora va aniq moslik afzal; kasbning o'z nomi boshqa kasbning sinonimidan ustun
+      // ("enaga" — "Enaga" kasbi, sinonimi "enaga" bo'lgan "Tarbiyachi yordamchisi" emas)
+      const ownName = [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && normalizeText(n) === cn);
+      const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01 + (ownName ? 0.5 : 0);
       if (!best || score > best.score) best = { id: h.id, score };
     }
+  }
+  // lug'atda yo'q — imlo xatosi bo'lishi mumkin ("oshpz", "kasir"): bitta-ikkita harf farqi bilan eng yaqin kasb
+  if (!best) {
+    // faqat yozilgan butun so'zlar: qo'shimchasi kesilgan bo'lak ("korzinkaga" → "korzinka") boshqa kasbga o'xshab qolmasin
+    const typed = new Set(normalizeText(q).split(" "));
+    const words = candidates.map((c) => normalizeText(c)).filter((c) => !c.includes(" ") && typed.has(c));
+    const hit = words.length ? bestTypoMatch(words, await typoIndex()) : null;
+    if (hit) best = { id: hit.id, score: 0 };
   }
   return {
     mode,
@@ -72,6 +85,55 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
     noExperience: u.noExperience,
     experienceMonths: u.experienceMonths,
   };
+}
+
+/**
+ * Imlo xatosini tuzatish uchun kasblar ro'yxati (tanlanadigan, faol, taqiqlanmagan): bitta so'zli nomlar va sinonimlar.
+ * Kuniga bir marta yangilanadi (kasblar daraxti kam o'zgaradi). Xato bo'lsa — bo'sh ro'yxat (qidiruv tuzatishsiz ishlayveradi).
+ * Hajmi: ~1900 kasb, ~5000 so'z — keshda bir necha yuz KB.
+ */
+const typoIndexCached = unstable_cache(
+  async (): Promise<TypoEntry[]> => {
+    const db = anon();
+    const out: TypoEntry[] = [];
+    const PAGE = 1000;
+    for (let from = 0; from < 20_000; from += PAGE) {
+      const { data, error } = await db
+        .from("profession_nodes")
+        .select("id, depth, name_uz, name_ru, name_en, aliases")
+        .eq("selectable", true)
+        .eq("is_active", true)
+        .order("id")
+        .range(from, from + PAGE - 1);
+      // xato keshlanmaydi (bo'sh ro'yxat bir kunga qolib ketmasin) — chaqiruvchi tuzatishsiz davom etadi
+      if (error) throw new Error(`typo_index:${error.code ?? ""}`);
+      for (const n of data ?? []) {
+        if (isProhibitedProfession(n)) continue;
+        const terms = new Map<string, boolean>();
+        for (const name of [n.name_uz, n.name_ru, n.name_en]) {
+          const t = name ? normalizeText(name) : "";
+          if (t && !t.includes(" ")) terms.set(t, false);
+        }
+        for (const a of n.aliases ?? []) {
+          const t = normalizeText(a);
+          if (t && !t.includes(" ") && !terms.has(t)) terms.set(t, true);
+        }
+        if (terms.size) out.push({ id: n.id, depth: n.depth, terms: [...terms].map(([t, alias]) => ({ t, alias })) });
+      }
+      if ((data?.length ?? 0) < PAGE) break;
+    }
+    return out;
+  },
+  ["profession-typo-index-v1"],
+  { revalidate: 86_400 },
+);
+async function typoIndex(): Promise<TypoEntry[]> {
+  try {
+    return await typoIndexCached();
+  } catch (error) {
+    console.warn("[find] typo index", error instanceof Error ? error.message : error);
+    return [];
+  }
 }
 
 export interface NodeInfo {
