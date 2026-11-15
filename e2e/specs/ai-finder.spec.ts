@@ -179,30 +179,15 @@ test("suhbat saqlanadi: e'lon ochilib, orqaga qaytilganda oynada oldingi javob t
   await expect(dialogOf(page).locator("article")).toHaveCount(1);
 });
 
-test("ovoz bilan: aytilgan gap maydonga yoziladi, tekshirib-tuzatib yuboriladi (Web Speech API bor brauzerda)", async ({ page, context }) => {
+test("ovoz yo'q (ega, 2026-11-15: «kerak emas»): brauzer qo'llasa ham mikrofon, «Ovoz bilan javob», «O'qib berish» chiqmaydi", async ({ page, context }) => {
   await vacancy("Buxgalter", "Buxgalter");
-  // brauzerning nutqni tanish xizmati o'rniga sinov: start() — "Toshkentda buxgalter" yakuniy natija, keyin tugash
+  // ovozli kiritish ham, o'qib berish ham "bor" brauzer — baribir tugmalar ko'rinmasligi kerak
   await context.addInitScript(() => {
     class FakeRecognition {
-      lang = "";
-      interimResults = false;
-      continuous = false;
-      maxAlternatives = 1;
-      onresult: ((e: unknown) => void) | null = null;
-      onerror: ((e: unknown) => void) | null = null;
-      onend: (() => void) | null = null;
-      start() {
-        (window as unknown as { __speechLang: string }).__speechLang = this.lang;
-        setTimeout(() => {
-          const alt = { transcript: "Toshkentda buxgalter" };
-          this.onresult?.({ resultIndex: 0, results: { length: 1, 0: Object.assign([alt], { isFinal: true }) } });
-          this.onend?.();
-        }, 50);
-      }
+      start() {}
       stop() {}
       abort() {}
     }
-    // yangi Chrome'da prefikssiz SpeechRecognition ham bor — ikkalasi ham sinov bilan almashtiriladi
     Object.assign(window, { SpeechRecognition: FakeRecognition, webkitSpeechRecognition: FakeRecognition });
   });
   await asGuest(context);
@@ -210,34 +195,16 @@ test("ovoz bilan: aytilgan gap maydonga yoziladi, tekshirib-tuzatib yuboriladi (
   await page.goto("/");
   await fab(page).click();
   const dialog = dialogOf(page);
-  // maydon bo'sh — asosiy tugma katta mikrofon (≥ 48px); matn yozilsa — "Yuborish"
-  const mic = dialog.getByRole("button", { name: "Ovoz bilan aytish" });
-  expect((await mic.boundingBox())!.width).toBeGreaterThanOrEqual(48);
-  await mic.click();
-  // aytilgan gap maydonga yoziladi — o'zi yuborilmaydi: foydalanuvchi tekshiradi, tuzatadi va yuboradi
   const field = dialog.getByLabel("Nima qidiryapsiz?");
-  await expect(field).toHaveValue("Toshkentda buxgalter");
-  await expect(dialog.getByText("Matnni tekshiring — kerak bo'lsa tuzating, keyin yuboring")).toBeVisible();
-  await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toHaveCount(0);
-  expect(await page.evaluate(() => (window as unknown as { __speechLang: string }).__speechLang)).toBe("uz-UZ");
+  await expect(field).toBeVisible();
+  await expect(dialog.getByRole("button", { name: /Ovoz bilan|Gapirib/ })).toHaveCount(0);
+  await expect(dialog.getByRole("switch")).toHaveCount(0);
   await field.fill("Toshkent shahrida buxgalter");
   await dialog.getByRole("button", { name: "Topish" }).click();
   await expect(dialog.getByText("Siz: Toshkent shahrida buxgalter")).toBeVisible();
   await expect(dialog.locator("article")).toHaveCount(1);
-  await expect(field).toHaveValue("");
-});
-
-test("ovozli kiritish qo'llanmasa — mikrofon tugmasi yo'q", async ({ page, context }) => {
-  await context.addInitScript(() => {
-    delete (window as unknown as { webkitSpeechRecognition?: unknown }).webkitSpeechRecognition;
-    delete (window as unknown as { SpeechRecognition?: unknown }).SpeechRecognition;
-  });
-  await asGuest(context);
-  await asMode(context, "worker");
-  await page.goto("/");
-  await fab(page).click();
-  await expect(dialogOf(page).getByLabel("Nima qidiryapsiz?")).toBeVisible();
-  await expect(dialogOf(page).getByRole("button", { name: "Ovoz bilan aytish" })).toHaveCount(0);
+  await expect(dialog.getByRole("button", { name: "O'qib berish" })).toHaveCount(0);
+  await expect(dialog.getByText(/mikrofon/i)).toHaveCount(0);
 });
 
 test("/ai sahifasi: suhbat sahifaning o'zida (oyna emas), natija shu yerda", async ({ page, context }) => {

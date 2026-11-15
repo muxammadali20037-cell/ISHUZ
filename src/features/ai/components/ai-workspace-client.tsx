@@ -30,8 +30,6 @@ import {
   Trash2,
   UserRound,
   UsersRound,
-  Volume2,
-  VolumeX,
   Zap,
   type LucideIcon,
 } from "lucide-react";
@@ -388,7 +386,6 @@ function ChatHeader({
     : aiConfigured
       ? t("easy.aiws.status_ai")
       : t("easy.aiws.status_rules");
-  const { speaker } = chat;
   return (
     // alohida ekranning o'z sarlavhasi: "‹" (ilovaga qaytish) · Yordamchi · suhbatlar · menyu
     <header className="sticky top-0 z-20 border-b border-border bg-card" style={{ paddingTop: "var(--safe-top)" }} data-ai-header>
@@ -400,7 +397,7 @@ function ChatHeader({
       >
         <ChevronLeft className="size-6" aria-hidden />
       </BackLink>
-      {/* telefonda belgi yo'q — joy "Ovoz bilan javob", "Suhbatlar" va menyu tugmalariga (salomlashuvda belgi bor) */}
+      {/* telefonda belgi yo'q — joy "Suhbatlar" va menyu tugmalariga (salomlashuvda belgi bor) */}
       <AiAvatar busy={chat.pending} size="md" className="max-sm:hidden" />
       <div className="min-w-0 flex-1">
         <h1 className="truncate text-lg font-extrabold leading-tight">
@@ -425,27 +422,6 @@ function ChatHeader({
           <span className="truncate">{status}</span>
         </p>
       </div>
-      {speaker.supported ? (
-        <button
-          type="button"
-          role="switch"
-          aria-checked={speaker.enabled}
-          onClick={() => speaker.setEnabled(!speaker.enabled)}
-          aria-label={t("easy.finder.voice_reply")}
-          className={cn(
-            "press flex size-11 shrink-0 items-center justify-center rounded-xl",
-            speaker.enabled
-              ? "bg-primary-soft text-primary-ink"
-              : "text-muted-foreground hover:bg-secondary",
-          )}
-        >
-          {speaker.enabled ? (
-            <Volume2 className="size-5" aria-hidden />
-          ) : (
-            <VolumeX className="size-5" aria-hidden />
-          )}
-        </button>
-      ) : null}
       {/* telefonda suhbat ketayotganda — "Yangi suhbat" bir bosishda (kompyuterda chap ustunda bor) */}
       {chat.turns.length ? (
         <button
@@ -490,20 +466,6 @@ function ChatHeader({
             >
               <Trash2 className="size-4" aria-hidden />{" "}
               {t("easy.aiws.menu_delete")}
-            </DropdownMenuItem>
-          ) : null}
-          {speaker.supported ? (
-            <DropdownMenuItem
-              onSelect={() => speaker.setEnabled(!speaker.enabled)}
-            >
-              {speaker.enabled ? (
-                <Volume2 className="size-4" aria-hidden />
-              ) : (
-                <VolumeX className="size-4" aria-hidden />
-              )}
-              {speaker.enabled
-                ? t("easy.aiws.menu_voice_on")
-                : t("easy.aiws.menu_voice_off")}
             </DropdownMenuItem>
           ) : null}
         </DropdownMenuContent>

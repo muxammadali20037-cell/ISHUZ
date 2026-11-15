@@ -47,8 +47,5 @@
     "rate_limited": "Juda ko'p urinish. Birozdan keyin qayta urinib ko'ring"
   },
   "cta_worker_update": "✨ Profilingizni yordamchi bilan yangilang",
-  "cta_worker_update_desc": "Nima o'zgargan bo'lsa oddiy tilda yozing — yordamchi kerakli bo'limlarni o'zi yangilaydi",
-  "voice_start": "Gapirib berish",
-  "voice_listening": "Gapiring — yozib boryapman… Tugatgach «To'xtatish»ni bosing.",
-  "voice_hint": "Yozish shart emas: «Gapirib berish»ni bosing va o'zingiz haqingizda ayting — yordamchi o'zi yozib, maydonlarni to'ldiradi."
+  "cta_worker_update_desc": "Nima o'zgargan bo'lsa oddiy tilda yozing — yordamchi kerakli bo'limlarni o'zi yangilaydi"
 }

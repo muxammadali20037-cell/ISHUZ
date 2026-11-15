@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Check, Mic, Sparkles, Square } from "lucide-react";
+import { Check, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/input";
 import { AiAvatar } from "@/components/shared/ai-avatar";
-import { useVoice } from "@/features/find/components/ai-voice";
 
 const MIN_LENGTH = 15;
 
@@ -39,19 +38,6 @@ export function AiComposer({
   const { t } = useT();
   const [text, setText] = useState(initialText);
   const tooShort = text.trim().length < MIN_LENGTH;
-  // ovoz bilan: aytilgani mavjud matn oxiriga qo'shiladi (brauzer qo'llasa; ovoz serverga yuborilmaydi — matnga brauzer aylantiradi)
-  const base = useRef("");
-  const join = (spoken: string) =>
-    (base.current ? `${base.current} ${spoken}` : spoken).slice(0, 4000);
-  const voice = useVoice(
-    (spoken) => setText(join(spoken)),
-    (spoken) => setText(join(spoken)),
-    { continuous: true },
-  );
-  const startVoice = () => {
-    base.current = text.trim();
-    voice.start();
-  };
 
   return (
     <div className="container-narrow py-5 sm:py-8">
@@ -80,12 +66,6 @@ export function AiComposer({
             </span>
           ))}
         </div>
-        {voice.supported ? (
-          <p className="flex items-start gap-2 rounded-xl bg-primary-soft px-3 py-2.5 text-sm font-semibold leading-snug text-primary-ink">
-            <Mic className="mt-0.5 size-4 shrink-0" aria-hidden />
-            {t("ai.voice_hint")}
-          </p>
-        ) : null}
         <div className="relative">
           <Textarea
             autoFocus
@@ -94,56 +74,10 @@ export function AiComposer({
             placeholder={placeholder}
             maxLength={4000}
             disabled={pending}
-            className={cn(
-              "min-h-[220px] text-base leading-relaxed",
-              voice.supported && "pb-16",
-            )}
+            className="min-h-[220px] text-base leading-relaxed"
             aria-label={title}
           />
-          {voice.supported ? (
-            // fishka: yozish o'rniga gapirib berish — ayniqsa telefonda va ko'p yozishni yoqtirmaydiganlar uchun
-            <button
-              type="button"
-              onClick={voice.listening ? voice.stop : startVoice}
-              disabled={pending}
-              aria-pressed={voice.listening}
-              aria-label={
-                voice.listening
-                  ? t("easy.finder.voice_stop")
-                  : t("ai.voice_start")
-              }
-              className={cn(
-                "ai-mic press absolute bottom-3 right-3 inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-sm font-bold",
-                voice.listening
-                  ? "bg-destructive-soft text-destructive"
-                  : "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover",
-              )}
-            >
-              {voice.listening ? (
-                <Square className="size-4 fill-current" aria-hidden />
-              ) : (
-                <Mic className="size-5" aria-hidden />
-              )}
-              {voice.listening
-                ? t("easy.finder.voice_stop")
-                : t("ai.voice_start")}
-            </button>
-          ) : null}
         </div>
-        {voice.listening ? (
-          <p
-            className="text-sm font-semibold text-primary-ink"
-            aria-live="polite"
-          >
-            {t("ai.voice_listening")}
-          </p>
-        ) : voice.error ? (
-          <p className="text-sm text-destructive" role="alert">
-            {voice.error === "denied"
-              ? t("easy.finder.voice_denied")
-              : t("easy.finder.voice_error")}
-          </p>
-        ) : null}
         {error ? (
           <p className="text-sm text-destructive" role="alert">
             {error}

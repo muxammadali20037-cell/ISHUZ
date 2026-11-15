@@ -113,8 +113,8 @@ test("cookie siyosati: sahifa 4 tilda, footer'da havola; maxfiylik siyosati AI y
   await context.addCookies([{ name: "ishuz_locale", value: "uz", domain: host, path: "/" }]);
   await page.goto("/privacy");
   const main = page.getByRole("main");
-  await expect(main.getByText(/Mikrofon faqat siz tugmani bosganingizda/)).toBeVisible();
-  await expect(main.getByText(/AI yordamchi: unga yozgan yoki aytgan matningiz/)).toBeVisible();
+  await expect(main.getByText(/Mikrofon faqat chatda ovozli xabar yozish tugmasini bosganingizda/)).toBeVisible();
+  await expect(main.getByText(/AI yordamchi: unga yozgan matningiz/)).toBeVisible();
   await expect(main.getByRole("link", { name: /Cookie fayllari siyosati/ })).toHaveAttribute("href", "/cookies");
   // footer (mehmon bosh sahifasi)
   await context.clearCookies({ name: "ib_mode" });

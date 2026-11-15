@@ -1,5 +1,30 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · "AI bilan oson joylash" (ish beruvchi) va ovozsiz yordamchi (`claude/ai-vacancy`)
+
+Ega: "ovoz yozish va ovoz chiqarib o'qishni olib tashla, kerak emas; ish beruvchi panelida «AI bilan vakansiyani oson
+joylang» ajralib tursin; kirganda sodda bo'lsin — «menga shunaqa kerak» desa, ekranda savol chiqsin, tanlab-tanlab sen
+bergan variantni o'tkazsin; yozuvlar kam va tushunarli bo'lsin".
+
+- **Ovoz olib tashlandi:** yordamchida (bosh sahifa oynasi, /ai ekrani, AI to'ldirish maydoni) mikrofon, "Ovoz bilan
+  javob" kaliti, "O'qib berish" tugmasi va ularning matnlari yo'q; salomlashuvdagi "mikrofonni bosib ayting" ham olindi.
+  Chatdagi ovozli xabarlar (odamlar o'rtasida) qoldi. Maxfiylik siyosatidagi mikrofon jumlasi shunga moslandi
+  (mikrofon — faqat chatda ovozli xabar uchun), cookie siyosatidan `ib_ai_speak` olindi (4 tilda, sana 2026-11-15).
+- **"AI bilan oson joylash" (`/post/vacancy?ai=1`):** ish beruvchi bosh sahifasida "Vakansiya joylash" ustida alohida
+  to'q sariq karta; oddiy formaning 1-qadamida ham shu kirish. Ish beruvchi bitta gap yozadi ("Chilonzordagi kafemizga
+  oshpaz kerak, oyligi 5 mln") yoki tayyor misolni bosadi. Gapdan tushunilgani ("Tushundim: Oshpaz · Chilonzor · 5 mln")
+  qayta so'ralmaydi; qolgani ekranda BITTADAN, katta variant tugmalari bilan: kasb (aniq bo'lmasa — variantlar, "Boshqa
+  kasb"), viloyat → tuman, maosh (tayyor summalar, "Kelishiladi", "Boshqa summa", oylik/kunlik), ish vaqti, tajriba, kim
+  ish beradi, nomi, telefon (profildan ma'lumlari so'ralmaydi), e'lon matni ("Ha, ma'qul" / "O'zgartirish"). Oxirida
+  bitta ekranda hammasi — har qatorda "O'zgartirish" va "E'lonni joylash". "Orqaga" — oldingi savol; "Oddiy forma" —
+  javoblar saqlanib oddiy qadamlarga o'tadi. Prod'da AI qo'shimcha to'ldiradi va e'lon matnini yozadi (faqat aytilgan
+  faktlardan — maosh, tajriba, grafik o'ylab topilmaydi); AI bo'lmasa — lug'at va savollar bilan ishlaydi.
+- **Imlo xatosi e'lon yozishda ham:** "santexnk", "oshpz" — eng yaqin kasb (ish izlovchi suhbatida ham).
+- Eski "AI bilan tez tayyorlash" (bitta katta matn maydoni) olib tashlandi — o'rnini yangi oqim egalladi.
+- Testlar: `vacancy-guide` (bosh sahifadan kirish → gap → savollar → joylash → bazada tekshirish; variantlar, orqaga,
+  kunlik, oxirgi ekrandan o'zgartirish, oddiy formaga o'tish; xato bilan yozilgan kasb), `guide-logic` unit testlari;
+  ai-finder, assistant-chat, assistant-stats, settings-legal — ovoz yo'qligi tekshiriladi.
+
 ## 2026-11-15 · Qidiruv tepada, ortiqcha matnlar qisqardi, 100+100 sinov (`claude/top-search`)
 
 Ega: "Uzumnikiga o'xshatib qidiruvni tepaga chiqar (telefon), «masalan oshpaz» o'rniga «ish va ishchilar izlash» lupa

@@ -7,6 +7,7 @@ import { getHomeSettings } from "@/features/home-windows/queries";
 import { AiFinder } from "@/features/find/components/ai-finder";
 import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
+import { AiAvatar } from "@/components/shared/ai-avatar";
 import { SeekerSearch } from "./home-search";
 import type { HomePlace } from "./home-queries";
 import { employerServiceHrefs, placeChooserHref } from "./quick-filters";
@@ -105,9 +106,25 @@ export async function EmployerHead({
           {t("easy.home2.e_all")} <ChevronRight className="size-4" aria-hidden />
         </Link>
       </nav>
+      {/* "AI bilan oson joylash" — alohida ajralib turadi (ega, 2026-11-16): bir gap yozadi, qolganini savollar bilan tanlaydi */}
+      <Link
+        href="/post/vacancy?ai=1"
+        prefetch={false}
+        data-track="home_post_vacancy"
+        data-track-to="ai"
+        data-guide-entry
+        className="press mt-5 flex items-center gap-3 rounded-2xl border-2 border-ai/40 bg-ai-soft px-4 py-3.5 hover:border-ai"
+      >
+        <AiAvatar size="md" />
+        <span className="min-w-0 flex-1">
+          <span className="block text-lg font-extrabold leading-snug text-foreground">{t("easy.vguide.entry_title")}</span>
+          <span className="block text-sm text-muted-foreground">{t("easy.vguide.entry_desc")}</span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-ai" aria-hidden />
+      </Link>
       {/* ish beruvchining asl maqsadi — vakansiya joylash: alohida, katta, ko'k */}
       {/* telefonda — faqat katta tugma (izohsiz) */}
-      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:rounded-xl sm:border sm:border-primary/25 sm:bg-primary-soft sm:p-4">
+      <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center sm:rounded-xl sm:border sm:border-primary/25 sm:bg-primary-soft sm:p-4">
         <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground max-sm:hidden" aria-hidden>
           <Sparkles className="size-5" />
         </span>

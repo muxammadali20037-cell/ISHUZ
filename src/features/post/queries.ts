@@ -1,6 +1,7 @@
 import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
+import { createPublicClient } from "@/lib/supabase/public";
 import type { SessionContext } from "@/features/auth/session";
 import { getProfessionTrail } from "@/features/professions/queries";
 import type { PickedProfession } from "@/features/professions/types";
@@ -161,4 +162,20 @@ export async function getSimpleListingFeatures(): Promise<SimpleListingFeatures>
   };
   featuresCache = { at: Date.now(), value };
   return value;
+}
+
+/** "AI bilan oson joylash": kasb savolidagi tez variantlar — eng ko'p so'raladigan oddiy kasblar (nomlari bazadan, ID o'ylab topilmaydi) */
+const QUICK_PROFESSIONS = ["Sotuvchi", "Oshpaz", "Haydovchi", "Farrosh", "Ofitsiant", "Kassir", "Quruvchi", "Omborchi"];
+
+export async function getQuickProfessions(): Promise<{ id: string; name_uz: string; name_ru: string; name_en: string | null }[]> {
+  const { data } = await createPublicClient()
+    .from("profession_nodes")
+    .select("id, name_uz, name_ru, name_en, depth")
+    .in("name_uz", QUICK_PROFESSIONS)
+    .eq("selectable", true)
+    .eq("is_active", true)
+    .order("depth");
+  const first = new Map<string, { id: string; name_uz: string; name_ru: string; name_en: string | null }>();
+  for (const n of data ?? []) if (!first.has(n.name_uz)) first.set(n.name_uz, { id: n.id, name_uz: n.name_uz, name_ru: n.name_ru, name_en: n.name_en });
+  return QUICK_PROFESSIONS.flatMap((n) => (first.has(n) ? [first.get(n)!] : []));
 }
