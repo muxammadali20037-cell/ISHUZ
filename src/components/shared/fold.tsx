@@ -4,6 +4,7 @@ import { useEffect, useId, useState, type ReactNode } from "react";
 import { ChevronDown } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
+import { TINT_TILE, type Tint } from "./tints";
 
 /**
  * Yig'iladigan bo'lim (2026-11-15, ega: "hammasini ichiga yashir — nimaligini bilsin, «ochish», «ko'rish» so'zlari bilan").
@@ -15,6 +16,7 @@ export function Fold({
   title,
   count,
   icon,
+  tint = "blue",
   verb = "open",
   open = "never",
   defaultOpen = false,
@@ -30,6 +32,8 @@ export function Fold({
   count?: number | null;
   /** belgi — tayyor element (server komponentidan funksiya uzatib bo'lmaydi): icon={<Inbox />} */
   icon?: ReactNode;
+  /** belgi plitkasining rangi (3.0): ko'k · binafsha · yashil · to'q sariq */
+  tint?: Tint;
   /** yopiq qatordagi so'z: "open" — "Ochish", "view" — "Ko'rish" */
   verb?: "open" | "view";
   open?: "lg" | "never";
@@ -69,12 +73,12 @@ export function Fold({
         onClick={() => setShown((v) => !v)}
         className={cn(
           "press flex min-h-16 w-full items-center gap-3 rounded-2xl border px-4 py-3 text-left transition-colors",
-          tone === "soft" ? "border-primary/20 bg-primary-soft/60 hover:border-primary/40" : "border-border bg-card hover:border-primary/40",
-          shown && "rounded-b-none border-b-transparent",
+          tone === "soft" ? "border-primary/20 bg-primary-soft/60 hover:border-primary/40" : "border-border/70 bg-card shadow-sm hover:border-primary/40",
+          shown && "rounded-b-none border-b-transparent shadow-none",
         )}
       >
         {icon ? (
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink [&>svg]:size-5" aria-hidden>
+          <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl [&>svg]:size-5", TINT_TILE[tint])} aria-hidden>
             {icon}
           </span>
         ) : null}
@@ -96,7 +100,7 @@ export function Fold({
         id={id}
         className={cn(
           shown ? "block rounded-b-2xl border border-t-0 px-4 pb-4 pt-1" : "hidden",
-          shown && (tone === "soft" ? "border-primary/20 bg-primary-soft/60" : "border-border bg-card"),
+          shown && (tone === "soft" ? "border-primary/20 bg-primary-soft/60" : "border-border/70 bg-card shadow-sm"),
           // kompyuterda (open="lg") — har doim ochiq, ramkasiz: sahifa o'z ko'rinishida
           open === "lg" && "lg:block lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0",
           bodyClassName,

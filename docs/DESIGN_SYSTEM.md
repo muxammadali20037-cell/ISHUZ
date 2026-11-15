@@ -1,4 +1,4 @@
-# Dizayn tizimi — Ish topdim 2.0
+# Dizayn tizimi — Ish topdim 3.0 (ranglar), 2.0 (tuzilish)
 
 Holat: **ranglar, shrift va radius kodga qo'llandi** (1-bosqich, 1-qadam, 2026-11-11) — `src/app/globals.css`.
 Komponentlar va qobiqlar keyingi qadamlarda. Kontrast `src/lib/brand-contrast.test.ts` da avtomatik tekshiriladi.
@@ -15,6 +15,32 @@ Namuna rasmlar — sifat darajasi uchun, piksel nusxasi uchun emas. Ulardan **ol
 - ma'lumot bo'lmagan joyda to'ldiruvchi grafiklar.
 
 ## 2. Ranglar
+
+### 3.0 ranglari (2026-11-15, ega yuborgan namuna rasm) — amaldagi qiymatlar
+
+Ega: "tuzilishini o'zgartirma, faqat dizaynni shunga mosla — ranglarni". Tuzilish (sahifalar, bloklar tartibi) 2.0 dagidek;
+o'zgargani — ranglar, soyalar, belgi plitkalari. Namunadagi soxta raqamlar ("2 500+ vakansiya"), begona logotiplar va stok
+odam surati **olinmadi** (1-bo'lim qoidasi).
+
+| Token | 3.0 qiymati | Kontrast |
+| --- | --- | --- |
+| `--primary` | `#0B57F0` (yorqin ko'k) | oq matn 5.8, fonda 5.4 ✓ |
+| `--primary-ink` | `#0847CF` | oq 7.5, fon 7.0, och ko'k 6.4 ✓ |
+| `--primary-soft` | `#E7EEFE` | maosh "pilyulasi", joylashuv tugmasi foni |
+| `--background` | `#F5F7FD` (och ko'kish) | |
+| `--foreground` | `#0E1A3D` (chuqur navy) | fon 15.9 ✓ |
+| `--muted-foreground` | `#4B5884` (ko'kish kulrang) | oq 6.9, fon 6.5 ✓ |
+| `--border` | `#E6EBF5` | dekorativ |
+| `--navy` / `--navy-2` | `#0D1F3F` / `#1A3563` | bosh sahifa banneri (`.hero-navy`, yengil gradient), yon menyu |
+| `--hero-accent` | `#6EA8FF` | navy banner ustidagi ko'k urg'u so'zlar: navy 6.8, navy-2 5.0 ✓ |
+| `--tint-blue/violet/green/orange` (+ `-ink`) | `#E3EDFE/#0A4FD8`, `#EBE9FE/#4F46E5`, `#E1F5F1/#05845F`, `#FFEFE3/#EA580C` | faqat belgi plitkasi (≥ 3:1) |
+| `--shadow-sm` / `--shadow-md` | yumshoq ko'kish soya | oq kartalar (`rounded-2xl border bg-card` — avtomatik) |
+
+- Rangli plitkalar: `components/shared/tints.ts` (`TINT_TILE`, `tintAt(i)` — navbatma-navbat, `tintFor(key)` — menyu bo'limlari).
+- Pastki menyu: faol bo'lim ostida ko'k chiziq. Maosh — och ko'k pilyulada (`bg-primary-soft text-primary-ink`).
+- "Universal ustalar" o'z turkuaz mavzusida qoladi; "Barchasi siz uchun" — to'q sariq (`--ai`).
+
+### 2.0 (tarix)
 
 Asos — talabdagi palitra. Kontrast WCAG AA (oddiy matn ≥ 4.5:1) bo'yicha hisoblandi; o'tmagan joyda matn uchun to'qroq
 variant qo'shildi. Faqat tokenlar ishlatiladi, komponentda hex yozilmaydi.

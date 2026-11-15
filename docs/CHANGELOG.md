@@ -1,5 +1,24 @@
 # O'zgarishlar jurnali
 
+## 2026-11-15 · Yangi ranglar: ega yuborgan namuna rasmdagidek (tuzilish o'zgarmagan) (`claude/design-colors`)
+
+Ega: "tuzilishini o'zgartirma, faqat dizaynni shunga mosla — ranglarni" (namuna: navy banner, yorqin ko'k tugmalar, oq
+kartalar, rangli belgi plitkalari, maosh — och ko'k pilyulada).
+
+- **Palitra 3.0** (`globals.css`, `docs/DESIGN_SYSTEM.md` §2): yorqin ko'k `#0B57F0`, navy matn `#0E1A3D`, och ko'kish fon
+  `#F5F7FD`, ko'kish kulrang `#4B5884`, yumshoq ko'kish soyalar. Barcha juftliklar AA (brand-contrast.test.ts — yangi
+  juftliklar: navy banner matni, plitka belgilari). Qorong'i mavzu ham moslandi.
+- **Bosh sahifa (mehmon):** birinchi ekran — to'q navy banner (oq sarlavha, ko'k urg'u, oq "Men ish qidiryapman" tugmasi).
+- **Rangli plitkalar** (ko'k · binafsha · yashil · to'q sariq): telefon bosh sahifasidagi tezkor yo'llar (endi oq kartalar),
+  "Bo'limlar" menyusi, yig'iladigan bo'limlar, sohalar to'ri (/search, /kasblar), Profildagi bo'limlar.
+- **Kartalar:** oq, deyarli ko'rinmas chegara va yumshoq soya (barcha `rounded-2xl` kartalar); e'lon kartalarida maosh —
+  och ko'k pilyulada. Telefonda yuqori qism sahifa fonida — oq kartalar ajralib turadi.
+- **Pastki menyu:** faol bo'lim ostida ko'k chiziq. **Sarlavha:** joylashuv — och ko'k pilyula.
+- Namunadagi soxta raqamlar ("2 500+ vakansiya"), begona logotiplar va stok surat olinmadi.
+- PWA manifest va xato sahifasi ranglari yangilandi.
+- Ruscha + 150% shriftda: pastki menyu nomlari va tezkor yo'l plitkalari ekranga sig'adi (yonga surilmaydi).
+- Testlar: brand-contrast (3.0 palitrasi va yangi juftliklar), telegram-fullscreen (yangi fon rangi).
+
 ## 2026-11-15 · Soddalashtirish: telefonda bo'limlar menyusi, "AI" o'rniga oddiy so'zlar, yig'iladigan bo'limlar (`claude/simplify-mobile`)
 
 Ega: "telefonda kirganda kategoriyalar chiqsin — chap menyudagidek, oldida kichik harf bilan nima ekani; eng tagida qizilda

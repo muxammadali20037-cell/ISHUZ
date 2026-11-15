@@ -131,8 +131,9 @@ function usePosted() {
 // Karta (2026-10 redizayn, COBALT SUN): matn birinchi — lavozim → maosh va davri → kompaniya → hudud · grafik · tajriba →
 // sana va amal. Butun karta bosiladi (sarlavha havolasi kartani qoplaydi, `after:inset-0`); "Saqlash" — o'ng yuqori burchakda,
 // amal tugmasi — pastki qatorda (ikkalasi `relative z-10`, karta havolasi ustida). Katta rasm va rangli belgilar yo'q.
-const cardCls = "relative rounded-xl border border-border bg-card px-4 py-3 transition-colors hover:border-primary/40 focus-within:border-primary/60";
-const stretched = "after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
+// 3.0: oq karta, yumshoq ko'kish soya (namunadagi e'lon kartalari)
+const cardCls = "relative rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm transition-colors hover:border-primary/40 focus-within:border-primary/60";
+const stretched = "after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
 const thumbCls = "size-12 shrink-0 rounded-lg";
 // amal: ikkilamchi (kartada bitta asosiy narsa — ma'lumot), lekin bosish maydoni ≥ 44 px
 const actionCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-primary/30 bg-card px-3 text-base font-semibold text-primary-ink hover:border-primary hover:bg-primary-soft";
@@ -256,7 +257,11 @@ export function JobResultCard({
         to={job.salary_to}
         type={job.salary_type}
         negotiable={job.salary_negotiable}
-        className={cn("mt-0.5 block text-base font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-foreground")}
+        // 3.0: maosh — och ko'k "pilyula"da (namunadagidek); kelishiladi — oddiy kulrang matn
+        className={cn(
+          "mt-1 text-base font-bold",
+          job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "block text-muted-foreground" : "inline-block max-w-full rounded-lg bg-primary-soft px-2.5 py-0.5 text-primary-ink",
+        )}
       />
       {job.employer_name ? (
         <p className="mt-1 flex min-w-0 items-center gap-1.5 text-sm font-medium text-foreground/85">

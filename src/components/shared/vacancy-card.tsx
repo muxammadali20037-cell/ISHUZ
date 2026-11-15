@@ -97,7 +97,13 @@ export function VacancyCard({
       </div>
 
       <div className="mt-3">
-        <SalaryText from={v.salary_from} to={v.salary_to} type={v.salary_type} negotiable={v.salary_negotiable} className="text-md" />
+        <SalaryText
+          from={v.salary_from}
+          to={v.salary_to}
+          type={v.salary_type}
+          negotiable={v.salary_negotiable}
+          className={v.salary_negotiable || (!v.salary_from && !v.salary_to) ? "text-md text-muted-foreground" : "inline-block rounded-lg bg-primary-soft px-2.5 py-0.5 text-md font-bold text-primary-ink"}
+        />
       </div>
 
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">

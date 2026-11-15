@@ -100,7 +100,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         <ProfileHeader session={session} mode={mode} />
       </Suspense>
 
-      <Fold name="my-listings" icon={<FileText />} verb="view" title={t("easy.cabinet.my_listings")} count={(worker ? 1 : 0) + vacancies.length || null}>
+      <Fold name="my-listings" icon={<FileText />} tint="blue" verb="view" title={t("easy.cabinet.my_listings")} count={(worker ? 1 : 0) + vacancies.length || null}>
       <section className="space-y-3" aria-label={t("easy.cabinet.my_listings")}>
         {!worker && !vacancies.length ? <p className="rounded-2xl bg-secondary p-4 text-muted-foreground">{t("easy.cabinet.no_listings")}</p> : null}
 
@@ -212,7 +212,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
       {/* "Mening dunyom" va bugungi reja (2026-11-13: bosh sahifadan ko'chirildi) — yig'ilgan */}
       {mode !== "employer" ? (
         <div id="dunyo" className="scroll-mt-20">
-          <Fold name="world" anchor="dunyo" icon={<Globe2 />} verb="open" title={t("easy.world.my_world")}>
+          <Fold name="world" anchor="dunyo" icon={<Globe2 />} tint="green" verb="open" title={t("easy.world.my_world")}>
             <Suspense fallback={null}>
               <MyWorld session={session} />
             </Suspense>
@@ -220,7 +220,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         </div>
       ) : null}
 
-      <Fold name="pro" icon={<BellRing />} verb="open" title={t("easy.aihub.pro_title")}>
+      <Fold name="pro" icon={<BellRing />} tint="orange" verb="open" title={t("easy.aihub.pro_title")}>
         <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
           <AiProCard userId={session.userId} only={mode} />
         </Suspense>
@@ -230,8 +230,8 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         <div className="grid gap-2 sm:grid-cols-2">
           {/* joriy rejimning e'loni (rejim tanlanmagan bo'lsa — ikkalasi, bir xil neytral ko'rinish) */}
           {newListings.map((l) => (
-            <Link key={l.href} href={l.href} className="press flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-base font-bold hover:border-primary/50">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
+            <Link key={l.href} href={l.href} className="press flex min-h-16 items-center gap-3 rounded-2xl border border-border/70 bg-card px-4 py-3 text-base font-bold shadow-sm hover:border-primary/50">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-tint-orange text-tint-orange-ink" aria-hidden>
                 <l.icon className="size-5" />
               </span>
               <span className="min-w-0 flex-1">{l.label}</span>
@@ -252,6 +252,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
           key={group}
           name={`links-${group}`}
           icon={group === "activity" ? <Activity /> : <UserRound />}
+          tint={group === "activity" ? "violet" : "blue"}
           verb="open"
           title={group === "activity" ? t("easy.cabinet.header.activity") : t("easy.cabinet.account")}
         >

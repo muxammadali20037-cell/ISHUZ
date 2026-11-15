@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
@@ -57,7 +58,7 @@ export default async function CatalogPage() {
             {t("welcome.catalog.page_all_title")}
           </h2>
           <ul className="mt-5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5">
-            {all.map((c) => {
+            {all.map((c, i) => {
               const n = countOf(c.id);
               return (
                 <li key={c.id} className="flex">
@@ -66,9 +67,9 @@ export default async function CatalogPage() {
                     prefetch={false}
                     data-track="catalog_category"
                     data-track-to={c.slug}
-                    className="group flex w-full items-center gap-3 rounded-xl border border-border bg-card p-3 transition-colors hover:border-primary/40 sm:p-4"
+                    className="group flex w-full items-center gap-3 rounded-2xl border border-border/70 bg-card p-3 shadow-sm transition-colors hover:border-primary/40 sm:p-4"
                   >
-                    <span className="flex size-11 shrink-0 items-center justify-center rounded-lg bg-primary-soft text-primary-ink" aria-hidden>
+                    <span className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${TINT_TILE[tintAt(i)]}`} aria-hidden>
                       <CategoryIcon name={c.icon} className="size-5" />
                     </span>
                     <span className="min-w-0 flex-1">

@@ -95,7 +95,8 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               href={place.href}
               prefetch={false}
               aria-label={t("easy.start.place_label", { place: place.label })}
-              className="press flex min-h-11 max-w-full items-center gap-1 rounded-lg px-1.5 text-base font-semibold hover:bg-secondary md:hidden"
+              // 3.0: joylashuv — och ko'k "pilyula" (namunadagi "Toshkent ⌄")
+              className="press flex h-11 w-fit max-w-full items-center gap-1 rounded-full border border-primary/15 bg-primary-soft px-3 text-sm font-semibold hover:border-primary/40 md:hidden"
             >
               <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
               <span className="truncate">{place.label}</span>

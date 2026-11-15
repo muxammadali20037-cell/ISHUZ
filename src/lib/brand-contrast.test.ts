@@ -75,6 +75,10 @@ const PAIRS: [string, string][] = [
   ["hero-fg", "hero-to"],
   ["hero-muted", "hero-via"],
   ["hero-muted", "hero-to"],
+  // 3.0: bosh sahifa navy banneri (.hero-navy) — oq sarlavha, och izoh va ko'k urg'u so'zlar
+  ["navy-foreground", "navy"],
+  ["navy-muted", "navy"],
+  ["hero-accent", "navy"],
 ];
 
 /** Matn bo'lmagan UI elementlari (tugma chegarasi, fokus halqasi, faol chiziq): WCAG 1.4.11 — kamida 3:1 */
@@ -83,6 +87,11 @@ const UI_PAIRS: [string, string][] = [
   ["primary", "card"],
   ["ring", "background"],
   ["brand-green", "card"],
+  // 3.0 rangli belgi plitkalari: belgi o'z och fonida
+  ["tint-blue-ink", "tint-blue"],
+  ["tint-violet-ink", "tint-violet"],
+  ["tint-green-ink", "tint-green"],
+  ["tint-orange-ink", "tint-orange"],
 ];
 
 describe("UI elementlari kontrasti (≥ 3:1)", () => {
@@ -101,16 +110,16 @@ describe("UI elementlari kontrasti (≥ 3:1)", () => {
   }
 });
 
-describe("2.0 palitrasi (docs/DESIGN_SYSTEM.md)", () => {
+describe("3.0 palitrasi (2026-11-15, ega namunasi; docs/DESIGN_SYSTEM.md)", () => {
   const light = block(":root");
   it("talabdagi asosiy ranglar o'z joyida", () => {
-    expect(light.navy?.toLowerCase()).toBe("#101d35");
-    expect(light.primary?.toLowerCase()).toBe("#276fe5");
-    expect(light.background?.toLowerCase()).toBe("#f4f6fa");
+    expect(light.navy?.toLowerCase()).toBe("#0d1f3f");
+    expect(light.primary?.toLowerCase()).toBe("#0b57f0");
+    expect(light.background?.toLowerCase()).toBe("#f5f7fd");
     expect(light.card?.toLowerCase()).toBe("#ffffff");
     expect(light["brand-green"]?.toLowerCase()).toBe("#16a378");
-    expect(light.foreground?.toLowerCase()).toBe("#172033");
-    expect(light.border?.toLowerCase()).toBe("#e5eaf0");
+    expect(light.foreground?.toLowerCase()).toBe("#0e1a3d");
+    expect(light.border?.toLowerCase()).toBe("#e6ebf5");
   });
 });
 

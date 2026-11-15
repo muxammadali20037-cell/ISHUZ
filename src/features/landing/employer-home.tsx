@@ -129,7 +129,7 @@ async function NewWorkers({ session, place, fold = false }: { session: SessionCo
   if (!fold) return body;
   // telefonda yig'iladi: "Yangi nomzodlar  8  Ko'rish ⌄" (kompyuterda har doim ochiq)
   return (
-    <Fold name="home-feed" open="lg" verb="view" icon={<UsersRound />} title={t("easy.start.new_workers_title")} count={feed.total || null}>
+    <Fold name="home-feed" open="lg" verb="view" icon={<UsersRound />} tint="violet" title={t("easy.start.new_workers_title")} count={feed.total || null}>
       {body}
     </Fold>
   );

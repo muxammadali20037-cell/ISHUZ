@@ -113,17 +113,18 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
         {cells.map((item) => {
           if (item === "post") {
             return (
-              <li key="post" className="flex flex-1 justify-center">
+              // min-w-0 + truncate: ruscha va katta shriftda (150%) beshta nom ekranga sig'adi — menyu yonga surilmaydi
+              <li key="post" className="flex min-w-0 flex-1 justify-center">
                 <Link
                   href={post.href}
                   aria-current={postActive ? "page" : undefined}
                   data-track="nav_post"
-                  className="press flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary-ink"
+                  className="press flex h-full w-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary-ink"
                 >
                   <span className="flex h-8 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground" aria-hidden>
                     <Plus className="size-5" strokeWidth={2.5} />
                   </span>
-                  <span>{t(post.labelKey)}</span>
+                  <span className="max-w-full truncate px-0.5">{t(post.labelKey)}</span>
                 </Link>
               </li>
             );
@@ -131,16 +132,18 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
           const active = item.match ? item.match(pathname) : pathname === item.href;
           const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
           return (
-            <li key={item.href} className="flex-1">
+            <li key={item.href} className="min-w-0 flex-1">
               <Link
                 href={item.href}
-                className={cn("press relative flex h-full flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary-ink" : "text-muted-foreground hover:text-foreground")}
+                className={cn("press relative flex h-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary-ink" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
                 <span className="flex h-8 items-center" aria-hidden>
                   <item.icon className="size-5" strokeWidth={active ? 2.25 : 1.75} />
                 </span>
-                <span>{t(item.labelKey)}</span>
+                <span className="max-w-full truncate px-0.5">{t(item.labelKey)}</span>
+                {/* 3.0: faol bo'lim ostida ko'k chiziq (namunadagidek) */}
+                {active ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" aria-hidden /> : null}
                 {badge ? (
                   <span className="absolute left-1/2 top-2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-2xs font-bold text-destructive-foreground">
                     {badge > 99 ? "99+" : badge}
