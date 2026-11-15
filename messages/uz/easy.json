@@ -1276,7 +1276,10 @@
       "prohibited": "Ish topdim faqat ish va ishchi qidirish e'lonlarini qabul qiladi. Ishga aloqasiz yoki taqiqlangan narsani yozmang.",
       "validation": "Javob juda uzun yoki bo'sh. Qisqaroq yozing.",
       "blocked": "Hisobingiz bloklangan"
-    }
+    },
+    "entry_title": "Yordamchi bilan to'ldirish",
+    "entry_hint": "Bir gap bilan yozing — qolganini o'zi so'raydi",
+    "back_to_list": "Kasbni ro'yxatdan tanlash"
   },
   "chips": {
     "seek_daily": "Kunlik ish",

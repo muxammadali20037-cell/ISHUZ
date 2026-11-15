@@ -25,6 +25,7 @@ test("e'lon yozayotganda 'massaj' — e'lon yo'q, hisob darhol bloklanadi va /bl
     await asMode(context, "worker");
     await page.goto("/post/worker");
     await formReady(page);
+    await page.locator("[data-listing-chat-open]").click();
     const chat = page.locator("[data-listing-chat]");
     await chat.locator("[data-chat-input]").fill("Men massajchiman, ish qidiryapman");
     await chat.getByRole("button", { name: "Boshlash" }).click();

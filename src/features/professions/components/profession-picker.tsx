@@ -1,7 +1,7 @@
 "use client";
 
 import { TINT_TILE, tintAt } from "@/components/shared/tints";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Check, ChevronLeft, ChevronRight, Clock, Loader2, Search, Sparkles, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import type { Category } from "@/lib/reference";
@@ -47,6 +47,7 @@ export function ProfessionPicker({
   subtitle,
   initialQuery = "",
   onCustom,
+  extra,
 }: {
   categories: Category[];
   value: PickedProfession | null;
@@ -57,6 +58,8 @@ export function ProfessionPicker({
   initialQuery?: string;
   /** "Topilmadimi? O'zingiz yozing": asl matn + eng yaqin soha (berilmasa bu yo'l ko'rsatilmaydi) */
   onCustom?: (text: string, categoryId: string) => void;
+  /** qidiruv maydoni ostida (hali hech narsa yozilmagan va tanlanmagan bo'lsa): masalan "Yordamchi bilan to'ldirish" */
+  extra?: ReactNode;
 }) {
   const { t, name } = useT();
   const [browsing, setBrowsing] = useState(!value);
@@ -257,6 +260,8 @@ export function ProfessionPicker({
         aria-label={t("professions.search_placeholder")}
         className="h-14 rounded-2xl text-base"
       />
+
+      {extra && !value && !query.trim() ? extra : null}
 
       {ambiguity ? (
         <section className="space-y-2 rounded-2xl border border-primary/30 bg-primary-soft/40 p-4" aria-live="polite">

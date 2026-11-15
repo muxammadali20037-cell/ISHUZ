@@ -44,6 +44,7 @@ export function ListingChat({
   needPhone,
   onActiveChange,
   onFinish,
+  autoFocus = false,
 }: {
   regions: Region[];
   districts: District[];
@@ -53,6 +54,8 @@ export function ListingChat({
   needPhone: boolean;
   onActiveChange: (active: boolean) => void;
   onFinish: (c: ChatCollected) => void;
+  /** "Yordamchi bilan to'ldirish" bosilib ochilganda — yozish maydoni darhol faol */
+  autoFocus?: boolean;
 }) {
   const { t, name, tEnum, locale } = useT();
   const [msgs, setMsgs] = useState<Msg[]>([]);
@@ -618,6 +621,7 @@ export function ListingChat({
                 : t("easy.aichat.start_label")
             }
             inputMode={field === "phone" ? "tel" : undefined}
+            autoFocus={autoFocus && !started}
             className="h-12 flex-1 rounded-xl bg-card text-base"
             data-chat-input
           />

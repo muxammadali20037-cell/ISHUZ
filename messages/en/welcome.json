@@ -23,12 +23,12 @@
     "worker_2": "Open a matching listing: get in touch right away with “Call” or tap “Apply”.",
     "worker_3": "If you see “Application sent”, the employer has received it.",
     "worker_4": "On the home page tap “Post about myself” — employers will find you in search.",
-    "worker_5": "Replies appear in “My account” → “My applications” and “Job offers”; updates in “Notifications”.",
+    "worker_5": "Replies and job offers appear in “Applications” (bottom menu); updates in “Notifications”.",
     "employer_title": "I'm hiring",
     "employer_1": "On the home page tap “Post a job”.",
     "employer_2": "Choose the profession (not on the list? type it in), then fill in the region and terms step by step.",
     "employer_3": "Review the listing and tap “Publish listing”.",
-    "employer_4": "In “My account”, the listing card shows the number of applications and “Matching workers”.",
+    "employer_4": "In “Profile” → “My listings”, the listing card shows the number of applications and “Matching workers”.",
     "employer_5": "Open an application: reply with “Shortlist” or “Reject”, get in touch via “Message” or “Call”.",
     "safety_title": "Safety",
     "safety_1": "Never send money to anyone to get a job.",
@@ -118,7 +118,7 @@
       "employer_title": "I'm hiring",
       "employer_desc": "Find people for my team",
       "continue": "Continue",
-      "note": "After you sign in, the app opens in this role. You can change it in My account → Change role.",
+      "note": "After you sign in, the app opens in this role. You can switch it with one tap at the top of the “Profile” page.",
       "error": "Your choice wasn't saved. Please try again."
     },
     "done": {

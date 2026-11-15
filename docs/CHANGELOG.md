@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-15 · E'lon berish soddalashtirildi: avval kasb, yordamchi — ixcham qator (`claude/simple-post`)
+
+Ega: "shu yerni ham soddalashtir — juda katta va tushunarsiz bo'lgan, ketma-ketligini to'g'irla, e'lon berishni osonlashtir"
+(ish izlovchi e'loni, 1-qadam: katta "Tez va qulay e'lon — yordamchi bilan" kartasi kasb savolidan oldin turardi).
+
+- **1-qadam tartibi:** avval asosiy savol — "Qaysi kasb bo'yicha ish qidiryapsiz?" va qidiruv; uning ostida bitta ixcham qator
+  "Yordamchi bilan to'ldirish — bir gap bilan yozing, qolganini o'zi so'raydi". Bosilsa — suhbat ochiladi (yozish maydoni
+  darhol faol), "‹ Kasbni ro'yxatdan tanlash" bilan qaytiladi; "Qaytadan boshlash" ham ro'yxatga qaytaradi. Kasb yozilsa yoki
+  tanlansa — qator yo'qoladi (ortiqcha narsa yo'q).
+- **Eskirgan matnlar:** rol tanlash ekranidagi "Kabinetim → «Rolni o'zgartirish»" → "«Profil» sahifasining tepasidagi
+  tugma"; yordam bo'limidagi "Kabinetim" havolalari → "Arizalar" / "Profil" (uz, oz, ru, en).
+- Testlar: post-ai-chat (tartib, ochish/qaytish, fokus), moderation-ban.
+
 ## 2026-11-15 · "Yordamchi": alohida to'liq ekran, sodda tezkor imkoniyatlar (`claude/assistant-screen`)
 
 Ega: "Barchasi siz uchun o'rniga Yordamchi; alohida panelga kirganda tagida menyular ko'rinmasin — alohida katta ekranga

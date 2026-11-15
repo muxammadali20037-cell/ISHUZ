@@ -1276,7 +1276,10 @@
       "prohibited": "Ish topdim only accepts job and job-seeker ads. Please don't write anything unrelated to work or prohibited.",
       "validation": "The answer is empty or too long. Please write it shorter.",
       "blocked": "Your account is blocked"
-    }
+    },
+    "entry_title": "Fill in with the helper",
+    "entry_hint": "Write one sentence — it will ask the rest",
+    "back_to_list": "Pick a job from the list"
   },
   "chips": {
     "seek_daily": "Day jobs",

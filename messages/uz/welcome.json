@@ -23,12 +23,12 @@
     "worker_2": "Mos e'lonni oching: «Qo'ng'iroq qilish» bilan darhol bog'laning yoki «Ariza yuborish»ni bosing.",
     "worker_3": "«Ariza yuborildi» chiqsa — arizangiz ish beruvchiga yetib bordi.",
     "worker_4": "Bosh sahifadagi «O'zim haqimda e'lon berish» orqali e'lon bering — ish beruvchilar sizni qidiruvda topadi.",
-    "worker_5": "Javoblar «Kabinetim» → «Yuborgan arizalarim» va «Ishga takliflar»da, yangiliklar «Bildirishnomalar»da ko'rinadi.",
+    "worker_5": "Javoblar va ishga takliflar «Arizalar» bo'limida (pastki menyuda), yangiliklar «Bildirishnomalar»da ko'rinadi.",
     "employer_title": "Xodim qidiryapman",
     "employer_1": "Bosh sahifadagi «Ish e'loni berish»ni bosing.",
     "employer_2": "Kasbni tanlang (ro'yxatda bo'lmasa — o'zingiz yozing), keyin hudud va shartlarni bosqichma-bosqich to'ldiring.",
     "employer_3": "E'lonni tekshirib chiqing va «E'lonni joylash»ni bosing.",
-    "employer_4": "«Kabinetim»dagi e'lon kartasida kelgan arizalar soni va «Mos ishchilar» ko'rinadi.",
+    "employer_4": "«Profil» → «Mening e'lonlarim»dagi e'lon kartasida kelgan arizalar soni va «Mos ishchilar» ko'rinadi.",
     "employer_5": "Arizani oching: «Tanlovga olish» yoki «Rad etish» bilan javob bering, «Yozish» yoki «Qo'ng'iroq qilish» orqali bog'laning.",
     "safety_title": "Xavfsizlik",
     "safety_1": "Ishga kirish uchun hech kimga oldindan pul o'tkazmang.",
@@ -118,7 +118,7 @@
       "employer_title": "Ishchi qidiryapman",
       "employer_desc": "Jamoam uchun xodim topish",
       "continue": "Davom etish",
-      "note": "Kirgandan keyin ilova shu rolda ochiladi. Rolni Kabinetim → «Rolni o'zgartirish» orqali almashtirasiz.",
+      "note": "Kirgandan keyin ilova shu rolda ochiladi. Rolni «Profil» sahifasining tepasidagi tugma bilan bir bosishda almashtirasiz.",
       "error": "Tanlov saqlanmadi. Qayta urinib ko'ring."
     },
     "done": {
