@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode, type RefObject } from "react";
-import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, Check, ChevronRight, Copy, Info, ListFilter, MessageCircle, Mic, Plus, RotateCcw, Search, Square, UsersRound, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type KeyboardEvent, type ReactNode, type RefObject } from "react";
+import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, Check, ChevronRight, Copy, Info, ListFilter, MessageCircle, Plus, RotateCcw, Search, Square, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { AiAvatar } from "@/components/shared/ai-avatar";
@@ -31,7 +31,6 @@ import {
 } from "../ai-chat-model";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 import { DemoJobCard } from "@/features/demo-vacancies/components/demo-job-card";
-import { useSpeaker, useVoice } from "./ai-voice";
 
 /**
  * AI yordamchi — suhbat oynasi (2026-11: HR yordamchi). Foydalanuvchi oddiy so'z bilan yozadi yoki aytadi; yordamchi suhbat
@@ -144,7 +143,6 @@ export function useAiChat(defaultMode: FinderMode) {
   const [convId, setConvIdState] = useState<number | null>(null);
   const seq = useRef(0);
   const abortRef = useRef<AbortController | null>(null);
-  const speaker = useSpeaker();
   const pending = turns.some((x) => x.status === "pending");
 
   // qurilmada saqlangan suhbat — faqat brauzerda, birinchi chizishdan keyin (SSR bilan mos)
@@ -196,7 +194,6 @@ export function useAiChat(defaultMode: FinderMode) {
   const ask = (text: string, opts?: { display?: string; refine?: boolean }) => {
     const q = text.replace(/\s+/g, " ").trim().slice(0, MESSAGE_MAX_CHARS);
     if (q.length < 1 || pending) return false;
-    speaker.stop();
     const id = ++seq.current;
     const m = mode;
     // kontekst: shu rejimdagi oxirgi savol-javoblar (yordamchi "Chilonzorda" kabi qisqa davomni tushunishi uchun)
@@ -215,7 +212,6 @@ export function useAiChat(defaultMode: FinderMode) {
     void (async () => {
       // matn bo'laklari kadrga bir marta chiziladi (har harfda butun ro'yxat qayta chizilmasin)
       let buf = "";
-      let full = "";
       let frame = 0;
       let finished = false;
       const flush = () => {
@@ -248,7 +244,6 @@ export function useAiChat(defaultMode: FinderMode) {
               break;
             case "text":
               buf += e.delta;
-              full += e.delta;
               frame ||= requestAnimationFrame(flush);
               break;
             case "results":
@@ -264,7 +259,6 @@ export function useAiChat(defaultMode: FinderMode) {
               finished = true;
               flush();
               patch(id, (x) => ({ ...x, status: "done", source: e.source, lang: e.lang }));
-              speaker.speakIfEnabled(full, e.lang);
               break;
             case "error":
               fail(e.code);
@@ -300,7 +294,6 @@ export function useAiChat(defaultMode: FinderMode) {
 
   const setMode = (m: FinderMode) => {
     if (m === mode || pending) return;
-    speaker.stop();
     setModeState(m);
     const stored = storageRead(m);
     setTurns(stored);
@@ -311,7 +304,6 @@ export function useAiChat(defaultMode: FinderMode) {
   /** Yangi suhbat: joriy suhbat ro'yxatda qoladi (yozilgan bo'lsa), ekran bo'shaydi */
   const clear = () => {
     if (pending) return;
-    speaker.stop();
     setStoredConvs(conversations);
     setTurns([]);
     setConvId(null);
@@ -322,7 +314,6 @@ export function useAiChat(defaultMode: FinderMode) {
     if (pending) return;
     const conv = conversations.find((c) => c.id === id);
     if (!conv) return;
-    speaker.stop();
     // joriy suhbat (bo'lsa) ro'yxatda qolsin — endi u "saqlangan"ga aylanadi
     setStoredConvs(conversations);
     seq.current = Math.max(seq.current, ...conv.turns.map((x) => x.id));
@@ -336,8 +327,7 @@ export function useAiChat(defaultMode: FinderMode) {
     if (pending) return;
     setStoredConvs((cur) => cur.filter((c) => c.id !== id));
     if (id === convId) {
-      speaker.stop();
-      setTurns([]);
+        setTurns([]);
       setConvId(null);
     }
   };
@@ -350,10 +340,7 @@ export function useAiChat(defaultMode: FinderMode) {
     setRestoredId(stored.at(-1)?.id ?? null);
   };
 
-  /** suhbat tili (oxirgi javobdan) — ovozli kiritish shu tilda tinglaydi */
-  const lang = turns.findLast((x) => x.lang)?.lang ?? null;
-
-  return { mode, setMode, turns, pending, ask, retry, stop, refine, clear, reload, restoredId, ready, speaker, lang, conversations, convId, openConversation, deleteConversation };
+  return { mode, setMode, turns, pending, ask, retry, stop, refine, clear, reload, restoredId, ready, conversations, convId, openConversation, deleteConversation };
 }
 
 export type AiChatState = ReturnType<typeof useAiChat>;
@@ -629,13 +616,8 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
             {turn.note}
           </p>
         ) : null}
-        {latest && !pending && reply && (chat.speaker.supported || reply.length > 240) ? (
+        {latest && !pending && reply && reply.length > 240 ? (
           <div className="-mx-2 -mb-1.5 flex flex-wrap gap-1" data-ai-reply-actions>
-            {chat.speaker.supported ? (
-              <button type="button" className={tool} onClick={() => chat.speaker.speak(reply, turn.lang ?? locale)}>
-                <Volume2 className="size-4" aria-hidden /> {t("easy.finder.speak")}
-              </button>
-            ) : null}
             {reply.length > 240 ? (
               <button type="button" className={tool} onClick={copy}>
                 {copied ? <Check className="size-4" aria-hidden /> : <Copy className="size-4" aria-hidden />} {copied ? t("easy.finder.copied") : t("easy.finder.copy")}
@@ -738,39 +720,22 @@ function Answer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: A
 }
 
 /** Suhbat oqimi: salomlashuv va misollar (bo'sh bo'lsa) yoki xabarlar; yangi xabar ko'rinadigan joyga suriladi */
-export function AiThread({ chat, examples, scrollOnRestore = true, bar: showBar = true }: { chat: AiChatState; examples: string[]; scrollOnRestore?: boolean; /** yuqori qator ("Ovoz bilan javob", "Yangi suhbat") — /ai sahifasida sarlavhada bor */ bar?: boolean }) {
+export function AiThread({ chat, examples, scrollOnRestore = true, bar: showBar = true }: { chat: AiChatState; examples: string[]; scrollOnRestore?: boolean; /** yuqori qator ("Yangi suhbat") — /ai sahifasida sarlavhada bor */ bar?: boolean }) {
   const { t } = useT();
   const lastRef = useRef<HTMLLIElement>(null);
   const last = chat.turns.at(-1);
   const lastKey = last ? `${last.id}:${last.status}` : "";
   // sahifada (/ai) qurilmadan tiklangan suhbat uchun ekran o'zi surilmaydi — sarlavha ko'rinib tursin
   const skip = !scrollOnRestore && !!last && last.id === chat.restoredId;
-  const { speaker } = chat;
 
   useEffect(() => {
     if (lastKey && !skip) lastRef.current?.scrollIntoView({ block: "start", behavior: "smooth" });
   }, [lastKey, skip]);
 
-  // yuqori qator: "Ovoz bilan javob" (qurilma qo'llasa) va "Yangi suhbat"
+  // yuqori qator: "Yangi suhbat" (ovozli javob olib tashlangan — ega, 2026-11-15: "kerak emas")
   const bar =
-    showBar && (speaker.supported || chat.turns.length) ? (
-      <div className="flex items-center justify-between gap-2">
-        {speaker.supported ? (
-          <button
-            type="button"
-            role="switch"
-            aria-checked={speaker.enabled}
-            onClick={() => speaker.setEnabled(!speaker.enabled)}
-            className={cn(
-              "press -my-2 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold",
-              speaker.enabled ? "text-primary-ink" : "text-muted-foreground hover:text-foreground",
-            )}
-          >
-            {speaker.enabled ? <Volume2 className="size-4" aria-hidden /> : <VolumeX className="size-4" aria-hidden />} {t("easy.finder.voice_reply")}
-          </button>
-        ) : (
-          <span />
-        )}
+    showBar && chat.turns.length ? (
+      <div className="flex items-center justify-end gap-2">
         {chat.turns.length ? (
           <button
             type="button"
@@ -854,11 +819,10 @@ export function AiThread({ chat, examples, scrollOnRestore = true, bar: showBar 
 export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, inputRef }: { chat: AiChatState; id?: string; autoFocus?: boolean; inputRef?: RefObject<HTMLTextAreaElement | null> }) {
   const { t } = useT();
   const [text, setText] = useState("");
-  /** maydondagi matn ovozdan kelgan (hali yuborilmagan) — "tekshiring" eslatmasi */
-  const [heard, setHeard] = useState(false);
   const ownRef = useRef<HTMLTextAreaElement>(null);
   const ref = inputRef ?? ownRef;
-  const { speaker } = chat;
+  // sahifa skriptlari yuklandi (testlar va sekin telefon: shundan keyin yozish maydoni ishlaydi)
+  const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
   // maydon matn bilan birga 4 qatorgacha o'sadi
   useEffect(() => {
@@ -869,23 +833,8 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
   }, [text, ref]);
 
   const send = (value = text) => {
-    if (chat.ask(value)) {
-      setText("");
-      setHeard(false);
-    } else if (!value.trim()) ref.current?.focus();
-  };
-  const voice = useVoice(
-    (spoken) => setText(spoken.slice(0, MESSAGE_MAX_CHARS)),
-    (spoken) => {
-      setText(spoken.slice(0, MESSAGE_MAX_CHARS));
-      setHeard(true);
-    },
-    { lang: chat.lang },
-  );
-  const listen = () => {
-    speaker.stop(); // o'qib berilayotgan javob mikrofonga tushmasin
-    setHeard(false);
-    voice.start();
+    if (chat.ask(value)) setText("");
+    else if (!value.trim()) ref.current?.focus();
   };
 
   const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -895,20 +844,6 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
     }
   };
 
-  const empty = !text.trim();
-  const status: { text: string; tone: "live" | "error" | "muted" } | null = voice.listening
-    ? { text: t("easy.finder.voice_listening"), tone: "live" }
-    : voice.error === "denied"
-      ? { text: t("easy.finder.voice_denied"), tone: "error" }
-      : voice.error
-        ? { text: t("easy.finder.voice_error"), tone: "error" }
-        : speaker.speaking
-          ? { text: t("easy.finder.voice_speaking"), tone: "live" }
-          : heard && !empty
-            ? { text: t("easy.finder.voice_review"), tone: "live" }
-            : speaker.missing
-              ? { text: t("easy.finder.voice_no_voice"), tone: "muted" }
-              : null;
   const round = "press relative flex size-12 shrink-0 items-center justify-center rounded-xl";
 
   return (
@@ -918,14 +853,10 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
         send();
       }}
       className="space-y-1.5"
-      data-voice={voice.listening ? "listening" : chat.pending ? "processing" : speaker.speaking ? "speaking" : voice.error ? "error" : "idle"}
+      data-state={chat.pending ? "processing" : "idle"}
+      data-hydrated={hydrated ? "" : undefined}
     >
-      <div
-        className={cn(
-          "flex items-end gap-1.5 rounded-2xl border bg-card p-1.5 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25",
-          voice.listening ? "border-destructive ring-2 ring-destructive/20" : "border-input",
-        )}
-      >
+      <div className="flex items-end gap-1.5 rounded-2xl border border-input bg-card p-1.5 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25">
         <label htmlFor={id} className="sr-only">
           {t("easy.finder.label")}
         </label>
@@ -943,19 +874,10 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
           // fokus halqasi butun yozish qutisida (focus-within) — ichidagi maydonda ikkinchi halqa chizilmaydi
           className="min-h-12 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-2.5 py-3 text-base leading-6 text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
         />
-        {/* har holatning o'z tugmasi (key): aks holda React bitta tugmani qayta ishlatadi va "To'xtatish" bosilganda u
-            shu zahoti "Yuborish"ga aylanib, aytilgan gap tekshirilmasdan yuborilib ketadi */}
+        {/* har holatning o'z tugmasi (key): "To'xtatish" bosilganda o'sha tugma "Yuborish"ga aylanib qolmasin */}
         {chat.pending ? (
           <button key="stop" type="button" onClick={chat.stop} aria-label={t("easy.finder.stop_answer")} className={cn(round, "border border-border bg-card text-foreground hover:bg-secondary")}>
             <Square className="size-4 fill-current" aria-hidden />
-          </button>
-        ) : voice.listening ? (
-          <button key="listening" type="button" onClick={voice.stop} aria-pressed aria-label={t("easy.finder.voice_stop")} className={cn(round, "ai-mic bg-destructive-soft text-destructive")}>
-            <Square className="size-4 fill-current" aria-hidden />
-          </button>
-        ) : empty && voice.supported ? (
-          <button key="mic" type="button" onClick={listen} aria-pressed={false} aria-label={t("easy.finder.voice_start")} className={cn(round, "bg-primary text-primary-foreground hover:bg-primary-hover")}>
-            <Mic className="size-6" aria-hidden />
           </button>
         ) : (
           <button key="send" type="submit" aria-label={t("easy.finder.submit")} className={cn(round, "bg-primary text-primary-foreground hover:bg-primary-hover")}>
@@ -963,16 +885,7 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
           </button>
         )}
       </div>
-      <div className="flex min-h-5 items-center justify-between gap-2 px-1">
-        <p className={cn("text-xs", status?.tone === "error" ? "text-destructive" : status?.tone === "live" ? "font-semibold text-foreground" : "text-muted-foreground")} aria-live="polite">
-          {status?.text ?? t("easy.finder.disclaimer")}
-        </p>
-        {speaker.speaking ? (
-          <button type="button" onClick={speaker.stop} className="press -my-3 inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg px-2 text-sm font-semibold text-primary-ink hover:bg-secondary">
-            <Square className="size-3.5 fill-current" aria-hidden /> {t("easy.finder.voice_stop_speaking")}
-          </button>
-        ) : null}
-      </div>
+      <p className="min-h-5 px-1 text-xs text-muted-foreground">{t("easy.finder.disclaimer")}</p>
     </form>
   );
 }
@@ -1013,3 +926,5 @@ export function AiChatPanel({
     </section>
   );
 }
+
+const noopSubscribe = () => () => {};

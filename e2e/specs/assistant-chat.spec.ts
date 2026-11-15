@@ -7,7 +7,7 @@ import { USERS, asGuest, asMode, sql } from "../support";
  *    tavsiya savollar bosiladi, foydalanuvchi tilida javob;
  *  - AI javobi (oqim) — server javobi almashtirilgan holda: uzun matn, nusxa olish, kontekst (oldingi savol-javob yuboriladi);
  *  - xatolar: limit (429) → "Qayta urinish"; javob o'rtasida uzilsa — yarim javob qoladi; javobni to'xtatish;
- *  - ovoz: mikrofon holatlari, ruxsat berilmagani, javobni o'qib berish va to'xtatish, qurilmada ovoz yo'qligi.
+ *  - ovoz yo'q (ega, 2026-11-15: "kerak emas"): brauzer qo'llasa ham mikrofon va "O'qib berish" chiqmaydi.
  */
 
 // Bir nechta testda server javobi almashtiriladi (page.route). Ilovaning service worker'i sahifani boshqaruvga olgach,
@@ -34,8 +34,8 @@ async function open(page: Page, context: import("@playwright/test").BrowserConte
   await asMode(context, "worker");
   await page.goto("/ai");
   await expect(field(page)).toBeVisible();
-  // skriptlar yuklangan: "Ovoz bilan javob" kaliti faqat brauzerda paydo bo'ladi
-  await expect(main(page).getByRole("switch", { name: "Ovoz bilan javob" })).toBeVisible();
+  // skriptlar yuklangan (yozish maydoni ishlaydi)
+  await expect(page.locator("form[data-state][data-hydrated]")).toHaveCount(1);
 }
 
 test.beforeEach(async () => {
@@ -164,33 +164,24 @@ test("javobni to'xtatish: kutish holati ko'rinadi, 'To'xtatish' bosilsa — suhb
   });
   await say(page, "oshpaz kerak");
   await expect(main(page).getByRole("status")).toContainText("So'zlaringizni tushunmoqdaman");
-  await expect(main(page).locator("form[data-voice]")).toHaveAttribute("data-voice", "processing");
+  await expect(main(page).locator("form[data-state]")).toHaveAttribute("data-state", "processing");
   // javob kutilayotganda yuborish tugmasi o'rnida — to'xtatish
   await expect(main(page).getByRole("button", { name: "Topish" })).toHaveCount(0);
   await main(page).getByRole("button", { name: "Javobni to'xtatish" }).click();
   await expect(main(page).getByText("To'xtatildi").last()).toBeVisible();
-  await expect(main(page).locator("form[data-voice]")).toHaveAttribute("data-voice", "idle");
+  await expect(main(page).locator("form[data-state]")).toHaveAttribute("data-state", "idle");
   release();
   await page.unroute("**/api/assistant");
   await say(page, "Salom");
   await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
 });
 
-test("ovozli javob: yoqilsa javob o'qib beriladi (tilga mos ovoz), to'xtatiladi; qurilmada ovoz bo'lmasa — aytiladi; tanlov eslab qolinadi", async ({ page, context }) => {
+test("ovoz yo'q: brauzer ovozni qo'llasa ham — mikrofon, «Ovoz bilan javob», «O'qib berish» ko'rinmaydi; hech narsa o'qib berilmaydi", async ({ page, context }) => {
   await context.addInitScript(() => {
     const w = window as unknown as Record<string, unknown>;
     w.__spoken = [];
-    w.__cancelled = 0;
-    w.__voices = [
-      { lang: "uz-UZ", name: "Madina" },
-      { lang: "ru-RU", name: "Svetlana" },
-    ];
     w.SpeechSynthesisUtterance = class {
       text: string;
-      lang = "";
-      voice: unknown = null;
-      onend: (() => void) | null = null;
-      onerror: (() => void) | null = null;
       constructor(text: string) {
         this.text = text;
       }
@@ -198,103 +189,29 @@ test("ovozli javob: yoqilsa javob o'qib beriladi (tilga mos ovoz), to'xtatiladi;
     Object.defineProperty(window, "speechSynthesis", {
       configurable: true,
       value: {
-        getVoices: () => w.__voices,
-        speak: (u: { text: string; lang: string }) => (w.__spoken as unknown[]).push({ text: u.text, lang: u.lang }),
-        cancel: () => void (w.__cancelled = (w.__cancelled as number) + 1),
+        getVoices: () => [{ lang: "uz-UZ", name: "Madina" }],
+        speak: (u: { text: string }) => (w.__spoken as unknown[]).push(u.text),
+        cancel: () => {},
         addEventListener: () => {},
         removeEventListener: () => {},
       },
     });
-  });
-  const spoken = () => page.evaluate(() => (window as unknown as { __spoken: Array<{ text: string; lang: string }> }).__spoken);
-  await open(page, context);
-  const toggle = main(page).getByRole("switch", { name: "Ovoz bilan javob" });
-  await expect(toggle).toHaveAttribute("aria-checked", "false");
-  // o'chiq: javob o'qilmaydi
-  await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
-  expect(await spoken()).toEqual([]);
-
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-checked", "true");
-  await say(page, "Rahmat");
-  await expect.poll(async () => (await spoken()).length).toBe(1);
-  expect((await spoken())[0]).toMatchObject({ lang: "uz-UZ", text: expect.stringMatching(/^(Arzimaydi|Marhamat)/) });
-  await expect(main(page).getByText("Javobni o'qib beryapman…")).toBeVisible();
-  await expect(main(page).locator("form[data-voice]")).toHaveAttribute("data-voice", "speaking");
-  await main(page).getByRole("button", { name: "Ovozni to'xtatish" }).click();
-  await expect(main(page).getByText("Javobni o'qib beryapman…")).toHaveCount(0);
-  expect(await page.evaluate(() => (window as unknown as { __cancelled: number }).__cancelled)).toBeGreaterThan(0);
-
-  // ruscha javob — ruscha ovoz bilan; har bir javobni qo'lda ham tinglash mumkin
-  await say(page, "спасибо");
-  await expect.poll(async () => (await spoken()).length).toBe(2);
-  expect((await spoken())[1]!.lang).toBe("ru-RU");
-  await main(page).getByRole("button", { name: "O'qib berish" }).click();
-  await expect.poll(async () => (await spoken()).length).toBe(3);
-
-  // qurilmada shu til uchun ovoz yo'q — boshqa til ovozi bilan buzib o'qilmaydi, foydalanuvchiga aytiladi
-  await page.evaluate(() => ((window as unknown as { __voices: unknown[] }).__voices = [{ lang: "en-US", name: "English" }]));
-  await say(page, "Salom");
-  await expect(main(page).getByText("Bu qurilmada shu til uchun ovoz yo'q — javob matnda")).toBeVisible();
-  expect(await spoken()).toHaveLength(3);
-
-  await page.reload();
-  await expect(main(page).getByRole("switch", { name: "Ovoz bilan javob" })).toHaveAttribute("aria-checked", "true");
-});
-
-test("mikrofon: tinglash holati aniq ko'rinadi va to'xtatiladi; ruxsat berilmasa — tushunarli xabar, matn bilan yozish ishlaydi", async ({ page, context }) => {
-  await context.addInitScript(() => {
-    const w = window as unknown as Record<string, unknown>;
-    w.__micMode = "listen";
     class FakeRecognition {
-      lang = "";
-      interimResults = false;
-      continuous = false;
-      maxAlternatives = 1;
-      onresult: ((e: unknown) => void) | null = null;
-      onerror: ((e: unknown) => void) | null = null;
-      onend: (() => void) | null = null;
-      start() {
-        if (w.__micMode === "denied") {
-          setTimeout(() => {
-            this.onerror?.({ error: "not-allowed" });
-            this.onend?.();
-          }, 30);
-          return;
-        }
-        // gapirilayotgan matn jonli ko'rinadi (hali yakuniy emas)
-        setTimeout(() => this.onresult?.({ resultIndex: 0, results: { length: 1, 0: Object.assign([{ transcript: "kunlik" }], { isFinal: false }) } }), 30);
-      }
-      stop() {
-        this.onresult?.({ resultIndex: 0, results: { length: 1, 0: Object.assign([{ transcript: "kunlik ish bormi" }], { isFinal: true }) } });
-        this.onend?.();
-      }
+      start() {}
+      stop() {}
       abort() {}
     }
     Object.assign(window, { SpeechRecognition: FakeRecognition, webkitSpeechRecognition: FakeRecognition });
   });
   await open(page, context);
-  const form = main(page).locator("form[data-voice]");
-  await main(page).getByRole("button", { name: "Ovoz bilan aytish" }).click();
-  await expect(form).toHaveAttribute("data-voice", "listening");
-  await expect(main(page).getByText("Gapiring — eshityapman… Ovoz saqlanmaydi.")).toBeVisible();
-  await expect(field(page)).toHaveValue("kunlik");
-  const stop = main(page).getByRole("button", { name: "To'xtatish", exact: true });
-  await expect(stop).toHaveAttribute("aria-pressed", "true");
-  await stop.click();
-  await expect(form).toHaveAttribute("data-voice", "idle");
-  await expect(field(page)).toHaveValue("kunlik ish bormi");
-  // o'zi yuborilmaydi — foydalanuvchi yuboradi
-  await expect(replies(page)).toHaveCount(0);
-  await main(page).getByRole("button", { name: "Topish", exact: true }).click();
-  await expect(main(page).getByText("Siz: kunlik ish bormi")).toBeVisible();
-  await expect(main(page).locator("article")).toHaveCount(1);
-
-  await page.evaluate(() => ((window as unknown as { __micMode: string }).__micMode = "denied"));
-  await main(page).getByRole("button", { name: "Ovoz bilan aytish" }).click();
-  await expect(main(page).getByText("Mikrofonga ruxsat yo'q. Brauzer sozlamalarida ruxsat bering yoki yozib yuboring.")).toBeVisible();
-  await expect(form).toHaveAttribute("data-voice", "error");
+  await expect(page.getByRole("switch")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Ovoz bilan|Gapirib/ })).toHaveCount(0);
   await say(page, "Salom");
   await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
+  await expect(main(page).getByRole("button", { name: "O'qib berish" })).toHaveCount(0);
+  // menyuda ham ovoz tanlovi yo'q
+  await page.locator("[data-ai-menu]").click();
+  await expect(page.getByRole("menuitem", { name: /Ovoz/ })).toHaveCount(0);
+  await page.keyboard.press("Escape");
+  expect(await page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken)).toEqual([]);
 });

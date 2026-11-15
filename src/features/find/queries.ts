@@ -67,11 +67,8 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   }
   // lug'atda yo'q — imlo xatosi bo'lishi mumkin ("oshpz", "kasir"): bitta-ikkita harf farqi bilan eng yaqin kasb
   if (!best) {
-    // faqat yozilgan butun so'zlar: qo'shimchasi kesilgan bo'lak ("korzinkaga" → "korzinka") boshqa kasbga o'xshab qolmasin
-    const typed = new Set(normalizeText(q).split(" "));
-    const words = candidates.map((c) => normalizeText(c)).filter((c) => !c.includes(" ") && typed.has(c));
-    const hit = words.length ? bestTypoMatch(words, await typoIndex()) : null;
-    if (hit) best = { id: hit.id, score: 0 };
+    const id = await professionByTypo(q, candidates);
+    if (id) best = { id, score: 0 };
   }
   return {
     mode,
@@ -134,6 +131,18 @@ async function typoIndex(): Promise<TypoEntry[]> {
     console.warn("[find] typo index", error instanceof Error ? error.message : error);
     return [];
   }
+}
+
+/**
+ * Imlo xatosi bilan yozilgan kasb ("oshpz", "santexnk") → eng yaqin tanlanadigan kasb ID'si yoki null.
+ * Faqat yozilgan butun so'zlar: qo'shimchasi kesilgan bo'lak ("korzinkaga" → "korzinka") boshqa kasbga o'xshab qolmasin.
+ * Qidiruv va e'lon yozish (ish izlovchi suhbati, "AI bilan oson joylash") uchun umumiy.
+ */
+export async function professionByTypo(text: string, candidates: string[] = professionCandidates(text)): Promise<string | null> {
+  const typed = new Set(normalizeText(text).split(" "));
+  const words = candidates.map((c) => normalizeText(c)).filter((c) => !c.includes(" ") && typed.has(c));
+  if (!words.length) return null;
+  return bestTypoMatch(words, await typoIndex())?.id ?? null;
 }
 
 export interface NodeInfo {

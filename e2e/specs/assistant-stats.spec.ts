@@ -47,7 +47,8 @@ async function open(page: Page, context: import("@playwright/test").BrowserConte
   await asMode(context, "worker");
   await page.goto("/ai");
   await expect(field(page)).toBeVisible();
-  await expect(main(page).getByRole("switch", { name: "Ovoz bilan javob" })).toBeVisible();
+  // skriptlar yuklangan (yozish maydoni ishlaydi)
+  await expect(page.locator("form[data-state][data-hydrated]")).toHaveCount(1);
 }
 
 test("statistika: sonlar bazadan (karta va matn), vakansiyalarga havola; kasb aytilmasa — so'raladi va davom etadi", async ({ page, context }) => {

@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
-import { ChevronDown, RotateCcw } from "lucide-react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { normalizePhone, formatPhone } from "@/lib/format";
@@ -23,7 +24,10 @@ import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
 import { PhotoUpload } from "./photo-upload";
-import { AiQuickFill, AiReadyBanner, mergeAiDraft } from "./ai-quick-fill";
+import { AiReadyBanner } from "./ai-quick-fill";
+import { AiAvatar } from "@/components/shared/ai-avatar";
+import { VacancyGuide } from "./vacancy-guide";
+import type { ProfessionOption } from "../chat-actions";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { ChoiceButtons, ChosenLine, CustomProfessionCard, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, professionLabels, scrollToError } from "./wizard-frame";
 
@@ -85,7 +89,7 @@ export function VacancyPost({
   prefill,
   editId,
   pricedDays,
-  aiEnabled = false,
+  quick = [],
   customAllowed = false,
   photoQuarantine = false,
   dailyAllowed = false,
@@ -97,7 +101,8 @@ export function VacancyPost({
   prefill: Partial<VacancyDraft>;
   editId: string | null;
   pricedDays: number;
-  aiEnabled?: boolean;
+  /** "AI bilan oson joylash" (?ai=1): kasb savolidagi tez variantlar */
+  quick?: ProfessionOption[];
   /** baza "Kasbim topilmadi" ni qo'llaydimi (0057) */
   customAllowed?: boolean;
   /** rasm yopiq karantin bucket'ga yuklanadimi (0058) */
@@ -117,6 +122,17 @@ export function VacancyPost({
     compareIgnore: ["step", "clientRef"],
   });
   const { step, go } = useStep(TOTAL, draft.step);
+  // "AI bilan oson joylash" — savollar bittadan (?ai=1); "Oddiy forma" bosilsa — shu qoralama bilan oddiy qadamlar
+  const params = useSearchParams();
+  const guideOn = !editId && params.get("ai") === "1";
+  const leaveGuide = (n: number) => {
+    const url = new URL(window.location.href);
+    url.searchParams.delete("ai");
+    url.searchParams.set("step", String(n));
+    window.history.replaceState(null, "", url);
+    update({ step: n });
+    window.scrollTo({ top: 0 });
+  };
   const [errors, setErrors] = useState<Errors>({});
   // maydon tahrirlansa — o'sha maydonning eski xatosi o'chadi (tuzatilgan maydonda qizil matn qolib ketmaydi)
   const update = useCallback(
@@ -350,6 +366,29 @@ export function VacancyPost({
     );
   }
 
+  if (guideOn) {
+    return (
+      <VacancyGuide
+        regions={regions}
+        districts={districts}
+        quick={quick}
+        draft={draft}
+        update={update}
+        viewer={viewer}
+        dailyAllowed={dailyAllowed}
+        busy={!ready}
+        pending={pending}
+        error={errors.form ?? null}
+        onPublish={() => {
+          // savollar majburiy maydonlarni to'ldiradi; baribir xato bo'lsa — oddiy formada o'sha maydon ko'rsatiladi
+          if (stepOf(validate(3))) leaveGuide(TOTAL);
+          publish();
+        }}
+        onClassic={() => leaveGuide(draft.profession || draft.custom ? TOTAL : 1)}
+      />
+    );
+  }
+
   // AI qoralamasi: yetishmayotgan majburiy maydonlar → qisqa savollar
   const aiQuestions = (() => {
     if (draft.source !== "ai") return [];
@@ -392,16 +431,6 @@ export function VacancyPost({
 
       {step === 1 ? (
         <section className="space-y-3">
-          {aiEnabled && !editId ? (
-            <AiQuickFill
-              kind="vacancy"
-              onReady={(d) => {
-                update({ ...mergeAiDraft(draft, d.vacancy ?? {}), source: "ai", step: TOTAL });
-                setErrors({});
-                go(TOTAL);
-              }}
-            />
-          ) : null}
           {!draft.profession && draft.custom ? (
             <CustomProfessionCard text={draft.custom.text} sector={category ? name(category) : null} badge={t("professions.custom_badge")} hint={t("easy.wizard.custom_note")} />
           ) : null}
@@ -423,6 +452,19 @@ export function VacancyPost({
             }
             title={t("easy.vacancy.profession_title")}
             subtitle={t("easy.vacancy.profession_subtitle")}
+            extra={
+              !editId ? (
+                // bir gap yozib, savollarga tugma bilan javob berish ("AI bilan oson joylash")
+                <Link href={`${PATH}?ai=1`} className="press flex w-full items-center gap-3 rounded-2xl border border-ai/25 bg-ai-soft/60 px-3.5 py-3 text-left hover:border-ai/50" data-guide-open>
+                  <AiAvatar size="sm" className="shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-bold leading-snug">{t("easy.vguide.entry_title")}</span>
+                    <span className="block text-sm text-muted-foreground">{t("easy.vguide.entry_desc")}</span>
+                  </span>
+                  <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+                </Link>
+              ) : undefined
+            }
           />
           <FieldError message={errors.profession} />
           {hasAnswers ? (
