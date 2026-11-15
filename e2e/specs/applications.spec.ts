@@ -68,6 +68,8 @@ test("ariza: ishchi yuboradi → ish beruvchi kabinetdan ochadi, holatni o'zgart
   await context.clearCookies();
   await loginAs(context, USERS.employer);
   await page.goto("/cabinet");
+  // e'lonlar — yig'ilgan "Mening e'lonlarim" bo'limida (2026-11-15)
+  await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
   const apps = page.getByRole("link", { name: /Arizalar: 1 ta/ });
   await expect(apps).toBeVisible();
   await expect(apps).toContainText("1 ta yangi");

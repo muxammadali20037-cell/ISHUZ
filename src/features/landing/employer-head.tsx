@@ -15,7 +15,22 @@ import { StoriesRow } from "@/features/stories/components/stories-row";
  * Bosh qism (mehmon va panel uchun bir xil): salom, savol, AI qidiruv maydoni, 4 ta tez yo'l, "Vakansiya joylash".
  * `extra` — panelda: kompaniya nomi va tasdiq belgisi.
  */
-export async function EmployerHead({ flush, greeting, place, postHref, extra }: { flush?: boolean; greeting: string; place: HomePlace; postHref: string; extra?: ReactNode }) {
+export async function EmployerHead({
+  flush,
+  greeting,
+  place,
+  postHref,
+  extra,
+  menu = false,
+}: {
+  flush?: boolean;
+  greeting: string;
+  place: HomePlace;
+  postHref: string;
+  extra?: ReactNode;
+  /** kirgan foydalanuvchi: telefonda pastda "Bo'limlar" menyusi bor — takrorlanadigan havolalar telefonda yashiriladi */
+  menu?: boolean;
+}) {
   const [{ t, name }, home] = await Promise.all([getT(), getHomeSettings()]);
   const where = { region: place.region?.slug ?? null, district: place.district?.id ?? null };
   const hrefs = employerServiceHrefs(where);
@@ -44,7 +59,8 @@ export async function EmployerHead({ flush, greeting, place, postHref, extra }: 
       <h1 id="home-title" className="mt-1 text-2xl font-bold leading-tight tracking-tight text-navy dark:text-foreground sm:text-3xl">
         {t("easy.home2.e_title")}
       </h1>
-      <p className="mt-1 text-base text-muted-foreground">{t("easy.home2.e_hint")}</p>
+      {/* izoh — planshet va kompyuterda; telefonda ortiqcha yozuv yo'q (ega, 2026-11-15) */}
+      <p className="mt-1 text-base text-muted-foreground max-md:hidden">{t("easy.home2.e_hint")}</p>
       <div className="mt-4 max-w-3xl">
         {home.aiButton ? (
           <AiFinder variant="field" defaultMode="workers" locked fieldLabel={t("easy.home2.e_title")} placeholder={t("easy.home2.e_placeholder")} submitLabel={t("easy.home2.submit")} />
@@ -75,17 +91,23 @@ export async function EmployerHead({ flush, greeting, place, postHref, extra }: 
             </li>
           ))}
         </ul>
-        <Link href={hrefs.candidates} prefetch={false} data-track="direction_select" className="mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+        <Link
+          href={hrefs.candidates}
+          prefetch={false}
+          data-track="direction_select"
+          className={cn("mt-3 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline", menu && "max-lg:hidden")}
+        >
           {t("easy.home2.e_all")} <ChevronRight className="size-4" aria-hidden />
         </Link>
       </nav>
       {/* ish beruvchining asl maqsadi — vakansiya joylash: alohida, katta, ko'k */}
-      <div className="mt-5 flex flex-col gap-3 rounded-xl border border-primary/25 bg-primary-soft p-4 sm:flex-row sm:items-center">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground" aria-hidden>
+      {/* telefonda — faqat katta tugma (izohsiz) */}
+      <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:rounded-xl sm:border sm:border-primary/25 sm:bg-primary-soft sm:p-4">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground max-sm:hidden" aria-hidden>
           <Sparkles className="size-5" />
         </span>
-        <p className="min-w-0 flex-1 text-sm leading-snug text-foreground">{t("easy.home2.e_post_hint")}</p>
-        <Button asChild size="lg" className="shrink-0 text-base font-bold">
+        <p className="min-w-0 flex-1 text-sm leading-snug text-foreground max-sm:hidden">{t("easy.home2.e_post_hint")}</p>
+        <Button asChild size="lg" className="h-12 shrink-0 text-base font-bold max-sm:w-full">
           <Link href={postHref} data-track="home_post_vacancy">
             <Plus className="size-5" aria-hidden /> {t("easy.start.post_vacancy")}
           </Link>

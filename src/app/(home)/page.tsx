@@ -29,7 +29,7 @@ export default async function HomePage() {
   // yo'naltirishlar (bloklangan, birinchi ochilish) — (home)/layout.tsx da
   const [session, mode] = await Promise.all([getSession(), getMode()]);
   return (
-    <Shell footer={<SiteFooter />}>
+    <Shell footer={<SiteFooter compact={!!session} />}>
       <Home session={session} mode={mode} />
     </Shell>
   );

@@ -42,8 +42,8 @@
     "not_found": "Payment not found",
     "to_vacancy": "Go to vacancy",
     "to_home": "Home",
-    "paid_ai_alerts": "AI assistant is on for 1 month — we'll message you on Telegram about matching jobs and workers",
-    "to_ai_alerts": "Go to the AI assistant",
+    "paid_ai_alerts": "PRO watch is on for 1 month — we'll message you on Telegram about matching jobs and workers",
+    "to_ai_alerts": "Go to PRO watch",
     "paid_listing": "Your listing is back in search for 10 days",
     "paid_topup": "Wallet topped up",
     "paid_topup_desc": "{amount} added to your balance",
@@ -155,7 +155,7 @@
       "vacancy_publish": "Job listing",
       "worker_listing": "Job-seeker listing",
       "worker_promotion": "Profile in TOP",
-      "ai_alerts": "AI assistant (PRO)",
+      "ai_alerts": "PRO watch",
       "wallet_topup": "Wallet top-up"
     },
     "statuses": {
@@ -183,11 +183,11 @@
     "upgrade_sheet_title": "Boost to TOP",
     "days": "{days} days",
     "top": "{days} days TOP",
-    "ai": "AI PRO",
+    "ai": "PRO watch",
     "benefit_days": "The listing stays in search for {days} more days",
     "benefit_top": "{days} days at the very top of search — with a \"TOP\" badge",
     "benefit_top_worker": "{days} days at the top of employers' search",
-    "benefit_ai": "{days} days of AI PRO: instant alert when a matching job appears",
+    "benefit_ai": "{days} days of PRO watch: instant alert when a matching job appears",
     "boost_cta": "Boost to TOP",
     "boost_worker_cta": "Boost my listing to TOP",
     "top_until": "TOP · until {date}"

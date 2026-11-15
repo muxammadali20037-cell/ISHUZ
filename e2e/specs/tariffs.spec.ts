@@ -4,7 +4,7 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 /**
  * Tariflar (0080; ega, 2026-11-14: "tarif ko'tarilgan sari imkoniyatlar kengayib borsin, narxni baland qo'yma"):
  * ochiq "Tariflar" sahifasi (bazadagi narxlar, e'lon bepul bo'lsa — Oddiy "Bepul"); bepul joylangan faol vakansiyani
- * "TOP qilish" — Tezkor/Maksimal, balansdan bir bosishda → qidiruvda TOP; ishchi e'loni Maksimal → TOP va AI PRO.
+ * "TOP qilish" — Tezkor/Maksimal, balansdan bir bosishda → qidiruvda TOP; ishchi e'loni Maksimal → TOP va PRO kuzatuv (oldin "AI PRO").
  */
 
 const PEOPLE = [USERS.employer, USERS.workerA];
@@ -41,7 +41,7 @@ test("ochiq 'Tariflar': ish beruvchi va ish izlovchi uchun 3 darajadan; narx o's
   }
   await expect(page.locator('[data-tariff="vacancy-max"]')).toContainText("99 000 so'm");
   await expect(page.locator('[data-tariff="vacancy-max"]')).toContainText("10 kun qidiruvda eng tepada");
-  await expect(page.locator('[data-tariff="worker-max"]')).toContainText("AI PRO");
+  await expect(page.locator('[data-tariff="worker-max"]')).toContainText("PRO kuzatuv");
   // narxlar — bazadagi bilan bir xil (soxta raqam yo'q)
   const [t] = await sql<{ j: { vacancy: { price: number }[] } }>("select public.public_tariffs() as j");
   expect(t!.j.vacancy.map((x) => x.price)).toEqual([30000, 49000, 99000]);
@@ -83,7 +83,7 @@ test("bepul joylangan faol vakansiya: 'TOP qilish' → Maksimal, balansdan → q
   await expect(page.locator("[data-featured]")).toContainText("TOP");
 });
 
-test("ishchi e'loni: 'E'lonimni TOP qilish' → Maksimal — 7 kun TOP va 30 kun AI PRO", async ({ page, context }) => {
+test("ishchi e'loni: 'E'lonimni TOP qilish' → Maksimal — 7 kun TOP va 30 kun PRO kuzatuv", async ({ page, context }) => {
   test.setTimeout(90_000);
   const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
   const [node] = await sql<{ id: string }>("select id from public.profession_nodes where selectable and is_active and name_uz = 'Sotuvchi' limit 1");
@@ -102,7 +102,7 @@ test("ishchi e'loni: 'E'lonimni TOP qilish' → Maksimal — 7 kun TOP va 30 kun
     const dialog = page.getByRole("dialog", { name: "TOP qilish" });
     await dialog.locator('[data-tier="max"]').click();
     await expect(dialog.getByTestId("checkout-price")).toHaveText("9 500 so'm");
-    await expect(dialog.getByText("30 kun AI PRO")).toBeVisible();
+    await expect(dialog.getByText("30 kun PRO kuzatuv")).toBeVisible();
     await dialog.getByRole("button", { name: /Balansdan to'lash · 9 500 so'm/ }).click();
     await page.waitForURL(/\/billing\/return\?order=\d+/);
     const [w] = await sql<{ top: boolean; ai: boolean }>(

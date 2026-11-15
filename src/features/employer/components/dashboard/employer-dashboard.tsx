@@ -15,6 +15,7 @@ import { KeyTiles, KeyTilesSkeleton } from "./stats-tiles";
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { VerificationBadge } from "./status-badge";
 import { EmployerHead } from "@/features/landing/employer-head";
+import { HomeMenu } from "@/features/landing/home-menu";
 import { getHomePlace } from "@/features/landing/home-queries";
 
 /**
@@ -67,53 +68,61 @@ export async function EmployerDashboard({ session, embedded = false }: { session
   return (
     // embedded — bosh sahifa ichida (o'z konteyneri bor)
     <div className={embedded ? "space-y-6" : "container-app space-y-6 py-5 sm:py-8"}>
-      <EmployerHead flush={embedded} greeting={t("employer.dashboard.greeting", { name })} place={place} postHref="/employer/vacancies/new" extra={status} />
+      <EmployerHead flush={embedded} greeting={t("employer.dashboard.greeting", { name })} place={place} postHref="/employer/vacancies/new" extra={status} menu={embedded} />
 
       <Suspense fallback={<KeyTilesSkeleton />}>
         <KeyTiles candidatesHref={candidatesHref} />
       </Suspense>
 
-      {!hasVacancies ? <EmptyState icon={PlusCircle} title={t("employer.dashboard.empty_title")} description={t("employer.dashboard.empty_desc")} /> : null}
-
-      {hasVacancies ? (
-        <Suspense fallback={<RowsSectionSkeleton />}>
-          <RecentApplicationsSection userId={userId} companyId={companyId} limit={5} title={t("employer.dashboard.stats.new_applications")} />
-        </Suspense>
-      ) : null}
-
-      {latestActive ? (
-        <Suspense fallback={<CardsSectionSkeleton />}>
-          <CandidatesSection
-            title={t("employer.dashboard.review_candidates")}
-            subtitle={t("employer.dashboard.for_you_vacancy", { title: latestActive.title })}
-            viewAllHref={candidatesHref}
-            search={{ vacancyId: latestActive.id, categoryId: latestActive.category_id, sort: "relevant", limit: 3 }}
-            hrefVacancyId={latestActive.id}
-          />
-        </Suspense>
-      ) : (
-        <Suspense fallback={<CardsSectionSkeleton />}>
-          <CandidatesSection
-            title={t("employer.dashboard.new_candidates")}
-            viewAllHref={withCategory("/workers?sort=newest")}
-            search={{ categoryId: latestCategoryId, sort: "newest", limit: 3 }}
-          />
-        </Suspense>
-      )}
-
-      {hasVacancies ? (
-        <Suspense fallback={<RowsSectionSkeleton />}>
-          <MyVacanciesSection userId={userId} companyId={companyId} limit={5} title={t("employer.dashboard.stats.active_vacancies")} />
-        </Suspense>
-      ) : null}
-
-      {/* 2026-11-13: "Bo'limlar" ro'yxati olib tashlandi — o'sha bo'limlar pastki/yon menyuda va Profilda bor (takror edi).
-          "Universal ustalar" — alohida yashil bo'lim (bosh sahifa ichida) */}
+      {/* telefon va planshet: bo'limlar ro'yxati (kompyuterda — chap yon menyu). Pastdagi ro'yxatlar telefonda yashirin — ular
+          shu menyuda ("Arizalar", "Vakansiyalarim", "Nomzodlar") va yuqoridagi raqamlarda (ega, 2026-11-15: "yozuvlar juda ko'p") */}
       {embedded ? (
         <Suspense fallback={null}>
-          <MastersHomeSection />
+          <HomeMenu mode="employer" />
         </Suspense>
       ) : null}
+      <div className={embedded ? "space-y-6 max-lg:hidden" : "space-y-6"}>
+        {!hasVacancies ? <EmptyState icon={PlusCircle} title={t("employer.dashboard.empty_title")} description={t("employer.dashboard.empty_desc")} /> : null}
+
+        {hasVacancies ? (
+          <Suspense fallback={<RowsSectionSkeleton />}>
+            <RecentApplicationsSection userId={userId} companyId={companyId} limit={5} title={t("employer.dashboard.stats.new_applications")} />
+          </Suspense>
+        ) : null}
+
+        {latestActive ? (
+          <Suspense fallback={<CardsSectionSkeleton />}>
+            <CandidatesSection
+              title={t("employer.dashboard.review_candidates")}
+              subtitle={t("employer.dashboard.for_you_vacancy", { title: latestActive.title })}
+              viewAllHref={candidatesHref}
+              search={{ vacancyId: latestActive.id, categoryId: latestActive.category_id, sort: "relevant", limit: 3 }}
+              hrefVacancyId={latestActive.id}
+            />
+          </Suspense>
+        ) : (
+          <Suspense fallback={<CardsSectionSkeleton />}>
+            <CandidatesSection
+              title={t("employer.dashboard.new_candidates")}
+              viewAllHref={withCategory("/workers?sort=newest")}
+              search={{ categoryId: latestCategoryId, sort: "newest", limit: 3 }}
+            />
+          </Suspense>
+        )}
+
+        {hasVacancies ? (
+          <Suspense fallback={<RowsSectionSkeleton />}>
+            <MyVacanciesSection userId={userId} companyId={companyId} limit={5} title={t("employer.dashboard.stats.active_vacancies")} />
+          </Suspense>
+        ) : null}
+
+        {/* "Universal ustalar" — alohida yashil bo'lim (bosh sahifa ichida; telefonda — menyuda) */}
+        {embedded ? (
+          <Suspense fallback={null}>
+            <MastersHomeSection />
+          </Suspense>
+        ) : null}
+      </div>
     </div>
   );
 }

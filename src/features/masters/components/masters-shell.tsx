@@ -44,12 +44,13 @@ export async function MastersShell({
           >
             <ChevronLeft className="size-5" aria-hidden />{" "}
             <span className="hidden sm:inline">{t("masters.back")}</span>
-            <span className="sm:hidden">Ish topdim</span>
+            {/* 360 px dan tor ekranda — faqat strelka ("E'lon joylash" yozuvi sig'sin), nom ekran o'quvchisi uchun qoladi */}
+            <span className="max-[359px]:sr-only sm:hidden">Ish topdim</span>
           </Link>
           <Link
             href="/ustalar"
             aria-label={t("masters.name")}
-            className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-display text-lg font-semibold tracking-tight text-primary-ink"
+            className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-display text-lg font-semibold tracking-tight text-primary-ink max-[389px]:hidden"
           >
             <span
               className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground"
@@ -90,12 +91,12 @@ export async function MastersShell({
           {post ? (
             <Link
               href={postHref}
-              aria-label={t("masters.post")}
-              className="press inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground hover:bg-primary-hover sm:px-4 sm:text-base"
+              className="press inline-flex min-h-11 shrink-0 items-center gap-1 whitespace-nowrap rounded-xl bg-primary px-3 text-sm font-bold text-primary-foreground hover:bg-primary-hover sm:gap-1.5 sm:px-4 sm:text-base"
               data-masters-post
             >
+              {/* telefonda ham yozuv bilan (ega, 2026-11-15: "+ emas — «E'lon joylash» bo'lib ko'rinsin") */}
               <Plus className="size-5" aria-hidden />{" "}
-              <span className="hidden sm:inline">{t("masters.post")}</span>
+              <span>{t("masters.post")}</span>
             </Link>
           ) : null}
           {session ? (

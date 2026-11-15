@@ -1,6 +1,7 @@
 import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 import { getT } from "@/lib/i18n/server";
 import { getServerEnv } from "@/lib/env";
 import { BrandLogo } from "@/components/shared/brand-logo";
@@ -20,7 +21,7 @@ interface FooterLink {
  * aloqa — SUPPORT_EMAIL sozlangan bo'lsa, Telegram — rasmiy bot sozlangan bo'lsa, ijtimoiy tarmoqlar — SOCIAL_*_URL
  * sozlangan bo'lsa (soxta ijtimoiy tarmoq havolalari yo'q).
  */
-export async function SiteFooter() {
+export async function SiteFooter({ compact = false }: { compact?: boolean } = {}) {
   const { t } = await getT();
   const { SUPPORT_EMAIL, TELEGRAM_BOT_USERNAME, SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL } = getServerEnv();
   const social = socialLinks({ SOCIAL_TELEGRAM_URL, SOCIAL_INSTAGRAM_URL, SOCIAL_FACEBOOK_URL });
@@ -67,7 +68,9 @@ export async function SiteFooter() {
   const linkCls = "inline-flex min-h-11 items-center text-base text-navy-muted hover:text-navy-foreground hover:underline";
   return (
     <footer className="page-with-tabbar mt-8 bg-navy text-navy-foreground md:pb-0">
-      <div className="container-wide grid grid-cols-1 gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] lg:py-14">
+      {/* compact — kirgan foydalanuvchi: telefon va planshetda katta havolalar ro'yxati yo'q (bo'limlar bosh sahifa menyusida;
+          ega, 2026-11-15: "telefonda yozuvlar juda ko'p") — faqat pastki qator va huquqiy havolalar */}
+      <div className={cn("container-wide grid grid-cols-1 gap-8 py-10 sm:grid-cols-2 lg:grid-cols-[minmax(0,1.3fr)_repeat(3,minmax(0,1fr))] lg:py-14", compact && "max-lg:hidden")}>
         <div>
           <Link href="/" className="inline-flex min-h-11 items-center" aria-label={BRAND.name}>
             <BrandLogo onDark className="text-2xl" />
@@ -108,7 +111,19 @@ export async function SiteFooter() {
         ))}
       </div>
       <div className="border-t border-navy-line">
-        <p className="container-wide py-5 text-sm text-navy-muted">{t("common.footer.rights", { year: new Date().getFullYear() })}</p>
+        <div className="container-wide flex flex-wrap items-center gap-x-5 gap-y-1 py-4 text-sm text-navy-muted">
+          <p className="py-1">{t("common.footer.rights", { year: new Date().getFullYear() })}</p>
+          {compact ? (
+            <span className="flex min-w-0 flex-wrap gap-x-5 lg:hidden">
+              <Link href="/terms" prefetch={false} className="inline-flex min-h-11 items-center hover:text-navy-foreground hover:underline">
+                {t("common.footer.terms")}
+              </Link>
+              <Link href="/privacy" prefetch={false} className="inline-flex min-h-11 items-center hover:text-navy-foreground hover:underline">
+                {t("common.footer.privacy")}
+              </Link>
+            </span>
+          ) : null}
+        </div>
       </div>
     </footer>
   );

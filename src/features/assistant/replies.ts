@@ -129,10 +129,10 @@ export function smallTalk(text: string): SmallTalk {
 const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "howdy" | "thanks" | "who" | "forme" | "stats_ask" | "found" | "widened" | "none" | "unclear" | "failed", Variants>>> = {
   uz: {
     seeker: {
-      greeting: ["Assalomu alaykum! Men Ish topdim AI yordamchisiman. Qanday ish qidiryapsiz — kasb va tumaningizni yozsangiz, bazadan qarab beraman."],
-      howdy: ["Yaxshi, rahmat! Men Ish topdim AI yordamchisiman — ish topishda yordam beraman. Qanday ish qidiryapsiz?", "Hammasi joyida, rahmat. Sizga qanday ish kerak — kasb va tumanni yozing, bazadan qarab beraman."],
+      greeting: ["Assalomu alaykum! Men Ish topdim yordamchisiman. Qanday ish qidiryapsiz — kasb va tumaningizni yozsangiz, bazadan qarab beraman."],
+      howdy: ["Yaxshi, rahmat! Men Ish topdim yordamchisiman — ish topishda yordam beraman. Qanday ish qidiryapsiz?", "Hammasi joyida, rahmat. Sizga qanday ish kerak — kasb va tumanni yozing, bazadan qarab beraman."],
       thanks: ["Arzimaydi. Yana qaysi ish bo'yicha qarab beray?", "Marhamat. Boshqa hudud yoki kasb bo'yicha ham qidirib ko'raymi?"],
-      who: ["Men sun'iy intellektman — Ish topdim platformasining AI yordamchisi. Bazadagi haqiqiy e'lonlardan sizga mos ishni topishga yordam beraman. Qanday ish kerak?"],
+      who: ["Men sun'iy intellektman — Ish topdim platformasining yordamchisi. Bazadagi haqiqiy e'lonlardan sizga mos ishni topishga yordam beraman. Qanday ish kerak?"],
       forme: ["Albatta. Qaysi kasb bo'yicha qidiray va qaysi tumanda? Masalan: «sotuvchi, Chilonzor» — bazadagi haqiqiy e'lonlardan topaman."],
       stats_ask: ["Qaysi kasb bo'yicha ko'raylik? Kasbni yozing — masalan «oshpaz maoshi qancha» yoki «haydovchi Samarqand statistika». Bazadagi faol vakansiyalar, ish izlovchilar soni va maosh oralig'ini ko'rsataman."],
       found: ["So'rovingiz bo'yicha {n} ta e'lon topdim — pastda ko'rsatdim. Maosh yoki ish vaqti bo'yicha aniqlashtiraymi?", "Bazada {n} ta mos e'lon bor, eng yangilari pastda. Qaysi biri bo'yicha batafsil aytay?", "{n} ta e'lon chiqdi. Xohlasangiz, tuman yoki maosh bo'yicha toraytiraman."],
@@ -142,10 +142,10 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "howdy"
       failed: ["Hozir bazaga ulanishda muammo bo'ldi. Bir ozdan keyin yana urinib ko'ring."],
     },
     employer: {
-      greeting: ["Assalomu alaykum! Men Ish topdim AI yordamchisiman. Qanday xodim kerak — kasbi va hududini yozsangiz, bazadagi nomzodlardan qarab beraman."],
-      howdy: ["Yaxshi, rahmat! Men Ish topdim AI yordamchisiman — xodim topishda yordam beraman. Qanday xodim kerak?", "Hammasi joyida, rahmat. Sizga qanday xodim kerak — kasb va hududni yozing, nomzodlardan qarab beraman."],
+      greeting: ["Assalomu alaykum! Men Ish topdim yordamchisiman. Qanday xodim kerak — kasbi va hududini yozsangiz, bazadagi nomzodlardan qarab beraman."],
+      howdy: ["Yaxshi, rahmat! Men Ish topdim yordamchisiman — xodim topishda yordam beraman. Qanday xodim kerak?", "Hammasi joyida, rahmat. Sizga qanday xodim kerak — kasb va hududni yozing, nomzodlardan qarab beraman."],
       thanks: ["Arzimaydi. Yana qaysi lavozim bo'yicha nomzod qidiray?", "Marhamat. Boshqa hudud bo'yicha ham qarab beraymi?"],
-      who: ["Men sun'iy intellektman — Ish topdim platformasining AI yordamchisi. Bazadagi haqiqiy nomzodlarni topishga yordam beraman; kimni ishga olishni o'zingiz hal qilasiz. Qanday xodim kerak?"],
+      who: ["Men sun'iy intellektman — Ish topdim platformasining yordamchisi. Bazadagi haqiqiy nomzodlarni topishga yordam beraman; kimni ishga olishni o'zingiz hal qilasiz. Qanday xodim kerak?"],
       forme: ["Albatta. Qanday xodim kerak — kasbi va hududi? Masalan: «sotuvchi, Yunusobod» — bazadagi nomzodlardan topaman."],
       stats_ask: ["Qaysi lavozim bo'yicha ko'raylik? Kasbni yozing — masalan «sotuvchi maoshi qancha» yoki «haydovchi Samarqand statistika». Bazadagi vakansiyalar, nomzodlar soni va maosh oralig'ini ko'rsataman."],
       found: ["So'rovingiz bo'yicha {n} ta nomzod topdim — pastda. Tajriba yoki hudud bo'yicha toraytiraymi?", "Bazada {n} ta mos nomzod bor. Tanlov o'zingizda — xohlasangiz, talablarni aniqlashtiramiz."],
@@ -157,10 +157,10 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "howdy"
   },
   oz: {
     seeker: {
-      greeting: ["Ассалому алайкум! Мен Ish topdim AI ёрдамчисиман. Қандай иш қидиряпсиз — касб ва туманингизни ёзсангиз, базадан қараб бераман."],
-      howdy: ["Яхши, раҳмат! Мен Ish topdim AI ёрдамчисиман — иш топишда ёрдам бераман. Қандай иш қидиряпсиз?", "Ҳаммаси жойида, раҳмат. Сизга қандай иш керак — касб ва туманни ёзинг, базадан қараб бераман."],
+      greeting: ["Ассалому алайкум! Мен Ish topdim ёрдамчисиман. Қандай иш қидиряпсиз — касб ва туманингизни ёзсангиз, базадан қараб бераман."],
+      howdy: ["Яхши, раҳмат! Мен Ish topdim ёрдамчисиман — иш топишда ёрдам бераман. Қандай иш қидиряпсиз?", "Ҳаммаси жойида, раҳмат. Сизга қандай иш керак — касб ва туманни ёзинг, базадан қараб бераман."],
       thanks: ["Арзимайди. Яна қайси иш бўйича қараб берай?", "Марҳамат. Бошқа ҳудуд ёки касб бўйича ҳам қидириб кўрайми?"],
-      who: ["Мен сунъий интеллектман — Ish topdim платформасининг AI ёрдамчиси. Базадаги ҳақиқий эълонлардан сизга мос ишни топишга ёрдам бераман. Қандай иш керак?"],
+      who: ["Мен сунъий интеллектман — Ish topdim платформасининг ёрдамчиси. Базадаги ҳақиқий эълонлардан сизга мос ишни топишга ёрдам бераман. Қандай иш керак?"],
       forme: ["Албатта. Қайси касб бўйича қидирай ва қайси туманда? Масалан: «сотувчи, Чилонзор» — базадаги ҳақиқий эълонлардан топаман."],
       stats_ask: ["Қайси касб бўйича кўрайлик? Касбни ёзинг — масалан «ошпаз маоши қанча» ёки «ҳайдовчи Самарқанд статистика». Базадаги фаол вакансиялар, иш изловчилар сони ва маош оралиғини кўрсатаман."],
       found: ["Сўровингиз бўйича {n} та эълон топдим — пастда кўрсатдим. Маош ёки иш вақти бўйича аниқлаштирайми?", "Базада {n} та мос эълон бор, энг янгилари пастда. Қайси бири бўйича батафсил айтай?"],
@@ -170,10 +170,10 @@ const T: Record<AssistantLang, Record<AssistantRole, Record<"greeting" | "howdy"
       failed: ["Ҳозир базага уланишда муаммо бўлди. Бир оздан кейин яна уриниб кўринг."],
     },
     employer: {
-      greeting: ["Ассалому алайкум! Мен Ish topdim AI ёрдамчисиман. Қандай ходим керак — касби ва ҳудудини ёзсангиз, базадаги номзодлардан қараб бераман."],
-      howdy: ["Яхши, раҳмат! Мен Ish topdim AI ёрдамчисиман — ходим топишда ёрдам бераман. Қандай ходим керак?", "Ҳаммаси жойида, раҳмат. Сизга қандай ходим керак — касб ва ҳудудни ёзинг, номзодлардан қараб бераман."],
+      greeting: ["Ассалому алайкум! Мен Ish topdim ёрдамчисиман. Қандай ходим керак — касби ва ҳудудини ёзсангиз, базадаги номзодлардан қараб бераман."],
+      howdy: ["Яхши, раҳмат! Мен Ish topdim ёрдамчисиман — ходим топишда ёрдам бераман. Қандай ходим керак?", "Ҳаммаси жойида, раҳмат. Сизга қандай ходим керак — касб ва ҳудудни ёзинг, номзодлардан қараб бераман."],
       thanks: ["Арзимайди. Яна қайси лавозим бўйича номзод қидирай?"],
-      who: ["Мен сунъий интеллектман — Ish topdim платформасининг AI ёрдамчиси. Базадаги ҳақиқий номзодларни топишга ёрдам бераман; кимни ишга олишни ўзингиз ҳал қиласиз. Қандай ходим керак?"],
+      who: ["Мен сунъий интеллектман — Ish topdim платформасининг ёрдамчиси. Базадаги ҳақиқий номзодларни топишга ёрдам бераман; кимни ишга олишни ўзингиз ҳал қиласиз. Қандай ходим керак?"],
       forme: ["Албатта. Қандай ходим керак — касби ва ҳудуди? Масалан: «сотувчи, Юнусобод» — базадаги номзодлардан топаман."],
       stats_ask: ["Қайси лавозим бўйича кўрайлик? Касбни ёзинг — масалан «сотувчи маоши қанча» ёки «ҳайдовчи Самарқанд статистика». Базадаги вакансиялар, номзодлар сони ва маош оралиғини кўрсатаман."],
       found: ["Сўровингиз бўйича {n} та номзод топдим — пастда. Тажриба ёки ҳудуд бўйича торайтирайми?"],

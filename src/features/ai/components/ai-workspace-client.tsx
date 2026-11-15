@@ -37,6 +37,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import { Fold } from "@/components/shared/fold";
 import { initials } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
@@ -597,103 +598,86 @@ function Welcome({
         </div>
       </div>
 
+      {/* "Bugungi ishlar" va "Yangi ishlar" — yig'ilgan (ega, 2026-11-15: "ichiga yashir — «ochish», «ko'rish» so'zlari bilan") */}
       {data.items.length ? (
-        <section
-          aria-labelledby="ai-brief"
-          className="rounded-2xl border border-border bg-card p-4"
-          data-ai-brief
-        >
-          <h2
-            id="ai-brief"
-            className="flex items-center gap-2 text-base font-bold"
-          >
-            <ListTodo className="size-5 text-primary-ink" aria-hidden />{" "}
-            {t("easy.aiws.brief_title")}
-          </h2>
-          <ul className="mt-3 space-y-2">
-            {data.items.map((item) => {
-              const Icon = ICONS[item.icon];
-              return (
-                <li key={item.key} className="flex items-center gap-3">
-                  <span
-                    className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-ink"
-                    aria-hidden
-                  >
-                    <Icon className="size-4" />
-                  </span>
-                  <span className="min-w-0 flex-1 text-base leading-snug">
-                    {item.text}
-                  </span>
-                  <Link
-                    href={item.href}
-                    className="press inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary-ink hover:bg-primary-soft"
-                  >
-                    {item.cta} <ArrowRight className="size-4" aria-hidden />
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
-        </section>
+        <Fold name="ai-brief" icon={<ListTodo />} verb="open" title={t("easy.aiws.brief_title")} count={data.items.length}>
+          <section aria-label={t("easy.aiws.brief_title")} data-ai-brief>
+            <ul className="space-y-2">
+              {data.items.map((item) => {
+                const Icon = ICONS[item.icon];
+                return (
+                  <li key={item.key} className="flex items-center gap-3">
+                    <span
+                      className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary-ink"
+                      aria-hidden
+                    >
+                      <Icon className="size-4" />
+                    </span>
+                    <span className="min-w-0 flex-1 text-base leading-snug">
+                      {item.text}
+                    </span>
+                    <Link
+                      href={item.href}
+                      className="press inline-flex min-h-11 shrink-0 items-center gap-1 rounded-full border border-primary/30 bg-card px-3 text-sm font-semibold text-primary-ink hover:bg-primary-soft"
+                    >
+                      {item.cta} <ArrowRight className="size-4" aria-hidden />
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        </Fold>
       ) : null}
 
       {feed && feed.items.length ? (
-        <section
-          aria-labelledby="ai-feed"
-          className="rounded-2xl bg-primary-soft/60 p-4"
-          data-ai-feed
-        >
-          <div className="flex items-baseline justify-between gap-3">
-            <h2
-              id="ai-feed"
-              className="flex items-center gap-2 text-base font-bold"
-            >
-              <Target className="size-5 text-primary-ink" aria-hidden />{" "}
-              {feed.title}
-            </h2>
-            <Link
-              href={feed.href}
-              className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-primary-ink hover:underline"
-            >
-              {t("easy.aiws.feed.see_all", { count: feed.total })}{" "}
-              <ChevronRight className="size-4" aria-hidden />
-            </Link>
-          </div>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {feed.subtitle}
-          </p>
-          <ul className="-mx-4 mt-3 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:thin]">
-            {feed.kind === "jobs"
-              ? feed.items.map((job) => (
-                  <li
-                    key={job.id}
-                    className="flex w-[280px] shrink-0 snap-start sm:w-[300px] [&>article]:w-full"
-                  >
-                    <JobResultCard
-                      job={job}
-                      saved={feed.saved.includes(job.id)}
-                      applied={feed.applied[job.id] ?? null}
-                    />
-                  </li>
-                ))
-              : feed.items.map((w) => (
-                  <li
-                    key={w.id}
-                    className="flex w-[280px] shrink-0 snap-start sm:w-[300px] [&>article]:w-full"
-                  >
-                    <WorkerResultCard
-                      worker={w}
-                      imageUrl={
-                        w.profession_node_id
-                          ? feed.images[w.profession_node_id]
-                          : null
-                      }
-                      saved={feed.saved.includes(w.id)}
-                    />
-                  </li>
-                ))}
-          </ul>
-        </section>
+        <Fold name="ai-feed" icon={<Target />} verb="view" tone="soft" title={feed.title} count={feed.total}>
+          <section aria-label={feed.title} data-ai-feed>
+            <div className="flex items-baseline justify-between gap-3">
+              <p className="min-w-0 text-sm text-muted-foreground">
+                {feed.subtitle}
+              </p>
+              <Link
+                href={feed.href}
+                className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-primary-ink hover:underline"
+              >
+                {t("easy.aiws.feed.see_all", { count: feed.total })}{" "}
+                <ChevronRight className="size-4" aria-hidden />
+              </Link>
+            </div>
+            <ul className="-mx-4 mt-3 flex snap-x gap-3 overflow-x-auto px-4 pb-1 [scrollbar-width:thin]">
+              {feed.kind === "jobs"
+                ? feed.items.map((job) => (
+                    <li
+                      key={job.id}
+                      className="flex w-[280px] shrink-0 snap-start sm:w-[300px] [&>article]:w-full"
+                    >
+                      <JobResultCard
+                        job={job}
+                        saved={feed.saved.includes(job.id)}
+                        applied={feed.applied[job.id] ?? null}
+                      />
+                    </li>
+                  ))
+                : feed.items.map((w) => (
+                    <li
+                      key={w.id}
+                      className="flex w-[280px] shrink-0 snap-start sm:w-[300px] [&>article]:w-full"
+                    >
+                      <WorkerResultCard
+                        worker={w}
+                        imageUrl={
+                          w.profession_node_id
+                            ? feed.images[w.profession_node_id]
+                            : null
+                        }
+                        saved={feed.saved.includes(w.id)}
+                      />
+                    </li>
+                  ))}
+            </ul>
+          </section>
+        </Fold>
       ) : null}
 
       {/* telefon va planshet: tezkor imkoniyatlar — o'ng panel yo'q */}

@@ -42,8 +42,8 @@
     "not_found": "To'lov topilmadi",
     "to_vacancy": "Vakansiyaga o'tish",
     "to_home": "Bosh sahifa",
-    "paid_ai_alerts": "AI yordamchi 1 oyga yoqildi — mos ish va ishchilar haqida Telegram'ga yozamiz",
-    "to_ai_alerts": "AI yordamchiga o'tish",
+    "paid_ai_alerts": "PRO kuzatuv 1 oyga yoqildi — mos ish va ishchilar haqida Telegram'ga yozamiz",
+    "to_ai_alerts": "PRO kuzatuvga o'tish",
     "paid_listing": "E'loningiz yana 10 kun qidiruvda",
     "paid_topup": "Hamyon to'ldirildi",
     "paid_topup_desc": "Balansingizga {amount} qo'shildi",
@@ -155,7 +155,7 @@
       "vacancy_publish": "Vakansiya e'loni",
       "worker_listing": "Ish qidirish e'loni",
       "worker_promotion": "Profil TOP da",
-      "ai_alerts": "AI yordamchi (PRO)",
+      "ai_alerts": "PRO kuzatuv",
       "wallet_topup": "Hamyonni to'ldirish"
     },
     "statuses": {
@@ -183,11 +183,11 @@
     "upgrade_sheet_title": "TOP qilish",
     "days": "{days} kun",
     "top": "{days} kun TOP",
-    "ai": "AI PRO",
+    "ai": "PRO kuzatuv",
     "benefit_days": "E'lon yana {days} kun qidiruvda turadi",
     "benefit_top": "{days} kun qidiruvda eng tepada — «TOP» belgisi bilan",
     "benefit_top_worker": "{days} kun ish beruvchilar qidiruvida eng tepada",
-    "benefit_ai": "{days} kun AI PRO: yangi mos ish chiqsa — darhol xabar",
+    "benefit_ai": "{days} kun PRO kuzatuv: yangi mos ish chiqsa — darhol xabar",
     "boost_cta": "TOP qilish",
     "boost_worker_cta": "E'lonimni TOP qilish",
     "top_until": "TOP · {date} gacha"

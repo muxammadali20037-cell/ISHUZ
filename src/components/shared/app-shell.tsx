@@ -2,12 +2,11 @@
 
 import { SocialLinks } from "./social-links";
 import { NewDot } from "./new-badge";
-import type { NewFeature } from "@/config/new-features";
 import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, BriefcaseBusiness, Building2, FileCheck2, Inbox, LayoutDashboard, LifeBuoy, MapPinned, MessageCircle, Plus, Search, Settings, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { Bell, Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -16,6 +15,7 @@ import { BrandMark } from "@/components/shared/brand-mark";
 import { LanguageSelect } from "./language-switcher";
 import { UserMenu } from "./user-menu";
 import type { TopBarUser } from "./top-bar";
+import { HOME_ITEM, MORE_ITEMS, isAiPath, mainItems, type MenuItem } from "./nav-items";
 
 export type NavRole = "worker" | "employer" | "guest";
 export type NavMode = "worker" | "employer" | null;
@@ -38,11 +38,9 @@ interface NavItem {
 const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages"];
 
 /**
- * "AI yordamchi" — alohida bo'lim (2026-11-12, egasi: "AI yordamchi bo'limi qani — bossa ChatGPT kabi ochilsin"): kompyuterda
- * yon menyu va yuqori menyuda "Bosh sahifa"dan keyin; telefonda — yuqori paneldagi belgi (top-bar) va bosh sahifadagi karta
- * (pastki menyuda joy yo'q: 5 ta katak, 320 px da oltinchisi sig'maydi).
+ * "Barchasi siz uchun" (avval "AI yordamchi") — alohida bo'lim: kompyuterda yon menyu va yuqori menyuda "Bosh sahifa"dan keyin;
+ * telefonda — yuqori paneldagi belgi (top-bar) va bosh sahifa menyusida (pastki menyuda joy yo'q: 5 ta katak).
  */
-const isAiPath = (p: string) => p === "/ai";
 const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath };
 
 function mainNav(mode: NavMode): NavItem[] {
@@ -265,71 +263,12 @@ function useFitLabels(labelsKey: string) {
 
 /**
  * Kompyuter (lg+) uchun chap yon menyu — kirgan foydalanuvchi (2026-11 redizayn, "Hirelly" uslubi): to'q ko'k panel, faol bo'lim —
- * ko'k plita. Ish qidiruvchi: Bosh sahifa · Vakansiyalar · Arizalarim · Saqlanganlar · Xabarlar · Profil; ish beruvchi:
- * Bosh sahifa · Vakansiyalarim · Arizalar · Nomzodlar · Xabarlar · Kompaniya · Profil; pastda — Bildirishnomalar, Sozlamalar, Yordam
- * (asosiy amal — yuqori paneldagi tugma). Telefon va planshetda — avvalgidek pastki va yuqori menyu.
+ * ko'k plita. Bo'limlar ro'yxati — nav-items.ts (telefondagi bosh sahifa menyusi bilan bitta manba); pastda — Sozlamalar,
+ * Yordam (asosiy amal — yuqori paneldagi tugma). Telefon va planshetda — pastki va yuqori menyu hamda bosh sahifa menyusi.
  * Hisoblagichlar — haqiqiy o'qilmaganlar (yuqori paneldagi bilan bir xil).
  */
-interface SideItem {
-  href: string;
-  labelKey: string;
-  icon: LucideIcon;
-  badgeKey?: "messages" | "applications" | "offers" | "notifications";
-  match: (path: string) => boolean;
-  /** muhim yangi bo'lim — yozuvsiz yonib-o'chuvchi nuqta (muddati config/new-features.ts da) */
-  fresh?: NewFeature;
-}
-
-function sideNav(mode: NavMode): { main: SideItem[]; more: SideItem[] } {
-  const more: SideItem[] = [
-    { href: "/settings", labelKey: "easy.side.settings", icon: Settings, match: (p) => p.startsWith("/settings") },
-    { href: "/help", labelKey: "easy.side.help", icon: LifeBuoy, match: (p) => p.startsWith("/help") },
-  ];
-  const messages: SideItem = { href: "/messages", labelKey: "easy.side.messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") };
-  if (mode === "employer") {
-    return {
-      main: [
-        { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
-        { ...AI_NAV, match: isAiPath, fresh: "ai" },
-        { href: "/employer/vacancies", labelKey: "easy.side.my_vacancies", icon: BriefcaseBusiness, match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/post/vacancy") },
-        { href: "/employer/applications", labelKey: "easy.side.applications", icon: Inbox, badgeKey: "applications", match: (p) => p.startsWith("/employer/applications") },
-        {
-          href: "/search?mode=workers",
-          labelKey: "easy.side.candidates",
-          icon: Users,
-          match: (p) => p.startsWith("/search") || p.startsWith("/workers") || p.startsWith("/listing") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates"),
-        },
-        messages,
-        { href: "/company/settings", labelKey: "easy.side.company", icon: Building2, match: (p) => p.startsWith("/company") },
-        { href: "/cabinet", labelKey: "easy.side.profile", icon: User, match: (p) => p.startsWith("/cabinet") || p.startsWith("/profile") || p.startsWith("/billing") || p.startsWith("/ai-alerts") || p.startsWith("/offers") },
-      ],
-      more,
-    };
-  }
-  return {
-    main: [
-      { href: "/", labelKey: "easy.side.home", icon: LayoutDashboard, match: (p) => p === "/" },
-      { ...AI_NAV, match: isAiPath, fresh: "ai" },
-      {
-        href: "/jobs",
-        labelKey: "easy.side.vacancies",
-        icon: Search,
-        match: (p) => (p.startsWith("/jobs") && !p.startsWith("/jobs/xarita")) || p.startsWith("/search") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
-      },
-      // yaqin atrofdagi ishlar — Yandex xaritasida (yangi)
-      { href: "/jobs/xarita", labelKey: "easy.side.map", icon: MapPinned, match: (p) => p.startsWith("/jobs/xarita"), fresh: "map" },
-      { href: "/applications", labelKey: "easy.side.my_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
-      { href: "/saved", labelKey: "easy.side.saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
-      messages,
-      {
-        href: "/cabinet",
-        labelKey: "easy.side.profile",
-        icon: User,
-        match: (p) => (p.startsWith("/cabinet") && !p.startsWith("/cabinet/matches")) || p.startsWith("/profile") || p.startsWith("/billing") || p.startsWith("/post"),
-      },
-    ],
-    more,
-  };
+function sideNav(mode: NavMode): { main: MenuItem[]; more: MenuItem[] } {
+  return { main: [HOME_ITEM(mode), ...mainItems(mode)], more: MORE_ITEMS };
 }
 
 export function SideNav({
@@ -347,11 +286,11 @@ export function SideNav({
   const { t } = useT();
   const { main, more } = sideNav(mode);
   const post = postAction(mode);
-  const link = (item: SideItem) => {
+  const link = (item: MenuItem) => {
     const active = item.match(pathname);
     const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
-    // "AI yordamchi" — to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
-    const ai = item.href === AI_NAV.href;
+    // "Barchasi siz uchun" — to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
+    const ai = item.tone === "ai";
     return (
       <li key={item.href}>
         <Link

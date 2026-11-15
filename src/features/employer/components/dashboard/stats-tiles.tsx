@@ -21,10 +21,11 @@ export async function KeyTiles({ candidatesHref }: { candidatesHref: string }) {
   return (
     <div role="group" aria-label={t("easy.start.metrics_label")} className="grid grid-cols-3 divide-x divide-border overflow-hidden rounded-xl border border-border bg-card sm:grid-cols-4">
       {tiles.map((x) => (
-        <Link key={x.label} href={x.href} className="press flex min-h-16 flex-col justify-center gap-0.5 px-4 py-3 hover:bg-secondary/60">
+        <Link key={x.label} href={x.href} className="press flex min-h-16 flex-col justify-center gap-0.5 px-3 py-3 hover:bg-secondary/60 sm:px-4">
           <span className={cn("text-2xl font-extrabold tabular leading-none", x.hot && "text-primary-ink")}>{x.value === null ? "—" : fmt.format(x.value)}</span>
           <span className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
-            <x.icon className={cn("size-4 shrink-0", x.hot && "text-primary-ink")} aria-hidden />
+            {/* telefonda belgisiz — uch ustunda nom so'z o'rtasida bo'linmasin ("vakansiy-alar") */}
+            <x.icon className={cn("size-4 shrink-0 max-sm:hidden", x.hot && "text-primary-ink")} aria-hidden />
             <span className="min-w-0 leading-tight">{x.label}</span>
           </span>
         </Link>

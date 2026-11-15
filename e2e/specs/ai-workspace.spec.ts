@@ -58,14 +58,26 @@ async function openPanel(page: Page) {
 
 type Ctx = { page: Page; context: import("@playwright/test").BrowserContext };
 
+/** "Bugungi ishlar" va "Yangi ishlar" yig'ilgan — ikkalasini ochish */
+async function openFolds(page: Page) {
+  for (const name of ["ai-brief", "ai-feed"]) {
+    const btn = page.locator(`[data-fold="${name}"] [data-fold-toggle]`);
+    await expect(btn).toHaveAttribute("aria-expanded", "false");
+    await btn.click();
+    await expect(btn).toHaveAttribute("aria-expanded", "true");
+  }
+}
+
 const guestTest = async ({ page, context }: Ctx) => {
   await seed();
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/ai");
-  await expect(page.getByRole("heading", { level: 1, name: "Ish topdim AI" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" })).toBeVisible();
   await expect(page.locator("[data-ai-header-status]")).toContainText("Oddiy rejim");
 
+  // "Bugungi ishlar" va "Yangi ishlar" — yig'ilgan (2026-11-15): "Ochish" / "Ko'rish" bilan ochiladi
+  await openFolds(page);
   const brief = page.locator("[data-ai-brief]");
   await expect(brief.getByText(/Kiring — mos ishlar/)).toBeVisible();
   await expect(brief.getByRole("link", { name: /Kirish/ })).toHaveAttribute("href", "/auth?next=%2Fai");
@@ -73,7 +85,7 @@ const guestTest = async ({ page, context }: Ctx) => {
   await expect(brief).not.toContainText("%");
 
   const feed = page.locator("[data-ai-feed]");
-  await expect(feed.getByRole("heading", { name: "Yangi ishlar" })).toBeVisible();
+  await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Yangi ishlar/ })).toBeVisible();
   await expect(feed.locator("article")).toHaveCount(3);
   await expect(feed.getByRole("link", { name: /Hammasi \(3\)/ })).toBeVisible();
 
@@ -87,7 +99,7 @@ const guestTest = async ({ page, context }: Ctx) => {
   ] as const) {
     await expect(panel.getByRole("link", { name })).toHaveAttribute("href", href);
   }
-  await expect(panel.getByRole("link", { name: "AI yordamchi" })).toHaveAttribute("aria-current", "page");
+  await expect(panel.getByRole("link", { name: "Barchasi siz uchun" })).toHaveAttribute("aria-current", "page");
   await expect(panel.getByText("Hali suhbat yo'q")).toBeVisible();
   await expect(panel.getByRole("link", { name: /Mehmon/ })).toHaveAttribute("href", "/auth?next=%2Fai");
   if (narrow(page)) await page.keyboard.press("Escape");
@@ -110,13 +122,14 @@ const seekerTest = async ({ page, context }: Ctx) => {
   const [wp] = await sql<{ completeness: number }>("select completeness from public.worker_profiles where profile_id = $1", [USERS.workerA]);
   await page.goto("/ai");
   await expect(page.getByText(/^Assalomu alaykum, /)).toBeVisible();
+  await openFolds(page);
   const brief = page.locator("[data-ai-brief]");
   // 3 ta faol "Sotuvchi" vakansiyasi — profil kasbi va viloyati bo'yicha
   await expect(brief.getByText(/«Sotuvchi» bo'yicha 3 ta mos vakansiya/)).toBeVisible();
   // profil to'liqligi — bazadagi trigger hisoblagan qiymat (soxta foiz emas)
   await expect(brief.getByText(`Profilingiz ${wp!.completeness} % to'ldirilgan`)).toBeVisible();
   await expect(brief.getByRole("link", { name: /Davom etish/ })).toHaveAttribute("href", "/profile/edit");
-  await expect(page.locator("[data-ai-feed]").getByRole("heading", { name: /Sizga mos/ })).toBeVisible();
+  await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Sizga mos/ })).toBeVisible();
   await expect(page.locator("[data-ai-feed] article")).toHaveCount(3);
 
   // kirgan foydalanuvchi, kompyuter: bo'limlar sayt yon menyusida — chap panelda takrorlanmaydi; telefon panelida — bor
@@ -206,11 +219,12 @@ const employerTest = async ({ page, context }: Ctx) => {
   const [row] = await sql<{ n: string }>("select count(*)::text as n from public.vacancies where owner_profile_id = $1 and status = 'active'", [USERS.employer]);
   const n = row!.n;
   await page.goto("/ai");
-  await expect(page.getByRole("heading", { level: 1, name: "Ish topdim AI" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" })).toBeVisible();
+  await openFolds(page);
   const brief = page.locator("[data-ai-brief]");
   await expect(brief.getByText(`${n} ta faol vakansiyangiz bor`)).toBeVisible();
   await expect(brief.getByRole("link", { name: /Ko'rish/ }).first()).toHaveAttribute("href", "/employer/vacancies");
-  await expect(page.locator("[data-ai-feed]").getByRole("heading", { name: "Yangi nomzodlar" })).toBeVisible();
+  await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Yangi nomzodlar/ })).toBeVisible();
   const quick = page.locator("[data-ai-quick]:visible").first();
   await expect(quick.locator("[data-quick='post']")).toHaveAttribute("href", "/employer/vacancies/new");
   await expect(quick.locator("[data-quick='candidates']")).toBeVisible();

@@ -170,7 +170,7 @@ test.describe("bo'limlar", () => {
     await asMode(context, "worker");
     await page.goto("/ai");
     await expect(
-      page.getByRole("heading", { level: 1, name: "Ish topdim AI" }),
+      page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" }),
     ).toBeVisible();
     // mehmon: bo'limlar chap panelda (telefonda — "Bo'limlar va suhbatlar" tugmasi bilan pastdan); kirish talab qiladiganlari — /auth?next=
     const narrow = (page.viewportSize()?.width ?? 1280) < 1024;

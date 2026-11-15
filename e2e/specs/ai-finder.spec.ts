@@ -25,7 +25,7 @@ async function vacancy(title: string, profession: string, salaryType: "monthly" 
 // 2.0: ish izlovchi bosh sahifasida — yagona qidiruv maydonining "Topish" tugmasi (bo'sh bosilsa — yordamchi misollar bilan
 // ochiladi); boshqa sahifalarda — "AI bilan qidirish" tugmasi
 // [data-hydrated] — skriptlar yuklanib bo'lgan (undan oldin bosilsa forma /ai?q=… sahifasiga ketadi — alohida testda)
-const fab = (page: Page) => page.locator("form[data-ai-field][data-hydrated] button[type='submit']").or(page.getByRole("button", { name: "AI bilan qidirish" })).first();
+const fab = (page: Page) => page.locator("form[data-ai-field][data-hydrated] button[type='submit']").or(page.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).first();
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -50,7 +50,7 @@ test("AI qidiruv — bosh sahifaning yagona qidiruv maydoni (suzuvchi emas): ayl
   await page.goto(`/jobs/${slug}`);
   await expect(page.getByRole("button", { name: "Ariza yuborish" }).last()).toBeVisible();
   await expect(page.locator("form[data-ai-field]")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "AI bilan qidirish" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).toHaveCount(0);
 });
 
 test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosilsa — sahifasi ochiladi", async ({ page, context }) => {
@@ -59,7 +59,7 @@ test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosils
   await asGuest(context);
   await page.goto("/");
   await fab(page).click();
-  const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
+  const dialog = page.getByRole("dialog", { name: "Yordamchi" });
   await expect(dialog.getByRole("radio", { name: "Ish qidiryapman" })).toHaveAttribute("aria-checked", "true");
   await dialog.getByLabel("Nima qidiryapsiz?").fill("Toshkent shahrida buxgalter");
   await dialog.getByRole("button", { name: "Topish" }).click();
@@ -79,7 +79,7 @@ test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq ta
   await asGuest(context);
   await page.goto("/");
   await fab(page).click();
-  const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
+  const dialog = page.getByRole("dialog", { name: "Yordamchi" });
   await dialog.getByLabel("Nima qidiryapsiz?").fill("kunlik ish");
   await dialog.getByRole("button", { name: "Topish" }).click();
   await expect(dialog.getByText(/^Tushundim:/)).toContainText("Kunlik ishlar");
@@ -97,7 +97,7 @@ test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq ta
   // hol-ahvol — qidiruv emas, suhbat
   await dialog.getByLabel("Nima qidiryapsiz?").fill("nima gap");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.locator("[data-ai-reply]").last()).toContainText("Men Ish topdim AI yordamchisiman");
+  await expect(dialog.locator("[data-ai-reply]").last()).toContainText("Men Ish topdim yordamchisiman");
   await expect(dialog.locator("[data-ai-reply]").last()).not.toContainText("tushunmadim");
 });
 
@@ -116,7 +116,7 @@ test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ish
   await expect(page.getByRole("dialog").getByRole("radio")).toHaveCount(0);
 });
 
-const dialogOf = (page: Page) => page.getByRole("dialog", { name: "AI yordamchi" });
+const dialogOf = (page: Page) => page.getByRole("dialog", { name: "Yordamchi" });
 
 test("suhbat: salomlashuv va misol → javob; aniqlashtirish (+ Kunlik) faqat kunliklarni qoldiradi; 'Yangi suhbat' tozalaydi", async ({ page, context }) => {
   await vacancy("Buxgalter (oylik)", "Buxgalter", "monthly");
@@ -237,7 +237,7 @@ test("/ai sahifasi: suhbat sahifaning o'zida (oyna emas), natija shu yerda", asy
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/ai");
-  await expect(page.getByRole("heading", { level: 1, name: "Ish topdim AI" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" })).toBeVisible();
   await page.getByLabel("Nima qidiryapsiz?").fill("Toshkentda buxgalter");
   await page.getByRole("button", { name: "Topish", exact: true }).click();
   await expect(page.getByText(/^Tushundim:/)).toContainText("Buxgalter");

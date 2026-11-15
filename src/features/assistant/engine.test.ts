@@ -175,7 +175,7 @@ describe("AI ishlamasa — lug'at va shablon bilan to'liq javob", () => {
       const r = await run([user(text)], {});
       expect(r.find, text).not.toHaveBeenCalled();
       expect(r.text, text).not.toMatch(/tushunmadim|aniqlay olmadim|понял|tell which/i);
-      expect(r.text, text).toMatch(/AI yordamchi|AI ёрдамчи|ИИ-помощник|AI assistant/);
+      expect(r.text, text).toMatch(/yordamchi|ёрдамчи|ИИ-помощник|AI assistant/);
     }
     const search = await run([user("qanday ish bor")], {});
     expect(search.find).toHaveBeenCalled();
@@ -211,7 +211,7 @@ describe("AI ishlamasa — lug'at va shablon bilan to'liq javob", () => {
   it("salomlashuv va rahmat — qidiruvsiz, tilga mos; sun'iy intellekt ekanini aytadi", async () => {
     const hi = await run([user("Salom")], {});
     expect(hi.find).not.toHaveBeenCalled();
-    expect(hi.text).toContain("AI yordamchi");
+    expect(hi.text).toContain("Ish topdim yordamchisiman");
     const who = await run([user("ты бот?")], {});
     expect(who.text).toContain("искусственный интеллект");
     const en = await run([user("thanks")], {});

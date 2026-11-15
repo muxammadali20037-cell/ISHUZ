@@ -23,7 +23,7 @@ const PAGES: { name: string; url: string; who: "guest" | "worker" | "employer" |
   { name: "qidiruv natijalari", url: "/search?mode=jobs&any=1&region=all", who: "worker" },
   { name: "e'lon berish (kasb tanlash)", url: "/post/worker", who: "seeker-guest" },
   { name: "kabinet", url: "/cabinet", who: "worker" },
-  { name: "AI yordamchi", url: "/ai", who: "worker" },
+  { name: "Barchasi siz uchun", url: "/ai", who: "worker" },
   { name: "til (birinchi ochilish)", url: "/start/til", who: "guest" },
   { name: "rol (birinchi ochilish)", url: "/start/rol", who: "guest" },
 ];
@@ -85,7 +85,7 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
     const field = page.locator("form[data-ai-field][data-hydrated]");
     await field.getByRole("searchbox").fill("Toshkentda omborchi");
     await field.getByRole("button", { name: "Topish" }).click();
-    const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
+    const dialog = page.getByRole("dialog", { name: "Yordamchi" });
     await expect(dialog.getByText(/^Tushundim:/).last()).toBeVisible();
     if (zoom) await zoomText(page, zoom);
     expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
