@@ -41,7 +41,8 @@ export async function MarketHero({ stats, counts, media, ai = false }: { stats: 
   const today = stats && stats.today > 0 ? stats.today : 0;
   const employers = counts && counts.employers > 0 ? counts.employers : 0;
   return (
-    <section aria-labelledby="hero-title" className="border-b border-border bg-hero-soft">
+    // 3.0 (2026-11-15, ega namunasi): to'q navy banner — oq sarlavha, ko'k urg'u, oq tugma; qidiruv va chiplar — oq kartalar
+    <section aria-labelledby="hero-title" className="hero-navy">
       <div className="container-wide grid grid-cols-1 gap-10 pb-10 pt-8 sm:pb-14 sm:pt-12 lg:grid-cols-[minmax(0,1.12fr)_minmax(0,0.88fr)] lg:items-center lg:gap-12 lg:pb-16 lg:pt-14">
         <div className="min-w-0">
           {vacancies ? (
@@ -53,7 +54,7 @@ export async function MarketHero({ stats, counts, media, ai = false }: { stats: 
           <h1 id="hero-title" className="text-4xl font-semibold leading-[1.08] tracking-tight sm:text-5xl">
             <HeroTitle text={t("welcome.hero.title")} />
           </h1>
-          <p className="mt-4 max-w-[54ch] text-lg leading-relaxed text-muted-foreground">{t("welcome.hero.subtitle")}</p>
+          <p className="mt-4 max-w-[54ch] text-lg leading-relaxed text-navy-muted">{t("welcome.hero.subtitle")}</p>
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <RoleCta mode="worker" primary icon={Search} label={t("welcome.hero.cta_seek")} />
             <RoleCta mode="employer" icon={UsersRound} label={t("welcome.hero.cta_hire")} />
@@ -63,7 +64,7 @@ export async function MarketHero({ stats, counts, media, ai = false }: { stats: 
           </div>
           <nav aria-label={t("welcome.market.quick_label")} className="-mx-4 mt-4 sm:mx-0">
             <ul className="flex items-center gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1 [scrollbar-width:none] sm:flex-wrap sm:overflow-visible sm:px-0 [&::-webkit-scrollbar]:hidden">
-              <li className="hidden shrink-0 pr-1 text-sm font-medium text-muted-foreground sm:block" aria-hidden>
+              <li className="hidden shrink-0 pr-1 text-sm font-medium text-navy-muted sm:block" aria-hidden>
                 {t("welcome.hero.popular")}
               </li>
               {/* AI yordamchi — qatorning boshida (telefonda ham birinchi ekranda ko'rinsin) */}
@@ -145,7 +146,7 @@ function HeroTitle({ text }: { text: string }) {
       ) : null}
       {line.split(/(\[[^\]]+\])/).map((part, j) =>
         part.startsWith("[") && part.endsWith("]") ? (
-          <span key={j} className="text-primary-ink">
+          <span key={j} className="text-hero-accent">
             {part.slice(1, -1)}
           </span>
         ) : (
@@ -166,7 +167,8 @@ function RoleCta({ mode, primary, icon: Icon, label }: { mode: AppMode; primary?
         data-track-to={mode}
         className={cn(
           "press inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-6 text-md font-semibold transition-colors sm:w-auto",
-          primary ? "bg-primary text-primary-foreground hover:bg-primary-hover" : "border border-border-strong bg-card text-foreground hover:border-primary/50 hover:text-primary-ink",
+          // navy banner ustida: asosiy — oq tugma (namunadagi "Ish qidirish →"), ikkinchisi — oq chiziqli shaffof tugma
+          primary ? "bg-card text-foreground shadow-sm hover:bg-primary-soft dark:bg-primary dark:text-primary-foreground dark:hover:bg-primary-hover" : "border border-navy-muted/60 text-navy-foreground hover:border-navy-foreground hover:bg-navy-line",
         )}
       >
         <Icon className="size-5 shrink-0" aria-hidden />

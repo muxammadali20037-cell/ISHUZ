@@ -5,6 +5,10 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ============================================================
+   ISH TOPDIM 3.0 ranglari (2026-11-15, ega yuborgan namuna rasm): yorqin ko'k #0B57F0, chuqur navy matn #0E1A3D,
+   och ko'kish fon #F5F7FD, oq kartalar va yumshoq ko'kish soya, rangli belgi plitkalari (ko'k · binafsha · yashil ·
+   to'q sariq), bosh ekran sarlavhasi — to'q navy banner. Tuzilish 2.0 dagidek; quyidagi 2.0 izohi tarix uchun.
+   ------------------------------------------------------------
    ISH TOPDIM 2.0 tokenlari (2026-11-11, docs/DESIGN_SYSTEM.md)
    Midnight Navy #101D35 · Professional Blue #276FE5 (tugma, faol holat) · Cloud #F4F6FA (fon) · oq sirt ·
    matn #172033 · ikkinchi darajali matn #56657A · chegara #E5EAF0 · Success #16A378 (faqat belgi; matn — #0E7A5A).
@@ -12,26 +16,26 @@
    Kontrast (WCAG AA) — brand-contrast.test.ts tekshiradi. Radius 10–16 px, soyalar juda yengil.
    ============================================================ */
 :root {
-  --background: #f4f6fa; /* Cloud */
-  --foreground: #172033;
+  --background: #f5f7fd; /* 3.0: och ko'kish fon (namunadagi #F4F7FD) */
+  --foreground: #0e1a3d; /* chuqur navy matn: fonda 15.9:1 */
   --card: #ffffff;
-  --card-foreground: #172033;
+  --card-foreground: #0e1a3d;
   --popover: #ffffff;
-  --popover-foreground: #172033;
-  --primary: #276fe5; /* Professional Blue (2.0): tugma foni, faol holat; oq matn ustida 4.7:1. Ko'k MATN — --primary-ink */
-  --primary-ink: #1f5fcc; /* ko'k matn/ikonka: Cloud fonda 5.4:1 (#276FE5 Cloud'da 4.3 — AA dan o'tmaydi) */
-  --primary-hover: #1f5fcc;
+  --popover-foreground: #0e1a3d;
+  --primary: #0b57f0; /* 3.0 yorqin ko'k: tugma foni, faol holat; oq matn ustida 5.8:1, fonda 5.4:1 */
+  --primary-ink: #0847cf; /* ko'k matn/ikonka: oq 7.5, fon 7.0, och ko'k 6.4 */
+  --primary-hover: #0847cf;
   --primary-foreground: #ffffff;
-  --primary-soft: #eaf1fd;
-  --secondary: #edf1f6;
-  --secondary-foreground: #172033;
-  --muted: #edf1f6;
-  --muted-foreground: #56657a; /* talabdagi #64748B ning AA varianti: oq 5.9, Cloud 5.5 (#64748B Cloud'da 4.4) */
-  --accent: #eaf1fd;
-  --accent-foreground: #1f5fcc;
+  --primary-soft: #e7eefe;
+  --secondary: #eef2fb;
+  --secondary-foreground: #0e1a3d;
+  --muted: #eef2fb;
+  --muted-foreground: #4b5884; /* ko'kish kulrang: oq 6.9, fon 6.5, och ko'k 6.0 */
+  --accent: #e7eefe;
+  --accent-foreground: #0847cf;
   /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
   --highlight: #ffc83d;
-  --highlight-foreground: #172033;
+  --highlight-foreground: #0e1a3d;
   --highlight-soft: #fff4d6;
   --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
   --success: #0e7a5a; /* Success #16A378 ning matn varianti: oq 5.3, Cloud 4.9. #16A378 — faqat belgi (--brand-green) */
@@ -46,14 +50,16 @@
   --destructive: #b42318; /* oq 6.6, Cloud 6.1 */
   --destructive-soft: #fcecec;
   --destructive-foreground: #ffffff;
-  --border: #e5eaf0;
-  --input: #d5dce6;
-  --ring: #276fe5;
+  --border: #e6ebf5;
+  --input: #d3dbec;
+  --ring: #0b57f0;
   /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
-  --navy: #101d35; /* Midnight Navy */
+  --navy: #0d1f3f; /* 3.0 navy (namunadagi banner) */
+  --navy-2: #1a3563; /* navy bannerning ikkinchi nuqtasi (yengil gradient, faqat .hero-navy) */
   --navy-foreground: #ffffff;
-  --navy-muted: #c9d3e6;
-  --navy-line: #22355c;
+  --navy-muted: #c7d3ea; /* navy 10.8, navy-2 8.0 */
+  --navy-line: #22396a;
+  --hero-accent: #6ea8ff; /* navy banner ustidagi ko'k urg'u so'zlar: navy 6.8, navy-2 5.0 */
   /*
    * Bosh ekran ko'k sirti (2026-10). Faqat shu faylda va pastdagi tasdiqlangan utilitalarda ishlatiladi (.hero-surface,
    * .btn-light): komponentlarda xom gradient/hex yo'q (brand-guard.test.ts). Tugma va belgilar — "toza" uslub (2026-10-22,
@@ -64,13 +70,14 @@
   --hero-from: #eaf1fd;
   --hero-via: #eaf1fd;
   --hero-to: #eaf1fd;
-  --hero-fg: #172033;
-  --hero-muted: #525c70; /* och ko'k ustida 6:1 */
-  --glow: rgb(53 106 230 / 0.30);
+  --hero-fg: #0e1a3d;
+  --hero-muted: #4b5884; /* och ko'k ustida 6:1 */
+  --glow: rgb(11 87 240 / 0.28);
   --radius: 0.625rem;
-  --shadow-sm: 0 1px 2px rgb(16 29 53 / 0.06);
-  --shadow-md: 0 1px 3px rgb(16 29 53 / 0.06), 0 1px 2px rgb(16 29 53 / 0.04);
-  --shadow-lg: 0 8px 24px rgb(16 29 53 / 0.12);
+  /* 3.0: yumshoq ko'kish soya (namunadagi kartalar) — chegara deyarli ko'rinmaydi, karta soyadan ajraladi */
+  --shadow-sm: 0 1px 2px rgb(14 26 61 / 0.04), 0 6px 18px -8px rgb(14 46 120 / 0.14);
+  --shadow-md: 0 2px 4px rgb(14 26 61 / 0.04), 0 10px 26px -10px rgb(14 46 120 / 0.2);
+  --shadow-lg: 0 12px 32px rgb(14 26 61 / 0.16);
   --tabbar-height: 58px;
   color-scheme: light;
   /*
@@ -79,11 +86,11 @@
    */
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  --sidebar-active: #1d2d52;
-  --sidebar-accent: #6d9eff;
-  --border-strong: #cdd5e1;
+  --sidebar-active: #1c3260;
+  --sidebar-accent: #6ea8ff;
+  --border-strong: #c9d3e8;
   /* brend belgisi (logo ravog'i) va yashil urg'u (#16A36A — faqat belgi/nuqta, matn uchun emas: oq ustida 3.2:1) */
-  --brand: #276fe5;
+  --brand: #0b57f0;
   --brand-accent: #0f766e; /* "Universal ustalar" bo'limi belgisi (turkuaz) — menyuda ajralib turadi */
   --accent-bright: #2dd4bf; /* o'sha turkuaz — to'q ko'k yon menyuda (navy ustida 9:1) */
   /* "AI yordamchi" — to'q sariq (orange): menyuda va kartalarda ajralib turadi. --ai: matn va tugma foni (oq ustida 5.2:1),
@@ -94,7 +101,17 @@
   --ai-bright: #fb923c;
   --brand-green: #16a378;
   /* bosh sahifa birinchi ekrani: och ko'k fon (matn 16:1, muted 4.6:1, primary 5.5:1) */
-  --hero-soft: #eaf1fd;
+  --hero-soft: #e7eefe;
+  /* 3.0 rangli belgi plitkalari (namunadagi to'rtta plitka): faqat belgi uchun — och fon + to'q belgi (≥ 3:1).
+     Bo'limlar menyusi, tezkor yo'llar, yig'iladigan bo'limlar va sohalar to'rida navbatma-navbat */
+  --tint-blue: #e3edfe;
+  --tint-blue-ink: #0a4fd8;
+  --tint-violet: #ebe9fe;
+  --tint-violet-ink: #4f46e5;
+  --tint-green: #e1f5f1;
+  --tint-green-ink: #05845f;
+  --tint-orange: #ffefe3;
+  --tint-orange-ink: #ea580c;
 }
 
 /* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
@@ -141,9 +158,11 @@ html.tg-fullscreen {
   --input: #34425f;
   --ring: #6d9eff;
   --navy: #0b1222;
+  --navy-2: #15264a;
   --navy-foreground: #ffffff;
   --navy-muted: #c9d3e6;
   --navy-line: #1f2c49;
+  --hero-accent: #8fb4ff;
   --hero-from: #121d35;
   --hero-via: #121d35;
   --hero-to: #121d35;
@@ -166,6 +185,14 @@ html.tg-fullscreen {
   --ai-bright: #fb923c;
   --brand-green: #2fbf84;
   --hero-soft: #121d35;
+  --tint-blue: #1b2d55;
+  --tint-blue-ink: #8fb4ff;
+  --tint-violet: #2a2557;
+  --tint-violet-ink: #b4adff;
+  --tint-green: #0f3a33;
+  --tint-green-ink: #5eead4;
+  --tint-orange: #3a2412;
+  --tint-orange-ink: #fdba74;
 }
 
 @theme inline {
@@ -219,6 +246,16 @@ html.tg-fullscreen {
   --color-navy-foreground: var(--navy-foreground);
   --color-navy-muted: var(--navy-muted);
   --color-navy-line: var(--navy-line);
+  --color-navy-2: var(--navy-2);
+  --color-hero-accent: var(--hero-accent);
+  --color-tint-blue: var(--tint-blue);
+  --color-tint-blue-ink: var(--tint-blue-ink);
+  --color-tint-violet: var(--tint-violet);
+  --color-tint-violet-ink: var(--tint-violet-ink);
+  --color-tint-green: var(--tint-green);
+  --color-tint-green-ink: var(--tint-green-ink);
+  --color-tint-orange: var(--tint-orange);
+  --color-tint-orange-ink: var(--tint-orange-ink);
   --color-sidebar-active: var(--sidebar-active);
   --color-sidebar-accent: var(--sidebar-accent);
   --color-border-strong: var(--border-strong);
@@ -442,6 +479,13 @@ body:has([data-global-back]) [data-header-back] { display: none; }
   background-color: var(--hero-from);
   box-shadow: inset 0 0 0 1px var(--border);
 }
+/* 3.0 (2026-11-15, ega namunasi): bosh sahifa birinchi ekrani — to'q navy banner, yengil diagonal gradient (navy → navy-2).
+   Ustida matn: text-navy-foreground (oq), text-navy-muted, urg'u — text-hero-accent; kartalar (qidiruv, chiplar) — oq */
+.hero-navy {
+  color: var(--navy-foreground);
+  background-color: var(--navy);
+  background-image: linear-gradient(150deg, var(--navy) 0%, var(--navy) 35%, var(--navy-2) 100%);
+}
 /* admin surati bor sarlavha: surat ustida to'q parda — matn oq (har ikki mavzuda) */
 .has-photo {
   --hero-fg: #ffffff;
@@ -499,6 +543,16 @@ body:has([data-global-back]) [data-header-back] { display: none; }
 }
 @keyframes caret-blink { 50% { opacity: 0; } }
 
+/* 3.0 (2026-11-15): oq kartalar namunadagidek yumshoq ko'kish soya bilan — har bir komponentga alohida yozmasdan.
+   Faqat katta panel/karta (rounded-2xl + chegara + oq sirt); o'z soyasi berilganlar (shadow-*) o'zgarmaydi */
+@layer components {
+  /* komponentlar qatlamida: ring-* / shadow-* utilitalari ustun turadi; fokus halqasi (--tw-ring-shadow) saqlanadi */
+  .rounded-2xl.border.bg-card:not([class*="shadow"]) {
+    --tw-shadow: var(--shadow-sm);
+    box-shadow: var(--tw-inset-shadow, 0 0 #0000), var(--tw-inset-ring-shadow, 0 0 #0000), var(--tw-ring-offset-shadow, 0 0 #0000),
+      var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  }
+}
 /* Oq, yengil ko'tarilgan karta: xizmatlar to'ri, rol kartalari */
 .tile-raise {
   background-color: var(--card);

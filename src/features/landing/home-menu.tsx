@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { unreadCounts } from "@/components/shared/unread-counts";
 import { MASTERS_ITEM, MORE_ITEMS, mainItems, type MenuItem, type MenuMode } from "@/components/shared/nav-items";
 import { NewDot } from "@/components/shared/new-badge";
+import { TINT_TILE, tintFor } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
 import { RoleSwitchRow } from "./role-switch-row";
 
@@ -20,8 +21,8 @@ export async function HomeMenu({ mode }: { mode: MenuMode }) {
   return (
     <nav aria-label={t("easy.side.label")} data-home-menu className="lg:hidden">
       <h2 className="mb-2 px-1 text-lg font-bold">{t("easy.side.sections")}</h2>
-      <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
-        {items.map((item) => {
+      <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+        {items.map((item, i) => {
           const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
           return (
             <li key={item.key}>
@@ -36,7 +37,7 @@ export async function HomeMenu({ mode }: { mode: MenuMode }) {
                 <span
                   className={cn(
                     "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                    item.tone === "ai" ? "bg-ai-soft text-ai" : item.tone === "masters" ? "theme-masters bg-primary-soft text-primary-ink" : "bg-primary-soft text-primary-ink",
+                    item.tone === "ai" ? "bg-ai-soft text-ai" : item.tone === "masters" ? "theme-masters bg-primary-soft text-primary-ink" : TINT_TILE[tintFor(item.key, i)],
                   )}
                   aria-hidden
                 >

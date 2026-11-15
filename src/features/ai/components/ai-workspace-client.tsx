@@ -600,7 +600,7 @@ function Welcome({
 
       {/* "Bugungi ishlar" va "Yangi ishlar" — yig'ilgan (ega, 2026-11-15: "ichiga yashir — «ochish», «ko'rish» so'zlari bilan") */}
       {data.items.length ? (
-        <Fold name="ai-brief" icon={<ListTodo />} verb="open" title={t("easy.aiws.brief_title")} count={data.items.length}>
+        <Fold name="ai-brief" icon={<ListTodo />} tint="violet" verb="open" title={t("easy.aiws.brief_title")} count={data.items.length}>
           <section aria-label={t("easy.aiws.brief_title")} data-ai-brief>
             <ul className="space-y-2">
               {data.items.map((item) => {
@@ -631,7 +631,7 @@ function Welcome({
       ) : null}
 
       {feed && feed.items.length ? (
-        <Fold name="ai-feed" icon={<Target />} verb="view" tone="soft" title={feed.title} count={feed.total}>
+        <Fold name="ai-feed" icon={<Target />} tint="green" verb="view" tone="soft" title={feed.title} count={feed.total}>
           <section aria-label={feed.title} data-ai-feed>
             <div className="flex items-baseline justify-between gap-3">
               <p className="min-w-0 text-sm text-muted-foreground">

@@ -1,5 +1,6 @@
 "use client";
 
+import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronLeft, ChevronRight, Clock, Loader2, Search, Sparkles, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -368,14 +369,14 @@ export function ProfessionPicker({
                 </section>
               ) : null}
               <div className="pop-list grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {categories.map((c) => (
+                {categories.map((c, i) => (
                   <button
                     key={c.id}
                     type="button"
                     onClick={() => openSector(c.id)}
                     className="flex min-h-[112px] flex-col items-start justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-[0.98]"
                   >
-                    <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink">
+                    <span className={cn("flex size-12 items-center justify-center rounded-2xl", TINT_TILE[tintAt(i)])}>
                       <CategoryIcon name={c.icon} className="size-6" />
                     </span>
                     {/* uzun so'z (telekommunikatsiya, программирование) plitkadan chiqmasin: kenglik — plitka, so'z kerak bo'lsa bo'linadi */}

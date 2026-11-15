@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import { getT } from "@/lib/i18n/server";
 import { getCategories } from "@/lib/reference";
 import { CategoryIcon } from "@/components/shared/category-icon";
@@ -12,13 +13,13 @@ export async function CategoryGrid() {
     <section aria-label={t("jobs.home.categories")}>
       <SectionHeader title={t("jobs.home.categories")} href="/jobs" linkLabel={t("common.actions.view_all")} />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {categories.map((c) => (
+        {categories.map((c, i) => (
           <Link
             key={c.id}
             href={`/jobs?category=${c.slug}`}
             className="flex min-h-[60px] items-center gap-3 rounded-2xl border border-border/70 bg-card p-3.5 shadow-sm transition-colors hover:border-primary/40 hover:bg-primary-soft/40"
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink">
+            <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${TINT_TILE[tintAt(i)]}`}>
               <CategoryIcon name={c.icon} className="size-5" />
             </span>
             <span className="text-sm font-medium leading-tight">{name(c)}</span>

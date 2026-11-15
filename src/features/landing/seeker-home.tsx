@@ -19,6 +19,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
+import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
@@ -107,7 +108,7 @@ export async function SeekerHome({
         data-home="seeker-v2"
         className={cn(
           "border-border bg-card px-4 py-6 sm:rounded-2xl sm:border sm:px-8 sm:py-8",
-          flush ? "-mx-4 -mt-4 border-b sm:mx-0 sm:mt-0" : "rounded-2xl border",
+          flush ? "-mx-4 -mt-4 max-sm:bg-transparent sm:mx-0 sm:mt-0" : "rounded-2xl border",
         )}
       >
         <div className="min-w-0">
@@ -172,20 +173,19 @@ export async function SeekerHome({
           </div>
           <nav aria-label={t("easy.home2.shortcuts")} className="mt-4">
             <ul className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-              {shortcuts.map(({ key, href, label, icon: Icon }) => (
+              {shortcuts.map(({ key, href, label, icon: Icon }, i) => (
                 <li key={key} className="flex">
                   <Link
                     href={href}
                     prefetch={false}
                     data-track="home_service"
                     data-track-to={key}
-                    className="press inline-flex min-h-11 w-full items-center gap-2 rounded-md border border-border bg-background px-3.5 py-1.5 text-sm font-semibold leading-tight hover:border-primary/50 hover:text-primary-ink"
+                    className="press inline-flex min-h-14 w-full min-w-0 items-center gap-2.5 rounded-xl border border-border/70 bg-card px-2.5 py-2 text-sm font-semibold leading-tight shadow-sm hover:border-primary/50 hover:text-primary-ink"
                   >
-                    <Icon
-                      className="size-4 shrink-0 text-primary-ink"
-                      aria-hidden
-                    />{" "}
-                    {label}
+                    <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", TINT_TILE[tintAt(i)])} aria-hidden>
+                      <Icon className="size-5" />
+                    </span>{" "}
+                    <span className="min-w-0 [overflow-wrap:anywhere]">{label}</span>
                   </Link>
                 </li>
               ))}

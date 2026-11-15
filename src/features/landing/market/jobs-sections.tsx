@@ -62,7 +62,7 @@ export async function LatestJobs() {
                 to={v.salary_to}
                 type={v.salary_type}
                 negotiable={v.salary_negotiable}
-                className={cn("text-base font-semibold", hasSalary(v) ? "text-foreground" : "text-muted-foreground")}
+                className={cn("text-base font-semibold", hasSalary(v) ? "inline-block rounded-lg bg-primary-soft px-2.5 py-0.5 font-bold text-primary-ink" : "text-muted-foreground")}
               />
             );
             return (
