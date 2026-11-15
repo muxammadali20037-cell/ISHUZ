@@ -122,7 +122,7 @@
       "hired": "Hired"
     },
     "account": "Account",
-    "role_now": "Now: {role}. Switch in one tap"
+    "role_now": "Now: {role}"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -754,7 +754,8 @@
     },
     "demos_exact": "Sample ads — not real",
     "demos_category": "Sample ads from this field — not real",
-    "demos_all": "All samples"
+    "demos_all": "All samples",
+    "top_placeholder": "Search jobs and workers"
   },
   "mode": {
     "chooser_title": "What are you looking for?",
@@ -981,28 +982,28 @@
     "map": "Jobs on the map",
     "sections": "Sections",
     "hint": {
-      "home": "Open the home page",
-      "ai": "Jobs that fit you and tips",
+      "home": "Main page",
+      "ai": "Matching jobs and tips",
       "ai_employer": "Matching candidates and tips",
-      "jobs": "View and search all jobs",
-      "map": "View jobs nearby on a map",
-      "my_applications": "View your applications and offers",
-      "saved": "Open your saved jobs",
-      "messages": "Open your conversations",
-      "profile": "Open your profile, listings and account",
-      "my_vacancies": "View your vacancies",
-      "emp_applications": "View incoming applications",
-      "candidates": "Search and view workers",
-      "company": "Open company details",
-      "masters": "Find a craftsman or post a service",
-      "settings": "Language, notifications and account",
-      "help": "Answers and help"
+      "jobs": "All jobs",
+      "map": "Jobs nearby",
+      "my_applications": "Applications and offers",
+      "saved": "Saved jobs",
+      "messages": "Conversations",
+      "profile": "Listings and account",
+      "my_vacancies": "Your vacancies",
+      "emp_applications": "Received applications",
+      "candidates": "Find workers",
+      "company": "Company details",
+      "masters": "Find a pro or offer a service",
+      "settings": "Language and notifications",
+      "help": "Questions and answers"
     },
     "switch": {
       "to_employer": "Switch to employer",
-      "to_employer_hint": "To find workers and post vacancies",
+      "to_employer_hint": "To find workers",
       "to_worker": "Switch to job seeker",
-      "to_worker_hint": "To find work and apply"
+      "to_worker_hint": "To find a job"
     }
   },
   "activity": {
@@ -1070,7 +1071,7 @@
   "home2": {
     "title": "What job are you looking for?",
     "hint": "Write it in your own words — for example “cook in Chilanzar” or “daily work”.",
-    "placeholder": "For example: cook",
+    "placeholder": "Search jobs and workers",
     "submit": "Find",
     "shortcuts": "Quick search",
     "all_filters": "Search with filters",
@@ -1078,7 +1079,7 @@
     "alert_desc": "Describe the job you need — we'll message you on Telegram as soon as a match appears",
     "e_title": "What kind of employee do you need?",
     "e_hint": "Write it in your own words — for example “salesperson in Chilanzar” or “a worker for a day”.",
-    "e_placeholder": "For example: salesperson",
+    "e_placeholder": "Search jobs and workers",
     "e_all": "All candidates",
     "e_alert_title": "We'll tell you about matching candidates",
     "e_alert_desc": "Describe who you need — we'll message you on Telegram as soon as a matching ad appears",

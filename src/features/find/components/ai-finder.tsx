@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type MouseEvent } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type MouseEvent } from "react";
 import { ArrowRight, Search, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Dialog, Sheet } from "@/components/ui/dialog";
@@ -35,7 +35,8 @@ export function AiFinder({
 }: {
   defaultMode: "jobs" | "workers";
   locked?: boolean;
-  variant?: "inline" | "card" | "cta" | "bar" | "field";
+  /** "top": telefonda sarlavhadagi doimiy qidiruv qatori (Uzum kabi) — lupa · "Ish va ishchilar izlash" · "Topish" */
+  variant?: "inline" | "card" | "cta" | "bar" | "field" | "top";
   className?: string;
   /** "field" uchun: maydon nomi (ekran o'qigich), misol matni va tugma yozuvi */
   fieldLabel?: string;
@@ -61,6 +62,15 @@ export function AiFinder({
   };
   // skriptlar yuklanib bo'lganini bildiradi (sekin telefon: undan oldin bosilsa — forma /ai?q=… ga oddiy yo'l bilan ketadi)
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
+  const submitField = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // maydon boshqarilmaydi (uncontrolled): skriptlar yuklanishidan oldin yozilgan matn ham yo'qolmaydi
+    const form = e.currentTarget;
+    const q = String(new FormData(form).get("q") ?? "").replace(/\s+/g, " ").trim();
+    form.reset();
+    // bo'sh yuborilsa ham — yordamchi misollar bilan ochiladi (nima yozishni bilmaganlar uchun)
+    openWith(q.length >= 2 ? q : undefined);
+  };
 
   return (
     <>
@@ -74,15 +84,7 @@ export function AiFinder({
           data-ai-field
           data-hydrated={hydrated ? "" : undefined}
           className={cn("flex items-center gap-1.5 rounded-xl border border-border bg-card p-1.5 shadow-sm focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/30", className)}
-          onSubmit={(e) => {
-            e.preventDefault();
-            // maydon boshqarilmaydi (uncontrolled): skriptlar yuklanishidan oldin yozilgan matn ham yo'qolmaydi
-            const form = e.currentTarget;
-            const q = String(new FormData(form).get("q") ?? "").replace(/\s+/g, " ").trim();
-            form.reset();
-            // bo'sh yuborilsa ham — yordamchi misollar bilan ochiladi (nima yozishni bilmaganlar uchun)
-            openWith(q.length >= 2 ? q : undefined);
-          }}
+          onSubmit={submitField}
         >
           {/* lupa har doim ko'rinadi (ega, 2026-11-14: "telefonda qidiruv joyida lupa ko'rinmayapti") — bu qidiruv maydoni
               ekanini birinchi qarashda bildiradi; tor telefonda joyni tugmadagi yulduzcha belgisi bo'shatadi */}
@@ -104,6 +106,42 @@ export function AiFinder({
           >
             <Sparkles className="size-5 max-[380px]:hidden" aria-hidden />
             {/* yozuv har doim ko'rinadi (320px da ham): faqat belgi bo'lsa tugma nima qilishi tushunarsiz */}
+            {submitLabel}
+          </button>
+        </form>
+      ) : variant === "top" ? (
+        <form
+          action="/ai"
+          method="get"
+          role="search"
+          aria-label={fieldLabel}
+          data-ai-field
+          data-top-search
+          data-hydrated={hydrated ? "" : undefined}
+          // Uzum kabi: kulrang to'ldirilgan maydon, chapda lupa, o'ngda "Topish"; bosilganda — oq va ko'k chegara (ichida kvadrat yo'q)
+          className={cn(
+            "flex h-12 items-center gap-2 rounded-xl border border-transparent bg-secondary pl-3 pr-1 transition-colors focus-within:border-primary focus-within:bg-card focus-within:ring-2 focus-within:ring-ring/25",
+            className,
+          )}
+          onSubmit={submitField}
+        >
+          <Search data-search-icon className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+          <input
+            name="q"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            maxLength={300}
+            aria-label={fieldLabel}
+            placeholder={placeholder}
+            className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+          />
+          <button
+            type="submit"
+            data-track="ai_finder_open"
+            data-track-to="top"
+            className="press tap-target relative inline-flex h-10 shrink-0 items-center rounded-lg bg-primary px-3.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+          >
             {submitLabel}
           </button>
         </form>

@@ -20,7 +20,7 @@ export default async function NotificationsPage({ searchParams }: { searchParams
   return (
     <Shell>
       <div className="container-narrow py-4 md:py-6">
-        <PageHeader title={t("notifications.title")} subtitle={t("notifications.description")} />
+        <PageHeader title={t("notifications.title")} subtitle={t("notifications.description")} hint />
         <NotificationList items={data.items} page={data.page} hasMore={data.hasMore} unread={data.unread} myId={session.userId} />
       </div>
     </Shell>

@@ -142,7 +142,7 @@ test("AI qidiruv: rejim tanlangan bo'lsa — faqat shu rejim ichida qidiradi", a
   await asMode(context, "employer");
   await page.goto("/");
   // 2.0: ish beruvchi bosh sahifasida ham yagona AI qidiruv maydoni — bo'sh "Topish" yordamchini ochadi
-  await page.locator("form[data-ai-field][data-hydrated] button[type='submit']").click();
+  await page.locator("form[data-ai-field][data-hydrated]:visible button[type='submit']").click();
   const dialog = page.getByRole("dialog", { name: "Yordamchi" });
   await expect(dialog.getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
   await expect(dialog.getByRole("radio")).toHaveCount(0);

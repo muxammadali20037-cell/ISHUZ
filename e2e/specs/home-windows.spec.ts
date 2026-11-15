@@ -38,7 +38,7 @@ test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qid
   await expect(links.nth(2)).toHaveText("Masofaviy ish");
   await expect(links.nth(3)).toHaveText("Tajribasiz ish");
   // qidiruv maydoni tepada, tez yo'llar uning ostida va e'lonlar ro'yxatidan oldin; har biri barmoq bilan bosishga qulay (≥ 44px)
-  const field = (await page.locator("form[data-ai-field]").boundingBox())!;
+  const field = (await page.locator("form[data-ai-field]:visible").boundingBox())!;
   const feed = (await page.locator("#home-feed").boundingBox())!;
   expect(field.y).toBeLessThan(400);
   for (let i = 0; i < 4; i++) {

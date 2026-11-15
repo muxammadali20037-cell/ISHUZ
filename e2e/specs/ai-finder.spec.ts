@@ -25,7 +25,7 @@ async function vacancy(title: string, profession: string, salaryType: "monthly" 
 // 2.0: ish izlovchi bosh sahifasida — yagona qidiruv maydonining "Topish" tugmasi (bo'sh bosilsa — yordamchi misollar bilan
 // ochiladi); boshqa sahifalarda — "AI bilan qidirish" tugmasi
 // [data-hydrated] — skriptlar yuklanib bo'lgan (undan oldin bosilsa forma /ai?q=… sahifasiga ketadi — alohida testda)
-const fab = (page: Page) => page.locator("form[data-ai-field][data-hydrated] button[type='submit']").or(page.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).first();
+const fab = (page: Page) => page.locator("form[data-ai-field][data-hydrated]:visible button[type='submit']").or(page.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).first();
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -34,18 +34,26 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("AI qidiruv — bosh sahifaning yagona qidiruv maydoni (suzuvchi emas): aylantirilganda ekranni to'smaydi, vakansiya sahifasida yo'q", async ({ page, context }) => {
+test("qidiruv — telefonda sarlavhada (Uzum kabi, 2026-11-15): «Ish va ishchilar izlash», aylantirilganda tepada qoladi, vakansiya sahifasida yo'q", async ({ page, context }) => {
   const slug = await vacancy("Buxgalter", "Buxgalter");
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  const field = page.getByRole("search", { name: "Qanday ish qidiryapsiz?" });
+  const field = page.getByRole("search", { name: "Ish va ishchilar izlash" });
   await expect(field).toBeVisible();
-  // tugma maydonning ichida, pozitsiyasi oddiy — fixed/sticky emas
+  await expect(field.getByRole("searchbox")).toHaveAttribute("placeholder", "Ish va ishchilar izlash");
+  // sahifadagi qidiruv takrorlanmaydi: ekranda bitta maydon, u sarlavhaning ichida
+  await expect(page.locator("form[role=search]:visible")).toHaveCount(1);
+  await expect(page.locator("header").getByRole("search", { name: "Ish va ishchilar izlash" })).toBeVisible();
   await expect(field.locator("button[type='submit']")).toHaveCount(1);
-  expect(await fab(page).evaluate((el) => getComputedStyle(el).position)).toBe("static");
+  // tugmaning o'zi suzib yurmaydi — sarlavha bilan birga tepada turadi (relative — faqat 44px bosish maydoni uchun)
+  expect(["static", "relative"]).toContain(await fab(page).evaluate((el) => getComputedStyle(el).position));
   await page.mouse.wheel(0, 2000);
-  await expect(fab(page)).not.toBeInViewport();
+  await expect(fab(page)).toBeInViewport();
+  expect((await field.boundingBox())!.y).toBeLessThan(120);
+  // bosilganda maydon ichida alohida to'rtburchak (fokus halqasi) chizilmaydi — halqa qobiqda
+  await field.getByRole("searchbox").focus();
+  expect(await field.getByRole("searchbox").evaluate((el) => getComputedStyle(el).boxShadow)).toBe("none");
   // vakansiya sahifasida "Ariza yuborish" paneli ustida hech narsa yo'q
   await page.goto(`/jobs/${slug}`);
   await expect(page.getByRole("button", { name: "Ariza yuborish" }).last()).toBeVisible();

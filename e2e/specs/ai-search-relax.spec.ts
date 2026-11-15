@@ -43,7 +43,7 @@ test.afterAll(async () => {
 async function ask(page: import("@playwright/test").Page, text: string) {
   await page.goto("/");
   // [data-hydrated] — skriptlar yuklangan: natija shu sahifadagi oynada (undan oldin yuborilsa — /ai sahifasida, pastdagi test)
-  const field = page.locator("form[data-ai-field][data-hydrated] input[name='q']");
+  const field = page.locator("form[data-ai-field][data-hydrated]:visible input[name='q']");
   await expect(field).toBeVisible();
   await field.fill(text);
   await field.press("Enter");
@@ -138,7 +138,8 @@ test("skriptlar yuklanmasdan yuborilsa: forma /ai?q=… ga boradi (sahifa shunch
   // "sahifa ko'rindi, lekin hali jonlanmagan" holati: ilova skriptlari (chunk'lar) yuklanmaydi — sahifa matni oqim bilan keladi
   await page.route("**/_next/static/chunks/**", (route) => route.abort());
   await page.goto("/");
-  const form = page.locator("form[data-ai-field]");
+  // telefonda qidiruv sarlavhada (2026-11-15)
+  const form = page.locator("form[data-top-search]");
   await expect(form).toBeVisible();
   await expect(form).not.toHaveAttribute("data-hydrated", "");
   await expect(form).toHaveAttribute("action", "/ai");

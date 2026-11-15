@@ -24,7 +24,7 @@ export async function CandidatesPicker({ vacancies }: { vacancies: MyVacancy[] }
   const { t, tEnum, locale } = await getT();
   return (
     <div className="container-app py-4 md:py-6">
-      <PageHeader title={t("workers.candidates.title")} subtitle={t("workers.candidates.desc")} backHref="/employer" />
+      <PageHeader title={t("workers.candidates.title")} subtitle={t("workers.candidates.desc")} hint backHref="/employer" />
       {!vacancies.length ? (
         <EmptyState icon={Briefcase} title={t("workers.candidates.empty_title")} description={t("workers.candidates.empty_desc")} action={{ label: t("workers.candidates.post"), href: "/employer/vacancies/new" }} />
       ) : (

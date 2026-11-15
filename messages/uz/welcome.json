@@ -112,13 +112,13 @@
     },
     "role": {
       "title": "O'z rolingizni tanlang",
-      "subtitle": "Siz uchun mos imkoniyatlarni tayyorlaymiz.",
+      "subtitle": "Ilova shu rolda ochiladi.",
       "worker_title": "Ish qidiryapman",
       "worker_desc": "Yangi imkoniyatlar topish",
       "employer_title": "Ishchi qidiryapman",
       "employer_desc": "Jamoam uchun xodim topish",
       "continue": "Davom etish",
-      "note": "Kirgandan keyin ilova shu rolda ochiladi. Rolni «Profil» sahifasining tepasidagi tugma bilan bir bosishda almashtirasiz.",
+      "note": "Rolni keyin «Profil»da bir bosishda almashtirasiz.",
       "error": "Tanlov saqlanmadi. Qayta urinib ko'ring."
     },
     "done": {
@@ -131,7 +131,7 @@
     },
     "welcome": {
       "title": "Siz nima qidiryapsiz?",
-      "subtitle": "Bitta bosing — ilova faqat sizga keraklisini ko'rsatadi. Kirish shart emas.",
+      "subtitle": "Kirish shart emas.",
       "worker_desc": "Vakansiyalar, kunlik ishlar, yordamchi",
       "employer_desc": "Tayyor ishchilar, vakansiya joylash",
       "go": "Boshlash",
@@ -430,7 +430,7 @@
     "alt_agriculture": "Paxta dalasida tomchilatib sug'orish quvurini o'rnatayotgan dehqon",
     "alt_generic": "{name}: ish joyidan surat",
     "page_title": "Kasblar katalogi",
-    "page_subtitle": "Sohani tanlang — o'sha sohadagi barcha faol vakansiyalar ochiladi. Sonlar — hozir saytdagi e'lonlar.",
+    "page_subtitle": "Sohani tanlang",
     "page_all_title": "Barcha sohalar",
     "page_meta": "Qurilish, tibbiyot, ta'lim, savdo, transport va boshqa sohalardagi vakansiyalar — Ish topdim kasblar katalogi.",
     "no_jobs": "Hozircha e'lon yo'q"

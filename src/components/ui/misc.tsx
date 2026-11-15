@@ -61,9 +61,12 @@ function PageHeader({
   backHref,
   actions,
   className,
+  hint = false,
 }: {
   title: string;
   subtitle?: string;
+  /** izoh (ma'lumot emas) — telefonda ko'rsatilmaydi: ortiqcha yozuv kamroq (ega, 2026-11-15) */
+  hint?: boolean;
   backHref?: string;
   actions?: React.ReactNode;
   className?: string;
@@ -77,7 +80,7 @@ function PageHeader({
       ) : null}
       <div className="min-w-0 flex-1">
         <h1 className="text-page font-semibold leading-tight text-foreground [overflow-wrap:anywhere] sm:text-page-lg">{title}</h1>
-        {subtitle ? <p className="mt-1.5 max-w-2xl text-md text-muted-foreground">{subtitle}</p> : null}
+        {subtitle ? <p className={cn("mt-1.5 max-w-2xl text-md text-muted-foreground", hint && "max-md:hidden")}>{subtitle}</p> : null}
       </div>
       {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
     </div>

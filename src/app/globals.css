@@ -342,6 +342,12 @@ html.tg-fullscreen {
   :focus-visible {
     @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
   }
+  /* qobiq ichidagi yozish maydoni (qidiruv, Yordamchi): fokus halqasi qobiqda (focus-within) — maydonning o'zida ichkarida
+     to'rtburchak chiziq chizilmaydi (ega, 2026-11-15: "bosganda kvadratcha belgi chiqmasin"). O'z halqasini bergan
+     maydonlar (focus:ring-*) utilita qatlamida — ularga ta'sir qilmaydi */
+  :is(input, textarea).outline-none:focus-visible {
+    box-shadow: none;
+  }
   ::selection {
     background: var(--primary-soft);
   }

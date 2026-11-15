@@ -143,7 +143,8 @@ export async function SeekerHome({
           <p className="mt-1 text-base text-muted-foreground max-md:hidden">
             {t("easy.home2.hint")}
           </p>
-          <div className="mt-4 max-w-3xl">
+          {/* telefonda qidiruv sarlavhada (TopSearch, Uzum kabi) — bu yerda takrorlanmaydi */}
+          <div className="mt-4 max-w-3xl max-lg:hidden">
             {home.aiButton ? (
               <AiFinder
                 variant="field"

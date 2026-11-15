@@ -82,7 +82,7 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
     // 2.0: bosh sahifaning yagona qidiruv maydoni — yozadi va "Topish" (skriptlar yuklangach: [data-hydrated])
-    const field = page.locator("form[data-ai-field][data-hydrated]");
+    const field = page.locator("form[data-ai-field][data-hydrated]:visible");
     await field.getByRole("searchbox").fill("Toshkentda omborchi");
     await field.getByRole("button", { name: "Topish" }).click();
     const dialog = page.getByRole("dialog", { name: "Yordamchi" });

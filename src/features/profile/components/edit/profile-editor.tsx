@@ -24,7 +24,7 @@ export async function ProfileEditor({ session, workerId }: { session: SessionCon
 
   return (
     <div className="container-narrow py-4 sm:py-6">
-      <PageHeader title={t("profile.edit.title")} subtitle={t("profile.edit.subtitle")} backHref="/profile" />
+      <PageHeader title={t("profile.edit.title")} subtitle={t("profile.edit.subtitle")} hint backHref="/profile" />
       <EditTabs />
       <div className="mt-4 space-y-4">
         <PersonalForm profile={{ id: p.id, first_name: p.first_name, last_name: p.last_name, birth_date: p.birth_date, gender: p.gender, avatar_url: p.avatar_url }} />

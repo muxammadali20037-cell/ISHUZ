@@ -67,12 +67,13 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-  // bitta qidiruv: yozilgan matn AI yordamchiga ketadi (alohida "AI qatori" va ikkinchi maydon yo'q)
-  const search = page.getByRole("search", { name: "Qanday ish qidiryapsiz?" });
+  // bitta qidiruv: yozilgan matn yordamchiga ketadi. 2026-11-15: telefonda u sarlavhada (Uzum kabi) — sahifada takrorlanmaydi
+  const search = page.getByRole("search", { name: "Ish va ishchilar izlash" });
   await expect(search).toHaveCount(1);
-  await expect(page.getByRole("main").getByRole("searchbox")).toHaveCount(1);
+  await expect(page.locator("header").getByRole("searchbox")).toHaveCount(1);
+  await expect(page.getByRole("main").getByRole("searchbox")).toBeHidden();
   const box = (await search.boundingBox())!;
-  expect(box.y + box.height).toBeLessThan(400);
+  expect(box.y + box.height).toBeLessThan(140);
   // tez yo'llar: 4 ta, shu tartibda, birinchi ekranda
   const quick = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem");
   expect((await quick.allInnerTexts()).map((x) => x.trim())).toEqual(["Kunlik ish", "Yaqin atrofda ish", "Masofaviy ish", "Tajribasiz ish"]);
@@ -145,7 +146,7 @@ test("bosh sahifa (390×844, kirgan ish qidiruvchi): 'Yangi ishlar' birinchi ekr
     }
     // suzuvchi AI tugmasi yo'q; qidiruv — bosh sahifaning yagona qidiruv maydoni
     await expect(page.locator(".ai-fab")).toHaveCount(0);
-    await expect(page.locator("form[data-ai-field]")).toBeVisible();
+    await expect(page.locator("form[data-ai-field]:visible")).toHaveCount(1);
   } finally {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   }
@@ -181,7 +182,7 @@ test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal
     await page.goto("/");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
-    await expect(page.getByRole("banner").getByRole("link", { name: "Chat" })).toBeVisible();
+    await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeVisible();
     await expect(page.getByRole("banner").getByRole("link", { name: "Bildirishnomalar" })).toBeVisible();
   }
 });
