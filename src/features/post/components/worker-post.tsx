@@ -9,7 +9,8 @@ import {
   useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, RotateCcw } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { AiAvatar } from "@/components/shared/ai-avatar";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { normalizePhone, formatPhone, formatMoney } from "@/lib/format";
@@ -163,6 +164,15 @@ export function WorkerPost({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   // "Tez va qulay e'lon — AI bilan" suhbati ochiq: oddiy kasb ro'yxati yashiriladi (ekran ikkiga bo'linmasin)
   const [chatActive, setChatActive] = useState(false);
+  // "Yordamchi bilan to'ldirish" ochilganmi (ega, 2026-11-15: avval katta karta kasb savolidan oldin turardi — chalkash)
+  const [chatOpen, setChatOpen] = useState(false);
+  const chatWasActive = useRef(false);
+  // suhbat "Qaytadan boshlash" bilan to'xtatilsa — oddiy tanlovga (kasblar ro'yxati) qaytiladi
+  const onChatActive = useCallback((active: boolean) => {
+    if (!active && chatWasActive.current) setChatOpen(false);
+    chatWasActive.current = active;
+    setChatActive(active);
+  }, []);
 
   /** suhbatda yig'ilganlar → qoralama; aytilmagan ixtiyoriy narsalar (grafik, maosh) avvalgicha qoladi */
   const fromChat = (c: ChatCollected): Partial<WorkerDraft> => ({
@@ -478,20 +488,37 @@ export function WorkerPost({
 
       {step === 1 ? (
         <section className="space-y-3">
-          <ListingChat
-            regions={regions}
-            districts={districts}
-            knownFirstName={draft.firstName || viewer.firstName}
-            needPhone={!viewer.loggedIn && !normalizePhone(draft.phone)}
-            onActiveChange={setChatActive}
-            onFinish={(c) => {
-              update({ ...fromChat(c), source: "ai", step: TOTAL });
-              setErrors({});
-              setChatActive(false);
-              go(TOTAL);
-            }}
-          />
-          {chatActive ? null : (
+          {/* tartib (2026-11-15): avval asosiy savol — kasb (qidiruv va sohalar); yordamchi — qidiruv ostida bitta ixcham qator,
+              bosilsa suhbat ochiladi ("Kasbni ro'yxatdan tanlash" bilan qaytiladi) */}
+          {chatOpen || chatActive ? (
+            <>
+              {chatActive ? null : (
+                <button
+                  type="button"
+                  onClick={() => setChatOpen(false)}
+                  className="press -ml-1 inline-flex min-h-11 items-center gap-1 rounded-lg px-1 text-base font-semibold text-primary-ink hover:bg-secondary"
+                  data-listing-chat-back
+                >
+                  <ChevronLeft className="size-5" aria-hidden /> {t("easy.aichat.back_to_list")}
+                </button>
+              )}
+              <ListingChat
+                regions={regions}
+                districts={districts}
+                knownFirstName={draft.firstName || viewer.firstName}
+                needPhone={!viewer.loggedIn && !normalizePhone(draft.phone)}
+                onActiveChange={onChatActive}
+                autoFocus
+                onFinish={(c) => {
+                  update({ ...fromChat(c), source: "ai", step: TOTAL });
+                  setErrors({});
+                  setChatActive(false);
+                  setChatOpen(false);
+                  go(TOTAL);
+                }}
+              />
+            </>
+          ) : (
             <>
               {!draft.profession && draft.custom ? (
                 <CustomProfessionCard
@@ -528,6 +555,21 @@ export function WorkerPost({
                 }
                 title={t("easy.worker.profession_title")}
                 subtitle={t("easy.worker.profession_subtitle")}
+                extra={
+                  <button
+                    type="button"
+                    onClick={() => setChatOpen(true)}
+                    className="press flex w-full items-center gap-3 rounded-2xl border border-ai/25 bg-ai-soft/60 px-3.5 py-3 text-left hover:border-ai/50"
+                    data-listing-chat-open
+                  >
+                    <AiAvatar size="sm" className="shrink-0" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-base font-bold leading-snug">{t("easy.aichat.entry_title")}</span>
+                      <span className="block text-sm text-muted-foreground">{t("easy.aichat.entry_hint")}</span>
+                    </span>
+                    <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+                  </button>
+                }
               />
               <FieldError message={errors.profession} />
               {hasAnswers ? (

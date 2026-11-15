@@ -2,7 +2,8 @@ import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, formReady, loginAs, snapshotUser, sql } from "../support";
 
 /**
- * "Tez va qulay e'lon — AI yordamchi bilan" (ish izlovchi, 1-qadam): bir gap → yordamchi kerakli narsalarni birma-bir so'raydi
+ * "Tez va qulay e'lon — yordamchi bilan" (ish izlovchi, 1-qadam; 2026-11-15 dan — kasb qidiruvi ostidagi "Yordamchi bilan
+ * to'ldirish" qatori orqali ochiladi): bir gap → yordamchi kerakli narsalarni birma-bir so'raydi
  * (tugmalar yoki matn) → oxirida qoralama to'ldiriladi va tekshirish sahifasi ochiladi. Stendda AI kaliti yo'q — lug'at rejimi.
  */
 const chat = (page: Page) => page.locator("[data-listing-chat]");
@@ -19,11 +20,23 @@ test("mehmon: 'kuryerlikdan ish qidirmoqchiman' → kasb variantlari → joy, ta
   await asMode(context, "worker");
   await page.goto("/post/worker");
   await formReady(page);
-  await expect(page.getByRole("region", { name: "Tez va qulay e'lon — yordamchi bilan" })).toBeVisible();
-  // sahifaning asosiy sarlavhasi — kasb savoli (karta sarlavha tartibini buzmaydi)
+  // 2026-11-15 (ega: "juda katta va tushunarsiz — ketma-ketligini to'g'irla"): avval asosiy savol — kasb; yordamchi — qidiruv
+  // ostida bitta ixcham qator, katta karta yo'q
   await expect(page.getByRole("heading", { level: 1 }).or(page.getByRole("heading", { level: 2 })).first()).toContainText("Qaysi kasb bo'yicha ish qidiryapsiz?");
-  // oddiy usul ham shu sahifada
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
+  await expect(page.getByRole("region", { name: "Tez va qulay e'lon — yordamchi bilan" })).toHaveCount(0);
+  const entry = page.locator("[data-listing-chat-open]");
+  await expect(entry).toContainText("Yordamchi bilan to'ldirish");
+  const searchBox = await page.getByLabel("Kasb yoki sohani qidiring").boundingBox();
+  expect((await entry.boundingBox())!.y).toBeGreaterThan(searchBox!.y);
+  // ochiladi va "Kasbni ro'yxatdan tanlash" bilan qaytiladi
+  await entry.click();
+  await expect(page.getByRole("region", { name: "Tez va qulay e'lon — yordamchi bilan" })).toBeVisible();
+  await expect(page.getByLabel("Kasb yoki sohani qidiring")).toHaveCount(0);
+  await expect(chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?")).toBeFocused();
+  await page.locator("[data-listing-chat-back]").click();
+  await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
+  await entry.click();
 
   await chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?").fill("Men kuryerlikdan ish qidirmoqchiman");
   await chat(page).getByRole("button", { name: "Boshlash" }).click();
@@ -86,6 +99,7 @@ test("kirgan ish izlovchi: taqiqlangan matn — hisob darhol bloklanadi; ism va 
   try {
     await page.goto("/post/worker");
     await formReady(page);
+    await page.locator("[data-listing-chat-open]").click();
     await chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?").fill("giyohvand sotaman");
     await chat(page).getByRole("button", { name: "Boshlash" }).click();
     await expect(page.getByText("Hisobingiz bloklangan").first()).toBeVisible();
@@ -96,6 +110,7 @@ test("kirgan ish izlovchi: taqiqlangan matn — hisob darhol bloklanadi; ism va 
 
   await page.goto("/post/worker");
   await formReady(page);
+  await page.locator("[data-listing-chat-open]").click();
 
   await chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?").fill("Samarqandda oshpaz bo'lib ishlamoqchiman, 3 yil tajribam bor");
   await chat(page).getByRole("button", { name: "Boshlash" }).click();
