@@ -5,16 +5,15 @@ import type { AppMode } from "@/features/mode/mode";
 import { getWorkspaceData } from "../workspace-data";
 import {
   AiWorkspaceClient,
-  type NavItem,
   type QuickAction,
   type WorkspaceUser,
 } from "./ai-workspace-client";
 
 /**
- * /ai — AI yordamchi ish maydoni (2026-11, "ChatGPT kabi"): chapda bo'limlar, so'nggi suhbatlar va profil; o'rtada suhbat —
- * salomlashuv, "Bugungi ishlar" (faqat bazadagi haqiqiy raqamlar), "Sizga mos ishlar" (bosh sahifa bilan bir manba), javoblar
- * jarayon izi bilan; o'ngda tezkor imkoniyatlar va maslahat. Telefonda — faqat suhbat, bo'limlar va suhbatlar pastdan chiqadi.
- * Havolalar faqat mavjud sahifalarga; mehmonga kirish talab qiladiganlari /auth?next= orqali.
+ * /ai — "Yordamchi" (avval "AI yordamchi" / "Barchasi siz uchun"), alohida to'liq ekran (2026-11-15, ega: "tagida menyular
+ * ko'rinmasin — alohida katta ekranga kirsin"): o'z sarlavhasi ("‹" — ilovaga qaytish), salomlashuv, "Bugungi ishlar" (faqat
+ * bazadagi haqiqiy raqamlar), "Sizga mos ishlar", tezkor imkoniyatlar (boshida: ish qidirish, karyera maslahati, suhbatga
+ * tayyorgarlik). Kompyuterda chapda suhbatlar, o'ngda tezkor imkoniyatlar va maslahat; telefonda suhbatlar pastdan chiqadi.
  */
 export async function AiWorkspace({
   session,
@@ -29,119 +28,9 @@ export async function AiWorkspace({
   const employer = mode === "employer";
   const role = !session ? "guest" : employer ? "employer" : "worker";
   const data = await getWorkspaceData(session, mode, t, name);
-  const auth = (next: string) =>
-    session ? next : `/auth?next=${encodeURIComponent(next)}`;
-
-  const nav: NavItem[] = employer
-    ? [
-        {
-          key: "home",
-          href: "/",
-          label: t("easy.aiws.nav.home"),
-          icon: "home",
-        },
-        { key: "ai", href: "/ai", label: t("easy.aiws.nav.ai"), icon: "ai" },
-        {
-          key: "workers",
-          href: auth("/workers"),
-          label: t("easy.aiws.nav.workers"),
-          icon: "workers",
-        },
-        {
-          key: "candidates",
-          href: auth("/cabinet/matches"),
-          label: t("easy.aiws.nav.candidates"),
-          icon: "matches",
-        },
-        {
-          key: "applications",
-          href: auth("/employer/applications"),
-          label: t("easy.aiws.nav.emp_applications"),
-          icon: "applications",
-        },
-        {
-          key: "saved",
-          href: auth("/employer/saved"),
-          label: t("easy.aiws.nav.saved"),
-          icon: "saved",
-        },
-        {
-          key: "vacancies",
-          href: auth("/employer/vacancies"),
-          label: t("easy.aiws.nav.vacancies"),
-          icon: "vacancies",
-        },
-        {
-          key: "company",
-          href: auth("/company/settings"),
-          label: t("easy.aiws.nav.company"),
-          icon: "company",
-        },
-      ]
-    : [
-        {
-          key: "home",
-          href: "/",
-          label: t("easy.aiws.nav.home"),
-          icon: "home",
-        },
-        { key: "ai", href: "/ai", label: t("easy.aiws.nav.ai"), icon: "ai" },
-        {
-          key: "jobs",
-          href: "/jobs",
-          label: t("easy.aiws.nav.jobs"),
-          icon: "jobs",
-        },
-        {
-          key: "matches",
-          href: session?.workerId
-            ? "/cabinet/matches"
-            : session
-              ? "/post/worker"
-              : auth("/cabinet/matches"),
-          label: t("easy.aiws.nav.matches"),
-          icon: "matches",
-        },
-        {
-          key: "applications",
-          href: auth("/applications"),
-          label: t("easy.aiws.nav.applications"),
-          icon: "applications",
-        },
-        {
-          key: "saved",
-          href: "/saved",
-          label: t("easy.aiws.nav.saved"),
-          icon: "saved",
-        },
-        {
-          key: "cv",
-          href: session?.workerId
-            ? "/profile/cv"
-            : session
-              ? "/post/worker"
-              : auth("/profile/cv"),
-          label: t("easy.aiws.nav.cv"),
-          icon: "cv",
-        },
-        {
-          key: "careers",
-          href: "/kasblar",
-          label: t("easy.aiws.nav.careers"),
-          icon: "careers",
-        },
-      ];
-
+  // ega (2026-11-15): boshida — ish qidirish, karyera maslahati, suhbat(ga tayyorgarlik); ish beruvchida — o'xshashlari
   const quick: QuickAction[] = employer
     ? [
-        {
-          key: "post",
-          label: t("easy.aiws.quick.post"),
-          icon: "post",
-          href: session?.employerOnboarded
-            ? "/employer/vacancies/new"
-            : "/post/vacancy",
-        },
         {
           key: "candidates",
           label: t("easy.aiws.quick.candidates"),
@@ -161,6 +50,14 @@ export async function AiWorkspace({
           prompt: t("easy.aiws.quick_prompt.questions"),
         },
         {
+          key: "post",
+          label: t("easy.aiws.quick.post"),
+          icon: "post",
+          href: session?.employerOnboarded
+            ? "/employer/vacancies/new"
+            : "/post/vacancy",
+        },
+        {
           key: "stats",
           label: t("easy.aiws.quick.stats"),
           icon: "stats",
@@ -174,12 +71,6 @@ export async function AiWorkspace({
         },
       ]
     : [
-        {
-          key: "cv",
-          label: t("easy.aiws.quick.cv"),
-          icon: "cv",
-          href: session?.workerId ? "/profile/cv" : "/post/worker",
-        },
         {
           key: "find",
           label: t("easy.aiws.quick.find"),
@@ -197,6 +88,12 @@ export async function AiWorkspace({
           label: t("easy.aiws.quick.interview"),
           icon: "interview",
           prompt: t("easy.aiws.quick_prompt.interview"),
+        },
+        {
+          key: "cv",
+          label: t("easy.aiws.quick.cv"),
+          icon: "cv",
+          href: session?.workerId ? "/profile/cv" : "/post/worker",
         },
         {
           key: "stats",
@@ -235,7 +132,6 @@ export async function AiWorkspace({
       role={role}
       locale={locale}
       user={user}
-      nav={nav}
       quick={quick}
       promo={{
         title: employer
@@ -254,19 +150,6 @@ export async function AiWorkspace({
       aiConfigured={aiProviderConfigured()}
       initialQuery={query}
       defaultMode={employer ? "workers" : "jobs"}
-      examples={
-        employer
-          ? [
-              t("easy.finder.example_w1"),
-              t("easy.finder.example_w2"),
-              t("easy.finder.example_w3"),
-            ]
-          : [
-              t("easy.finder.example_j1"),
-              t("easy.finder.example_j2"),
-              t("easy.finder.example_j3"),
-            ]
-      }
     />
   );
 }

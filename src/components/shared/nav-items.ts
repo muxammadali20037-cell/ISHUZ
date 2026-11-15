@@ -36,7 +36,7 @@ export interface MenuItem {
   match: (path: string) => boolean;
   /** muhim yangi bo'lim — yozuvsiz yonib-o'chuvchi nuqta (muddati config/new-features.ts da) */
   fresh?: NewFeature;
-  /** alohida rangda ajraladi: "Barchasi siz uchun" — to'q sariq, "Universal ustalar" — turkuaz */
+  /** alohida rangda ajraladi: "Yordamchi" — to'q sariq, "Universal ustalar" — turkuaz */
   tone?: "ai" | "masters";
 }
 

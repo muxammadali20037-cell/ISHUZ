@@ -237,7 +237,7 @@ test("/ai sahifasi: suhbat sahifaning o'zida (oyna emas), natija shu yerda", asy
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/ai");
-  await expect(page.getByRole("heading", { level: 1, name: "Barchasi siz uchun" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Yordamchi" })).toBeVisible();
   await page.getByLabel("Nima qidiryapsiz?").fill("Toshkentda buxgalter");
   await page.getByRole("button", { name: "Topish", exact: true }).click();
   await expect(page.getByText(/^Tushundim:/)).toContainText("Buxgalter");

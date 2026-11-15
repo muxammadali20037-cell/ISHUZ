@@ -20,12 +20,25 @@ import { getT } from "@/lib/i18n/server";
  * Ma'lumot shu yerda (serverda) olinadi, chizish — AppFrame (mijoz): u qobiqni eslab qoladi, keyingi sahifa
  * yuklanayotganda panel va menyu joyida turadi.
  */
-export async function Shell({ children, forceRole, hideNav, footer }: { children: ReactNode; forceRole?: NavRole; hideNav?: boolean; footer?: ReactNode }) {
+export async function Shell({
+  children,
+  forceRole,
+  hideNav,
+  bare,
+  footer,
+}: {
+  children: ReactNode;
+  forceRole?: NavRole;
+  hideNav?: boolean;
+  /** to'liq ekran: panel va menyular yo'q (AppFrame) */
+  bare?: boolean;
+  footer?: ReactNode;
+}) {
   // sessiya va o'qilmaganlar soni parallel (ketma-ket ikki so'rov emas)
   const [session, unread, mode] = await Promise.all([getSession(), unreadCounts(), getMode()]);
   const role: NavRole = forceRole ?? (session ? (mode === "employer" ? "employer" : "worker") : "guest");
   // ish qidiruvchi rejimi: telefonda bosh sahifa panelidagi hudud (eslab qolingan; bo'lmasa — butun O'zbekiston)
-  const place = mode === "worker" && !hideNav ? await placeLabel() : null;
+  const place = mode === "worker" && !hideNav && !bare ? await placeLabel() : null;
   const chrome: FrameChrome = {
     social: socialLinks(getServerEnv()),
     top: {
@@ -49,6 +62,7 @@ export async function Shell({ children, forceRole, hideNav, footer }: { children
     <AppFrame
       chrome={chrome}
       hideNav={hideNav}
+      bare={bare}
       footer={footer}
       extras={
         <>

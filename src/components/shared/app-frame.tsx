@@ -33,6 +33,7 @@ function subscribe(fn: () => void) {
 export function AppFrame({
   chrome,
   hideNav = false,
+  bare = false,
   skeleton = false,
   extras,
   footer,
@@ -40,6 +41,8 @@ export function AppFrame({
 }: {
   chrome: FrameChrome | null;
   hideNav?: boolean;
+  /** alohida to'liq ekran (masalan /ai "Yordamchi"): yuqori panel, yon va pastki menyu yo'q — sahifaning o'z sarlavhasi bor */
+  bare?: boolean;
   skeleton?: boolean;
   extras?: ReactNode;
   /** sahifa pastki qismi (bosh sahifa): <main> dan tashqarida — ekran o'qigichlari uchun alohida "contentinfo" hudud */
@@ -54,6 +57,16 @@ export function AppFrame({
       listeners.forEach((fn) => fn());
     }
   }, [skeleton, chrome]);
+
+  // ega (2026-11-15): "alohida panelga kirganda tagida menyular ko'rinmasin — alohida katta ekranga kirsin"
+  if (bare) {
+    return (
+      <div className="flex min-h-dvh flex-col">
+        <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+        {extras}
+      </div>
+    );
+  }
 
 
   // kirgan foydalanuvchi, kompyuter (lg+): chap yon menyu (2026-11); yuqori paneldagi bo'lim havolalari o'shanda yashiriladi
@@ -76,14 +89,14 @@ export function AppFrame({
 }
 
 /** loading.tsx uchun: oxirgi sahifaning qobig'i ichida skelet (qobiq bo'lmasa — avvalgidek faqat skelet) */
-export function LoadingShell({ children, hideNav = false }: { children: ReactNode; hideNav?: boolean }) {
+export function LoadingShell({ children, hideNav = false, bare = false }: { children: ReactNode; hideNav?: boolean; bare?: boolean }) {
   const chrome = useSyncExternalStore(
     subscribe,
     () => remembered,
     () => null,
   );
   return (
-    <AppFrame chrome={chrome} hideNav={hideNav} skeleton>
+    <AppFrame chrome={chrome} hideNav={hideNav} bare={bare} skeleton>
       {children}
     </AppFrame>
   );

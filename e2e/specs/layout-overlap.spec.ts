@@ -23,7 +23,7 @@ const PAGES: { name: string; url: string; who: "guest" | "worker" | "employer" |
   { name: "qidiruv natijalari", url: "/search?mode=jobs&any=1&region=all", who: "worker" },
   { name: "e'lon berish (kasb tanlash)", url: "/post/worker", who: "seeker-guest" },
   { name: "kabinet", url: "/cabinet", who: "worker" },
-  { name: "Barchasi siz uchun", url: "/ai", who: "worker" },
+  { name: "Yordamchi", url: "/ai", who: "worker" },
   { name: "til (birinchi ochilish)", url: "/start/til", who: "guest" },
   { name: "rol (birinchi ochilish)", url: "/start/rol", who: "guest" },
 ];
