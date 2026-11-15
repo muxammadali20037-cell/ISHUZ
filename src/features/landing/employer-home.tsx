@@ -12,6 +12,9 @@ import { EmployerDashboard } from "@/features/employer/components/dashboard/empl
 import { getHomePlace, getNewWorkers, type HomePlace } from "./home-queries";
 import { EmployerHead } from "./employer-head";
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
+import { Fold } from "@/components/shared/fold";
+import { cn } from "@/lib/utils";
+import { HomeMenu } from "./home-menu";
 
 /**
  * Ish beruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "ish beruvchilar panelini ham soddalashtir"). Profili tayyor ish beruvchi —
@@ -30,7 +33,7 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
   const firstName = session?.profile.first_name?.trim();
   return (
     <div className="flex flex-col gap-6">
-      <EmployerHead flush={flush} greeting={firstName ? t("easy.home2.e_greeting", { name: firstName }) : t("easy.services.greeting_guest")} place={place} postHref="/post/vacancy" />
+      <EmployerHead flush={flush} greeting={firstName ? t("easy.home2.e_greeting", { name: firstName }) : t("easy.services.greeting_guest")} place={place} postHref="/post/vacancy" menu={!!session} />
 
       <div>
         <div className="min-w-0 space-y-5">
@@ -45,22 +48,30 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
               <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
             </Link>
           ) : null}
+          {/* telefon va planshet: bo'limlar ro'yxati (kompyuterda — chap yon menyu) */}
           <Suspense fallback={<WorkersSkeleton />}>
-            <NewWorkers session={session} place={place} />
+            <NewWorkers session={session} place={place} fold={!!session} />
           </Suspense>
+          {session ? (
+            <Suspense fallback={null}>
+              <HomeMenu mode="employer" />
+            </Suspense>
+          ) : null}
         </div>
       </div>
 
-      {/* "Universal ustalar" — alohida yashil bo'lim (2026-11-13). AI yordamchi — yuqori panelda (✨) va yon menyuda;
-          "Mos nomzod chiqsa xabar" — Profil → AI PRO */}
-      <Suspense fallback={null}>
-        <MastersHomeSection />
-      </Suspense>
+      {/* "Universal ustalar" — alohida yashil bo'lim (2026-11-13; kirganda telefonda — menyuda). "Barchasi siz uchun" — yuqori
+          panelda (✨) va yon menyuda; "Mos nomzod chiqsa xabar" — Profil → PRO kuzatuv */}
+      <div className={session ? "max-lg:hidden" : undefined}>
+        <Suspense fallback={null}>
+          <MastersHomeSection />
+        </Suspense>
+      </div>
     </div>
   );
 }
 
-async function NewWorkers({ session, place }: { session: SessionContext | null; place: HomePlace }) {
+async function NewWorkers({ session, place, fold = false }: { session: SessionContext | null; place: HomePlace; fold?: boolean }) {
   const [{ t, name }, feed] = await Promise.all([getT(), getNewWorkers(place)]);
   if (!feed.ok) {
     return (
@@ -78,9 +89,9 @@ async function NewWorkers({ session, place }: { session: SessionContext | null; 
   }
   const saved = await savedIdSet(session, "worker", feed.items.map((i) => i.id));
   const more = feed.total > feed.items.length;
-  return (
+  const body = (
     <section aria-labelledby="home-feed">
-      <div className="flex items-center justify-between gap-3">
+      <div className={cn("flex items-center justify-between gap-3", fold && "max-lg:hidden")}>
         <h2 id="home-feed" className="min-w-0 text-lg font-bold leading-tight">
           {t("easy.start.new_workers_title")}
         </h2>
@@ -114,6 +125,13 @@ async function NewWorkers({ session, place }: { session: SessionContext | null; 
         </Button>
       ) : null}
     </section>
+  );
+  if (!fold) return body;
+  // telefonda yig'iladi: "Yangi nomzodlar  8  Ko'rish ⌄" (kompyuterda har doim ochiq)
+  return (
+    <Fold name="home-feed" open="lg" verb="view" icon={<UsersRound />} title={t("easy.start.new_workers_title")} count={feed.total || null}>
+      {body}
+    </Fold>
   );
 }
 

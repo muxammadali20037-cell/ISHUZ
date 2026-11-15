@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs } from "../support";
 
 /**
- * "AI yordamchi" bo'limiga kirish (2026-11-12, egasi: "AI yordamchi bo'limi qani — qo'shib ber, bossa ChatGPT kabi ochilsin").
+ * "Barchasi siz uchun" bo'limiga kirish (2026-11-12, egasi: "AI yordamchi bo'limi qani — qo'shib ber, bossa ChatGPT kabi ochilsin").
  * Sahifa (/ai) bor edi, lekin unga olib boradigan nomli tugma yo'q edi. Endi:
  *  - kompyuter, kirgan foydalanuvchi: chap yon menyuda "Bosh sahifa"dan keyin;
  *  - kompyuter/planshet, mehmon: yuqori menyuda; rejim tanlanmagan mehmon — sayt menyusida;
@@ -10,37 +10,37 @@ import { USERS, asGuest, asMode, loginAs } from "../support";
  *  - "Kabinetim"da karta. Hammasi /ai ni ochadi — suhbat oynasi (chap panel, so'nggi suhbatlar).
  */
 
-test("mehmon (ish izlovchi rejimi), kompyuter: yuqori menyuda 'AI yordamchi' — bosilganda suhbat oynasi", async ({ page, context }) => {
+test("mehmon (ish izlovchi rejimi), kompyuter: yuqori menyuda 'Barchasi siz uchun' — bosilganda suhbat oynasi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
   const nav = page.getByRole("banner").getByRole("navigation", { name: "Asosiy bo'limlar" });
-  // nomlari bilan (faqat belgi emas): "AI yordamchi" birinchi bo'limdan keyin
-  await expect(nav.getByRole("link").filter({ visible: true })).toHaveText(["Ishlar", "AI yordamchi", "Saqlangan", "Arizalar", "Profil"]);
-  for (const name of ["Ishlar", "AI yordamchi", "Saqlangan", "Arizalar", "Profil"]) {
+  // nomlari bilan (faqat belgi emas): "Barchasi siz uchun" birinchi bo'limdan keyin
+  await expect(nav.getByRole("link").filter({ visible: true })).toHaveText(["Ishlar", "Barchasi siz uchun", "Saqlangan", "Arizalar", "Profil"]);
+  for (const name of ["Ishlar", "Barchasi siz uchun", "Saqlangan", "Arizalar", "Profil"]) {
     const label = nav.getByRole("link", { name, exact: true }).getByText(name, { exact: true });
     expect(await label.evaluate((el) => el.getBoundingClientRect().width), `"${name}" nomi ko'rinadi`).toBeGreaterThan(10);
   }
   // planshetda (768): bo'limlar belgi bilan, "Universal ustalar" ham shu qatorda (turkuaz)
   await page.setViewportSize({ width: 800, height: 900 });
   await expect(nav.getByRole("link", { name: "Universal ustalar" })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "AI yordamchi" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Barchasi siz uchun" })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
   // 3.0 (2026-11-13): bosh sahifada AI kartasi yo'q (AI — menyuda); "Universal ustalar" — alohida yashil bo'lim
   await expect(page.locator("main [data-ai-entry]")).toHaveCount(0);
   await expect(page.locator("main [data-masters-home]")).toContainText("Universal ustalar");
 
-  await nav.getByRole("link", { name: "AI yordamchi" }).click();
+  await nav.getByRole("link", { name: "Barchasi siz uchun" }).click();
   await page.waitForURL(/\/ai$/);
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();
   await expect(page.locator("[data-ai-welcome]")).toBeVisible();
-  // /ai da faqat "AI yordamchi" belgilangan ("Ishlar" emas)
-  await expect(nav.getByRole("link", { name: "AI yordamchi" })).toHaveAttribute("aria-current", "page");
+  // /ai da faqat "Barchasi siz uchun" belgilangan ("Ishlar" emas)
+  await expect(nav.getByRole("link", { name: "Barchasi siz uchun" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Ishlar" })).not.toHaveAttribute("aria-current", "page");
 });
 
-test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; Profildagi karta ham ochadi", async ({ page, context }) => {
+test("kirgan ish izlovchi, kompyuter: yon menyuda 'Barchasi siz uchun' ikkinchi; Profildagi karta ham ochadi", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -48,7 +48,7 @@ test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; Profi
   const side = page.getByRole("navigation", { name: "Kabinet menyusi" });
   await expect(side.getByRole("link").nth(0)).toHaveText("Bosh sahifa");
   // AI yordamchi — to'q sariq rangda ajralib turadi, yonida yozuvsiz yonib-o'chuvchi nuqta ("Yangi" faqat ekran o'quvchiga)
-  await expect(side.getByRole("link").nth(1)).toHaveText(/^AI yordamchi/);
+  await expect(side.getByRole("link").nth(1)).toHaveText(/^Barchasi siz uchun/);
   const aiDot = side.getByRole("link").nth(1).locator("[data-new-dot=ai]");
   await expect(aiDot).toBeVisible();
   // yozuvli belgi emas — kichik nuqta
@@ -57,10 +57,10 @@ test("kirgan ish izlovchi, kompyuter: yon menyuda 'AI yordamchi' ikkinchi; Profi
   await expect(side.getByRole("link", { name: /^Ishlar xaritada/ })).toHaveAttribute("href", "/jobs/xarita");
   await expect(side.locator("[data-masters-entry] [data-new-dot=masters]")).toBeVisible();
   await expect(side.locator("[data-new-dot=map]")).toBeVisible();
-  await side.getByRole("link", { name: /^AI yordamchi/ }).click();
+  await side.getByRole("link", { name: /^Barchasi siz uchun/ }).click();
   await page.waitForURL(/\/ai$/);
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();
-  await expect(side.getByRole("link", { name: /^AI yordamchi/ })).toHaveAttribute("aria-current", "page");
+  await expect(side.getByRole("link", { name: /^Barchasi siz uchun/ })).toHaveAttribute("aria-current", "page");
   await expect(side.getByRole("link", { name: "Vakansiyalar" })).not.toHaveAttribute("aria-current", "page");
 
   // bosh sahifada — faqat qidiruv va e'lonlar (3.0); AI kartasi Profilda
@@ -75,23 +75,23 @@ test("telefon: yuqori paneldagi belgi (bosh sahifada alohida karta yo'q); pastki
   await asMode(context, "worker");
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
-  const top = page.getByRole("banner").getByRole("link", { name: "AI yordamchi" });
+  const top = page.getByRole("banner").getByRole("link", { name: "Barchasi siz uchun" });
   await expect(top).toBeVisible();
   await expect(page.locator("main [data-ai-entry]")).toHaveCount(0);
   // pastki menyu: 4 bo'lim + "E'lon" — oltinchi katak qo'shilmagan
   await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
   // boshqa sahifadan ham bir bosishda
   await page.goto("/saved");
-  await page.getByRole("banner").getByRole("link", { name: "AI yordamchi" }).click();
+  await page.getByRole("banner").getByRole("link", { name: "Barchasi siz uchun" }).click();
   await page.waitForURL(/\/ai$/);
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();
   // /ai ning o'zida belgi takrorlanmaydi
-  await expect(page.getByRole("banner").getByRole("link", { name: "AI yordamchi" })).toHaveCount(0);
+  await expect(page.getByRole("banner").getByRole("link", { name: "Barchasi siz uchun" })).toHaveCount(0);
 
   // 320 px: sarlavha ekrandan chiqmaydi
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("/");
-  await expect(page.getByRole("banner").getByRole("link", { name: "AI yordamchi" })).toBeVisible();
+  await expect(page.getByRole("banner").getByRole("link", { name: "Barchasi siz uchun" })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
@@ -101,7 +101,7 @@ test("ish beruvchi: yon menyu va 'Kabinetim'dagi karta (o'z matni bilan)", async
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/cabinet");
   const side = page.getByRole("navigation", { name: "Kabinet menyusi" });
-  await expect(side.getByRole("link").nth(1)).toHaveText("AI yordamchiYangi");
+  await expect(side.getByRole("link").nth(1)).toHaveText("Barchasi siz uchunYangi");
   // ish beruvchida xarita (ish izlovchi uchun) yo'q
   await expect(side.getByRole("link", { name: /^Ishlar xaritada/ })).toHaveCount(0);
   const card = page.locator("main [data-ai-entry]");
@@ -109,6 +109,6 @@ test("ish beruvchi: yon menyu va 'Kabinetim'dagi karta (o'z matni bilan)", async
   await card.click();
   await page.waitForURL(/\/ai$/);
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();
-  await expect(side.getByRole("link", { name: /^AI yordamchi/ })).toHaveAttribute("aria-current", "page");
+  await expect(side.getByRole("link", { name: /^Barchasi siz uchun/ })).toHaveAttribute("aria-current", "page");
   await expect(side.getByRole("link", { name: "Profil" })).not.toHaveAttribute("aria-current", "page");
 });

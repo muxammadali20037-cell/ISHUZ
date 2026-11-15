@@ -66,7 +66,7 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(page.getByRole("navigation").last().getByRole("link", { name: "Nomzodlar" })).toHaveAttribute("href", "/search?mode=workers");
 });
 
-test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Kabinetim → 'Rolni o'zgartirish' → o'sha rol ekrani", async ({ page, context }) => {
+test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profil tepasidagi tugma, bir bosishda", async ({ page, context }) => {
   // profili tayyor ish izlovchi (yangi foydalanuvchi emas — rol almashganda ro'yxatdan o'tish oqimiga tushmaydi)
   const RET = "7e2e0000-0000-4000-8000-000000000073";
   await sql(
@@ -90,11 +90,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
 
     await page.goto("/cabinet");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
-    await page.getByRole("link", { name: "Rolni o'zgartirish" }).click();
-    await page.waitForURL("**/start/rol?next=%2F");
-    await expect(page.getByRole("radio", { name: /Ish qidiryapman/ })).toBeChecked();
-    await page.getByText("Ishchi qidiryapman", { exact: true }).click();
-    await page.getByRole("button", { name: "Davom etish" }).click();
+    await page.locator("main [data-role-switch]").click();
     await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
@@ -147,7 +143,7 @@ test("AI qidiruv: rejim tanlangan bo'lsa — faqat shu rejim ichida qidiradi", a
   await page.goto("/");
   // 2.0: ish beruvchi bosh sahifasida ham yagona AI qidiruv maydoni — bo'sh "Topish" yordamchini ochadi
   await page.locator("form[data-ai-field][data-hydrated] button[type='submit']").click();
-  const dialog = page.getByRole("dialog", { name: "AI yordamchi" });
+  const dialog = page.getByRole("dialog", { name: "Yordamchi" });
   await expect(dialog.getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
   await expect(dialog.getByRole("radio")).toHaveCount(0);
 });

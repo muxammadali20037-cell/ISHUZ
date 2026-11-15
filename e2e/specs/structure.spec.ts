@@ -114,7 +114,9 @@ test.describe("tuzilma", () => {
     await expect(main.getByText(`Profil to'liqligi: ${w!.completeness}%`)).toBeVisible();
     const activity = main.getByRole("list", { name: "Faoliyat" });
     await expect(activity.getByRole("link", { name: /^1\s*Arizalar$/ })).toHaveAttribute("href", "/applications");
-    await expect(main.getByRole("heading", { level: 2, name: "Hisob" })).toBeVisible();
+    // 2026-11-15: havolalar yig'ilgan guruhlarda — "Faoliyat — Ochish", "Hisob — Ochish"
+    await expect(main.getByRole("heading", { level: 2, name: /^Hisob/ })).toBeVisible();
+    await main.locator('[data-fold="links-activity"] [data-fold-toggle]').click();
     await expect(main.getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
   });
 

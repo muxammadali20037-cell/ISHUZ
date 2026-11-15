@@ -1,5 +1,32 @@
 # O'zgarishlar jurnali
 
+## 2026-11-15 · Soddalashtirish: telefonda bo'limlar menyusi, "AI" o'rniga oddiy so'zlar, yig'iladigan bo'limlar (`claude/simplify-mobile`)
+
+Ega: "telefonda kirganda kategoriyalar chiqsin — chap menyudagidek, oldida kichik harf bilan nima ekani; eng tagida qizilda
+rolni o'zgartirish; AI o'rniga tushunarli so'z; yozuvlar juda ko'p — bugungi va yangi ishlarni ichiga yashir («ochish»,
+«ko'rish»); profil katta va chalkash — ichiga yashir, rolni o'zgartirish eng tepada; ustalarda «+» emas «E'lon joylash»".
+
+- **Telefon/planshet, bosh sahifa (kirgan):** "Bo'limlar" ro'yxati — kompyuterdagi chap menyu bilan bitta manba
+  (`components/shared/nav-items.ts`); har bo'lim ostida kichik izoh ("Barcha ishlarni ko'rish va qidirish", "Yaqin atrofdagi
+  ishlarni xaritada ko'rish"…), o'qilmaganlar soni. Eng tagida qizil "Ish beruvchiga o'tish" / "Ish izlovchiga o'tish" — bir
+  bosishda (rejim yoziladi, bosh sahifa o'sha rolda ochiladi). "Yangi ishlar" / "Yangi nomzodlar" — yig'ilgan ("Ko'rish"),
+  kompyuterda ochiq. Izoh matnlari, takroriy havolalar, "Universal ustalar" katta bloki va ish beruvchi panelidagi uzun
+  ro'yxatlar telefonda yo'q (ular menyuda va raqamlarda). Pastki qism (footer) kirganlarga telefonda ixcham.
+- **"AI" → oddiy so'zlar** (uz/oz, ru/en ham): bo'lim nomi "Barchasi siz uchun" (ru "Всё для вас", en "All for you"); qolgan
+  joylarda "Yordamchi" / "Помощник" / "Helper", "Oddiy so'z bilan qidirish", "PRO kuzatuv" / "PRO-слежение" / "PRO watch".
+  Yordamchi o'zini "Ish topdim yordamchisi" deb tanishtiradi ("kimsan?" savoliga sun'iy intellekt ekanini aytishi saqlangan).
+  Admin matnlari o'zgarmagan.
+- **"Barchasi siz uchun" sahifasi:** "Bugungi ishlar" va "Yangi ishlar" — yopiq qatorlar ("Ochish", "Ko'rish").
+- **Profil** (sarlavha "Kabinetim" → "Profil"): tepada rolni almashtirish, keyin profil kartasi; "Mening e'lonlarim",
+  "Mening dunyom", "PRO kuzatuv", "Faoliyat", "Hisob" — yig'iladigan bo'limlar. `/cabinet#dunyo` havolasi (dunyo yaratilgach)
+  "Mening dunyom"ni o'zi ochadi (`Fold anchor`).
+- **Universal ustalar:** telefonda ham "+ E'lon joylash" yozuvi (320 px da ham sig'adi).
+- Yangi umumiy komponent: `Fold` (WAI-ARIA accordion: tugma sarlavha ichida, `aria-expanded`).
+- Ixcham footer: "Foydalanish shartlari" / "Maxfiylik" havolalari ruscha va katta shriftda ham qatorga sig'adi (yonga surilmaydi).
+- Testlar: E2E `simple-mobile.spec.ts` (7), yangilangan: ai-entry, ai-workspace, ai-finder, sections, applications,
+  assistant-chat, auth, cabinet, entry-flow, home, home-market, journeys, layout-overlap, matches, modes, payments,
+  post-ai-chat, saved, structure, tariffs, telegram-login, world; unit — engine.test.
+
 ## 2026-11-14 · Audit: telefonda "‹ Orqaga" va logotip ustma-ust tushmaydi (`claude/audit-back-logo`)
 
 - Reklamadan oldingi tekshiruv (ega: "barcha muammolarni hal qil … odamlarga judayam qulay qil"): 390–430 px telefonlarda

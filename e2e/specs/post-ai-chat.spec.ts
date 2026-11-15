@@ -19,13 +19,13 @@ test("mehmon: 'kuryerlikdan ish qidirmoqchiman' → kasb variantlari → joy, ta
   await asMode(context, "worker");
   await page.goto("/post/worker");
   await formReady(page);
-  await expect(page.getByRole("region", { name: "Tez va qulay e'lon — AI yordamchi bilan" })).toBeVisible();
+  await expect(page.getByRole("region", { name: "Tez va qulay e'lon — yordamchi bilan" })).toBeVisible();
   // sahifaning asosiy sarlavhasi — kasb savoli (karta sarlavha tartibini buzmaydi)
   await expect(page.getByRole("heading", { level: 1 }).or(page.getByRole("heading", { level: 2 })).first()).toContainText("Qaysi kasb bo'yicha ish qidiryapsiz?");
   // oddiy usul ham shu sahifada
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
 
-  await chat(page).getByLabel("AI yordamchiga yozing: qanday ish qidiryapsiz?").fill("Men kuryerlikdan ish qidirmoqchiman");
+  await chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?").fill("Men kuryerlikdan ish qidirmoqchiman");
   await chat(page).getByRole("button", { name: "Boshlash" }).click();
   // suhbat ochildi — kasblar ro'yxati yashirindi (ekran ikkiga bo'linmaydi)
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toHaveCount(0);
@@ -70,7 +70,7 @@ test("mehmon: 'kuryerlikdan ish qidirmoqchiman' → kasb variantlari → joy, ta
   // tekshirish sahifasi: hammasi qoralamada, "AI tayyorladi" belgisi, hech narsa o'zi joylanmagan
   await expect(page.getByRole("heading", { name: "E'loningizni tekshiring" })).toBeVisible();
   const main = page.getByRole("main");
-  await expect(main).toContainText("AI e'loningizni tayyorladi");
+  await expect(main).toContainText("Yordamchi e'loningizni tayyorladi");
   await expect(main).toContainText("Moto kuryer");
   await expect(main).toContainText("Chilonzor tumani");
   await expect(main).toContainText("Aziz");
@@ -86,7 +86,7 @@ test("kirgan ish izlovchi: taqiqlangan matn — hisob darhol bloklanadi; ism va 
   try {
     await page.goto("/post/worker");
     await formReady(page);
-    await chat(page).getByLabel("AI yordamchiga yozing: qanday ish qidiryapsiz?").fill("giyohvand sotaman");
+    await chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?").fill("giyohvand sotaman");
     await chat(page).getByRole("button", { name: "Boshlash" }).click();
     await expect(page.getByText("Hisobingiz bloklangan").first()).toBeVisible();
     expect((await sql<{ b: boolean }>("select is_blocked as b from public.profiles where id = $1", [USERS.workerB]))[0]!.b).toBe(true);
@@ -97,7 +97,7 @@ test("kirgan ish izlovchi: taqiqlangan matn — hisob darhol bloklanadi; ism va 
   await page.goto("/post/worker");
   await formReady(page);
 
-  await chat(page).getByLabel("AI yordamchiga yozing: qanday ish qidiryapsiz?").fill("Samarqandda oshpaz bo'lib ishlamoqchiman, 3 yil tajribam bor");
+  await chat(page).getByLabel("Yordamchiga yozing: qanday ish qidiryapsiz?").fill("Samarqandda oshpaz bo'lib ishlamoqchiman, 3 yil tajribam bor");
   await chat(page).getByRole("button", { name: "Boshlash" }).click();
   // birinchi gapdan: kasb, viloyat, tajriba — qayta so'ralmaydi
   await expect(lastBot(page)).toContainText("Kasb: Oshpaz ✓");

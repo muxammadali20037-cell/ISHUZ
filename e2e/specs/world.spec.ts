@@ -29,6 +29,8 @@ test("dunyo yaratish: sohalar → hudud → tayyor; Profil moslashadi", async ({
   await expect(page.getByRole("main").getByText("Mening dunyom")).toHaveCount(0);
   await page.goto("/cabinet");
   const main = page.getByRole("main");
+  // 2026-11-15: "Mening dunyom" Profilda yig'ilgan — "Ochish"
+  await main.locator('[data-fold="world"] [data-fold-toggle]').click();
   await expect(main.getByRole("heading", { name: "Dunyongizni yarating" })).toBeVisible();
   await expect(main.getByRole("heading", { name: "Bugungi rejangiz" })).toBeVisible();
   await main.getByRole("link", { name: "Boshlash" }).click();
@@ -53,6 +55,8 @@ test("dunyo yaratish: sohalar → hudud → tayyor; Profil moslashadi", async ({
 
   await page.getByRole("link", { name: "Dunyomga kirish" }).click();
   await page.waitForURL(/\/cabinet#dunyo$/);
+  // havola #dunyo bilan keladi — bo'lim o'zi ochiladi
+  await expect(main.locator('[data-fold="world"]')).toHaveAttribute("data-open", "");
   await expect(main.getByRole("heading", { name: /Sohalaringizda/ })).toBeVisible();
   await expect(main.getByRole("link", { name: new RegExp(`^${a!.name_uz}`) }).first()).toHaveAttribute("href", new RegExp(`category=${a!.slug}`));
   await expect(main.getByText("Qiziqishlaringizni tanlang")).toHaveClass(/line-through/);

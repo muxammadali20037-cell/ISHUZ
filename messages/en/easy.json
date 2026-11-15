@@ -41,7 +41,7 @@
     }
   },
   "cabinet": {
-    "title": "My account",
+    "title": "Profile",
     "home_hint_guest": "Sign in to see your listings",
     "home_hint": "My listings: {count}",
     "open": "Open",
@@ -121,7 +121,8 @@
       "new_applications": "New",
       "hired": "Hired"
     },
-    "account": "Account"
+    "account": "Account",
+    "role_now": "Now: {role}. Switch in one tap"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -456,7 +457,7 @@
     "tab_vacancies": "Vacancies",
     "tab_candidates": "Candidates",
     "tab_home": "Home",
-    "tab_ai": "AI",
+    "tab_ai": "For you",
     "tab_messages": "Messages",
     "tab_saved": "Saved",
     "tab_dashboard": "Dashboard",
@@ -596,22 +597,22 @@
   "ai": {
     "choose": "How do you want to prepare the listing?",
     "manual": "I'll fill it in",
-    "quick": "Quick with AI",
+    "quick": "Quick with the helper",
     "worker_label": "Describe yourself in plain words",
     "vacancy_label": "Describe in plain words who you need",
     "worker_example": "E.g.: I'm an accountant with 3 years of experience, I live in Chilonzor, looking for a job from 6 million.",
     "vacancy_example": "E.g.: My cafe in Chilonzor needs 2 cooks, 5–7 million, 6-day week, experienced.",
-    "note": "AI uses only what you wrote: it never invents experience, salary or conditions. Nothing is published until you check it.",
+    "note": "The helper uses only what you wrote: it never invents experience, salary or conditions. Nothing is published until you check it.",
     "prepare": "Prepare",
     "preparing": "Preparing…",
     "too_short": "Write at least a sentence or two",
-    "ready": "AI prepared your listing. Check it and publish.",
+    "ready": "The helper prepared your listing. Check it and publish.",
     "ready_note": "Check every line — tap “Change” if something is wrong.",
     "missing": "Still needed:",
     "errors": {
-      "ai_disabled": "AI is not available now. Please fill in the listing yourself.",
-      "ai_busy": "AI is busy. Try again in a minute or fill it in yourself.",
-      "ai_failed": "AI couldn't prepare it. Try again or fill it in yourself.",
+      "ai_disabled": "The helper is not available now. Please fill in the listing yourself.",
+      "ai_busy": "The helper is busy. Try again in a minute or fill it in yourself.",
+      "ai_failed": "The helper couldn't prepare it. Try again or fill it in yourself.",
       "rate_limited": "Too many attempts. Please wait a bit.",
       "prohibited": "Ish topdim accepts only job and job-seeker listings. Please change the unrelated or prohibited part of your text.",
       "validation": "Write at least a sentence or two (up to 1500 characters).",
@@ -619,7 +620,7 @@
     }
   },
   "aihub": {
-    "title": "AI assistant",
+    "title": "All for you",
     "subtitle": "Helps you find the right match faster. Results come only from real listings.",
     "search_title": "Search in plain words",
     "search_desc_jobs": "For example: \"evening shift cashier in Chilonzor\". We work out the job, area and terms.",
@@ -630,7 +631,7 @@
     "matches_desc": "Fit calculated from your profile (job, area, experience, pay) and why",
     "matches_login": "Log in to see them",
     "matches_profile": "Tell us about yourself first",
-    "pro_title": "AI PRO watch",
+    "pro_title": "PRO watch",
     "pro_desc": "A Telegram message as soon as a fitting listing appears",
     "fill_title_worker": "Quick résumé",
     "fill_desc_worker": "Describe yourself in plain words — the fields fill in, you check and publish",
@@ -638,8 +639,8 @@
     "fill_desc_employer": "Describe who you need in plain words — the fields fill in, you check and publish",
     "candidates_title": "Candidates for your vacancy",
     "candidates_desc": "Workers ranked by your vacancy requirements",
-    "note": "AI only assists: the decision is yours. We never show a match percentage that was not calculated.",
-    "more_title": "More AI tools"
+    "note": "The helper only advises: the decision is yours. We never show a match percentage that was not calculated.",
+    "more_title": "More tools"
   },
   "finder": {
     "button": "Find what fits you",
@@ -677,12 +678,12 @@
       "timeout": "The answer took too long. Please try again.",
       "unavailable": "The assistant couldn't answer just now. Please try again."
     },
-    "inline_button": "Search with AI",
-    "assistant_title": "AI assistant",
+    "inline_button": "Search in plain words",
+    "assistant_title": "Helper",
     "assistant_desc_jobs": "Write in plain words — I'll search real listings",
     "assistant_desc_workers": "Describe who you need — I'll search real workers",
-    "greeting_jobs": "Hello! I'm the AI assistant. What job are you looking for? Type the job and district, or tap the microphone and say it — I'll search the real ads in our database.",
-    "greeting_workers": "Hello! I'm the AI assistant. What kind of employee do you need? Type the job and area, or tap the microphone and say it — I'll search the real candidates in our database.",
+    "greeting_jobs": "Hello! I'm the Ish topdim helper. What job are you looking for? Type the job and district, or tap the microphone and say it — I'll search the real ads in our database.",
+    "greeting_workers": "Hello! I'm the Ish topdim helper. What kind of employee do you need? Type the job and area, or tap the microphone and say it — I'll search the real candidates in our database.",
     "try_label": "For example, tap:",
     "you": "You",
     "thinking_understand": "Understanding your request…",
@@ -707,14 +708,14 @@
     "voice_error": "Couldn't recognise your voice. Type it or try again.",
     "voice_denied": "No microphone access. Allow it in browser settings or type instead.",
     "disclaimer": "Only real listings. The decision is yours.",
-    "card_title": "Ask the AI assistant",
+    "card_title": "Ask the helper",
     "card_desc_jobs": "In plain words: job, area, pay — finds matching listings instantly",
     "card_desc_workers": "In plain words: job, area, experience — finds matching workers instantly",
     "card_open": "Start typing",
-    "empty_ai_hint": "Or describe it in plain words — the AI assistant will try another way",
+    "empty_ai_hint": "Or describe it in plain words — the helper will try another way",
     "composer_placeholder_jobs": "Job, area, pay…",
     "composer_placeholder_workers": "Who you need: job, area…",
-    "cta_button": "Try the AI assistant",
+    "cta_button": "Try the helper",
     "bar_badge": "New",
     "relaxed_district": "Nothing in {district} yet — showing all of {region}",
     "relaxed_region": "Nothing in {region} yet — showing all of Uzbekistan",
@@ -938,8 +939,8 @@
     "all_hint": "By field",
     "e_post": "Post a vacancy",
     "e_post_hint": "In 5 minutes",
-    "e_ai": "Vacancy with AI",
-    "e_ai_hint": "Write — AI fills it in",
+    "e_ai": "Vacancy with the helper",
+    "e_ai_hint": "Write — the helper fills it in",
     "e_candidates": "Candidates",
     "e_candidates_hint": "Worker list",
     "e_daily": "Day workers",
@@ -953,7 +954,7 @@
     "e_company": "Company",
     "e_company_hint": "Page and verification",
     "hire_title": "Find the right person fast",
-    "hire_sub": "Post a vacancy or search candidates with AI — among real workers"
+    "hire_sub": "Post a vacancy or search candidates in plain words — among real workers"
   },
   "side": {
     "label": "Account menu",
@@ -977,7 +978,32 @@
     "cta_employer_desc": "Post a vacancy — candidates' applications will appear here.",
     "mode_worker": "Job seeker",
     "mode_employer": "Employer",
-    "map": "Jobs on the map"
+    "map": "Jobs on the map",
+    "sections": "Sections",
+    "hint": {
+      "home": "Open the home page",
+      "ai": "Jobs that fit you and tips",
+      "ai_employer": "Matching candidates and tips",
+      "jobs": "View and search all jobs",
+      "map": "View jobs nearby on a map",
+      "my_applications": "View your applications and offers",
+      "saved": "Open your saved jobs",
+      "messages": "Open your conversations",
+      "profile": "Open your profile, listings and account",
+      "my_vacancies": "View your vacancies",
+      "emp_applications": "View incoming applications",
+      "candidates": "Search and view workers",
+      "company": "Open company details",
+      "masters": "Find a craftsman or post a service",
+      "settings": "Language, notifications and account",
+      "help": "Answers and help"
+    },
+    "switch": {
+      "to_employer": "Switch to employer",
+      "to_employer_hint": "To find workers and post vacancies",
+      "to_worker": "Switch to job seeker",
+      "to_worker_hint": "To find work and apply"
+    }
   },
   "activity": {
     "title": "My activity",
@@ -1060,9 +1086,9 @@
     "e_greeting": "Hello, {name}!"
   },
   "aiws": {
-    "title": "Ish topdim AI",
+    "title": "All for you",
     "status_ai": "Artificial intelligence · ready",
-    "status_rules": "Basic mode (AI not connected)",
+    "status_rules": "Basic mode",
     "status_busy": "Writing a reply…",
     "status_search": "Searching the database…",
     "menu": "Chat menu",
@@ -1075,7 +1101,7 @@
     "new_chat": "New chat",
     "nav": {
       "home": "Home",
-      "ai": "AI assistant",
+      "ai": "All for you",
       "jobs": "Jobs",
       "matches": "Matching jobs",
       "applications": "My applications",
@@ -1142,7 +1168,7 @@
       "counted": "Counted from the database"
     },
     "promo_title": "Grow your career",
-    "promo_desc": "Find out with the AI assistant which profession and direction suit you.",
+    "promo_desc": "Find out with the helper which profession and direction suit you.",
     "promo_prompt": "Which profession suits me? Advise me based on my experience and interests.",
     "promo_title_employer": "Find the right employee",
     "promo_desc_employer": "Describe your requirements — I will shortlist candidates and explain why they fit.",
@@ -1184,14 +1210,14 @@
     "entry_desc_employer": "In a chat: finding candidates, vacancy text, interview questions"
   },
   "aichat": {
-    "title": "Quick ad — with the AI assistant",
+    "title": "Quick ad — with the helper",
     "desc": "Tell me in one sentence what job you are looking for. I'll ask for everything the ad needs, one question at a time — 1–2 minutes.",
-    "start_label": "Write to the AI assistant: what job are you looking for?",
+    "start_label": "Write to the helper: what job are you looking for?",
     "start_placeholder": "For example: I want to work as a courier",
     "start": "Start",
     "note": "Only what you tell me goes into the ad — I never invent experience, salary or anything else. At the end you check everything and publish it yourself.",
     "progress": "{done} of {total} done",
-    "log": "Chat with the AI assistant",
+    "log": "Chat with the helper",
     "choices": "Answer options",
     "answer_label": "Your answer",
     "answer_placeholder": "Type your answer or tap a button",
@@ -1275,5 +1301,10 @@
     "prev": "Previous",
     "counter": "{n} / {total}",
     "failed": "Couldn't load. Tap to go to the next one."
+  },
+  "fold": {
+    "open": "Open",
+    "view": "View",
+    "close": "Close"
   }
 }

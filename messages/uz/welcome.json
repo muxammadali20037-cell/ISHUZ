@@ -9,7 +9,7 @@
   },
   "cross": {
     "worker_title": "Ishchi kerakmi?",
-    "worker_desc": "Siz ham vakansiya joylashingiz mumkin — AI 1 daqiqada yozib beradi",
+    "worker_desc": "Siz ham vakansiya joylashingiz mumkin — yordamchi 1 daqiqada yozib beradi",
     "worker_cta": "E'lon joylash",
     "employer_title": "O'zingiz ish qidiryapsizmi?",
     "employer_desc": "Bitta akkauntda ham ish, ham ishchi qidirish mumkin",
@@ -105,7 +105,7 @@
       "s1_text": "Turli sohalardagi vakansiyalarni bitta platformada qidiring.",
       "s2_title": "Ishchi topish bir joyda",
       "s2_text": "Vakansiya joylang va sizga mos nomzodlarni toping.",
-      "s3_title": "AI yordamchingiz har doim yoningizda",
+      "s3_title": "Yordamchingiz har doim yoningizda",
       "s3_text": "Qiziqishlaringiz, ko'nikmalaringiz va tajribangizga mos imkoniyatlarni toping.",
       "start": "Boshlash",
       "slides": "Tanishtiruv"
@@ -132,7 +132,7 @@
     "welcome": {
       "title": "Siz nima qidiryapsiz?",
       "subtitle": "Bitta bosing — ilova faqat sizga keraklisini ko'rsatadi. Kirish shart emas.",
-      "worker_desc": "Vakansiyalar, kunlik ishlar, AI yordamchi",
+      "worker_desc": "Vakansiyalar, kunlik ishlar, yordamchi",
       "employer_desc": "Tayyor ishchilar, vakansiya joylash",
       "go": "Boshlash",
       "how": "Qanday ishlaydi?"
@@ -264,7 +264,7 @@
     "f_pricing": "Tariflar",
     "f_contact": "Aloqa",
     "f_telegram": "Telegram bot",
-    "ai_title": "Oddiy so'z bilan yozing — AI yordamchi topib beradi",
+    "ai_title": "Oddiy so'z bilan yozing — yordamchi topib beradi",
     "ai_desc": "Kasb, tuman, maosh yoki «kunlik» — o'zingiz gapirgandek yozing. Yordamchi nimani tushunganini ko'rsatadi va faqat bazadagi haqiqiy e'lonlarni chiqaradi.",
     "ai_point_1": "O'zbekcha (lotin va kirill) va ruscha tushunadi",
     "ai_point_2": "Bir bosishda aniqlashtirish: kunlik, tajribasiz, masofaviy",

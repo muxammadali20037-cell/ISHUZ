@@ -65,7 +65,7 @@ test("Mini App ochilganda — avtomatik kiradi, 'Kirish' bosish shart emas; keyi
   expect(JSON.parse(calls[0]!)).toMatchObject({ initData: expect.stringContaining("hash=test"), locale: "uz" });
   await page.goto("/search");
   await page.goto("/cabinet");
-  await expect(page.getByRole("heading", { level: 1, name: "Kabinetim" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Profil" })).toBeVisible();
   expect(calls).toHaveLength(1);
 });
 

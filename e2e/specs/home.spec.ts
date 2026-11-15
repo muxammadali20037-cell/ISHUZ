@@ -85,7 +85,7 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await expect(page.locator("#home-feed")).toBeVisible();
 });
 
-test("bosh sahifa (3.0): faqat qidiruv, tez yo'llar, yangi ishlar va alohida 'Universal ustalar' — ortiqcha bloklar yo'q", async ({ page, context }) => {
+test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi ishlar' va bo'limlar menyusi — ortiqcha bloklar yo'q", async ({ page, context }) => {
   // ro'yxat bo'sh bo'lmasin: bo'sh holatda "O'zim haqimda e'lon berish" — to'g'ri keyingi qadam (bu test kartalar haqida)
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await sql(
@@ -97,25 +97,29 @@ test("bosh sahifa (3.0): faqat qidiruv, tez yo'llar, yangi ishlar va alohida 'Un
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/");
-  await expect(page.locator("main article").first()).toBeVisible();
   const main = page.getByRole("main");
-  await expect(main.locator("#home-feed")).toBeVisible();
-  // ko'chirilganlar: "Mening dunyom" (Profilga), AI kartasi (menyuda), "Yangi ish chiqsa" (Profil → AI PRO), "O'zim haqimda e'lon" (pastki menyu)
+  // "Yangi ishlar" — yig'ilgan (2026-11-15): bosilsa ro'yxat ochiladi
+  const toggle = main.locator('[data-fold="home-feed"] [data-fold-toggle]');
+  await expect(toggle).toContainText("Ko'rish");
+  await expect(main.locator("article:visible")).toHaveCount(0);
+  await toggle.click();
+  await expect(main.locator("article").first()).toBeVisible();
+  // ko'chirilganlar: "Mening dunyom" (Profilga), "Yangi ish chiqsa" (Profil → PRO kuzatuv), "O'zim haqimda e'lon" (pastki menyu)
   await expect(main.getByText("Mening dunyom")).toHaveCount(0);
-  await expect(main.locator("[data-ai-entry]")).toHaveCount(0);
   await expect(main.getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveCount(0);
   await expect(main.getByRole("link", { name: /^O'zim haqimda e'lon berish/ })).toHaveCount(0);
-  // "Universal ustalar" — ro'yxatdan keyin, o'z bo'limi: xizmat turlari va "Ustalarni ko'rish"
-  const masters = main.locator("[data-masters-home]");
-  await expect(masters.getByRole("heading", { name: "Universal ustalar" })).toBeVisible();
-  const feedBottom = (await main.locator("#home-feed").boundingBox())!;
-  expect((await masters.boundingBox())!.y).toBeGreaterThan(feedBottom.y);
-  await masters.getByRole("link", { name: "Ustalarni ko'rish" }).click();
+  // "Barchasi siz uchun" va "Universal ustalar" — faqat bo'limlar menyusida (katta bloklar telefonda yo'q)
+  await expect(main.locator("[data-ai-entry]")).toHaveCount(1);
+  await expect(main.locator("[data-home-menu] [data-ai-entry]")).toHaveCount(1);
+  await expect(main.locator("[data-masters-home]")).toBeHidden();
+  const menu = main.locator("[data-home-menu]");
+  expect((await menu.boundingBox())!.y).toBeGreaterThan((await main.locator('[data-fold="home-feed"]').boundingBox())!.y);
+  await menu.locator('[data-menu-item="masters"]').click();
   await page.waitForURL(/\/ustalar$/);
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (390×844, kirgan ish qidiruvchi): birinchi vakansiyaning nomi, maoshi va hududi birinchi ekranda", async ({ page, context }) => {
+test("bosh sahifa (390×844, kirgan ish qidiruvchi): 'Yangi ishlar' birinchi ekranda; ochilsa — birinchi vakansiyaning nomi, maoshi va hududi pastki menyudan yuqorida", async ({ page, context }) => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await sql(
     `insert into public.vacancies (owner_profile_id, title, region_id, district_id, description, status, salary_from, salary_to, salary_type, schedule, published_at, expires_at)
@@ -127,16 +131,19 @@ test("bosh sahifa (390×844, kirgan ish qidiruvchi): birinchi vakansiyaning nomi
     await loginAs(context, USERS.workerA);
     await asMode(context, "worker");
     await page.goto("/");
+    const navTop = (await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().boundingBox())!.y;
+    const toggle = page.locator('main [data-fold="home-feed"] [data-fold-toggle]');
+    const tb = (await toggle.boundingBox())!;
+    expect(tb.y + tb.height).toBeLessThanOrEqual(navTop);
+    await toggle.click();
     const card = page.locator("main article").first();
     await expect(card).toBeVisible();
-    // pastki menyudan yuqorida to'liq ko'rinadi: nom, maosh (davri bilan), hudud
-    const navTop = (await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().boundingBox())!.y;
     for (const part of [card.getByRole("heading", { level: 3 }), card.getByText(/so'm\/(oy|kun|soat)/).first(), card.locator("li[title]").first()]) {
       const box = (await part.boundingBox())!;
       expect(box.y).toBeGreaterThanOrEqual(0);
       expect(box.y + box.height).toBeLessThanOrEqual(navTop);
     }
-    // suzuvchi AI tugmasi yo'q; AI qidiruv — bosh sahifaning yagona qidiruv maydoni
+    // suzuvchi AI tugmasi yo'q; qidiruv — bosh sahifaning yagona qidiruv maydoni
     await expect(page.locator(".ai-fab")).toHaveCount(0);
     await expect(page.locator("form[data-ai-field]")).toBeVisible();
   } finally {

@@ -63,7 +63,7 @@ test("suhbat: salomlashuv qidiruvsiz; tavsiya savoli bosiladi → javob matni va
   await open(page, context);
   await say(page, "Salom");
   await expect(main(page).getByText("Siz: Salom")).toBeVisible();
-  await expect(replies(page).last()).toContainText("Men Ish topdim AI yordamchisiman");
+  await expect(replies(page).last()).toContainText("Men Ish topdim yordamchisiman");
   await expect(main(page).locator("article")).toHaveCount(0);
   await expect(main(page).getByText(/^Tushundim:/)).toHaveCount(0);
   // AI ulanmagan: AI'siz bajariladigan narsalar taklif qilinadi — qidiruv misollari va bozor statistikasi (bazadan)
@@ -152,7 +152,7 @@ test("xatolar: limit → tushunarli xabar va 'Qayta urinish'; javob o'rtasida uz
   // xatodan keyin ham yozish mumkin
   await page.unroute("**/api/assistant");
   await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("AI yordamchisiman");
+  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
 });
 
 test("javobni to'xtatish: kutish holati ko'rinadi, 'To'xtatish' bosilsa — suhbat davom etadi", async ({ page, context }) => {
@@ -173,7 +173,7 @@ test("javobni to'xtatish: kutish holati ko'rinadi, 'To'xtatish' bosilsa — suhb
   release();
   await page.unroute("**/api/assistant");
   await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("AI yordamchisiman");
+  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
 });
 
 test("ovozli javob: yoqilsa javob o'qib beriladi (tilga mos ovoz), to'xtatiladi; qurilmada ovoz bo'lmasa — aytiladi; tanlov eslab qolinadi", async ({ page, context }) => {
@@ -212,7 +212,7 @@ test("ovozli javob: yoqilsa javob o'qib beriladi (tilga mos ovoz), to'xtatiladi;
   await expect(toggle).toHaveAttribute("aria-checked", "false");
   // o'chiq: javob o'qilmaydi
   await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("AI yordamchisiman");
+  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
   expect(await spoken()).toEqual([]);
 
   await toggle.click();
@@ -296,5 +296,5 @@ test("mikrofon: tinglash holati aniq ko'rinadi va to'xtatiladi; ruxsat berilmasa
   await expect(main(page).getByText("Mikrofonga ruxsat yo'q. Brauzer sozlamalarida ruxsat bering yoki yozib yuboring.")).toBeVisible();
   await expect(form).toHaveAttribute("data-voice", "error");
   await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("AI yordamchisiman");
+  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
 });

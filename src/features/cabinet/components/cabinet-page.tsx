@@ -3,7 +3,7 @@ import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Bell, BellRing, Bookmark, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Repeat, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
+import { Activity, Bell, BellRing, Bookmark, BriefcaseBusiness, ChevronRight, ExternalLink, FileText, Globe2, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
@@ -23,6 +23,8 @@ import { ProfileHeader } from "./profile-header";
 import { MastersEntry } from "@/features/masters/components/masters-entry";
 import { AiEntry } from "@/features/ai/components/ai-entry";
 import { MyWorld } from "@/features/world/components/my-world";
+import { Fold } from "@/components/shared/fold";
+import { RoleSwitchRow } from "@/features/landing/role-switch-row";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
@@ -69,8 +71,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true, group: "account" },
     { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true, group: "account" },
     { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true, group: "account" },
-    // rol kirishda tanlanadi; almashtirish — o'sha rol ekrani orqali (bosh sahifada almashtirgich yo'q)
-    { href: `/start/rol?next=${encodeURIComponent("/")}`, label: t("easy.cabinet.links.change_role"), icon: Repeat, show: true, group: "account" },
+    // rolni almashtirish — sahifaning eng tepasida (ega, 2026-11-15)
   ];
 
   const newListings = [
@@ -78,22 +79,29 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { mode: "employer", href: "/post/vacancy", icon: UsersRound, label: t("easy.home.employer_cta") },
   ].filter((l) => !mode || l.mode === mode);
 
+  const roleTarget = mode === "employer" ? "worker" : "employer";
   const workerSearch = worker
     ? `/search?${new URLSearchParams({ mode: "jobs", ...(worker.professionNodeId ? { p: worker.professionNodeId } : {}), ...(worker.regionSlug ? { region: worker.regionSlug, district: worker.districtId ?? "all" } : {}) }).toString()}`
     : null;
 
   return (
-    <div className="container-narrow space-y-6 py-6 text-lg sm:py-8">
+    // Profil — 2.0 (2026-11-15, ega: "profil juda katta va chalkash — hammasini ichiga yashir; rolni o'zgartirish eng tepada"):
+    // tepada rolni almashtirish, profil kartasi; qolgan hammasi yig'iladigan bo'limlar ("Ko'rish" / "Ochish")
+    <div className="container-narrow space-y-4 py-6 text-lg sm:py-8">
       <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
-      {/* S3: profil sarlavhasi — avatar, ism, rol, to'liqlik va faoliyat sonlari (haqiqiy) */}
+      <RoleSwitchRow
+        tone="primary"
+        target={roleTarget}
+        title={t(roleTarget === "employer" ? "easy.side.switch.to_employer" : "easy.side.switch.to_worker")}
+        hint={t("easy.cabinet.role_now", { role: t(roleTarget === "employer" ? "easy.cabinet.header.worker" : "easy.cabinet.header.employer") })}
+      />
+      {/* profil sarlavhasi — avatar, ism, rol, to'liqlik va faoliyat sonlari (haqiqiy) */}
       <Suspense fallback={<div className="h-44 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
         <ProfileHeader session={session} mode={mode} />
       </Suspense>
 
-      <section className="space-y-3" aria-labelledby="my-listings">
-        <h2 id="my-listings" className="text-2xl font-bold">
-          {t("easy.cabinet.my_listings")}
-        </h2>
+      <Fold name="my-listings" icon={<FileText />} verb="view" title={t("easy.cabinet.my_listings")} count={(worker ? 1 : 0) + vacancies.length || null}>
+      <section className="space-y-3" aria-label={t("easy.cabinet.my_listings")}>
         {!worker && !vacancies.length ? <p className="rounded-2xl bg-secondary p-4 text-muted-foreground">{t("easy.cabinet.no_listings")}</p> : null}
 
         {worker ? (
@@ -199,32 +207,35 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
           </div>
         ) : null}
       </section>
+      </Fold>
 
-      {/* "Mening dunyom" va bugungi reja (2026-11-13: bosh sahifadan ko'chirildi — bosh sahifada faqat qidiruv va e'lonlar) */}
+      {/* "Mening dunyom" va bugungi reja (2026-11-13: bosh sahifadan ko'chirildi) — yig'ilgan */}
       {mode !== "employer" ? (
         <div id="dunyo" className="scroll-mt-20">
-          <Suspense fallback={null}>
-            <MyWorld session={session} />
-          </Suspense>
+          <Fold name="world" anchor="dunyo" icon={<Globe2 />} verb="open" title={t("easy.world.my_world")}>
+            <Suspense fallback={null}>
+              <MyWorld session={session} />
+            </Suspense>
+          </Fold>
         </div>
       ) : null}
 
-      <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
-        <AiProCard userId={session.userId} only={mode} />
-      </Suspense>
+      <Fold name="pro" icon={<BellRing />} verb="open" title={t("easy.aihub.pro_title")}>
+        <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
+          <AiProCard userId={session.userId} only={mode} />
+        </Suspense>
+      </Fold>
 
-      <section className="space-y-3" aria-labelledby="new-listing">
-        <h2 id="new-listing" className="text-2xl font-bold">
-          {t("easy.cabinet.new_listing")}
-        </h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+      <section className="space-y-2" aria-label={t("easy.cabinet.new_listing")}>
+        <div className="grid gap-2 sm:grid-cols-2">
           {/* joriy rejimning e'loni (rejim tanlanmagan bo'lsa — ikkalasi, bir xil neytral ko'rinish) */}
           {newListings.map((l) => (
-            <Link key={l.href} href={l.href} className="press flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 font-semibold hover:border-primary/50">
+            <Link key={l.href} href={l.href} className="press flex min-h-16 items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3 text-base font-bold hover:border-primary/50">
               <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
                 <l.icon className="size-5" />
               </span>
-              {l.label}
+              <span className="min-w-0 flex-1">{l.label}</span>
+              <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
             </Link>
           ))}
         </div>
@@ -236,15 +247,15 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         <MastersEntry title={t("masters.name")} desc={t("masters.entry_desc")} />
       </div>
 
-      {/* telefonda yon menyu yo'q — rasmiy Telegram va Instagram shu yerda */}
-      <SocialLinks links={socialLinks(getServerEnv())} className="rounded-2xl border border-border bg-card p-4" />
-
       {(["activity", "account"] as const).map((group) => (
-        <section key={group} className="space-y-2" aria-labelledby={`links-${group}`}>
-          <h2 id={`links-${group}`} className="text-xl font-bold">
-            {group === "activity" ? t("easy.cabinet.header.activity") : t("easy.cabinet.account")}
-          </h2>
-          <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border bg-card">
+        <Fold
+          key={group}
+          name={`links-${group}`}
+          icon={group === "activity" ? <Activity /> : <UserRound />}
+          verb="open"
+          title={group === "activity" ? t("easy.cabinet.header.activity") : t("easy.cabinet.account")}
+        >
+          <ul className="-mx-4 divide-y divide-border border-t border-border">
             {links
               .filter((l) => l.show && l.group === group)
               .map((l) => (
@@ -267,8 +278,11 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
               </li>
             ) : null}
           </ul>
-        </section>
+        </Fold>
       ))}
+
+      {/* telefonda yon menyu yo'q — rasmiy Telegram va Instagram shu yerda */}
+      <SocialLinks links={socialLinks(getServerEnv())} className="rounded-2xl border border-border bg-card p-4" />
     </div>
   );
 }

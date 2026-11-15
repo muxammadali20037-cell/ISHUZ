@@ -9,7 +9,7 @@
   },
   "cross": {
     "worker_title": "Need workers?",
-    "worker_desc": "You can post a vacancy too — AI will write it in 1 minute",
+    "worker_desc": "You can post a vacancy too — the helper will write it in 1 minute",
     "worker_cta": "Post a vacancy",
     "employer_title": "Looking for a job yourself?",
     "employer_desc": "One account lets you search for both jobs and workers",
@@ -105,7 +105,7 @@
       "s1_text": "Search vacancies across many fields in one place.",
       "s2_title": "Hiring, all in one place",
       "s2_text": "Post a vacancy and find candidates who fit.",
-      "s3_title": "Your AI assistant is always with you",
+      "s3_title": "Your helper is always with you",
       "s3_text": "Find opportunities that match your interests, skills and experience.",
       "start": "Get started",
       "slides": "Introduction"
@@ -132,7 +132,7 @@
     "welcome": {
       "title": "What are you looking for?",
       "subtitle": "One tap — the app shows only what you need. No sign-in required.",
-      "worker_desc": "Vacancies, daily work, AI assistant",
+      "worker_desc": "Vacancies, daily work, a helper",
       "employer_desc": "Ready workers, post a vacancy",
       "go": "Start",
       "how": "How does it work?"
@@ -264,7 +264,7 @@
     "f_pricing": "Plans",
     "f_contact": "Contact",
     "f_telegram": "Telegram bot",
-    "ai_title": "Write in plain words — the AI assistant finds it",
+    "ai_title": "Write in plain words — the helper finds it",
     "ai_desc": "Job, area, pay or “daily” — write the way you speak. The assistant shows what it understood and lists only real listings from the database.",
     "ai_point_1": "Understands Uzbek (Latin and Cyrillic) and Russian",
     "ai_point_2": "Narrow down in one tap: daily, no experience, remote",

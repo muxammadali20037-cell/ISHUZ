@@ -3,6 +3,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
+  BriefcaseBusiness,
   CalendarDays,
   ChevronDown,
   ChevronRight,
@@ -33,6 +34,8 @@ import {
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
 import { StoriesRow } from "@/features/stories/components/stories-row";
+import { Fold } from "@/components/shared/fold";
+import { HomeMenu } from "./home-menu";
 
 /** bosh sahifa ro'yxatida haqiqiy e'lon shundan kam bo'lsa — ostida namuna e'lonlar bloki */
 const DEMO_BELOW = 4;
@@ -135,7 +138,8 @@ export async function SeekerHome({
           >
             {t("easy.home2.title")}
           </h1>
-          <p className="mt-1 text-base text-muted-foreground">
+          {/* izoh — planshet va kompyuterda; telefonda ortiqcha yozuv yo'q (ega, 2026-11-15) — namuna qidiruv maydonida */}
+          <p className="mt-1 text-base text-muted-foreground max-md:hidden">
             {t("easy.home2.hint")}
           </p>
           <div className="mt-4 max-w-3xl">
@@ -187,7 +191,8 @@ export async function SeekerHome({
               ))}
             </ul>
             {/* "direction_select" — admin tahlilidagi voronka qadami (avval "Barcha kasblar" havolasida edi) */}
-            <div className="mt-3 flex flex-wrap gap-x-5">
+            {/* kirgan foydalanuvchida telefonda — pastdagi "Bo'limlar" menyusida (Vakansiyalar, Ishlar xaritada) */}
+            <div className={cn("mt-3 flex flex-wrap gap-x-5", session && "max-lg:hidden")}>
               <Link
                 href={seekerFiltersHref(where)}
                 prefetch={false}
@@ -218,14 +223,24 @@ export async function SeekerHome({
         </div>
       </section>
 
+      {/* telefon va planshet (kirgan): bo'limlar ro'yxati — chap menyudagidek, har biri ostida nima qilishi; eng tagida
+          qizilda rolni almashtirish (ega, 2026-11-15). Kompyuterda — chap yon menyu */}
       <Suspense fallback={<FeedSkeleton />}>
-        <SeekerFeed session={session} place={place} />
+        <SeekerFeed session={session} place={place} fold={!!session} />
       </Suspense>
 
-      {/* "Universal ustalar" — ish e'lonlaridan alohida, o'z yashil rangida */}
-      <Suspense fallback={null}>
-        <MastersHomeSection />
-      </Suspense>
+      {session ? (
+        <Suspense fallback={null}>
+          <HomeMenu mode="worker" />
+        </Suspense>
+      ) : null}
+
+      {/* "Universal ustalar" — ish e'lonlaridan alohida, o'z yashil rangida (kirganda telefonda — menyuda) */}
+      <div className={session ? "max-lg:hidden" : undefined}>
+        <Suspense fallback={null}>
+          <MastersHomeSection />
+        </Suspense>
+      </div>
     </div>
   );
 }
@@ -256,9 +271,12 @@ function placeText(
 async function SeekerFeed({
   session,
   place,
+  fold = false,
 }: {
   session: SessionContext | null;
   place: HomePlace;
+  /** telefonda yig'ilgan ("Yangi ishlar — Ko'rish"), kompyuterda ochiq */
+  fold?: boolean;
 }) {
   const [{ t, name }, feed] = await Promise.all([
     getT(),
@@ -293,13 +311,12 @@ async function SeekerFeed({
   ]);
   const where = placeText(feed, name, t("easy.location.whole_country"));
   const more = feed.total > feed.items.length;
-  return (
+  const title = feed.kind === "match" ? t("easy.start.match_title") : t("easy.start.new_title");
+  const body = (
     <section aria-labelledby="home-feed" className="min-w-0">
-      <div className="flex items-baseline justify-between gap-3">
+      <div className={cn("flex items-baseline justify-between gap-3", fold && "max-lg:hidden")}>
         <h2 id="home-feed" className="min-w-0 text-lg font-bold leading-tight">
-          {feed.kind === "match"
-            ? t("easy.start.match_title")
-            : t("easy.start.new_title")}
+          {title}
         </h2>
         {more ? (
           <Link
@@ -382,6 +399,13 @@ async function SeekerFeed({
         </Suspense>
       ) : null}
     </section>
+  );
+  if (!fold) return body;
+  // telefonda yig'iladi: "Yangi ishlar  12  Ko'rish ⌄" — bosilsa ro'yxat ochiladi (kompyuterda har doim ochiq)
+  return (
+    <Fold name="home-feed" open="lg" verb="view" icon={<BriefcaseBusiness />} title={title} count={feed.total || null}>
+      {body}
+    </Fold>
   );
 }
 

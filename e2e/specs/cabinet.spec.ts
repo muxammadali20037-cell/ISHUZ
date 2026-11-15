@@ -35,6 +35,8 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/cabinet");
+  // e'lonlar yig'ilgan bo'limda ("Mening e'lonlarim — Ko'rish", 2026-11-15)
+  await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
   await expect(page.getByText("Faol — qidiruvda ko'rinadi · 22-oktabr 2026 gacha")).toBeVisible();
   const found = page.getByRole("button", { name: "Ishchi topdim" });
   await expect(found).toBeVisible();
@@ -44,9 +46,9 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
   // "yangi e'lon" — faqat joriy rejimniki (ish beruvchiga o'zi haqida e'lon taklif qilinmaydi), neytral ko'rinish
   await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(1);
   await expect(page.getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveCount(0);
-  // kirgandan keyin almashtirgich yo'q — rol kirishda tanlangan; almashtirish faqat "Rolni o'zgartirish" orqali
+  // kirgandan keyin rejim almashtirgichi yo'q; rolni almashtirish — Profil tepasida, bir bosishda (2026-11-15)
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
-  await expect(page.getByRole("link", { name: "Rolni o'zgartirish" })).toHaveAttribute("href", "/start/rol?next=%2F");
+  await expect(page.locator("main [data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
 });
 
 test("vakansiya sahifasi: bandlik turi o'zbekcha ('To'liq kun', 'Full-time' emas)", async ({ page, context }) => {

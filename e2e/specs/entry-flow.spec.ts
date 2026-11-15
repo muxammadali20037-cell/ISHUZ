@@ -104,7 +104,7 @@ test.describe("kirish oqimi", () => {
     await page.keyboard.press("ArrowRight");
     await expect(h1).toHaveText("Ishchi topish bir joyda");
     await page.getByRole("link", { name: "3-qadam, jami 3" }).click();
-    await expect(h1).toHaveText("AI yordamchingiz har doim yoningizda");
+    await expect(h1).toHaveText("Yordamchingiz har doim yoningizda");
     // oxirgi qadamda "O'tkazib yuborish" yo'q — "Boshlash"
     await expect(page.getByRole("button", { name: "O'tkazib yuborish" })).toHaveCount(0);
     await page.getByRole("button", { name: "Boshlash" }).click();

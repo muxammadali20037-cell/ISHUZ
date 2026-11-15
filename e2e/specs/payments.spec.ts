@@ -228,7 +228,7 @@ test("AI PRO: ixcham to'lov — balansdan bir bosishda obuna yoqiladi", async ({
   await expect(checkout.getByRole("button", { name: "Payme orqali to'lash" })).toBeVisible();
   await checkout.getByRole("button", { name: /Balansdan to'lash · 15 000 so'm/ }).click();
   await page.waitForURL(/\/billing\/return\?order=\d+/);
-  await expect(page.getByText("AI yordamchi 1 oyga yoqildi")).toBeVisible();
+  await expect(page.getByText("PRO kuzatuv 1 oyga yoqildi")).toBeVisible();
   const [s] = await sql<{ n: number }>("select count(*)::int as n from public.ai_alert_subscriptions where profile_id = $1 and paid_until > now() + interval '29 days'", [USERS.workerA]);
   expect(s!.n).toBe(1);
 });

@@ -42,8 +42,8 @@
     "not_found": "Тўлов топилмади",
     "to_vacancy": "Вакансияга ўтиш",
     "to_home": "Бош саҳифа",
-    "paid_ai_alerts": "AI ёрдамчи 1 ойга ёқилди — мос иш ва ишчилар ҳақида Telegramга ёзамиз",
-    "to_ai_alerts": "AI ёрдамчига ўтиш",
+    "paid_ai_alerts": "PRO кузатув 1 ойга ёқилди — мос иш ва ишчилар ҳақида Telegramга ёзамиз",
+    "to_ai_alerts": "PRO кузатувга ўтиш",
     "paid_listing": "Эълонингиз яна 10 кун қидирувда",
     "paid_topup": "Ҳамён тўлдирилди",
     "paid_topup_desc": "Балансингизга {amount} қўшилди",
@@ -155,7 +155,7 @@
       "vacancy_publish": "Вакансия эълони",
       "worker_listing": "Иш қидириш эълони",
       "worker_promotion": "Профил TOP да",
-      "ai_alerts": "AI ёрдамчи (PRO)",
+      "ai_alerts": "PRO кузатув",
       "wallet_topup": "Ҳамённи тўлдириш"
     },
     "statuses": {
@@ -183,11 +183,11 @@
     "upgrade_sheet_title": "TOP қилиш",
     "days": "{days} кун",
     "top": "{days} кун TOP",
-    "ai": "AI PRO",
+    "ai": "PRO кузатув",
     "benefit_days": "Эълон яна {days} кун қидирувда туради",
     "benefit_top": "{days} кун қидирувда энг тепада — «TOP» белгиси билан",
     "benefit_top_worker": "{days} кун иш берувчилар қидирувида энг тепада",
-    "benefit_ai": "{days} кун AI PRO: янги мос иш чиқса — дарҳол хабар",
+    "benefit_ai": "{days} кун PRO кузатув: янги мос иш чиқса — дарҳол хабар",
     "boost_cta": "TOP қилиш",
     "boost_worker_cta": "Эълонимни TOP қилиш",
     "top_until": "TOP · {date} гача"

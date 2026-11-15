@@ -69,6 +69,7 @@ for (const vp of [
     // kabinetda — o'z e'loni va uning holati
     await page.goto("/cabinet");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+    await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
     await expect(page.getByText("Buxgalter").first()).toBeVisible();
     await expect(page.getByText(/Qidiruvda ko'rinadi|Tekshiruvda/).first()).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -134,6 +135,7 @@ for (const vp of [
     }
 
     await page.goto("/cabinet");
+    await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
     await expect(page.getByText("Buxgalter").first()).toBeVisible();
 
     // mehmon qidiruvida — e'lon va oylik maosh

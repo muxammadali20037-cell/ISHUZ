@@ -28,10 +28,11 @@ async function vacancy(title: string) {
   return { id: v!.id, node: n!.id };
 }
 
-/** S2: "Saqlanganlar" — Profil (kabinet) ichida: pastki menyudan Profil → "Saqlanganlar" */
+/** S2: "Saqlanganlar" — Profil (kabinet) ichida: pastki menyudan Profil → "Faoliyat — Ochish" → "Saqlanganlar" */
 async function openSaved(page: Page) {
   await page.getByRole("navigation").last().getByRole("link", { name: "Profil" }).click();
   await page.waitForURL("**/cabinet");
+  await page.locator('[data-fold="links-activity"] [data-fold-toggle]').click();
   await page.getByRole("main").getByRole("link", { name: "Saqlanganlar" }).click();
 }
 
