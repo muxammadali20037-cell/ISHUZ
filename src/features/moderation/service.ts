@@ -225,3 +225,39 @@ export async function checkGeneratedImage(img: AiImage): Promise<"allow" | "reje
   );
   return result.decision;
 }
+
+/**
+ * Usta e'lonining ish namunalari (vacancy-photos'dagi tekshirilgan WebP) — joylashdan oldin rasm tekshiruvi (AI).
+ * Hammasi "allow" — e'lon darhol chiqadi; AI sozlanmagan, xato, vaqt tugadi yoki shubha — "review" (admin ko'radi).
+ */
+export async function checkStoredPhotos(paths: string[], timeoutMs = 20_000): Promise<"allow" | "review"> {
+  if (!paths.length) return "allow";
+  if (!aiProviderConfigured()) return "review";
+  const one = async (path: string): Promise<"allow" | "reject" | "review"> => {
+    const url = trustedImageUrl("vacancy", "photo", path);
+    if (!url) return "review";
+    const img = await fetchImage(url);
+    const out = await aiJson(imageVerdictSchema, imageSystemPrompt("uz"), "Check this image.", {
+      feature: "moderation_image", images: [img], timeoutMs, temperature: 0, maxOutputTokens: 1500,
+    });
+    const { extracted_text, ...verdict } = out;
+    const result = await runModerationEngine(
+      { entity: "vacancy", locale: "uz", fields: {}, images: [{ key: "photo", url }], signals: [] },
+      {
+        aiAvailable: true,
+        withoutAi: "review",
+        textVerdict: async () => ({ decision: "allow", category: "job_related", reason_code: "no_text", user_message: "", flagged_fields: [] }),
+        imageVerdict: async () => ({ verdict, extractedText: extracted_text ?? "" }),
+      },
+    );
+    return result.decision;
+  };
+  const timeout = new Promise<"review">((resolve) => setTimeout(() => resolve("review"), timeoutMs + 2_000));
+  try {
+    const all = Promise.all(paths.map((p) => one(p).catch(() => "review" as const)));
+    const res = await Promise.race([all, timeout]);
+    return Array.isArray(res) && res.every((d) => d === "allow") ? "allow" : "review";
+  } catch {
+    return "review";
+  }
+}

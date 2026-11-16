@@ -32,22 +32,34 @@ async function photo() {
     .toBuffer();
 }
 
-async function fillListing(page: Page, opts: { phonePublic: boolean; withPhoto?: boolean }) {
+/**
+ * Usta e'loni — oynama-oyna (2026-11-17): kategoriya → xizmat → ism → hudud va telefon → ish namunalari → "E'lon joylash".
+ * Xizmat ro'yxatda yo'q — o'zi yozadi (bitta xizmat — e'lon sarlavhasi shu). Rasm bo'lsa — stendda AI yo'q, e'lon admin
+ * navbatiga ("pending_review") tushadi; rasmsiz va matn toza bo'lsa — darhol katalogda.
+ */
+async function wizardListing(page: Page, opts: { services?: string[]; withPhoto?: boolean } = {}) {
   await page.goto("/ustalar/elon");
-  const form = page.locator("[data-masters-form]");
-  await expect(form).toBeVisible();
-  await form.getByRole("radio", { name: "Konditsioner ustasi" }).click();
-  await form.getByLabel("Tajriba (yil)").fill("7");
-  await form.getByLabel("E'lon sarlavhasi").fill(TITLE);
-  await form.getByLabel("Xizmat tavsifi").fill("Split va kassetali konditsionerlarni o'rnataman, tozalayman, freon quyaman. Kafolat 6 oy.");
-  await form.getByLabel("Qo'shimcha xizmatlar").fill("o'rnatish, tozalash, freon quyish");
-  await form.getByLabel("Xizmat ko'rsatadigan hudud").selectOption({ label: "Toshkent shahri" });
-  await form.getByLabel("Telefon raqami").fill("+998 90 765 43 21");
-  if (opts.phonePublic) await form.locator("[data-masters-phone-consent]").check();
-  if (opts.withPhoto) {
-    await form.locator('input[type="file"]').setInputFiles({ name: "ish.jpg", mimeType: "image/jpeg", buffer: await photo() });
-    await expect(form.locator("[data-masters-photos-upload] img")).toHaveCount(1, { timeout: 30_000 });
+  const w = page.locator("[data-master-wizard]");
+  await expect(async () => {
+    await w.locator("[data-category='ac']").click();
+    await expect(w).toHaveAttribute("data-step", "2", { timeout: 1_000 });
+  }).toPass();
+  for (const s of opts.services ?? [TITLE]) {
+    await w.locator("[data-master-wizard-other]").fill(s);
+    await w.locator("[data-master-wizard-add]").click();
   }
+  await w.locator("[data-master-wizard-next]").click();
+  await w.getByLabel("Ismingiz").fill("Anvar");
+  await w.locator("[data-master-wizard-next]").click();
+  await w.getByLabel("Viloyat yoki shahar").selectOption({ label: "Toshkent shahri" });
+  await w.getByLabel("Telefon raqamingiz").fill("907654321");
+  await w.locator("[data-master-wizard-next]").click();
+  await expect(w).toHaveAttribute("data-step", "5");
+  if (opts.withPhoto) {
+    await w.locator('input[type="file"]').setInputFiles({ name: "ish.jpg", mimeType: "image/jpeg", buffer: await photo() });
+    await expect(w.locator("[data-masters-photos-upload] img")).toHaveCount(1, { timeout: 30_000 });
+  }
+  await w.locator("[data-master-wizard-publish]").click();
 }
 
 async function approveAsAdmin(page: Page, context: import("@playwright/test").BrowserContext) {
@@ -131,17 +143,80 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(page).toHaveURL(/\/ustalar$/);
 });
 
-test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; telefon faqat rozilik bilan; so'rov, sharh, statistika", async ({ page, context, browser }) => {
-  test.setTimeout(180_000);
-  // 1) usta: e'lon (rasm bilan), telefon ochiq EMAS
+test("oynama-oyna: kategoriya → xizmatlar → ism → hudud va telefon → rasmsiz → darhol katalogda (kategoriya sahifasida 'joylandi')", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
-  await fillListing(page, { phonePublic: false, withPhoto: true });
-  await page.locator("[data-masters-submit]").click();
-  await expect(page.locator("[data-masters-form-sent='pending_review']")).toContainText("E'lon moderatsiyaga yuborildi");
-  const [row] = await sql<{ slug: string; status: string; photos: string[]; phone_public: boolean }>("select slug, status::text, photos, phone_public from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ustalar/elon");
+  const w = page.locator("[data-master-wizard]");
+  // 1-oyna: kategoriyalar — katta plitkalar; narx va ish vaqti hech qayerda so'ralmaydi
+  await expect(w.getByRole("heading", { level: 1, name: "Qanday ustasiz?" })).toBeVisible();
+  await expect(w.locator("[data-master-wizard-categories] [data-category]")).toHaveCount(12);
+  await expect(async () => {
+    await w.locator("[data-category='ac']").click();
+    await expect(w).toHaveAttribute("data-step", "2", { timeout: 1_000 });
+  }).toPass();
+  // 2-oyna: shu kategoriya xizmatlari
+  await expect(w.getByRole("heading", { level: 1, name: "Qaysi ishlarni qilasiz?" })).toBeVisible();
+  await w.locator("[data-master-wizard-next]").click();
+  await expect(w.getByRole("alert")).toHaveText("Kamida bitta xizmatni tanlang.");
+  await w.locator("[data-service]", { hasText: "Konditsioner o'rnatish" }).click();
+  await w.locator("[data-service]", { hasText: "Freon to'ldirish" }).click();
+  await w.locator("[data-master-wizard-next]").click();
+  // 3-oyna: ism hisobdan
+  await expect(w.getByLabel("Ismingiz")).toHaveValue("Anvar");
+  await w.locator("[data-master-wizard-next]").click();
+  // 4-oyna: hudud va telefon
+  await w.locator("[data-master-wizard-next]").click();
+  await expect(w.getByRole("alert")).toHaveText("Hududni tanlang.");
+  await w.getByLabel("Viloyat yoki shahar").selectOption({ label: "Toshkent shahri" });
+  await w.locator("[data-master-wizard-next]").click();
+  // 5-oyna: ish namunalari (ixtiyoriy) → "E'lon joylash"
+  await expect(w.getByRole("heading", { level: 1, name: "Ish namunalaringiz" })).toBeVisible();
+  await expect(page.locator("main")).not.toContainText(/narx|ish vaqti/i);
+  await w.locator("[data-master-wizard-publish]").click();
+  await page.waitForURL(/\/ustalar\/qidiruv\?k=ac&joylandi=1$/);
+  await expect(page.locator("[data-masters-posted]")).toContainText("E'loningiz joylandi!");
+  const first = page.locator("[data-masters-results] [data-master-card]").first();
+  await expect(first).toContainText("Konditsioner ustasi");
+  await expect(first).not.toContainText("Demo");
+  const [row] = await sql<{ status: string; title: string; services: string[]; price_negotiable: boolean; work_from: string | null; phone_public: boolean; description: string }>(
+    "select status::text, title, services, price_negotiable, work_from, phone_public, description from public.master_listings where owner_profile_id = $1",
+    [USERS.workerA],
+  );
+  expect(row).toEqual({
+    status: "active",
+    title: "Konditsioner ustasi",
+    services: ["Konditsioner o'rnatish", "Freon to'ldirish"],
+    price_negotiable: true,
+    work_from: null,
+    phone_public: true,
+    description: "Konditsioner ustasi: Konditsioner o'rnatish, Freon to'ldirish. Hudud: Toshkent shahri.",
+  });
+});
+
+test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; telefon faqat rozilik bilan; so'rov, sharh, statistika", async ({ page, context, browser }) => {
+  test.setTimeout(180_000);
+  // 1) usta: e'lon (rasm bilan — stendda rasm AI bilan tekshirilmaydi, shuning uchun admin navbatiga)
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await wizardListing(page, { withPhoto: true });
+  await expect(page.locator("[data-master-wizard-review]")).toContainText("E'loningiz qabul qilindi");
+  const [row] = await sql<{ id: string; slug: string; status: string; photos: string[]; phone_public: boolean; title: string; price_negotiable: boolean; description: string }>(
+    "select id, slug, status::text, photos, phone_public, title, price_negotiable, description from public.master_listings where owner_profile_id = $1",
+    [USERS.workerA],
+  );
   expect(row!.status).toBe("pending_review");
-  expect(row!.phone_public).toBe(false);
+  // sarlavha va tavsif — faqat tanlanganlardan; narx so'ralmaydi ("Kelishiladi"); telefon ochiq (oynada aytiladi)
+  expect(row!.title).toBe(TITLE);
+  expect(row!.description).toBe(`Konditsioner ustasi: ${TITLE}. Hudud: Toshkent shahri.`);
+  expect(row!.price_negotiable).toBe(true);
+  expect(row!.phone_public).toBe(true);
+  // tahrirlash formasida telefonni yopish (rozilik olib tashlanadi) — keyingi qadamlar "faqat so'rov" holatini tekshiradi
+  await page.goto(`/ustalar/elon/${row!.id}`);
+  await page.locator("[data-masters-phone-consent]").uncheck();
+  await page.locator("[data-masters-submit]").click();
+  await expect(page.locator("[data-masters-form-sent='pending_review']")).toBeVisible();
   // rasm: tekshirilgan, qayta kodlangan (v-<sha256>.webp)
   expect(row!.photos[0]).toMatch(new RegExp(`^${USERS.workerA}/v-[0-9a-f]{64}\\.webp$`));
 
@@ -155,7 +230,7 @@ test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; t
   const guest = await guestCtx.newPage();
   await guest.goto("/ustalar/qidiruv?k=ac");
   await expect(guest.locator("[data-masters-results] [data-master-card]")).toHaveCount(4);
-  await expect(guest.getByText(TITLE)).toHaveCount(0);
+  await expect(guest.getByText(TITLE, { exact: true })).toHaveCount(0);
   expect((await guest.goto(`/ustalar/${row!.slug}`))?.status()).toBe(404);
 
   // 3) admin tasdiqlaydi
@@ -250,9 +325,8 @@ test("tahrirlash — qayta moderatsiya; admin rad etadi — sabab egasiga ko'rin
   test.setTimeout(150_000);
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
-  await fillListing(page, { phonePublic: true });
-  await page.locator("[data-masters-submit]").click();
-  await expect(page.locator("[data-masters-form-sent='pending_review']")).toBeVisible();
+  await wizardListing(page, { withPhoto: true });
+  await expect(page.locator("[data-master-wizard-review]")).toBeVisible();
   const [row] = await sql<{ id: string; slug: string }>("select id, slug from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
 
   const adminCtx = await browser.newContext({ baseURL: new URL(page.url()).origin, viewport: { width: 1280, height: 900 } });
@@ -317,25 +391,20 @@ test("noqonuniy mazmun: taqiqlangan e'lon saqlanmaydi (muallif bloklanadi); shub
   await sql("delete from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
-  await fillListing(page, { phonePublic: false });
-  const form = page.locator("[data-masters-form]");
   const restore = await snapshotUser(USERS.workerA);
   try {
     // 2026-11-13: og'ir taqiq — e'lon saqlanmaydi va muallif o'sha zahoti bloklanadi (moderation-ban.spec.ts)
-    await form.getByLabel("Xizmat tavsifi").fill("Intim xizmat ko'rsatamiz, soatbay, uyga boramiz.");
-    await page.locator("[data-masters-submit]").click();
-    await expect(form.getByRole("alert")).toContainText("hisobingiz bloklandi");
+    await wizardListing(page, { services: ["Intim xizmat, uyga boramiz"] });
+    await expect(page.locator("[data-master-wizard]").getByRole("alert")).toContainText("hisobingiz bloklandi");
     expect((await sql<{ n: string }>("select count(*)::text as n from public.master_listings where owner_profile_id = $1", [USERS.workerA]))[0]!.n).toBe("0");
     expect((await sql<{ b: boolean }>("select is_blocked as b from public.profiles where id = $1", [USERS.workerA]))[0]!.b).toBe(true);
   } finally {
     await restore();
   }
 
-  // shubhali (savdo + oldindan to'lov) — saqlanadi, moderatsiyaga boradi, admin ogohlantirishni va rasmni ko'radi
-  await fillListing(page, { phonePublic: false, withPhoto: true });
-  await form.getByLabel("Xizmat tavsifi").fill("Konditsionerlar sotiladi, optom narxda. O'rnatish uchun oldindan to'lov 50%.");
-  await page.locator("[data-masters-submit]").click();
-  await expect(page.locator("[data-masters-form-sent='pending_review']")).toBeVisible();
+  // shubhali (savdo + oldindan to'lov) — saqlanadi, lekin darhol chiqmaydi: admin ogohlantirishni va rasmni ko'radi
+  await wizardListing(page, { services: [TITLE, "Optom sotiladi", "Oldindan to'lov 50%"], withPhoto: true });
+  await expect(page.locator("[data-master-wizard-review]")).toBeVisible();
 
   await sql(
     `insert into public.admin_users (profile_id, role, permissions, is_active) values ($1, 'super_admin', '{}', true)

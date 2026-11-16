@@ -28,7 +28,11 @@ import {
   masterReviewSchema,
   type MasterListingInput,
 } from "./schema";
-import type { MasterListingStatus, MasterRequestStatus } from "./types";
+import { MASTER_PHOTOS_MAX, MASTER_SERVICES_MAX, type MasterListingStatus, type MasterRequestStatus } from "./types";
+import { getMasterCategories } from "./queries";
+import { getT } from "@/lib/i18n/server";
+import { getDistricts, getRegions } from "@/lib/reference";
+import { checkStoredPhotos } from "@/features/moderation/service";
 
 /**
  * "Universal ustalar" — server amallari. Yozish faqat egasi nomidan (RLS + triggerlar), holat o'tishlari bazada tekshiriladi;
@@ -155,6 +159,102 @@ export async function saveMasterListing(
   if (error) return { ok: false, error: errorCode(error) };
   revalidateMasters();
   return { ok: true, data: { id: data.id, status: data.status } };
+}
+
+const quickSchema = z.object({
+  categoryId: z.uuid(),
+  services: z
+    .array(z.string().transform((s) => s.replace(/\s+/g, " ").trim()).pipe(z.string().min(2).max(40)))
+    .min(1)
+    .max(MASTER_SERVICES_MAX),
+  firstName: z.string().transform((s) => s.replace(/\s+/g, " ").trim()).pipe(z.string().min(2).max(40)),
+  lastName: z.string().transform((s) => s.replace(/\s+/g, " ").trim()).pipe(z.string().max(40)),
+  regionId: z.uuid(),
+  districtId: z.uuid().nullable(),
+  phone: z.string().regex(/^\+998\d{9}$/),
+  photos: z.array(z.string().max(200)).max(MASTER_PHOTOS_MAX),
+});
+
+/**
+ * Usta e'loni — oynama-oyna (ega, 2026-11-17: "kategoriya → xizmat → ism-familiya → hudud va telefon → ish namunalari →
+ * «E'lon joylash»; narx va ish vaqti kerak emas; moderatsiya kerak emas — darhol joylansin va kategoriyasiga olib borsin").
+ * Darhol avtomatik tekshiruv: matn — qoidalar (taqiqlangan bo'lsa saqlanmaydi, og'ir bo'lsa bloklanadi); ish namunalari —
+ * AI rasm tekshiruvi. Hammasi toza — e'lon shu zahoti "active"; shubha bo'lsa (yoki rasmni tekshirib bo'lmasa) — admin
+ * navbatida ("pending_review"). Sarlavha va tavsif faqat tanlanganlardan (o'ylab topilmaydi); narx — "Kelishiladi".
+ */
+export async function publishMasterQuick(
+  input: unknown,
+): Promise<ActionResult<{ id: string; status: MasterListingStatus; categorySlug: string }>> {
+  const parsed = quickSchema.safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
+  const session = await getSession();
+  if (!session) return { ok: false, error: "not_authenticated" };
+  if (session.profile.is_blocked) return { ok: false, error: "blocked" };
+  if (!(await allowRate(`masters_save:${session.userId}`, 60, 3600)))
+    return { ok: false, error: "rate_limited" };
+  const v = parsed.data;
+  const { t, name } = await getT();
+  const [categories, regions, districts] = await Promise.all([getMasterCategories(), getRegions(), getDistricts()]);
+  const category = categories.find((c) => c.id === v.categoryId);
+  const region = regions.find((r) => r.id === v.regionId);
+  const district = v.districtId ? districts.find((d) => d.id === v.districtId && d.region_id === v.regionId) : null;
+  if (!category || !region || (v.districtId && !district)) return { ok: false, error: "validation" };
+  const services = [...new Set(v.services)];
+  const displayName = [v.firstName, v.lastName].filter(Boolean).join(" ").slice(0, 60);
+  const title = (services.length === 1 ? services[0]! : name(category)).slice(0, 120);
+  const place = [name(region), district ? name(district) : null].filter(Boolean).join(", ");
+  const description = t("masters.wizard.description", { category: name(category), services: services.join(", "), place }).slice(0, 3000);
+
+  const verdict = checkMasterText({ displayName, title, description, services });
+  if (verdict.blocked) {
+    if (await banIfRuleBlock(session.userId, verdictBlock(verdict), "master_listing")) return { ok: false, error: "blocked" };
+    return { ok: false, error: "prohibited" };
+  }
+  if (v.photos.some((p) => !isVerifiedPhotoPath(session.userId, p)))
+    return { ok: false, error: "photo_invalid" };
+
+  const supabase = await createClient();
+  const id = crypto.randomUUID();
+  const { error } = await supabase.from("master_listings").insert({
+    id,
+    owner_profile_id: session.userId,
+    slug: slugFor(title, id),
+    status: "pending_review",
+    category_id: category.id,
+    display_name: displayName,
+    title,
+    description,
+    experience_years: 0,
+    services,
+    region_id: region.id,
+    district_id: district?.id ?? null,
+    service_area: null,
+    phone: v.phone,
+    // ega: mijozlar qo'ng'iroq qilsin — telefon e'londa ko'rinadi (oynada aytiladi)
+    phone_public: true,
+    price_negotiable: true,
+    price_from: null,
+    price_to: null,
+    work_from: null,
+    work_to: null,
+    photos: v.photos,
+  });
+  if (error) return { ok: false, error: errorCode(error) };
+
+  // matnda shubha yo'q va rasmlar toza — darhol katalogda (server kaliti; holat o'tishini bazadagi trigger ruxsat beradi)
+  let status: MasterListingStatus = "pending_review";
+  if (!verdict.flags.length && process.env.SUPABASE_SERVICE_ROLE_KEY && (await checkStoredPhotos(v.photos)) === "allow") {
+    const { data: live } = await createAdminClient()
+      .from("master_listings")
+      .update({ status: "active" })
+      .eq("id", id)
+      .eq("status", "pending_review")
+      .select("status")
+      .maybeSingle();
+    if (live?.status === "active") status = "active";
+  }
+  revalidateMasters();
+  return { ok: true, data: { id, status, categorySlug: category.slug } };
 }
 
 /** Egasi: yashirish / qaytarish / qoralamadan yuborish — holat o'tishlari bazadagi trigger bilan tekshiriladi */
