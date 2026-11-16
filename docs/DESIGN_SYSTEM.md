@@ -43,7 +43,7 @@ Komponentlarda gradient/blur to'g'ridan-to'g'ri yozilmaydi (`brand-guard.test.ts
 
 Tuzilish (5.0):
 
-- **Sarlavha** — 64 px (telefonda 56), sticky, `glass-bar`; logo 36 px gradient kvadrat + oq portfel + "Ish topdim";
+- **Sarlavha** — 64 px (telefonda 56), sticky, `glass-bar`; logo 36 px — egasining haqiqiy belgisi (`src/assets/brand/ishtopdim-mark.png`) + "Ish topdim";
   5 ta pill menyu (Bosh sahifa · Yordamchi · Ishlar · Arizalar · Profil), o'ngda "E'lon berish" (gradient pill), til,
   "Kirish". Telefonda — pastki menyu. Kirgan foydalanuvchida kompyuterda avvalgidek chap yon menyu (ega talabi, 2026-11).
 - **Bosh sahifa** — rol almashtirgich (pill) → hero panel (radius 2rem, `hero-glow`, joy pilli, salom 👋, gradient so'zli

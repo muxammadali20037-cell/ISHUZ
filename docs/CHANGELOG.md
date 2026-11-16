@@ -1,5 +1,11 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · Logotip: egasining haqiqiy belgisi qaytdi (`claude/real-logo`)
+
+Ega: "o'zimizning real logotip bo'lsin". 5.0 dagi gradient kvadrat + portfel belgisi olib tashlandi — hamma joyda
+(sarlavha, yon menyu, kirish oynasi, admin, hikoyalar) yana `src/assets/brand/ishtopdim-mark.png` (oq plitada ko'k odam va
+strelka). Favicon va ilova belgilari o'zgarmagan (ular doim shu belgi edi).
+
 ## 2026-11-16 · 5.0 "ko'k-oq" dizayn: Manrope, gradient, yangi bosh sahifa (`claude/blue-white`)
 
 Ega: dizayn topshirig'i (oklch tokenlar, Manrope, shisha sarlavha, hero panel, 3+6 kartochka) — "Saytning o'ziga qo'llash".
