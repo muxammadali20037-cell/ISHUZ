@@ -6,6 +6,8 @@ import { getVacancyBySlug } from "@/features/jobs/queries";
 import { PROMO_SIZES, PromoCard, promoTheme, twemojiCode, type PromoFormat } from "@/features/promo/card";
 import { buildPromoData } from "@/features/promo/data";
 import { BRAND } from "@/config/brand";
+import { jobArchetype } from "@/lib/job-art/archetype";
+import { personDataUri } from "@/lib/job-art/person";
 
 /** Faqat kerakli harflar bilan Manrope (TTF) — kirill va lotin uchun */
 async function loadFont(text: string, weight: 600 | 800): Promise<ArrayBuffer | null> {
@@ -62,8 +64,13 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     ...(semi ? [{ name: "Manrope", data: semi, weight: 600 as const, style: "normal" as const }] : []),
   ];
 
+  // kasbga mos kiyingan odam (chizma): har kasb doim bir xil ko'rinadi (urug' — kasb ID'si)
+  const prof = vacancy.profession;
+  const archetype = jobArchetype({ names: [prof?.name_en, prof?.name_ru, prof?.name_uz, vacancy.title], categorySlug: vacancy.category?.slug ?? null });
+  const personSrc = personDataUri(archetype, prof?.id ?? vacancy.title);
+
   const size = PROMO_SIZES[format];
-  return new ImageResponse(<PromoCard data={data} format={format} stickerSrc={stickerSrc} />, {
+  return new ImageResponse(<PromoCard data={data} format={format} stickerSrc={stickerSrc} personSrc={personSrc} />, {
     ...size,
     fonts: fonts.length ? fonts : undefined,
     headers: { "Cache-Control": vacancy.status === "active" ? "public, max-age=600, s-maxage=3600" : "private, no-store" },

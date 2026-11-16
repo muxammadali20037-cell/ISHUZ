@@ -1,5 +1,26 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · E'lon rasmi: kasbga mos kiyingan odam; kanalga rasm bilan (`claude/job-art`)
+
+Ega: "e'lon joylanib, guruhga xabar borganda rasm bilan borsin; har bitta kasbga rasm tayyorla — odamning rasmi bo'lsin,
+kasbga mos kiyintir".
+
+- **Kasb chizmalari (`src/lib/job-art`):** 34 xil kiyim — oq xalat va stetoskop (shifokor), hamshira formasi, oshpaz
+  qalpog'i va kurtkasi, ofitsiant nimchasi, sotuvchi fartugi, kassir formasi, haydovchi kepkasi, kuryer ryukzagi,
+  quruvchi kaskasi va yorqin jileti, payvandchi niqobi, elektrik va muhandis kaskasi, santexnik kombinezoni, qo'riqchi
+  furajkasi, o'qituvchi ko'zoynagi, dasturchi naushnigi, operator garniturasi, tikuvchi santimetri, dehqon shlyapasi
+  va boshqalar. ~1900 kasbning har biri nomidan (o'zbek, rus, ingliz) yoki sohasidan kiyim turiga bog'lanadi; jinsi,
+  teri va soch rangi, soch turmagi (ro'mol ham) kasb ID'sidan — har kasb doim bir xil ko'rinadi. Tashqi xizmatsiz,
+  bepul, darhol. Uslub ataylab chizma: haqiqiy ish beruvchi yoki ishchining surati emas.
+- **E'lon rasmi** (`/api/promo/vacancy/…`: kvadrat, story, havola oldindan ko'rinishi): o'ng tomonda (story'da — o'rtada)
+  kasbga mos kiyingan odam, yonida soha belgisi. Telegram/Instagram'da havola ulashilganda ham shu rasm chiqadi.
+- **Kanalga avtomatik e'lon:** vakansiya endi rasm bilan ketadi (kvadrat rasm + izoh + "Ochish" tugmasi); Telegram
+  rasmni ololmasa — o'sha xabar matn bilan. Ishchi e'lonlari rasmsiz qoladi (chizma ishchining o'zi deb o'ylanmasin).
+- Aniqlandi: AI bilan kasb rasmlarini yaratish (Gemini) prod'da ishlamayapti — Google kaliti 429 (limit yo'q) qaytaradi.
+  Yangi chizmalar bunga bog'liq emas.
+- Testlar: `job-art` unit (kasb → kiyim, adashtiradigan so'zlar, SVG to'g'riligi), `channel` (rasm, matnga qaytish,
+  kanal xatosi), `autopost` va `autopost-format` yangilandi; `promo-image` e2e (PNG o'lchamlari, og:image, qoralama 404).
+
 ## 2026-11-16 · "AI bilan oson joylash" (ish beruvchi) va ovozsiz yordamchi (`claude/ai-vacancy`)
 
 Ega: "ovoz yozish va ovoz chiqarib o'qishni olib tashla, kerak emas; ish beruvchi panelida «AI bilan vakansiyani oson
