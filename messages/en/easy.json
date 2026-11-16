@@ -1068,7 +1068,7 @@
     "title": "Helper",
     "status_ai": "Artificial intelligence · ready",
     "status_rules": "Basic mode",
-    "status_busy": "Writing a reply…",
+    "status_busy": "Reading your request…",
     "status_search": "Searching the database…",
     "menu": "Chat menu",
     "menu_new": "New chat",
@@ -1343,5 +1343,34 @@
       "exp_12": "Experience: 1+ year.",
       "exp_36": "Experience: 3+ years."
     }
+  },
+  "quick": {
+    "remote": "Remote (online)",
+    "any_job": "All jobs",
+    "any_worker": "All candidates",
+    "sheet_title_jobs": "Job search",
+    "sheet_title_workers": "Find an employee",
+    "sheet_desc": "Answer and tap “Search”.",
+    "q_profession_jobs": "What job?",
+    "q_profession_workers": "Who do you need?",
+    "profession_placeholder": "For example: cook",
+    "q_place_jobs": "Which region?",
+    "q_place_workers": "From which region?",
+    "q_salary": "Monthly salary?",
+    "salary_any": "Any",
+    "salary_from": "from {amount}",
+    "search": "Search",
+    "form_note": "Pick a region and salary — then I'll search.",
+    "open_form": "Answer",
+    "edit": "Change",
+    "found_jobs": "{count} jobs found",
+    "found_workers": "{count} candidates found",
+    "none_jobs": "No such jobs yet.",
+    "none_workers": "No matching candidates yet.",
+    "saved": "Your request is saved. We'll let you know when a matching job appears.",
+    "login_note": "Sign in and we'll let you know when a matching job appears.",
+    "login": "Sign in",
+    "similar_near_jobs": "Similar jobs",
+    "similar_near_workers": "Similar candidates"
   }
 }

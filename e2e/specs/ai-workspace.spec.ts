@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, quickSearch, sql } from "../support";
 
 /**
  * /ai — AI yordamchi ish maydoni (2026-11, "ChatGPT kabi"):
@@ -7,9 +7,11 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  *  - chap panel ("Suhbatlar"): "Yangi suhbat", so'nggi suhbatlar (qurilmada), profil;
  *  - "Bugungi ishlar" va "Sizga mos ishlar" — faqat bazadagi haqiqiy raqamlar (profil to'liqligi, mos vakansiyalar soni,
  *    faol vakansiyalar) — bazadagi qiymat bilan solishtiriladi;
- *  - savol → jarayon izi (tushunildi → bazadan qidirildi · N ta → javob), suhbat ro'yxatga tushadi, qayta ochiladi, o'chiriladi;
- *  - tezkor imkoniyat tugmasi savolni yuboradi; telefonda bo'limlar pastdan chiqadi.
- * Stendda AI kaliti yo'q — javob lug'at (oddiy rejim) bilan; jarayon izi shuni ham halol ko'rsatadi.
+ *  - 2026-11-16 (ega: "AI uzun matn yozmasin"): savol → so'rovnoma oynasi (kasb, hudud, maosh) → "Qidirish" → qisqa xulosa
+ *    va kartalar; suhbat ro'yxatga tushadi, qayta ochiladi, o'chiriladi;
+ *  - tezkor imkoniyat tugmasi so'rovnomani bo'sh "Qanday ish?" bilan ochadi; erkin suhbat (karyera maslahati va h.k.) yo'q;
+ *    telefonda bo'limlar pastdan chiqadi.
+ * Stendda AI kaliti yo'q — matn lug'at bilan tushuniladi.
  */
 
 const narrow = (page: Page) => (page.viewportSize()?.width ?? 1280) < 1024;
@@ -102,8 +104,9 @@ const guestTest = async ({ page, context }: Ctx) => {
 
   // tezkor imkoniyatlar (kompyuterda o'ng panel, telefonda salomlashuv ostida) va maslahat
   const quick = page.locator("[data-ai-quick]:visible").first();
-  // boshida: ish qidirish, karyera maslahati, suhbatga tayyorgarlik (ega, 2026-11-15); "Masalan, bosing" yo'q
-  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /Karyera maslahati/, /Suhbatga tayyorgarlik/, /CV yaratish/, /Maosh va talab/, /PRO kuzatuv/]);
+  // 2026-11-16: faqat qidiruv va sahifalarga havolalar (erkin suhbat — karyera maslahati va h.k. — yo'q); "Masalan, bosing" yo'q
+  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /CV yaratish/, /PRO kuzatuv/]);
+  await expect(page.locator("[data-ai-promo]")).toHaveCount(0);
   await expect(page.getByText("Masalan, bosing:")).toHaveCount(0);
   await expect(quick.locator("[data-quick='cv']")).toHaveAttribute("href", "/post/worker");
   await expect(quick.locator("[data-quick='alerts']")).toHaveAttribute("href", "/ai-alerts");
@@ -146,12 +149,10 @@ const chatTest = async ({ page, context }: Ctx) => {
   await expect(page.locator("[data-ai-welcome]")).toBeVisible();
 
   await ask(page, "Toshkentda sotuvchi");
-  const trace = page.locator("[data-ai-trace]").last();
-  await expect(trace.locator("[data-state='done']")).toHaveCount(3);
-  await expect(trace).toContainText("Tushunildi");
-  await expect(trace).toContainText("Bazadan qidirildi · 3 ta");
-  await expect(trace).toContainText("Javob: oddiy rejim");
-  await expect(page.locator("[data-ai-reply]").last()).toBeVisible();
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-summary]")).toContainText("Sotuvchi");
+  await expect(answer.locator("[data-quick-found]")).toHaveText("3 ta ish topildi");
+  await expect(page.locator("[data-ai-reply], [data-ai-trace]")).toHaveCount(0);
   await expect(page.locator("[data-ai-welcome]")).toHaveCount(0);
   await expect(page.locator("[data-ai-header-status]")).toContainText("Oddiy rejim");
 
@@ -164,7 +165,7 @@ const chatTest = async ({ page, context }: Ctx) => {
   await panel.getByRole("button", { name: "Yangi suhbat" }).click();
   await expect(page.locator("[data-ai-welcome]")).toBeVisible();
   await ask(page, "kunlik ish");
-  await expect(page.locator("[data-ai-reply]").last()).toBeVisible();
+  await quickSearch(page);
   panel = await openPanel(page);
   await expect(panel.locator("[data-ai-recent] button[aria-current='true']")).toHaveText(/kunlik ish/);
   await expect(panel.locator("[data-ai-recent]").getByRole("button", { name: "Toshkentda sotuvchi", exact: true })).toBeVisible();
@@ -172,7 +173,7 @@ const chatTest = async ({ page, context }: Ctx) => {
   // eski suhbatni ochish — savol-javobi qaytadi
   await panel.locator("[data-ai-recent]").getByRole("button", { name: "Toshkentda sotuvchi", exact: true }).click();
   await expect(page.locator("[data-ai-you]").last()).toHaveText(/Toshkentda sotuvchi$/);
-  await expect(page.locator("[data-ai-trace]").last()).toContainText("Bazadan qidirildi · 3 ta");
+  await expect(page.locator("[data-quick-found]").last()).toHaveText("3 ta ish topildi");
 
   // sahifa yangilansa — ro'yxat qurilmada saqlangan (localStorage)
   await page.reload();
@@ -192,17 +193,13 @@ const quickTest = async ({ page, context }: Ctx) => {
   await page.goto("/ai");
   await expect(page.locator("[data-ai-welcome]")).toBeVisible();
   await page.locator("[data-ai-quick]:visible [data-quick='find']").first().click();
-  await expect(page.locator("[data-ai-you]").last()).toHaveText(/Menga mos ish toping$/);
-  // AI ulanmagan stendda: kasb so'raladi (soxta qidiruv emas), jarayon izi qidiruvsiz
-  await expect(page.locator("[data-ai-reply]").last()).toContainText(/kasb/i);
-  await expect(page.locator("[data-ai-trace]").last()).not.toContainText("Bazadan qidirildi");
-  await expect(page.locator("[data-ai-trace]").last()).toContainText("Javob: oddiy rejim");
-  if (!narrow(page)) {
-    await page.locator("[data-ai-promo]").getByRole("button", { name: "Boshlash" }).click();
-    await expect(page.locator("[data-ai-you]").last()).toHaveText(/Menga qaysi kasb mos keladi\?/);
-    // maslahat AI'siz ham boshi berk emas: bosqichma-bosqich karyera rejasi
-    await expect(page.locator("[data-ai-reply]").last()).toContainText("Karyerani bosqichma-bosqich quramiz:");
-  }
+  await expect(page.locator("[data-ai-you]").last()).toHaveText(/Ish qidirish$/);
+  // tugma nomi kasb deb olinmaydi: "Qanday ish?" bo'sh — yozib, qidiramiz
+  const sheet = page.locator("[data-quick-sheet]");
+  await expect(sheet.locator("[data-quick-profession]")).toHaveValue("");
+  const answer = await quickSearch(page, { profession: "sotuvchi", place: "tashkent_city" });
+  await expect(answer.locator("[data-quick-found]")).toHaveText("3 ta ish topildi");
+  await expect(page.locator("[data-ai-reply]")).toHaveCount(0);
 };
 
 const employerTest = async ({ page, context }: Ctx) => {
@@ -219,7 +216,7 @@ const employerTest = async ({ page, context }: Ctx) => {
   await expect(brief.getByRole("link", { name: /Ko'rish/ }).first()).toHaveAttribute("href", "/employer/vacancies");
   await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Yangi nomzodlar/ })).toBeVisible();
   const quick = page.locator("[data-ai-quick]:visible").first();
-  await expect(quick.locator("[data-quick]")).toHaveText([/Nomzod topish/, /Vakansiya matni/, /Suhbat savollari/, /Vakansiya joylash/, /Maosh va talab/, /PRO kuzatuv/]);
+  await expect(quick.locator("[data-quick]")).toHaveText([/Nomzod topish/, /Vakansiya joylash/, /PRO kuzatuv/]);
   await expect(quick.locator("[data-quick='post']")).toHaveAttribute("href", "/employer/vacancies/new");
   await expect(quick.locator("[data-quick='candidates']")).toBeVisible();
   await expect(page.getByLabel("Nima qidiryapsiz?")).toHaveAttribute("placeholder", /Kim kerak/);
@@ -234,8 +231,8 @@ for (const [label, viewport] of [
     if (viewport) test.use({ viewport });
     test("mehmon: bo'limlar, 'Kiring' qadami, yangi e'lonlar bazadan, tezkor imkoniyatlar, maslahat", guestTest);
     test("ish qidiruvchi: 'Bugungi ishlar' bazadagi raqamlar bilan; mos ishlar profil kasbi bo'yicha", seekerTest);
-    test("suhbat: jarayon izi, so'nggi suhbatlar ro'yxati, yangi suhbat, qayta ochish, o'chirish", chatTest);
-    test("tezkor imkoniyat: 'Ish qidirish' savolni yuboradi; 'Boshlash' — karyera savoli", quickTest);
+    test("suhbat: so'rovnoma → qisqa javob (matn yo'q), so'nggi suhbatlar ro'yxati, yangi suhbat, qayta ochish, o'chirish", chatTest);
+    test("tezkor imkoniyat: 'Ish qidirish' so'rovnomani bo'sh kasb bilan ochadi; qidiruv shu yerda", quickTest);
     test("ish beruvchi: faol vakansiyalar soni bazadan, yangi nomzodlar, o'z tezkor imkoniyatlari", employerTest);
   });
 }

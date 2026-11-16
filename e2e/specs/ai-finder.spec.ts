@@ -1,10 +1,11 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, quickSearch, sql } from "../support";
 
 /**
- * D4 / 2026-10 · "AI bilan qidirish" — qidiruv blokida (ekranni to'sadigan suzuvchi tugma yo'q): "AI yordamchi" oynasi
- * (suhbat ko'rinishi); qisqa matn → tushunilgan narsalar + mos e'lonlar shu oynada (stendda AI kaliti yo'q — lug'at bilan
- * tushuniladi); bir bosishda aniqlashtirish; suhbat sahifadan qaytganda saqlanadi; /ai sahifasida — suhbat sahifaning o'zida.
+ * D4 / 2026-10 · "AI bilan qidirish" — qidiruv blokida: "Yordamchi" oynasi (suhbat ko'rinishi).
+ * 2026-11-16 (ega: "AI uzun matn yozmasin"): matn → so'rovnoma oynasi (kasb, hudud, maosh — matndan oldindan to'ldirilgan,
+ * stendda AI kaliti yo'q — lug'at bilan) → "Qidirish" → mos e'lonlar shu yerda; suhbat sahifadan qaytganda saqlanadi;
+ * /ai sahifasida — suhbat sahifaning o'zida.
  */
 
 async function nodeId(name: string) {
@@ -63,7 +64,7 @@ test("qidiruv — bosh sahifaning hero blokida (5.0 «ko'k-oq», 2026-11-16): «
   await expect(page.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).toHaveCount(0);
 });
 
-test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosilsa — sahifasi ochiladi", async ({ page, context }) => {
+test("matn → so'rovnoma (kasb va hudud oldindan to'ldirilgan) → «Qidirish» → mos e'lonlar oyna ichida; e'lon bosilsa — sahifasi ochiladi", async ({ page, context }) => {
   const slug = await vacancy("Buxgalter", "Buxgalter");
   await vacancy("Oshpaz", "Oshpaz");
   await asGuest(context);
@@ -73,8 +74,17 @@ test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosils
   await expect(dialog.getByRole("radio", { name: "Ish qidiryapman" })).toHaveAttribute("aria-checked", "true");
   await dialog.getByLabel("Nima qidiryapsiz?").fill("Toshkent shahrida buxgalter");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.getByText(/^Tushundim:/)).toContainText("Buxgalter");
-  await expect(dialog.getByText(/^Tushundim:/)).toContainText("Toshkent shahri");
+  // so'rovnoma: "Qanday ish?", "Qaysi hududda?", "Oylik maosh qancha bo'lsin?" — yozilganidan to'ldirilgan
+  const sheet = page.getByRole("dialog", { name: "Ish qidirish" });
+  await expect(sheet.getByLabel("Qanday ish?")).toHaveValue("Buxgalter");
+  await expect(sheet.getByLabel("Qaysi hududda?")).toHaveValue("tashkent_city");
+  await expect(sheet.getByRole("radiogroup", { name: "Oylik maosh qancha bo'lsin?" }).getByRole("radio", { name: "Farqi yo'q" })).toHaveAttribute("aria-checked", "true");
+  const answer = await quickSearch(page);
+  // AI javob matni yozilmaydi — qisqa xulosa va kartalar
+  await expect(dialog.locator("[data-ai-reply]")).toHaveCount(0);
+  await expect(answer.locator("[data-quick-summary]")).toContainText("Buxgalter");
+  await expect(answer.locator("[data-quick-summary]")).toContainText("Toshkent shahri");
+  await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
   const cards = dialog.locator("article");
   await expect(cards).toHaveCount(1);
   await expect(cards.first()).toContainText("Buxgalter");
@@ -83,7 +93,7 @@ test("matn → tushunilgan kasb va hudud, mos e'lonlar oyna ichida; e'lon bosils
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
-test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq taklif", async ({ page, context }) => {
+test("'kunlik ish' tushuniladi — oynada «Kunlik ishlar» sharti (maosh so'ralmaydi), faqat kunliklar; tushunarsiz matn — qisqa «yo'q»", async ({ page, context }) => {
   await vacancy("Yuk tashuvchi", "Buxgalter", "daily");
   await vacancy("Buxgalter", "Buxgalter", "monthly");
   await asGuest(context);
@@ -92,23 +102,24 @@ test("'kunlik ish' tushuniladi — faqat kunliklar; kasb aniqlanmasa — aniq ta
   const dialog = page.getByRole("dialog", { name: "Yordamchi" });
   await dialog.getByLabel("Nima qidiryapsiz?").fill("kunlik ish");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.getByText(/^Tushundim:/)).toContainText("Kunlik ishlar");
+  const sheet = page.locator("[data-quick-sheet]");
+  await expect(sheet.locator("[data-quick-filters]")).toContainText("Kunlik ishlar");
+  await expect(sheet.locator("[data-quick-salary]")).toHaveCount(0);
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-summary]")).toContainText("Kunlik ishlar");
   await expect(dialog.locator("article")).toHaveCount(1);
   await expect(dialog.locator("article").first()).toContainText("Yuk tashuvchi");
   await expect(dialog.locator("article").first()).toContainText("/kun");
 
+  // hech narsa yo'q: bitta qisqa xabar (uzun matn yo'q); mehmon — "kirsangiz, xabar beramiz" va "Kirish"
   await dialog.getByLabel("Nima qidiryapsiz?").fill("qwerty asdf");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.locator("[data-ai-reply]").last()).toContainText(/tushunmadim|aniqlay olmadim/);
-  await expect(dialog.getByRole("link", { name: "Kasbni ro'yxatdan tanlash" })).toHaveAttribute("href", /\/search\?mode=jobs/);
-  // tushunilmagan matn uchun "yangisi chiqsa xabar olish" taklif qilinmaydi (nimani kuzatish noma'lum)
-  await expect(dialog.locator("[data-ai-empty-actions]")).toHaveCount(0);
-
-  // hol-ahvol — qidiruv emas, suhbat
-  await dialog.getByLabel("Nima qidiryapsiz?").fill("nima gap");
-  await dialog.getByRole("button", { name: "Topish" }).click();
-  await expect(dialog.locator("[data-ai-reply]").last()).toContainText("Men Ish topdim yordamchisiman");
-  await expect(dialog.locator("[data-ai-reply]").last()).not.toContainText("tushunmadim");
+  const none = await quickSearch(page);
+  await expect(none.locator("[data-quick-none]")).toContainText("Hozircha bunday ish yo'q.");
+  await expect(none.locator("[data-quick-none]")).toHaveAttribute("data-save", "login");
+  await expect(none.getByRole("link", { name: "Kirish" })).toHaveAttribute("href", "/auth?next=%2Fai");
+  await expect(none.locator("article")).toHaveCount(0);
+  await expect(dialog.locator("[data-ai-reply]")).toHaveCount(0);
 });
 
 test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ishchilar ichida", async ({ page, context }) => {
@@ -128,7 +139,7 @@ test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ish
 
 const dialogOf = (page: Page) => page.getByRole("dialog", { name: "Yordamchi" });
 
-test("suhbat: salomlashuv va misol → javob; aniqlashtirish (+ Kunlik) faqat kunliklarni qoldiradi; 'Yangi suhbat' tozalaydi", async ({ page, context }) => {
+test("suhbat: salomlashuv va misol → so'rovnoma → javob; «O'zgartirish» oynani qayta ochadi (maosh); 'Yangi suhbat' tozalaydi", async ({ page, context }) => {
   await vacancy("Buxgalter (oylik)", "Buxgalter", "monthly");
   await vacancy("Buxgalter (kunlik)", "Buxgalter", "daily");
   await asGuest(context);
@@ -140,22 +151,21 @@ test("suhbat: salomlashuv va misol → javob; aniqlashtirish (+ Kunlik) faqat ku
   await expect(dialog.getByText(/Qanday ish qidiryapsiz\?/)).toBeVisible();
   await expect(dialog.getByRole("button", { name: "Toshkentda buxgalter" })).toBeVisible();
   await dialog.getByRole("button", { name: "Toshkentda buxgalter" }).click();
-  // foydalanuvchi xabari va javob
   await expect(dialog.getByText("Siz: Toshkentda buxgalter")).toBeVisible();
-  await expect(dialog.getByText(/^Tushundim:/)).toContainText("Buxgalter");
-  // yordamchining tabiiy javobi (son — bazadan), keyin "Tushundim" va kartalar
-  await expect(dialog.locator("[data-ai-reply]")).toContainText("2 ta e'lon topdim");
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-summary]")).toContainText("Buxgalter");
+  await expect(answer.locator("[data-quick-found]")).toHaveText("2 ta ish topildi");
   await expect(dialog.locator("article")).toHaveCount(2);
 
-  // aniqlashtirish: oxirgi so'rovga "kunlik" qo'shiladi — oldingi javob ixchamlashadi, yangisida faqat kunlik
-  await dialog.getByRole("button", { name: "Qo'shish: Kunlik" }).click();
-  await expect(dialog.getByText("Siz: + Kunlik")).toBeVisible();
-  await expect(dialog.getByText(/^Tushundim:/).last()).toContainText("Kunlik ishlar");
-  await expect(dialog.locator("article")).toHaveCount(1);
-  await expect(dialog.locator("article").first()).toContainText("/kun");
-  // qo'llangan shart qayta taklif qilinmaydi
-  await expect(dialog.getByRole("button", { name: "Qo'shish: Kunlik" })).toHaveCount(0);
-  await expect(dialog.getByRole("button", { name: "Qo'shish: Tajribasiz" })).toBeVisible();
+  // "O'zgartirish": oyna oldingi javoblar bilan qayta ochiladi; 10 mln dan — stenddagi e'lonlar (200 ming: oylik va kunlik,
+  // kunligi oyiga ~5 mln) chiqmaydi, "yo'q" va pastda — shunga yaqin ishlar (maosh shartisiz)
+  await answer.getByRole("button", { name: "O'zgartirish" }).click();
+  await expect(page.locator("[data-quick-sheet] [data-quick-profession]")).toHaveValue("Buxgalter");
+  const again = await quickSearch(page, { salary: 10_000_000 });
+  await expect(again.locator("[data-quick-summary]")).toContainText("10 mln so'mdan yuqori");
+  await expect(again.locator("[data-quick-none]")).toContainText("Hozircha bunday ish yo'q.");
+  await expect(again.locator("[data-quick-similar]")).toContainText("Shunga yaqin ishlar");
+  await expect(again.locator("[data-quick-similar] article")).toHaveCount(2);
 
   await dialog.getByRole("button", { name: "Yangi suhbat" }).click();
   await expect(dialog.locator("article")).toHaveCount(0);
@@ -171,6 +181,7 @@ test("suhbat saqlanadi: e'lon ochilib, orqaga qaytilganda oynada oldingi javob t
   const dialog = dialogOf(page);
   await dialog.getByLabel("Nima qidiryapsiz?").fill("Toshkent shahrida buxgalter");
   await dialog.getByRole("button", { name: "Topish" }).click();
+  await quickSearch(page);
   await expect(dialog.locator("article")).toHaveCount(1);
   await dialog.locator("article").first().getByRole("heading").getByRole("link").click();
   await page.waitForURL(`**/jobs/${slug}`);
@@ -204,6 +215,7 @@ test("ovoz yo'q (ega, 2026-11-15: «kerak emas»): brauzer qo'llasa ham mikrofon
   await field.fill("Toshkent shahrida buxgalter");
   await dialog.getByRole("button", { name: "Topish" }).click();
   await expect(dialog.getByText("Siz: Toshkent shahrida buxgalter")).toBeVisible();
+  await quickSearch(page);
   await expect(dialog.locator("article")).toHaveCount(1);
   await expect(dialog.getByRole("button", { name: "O'qib berish" })).toHaveCount(0);
   await expect(dialog.getByText(/mikrofon/i)).toHaveCount(0);
@@ -217,7 +229,8 @@ test("/ai sahifasi: suhbat sahifaning o'zida (oyna emas), natija shu yerda", asy
   await expect(page.getByRole("heading", { level: 1, name: "Yordamchi" })).toBeVisible();
   await page.getByLabel("Nima qidiryapsiz?").fill("Toshkentda buxgalter");
   await page.getByRole("button", { name: "Topish", exact: true }).click();
-  await expect(page.getByText(/^Tushundim:/)).toContainText("Buxgalter");
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-summary]")).toContainText("Buxgalter");
   // natija kartasi suhbatda (salomlashuvdagi "Yangi ishlar" ro'yxati yo'qoladi)
   await expect(page.locator("main article")).toHaveCount(1);
   await expect(page.getByRole("dialog")).toHaveCount(0);

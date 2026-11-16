@@ -43,6 +43,12 @@ describe("professionCandidates", () => {
     expect(professionCandidates("Ищу работу водителем")).toEqual(expect.arrayContaining(["водителем", "водител"]));
     expect(professionCandidates("Ищу работу водителем")).not.toContain("работу");
   });
+  it("olmosh va kesim: \"men instruktorman\" — \"men\" kasb emas, \"instruktor\" qidiriladi", () => {
+    const c = professionCandidates("men instruktorman menga ish kerak");
+    expect(c).toContain("instruktor");
+    expect(c).not.toContain("men");
+    expect(c).not.toContain("menga");
+  });
   it("ikki so'zli kasb", () => {
     expect(professionCandidates("bosh buxgalter kerak")).toEqual(expect.arrayContaining(["bosh buxgalter", "buxgalter"]));
   });

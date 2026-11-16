@@ -116,3 +116,23 @@ export async function snapshotUser(id: string): Promise<() => Promise<void>> {
   };
 }
 
+
+/**
+ * Yordamchi — oddiy qidiruv (2026-11-16): matn yuborilgach so'rovnoma oynasi chiqadi ("Qanday ish?", "Qaysi hududda?",
+ * "Oylik maosh qancha bo'lsin?"). Javoblarni (kerak bo'lsa) o'zgartirib "Qidirish" bosadi va yordamchi javobini qaytaradi.
+ * `place` — select qiymati ("all", "remote", "<viloyat slug>"), `salary` — "...dan" tugmasi (so'm).
+ */
+export async function quickSearch(page: Page, opts: { profession?: string; place?: string; salary?: number } = {}) {
+  const sheet = page.locator("[data-quick-sheet]");
+  await expect(sheet).toBeVisible();
+  if (opts.profession !== undefined) await sheet.locator("[data-quick-profession]").fill(opts.profession);
+  if (opts.place) await sheet.locator("[data-quick-place]").selectOption(opts.place);
+  if (opts.salary) await sheet.locator(`[data-salary='${opts.salary}']`).click();
+  await page.locator("[data-quick-submit]").click();
+  // oyna yopilishi va "qidirilmoqda" holati bitta yangilanishda — oyna yopilgach, qidiruv tugashini kutamiz
+  await expect(sheet).toBeHidden();
+  await expect(page.locator("ol[aria-busy='true']")).toHaveCount(0);
+  const answer = page.locator("[data-quick-answer]").last();
+  await expect(answer).toBeVisible();
+  return answer;
+}
