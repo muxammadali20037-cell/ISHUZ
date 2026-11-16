@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · Tez o'tish: bosilgan zahoti yangi ekran (`claude/fast-nav`)
+
+Ega: "tugma bosilgach keyingi oynaga o'tishi sekin — tepada ko'k chiziq keyingi ekranga o'tishni kutib turadi, umuman
+yoqmayapti".
+
+- Boshqa sahifaga havola bosilganda eski sahifa ustida kutilmaydi: kontent o'rnida darhol yangi sahifa skeleti (yuqori
+  panel va pastki menyu joyida), pastki/yon menyuda bosilgan bo'lim darhol belgilanadi; javob kelishi bilan sahifa
+  almashadi. Oldindan yuklangan sahifa (prefetch + `loading.tsx`) avvalgidek o'sha zahoti ochiladi — qatlam ko'rinmaydi.
+- Tepadagi ko'k chiziq boshqa sahifaga o'tishda yo'q; faqat o'sha sahifada (filtr, sahifa raqami) va 0.2 s dan kechiksa.
+- Qatlam bosishni to'smaydi, API/fayl havolalari va havola ichidagi tugmalarda chiqmaydi, 10 s da o'zi yo'qoladi.
+- Ochilgan sahifaga qaytish keshi 30 s → 60 s (`staleTimes.dynamic`).
+- Sinov: `e2e/specs/nav-instant.spec.ts` — sekin server (1.5 s, oldindan yuklashsiz) taqlidida 0.4 s ichida skelet va faol bo'lim.
+
 ## 2026-11-16 · 07–10: pastki menyu, qidiruv matni, 3 qadamli ariza (`claude/seeker-screens`)
 
 Ega ("MASTER PROMPT", 5-bosqich).

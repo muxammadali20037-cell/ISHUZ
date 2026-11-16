@@ -16,6 +16,7 @@ import { LanguageSelect } from "./language-switcher";
 import { UserMenu } from "./user-menu";
 import type { TopBarUser } from "./top-bar";
 import { HOME_ITEM, MORE_ITEMS, isAiPath, mainItems, type MenuItem } from "./nav-items";
+import { usePendingPath } from "./nav-pending";
 
 export type NavRole = "worker" | "employer" | "guest";
 export type NavMode = "worker" | "employer" | null;
@@ -98,7 +99,10 @@ export function postAction(mode: NavMode): { href: string; labelKey: string; cta
 }
 
 export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
-  const pathname = usePathname();
+  // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
+  const pendingPath = usePendingPath();
+  const currentPath = usePathname();
+  const pathname = pendingPath ?? currentPath;
   const { t } = useT();
   const items = mainNav(mode);
   const post = postAction(mode);
@@ -164,7 +168,10 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
 
 /** Desktop uchun yon/ustki navigatsiya havolalari */
 export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
-  const pathname = usePathname();
+  // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
+  const pendingPath = usePendingPath();
+  const currentPath = usePathname();
+  const pathname = pendingPath ?? currentPath;
   const { t } = useT();
   // "AI yordamchi" — birinchi bo'limdan keyin; /ai ochiq bo'lsa faqat u belgilanadi (telefonda /ai — "Ishlar"/"Profil" ichida)
   // "Xabarlar" — kompyuterda yuqori panel belgisida (bu qatorda takrorlanmaydi)
@@ -290,7 +297,10 @@ export function SideNav({
   user?: TopBarUser | null;
   social?: SocialLink[];
 }) {
-  const pathname = usePathname();
+  // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
+  const pendingPath = usePendingPath();
+  const currentPath = usePathname();
+  const pathname = pendingPath ?? currentPath;
   const { t } = useT();
   const { main, more } = sideNav(mode);
   const post = postAction(mode);

@@ -711,6 +711,11 @@ body:has([data-global-back]) [data-header-back] { display: none; }
 @keyframes nav-done { from { transform: scaleX(0.85); opacity: 1; } to { transform: scaleX(1); opacity: 0; } }
 .nav-progress[data-state="loading"] > span { animation: nav-grow 2.4s cubic-bezier(0.1, 0.7, 0.2, 1) forwards; }
 .nav-progress[data-state="done"] > span { animation: nav-done 380ms ease-out forwards; }
+/* Bosilgan zahoti yangi sahifa skeleti (NavProgress): kontent maydonini yopadi, yuqori panel va pastki menyu ochiq qoladi.
+   Bosishni to'smaydi; ~0.1 s da yumshoq paydo bo'ladi (oldindan yuklangan sahifa undan tezroq ochiladi — miltillamaydi) */
+@keyframes nav-instant-in { from { opacity: 0; } }
+.nav-instant { position: fixed; z-index: 38; overflow: hidden; pointer-events: none; background: var(--background); animation: nav-instant-in 120ms ease-out; }
+.nav-instant-full { inset: 0; z-index: 60; }
 
 /* Bosilganda darhol vizual javob: barmoq ostida biroz kichrayadi (60 ms); qolgan o'zgarishlar 200 ms (--ease-std).
  * Sichqonchada (kompyuter): asosiy tugma 1 px, bosiladigan karta 2 px ko'tarilib soya oladi — operator panelidagi kabi.
