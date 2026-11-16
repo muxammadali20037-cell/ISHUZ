@@ -28,8 +28,9 @@ for (const vp of [
     // (kompyuterda — o'ng paneldagi "Rezyume joylash"). Rejim tanlangan — e'lon turi qayta so'ralmaydi (tasdiq — modes.spec)
     await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-    await page.locator("main a[href='/post/worker']:visible").first().click();
-    await page.waitForURL(/\/post\/worker/);
+    // bosh sahifadagi "+ E'lon joylash" endi yordamchiga olib kiradi (ai-post.spec); bu yo'l — batafsil forma (kabinetdan tahrirlash)
+    await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
+    await page.goto("/post/worker");
     await pickProfession(page, "Buxgalter", "Buxgalter");
     await next(page);
     await pickWholeRegion(page);

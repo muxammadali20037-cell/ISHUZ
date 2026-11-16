@@ -144,7 +144,7 @@ export async function SeekerHome({
           {/* ega (2026-11-17): qidiruv ostida katta "+ E'lon joylash" — o'zi haqida e'lon (ish beruvchilar topadi) */}
           <div className="mt-3 max-w-2xl">
             <Link
-              href="/post/worker"
+              href="/ai/post"
               prefetch={false}
               data-track="post_start"
               data-track-to="home_hero"

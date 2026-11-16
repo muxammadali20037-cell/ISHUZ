@@ -30,7 +30,8 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   // ishchi topish va vakansiya berish — ish izlovchiga ko'rsatilmaydi
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
-  await expect(page.locator("main a[href='/post/worker']:visible").first()).toBeVisible();
+  // "+ E'lon joylash" — yordamchi bilan (2026-11-17)
+  await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
   // pastki menyu (4.0): Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil ("Saqlanganlar" va "E'lon" — Profilda)
   const nav = page.getByRole("navigation").last();
   await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]);

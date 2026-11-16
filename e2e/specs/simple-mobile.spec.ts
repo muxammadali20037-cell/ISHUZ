@@ -27,7 +27,7 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   // tartib (ega, 2026-11-17): E'lon joylash → Yordamchi → Universal ustalar → Barcha vakansiyalar → Kunlik ish → qolganlari
   await expect(menu.locator("[data-menu-item]")).toHaveCount(12);
   expect(await menu.locator("[data-menu-item]").evaluateAll((els) => els.slice(0, 5).map((e) => e.getAttribute("data-menu-item")))).toEqual(["post", "ai", "masters", "jobs", "daily"]);
-  await expect(menu.locator('[data-menu-item="post"]')).toHaveAttribute("href", "/post/worker");
+  await expect(menu.locator('[data-menu-item="post"]')).toHaveAttribute("href", "/ai/post");
   await expect(menu.locator('[data-menu-item="daily"]')).toContainText("Kunlik ish");
   // har bir bo'lim — nomi va ostida kichik izoh (nima qiladi)
   const jobs = menu.locator('[data-menu-item="jobs"]');

@@ -1,5 +1,25 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · "+ E'lon joylash" — yordamchi bilan e'lon (`claude/ai-post`)
+
+Ega: "E'lon joylash bosilsa AI yordamchiga kirsin; «men o'qituvchiman», «uqituvchi», «oqtvchi» deb yozsa ham to'g'ri
+tushunsin; kerak bo'lsa «aynan qanday o'qituvchisiz?» deb variantlar bersin; oylik maosh kerak emas, telefon raqamini
+yozsin; «Tasdiqlash» → «Sizning e'loningiz shunday ko'rinadi» → «Joylash» → avtomatik tekshiruv → «Tabriklaymiz»; boshqa
+mavzuda oyna chiqmasin".
+
+- **/ai/post** (alohida to'liq ekran): bosh sahifadagi katta tugma, "Bo'limlar"dagi "E'lon joylash" va pastki/yuqori
+  "E'lon" (ish izlovchi) shu yerga olib kiradi. Ish beruvchi rejimida — vakansiya joylash (avvalgidek).
+- **Tushunish:** guruh ("O'qituvchi") — barcha aniq kasblar sarlavhalar bilan (Aniq fanlar, Chet tillari…); kasb nomi
+  gapda haqiqatan bo'lishi shart ("bugun havo zo'r" → "Havo liniyasi elektromontyori" emas). "Salom", "rahmat", "kimsan",
+  ish bilan bog'liq bo'lmagan savol — oyna emas, qisqa javob; "ish kerak" — oyna ochiladi, kasb unda yoziladi.
+- **Oyna:** kasb, ism (familiya ixtiyoriy), hudud va tuman, tajriba (bitta bosish), telefon (kirgan — hisobdagi raqam;
+  mehmon — yozadi, "Joylash"da SMS bilan kiradi va javoblari bilan shu yerga qaytadi). Maosh va ish vaqti so'ralmaydi.
+- **Ko'rinishi:** joylanadigan matnning o'zi; "O'zim haqimda" — faqat aytilganlardan ("… sifatida ish qidiryapman.
+  Tajribam — 1–3 yil. Hudud: …"), avvalgi e'londa o'z so'zlari bo'lsa (kasb o'sha) — o'shalar saqlanadi.
+- **Joylash:** mavjud `publishWorkerListing` (majburiy avtomatik tekshiruv, haqiqiy holat): joylandi — "Tabriklaymiz",
+  ilovada mos ish xabari va "Menga mos ish chiqsa xabar bering" (Telegram); tekshiruvda / rad etildi / to'lov — o'z ekrani.
+- **Ish qidirishda ham:** "salom", "kimsan", "ob-havo qanday?" — oyna chiqmaydi, qisqa javob.
+
 ## 2026-11-17 · Soddalashtirish 1: kirish, bosh ekran, bo'limlar tartibi, "o'qituvchi" (`claude/simplify-1`)
 
 Ega (2026-11-17, uzun ro'yxat — bosqichma-bosqich). 1-bosqich:

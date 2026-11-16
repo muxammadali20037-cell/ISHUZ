@@ -79,6 +79,8 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   // qidiruv ostida katta "+ E'lon joylash" (ega, 2026-11-17)
   const post = page.locator("[data-home='seeker-v2'] [data-home-post]");
   await expect(post).toHaveText("E'lon joylash");
+  // bosilsa — yordamchi (e'lon joylash rejimi)
+  await expect(post).toHaveAttribute("href", "/ai/post");
   expect((await post.boundingBox())!.height).toBeGreaterThanOrEqual(56);
   // tez yo'llar: 4 ta katta plitka (hero ostida), shu tartibda; birinchisi birinchi ekranda
   const quick = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem");
