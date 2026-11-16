@@ -64,8 +64,14 @@ test.describe("kirish oqimi", () => {
 
     await start.click();
     await page.waitForURL("**/start/rol?from=welcome");
-    await page.getByText("Ish qidiryapman", { exact: true }).click();
+    await expect(page.getByRole("heading", { level: 1, name: "Siz qaysi maqsadda keldingiz?" })).toBeVisible();
+    await page.getByText("Men ish qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
+    // 05 kasblar va 06 hudud — ixtiyoriy ("O'tkazib yuborish"), keyin bosh sahifa
+    await page.waitForURL("**/start/kasblar");
+    await page.getByTestId("step-skip").click();
+    await page.waitForURL("**/start/hudud");
+    await page.getByTestId("step-skip").click();
     await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
     expect(await cookie(context, "ib_mode")).toBe("worker");
@@ -87,7 +93,7 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Правильная возможность для вашего будущего начинается здесь." })).toBeVisible();
     await page.getByRole("link", { name: "Начать", exact: true }).click();
     await page.waitForURL("**/start/rol?from=welcome");
-    await page.locator("label").filter({ hasText: /Ищу сотрудников/ }).click();
+    await page.locator("label").filter({ hasText: /Я ищу сотрудников/ }).click();
     await page.locator('form[data-role-form="welcome"] button[type="submit"]').click();
     await page.waitForURL((u) => new URL(u).pathname === "/");
     // (bosh sahifaning o'zi oqim bilan chiziladi — JS'siz to'liq ko'rinmasligi mumkin; muhimi: forma ishladi, rol va til saqlandi)
@@ -130,10 +136,10 @@ test.describe("kirish oqimi", () => {
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/auth");
     // manzil o'zgarmaydi, birinchi ko'rinish — rol
-    await expect(page.getByRole("heading", { level: 1, name: "O'z rolingizni tanlang" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Siz qaysi maqsadda keldingiz?" })).toBeVisible();
     expect(path(page)).toBe("/auth");
     await expect(page.getByRole("button", { name: "Davom etish" })).toBeDisabled();
-    await page.getByText("Ishchi qidiryapman", { exact: true }).click();
+    await page.getByText("Men xodim qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL(/\/auth\?next=%2Fstart&role=1$/);
     expect(await cookie(context, "ib_mode")).toBe("employer");
@@ -153,8 +159,8 @@ test.describe("kirish oqimi", () => {
 
     // keyingi kirishda ham rol so'raladi — oxirgi tanlov belgilangan, bir bosishda davom etadi
     await page.goto("/auth");
-    await expect(page.getByRole("heading", { level: 1, name: "O'z rolingizni tanlang" })).toBeVisible();
-    await expect(page.getByRole("radio", { name: /Ishchi qidiryapman/ })).toBeChecked();
+    await expect(page.getByRole("heading", { level: 1, name: "Siz qaysi maqsadda keldingiz?" })).toBeVisible();
+    await expect(page.getByRole("radio", { name: /Men xodim qidiryapman/ })).toBeChecked();
     await expect(page.getByRole("button", { name: "Davom etish" })).toBeEnabled();
   });
 
@@ -279,7 +285,7 @@ test.describe("kirish oqimi", () => {
     // oqim boshlangan, profil yo'q — bosh sahifa to'xtagan qadamga (rol) olib boradi
     await page.goto("/");
     await page.waitForURL("**/start/rol");
-    await page.getByText("Ish qidiryapman", { exact: true }).click();
+    await page.getByText("Men ish qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL(/\/onboarding\/worker\?next=%2Fstart%2Ftayyor/);
     expect((await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [NEW_WORKER]))[0]!.active_role).toBe("worker");
@@ -316,7 +322,7 @@ test.describe("kirish oqimi", () => {
     await freshUser(NEW_EMPLOYER, "+998901110072", "Dilshod", "Rahimov");
     await loginMidFlow(context, NEW_EMPLOYER);
     await page.goto("/start/rol");
-    await page.getByText("Ishchi qidiryapman", { exact: true }).click();
+    await page.getByText("Men xodim qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL(/\/onboarding\/employer\?next=%2Fstart%2Ftayyor/);
     // ish beruvchi profili mavjud yo'l bilan yaratildi (bu yerda — bazadan), keyin oqim yakuni

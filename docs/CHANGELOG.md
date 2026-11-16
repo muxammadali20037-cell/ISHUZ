@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · 04–06 ekranlar: rol, kasblar, hudud va tajriba (`claude/seeker-setup`)
+
+Ega ("MASTER PROMPT", 4-bosqich). Kirish hamon talab qilinmaydi; tanlov shu qurilmada saqlanadi.
+
+- **04 Rol:** "Siz qaysi maqsadda keldingiz?" — "Men ish qidiryapman" / "Men xodim qidiryapman" (4 tilda). Rolni keyin
+  Profilda almashtirish o'zgarmadi.
+- **05 Kasblar** (`/start/kasblar`): "Qaysi kasblar sizga mos keladi?" — umumiy kasb tanlagich (soha → kasb, qidiruv),
+  bir nechta (5 tagacha), tanlanganlar tepada (olib tashlanadi), "1/2-qadam", "O'tkazib yuborish". Kasblar bazadan
+  tekshiriladi (faol va tanlanadigan) va `ib_prefs` cookie'sida saqlanadi.
+- **06 Hudud va tajriba** (`/start/hudud`): viloyat, tuman yoki shahar (mavjud `ib_place` cookie'si — bosh sahifa va qidiruv
+  uni allaqachon ishlatadi), "Masofaviy ish ham mos keladi", tajriba (ixtiyoriy), "2/2-qadam".
+- Mehmon ish qidiruvchi rolni tanlasa — 05 → 06 → bosh sahifa; ish beruvchi — darhol bosh sahifa; `next` bo'lsa — o'sha joyga.
+- **Bosh sahifa "Sizga mos ishlar":** profilda kasb bo'lmasa — 05 da tanlangan kasblar bo'yicha (avval tanlangan hududda,
+  "Tajriba yo'q" bo'lsa avval tajriba talab qilmaydiganlari), so'rovlar parallel. Faqat haqiqiy faol e'lonlar.
+- Audit tuzatishi: bir nechta kasb uchun bazada jadval allaqachon bor (`worker_professions`, asosiy + 5 ta qo'shimcha) —
+  yangi migratsiya kerak emas.
+
 ## 2026-11-16 · 01–03 ekranlar: splash, xush kelibsiz, kirish (`claude/entry-screens`)
 
 Ega ("MASTER PROMPT", 3-bosqich).

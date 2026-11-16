@@ -108,12 +108,12 @@
       "slides": "Introduction"
     },
     "role": {
-      "title": "Choose your role",
-      "subtitle": "The app opens in this role.",
+      "title": "What brings you here?",
+      "subtitle": "The app will open for this goal.",
       "worker_title": "I'm looking for a job",
-      "worker_desc": "Find new opportunities",
-      "employer_title": "I'm hiring",
-      "employer_desc": "Find people for my team",
+      "worker_desc": "Browse vacancies and apply",
+      "employer_title": "I'm looking for staff",
+      "employer_desc": "Post vacancies and find candidates",
       "continue": "Continue",
       "note": "You can switch the role later in “Profile”.",
       "error": "Your choice wasn't saved. Please try again."
@@ -133,6 +133,31 @@
       "start": "Get started",
       "have_account": "I have an account",
       "photo_alt": "A person at work"
+    },
+    "professions": {
+      "step": "Step {current} of {total}",
+      "title": "Which professions suit you?",
+      "subtitle": "Pick a few — we'll show matching jobs first.",
+      "picked": "Selected: {count} / {max}",
+      "remove": "Remove {name}",
+      "limit": "You can pick up to {max} professions.",
+      "empty": "No professions selected yet. Search below or pick a field.",
+      "add_more": "Add another profession",
+      "continue": "Continue",
+      "skip": "Skip"
+    },
+    "place": {
+      "title": "Where do you want to work?",
+      "subtitle": "We'll show jobs in this area first.",
+      "region": "Region",
+      "region_all": "All of Uzbekistan",
+      "district": "District or city",
+      "district_all": "Whole region",
+      "remote": "Remote work (from home) also suits me",
+      "experience": "How much experience do you have?",
+      "optional": "Optional",
+      "finish": "Done",
+      "skip": "Skip"
     }
   },
   "market": {
