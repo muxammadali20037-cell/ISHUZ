@@ -96,10 +96,16 @@ test("qidiruv boshi: ikki teng neytral karta (rangli dominant sirt yo'q)", async
   // rejim hali tanlanmagan — bosh sahifadagi kabi "Ish qidiryapman" / "Xodim qidiryapman" (E1)
   for (const name of [/^Ish qidiryapman/, /^Xodim qidiryapman/]) await expect(page.getByRole("button", { name })).toBeVisible();
   const big = await page.evaluate(() => {
-    const css = getComputedStyle(document.documentElement);
-    const brand = ["--primary", "--success"].map((v) => css.getPropertyValue(v).trim());
-    const hex = (rgb: string) => `#${(rgb.match(/\d+/g) ?? []).slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}`;
-    return Array.from(document.querySelectorAll<HTMLElement>("main *")).filter((el) => brand.includes(hex(getComputedStyle(el).backgroundColor)) && el.getBoundingClientRect().height >= 80).length;
+    // token ranglari brauzer hisoblagan ko'rinishda (5.0 tokenlari oklch da — namuna element orqali)
+    const brand = ["--primary", "--success"].map((v) => {
+      const probe = document.createElement("span");
+      probe.style.backgroundColor = `var(${v})`;
+      document.body.append(probe);
+      const c = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return c;
+    });
+    return Array.from(document.querySelectorAll<HTMLElement>("main *")).filter((el) => brand.includes(getComputedStyle(el).backgroundColor) && el.getBoundingClientRect().height >= 80).length;
   });
   expect(big).toBe(0);
 });

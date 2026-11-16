@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
+import { oklchToHex } from "@/lib/color";
 
 /**
  * Brend ranglari kontrasti (WCAG 2.1 AA, oddiy matn ≥ 4.5:1) — yorug' (:root) va qorong'i (.dark) mavzuda.
@@ -13,7 +14,9 @@ function block(selector: string): Record<string, string> {
   const m = css.match(new RegExp(`(?:^|\\n)${selector.replace(".", "\\.")}\\s*\\{([^}]*)\\}`));
   if (!m) throw new Error(`${selector} topilmadi`);
   const out: Record<string, string> = {};
-  for (const [, k, v] of m[1]!.matchAll(/--([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)) out[k!] = v!;
+  for (const [, k, v] of m[1]!.matchAll(/--([a-z-]+):\s*(#[0-9a-fA-F]{6})\b/g)) out[k!] = v!;
+  // 5.0: oklch(L C H) tokenlari ham (shaffofligi bo'lganlari — kontrast juftligi emas, o'tkaziladi)
+  for (const [, k, l, c, h] of m[1]!.matchAll(/--([a-z-]+):\s*oklch\(([\d.]+)\s+([\d.]+)\s+([\d.]+)\)/g)) out[k!] = oklchToHex(+l!, +c!, +h!);
   return out;
 }
 
@@ -110,21 +113,29 @@ describe("UI elementlari kontrasti (≥ 3:1)", () => {
   }
 });
 
-describe("4.0 palitrasi (2026-11-16, ega dizayn tizimi; docs/DESIGN_SYSTEM.md)", () => {
-  const light = block(":root");
-  it("talabdagi asosiy ranglar o'z joyida", () => {
-    expect(light.primary?.toLowerCase()).toBe("#1558d6"); // Primary
-    expect(light["primary-soft"]?.toLowerCase()).toBe("#eaf1ff"); // Secondary
-    expect(light.secondary?.toLowerCase()).toBe("#eaf1ff");
-    expect(light.background?.toLowerCase()).toBe("#f5f7fa"); // Background
-    expect(light.card?.toLowerCase()).toBe("#ffffff"); // Surface
-    expect(light.foreground?.toLowerCase()).toBe("#101828"); // Text
-    expect(light["brand-green"]?.toLowerCase()).toBe("#16a36a"); // Success (belgi)
-    // AA uchun matn variantlari: Secondary text #667085, Success #16A36A va Error #DC3545 ning to'qroq ko'rinishi
-    expect(light["muted-foreground"]?.toLowerCase()).toBe("#626c81");
-    expect(light.success?.toLowerCase()).toBe("#107a4f");
-    expect(light.destructive?.toLowerCase()).toBe("#c62f3e");
-    expect(light.navy?.toLowerCase()).toBe("#0d1f3f");
+describe("5.0 palitrasi (2026-11-16, ega \"ko'k-oq\" dizayni; docs/DESIGN_SYSTEM.md)", () => {
+  const raw = (name: string) => css.match(new RegExp(`:root\\s*\\{[^}]*--${name}:\\s*([^;]+);`))?.[1]?.trim();
+  it("talabdagi tokenlar o'z joyida (oklch)", () => {
+    expect(raw("background")).toBe("oklch(0.982 0.004 250)");
+    expect(raw("foreground")).toBe("oklch(0.2 0.03 260)");
+    expect(raw("card")).toBe("oklch(1 0 0)");
+    expect(raw("primary")).toBe("oklch(0.52 0.2 260)");
+    expect(raw("primary-foreground")).toBe("oklch(0.99 0 0)");
+    expect(raw("primary-soft")).toBe("oklch(0.95 0.03 260)");
+    expect(raw("secondary")).toBe("oklch(0.96 0.01 255)");
+    expect(raw("muted")).toBe("oklch(0.96 0.008 255)");
+    expect(raw("muted-foreground")).toBe("oklch(0.52 0.03 260)");
+    expect(raw("brand-green")).toBe("oklch(0.62 0.15 155)");
+    expect(raw("warm")).toBe("oklch(0.66 0.18 45)");
+    expect(raw("border")).toBe("oklch(0.92 0.01 255)");
+    expect(raw("ring")).toBe("oklch(0.52 0.2 260)");
+    expect(raw("radius")).toBe("0.875rem");
+    expect(raw("gradient-brand")).toBe("linear-gradient(135deg, oklch(0.55 0.21 262), oklch(0.62 0.17 230))");
+  });
+  it("qorong'i mavzu foni va kartochkasi", () => {
+    const dark = block(".dark");
+    expect(dark.background).toBe(oklchToHex(0.129, 0.042, 264));
+    expect(dark.card).toBe(oklchToHex(0.208, 0.042, 265));
   });
 });
 

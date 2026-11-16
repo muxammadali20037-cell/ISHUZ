@@ -1,5 +1,23 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · 5.0 "ko'k-oq" dizayn: Manrope, gradient, yangi bosh sahifa (`claude/blue-white`)
+
+Ega: dizayn topshirig'i (oklch tokenlar, Manrope, shisha sarlavha, hero panel, 3+6 kartochka) — "Saytning o'ziga qo'llash".
+
+- **Tokenlar va shrift:** barcha ranglar `oklch` da, asosiy ko'k `oklch(0.52 0.2 260)`; shrift Inter → Manrope Variable
+  (400–800); radius 0.875rem; yangi `--gradient-brand`, `--gradient-hero`, `--shadow-card`, `--shadow-glow`, `--warm`.
+  Kontrast testi oklch qiymatlarini o'qiydi — barcha AA juftlari o'tadi.
+- **Sarlavha:** 64 px (telefonda 56) shaffof (blur) sticky; logo — gradient kvadratda oq portfel; pill menyu; "E'lon
+  berish" gradient tugma; til va "Kirish" yumshoq. Kirgan foydalanuvchida kompyuterdagi yon menyu saqlandi.
+- **Bosh sahifa:** rol almashtirgich pill; hero panel (joy, salom 👋, "Qanday **ish** qidiryapsiz?", qidiruv + gradient
+  "Topish", 4 chip, filtrlar va xarita). Qidiruv endi sarlavhada emas, heroda (telefon va kompyuterda bir xil).
+  "Yangi ishlar" va "Namuna e'lonlar" 3/2/1 ustun (kirganda telefonda "Yangi ishlar" avvalgidek yig'ilgan).
+- **Kartalar:** yangi ish kartasi (maosh pill, hover ko'tarilish va nur; telefonda ixcham — 3 ta karta birinchi ekranda),
+  namuna kartasi punktir chegarali.
+- Footer: til tanlagich to'q fonda ko'rinadigan bo'ldi. Telegram Mini App panellari oklch tokenlardan ham to'g'ri rang
+  oladi (hex ga aylantiriladi).
+- Eski "sarlavhada doimiy qidiruv (Uzum uslubi)" yangi topshiriq bilan almashtirildi.
+
 ## 2026-11-16 · Tez o'tish: bosilgan zahoti yangi ekran (`claude/fast-nav`)
 
 Ega: "tugma bosilgach keyingi oynaga o'tishi sekin — tepada ko'k chiziq keyingi ekranga o'tishni kutib turadi, umuman

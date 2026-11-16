@@ -35,7 +35,11 @@ describe("Telegram Mini App: to'liq ekran qoidalari", () => {
   it("panel ranglari faqat #rrggbb ko'rinishida", () => {
     expect(hexColor(" #F6F8FB ")).toBe("#f6f8fb");
     expect(hexColor("#fff")).toBe("#ffffff");
-    expect(hexColor("oklch(0.9 0 0)")).toBeNull();
+    // 5.0: oklch tokenlar ham hex ga aylanadi (Telegram faqat #rrggbb qabul qiladi)
+    expect(hexColor("oklch(1 0 0)")).toBe("#ffffff");
+    expect(hexColor("oklch(0.982 0.004 250)")).toBe("#f7f9fc");
+    expect(hexColor("oklch(0.9 0 0)")).toBe("#dedede");
+    expect(hexColor("var(--x)")).toBeNull();
     expect(hexColor(undefined)).toBeNull();
   });
 });

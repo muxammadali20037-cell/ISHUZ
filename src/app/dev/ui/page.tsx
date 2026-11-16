@@ -115,7 +115,7 @@ export default async function UiKitPage() {
         </ul>
       </Section>
 
-      <Section id="type" title="Shrift: Inter Variable (lotin + kirill)">
+      <Section id="type" title="Shrift: Manrope Variable (lotin + kirill)">
         <ul className="space-y-2">
           {TYPE.map(([cls, label]) => (
             <li key={cls} className="flex flex-wrap items-baseline gap-x-4 border-b border-border pb-2">

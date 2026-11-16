@@ -34,7 +34,7 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("qidiruv — telefonda sarlavhada (Uzum kabi, 2026-11-15): «Lavozim yoki kompaniyani qidiring...», aylantirilganda tepada qoladi, vakansiya sahifasida yo'q", async ({ page, context }) => {
+test("qidiruv — bosh sahifaning hero blokida (5.0 «ko'k-oq», 2026-11-16): «Lavozim yoki kompaniyani qidiring...», birinchi ekranda, vakansiya sahifasida yo'q", async ({ page, context }) => {
   const slug = await vacancy("Buxgalter", "Buxgalter");
   await asGuest(context);
   await asMode(context, "worker");
@@ -42,15 +42,17 @@ test("qidiruv — telefonda sarlavhada (Uzum kabi, 2026-11-15): «Lavozim yoki k
   const field = page.getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." });
   await expect(field).toBeVisible();
   await expect(field.getByRole("searchbox")).toHaveAttribute("placeholder", "Lavozim yoki kompaniyani qidiring...");
-  // sahifadagi qidiruv takrorlanmaydi: ekranda bitta maydon, u sarlavhaning ichida
+  // qidiruv takrorlanmaydi: ekranda bitta maydon — hero blokida (2026-11-15 dagi sarlavhadagi qidiruv 5.0 topshirig'i bilan
+  // hero ga ko'chdi: sarlavhada logotip, bo'limlar, "E'lon berish", til va "Kirish")
   await expect(page.locator("form[role=search]:visible")).toHaveCount(1);
-  await expect(page.locator("header").getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." })).toBeVisible();
+  await expect(page.locator("[data-home='seeker-v2']").getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." })).toBeVisible();
+  await expect(page.locator("header").getByRole("search")).toHaveCount(0);
   await expect(field.locator("button[type='submit']")).toHaveCount(1);
-  // tugmaning o'zi suzib yurmaydi — sarlavha bilan birga tepada turadi (relative — faqat 44px bosish maydoni uchun)
+  // tugma suzib yurmaydi — maydon ichida (relative — faqat 44px bosish maydoni uchun); birinchi ekranda
   expect(["static", "relative"]).toContain(await fab(page).evaluate((el) => getComputedStyle(el).position));
-  await page.mouse.wheel(0, 2000);
   await expect(fab(page)).toBeInViewport();
-  expect((await field.boundingBox())!.y).toBeLessThan(120);
+  const box = (await field.boundingBox())!;
+  expect(box.y + box.height).toBeLessThan(560);
   // bosilganda maydon ichida alohida to'rtburchak (fokus halqasi) chizilmaydi — halqa qobiqda
   await field.getByRole("searchbox").focus();
   expect(await field.getByRole("searchbox").evaluate((el) => getComputedStyle(el).boxShadow)).toBe("none");

@@ -2,6 +2,7 @@
  * Telegram Mini App'ni haqiqiy ilova kabi ochish qoidalari (sof funksiyalar — unit test: fullscreen.test.ts).
  * To'liq ekran (Bot API 8.0) — faqat telefonda: kompyuter Telegram'ida butun monitorni egallash noqulay, u yerda faqat expand().
  */
+import { parseOklch } from "@/lib/color";
 
 /** "7.10" ≥ "7.7" kabi taqqoslash (Telegram versiyasi — nuqtali raqamlar, satr sifatida taqqoslab bo'lmaydi) */
 export function versionAtLeast(version: string | undefined, min: string): boolean {
@@ -45,10 +46,12 @@ export function insetVars(safe: Partial<Insets> | undefined, content: Partial<In
   return out;
 }
 
-/** Brend tokeni (#rrggbb) — Telegram setHeaderColor/setBackgroundColor faqat shu ko'rinishni qabul qiladi */
+/** Brend tokeni → #rrggbb — Telegram setHeaderColor/setBackgroundColor faqat shu ko'rinishni qabul qiladi.
+ *  5.0 tokenlari `oklch(...)` da — ular ham hex ga aylantiriladi */
 export function hexColor(value: string | undefined): string | null {
   const v = (value ?? "").trim();
   if (/^#[0-9a-f]{6}$/i.test(v)) return v.toLowerCase();
   const short = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(v);
-  return short ? `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toLowerCase() : null;
+  if (short) return `#${short[1]}${short[1]}${short[2]}${short[2]}${short[3]}${short[3]}`.toLowerCase();
+  return parseOklch(v);
 }

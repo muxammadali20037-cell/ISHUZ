@@ -193,16 +193,12 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
               title={t(item.labelKey)}
               {...(item === AI_NAV ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "top" } : {})}
               className={cn(
-                "relative flex min-h-11 min-w-11 items-center justify-center gap-2 whitespace-nowrap rounded-xl px-3 py-2 text-base font-semibold transition-colors",
-                // "AI yordamchi" — to'q sariq (boshqa bo'limlardan ajralib turadi)
-                item === AI_NAV
-                  ? cn("text-ai ring-1 ring-ai/30", active ? "bg-ai-soft" : "hover:bg-ai-soft")
-                  : active
-                    ? "bg-primary-soft text-primary-ink"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+                // 5.0: to'liq yumaloq (pill) tugma — belgi + matn; faol bo'lim och ko'k fonda
+                "relative flex min-h-11 min-w-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold transition-colors",
+                active ? "bg-primary-soft text-primary-ink" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
-              <item.icon className="size-4.5" aria-hidden />
+              <item.icon className="size-4" aria-hidden />
               {/* planshetda (md) va joy yetmaganda (uzun nomlar, o'ng tomonda "Vakansiya joylash") — faqat belgi: menyu o'ngdagi
                   tugmalar ostiga kirib, ularni to'smaydi; nom ekran o'quvchisi va title uchun saqlanadi */}
               {/* "AI yordamchi" nomi kompyuterda doim ko'rinadi (joy yetmasa ham): yangi bo'lim faqat belgi bo'lib qolmasin */}

@@ -38,7 +38,7 @@ export function ModeSwitch({ mode, className }: { mode: AppMode; className?: str
 
   return (
     <>
-      <div role="radiogroup" aria-label={t("easy.mode.switch_label")} className={cn("mx-auto grid max-w-md grid-cols-2 gap-1 rounded-2xl border border-border bg-secondary p-1", className)}>
+      <div role="radiogroup" aria-label={t("easy.mode.switch_label")} className={cn("inline-grid w-full max-w-sm grid-cols-2 gap-1 rounded-full border border-border bg-secondary p-1 sm:w-auto", className)}>
         {items.map((it) => {
           const on = it.mode === mode;
           return (
@@ -51,12 +51,13 @@ export function ModeSwitch({ mode, className }: { mode: AppMode; className?: str
               data-track="mode_switch"
               data-track-to={it.mode}
               className={cn(
-                "flex min-h-11 items-center justify-center gap-2 rounded-xl px-2 text-base font-bold transition-colors max-[339px]:px-1",
-                on ? "bg-card text-primary-ink shadow-sm" : "text-muted-foreground hover:text-foreground",
+                // 5.0: kulrang "pill" ichida — tanlangani oq fonli, ko'k matnli, soyali
+                "flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors max-[339px]:px-1",
+                on ? "bg-card text-primary-ink shadow-card" : "text-muted-foreground hover:text-foreground",
               )}
             >
               {/* tor ekranda ikonka joy olmasin — yozuv to'liq ko'rinsin ("Работодатель" 360 px da kesilardi) */}
-              <it.icon className="size-5 shrink-0 max-[339px]:hidden max-[379px]:[:lang(ru)_&]:hidden" aria-hidden /> <span className="truncate">{it.label}</span>
+              <it.icon className="size-4 shrink-0 max-[339px]:hidden max-[379px]:[:lang(ru)_&]:hidden" aria-hidden /> <span className="truncate">{it.label}</span>
             </button>
           );
         })}

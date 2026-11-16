@@ -18,10 +18,16 @@ async function activeVacancy() {
 
 async function bigBrandSurfaces(page: Page) {
   return page.evaluate(() => {
-    const css = getComputedStyle(document.documentElement);
-    const brand = ["--primary", "--success"].map((v) => css.getPropertyValue(v).trim());
-    const hex = (rgb: string) => `#${(rgb.match(/\d+/g) ?? []).slice(0, 3).map((n) => Number(n).toString(16).padStart(2, "0")).join("")}`;
-    return Array.from(document.querySelectorAll<HTMLElement>("main *")).filter((el) => brand.includes(hex(getComputedStyle(el).backgroundColor)) && el.getBoundingClientRect().height >= 80).length;
+    // token ranglari brauzer hisoblagan ko'rinishda (5.0 tokenlari oklch da — namuna element orqali)
+    const brand = ["--primary", "--success"].map((v) => {
+      const probe = document.createElement("span");
+      probe.style.backgroundColor = `var(${v})`;
+      document.body.append(probe);
+      const c = getComputedStyle(probe).backgroundColor;
+      probe.remove();
+      return c;
+    });
+    return Array.from(document.querySelectorAll<HTMLElement>("main *")).filter((el) => brand.includes(getComputedStyle(el).backgroundColor) && el.getBoundingClientRect().height >= 80).length;
   });
 }
 
@@ -41,7 +47,15 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
   const found = page.getByRole("button", { name: "Ishchi topdim" });
   await expect(found).toBeVisible();
   const bg = await found.evaluate((el) => getComputedStyle(el).backgroundColor);
-  const success = await page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--success").trim());
+  // 5.0 tokenlari oklch da — token rangi brauzer hisoblagan ko'rinishda (namuna element orqali) solishtiriladi
+  const success = await page.evaluate(() => {
+    const probe = document.createElement("span");
+    probe.style.backgroundColor = "var(--success)";
+    document.body.append(probe);
+    const c = getComputedStyle(probe).backgroundColor;
+    probe.remove();
+    return c;
+  });
   expect(bg).not.toBe(success);
   // "yangi e'lon" — faqat joriy rejimniki (ish beruvchiga o'zi haqida e'lon taklif qilinmaydi), neytral ko'rinish
   await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(1);
@@ -89,11 +103,15 @@ test("ishchi e'loni (egasi): holat neytral kartada; ikonka plitasida 'Kasb tasvi
   expect(await bigBrandSurfaces(page)).toBe(0);
   // holat — kichik nuqtali yozuv, butun blok yashil chegara bilan o'ralmaydi
   const successBorders = await page.evaluate(() => {
-    const success = getComputedStyle(document.documentElement).getPropertyValue("--success").trim();
-    const hex = (rgb: string) => `#${(rgb.match(/\d+/g) ?? []).slice(0, 3).map((x) => Number(x).toString(16).padStart(2, "0")).join("")}`;
+    // token rangi brauzer hisoblagan ko'rinishda (5.0 tokenlari oklch da)
+    const probe = document.createElement("span");
+    probe.style.color = "var(--success)";
+    document.body.append(probe);
+    const success = getComputedStyle(probe).color;
+    probe.remove();
     return Array.from(document.querySelectorAll<HTMLElement>("main *")).filter((el) => {
       const cs = getComputedStyle(el);
-      return cs.borderTopStyle !== "none" && parseFloat(cs.borderTopWidth) > 0 && hex(cs.borderTopColor) === success;
+      return cs.borderTopStyle !== "none" && parseFloat(cs.borderTopWidth) > 0 && cs.borderTopColor === success;
     }).length;
   });
   expect(successBorders).toBe(0);
