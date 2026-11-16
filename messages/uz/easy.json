@@ -462,7 +462,8 @@
     "tab_saved": "Saqlangan",
     "tab_dashboard": "Boshqaruv",
     "tab_post": "E'lon",
-    "post_worker_cta": "E'lon berish"
+    "post_worker_cta": "E'lon berish",
+    "tab_home_page": "Bosh sahifa"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -724,7 +725,8 @@
     "demos_exact": "Namuna e'lonlar — haqiqiy emas",
     "demos_category": "Shu sohadagi namuna e'lonlar — haqiqiy emas",
     "demos_all": "Barcha namunalar",
-    "top_placeholder": "Ish va ishchilar izlash"
+    "top_placeholder": "Ish va ishchilar izlash",
+    "top_placeholder_jobs": "Lavozim yoki kompaniyani qidiring..."
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",

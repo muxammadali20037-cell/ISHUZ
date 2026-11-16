@@ -462,7 +462,8 @@
     "tab_saved": "Saved",
     "tab_dashboard": "Dashboard",
     "tab_post": "Post",
-    "post_worker_cta": "Post a CV"
+    "post_worker_cta": "Post a CV",
+    "tab_home_page": "Home"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -724,7 +725,8 @@
     "demos_exact": "Sample ads — not real",
     "demos_category": "Sample ads from this field — not real",
     "demos_all": "All samples",
-    "top_placeholder": "Search jobs and workers"
+    "top_placeholder": "Search jobs and workers",
+    "top_placeholder_jobs": "Search for a job title or company..."
   },
   "mode": {
     "chooser_title": "What are you looking for?",

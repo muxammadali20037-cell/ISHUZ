@@ -34,17 +34,17 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("qidiruv — telefonda sarlavhada (Uzum kabi, 2026-11-15): «Ish va ishchilar izlash», aylantirilganda tepada qoladi, vakansiya sahifasida yo'q", async ({ page, context }) => {
+test("qidiruv — telefonda sarlavhada (Uzum kabi, 2026-11-15): «Lavozim yoki kompaniyani qidiring...», aylantirilganda tepada qoladi, vakansiya sahifasida yo'q", async ({ page, context }) => {
   const slug = await vacancy("Buxgalter", "Buxgalter");
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  const field = page.getByRole("search", { name: "Ish va ishchilar izlash" });
+  const field = page.getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." });
   await expect(field).toBeVisible();
-  await expect(field.getByRole("searchbox")).toHaveAttribute("placeholder", "Ish va ishchilar izlash");
+  await expect(field.getByRole("searchbox")).toHaveAttribute("placeholder", "Lavozim yoki kompaniyani qidiring...");
   // sahifadagi qidiruv takrorlanmaydi: ekranda bitta maydon, u sarlavhaning ichida
   await expect(page.locator("form[role=search]:visible")).toHaveCount(1);
-  await expect(page.locator("header").getByRole("search", { name: "Ish va ishchilar izlash" })).toBeVisible();
+  await expect(page.locator("header").getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." })).toBeVisible();
   await expect(field.locator("button[type='submit']")).toHaveCount(1);
   // tugmaning o'zi suzib yurmaydi — sarlavha bilan birga tepada turadi (relative — faqat 44px bosish maydoni uchun)
   expect(["static", "relative"]).toContain(await fab(page).evaluate((el) => getComputedStyle(el).position));

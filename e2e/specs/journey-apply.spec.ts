@@ -71,6 +71,7 @@ for (const vp of VIEWPORTS) {
     // 5. kirdi → qaytdi → ariza oynasi o'zi ochiq → "Ariza yuborildi" → arizani ko'rish
     await loginAs(context, USERS.workerB);
     await page.goto(`${jobUrl}?apply=1`);
+    for (let i = 0; i < 2; i++) await page.getByRole("dialog").getByRole("button", { name: "Davom etish" }).click();
     await page.getByRole("dialog").getByRole("button", { name: "Ariza yuborish" }).click();
     await expect(page.getByRole("dialog").getByText("Ariza yuborildi").first()).toBeVisible();
     await page.getByRole("link", { name: "Arizani ko'rish" }).click();

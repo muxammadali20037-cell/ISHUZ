@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · 07–10: pastki menyu, qidiruv matni, 3 qadamli ariza (`claude/seeker-screens`)
+
+Ega ("MASTER PROMPT", 5-bosqich).
+
+- **Pastki menyu (ish qidiruvchi va mehmon):** Bosh sahifa · Ishlar (`/jobs`) · Arizalar · Xabarlar · Profil. "Saqlanganlar"
+  va "O'zim haqimda e'lon" — Profilda (Kabinetim) va bosh sahifa "Bo'limlar" menyusida; kompyuterda yon menyudagi "E'lon"
+  tugmasi joyida. Ish beruvchi menyusi o'zgarmadi. Kompyuterda "Xabarlar" — yuqori panel belgisida (takrorlanmaydi).
+- **07 Qidiruv:** ish qidiruvchida sarlavhadagi qidiruv — "Lavozim yoki kompaniyani qidiring..." (qidiruv kompaniya nomini
+  ham ko'radi); ish beruvchida — "Ish va ishchilar izlash".
+- **10 Ariza — 3 qadam:** 1) rezyume (profildagi rezyume + PDF ko'rish/tahrirlash yoki tezkor ariza + "Avval to'liq rezyume
+  yaratish"), 2) qo'shimcha (xabar va tez qo'shiladigan qatorlar), 3) tasdiqlash (vakansiya, rezyume, xabar). Natija:
+  "Arizangiz muvaffaqiyatli yuborildi!". Takror arizaga qarshi himoya — avvalgidek (baza). PDF fayl yuklash bazada yo'q —
+  tugmasi ham qo'yilmadi.
+- 08 katalog (filtrlar, sahifalar) va 09 vakansiya sahifasi (kompaniya, logo, tasdiq belgisi, saqlash, ulashish, shikoyat,
+  ariza) avvaldan bor — 4.0 ranglari bilan.
+
 ## 2026-11-16 · 04–06 ekranlar: rol, kasblar, hudud va tajriba (`claude/seeker-setup`)
 
 Ega ("MASTER PROMPT", 4-bosqich). Kirish hamon talab qilinmaydi; tanlov shu qurilmada saqlanadi.

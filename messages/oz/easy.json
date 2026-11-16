@@ -462,7 +462,8 @@
     "tab_saved": "Сақланган",
     "tab_dashboard": "Бошқарув",
     "tab_post": "Эълон",
-    "post_worker_cta": "Эълон бериш"
+    "post_worker_cta": "Эълон бериш",
+    "tab_home_page": "Бош саҳифа"
   },
   "moderation": {
     "pending_title": "Эълонингиз сақланди",
@@ -724,7 +725,8 @@
     "demos_exact": "Намуна эълонлар — ҳақиқий эмас",
     "demos_category": "Шу соҳадаги намуна эълонлар — ҳақиқий эмас",
     "demos_all": "Барча намуналар",
-    "top_placeholder": "Иш ва ишчилар излаш"
+    "top_placeholder": "Иш ва ишчилар излаш",
+    "top_placeholder_jobs": "Лавозим ёки компанияни қидиринг..."
   },
   "mode": {
     "chooser_title": "Сиз нима қидиряпсиз?",
