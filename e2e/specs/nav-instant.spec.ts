@@ -9,14 +9,15 @@ import { USERS, asMode, loginAs } from "../support";
 test("sekin serverda ham: bosilgan zahoti yangi ekran skeleti va faol bo'lim; javob kelgach — haqiqiy sahifa", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
-  await page.goto("/cabinet");
-  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
+  // oldindan yuklash sahifa ochilishidan boshlab o'chiq (aks holda bosishgacha yuklanib ulgurib, o'tish shundoq ham oniy bo'ladi)
   await page.route("**/*", async (route) => {
     const h = route.request().headers();
     if (h["rsc"] === "1" && h["next-router-prefetch"]) return route.abort();
     if (h["rsc"] === "1") await new Promise((r) => setTimeout(r, 1500));
     return route.continue();
   });
+  await page.goto("/cabinet");
+  await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
   const nav = page.locator("nav.bottom-nav");
   const t0 = Date.now();
   await nav.getByRole("link", { name: "Arizalar" }).click();
