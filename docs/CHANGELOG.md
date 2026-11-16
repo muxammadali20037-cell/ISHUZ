@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · 01–03 ekranlar: splash, xush kelibsiz, kirish (`claude/entry-screens`)
+
+Ega ("MASTER PROMPT", 3-bosqich).
+
+- **01 Splash:** shior "Yaxshi ish — yorqin kelajak!" (4 tilda). Logo, yuklanish chizig'i va qisqa avtomatik o'tish o'zgarmadi.
+- **02 Xush kelibsiz** (`/start/til`): haqiqiy surat (admin "home_photo" joyiga yuklaydi; bo'lmasa — egasi bergan surat),
+  sarlavha "Kelajagingiz uchun to'g'ri imkoniyat shu yerdan boshlanadi.", izoh, ikkita katta tugma: **Boshlash** → rol
+  tanlash (`/start/rol?from=welcome`), **Hisobim mavjud** → kirish (`/auth`). Til — tepada ixcham qator; "Qanday ishlaydi?" —
+  tepada o'ngda. Rol kartalari xush kelibsiz ekranidan rol ekraniga o'tdi (kirish hamon talab qilinmaydi: mehmon rolni
+  tanlab, darhol bosh sahifaga o'tadi). Bayroqlar olib tashlandi (`flags.tsx`).
+- **03 Kirish:** o'zgarmadi — +998 raqam, kod Telegram bot orqali (SMS xizmati ulanmagan, soxta SMS yo'q), qayta yuborish
+  taymeri, xatolar, foydalanish shartlari va maxfiylik. Google orqali kirish ulanmagan — ko'rsatilmaydi.
+
 ## 2026-11-16 · Dizayn tizimi 4.0 — ranglar (`claude/design-tokens`)
 
 Ega ("MASTER PROMPT", 2-bosqich): Primary `#1558D6`, Secondary `#EAF1FF`, Background `#F5F7FA`, Surface `#FFFFFF`,
