@@ -13,8 +13,13 @@ export async function generateMetadata(): Promise<Metadata> {
  * 7-ekran: "O'z rolingizni tanlang". Kirishdan oldin (/auth birinchi qadami shu ko'rinish), kirgandan keyin (masalan, Telegram'dan
  * birinchi kirish) yoki Kabinetim → "Rolni o'zgartirish" — tanlovdan so'ng `next` ga (oqim davom etadi).
  */
-export default async function RolePage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
+export default async function RolePage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string; from?: string }> }) {
   const [mode, sp] = await Promise.all([getMode(), searchParams]);
+  // 02 xush kelibsiz → "Boshlash": tanlovdan so'ng mehmon darhol bosh sahifaga (kirish so'ralmaydi); orqaga — xush kelibsiz ekraniga
+  if (sp.from === "welcome") {
+    const next = safeInternalPath(sp.next, "");
+    return <RoleScreen mode={mode} next={next} backHref={next ? `/start/til?next=${encodeURIComponent(next)}` : "/start/til"} welcome />;
+  }
   const next = safeInternalPath(sp.next, "") || "/start";
   // raqam ekraniga ketayotgan bo'lsa — orqaga kirish usuliga (rol shu yerda tanlanadi, qayta so'ralmaydi); aks holda bosh sahifaga
   const phoneNext = next.startsWith("/auth/telefon") ? new URLSearchParams(next.split("?")[1] ?? "").get("next") : null;

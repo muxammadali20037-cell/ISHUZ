@@ -5,14 +5,26 @@ import { Check } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import type { AppMode } from "@/features/mode/mode";
 import { cn } from "@/lib/utils";
-import { pickRole } from "../actions";
+import { pickRole, pickWelcomeRole } from "../actions";
 import { EntrySubmit, useHydrated } from "./entry-client";
 
 /**
  * 7-ekran: ikkita katta karta (rasm, nom, izoh). Tanlov — mavjud chooseMode (qurilma cookie'si + kirgan bo'lsa active_role).
  * Bitta hisobda keyin ikkinchi rolni ham qo'shish mumkin — rollar aralashmaydi. JS'siz ham ishlaydi (radio + forma).
+ * `welcome` — xush kelibsiz ekranidagi "Boshlash"dan kelingan: mehmon darhol o'z bosh sahifasiga (kirish so'ralmaydi), kirgan,
+ * lekin profili yo'q foydalanuvchi — oqim davom etadi (pickWelcomeRole).
  */
-export function RolePicker({ initial, next, images }: { initial: AppMode | null; next: string; images: Record<AppMode, ReactNode> }) {
+export function RolePicker({
+  initial,
+  next,
+  images,
+  welcome = null,
+}: {
+  initial: AppMode | null;
+  next: string;
+  images: Record<AppMode, ReactNode>;
+  welcome?: { locale: string } | null;
+}) {
   const { t } = useT();
   const hydrated = useHydrated();
   const [mode, setMode] = useState<AppMode | null>(initial);
@@ -21,8 +33,9 @@ export function RolePicker({ initial, next, images }: { initial: AppMode | null;
     { mode: "employer" as const, title: t("welcome.entry.role.employer_title"), desc: t("welcome.entry.role.employer_desc") },
   ];
   return (
-    <form action={pickRole} className="flex flex-1 flex-col">
-      <input type="hidden" name="next" value={next} />
+    <form action={welcome ? pickWelcomeRole : pickRole} className="flex flex-1 flex-col" data-role-form={welcome ? "welcome" : "role"}>
+      {next ? <input type="hidden" name="next" value={next} /> : null}
+      {welcome ? <input type="hidden" name="locale" value={welcome.locale} /> : null}
       {/* 2026-11 ("Outreach" uslubi): kompyuterda ikki karta yonma-yon — chap yuqorida belgi katakchasi, markazda rasm, nom va izoh;
           telefonda — avvalgidek gorizontal kartalar (bosh barmoq bilan qulay) */}
       <fieldset className="mt-8 grid gap-3 sm:grid-cols-2 sm:gap-4">

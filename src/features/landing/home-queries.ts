@@ -9,6 +9,7 @@ import type { SessionContext } from "@/features/auth/session";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { PLACE_COOKIE, parsePlace } from "@/features/find/place";
 import { findJobs, findWorkers, type JobRow, type WorkerRow } from "@/features/find/queries";
+import { PREFS_COOKIE, parsePrefs } from "@/features/entry/prefs";
 
 /** Bosh sahifadagi ro'yxat hajmi: telefonda 3–4 ta ekranga sig'adi, qolgani — "Barcha vakansiyalar" */
 export const HOME_LIST = 8;
@@ -113,37 +114,56 @@ async function workerTarget(workerId: string): Promise<{ profession: (Named & { 
   return { profession: data?.profession_nodes ?? null, regionId: data?.region_id ?? null };
 }
 
+/** 05 da tanlangan kasblar (shu qurilmada, ib_prefs) — faol tugunlar, tanlov tartibida */
+async function prefProfessions(ids: string[]): Promise<(Named & { id: string })[]> {
+  if (!ids.length) return [];
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("profession_nodes").select("id, name_uz, name_ru, name_en").in("id", ids).eq("is_active", true);
+  if (error) console.warn("[home] pref professions", error.code, error.message);
+  const byId = new Map((data ?? []).map((n) => [n.id, n]));
+  return ids.flatMap((id) => (byId.has(id) ? [byId.get(id)!] : []));
+}
+
 /**
  * Ish qidiruvchining bosh sahifa ro'yxati — faqat haqiqiy faol e'lonlar, soxta moslik foizi yo'q:
  *  1) profilda kasb bor — shu kasb, avval o'z viloyatida, bo'lmasa butun O'zbekiston bo'yicha ("Sizga mos ishlar");
+ *     profilda kasb yo'q, lekin 05-ekranda kasblar tanlangan (ib_prefs) — ular tartib bilan, avval tanlangan hududda;
+ *     "Tajriba yo'q" tanlangan bo'lsa — avval tajriba talab qilmaydiganlari;
  *  2) aks holda (yoki topilmasa) — eng yangi e'lonlar eslab qolingan hududda, u yerda bo'lmasa butun O'zbekistonda.
  * Texnik xato bo'sh ro'yxat deb ko'rsatilmaydi.
  */
 export async function getSeekerFeed(session: SessionContext | null, place: HomePlace): Promise<FeedResult<JobFeed>> {
   const regions = await getRegions();
   const target = session?.workerId ? await workerTarget(session.workerId) : null;
-  const profession = target?.profession ?? null;
-  if (profession) {
-    const home = target?.regionId ? (regions.find((r) => r.id === target.regionId) ?? null) : null;
-    for (const region of home ? [home, null] : [null]) {
-      const res = await findJobs({ ...EMPTY_FIND, mode: "jobs", p: profession.id }, { regionId: region?.id ?? null, districtId: null, remote: false }, HOME_LIST);
-      if (!res.ok) return res;
-      if (res.items.length) {
-        return {
-          ok: true,
-          kind: "match",
-          items: res.items,
-          total: res.total,
-          images: res.images,
-          photos: res.photos ?? {},
-          profession,
-          region,
-          district: null,
-          noMatchFor: null,
-          allHref: findHref(EMPTY_FIND, { mode: "jobs", p: profession.id, region: region?.slug ?? "all", district: region ? "all" : null }),
-        };
-      }
-    }
+  const prefs = target?.profession ? null : parsePrefs((await cookies()).get(PREFS_COOKIE)?.value);
+  const candidates = target?.profession ? [target.profession] : await prefProfessions(prefs?.professions ?? []);
+  const profession = candidates[0] ?? null;
+  const home = target?.profession ? (target.regionId ? (regions.find((r) => r.id === target.regionId) ?? null) : null) : place.region;
+  // ustuvorlik tartibida: (tajriba talab qilmaydigan →) hudud → butun O'zbekiston; har birida kasblar tanlov tartibida.
+  // Hammasi parallel so'raladi (bosh sahifa ketma-ket kutmaydi), birinchi bo'sh bo'lmagani olinadi.
+  const attempts = (prefs?.experience === "none" ? [true, false] : [false]).flatMap((noexp) =>
+    (home ? [home, null] : [null]).flatMap((region) => candidates.slice(0, 3).map((prof) => ({ prof, region, noexp }))),
+  );
+  const results = await Promise.all(
+    attempts.map(({ prof, region, noexp }) => findJobs({ ...EMPTY_FIND, mode: "jobs", p: prof.id, noexp }, { regionId: region?.id ?? null, districtId: null, remote: false }, HOME_LIST)),
+  );
+  for (const [i, res] of results.entries()) {
+    if (!res.ok) return res;
+    if (!res.items.length) continue;
+    const { prof, region } = attempts[i]!;
+    return {
+      ok: true,
+      kind: "match",
+      items: res.items,
+      total: res.total,
+      images: res.images,
+      photos: res.photos ?? {},
+      profession: prof,
+      region,
+      district: null,
+      noMatchFor: null,
+      allHref: findHref(EMPTY_FIND, { mode: "jobs", p: prof.id, region: region?.slug ?? "all", district: region ? "all" : null }),
+    };
   }
   for (const where of place.region ? [place, { region: null, district: null }] : [place]) {
     const res = await newJobs(where.region?.id ?? null, where.district?.id ?? null, HOME_LIST);

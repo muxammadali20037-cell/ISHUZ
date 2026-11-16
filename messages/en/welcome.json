@@ -39,7 +39,7 @@
     "version": "App version: {v}"
   },
   "splash": {
-    "slogan": "Jobs and workers in one place"
+    "slogan": "A good job — a bright future!"
   },
   "intro": {
     "skip": "Skip",
@@ -59,7 +59,6 @@
     "later": "I'll choose later"
   },
   "entry": {
-    "today": "{count} new posts today",
     "title": "What are you looking for?",
     "subtitle": "Pick one and we'll open the right sections",
     "worker_tile": "Find a job",
@@ -78,8 +77,6 @@
     "perk_call": "Call in one tap",
     "perk_telegram": "Sign in with Telegram",
     "perk_verified": "Verified employers",
-    "have_account": "Already have an account?",
-    "login": "Sign in",
     "for_seekers": "For job seekers",
     "for_employers": "For employers",
     "q_daily": "Daily jobs",
@@ -111,12 +108,12 @@
       "slides": "Introduction"
     },
     "role": {
-      "title": "Choose your role",
-      "subtitle": "The app opens in this role.",
+      "title": "What brings you here?",
+      "subtitle": "The app will open for this goal.",
       "worker_title": "I'm looking for a job",
-      "worker_desc": "Find new opportunities",
-      "employer_title": "I'm hiring",
-      "employer_desc": "Find people for my team",
+      "worker_desc": "Browse vacancies and apply",
+      "employer_title": "I'm looking for staff",
+      "employer_desc": "Post vacancies and find candidates",
       "continue": "Continue",
       "note": "You can switch the role later in “Profile”.",
       "error": "Your choice wasn't saved. Please try again."
@@ -130,12 +127,37 @@
       "edit": "Edit profile"
     },
     "welcome": {
-      "title": "What are you looking for?",
-      "subtitle": "No sign-in needed.",
-      "worker_desc": "Vacancies, daily work, a helper",
-      "employer_desc": "Ready workers, post a vacancy",
-      "go": "Start",
-      "how": "How does it work?"
+      "title": "The right opportunity for your future starts here.",
+      "subtitle": "Find a job, discover new opportunities and grow your career.",
+      "how": "How does it work?",
+      "start": "Get started",
+      "have_account": "I have an account",
+      "photo_alt": "A person at work"
+    },
+    "professions": {
+      "step": "Step {current} of {total}",
+      "title": "Which professions suit you?",
+      "subtitle": "Pick a few — we'll show matching jobs first.",
+      "picked": "Selected: {count} / {max}",
+      "remove": "Remove {name}",
+      "limit": "You can pick up to {max} professions.",
+      "empty": "No professions selected yet. Search below or pick a field.",
+      "add_more": "Add another profession",
+      "continue": "Continue",
+      "skip": "Skip"
+    },
+    "place": {
+      "title": "Where do you want to work?",
+      "subtitle": "We'll show jobs in this area first.",
+      "region": "Region",
+      "region_all": "All of Uzbekistan",
+      "district": "District or city",
+      "district_all": "Whole region",
+      "remote": "Remote work (from home) also suits me",
+      "experience": "How much experience do you have?",
+      "optional": "Optional",
+      "finish": "Done",
+      "skip": "Skip"
     }
   },
   "market": {

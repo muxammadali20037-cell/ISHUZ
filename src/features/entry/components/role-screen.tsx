@@ -9,8 +9,21 @@ import { RolePicker } from "./role-picker";
  * 7-ekran: "O'z rolingizni tanlang". /start/rol va har kirishning birinchi qadami (/auth) — bitta ko'rinish.
  * Tanlovdan so'ng `next` ga (kirish usuli yoki oqimning keyingi qadami).
  */
-export async function RoleScreen({ mode, next, backHref, error }: { mode: AppMode | null; next: string; backHref: string; error?: boolean }) {
-  const [{ t }, media] = await Promise.all([getT(), getEntryMedia()]);
+export async function RoleScreen({
+  mode,
+  next,
+  backHref,
+  error,
+  welcome = false,
+}: {
+  mode: AppMode | null;
+  next: string;
+  backHref: string;
+  error?: boolean;
+  /** xush kelibsiz ekranidagi "Boshlash"dan (02 → 04) */
+  welcome?: boolean;
+}) {
+  const [{ t, locale }, media] = await Promise.all([getT(), getEntryMedia()]);
   return (
     <EntryScreen className="sm:max-w-2xl" left={<EntryBack href={backHref} label={t("common.actions.back")} />}>
       <EntryHeading className="pt-2" title={t("welcome.entry.role.title")} subtitle={t("welcome.entry.role.subtitle")} />
@@ -22,6 +35,7 @@ export async function RoleScreen({ mode, next, backHref, error }: { mode: AppMod
       <RolePicker
         initial={mode}
         next={next}
+        welcome={welcome ? { locale } : null}
         images={{
           worker: <EntryImage slot="role_worker" media={media} sizes="96px" className="size-full" />,
           employer: <EntryImage slot="role_employer" media={media} sizes="96px" className="size-full" />,

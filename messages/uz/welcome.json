@@ -39,7 +39,7 @@
     "version": "Ilova versiyasi: {v}"
   },
   "splash": {
-    "slogan": "Ish ham, ishchi ham — shu yerda"
+    "slogan": "Yaxshi ish — yorqin kelajak!"
   },
   "intro": {
     "skip": "O'tkazib yuborish",
@@ -59,7 +59,6 @@
     "later": "Keyinroq tanlayman"
   },
   "entry": {
-    "today": "Bugun {count} ta yangi e'lon",
     "title": "Nima qidiryapsiz?",
     "subtitle": "Tanlang — sizga kerakli bo'limlar ochiladi",
     "worker_tile": "Ish topaman",
@@ -78,8 +77,6 @@
     "perk_call": "Bir bosishda qo'ng'iroq",
     "perk_telegram": "Telegram orqali kirish",
     "perk_verified": "Tekshirilgan ish beruvchilar",
-    "have_account": "Hisobingiz bormi?",
-    "login": "Kirish",
     "for_seekers": "Ish izlovchilarga",
     "for_employers": "Ish beruvchilarga",
     "q_daily": "Kunlik ish",
@@ -111,12 +108,12 @@
       "slides": "Tanishtiruv"
     },
     "role": {
-      "title": "O'z rolingizni tanlang",
-      "subtitle": "Ilova shu rolda ochiladi.",
-      "worker_title": "Ish qidiryapman",
-      "worker_desc": "Yangi imkoniyatlar topish",
-      "employer_title": "Ishchi qidiryapman",
-      "employer_desc": "Jamoam uchun xodim topish",
+      "title": "Siz qaysi maqsadda keldingiz?",
+      "subtitle": "Ilova shu maqsad bo'yicha ochiladi.",
+      "worker_title": "Men ish qidiryapman",
+      "worker_desc": "Vakansiyalarni ko'ring va ariza yuboring",
+      "employer_title": "Men xodim qidiryapman",
+      "employer_desc": "Vakansiya joylang va nomzod toping",
       "continue": "Davom etish",
       "note": "Rolni keyin «Profil»da bir bosishda almashtirasiz.",
       "error": "Tanlov saqlanmadi. Qayta urinib ko'ring."
@@ -130,12 +127,37 @@
       "edit": "Profilni tahrirlash"
     },
     "welcome": {
-      "title": "Siz nima qidiryapsiz?",
-      "subtitle": "Kirish shart emas.",
-      "worker_desc": "Vakansiyalar, kunlik ishlar, yordamchi",
-      "employer_desc": "Tayyor ishchilar, vakansiya joylash",
-      "go": "Boshlash",
-      "how": "Qanday ishlaydi?"
+      "title": "Kelajagingiz uchun to'g'ri imkoniyat shu yerdan boshlanadi.",
+      "subtitle": "Ish toping, yangi imkoniyatlarni kashf eting va karyerangizni rivojlantiring.",
+      "how": "Qanday ishlaydi?",
+      "start": "Boshlash",
+      "have_account": "Hisobim mavjud",
+      "photo_alt": "Ishda turgan odam"
+    },
+    "professions": {
+      "step": "{current}/{total}-qadam",
+      "title": "Qaysi kasblar sizga mos keladi?",
+      "subtitle": "Bir nechtasini tanlang — mos ishlarni birinchi ko'rsatamiz.",
+      "picked": "Tanlangan: {count} / {max}",
+      "remove": "{name} — olib tashlash",
+      "limit": "Ko'pi bilan {max} ta kasb tanlash mumkin.",
+      "empty": "Hali kasb tanlanmagan. Pastda qidiring yoki sohani tanlang.",
+      "add_more": "Yana kasb qo'shish",
+      "continue": "Davom etish",
+      "skip": "O'tkazib yuborish"
+    },
+    "place": {
+      "title": "Qayerda ishlashni istaysiz?",
+      "subtitle": "Shu hududdagi ishlarni birinchi ko'rsatamiz.",
+      "region": "Viloyat",
+      "region_all": "Butun O'zbekiston",
+      "district": "Tuman yoki shahar",
+      "district_all": "Butun viloyat",
+      "remote": "Masofaviy (uydan) ish ham mos keladi",
+      "experience": "Tajribangiz qancha?",
+      "optional": "Ixtiyoriy",
+      "finish": "Tayyor",
+      "skip": "O'tkazib yuborish"
     }
   },
   "market": {

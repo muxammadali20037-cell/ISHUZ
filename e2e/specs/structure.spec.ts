@@ -124,10 +124,10 @@ test.describe("tuzilma", () => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/start/rol?next=%2Fauth%2Ftelefon");
-    const group = page.getByRole("group", { name: "O'z rolingizni tanlang" });
+    const group = page.getByRole("group", { name: "Siz qaysi maqsadda keldingiz?" });
     await expect(group.getByRole("radio")).toHaveCount(2);
-    await group.getByText("Ishchi qidiryapman", { exact: true }).click();
-    await expect(group.getByRole("radio", { name: /Ishchi qidiryapman/ })).toBeChecked();
+    await group.getByText("Men xodim qidiryapman", { exact: true }).click();
+    await expect(group.getByRole("radio", { name: /Men xodim qidiryapman/ })).toBeChecked();
     await page.getByRole("button", { name: "Davom etish" }).click();
     await page.waitForURL("**/auth/telefon");
     await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
