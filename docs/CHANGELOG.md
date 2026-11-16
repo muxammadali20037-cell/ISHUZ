@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · Dizayn tizimi 4.0 — ranglar (`claude/design-tokens`)
+
+Ega ("MASTER PROMPT", 2-bosqich): Primary `#1558D6`, Secondary `#EAF1FF`, Background `#F5F7FA`, Surface `#FFFFFF`,
+Text `#101828`, Secondary text `#667085`, Success `#16A36A`, Error `#DC3545`, kartalar 12–16px, yengil soya.
+
+- `globals.css` yorug' mavzu tokenlari shu palitraga o'tdi; tuzilish va komponentlar o'zgarmadi.
+- AA uchun matn variantlari: ikkilamchi matn `#626C81`, muvaffaqiyat `#107A4F`, xato `#C62F3E` (asl ranglar `#EAF1FF`
+  yoki fon ustida 4.5:1 dan past). `#16A36A` — faqat belgi.
+- `--radius` 12px, soyalar neytral va yengilroq. `brand-contrast.test.ts` 4.0 qiymatlarini mahkamlaydi.
+
 ## 2026-11-16 · Kanal posti — oddiy rasm va "Ariza qoldirish" (`claude/plain-post`)
 
 Ega: "rasmi kerak emas, oddiy o'zi chiqsin: yozuv, vakansiya nomi, «Ariza qoldirish» chiqsin, sayt nomi kerak emas …

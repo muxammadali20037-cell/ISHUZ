@@ -16,7 +16,30 @@ Namuna rasmlar — sifat darajasi uchun, piksel nusxasi uchun emas. Ulardan **ol
 
 ## 2. Ranglar
 
-### 3.0 ranglari (2026-11-15, ega yuborgan namuna rasm) — amaldagi qiymatlar
+### 4.0 ranglari (2026-11-16, ega "MASTER PROMPT" dizayn tizimi) — amaldagi qiymatlar
+
+Ega talabi: Primary `#1558D6`, Secondary `#EAF1FF`, Background `#F5F7FA`, Surface `#FFFFFF`, Text `#101828`,
+Secondary text `#667085`, Success `#16A36A`, Error `#DC3545`; Inter; 8px oraliq; kartalar 12–16px; yengil soya.
+Tuzilish o'zgarmadi — faqat tokenlar. AA (≥ 4.5:1) dan o'tmagan uchta rang uchun matn varianti olindi (asl rang — belgi/nuqta):
+
+| Token | 4.0 qiymati | Kontrast |
+| --- | --- | --- |
+| `--primary`, `--primary-ink`, `--ring`, `--brand` | `#1558D6` | oq matn 6.2, fon 5.8, `#EAF1FF` 5.5 ✓ |
+| `--primary-hover` | `#1149B5` | oq 7.9 |
+| `--primary-soft`, `--secondary`, `--accent`, `--hero-soft`, `--tint-blue` | `#EAF1FF` | |
+| `--background` | `#F5F7FA` | |
+| `--card` | `#FFFFFF` | |
+| `--foreground` | `#101828` | fon 16.5 ✓ |
+| `--muted-foreground` | `#626C81` (talab `#667085`) | `#667085` `#EAF1FF` ustida 4.4 — o'tmaydi; `#626C81`: oq 5.3, fon 4.9, `#EAF1FF` 4.65 ✓ |
+| `--success` / `--brand-green` | `#107A4F` matn / `#16A36A` belgi | `#16A36A` oq ustida 3.2 — faqat belgi |
+| `--destructive` | `#C62F3E` (talab `#DC3545`) | `#DC3545` fonda 4.2 — o'tmaydi; `#C62F3E`: oq 5.4, fon 5.1 ✓ |
+| `--border` / `--input` | `#EAECF0` / `#D0D5DD` | dekorativ |
+| `--radius` | `0.75rem` (12px); kartalar `rounded-2xl` (16px) | |
+| `--shadow-*` | neytral `rgb(16 24 40 / …)`, yengil | |
+
+Navy (`--navy`, footer va yon menyu) va "AI" to'q sariq rangi o'zgarmadi. Qorong'i mavzu — keyingi qadamda.
+
+### 3.0 ranglari (2026-11-15, ega yuborgan namuna rasm) — tarix
 
 Ega: "tuzilishini o'zgartirma, faqat dizaynni shunga mosla — ranglarni". Tuzilish (sahifalar, bloklar tartibi) 2.0 dagidek;
 o'zgargani — ranglar, soyalar, belgi plitkalari. Namunadagi soxta raqamlar ("2 500+ vakansiya"), begona logotiplar va stok

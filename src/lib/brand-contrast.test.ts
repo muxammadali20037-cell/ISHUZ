@@ -110,16 +110,21 @@ describe("UI elementlari kontrasti (≥ 3:1)", () => {
   }
 });
 
-describe("3.0 palitrasi (2026-11-15, ega namunasi; docs/DESIGN_SYSTEM.md)", () => {
+describe("4.0 palitrasi (2026-11-16, ega dizayn tizimi; docs/DESIGN_SYSTEM.md)", () => {
   const light = block(":root");
   it("talabdagi asosiy ranglar o'z joyida", () => {
+    expect(light.primary?.toLowerCase()).toBe("#1558d6"); // Primary
+    expect(light["primary-soft"]?.toLowerCase()).toBe("#eaf1ff"); // Secondary
+    expect(light.secondary?.toLowerCase()).toBe("#eaf1ff");
+    expect(light.background?.toLowerCase()).toBe("#f5f7fa"); // Background
+    expect(light.card?.toLowerCase()).toBe("#ffffff"); // Surface
+    expect(light.foreground?.toLowerCase()).toBe("#101828"); // Text
+    expect(light["brand-green"]?.toLowerCase()).toBe("#16a36a"); // Success (belgi)
+    // AA uchun matn variantlari: Secondary text #667085, Success #16A36A va Error #DC3545 ning to'qroq ko'rinishi
+    expect(light["muted-foreground"]?.toLowerCase()).toBe("#626c81");
+    expect(light.success?.toLowerCase()).toBe("#107a4f");
+    expect(light.destructive?.toLowerCase()).toBe("#c62f3e");
     expect(light.navy?.toLowerCase()).toBe("#0d1f3f");
-    expect(light.primary?.toLowerCase()).toBe("#0b57f0");
-    expect(light.background?.toLowerCase()).toBe("#f5f7fd");
-    expect(light.card?.toLowerCase()).toBe("#ffffff");
-    expect(light["brand-green"]?.toLowerCase()).toBe("#16a378");
-    expect(light.foreground?.toLowerCase()).toBe("#0e1a3d");
-    expect(light.border?.toLowerCase()).toBe("#e6ebf5");
   });
 });
 
