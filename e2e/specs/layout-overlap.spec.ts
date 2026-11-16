@@ -107,7 +107,8 @@ test("pastki menyu: hech narsa menyudan yuqoriga chiqmaydi — ostidan o'tayotga
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/");
       const nav = page.locator("nav.bottom-nav");
-      await expect(nav.getByRole("link", { name: "E'lon" })).toBeVisible();
+      // "E'lon" — faqat ish beruvchida (4.0: ish qidiruvchida beshta bo'lim)
+      if (mode === "employer") await expect(nav.getByRole("link", { name: "E'lon" })).toBeVisible();
       const out = await nav.evaluate((n) => {
         const top = n.getBoundingClientRect().top;
         return Array.from(n.querySelectorAll("*"))

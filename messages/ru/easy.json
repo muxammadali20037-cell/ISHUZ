@@ -462,7 +462,8 @@
     "tab_saved": "Избранное",
     "tab_dashboard": "Панель",
     "tab_post": "Разместить",
-    "post_worker_cta": "Разместить резюме"
+    "post_worker_cta": "Разместить резюме",
+    "tab_home_page": "Главная"
   },
   "moderation": {
     "pending_title": "Объявление сохранено",
@@ -724,7 +725,8 @@
     "demos_exact": "Образцы объявлений — не настоящие",
     "demos_category": "Образцы из этой сферы — не настоящие",
     "demos_all": "Все образцы",
-    "top_placeholder": "Поиск работы и работников"
+    "top_placeholder": "Поиск работы и работников",
+    "top_placeholder_jobs": "Ищите должность или компанию..."
   },
   "mode": {
     "chooser_title": "Что вы ищете?",

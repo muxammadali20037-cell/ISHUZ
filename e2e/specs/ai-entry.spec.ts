@@ -18,8 +18,8 @@ test("mehmon (ish izlovchi rejimi), kompyuter: yuqori menyuda 'Yordamchi' — bo
   await page.goto("/");
   const nav = page.getByRole("banner").getByRole("navigation", { name: "Asosiy bo'limlar" });
   // nomlari bilan (faqat belgi emas): "Yordamchi" birinchi bo'limdan keyin
-  await expect(nav.getByRole("link").filter({ visible: true })).toHaveText(["Ishlar", "Yordamchi", "Saqlangan", "Arizalar", "Profil"]);
-  for (const name of ["Ishlar", "Yordamchi", "Saqlangan", "Arizalar", "Profil"]) {
+  await expect(nav.getByRole("link").filter({ visible: true })).toHaveText(["Bosh sahifa", "Yordamchi", "Ishlar", "Arizalar", "Profil"]);
+  for (const name of ["Bosh sahifa", "Yordamchi", "Ishlar", "Arizalar", "Profil"]) {
     const label = nav.getByRole("link", { name, exact: true }).getByText(name, { exact: true });
     expect(await label.evaluate((el) => el.getBoundingClientRect().width), `"${name}" nomi ko'rinadi`).toBeGreaterThan(10);
   }
@@ -81,8 +81,8 @@ test("telefon: yuqori paneldagi belgi (bosh sahifada alohida karta yo'q); pastki
   const top = page.getByRole("banner").getByRole("link", { name: "Yordamchi" });
   await expect(top).toBeVisible();
   await expect(page.locator("main [data-ai-entry]")).toHaveCount(0);
-  // pastki menyu: 4 bo'lim + "E'lon" — oltinchi katak qo'shilmagan
-  await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
+  // pastki menyu (4.0): beshta bo'lim — oltinchi katak qo'shilmagan
+  await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]);
   // boshqa sahifadan ham bir bosishda
   await page.goto("/saved");
   await page.getByRole("banner").getByRole("link", { name: "Yordamchi" }).click();

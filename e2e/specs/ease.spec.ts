@@ -131,8 +131,12 @@ test("G2+G3: kartada 'Ariza yuborish' → kirish → ariza oynasi o'zi ochiladi 
   const dialog = page.getByRole("dialog", { name: "Ariza yuborish" });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByText(/Profil to'ldirish shart emas/)).toBeVisible();
+  // 1-qadam: tezkor ariza (rezyumesiz) — 2-qadamda xabar
+  await expect(dialog.getByText("Tezkor ariza").first()).toBeVisible();
+  await dialog.getByRole("button", { name: "Davom etish" }).click();
   // profil yo'q — "profilim bilan tanishing" emas, "men bilan bog'laning"
   await expect(dialog.getByRole("textbox")).toHaveValue("Assalomu alaykum! «Kassir — supermarket» vakansiyasiga qiziqyapman. Iltimos, men bilan bog'laning.");
+  await dialog.getByRole("button", { name: "Davom etish" }).click();
   await dialog.getByRole("button", { name: "Ariza yuborish" }).click();
   await expect(page.getByRole("dialog").getByText("Ariza yuborildi").first()).toBeVisible();
   await expect(page.getByRole("dialog").getByRole("link", { name: /Profilingizni 1 daqiqada to'ldiring/ })).toHaveAttribute("href", "/post/worker");

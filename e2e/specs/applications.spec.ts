@@ -59,6 +59,8 @@ test("ariza: ishchi yuboradi → ish beruvchi kabinetdan ochadi, holatni o'zgart
   await loginAs(context, USERS.workerB);
   await page.goto(`/jobs/${vacancy.slug}`);
   await page.getByRole("button", { name: "Ariza yuborish" }).last().click();
+  // 3 qadam: rezyume → qo'shimcha → tasdiqlash
+  for (let i = 0; i < 2; i++) await page.getByRole("dialog").getByRole("button", { name: "Davom etish" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Ariza yuborish" }).click();
   await expect(page.getByRole("dialog").getByText("Ariza yuborildi").first()).toBeVisible();
   await page.getByRole("link", { name: "Arizani ko'rish" }).click();

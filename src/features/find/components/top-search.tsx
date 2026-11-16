@@ -12,7 +12,9 @@ import { AiFinder } from "./ai-finder";
  */
 export function TopSearch({ mode, ai }: { mode: "jobs" | "workers"; ai: boolean }) {
   const { t } = useT();
-  const label = t("easy.finder.top_placeholder");
+  // ish qidiruvchi (4.0, ega "MASTER PROMPT"): "Lavozim yoki kompaniyani qidiring..." (qidiruv kompaniya nomini ham ko'radi);
+  // ish beruvchi — "Ish va ishchilar izlash"
+  const label = t(mode === "jobs" ? "easy.finder.top_placeholder_jobs" : "easy.finder.top_placeholder");
   if (ai) return <AiFinder variant="top" defaultMode={mode} locked fieldLabel={label} placeholder={label} submitLabel={t("easy.home2.submit")} />;
   return (
     <Form

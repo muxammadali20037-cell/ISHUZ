@@ -3,18 +3,16 @@
 import { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Bookmark, CheckCircle2, Info, Send, Settings2, Share2 } from "lucide-react";
+import { Bookmark, CheckCircle2, Send, Settings2, Share2 } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import type { Enums } from "@/types/database.types";
 import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
-import { Textarea } from "@/components/ui/input";
-import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
 import { applyToVacancy } from "../actions";
+import { ApplySteps } from "./apply-steps";
 import { errorMessage } from "../i18n-helpers";
-import { APPLY_MESSAGE_MAX } from "../limits";
 import type { VacancyViewerState } from "../types";
 import { useSaveVacancy } from "./use-save-vacancy";
 import { celebrate } from "@/lib/celebrate";
@@ -217,7 +215,7 @@ export function VacancyActions({ vacancy, viewer, layout = "card" }: VacancyActi
               <span className="flex size-16 items-center justify-center rounded-full bg-success-soft text-success">
                 <CheckCircle2 className="size-8" />
               </span>
-              <p className="mt-4 text-lg font-semibold">{t("jobs.apply.success_title")}</p>
+              <p className="mt-4 text-lg font-semibold">{t("jobs.apply.success_big")}</p>
               <p className="mt-1 max-w-sm text-sm text-muted-foreground">{t("jobs.apply.success_desc")}</p>
               <Button asChild className="mt-6" fullWidth>
                 <Link href={`/applications/${done}`}>{t("jobs.apply.success_action")}</Link>
@@ -233,38 +231,15 @@ export function VacancyActions({ vacancy, viewer, layout = "card" }: VacancyActi
             </div>
           </Sheet>
         ) : (
-          <Sheet
-            title={t("jobs.apply.title")}
-            description={t(viewer.kind === "no_worker" ? "jobs.apply.description_quick" : "jobs.apply.description")}
-            footer={
-              <Button type="button" fullWidth size="lg" onClick={submit} loading={pending}>
-                <Send className="size-4" /> {t("jobs.apply.submit")}
-              </Button>
-            }
-          >
-            {viewer.kind === "no_worker" ? (
-              <p className="mb-3 flex items-start gap-2 rounded-xl bg-primary-soft/60 px-3 py-2.5 text-sm">
-                <Info className="mt-0.5 size-4 shrink-0 text-primary-ink" aria-hidden />
-                {t("jobs.apply.quick_note")}
-              </p>
-            ) : null}
-            <Field
-              label={t("jobs.apply.message_label")}
-              hint={t("jobs.apply.message_hint")}
-              htmlFor="apply-message"
-              description={t("jobs.apply.chars", { count: message.length, max: APPLY_MESSAGE_MAX })}
-            >
-              <Textarea
-                id="apply-message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value.slice(0, APPLY_MESSAGE_MAX))}
-                maxLength={APPLY_MESSAGE_MAX}
-                placeholder={t("jobs.apply.message_placeholder")}
-                className="min-h-[140px]"
-                disabled={pending}
-              />
-            </Field>
-          </Sheet>
+          <ApplySteps
+            quick={viewer.kind === "no_worker"}
+            vacancy={{ title: vacancy.title, companyName: vacancy.companyName }}
+            message={message}
+            setMessage={setMessage}
+            pending={pending}
+            onSubmit={submit}
+            createResumeHref={`/onboarding/worker?next=${applyReturn}`}
+          />
         )}
       </Dialog>
     </>

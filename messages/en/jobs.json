@@ -174,7 +174,35 @@
       "generic": "Application not sent. Please try again."
     },
     "quick_note": "No profile needed — your application is sent with your name and phone number. The employer will get in touch with you.",
-    "quick_profile_cta": "Fill in your profile in a minute — employers will also find you in search"
+    "quick_profile_cta": "Fill in your profile in a minute — employers will also find you in search",
+    "next": "Continue",
+    "step_of": "Step {current} of {total}",
+    "success_big": "Your application has been sent!",
+    "steps": {
+      "label": "Application steps",
+      "resume": "Resume",
+      "extra": "Details",
+      "confirm": "Confirm"
+    },
+    "resume": {
+      "profile_title": "Resume from my profile",
+      "profile_desc": "The employer will see your profile: experience, skills, education.",
+      "download_pdf": "View resume as PDF",
+      "edit": "Edit resume",
+      "quick_title": "Quick apply",
+      "create": "Create a full resume first"
+    },
+    "quick_lines": {
+      "title": "Quick add",
+      "start_now": "I can start right away.",
+      "have_experience": "I have experience in this field.",
+      "part_time_ok": "Part-time also works for me."
+    },
+    "confirm": {
+      "vacancy": "Vacancy",
+      "resume": "Resume",
+      "no_message": "No message"
+    }
   },
   "save": {
     "saved": "Vacancy saved",

@@ -68,7 +68,7 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
   // bitta qidiruv: yozilgan matn yordamchiga ketadi. 2026-11-15: telefonda u sarlavhada (Uzum kabi) — sahifada takrorlanmaydi
-  const search = page.getByRole("search", { name: "Ish va ishchilar izlash" });
+  const search = page.getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." });
   await expect(search).toHaveCount(1);
   await expect(page.locator("header").getByRole("searchbox")).toHaveCount(1);
   await expect(page.getByRole("main").getByRole("searchbox")).toBeHidden();
@@ -158,18 +158,16 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  // 2026-10: ish qidiruvchi (rejim tanlamagan mehmon ham) — Ishlar · Saqlangan · Arizalar · Profil
+  // 4.0 (ega "MASTER PROMPT"): ish qidiruvchi (rejim tanlamagan mehmon ham) — Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  // o'rtada — bo'rtib turadigan "E'lon" (ish qidiruvchi: o'zi haqida e'lon / CV)
-  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
-  await expect(nav.getByRole("link", { name: "E'lon" })).toHaveAttribute("href", "/post/worker");
+  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: "Ishlar" }).click();
+  await page.waitForURL(/\/jobs$/);
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
-  await nav.getByRole("link", { name: "Saqlangan" }).click();
-  await page.waitForURL(/\/saved$/);
-  await expect(nav.getByRole("link", { name: "Saqlangan" })).toHaveAttribute("aria-current", "page");
-  await expect(nav.getByRole("link", { name: "Ishlar" })).not.toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).not.toHaveAttribute("aria-current", "page");
   // 360 px da yozuvlar sig'adi (kesilmaydi)
-  for (const name of ["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]) {
+  for (const name of ["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]) {
     const label = nav.getByRole("link", { name }).locator("span").first();
     expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), name).toBe(true);
   }

@@ -174,13 +174,14 @@ async function workersInDb(prof: string, where: { district?: string; region?: st
 }
 
 /**
- * Sarlavhadagi qidiruvga ("Ish va ishchilar izlash") oddiy so'z yozib, Enter — yordamchi oynasidagi javob.
+ * Sarlavhadagi qidiruvga oddiy so'z yozib, Enter — yordamchi oynasidagi javob.
  * Har so'rov yangi suhbatda (oldingi javob aralashmasin): sahifa skriptlaridan oldin suhbat xotirasi tozalanadi.
  */
 async function search(page: Page, text: string) {
   await page.goto("/");
   const field = page.locator("form[data-top-search][data-hydrated] input[name='q']");
-  await expect(field).toHaveAttribute("placeholder", "Ish va ishchilar izlash");
+  // ish qidiruvchida — "Lavozim yoki kompaniyani qidiring...", ish beruvchida — "Ish va ishchilar izlash" (4.0)
+  await expect(field).toHaveAttribute("placeholder", /^(Lavozim yoki kompaniyani qidiring\.\.\.|Ish va ishchilar izlash)$/);
   await field.fill(text);
   await field.press("Enter");
   const dialog = page.getByRole("dialog");

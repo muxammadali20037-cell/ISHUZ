@@ -174,7 +174,35 @@
       "generic": "Ariza yuborilmadi. Qayta urinib ko'ring."
     },
     "quick_note": "Profil to'ldirish shart emas — ariza ismingiz va telefon raqamingiz bilan yuboriladi. Ish beruvchi siz bilan bog'lanadi.",
-    "quick_profile_cta": "Profilingizni 1 daqiqada to'ldiring — ish beruvchilar sizni qidiruvda ham topadi"
+    "quick_profile_cta": "Profilingizni 1 daqiqada to'ldiring — ish beruvchilar sizni qidiruvda ham topadi",
+    "next": "Davom etish",
+    "step_of": "{current}/{total}-qadam",
+    "success_big": "Arizangiz muvaffaqiyatli yuborildi!",
+    "steps": {
+      "label": "Ariza qadamlari",
+      "resume": "Rezyume",
+      "extra": "Qo'shimcha",
+      "confirm": "Tasdiqlash"
+    },
+    "resume": {
+      "profile_title": "Profilimdagi rezyume",
+      "profile_desc": "Ish beruvchi profilingizni ko'radi: tajriba, ko'nikmalar, ta'lim.",
+      "download_pdf": "Rezyumeni PDF ko'rish",
+      "edit": "Rezyumeni tahrirlash",
+      "quick_title": "Tezkor ariza",
+      "create": "Avval to'liq rezyume yaratish"
+    },
+    "quick_lines": {
+      "title": "Tez qo'shish",
+      "start_now": "Darhol ishga chiqa olaman.",
+      "have_experience": "Shu sohada tajribam bor.",
+      "part_time_ok": "Qisman bandlik ham mos keladi."
+    },
+    "confirm": {
+      "vacancy": "Vakansiya",
+      "resume": "Rezyume",
+      "no_message": "Xabarsiz"
+    }
   },
   "save": {
     "saved": "Vakansiya saqlandi",

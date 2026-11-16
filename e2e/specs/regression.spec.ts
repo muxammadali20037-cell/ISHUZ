@@ -99,13 +99,16 @@ test.describe("#27: ariza yuborish — tarmoq uzilishi va kunlik limit", () => {
     await page.goto(`/jobs/${slug}`);
     await page.getByRole("button", { name: "Ariza yuborish" }).last().click();
     const dialog = page.getByRole("dialog");
+    await dialog.getByRole("button", { name: "Davom etish" }).click();
     await dialog.getByLabel(/Qisqacha xabar/).fill("Assalomu alaykum! Tajribam 4 yil.");
+    await dialog.getByRole("button", { name: "Davom etish" }).click();
     // server action so'rovi (POST, Next-Action sarlavhasi) uziladi
     await page.route(`**/jobs/${slug}`, (route) => (route.request().method() === "POST" ? route.abort("internetdisconnected") : route.continue()));
     await dialog.getByRole("button", { name: "Ariza yuborish" }).click();
     await expect(page.getByText("Internet bilan aloqa yo'q. Ulanishni tekshiring.")).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Ariza yuborish" })).toBeEnabled();
-    await expect(dialog.getByLabel(/Qisqacha xabar/)).toHaveValue("Assalomu alaykum! Tajribam 4 yil.");
+    // tasdiqlash qadamida xabar saqlangan
+    await expect(dialog.getByText("Assalomu alaykum! Tajribam 4 yil.")).toBeVisible();
     // internet qaytdi — o'sha tugma bilan yuboriladi, bitta ariza
     await page.unroute(`**/jobs/${slug}`);
     await dialog.getByRole("button", { name: "Ariza yuborish" }).click();
@@ -122,6 +125,7 @@ test.describe("#27: ariza yuborish — tarmoq uzilishi va kunlik limit", () => {
     await page.goto(`/jobs/${slug}`);
     await page.getByRole("button", { name: "Ariza yuborish" }).last().click();
     const dialog = page.getByRole("dialog");
+    for (let i = 0; i < 2; i++) await dialog.getByRole("button", { name: "Davom etish" }).click();
     await dialog.getByRole("button", { name: "Ariza yuborish" }).click();
     await expect(page.getByText("Bugungi arizalar limiti tugadi. Ertaga qayta urinib ko'ring.")).toBeVisible();
     await expect(dialog.getByRole("button", { name: "Ariza yuborish" })).toBeEnabled();

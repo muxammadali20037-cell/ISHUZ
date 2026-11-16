@@ -31,12 +31,12 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.getByText("Endi xodim topish oson")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   await expect(page.locator("main a[href='/post/worker']:visible").first()).toBeVisible();
-  // pastki menyu (2026-10): Ishlar · Saqlangan · [E'lon] · Arizalar · Profil (chat va bildirishnomalar — yuqori panelda)
+  // pastki menyu (4.0): Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil ("Saqlanganlar" va "E'lon" — Profilda)
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(["Ishlar", "Saqlangan", "E'lon", "Arizalar", "Profil"]);
-  await expect(nav.getByRole("link", { name: "E'lon" })).toHaveAttribute("href", "/post/worker");
-  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/");
-  await expect(nav.getByRole("link", { name: "Saqlangan" })).toHaveAttribute("href", "/saved");
+  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]);
+  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("href", "/");
+  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/jobs");
+  await expect(nav.getByRole("link", { name: "Xabarlar" })).toHaveAttribute("href", "/messages");
   await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/applications");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");

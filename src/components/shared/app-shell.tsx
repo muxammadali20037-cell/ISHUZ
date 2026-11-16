@@ -6,7 +6,7 @@ import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, BriefcaseBusiness, FileCheck2, LayoutDashboard, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { Bell, BriefcaseBusiness, FileCheck2, House, LayoutDashboard, MessageCircle, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -68,21 +68,24 @@ function mainNav(mode: NavMode): NavItem[] {
       },
     ];
   }
+  // 4.0 (ega "MASTER PROMPT", 2026-11-16): Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil. "Saqlanganlar" va
+  // "O'zim haqimda e'lon" — Profil (Kabinetim) va bosh sahifa "Bo'limlar" menyusida (o'chirilmadi)
   return [
+    { href: "/", labelKey: "easy.nav.tab_home_page", icon: House, match: (p) => p === "/" || p === "/ai" },
     {
-      href: "/",
+      href: "/jobs",
       labelKey: "easy.nav.tab_jobs",
       icon: Search,
-      match: (p) =>
-        p === "/" || p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p === "/ai" || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
+      match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
     },
-    { href: "/saved", labelKey: "easy.nav.tab_saved", icon: Bookmark, match: (p) => p.startsWith("/saved") },
     { href: "/applications", labelKey: "easy.nav.tab_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
+    { href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
     {
       href: "/cabinet",
       labelKey: "easy.nav.tab_profile",
       icon: User,
-      match: (p) => (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches")) || p.startsWith("/post"),
+      match: (p) =>
+        (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches") && !p.startsWith("/messages")) || p.startsWith("/post") || p.startsWith("/saved"),
     },
   ];
 }
@@ -102,7 +105,8 @@ export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMo
   const postActive = pathname.startsWith(post.href);
   // o'rtada — "E'lon" (2 ta bo'lim · E'lon · 2 ta bo'lim): ko'k pilyula, menyu ichida (yozuvni to'smaydi). Hamma bo'limda belgi
   // maydoni bir xil balandlikda (h-8) — nomlar bitta chiziqda turadi
-  const cells: (NavItem | "post")[] = [...items.slice(0, 2), "post", ...items.slice(2)];
+  // ish beruvchi: o'rtada "E'lon" (vakansiya); ish qidiruvchi (4.0): beshta bo'lim, "E'lon" — Profilda
+  const cells: (NavItem | "post")[] = mode === "employer" ? [...items.slice(0, 2), "post", ...items.slice(2)] : items;
   return (
     <nav
       className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
@@ -163,7 +167,8 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
   const pathname = usePathname();
   const { t } = useT();
   // "AI yordamchi" — birinchi bo'limdan keyin; /ai ochiq bo'lsa faqat u belgilanadi (telefonda /ai — "Ishlar"/"Profil" ichida)
-  const [first, ...rest] = mainNav(mode);
+  // "Xabarlar" — kompyuterda yuqori panel belgisida (bu qatorda takrorlanmaydi)
+  const [first, ...rest] = mainNav(mode).filter((i) => i.href !== "/messages");
   const items: NavItem[] = first ? [first, AI_NAV, ...rest] : [AI_NAV];
   const onAi = isAiPath(pathname);
   const [navRef, compact] = useFitLabels(items.map((i) => t(i.labelKey)).join("|"));
