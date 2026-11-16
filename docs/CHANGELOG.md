@@ -1,5 +1,16 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · Kanal posti — oddiy rasm va "Ariza qoldirish" (`claude/plain-post`)
+
+Ega: "rasmi kerak emas, oddiy o'zi chiqsin: yozuv, vakansiya nomi, «Ariza qoldirish» chiqsin, sayt nomi kerak emas …
+rasmli qil, prosta: rasmda faqat ish nomi, maoshi, lokatsiyasi, kompaniya nomi bo'lsin, tushunarli bo'lib".
+
+- Kanalga avtomatik vakansiya e'loni: oddiy rasm (`/api/promo/vacancy/<slug>?f=post`, 1200×800) — faqat ish nomi,
+  kompaniya, joylashuv va maosh; odam chizmasi, logotip, sayt nomi yo'q. Izohda faqat vakansiya nomi, tugma —
+  "Ariza qoldirish" (oldin "Batafsil va ariza →"). Rasm ketmasa — to'liq matn, havola ko'rinishi o'chiq.
+- Rasm har doim o'zbekcha (til cookie'siga bog'liq emas) va loyihadagi Manrope shrifti bilan (tarmoqsiz) chiziladi.
+- Ishchi e'lonlari o'zgarmadi (matn). Ulashish uchun e'lon rasmlari (kvadrat, story) va kasb chizmalari joyida qoldi.
+
 ## 2026-11-16 · E'lon rasmi: kasbga mos kiyingan odam; kanalga rasm bilan (`claude/job-art`)
 
 Ega: "e'lon joylanib, guruhga xabar borganda rasm bilan borsin; har bitta kasbga rasm tayyorla — odamning rasmi bo'lsin,

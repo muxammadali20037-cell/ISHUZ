@@ -85,11 +85,11 @@
   "channel": {
     "job_tag": "🟦 ISH",
     "worker_tag": "🟩 ИШЧИ",
-    "open_job": "Батафсил ва ариза →",
     "open_worker": "Ишчини кўриш →",
     "remote": "Масофавий (уйдан)",
     "negotiable": "Келишилади",
     "experience": "Тажриба: {value}",
-    "salary_expect": "Кутилаётган маош: {value}"
+    "salary_expect": "Кутилаётган маош: {value}",
+    "apply": "Ариза қолдириш"
   }
 }

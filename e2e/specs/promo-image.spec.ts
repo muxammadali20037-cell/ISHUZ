@@ -53,6 +53,18 @@ test("kvadrat, story va og — PNG, to'g'ri o'lchamda; sahifaning og:image — s
   await expect(page.locator('meta[property="og:image"]').first()).toHaveAttribute("content", new RegExp(`/api/promo/vacancy/${slug}\\?f=og`));
 });
 
+test("kanal posti rasmi (f=post) — oddiy, 1200×800, til cookie'siga bog'liq emas", async ({ request }) => {
+  const slug = await vacancy("active");
+  const res = await request.get(`/api/promo/vacancy/${slug}?f=post`);
+  expect(res.status()).toBe(200);
+  expect(res.headers()["content-type"]).toContain("image/png");
+  const body = await res.body();
+  expect(pngSize(body)).toEqual({ width: 1200, height: 800 });
+  // ruscha cookie bilan ham aynan shu rasm (kanal o'zbekcha; CDN keshida boshqa til qolmasin)
+  const ru = await request.get(`/api/promo/vacancy/${slug}?f=post`, { headers: { cookie: "ishuz_locale=ru" } });
+  expect((await ru.body()).equals(body)).toBe(true);
+});
+
 test("qoralama vakansiyaning rasmi begonaga ko'rinmaydi", async ({ request }) => {
   const slug = await vacancy("draft");
   expect((await request.get(`/api/promo/vacancy/${slug}?f=square`)).status()).toBe(404);

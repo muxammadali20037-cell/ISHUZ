@@ -3,8 +3,9 @@ import { formatSalaryWithPeriod } from "@/lib/format";
 /**
  * Kanalga avtomatik e'lon matni (sof funksiyalar): vakansiya — "ISH", ishchi e'loni — "ISHCHI" (ega, 2026-11-14:
  * "ish beruvchilar kanaliga — ishchi, ishchilarga — ish"). Faqat saytda hammaga ochiq ma'lumot: telefon, ism, foydalanuvchi
- * rasmi, erkin matn (tavsif, "o'zim haqimda") YO'Q. Vakansiya — rasm bilan (ega, 2026-11-16): e'lon kartasi va kasbga
- * mos kiyingan odam chizmasi (/api/promo/vacancy/…?f=square) — bu haqiqiy odam surati emas, kasb tasviri. Sarlavhadagi telefon raqami, @nik, havola va email ham olib tashlanadi —
+ * rasmi, erkin matn (tavsif, "o'zim haqimda") YO'Q. Vakansiya (ega, 2026-11-16): oddiy rasm — faqat ish nomi, maosh, joylashuv,
+ * kompaniya (/api/promo/vacancy/…?f=post), izohda faqat vakansiya nomi, "Ariza qoldirish" tugmasi; sayt nomi va odam
+ * chizmasi yo'q. Rasm ketmasa — to'liq matn (html). Sarlavhadagi telefon raqami, @nik, havola va email ham olib tashlanadi —
  * bog'lanish faqat sayt orqali (kontakt maxfiyligi, 0074).
  */
 export type T = (key: string, params?: Record<string, string | number>) => string;
@@ -40,10 +41,12 @@ export interface WorkerPostData {
 }
 
 export interface ChannelPost {
+  /** to'liq matn — rasmsiz xabar (yoki rasm ketmasa) */
   html: string;
   button: { text: string; url: string };
-  /** rasm manzili (Telegram o'zi yuklab oladi); bo'lmasa — oddiy matnli xabar */
+  /** rasm manzili (Telegram o'zi yuklab oladi) va uning qisqa izohi */
   photo?: string;
+  caption?: string;
 }
 
 /** Telefon, @nik, havola, email — olib tashlanadi; bo'sh joylar yig'iladi; uzunlik cheklanadi */
@@ -99,8 +102,9 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string): ChannelPost
   ];
   return {
     html: lines.filter((l) => l !== null).join("\n"),
-    button: { text: t("bot.channel.open_job"), url: `${base}/jobs/${encodeURIComponent(d.slug)}` },
-    photo: `${base}/api/promo/vacancy/${encodeURIComponent(d.slug)}?f=square`,
+    button: { text: t("bot.channel.apply"), url: `${base}/jobs/${encodeURIComponent(d.slug)}` },
+    photo: `${base}/api/promo/vacancy/${encodeURIComponent(d.slug)}?f=post`,
+    caption: `<b>${escapeHtml(title)}</b>`,
   };
 }
 
