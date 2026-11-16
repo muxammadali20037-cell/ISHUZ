@@ -124,28 +124,20 @@ export function isChannelLevelError(description: string): boolean {
 }
 
 /**
- * Avtomatik e'lon: HTML matn va bitta havola tugmasi (sayt sahifasi) — kanal o'zi tanlanadi (vakansiya/ishchi).
- * `photo` berilsa — rasm + izoh (sendPhoto); Telegram rasmni ololmasa (sayt band, tarmoq) — o'sha xabar matn bilan ketadi.
+ * Avtomatik e'lon: oddiy HTML matn va bitta tugma (vakansiyada — "Ariza qoldirish") — kanal o'zi tanlanadi.
+ * Rasm va havola ko'rinishi yo'q (ega, 2026-11-16: "rasmi kerak emas, sayt nomi kerak emas").
  */
 export async function sendChannelMessage(input: {
   chatId: string;
   html: string;
   button: { text: string; url: string };
-  photo?: string;
 }): Promise<{ ok: true; messageId: number } | { ok: false; description: string; channelLevel: boolean }> {
-  const reply_markup = { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] };
-  if (input.photo && input.html.length <= 1024) {
-    // rasmni Telegram saytdan o'zi yuklaydi (kartani chizish 1–3 s) — kutish uzunroq
-    const p = await tg<{ message_id: number }>("sendPhoto", { chat_id: input.chatId, photo: input.photo, caption: input.html, parse_mode: "HTML", reply_markup }, 40_000);
-    if (p.ok) return { ok: true, messageId: p.result.message_id };
-    if (p.description === "telegram_not_configured" || isChannelLevelError(p.description)) return { ok: false, description: p.description, channelLevel: true };
-  }
   const r = await tg<{ message_id: number }>("sendMessage", {
     chat_id: input.chatId,
     text: input.html,
     parse_mode: "HTML",
     link_preview_options: { is_disabled: true },
-    reply_markup,
+    reply_markup: { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] },
   });
   if (r.ok) return { ok: true, messageId: r.result.message_id };
   return { ok: false, description: r.description, channelLevel: r.description === "telegram_not_configured" || isChannelLevelError(r.description) };
