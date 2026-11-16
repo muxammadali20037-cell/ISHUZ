@@ -47,3 +47,27 @@ describe("imlo xatosi", () => {
     }
   });
 });
+
+describe("o'qituvchi (ega, 2026-11-17: «o'qituvchi», «uqituvchi», «oqtvchi» — hammasi o'qituvchi)", () => {
+  const WITH_GROUP: TypoEntry[] = [
+    ...INDEX.filter((e) => e.id !== "oqituvchi"),
+    { id: "teacher-group", depth: 2, selectable: false, terms: [{ t: "o'qituvchi", alias: false }] },
+    { id: "avtoinstruktor", depth: 3, terms: [{ t: "avtoinstruktor", alias: false }] },
+  ];
+  it("bitta harf xato — guruh (faqat qidiruvda, `groups`)", () => {
+    expect(bestTypoMatch(["uqituvchi"], WITH_GROUP, { groups: true })?.id).toBe("teacher-group");
+    expect(bestTypoMatch(["uqituvchi"], WITH_GROUP)).toBeNull();
+  });
+  it("unlilari tushib qolgan yozuv — undosh skeleti bo'yicha; kesim (-man) o'zagi ham", () => {
+    expect(bestTypoMatch(["oqtvchi"], WITH_GROUP, { groups: true })?.id).toBe("teacher-group");
+    expect(bestTypoMatch(["oqtvchiman"], WITH_GROUP, { groups: true })?.id).toBe("teacher-group");
+  });
+  it("skelet bir nechta kasbga mos kelsa yoki bosh harf boshqa bo'lsa — taxmin qilinmaydi", () => {
+    const twin: TypoEntry[] = [
+      { id: "a", depth: 2, terms: [{ t: "sotuvchi", alias: false }] },
+      { id: "b", depth: 2, terms: [{ t: "satuvcha", alias: false }] },
+    ];
+    expect(bestTypoMatch(["stvch"], twin)).toBeNull();
+    expect(bestTypoMatch(["aqtvchi"], WITH_GROUP, { groups: true })).toBeNull();
+  });
+});

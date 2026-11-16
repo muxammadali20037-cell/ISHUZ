@@ -67,11 +67,7 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Siz qaysi maqsadda keldingiz?" })).toBeVisible();
     await page.getByText("Men ish qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
-    // 05 kasblar va 06 hudud — ixtiyoriy ("O'tkazib yuborish"), keyin bosh sahifa
-    await page.waitForURL("**/start/kasblar");
-    await page.getByTestId("step-skip").click();
-    await page.waitForURL("**/start/hudud");
-    await page.getByTestId("step-skip").click();
+    // 2026-11-17 (ega): kasb va hudud so'rovnomasi yo'q — rol tanlangach darhol bosh sahifa
     await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
     expect(await cookie(context, "ib_mode")).toBe("worker");

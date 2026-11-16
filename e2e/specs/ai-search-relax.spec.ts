@@ -59,8 +59,9 @@ test("bosh sahifa: bitta qidiruv maydoni, nol ko'rsatkich va fon surati yo'q", a
   await expect(hero.locator("form[data-ai-field]")).toHaveCount(1);
   await expect(hero.locator("input[type='search']")).toHaveCount(1);
   await expect(hero.locator("img")).toHaveCount(0);
-  // 4 ta tez yo'l, har biri ishlaydigan havola
-  await expect(hero.getByRole("navigation").getByRole("listitem")).toHaveCount(4);
+  // katta "+ E'lon joylash" heroda; 4 ta tez yo'l — hero ostida katta plitkalar (ega, 2026-11-17)
+  await expect(hero.locator("[data-home-post]")).toBeVisible();
+  await expect(page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem")).toHaveCount(4);
 });
 
 test("Chilonzorda oshpaz → oynada «Oshpaz» va Chilonzor; tumanda yo'q → qisqa «yo'q» va pastda shunga yaqin ishlar (Samarqanddagi)", async ({ page, context }) => {

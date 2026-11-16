@@ -16,6 +16,8 @@ export interface TypoEntry {
   id: string;
   depth: number;
   terms: TypoTerm[];
+  /** false — guruh (masalan "O'qituvchi": ichida aniq kasblar); faqat qidiruvda (`groups`) olinadi */
+  selectable?: boolean;
 }
 
 /** Ruxsat etilgan xato soni so'z uzunligiga qarab */
@@ -51,17 +53,29 @@ export function editDistance(a: string, b: string, max: number): number {
 
 const bare = (s: string) => s.replace(/'/g, "");
 
+/** Undosh skeleti: "oqtvchi" → "qtvch", "o'qituvchi" → "qtvch" (unlilar tushib qolgan tez yozuv, SMS uslubi) */
+export function consonantSkeleton(s: string): string {
+  return bare(s).replace(/[aeiouy]/g, "");
+}
+
+/** "-man/-miz" (kesim: "oqtvchiman" — "men oqtvchiman") — o'zagi ham tekshiriladi */
+function withoutPredicate(w: string): string[] {
+  const m = /^(.{5,})(man|miz)$/.exec(w);
+  return m ? [w, m[1]!] : [w];
+}
+
 /**
  * So'zlar (normalizeText qilingan, foydalanuvchi yozgan butun so'zlar — qo'shimchasi kesilgan bo'laklar emas) → eng yaqin kasb.
  * Teng bo'lsa: kamroq xato → asl nom (sinonim emas) → yuqoriroq tugun. Topilmasa — null.
  */
-export function bestTypoMatch(words: string[], index: TypoEntry[]): { id: string; term: string; distance: number } | null {
+export function bestTypoMatch(words: string[], index: TypoEntry[], opts: { groups?: boolean } = {}): { id: string; term: string; distance: number } | null {
   let best: { id: string; term: string; distance: number; alias: boolean; depth: number } | null = null;
-  for (const raw of new Set(words)) {
-    const w = bare(raw);
+  const entries = opts.groups ? index : index.filter((e) => e.selectable !== false);
+  const typed = [...new Set(words.flatMap((w) => withoutPredicate(bare(w))))];
+  for (const w of typed) {
     const limit = typoLimit(w.length);
     if (!limit || w.includes(" ")) continue;
-    for (const e of index) {
+    for (const e of entries) {
       for (const term of e.terms) {
         const t = bare(term.t);
         if (t.length < 5) continue;
@@ -75,5 +89,24 @@ export function bestTypoMatch(words: string[], index: TypoEntry[]): { id: string
       }
     }
   }
-  return best ? { id: best.id, term: best.term, distance: best.distance } : null;
+  if (best) return { id: best.id, term: best.term, distance: best.distance };
+  // unlilari tushib qolgan yozuv ("oqtvchi", "oshpz"): undosh skeleti to'liq mos va bosh harfi bir xil — faqat bitta kasb bo'lsa
+  for (const w of typed) {
+    const sk = consonantSkeleton(w);
+    if (sk.length < 4 || w.length < 5) continue;
+    const hits = new Map<string, { id: string; term: string; alias: boolean; depth: number }>();
+    for (const e of entries) {
+      for (const term of e.terms) {
+        const t = bare(term.t);
+        if (t.length < 5 || t[0] !== w[0] || consonantSkeleton(t) !== sk) continue;
+        const cur = hits.get(e.id);
+        if (!cur || (cur.alias && !term.alias)) hits.set(e.id, { id: e.id, term: term.t, alias: term.alias, depth: e.depth });
+      }
+    }
+    // bir nechta kasbga mos kelsa — taxmin qilinmaydi (asl nomli bitta bo'lsa — o'sha)
+    const own = [...hits.values()].filter((h) => !h.alias);
+    const pick = own.length === 1 ? own[0] : hits.size === 1 ? [...hits.values()][0] : undefined;
+    if (pick) return { id: pick.id, term: pick.term, distance: 99 };
+  }
+  return null;
 }

@@ -976,6 +976,16 @@
       "to_employer_hint": "Ishchi topish uchun",
       "to_worker": "Ish izlovchiga o'tish",
       "to_worker_hint": "Ish topish uchun"
+    },
+    "menu": {
+      "post": "E'lon joylash",
+      "post_hint_worker": "O'zingiz haqingizda e'lon — ish beruvchilar topadi",
+      "post_hint_employer": "Vakansiya joylash — nomzodlar topadi",
+      "daily": "Kunlik ish",
+      "daily_hint": "Bugun ishlab, bugun haq olish",
+      "ai_hint": "Sun'iy intellekt: ish qidirish va e'lon joylash",
+      "ai_hint_employer": "Sun'iy intellekt: nomzod qidirish",
+      "jobs_label": "Barcha vakansiyalar"
     }
   },
   "activity": {
@@ -1062,7 +1072,8 @@
     "title_b": " qidiryapsiz?",
     "e_title_a": "Qanday ",
     "e_title_em": "xodim",
-    "e_title_b": " kerak?"
+    "e_title_b": " kerak?",
+    "post_cta": "E'lon joylash"
   },
   "aiws": {
     "title": "Yordamchi",
@@ -1260,9 +1271,9 @@
   },
   "chips": {
     "seek_daily": "Kunlik ish",
-    "seek_near": "Yaqin atrofda ish",
+    "seek_near": "Yaqin atrofdan ish qidirish",
     "seek_remote": "Masofaviy ish",
-    "seek_noexp": "Tajribasiz ish",
+    "seek_noexp": "Tajriba talab qilinmaydigan ishlar",
     "emp_daily": "Kunlik ishchi",
     "emp_near": "Yaqin atrofdagi ishchi",
     "emp_exp": "Tajribali ishchi",
