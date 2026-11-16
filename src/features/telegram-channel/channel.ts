@@ -123,18 +123,29 @@ export function isChannelLevelError(description: string): boolean {
   return /chat not found|not enough rights|need administrator rights|CHAT_WRITE_FORBIDDEN|bot was kicked|bot is not a member|have no rights|CHAT_ADMIN_REQUIRED/i.test(description);
 }
 
-/** Avtomatik e'lon: HTML matn va bitta havola tugmasi (sayt sahifasi) — kanal o'zi tanlanadi (vakansiya/ishchi) */
+/**
+ * Avtomatik e'lon: HTML matn va bitta havola tugmasi (sayt sahifasi) — kanal o'zi tanlanadi (vakansiya/ishchi).
+ * `photo` berilsa — rasm + izoh (sendPhoto); Telegram rasmni ololmasa (sayt band, tarmoq) — o'sha xabar matn bilan ketadi.
+ */
 export async function sendChannelMessage(input: {
   chatId: string;
   html: string;
   button: { text: string; url: string };
+  photo?: string;
 }): Promise<{ ok: true; messageId: number } | { ok: false; description: string; channelLevel: boolean }> {
+  const reply_markup = { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] };
+  if (input.photo && input.html.length <= 1024) {
+    // rasmni Telegram saytdan o'zi yuklaydi (kartani chizish 1–3 s) — kutish uzunroq
+    const p = await tg<{ message_id: number }>("sendPhoto", { chat_id: input.chatId, photo: input.photo, caption: input.html, parse_mode: "HTML", reply_markup }, 40_000);
+    if (p.ok) return { ok: true, messageId: p.result.message_id };
+    if (p.description === "telegram_not_configured" || isChannelLevelError(p.description)) return { ok: false, description: p.description, channelLevel: true };
+  }
   const r = await tg<{ message_id: number }>("sendMessage", {
     chat_id: input.chatId,
     text: input.html,
     parse_mode: "HTML",
     link_preview_options: { is_disabled: true },
-    reply_markup: { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] },
+    reply_markup,
   });
   if (r.ok) return { ok: true, messageId: r.result.message_id };
   return { ok: false, description: r.description, channelLevel: r.description === "telegram_not_configured" || isChannelLevelError(r.description) };

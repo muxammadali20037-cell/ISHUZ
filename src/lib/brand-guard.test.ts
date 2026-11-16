@@ -14,6 +14,7 @@ const SRC = path.join(__dirname, "..");
 const ALLOW: Record<string, { rules: Rule[]; why: string }> = {
   "features/profile/components/cv/cv-document.tsx": { rules: ["palette", "hex", "px-text", "white"], why: "chop etiladigan CV — doim oq qog'oz, mavzudan mustaqil" },
   "features/promo/card.tsx": { rules: ["hex", "gradient"], why: "serverda PNG'ga chiziladigan ulashiladigan reklama kartasi (CSS tokenlari ishlamaydi)" },
+  "lib/job-art/person.ts": { rules: ["hex"], why: "kasb chizmasi (SVG → reklama kartasi PNG'i): kiyim, teri va soch ranglari — interfeys tokeni emas" },
   "app/global-error.tsx": { rules: ["hex"], why: "ildiz layout yiqilganda — globals.css yuklanmagan bo'lishi mumkin" },
   "app/layout.tsx": { rules: ["hex"], why: "brauzer themeColor meta (CSS emas)" },
   "features/auth/components/auth-form.tsx": { rules: ["hex"], why: "Telegram belgisining rasmiy rangi (uchinchi tomon logotipi)" },

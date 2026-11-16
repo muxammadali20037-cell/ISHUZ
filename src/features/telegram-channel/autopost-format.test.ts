@@ -47,6 +47,8 @@ describe("kanal e'lonlari: faqat ochiq ma'lumot, telefon va havolasiz", () => {
     expect(p.html).toContain("4 000 000 – 6 000 000 so'm");
     expect(p.html).not.toMatch(/90 123/);
     expect(p.button.url).toBe(`${BASE}/jobs/sotuvchi-abc123`);
+    // vakansiya — e'lon kartasi rasmi bilan (kasbga mos kiyingan odam chizmasi)
+    expect(p.photo).toBe(`${BASE}/api/promo/vacancy/sotuvchi-abc123?f=square`);
   });
 
   it("ishchi: ISHCHI belgisi, ism/telefonsiz, tugma — ishchi sahifasi", () => {
@@ -62,6 +64,8 @@ describe("kanal e'lonlari: faqat ochiq ma'lumot, telefon va havolasiz", () => {
     expect(p.html).toContain("Kutilayotgan maosh:");
     expect(p.html).not.toMatch(/998901234567/);
     expect(p.button.url).toBe(`${BASE}/workers/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21`);
+    // ishchi e'lonida rasm yo'q: chizma haqiqiy ishchining surati deb o'ylanmasin
+    expect(p.photo).toBeUndefined();
   });
 
   it("ishchi maosh kutmasa — kelishiladi", () => {

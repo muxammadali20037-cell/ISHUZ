@@ -74,16 +74,29 @@ export function twemojiCode(emoji: string): string {
     .join("-");
 }
 
+/** Odam chizmasi joyi (og va square — o'ngda, CTA ustida turadi; story — o'rtada, oqim ichida) */
+const PERSON: Record<PromoFormat, { h: number; right: number; bottom: number; badge: number }> = {
+  og: { h: 400, right: 64, bottom: 122, badge: 92 },
+  square: { h: 600, right: 24, bottom: 156, badge: 128 },
+  story: { h: 780, right: 0, bottom: 0, badge: 170 },
+};
+
 /**
- * stickerSrc — kategoriya emoji-stikeri (data URI). Yuklanmasa lavozimning bosh harfi chiqadi.
- * Kichik belgilar matn emoji emas — tashqi resursga bog'liq bo'lmasin.
+ * personSrc — kasbga mos kiyingan odam chizmasi (lib/job-art, data URI): ega, 2026-11-16 — "odamning rasmi bo'lsin,
+ * kasbga mos kiyintir". stickerSrc — kategoriya emoji-stikeri (data URI) — odam yonida kichik belgi.
+ * Ikkalasi bo'lmasa — eski ko'rinish: stiker yoki lavozimning bosh harfi. Kichik belgilar matn emoji emas.
  */
-export function PromoCard({ data, format, stickerSrc }: { data: PromoData; format: PromoFormat; stickerSrc: string | null }) {
+export function PromoCard({ data, format, stickerSrc, personSrc = null }: { data: PromoData; format: PromoFormat; stickerSrc: string | null; personSrc?: string | null }) {
   const theme = promoTheme(data.categorySlug);
   const z = SIZES[format];
   const og = format === "og";
+  const story = format === "story";
   const len = data.title.length;
-  const titleSize = len > 34 ? z.title[2] : len > 20 ? z.title[1] : z.title[0];
+  const art = PERSON[format];
+  const artW = Math.round((art.h * 400) / 460);
+  // og/square: matn odamga tegmasin (rasm chetidagi shaffof joy hisobga olingan)
+  const textMax = personSrc && !story ? PROMO_SIZES[format].width - z.pad - art.right - artW + Math.round(artW * 0.07) : null;
+  const titleSize = textMax && len <= 20 ? z.title[1] : len > 34 ? z.title[2] : len > 20 ? z.title[1] : z.title[0];
   const pill = (text: string, big = false) => (
     <div
       key={text}
@@ -103,6 +116,35 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
     </div>
   );
 
+  const badge = (size: number) =>
+    stickerSrc ? (
+      <div
+        style={{
+          width: size,
+          height: size,
+          borderRadius: 999,
+          background: "#fff",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 14px 34px rgba(0,0,0,0.25)",
+        }}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- satori (next/og) faqat <img> qabul qiladi */}
+        <img src={stickerSrc} width={Math.round(size * 0.58)} height={Math.round(size * 0.58)} alt="" />
+      </div>
+    ) : null;
+
+  // odam: orqasida yumshoq doira, yonida kategoriya belgisi
+  const person = personSrc ? (
+    <div style={{ position: "relative", display: "flex", width: artW, height: art.h, flexShrink: 0 }}>
+      <div style={{ position: "absolute", left: Math.round(artW * 0.06), top: Math.round(art.h * 0.06), width: Math.round(artW * 0.88), height: Math.round(artW * 0.88), borderRadius: 999, background: "rgba(255,255,255,0.16)", display: "flex" }} />
+      {/* eslint-disable-next-line @next/next/no-img-element -- satori (next/og) faqat <img> qabul qiladi */}
+      <img src={personSrc} width={artW} height={art.h} alt="" style={{ position: "absolute", left: 0, top: 0 }} />
+      <div style={{ position: "absolute", left: -Math.round(art.badge * 0.15), bottom: Math.round(art.h * 0.12), display: "flex" }}>{badge(art.badge)}</div>
+    </div>
+  ) : null;
+
   return (
     <div
       style={{
@@ -120,6 +162,7 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
     >
       <div style={{ position: "absolute", right: -160, top: -160, width: 520, height: 520, borderRadius: 999, background: "rgba(255,255,255,0.10)", display: "flex" }} />
       <div style={{ position: "absolute", left: -120, bottom: -180, width: 420, height: 420, borderRadius: 999, background: "rgba(255,255,255,0.08)", display: "flex" }} />
+      {person && !story ? <div style={{ position: "absolute", right: art.right, bottom: art.bottom, display: "flex" }}>{person}</div> : null}
 
       {/* yuqori: brend + "Ish bor" stikeri */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -138,35 +181,39 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
         </div>
       </div>
 
-      {/* markaz: emoji-stiker + sarlavha */}
-      <div style={{ display: "flex", flexDirection: og ? "row" : "column", alignItems: og ? "center" : "flex-start", gap: z.gap }}>
-        <div
-          style={{
-            width: z.sticker,
-            height: z.sticker,
-            borderRadius: z.sticker * 0.28,
-            background: "rgba(255,255,255,0.95)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: z.emoji,
-            transform: "rotate(-5deg)",
-            boxShadow: "0 24px 60px rgba(0,0,0,0.25)",
-            flexShrink: 0,
-          }}
-        >
-          {stickerSrc ? (
-            // eslint-disable-next-line @next/next/no-img-element -- satori (next/og) faqat <img> qabul qiladi
-            <img src={stickerSrc} width={z.emoji} height={z.emoji} alt="" />
-          ) : (
-            <div style={{ display: "flex", fontSize: z.emoji, fontWeight: 800, color: theme.from }}>{data.title.slice(0, 1).toUpperCase()}</div>
-          )}
-        </div>
+      {story && person ? <div style={{ display: "flex", justifyContent: "center" }}>{person}</div> : null}
+
+      {/* markaz: (odam bo'lmasa — emoji-stiker) + sarlavha */}
+      <div style={{ display: "flex", flexDirection: og ? "row" : "column", alignItems: og ? "center" : "flex-start", gap: z.gap, ...(textMax ? { maxWidth: textMax } : {}) }}>
+        {!personSrc ? (
+          <div
+            style={{
+              width: z.sticker,
+              height: z.sticker,
+              borderRadius: z.sticker * 0.28,
+              background: "rgba(255,255,255,0.95)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: z.emoji,
+              transform: "rotate(-5deg)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.25)",
+              flexShrink: 0,
+            }}
+          >
+            {stickerSrc ? (
+              // eslint-disable-next-line @next/next/no-img-element -- satori (next/og) faqat <img> qabul qiladi
+              <img src={stickerSrc} width={z.emoji} height={z.emoji} alt="" />
+            ) : (
+              <div style={{ display: "flex", fontSize: z.emoji, fontWeight: 800, color: theme.from }}>{data.title.slice(0, 1).toUpperCase()}</div>
+            )}
+          </div>
+        ) : null}
         <div style={{ display: "flex", flexDirection: "column", gap: 10, ...(og ? { flex: 1 } : { width: "100%" }) }}>
           {data.categoryName && !og ? <div style={{ display: "flex", fontSize: z.cat, fontWeight: 600, opacity: 0.85 }}>{data.categoryName}</div> : null}
           <div style={{ display: "flex", fontSize: titleSize, fontWeight: 800, lineHeight: 1.05, letterSpacing: -2 }}>{data.title}</div>
           {data.company ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: z.company, fontWeight: 600, opacity: 0.92 }}>
+            <div style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 14, fontSize: z.company, fontWeight: 600, opacity: 0.92 }}>
               {data.company}
               {data.isGovernment ? pill(data.labels.government) : null}
             </div>
@@ -175,7 +222,7 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
       </div>
 
       {/* shartlar */}
-      <div style={{ display: "flex", flexDirection: "column", gap: z.gap * 0.6 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: z.gap * 0.6, ...(textMax ? { maxWidth: textMax } : {}) }}>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 14 }}>
           {pill(data.salary, true)}
           {data.place ? pill(data.place, true) : null}
@@ -183,7 +230,7 @@ export function PromoCard({ data, format, stickerSrc }: { data: PromoData; forma
         {!og ? (
           <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
             {data.schedule ? pill(data.schedule) : null}
-            {data.tags.slice(0, format === "story" ? 4 : 2).map((tag) => pill(tag))}
+            {data.tags.slice(0, story ? 4 : 2).map((tag) => pill(tag))}
           </div>
         ) : null}
       </div>
