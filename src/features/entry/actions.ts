@@ -12,10 +12,6 @@ import { getSession } from "@/features/auth/session";
 import { getMode } from "@/features/mode/server";
 import { INTRO_COOKIE } from "@/features/intro/intro";
 import { ENTRY_COOKIE, dashboardPath } from "./flow";
-import { createClient } from "@/lib/supabase/server";
-import { getDistricts, getRegions } from "@/lib/reference";
-import { PLACE_COOKIE, formatPlace } from "@/features/find/place";
-import { PREFS_COOKIE, cleanProfessionIds, formatPrefs, isExperienceLevel, parsePrefs } from "./prefs";
 
 const YEAR = 60 * 60 * 24 * 365;
 const MONTH = 60 * 60 * 24 * 30;
@@ -54,55 +50,8 @@ export async function pickWelcomeRole(form: FormData): Promise<void> {
   jar.delete(ENTRY_COOKIE);
   const next = safeInternalPath(typeof form.get("next") === "string" ? (form.get("next") as string) : null, "");
   if (next) redirect(next);
-  // 4.0: ish qidiruvchi — 05 kasblar va 06 hudud (ixtiyoriy, "O'tkazib yuborish" bor), keyin bosh sahifa
-  redirect(mode.data === "worker" ? "/start/kasblar" : dashboardPath(mode.data, !!session?.employerOnboarded));
-}
-
-const HALF_YEAR = 60 * 60 * 24 * 180;
-
-/**
- * 05 · "Qaysi kasblar sizga mos keladi?": 5 tagacha kasb (faol va tanlanadigan tugunlar — bazadan tekshiriladi) shu qurilmada
- * eslab qolinadi; bosh sahifadagi "Sizga mos ishlar" shular bo'yicha (profilda kasb bo'lmasa). Keyin — 06 hudud.
- */
-export async function saveProfessionPrefs(form: FormData): Promise<void> {
-  const ids = cleanProfessionIds(form.getAll("p"));
-  let valid: string[] = [];
-  if (ids.length) {
-    const supabase = await createClient();
-    const { data } = await supabase.from("profession_nodes").select("id").in("id", ids).eq("is_active", true).eq("selectable", true);
-    const ok = new Set((data ?? []).map((r) => r.id));
-    valid = ids.filter((id) => ok.has(id));
-  }
-  const jar = await cookies();
-  const prefs = parsePrefs(jar.get(PREFS_COOKIE)?.value);
-  jar.set(PREFS_COOKIE, formatPrefs({ ...prefs, professions: valid }), prefCookie(HALF_YEAR));
-  redirect("/start/hudud");
-}
-
-/**
- * 06 · "Qayerda ishlashni istaysiz?": viloyat va tuman — mavjud hudud cookie'siga (bosh sahifa va qidiruv shuni o'qiydi;
- * "Butun O'zbekiston" — o'chiriladi), "masofaviy ham mos" va tajriba — tanlov cookie'siga. Keyin — bosh sahifa.
- */
-export async function saveRegionPrefs(form: FormData): Promise<void> {
-  const jar = await cookies();
-  const regionSlug = form.get("region");
-  const districtId = form.get("district");
-  const [regions, districts] = await Promise.all([getRegions(), getDistricts()]);
-  const region = typeof regionSlug === "string" ? regions.find((r) => r.slug === regionSlug) : undefined;
-  if (region) {
-    const district = typeof districtId === "string" ? districts.find((d) => d.id === districtId && d.region_id === region.id) : undefined;
-    jar.set(PLACE_COOKIE, formatPlace({ region: region.slug, district: district?.id ?? "all" }), prefCookie(HALF_YEAR));
-  } else if (regionSlug === "all") {
-    jar.delete(PLACE_COOKIE);
-  }
-  const experience = form.get("experience");
-  const prefs = parsePrefs(jar.get(PREFS_COOKIE)?.value);
-  jar.set(
-    PREFS_COOKIE,
-    formatPrefs({ ...prefs, remote: form.get("remote") === "1", experience: isExperienceLevel(experience) ? experience : null }),
-    prefCookie(HALF_YEAR),
-  );
-  redirect("/");
+  // 2026-11-17 (ega): kasb va hudud so'rovnomasi olib tashlandi — rol tanlangach darhol bosh sahifa
+  redirect(dashboardPath(mode.data, !!session?.employerOnboarded));
 }
 
 /** Tanishtiruv tugadi yoki o'tkazib yuborildi — shundagina "ko'rilgan" deb belgilanadi (oyna ochilishi emas) */

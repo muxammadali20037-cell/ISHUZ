@@ -976,6 +976,16 @@
       "to_employer_hint": "To find workers",
       "to_worker": "Switch to job seeker",
       "to_worker_hint": "To find a job"
+    },
+    "menu": {
+      "post": "Post an ad",
+      "post_hint_worker": "An ad about you — employers will find you",
+      "post_hint_employer": "Post a vacancy — candidates will find you",
+      "daily": "Day jobs",
+      "daily_hint": "Work today, get paid today",
+      "ai_hint": "AI: find a job and post an ad",
+      "ai_hint_employer": "AI: find candidates",
+      "jobs_label": "All vacancies"
     }
   },
   "activity": {
@@ -1062,7 +1072,8 @@
     "title_b": " are you looking for?",
     "e_title_a": "What kind of ",
     "e_title_em": "employee",
-    "e_title_b": " do you need?"
+    "e_title_b": " do you need?",
+    "post_cta": "Post an ad"
   },
   "aiws": {
     "title": "Helper",
@@ -1260,9 +1271,9 @@
   },
   "chips": {
     "seek_daily": "Day jobs",
-    "seek_near": "Jobs nearby",
+    "seek_near": "Find jobs nearby",
     "seek_remote": "Remote jobs",
-    "seek_noexp": "No-experience jobs",
+    "seek_noexp": "Jobs with no experience required",
     "emp_daily": "Day workers",
     "emp_near": "Workers nearby",
     "emp_exp": "Experienced workers",

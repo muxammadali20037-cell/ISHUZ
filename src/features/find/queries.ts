@@ -57,17 +57,19 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   for (const { c, hits } of results) {
     const cn = normalizeText(c);
     for (const h of hits) {
-      if (!h.selectable || h.score < 2 || isProhibitedProfession(h)) continue;
       // uzunroq (aniqroq) ibora va aniq moslik afzal; kasbning o'z nomi boshqa kasbning sinonimidan ustun
       // ("enaga" — "Enaga" kasbi, sinonimi "enaga" bo'lgan "Tarbiyachi yordamchisi" emas)
       const ownName = [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && normalizeText(n) === cn);
+      // guruh ("O'qituvchi": ichida aniq kasblar) — faqat nomi aynan yozilganida (qidiruv butun guruh bo'yicha); aks holda
+      // sinonimi o'xshash boshqa kasb ("o'qituvchi" → Avtoinstruktor) tanlanib qolardi (ega, 2026-11-17)
+      if ((!h.selectable && !ownName) || h.score < 2 || isProhibitedProfession(h)) continue;
       const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01 + (ownName ? 0.5 : 0);
       if (!best || score > best.score) best = { id: h.id, score };
     }
   }
   // lug'atda yo'q — imlo xatosi bo'lishi mumkin ("oshpz", "kasir"): bitta-ikkita harf farqi bilan eng yaqin kasb
   if (!best) {
-    const id = await professionByTypo(q, candidates);
+    const id = await professionByTypo(q, candidates, { groups: true });
     if (id) best = { id, score: 0 };
   }
   return {
@@ -97,8 +99,7 @@ const typoIndexCached = unstable_cache(
     for (let from = 0; from < 20_000; from += PAGE) {
       const { data, error } = await db
         .from("profession_nodes")
-        .select("id, depth, name_uz, name_ru, name_en, aliases")
-        .eq("selectable", true)
+        .select("id, depth, name_uz, name_ru, name_en, aliases, selectable")
         .eq("is_active", true)
         .order("id")
         .range(from, from + PAGE - 1);
@@ -115,13 +116,14 @@ const typoIndexCached = unstable_cache(
           const t = normalizeText(a);
           if (t && !t.includes(" ") && !terms.has(t)) terms.set(t, true);
         }
-        if (terms.size) out.push({ id: n.id, depth: n.depth, terms: [...terms].map(([t, alias]) => ({ t, alias })) });
+        if (terms.size) out.push({ id: n.id, depth: n.depth, selectable: n.selectable, terms: [...terms].map(([t, alias]) => ({ t, alias })) });
       }
       if ((data?.length ?? 0) < PAGE) break;
     }
     return out;
   },
-  ["profession-typo-index-v1"],
+  // v2: guruhlar ham (selectable=false, faqat qidiruvda — "o'qituvchi" → "O'qituvchi" guruhi)
+  ["profession-typo-index-v2"],
   { revalidate: 86_400 },
 );
 async function typoIndex(): Promise<TypoEntry[]> {
@@ -138,11 +140,11 @@ async function typoIndex(): Promise<TypoEntry[]> {
  * Faqat yozilgan butun so'zlar: qo'shimchasi kesilgan bo'lak ("korzinkaga" → "korzinka") boshqa kasbga o'xshab qolmasin.
  * Qidiruv va e'lon yozish (ish izlovchi suhbati, "AI bilan oson joylash") uchun umumiy.
  */
-export async function professionByTypo(text: string, candidates: string[] = professionCandidates(text)): Promise<string | null> {
+export async function professionByTypo(text: string, candidates: string[] = professionCandidates(text), opts: { groups?: boolean } = {}): Promise<string | null> {
   const typed = new Set(normalizeText(text).split(" "));
   const words = candidates.map((c) => normalizeText(c)).filter((c) => !c.includes(" ") && typed.has(c));
   if (!words.length) return null;
-  return bestTypoMatch(words, await typoIndex())?.id ?? null;
+  return bestTypoMatch(words, await typoIndex(), opts)?.id ?? null;
 }
 
 export interface NodeInfo {

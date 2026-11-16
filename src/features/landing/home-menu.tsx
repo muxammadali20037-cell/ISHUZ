@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { unreadCounts } from "@/components/shared/unread-counts";
-import { MASTERS_ITEM, MORE_ITEMS, mainItems, type MenuItem, type MenuMode } from "@/components/shared/nav-items";
+import { DAILY_ITEM, MASTERS_ITEM, MORE_ITEMS, POST_ITEM, mainItems, type MenuItem, type MenuMode } from "@/components/shared/nav-items";
 import { NewDot } from "@/components/shared/new-badge";
 import { TINT_TILE, tintFor } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
@@ -16,7 +16,24 @@ import { RoleSwitchRow } from "./role-switch-row";
  */
 export async function HomeMenu({ mode }: { mode: MenuMode }) {
   const [{ t }, counts] = await Promise.all([getT(), unreadCounts()]);
-  const items: MenuItem[] = [...mainItems(mode), MASTERS_ITEM, ...MORE_ITEMS];
+  // tartib (ega, 2026-11-17): E'lon joylash → Yordamchi (sun'iy intellekt) → Universal ustalar → Barcha vakansiyalar →
+  // Kunlik ish → qolganlari ketma-ket; ish beruvchida: Vakansiya joylash → Yordamchi → ustalar → qolganlari
+  const main = mainItems(mode);
+  const ai = main.find((i) => i.key === "ai")!;
+  const rest = main.filter((i) => i.key !== "ai" && i.key !== "jobs");
+  const jobs = main.find((i) => i.key === "jobs");
+  const items: MenuItem[] =
+    mode === "employer"
+      ? [POST_ITEM(mode), { ...ai, hintKey: "easy.side.menu.ai_hint_employer" }, MASTERS_ITEM, ...rest, ...MORE_ITEMS]
+      : [
+          POST_ITEM(mode),
+          { ...ai, hintKey: "easy.side.menu.ai_hint" },
+          MASTERS_ITEM,
+          ...(jobs ? [{ ...jobs, labelKey: "easy.side.menu.jobs_label" }] : []),
+          DAILY_ITEM,
+          ...rest,
+          ...MORE_ITEMS,
+        ];
   const target = mode === "employer" ? "worker" : "employer";
   return (
     <nav aria-label={t("easy.side.label")} data-home-menu className="lg:hidden">
@@ -32,19 +49,26 @@ export async function HomeMenu({ mode }: { mode: MenuMode }) {
                 data-menu-item={item.key}
                 {...(item.tone === "ai" ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "home_menu" } : {})}
                 {...(item.tone === "masters" ? { "data-masters-entry": true, "data-track": "masters_entry", "data-track-to": "home_menu" } : {})}
+                {...(item.tone === "post" ? { "data-track": "post_start", "data-track-to": "home_menu" } : {})}
                 className="press flex min-h-16 items-center gap-3 px-4 py-2.5 hover:bg-secondary/60"
               >
                 <span
                   className={cn(
                     "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                    item.tone === "ai" ? "bg-ai-soft text-ai" : item.tone === "masters" ? "theme-masters bg-primary-soft text-primary-ink" : TINT_TILE[tintFor(item.key, i)],
+                    item.tone === "post"
+                      ? "brand-fill shadow-glow"
+                      : item.tone === "ai"
+                        ? "bg-ai-soft text-ai"
+                        : item.tone === "masters"
+                          ? "theme-masters bg-primary-soft text-primary-ink"
+                          : TINT_TILE[tintFor(item.key, i)],
                   )}
                   aria-hidden
                 >
                   <item.icon className="size-5" />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className={cn("flex items-center gap-1.5 text-base font-bold leading-tight", item.tone === "ai" && "text-ai", item.tone === "masters" && "theme-masters text-primary-ink")}>
+                  <span className={cn("flex items-center gap-1.5 text-base font-bold leading-tight", item.tone === "ai" && "text-ai", item.tone === "masters" && "theme-masters text-primary-ink", item.tone === "post" && "text-primary-ink")}>
                     <span className="truncate">{t(item.labelKey)}</span>
                     {item.fresh ? <NewDot feature={item.fresh} /> : null}
                   </span>

@@ -34,9 +34,9 @@ test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qid
   const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
   await expect(links).toHaveCount(4);
   await expect(links.nth(0)).toHaveText("Kunlik ish");
-  await expect(links.nth(1)).toHaveText("Yaqin atrofda ish");
+  await expect(links.nth(1)).toHaveText("Yaqin atrofdan ish qidirish");
   await expect(links.nth(2)).toHaveText("Masofaviy ish");
-  await expect(links.nth(3)).toHaveText("Tajribasiz ish");
+  await expect(links.nth(3)).toHaveText("Tajriba talab qilinmaydigan ishlar");
   // qidiruv maydoni tepada, tez yo'llar uning ostida va e'lonlar ro'yxatidan oldin; har biri barmoq bilan bosishga qulay (≥ 44px)
   const field = (await page.locator("form[data-ai-field]:visible").boundingBox())!;
   // e'lonlar ro'yxati oqim bilan keladi (Suspense) — sarlavhasi chizilguncha kutamiz (sekin CI'da hali yo'q bo'lishi mumkin)

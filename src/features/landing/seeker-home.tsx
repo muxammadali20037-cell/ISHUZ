@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Laptop,
   MapPin,
+  Plus,
   SearchX,
   Sprout,
 } from "lucide-react";
@@ -140,55 +141,74 @@ export async function SeekerHome({
           <div className="mt-4 max-w-2xl sm:mt-6">
             <TopSearch mode="jobs" ai={home.aiButton} hero />
           </div>
-          <nav aria-label={t("easy.home2.shortcuts")} className="mt-4">
-            <ul className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-              {shortcuts.map(({ key, href, label, icon: Icon, tone }) => (
-                <li key={key} className="flex">
-                  <Link
-                    href={href}
-                    prefetch={false}
-                    data-track="home_service"
-                    data-track-to={key}
-                    className="press inline-flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-border bg-card py-2 pl-2 pr-3 text-sm font-semibold leading-tight shadow-card hover:border-primary/40 sm:w-auto sm:pr-4"
-                  >
-                    <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", TINT_TILE[tone])} aria-hidden>
-                      <Icon className="size-4.5" />
-                    </span>{" "}
-                    <span className="min-w-0 [overflow-wrap:anywhere]">{label}</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <div className={cn("mt-2 flex flex-wrap gap-x-6 sm:mt-4", session && "max-lg:hidden")}>
-              <Link
-                href={seekerFiltersHref(where)}
-                prefetch={false}
-                data-track="direction_select"
-                className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline"
-              >
-                {t("easy.home2.all_filters")}{" "}
-                <ChevronRight className="size-4" aria-hidden />
-              </Link>
-              {/* yaqin atrofdagi ishlar — Yandex xaritasida (eslab qolingan hudud bilan) */}
-              <Link
-                href={
-                  place.region
-                    ? `/jobs/xarita?region=${encodeURIComponent(place.region.slug)}${place.district ? `&district=${place.district.id}` : ""}`
-                    : "/jobs/xarita"
-                }
-                prefetch={false}
-                data-track="home_service"
-                data-track-to="map"
-                data-map-entry
-                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink hover:underline"
-              >
-                <MapPin className="size-4" aria-hidden /> {t("map.entry")}
-                <span className="live-dot ml-0.5 size-2 rounded-full bg-primary" aria-hidden />
-              </Link>
-            </div>
-          </nav>
+          {/* ega (2026-11-17): qidiruv ostida katta "+ E'lon joylash" — o'zi haqida e'lon (ish beruvchilar topadi) */}
+          <div className="mt-3 max-w-2xl">
+            <Link
+              href="/post/worker"
+              prefetch={false}
+              data-track="post_start"
+              data-track-to="home_hero"
+              data-home-post
+              className="press brand-fill flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl px-5 text-lg font-extrabold shadow-glow hover:opacity-95"
+            >
+              <span className="flex size-8 items-center justify-center rounded-full border-2 border-current" aria-hidden>
+                <Plus className="size-5" strokeWidth={3} />
+              </span>
+              {t("easy.home2.post_cta")}
+            </Link>
+          </div>
+          <div className={cn("mt-2 flex flex-wrap gap-x-6", session && "max-lg:hidden")}>
+            <Link
+              href={seekerFiltersHref(where)}
+              prefetch={false}
+              data-track="direction_select"
+              className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline"
+            >
+              {t("easy.home2.all_filters")}{" "}
+              <ChevronRight className="size-4" aria-hidden />
+            </Link>
+            {/* yaqin atrofdagi ishlar — Yandex xaritasida (eslab qolingan hudud bilan) */}
+            <Link
+              href={
+                place.region
+                  ? `/jobs/xarita?region=${encodeURIComponent(place.region.slug)}${place.district ? `&district=${place.district.id}` : ""}`
+                  : "/jobs/xarita"
+              }
+              prefetch={false}
+              data-track="home_service"
+              data-track-to="map"
+              data-map-entry
+              className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink hover:underline"
+            >
+              <MapPin className="size-4" aria-hidden /> {t("map.entry")}
+              <span className="live-dot ml-0.5 size-2 rounded-full bg-primary" aria-hidden />
+            </Link>
+          </div>
         </div>
       </section>
+
+      {/* 4 ta tez yo'l — katta plitkalar (ega, 2026-11-17: "katta qil, hozir oynacha ustida kichkina") */}
+      <nav aria-label={t("easy.home2.shortcuts")} data-home-shortcuts>
+        <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {shortcuts.map(({ key, href, label, icon: Icon, tone }) => (
+            <li key={key} className="flex">
+              <Link
+                href={href}
+                prefetch={false}
+                data-track="home_service"
+                data-track-to={key}
+                className="press flex min-h-28 w-full flex-col items-start gap-2.5 rounded-2xl border border-border bg-card p-3.5 text-base font-bold leading-snug shadow-card hover:border-primary/40 sm:p-4"
+              >
+                <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", TINT_TILE[tone])} aria-hidden>
+                  <Icon className="size-6" />
+                </span>
+                {/* belgi ustida, matn ostida — uzun nom ("Tajriba talab qilinmaydigan ishlar") so'z o'rtasidan bo'linmaydi */}
+                <span className="min-w-0 break-words">{label}</span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
       {/* telefon va planshet (kirgan): bo'limlar ro'yxati — chap menyudagidek, har biri ostida nima qilishi; eng tagida
           qizilda rolni almashtirish (ega, 2026-11-15). Kompyuterda — chap yon menyu */}

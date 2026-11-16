@@ -2,12 +2,14 @@ import {
   Bookmark,
   BriefcaseBusiness,
   Building2,
+  CalendarDays,
   FileCheck2,
   Inbox,
   LayoutDashboard,
   LifeBuoy,
   MapPinned,
   MessageCircle,
+  Plus,
   Search,
   Settings,
   Sparkles,
@@ -36,8 +38,8 @@ export interface MenuItem {
   match: (path: string) => boolean;
   /** muhim yangi bo'lim — yozuvsiz yonib-o'chuvchi nuqta (muddati config/new-features.ts da) */
   fresh?: NewFeature;
-  /** alohida rangda ajraladi: "Yordamchi" — to'q sariq, "Universal ustalar" — turkuaz */
-  tone?: "ai" | "masters";
+  /** alohida rangda ajraladi: "Yordamchi" — to'q sariq, "Universal ustalar" — turkuaz, "E'lon joylash" — gradient */
+  tone?: "ai" | "masters" | "post";
 }
 
 /** "Barchasi siz uchun" (avval "AI yordamchi"; ega, 2026-11-15: "ko'pchilik AI nimaligini bilmaydi — tushunarli so'z bilan") */
@@ -72,6 +74,27 @@ const messages: MenuItem = {
   icon: MessageCircle,
   badgeKey: "messages",
   match: (p) => p.startsWith("/messages"),
+};
+
+/** "E'lon joylash" (ega, 2026-11-17: bosh ekran bo'limlari ro'yxatida eng tepada) — ish izlovchi: o'zi haqida e'lon, ish beruvchi: vakansiya */
+export const POST_ITEM = (mode: MenuMode): MenuItem => ({
+  key: "post",
+  href: mode === "employer" ? "/post/vacancy" : "/post/worker",
+  labelKey: "easy.side.menu.post",
+  hintKey: mode === "employer" ? "easy.side.menu.post_hint_employer" : "easy.side.menu.post_hint_worker",
+  icon: Plus,
+  match: (p) => p.startsWith("/post"),
+  tone: "post",
+});
+
+/** "Kunlik ish" — kunlik haqli ishlar (kasb so'ralmaydi) */
+export const DAILY_ITEM: MenuItem = {
+  key: "daily",
+  href: "/search?mode=jobs&pay=daily",
+  labelKey: "easy.side.menu.daily",
+  hintKey: "easy.side.menu.daily_hint",
+  icon: CalendarDays,
+  match: () => false,
 };
 
 export const MORE_ITEMS: MenuItem[] = [

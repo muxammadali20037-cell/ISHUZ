@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Soddalashtirish 1: kirish, bosh ekran, bo'limlar tartibi, "o'qituvchi" (`claude/simplify-1`)
+
+Ega (2026-11-17, uzun ro'yxat — bosqichma-bosqich). 1-bosqich:
+
+- **Kirish:** til → "Boshlash" → rol; "Qaysi kasblar sizga mos" va "Qayerda ishlashni xohlaysiz" olib tashlandi (eski
+  havolalar bosh sahifaga).
+- **Bosh ekran:** qidiruv ostida katta "+ E'lon joylash"; 4 ta tez yo'l hero ostida katta plitkalar; "Yaqin atrofdan ish
+  qidirish", "Tajriba talab qilinmaydigan ishlar".
+- **Bo'limlar ro'yxati (telefon, kirgan):** E'lon joylash → Yordamchi (sun'iy intellekt) → Universal ustalar → Barcha
+  vakansiyalar → Kunlik ish → qolganlari.
+- **Ustalar:** qidiruv — "Ustani qidirish".
+- **Tushunish:** "мен ўқитувчиман" endi "Loyiha menejeri" emas (kirill olmoshlari, "-ман" qo'shimchasi); "o'qituvchi" —
+  "O'qituvchi" guruhi (avval sinonimi o'xshash "Avtoinstruktor"); "uqituvchi", "oqtvchi" ham (bir harf xato, unlisiz yozuv).
+- Gradientli tugmalar matni qorong'i mavzuda ham oq.
+
 ## 2026-11-16 · Yordamchi: uzun AI matni o'rniga so'rovnoma oynasi (`claude/quick-ai`)
 
 Ega: "AI uzun matn yozmasin. So'rov qilgandan keyin oyna chiqsin — qaysi hududdan, oylik maoshi qancha bo'lsin — oxirida

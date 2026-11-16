@@ -706,7 +706,8 @@ body:has([data-global-back]) [data-header-back] { display: none; }
    gradient/blur yo'q, brand-guard.test.ts) */
 @utility brand-fill {
   background-image: var(--gradient-brand);
-  color: var(--primary-foreground);
+  /* gradient ikkala mavzuda bir xil ko'k — matn doim oq (qorong'i mavzuning --primary-foreground'i to'q, ko'kda o'qilmaydi) */
+  color: oklch(0.99 0 0);
 }
 @utility brand-text {
   background-image: var(--gradient-brand);

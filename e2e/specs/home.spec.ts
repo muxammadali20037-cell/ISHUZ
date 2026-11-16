@@ -10,7 +10,8 @@ const PATHS = [
   // 3.0 (2026-11-13): "O'zim haqimda e'lon berish" bosh sahifada yo'q — pastki menyudagi "E'lon" (navigatsiya testi)
   // 2.0 (2026-11-11): ish qidiruvchi bosh sahifasida 4 ta tez yo'l va "Filtrlar bilan qidirish"
   { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
-  { mode: "worker", name: /^Tajribasiz ish$/, url: /\/search\?mode=jobs&region=all&noexp=1&any=1$/, heading: /Ish e'lonlari/ },
+  // 2026-11-17 (ega): "Tajribasiz ish" → "Tajriba talab qilinmaydigan ishlar"
+  { mode: "worker", name: /^Tajriba talab qilinmaydigan ishlar$/, url: /\/search\?mode=jobs&region=all&noexp=1&any=1$/, heading: /Ish e'lonlari/ },
   { mode: "worker", name: /^Filtrlar bilan qidirish$/, url: /\/search\?mode=jobs&region=all&any=1$/, heading: /Ish e'lonlari/ },
   { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
   { mode: "employer", name: /^Tajribali/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
@@ -75,10 +76,15 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await expect(page.locator("[data-home='seeker-v2']").getByRole("searchbox")).toBeVisible();
   const box = (await search.boundingBox())!;
   expect(box.y + box.height).toBeLessThan(560);
-  // tez yo'llar: 4 ta, shu tartibda, birinchi ekranda
+  // qidiruv ostida katta "+ E'lon joylash" (ega, 2026-11-17)
+  const post = page.locator("[data-home='seeker-v2'] [data-home-post]");
+  await expect(post).toHaveText("E'lon joylash");
+  expect((await post.boundingBox())!.height).toBeGreaterThanOrEqual(56);
+  // tez yo'llar: 4 ta katta plitka (hero ostida), shu tartibda; birinchisi birinchi ekranda
   const quick = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem");
-  expect((await quick.allInnerTexts()).map((x) => x.trim())).toEqual(["Kunlik ish", "Yaqin atrofda ish", "Masofaviy ish", "Tajribasiz ish"]);
-  expect((await quick.last().boundingBox())!.y).toBeLessThan(844);
+  expect((await quick.allInnerTexts()).map((x) => x.trim())).toEqual(["Kunlik ish", "Yaqin atrofdan ish qidirish", "Masofaviy ish", "Tajriba talab qilinmaydigan ishlar"]);
+  expect((await quick.first().boundingBox())!.y).toBeLessThan(844);
+  for (const box of await quick.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height))) expect(box).toBeGreaterThanOrEqual(100);
   // olib tashlanganlar: fon surati, "Faol vakansiyalar 0" kabi raqamlar, 8 ta plitka, ko'p bo'limli yon panel
   await expect(page.locator("main .hero-surface")).toHaveCount(0);
   await expect(page.locator("[data-home='seeker-v2'] img")).toHaveCount(0);
@@ -121,7 +127,8 @@ test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (390×844, kirgan ish qidiruvchi): 'Yangi ishlar' birinchi ekranda; ochilsa — birinchi vakansiyaning nomi, maoshi va hududi pastki menyudan yuqorida", async ({ page, context }) => {
+test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash» birinchi ekranda; keyin tez yo'llar, yig'ilgan 'Yangi ishlar' — ochilsa birinchi vakansiya nomi, maoshi va hududi bilan", async ({ page, context }) => {
+  // 2026-11-17 (ega): hero ostida katta "+ E'lon joylash" va katta tez yo'llar — "Yangi ishlar" endi birinchi ekrandan pastda
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await sql(
     `insert into public.vacancies (owner_profile_id, title, region_id, district_id, description, status, salary_from, salary_to, salary_type, schedule, published_at, expires_at)
@@ -134,17 +141,20 @@ test("bosh sahifa (390×844, kirgan ish qidiruvchi): 'Yangi ishlar' birinchi ekr
     await asMode(context, "worker");
     await page.goto("/");
     const navTop = (await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().boundingBox())!.y;
+    for (const el of [page.locator("form[data-ai-field]:visible"), page.locator("[data-home-post]")]) {
+      const box = (await el.boundingBox())!;
+      expect(box.y + box.height).toBeLessThanOrEqual(navTop);
+    }
+    // tartib: hero → tez yo'llar → "Yangi ishlar"
+    const shortcutsY = (await page.locator("[data-home-shortcuts]").boundingBox())!.y;
     const toggle = page.locator('main [data-fold="home-feed"] [data-fold-toggle]');
-    const tb = (await toggle.boundingBox())!;
-    expect(tb.y + tb.height).toBeLessThanOrEqual(navTop);
+    expect((await toggle.boundingBox())!.y).toBeGreaterThan(shortcutsY);
     await toggle.click();
     const card = page.locator("main article").first();
     await expect(card).toBeVisible();
-    for (const part of [card.getByRole("heading", { level: 3 }), card.getByText(/so'm\/(oy|kun|soat)/).first(), card.locator("li[title]").first()]) {
-      const box = (await part.boundingBox())!;
-      expect(box.y).toBeGreaterThanOrEqual(0);
-      expect(box.y + box.height).toBeLessThanOrEqual(navTop);
-    }
+    await expect(card.getByRole("heading", { level: 3 })).toBeVisible();
+    await expect(card.getByText(/so'm\/(oy|kun|soat)/).first()).toBeVisible();
+    await expect(card.locator("li[title]").first()).toBeVisible();
     // suzuvchi AI tugmasi yo'q; qidiruv — bosh sahifaning yagona qidiruv maydoni
     await expect(page.locator(".ai-fab")).toHaveCount(0);
     await expect(page.locator("form[data-ai-field]:visible")).toHaveCount(1);
