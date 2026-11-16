@@ -62,6 +62,8 @@ const PAGES: { name: string; url: () => Promise<string>; user?: string; mode?: "
   { name: "employer-vacancies", url: async () => (await vacancySlug(), "/employer/vacancies"), user: USERS.employer, mode: "employer" },
   // AI yordamchi sahifasi (suhbat sahifaning o'zida, yozish maydoni pastda yopishgan)
   { name: "ai-hub", url: async () => "/ai", mode: "worker" },
+  // "+ E'lon joylash" — yordamchi bilan e'lon (2026-11-17)
+  { name: "ai-post", url: async () => "/ai/post", mode: "worker" },
   // "Universal ustalar" (turkuaz mavzu): katalog, qidiruv, usta sahifasi (demo), e'lon formasi, kabinet
   { name: "masters-home", url: async () => "/ustalar" },
   { name: "masters-search", url: async () => "/ustalar/qidiruv?k=ac" },

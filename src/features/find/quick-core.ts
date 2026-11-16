@@ -10,6 +10,7 @@ import { trackServer } from "@/features/analytics/server";
 import { saveJobsSearch } from "@/features/saved-searches/actions";
 import { smartResolveQuery } from "./ai-search";
 import { textKeywords } from "./ai-keywords";
+import { offTopic } from "./post-intent";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
 import { PLACE_COOKIE, parsePlace } from "./place";
 import { findJobs, findJobsByText, findWorkers, getNodeInfo, type NodeInfo } from "./queries";
@@ -73,12 +74,22 @@ async function resolvePlace(value: string): Promise<ResolvedPlace> {
   };
 }
 
+function emptyForm(mode: QuickMode, text: string): QuickForm {
+  return { mode, text, profession: "", nodeId: null, place: "all", salary: null, filters: NO_FILTERS, places: [] };
+}
+
 /** Yozilgan matn → oynaning boshlang'ich javoblari */
 export async function prepareQuick(input: { text: string; mode: QuickMode; session: SessionContext | null }): Promise<QuickForm> {
-  const { name } = await getT();
+  const { t, name } = await getT();
+  // boshqa mavzu ("salom", "rahmat", "kimsan") — oyna chiqmaydi, qisqa javob (ega, 2026-11-17); tushunishga (AI) ham bormaydi
+  const pre = input.text ? offTopic(input.text, false) : null;
+  if (pre && pre !== "other") return { ...emptyForm(input.mode, input.text), reply: t(`easy.quick.reply.${pre}_${input.mode}`) };
   const empty = { mode: input.mode, nodeId: null, regionSlug: null, districtId: null, remote: false, salary: null, pay: null, noexp: false, exp: false, schedule: null };
   const r = input.text ? await smartResolveQuery(input.text, input.session?.userId ?? null, input.mode) : empty;
   const node = r.nodeId ? await getNodeInfo(r.nodeId).catch(() => null) : null;
+  // ish bilan bog'liq bo'lmagan savol ("ob-havo qanday?") — kasb, hudud yoki maosh tushunilmagan bo'lsa
+  const off = pre && offTopic(input.text, !!node || !!r.regionSlug || !!r.salary || r.remote);
+  if (off) return { ...emptyForm(input.mode, input.text), reply: t(`easy.quick.reply.${off}_${input.mode}`) };
   const regions = await getRegions();
   // kasb tushunilmasa — matndagi asosiy so'z (kompaniya nomi, erkin lavozim; hudud nomi emas); oynada o'zgartirsa bo'ladi
   const said = r.regionSlug ? regions.find((x) => x.slug === r.regionSlug) : undefined;

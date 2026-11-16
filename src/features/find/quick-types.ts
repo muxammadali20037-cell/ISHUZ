@@ -46,6 +46,8 @@ export interface QuickForm {
   filters: QuickFilters;
   /** hudud ro'yxati (birinchisi — "Butun O'zbekiston") */
   places: QuickOption[];
+  /** boshqa mavzu ("salom", "kimsan") — oyna o'rniga shu qisqa javob */
+  reply?: string;
 }
 
 export interface QuickAnswers {

@@ -95,7 +95,8 @@ function mainNav(mode: NavMode): NavItem[] {
 export function postAction(mode: NavMode): { href: string; labelKey: string; ctaKey: string } {
   return mode === "employer"
     ? { href: "/post/vacancy", labelKey: "easy.nav.tab_post", ctaKey: "easy.start.post_vacancy" }
-    : { href: "/post/worker", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
+    : // ega (2026-11-17): "+ E'lon joylash" — yordamchi bilan (kasbni yozadi, oyna, "Tasdiqlash", "Joylash")
+      { href: "/ai/post", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
 }
 
 export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {

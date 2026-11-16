@@ -55,6 +55,8 @@ export interface AiTurn {
   /** kutilayotganda: tushunish yoki qidirish */
   stage?: "thinking" | "searching";
   form?: QuickForm;
+  /** boshqa mavzu ("salom", "kimsan") — oyna o'rniga qisqa javob */
+  reply?: string;
   answers?: QuickAnswers;
   quick?: QuickResult;
   /** foydalanuvchi to'xtatdi */
@@ -196,6 +198,8 @@ export function useAiChat(defaultMode: FinderMode) {
       (res) => {
         if (runRef.current !== run) return;
         if (!res.ok) return patch(id, (x) => ({ ...x, status: "error", stage: undefined, error: errorText(res.error) }));
+        const reply = res.data.reply;
+        if (reply) return patch(id, (x) => ({ ...x, status: "done", stage: undefined, reply }));
         patch(id, (x) => ({ ...x, status: "form", stage: undefined, form: res.data }));
         setFormFor(id);
       },
@@ -413,6 +417,18 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
           <Button type="button" className="h-11 text-base" onClick={() => chat.openForm(turn.id)} disabled={chat.pending} data-quick-open-form>
             <SlidersHorizontal className="size-5" aria-hidden /> {t("easy.quick.open_form")}
           </Button>
+        </Bubble>
+      </div>
+    );
+  }
+
+  // boshqa mavzu — oyna yo'q, faqat qisqa javob
+  if (turn.reply) {
+    return (
+      <div className="ai-bubble-in space-y-2" data-quick-reply>
+        <AssistantHead />
+        <Bubble>
+          <p>{turn.reply}</p>
         </Bubble>
       </div>
     );

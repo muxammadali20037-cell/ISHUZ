@@ -79,11 +79,12 @@ const messages: MenuItem = {
 /** "E'lon joylash" (ega, 2026-11-17: bosh ekran bo'limlari ro'yxatida eng tepada) — ish izlovchi: o'zi haqida e'lon, ish beruvchi: vakansiya */
 export const POST_ITEM = (mode: MenuMode): MenuItem => ({
   key: "post",
-  href: mode === "employer" ? "/post/vacancy" : "/post/worker",
+  // ish izlovchi — yordamchi bilan e'lon (ega, 2026-11-17: "bossa AI yordamchiga olib kirsin")
+  href: mode === "employer" ? "/post/vacancy" : "/ai/post",
   labelKey: "easy.side.menu.post",
   hintKey: mode === "employer" ? "easy.side.menu.post_hint_employer" : "easy.side.menu.post_hint_worker",
   icon: Plus,
-  match: (p) => p.startsWith("/post"),
+  match: (p) => p.startsWith("/post") || p.startsWith("/ai/post"),
   tone: "post",
 });
 
