@@ -117,7 +117,8 @@ describe("kanalga avtomatik e'lon", () => {
     expect(await runChannelAutopost()).toMatchObject({ posted: 2, failed: 0 });
     expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual([expect.stringContaining("ISH"), expect.stringContaining("ISHCHI")]);
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main", button: { text: "Ariza qoldirish", url: "https://ishuz.vercel.app/jobs/v-a" } });
-    expect(send.mock.calls[0]![0]).not.toHaveProperty("photo");
+    expect(send.mock.calls[0]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post", caption: expect.stringContaining("<b>") });
+    expect(send.mock.calls[1]![0]).toMatchObject({ photo: undefined });
     expect(tables.channel_posts!.map((r) => r.status)).toEqual(["posted", "posted"]);
     expect(await runChannelAutopost()).toMatchObject({ posted: 0 });
     expect(send).toHaveBeenCalledTimes(2);

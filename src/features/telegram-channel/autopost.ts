@@ -16,7 +16,8 @@ import { vacancyPost, workerPost, type ChannelPost } from "./autopost-format";
  *  · Faqat oxirgi 24 soatda chiqqan/yangilangan va hozir ommaviy e'lonlar (eski e'lonlar to'plami kanalni to'ldirib
  *    yubormasin); har biri har kanalga BIR marta (channel_posts — unique).
  *  · Bir qadamda ko'pi bilan 4 ta post (Telegram cheklovi: kanalga daqiqasiga ~20); qolgani keyingi qadamda.
- *  · Muallifi bloklangan e'lon yuborilmaydi. Matnda telefon, ism, rasm, tavsif, sayt nomi yo'q (autopost-format.ts).
+ *  · Muallifi bloklangan e'lon yuborilmaydi. Matnda telefon, ism, tavsif, sayt nomi yo'q (autopost-format.ts); vakansiya —
+ *    oddiy rasm (ish nomi, maosh, joylashuv, kompaniya) va izohda vakansiya nomi; rasm ketmasa — to'liq matn.
  *  · Xato: 3 marta qayta urinadi; kanal darajasidagi xato (bot admin emas, kanal yo'q) — qadam to'xtaydi.
  * Ishga tushiruvchilar: fon navbati (tick) va sayt trafigi (moderation/sweep-trigger.ts).
  */
@@ -171,7 +172,7 @@ async function runEntity(db: Db, entity: Entity, chatId: string, budget: number,
       rowId = claimed.id;
     }
     used += 1;
-    const sent = await sendChannelMessage({ chatId, html: item.post.html, button: item.post.button });
+    const sent = await sendChannelMessage({ chatId, html: item.post.html, button: item.post.button, photo: item.post.photo, caption: item.post.caption });
     if (sent.ok) {
       await db.from("channel_posts").update({ status: "posted", message_id: sent.messageId, posted_at: new Date().toISOString(), error: null }).eq("id", rowId);
       res.posted += 1;

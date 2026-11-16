@@ -23,6 +23,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/telegram/webhook": ["./src/features/cv/fonts/*"],
     "/api/cv/pdf": ["./src/features/cv/fonts/*"],
+    "/api/promo/vacancy/*": ["./src/features/cv/fonts/*"],
   },
   images: {
     // faqat o'z Supabase loyihamiz va Telegram avatarlari (boshqa *.supabase.co loyihalari orqali proksi yo'q)
