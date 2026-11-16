@@ -132,12 +132,18 @@ function usePosted() {
 // sana va amal. Butun karta bosiladi (sarlavha havolasi kartani qoplaydi, `after:inset-0`); "Saqlash" — o'ng yuqori burchakda,
 // amal tugmasi — pastki qatorda (ikkalasi `relative z-10`, karta havolasi ustida). Katta rasm va rangli belgilar yo'q.
 // 3.0: oq karta, yumshoq ko'kish soya (namunadagi e'lon kartalari)
-const cardCls = "relative rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm transition-colors hover:border-primary/40 focus-within:border-primary/60";
+// 5.0 (ega "ko'k-oq" dizayni): oq panel, radius 1rem, ichki 20 px, nozik soya; sichqoncha borganda — 4 px ko'tariladi, ko'k nur
+// soyasi va tepada ko'k gradient chiziq ochiladi
+const cardCls = "group relative overflow-hidden rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-card sm:p-5 transition-[translate,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-glow focus-within:border-primary/60";
 const stretched = "after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
 const thumbCls = "size-12 shrink-0 rounded-lg";
 // amal: ikkilamchi (kartada bitta asosiy narsa — ma'lumot), lekin bosish maydoni ≥ 44 px
-const actionCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-primary/30 bg-card px-3 text-base font-semibold text-primary-ink hover:border-primary hover:bg-primary-soft";
+const actionCls = "press relative z-10 inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-primary/30 bg-card px-4 text-sm font-semibold text-primary-ink hover:border-primary hover:bg-primary-soft";
 const metaCls = "flex shrink-0 items-center gap-1";
+/** sichqoncha borganda tepadan ochiladigan 1 px ko'k gradient chiziq */
+function HoverLine() {
+  return <span className="brand-fill pointer-events-none absolute inset-x-0 top-0 h-px origin-left scale-x-0 transition-transform duration-300 group-hover:scale-x-100" aria-hidden />;
+}
 const chipCls = "min-w-0 truncate rounded-md bg-secondary px-2 py-1 text-sm font-medium text-foreground/80";
 // o'z arizasi holati (ariza tugmasi o'rnida): bosilsa — "Arizalarim"
 // Rang holatga qarab, arizalar sahifasidagi bilan bir xil (`STATUS_TONE`): rad etilgan — qizil, qaytarib olingan — kulrang,
@@ -171,7 +177,7 @@ function CardAction({ phone, action }: { phone: string | null; action: { href: s
 /** Kompaniya belgisi: haqiqiy logotip bo'lmasa — bosh harf (neytral), soxta logotip yo'q */
 function OrgMark({ name }: { name: string }) {
   return (
-    <span className="flex size-5 shrink-0 items-center justify-center rounded bg-secondary text-2xs font-bold uppercase text-foreground/70" aria-hidden>
+    <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-secondary text-2xs font-bold uppercase text-foreground/70 sm:size-6 sm:text-xs" aria-hidden>
       {name.trim().slice(0, 1)}
     </span>
   );
@@ -245,8 +251,10 @@ export function JobResultCard({
   const experience = job.experience_min_months === 0 ? t("easy.card.no_experience") : t("easy.card.experience", { value: expValue });
   const schedule = job.schedule !== "negotiable" ? tEnum("work_schedule", job.schedule) : null;
   const where = place(job, job.is_remote);
+  const today = !!job.published_at && postedDay(job.published_at) === "today";
   return (
     <article className={cardCls}>
+      <HoverLine />
       <h3 className={cn("line-clamp-2 break-words text-lg font-bold leading-snug", saved !== undefined && "pr-10")}>
         <Link href={`/jobs/${job.slug}`} className={stretched}>
           {job.title}
@@ -259,12 +267,12 @@ export function JobResultCard({
         negotiable={job.salary_negotiable}
         // 3.0: maosh — och ko'k "pilyula"da (namunadagidek); kelishiladi — oddiy kulrang matn
         className={cn(
-          "mt-1 text-base font-bold",
-          job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "block text-muted-foreground" : "inline-block max-w-full rounded-lg bg-primary-soft px-2.5 py-0.5 text-primary-ink",
+          "mt-1.5 text-sm font-bold sm:mt-2",
+          job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "block font-semibold text-muted-foreground" : "inline-block max-w-full rounded-full bg-primary-soft px-3 py-0.5 text-primary-ink sm:py-1",
         )}
       />
       {job.employer_name ? (
-        <p className="mt-1 flex min-w-0 items-center gap-1.5 text-sm font-medium text-foreground/85">
+        <p className="mt-1.5 flex min-w-0 items-center gap-2 text-sm font-semibold text-foreground/90 sm:mt-3">
           <OrgMark name={job.employer_name} />
           <span className="truncate">{job.employer_name}</span>
           {/* faqat moderator tasdiqlagan kompaniya (companies.verification_status = verified) */}
@@ -272,9 +280,9 @@ export function JobResultCard({
         </p>
       ) : null}
       {/* bitta qator: hudud (qisqa: tuman birinchi; to'liq — title va ekran o'qigichida) · grafik · tajriba */}
-      <ul className="mt-1 flex min-w-0 items-center gap-x-3 text-sm text-muted-foreground">
+      <ul className="mt-1.5 flex min-w-0 items-center gap-x-3 text-xs text-muted-foreground sm:mt-2">
         <li className="flex min-w-0 items-center gap-1" title={where}>
-          <MapPin className="size-4 shrink-0" aria-hidden />
+          <MapPin className="size-3.5 shrink-0" aria-hidden />
           <span className="truncate" aria-hidden>
             {shortPlace(job, job.is_remote)}
           </span>
@@ -282,12 +290,12 @@ export function JobResultCard({
         </li>
         {schedule ? (
           <li className={metaCls}>
-            <Clock className="size-4 shrink-0" aria-hidden />
+            <Clock className="size-3.5 shrink-0" aria-hidden />
             <span className="whitespace-nowrap">{schedule}</span>
           </li>
         ) : null}
         <li className={metaCls} title={experience}>
-          <BriefcaseBusiness className="size-4 shrink-0" aria-hidden />
+          <BriefcaseBusiness className="size-3.5 shrink-0" aria-hidden />
           {job.experience_min_months === 0 ? (
             <span className="whitespace-nowrap">{experience}</span>
           ) : (
@@ -300,10 +308,12 @@ export function JobResultCard({
           )}
         </li>
       </ul>
-      <div className="mt-2 flex items-center gap-2">
+      <div className="mt-2 flex items-center gap-2 sm:mt-4">
         {job.is_featured ? <span className="shrink-0 rounded bg-highlight px-1.5 py-0.5 text-xs font-bold text-highlight-foreground">{t("easy.card.featured")}</span> : null}
         {when ? (
-          <span className="min-w-0 truncate text-sm text-muted-foreground" suppressHydrationWarning>
+          // bugungi e'lon — yashil nuqta bilan
+          <span className={cn("flex min-w-0 items-center gap-1.5 truncate text-xs font-medium", today ? "text-success" : "text-muted-foreground")} suppressHydrationWarning>
+            {today ? <span className="size-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden /> : null}
             {when}
           </span>
         ) : null}

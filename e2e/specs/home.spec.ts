@@ -67,13 +67,14 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-  // bitta qidiruv: yozilgan matn yordamchiga ketadi. 2026-11-15: telefonda u sarlavhada (Uzum kabi) — sahifada takrorlanmaydi
+  // bitta qidiruv: yozilgan matn yordamchiga ketadi. 5.0 (2026-11-16, "ko'k-oq"): hero blokida (telefon va kompyuterda bir
+  // xil); sarlavhada qidiruv yo'q (2026-11-15 dagi sarlavhadagi qidiruv o'rniga)
   const search = page.getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." });
   await expect(search).toHaveCount(1);
-  await expect(page.locator("header").getByRole("searchbox")).toHaveCount(1);
-  await expect(page.getByRole("main").getByRole("searchbox")).toBeHidden();
+  await expect(page.locator("header").getByRole("searchbox")).toHaveCount(0);
+  await expect(page.locator("[data-home='seeker-v2']").getByRole("searchbox")).toBeVisible();
   const box = (await search.boundingBox())!;
-  expect(box.y + box.height).toBeLessThan(140);
+  expect(box.y + box.height).toBeLessThan(560);
   // tez yo'llar: 4 ta, shu tartibda, birinchi ekranda
   const quick = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem");
   expect((await quick.allInnerTexts()).map((x) => x.trim())).toEqual(["Kunlik ish", "Yaqin atrofda ish", "Masofaviy ish", "Tajribasiz ish"]);

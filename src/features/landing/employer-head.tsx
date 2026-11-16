@@ -1,14 +1,13 @@
 import { Suspense, type ReactNode } from "react";
 import Link from "next/link";
-import { BadgeCheck, CalendarDays, ChevronRight, Laptop, MapPin, Plus, Sparkles } from "lucide-react";
+import { BadgeCheck, CalendarDays, ChevronDown, ChevronRight, Laptop, MapPin, Plus, Sparkles } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { Button } from "@/components/ui/button";
 import { getHomeSettings } from "@/features/home-windows/queries";
-import { AiFinder } from "@/features/find/components/ai-finder";
+import { TopSearch } from "@/features/find/components/top-search";
 import { TINT_TILE, tintAt } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
 import { AiAvatar } from "@/components/shared/ai-avatar";
-import { SeekerSearch } from "./home-search";
 import type { HomePlace } from "./home-queries";
 import { employerServiceHrefs, placeChooserHref } from "./quick-filters";
 import { StoriesRow } from "@/features/stories/components/stories-row";
@@ -48,35 +47,39 @@ export async function EmployerHead({
     <section
       aria-labelledby="home-title"
       data-home="employer-v2"
-      className={cn("border-border bg-card px-4 py-6 sm:rounded-2xl sm:border sm:px-8 sm:py-8", flush ? "-mx-4 -mt-4 max-sm:bg-transparent sm:mx-0 sm:mt-0" : "rounded-2xl border")}
+      // 5.0 (ega "ko'k-oq" dizayni): katta oq qidiruv bloki — ish izlovchidagi bilan bir xil tartib
+      className="hero-glow relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
+      data-flush={flush ? "" : undefined}
     >
       {/* "Ish Topdim" hikoyalari — eng tepada (bo'lmasa — joy ham qolmaydi) */}
       <Suspense fallback={null}>
         <StoriesRow mode="employer" className="mb-4" />
       </Suspense>
-      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-        <p className="text-sm font-medium text-muted-foreground">{greeting}</p>
+      <Link
+        href={placeChooserHref("workers")}
+        prefetch={false}
+        data-home-place
+        aria-label={t("easy.start.place_label", { place: placeLabel })}
+        className="press inline-flex h-11 max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-4 text-sm font-semibold hover:border-primary/40"
+      >
+        <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
+        <span className="truncate">{placeLabel}</span>
+        <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
+      <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:mt-6">
+        <p className="text-sm font-medium text-muted-foreground">
+          {greeting} <span aria-hidden>👋</span>
+        </p>
         {extra}
       </div>
-      <h1 id="home-title" className="mt-1 text-2xl font-bold leading-tight tracking-tight text-navy dark:text-foreground sm:text-3xl">
-        {t("easy.home2.e_title")}
+      <h1 id="home-title" className="mt-1 text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:mt-1.5 sm:text-5xl lg:text-6xl">
+        {t("easy.home2.e_title_a")}
+        <span className="brand-text">{t("easy.home2.e_title_em")}</span>
+        {t("easy.home2.e_title_b")}
       </h1>
-      {/* izoh — planshet va kompyuterda; telefonda ortiqcha yozuv yo'q (ega, 2026-11-15) */}
-      <p className="mt-1 text-base text-muted-foreground max-md:hidden">{t("easy.home2.e_hint")}</p>
-      {/* telefonda qidiruv sarlavhada (TopSearch, Uzum kabi) — bu yerda takrorlanmaydi */}
-      <div className="mt-4 max-w-3xl max-lg:hidden">
-        {home.aiButton ? (
-          <AiFinder variant="field" defaultMode="workers" locked fieldLabel={t("easy.home2.e_title")} placeholder={t("easy.home2.e_placeholder")} submitLabel={t("easy.home2.submit")} />
-        ) : (
-          <SeekerSearch
-            scope="workers"
-            label={t("easy.start.employer_search_label")}
-            placeholder={t("easy.start.employer_search_placeholder")}
-            place={{ label: placeLabel, href: placeChooserHref("workers"), ...where }}
-            filtersHref={hrefs.candidates}
-            ai={false}
-          />
-        )}
+      <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:mt-3 sm:text-base">{t("easy.home2.e_hint")}</p>
+      <div className="mt-4 max-w-2xl sm:mt-6">
+        <TopSearch mode="workers" ai={home.aiButton} hero />
       </div>
       <nav aria-label={t("easy.home2.shortcuts")} className="mt-4">
         <ul className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
@@ -87,10 +90,10 @@ export async function EmployerHead({
                 prefetch={false}
                 data-track="home_service"
                 data-track-to={key}
-                className="press inline-flex min-h-14 w-full min-w-0 items-center gap-2.5 rounded-xl border border-border/70 bg-card px-2.5 py-2 text-sm font-semibold leading-tight shadow-sm hover:border-primary/50 hover:text-primary-ink"
+                className="press inline-flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-border bg-card py-2 pl-2 pr-3 text-sm font-semibold leading-tight shadow-card hover:border-primary/40 sm:w-auto sm:pr-4"
               >
-                <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", TINT_TILE[tintAt(i)])} aria-hidden>
-                  <Icon className="size-5" />
+                <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", TINT_TILE[(["blue", "blue", "green", "orange"] as const)[i] ?? tintAt(i)])} aria-hidden>
+                  <Icon className="size-4.5" />
                 </span>{" "}
                 <span className="min-w-0 [overflow-wrap:anywhere]">{label}</span>
               </Link>

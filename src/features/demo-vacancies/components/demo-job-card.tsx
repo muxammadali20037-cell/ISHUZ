@@ -9,8 +9,9 @@ import { cn } from "@/lib/utils";
 import type { DemoVacancy } from "../types";
 
 // haqiqiy vakansiya kartasi bilan bir xil shakl (result-cards.tsx) — lekin kesik chiziqli hoshiya va "Namuna" belgisi bilan
-const cardCls = "relative rounded-xl border border-dashed border-border bg-card px-4 py-3 transition-colors hover:border-primary/40 focus-within:border-primary/60";
-const stretched = "after:absolute after:inset-0 after:rounded-xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
+// 5.0: chiziqli (dashed) chegara, biroz shaffof oq panel
+const cardCls = "relative rounded-2xl border border-dashed border-border-strong bg-card/70 p-5 transition-colors hover:border-primary/40 focus-within:border-primary/60";
+const stretched = "after:absolute after:inset-0 after:rounded-2xl after:content-[''] focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-ring";
 const metaCls = "flex shrink-0 items-center gap-1";
 const EXP_STEPS = [60, 36, 24, 12, 6] as const;
 
@@ -41,11 +42,11 @@ export function DemoJobCard({ job, className }: { job: DemoVacancy; className?: 
         to={job.salary_to}
         type={job.salary_type}
         negotiable={job.salary_negotiable}
-        className={cn("mt-0.5 block text-base font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-foreground")}
+        className={cn("mt-2 block text-base font-bold", job.salary_negotiable || (!job.salary_from && !job.salary_to) ? "text-muted-foreground" : "text-foreground")}
       />
-      <ul className="mt-1 flex min-w-0 items-center gap-x-3 text-sm text-muted-foreground">
+      <ul className="mt-2 flex min-w-0 items-center gap-x-3 text-xs text-muted-foreground">
         <li className="flex min-w-0 items-center gap-1" title={where}>
-          <MapPin className="size-4 shrink-0" aria-hidden />
+          <MapPin className="size-3.5 shrink-0" aria-hidden />
           <span className="truncate" aria-hidden>
             {shortPlace(job, job.is_remote)}
           </span>
@@ -53,12 +54,12 @@ export function DemoJobCard({ job, className }: { job: DemoVacancy; className?: 
         </li>
         {schedule ? (
           <li className={metaCls}>
-            <Clock className="size-4 shrink-0" aria-hidden />
+            <Clock className="size-3.5 shrink-0" aria-hidden />
             <span className="whitespace-nowrap">{schedule}</span>
           </li>
         ) : null}
         <li className={metaCls} title={experience}>
-          <BriefcaseBusiness className="size-4 shrink-0" aria-hidden />
+          <BriefcaseBusiness className="size-3.5 shrink-0" aria-hidden />
           {job.experience_min_months === 0 ? (
             <span className="whitespace-nowrap">{experience}</span>
           ) : (
@@ -71,14 +72,14 @@ export function DemoJobCard({ job, className }: { job: DemoVacancy; className?: 
           )}
         </li>
       </ul>
-      <div className="mt-2 flex items-center gap-2">
-        <span className="inline-flex shrink-0 items-center gap-1 rounded bg-secondary px-1.5 py-0.5 text-xs font-bold text-foreground/80" data-demo-badge>
+      <div className="mt-4 flex items-center gap-2">
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-secondary px-2.5 py-1 text-xs font-bold text-foreground/80" data-demo-badge>
           <FlaskConical className="size-3.5" aria-hidden /> {t("demo.badge")}
         </span>
         {/* bezak: butun karta — bitta havola (sarlavha); ariza tugmasi yo'q */}
         <span
           aria-hidden
-          className="ml-auto inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg border border-border bg-card px-3 text-base font-semibold text-foreground/80"
+          className="ml-auto inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-border bg-card px-4 text-sm font-semibold text-foreground/80"
         >
           <Eye className="size-4" /> {t("demo.view")}
         </span>

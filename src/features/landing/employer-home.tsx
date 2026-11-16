@@ -92,7 +92,7 @@ async function NewWorkers({ session, place, fold = false }: { session: SessionCo
   const body = (
     <section aria-labelledby="home-feed">
       <div className={cn("flex items-center justify-between gap-3", fold && "max-lg:hidden")}>
-        <h2 id="home-feed" className="min-w-0 text-lg font-bold leading-tight">
+        <h2 id="home-feed" className="min-w-0 text-2xl font-extrabold leading-tight tracking-tight">
           {t("easy.start.new_workers_title")}
         </h2>
         {more ? (
@@ -103,7 +103,7 @@ async function NewWorkers({ session, place, fold = false }: { session: SessionCo
       </div>
       <p className="mt-0.5 text-sm text-muted-foreground">{t("easy.start.new_reason", { place: feed.region ? name(feed.region) : t("easy.location.whole_country") })}</p>
       {feed.items.length ? (
-        <ul className="pop-list mt-3 grid grid-cols-1 gap-3 2xl:grid-cols-2 4xl:grid-cols-3">
+        <ul className="pop-list mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 4xl:grid-cols-4">
           {feed.items.map((w) => (
             <li key={w.id}>
               <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? feed.images[w.profession_node_id] : null} saved={saved.has(w.id)} />
@@ -127,7 +127,7 @@ async function NewWorkers({ session, place, fold = false }: { session: SessionCo
     </section>
   );
   if (!fold) return body;
-  // telefonda yig'iladi: "Yangi nomzodlar  8  Ko'rish ⌄" (kompyuterda har doim ochiq)
+  // kirgan foydalanuvchi, telefonda yig'iladi: "Yangi nomzodlar  8  Ko'rish ⌄" (kompyuterda va mehmonda har doim ochiq)
   return (
     <Fold name="home-feed" open="lg" verb="view" icon={<UsersRound />} tint="violet" title={t("easy.start.new_workers_title")} count={feed.total || null}>
       {body}

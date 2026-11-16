@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, ChevronDown, MapPin, MessageCircle, Plus, Sparkles } from "lucide-react";
+import { Bell, Bookmark, MessageCircle, Plus, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,6 @@ import { BrandMark } from "@/components/shared/brand-mark";
 import { BrandWordmark } from "@/components/shared/brand-wordmark";
 import { BRAND } from "@/config/brand";
 import { cn } from "@/lib/utils";
-import { TopSearch } from "@/features/find/components/top-search";
 
 /** Yuqori paneldagi foydalanuvchi (sessiyadan, serverda tayyorlanadi) */
 export interface TopBarUser {
@@ -54,18 +53,19 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
   const pathname = usePathname();
   const session = user;
   // telefonda bosh sahifa paneli: logo · hudud · chat · bildirishnomalar (til — Profil → Sozlamalar, avatar — pastki "Profil")
-  const showPlace = !!place && pathname === "/";
-  // Uzum kabi: telefonda bosh sahifada qidiruv sarlavhaning ichida (yopishib turadi) — "Ish va ishchilar izlash"
-  // (mehmon, rejim tanlanmagan — banner o'z qidiruvi bilan: kasb + hudud; u yerda takrorlanmaydi)
-  const showSearch = !!search && pathname === "/" && !site;
+  // 5.0 (2026-11-16, ega "ko'k-oq" dizayni): joylashuv va qidiruv — bosh sahifaning qidiruv blokida (telefon va kompyuterda
+  // bir xil tartib); sarlavhada takrorlanmaydi. `place` va `search` (Shell) endi sarlavhada ishlatilmaydi.
+  void place;
+  void search;
   return (
     // @container: katta shriftda (sarlavha 22rem dan tor) chat belgisi yashiriladi — xabarlar Kabinet va bildirishnomalarda
     <header
-      className={cn("@container sticky top-0 z-40 border-b border-border bg-card", side && "lg:hidden")}
+      // 5.0: yopishqoq, 64 px (telefonda 56 — birinchi ekranda 3 ta karta sig'sin), yarim shaffof oq + xiralashtirish, ostida nozik chiziq
+      className={cn("@container glass-bar sticky top-0 z-40 border-b border-border/70", side && "lg:hidden")}
       style={{ paddingTop: "var(--safe-top)" }}
     >
       {/* yon menyu bo'lsa (kompyuter): panel to'liq kenglikda, logotip menyu ustida */}
-      <div className={cn("container-wide flex items-center gap-2 sm:gap-3", site ? "h-16" : "h-14")}>
+      <div className="container-wide flex h-14 items-center gap-2 sm:h-16 sm:gap-3">
         {/* telefonda ichki sahifalarda — "‹ Orqaga" logotip oldida (Telegram ichida brauzer tugmasi ko'rinmaydi) */}
         {back ? <GlobalBack variant="bar" /> : null}
         <Link
@@ -74,21 +74,22 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           className="flex min-h-11 min-w-11 items-center justify-center gap-2 font-extrabold tracking-tight"
           aria-label={BRAND.name}
         >
-          <BrandMark className="size-9" sizes="36px" />
-          {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan */}
+          <BrandMark className="size-9 shrink-0" sizes="36px" />
+          {/* mehmonda joy yetadi — nom har doim; kirganda (chat, qo'ng'iroqcha, avatar) faqat 400 px dan. Joy yetmasa (katta
+              shrift) — nom qisqaradi ("Ish to…"), qo'shni tugmalar ustiga chiqmaydi */}
           <span
             className={cn(
+              "min-w-0 truncate",
               session ? "hidden text-lg min-[400px]:inline @max-[22rem]:hidden" : "whitespace-nowrap text-base sm:text-lg @max-[22rem]:hidden",
               // sayt menyusi (lg–xl): nom o'rniga faqat belgi — to'rt bo'lim va o'ngdagi tugmalar sig'sin
               site && "lg:max-xl:hidden",
-              showPlace && "max-md:hidden",
             )}
           >
             <BrandWordmark />
             {/* shior sarlavhada yo'q (2026-10-31): to'rt bo'limli menyu va "Ish joylashtirish" sig'sin — shior footer'da */}
           </span>
         </Link>
-        <div className={cn("ml-4 min-w-0 flex-1 @max-[22rem]:ml-0", showPlace && "max-md:ml-0")}>
+        <div className="ml-4 min-w-0 flex-1 max-md:hidden">
           {site ? (
             <SiteNavLinks />
           ) : (
@@ -96,39 +97,31 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               <DesktopNavLinks role={role} mode={mode} counts={counts} />
             </div>
           )}
-          {showPlace ? (
-            <Link
-              href={place.href}
-              prefetch={false}
-              aria-label={t("easy.start.place_label", { place: place.label })}
-              // 3.0: joylashuv — och ko'k "pilyula" (namunadagi "Toshkent ⌄")
-              className="press flex h-11 w-fit max-w-full items-center gap-1 rounded-full border border-primary/15 bg-primary-soft px-3 text-sm font-semibold hover:border-primary/40 md:hidden"
-            >
-              <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
-              <span className="truncate">{place.label}</span>
-              <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-            </Link>
-          ) : null}
         </div>
-        <div className="flex items-center gap-1">
+        {/* telefonda o'rtadagi bo'limlar yo'q (pastki menyuda) — o'ng guruh ml-auto bilan chetga */}
+        <div className="ml-auto flex items-center gap-1">
           {/* kompyuterda — asosiy amal (telefonda pastki menyuning o'rtasida); bosh sahifada u sarlavhada bor */}
           {!site && !(pathname === "/" && mode === "employer") && !pathname.startsWith("/post/") ? (
-            <Button asChild className="mr-1 hidden h-11 px-4 text-base font-bold lg:inline-flex">
-              <Link href={postAction(mode).href} data-track="nav_post">
-                <Plus className="size-5" aria-hidden />
-                <span>{t(postAction(mode).ctaKey)}</span>
-              </Link>
-            </Button>
+            // 5.0: "E'lon berish" — ko'k gradientli yumaloq tugma
+            <Link
+              href={postAction(mode).href}
+              data-track="nav_post"
+              className="press brand-fill mr-1 hidden h-11 items-center gap-1.5 rounded-full px-4 text-sm font-bold shadow-glow hover:opacity-95 lg:inline-flex"
+            >
+              <Plus className="size-4" strokeWidth={2.5} aria-hidden />
+              <span>{t("easy.nav.post_cta")}</span>
+            </Link>
           ) : null}
           {/* telefonda (md dan tor): "AI yordamchi" — har sahifadan bir bosishda; kompyuterda u menyuda (yon yoki yuqori) */}
           {pathname === "/ai" ? null : (
-            <Button asChild variant="ghost" size="icon" className="text-ai hover:bg-ai-soft md:hidden" aria-label={t("easy.aiws.nav.ai")}>
+            // rejim tanlamagan mehmon (sayt menyusi): telefonda belgi yo'q — "Yordamchi" ☰ menyuda (nom, til, Kirish sig'sin)
+            <Button asChild variant="ghost" size="icon" className={cn("text-primary-ink hover:bg-primary-soft md:hidden", site && "max-sm:hidden")} aria-label={t("easy.aiws.nav.ai")}>
               <Link href="/ai" data-track="ai_entry" data-track-to="topbar" data-ai-entry>
                 <Sparkles className="size-5" />
               </Link>
             </Button>
           )}
-          <LanguageSelect className={showPlace && session ? "max-md:hidden" : undefined} />
+          <LanguageSelect />
           {session ? (
             <>
               <Button asChild variant="ghost" size="icon" className="relative @max-[22rem]:hidden" aria-label={t("common.nav.messages")}>
@@ -166,7 +159,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
             </>
           ) : (
             <>
-              <Button asChild variant="soft" className="h-11 px-3 sm:px-4">
+              <Button asChild variant="soft" className="h-11 rounded-full bg-secondary px-3 font-bold text-primary-ink hover:bg-primary-soft sm:px-4">
                 <LoginLink>{t("common.nav.login")}</LoginLink>
               </Button>
               {site ? (
@@ -185,11 +178,6 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           )}
         </div>
       </div>
-      {showSearch ? (
-        <div className="container-wide pb-2.5 lg:hidden" data-top-search-row>
-          <TopSearch mode={mode === "employer" ? "workers" : "jobs"} ai={search.ai} />
-        </div>
-      ) : null}
     </header>
   );
 }

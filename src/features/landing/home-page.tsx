@@ -52,9 +52,9 @@ export async function HomePage({ session, mode }: { session: SessionContext | nu
 
   return (
     <>
-      <div className="container-wide py-4 sm:py-6">
+      <div className="container-wide py-4 sm:py-8">
         <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd }} />
-        {session ? null : <ModeSwitch mode={mode} className="mb-5 sm:mx-0 sm:max-w-sm" />}
+        {session ? null : <ModeSwitch mode={mode} className="mb-4 sm:mb-6" />}
         {mode === "employer" ? <EmployerHome session={session} flush={!!session} /> : <SeekerHome session={session} flush={!!session} />}
       </div>
     </>

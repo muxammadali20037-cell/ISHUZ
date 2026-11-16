@@ -463,7 +463,8 @@
     "tab_dashboard": "Dashboard",
     "tab_post": "Post",
     "post_worker_cta": "Post a CV",
-    "tab_home_page": "Home"
+    "tab_home_page": "Home",
+    "post_cta": "Post an ad"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -1055,7 +1056,13 @@
     "e_alert_title": "We'll tell you about matching candidates",
     "e_alert_desc": "Describe who you need — we'll message you on Telegram as soon as a matching ad appears",
     "e_post_hint": "3 minutes: job → conditions → ad. Suitable workers will apply themselves.",
-    "e_greeting": "Hello, {name}!"
+    "e_greeting": "Hello, {name}!",
+    "title_a": "What ",
+    "title_em": "job",
+    "title_b": " are you looking for?",
+    "e_title_a": "What kind of ",
+    "e_title_em": "employee",
+    "e_title_b": " do you need?"
   },
   "aiws": {
     "title": "Helper",

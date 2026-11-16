@@ -4,6 +4,27 @@ import { createContext, useContext, useEffect, useMemo, useSyncExternalStore, ty
 import { usePathname, useRouter } from "next/navigation";
 import { canDisableVerticalSwipes, hexColor, insetVars, versionAtLeast, wantsFullscreen } from "./fullscreen";
 
+/**
+ * Har qanday CSS rang (tokenlar 5.0 da oklch; CSS yig'uvchi ularni lab(...) ga aylantiradi) → #rrggbb.
+ * Avval sof tahlil (hex, oklch), bo'lmasa — brauzerning o'zi: 1×1 canvas'ga bo'yab, pikselni o'qiymiz (sRGB).
+ */
+function toHex(value: string): string | null {
+  const plain = hexColor(value);
+  if (plain || !value.trim()) return plain;
+  try {
+    const ctx = document.createElement("canvas").getContext("2d", { willReadFrequently: true });
+    if (!ctx) return null;
+    ctx.fillStyle = "#000";
+    ctx.fillStyle = value.trim();
+    ctx.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = ctx.getImageData(0, 0, 1, 1).data;
+    if (!a) return null;
+    return "#" + [r, g, b].map((n) => (n ?? 0).toString(16).padStart(2, "0")).join("");
+  } catch {
+    return null;
+  }
+}
+
 /** Telegram Mini App SDK ning biz ishlatadigan qismi (window.Telegram.WebApp) */
 export interface TelegramWebApp {
   initData: string;
@@ -92,8 +113,8 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
     // Telegram panellari ilova ranglarida (yuqori — karta, orqa fon — sahifa, pastki — pastki menyu)
     const paintChrome = () => {
       const css = getComputedStyle(root);
-      const card = hexColor(css.getPropertyValue("--card"));
-      const bg = hexColor(css.getPropertyValue("--background"));
+      const card = toHex(css.getPropertyValue("--card"));
+      const bg = toHex(css.getPropertyValue("--background"));
       if (card && versionAtLeast(webApp.version, "6.9")) safely(() => webApp.setHeaderColor?.(card));
       if (bg && versionAtLeast(webApp.version, "6.1")) safely(() => webApp.setBackgroundColor?.(bg));
       if (card && versionAtLeast(webApp.version, "7.10")) safely(() => webApp.setBottomBarColor?.(card));

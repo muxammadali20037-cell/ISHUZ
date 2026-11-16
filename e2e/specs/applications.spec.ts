@@ -37,11 +37,22 @@ async function setup() {
   return { vacancy: v!, workerId: w!.id };
 }
 
-const hex = (rgb: string) => `#${(rgb.match(/\d+/g) ?? []).slice(0, 3).map((x) => Number(x).toString(16).padStart(2, "0")).join("")}`;
+// token rangi brauzer hisoblagan ko'rinishda (5.0 tokenlari oklch da — matn sifatida emas, namuna element orqali solishtiriladi)
+function tokenColor(page: Page, token: string) {
+  return page.evaluate((v) => {
+    const probe = document.createElement("span");
+    probe.style.color = `var(${v})`;
+    document.body.append(probe);
+    const c = getComputedStyle(probe).color;
+    probe.remove();
+    return c;
+  }, token);
+}
 
+// tugma foni = asosiy rang (--primary)
 async function isPrimary(page: Page, el: Locator) {
-  const [bg, primary] = await Promise.all([el.evaluate((e) => getComputedStyle(e).backgroundColor), page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--primary").trim())]);
-  return hex(bg) === primary;
+  const [bg, primary] = await Promise.all([el.evaluate((e) => getComputedStyle(e).backgroundColor), tokenColor(page, "--primary")]);
+  return bg === primary;
 }
 
 test.afterEach(async () => {
@@ -201,11 +212,7 @@ test("qidiruv kartasi: rad etilgan ariza yashil emas, qizil ko'rinadi", async ({
   const badge = page.locator('a[href="/applications"][data-status="rejected"]').first();
   await expect(badge).toBeVisible();
   await expect(badge).toContainText("Rad etildi");
-  const [color, success, danger] = await Promise.all([
-    badge.evaluate((e) => getComputedStyle(e).color),
-    page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--success").trim()),
-    page.evaluate(() => getComputedStyle(document.documentElement).getPropertyValue("--destructive").trim()),
-  ]);
-  expect(hex(color)).not.toBe(success);
-  expect(hex(color)).toBe(danger);
+  const [color, success, danger] = await Promise.all([badge.evaluate((e) => getComputedStyle(e).color), tokenColor(page, "--success"), tokenColor(page, "--destructive")]);
+  expect(color).not.toBe(success);
+  expect(color).toBe(danger);
 });

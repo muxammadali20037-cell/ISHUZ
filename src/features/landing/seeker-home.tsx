@@ -1,4 +1,3 @@
-import { NewDot } from "@/components/shared/new-badge";
 import { Suspense } from "react";
 import Link from "next/link";
 import {
@@ -19,13 +18,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
-import { TINT_TILE, tintAt } from "@/components/shared/tints";
+import { TINT_TILE } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { getHomeSettings } from "@/features/home-windows/queries";
-import { SeekerSearch } from "./home-search";
-import { AiFinder } from "@/features/find/components/ai-finder";
+import { TopSearch } from "@/features/find/components/top-search";
 import { getHomePlace, getSeekerFeed, type HomePlace } from "./home-queries";
 import {
   placeChooserHref,
@@ -57,7 +55,6 @@ const DEMO_BELOW = 4;
  */
 export async function SeekerHome({
   session,
-  flush = false,
 }: {
   session: SessionContext | null;
   flush?: boolean;
@@ -78,24 +75,28 @@ export async function SeekerHome({
   const shortcuts = [
     {
       key: "daily",
+      tone: "blue" as const,
       href: quick.daily,
       label: t("easy.chips.seek_daily"),
       icon: CalendarDays,
     },
     {
       key: "near",
+      tone: "blue" as const,
       href: findHref(EMPTY_FIND, { mode: "jobs", near: true }),
       label: t("easy.chips.seek_near"),
       icon: MapPin,
     },
     {
       key: "remote",
+      tone: "green" as const,
       href: quick.remote,
       label: t("easy.chips.seek_remote"),
       icon: Laptop,
     },
     {
       key: "noexp",
+      tone: "orange" as const,
       href: quick.noexp,
       label: t("easy.chips.seek_noexp"),
       icon: Sprout,
@@ -103,97 +104,62 @@ export async function SeekerHome({
   ];
   return (
     <div className="flex flex-col gap-6">
+      {/* 5.0 (2026-11-16, ega "ko'k-oq" dizayni): katta oq qidiruv bloki (radius 2rem, yumshoq soya, tepa-o'ngda ko'k nur) —
+          telefon va kompyuterda bir xil tartib: joylashuv · salomlashuv · sarlavha · izoh · qidiruv · 4 ta tez yo'l · havolalar */}
       <section
         aria-labelledby="home-title"
         data-home="seeker-v2"
-        className={cn(
-          "border-border bg-card px-4 py-6 sm:rounded-2xl sm:border sm:px-8 sm:py-8",
-          flush ? "-mx-4 -mt-4 max-sm:bg-transparent sm:mx-0 sm:mt-0" : "rounded-2xl border",
-        )}
+        className="hero-glow relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
       >
         <div className="min-w-0">
           {/* "Ish Topdim" hikoyalari — eng tepada, kichik doirachalar (bo'lmasa — joy ham qolmaydi) */}
           <Suspense fallback={null}>
             <StoriesRow mode="seeker" className="mb-4" />
           </Suspense>
-          {/* joylashuv: telefonda yuqori panelda (TopBar), planshet va kompyuterda — shu yerda, salomlashuv ustida */}
           <Link
             href={placeChooserHref("jobs")}
             prefetch={false}
             data-home-place
             aria-label={t("easy.start.place_label", { place: placeText(place, name, t("easy.location.whole_country")) })}
-            className="press -ml-1.5 mb-1 hidden min-h-11 items-center gap-1 rounded-lg px-1.5 text-base font-semibold hover:bg-secondary md:inline-flex"
+            className="press inline-flex h-11 max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-4 text-sm font-semibold hover:border-primary/40"
           >
             <MapPin className="size-4 shrink-0 text-primary-ink" aria-hidden />
             <span className="truncate">{placeText(place, name, t("easy.location.whole_country"))}</span>
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           </Link>
-          <p className="text-sm font-medium text-muted-foreground">
-            {firstName
-              ? t("easy.services.greeting", { name: firstName })
-              : t("easy.services.greeting_guest")}
+          <p className="mt-4 text-sm font-medium text-muted-foreground sm:mt-6">
+            {firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")} <span aria-hidden>👋</span>
           </p>
-          <h1
-            id="home-title"
-            className="mt-1 text-2xl font-bold leading-tight tracking-tight text-navy dark:text-foreground sm:text-3xl"
-          >
-            {t("easy.home2.title")}
+          <h1 id="home-title" className="mt-1 text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:mt-1.5 sm:text-5xl lg:text-6xl">
+            {t("easy.home2.title_a")}
+            <span className="brand-text">{t("easy.home2.title_em")}</span>
+            {t("easy.home2.title_b")}
           </h1>
-          {/* izoh — planshet va kompyuterda; telefonda ortiqcha yozuv yo'q (ega, 2026-11-15) — namuna qidiruv maydonida */}
-          <p className="mt-1 text-base text-muted-foreground max-md:hidden">
-            {t("easy.home2.hint")}
-          </p>
-          {/* telefonda qidiruv sarlavhada (TopSearch, Uzum kabi) — bu yerda takrorlanmaydi */}
-          <div className="mt-4 max-w-3xl max-lg:hidden">
-            {home.aiButton ? (
-              <AiFinder
-                variant="field"
-                defaultMode="jobs"
-                locked
-                fieldLabel={t("easy.home2.title")}
-                placeholder={t("easy.home2.placeholder")}
-                submitLabel={t("easy.home2.submit")}
-              />
-            ) : (
-              <SeekerSearch
-                label={t("easy.start.search_label")}
-                placeholder={t("easy.start.search_placeholder")}
-                place={{
-                  label: placeText(
-                    place,
-                    name,
-                    t("easy.location.whole_country"),
-                  ),
-                  href: placeChooserHref("jobs"),
-                  ...where,
-                }}
-                filtersHref={seekerFiltersHref(where)}
-                ai={false}
-              />
-            )}
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:mt-3 sm:text-base">{t("easy.home2.hint")}</p>
+          {/* qidiruv: AI yoqilgan bo'lsa — Yordamchi (oddiy so'z bilan), aks holda — oddiy matnli qidiruv (/search) */}
+          <div className="mt-4 max-w-2xl sm:mt-6">
+            <TopSearch mode="jobs" ai={home.aiButton} hero />
           </div>
           <nav aria-label={t("easy.home2.shortcuts")} className="mt-4">
             <ul className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
-              {shortcuts.map(({ key, href, label, icon: Icon }, i) => (
+              {shortcuts.map(({ key, href, label, icon: Icon, tone }) => (
                 <li key={key} className="flex">
                   <Link
                     href={href}
                     prefetch={false}
                     data-track="home_service"
                     data-track-to={key}
-                    className="press inline-flex min-h-14 w-full min-w-0 items-center gap-2.5 rounded-xl border border-border/70 bg-card px-2.5 py-2 text-sm font-semibold leading-tight shadow-sm hover:border-primary/50 hover:text-primary-ink"
+                    className="press inline-flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-border bg-card py-2 pl-2 pr-3 text-sm font-semibold leading-tight shadow-card hover:border-primary/40 sm:w-auto sm:pr-4"
                   >
-                    <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", TINT_TILE[tintAt(i)])} aria-hidden>
-                      <Icon className="size-5" />
+                    <span className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", TINT_TILE[tone])} aria-hidden>
+                      <Icon className="size-4.5" />
                     </span>{" "}
                     <span className="min-w-0 [overflow-wrap:anywhere]">{label}</span>
                   </Link>
                 </li>
               ))}
             </ul>
-            {/* "direction_select" — admin tahlilidagi voronka qadami (avval "Barcha kasblar" havolasida edi) */}
-            {/* kirgan foydalanuvchida telefonda — pastdagi "Bo'limlar" menyusida (Vakansiyalar, Ishlar xaritada) */}
-            <div className={cn("mt-3 flex flex-wrap gap-x-5", session && "max-lg:hidden")}>
+            <div className={cn("mt-2 flex flex-wrap gap-x-6 sm:mt-4", session && "max-lg:hidden")}>
               <Link
                 href={seekerFiltersHref(where)}
                 prefetch={false}
@@ -214,10 +180,10 @@ export async function SeekerHome({
                 data-track="home_service"
                 data-track-to="map"
                 data-map-entry
-                className="inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline"
+                className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink hover:underline"
               >
                 <MapPin className="size-4" aria-hidden /> {t("map.entry")}
-                <NewDot feature="map" className="ml-1" />
+                <span className="live-dot ml-0.5 size-2 rounded-full bg-primary" aria-hidden />
               </Link>
             </div>
           </nav>
@@ -276,7 +242,7 @@ async function SeekerFeed({
 }: {
   session: SessionContext | null;
   place: HomePlace;
-  /** telefonda yig'ilgan ("Yangi ishlar — Ko'rish"), kompyuterda ochiq */
+  /** kirgan foydalanuvchi: telefonda yig'ilgan ("Yangi ishlar — Ko'rish"), kompyuterda ochiq */
   fold?: boolean;
 }) {
   const [{ t, name }, feed] = await Promise.all([
@@ -316,7 +282,7 @@ async function SeekerFeed({
   const body = (
     <section aria-labelledby="home-feed" className="min-w-0">
       <div className={cn("flex items-baseline justify-between gap-3", fold && "max-lg:hidden")}>
-        <h2 id="home-feed" className="min-w-0 text-lg font-bold leading-tight">
+        <h2 id="home-feed" className="min-w-0 text-2xl font-extrabold leading-tight tracking-tight">
           {title}
         </h2>
         {more ? (
@@ -330,7 +296,7 @@ async function SeekerFeed({
         ) : null}
       </div>
       {/* nega aynan shu ro'yxat: kasb va hudud (soxta foiz yo'q) */}
-      <p className="text-sm text-muted-foreground">
+      <p className="mt-1 text-sm text-muted-foreground">
         {feed.kind === "match"
           ? t("easy.start.match_reason", {
               profession: name(feed.profession),
@@ -344,7 +310,8 @@ async function SeekerFeed({
         </p>
       ) : null}
       {feed.items.length ? (
-        <ul className="pop-list mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4">
+        // 5.0: 3 ustun (planshet 2, telefon 1), oraliq 16 px
+        <ul className="pop-list mt-4 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 4xl:grid-cols-4">
           {feed.items.map((job) => (
             <li key={job.id} className="flex [&>article]:w-full">
               <JobResultCard
@@ -395,14 +362,15 @@ async function SeekerFeed({
             region={place.region?.slug ?? null}
             limit={6}
             className="mt-6"
-            columns="md:grid-cols-2 2xl:grid-cols-3"
+            columns="md:grid-cols-2 lg:grid-cols-3"
           />
         </Suspense>
       ) : null}
     </section>
   );
   if (!fold) return body;
-  // telefonda yig'iladi: "Yangi ishlar  12  Ko'rish ⌄" — bosilsa ro'yxat ochiladi (kompyuterda har doim ochiq)
+  // kirgan foydalanuvchi, telefonda yig'iladi: "Yangi ishlar  12  Ko'rish ⌄" — bosilsa ro'yxat ochiladi (kompyuterda va
+  // mehmonda har doim ochiq; ega, 2026-11-15)
   return (
     <Fold name="home-feed" open="lg" verb="view" icon={<BriefcaseBusiness />} title={title} count={feed.total || null}>
       {body}
@@ -416,7 +384,7 @@ function FeedSkeleton() {
     <div aria-hidden className="min-w-0 space-y-3">
       <Skeleton className="h-6 w-40" />
       <Skeleton className="h-4 w-56" />
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 2xl:grid-cols-3 4xl:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 4xl:grid-cols-4">
         {[0, 1, 2, 3].map((i) => (
           <div
             key={i}

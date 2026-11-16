@@ -463,7 +463,8 @@
     "tab_dashboard": "Boshqaruv",
     "tab_post": "E'lon",
     "post_worker_cta": "E'lon berish",
-    "tab_home_page": "Bosh sahifa"
+    "tab_home_page": "Bosh sahifa",
+    "post_cta": "E'lon berish"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -1055,7 +1056,13 @@
     "e_alert_title": "Mos nomzod chiqsa — xabar beramiz",
     "e_alert_desc": "Qanday xodim kerakligini yozing, mos ishchi e'loni chiqishi bilan Telegram'da xabar keladi",
     "e_post_hint": "3 daqiqa: kasb → shartlar → e'lon. Mos ishchilar o'zlari ariza yuboradi.",
-    "e_greeting": "Assalomu alaykum, {name}!"
+    "e_greeting": "Assalomu alaykum, {name}!",
+    "title_a": "Qanday ",
+    "title_em": "ish",
+    "title_b": " qidiryapsiz?",
+    "e_title_a": "Qanday ",
+    "e_title_em": "xodim",
+    "e_title_b": " kerak?"
   },
   "aiws": {
     "title": "Yordamchi",

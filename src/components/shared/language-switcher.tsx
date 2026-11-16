@@ -69,13 +69,14 @@ export function LanguageSelect({ className, tone = "light" }: { className?: stri
   return (
     <label
       className={cn(
-        "relative inline-flex items-center gap-1 rounded-md border pl-2.5 pr-2 text-sm font-medium",
-        tone === "dark" ? "h-11 border-navy-line bg-navy-foreground/5 text-navy-foreground hover:bg-navy-foreground/10" : "h-11 border-border bg-card",
+        "relative inline-flex items-center gap-1 rounded-full border pl-2 pr-1.5 text-sm font-semibold sm:pl-3 sm:pr-2.5",
+        // 5.0: matnli tugma (globus · "Ўз" · ⌄), chegarasiz
+        tone === "dark" ? "h-11 border-navy-line bg-navy-foreground/5 text-navy-foreground hover:bg-navy-foreground/10" : "h-11 border-transparent text-foreground hover:bg-secondary",
         pending && "opacity-60",
         className,
       )}
     >
-      <Globe className={cn("hidden size-4 min-[400px]:block", tone === "dark" ? "text-navy-muted" : "text-muted-foreground")} aria-hidden />
+      <Globe className={cn("hidden size-4 min-[400px]:block", tone === "dark" ? "text-navy-muted" : "text-foreground")} aria-hidden />
       <span aria-hidden className={tone === "dark" ? "flex-1" : undefined}>
         {LOCALE_LABELS[locale]}
       </span>

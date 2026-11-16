@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "@fontsource-variable/inter/index.css";
+@import "@fontsource-variable/manrope/index.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -16,30 +16,30 @@
    Kontrast (WCAG AA) — brand-contrast.test.ts tekshiradi. Radius 10–16 px, soyalar juda yengil.
    ============================================================ */
 :root {
-  --background: #f5f7fa; /* 4.0 (2026-11-16, ega dizayn tizimi): Background #F5F7FA */
-  --foreground: #101828; /* Text #101828: fonda 16.5, oq 17.8 */
-  --card: #ffffff;
-  --card-foreground: #101828;
-  --popover: #ffffff;
-  --popover-foreground: #101828;
-  --primary: #1558d6; /* 4.0 Primary #1558D6: oq matn ustida 6.2, fonda 5.8, #EAF1FF da 5.5 */
-  --primary-ink: #1558d6; /* ko'k matn/ikonka — Primary'ning o'zi (AA hamma fonda) */
-  --primary-hover: #1149b5;
-  --primary-foreground: #ffffff;
-  --primary-soft: #eaf1ff; /* Secondary #EAF1FF */
-  --secondary: #eaf1ff; /* Secondary #EAF1FF */
-  --secondary-foreground: #101828;
-  --muted: #eef1f6;
-  --muted-foreground: #626c81; /* Secondary text #667085 ning AA varianti (#667085 #EAF1FF ustida 4.4 — o'tmaydi): oq 5.3, fon 4.9, #EAF1FF 4.65 */
-  --accent: #eaf1ff;
-  --accent-foreground: #1558d6;
+  --background: oklch(0.982 0.004 250); /* 5.0 ko'k-oq: deyarli oq, sovuq kulrang */
+  --foreground: oklch(0.2 0.03 260); /* to'q ko'k-qora matn: fonda 17:1 */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.2 0.03 260);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.2 0.03 260);
+  --primary: oklch(0.52 0.2 260); /* asosiy ko'k: oq matn 5.6, fonda 5.4, och ko'kda 4.9 */
+  --primary-ink: oklch(0.52 0.2 260);
+  --primary-hover: oklch(0.47 0.2 260);
+  --primary-foreground: oklch(0.99 0 0);
+  --primary-soft: oklch(0.95 0.03 260); /* och ko'k fon (tugma, belgi orqasi) */
+  --secondary: oklch(0.96 0.01 255);
+  --secondary-foreground: oklch(0.2 0.03 260);
+  --muted: oklch(0.96 0.008 255);
+  --muted-foreground: oklch(0.52 0.03 260); /* oq 5.5, fon 5.2, och ko'k 4.7 */
+  --accent: oklch(0.95 0.03 260);
+  --accent-foreground: oklch(0.52 0.2 260);
   /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
   --highlight: #ffc83d;
-  --highlight-foreground: #101828;
+  --highlight-foreground: oklch(0.2 0.03 260);
   --highlight-soft: #fff4d6;
   --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
-  --success: #107a4f; /* Success #16A36A ning matn varianti: oq 5.4, fon 5.0. #16A36A — faqat belgi (--brand-green) */
-  --success-soft: #e8f6ef;
+  --success: oklch(0.5 0.13 155); /* matn varianti (oq 5.6); talabdagi oklch(0.62 0.15 155) — nuqta/belgi: --brand-green */
+  --success-soft: oklch(0.95 0.04 155);
   --success-foreground: #ffffff;
   --warning: #b54708;
   --warning-soft: #fdf3e2;
@@ -50,9 +50,9 @@
   --destructive: #c62f3e; /* Error #DC3545 ning AA varianti (#DC3545 fonda 4.2 — o'tmaydi): oq 5.4, fon 5.1 */
   --destructive-soft: #fdecee;
   --destructive-foreground: #ffffff;
-  --border: #eaecf0;
-  --input: #d0d5dd;
-  --ring: #1558d6;
+  --border: oklch(0.92 0.01 255);
+  --input: oklch(0.88 0.012 255);
+  --ring: oklch(0.52 0.2 260);
   /* bosh sahifa pastki qismi (footer): to'q ko'k sirt va ustidagi matn (navy-muted — 7.9:1) */
   --navy: #0d1f3f; /* 3.0 navy (namunadagi banner) */
   --navy-2: #1a3563; /* navy bannerning ikkinchi nuqtasi (yengil gradient, faqat .hero-navy) */
@@ -67,17 +67,17 @@
    */
   /* 2026-11-05: bosh ekran sarlavhalari och ko'k (bosh sahifa hero'si bilan bir xil); admin surati bo'lsa — .has-photo
      (pastda) to'q parda va oq matnga qaytaradi */
-  --hero-from: #eaf1ff;
-  --hero-via: #eaf1ff;
-  --hero-to: #eaf1ff;
-  --hero-fg: #101828;
-  --hero-muted: #626c81; /* #EAF1FF ustida 4.65 */
-  --glow: rgb(21 88 214 / 0.28);
-  --radius: 0.75rem; /* 4.0: kartalar 12–16px */
+  --hero-from: oklch(0.95 0.03 260);
+  --hero-via: oklch(0.95 0.03 260);
+  --hero-to: oklch(0.95 0.03 260);
+  --hero-fg: oklch(0.2 0.03 260);
+  --hero-muted: oklch(0.52 0.03 260);
+  --glow: oklch(0.52 0.2 260 / 0.28);
+  --radius: 0.875rem; /* 5.0 */
   /* 3.0: yumshoq ko'kish soya (namunadagi kartalar) — chegara deyarli ko'rinmaydi, karta soyadan ajraladi */
-  --shadow-sm: 0 1px 2px rgb(16 24 40 / 0.04), 0 4px 14px -6px rgb(16 24 40 / 0.1); /* 4.0: yengil neytral soya */
-  --shadow-md: 0 2px 4px rgb(16 24 40 / 0.04), 0 10px 24px -10px rgb(16 24 40 / 0.14);
-  --shadow-lg: 0 12px 32px rgb(16 24 40 / 0.14);
+  --shadow-sm: 0 1px 2px oklch(0.2 0.03 260 / 4%), 0 8px 24px -12px oklch(0.2 0.03 260 / 12%); /* = --shadow-card */
+  --shadow-md: 0 2px 4px oklch(0.2 0.03 260 / 5%), 0 14px 32px -14px oklch(0.2 0.03 260 / 18%);
+  --shadow-lg: 0 12px 32px oklch(0.2 0.03 260 / 14%);
   --tabbar-height: 58px;
   color-scheme: light;
   /*
@@ -88,9 +88,9 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   --sidebar-active: #1c3260;
   --sidebar-accent: #6ea8ff;
-  --border-strong: #d0d5dd;
+  --border-strong: oklch(0.86 0.015 255);
   /* brend belgisi (logo ravog'i) va yashil urg'u (#16A36A — faqat belgi/nuqta, matn uchun emas: oq ustida 3.2:1) */
-  --brand: #1558d6;
+  --brand: oklch(0.52 0.2 260);
   --brand-accent: #0f766e; /* "Universal ustalar" bo'limi belgisi (turkuaz) — menyuda ajralib turadi */
   --accent-bright: #2dd4bf; /* o'sha turkuaz — to'q ko'k yon menyuda (navy ustida 9:1) */
   /* "AI yordamchi" — to'q sariq (orange): menyuda va kartalarda ajralib turadi. --ai: matn va tugma foni (oq ustida 5.2:1),
@@ -99,19 +99,26 @@
   --ai-foreground: #ffffff;
   --ai-soft: #fff1e6;
   --ai-bright: #fb923c;
-  --brand-green: #16a36a;
+  --brand-green: oklch(0.62 0.15 155); /* yangi e'lon nuqtasi */
   /* bosh sahifa birinchi ekrani: och ko'k fon (matn 16:1, muted 4.6:1, primary 5.5:1) */
-  --hero-soft: #eaf1ff;
+  --hero-soft: oklch(0.95 0.03 260);
   /* 3.0 rangli belgi plitkalari (namunadagi to'rtta plitka): faqat belgi uchun — och fon + to'q belgi (≥ 3:1).
      Bo'limlar menyusi, tezkor yo'llar, yig'iladigan bo'limlar va sohalar to'rida navbatma-navbat */
-  --tint-blue: #eaf1ff;
-  --tint-blue-ink: #1558d6;
+  --tint-blue: oklch(0.95 0.03 260);
+  --tint-blue-ink: oklch(0.52 0.2 260);
   --tint-violet: #ebe9fe;
   --tint-violet-ink: #4f46e5;
-  --tint-green: #e1f5f1;
-  --tint-green-ink: #05845f;
-  --tint-orange: #ffefe3;
-  --tint-orange-ink: #ea580c;
+  --tint-green: oklch(0.95 0.04 155);
+  --tint-green-ink: oklch(0.5 0.13 155);
+  --tint-orange: oklch(0.95 0.04 50);
+  --tint-orange-ink: oklch(0.58 0.17 45);
+  /* 5.0: talabdagi qo'shimcha tokenlar */
+  --warm: oklch(0.66 0.18 45); /* to'q sariq (tajribasiz belgisi) — faqat belgi */
+  --warm-soft: oklch(0.95 0.04 50);
+  --gradient-brand: linear-gradient(135deg, oklch(0.55 0.21 262), oklch(0.62 0.17 230));
+  --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.93 0.05 260) 0%, transparent 45%);
+  --shadow-card: 0 1px 2px oklch(0.2 0.03 260 / 4%), 0 8px 24px -12px oklch(0.2 0.03 260 / 12%);
+  --shadow-glow: 0 12px 32px -12px oklch(0.52 0.2 260 / 45%);
 }
 
 /* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
@@ -121,11 +128,11 @@ html.tg-fullscreen {
 }
 
 .dark {
-  --background: #101827;
+  --background: oklch(0.129 0.042 264);
   --foreground: #e8ecf5;
-  --card: #16213a;
+  --card: oklch(0.208 0.042 265);
   --card-foreground: #e8ecf5;
-  --popover: #1a2742;
+  --popover: oklch(0.24 0.042 265);
   --popover-foreground: #e8ecf5;
   --primary: #6b93f2;
   --primary-hover: #7da1f4;
@@ -193,19 +200,21 @@ html.tg-fullscreen {
   --tint-green-ink: #5eead4;
   --tint-orange: #3a2412;
   --tint-orange-ink: #fdba74;
+  --warm: oklch(0.74 0.16 50);
+  --warm-soft: oklch(0.3 0.06 50);
+  --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.32 0.08 262) 0%, transparent 45%);
+  --shadow-card: 0 1px 2px oklch(0 0 0 / 30%), 0 8px 24px -12px oklch(0 0 0 / 50%);
+  --shadow-glow: 0 12px 32px -12px oklch(0.6 0.2 260 / 45%);
 }
 
 @theme inline {
   /* katta monitorlar: ro'yxat sahifalari ekranni to'ldiradi (3xl — 1920px, 4xl — 2400px va undan keng) */
   --breakpoint-3xl: 120rem;
   --breakpoint-4xl: 150rem;
-  /* 2.0: bitta shrift oilasi — Inter Variable (lotin, kirill: o'zbek va rus). Sarlavhalar ham Inter (avval Geist edi:
-     kirill sarlavhalarda shrift aralashardi). --font-display nomi saqlandi — komponentlar o'zgarmaydi. */
-  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
-  /* og'irliklar: Inter'da 700/800 og'ir ko'rinadi — namunadagidek yengilroq (bold → 600, extrabold → 700) */
-  --font-weight-bold: 600;
-  --font-weight-extrabold: 700;
+  /* 5.0 (2026-11-16, ega "ko'k-oq" dizayn): bitta shrift oilasi — Manrope Variable 400–800 (lotin, kirill: o'zbek va rus).
+     Sarlavhalar extrabold, tracking-tight. --font-display nomi saqlandi — komponentlar o'zgarmaydi. */
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -281,6 +290,10 @@ html.tg-fullscreen {
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
+  --shadow-card: var(--shadow-card);
+  --shadow-glow: var(--shadow-glow);
+  --color-warm: var(--warm);
+  --color-warm-soft: var(--warm-soft);
   /* Shrift shkalasi (BRAND_UI_GUIDE): 2xs faqat hisoblagich/vaqt belgisi; md — kiritish maydonlari va ixcham matn */
   --text-2xs: 0.6875rem;
   --text-2xs--line-height: 1rem;
@@ -689,6 +702,34 @@ body:has([data-global-back]) [data-header-back] { display: none; }
 
 /* Ko'rinishi kichik (h-8/h-9) tugma va chiplar uchun barmoq maydoni kamida 44×44 px — tashqi ko'rinish o'zgarmaydi.
  * Elementning o'zida `relative` (yoki boshqa position) bo'lishi kerak; tugma va chip komponentlari buni o'zi qo'yadi. */
+/* 5.0 "ko'k-oq" dizayn: gradient, shisha panel va katta radius — faqat shu tokenli utilitalar orqali (komponentda xom
+   gradient/blur yo'q, brand-guard.test.ts) */
+@utility brand-fill {
+  background-image: var(--gradient-brand);
+  color: var(--primary-foreground);
+}
+@utility brand-text {
+  background-image: var(--gradient-brand);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility hero-glow {
+  background-image: var(--gradient-hero);
+}
+@utility glass-bar {
+  background-color: color-mix(in oklch, var(--card) 82%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  backdrop-filter: saturate(1.4) blur(12px);
+}
+@utility rounded-hero {
+  border-radius: 2rem;
+}
+@keyframes live-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@utility live-dot {
+  animation: live-dot 1.6s ease-in-out infinite;
+}
+
 @utility tap-target {
   &::after {
     content: "";

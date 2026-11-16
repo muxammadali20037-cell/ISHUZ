@@ -79,8 +79,8 @@ export async function SiteFooter({ compact = false }: { compact?: boolean } = {}
           <p className="mt-1 max-w-xs text-sm leading-relaxed text-navy-muted">{t("welcome.market.footer_about")}</p>
           <div className="mt-4">
             <p className="mb-1.5 text-sm font-bold">{t("welcome.market.footer_language")}</p>
-            {/* tanlagich oq sirtda — matni oddiy (to'q) rangda */}
-            <LanguageSelect className="text-foreground" />
+            {/* to'q (navy) footer — tanlagich ham to'q tonda, matni och */}
+            <LanguageSelect tone="dark" />
           </div>
           {bot ? (
             <a href={`https://t.me/${bot}`} target="_blank" rel="noopener noreferrer" className={`${linkCls} mt-2`}>

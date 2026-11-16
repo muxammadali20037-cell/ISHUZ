@@ -32,11 +32,11 @@ export async function DemoVacanciesBlock({
   return (
     <section aria-labelledby="demo-vacancies-title" className={cn("min-w-0", className)} data-demo-block>
       <div className="flex items-baseline justify-between gap-3">
-        <h2 id="demo-vacancies-title" className="flex min-w-0 items-center gap-1.5 text-lg font-bold leading-tight">
-          <FlaskConical className="size-5 shrink-0 text-muted-foreground" aria-hidden /> {t("demo.block_title")}
+        <h2 id="demo-vacancies-title" className="flex min-w-0 items-center gap-2 text-2xl font-extrabold leading-tight tracking-tight">
+          <FlaskConical className="size-6 shrink-0 text-muted-foreground" aria-hidden /> {t("demo.block_title")}
         </h2>
         {list.total > list.items.length ? (
-          <Link href={allHref} prefetch={false} className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-0.5 text-base font-semibold text-primary-ink hover:underline">
+          <Link href={allHref} prefetch={false} className="-my-2 inline-flex min-h-11 shrink-0 items-center gap-0.5 text-sm font-semibold text-primary-ink hover:underline">
             {t("demo.see_all")} <ChevronRight className="size-4" aria-hidden />
           </Link>
         ) : null}
@@ -44,7 +44,7 @@ export async function DemoVacanciesBlock({
       <p className="mt-1 text-sm text-muted-foreground" data-demo-note>
         {category && categoryName ? t("demo.block_note_category", { category: categoryName }) : t("demo.block_note")}
       </p>
-      <ul className={cn("mt-3 grid grid-cols-1 gap-3", columns)}>
+      <ul className={cn("mt-4 grid grid-cols-1 gap-4", columns)}>
         {list.items.map((job) => (
           <li key={job.id} className="flex [&>article]:w-full">
             <DemoJobCard job={job} />

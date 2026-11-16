@@ -32,8 +32,11 @@ export function AiFinder({
   fieldLabel,
   placeholder,
   submitLabel,
+  hero = false,
 }: {
   defaultMode: "jobs" | "workers";
+  /** 5.0: bosh sahifa qidiruv blokidagi ko'rinish — oq panel, lupa, ko'k gradientli "Topish" (yulduzcha belgisi bilan) */
+  hero?: boolean;
   locked?: boolean;
   /** "top": telefonda sarlavhadagi doimiy qidiruv qatori (Uzum kabi) — lupa · "Ish va ishchilar izlash" · "Topish" */
   variant?: "inline" | "card" | "cta" | "bar" | "field" | "top";
@@ -118,9 +121,12 @@ export function AiFinder({
           data-ai-field
           data-top-search
           data-hydrated={hydrated ? "" : undefined}
-          // Uzum kabi: kulrang to'ldirilgan maydon, chapda lupa, o'ngda "Topish"; bosilganda — oq va ko'k chegara (ichida kvadrat yo'q)
+          // Uzum kabi: kulrang to'ldirilgan maydon, chapda lupa, o'ngda "Topish"; bosilganda — oq va ko'k chegara (ichida kvadrat yo'q).
+          // hero (5.0): oq panel, radius 1rem, yumshoq soya; fokusda — ko'k nur
           className={cn(
-            "flex h-12 items-center gap-2 rounded-xl border border-transparent bg-secondary pl-3 pr-1 transition-colors focus-within:border-primary focus-within:bg-card focus-within:ring-2 focus-within:ring-ring/25",
+            hero
+              ? "flex h-14 items-center gap-2 rounded-2xl border border-border bg-card pl-4 pr-1.5 shadow-card transition-shadow focus-within:border-primary/60 focus-within:shadow-glow"
+              : "flex h-12 items-center gap-2 rounded-xl border border-transparent bg-secondary pl-3 pr-1 transition-colors focus-within:border-primary focus-within:bg-card focus-within:ring-2 focus-within:ring-ring/25",
             className,
           )}
           onSubmit={submitField}
@@ -140,8 +146,12 @@ export function AiFinder({
             type="submit"
             data-track="ai_finder_open"
             data-track-to="top"
-            className="press tap-target relative inline-flex h-10 shrink-0 items-center rounded-lg bg-primary px-3.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover"
+            className={cn(
+              "press tap-target relative inline-flex h-10 shrink-0 items-center rounded-lg bg-primary px-3.5 text-sm font-bold text-primary-foreground hover:bg-primary-hover",
+              hero && "brand-fill h-11 gap-1.5 rounded-xl px-5 shadow-glow hover:opacity-95",
+            )}
           >
+            {hero ? <Sparkles className="size-4 max-[360px]:hidden" aria-hidden /> : null}
             {submitLabel}
           </button>
         </form>
