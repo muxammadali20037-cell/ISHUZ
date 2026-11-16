@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { asGuest, asMode, sql } from "../support";
+import { asGuest, asMode, sql, quickSearch } from "../support";
 
 /**
  * S2 / 2026-10 · bo'limlar: bosilsa — o'sha bo'lim natijalari, faol filtr chip sifatida ko'rinadi va olib tashlanadi.
@@ -179,8 +179,9 @@ test.describe("bo'limlar", () => {
     ).toHaveAttribute("href", "/ai-alerts");
     await page.getByLabel("Nima qidiryapsiz?").fill("omborchi");
     await page.getByRole("button", { name: "Topish", exact: true }).click();
-    // so'z kasbga aylandi ("Omborchi"), hudud aytilmagan — butun O'zbekiston bo'yicha; natija shu sahifada
-    await expect(page.getByText(/^Tushundim:/)).toContainText("Omborchi");
+    // so'z kasbga aylandi ("Omborchi"), hudud aytilmagan — butun O'zbekiston bo'yicha; so'rovnoma → natija shu sahifada
+    const answer = await quickSearch(page);
+    await expect(answer.locator("[data-quick-summary]")).toContainText("Omborchi");
     await expect(
       page.locator("main article").filter({ hasText: "YaTT omborchi kunlik" }),
     ).toHaveCount(1);

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql, quickSearch } from "../support";
 import { findLayoutIssues, fullHeight, zoomText } from "../overlap";
 
 /**
@@ -86,14 +86,20 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
     await field.getByRole("searchbox").fill("Toshkentda omborchi");
     await field.getByRole("button", { name: "Topish" }).click();
     const dialog = page.getByRole("dialog", { name: "Yordamchi" });
-    await expect(dialog.getByText(/^Tushundim:/).last()).toBeVisible();
+    // so'rovnoma oynasi (2026-11-16): savollar, maosh tugmalari va "Qidirish" sig'adi
+    const sheet = page.locator("[data-quick-sheet]");
+    await expect(sheet).toBeVisible();
+    if (zoom) await zoomText(page, zoom);
+    expect(await findLayoutIssues(page, "[data-quick-sheet]")).toEqual([]);
+    await quickSearch(page);
     if (zoom) await zoomText(page, zoom);
     expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
-    // hech narsa topilmagan javob: "xabar olish" va "e'lon berish" tugmalari ham sig'adi (uzun yozuv tugmadan chiqmaydi)
-    await dialog.getByLabel("Nima qidiryapsiz?").fill("elektrik kerak");
+    // hech narsa topilmagan javob: qisqa xabar va "Kirish" tugmasi ham sig'adi (uzun yozuv tugmadan chiqmaydi)
+    await dialog.getByLabel("Nima qidiryapsiz?").fill("Termizda elektrik kerak");
     await dialog.getByRole("button", { name: "Topish" }).click();
-    // avvalgi aylanadagi suhbat tabda saqlanadi (30 daqiqa) — eski javobning tugmalari ham turadi; oxirgisi tekshiriladi
-    await expect(dialog.locator("[data-ai-empty-actions]").last()).toBeVisible();
+    await quickSearch(page);
+    await expect(dialog.locator("[data-quick-none]").last()).toBeVisible();
+    if (zoom) await zoomText(page, zoom);
     expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
     await page.keyboard.press("Escape");
   }

@@ -119,7 +119,7 @@ test("kompyuterda yangi ishlar ochiq (yig'ish tugmasi yo'q)", async ({ browser }
   await desk.close();
 });
 
-test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq — «Ochish» bilan ochiladi; tezkor imkoniyatlar to'liq", async ({ page, context }) => {
+test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq — «Ochish» bilan ochiladi; tezkor imkoniyatlar ekranda", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/ai");
@@ -129,11 +129,10 @@ test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq �
   await expect(page.locator("header [data-bar-logo]")).toHaveCount(0);
   const composer = await page.getByLabel("Nima qidiryapsiz?").boundingBox();
   expect(composer!.y + composer!.height).toBeLessThanOrEqual(page.viewportSize()!.height);
-  // tezkor imkoniyatlar: boshida ish qidirish, karyera maslahati, suhbat — hammasi ekranda (yonga surilmaydi); "Masalan, bosing" yo'q
+  // tezkor imkoniyatlar (2026-11-16: erkin suhbat yo'q): ish qidirish, CV, xabarlar — hammasi ekranda (yonga surilmaydi);
+  // "Masalan, bosing" yo'q
   const quick = page.locator("[data-ai-quick]:visible");
-  await expect(quick.locator("[data-quick]").first()).toContainText("Ish qidirish");
-  await expect(quick.locator("[data-quick]").nth(1)).toContainText("Karyera maslahati");
-  await expect(quick.locator("[data-quick]").nth(2)).toContainText("Suhbatga tayyorgarlik");
+  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /CV yaratish/, /PRO kuzatuv/]);
   for (const box of await quick.locator("[data-quick]").evaluateAll((els) => els.map((e) => e.getBoundingClientRect().right))) {
     expect(box).toBeLessThanOrEqual(390);
   }

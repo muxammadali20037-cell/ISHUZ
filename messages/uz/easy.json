@@ -1068,7 +1068,7 @@
     "title": "Yordamchi",
     "status_ai": "Sun'iy intellekt · tayyor",
     "status_rules": "Oddiy rejim",
-    "status_busy": "Javob yozilmoqda…",
+    "status_busy": "So'rovingiz tushunilmoqda…",
     "status_search": "Bazadan qidirilmoqda…",
     "menu": "Suhbat menyusi",
     "menu_new": "Yangi suhbat",
@@ -1343,5 +1343,34 @@
       "exp_12": "Tajriba: 1 yildan.",
       "exp_36": "Tajriba: 3 yildan."
     }
+  },
+  "quick": {
+    "remote": "Masofaviy (internet orqali)",
+    "any_job": "Barcha ishlar",
+    "any_worker": "Barcha xodimlar",
+    "sheet_title_jobs": "Ish qidirish",
+    "sheet_title_workers": "Xodim qidirish",
+    "sheet_desc": "Javob bering va «Qidirish»ni bosing.",
+    "q_profession_jobs": "Qanday ish?",
+    "q_profession_workers": "Qanday xodim kerak?",
+    "profession_placeholder": "Masalan: oshpaz",
+    "q_place_jobs": "Qaysi hududda?",
+    "q_place_workers": "Qaysi hududdan?",
+    "q_salary": "Oylik maosh qancha bo'lsin?",
+    "salary_any": "Farqi yo'q",
+    "salary_from": "{amount} dan",
+    "search": "Qidirish",
+    "form_note": "Hudud va maoshni tanlang — keyin qidiraman.",
+    "open_form": "Javob berish",
+    "edit": "O'zgartirish",
+    "found_jobs": "{count} ta ish topildi",
+    "found_workers": "{count} ta nomzod topildi",
+    "none_jobs": "Hozircha bunday ish yo'q.",
+    "none_workers": "Hozircha mos nomzod yo'q.",
+    "saved": "So'rovingiz saqlandi. Mos ish chiqsa, sizga xabar beramiz.",
+    "login_note": "Kirsangiz — mos ish chiqsa, sizga xabar beramiz.",
+    "login": "Kirish",
+    "similar_near_jobs": "Shunga yaqin ishlar",
+    "similar_near_workers": "Shunga yaqin nomzodlar"
   }
 }

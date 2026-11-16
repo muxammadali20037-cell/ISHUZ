@@ -39,12 +39,15 @@ const STOP = new Set(
     "kerak kerakli ish ishi ishga ishlar ishlash ishlamoqchi ishlamoqchiman bor bormi uchun menga bizga qidiryapman qidiraman qidiryapmiz izlayman topish vakansiya vakansiyalar " +
     "va yoki bilan boyicha bo'yicha joy joyi xodim hodim ishchi ishchilar odam mutaxassis tajribali yaxshi shoshilinch tez " +
     "rabota rabotu raboty nujen nujna nujno nujny trebuetsya trebuyutsya vakansiya vakansii ishchu ishu v na dlya i ili s po " +
-    "job jobs need needed hire hiring for a an the in looking"
+    "job jobs need needed hire hiring for a an the in looking " +
+    // olmoshlar va salomlashuv ("men instruktorman menga ish kerak": "men" inglizcha "men's" kasbiga tushib qolmasin)
+    "men sen siz biz ular mening meni menda bizning bizni iltimos salom assalomu alaykum"
   ).split(" "),
 );
 
 /** Qo'shimchalar: "buxgalterlik" → "buxgalter", "haydovchilar" → "haydovchi", "Toshkentda" → "toshkent" */
-const SUFFIXES = ["chilikka", "chiligi", "chilik", "likka", "ligi", "lik", "larni", "larga", "larda", "lari", "lar", "ni", "ga", "da", "dan", "ning", "a", "u", "om", "ov"];
+// "-man/-miz" (kesim: "instruktorman" — "men instruktorman", "oshpazmiz") ham — o'zak bilan birga asl so'z ham qidiriladi
+const SUFFIXES = ["chilikka", "chiligi", "chilik", "likka", "ligi", "lik", "larni", "larga", "larda", "lari", "lar", "man", "miz", "ni", "ga", "da", "dan", "ning", "a", "u", "om", "ov"];
 
 /** "-lik/-chilik" (kasb nomidan yasalgan so'z): kelishik qo'shimchasidan keyin ham olib tashlanadi */
 const DERIVED = ["chilik", "lik"];

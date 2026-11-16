@@ -72,8 +72,8 @@ export interface StoredChat<T> {
 }
 
 export function chatStorageKey(mode: FinderMode): string {
-  // v2 (2026-11): javob matni va tavsiya savollar qo'shildi — eski shakldagi suhbat o'qilmaydi
-  return `ib_ai_chat_v2:${mode}`;
+  // v3 (2026-11-16): oddiy qidiruv (so'rovnoma) — uzun AI matnli eski suhbatlar o'qilmaydi
+  return `ib_ai_chat_v3:${mode}`;
 }
 
 /** Saqlangan suhbat: muddati o'tgan yoki buzilgan bo'lsa — bo'sh */
@@ -112,7 +112,8 @@ export interface StoredConversation<T> {
 }
 
 export function conversationsStorageKey(mode: FinderMode): string {
-  return `ib_ai_convs_v1:${mode}`;
+  // v2 (2026-11-16): oddiy qidiruv — eski (uzun matnli) suhbatlar ro'yxatda ko'rinmaydi
+  return `ib_ai_convs_v2:${mode}`;
 }
 
 /** Ro'yxat sarlavhasi: birinchi savol, bir qatorda, 60 belgigacha */

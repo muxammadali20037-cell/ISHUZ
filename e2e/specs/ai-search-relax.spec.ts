@@ -1,13 +1,13 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, sql } from "../support";
+import { USERS, asGuest, asMode, quickSearch, sql } from "../support";
 
 /**
  * 2.0 (2026-11-11, egasi: "AI bilan qidirganda tushunsin, bazadan topsin, «yo'q» deb o'tirmasin"):
  *  - bosh sahifada BITTA qidiruv maydoni: yozilgan matn darhol yordamchiga yuboriladi, bosqichlarsiz natija;
- *  - aniq so'rov bo'sh chiqsa — qidiruv birma-bir kengaytiriladi (tuman → viloyat → butun O'zbekiston) va bu ochiq aytiladi;
- *  - kasblar ro'yxatida yo'q so'z (do'kon yoki kompaniya nomi, erkin lavozim) — e'lon matnlaridan qidiriladi va qaysi so'z
- *    bo'yicha topilgani aytiladi;
- *  - umuman yo'q bo'lsa — halol javob va keyingi qadam: yozgan matni tayyor turgan Telegram xabari, o'zi e'lon berishi;
+ *  - 2026-11-16 (ega: "AI uzun matn yozmasin"): yozilgandan keyin so'rovnoma oynasi (kasb, hudud, maosh) va "Qidirish";
+ *  - aniq so'rov bo'sh chiqsa — bitta qisqa "Hozircha bunday ish yo'q" (mehmonga — "kirsangiz, xabar beramiz") va pastda
+ *    "Shunga yaqin ishlar" (yaqin kasblar yoki shu kasb boshqa hududlarda);
+ *  - kasblar ro'yxatida yo'q so'z (do'kon yoki kompaniya nomi, erkin lavozim) — e'lon matnlaridan qidiriladi;
  *  - sekin telefon: sahifa skriptlari yuklanmasdan "Topish" bosilsa ham boshi berk yo'q — matn /ai?q=… sahifasiga boradi va
  *    savol o'sha yerda o'zi yuboriladi.
  */
@@ -47,7 +47,7 @@ async function ask(page: import("@playwright/test").Page, text: string) {
   await expect(field).toBeVisible();
   await field.fill(text);
   await field.press("Enter");
-  return page.getByRole("dialog");
+  return page.getByRole("dialog", { name: "Yordamchi" });
 }
 
 test("bosh sahifa: bitta qidiruv maydoni, nol ko'rsatkich va fon surati yo'q", async ({ page, context }) => {
@@ -63,19 +63,20 @@ test("bosh sahifa: bitta qidiruv maydoni, nol ko'rsatkich va fon surati yo'q", a
   await expect(hero.getByRole("navigation").getByRole("listitem")).toHaveCount(4);
 });
 
-test("Chilonzorda oshpaz → tumanda ham, Toshkentda ham yo'q → butun O'zbekistondan topadi va buni aytadi", async ({ page, context }) => {
+test("Chilonzorda oshpaz → oynada «Oshpaz» va Chilonzor; tumanda yo'q → qisqa «yo'q» va pastda shunga yaqin ishlar (Samarqanddagi)", async ({ page, context }) => {
   await seed();
   try {
     await asGuest(context);
     await asMode(context, "worker");
     const dialog = await ask(page, "Chilonzorda oshpaz ish kerak");
-    const notes = dialog.locator("[data-ai-relaxed]");
-    await expect(notes).toBeVisible({ timeout: 20_000 });
-    await expect(notes).toContainText("butun O'zbekiston bo'yicha ko'rsatildi");
-    await expect(dialog.getByText(TITLE).first()).toBeVisible();
-    await expect(dialog.locator("[data-ai-empty-actions]")).toHaveCount(0);
-    // aynan so'ralgani (Chilonzorda) yo'q edi — o'shanaqasi chiqsa xabar olish taklifi, yozgan matni bilan
-    await expect(dialog.locator("[data-ai-relaxed-alert]")).toHaveAttribute("href", /\/ai-alerts\?role=worker&q=Chilonzorda\+oshpaz\+ish\+kerak/);
+    const sheet = page.locator("[data-quick-sheet]");
+    await expect(sheet.locator("[data-quick-profession]")).toHaveValue("Oshpaz", { timeout: 20_000 });
+    await expect(sheet.locator("[data-quick-place] option:checked")).toHaveText("Toshkent shahri, Chilonzor tumani");
+    const answer = await quickSearch(page);
+    await expect(answer.locator("[data-quick-none]")).toContainText("Hozircha bunday ish yo'q.");
+    await expect(answer.locator("[data-quick-similar]")).toContainText("Shunga yaqin ishlar");
+    await expect(answer.locator("[data-quick-similar]").getByText(TITLE)).toBeVisible();
+    await expect(dialog.locator("[data-ai-reply]")).toHaveCount(0);
   } finally {
     await sql("delete from public.vacancies where title = $1", [TITLE]);
   }
@@ -83,7 +84,7 @@ test("Chilonzorda oshpaz → tumanda ham, Toshkentda ham yo'q → butun O'zbekis
 
 const BRAND_TITLE = "Sotuvchi — Yulduzcha supermarketi";
 
-test("kasblar ro'yxatida yo'q so'z (do'kon nomi) → e'lon matnlaridan topadi va qaysi so'z bo'yicha topganini aytadi", async ({ page, context }) => {
+test("kasblar ro'yxatida yo'q so'z (do'kon nomi) → oynada shu so'z; e'lon matnlaridan topadi; boshqa hududda bo'lsa — pastda", async ({ page, context }) => {
   await sql("delete from public.vacancies where title = $1", [BRAND_TITLE]);
   await sql(
     `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, published_at, expires_at)
@@ -96,33 +97,33 @@ test("kasblar ro'yxatida yo'q so'z (do'kon nomi) → e'lon matnlaridan topadi va
     await asMode(context, "worker");
     // kasb ham, hudud ham aytilmagan: "yulduzcha" — kasb emas, do'kon nomi
     let dialog = await ask(page, "yulduzchaga ishga kirmoqchiman");
-    await expect(dialog.locator("[data-ai-relaxed]")).toContainText("«yulduzcha» so'zi bo'yicha e'lon matnlaridan topdim", { timeout: 20_000 });
+    await expect(page.locator("[data-quick-sheet] [data-quick-profession]")).toHaveValue(/^yulduzcha/, { timeout: 20_000 });
+    let answer = await quickSearch(page);
+    await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
     await expect(dialog.getByText(BRAND_TITLE).first()).toBeVisible();
-    await expect(dialog.getByText("Kasbni aniqlay olmadim")).toHaveCount(0);
-    await expect(dialog.locator("[data-ai-empty-actions]")).toHaveCount(0);
 
-    // hudud aytilgan, u yerda yo'q: butun O'zbekistondan topiladi — ikkalasi ham aytiladi
+    // hudud aytilgan (hudud nomi kasb deb olinmaydi), u yerda yo'q: pastda — boshqa hududdagisi
     dialog = await ask(page, "Toshkentda yulduzchaga ishga kirmoqchiman");
-    // oldingi javob ixchamlashadi: to'liq natijalar havolasi — o'sha so'z bo'yicha matnli qidiruv
-    await expect(dialog.getByRole("link", { name: "Natijalarni ochish" }).first()).toHaveAttribute("href", /\/search\?mode=jobs&q=yulduzcha&region=all/);
-    const notes = dialog.locator("[data-ai-relaxed]").last();
-    await expect(notes).toContainText("e'lon matnlaridan topdim", { timeout: 20_000 });
-    await expect(notes).toContainText("butun O'zbekiston bo'yicha ko'rsatildi");
-    await expect(dialog.getByText(BRAND_TITLE).first()).toBeVisible();
+    await expect(page.locator("[data-quick-sheet] [data-quick-profession]")).toHaveValue(/^yulduzcha/, { timeout: 20_000 });
+    await expect(page.locator("[data-quick-sheet] [data-quick-place]")).toHaveValue("tashkent_city");
+    answer = await quickSearch(page);
+    await expect(answer.locator("[data-quick-none]")).toBeVisible();
+    await expect(answer.locator("[data-quick-similar]").getByText(BRAND_TITLE)).toBeVisible();
   } finally {
     await sql("delete from public.vacancies where title = $1", [BRAND_TITLE]);
   }
 });
 
-test("umuman yo'q → halol javob, yozgan matni bilan Telegram xabari va o'zi e'lon berish", async ({ page, context }) => {
+test("umuman yo'q → bitta qisqa xabar; mehmonga — «kirsangiz, xabar beramiz» va «Kirish» (uzun matn va boshqa tugmalar yo'q)", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   const dialog = await ask(page, "Toshkentda kosmonavt kerak");
-  const actions = dialog.locator("[data-ai-empty-actions]");
-  await expect(actions).toBeVisible({ timeout: 20_000 });
-  const alert = actions.getByRole("link", { name: "Yangisi chiqsa xabar olish" });
-  await expect(alert).toHaveAttribute("href", /\/ai-alerts\?role=worker&q=Toshkentda\+kosmonavt\+kerak/);
-  await expect(actions.getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveAttribute("href", "/post/worker");
+  const answer = await quickSearch(page);
+  const none = answer.locator("[data-quick-none]");
+  await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*Kirsangiz — mos ish chiqsa, sizga xabar beramiz\.\s*Kirish/);
+  await expect(none.getByRole("link", { name: "Kirish" })).toHaveAttribute("href", "/auth?next=%2Fai");
+  await expect(answer.locator("[data-quick-similar]")).toHaveCount(0);
+  await expect(dialog.locator("[data-ai-reply], [data-ai-suggestions], [data-ai-demos]")).toHaveCount(0);
 });
 
 test("Telegram xabari sahifasi yozilgan matnni tayyor ko'rsatadi", async ({ page, context }) => {
@@ -156,6 +157,9 @@ test("/ai?q=… — savol o'zi yuboriladi, natija shu sahifada; manzildan q olib
     await page.goto("/ai?q=Samarqandda%20oshpaz");
     const main = page.getByRole("main");
     await expect(main.getByText("Siz: Samarqandda oshpaz")).toBeVisible();
+    // so'rovnoma o'zi ochiladi (hudud — Samarqand)
+    await expect(page.locator("[data-quick-sheet] [data-quick-place]")).toHaveValue("samarkand");
+    await quickSearch(page);
     await expect(main.locator("article").filter({ hasText: TITLE })).toHaveCount(1);
     await expect(page).toHaveURL(/\/ai$/);
     await page.reload();

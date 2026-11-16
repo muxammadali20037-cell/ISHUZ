@@ -61,7 +61,7 @@ export function RoleSwitchRow({
       </span>
       <span className="min-w-0 flex-1">
         <span className="block text-base font-bold leading-tight">{title}</span>
-        <span className={cn("mt-0.5 block text-sm leading-snug", tone === "danger" ? "text-destructive/80" : "text-muted-foreground")}>{hint}</span>
+        <span className={cn("mt-0.5 block text-sm leading-snug", tone === "danger" ? "text-destructive" : "text-muted-foreground")}>{hint}</span>
       </span>
     </button>
   );

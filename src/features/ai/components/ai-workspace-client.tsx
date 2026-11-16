@@ -129,7 +129,6 @@ interface Props {
   locale: string;
   user: WorkspaceUser | null;
   quick: QuickAction[];
-  promo: { title: string; desc: string; cta: string; prompt: string };
   tips: string[];
   data: WorkspaceData;
   aiConfigured: boolean;
@@ -154,9 +153,10 @@ export function AiWorkspaceClient(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- `ask` har chizishda yangi; savol faqat bir marta yuboriladi (asked)
   }, [ready, props.initialQuery]);
 
-  const run = (prompt: string) => {
+  // tezkor tugma ("Ish qidirish", "Nomzod topish"): so'rovnoma oynasi bo'sh "Qanday ish?" bilan ochiladi
+  const run = (label: string) => {
     setDrawer(false);
-    chat.ask(prompt);
+    chat.ask(label, { blank: true });
     document.getElementById("ai-ws-text")?.focus();
   };
 
@@ -213,7 +213,7 @@ export function AiWorkspaceClient(props: Props) {
         </section>
 
         <aside className="hidden lg:sticky lg:top-24 lg:block" data-ai-rail>
-          <RightRail quick={props.quick} promo={props.promo} tips={props.tips} chat={chat} onPrompt={run} />
+          <RightRail quick={props.quick} tips={props.tips} chat={chat} onPrompt={run} />
         </aside>
       </div>
 
@@ -660,7 +660,7 @@ function QuickActions({
               ) : (
                 <button
                   type="button"
-                  onClick={() => onPrompt(q.prompt ?? q.label)}
+                  onClick={() => onPrompt(q.label)}
                   disabled={chat.pending}
                   className={compact ? tile : item}
                   data-quick={q.key}
@@ -678,13 +678,11 @@ function QuickActions({
 
 function RightRail({
   quick,
-  promo,
   tips,
   chat,
   onPrompt,
 }: {
   quick: QuickAction[];
-  promo: Props["promo"];
   tips: string[];
   chat: AiChatState;
   onPrompt: (p: string) => void;
@@ -696,30 +694,6 @@ function RightRail({
   );
   return (
     <div className="space-y-4">
-      <section
-        className="relative overflow-hidden rounded-2xl bg-primary-soft p-4"
-        data-ai-promo
-      >
-        <span
-          className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground"
-          aria-hidden
-        >
-          <Compass className="size-6" />
-        </span>
-        <h2 className="mt-3 text-lg font-extrabold leading-tight">
-          {promo.title}
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">{promo.desc}</p>
-        <Button
-          type="button"
-          className="mt-3 text-base"
-          onClick={() => onPrompt(promo.prompt)}
-          disabled={chat.pending}
-        >
-          {promo.cta} <ArrowRight className="size-4" aria-hidden />
-        </Button>
-      </section>
-
       <QuickActions quick={quick} onPrompt={onPrompt} chat={chat} />
 
       {tips.length ? (

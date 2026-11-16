@@ -1,42 +1,40 @@
-import { expect, test, type Page, type Route } from "@playwright/test";
-import { USERS, asGuest, asMode, sql } from "../support";
+import { expect, test, type Page } from "@playwright/test";
+import { USERS, asGuest, asMode, loginAs, quickSearch, sql } from "../support";
 
 /**
- * AI HR yordamchi — suhbat oynasi (/ai sahifasi va bosh sahifadagi oyna bitta komponent):
- *  - haqiqiy server (stendda AI kaliti yo'q — lug'at javobi): salomlashuv qidiruvsiz, so'rov → javob matni + bazadagi kartalar,
- *    tavsiya savollar bosiladi, foydalanuvchi tilida javob;
- *  - AI javobi (oqim) — server javobi almashtirilgan holda: uzun matn, nusxa olish, kontekst (oldingi savol-javob yuboriladi);
- *  - xatolar: limit (429) → "Qayta urinish"; javob o'rtasida uzilsa — yarim javob qoladi; javobni to'xtatish;
- *  - ovoz yo'q (ega, 2026-11-15: "kerak emas"): brauzer qo'llasa ham mikrofon va "O'qib berish" chiqmaydi.
+ * Yordamchi — oddiy qidiruv (2026-11-16, ega: "AI uzun matn yozmasin. So'rov qilgandan keyin oyna chiqsin — qaysi hududdan,
+ * oylik maoshi qancha bo'lsin — oxirida «Qidirish». Ish yo'q bo'lsa — so'rovingiz saqlandi, xabar beramiz, bo'ldi. Yaqin
+ * kasblar bo'lsa — pastda"):
+ *  - matn → so'rovnoma oynasi (oldindan to'ldirilgan) → "Qidirish" → qisqa xulosa va bazadagi kartalar; javob matni yo'q;
+ *  - kirgan ish izlovchi, topilmadi → qidiruv bazada saqlanadi (saved_searches) va "So'rovingiz saqlandi" deyiladi;
+ *  - ish beruvchi: "Xodim qidirish", maosh so'ralmaydi; topilmasa — "Vakansiya joylash";
+ *  - xato → "Qayta urinish"; kutish paytida "To'xtatish"; ovoz yo'q.
  */
 
-// Bir nechta testda server javobi almashtiriladi (page.route). Ilovaning service worker'i sahifani boshqaruvga olgach,
-// Playwright so'rovni ushlamay qolishi mumkin (vaqtga bog'liq — to'liq to'plamda bir marta haqiqiy serverga o'tib ketdi),
-// shuning uchun bu faylda service worker o'chirilgan. Suhbatning o'zi service worker'ga bog'liq emas (POST keshlanmaydi).
+// Ikki testda server amali ushlanadi (page.route). Ilovaning service worker'i sahifani boshqaruvga olgach, Playwright so'rovni
+// ushlamay qolishi mumkin (vaqtga bog'liq — CI'da bir marta haqiqiy serverga o'tib ketdi), shuning uchun bu faylda service
+// worker o'chirilgan. Yordamchining o'zi service worker'ga bog'liq emas (POST keshlanmaydi).
 test.use({ serviceWorkers: "block" });
-
-const DAILY = "Yuk tashuvchi (AI suhbat)";
 
 const main = (page: Page) => page.getByRole("main");
 const field = (page: Page) => main(page).getByLabel("Nima qidiryapsiz?");
-const replies = (page: Page) => main(page).locator("[data-ai-reply]");
 
 async function say(page: Page, text: string) {
   await field(page).fill(text);
   await main(page).getByRole("button", { name: "Topish", exact: true }).click();
 }
 
-const ndjson = (events: unknown[]) => events.map((e) => JSON.stringify(e)).join("\n") + "\n";
-const fulfill = (route: Route, events: unknown[]) => route.fulfill({ status: 200, contentType: "application/x-ndjson; charset=utf-8", body: ndjson(events) });
-
-async function open(page: Page, context: import("@playwright/test").BrowserContext) {
-  await asGuest(context);
-  await asMode(context, "worker");
+async function open(page: Page) {
   await page.goto("/ai");
   await expect(field(page)).toBeVisible();
   // skriptlar yuklangan (yozish maydoni ishlaydi)
   await expect(page.locator("form[data-state][data-hydrated]")).toHaveCount(1);
 }
+
+/** server amallari (Next server action) — /ai sahifasiga POST, "next-action" sarlavhasi bilan */
+const isAction = (r: import("@playwright/test").Request) => r.method() === "POST" && !!r.headers()["next-action"];
+
+const TITLE = "Buxgalter (Yordamchi so'rovnoma)";
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -47,133 +45,119 @@ test.beforeEach(async () => {
   );
   await sql(
     `insert into public.vacancies (owner_profile_id, title, region_id, profession_node_id, description, status, salary_from, salary_type, published_at, expires_at)
-     select $1, t.title, r.id, n.id, 'Sinov e''loni: ish vaqti 9 dan 18 gacha, tushlik bilan.', 'active', t.pay, t.kind::public.salary_type, now(), now() + interval '10 days'
+     select $1, $2, r.id, n.id, 'Sinov e''loni: ish vaqti 9 dan 18 gacha, tushlik bilan.', 'active', 6000000, 'monthly', now(), now() + interval '10 days'
      from public.regions r
      cross join (select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable order by depth limit 1) n
-     cross join (values ($2, 250000, 'daily'), ('Buxgalter (AI suhbat)', 6000000, 'monthly')) as t(title, pay, kind)
      where r.slug = 'tashkent_city'`,
-    [USERS.employer, DAILY],
+    [USERS.employer, TITLE],
   );
 });
 test.afterAll(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  await sql("delete from public.saved_searches where profile_id = $1", [USERS.workerB]);
 });
 
-test("suhbat: salomlashuv qidiruvsiz; tavsiya savoli bosiladi → javob matni va bazadagi kartalar; ruscha yozsa — ruscha", async ({ page, context }) => {
-  await open(page, context);
-  await say(page, "Salom");
-  await expect(main(page).getByText("Siz: Salom")).toBeVisible();
-  await expect(replies(page).last()).toContainText("Men Ish topdim yordamchisiman");
-  await expect(main(page).locator("article")).toHaveCount(0);
-  await expect(main(page).getByText(/^Tushundim:/)).toHaveCount(0);
-  // AI ulanmagan: AI'siz bajariladigan narsalar taklif qilinadi — qidiruv misollari va bozor statistikasi (bazadan)
-  const chips = main(page).locator("[data-ai-suggestions]").getByRole("button");
-  await expect(chips).toHaveText(["Kunlik ish bormi?", "Tajribasiz ishlar", "Oshpaz maoshi qancha?"]);
-
-  await chips.first().click();
-  await expect(main(page).getByText("Siz: Kunlik ish bormi?")).toBeVisible();
-  await expect(replies(page).last()).toContainText("1 ta");
-  await expect(main(page).getByText(/^Tushundim:/).last()).toContainText("Kunlik ishlar");
-  const cards = main(page).locator("article");
-  await expect(cards).toHaveCount(1);
-  await expect(cards.first()).toContainText(DAILY);
-  // oldingi javobning tavsiyalari yo'qoladi; natija bor — toraytirish tugmalari
-  await expect(main(page).locator("[data-ai-suggestions]")).toHaveCount(0);
-  await expect(main(page).getByRole("button", { name: "Qo'shish: Tajribasiz" })).toBeVisible();
-
-  await say(page, "ищу работу бухгалтером в Ташкенте");
-  await expect(replies(page).last()).toContainText(/объявлен/);
-  await expect(main(page).locator("article").first()).toBeVisible();
-
-  // suhbat shu tabda saqlanadi: sahifa yangilansa javoblar joyida
-  await page.reload();
-  await expect(replies(page)).toHaveCount(3);
-  await main(page).getByRole("button", { name: "Yangi suhbat" }).click();
-  await expect(replies(page)).toHaveCount(0);
-  // ish maydoni (2026-11): bo'sh suhbat — salomlashuv va "Bugungi ishlar"
-  await expect(main(page).locator("[data-ai-welcome]")).toBeVisible();
+test("matn → so'rovnoma (kasb, hudud, maosh oldindan to'ldirilgan) → «Qidirish» → qisqa xulosa va kartalar; AI matni yo'q", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await open(page);
+  await say(page, "Toshkentda buxgalter 5 mln");
+  const sheet = page.getByRole("dialog", { name: "Ish qidirish" });
+  await expect(sheet.getByLabel("Qanday ish?")).toHaveValue("Buxgalter");
+  await expect(sheet.getByLabel("Qaysi hududda?")).toHaveValue("tashkent_city");
+  // matnda aytilgan maosh ham tanlangan (ro'yxatda bo'lmasa — qo'shiladi)
+  await expect(sheet.getByRole("radio", { name: "5 mln dan" })).toHaveAttribute("aria-checked", "true");
+  // fokus "Qidirish"da — telefonda klaviatura o'zi chiqmaydi
+  await expect(sheet.locator("[data-quick-submit]")).toBeFocused();
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-summary] span")).toHaveText(["Buxgalter", "Toshkent shahri", "5 mln so'mdan yuqori"]);
+  await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
+  await expect(answer.locator("article")).toHaveCount(1);
+  await expect(answer.locator("article")).toContainText(TITLE);
+  await expect(main(page).locator("[data-ai-reply], [data-ai-trace], [data-ai-suggestions]")).toHaveCount(0);
 });
 
-test("AI javobi (oqim): uzun matn qatorlari bilan, nusxa olish, tavsiya; keyingi xabarda oldingi savol-javob kontekst sifatida yuboriladi", async ({ page, context }) => {
-  await context.grantPermissions(["clipboard-read", "clipboard-write"]);
-  await open(page, context);
-  const cv = "Mana qisqa rezyume matni:\n\n1. Oshpaz, 3 yil tajriba — milliy taomlar.\n2. Katta oshxonada smena boshlig'i bo'lib ishlaganman.\n3. Sanitariya daftarchasi bor.\n\nIsh beruvchi ko'radigan e'longa shu matnni qo'ysangiz bo'ladi. Qaysi tumanda ishlashni xohlaysiz?";
-  const bodies: Array<{ messages: Array<{ role: string; text: string }>; role: string }> = [];
-  await page.route("**/api/assistant", async (route) => {
-    bodies.push(route.request().postDataJSON());
-    const second = bodies.length > 1;
-    await fulfill(route, [
-      { type: "status", stage: "thinking" },
-      ...(second ? ["Chilonzor bo'yicha ", "qarab chiqdim."] : [cv.slice(0, 40), cv.slice(40, 150), cv.slice(150)]).map((delta) => ({ type: "text", delta })),
-      { type: "suggestions", items: ["Suhbatga qanday tayyorlanay?"] },
-      { type: "done", source: "ai", lang: "uz" },
-    ]);
-  });
-  await say(page, "rezyume yozishga yordam bering, oshpazman");
-  const reply = replies(page).last();
-  await expect(reply).toHaveText(cv);
-  // qatorlar saqlanadi (ro'yxat bir qatorga yopishib qolmaydi)
-  expect(await reply.evaluate((el) => getComputedStyle(el).whiteSpace)).toBe("pre-wrap");
-  await expect(main(page).getByText("Sun'iy intellekt tahlil qildi")).toBeVisible();
-  await expect(main(page).getByText(/^Tushundim:/)).toHaveCount(0);
-  await main(page).getByRole("button", { name: "Nusxa olish" }).click();
-  await expect(main(page).getByRole("button", { name: "Nusxa olindi" })).toBeVisible();
-  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(cv);
-  await expect(main(page).locator("[data-ai-suggestions]").getByRole("button")).toHaveText(["Suhbatga qanday tayyorlanay?"]);
-  // AI tuzib bergan matn bilan keyingi qadam: o'zi haqida e'lon berish
-  await expect(main(page).locator("[data-ai-reply-actions]").getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveAttribute("href", "/post/worker");
+test("kirgan ish izlovchi, topilmadi → «So'rovingiz saqlandi», qidiruv bazada; pastda shunga yaqin ishlar", async ({ page, context }) => {
+  await sql("delete from public.saved_searches where profile_id = $1", [USERS.workerB]);
+  await loginAs(context, USERS.workerB, "aal2");
+  await asMode(context, "worker");
+  await open(page);
+  await say(page, "Samarqandda buxgalter");
+  const answer = await quickSearch(page, { salary: 10_000_000 });
+  const none = answer.locator("[data-quick-none]");
+  await expect(none).toHaveAttribute("data-save", "saved");
+  await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*So'rovingiz saqlandi\. Mos ish chiqsa, sizga xabar beramiz\./);
+  // haqiqatan saqlangan: kasb, viloyat va maosh bilan (kuniga bir marta tekshiriladi — mos yangi e'lon bo'lsa bildirishnoma)
+  const rows = await sql<{ q: string; region: string; salary_min: number; notify: boolean }>(
+    "select s.q, r.slug as region, s.salary_min, s.notify from public.saved_searches s left join public.regions r on r.id = s.region_id where s.profile_id = $1",
+    [USERS.workerB],
+  );
+  expect(rows).toEqual([{ q: "Buxgalter", region: "samarkand", salary_min: 10_000_000, notify: true }]);
+  // pastda — shu kasb boshqa hududda (Toshkentdagi e'lon)
+  await expect(answer.locator("[data-quick-similar]")).toContainText("Shunga yaqin ishlar");
+  await expect(answer.locator("[data-quick-similar] article")).toContainText(TITLE);
 
-  await say(page, "Chilonzorda");
-  await expect(replies(page).last()).toHaveText("Chilonzor bo'yicha qarab chiqdim.");
-  expect(bodies[0]).toEqual({ messages: [{ role: "user", text: "rezyume yozishga yordam bering, oshpazman" }], role: "seeker" });
-  expect(bodies[1]!.messages).toEqual([
-    { role: "user", text: "rezyume yozishga yordam bering, oshpazman" },
-    { role: "assistant", text: cv },
-    { role: "user", text: "Chilonzorda" },
-  ]);
+  // xuddi shu so'rov yana — ikkinchi nusxa yozilmaydi, xabar o'sha
+  await say(page, "Samarqandda buxgalter");
+  const again = await quickSearch(page, { salary: 10_000_000 });
+  await expect(again.locator("[data-quick-none]")).toContainText("So'rovingiz saqlandi.");
+  const [count] = await sql<{ n: string }>("select count(*)::text as n from public.saved_searches where profile_id = $1", [USERS.workerB]);
+  expect(count!.n).toBe("1");
 });
 
-test("xatolar: limit → tushunarli xabar va 'Qayta urinish'; javob o'rtasida uzilsa — kelgan qismi qoladi", async ({ page, context }) => {
-  await open(page, context);
-  let mode: "limit" | "cut" = "limit";
-  await page.route("**/api/assistant", async (route) => {
-    if (mode === "limit") return route.fulfill({ status: 429, contentType: "application/json", body: JSON.stringify({ error: "rate_limited" }) });
-    return fulfill(route, [
-      { type: "text", delta: "Hozir bazadan qarayman." },
-      { type: "error", code: "timeout" },
-    ]);
-  });
-  await say(page, "oshpaz kerak");
-  await expect(main(page).getByRole("alert")).toContainText("So'rovlar soni vaqtincha cheklangan");
-  mode = "cut";
+test("ish beruvchi: «Xodim qidirish» — maosh so'ralmaydi; topilmasa — qisqa xabar va «Vakansiya joylash»", async ({ page, context }) => {
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  await open(page);
+  await expect(field(page)).toHaveAttribute("placeholder", /Kim kerak/);
+  await say(page, "Termizda kosmonavt kerak");
+  const sheet = page.getByRole("dialog", { name: "Xodim qidirish" });
+  await expect(sheet.getByLabel("Qanday xodim kerak?")).toBeVisible();
+  await expect(sheet.getByLabel("Qaysi hududdan?")).toBeVisible();
+  await expect(sheet.locator("[data-quick-salary]")).toHaveCount(0);
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-none]")).toContainText("Hozircha mos nomzod yo'q.");
+  await expect(answer.getByRole("link", { name: "Vakansiya joylash" })).toHaveAttribute("href", "/post/vacancy");
+});
+
+test("xato: tushunarli xabar va «Qayta urinish» — qayta urinilsa so'rovnoma ochiladi; xatodan keyin ham yozish mumkin", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await open(page);
+  let fail = true;
+  await page.route("**/ai", (route) => (fail && isAction(route.request()) ? route.abort() : route.continue()));
+  await say(page, "Toshkentda buxgalter");
+  await expect(main(page).getByRole("alert")).toBeVisible();
+  fail = false;
   await main(page).getByRole("button", { name: "Qayta urinish" }).click();
-  await expect(replies(page).last()).toHaveText("Hozir bazadan qarayman.");
-  await expect(main(page).getByRole("alert")).toHaveText("Javob cho'zilib ketdi. Qayta urinib ko'ring.");
-  // xatodan keyin ham yozish mumkin
-  await page.unroute("**/api/assistant");
-  await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
 });
 
-test("javobni to'xtatish: kutish holati ko'rinadi, 'To'xtatish' bosilsa — suhbat davom etadi", async ({ page, context }) => {
-  await open(page, context);
+test("kutish holati ko'rinadi; «To'xtatish» bosilsa — «To'xtatildi», suhbat davom etadi", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await open(page);
   let release: () => void = () => {};
-  await page.route("**/api/assistant", async (route) => {
+  let hold = true;
+  await page.route("**/ai", async (route) => {
+    if (!hold || !isAction(route.request())) return route.continue();
     await new Promise<void>((r) => (release = r));
     await route.abort().catch(() => undefined);
   });
-  await say(page, "oshpaz kerak");
+  await say(page, "Toshkentda buxgalter");
   await expect(main(page).getByRole("status")).toContainText("So'zlaringizni tushunmoqdaman");
   await expect(main(page).locator("form[data-state]")).toHaveAttribute("data-state", "processing");
-  // javob kutilayotganda yuborish tugmasi o'rnida — to'xtatish
+  // kutilayotganda yuborish tugmasi o'rnida — to'xtatish
   await expect(main(page).getByRole("button", { name: "Topish" })).toHaveCount(0);
   await main(page).getByRole("button", { name: "Javobni to'xtatish" }).click();
   await expect(main(page).getByText("To'xtatildi").last()).toBeVisible();
   await expect(main(page).locator("form[data-state]")).toHaveAttribute("data-state", "idle");
+  hold = false;
   release();
-  await page.unroute("**/api/assistant");
-  await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
+  await say(page, "Toshkentda buxgalter");
+  const answer = await quickSearch(page);
+  await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
 });
 
 test("ovoz yo'q: brauzer ovozni qo'llasa ham — mikrofon, «Ovoz bilan javob», «O'qib berish» ko'rinmaydi; hech narsa o'qib berilmaydi", async ({ page, context }) => {
@@ -203,15 +187,13 @@ test("ovoz yo'q: brauzer ovozni qo'llasa ham — mikrofon, «Ovoz bilan javob»,
     }
     Object.assign(window, { SpeechRecognition: FakeRecognition, webkitSpeechRecognition: FakeRecognition });
   });
-  await open(page, context);
-  await expect(page.getByRole("switch")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: /Ovoz bilan|Gapirib/ })).toHaveCount(0);
-  await say(page, "Salom");
-  await expect(replies(page).last()).toContainText("Ish topdim yordamchisiman");
+  await asGuest(context);
+  await asMode(context, "worker");
+  await open(page);
+  await expect(main(page).getByRole("button", { name: /Ovoz bilan|Gapirib/ })).toHaveCount(0);
+  await say(page, "Toshkentda buxgalter");
+  await quickSearch(page);
   await expect(main(page).getByRole("button", { name: "O'qib berish" })).toHaveCount(0);
-  // menyuda ham ovoz tanlovi yo'q
-  await page.locator("[data-ai-menu]").click();
-  await expect(page.getByRole("menuitem", { name: /Ovoz/ })).toHaveCount(0);
-  await page.keyboard.press("Escape");
-  expect(await page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken)).toEqual([]);
+  await expect(main(page).getByRole("switch")).toHaveCount(0);
+  expect(await page.evaluate(() => (window as unknown as { __spoken: unknown[] }).__spoken.length)).toBe(0);
 });

@@ -1,5 +1,23 @@
 # O'zgarishlar jurnali
 
+## 2026-11-16 · Yordamchi: uzun AI matni o'rniga so'rovnoma oynasi (`claude/quick-ai`)
+
+Ega: "AI uzun matn yozmasin. So'rov qilgandan keyin oyna chiqsin — qaysi hududdan, oylik maoshi qancha bo'lsin — oxirida
+«Qidirish». Ish yo'q bo'lsa — so'rovingiz qoldirildi, xabar beramiz, bo'ldi. Yaqin kasblar bo'lsa — pastda. Sodda bo'lsin".
+Tanlov (AskUserQuestion): erkin suhbat ham olib tashlansin; matn — "So'rovingiz saqlandi".
+
+- **Oqim:** yozilgan matn → kasb, hudud, maosh (va "kunlik", "tajribasiz" kabi shartlar) tushuniladi (lug'at, kerak bo'lsa
+  AI — faqat tushunish uchun) → oyna (telefonda pastdan): "Qanday ish?", "Qaysi hududda?", "Oylik maosh qancha bo'lsin?"
+  (oldindan to'ldirilgan) → "Qidirish" → qisqa xulosa ("Buxgalter · Toshkent shahri · 4 mln so'mdan yuqori") va kartalar.
+- **Topilmasa:** bitta qisqa xabar. Kirgan ish izlovchi — qidiruv saqlanadi (bepul `saved_searches`, kuniga bir marta
+  tekshiriladi, mos e'lon bo'lsa bildirishnoma) va "So'rovingiz saqlandi. Mos ish chiqsa, sizga xabar beramiz."; mehmon —
+  "Kirsangiz — xabar beramiz" + "Kirish". Pastda — "Shunga yaqin ishlar" (ota yo'nalish yoki shu kasb boshqa joyda).
+- Olib tashlandi: AI javob matni, jarayon izi, "+ Kunlik" aniqlashtirish, tavsiya savollar, bozor statistikasi kartasi,
+  namuna e'lonlar (yordamchida), karyera/suhbat/vakansiya matni tezkor tugmalari va "Karyerangizni rivojlantiring" kartasi.
+  `/api/assistant` serverda qoldi (UI ishlatmaydi).
+- Lug'at: "men", "menga" kabi olmoshlar kasb deb olinmaydi; "-man/-miz" qo'shimchasi ("instruktorman" → "instruktor").
+- Suhbat xotirasi kaliti yangilandi (v3) — eski uzun matnli suhbatlar ko'rinmaydi.
+
 ## 2026-11-16 · Logotip: egasining haqiqiy belgisi qaytdi (`claude/real-logo`)
 
 Ega: "o'zimizning real logotip bo'lsin". 5.0 dagi gradient kvadrat + portfel belgisi olib tashlandi — hamma joyda
