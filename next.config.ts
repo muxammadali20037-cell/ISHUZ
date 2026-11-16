@@ -15,9 +15,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {
-    // bir marta ochilgan sahifaga 30 s ichida qaytish — serverni kutmasdan, darhol (orqaga/oldinga va menyu bo'ylab yurish).
+    // bir marta ochilgan sahifaga 60 s ichida qaytish — serverni kutmasdan, darhol (orqaga/oldinga va menyu bo'ylab yurish).
     // Server amallari (revalidatePath, router.refresh) va cookie o'zgarishi keshni o'zi tozalaydi
-    staleTimes: { dynamic: 30 },
+    staleTimes: { dynamic: 60 },
   },
   // PDF CV shriftlari serverless funksiyaga qo'shiladi (fs orqali o'qiladi)
   outputFileTracingIncludes: {
