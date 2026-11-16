@@ -1,21 +1,25 @@
-import { BriefcaseBusiness } from "lucide-react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
+import markPng from "@/assets/brand/ishtopdim-mark.png";
 
 /**
- * "Ish topdim" belgisi — 5.0 (2026-11-16, ega "ko'k-oq" dizayni): ko'k gradientli yumaloq-kvadrat (36 px da radius 12 px)
- * ichida oq "portfel". Faqat token (--gradient-brand) orqali; favicon va ilova belgilari — public/brand (o'zgarmagan).
- * O'lcham — `className` (masalan, `size-9`).
+ * "Ish topdim" belgisi (egasi, 2026-11-05): oq plita ichida ko'k odam va yuqoriga strelka — "ish topdim, oldinga".
+ * Egasi bergan rasm o'zgartirilmaydi; manba — scripts/brand/source/ishtopdim-mark-original.png, kesim va o'lchamlar —
+ * scripts/brand/build-brand.py (favicon, ilova belgilari va logo fayllari ham o'sha yerdan). Plita oq bo'lgani uchun
+ * och va to'q fonda bir xil ko'rinadi — alohida "to'q fon" varianti kerak emas.
+ *
+ * O'lcham — `className` (masalan, `size-9`); `sizes` brauzerga kerakli eng kichik faylni tanlash uchun.
  */
-export function BrandMark({ className, label }: { className?: string; label?: string; sizes?: string }) {
+export function BrandMark({ className, label, sizes = "80px" }: { className?: string; label?: string; sizes?: string }) {
   return (
-    <span
-      role={label ? "img" : undefined}
-      aria-label={label}
+    <Image
+      src={markPng}
+      alt={label ?? ""}
       aria-hidden={label ? undefined : true}
-      className={cn("brand-fill inline-flex size-8 shrink-0 select-none items-center justify-center shadow-glow", className)}
-      style={{ borderRadius: "33%" }}
-    >
-      <BriefcaseBusiness className="size-[56%]" strokeWidth={2.2} aria-hidden />
-    </span>
+      sizes={sizes}
+      loading="eager"
+      draggable={false}
+      className={cn("block size-8 shrink-0 select-none object-contain", className)}
+    />
   );
 }
