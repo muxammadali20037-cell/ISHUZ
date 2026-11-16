@@ -11,6 +11,11 @@ import { USERS, asGuest, asMode, loginAs, quickSearch, sql } from "../support";
  *  - xato → "Qayta urinish"; kutish paytida "To'xtatish"; ovoz yo'q.
  */
 
+// Ikki testda server amali ushlanadi (page.route). Ilovaning service worker'i sahifani boshqaruvga olgach, Playwright so'rovni
+// ushlamay qolishi mumkin (vaqtga bog'liq — CI'da bir marta haqiqiy serverga o'tib ketdi), shuning uchun bu faylda service
+// worker o'chirilgan. Yordamchining o'zi service worker'ga bog'liq emas (POST keshlanmaydi).
+test.use({ serviceWorkers: "block" });
+
 const main = (page: Page) => page.getByRole("main");
 const field = (page: Page) => main(page).getByLabel("Nima qidiryapsiz?");
 
