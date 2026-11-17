@@ -169,6 +169,19 @@ test("«E'lonlarim» (bosh sahifadan): o'zi joylagan e'lonlar va holati; bo'lmas
   await expect(paused).toBeVisible();
   await expect(paused.locator("p").filter({ hasText: /To'xtatilgan|to'xtatilgan/ }).first()).toBeVisible();
   await expect(page.locator("[data-my-listings-empty]")).toHaveCount(0);
+  // ixcham (ega, 2026-11-17: "juda katta, tushunarsiz — soddalashtir"): kichik karta, tugmalar kichik va bir qatorda;
+  // xabarnoma obunasi va "mos ishchilar" bu yerda yo'q
+  const list = page.locator("[data-my-listings]");
+  await expect(list).not.toContainText("xabar bering");
+  await expect(list).not.toContainText("Mos ishchilar");
+  await expect(active.getByRole("link", { name: "O'zgartirish" })).toBeVisible();
+  // kartaning bosh qismi (nomi, "›") — e'lonning o'zini ochadi
+  await expect(active.locator("[data-my-listing-open]")).toHaveAttribute("href", /^\/employer\/vacancies\/[0-9a-f-]{36}$/);
+  await expect(active.getByRole("button", { name: "Ishchi topdim" })).toBeVisible();
+  const chips = await active.locator("a:not([data-my-listing-open]), button").evaluateAll((els) => els.map((e) => e.getBoundingClientRect()).map((r) => ({ h: r.height, top: Math.round(r.top) })));
+  for (const c of chips) expect(c.h).toBeLessThanOrEqual(44);
+  expect(new Set(chips.map((c) => c.top)).size).toBe(1);
+  expect((await active.boundingBox())!.height).toBeLessThan(240);
 
   // e'loni yo'q ish izlovchi: bosh sahifadagi qator → bo'sh holat va "E'lon joylash"
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);

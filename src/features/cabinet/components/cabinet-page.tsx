@@ -10,7 +10,6 @@ import { signOut } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { getMyListings } from "../queries";
 import { MyListingsSection } from "./my-listings";
-import { getAlertSubscriptions } from "@/features/alerts/queries";
 import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import type { AppMode } from "@/features/mode/mode";
 import { ProfileHeader } from "./profile-header";
@@ -38,7 +37,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     );
   }
 
-  const [{ worker, vacancies, paid }, alerts] = await Promise.all([getMyListings(session), getAlertSubscriptions(session)]);
+  const { worker, vacancies, paid } = await getMyListings(session);
   // bitta ro'yxat: faoliyat (arizalar, takliflar, saqlangan, xabarlar…), keyin hisob (profil, to'lovlar, sozlamalar)
   const links: { href: string; label: string; icon: typeof Bell; show: boolean }[] = [
     { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId },
@@ -77,7 +76,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
       </Suspense>
 
       <Fold name="my-listings" icon={<FileText />} tint="blue" verb="view" title={t("easy.cabinet.my_listings")} count={(worker ? 1 : 0) + vacancies.length || null}>
-        <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} alerts={alerts} />
+        <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} />
       </Fold>
 
       <Fold name="pro" icon={<BellRing />} tint="orange" verb="open" title={t("easy.aihub.pro_title")}>

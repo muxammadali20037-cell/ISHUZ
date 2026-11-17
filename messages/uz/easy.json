@@ -125,7 +125,10 @@
     "role_now": "Hozir: {role}",
     "master_listings": "Usta e'lonlarim",
     "master_manage": "Usta kabinetida ko'rish",
-    "page_sub": "Joylagan e'lonlaringiz va ularning holati: joylandi, tekshiruvda yoki to'xtatilgan."
+    "page_sub": "Joylagan e'lonlaringiz va ularning holati: joylandi, tekshiruvda yoki to'xtatilgan.",
+    "group_self": "O'zim haqimda e'lon",
+    "group_vacancies": "Vakansiyalarim",
+    "edit_short": "O'zgartirish"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",

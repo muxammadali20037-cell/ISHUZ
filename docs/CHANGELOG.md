@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · "E'lonlarim" — ixcham kartalar (`claude/my-listings-compact`)
+
+Ega: "e'lonlarimdagi juda katta, tushunarsiz — tartibga keltir, soddalashtir".
+
+- Har bir e'lon — kichik karta: nomi va joyi (bosilsa e'lonning o'zi ochiladi, "›"), kichik holat belgisi va bir qatorda
+  kichik tugmalar: "O'zgartirish" va "Ishga joylashdim" / "Ishchi topdim" (vakansiyada — "Arizalar: N"; kerak bo'lsa
+  "To'lash"). Guruh nomlari oddiy kichik yozuv ("O'zim haqimda e'lon", "Vakansiyalarim", "Usta e'lonlarim").
+- Olib tashlandi: katta "Batafsil" va "Mos ishlar / Mos ishchilar" tugmalari, xabarnoma obunasi bloki (Profil →
+  "Telegram xabarnomalari" va bosh sahifadagi "Sizga mos ishlar" bor). Profildagi "Mening e'lonlarim" ham shunday.
+
 ## 2026-11-17 · "E'lonlarim" va "Yangi ishlar" — alohida sahifalar (`claude/home-rows`)
 
 Ega: "yangi ishlarni bossa — yangi joylangan e'lonlar ichiga kirsin, o'sha oynada ochilmasin; tepasida e'lonlarim tursin —
