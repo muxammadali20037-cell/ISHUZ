@@ -13,11 +13,14 @@ import { celebrate } from "@/lib/celebrate";
 import { markFoundJob, markFoundWorker } from "@/features/post/actions";
 import { callAction } from "@/lib/action-call";
 
+/** "E'lonlarim"dagi kichik amal tugmalari (ega, 2026-11-17: "juda katta, tushunarsiz — soddalashtir") */
+const COMPACT = "h-10 gap-1.5 rounded-xl px-3 text-sm font-semibold";
+
 /**
  * "Ishga joylashdim" / "Ishchi topdim" — tasdiqlash bilan; e'lon qidiruvdan chiqadi.
  * Yopuvchi amal — kartaning eng yorqin tugmasi emas (outline); natija rangi faqat belgida.
  */
-export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacancyId?: string }) {
+export function FoundButton({ kind, vacancyId, compact = false }: { kind: "job" | "worker"; vacancyId?: string; /** "E'lonlarim": kichik tugma */ compact?: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -38,8 +41,8 @@ export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacan
     });
   return (
     <>
-      <Button type="button" variant="outline" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base" onClick={() => setOpen(true)}>
-        <CheckCircle2 className="size-5 text-success" aria-hidden /> {kind === "job" ? t("easy.cabinet.found_job") : t("easy.cabinet.found_worker")}
+      <Button type="button" variant="outline" className={compact ? COMPACT : "h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base"} onClick={() => setOpen(true)}>
+        <CheckCircle2 className={compact ? "size-4 text-success" : "size-5 text-success"} aria-hidden /> {kind === "job" ? t("easy.cabinet.found_job") : t("easy.cabinet.found_worker")}
       </Button>
       <ConfirmDialog
         open={open}
@@ -56,13 +59,13 @@ export function FoundButton({ kind, vacancyId }: { kind: "job" | "worker"; vacan
 }
 
 /** To'lov kutilayotgan e'lon: to'lash (Android ilovada — neytral izoh) */
-export function PayButton({ purpose, targetId }: { purpose: "worker_listing" | "vacancy_publish"; targetId: string }) {
+export function PayButton({ purpose, targetId, compact = false }: { purpose: "worker_listing" | "vacancy_publish"; targetId: string; compact?: boolean }) {
   const { t } = useT();
   const inApp = useAndroidApp();
   if (inApp) return <InAppNote />;
   return (
-    <Button type="button" className="h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base" onClick={() => requestPayment({ purpose, targetId })}>
-      <CreditCard className="size-5" aria-hidden /> {t("easy.cabinet.pay")}
+    <Button type="button" className={compact ? COMPACT : "h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base"} onClick={() => requestPayment({ purpose, targetId })}>
+      <CreditCard className={compact ? "size-4" : "size-5"} aria-hidden /> {t("easy.cabinet.pay")}
     </Button>
   );
 }

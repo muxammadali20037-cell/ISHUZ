@@ -5,7 +5,6 @@ import { getT } from "@/lib/i18n/server";
 import { requireSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { getMyListings } from "@/features/cabinet/queries";
-import { getAlertSubscriptions } from "@/features/alerts/queries";
 import { getMyMasterListings } from "@/features/masters/queries";
 import { MyListingsSection } from "@/features/cabinet/components/my-listings";
 
@@ -21,10 +20,9 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function MyListingsPage() {
   const session = await requireSession("/cabinet/elonlar");
-  const [{ t }, { worker, vacancies, paid }, alerts, masters] = await Promise.all([
+  const [{ t }, { worker, vacancies, paid }, masters] = await Promise.all([
     getT(),
     getMyListings(session),
-    getAlertSubscriptions(session),
     getMyMasterListings(session.userId),
   ]);
   const empty = !worker && !vacancies.length && !masters.length;
@@ -35,7 +33,7 @@ export default async function MyListingsPage() {
           <h1 className="text-3xl font-extrabold tracking-tight">{t("easy.home2.my_listings")}</h1>
           <p className="mt-1 text-base text-muted-foreground">{t("easy.cabinet.page_sub")}</p>
         </div>
-        <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} alerts={alerts} masters={masters} />
+        <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} masters={masters} />
         {empty ? (
           <Link
             href="/ai/post"

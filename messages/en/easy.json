@@ -125,7 +125,10 @@
     "role_now": "Now: {role}",
     "master_listings": "My handyman listings",
     "master_manage": "Open handyman dashboard",
-    "page_sub": "Your listings and their status: live, under review or stopped."
+    "page_sub": "Your listings and their status: live, under review or stopped.",
+    "group_self": "About me",
+    "group_vacancies": "My vacancies",
+    "edit_short": "Edit"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
