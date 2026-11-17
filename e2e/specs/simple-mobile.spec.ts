@@ -61,16 +61,23 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz), 
   const labelColors = await menu.locator("[data-menu-item] span.font-bold").evaluateAll((els) => els.map((e) => getComputedStyle(e).color));
   expect(new Set(labelColors).size).toBe(1);
   await expect(menu.locator("[data-new-dot]")).toHaveCount(0);
-  // menyu sahifadagi oxirgi bo'lim (rol almashtirish eng tagida — yangi ishlar undan oldin)
-  const feedY = (await fold(page, "home-feed").boundingBox())!.y;
-  expect((await sw.boundingBox())!.y).toBeGreaterThan(feedY);
-  // yangi ishlar — yopiq: "Yangi ishlar … Ko'rish"; bosilsa ochiladi
-  const toggle = fold(page, "home-feed").locator("[data-fold-toggle]");
-  await expect(toggle).toHaveAttribute("aria-expanded", "false");
-  await expect(toggle).toContainText("Ko'rish");
-  await toggle.click();
-  await expect(toggle).toHaveAttribute("aria-expanded", "true");
-  await expect(toggle).toContainText("Yopish");
+  // menyu sahifadagi oxirgi bo'lim (rol almashtirish eng tagida — "E'lonlarim" va "Yangi ishlar" undan oldin)
+  const mine = page.locator('main [data-home-row="my-listings"]');
+  const fresh = page.locator('main [data-home-row="new-jobs"]');
+  expect((await sw.boundingBox())!.y).toBeGreaterThan((await fresh.boundingBox())!.y);
+  // ega (2026-11-17): "yangi ishlarni bossa — yangi joylangan e'lonlar ichiga kirsin, o'sha oynada ochilmasin; tepasida e'lonlarim
+  // tursin — bossa o'zi joylagan e'lonlar ichiga kirsin, holatini ko'rsin". Ikkalasi ham qator-havola, rangsiz
+  expect((await mine.boundingBox())!.y).toBeLessThan((await fresh.boundingBox())!.y);
+  await expect(mine).toContainText("E'lonlarim");
+  await expect(mine).toHaveAttribute("href", "/cabinet/elonlar");
+  await expect(fresh).toContainText("Yangi ishlar");
+  await expect(fresh).toHaveAttribute("href", /^\/jobs\?sort=newest/);
+  await expect(page.locator("[data-fold-toggle]")).toHaveCount(0);
+  await mine.click();
+  await page.waitForURL(/\/cabinet\/elonlar$/);
+  await expect(page.getByRole("heading", { level: 1, name: "E'lonlarim" })).toBeVisible();
+  await page.goBack();
+  await expect(page.locator("[data-home-menu]")).toBeVisible();
   // pastki qism ixcham: katta havolalar ro'yxati yo'q, huquqiy havolalar bor
   const footer = page.getByRole("contentinfo");
   await expect(footer.getByText("Ish izlovchilarga", { exact: true })).toBeHidden();
@@ -135,7 +142,7 @@ test("kompyuterda yangi ishlar ochiq (yig'ish tugmasi yo'q)", async ({ browser }
   const p = await desk.newPage();
   await p.goto("/");
   await expect(p.locator("[data-home-menu]")).toBeHidden();
-  await expect(fold(p, "home-feed").locator("[data-fold-toggle]")).toBeHidden();
+  await expect(p.locator('[data-home-row="new-jobs"]')).toBeHidden();
   await expect(p.locator("#home-feed")).toBeVisible();
   await desk.close();
 });

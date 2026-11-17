@@ -45,9 +45,18 @@ test("ish qidiruvchi: profilida kasb — bosh sahifada 'Sizga mos ishlar' (kasb 
   await loginAs(context, WORKER);
   await asMode(context, "worker");
   await page.goto("/");
-  // telefonda ro'yxat yig'ilgan (2026-11-15): "Sizga mos ishlar — Ko'rish"
+  // telefonda — qator-havola (2026-11-17): "Sizga mos ishlar", ostida kasb; bosilsa — kasb bo'yicha natijalar sahifasi
+  const row = page.locator('main [data-home-row="new-jobs"]');
+  await expect(row).toContainText("Sizga mos ishlar");
+  await expect(row).toContainText("Oshpaz");
+  await row.click();
+  await page.waitForURL(/\/search\?.*mode=jobs/);
+  await expect(page.locator("main article").filter({ hasText: "Oshpaz — choyxona (M1)" })).toHaveCount(1);
+  await expect(page.locator("main article").filter({ hasText: "Kassir — supermarket (M1)" })).toHaveCount(0);
+  // kompyuterda — ro'yxat bosh sahifaning o'zida, sababi bilan
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
   await expect(page.getByRole("heading", { level: 2, name: /Sizga mos ishlar/ })).toBeVisible();
-  await page.locator('[data-fold="home-feed"] [data-fold-toggle]').click();
   await expect(page.getByText("Kasbingiz bo'yicha: Oshpaz · Toshkent shahri")).toBeVisible();
   const feed = page.locator("section[aria-labelledby='home-feed'] article");
   await expect(feed.filter({ hasText: "Oshpaz — choyxona (M1)" })).toHaveCount(1);

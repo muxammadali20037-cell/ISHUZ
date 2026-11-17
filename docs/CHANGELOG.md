@@ -1,5 +1,17 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · "E'lonlarim" va "Yangi ishlar" — alohida sahifalar (`claude/home-rows`)
+
+Ega: "yangi ishlarni bossa — yangi joylangan e'lonlar ichiga kirsin, o'sha oynada ochilmasin; tepasida e'lonlarim tursin —
+bossa o'zi joylagan e'lonlar ichiga kirsin, holatlarini ko'rsin".
+
+- Bosh sahifa (kirgan, telefonda): "E'lonlarim" qatori (son — o'zi haqidagi e'lon, vakansiyalar va usta e'lonlari), ostida
+  "Yangi ishlar" qatori — endi yig'ilgan ro'yxat emas, havola: `/jobs?sort=newest` (hudud bilan; "Sizga mos ishlar" — kasb
+  bo'yicha natijalar). Kompyuterda va mehmonda ro'yxat avvalgidek shu yerda. Qatorlar rangsiz ("Bo'limlar" bilan bir xil).
+- Yangi sahifa **/cabinet/elonlar** — "E'lonlarim": o'zi haqidagi e'lon, vakansiyalar va usta e'lonlari, har birining
+  haqiqiy holati va amallari (Profildagi "Mening e'lonlarim" bilan bir xil komponent — `MyListingsSection`); bo'lmasa —
+  "E'lon joylash". Mehmon — kirishga.
+
 ## 2026-11-17 · Bosh menyu rangsiz (`claude/menu-neutral`)
 
 Ega: "bosh menyudagi ranglar umuman yoqmayapti — rangni olib tashla".

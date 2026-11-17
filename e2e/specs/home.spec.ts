@@ -121,12 +121,10 @@ test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi
   await asMode(context, "worker");
   await page.goto("/");
   const main = page.getByRole("main");
-  // "Yangi ishlar" — yig'ilgan (2026-11-15): bosilsa ro'yxat ochiladi
-  const toggle = main.locator('[data-fold="home-feed"] [data-fold-toggle]');
-  await expect(toggle).toContainText("Ko'rish");
+  // "Yangi ishlar" — qator-havola (2026-11-17): ro'yxat bosh sahifada ochilmaydi, alohida sahifada
+  const row = main.locator('[data-home-row="new-jobs"]');
+  await expect(row).toContainText("Yangi ishlar");
   await expect(main.locator("article:visible")).toHaveCount(0);
-  await toggle.click();
-  await expect(main.locator("article").first()).toBeVisible();
   // ko'chirilganlar: "Mening dunyom" (Profilga), "Yangi ish chiqsa" (Profil → PRO kuzatuv), "O'zim haqimda e'lon" (pastki menyu)
   await expect(main.getByText("Mening dunyom")).toHaveCount(0);
   await expect(main.getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveCount(0);
@@ -136,13 +134,13 @@ test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi
   await expect(main.locator("[data-home-menu] [data-ai-entry]")).toHaveCount(1);
   await expect(main.locator("[data-masters-home]")).toBeHidden();
   const menu = main.locator("[data-home-menu]");
-  expect((await menu.boundingBox())!.y).toBeGreaterThan((await main.locator('[data-fold="home-feed"]').boundingBox())!.y);
+  expect((await menu.boundingBox())!.y).toBeGreaterThan((await row.boundingBox())!.y);
   await menu.locator('[data-menu-item="masters"]').click();
   await page.waitForURL(/\/ustalar$/);
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash» birinchi ekranda; keyin 'Yangi ishlar' — ochilsa birinchi vakansiya nomi, maoshi va hududi bilan", async ({ page, context }) => {
+test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash» birinchi ekranda; keyin «E'lonlarim» va «Yangi ishlar» — bosilsa yangi e'lonlar sahifasi", async ({ page, context }) => {
   // 2026-11-17 (ega): hero ostida katta "+ E'lon joylash" va katta tez yo'llar — "Yangi ishlar" endi birinchi ekrandan pastda
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await sql(
@@ -160,20 +158,21 @@ test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash�
       const box = (await el.boundingBox())!;
       expect(box.y + box.height).toBeLessThanOrEqual(navTop);
     }
-    // tartib: hero → "Yangi ishlar" → "Bo'limlar" (tez yo'llar plitkalari 2026-11-17 dan bo'limlarda)
-    const toggle = page.locator('main [data-fold="home-feed"] [data-fold-toggle]');
+    // tartib: hero → "E'lonlarim" → "Yangi ishlar" → "Bo'limlar" (ega, 2026-11-17)
+    const mine = page.locator('main [data-home-row="my-listings"]');
+    const fresh = page.locator('main [data-home-row="new-jobs"]');
     const postBox = (await page.locator("[data-home-post]").boundingBox())!;
-    expect((await toggle.boundingBox())!.y).toBeGreaterThan(postBox.y);
-    expect((await page.locator("[data-home-menu]").boundingBox())!.y).toBeGreaterThan((await toggle.boundingBox())!.y);
-    await toggle.click();
-    const card = page.locator("main article").first();
-    await expect(card).toBeVisible();
-    await expect(card.getByRole("heading", { level: 3 })).toBeVisible();
-    await expect(card.getByText(/so'm\/(oy|kun|soat)/).first()).toBeVisible();
-    await expect(card.locator("li[title]").first()).toBeVisible();
+    expect((await mine.boundingBox())!.y).toBeGreaterThan(postBox.y);
+    expect((await fresh.boundingBox())!.y).toBeGreaterThan((await mine.boundingBox())!.y);
+    expect((await page.locator("[data-home-menu]").boundingBox())!.y).toBeGreaterThan((await fresh.boundingBox())!.y);
     // suzuvchi AI tugmasi yo'q; qidiruv — bosh sahifaning yagona qidiruv maydoni
     await expect(page.locator(".ai-fab")).toHaveCount(0);
     await expect(page.locator("form[data-ai-field]:visible")).toHaveCount(1);
+    // "Yangi ishlar" bosilsa — shu yerda ochilmaydi: yangi joylangan e'lonlar sahifasi (eng yangisi tepada)
+    await expect(fresh).toHaveAttribute("href", /^\/jobs\?sort=newest/);
+    await fresh.click();
+    await page.waitForURL(/\/jobs\?sort=newest/);
+    await expect(page.locator("main article").first()).toContainText("Sotuvchi — birinchi ekran");
   } finally {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   }
