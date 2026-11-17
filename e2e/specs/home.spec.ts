@@ -234,3 +234,26 @@ test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikk
   }
   expect(bad).toEqual([]);
 });
+
+test("bosh qism (ega, 2026-11-17): sarlavha telefonda bitta qatorda; tashqi karta yo'q («oyna ustida oyna» emas)", async ({ page, context }) => {
+  await asGuest(context);
+  for (const [mode, sel, text] of [["worker", "seeker-v2", "Qanday ish qidiryapsiz?"], ["employer", "employer-v2", "Qanday xodim kerak?"]] as const) {
+    await asMode(context, mode);
+    for (const width of [320, 360, 390, 412]) {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/");
+      const h1 = page.locator(`[data-home='${sel}'] h1`);
+      await expect(h1).toHaveText(text);
+      // bitta qator: balandlik ≈ bitta qator balandligi
+      const [h, lh] = await h1.evaluate((el) => [el.getBoundingClientRect().height, parseFloat(getComputedStyle(el).lineHeight)]);
+      expect(h, `${mode} ${width}px`).toBeLessThan(lh * 1.5);
+      expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), `${mode} ${width}px`).toBe(true);
+      // tashqi oq karta yo'q: chegara, fon va soya yo'q
+      const box = await page.locator(`[data-home='${sel}']`).evaluate((el) => {
+        const cs = getComputedStyle(el);
+        return { border: cs.borderTopWidth, bg: cs.backgroundColor, shadow: cs.boxShadow };
+      });
+      expect(box, `${mode} ${width}px`).toEqual({ border: "0px", bg: "rgba(0, 0, 0, 0)", shadow: "none" });
+    }
+  }
+});

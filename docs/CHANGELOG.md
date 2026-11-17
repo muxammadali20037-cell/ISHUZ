@@ -1,5 +1,13 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Bosh qism: sarlavha bitta qatorda, tashqi karta yo'q (`claude/hero-oneline`)
+
+Ega: "«Qanday ish qidiryapsiz» yozuvini kichraytir — bitta qatorga sig'sin; oyna ustida oyna turibdi — olib tashla".
+
+- Sarlavha o'lchami bosh qism kengligiga qarab (`cqw`): telefonda (320–412 px) "Qanday ish qidiryapsiz?" / "Qanday xodim
+  kerak?" bitta qatorda (kirillchada ham); kompyuterda — eng ko'pi 3–3.5 rem.
+- Tashqi oq karta (chegara, fon, soya) olib tashlandi — qidiruv maydoni va "+ E'lon joylash" sahifaning o'zida.
+
 ## 2026-11-17 · Bosh sahifa tartibi (`claude/home-tidy`)
 
 Ega: "bosh sahifa umuman yoqmayapti — tartibsiz: pastda bor ishlar, arizalar, xabarlar, profil; profildagi sozlamalar bosh

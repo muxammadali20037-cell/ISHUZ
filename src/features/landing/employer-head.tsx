@@ -21,8 +21,8 @@ export async function EmployerHead({ flush, greeting, place, extra }: { flush?: 
     <section
       aria-labelledby="home-title"
       data-home="employer-v2"
-      // 5.0 (ega "ko'k-oq" dizayni): katta oq qidiruv bloki — ish izlovchidagi bilan bir xil tartib (ko'k nur, 👋 va izoh qatori yo'q)
-      className="relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
+      // ish izlovchidagi bilan bir xil: tashqi karta yo'q ("oyna ustida oyna", ega 2026-11-17), sarlavha bitta qatorda (cqw)
+      className="@container relative px-1 pt-1 sm:px-2"
       data-flush={flush ? "" : undefined}
     >
       {/* "Ish Topdim" hikoyalari — eng tepada (bo'lmasa — joy ham qolmaydi) */}
@@ -46,7 +46,7 @@ export async function EmployerHead({ flush, greeting, place, extra }: { flush?: 
         </p>
         {extra}
       </div>
-      <h1 id="home-title" className="mt-1 text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:mt-1.5 sm:text-5xl lg:text-6xl">
+      <h1 id="home-title" className="mt-1 text-[min(1.75rem,8.2cqw)] font-extrabold leading-[1.1] tracking-tight sm:mt-1.5 sm:text-[min(3rem,8.2cqw)] lg:text-[min(3.5rem,8.2cqw)]">
         {t("easy.home2.e_title_a")}
         <span className="brand-text">{t("easy.home2.e_title_em")}</span>
         {t("easy.home2.e_title_b")}
