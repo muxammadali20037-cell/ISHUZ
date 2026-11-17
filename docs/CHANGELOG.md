@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · E'londagi telefon — qo'lda, majburiy, "+ Yana raqam" (`claude/post-phone-manual`)
+
+Ega: "telefon raqamini qo'lda kiritsin, kiritmasa e'lon berilmasin; 2 ta nomer bo'lsa — «yana nomer»; nomer majburiy,
+profildagi nomer emas — boshqa nomer joylasin, xohlasa profildagini, lekin qo'lda yozilsin".
+
+- **Oyna (/ai/post):** telefon maydoni hamma uchun bo'sh ("+998") — hisobdagi raqam oldindan qo'yilmaydi va "Tasdiqlangan"
+  qutisi yo'q. Raqam yozilmasa — "Telefon raqamini to'liq yozing." va e'lon ko'rinishiga o'tmaydi. "+ Yana raqam" —
+  ixtiyoriy ikkinchi raqam (chala yozilsa — xato, "×" bilan olib tashlanadi; birinchisi bilan bir xil bo'lsa — saqlanmaydi).
+  E'lon ko'rinishida raqamning o'zi ko'rsatilmaydi — "Siz yozgan (ikkala) raqam e'londa ko'rinadi".
+- **E'lon sahifasi:** kirgan foydalanuvchiga qo'lda yozilgan raqam (hisob raqami emas) va bo'lsa "Qo'shimcha raqam";
+  egasiga — "E'londagi raqam: …". Mehmon va ro'yxatlar — avvalgidek telefonsiz (0074 limiti ham o'sha).
+- **Hisob raqami** (kirish uchun) o'zgarmaydi va uning ko'rinish sozlamasiga tegilmaydi. Hisobida raqami yo'q (Telegram
+  orqali kirgan) foydalanuvchi ham qo'lda yozilgan raqam bilan joylay oladi — vakansiyadagidek.
+- To'liq forma (/post/worker, kabinetdan tahrirlash) avvalgidek: u bilan saqlansa e'lon yana hisob raqamiga qaytadi.
+- **Baza — 0081** (`worker_listing_phones`, `save_simple_worker_listing` yamog'i, `simple_worker_listing` + `phone2`):
+  `supabase/prod/pending.sql` ga qo'shildi. Qo'llanmaguncha oyna ishlaydi, lekin e'londa hisob raqami ko'rinadi.
+
 ## 2026-11-17 · E'lon rasmi — kanalga va e'lon egasiga (`claude/post-image-everywhere`)
 
 Ega: "shunga o'xshab kelsin — e'lon joylandimi, shunaqa rasm bo'lib kelsin" (vakansiya kartasi rasmi) → "ikkalasi ham".

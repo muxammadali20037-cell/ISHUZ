@@ -110,7 +110,6 @@ async function baseForm(text: string, viewerP: ReturnType<typeof getPostViewer>,
     loggedIn: viewer.loggedIn,
     firstName: viewer.firstName,
     lastName: viewer.lastName,
-    phone: viewer.phone,
   };
 }
 
@@ -215,6 +214,5 @@ export async function buildPreview(session: SessionContext | null, answers: Post
     place,
     about,
     loggedIn: viewer.loggedIn,
-    needPhone: viewer.loggedIn && !viewer.phone,
   };
 }

@@ -398,7 +398,9 @@
     "contact_hidden_logged": "The number is hidden. As an employer you can open the full profile and send a request.",
     "open_full": "Open full profile",
     "not_found": "Listing not found or no longer active",
-    "back": "Back to search"
+    "back": "Back to search",
+    "phone2": "Additional number",
+    "own_phone": "Number in the ad"
   },
   "image": {
     "label": "Profession image"
@@ -1415,7 +1417,7 @@
     "confirm": "Confirm",
     "preview_title": "This is how your ad will look",
     "preview_desc": "If everything is right — “Post”.",
-    "preview_phone": "Your phone number is shown in the ad",
+    "preview_phone": "The number you entered is shown in the ad — employers will call it",
     "publish": "Post",
     "edit": "Edit",
     "login_first": "To post, you'll confirm your phone number (SMS code).",
@@ -1434,6 +1436,10 @@
       "lt1": "Experience: up to 1 year.",
       "1_3": "Experience: 1–3 years.",
       "3plus": "Experience: more than 3 years."
-    }
+    },
+    "add_phone": "Another number",
+    "q_phone2": "Additional number",
+    "remove_phone": "Remove the additional number",
+    "preview_phones": "Both numbers you entered are shown in the ad — employers will call them"
   }
 }

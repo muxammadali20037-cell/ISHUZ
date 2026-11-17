@@ -89,6 +89,8 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
       salary_expected: v.salary,
       schedule: kept.schedule,
       show_phone: v.showPhone,
+      // 0081: qo'lda yozilgan raqam(lar) e'londa; yo'q bo'lsa — e'lon hisob raqamiga qaytadi
+      ...(v.listingPhone ? { listing_phone: v.listingPhone, listing_phone2: v.listingPhone2 && v.listingPhone2 !== v.listingPhone ? v.listingPhone2 : null } : {}),
     },
   });
   if (error || !data) return { ok: false, error: errorCode(error) };
