@@ -24,8 +24,8 @@ export function RoleSwitchRow({
   target: "worker" | "employer";
   title: string;
   hint: string;
-  /** "danger" — qizil (bosh sahifa menyusining eng tagida), "primary" — ko'k (Profil tepasida) */
-  tone?: "danger" | "primary";
+  /** "neutral" — rangsiz (bosh sahifa menyusining eng tagida, 2026-11-17), "danger" — qizil, "primary" — ko'k (Profil tepasida) */
+  tone?: "danger" | "primary" | "neutral";
   className?: string;
 }) {
   const router = useRouter();
@@ -52,11 +52,13 @@ export function RoleSwitchRow({
         "press flex min-h-16 w-full items-center gap-3 rounded-2xl border px-4 py-2.5 text-left disabled:opacity-70",
         tone === "danger"
           ? "border-destructive/30 bg-destructive-soft/40 text-destructive hover:bg-destructive-soft/70"
-          : "border-primary/30 bg-primary-soft/60 text-primary-ink hover:border-primary/60",
+          : tone === "neutral"
+            ? "border-border/70 bg-card text-foreground shadow-sm hover:bg-secondary/60"
+            : "border-primary/30 bg-primary-soft/60 text-primary-ink hover:border-primary/60",
         className,
       )}
     >
-      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", tone === "danger" ? "bg-destructive/10" : "bg-primary text-primary-foreground")} aria-hidden>
+      <span className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", tone === "danger" ? "bg-destructive/10" : tone === "neutral" ? "bg-secondary" : "bg-primary text-primary-foreground")} aria-hidden>
         {pending ? <Loader2 className="size-5 animate-spin" /> : <ArrowLeftRight className="size-5" />}
       </span>
       <span className="min-w-0 flex-1">

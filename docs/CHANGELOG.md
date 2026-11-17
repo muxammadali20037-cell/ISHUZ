@@ -1,5 +1,13 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Bosh menyu rangsiz (`claude/menu-neutral`)
+
+Ega: "bosh menyudagi ranglar umuman yoqmayapti — rangni olib tashla".
+
+- "Bo'limlar": belgilar bir xil kulrang qutida, nomlar bir xil (qora) rangda — Universal ustalar (yashil) va Yordamchi
+  (to'q sariq) ham; "yangi" nuqtalari yo'q. Eng tagidagi "Ish beruvchiga o'tish" — qizil emas, boshqa qatorlar kabi.
+  Kompyuterdagi chap yon menyu o'zgarmadi.
+
 ## 2026-11-17 · Bosh qism: sarlavha bitta qatorda, tashqi karta yo'q (`claude/hero-oneline`)
 
 Ega: "«Qanday ish qidiryapsiz» yozuvini kichraytir — bitta qatorga sig'sin; oyna ustida oyna turibdi — olib tashla".
