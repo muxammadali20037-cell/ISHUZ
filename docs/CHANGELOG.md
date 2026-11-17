@@ -1,5 +1,32 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Soddalashtirish 2 (`claude/simplify-2`)
+
+Ega: "kunlik ish, masofaviy, tajriba — hammasini bo'limlarga qo'sh; eng tepada Universal ustalar, keyin Barcha vakansiyalar…
+hammasi bir qatorda; «O'zingizga mos ishni qidiring», «Topish» o'rniga «Izlash»; oila shifokori — noto'g'ri chiqdi; oylik
+maosh kerak emas; ish beruvchi panelini ham sodda qil; birinchi kirishda kunduzgi rejim; mehmonlarda Xabarlar o'rniga
+Sohalar; profil juda chalkash — Mening dunyom, O'zim haqimda e'lon, Yordamchi, Universal usta kerak emas".
+
+- **Bosh sahifa — "Bo'limlar":** 4 ta tez yo'l plitkasi olib tashlandi, ular bo'limlarga ko'chdi. Tartib (ish izlovchi):
+  Universal ustalar → Barcha vakansiyalar → Yordamchi → Kunlik ish → Masofaviy ish → Tajriba talab qilinmaydigan ishlar →
+  Yaqin atrofdan → xarita, arizalar, saqlanganlar, xabarlar, profil, sozlamalar, yordam. Ish beruvchida: Universal ustalar →
+  Barcha nomzodlar → Yordamchi → Kunlik/Masofaviy/Tajribali/Yaqin atrofdagi ishchi → … "E'lon joylash" bo'limlardan olib
+  tashlandi (tepada katta tugma). Hammasi bitta ustunda, uzun nomlar qisqartirilmaydi. Mehmon ham ko'radi (shaxsiy
+  bo'limlarsiz).
+- **Qidiruv maydoni:** "O'zingizga mos ishni qidiring..." (ish beruvchida — "...xodimni..."), tugma — "Izlash".
+- **Tushunish:** kasb nomi aytilgan so'zlarga qanchalik to'liq mos kelishi hisobga olinadi — "men oila shifokoriman" →
+  "Oilaviy shifokor" (avval "Oila huquqi yuristi").
+- **Qidiruv oynasi:** "Oylik maosh qancha bo'lsin?" savoli olib tashlandi (faqat "Qanday ish?" va "Qaysi hududda?").
+- **Ish beruvchi paneli:** tez yo'llar, "AI bilan oson joylash" kartasi va ikkinchi tugma o'rnida — bitta katta
+  "+ Vakansiya joylash" (yordamchi bilan); qolgani "Bo'limlar"da.
+- **Mavzu:** birinchi kirishda — kunduzgi (telefon tungi rejimda bo'lsa ham). Tungi yoki "Tizim" — faqat sozlamalarda tanlansa.
+- **Mehmonning pastki menyusi:** "Xabarlar" o'rnida "Sohalar" (kirganlarda o'zgarmagan). **/sohalar** — har bir soha
+  qator bo'lib, eng ko'p ish o'rni bor soha tepada, ostida "N ta ish o'rni" (haqiqiy faol vakansiyalar; xato bo'lsa son
+  ko'rsatilmaydi).
+- **Profil:** "Mening dunyom", "O'zim haqimda e'lon berish", Yordamchi va Universal ustalar kartalari olib tashlandi;
+  "Faoliyat"/"Hisob" yig'ilgan guruhlari o'rnida — bitta oddiy ro'yxat, oxirida "Hisobdan chiqish". Eski `/dunyo`
+  havolasi — Profilga. Bazadagi tanlangan qiziqishlar (`profile_interests`) o'chirilmadi.
+
 ## 2026-11-17 · Qidiruv tezroq (`claude/search-speed`)
 
 Ega: "hammasi tezlik bilan bo'lsin, qulay, sodda bo'lsin".

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { hasJobIntent, offTopic, professionMentioned } from "./post-intent";
+import { hasJobIntent, nameFit, offTopic, professionMentioned } from "./post-intent";
 
 describe("ish so'zi (oyna ochiladimi)", () => {
   it("ish haqidagi gaplar", () => {
@@ -57,5 +57,21 @@ describe("kasb nomi gapda bormi", async () => {
     expect(m("haydovchiman", "Avtobus haydovchisi")).toBe(false);
     expect(m("men o'qituvchiman", "Loyiha menejeri")).toBe(false);
     expect(m("o'qituvchi", "Avtoinstruktor")).toBe(false);
+  });
+});
+
+describe("kasb nomining gapga mosligi (qidiruvda tartiblash)", async () => {
+  const { normalizeText } = await import("@/features/search/understand");
+  const fit = (said: string, name: string) => {
+    const f = nameFit(normalizeText(said).split(" "), name, normalizeText);
+    return f.covered * 0.8 - f.extra * 0.4;
+  };
+  it("«oila shifokori» — Oilaviy shifokor, Oila huquqi yuristi emas", () => {
+    expect(fit("oila shifokori", "Oilaviy shifokor")).toBeGreaterThan(fit("oila shifokori", "Oila huquqi yuristi") + 1);
+    expect(fit("oila shifokori", "Oilaviy shifokor")).toBeGreaterThan(fit("oila shifokori", "Klinik laboratoriya shifokori") + 1);
+  });
+  it("aniq nom — eng yuqori", () => {
+    expect(fit("enaga", "Enaga")).toBeGreaterThan(fit("enaga", "Tarbiyachi yordamchisi"));
+    expect(fit("haydovchi", "Haydovchi")).toBeGreaterThan(fit("haydovchi", "Avtobus haydovchisi"));
   });
 });

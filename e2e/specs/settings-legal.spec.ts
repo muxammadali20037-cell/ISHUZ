@@ -13,8 +13,10 @@ test("yordam: hozirgi interfeysdagi tugma nomlari (eskirgan «+ Vakansiya joylas
   await asGuest(context);
   await page.goto("/help");
   const main = page.getByRole("main");
-  await expect(main.getByText("Bosh sahifadagi «Ish e'loni berish»ni bosing.")).toBeVisible();
-  await expect(main.getByText(/«O'zim haqimda e'lon berish»/)).toBeVisible();
+  // 2026-11-17: bosh sahifadagi katta tugmalar — «Vakansiya joylash» va «E'lon joylash»
+  await expect(main.getByText("Bosh sahifadagi katta «Vakansiya joylash» tugmasini bosing.")).toBeVisible();
+  await expect(main.getByText(/katta «E'lon joylash» tugmasini/)).toBeVisible();
+  await expect(main.getByText(/«O'zim haqimda e'lon berish»|«Ish e'loni berish»/)).toHaveCount(0);
   await expect(main.getByText(/Vakansiya joylashtirish|Bo'sh ish o'rinlarini ko'rish|«Nomzodlar»/)).toHaveCount(0);
 });
 

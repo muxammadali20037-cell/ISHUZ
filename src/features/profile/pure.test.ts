@@ -103,7 +103,9 @@ describe("reorderItems", () => {
 describe("theme", () => {
   it("parses cookie and resolves dark", () => {
     expect(themeFromCookie("dark")).toBe("dark");
-    expect(themeFromCookie(undefined)).toBe("system");
+    // tanlanmagan — kunduzgi (2026-11-17); "Tizim bo'yicha" — faqat tanlanganda
+    expect(themeFromCookie(undefined)).toBe("light");
+    expect(themeFromCookie("system")).toBe("system");
     expect(resolveDark("system", true)).toBe(true);
     expect(resolveDark("light", true)).toBe(false);
     expect(resolveDark("dark", false)).toBe(true);

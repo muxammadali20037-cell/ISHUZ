@@ -19,7 +19,7 @@ export function PageSkeleton() {
   );
 }
 
-/** Menyusiz sahifalar (kirish, birinchi ochilish, "Dunyongizni yarating"): faqat markazdagi yengil skelet */
+/** Menyusiz sahifalar (kirish, birinchi ochilish): faqat markazdagi yengil skelet */
 export function BareSkeleton() {
   return (
     <div className="mx-auto flex min-h-dvh w-full max-w-md flex-col px-4 pt-[calc(var(--safe-top)+1.5rem)]" aria-busy="true">

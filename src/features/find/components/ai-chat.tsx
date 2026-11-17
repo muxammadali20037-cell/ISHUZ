@@ -11,7 +11,6 @@ import { FilterChip } from "@/components/ui/chip";
 import { Dialog, Sheet } from "@/components/ui/dialog";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { cn } from "@/lib/utils";
-import { formatMoneyShort } from "@/lib/format";
 import { MESSAGE_MAX_CHARS } from "@/features/assistant/types";
 import {
   CHAT_KEEP,
@@ -27,7 +26,7 @@ import {
   type StoredConversation,
 } from "../ai-chat-model";
 import { quickPrepare, quickSearch } from "../quick-actions";
-import { NO_FILTERS, QUICK_SALARIES, type QuickAnswers, type QuickFilters, type QuickForm, type QuickList, type QuickResult } from "../quick-types";
+import { NO_FILTERS, type QuickAnswers, type QuickFilters, type QuickForm, type QuickList, type QuickResult } from "../quick-types";
 import { JobResultCard, WorkerResultCard } from "./result-cards";
 
 /**
@@ -53,7 +52,7 @@ export function defaultAnswers(form: QuickForm): QuickAnswers {
     profession: form.profession.replace(/\s+/g, " ").trim().slice(0, 120),
     nodeId: form.nodeId,
     place: form.place,
-    salary: form.mode === "jobs" && !filters.pay ? form.salary : null,
+    salary: null,
     filters,
   };
 }
@@ -587,18 +586,15 @@ function QuickSheet({ chat }: { chat: AiChatState }) {
 }
 
 function QuickFormBody({ turn, form, chat }: { turn: AiTurn; form: QuickForm; chat: AiChatState }) {
-  const { t, locale, tEnum } = useT();
+  const { t, tEnum } = useT();
   const submitRef = useRef<HTMLButtonElement>(null);
   // eski (filtrsiz) yozuvlar uchun — bo'sh shartlar
   const start = turn.answers ?? { profession: form.profession, nodeId: form.nodeId, place: form.place, salary: form.salary, filters: form.filters ?? NO_FILTERS };
   const [profession, setProfession] = useState(start.profession);
   const [place, setPlace] = useState(start.place);
-  const [salary, setSalary] = useState<number | null>(start.salary);
   const [filters, setFilters] = useState<QuickFilters>(start.filters ?? NO_FILTERS);
   const jobs = form.mode === "jobs";
   const formId = `quick-form-${turn.id}`;
-  // matndan tushunilgan maosh ro'yxatda bo'lmasa (masalan 5 mln) — u ham tanlov sifatida
-  const salaries = [...new Set([...QUICK_SALARIES, ...(start.salary ? [start.salary] : [])])].sort((a, b) => a - b);
   const places = form.places.some((p) => p.value === place) ? form.places : [{ value: place, label: place }, ...form.places];
 
   const submit = (e?: FormEvent) => {
@@ -606,14 +602,9 @@ function QuickFormBody({ turn, form, chat }: { turn: AiTurn; form: QuickForm; ch
     const name = profession.replace(/\s+/g, " ").trim().slice(0, 120);
     // kasb nomi o'zgartirilmagan bo'lsa — tushunilgan kasb bilan (qayta tushunish shart emas)
     const nodeId = name === start.profession.trim() ? start.nodeId : null;
-    chat.search(turn.id, { profession: name, nodeId, place, salary: jobs && !filters.pay ? salary : null, filters });
+    // ega (2026-11-17): "oylik maosh kerak emas" — maosh so'ralmaydi va qidiruvga qo'shilmaydi
+    chat.search(turn.id, { profession: name, nodeId, place, salary: null, filters });
   };
-
-  const chip = (selected: boolean) =>
-    cn(
-      "press inline-flex min-h-11 items-center rounded-full border px-4 text-sm font-semibold",
-      selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card text-foreground hover:border-primary/50",
-    );
 
   return (
     <Sheet
@@ -660,22 +651,6 @@ function QuickFormBody({ turn, form, chat }: { turn: AiTurn; form: QuickForm; ch
             {filters.noexp ? <FilterChip onRemove={() => setFilters({ ...filters, noexp: false })}>{t("easy.search.no_experience")}</FilterChip> : null}
             {filters.exp ? <FilterChip onRemove={() => setFilters({ ...filters, exp: false })}>{t("easy.search.experienced")}</FilterChip> : null}
           </div>
-        ) : null}
-        {/* kunlik haqli ishda oylik maosh so'ralmaydi */}
-        {jobs && !filters.pay ? (
-          <fieldset className="space-y-2">
-            <legend className="text-base font-bold">{t("easy.quick.q_salary")}</legend>
-            <div className="flex flex-wrap gap-2" role="radiogroup" aria-label={t("easy.quick.q_salary")} data-quick-salary>
-              <button type="button" role="radio" aria-checked={salary === null} onClick={() => setSalary(null)} className={chip(salary === null)}>
-                {t("easy.quick.salary_any")}
-              </button>
-              {salaries.map((s) => (
-                <button key={s} type="button" role="radio" aria-checked={salary === s} onClick={() => setSalary(s)} className={chip(salary === s)} data-salary={s}>
-                  {t("easy.quick.salary_from", { amount: formatMoneyShort(s, locale) })}
-                </button>
-              ))}
-            </div>
-          </fieldset>
         ) : null}
       </form>
     </Sheet>

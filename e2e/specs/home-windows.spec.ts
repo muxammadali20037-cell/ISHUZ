@@ -25,53 +25,63 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (ish izlovchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l qidiruv ostida, e'lonlardan oldin; har biri bir bosishda natijaga olib boradi", async ({ page, context }) => {
+test("bosh sahifa (ish izlovchi): rasmli oynalar va tez yo'l plitkalari yo'q — hammasi «Bo'limlar»da, bitta ustunda; har biri bir bosishda natijaga", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  // 2.0: ish izlovchi bosh sahifasida admin oynalari ko'rsatilmaydi (bitta vazifa — qidiruv)
+  // ish izlovchi bosh sahifasida admin oynalari ko'rsatilmaydi (bitta vazifa — qidiruv)
   await expect(page.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
-  const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
-  await expect(links).toHaveCount(4);
-  await expect(links.nth(0)).toHaveText("Kunlik ish");
-  await expect(links.nth(1)).toHaveText("Yaqin atrofdan ish qidirish");
-  await expect(links.nth(2)).toHaveText("Masofaviy ish");
-  await expect(links.nth(3)).toHaveText("Tajriba talab qilinmaydigan ishlar");
-  // qidiruv maydoni tepada, tez yo'llar uning ostida va e'lonlar ro'yxatidan oldin; har biri barmoq bilan bosishga qulay (≥ 44px)
+  // 2026-11-17 (ega): "kunlik, masofaviy, tajriba — hammasini bo'limlarga qo'sh; hammasi bir qatorda"
+  await expect(page.getByRole("navigation", { name: "Tez qidiruv" })).toHaveCount(0);
+  const menu = page.locator("[data-home-menu]");
+  const item = (key: string) => menu.locator(`[data-menu-item="${key}"]`);
+  await expect(item("daily")).toContainText("Kunlik ish");
+  await expect(item("near")).toContainText("Yaqin atrofdan ish qidirish");
+  await expect(item("remote")).toContainText("Masofaviy ish");
+  await expect(item("noexp")).toContainText("Tajriba talab qilinmaydigan ishlar");
+  // qidiruv maydoni tepada; har bir qator barmoq bilan bosishga qulay (≥ 44px), to'liq kenglikda
   const field = (await page.locator("form[data-ai-field]:visible").boundingBox())!;
-  // e'lonlar ro'yxati oqim bilan keladi (Suspense) — sarlavhasi chizilguncha kutamiz (sekin CI'da hali yo'q bo'lishi mumkin)
-  await expect(page.locator("#home-feed")).toBeVisible();
-  const feed = (await page.locator("#home-feed").boundingBox())!;
   expect(field.y).toBeLessThan(400);
-  for (let i = 0; i < 4; i++) {
-    const box = (await links.nth(i).boundingBox())!;
+  for (const key of ["masters", "jobs", "ai", "daily", "remote", "noexp", "near"]) {
+    const box = (await item(key).boundingBox())!;
     expect(box.y).toBeGreaterThan(field.y);
-    expect(box.y + box.height).toBeLessThanOrEqual(feed.y);
     expect(box.height).toBeGreaterThanOrEqual(44);
   }
+  // uzun nomlar qisqartirilmaydi (… yo'q)
+  expect(await item("noexp").evaluate((el) => [...el.querySelectorAll("span")].every((s) => s.scrollWidth <= s.clientWidth + 1))).toBe(true);
   // telefonda sahifa yonga siljimaydi
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
 
   // kunlik ishlar: kasb ham, hudud ham so'ralmaydi — darhol natijalar
-  await links.nth(0).click();
+  await item("daily").click();
   await page.waitForURL(/\/search\?mode=jobs&region=all&pay=daily$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Kunlik ishlar");
   await page.goBack();
-  await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Masofaviy ish", exact: true }).click();
+  await item("remote").click();
   await page.waitForURL(/\/search\?mode=jobs&region=remote/);
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
-test("bosh sahifa (ish beruvchi, 2.0): rasmli oynalar yo'q — 4 ta tez yo'l, 'Barcha nomzodlar' va 'Vakansiya joylash'", async ({ page, context }) => {
+test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da ('Barcha nomzodlar' bilan), tepada bitta katta «Vakansiya joylash»", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
   await expect(page.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
-  const links = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem").getByRole("link");
-  await expect(links).toHaveText(["Kunlik ishchi", "Yaqin atrofdagi ishchi", "Tajribali ishchi", "Masofaviy ishchi"]);
-  await expect(page.getByRole("main").getByRole("link", { name: "Barcha nomzodlar" })).toHaveAttribute("href", "/search?mode=workers&region=all&any=1");
-  await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toHaveAttribute("href", "/post/vacancy");
-  await links.nth(0).click();
+  await expect(page.getByRole("navigation", { name: "Tez qidiruv" })).toHaveCount(0);
+  const menu = page.locator("[data-home-menu]");
+  const item = (key: string) => menu.locator(`[data-menu-item="${key}"]`);
+  await expect(item("daily")).toContainText("Kunlik ishchi");
+  await expect(item("near")).toContainText("Yaqin atrofdagi ishchi");
+  await expect(item("exp")).toContainText("Tajribali ishchi");
+  await expect(item("remote")).toContainText("Masofaviy ishchi");
+  await expect(item("candidates")).toContainText("Barcha nomzodlar");
+  await expect(item("candidates")).toHaveAttribute("href", "/search?mode=workers&region=all&any=1");
+  // bitta katta tugma (avval ikkita: "AI bilan oson joylash" va "Vakansiya joylash") — yordamchi bilan joylash
+  const post = page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true });
+  await expect(post).toHaveCount(1);
+  await expect(post).toHaveAttribute("href", "/post/vacancy?ai=1");
+  expect((await post.boundingBox())!.height).toBeGreaterThanOrEqual(56);
+  await item("daily").click();
   await page.waitForURL(/\/search\?mode=workers&region=all&pay=daily&any=1$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Ishchilar");
 });
@@ -108,11 +118,11 @@ test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat
   );
   expect(v).toEqual({ salary_type: "daily", salary_from: 250000 });
 
-  // mehmon bosh sahifadagi "Kunlik ish" tez yo'lidan: bir bosishda natijalar — faqat kunlik e'lon
+  // mehmon bosh sahifadagi "Kunlik ish" bo'limidan: bir bosishda natijalar — faqat kunlik e'lon
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  await page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("link", { name: "Kunlik ish", exact: true }).click();
+  await page.locator('[data-home-menu] [data-menu-item="daily"]').click();
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Kunlik ishlar");
   const cards = page.locator("main article");
   await expect(cards).toHaveCount(1);

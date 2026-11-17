@@ -80,14 +80,14 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  // 3.0 (2026-11-13): bosh sahifada alohida bo'lim — sarlavha, xizmat turlari va "Ustalarni ko'rish"
-  const section = page.locator("main [data-masters-home]");
-  await expect(section).toContainText("Universal ustalar");
-  const entry = section.locator("[data-masters-entry]");
-  await expect(entry).toHaveText(/Ustalarni ko'rish/);
+  // telefonda (2026-11-17): "Bo'limlar"ning birinchi qatori — "Universal ustalar" (katta yashil bo'lim — kompyuterda)
+  const entry = page.locator("[data-home-menu] [data-menu-item]").first();
+  await expect(entry).toHaveAttribute("data-masters-entry");
+  await expect(entry).toContainText("Universal ustalar");
+  await expect(page.locator("main [data-masters-home]")).toBeHidden();
   // alohida rang: asosiy ko'k emas (yashil mavzu)
   const [entryColor, blue] = await Promise.all([
-    section.getByRole("heading", { name: "Universal ustalar" }).evaluate((el) => getComputedStyle(el).color),
+    entry.getByText("Universal ustalar", { exact: true }).evaluate((el) => getComputedStyle(el).color),
     page.evaluate(() => {
       const probe = document.createElement("span");
       probe.className = "text-primary-ink";
@@ -133,13 +133,17 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(page.locator("[data-masters-review]")).toHaveCount(0);
   await expect(page.locator("main")).toContainText("Hali baho yo'q");
 
-  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q — kirish "Kabinetim" sahifasida
+  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q — kirish bosh sahifadagi "Bo'limlar"ning birinchi
+  // qatori (2026-11-17, ega: "eng tepada Universal ustalar"; Profildagi karta olib tashlandi)
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/cabinet");
-  const fromCabinet = page.locator("main [data-masters-entry]");
-  await expect(fromCabinet).toContainText("Universal ustalar");
-  await fromCabinet.click();
+  await expect(page.locator("main [data-masters-entry]")).toHaveCount(0);
+  await page.goto("/");
+  const fromMenu = page.locator("[data-home-menu] [data-menu-item]").first();
+  await expect(fromMenu).toHaveAttribute("data-masters-entry");
+  await expect(fromMenu).toContainText("Universal ustalar");
+  await fromMenu.click();
   await expect(page).toHaveURL(/\/ustalar$/);
 });
 

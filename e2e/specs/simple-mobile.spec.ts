@@ -24,11 +24,20 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   const menu = page.locator("[data-home-menu]");
   await expect(menu).toBeVisible();
   await expect(menu.getByRole("heading", { name: "Bo'limlar" })).toBeVisible();
-  // tartib (ega, 2026-11-17): E'lon joylash → Yordamchi → Universal ustalar → Barcha vakansiyalar → Kunlik ish → qolganlari
-  await expect(menu.locator("[data-menu-item]")).toHaveCount(12);
-  expect(await menu.locator("[data-menu-item]").evaluateAll((els) => els.slice(0, 5).map((e) => e.getAttribute("data-menu-item")))).toEqual(["post", "ai", "masters", "jobs", "daily"]);
-  await expect(menu.locator('[data-menu-item="post"]')).toHaveAttribute("href", "/ai/post");
+  // tartib (ega, 2026-11-17, ikkinchi): Universal ustalar → Barcha vakansiyalar → Yordamchi → Kunlik → Masofaviy → Tajribasiz → Yaqin atrofdan → qolganlari;
+  // "E'lon joylash" bo'limlarda yo'q (tepada katta tugma bor); hammasi bitta ustunda, qator bo'lib
+  const order = ["masters", "jobs", "ai", "daily", "remote", "noexp", "near", "map", "applications", "saved", "messages", "profile", "settings", "help"];
+  expect(await menu.locator("[data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")))).toEqual(order);
+  await expect(menu.locator('[data-menu-item="post"]')).toHaveCount(0);
   await expect(menu.locator('[data-menu-item="daily"]')).toContainText("Kunlik ish");
+  await expect(menu.locator('[data-menu-item="remote"]')).toContainText("Masofaviy ish");
+  await expect(menu.locator('[data-menu-item="noexp"]')).toContainText("Tajriba talab qilinmaydigan ishlar");
+  await expect(menu.locator('[data-menu-item="near"]')).toContainText("Yaqin atrofdan ish qidirish");
+  // bitta ustun: hamma qatorlar bir xil chap chetda
+  const lefts = await menu.locator("[data-menu-item]").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
+  expect(new Set(lefts).size).toBe(1);
+  // tepadagi tez qidiruv kartochkalari yo'q — hammasi bo'limlarda
+  await expect(page.locator("[data-home-shortcuts]")).toHaveCount(0);
   // har bir bo'lim — nomi va ostida kichik izoh (nima qiladi)
   const jobs = menu.locator('[data-menu-item="jobs"]');
   await expect(jobs).toContainText("Barcha vakansiyalar");
@@ -37,7 +46,7 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   // "AI" so'zi yo'q — "Yordamchi" (2026-11-15; avval "Barchasi siz uchun")
   await expect(menu.locator('[data-menu-item="ai"]')).toContainText("Yordamchi");
   await expect(menu).not.toContainText("AI");
-  for (const key of ["ai", "jobs", "map", "applications", "saved", "messages", "profile", "masters", "settings", "help"]) {
+  for (const key of order) {
     await expect(menu.locator(`[data-menu-item="${key}"]`)).toBeVisible();
   }
   // eng tagida — qizil "Ish beruvchiga o'tish"
@@ -151,7 +160,7 @@ test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq �
   await expect(page.locator("[data-ai-brief] li").first()).toBeVisible();
 });
 
-test("Profil: tepada rolni almashtirish, bo'limlar yig'ilgan («Ko'rish», «Ochish»)", async ({ page, context }) => {
+test("Profil: tepada rolni almashtirish; sodda — «Mening dunyom», «O'zim haqimda e'lon», Yordamchi, Universal ustalar yo'q; bitta ro'yxat", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/cabinet");
@@ -164,15 +173,26 @@ test("Profil: tepada rolni almashtirish, bo'limlar yig'ilgan («Ko'rish», «Och
   const swBox = (await sw.boundingBox())!;
   expect(swBox.y).toBeGreaterThan(h1Box.y);
   expect(swBox.y - (h1Box.y + h1Box.height)).toBeLessThan(40);
-  for (const name of ["my-listings", "world", "pro", "links-activity", "links-account"]) {
+  // faqat ikkita yig'ilgan bo'lim: e'lonlarim va PRO kuzatuv (ega, 2026-11-17: "profil juda chalkash")
+  expect(await page.locator("main [data-fold]").evaluateAll((els) => els.map((e) => e.getAttribute("data-fold")))).toEqual(["my-listings", "pro"]);
+  for (const name of ["my-listings", "pro"]) {
     await expect(fold(page, name).locator("[data-fold-toggle]")).toHaveAttribute("aria-expanded", "false");
   }
   await expect(fold(page, "my-listings").locator("[data-fold-toggle]")).toContainText("Ko'rish");
-  // "Hisob" ochilsa — chiqish tugmasi
-  await fold(page, "links-account").locator("[data-fold-toggle]").click();
-  await expect(page.getByRole("button", { name: "Hisobdan chiqish" })).toBeVisible();
+  const main = page.locator("main");
+  await expect(main).not.toContainText("Mening dunyom");
+  await expect(main).not.toContainText("O'zim haqimda e'lon");
+  await expect(main.locator("[data-ai-entry], [data-masters-entry]")).toHaveCount(0);
+  // bitta oddiy ro'yxat, chiqish tugmasi oxirida — hech narsani ochmasdan ko'rinadi
+  const links = page.locator("[data-cabinet-links]");
+  await expect(links.getByRole("link", { name: "Saqlanganlar" })).toBeVisible();
+  await expect(links.getByRole("link", { name: "Sozlamalar" })).toBeVisible();
+  await expect(links.getByRole("button", { name: "Hisobdan chiqish" })).toBeVisible();
   // eski "Rolni o'zgartirish" havolasi takrorlanmaydi
   await expect(page.getByRole("link", { name: "Rolni o'zgartirish" })).toHaveCount(0);
+  // eski /dunyo manzili — profilga
+  await page.goto("/dunyo");
+  await expect(page).toHaveURL(/\/cabinet$/);
 });
 
 test("Universal ustalar, telefon: sarlavhada «E'lon joylash» yozuvi (faqat «+» emas), 320 px da ham sig'adi", async ({ browser }) => {

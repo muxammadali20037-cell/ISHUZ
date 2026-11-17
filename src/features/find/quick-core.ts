@@ -118,7 +118,8 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
     profession,
     nodeId: node?.id ?? null,
     place,
-    salary: input.mode === "jobs" && r.salary && !r.pay ? r.salary : null,
+    // ega (2026-11-17): "oylik maosh kerak emas" — oynada so'ralmaydi va qidiruvga qo'shilmaydi
+    salary: null,
     filters: {
       pay: input.mode === "jobs" ? r.pay : null,
       noexp: input.mode === "jobs" && r.noexp,

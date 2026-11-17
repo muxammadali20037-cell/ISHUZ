@@ -185,9 +185,12 @@ export function isTheme(v: unknown): v is Theme {
   return typeof v === "string" && (THEMES as readonly string[]).includes(v);
 }
 
-/** Cookie qiymatidan mavzu: "dark"/"light" → o'zi, boshqa → system */
+/**
+ * Cookie qiymatidan mavzu: "dark"/"light"/"system" → o'zi; tanlanmagan → kunduzgi (ega, 2026-11-17: "kirganda birinchi
+ * kundizgi rejimga kirsin" — telefon tungi rejimda bo'lsa ham). "Tizim bo'yicha" faqat foydalanuvchi o'zi tanlasa.
+ */
 export function themeFromCookie(value: string | undefined): Theme {
-  return value === "dark" || value === "light" ? value : "system";
+  return value === "dark" || value === "light" || value === "system" ? value : "light";
 }
 
 /** Qorong'i rejim qo'llanadimi (system → prefers-color-scheme) */

@@ -41,10 +41,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e172b" },
-  ],
+  // standart — kunduzgi rejim (tungi faqat sozlamalarda tanlansa)
+  themeColor: "#ffffff",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -73,10 +71,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             __html: `(function(){try{var h=location.hash,u=${adminLink};if(h&&/[#&]type=recovery(&|$)/.test(h)&&/[#&]access_token=/.test(h)&&location.origin+location.pathname!==u)location.replace(u+h);}catch(e){}})();`,
           }}
         />
-        {/* Mavzu: cookie yo'q ("system") bo'lsa — qurilma sozlamasiga qarab, gidratsiyadan oldin (miltillashsiz) */}
+        {/* Mavzu: cookie yo'q — kunduzgi (ega, 2026-11-17); "system" tanlangan bo'lsa — qurilma sozlamasiga qarab; gidratsiyadan oldin (miltillashsiz) */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var m=document.cookie.match(/(?:^|; )ishuz_theme=(dark|light)/);var d=m?m[1]==='dark':window.matchMedia('(prefers-color-scheme: dark)').matches;document.documentElement.classList.toggle('dark',d);}catch(e){}})();`,
+            __html: `(function(){try{var m=document.cookie.match(/(?:^|; )ishuz_theme=(dark|light|system)/);var d=m?(m[1]==='system'?window.matchMedia('(prefers-color-scheme: dark)').matches:m[1]==='dark'):false;document.documentElement.classList.toggle('dark',d);}catch(e){}})();`,
           }}
         />
       </head>

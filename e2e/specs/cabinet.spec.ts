@@ -57,8 +57,8 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
     return c;
   });
   expect(bg).not.toBe(success);
-  // "yangi e'lon" — faqat joriy rejimniki (ish beruvchiga o'zi haqida e'lon taklif qilinmaydi), neytral ko'rinish
-  await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(1);
+  // "yangi e'lon" bloki Profilda yo'q (2026-11-17, ega: "profil juda chalkash") — e'lon bosh sahifadagi katta tugmadan
+  await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveCount(0);
   // kirgandan keyin rejim almashtirgichi yo'q; rolni almashtirish — Profil tepasida, bir bosishda (2026-11-15)
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);

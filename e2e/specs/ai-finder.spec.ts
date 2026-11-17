@@ -23,7 +23,7 @@ async function vacancy(title: string, profession: string, salaryType: "monthly" 
   return v!.slug;
 }
 
-// 2.0: ish izlovchi bosh sahifasida — yagona qidiruv maydonining "Topish" tugmasi (bo'sh bosilsa — yordamchi misollar bilan
+// 2.0: ish izlovchi bosh sahifasida — yagona qidiruv maydonining "Izlash" tugmasi (bo'sh bosilsa — yordamchi misollar bilan
 // ochiladi); boshqa sahifalarda — "AI bilan qidirish" tugmasi
 // [data-hydrated] — skriptlar yuklanib bo'lgan (undan oldin bosilsa forma /ai?q=… sahifasiga ketadi — alohida testda)
 const fab = (page: Page) => page.locator("form[data-ai-field][data-hydrated]:visible button[type='submit']").or(page.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).first();
@@ -35,18 +35,18 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("qidiruv — bosh sahifaning hero blokida (5.0 «ko'k-oq», 2026-11-16): «Lavozim yoki kompaniyani qidiring...», birinchi ekranda, vakansiya sahifasida yo'q", async ({ page, context }) => {
+test("qidiruv — bosh sahifaning hero blokida (5.0 «ko'k-oq», 2026-11-16): «O'zingizga mos ishni qidiring...», birinchi ekranda, vakansiya sahifasida yo'q", async ({ page, context }) => {
   const slug = await vacancy("Buxgalter", "Buxgalter");
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  const field = page.getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." });
+  const field = page.getByRole("search", { name: "O'zingizga mos ishni qidiring..." });
   await expect(field).toBeVisible();
-  await expect(field.getByRole("searchbox")).toHaveAttribute("placeholder", "Lavozim yoki kompaniyani qidiring...");
+  await expect(field.getByRole("searchbox")).toHaveAttribute("placeholder", "O'zingizga mos ishni qidiring...");
   // qidiruv takrorlanmaydi: ekranda bitta maydon — hero blokida (2026-11-15 dagi sarlavhadagi qidiruv 5.0 topshirig'i bilan
   // hero ga ko'chdi: sarlavhada logotip, bo'limlar, "E'lon berish", til va "Kirish")
   await expect(page.locator("form[role=search]:visible")).toHaveCount(1);
-  await expect(page.locator("[data-home='seeker-v2']").getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." })).toBeVisible();
+  await expect(page.locator("[data-home='seeker-v2']").getByRole("search", { name: "O'zingizga mos ishni qidiring..." })).toBeVisible();
   await expect(page.locator("header").getByRole("search")).toHaveCount(0);
   await expect(field.locator("button[type='submit']")).toHaveCount(1);
   // tugma suzib yurmaydi — maydon ichida (relative — faqat 44px bosish maydoni uchun); birinchi ekranda
@@ -74,11 +74,11 @@ test("matn → so'rovnoma (kasb va hudud oldindan to'ldirilgan) → «Qidirish»
   await expect(dialog.getByRole("radio", { name: "Ish qidiryapman" })).toHaveAttribute("aria-checked", "true");
   await dialog.getByLabel("Nima qidiryapsiz?").fill("Toshkent shahrida buxgalter");
   await dialog.getByRole("button", { name: "Topish" }).click();
-  // so'rovnoma: "Qanday ish?", "Qaysi hududda?", "Oylik maosh qancha bo'lsin?" — yozilganidan to'ldirilgan
+  // so'rovnoma: "Qanday ish?", "Qaysi hududda?" — yozilganidan to'ldirilgan; oylik maosh so'ralmaydi (ega, 2026-11-17)
   const sheet = page.getByRole("dialog", { name: "Ish qidirish" });
   await expect(sheet.getByLabel("Qanday ish?")).toHaveValue("Buxgalter");
   await expect(sheet.getByLabel("Qaysi hududda?")).toHaveValue("tashkent_city");
-  await expect(sheet.getByRole("radiogroup", { name: "Oylik maosh qancha bo'lsin?" }).getByRole("radio", { name: "Farqi yo'q" })).toHaveAttribute("aria-checked", "true");
+  await expect(sheet.getByRole("radiogroup", { name: "Oylik maosh qancha bo'lsin?" })).toHaveCount(0);
   const answer = await quickSearch(page);
   // AI javob matni yozilmaydi — qisqa xulosa va kartalar
   await expect(dialog.locator("[data-ai-reply]")).toHaveCount(0);
@@ -157,12 +157,13 @@ test("suhbat: salomlashuv va misol → so'rovnoma → javob; «O'zgartirish» oy
   await expect(answer.locator("[data-quick-found]")).toHaveText("2 ta ish topildi");
   await expect(dialog.locator("article")).toHaveCount(2);
 
-  // "O'zgartirish": oyna oldingi javoblar bilan qayta ochiladi; 10 mln dan — stenddagi e'lonlar (200 ming: oylik va kunlik,
-  // kunligi oyiga ~5 mln) chiqmaydi, "yo'q" va pastda — shunga yaqin ishlar (maosh shartisiz)
+  // "O'zgartirish": oyna oldingi javoblar bilan qayta ochiladi; Samarqandda — stenddagi e'lonlar (Toshkentda) chiqmaydi,
+  // "yo'q" va pastda — shunga yaqin ishlar (boshqa hududda). Maosh so'ralmaydi (ega, 2026-11-17)
   await answer.getByRole("button", { name: "O'zgartirish" }).click();
   await expect(page.locator("[data-quick-sheet] [data-quick-profession]")).toHaveValue("Buxgalter");
-  const again = await quickSearch(page, { salary: 10_000_000 });
-  await expect(again.locator("[data-quick-summary]")).toContainText("10 mln so'mdan yuqori");
+  await expect(page.locator("[data-quick-sheet] [data-quick-salary]")).toHaveCount(0);
+  const again = await quickSearch(page, { place: "samarkand" });
+  await expect(again.locator("[data-quick-summary]")).toContainText("Samarqand");
   await expect(again.locator("[data-quick-none]")).toContainText("Hozircha bunday ish yo'q.");
   await expect(again.locator("[data-quick-similar]")).toContainText("Shunga yaqin ishlar");
   await expect(again.locator("[data-quick-similar] article")).toHaveCount(2);

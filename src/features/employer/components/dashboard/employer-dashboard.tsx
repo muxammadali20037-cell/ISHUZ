@@ -16,6 +16,7 @@ import { MastersHomeSection } from "@/features/masters/components/masters-home-s
 import { VerificationBadge } from "./status-badge";
 import { EmployerHead } from "@/features/landing/employer-head";
 import { HomeMenu } from "@/features/landing/home-menu";
+import { homeMenuLinks } from "@/features/landing/quick-filters";
 import { getHomePlace } from "@/features/landing/home-queries";
 
 /**
@@ -68,7 +69,7 @@ export async function EmployerDashboard({ session, embedded = false }: { session
   return (
     // embedded — bosh sahifa ichida (o'z konteyneri bor)
     <div className={embedded ? "space-y-6" : "container-app space-y-6 py-5 sm:py-8"}>
-      <EmployerHead flush={embedded} greeting={t("employer.dashboard.greeting", { name })} place={place} postHref="/employer/vacancies/new" extra={status} menu={embedded} />
+      <EmployerHead flush={embedded} greeting={t("employer.dashboard.greeting", { name })} place={place} extra={status} />
 
       <Suspense fallback={<KeyTilesSkeleton />}>
         <KeyTiles candidatesHref={candidatesHref} />
@@ -78,7 +79,7 @@ export async function EmployerDashboard({ session, embedded = false }: { session
           shu menyuda ("Arizalar", "Vakansiyalarim", "Nomzodlar") va yuqoridagi raqamlarda (ega, 2026-11-15: "yozuvlar juda ko'p") */}
       {embedded ? (
         <Suspense fallback={null}>
-          <HomeMenu mode="employer" />
+          <HomeMenu mode="employer" links={homeMenuLinks("employer", { region: place.region?.slug ?? null, district: place.district?.id ?? null })} />
         </Suspense>
       ) : null}
       <div className={embedded ? "space-y-6 max-lg:hidden" : "space-y-6"}>

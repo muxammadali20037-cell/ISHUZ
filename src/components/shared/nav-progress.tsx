@@ -17,7 +17,7 @@ import { setPendingPath } from "./nav-pending";
  */
 
 // menyusiz to'liq ekranlar (kirish, birinchi ochilish) — butun ekran skeleti
-const BARE = ["/start", "/auth", "/dunyo", "/ai"];
+const BARE = ["/start", "/auth", "/ai"];
 const isBare = (p: string) => BARE.some((b) => p === b || p.startsWith(b + "/"));
 
 interface Pending {

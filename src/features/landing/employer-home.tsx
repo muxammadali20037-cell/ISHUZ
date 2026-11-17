@@ -15,15 +15,18 @@ import { MastersHomeSection } from "@/features/masters/components/masters-home-s
 import { Fold } from "@/components/shared/fold";
 import { cn } from "@/lib/utils";
 import { HomeMenu } from "./home-menu";
+import { homeMenuLinks } from "./quick-filters";
 
 /**
  * Ish beruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "ish beruvchilar panelini ham soddalashtir"). Profili tayyor ish beruvchi —
  * panel (employer-dashboard.tsx, xuddi shu bosh qism bilan). Mehmon yoki profil hali yo'q:
  *  1) bitta savol "Qanday xodim kerak?" va BITTA qidiruv maydoni (AI: o'z so'zi bilan — bazadagi nomzodlardan topadi);
- *  2) 4 ta tez yo'l: kunlik ishchi, yaqin atrofda, tajribali, masofaviy; "Barcha nomzodlar";
- *  3) asosiy amal — "Vakansiya joylash" (ish beruvchining asl maqsadi);
- *  4) yangi nomzodlar ro'yxati; 5) "Universal ustalar" — alohida yashil bo'lim (2026-11-13).
- * Olib tashlandi: fon surati, 4 ta plitka, bo'limlar ro'yxati, admin oynalari, AI PRO kartasi — bir ekranda bitta vazifa.
+ *  2) asosiy amal — bitta katta "+ Vakansiya joylash" (yordamchi bilan; 2026-11-17, ega: "ish beruvchi panelini ham shunaqa
+ *     sodda qil" — avvalgi "AI bilan oson joylash" kartasi va ikkinchi tugma o'rnida);
+ *  3) yangi nomzodlar ro'yxati;
+ *  4) "Bo'limlar": Universal ustalar, Barcha nomzodlar, Yordamchi, Kunlik/Masofaviy/Tajribali/Yaqin atrofdagi ishchi… —
+ *     bitta ustunda (avvalgi 4 ta tez yo'l shu yerda); 5) kompyuterda "Universal ustalar" — alohida yashil bo'lim.
+ * Olib tashlandi: fon surati, plitkalar, admin oynalari, AI PRO kartasi — bir ekranda bitta vazifa.
  * Rejim faqat ko'rinishni tanlaydi: ruxsatlar serverda (requireEmployer, RLS) — rejim o'zgarsa ham kengaymaydi.
  */
 export async function EmployerHome({ session, flush = false }: { session: SessionContext | null; flush?: boolean }) {
@@ -33,7 +36,7 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
   const firstName = session?.profile.first_name?.trim();
   return (
     <div className="flex flex-col gap-6">
-      <EmployerHead flush={flush} greeting={firstName ? t("easy.home2.e_greeting", { name: firstName }) : t("easy.services.greeting_guest")} place={place} postHref="/post/vacancy" menu={!!session} />
+      <EmployerHead flush={flush} greeting={firstName ? t("easy.home2.e_greeting", { name: firstName }) : t("easy.services.greeting_guest")} place={place} />
 
       <div>
         <div className="min-w-0 space-y-5">
@@ -52,17 +55,16 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
           <Suspense fallback={<WorkersSkeleton />}>
             <NewWorkers session={session} place={place} fold={!!session} />
           </Suspense>
-          {session ? (
-            <Suspense fallback={null}>
-              <HomeMenu mode="employer" />
-            </Suspense>
-          ) : null}
+          {/* bo'limlar: Universal ustalar, Barcha nomzodlar, Yordamchi, Kunlik, Masofaviy, Tajribali, Yaqin atrofdagi ishchi… */}
+          <Suspense fallback={null}>
+            <HomeMenu mode="employer" guest={!session} links={homeMenuLinks("employer", { region: place.region?.slug ?? null, district: place.district?.id ?? null })} />
+          </Suspense>
         </div>
       </div>
 
       {/* "Universal ustalar" — alohida yashil bo'lim (2026-11-13; kirganda telefonda — menyuda). "Barchasi siz uchun" — yuqori
           panelda (✨) va yon menyuda; "Mos nomzod chiqsa xabar" — Profil → PRO kuzatuv */}
-      <div className={session ? "max-lg:hidden" : undefined}>
+      <div className="max-lg:hidden">
         <Suspense fallback={null}>
           <MastersHomeSection />
         </Suspense>

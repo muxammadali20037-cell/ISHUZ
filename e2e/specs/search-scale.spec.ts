@@ -180,8 +180,8 @@ async function workersInDb(prof: string, where: { district?: string; region?: st
 async function search(page: Page, text: string) {
   await page.goto("/");
   const field = page.locator("form[data-top-search][data-hydrated] input[name='q']");
-  // ish qidiruvchida — "Lavozim yoki kompaniyani qidiring...", ish beruvchida — "Ish va ishchilar izlash" (4.0)
-  await expect(field).toHaveAttribute("placeholder", /^(Lavozim yoki kompaniyani qidiring\.\.\.|Ish va ishchilar izlash)$/);
+  // ish qidiruvchida — "O'zingizga mos ishni qidiring...", ish beruvchida — "O'zingizga mos xodimni qidiring..." (2026-11-17)
+  await expect(field).toHaveAttribute("placeholder", /^O'zingizga mos (ishni|xodimni) qidiring\.\.\.$/);
   await field.fill(text);
   await field.press("Enter");
   const dialog = page.getByRole("dialog", { name: "Yordamchi" });

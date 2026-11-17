@@ -8,7 +8,7 @@ import { USERS, asGuest, asMode, quickSearch, sql } from "../support";
  *  - aniq so'rov bo'sh chiqsa — bitta qisqa "Hozircha bunday ish yo'q" (mehmonga — "kirsangiz, xabar beramiz") va pastda
  *    "Shunga yaqin ishlar" (yaqin kasblar yoki shu kasb boshqa hududlarda);
  *  - kasblar ro'yxatida yo'q so'z (do'kon yoki kompaniya nomi, erkin lavozim) — e'lon matnlaridan qidiriladi;
- *  - sekin telefon: sahifa skriptlari yuklanmasdan "Topish" bosilsa ham boshi berk yo'q — matn /ai?q=… sahifasiga boradi va
+ *  - sekin telefon: sahifa skriptlari yuklanmasdan "Izlash" bosilsa ham boshi berk yo'q — matn /ai?q=… sahifasiga boradi va
  *    savol o'sha yerda o'zi yuboriladi.
  */
 
@@ -59,9 +59,10 @@ test("bosh sahifa: bitta qidiruv maydoni, nol ko'rsatkich va fon surati yo'q", a
   await expect(hero.locator("form[data-ai-field]")).toHaveCount(1);
   await expect(hero.locator("input[type='search']")).toHaveCount(1);
   await expect(hero.locator("img")).toHaveCount(0);
-  // katta "+ E'lon joylash" heroda; 4 ta tez yo'l — hero ostida katta plitkalar (ega, 2026-11-17)
+  // katta "+ E'lon joylash" heroda; tez yo'llar — plitka emas, "Bo'limlar" qatorlari (ega, 2026-11-17)
   await expect(hero.locator("[data-home-post]")).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem")).toHaveCount(4);
+  await expect(page.getByRole("navigation", { name: "Tez qidiruv" })).toHaveCount(0);
+  await expect(page.locator('[data-home-menu] [data-menu-item="daily"]')).toBeVisible();
 });
 
 test("Chilonzorda oshpaz → oynada «Oshpaz» va Chilonzor; tumanda yo'q → qisqa «yo'q» va pastda shunga yaqin ishlar (Samarqanddagi)", async ({ page, context }) => {
@@ -146,7 +147,7 @@ test("skriptlar yuklanmasdan yuborilsa: forma /ai?q=… ga boradi (sahifa shunch
   await expect(form).not.toHaveAttribute("data-hydrated", "");
   await expect(form).toHaveAttribute("action", "/ai");
   await form.locator("input[name='q']").fill("Samarqandda oshpaz");
-  await form.getByRole("button", { name: "Topish" }).click();
+  await form.getByRole("button", { name: "Izlash" }).click();
   await page.waitForURL((u) => new URL(u).pathname === "/ai" && new URL(u).searchParams.get("q") === "Samarqandda oshpaz");
 });
 

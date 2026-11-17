@@ -175,7 +175,7 @@ export async function searchVacancyCards(args: SearchVacanciesArgs, db?: ReadCli
   return (data ?? []).map(toCardData);
 }
 
-/** Kichik ro'yxat va umumiy soni ("Mening dunyom" — soha bo'yicha yangi ishlar). Xatoda — null (son ko'rsatilmaydi). */
+/** Kichik ro'yxat va umumiy soni (bosh sahifa bo'limlari — yangi ishlar). Xatoda — null (son ko'rsatilmaydi). */
 export async function searchVacancyCardsWithTotal(args: SearchVacanciesArgs): Promise<{ items: VacancyCardData[]; total: number } | null> {
   const supabase = await createClient();
   const { data, error } = await rpcSearch(supabase, args);

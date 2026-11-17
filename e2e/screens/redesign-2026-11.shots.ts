@@ -123,6 +123,5 @@ test("redizayn 2026-11: bosh sahifa, vakansiya, kabinet, arizalar, onboarding", 
   await capture(browser, "new", [
     ["onboarding-employer", "/onboarding/employer"],
     ["onboarding-worker", "/onboarding/worker"],
-    ["world-builder", "/dunyo"],
   ]);
 });

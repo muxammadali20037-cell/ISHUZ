@@ -37,7 +37,8 @@ test("bosh sahifada alohida kirish → bir gap → faqat tushunilmagani so'ralad
   await asMode(context, "employer");
   await page.goto("/");
   const entry = page.locator("[data-guide-entry]");
-  await expect(entry).toContainText("AI bilan oson joylash");
+  // 2026-11-17: bitta katta "Vakansiya joylash" tugmasi — yordamchi bilan (avvalgi "AI bilan oson joylash" kartasi o'rnida)
+  await expect(entry).toHaveText("Vakansiya joylash");
   await entry.click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
   await expect(h1(page)).toHaveText("Qanday xodim kerak?");

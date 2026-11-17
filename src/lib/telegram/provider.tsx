@@ -100,7 +100,10 @@ export function TelegramProvider({ children }: { children: ReactNode }) {
     webApp.ready();
     webApp.expand();
     root.classList.add("tg");
-    if (webApp.colorScheme === "dark") root.classList.add("dark");
+    // ega (2026-11-17): "kirganda birinchi kunduzgi rejim" — Telegram tungi bo'lsa ham; tungi faqat sozlamada tanlansa
+    // ("Tungi" yoki "Tizim bo'yicha" — unda Telegram'ning rejimiga ergashadi)
+    const chosen = document.cookie.match(/(?:^|; )ishuz_theme=(dark|light|system)/)?.[1];
+    if (chosen === "dark" || (chosen === "system" && webApp.colorScheme === "dark")) root.classList.add("dark");
     // eski Telegram versiyalarida usul yo'q yoki xato tashlaydi — ilova baribir ochiladi
     const safely = (fn: (() => void) | undefined) => {
       try {
