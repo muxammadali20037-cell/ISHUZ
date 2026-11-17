@@ -90,6 +90,13 @@
     "negotiable": "Negotiable",
     "experience": "Experience: {value}",
     "salary_expect": "Expected salary: {value}",
-    "apply": "Apply"
+    "apply": "Apply",
+    "worker_badge": "LOOKING FOR WORK",
+    "salary_negotiable": "Salary: negotiable"
+  },
+  "owner_post": {
+    "vacancy": "✅ <b>Your listing is live!</b>\n{title} — job seekers can now find it in search.",
+    "worker": "✅ <b>Your listing is live!</b>\n{title} — employers can now find you in search.",
+    "button": "My listings"
   }
 }

@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · E'lon rasmi — kanalga va e'lon egasiga (`claude/post-image-everywhere`)
+
+Ega: "shunga o'xshab kelsin — e'lon joylandimi, shunaqa rasm bo'lib kelsin" (vakansiya kartasi rasmi) → "ikkalasi ham".
+
+- **Kanal:** ishchi e'lonlari ("o'zim haqimda") ham vakansiyadek rasm bilan chiqadi — `/api/promo/worker/<id>`
+  (1200×800): "ISHCHI · ish qidiryapti" yorlig'i, kasbi, tajribasi, joyi, kutilayotgan maosh. Ism, telefon, rasm va erkin
+  matn yo'q; faqat ommaviy e'lon (aks holda 404). Rasm ketmasa — avvalgidek matn.
+- **E'lon egasiga:** e'lon ommaga chiqqach (oxirgi 24 soat), bot orqali "✅ E'loningiz joylandi!" — o'sha rasm bilan va
+  "E'lonlarimni ko'rish" tugmasi (ilovani Telegram ichida ochadi). Har e'lon — bir marta; bot ishga tushirilmagan yoki
+  muallif bloklangan bo'lsa — yuborilmaydi. Kanal sozlamasidan qat'i nazar ishlaydi; kanalga avtomatik e'lon bilan bir
+  navbatda (`channel_posts`, `chat_id = "dm:<telegram id>"` — admin sahifasida kanal yozuvlari bilan aralashmaydi).
+- Ikkalasi ham 0079 (`channel_posts`) qo'llangan bo'lishini talab qiladi (`supabase/prod/pending.sql`).
+
 ## 2026-11-17 · Bo'limlarda Universal ustalar — ko'k (`claude/menu-masters-blue`)
 
 Ega: "faqat ustalarni ko'k rang bilan ajratib qo'y". "Bo'limlar"da faqat Universal ustalar qatorining belgisi (och ko'k

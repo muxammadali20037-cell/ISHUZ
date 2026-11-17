@@ -90,6 +90,13 @@
     "negotiable": "Kelishiladi",
     "experience": "Tajriba: {value}",
     "salary_expect": "Kutilayotgan maosh: {value}",
-    "apply": "Ariza qoldirish"
+    "apply": "Ariza qoldirish",
+    "worker_badge": "ISHCHI · ish qidiryapti",
+    "salary_negotiable": "Maosh: kelishiladi"
+  },
+  "owner_post": {
+    "vacancy": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi qidiruvda ko'rinadi, ish izlovchilar ko'radi.",
+    "worker": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi ish beruvchilar sizni qidiruvda topadi.",
+    "button": "E'lonlarimni ko'rish"
   }
 }

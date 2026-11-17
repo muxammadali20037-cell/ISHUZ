@@ -7,7 +7,8 @@ import { miniAppBaseUrl } from "@/lib/telegram/bot";
 import { channelChatId, sendChannelMessage } from "./channel";
 import { channelChatIdFrom } from "./media";
 import { AUTOPOST_KEY, parseAutopost } from "./autopost-settings";
-import { vacancyPost, workerPost, type ChannelPost } from "./autopost-format";
+import { sanitizeLine, vacancyPost, workerPost, type ChannelPost } from "./autopost-format";
+import { resolveTelegramLocale } from "@/features/notifications/telegram";
 
 /**
  * Telegram kanalga avtomatik e'lon (0079): yangi chiqqan vakansiya — "ISH", ishchi e'loni (rezyume) — "ISHCHI".
@@ -36,6 +37,86 @@ export interface AutopostResult {
   posted: number;
   failed: number;
   stopped?: string;
+  /** e'lon egalariga "E'loningiz joylandi" (rasm bilan) — yuborilganlar soni */
+  notified?: number;
+}
+
+/** bir qadamda ko'pi bilan nechta egaga xabar (har biri boshqa chat — kanal cheklovi yo'q, lekin qadam qisqa bo'lsin) */
+const OWNER_PER_RUN = 8;
+const escapeHtml = (s: string) => s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c] ?? c);
+
+/**
+ * E'lon egasiga Telegram bot orqali "✅ E'loningiz joylandi!" — e'lonning rasmi bilan (kanaldagi bilan bir xil rasm) va
+ * "E'lonlarimni ko'rish" tugmasi (ega, 2026-11-17: "e'lon joylandimi — shunaqa rasm bo'lib kelsin… ikkalasi ham").
+ * Faqat oxirgi 24 soatda ommaga chiqqan e'lonlar; har biri egasiga BIR marta (channel_posts, chat_id = "dm:<telegram id>");
+ * egasi botni ishga tushirmagan yoki bloklangan bo'lsa — yuborilmaydi. Xato bo'lsa qayta urinilmaydi (shaxsiy xabar — muhim
+ * emas, takror xabardan yaxshiroq).
+ */
+async function runOwnerNotices(db: Db, res: AutopostResult): Promise<void> {
+  const since = new Date(Date.now() - FRESH_MS).toISOString();
+  const base = miniAppBaseUrl();
+  const [vacs, workers] = await Promise.all([
+    db
+      .from("vacancies")
+      .select("id, slug, title, owner_profile_id, owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)")
+      .eq("status", "active")
+      .gte("published_at", since)
+      .order("published_at", { ascending: false })
+      .limit(30),
+    db
+      .from("worker_profiles")
+      .select("id, profile_id, custom_profession, profession:profession_nodes!worker_profiles_profession_node_id_fkey(name_uz), owner:profiles!worker_profiles_profile_id_fkey(is_blocked)")
+      .eq("is_public", true)
+      .gte("onboarding_completed_at", since)
+      .order("onboarding_completed_at", { ascending: false })
+      .limit(30),
+  ]);
+  type Item = { entity: Entity; id: string; owner: string; title: string; photo: string };
+  const items: Item[] = [];
+  for (const v of vacs.data ?? []) {
+    if (!v.owner_profile_id || one(v.owner)?.is_blocked) continue;
+    items.push({ entity: "vacancy", id: v.id, owner: v.owner_profile_id, title: sanitizeLine(v.title, 80), photo: `${base}/api/promo/vacancy/${encodeURIComponent(v.slug)}?f=post` });
+  }
+  for (const w of workers.data ?? []) {
+    const title = sanitizeLine(w.custom_profession ?? one(w.profession)?.name_uz ?? null, 80);
+    if (!title || one(w.owner)?.is_blocked) continue;
+    items.push({ entity: "worker", id: w.id, owner: w.profile_id, title, photo: `${base}/api/promo/worker/${w.id}` });
+  }
+  if (!items.length) return;
+  const owners = [...new Set(items.map((i) => i.owner))];
+  const [{ data: accounts }, { data: profs }] = await Promise.all([
+    db.from("telegram_accounts").select("profile_id, telegram_user_id, bot_started, language_code").in("profile_id", owners),
+    db.from("profiles").select("id, locale").in("id", owners),
+  ]);
+  let sent = 0;
+  for (const item of items) {
+    if (sent >= OWNER_PER_RUN) break;
+    const tg = (accounts ?? []).find((a) => a.profile_id === item.owner);
+    if (!tg?.bot_started) continue;
+    const key = `dm:${tg.telegram_user_id}`;
+    const { data: claimed, error } = await db
+      .from("channel_posts")
+      .insert({ entity_type: item.entity, entity_id: item.id, chat_id: key, status: "claimed", attempts: 1 })
+      .select("id")
+      .maybeSingle();
+    if (error || !claimed) continue; // allaqachon yuborilgan (unique)
+    sent += 1;
+    const t = makeT(resolveTelegramLocale([(profs ?? []).find((p) => p.id === item.owner)?.locale, tg.language_code]));
+    const caption = t(`bot.owner_post.${item.entity}`, { title: escapeHtml(item.title) });
+    const r = await sendChannelMessage({
+      chatId: String(tg.telegram_user_id),
+      html: caption,
+      caption,
+      photo: item.photo,
+      button: { text: t("bot.owner_post.button"), url: `${base}/cabinet/elonlar` },
+      webApp: true,
+    });
+    await db
+      .from("channel_posts")
+      .update(r.ok ? { status: "posted", message_id: r.messageId, posted_at: new Date().toISOString() } : { status: "failed", attempts: MAX_ATTEMPTS, error: r.description.slice(0, 300) })
+      .eq("id", claimed.id);
+    if (r.ok) res.notified = (res.notified ?? 0) + 1;
+  }
 }
 
 async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promise<Map<string, ChannelPost>> {
@@ -206,10 +287,12 @@ export async function runChannelAutopost(): Promise<AutopostResult> {
     if (cfg.jobs && jobsChat) budget -= await runEntity(db, "vacancy", jobsChat, budget, res);
     const workersChat = channelChatIdFrom(cfg.workersChat) ?? main;
     if (cfg.workers && workersChat && budget > 0 && !res.stopped) await runEntity(db, "worker", workersChat, budget, res);
+    // e'lon egalariga — kanal sozlamasidan qat'i nazar
+    await runOwnerNotices(db, res);
   } catch (e) {
     // 0079 qo'llanmagan (channel_posts yo'q) yoki tarmoq xatosi — keyingi qadamda yana
     console.error("[channel-autopost]", e instanceof Error ? e.message : e);
   }
-  if (res.posted || res.failed) console.info("[channel-autopost]", res);
+  if (res.posted || res.failed || res.notified) console.info("[channel-autopost]", res);
   return res;
 }

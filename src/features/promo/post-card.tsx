@@ -1,5 +1,6 @@
 /**
- * Kanal posti rasmi (next/og → PNG, 1200×800): FAQAT ish nomi, maosh, joylashuv va kompaniya nomi
+ * Kanal posti rasmi (next/og → PNG, 1200×800): FAQAT ish nomi, maosh, joylashuv va kompaniya nomi; ishchi e'loni (2026-11-17,
+ * ega: "e'lon joylandimi — shunaqa rasm bo'lib kelsin") — kasbi, tajribasi, joyi, kutilayotgan maosh va "ISHCHI" yorlig'i
  * (ega, 2026-11-16: "rasmli qil prosta, rasmda faqat ish nomi, maoshi, lokatsiyasi, kompaniya nomi bo'lsin").
  * Odam chizmasi, logotip, sayt nomi va havola YO'Q. Faqat flexbox va satori qo'llaydigan CSS; belgilar — chiziqli SVG
  * (matn emoji emas). Ranglar — dizayn tizimi palitrasi (asosiy #1558D6, ikkilamchi #EAF1FF).
@@ -11,6 +12,10 @@ export interface PostCardData {
   company: string | null;
   place: string | null;
   salary: string;
+  /** ishchi e'loni: tepada kichik yorliq ("ISHCHI · ish qidiryapti") — vakansiyadan ajralib tursin */
+  badge?: string | null;
+  /** ishchi e'loni: tajriba qatori (kompaniya o'rnida) */
+  experience?: string | null;
 }
 
 const BLUE = "#1558D6";
@@ -19,7 +24,7 @@ const INK = "#101828";
 const GREEN = "#16A36A";
 
 /** Lucide belgilari (ISC) — 24×24 chiziqli */
-function Icon({ name, size, color }: { name: "building" | "pin" | "money"; size: number; color: string }) {
+function Icon({ name, size, color }: { name: "building" | "pin" | "money" | "briefcase"; size: number; color: string }) {
   const common = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   if (name === "building")
     return (
@@ -28,6 +33,13 @@ function Icon({ name, size, color }: { name: "building" | "pin" | "money"; size:
         <path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2" />
         <path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2" />
         <path d="M10 6h4M10 10h4M10 14h4M10 18h4" />
+      </svg>
+    );
+  if (name === "briefcase")
+    return (
+      <svg {...common}>
+        <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+        <rect width="20" height="14" x="2" y="6" rx="2" />
       </svg>
     );
   if (name === "pin")
@@ -60,7 +72,7 @@ export function postTitleSize(title: string): number {
 
 export function PostCard({ data }: { data: PostCardData }) {
   const title = clip(data.title, 70);
-  const row = (icon: "building" | "pin", text: string) => (
+  const row = (icon: "building" | "pin" | "briefcase", text: string) => (
     <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 72, height: 72, borderRadius: 20, background: "rgba(255,255,255,0.16)", flexShrink: 0 }}>
         <Icon name={icon} size={40} color="#FFFFFF" />
@@ -88,10 +100,20 @@ export function PostCard({ data }: { data: PostCardData }) {
       <div style={{ position: "absolute", right: -180, top: -200, width: 560, height: 560, borderRadius: 999, background: "rgba(255,255,255,0.07)", display: "flex" }} />
       <div style={{ position: "absolute", right: 120, bottom: -260, width: 420, height: 420, borderRadius: 999, background: "rgba(255,255,255,0.05)", display: "flex" }} />
 
-      <div style={{ display: "flex", fontSize: postTitleSize(title), fontWeight: 800, lineHeight: 1.08, letterSpacing: -2, maxWidth: 1000 }}>{title}</div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+        {data.badge ? (
+          <div style={{ display: "flex" }}>
+            <div style={{ display: "flex", fontSize: 30, fontWeight: 800, letterSpacing: 1, color: "#FFFFFF", background: "rgba(255,255,255,0.18)", borderRadius: 999, padding: "10px 26px" }}>
+              {clip(data.badge, 40)}
+            </div>
+          </div>
+        ) : null}
+        <div style={{ display: "flex", fontSize: postTitleSize(title), fontWeight: 800, lineHeight: 1.08, letterSpacing: -2, maxWidth: 1000 }}>{title}</div>
+      </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
         {data.company ? row("building", data.company) : null}
+        {data.experience ? row("briefcase", data.experience) : null}
         {data.place ? row("pin", data.place) : null}
       </div>
 

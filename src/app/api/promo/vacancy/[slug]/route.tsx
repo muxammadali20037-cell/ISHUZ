@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { ImageResponse } from "next/og";
 import { getT } from "@/lib/i18n/server";
 import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
@@ -11,7 +9,7 @@ import { buildPromoData } from "@/features/promo/data";
 import { BRAND } from "@/config/brand";
 import { jobArchetype } from "@/lib/job-art/archetype";
 import { personDataUri } from "@/lib/job-art/person";
-import { POST_SIZE, PostCard } from "@/features/promo/post-card";
+import { postImageResponse } from "@/features/promo/post-image";
 
 /** Faqat kerakli harflar bilan Manrope (TTF) — kirill va lotin uchun */
 async function loadFont(text: string, weight: 600 | 800): Promise<ArrayBuffer | null> {
@@ -20,16 +18,6 @@ async function loadFont(text: string, weight: 600 | 800): Promise<ArrayBuffer | 
     const url = css.match(/src: url\((.+?)\) format\('(opentype|truetype)'\)/)?.[1];
     if (!url) return null;
     return await (await fetch(url, { cache: "force-cache" })).arrayBuffer();
-  } catch {
-    return null;
-  }
-}
-
-/** Loyihadagi Manrope (TTF, kirill + lotin) — tarmoqsiz; kanal posti rasmi har doim bir xil chiqsin */
-async function loadLocalFont(file: "Manrope-Bold.ttf" | "Manrope-Regular.ttf"): Promise<ArrayBuffer | null> {
-  try {
-    const buf = await readFile(path.join(process.cwd(), "src/features/cv/fonts", file));
-    return buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
   } catch {
     return null;
   }
@@ -73,14 +61,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     // kanal o'zbekcha: til cookie'ga bog'liq emas (CDN keshida boshqa til qolib ketmasin)
     const t = makeT("uz");
     const d = buildPromoData(vacancy, { t, tEnum: makeTEnum(t), locale: "uz", name: (row) => localizedName("uz", row) });
-    const bold = await loadLocalFont("Manrope-Bold.ttf");
-    return new ImageResponse(<PostCard data={{ title: d.title, company: d.company, place: d.place, salary: d.salary }} />, {
-      ...POST_SIZE,
-      fonts: bold
-        ? [800, 700, 600].map((weight) => ({ name: "Manrope", data: bold, weight: weight as 800 | 700 | 600, style: "normal" as const }))
-        : undefined,
-      headers: cache,
-    });
+    return postImageResponse({ title: d.title, company: d.company, place: d.place, salary: d.salary }, cache);
   }
   const format: PromoFormat = f === "story" || f === "og" ? f : "square";
   const tt = await getT();

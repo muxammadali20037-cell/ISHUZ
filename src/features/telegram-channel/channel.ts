@@ -134,8 +134,10 @@ export async function sendChannelMessage(input: {
   button: { text: string; url: string };
   photo?: string;
   caption?: string;
+  /** shaxsiy chat (e'lon egasiga): tugma ilovani Telegram ichida ochadi (kanalda web_app tugmasi ishlamaydi) */
+  webApp?: boolean;
 }): Promise<{ ok: true; messageId: number } | { ok: false; description: string; channelLevel: boolean }> {
-  const reply_markup = { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] };
+  const reply_markup = { inline_keyboard: [[input.webApp ? { text: input.button.text, web_app: { url: input.button.url } } : { text: input.button.text, url: input.button.url }]] };
   const caption = input.caption ?? input.html;
   if (input.photo && caption.length <= 1024) {
     // rasmni Telegram saytdan o'zi yuklaydi (chizish 1–3 s) — kutish uzunroq

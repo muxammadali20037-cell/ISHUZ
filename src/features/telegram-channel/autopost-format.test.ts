@@ -68,7 +68,10 @@ describe("kanal e'lonlari: faqat ochiq ma'lumot, telefon va havolasiz", () => {
     expect(p.html).toContain("Kutilayotgan maosh:");
     expect(p.html).not.toMatch(/998901234567/);
     expect(p.button.url).toBe(`${BASE}/workers/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21`);
-    expect(p).not.toHaveProperty("photo");
+    // 2026-11-17 (ega): ishchi e'loni ham rasm bilan — kasbi, tajribasi, joyi, maosh (ism, telefon yo'q); izohda faqat kasb
+    expect(p.photo).toBe(`${BASE}/api/promo/worker/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21`);
+    expect(p.caption).toMatch(/^<b>[^<]+<\/b>$/);
+    expect(p.caption).not.toMatch(/998901234567/);
   });
 
   it("ishchi maosh kutmasa — kelishiladi", () => {

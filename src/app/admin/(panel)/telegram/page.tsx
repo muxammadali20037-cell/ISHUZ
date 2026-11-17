@@ -27,7 +27,7 @@ export default async function AdminTelegramChannelPage() {
   const [status, setting, recent] = await Promise.all([
     channelStatus(),
     supabase.from("app_settings").select("value").eq("key", AUTOPOST_KEY).maybeSingle(),
-    supabase.from("channel_posts").select("id, entity_type, status, error, created_at, posted_at").order("created_at", { ascending: false }).limit(10),
+    supabase.from("channel_posts").select("id, entity_type, status, error, created_at, posted_at").not("chat_id", "like", "dm:%").order("created_at", { ascending: false }).limit(10),
   ]);
   const ready = status.state === "ready";
   const name = "chatId" in status ? (status.title ? `${status.title} (${status.chatId})` : status.chatId) : null;
