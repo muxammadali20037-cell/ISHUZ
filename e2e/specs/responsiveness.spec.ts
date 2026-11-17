@@ -185,8 +185,9 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   // (aks holda 1-o'lchov yarim sahifada olinib, keyingilar "o'sgan" ko'rinadi)
   const homeReady = async () => {
     await expect(page.locator("#home-feed")).toBeVisible();
-    // 3.0 (2026-11-13): oxirgi oqim bilan keladigan bo'lim — "Universal ustalar"
-    await expect(page.locator("main [data-masters-home]")).toBeVisible();
+    // oxirgi oqim bilan keladigan bo'limlar — "Bo'limlar" ro'yxati (telefonda; 2026-11-17) va "Universal ustalar" (kompyuterda)
+    await expect(page.locator("main [data-home-menu]")).toBeVisible();
+    await expect(page.locator("main [data-masters-home]")).toHaveCount(1);
     await expect(page.locator("main .skeleton-shimmer")).toHaveCount(0);
   };
   await page.goto("/");

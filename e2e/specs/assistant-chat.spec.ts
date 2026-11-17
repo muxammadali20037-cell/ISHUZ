@@ -57,7 +57,7 @@ test.afterAll(async () => {
   await sql("delete from public.saved_searches where profile_id = $1", [USERS.workerB]);
 });
 
-test("matn → so'rovnoma (kasb, hudud, maosh oldindan to'ldirilgan) → «Qidirish» → qisqa xulosa va kartalar; AI matni yo'q", async ({ page, context }) => {
+test("matn → so'rovnoma (kasb, hudud oldindan to'ldirilgan; maosh so'ralmaydi) → «Qidirish» → qisqa xulosa va kartalar; AI matni yo'q", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await open(page);
@@ -65,12 +65,12 @@ test("matn → so'rovnoma (kasb, hudud, maosh oldindan to'ldirilgan) → «Qidir
   const sheet = page.getByRole("dialog", { name: "Ish qidirish" });
   await expect(sheet.getByLabel("Qanday ish?")).toHaveValue("Buxgalter");
   await expect(sheet.getByLabel("Qaysi hududda?")).toHaveValue("tashkent_city");
-  // matnda aytilgan maosh ham tanlangan (ro'yxatda bo'lmasa — qo'shiladi)
-  await expect(sheet.getByRole("radio", { name: "5 mln dan" })).toHaveAttribute("aria-checked", "true");
+  // ega (2026-11-17): "oylik maosh kerak emas" — matnda aytilgan bo'lsa ham so'ralmaydi va qidiruvga qo'shilmaydi
+  await expect(sheet.locator("[data-quick-salary]")).toHaveCount(0);
   // fokus "Qidirish"da — telefonda klaviatura o'zi chiqmaydi
   await expect(sheet.locator("[data-quick-submit]")).toBeFocused();
   const answer = await quickSearch(page);
-  await expect(answer.locator("[data-quick-summary] span")).toHaveText(["Buxgalter", "Toshkent shahri", "5 mln so'mdan yuqori"]);
+  await expect(answer.locator("[data-quick-summary] span")).toHaveText(["Buxgalter", "Toshkent shahri"]);
   await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
   await expect(answer.locator("article")).toHaveCount(1);
   await expect(answer.locator("article")).toContainText(TITLE);
@@ -83,23 +83,23 @@ test("kirgan ish izlovchi, topilmadi → «So'rovingiz saqlandi», qidiruv bazad
   await asMode(context, "worker");
   await open(page);
   await say(page, "Samarqandda buxgalter");
-  const answer = await quickSearch(page, { salary: 10_000_000 });
+  const answer = await quickSearch(page);
   const none = answer.locator("[data-quick-none]");
   await expect(none).toHaveAttribute("data-save", "saved");
   await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*So'rovingiz saqlandi\. Mos ish chiqsa, sizga xabar beramiz\./);
-  // haqiqatan saqlangan: kasb, viloyat va maosh bilan (kuniga bir marta tekshiriladi — mos yangi e'lon bo'lsa bildirishnoma)
-  const rows = await sql<{ q: string; region: string; salary_min: number; notify: boolean }>(
+  // haqiqatan saqlangan: kasb va viloyat bilan (kuniga bir marta tekshiriladi — mos yangi e'lon bo'lsa bildirishnoma)
+  const rows = await sql<{ q: string; region: string; salary_min: number | null; notify: boolean }>(
     "select s.q, r.slug as region, s.salary_min, s.notify from public.saved_searches s left join public.regions r on r.id = s.region_id where s.profile_id = $1",
     [USERS.workerB],
   );
-  expect(rows).toEqual([{ q: "Buxgalter", region: "samarkand", salary_min: 10_000_000, notify: true }]);
+  expect(rows).toEqual([{ q: "Buxgalter", region: "samarkand", salary_min: null, notify: true }]);
   // pastda — shu kasb boshqa hududda (Toshkentdagi e'lon)
   await expect(answer.locator("[data-quick-similar]")).toContainText("Shunga yaqin ishlar");
   await expect(answer.locator("[data-quick-similar] article")).toContainText(TITLE);
 
   // xuddi shu so'rov yana — ikkinchi nusxa yozilmaydi, xabar o'sha
   await say(page, "Samarqandda buxgalter");
-  const again = await quickSearch(page, { salary: 10_000_000 });
+  const again = await quickSearch(page);
   await expect(again.locator("[data-quick-none]")).toContainText("So'rovingiz saqlandi.");
   const [count] = await sql<{ n: string }>("select count(*)::text as n from public.saved_searches where profile_id = $1", [USERS.workerB]);
   expect(count!.n).toBe("1");

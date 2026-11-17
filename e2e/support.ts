@@ -122,12 +122,11 @@ export async function snapshotUser(id: string): Promise<() => Promise<void>> {
  * "Oylik maosh qancha bo'lsin?"). Javoblarni (kerak bo'lsa) o'zgartirib "Qidirish" bosadi va yordamchi javobini qaytaradi.
  * `place` — select qiymati ("all", "remote", "<viloyat slug>"), `salary` — "...dan" tugmasi (so'm).
  */
-export async function quickSearch(page: Page, opts: { profession?: string; place?: string; salary?: number } = {}) {
+export async function quickSearch(page: Page, opts: { profession?: string; place?: string } = {}) {
   const sheet = page.locator("[data-quick-sheet]");
   await expect(sheet).toBeVisible();
   if (opts.profession !== undefined) await sheet.locator("[data-quick-profession]").fill(opts.profession);
   if (opts.place) await sheet.locator("[data-quick-place]").selectOption(opts.place);
-  if (opts.salary) await sheet.locator(`[data-salary='${opts.salary}']`).click();
   await page.locator("[data-quick-submit]").click();
   // oyna yopilishi va "qidirilmoqda" holati bitta yangilanishda — oyna yopilgach, qidiruv tugashini kutamiz
   await expect(sheet).toBeHidden();

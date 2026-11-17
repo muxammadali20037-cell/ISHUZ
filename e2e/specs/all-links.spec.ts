@@ -51,7 +51,7 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     await asMode(context, "worker");
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-    await expect(page.locator("main form[data-top-search] input")).toHaveAttribute("placeholder", "Lavozim yoki kompaniyani qidiring...");
+    await expect(page.locator("main form[data-top-search] input")).toHaveAttribute("placeholder", "O'zingizga mos ishni qidiring...");
     await expectAllOpen(page, await linksOn(page, ["/", "/cabinet", "/search?mode=jobs"]));
 
     // rolni almashtirish — "Profil" sahifasidagi bitta tugma
@@ -59,7 +59,7 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
-    await expect(page.locator("main form[data-top-search] input")).toHaveAttribute("placeholder", "Ish va ishchilar izlash");
+    await expect(page.locator("main form[data-top-search] input")).toHaveAttribute("placeholder", "O'zingizga mos xodimni qidiring...");
     await expectAllOpen(page, await linksOn(page, ["/", "/cabinet", "/search?mode=workers"]));
 
     // va orqaga

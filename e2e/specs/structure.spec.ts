@@ -114,10 +114,8 @@ test.describe("tuzilma", () => {
     await expect(main.getByText(`Profil to'liqligi: ${w!.completeness}%`)).toBeVisible();
     const activity = main.getByRole("list", { name: "Faoliyat" });
     await expect(activity.getByRole("link", { name: /^1\s*Arizalar$/ })).toHaveAttribute("href", "/applications");
-    // 2026-11-15: havolalar yig'ilgan guruhlarda — "Faoliyat — Ochish", "Hisob — Ochish"
-    await expect(main.getByRole("heading", { level: 2, name: /^Hisob/ })).toBeVisible();
-    await main.locator('[data-fold="links-activity"] [data-fold-toggle]').click();
-    await expect(main.getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
+    // 2026-11-17: havolalar — bitta oddiy ro'yxat (yig'ilmagan, guruhlarsiz)
+    await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
   });
 
   test("rol tanlash (7-ekran): ikki karta, tanlov qurilmada saqlanadi", async ({ page, context }) => {

@@ -41,7 +41,7 @@ export function Fold({
   tone?: "default" | "soft";
   /** testlar va tahlil uchun: data-fold="…" */
   name?: string;
-  /** havola shu bo'limga olib kelsa (masalan /cabinet#dunyo) — bo'lim o'zi ochiladi */
+  /** havola shu bo'limga olib kelsa (masalan /cabinet#pro) — bo'lim o'zi ochiladi */
   anchor?: string;
   /** sarlavha darajasi: tugma sarlavha ichida (WAI-ARIA "accordion" namunasi) — ekran o'quvchida bo'lim nomi sarlavha bo'lib qoladi */
   level?: 2 | 3;

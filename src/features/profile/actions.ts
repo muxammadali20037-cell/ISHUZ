@@ -520,12 +520,11 @@ export async function revokeContactGrant(input: unknown): Promise<ActionResult> 
   return { ok: true };
 }
 
-/** Mavzu: cookie (system → cookie o'chiriladi, prefers-color-scheme ga ergashadi) */
+/** Mavzu: cookie ("system" ham yoziladi — cookie yo'q bo'lsa kunduzgi rejim, 2026-11-17) */
 export async function setTheme(input: unknown): Promise<ActionResult> {
   const parsed = themeSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
   const store = await cookies();
-  if (parsed.data.theme === "system") store.delete(THEME_COOKIE);
-  else store.set(THEME_COOKIE, parsed.data.theme, prefCookie(60 * 60 * 24 * 365));
+  store.set(THEME_COOKIE, parsed.data.theme, prefCookie(60 * 60 * 24 * 365));
   return { ok: true };
 }

@@ -3,34 +3,25 @@ import Link from "next/link";
 import {
   ArrowRight,
   BriefcaseBusiness,
-  CalendarDays,
   ChevronDown,
   ChevronRight,
-  Laptop,
   MapPin,
   Plus,
   SearchX,
-  Sprout,
 } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
-import { TINT_TILE } from "@/components/shared/tints";
 import { cn } from "@/lib/utils";
 import { savedIdSet } from "@/features/saved/queries";
 import { myApplicationStatuses } from "@/features/applications/queries";
 import { getHomeSettings } from "@/features/home-windows/queries";
 import { TopSearch } from "@/features/find/components/top-search";
 import { getHomePlace, getSeekerFeed, type HomePlace } from "./home-queries";
-import {
-  placeChooserHref,
-  seekerFiltersHref,
-  seekerQuickFilters,
-} from "./quick-filters";
+import { homeMenuLinks, placeChooserHref, seekerFiltersHref } from "./quick-filters";
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
 import { StoriesRow } from "@/features/stories/components/stories-row";
@@ -45,13 +36,12 @@ const DEMO_BELOW = 4;
  * katta qidiruv, tezkor kategoriyalar, yangi ish e'lonlari, alohida Universal ustalar"). Mehmon ham ko'radi.
  *  1) joylashuv (telefonda — yuqori panelda, kompyuterda — shu yerda) va salomlashuv;
  *  2) bitta savol va BITTA qidiruv maydoni: o'z so'zi bilan yozadi — AI tushunadi va bazadan topadi (src/features/find/ai-find.ts);
- *  3) 4 ta tez yo'l — har birida "ish" so'zi (ega, 2026-11-14: "ish izlovchida — ish, ish beruvchida — ishchi"): kunlik ish,
- *     yaqin atrofda ish, masofaviy ish, tajribasiz ish; "Filtrlar bilan qidirish" va xarita — kichik havola;
- *  4) yangi ishlar ro'yxati (to'liq kenglikda);
- *  5) "Universal ustalar" — o'z yashil rangida, alohida bo'lim.
- * Ko'chirildi (o'chirilmadi): "Mening dunyom" va bugungi reja — Profilga (Kabinetim); arizalar holati — "Arizalar" bo'limi va
- * profil sarlavhasi; "O'zim haqimda e'lon" — pastki menyudagi "E'lon"; "Yangi ish chiqsa xabar" — Profil → AI PRO;
- * AI yordamchi — yuqori panel (✨) va yon menyu.
+ *  3) yangi ishlar ro'yxati (to'liq kenglikda; kirganda telefonda yig'ilgan);
+ *  4) "Bo'limlar" (2026-11-17, ega): Universal ustalar, Barcha vakansiyalar, Yordamchi, Kunlik, Masofaviy, Tajribasiz, Yaqin
+ *     atrofdan… — bitta ustunda qator bo'lib (avvalgi 4 ta tez yo'l plitkasi shu yerga ko'chdi); mehmon ham ko'radi;
+ *  5) "Universal ustalar" — kompyuterda o'z yashil rangida, alohida bo'lim.
+ * "Mening dunyom" — 2026-11-17 olib tashlandi (ega); arizalar holati — "Arizalar" bo'limi va profil sarlavhasi;
+ * "Yangi ish chiqsa xabar" — Profil → PRO kuzatuv; Yordamchi — yuqori panel (✨) va bo'limlar.
  * Admin AI'ni o'chirgan bo'lsa — oddiy matnli qidiruv (/search).
  */
 export async function SeekerHome({
@@ -69,40 +59,7 @@ export async function SeekerHome({
     region: place.region?.slug ?? null,
     district: place.district?.id ?? null,
   };
-  const quick = Object.fromEntries(
-    seekerQuickFilters(where).map((c) => [c.key, c.href]),
-  ) as Record<"daily" | "noexp" | "remote" | "students", string>;
   const firstName = session?.profile.first_name?.trim();
-  const shortcuts = [
-    {
-      key: "daily",
-      tone: "blue" as const,
-      href: quick.daily,
-      label: t("easy.chips.seek_daily"),
-      icon: CalendarDays,
-    },
-    {
-      key: "near",
-      tone: "blue" as const,
-      href: findHref(EMPTY_FIND, { mode: "jobs", near: true }),
-      label: t("easy.chips.seek_near"),
-      icon: MapPin,
-    },
-    {
-      key: "remote",
-      tone: "green" as const,
-      href: quick.remote,
-      label: t("easy.chips.seek_remote"),
-      icon: Laptop,
-    },
-    {
-      key: "noexp",
-      tone: "orange" as const,
-      href: quick.noexp,
-      label: t("easy.chips.seek_noexp"),
-      icon: Sprout,
-    },
-  ];
   return (
     <div className="flex flex-col gap-6">
       {/* 5.0 (2026-11-16, ega "ko'k-oq" dizayni): katta oq qidiruv bloki (radius 2rem, yumshoq soya, tepa-o'ngda ko'k nur) —
@@ -187,43 +144,24 @@ export async function SeekerHome({
         </div>
       </section>
 
-      {/* 4 ta tez yo'l — katta plitkalar (ega, 2026-11-17: "katta qil, hozir oynacha ustida kichkina") */}
-      <nav aria-label={t("easy.home2.shortcuts")} data-home-shortcuts>
-        <ul className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {shortcuts.map(({ key, href, label, icon: Icon, tone }) => (
-            <li key={key} className="flex">
-              <Link
-                href={href}
-                prefetch={false}
-                data-track="home_service"
-                data-track-to={key}
-                className="press flex min-h-28 w-full flex-col items-start gap-2.5 rounded-2xl border border-border bg-card p-3.5 text-base font-bold leading-snug shadow-card hover:border-primary/40 sm:p-4"
-              >
-                <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-xl", TINT_TILE[tone])} aria-hidden>
-                  <Icon className="size-6" />
-                </span>
-                {/* belgi ustida, matn ostida — uzun nom ("Tajriba talab qilinmaydigan ishlar") so'z o'rtasidan bo'linmaydi */}
-                <span className="min-w-0 break-words">{label}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
-
       {/* telefon va planshet (kirgan): bo'limlar ro'yxati — chap menyudagidek, har biri ostida nima qilishi; eng tagida
           qizilda rolni almashtirish (ega, 2026-11-15). Kompyuterda — chap yon menyu */}
       <Suspense fallback={<FeedSkeleton />}>
         <SeekerFeed session={session} place={place} fold={!!session} />
       </Suspense>
 
-      {session ? (
-        <Suspense fallback={null}>
-          <HomeMenu mode="worker" />
-        </Suspense>
-      ) : null}
+      {/* bo'limlar (ega, 2026-11-17): Universal ustalar, Barcha vakansiyalar, Yordamchi, Kunlik, Masofaviy, Tajribasiz, Yaqin
+          atrofdan… — hammasi bir qatorda; avvalgi 4 ta plitka shu yerga ko'chdi. Mehmon ham ko'radi */}
+      <Suspense fallback={null}>
+        <HomeMenu
+          mode="worker"
+          guest={!session}
+          links={homeMenuLinks("worker", where)}
+        />
+      </Suspense>
 
-      {/* "Universal ustalar" — ish e'lonlaridan alohida, o'z yashil rangida (kirganda telefonda — menyuda) */}
-      <div className={session ? "max-lg:hidden" : undefined}>
+      {/* "Universal ustalar" — ish e'lonlaridan alohida, o'z yashil rangida (telefonda — bo'limlar ro'yxatida) */}
+      <div className="max-lg:hidden">
         <Suspense fallback={null}>
           <MastersHomeSection />
         </Suspense>

@@ -39,6 +39,44 @@ export function offTopic(text: string, understood: boolean): OffTopic | null {
   return QUESTION.test(norm(s)) ? "other" : null;
 }
 
+const skel = (s: string) => s.replace(/'/g, "").replace(/[aeiouy]/g, "");
+const commonPrefix = (a: string, b: string) => {
+  let i = 0;
+  while (i < a.length && i < b.length && a[i] === b[i]) i++;
+  return i;
+};
+
+/**
+ * Yozilgan so'z (`w`) kasb nomidagi so'zga (`nw`) to'g'ri keladimi: qo'shimcha bilan ("o'qituvchisiman" ~ "o'qituvchi"),
+ * egalik/izofa ("shifokori" ~ "shifokor", "oila" ~ "oilaviy"), imlo xatosi bilan ("oqtvchi" — undosh skeleti).
+ * Ikkalasi ham normallashtirilgan (kichik harf, lotin).
+ */
+export function wordMatches(w: string, nw: string): boolean {
+  return (
+    w.startsWith(nw) ||
+    (w.length >= 4 && nw.startsWith(w)) ||
+    // "haydovchiman" ~ "haydovchisi", "o'qituvchiman" ~ "o'qituvchisi" (egalik va kesim qo'shimchalari)
+    commonPrefix(w, nw) >= Math.max(5, Math.ceil(nw.length * 0.75)) ||
+    (skel(nw).length >= 4 && skel(w).startsWith(skel(nw)))
+  );
+}
+
+/**
+ * Kasb nomi gapga qanchalik mos: `covered` — gapdagi nechta so'z nomda bor, `extra` — nomdagi nechta so'z gapda yo'q
+ * (3 harfdan qisqa so'zlar hisobga olinmaydi). "men oila shifokoriman": "Oilaviy shifokor" — 2 ta, ortiqcha 0;
+ * "Oila huquqi yuristi" — 1 ta, ortiqcha 2 (ega, 2026-11-17: "oila shifokoriman desam, nimaga oila huquqi yuristi chiqdi").
+ */
+export function nameFit(saidWords: string[], name: string, normalize: (s: string) => string): { covered: number; extra: number } {
+  const parts = normalize(name)
+    .split(" ")
+    .filter((w) => w.length >= 3);
+  const said = saidWords.filter((w) => w.length >= 3);
+  return {
+    covered: said.filter((w) => parts.some((nw) => wordMatches(w, nw))).length,
+    extra: parts.filter((nw) => !said.some((w) => wordMatches(w, nw))).length,
+  };
+}
+
 /**
  * Kasb nomi yozilgan gapda haqiqatan bormi: ikki so'zgacha nomda — hamma so'zi, uzunroq nomda — kamida uchdan ikkisi
  * (qo'shimcha bilan — "o'qituvchisiman"; imlo xatosi bilan — "oqtvchi": undosh skeleti). "bugun havo zo'r" → "Havo
@@ -46,27 +84,12 @@ export function offTopic(text: string, understood: boolean): OffTopic | null {
  */
 export function professionMentioned(text: string, names: string[], normalize: (s: string) => string): boolean {
   const said = normalize(text).split(" ").filter((w) => w.length >= 2);
-  const skel = (s: string) => s.replace(/'/g, "").replace(/[aeiouy]/g, "");
-  const prefix = (a: string, b: string) => {
-    let i = 0;
-    while (i < a.length && i < b.length && a[i] === b[i]) i++;
-    return i;
-  };
-  const covered = (nw: string) =>
-    said.some(
-      (w) =>
-        w.startsWith(nw) ||
-        (w.length >= 4 && nw.startsWith(w)) ||
-        // "haydovchiman" ~ "haydovchisi", "o'qituvchiman" ~ "o'qituvchisi" (egalik va kesim qo'shimchalari)
-        prefix(w, nw) >= Math.max(5, Math.ceil(nw.length * 0.75)) ||
-        (skel(nw).length >= 4 && skel(w).startsWith(skel(nw))),
-    );
   return names.some((name) => {
     const parts = normalize(name)
       .split(" ")
       .filter((w) => w.length >= 3);
     if (!parts.length) return false;
     const need = parts.length <= 2 ? parts.length : Math.ceil((parts.length * 2) / 3);
-    return parts.filter(covered).length >= need;
+    return parts.filter((nw) => said.some((w) => wordMatches(w, nw))).length >= need;
   });
 }

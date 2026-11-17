@@ -8,12 +8,13 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  */
 const PATHS = [
   // 3.0 (2026-11-13): "O'zim haqimda e'lon berish" bosh sahifada yo'q — pastki menyudagi "E'lon" (navigatsiya testi)
-  // 2.0 (2026-11-11): ish qidiruvchi bosh sahifasida 4 ta tez yo'l va "Filtrlar bilan qidirish"
-  { mode: "worker", name: /^Kunlik ish$/, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
+  // 2026-11-17 (ega): tez yo'llar — "Bo'limlar" qatorlarida (nomi + ostida izoh; shuning uchun nomning boshi bo'yicha)
+  { mode: "worker", name: /^Kunlik ish /, url: /\/search\?mode=jobs&region=all&pay=daily$/, heading: /Kunlik ishlar/ },
   // 2026-11-17 (ega): "Tajribasiz ish" → "Tajriba talab qilinmaydigan ishlar"
-  { mode: "worker", name: /^Tajriba talab qilinmaydigan ishlar$/, url: /\/search\?mode=jobs&region=all&noexp=1&any=1$/, heading: /Ish e'lonlari/ },
+  { mode: "worker", name: /^Tajriba talab qilinmaydigan ishlar /, url: /\/search\?mode=jobs&region=all&noexp=1&any=1$/, heading: /Ish e'lonlari/ },
   { mode: "worker", name: /^Filtrlar bilan qidirish$/, url: /\/search\?mode=jobs&region=all&any=1$/, heading: /Ish e'lonlari/ },
-  { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy$/, heading: /Qanday mutaxassis kerak/ },
+  // 2026-11-17: bitta katta tugma — yordamchi bilan joylash (avvalgi ikki tugma o'rnida)
+  { mode: "employer", name: /^Vakansiya joylash$/, url: /\/post\/vacancy\?ai=1$/, heading: /Qanday xodim kerak/ },
   { mode: "employer", name: /^Tajribali/, url: /\/search\?mode=workers&region=all&exp=1&any=1$/, heading: /Ishchilar: Barcha kasblar/ },
 ] as const;
 
@@ -62,7 +63,7 @@ test("bosh sahifa: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbg
   }
 });
 
-test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 ta tez yo'l; fon surati, nol raqamlar va plitkalar yo'q", async ({ page, context }) => {
+test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; tez yo'llar — bo'limlarda; fon surati, nol raqamlar va plitkalar yo'q", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
@@ -70,7 +71,7 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
   // bitta qidiruv: yozilgan matn yordamchiga ketadi. 5.0 (2026-11-16, "ko'k-oq"): hero blokida (telefon va kompyuterda bir
   // xil); sarlavhada qidiruv yo'q (2026-11-15 dagi sarlavhadagi qidiruv o'rniga)
-  const search = page.getByRole("search", { name: "Lavozim yoki kompaniyani qidiring..." });
+  const search = page.getByRole("search", { name: "O'zingizga mos ishni qidiring..." });
   await expect(search).toHaveCount(1);
   await expect(page.locator("header").getByRole("searchbox")).toHaveCount(0);
   await expect(page.locator("[data-home='seeker-v2']").getByRole("searchbox")).toBeVisible();
@@ -82,11 +83,18 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; 4 t
   // bosilsa — yordamchi (e'lon joylash rejimi)
   await expect(post).toHaveAttribute("href", "/ai/post");
   expect((await post.boundingBox())!.height).toBeGreaterThanOrEqual(56);
-  // tez yo'llar: 4 ta katta plitka (hero ostida), shu tartibda; birinchisi birinchi ekranda
-  const quick = page.getByRole("navigation", { name: "Tez qidiruv" }).getByRole("listitem");
-  expect((await quick.allInnerTexts()).map((x) => x.trim())).toEqual(["Kunlik ish", "Yaqin atrofdan ish qidirish", "Masofaviy ish", "Tajriba talab qilinmaydigan ishlar"]);
-  expect((await quick.first().boundingBox())!.y).toBeLessThan(844);
-  for (const box of await quick.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().height))) expect(box).toBeGreaterThanOrEqual(100);
+  // qidiruv tugmasi — "Izlash" (ega, 2026-11-17; avval "Topish")
+  await expect(search.getByRole("button", { name: "Izlash" })).toBeVisible();
+  // tez yo'llar plitkalari yo'q (2026-11-17, ega) — ular "Bo'limlar" ro'yxatida, bitta ustunda; mehmon ham ko'radi
+  // (shaxsiy bo'limlarsiz: arizalar, xabarlar, profil — kirgandan keyin)
+  await expect(page.getByRole("navigation", { name: "Tez qidiruv" })).toHaveCount(0);
+  const menu = page.locator("[data-home-menu]");
+  await expect(menu).toBeVisible();
+  expect(await menu.locator("[data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")))).toEqual([
+    "masters", "jobs", "ai", "daily", "remote", "noexp", "near", "map", "help",
+  ]);
+  await expect(menu.locator('[data-menu-item="daily"]')).toHaveAttribute("href", /pay=daily/);
+  await expect(menu.locator("[data-role-switch]")).toHaveCount(0);
   // olib tashlanganlar: fon surati, "Faol vakansiyalar 0" kabi raqamlar, 8 ta plitka, ko'p bo'limli yon panel
   await expect(page.locator("main .hero-surface")).toHaveCount(0);
   await expect(page.locator("[data-home='seeker-v2'] img")).toHaveCount(0);
@@ -129,7 +137,7 @@ test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash» birinchi ekranda; keyin tez yo'llar, yig'ilgan 'Yangi ishlar' — ochilsa birinchi vakansiya nomi, maoshi va hududi bilan", async ({ page, context }) => {
+test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash» birinchi ekranda; keyin 'Yangi ishlar' — ochilsa birinchi vakansiya nomi, maoshi va hududi bilan", async ({ page, context }) => {
   // 2026-11-17 (ega): hero ostida katta "+ E'lon joylash" va katta tez yo'llar — "Yangi ishlar" endi birinchi ekrandan pastda
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await sql(
@@ -147,10 +155,11 @@ test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash�
       const box = (await el.boundingBox())!;
       expect(box.y + box.height).toBeLessThanOrEqual(navTop);
     }
-    // tartib: hero → tez yo'llar → "Yangi ishlar"
-    const shortcutsY = (await page.locator("[data-home-shortcuts]").boundingBox())!.y;
+    // tartib: hero → "Yangi ishlar" → "Bo'limlar" (tez yo'llar plitkalari 2026-11-17 dan bo'limlarda)
     const toggle = page.locator('main [data-fold="home-feed"] [data-fold-toggle]');
-    expect((await toggle.boundingBox())!.y).toBeGreaterThan(shortcutsY);
+    const postBox = (await page.locator("[data-home-post]").boundingBox())!;
+    expect((await toggle.boundingBox())!.y).toBeGreaterThan(postBox.y);
+    expect((await page.locator("[data-home-menu]").boundingBox())!.y).toBeGreaterThan((await toggle.boundingBox())!.y);
     await toggle.click();
     const card = page.locator("main article").first();
     await expect(card).toBeVisible();
@@ -171,16 +180,17 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  // 4.0 (ega "MASTER PROMPT"): ish qidiruvchi (rejim tanlamagan mehmon ham) — Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil
+  // 4.0 (ega "MASTER PROMPT"): ish qidiruvchi (rejim tanlamagan mehmon ham) — Bosh sahifa · Ishlar · Arizalar · Sohalar · Profil
+  // (mehmonda "Xabarlar" o'rnida "Sohalar" — ega, 2026-11-17)
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]);
+  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]);
   await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
   await nav.getByRole("link", { name: "Ishlar" }).click();
   await page.waitForURL(/\/jobs$/);
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Bosh sahifa" })).not.toHaveAttribute("aria-current", "page");
   // 360 px da yozuvlar sig'adi (kesilmaydi)
-  for (const name of ["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]) {
+  for (const name of ["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]) {
     const label = nav.getByRole("link", { name }).locator("span").first();
     expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), name).toBe(true);
   }

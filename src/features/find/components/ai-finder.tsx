@@ -121,7 +121,7 @@ export function AiFinder({
           data-ai-field
           data-top-search
           data-hydrated={hydrated ? "" : undefined}
-          // Uzum kabi: kulrang to'ldirilgan maydon, chapda lupa, o'ngda "Topish"; bosilganda — oq va ko'k chegara (ichida kvadrat yo'q).
+          // Uzum kabi: kulrang to'ldirilgan maydon, chapda lupa, o'ngda "Izlash"; bosilganda — oq va ko'k chegara (ichida kvadrat yo'q).
           // hero (5.0): oq panel, radius 1rem, yumshoq soya; fokusda — ko'k nur
           className={cn(
             hero
@@ -132,16 +132,41 @@ export function AiFinder({
           onSubmit={submitField}
         >
           <Search data-search-icon className="size-5 shrink-0 text-muted-foreground" aria-hidden />
-          <input
-            name="q"
-            type="search"
-            enterKeyHint="search"
-            autoComplete="off"
-            maxLength={300}
-            aria-label={fieldLabel}
-            placeholder={placeholder}
-            className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
-          />
+          {hero ? (
+            // hero: "O'zingizga mos ishni qidiring..." to'liq ko'rinsin (ega, 2026-11-17) — oddiy placeholder telefonda kesilib
+            // qolardi ("O'zingizga mos ishı"), shuning uchun yozuv ustma-ust qatlamda, kerak bo'lsa ikki qatorga o'tadi.
+            // Asl placeholder atributi qoladi (ekran o'qigichlari va avtomatik to'ldirish uchun), faqat ko'rinmaydi
+            <span className="relative flex h-full min-w-0 flex-1 items-center">
+              <input
+                name="q"
+                type="search"
+                enterKeyHint="search"
+                autoComplete="off"
+                maxLength={300}
+                aria-label={fieldLabel}
+                placeholder={placeholder}
+                className="peer h-full w-full min-w-0 bg-transparent text-base text-foreground outline-none placeholder:text-transparent"
+              />
+              <span
+                aria-hidden
+                data-hero-placeholder
+                className="pointer-events-none absolute inset-x-0 top-1/2 hidden max-h-[2.6em] -translate-y-1/2 overflow-hidden text-sm leading-tight text-muted-foreground peer-placeholder-shown:block sm:text-base"
+              >
+                {placeholder}
+              </span>
+            </span>
+          ) : (
+            <input
+              name="q"
+              type="search"
+              enterKeyHint="search"
+              autoComplete="off"
+              maxLength={300}
+              aria-label={fieldLabel}
+              placeholder={placeholder}
+              className="h-full min-w-0 flex-1 bg-transparent text-base text-foreground outline-none placeholder:text-muted-foreground"
+            />
+          )}
           <button
             type="submit"
             data-track="ai_finder_open"

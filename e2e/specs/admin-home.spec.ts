@@ -124,10 +124,10 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await guest.reload();
   await expect(guest.locator("form[data-ai-field]")).toHaveCount(0);
   // telefonda: sarlavhadagi qidiruv oddiy matnli bo'ladi (sahifadagisi telefonda ko'rinmaydi)
-  await expect(guest.getByRole("searchbox", { name: "Ish va ishchilar izlash" })).toBeVisible();
+  await expect(guest.getByRole("searchbox", { name: "O'zingizga mos xodimni qidiring..." })).toBeVisible();
   await seeker.reload();
   await expect(seeker.locator("form[data-ai-field]")).toHaveCount(0);
-  await expect(seeker.getByRole("searchbox", { name: "Lavozim yoki kompaniyani qidiring..." })).toBeVisible();
+  await expect(seeker.getByRole("searchbox", { name: "O'zingizga mos ishni qidiring..." })).toBeVisible();
 
   const logs = await sql<{ target_id: string }>(
     "select target_id from public.audit_logs where actor_id = $1 and action = 'settings.update' and target_id in ('home_banners', 'ai_search_button') and created_at >= $2::timestamptz order by id",

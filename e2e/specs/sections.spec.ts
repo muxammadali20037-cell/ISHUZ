@@ -137,7 +137,7 @@ test.describe("bo'limlar", () => {
     );
   });
 
-  test("ish beruvchi (2.0): bosh sahifadagi 'Kunlik ishchi' tez yo'li — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
+  test("ish beruvchi: bosh sahifa «Bo'limlar»idagi 'Kunlik ishchi' — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
     page,
     context,
   }) => {
@@ -145,10 +145,9 @@ test.describe("bo'limlar", () => {
     await asMode(context, "employer");
     await page.goto("/");
     await expect(sections(page)).toHaveCount(0);
-    await page
-      .getByRole("navigation", { name: "Tez qidiruv" })
-      .getByRole("link", { name: "Kunlik ishchi", exact: true })
-      .click();
+    const daily = page.locator('[data-home-menu] [data-menu-item="daily"]');
+    await expect(daily).toContainText("Kunlik ishchi");
+    await daily.click();
     await page.waitForURL(/mode=workers.*pay=daily/);
     await expect(
       page

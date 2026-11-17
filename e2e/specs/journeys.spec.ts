@@ -92,8 +92,10 @@ for (const vp of [
     // birinchi ochilish: bosh sahifa — "Ish beruvchiman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
     await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+    // bosh sahifadagi katta tugma — yordamchi bilan joylash (2026-11-17); bu sayohat — oddiy forma (pastki menyudagi "E'lon")
     await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
-    await page.waitForURL(/\/post\/vacancy/);
+    await page.waitForURL(/\/post\/vacancy\?ai=1$/);
+    await page.goto("/post/vacancy");
     await pickProfession(page, "Buxgalter", "Buxgalter");
     await next(page);
     await pickWholeRegion(page);

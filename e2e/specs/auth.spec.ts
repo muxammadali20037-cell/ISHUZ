@@ -87,8 +87,7 @@ test("chiqish: sarlavhada yana 'Kirish', kabinet kirishni taklif qiladi", async 
   await loginAs(context, USERS.workerA);
   // telefonda profil menyusi — pastki "Profil" (kabinet); kompyuterda — sarlavhadagi avatar menyusi
   await page.goto("/cabinet");
-  // chiqish — yig'ilgan "Hisob" bo'limida (2026-11-15)
-  await page.locator('[data-fold="links-account"] [data-fold-toggle]').click();
+  // chiqish — Profil ro'yxatining oxirida (2026-11-17: yig'ilmagan, bitta ro'yxat)
   await page.getByRole("main").getByRole("button", { name: "Chiqish" }).click();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
   await page.goto("/cabinet");

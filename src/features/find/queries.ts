@@ -17,6 +17,7 @@ import type { TrailItem } from "@/features/professions/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
 import { getCategories } from "@/lib/reference";
 import type { JobCardData } from "./components/result-cards";
+import { nameFit } from "./post-intent";
 import { detectIntent, professionCandidates, withoutPlaceOnly, type FindMode } from "./intent";
 import { bestTypoMatch, type TypoEntry } from "./typo";
 import { EMPLOYER_KIND_TYPE, hasSectionFilter, type FindParams } from "./params";
@@ -53,6 +54,9 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   const candidates = withoutPlaceOnly(professionCandidates(q), places).slice(0, 12);
   const db = anon();
   const results = await Promise.all(candidates.map((c) => db.rpc("search_profession_nodes", { p_query: c.slice(0, 80), p_limit: 3 }).then((r) => ({ c, hits: r.data ?? [] }))));
+  // gapdagi barcha so'zlar: nom ularni qanchalik qamrasa, shuncha afzal ("men oila shifokoriman" — "Oilaviy shifokor",
+  // "oila" so'zi bo'yicha eng yuqori ball olgan "Oila huquqi yuristi" emas — 2026-11-17)
+  const said = [...new Set(candidates.flatMap((c) => normalizeText(c).split(" ")))];
   let best: { id: string; score: number } | null = null;
   for (const { c, hits } of results) {
     const cn = normalizeText(c);
@@ -63,7 +67,11 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
       // guruh ("O'qituvchi": ichida aniq kasblar) — faqat nomi aynan yozilganida (qidiruv butun guruh bo'yicha); aks holda
       // sinonimi o'xshash boshqa kasb ("o'qituvchi" → Avtoinstruktor) tanlanib qolardi (ega, 2026-11-17)
       if ((!h.selectable && !ownName) || h.score < 2 || isProhibitedProfession(h)) continue;
-      const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01 + (ownName ? 0.5 : 0);
+      const fit = Math.max(...[h.name_uz, h.name_ru, h.name_en].filter((n): n is string => !!n).map((n) => {
+        const f = nameFit(said, n, normalizeText);
+        return f.covered * 0.8 - f.extra * 0.4;
+      }));
+      const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01 + (ownName ? 0.5 : 0) + fit;
       if (!best || score > best.score) best = { id: h.id, score };
     }
   }

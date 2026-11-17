@@ -6,7 +6,7 @@ import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BriefcaseBusiness, FileCheck2, House, LayoutDashboard, MessageCircle, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { Bell, BriefcaseBusiness, FileCheck2, House, LayoutDashboard, LayoutGrid, MessageCircle, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -44,7 +44,13 @@ const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/
  */
 const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath };
 
-function mainNav(mode: NavMode): NavItem[] {
+/**
+ * Mehmon (hisobga kirmagan) ish izlovchi: "Xabarlar" o'rniga "Sohalar" (ega, 2026-11-17: "har bir soha qator bo'lib, eng ko'p
+ * ish o'rni bori tepada, tagida nechta ish o'rni; hisobga kirmaganlarga — shunaqa, kirganlarga — o'zgarmasin")
+ */
+const FIELDS_NAV: NavItem = { href: "/sohalar", labelKey: "easy.nav.tab_fields", icon: LayoutGrid, match: (p) => p.startsWith("/sohalar") || p.startsWith("/kasblar") };
+
+function mainNav(mode: NavMode, guest = false): NavItem[] {
   if (mode === "employer") {
     return [
       { href: "/", labelKey: "easy.nav.tab_dashboard", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
@@ -80,7 +86,7 @@ function mainNav(mode: NavMode): NavItem[] {
       match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
     },
     { href: "/applications", labelKey: "easy.nav.tab_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
-    { href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
+    guest ? FIELDS_NAV : { href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
     {
       href: "/cabinet",
       labelKey: "easy.nav.tab_profile",
@@ -99,13 +105,13 @@ export function postAction(mode: NavMode): { href: string; labelKey: string; cta
       { href: "/ai/post", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
 }
 
-export function BottomNav({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
+export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
   // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
   const pendingPath = usePendingPath();
   const currentPath = usePathname();
   const pathname = pendingPath ?? currentPath;
   const { t } = useT();
-  const items = mainNav(mode);
+  const items = mainNav(mode, role === "guest");
   const post = postAction(mode);
   const postActive = pathname.startsWith(post.href);
   // o'rtada — "E'lon" (2 ta bo'lim · E'lon · 2 ta bo'lim): ko'k pilyula, menyu ichida (yozuvni to'smaydi). Hamma bo'limda belgi
