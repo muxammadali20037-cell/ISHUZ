@@ -124,7 +124,9 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           <LanguageSelect />
           {session ? (
             <>
-              <Button asChild variant="ghost" size="icon" className="relative @max-[22rem]:hidden" aria-label={t("common.nav.messages")}>
+              {/* ish izlovchida telefonda yo'q — pastki menyuda "Xabarlar" bor (ega, 2026-11-17: takror — chalkash);
+                  ish beruvchining pastki menyusida "Xabarlar" yo'q — unda qoladi */}
+              <Button asChild variant="ghost" size="icon" className={cn("relative @max-[22rem]:hidden", mode !== "employer" && "max-md:hidden")} aria-label={t("common.nav.messages")}>
                 <Link href="/messages">
                   <MessageCircle className="size-5" />
                   {counts?.messages ? (

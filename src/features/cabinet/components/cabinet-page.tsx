@@ -3,7 +3,7 @@ import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
 import { Suspense } from "react";
-import { Bell, BellRing, Bookmark, ChevronRight, ExternalLink, FileText, Handshake, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
+import { Bell, BellRing, Bookmark, ChevronRight, ExternalLink, FileText, Handshake, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Search, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import type { SessionContext } from "@/features/auth/session";
@@ -68,6 +68,8 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true },
     { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true },
     { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true },
+    // yordam — bosh sahifa bo'limlaridan shu yerga (2026-11-17: bosh sahifada takrorlanmasin)
+    { href: "/help", label: t("easy.side.help"), icon: LifeBuoy, show: true },
   ];
 
   const roleTarget = mode === "employer" ? "worker" : "employer";

@@ -21,8 +21,8 @@ export async function EmployerHead({ flush, greeting, place, extra }: { flush?: 
     <section
       aria-labelledby="home-title"
       data-home="employer-v2"
-      // 5.0 (ega "ko'k-oq" dizayni): katta oq qidiruv bloki — ish izlovchidagi bilan bir xil tartib
-      className="hero-glow relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
+      // 5.0 (ega "ko'k-oq" dizayni): katta oq qidiruv bloki — ish izlovchidagi bilan bir xil tartib (ko'k nur, 👋 va izoh qatori yo'q)
+      className="relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
       data-flush={flush ? "" : undefined}
     >
       {/* "Ish Topdim" hikoyalari — eng tepada (bo'lmasa — joy ham qolmaydi) */}
@@ -42,7 +42,7 @@ export async function EmployerHead({ flush, greeting, place, extra }: { flush?: 
       </Link>
       <div className="mt-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 sm:mt-6">
         <p className="text-sm font-medium text-muted-foreground">
-          {greeting} <span aria-hidden>👋</span>
+          {greeting}
         </p>
         {extra}
       </div>
@@ -51,12 +51,11 @@ export async function EmployerHead({ flush, greeting, place, extra }: { flush?: 
         <span className="brand-text">{t("easy.home2.e_title_em")}</span>
         {t("easy.home2.e_title_b")}
       </h1>
-      <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:mt-3 sm:text-base">{t("easy.home2.e_hint")}</p>
       <div className="mt-4 max-w-2xl sm:mt-6">
         <TopSearch mode="workers" ai={home.aiButton} hero />
       </div>
-      {/* asosiy amal — vakansiya joylash: katta, gradientli (ish izlovchidagi "+ E'lon joylash" bilan bir xil) */}
-      <div className="mt-3 max-w-2xl">
+      {/* asosiy amal — vakansiya joylash (ish izlovchidagi "+ E'lon joylash" bilan bir xil: 44 px, och ko'k; ega 2026-11-17) */}
+      <div className="mt-2.5 max-w-2xl">
         <Link
           href="/post/vacancy?ai=1"
           prefetch={false}
@@ -64,11 +63,9 @@ export async function EmployerHead({ flush, greeting, place, extra }: { flush?: 
           data-track-to="ai"
           data-guide-entry
           data-home-post
-          className="press brand-fill flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl px-5 text-lg font-extrabold shadow-glow hover:opacity-95"
+          className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-soft px-4 text-base font-bold text-primary-ink hover:bg-primary/15"
         >
-          <span className="flex size-8 items-center justify-center rounded-full border-2 border-current" aria-hidden>
-            <Plus className="size-5" strokeWidth={3} />
-          </span>
+          <Plus className="size-5" strokeWidth={2.6} aria-hidden />
           {t("easy.start.post_vacancy")}
         </Link>
       </div>

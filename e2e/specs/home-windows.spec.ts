@@ -36,13 +36,13 @@ test("bosh sahifa (ish izlovchi): rasmli oynalar va tez yo'l plitkalari yo'q —
   const menu = page.locator("[data-home-menu]");
   const item = (key: string) => menu.locator(`[data-menu-item="${key}"]`);
   await expect(item("daily")).toContainText("Kunlik ish");
-  await expect(item("near")).toContainText("Yaqin atrofdan ish qidirish");
+  await expect(item("near")).toContainText("Yaqin atrofdagi ishlar");
   await expect(item("remote")).toContainText("Masofaviy ish");
   await expect(item("noexp")).toContainText("Tajriba talab qilinmaydigan ishlar");
   // qidiruv maydoni tepada; har bir qator barmoq bilan bosishga qulay (≥ 44px), to'liq kenglikda
   const field = (await page.locator("form[data-ai-field]:visible").boundingBox())!;
   expect(field.y).toBeLessThan(400);
-  for (const key of ["masters", "jobs", "ai", "daily", "remote", "noexp", "near"]) {
+  for (const key of ["masters", "ai", "daily", "remote", "noexp", "near"]) {
     const box = (await item(key).boundingBox())!;
     expect(box.y).toBeGreaterThan(field.y);
     expect(box.height).toBeGreaterThanOrEqual(44);
@@ -62,7 +62,7 @@ test("bosh sahifa (ish izlovchi): rasmli oynalar va tez yo'l plitkalari yo'q —
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
-test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da ('Barcha nomzodlar' bilan), tepada bitta katta «Vakansiya joylash»", async ({ page, context }) => {
+test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da, «Barcha nomzodlar» — pastki menyuda; tepada «Vakansiya joylash»", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
@@ -74,13 +74,16 @@ test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da ('Barcha nomzodlar
   await expect(item("near")).toContainText("Yaqin atrofdagi ishchi");
   await expect(item("exp")).toContainText("Tajribali ishchi");
   await expect(item("remote")).toContainText("Masofaviy ishchi");
-  await expect(item("candidates")).toContainText("Barcha nomzodlar");
-  await expect(item("candidates")).toHaveAttribute("href", "/search?mode=workers&region=all&any=1");
-  // bitta katta tugma (avval ikkita: "AI bilan oson joylash" va "Vakansiya joylash") — yordamchi bilan joylash
+  // barcha nomzodlar — pastki menyudagi "Nomzodlar" (bo'limlarda takrorlanmaydi, ega 2026-11-17)
+  await expect(item("candidates")).toHaveCount(0);
+  await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Nomzodlar" })).toBeVisible();
+  // bitta tugma — yordamchi bilan joylash; ingichka (44–48 px), qidiruvdan kichikroq (ega, 2026-11-17)
   const post = page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true });
   await expect(post).toHaveCount(1);
   await expect(post).toHaveAttribute("href", "/post/vacancy?ai=1");
-  expect((await post.boundingBox())!.height).toBeGreaterThanOrEqual(56);
+  const ph = (await post.boundingBox())!.height;
+  expect(ph).toBeGreaterThanOrEqual(44);
+  expect(ph).toBeLessThanOrEqual(48);
   await item("daily").click();
   await page.waitForURL(/\/search\?mode=workers&region=all&pay=daily&any=1$/);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Ishchilar");

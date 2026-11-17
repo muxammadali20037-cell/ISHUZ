@@ -62,12 +62,12 @@ export async function SeekerHome({
   const firstName = session?.profile.first_name?.trim();
   return (
     <div className="flex flex-col gap-6">
-      {/* 5.0 (2026-11-16, ega "ko'k-oq" dizayni): katta oq qidiruv bloki (radius 2rem, yumshoq soya, tepa-o'ngda ko'k nur) —
+      {/* 5.0 (2026-11-16, ega "ko'k-oq" dizayni): katta oq qidiruv bloki (radius 2rem, yumshoq soya; ko'k nur va 👋 — 2026-11-17 olib tashlandi) —
           telefon va kompyuterda bir xil tartib: joylashuv · salomlashuv · sarlavha · izoh · qidiruv · 4 ta tez yo'l · havolalar */}
       <section
         aria-labelledby="home-title"
         data-home="seeker-v2"
-        className="hero-glow relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
+        className="relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
       >
         <div className="min-w-0">
           {/* "Ish Topdim" hikoyalari — eng tepada, kichik doirachalar (bo'lmasa — joy ham qolmaydi) */}
@@ -86,31 +86,29 @@ export async function SeekerHome({
             <ChevronDown className="size-4 shrink-0 text-muted-foreground" aria-hidden />
           </Link>
           <p className="mt-4 text-sm font-medium text-muted-foreground sm:mt-6">
-            {firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")} <span aria-hidden>👋</span>
+            {firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}
           </p>
           <h1 id="home-title" className="mt-1 text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:mt-1.5 sm:text-5xl lg:text-6xl">
             {t("easy.home2.title_a")}
             <span className="brand-text">{t("easy.home2.title_em")}</span>
             {t("easy.home2.title_b")}
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-muted-foreground sm:mt-3 sm:text-base">{t("easy.home2.hint")}</p>
           {/* qidiruv: AI yoqilgan bo'lsa — Yordamchi (oddiy so'z bilan), aks holda — oddiy matnli qidiruv (/search) */}
           <div className="mt-4 max-w-2xl sm:mt-6">
             <TopSearch mode="jobs" ai={home.aiButton} hero />
           </div>
-          {/* ega (2026-11-17): qidiruv ostida katta "+ E'lon joylash" — o'zi haqida e'lon (ish beruvchilar topadi) */}
-          <div className="mt-3 max-w-2xl">
+          {/* qidiruv ostida "+ E'lon joylash" — o'zi haqida e'lon (ish beruvchilar topadi). Ega (2026-11-17, ikkinchi):
+              "juda katta bo'lib ketgan — ingichka va kichikroq bo'lsin": 44 px, och ko'k (qidiruvdagi "Izlash" bilan raqobat qilmaydi) */}
+          <div className="mt-2.5 max-w-2xl">
             <Link
               href="/ai/post"
               prefetch={false}
               data-track="post_start"
               data-track-to="home_hero"
               data-home-post
-              className="press brand-fill flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl px-5 text-lg font-extrabold shadow-glow hover:opacity-95"
+              className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-soft px-4 text-base font-bold text-primary-ink hover:bg-primary/15"
             >
-              <span className="flex size-8 items-center justify-center rounded-full border-2 border-current" aria-hidden>
-                <Plus className="size-5" strokeWidth={3} />
-              </span>
+              <Plus className="size-5" strokeWidth={2.6} aria-hidden />
               {t("easy.home2.post_cta")}
             </Link>
           </div>
