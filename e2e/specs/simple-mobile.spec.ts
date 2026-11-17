@@ -55,11 +55,25 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz), 
   await expect(sw).toHaveText(/Ish beruvchiga o'tish/);
   await expect(menu.locator(":scope > *").last()).toHaveAttribute("data-role-switch", "employer");
   await expect(sw).not.toHaveClass(/text-destructive/);
-  // bosh menyu rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): hamma belgi va nom bir xil rangda, "yangi" nuqtalari yo'q
-  const tileColors = await menu.locator("[data-menu-item] > span:first-child").evaluateAll((els) => els.map((e) => getComputedStyle(e).color + "|" + getComputedStyle(e).backgroundColor));
+  // bosh menyu rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): boshqa belgi va nomlar bir xil rangda, "yangi" nuqtalari
+  // yo'q; faqat Universal ustalar — ko'k (ega: "faqat ustalarni ko'k rang bilan ajratib qo'y")
+  const others = menu.locator("[data-menu-item]:not([data-menu-item='masters'])");
+  const tileColors = await others.locator(":scope > span:first-child").evaluateAll((els) => els.map((e) => getComputedStyle(e).color + "|" + getComputedStyle(e).backgroundColor));
   expect(new Set(tileColors).size).toBe(1);
-  const labelColors = await menu.locator("[data-menu-item] span.font-bold").evaluateAll((els) => els.map((e) => getComputedStyle(e).color));
+  const labelColors = await others.locator("span.font-bold").evaluateAll((els) => els.map((e) => getComputedStyle(e).color));
   expect(new Set(labelColors).size).toBe(1);
+  const blue = await page.evaluate(() => {
+    const probe = document.createElement("span");
+    probe.className = "text-primary-ink";
+    document.body.append(probe);
+    const c = getComputedStyle(probe).color;
+    probe.remove();
+    return c;
+  });
+  const masters = menu.locator("[data-menu-item='masters']");
+  expect(await masters.locator(":scope > span:first-child").evaluate((e) => getComputedStyle(e).color)).toBe(blue);
+  expect(await masters.locator("span.font-bold").evaluate((e) => getComputedStyle(e).color)).toBe(blue);
+  expect(labelColors[0]).not.toBe(blue);
   await expect(menu.locator("[data-new-dot]")).toHaveCount(0);
   // menyu sahifadagi oxirgi bo'lim (rol almashtirish eng tagida — "E'lonlarim" va "Yangi ishlar" undan oldin)
   const mine = page.locator('main [data-home-row="my-listings"]');

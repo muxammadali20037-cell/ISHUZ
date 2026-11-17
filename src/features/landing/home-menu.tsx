@@ -14,6 +14,7 @@ import {
   type MenuItem,
   type MenuMode,
 } from "@/components/shared/nav-items";
+import { cn } from "@/lib/utils";
 import { RoleSwitchRow } from "./role-switch-row";
 import type { HomeMenuLinks } from "./quick-filters";
 
@@ -23,7 +24,8 @@ import type { HomeMenuLinks } from "./quick-filters";
  * Faqat boshqa joyda yo'q yo'llar — 6 ta qator: Universal ustalar, Yordamchi, Kunlik, Masofaviy, Tajribasiz (ish beruvchida —
  * Tajribali), Yaqin atrofdagi. Takrorlanmaydi: Barcha vakansiyalar / Barcha nomzodlar (pastki menyu), arizalar, xabarlar,
  * profil, saqlanganlar, sozlamalar, yordam (pastki menyu va Profil), xarita ("Yaqin atrofdagi" sahifasida).
- * Rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): hamma belgi, nom va rol almashtirish bir xil, "yangi" nuqtalarsiz.
+ * Rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): hamma belgi, nom va rol almashtirish bir xil, "yangi" nuqtalarsiz;
+ * faqat Universal ustalar — ko'k (belgi va nomi) bilan ajratilgan.
  * Kirgan foydalanuvchi: telefon va planshetda (kompyuterda — chap yon menyu), eng tagida rolni almashtirish.
  * Mehmon: hamma ekranda (yon menyu yo'q).
  */
@@ -134,15 +136,19 @@ export async function HomeMenu({
                 : {})}
               className="press flex min-h-16 items-center gap-3 px-4 py-2.5 hover:bg-secondary/60"
             >
-              {/* rangsiz (ega, 2026-11-17: "bosh menyudagi ranglar umuman yoqmayapti — rangni olib tashla"): hamma belgi bir xil */}
+              {/* rangsiz (ega, 2026-11-17: "bosh menyudagi ranglar umuman yoqmayapti — rangni olib tashla"); faqat Universal ustalar —
+                  ko'k bilan ajratilgan (ega, o'sha kuni: "faqat ustalarni ko'k rang bilan ajratib qo'y") */}
               <span
-                className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground"
+                className={cn(
+                  "flex size-10 shrink-0 items-center justify-center rounded-xl",
+                  item.tone === "masters" ? "bg-primary-soft text-primary-ink" : "bg-secondary text-foreground",
+                )}
                 aria-hidden
               >
                 <item.icon className="size-5" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block text-base font-bold leading-tight">
+                <span className={cn("block text-base font-bold leading-tight", item.tone === "masters" && "text-primary-ink")}>
                   {/* uzun nomlar ("Tajriba talab qilinmaydigan ishlar") qisqartirilmaydi — ikkinchi qatorga o'tadi */}
                   {t(item.labelKey)}
                 </span>
