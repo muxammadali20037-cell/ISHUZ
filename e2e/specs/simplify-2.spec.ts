@@ -144,3 +144,48 @@ test("qidiruv maydoni: «O'zingizga mos ishni qidiring...» telefonda to'liq ko'
   await page.locator("main form[data-top-search][data-hydrated] input").fill("oshpaz");
   await expect(page.locator("main form[data-top-search] [data-hero-placeholder]")).toBeHidden();
 });
+
+test("«E'lonlarim» (bosh sahifadan): o'zi joylagan e'lonlar va holati; bo'lmasa — «E'lon joylash»; mehmon — kirishga", async ({ page, context }) => {
+  await sql(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, published_at, expires_at)
+     select $1, $2, r.id, 'Sinov e''loni: ish joyi tavsifi, grafik va shartlar', 'active', 3000000, 'monthly', now(), now() + interval '10 days'
+     from public.regions r where r.slug = 'tashkent_city'`,
+    [USERS.employer, `${TAG} faol`],
+  );
+  await sql(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type)
+     select $1, $2, r.id, 'Sinov e''loni: ish joyi tavsifi, grafik va shartlar', 'paused', 3000000, 'monthly'
+     from public.regions r where r.slug = 'tashkent_city'`,
+    [USERS.employer, `${TAG} to'xtatilgan`],
+  );
+  // ish beruvchi: ikkala vakansiya va har birining holati
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  await page.goto("/cabinet/elonlar");
+  await expect(page.getByRole("heading", { level: 1, name: "E'lonlarim" })).toBeVisible();
+  const active = page.locator("article").filter({ hasText: `${TAG} faol` });
+  await expect(active).toContainText(/Faol/);
+  const paused = page.locator("article").filter({ hasText: `${TAG} to'xtatilgan` });
+  await expect(paused).toBeVisible();
+  await expect(paused.locator("p").filter({ hasText: /To'xtatilgan|to'xtatilgan/ }).first()).toBeVisible();
+  await expect(page.locator("[data-my-listings-empty]")).toHaveCount(0);
+
+  // e'loni yo'q ish izlovchi: bosh sahifadagi qator → bo'sh holat va "E'lon joylash"
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  await sql("delete from public.master_listings where owner_profile_id = $1", [USERS.workerB]).catch(() => {});
+  await loginAs(context, USERS.workerB);
+  await asMode(context, "worker");
+  await page.goto("/");
+  const row = page.locator('main [data-home-row="my-listings"]');
+  await expect(row).toContainText("E'lonlarim");
+  await expect(row.locator("[data-home-row-count]")).toHaveCount(0);
+  await row.click();
+  await page.waitForURL(/\/cabinet\/elonlar$/);
+  await expect(page.locator("[data-my-listings-empty]")).toHaveText("Hozircha e'loningiz yo'q.");
+  await expect(page.getByRole("link", { name: "E'lon joylash" })).toHaveAttribute("href", "/ai/post");
+
+  // mehmon — kirishga (qaytish manzili bilan)
+  await asGuest(context);
+  await page.goto("/cabinet/elonlar");
+  await expect(page).toHaveURL(/\/auth\?next=%2Fcabinet%2Felonlar/);
+});

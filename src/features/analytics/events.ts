@@ -27,6 +27,7 @@ export const CLIENT_EVENTS = [
   "home_cta",
   "home_filters",
   "home_post_vacancy",
+  "home_row",
   "home_section",
   "home_service",
   "home_window",

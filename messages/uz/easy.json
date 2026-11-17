@@ -122,7 +122,10 @@
       "hired": "Ishga olingan"
     },
     "account": "Hisob",
-    "role_now": "Hozir: {role}"
+    "role_now": "Hozir: {role}",
+    "master_listings": "Usta e'lonlarim",
+    "master_manage": "Usta kabinetida ko'rish",
+    "page_sub": "Joylagan e'lonlaringiz va ularning holati: joylandi, tekshiruvda yoki to'xtatilgan."
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -1043,7 +1046,10 @@
     "e_title_a": "Qanday ",
     "e_title_em": "xodim",
     "e_title_b": " kerak?",
-    "post_cta": "E'lon joylash"
+    "post_cta": "E'lon joylash",
+    "my_listings": "E'lonlarim",
+    "my_listings_hint": "Joylagan e'lonlaringiz va holati",
+    "new_jobs_hint": "Yangi joylangan e'lonlar"
   },
   "aiws": {
     "title": "Yordamchi",

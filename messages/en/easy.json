@@ -122,7 +122,10 @@
       "hired": "Hired"
     },
     "account": "Account",
-    "role_now": "Now: {role}"
+    "role_now": "Now: {role}",
+    "master_listings": "My handyman listings",
+    "master_manage": "Open handyman dashboard",
+    "page_sub": "Your listings and their status: live, under review or stopped."
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -1043,7 +1046,10 @@
     "e_title_a": "What kind of ",
     "e_title_em": "employee",
     "e_title_b": " do you need?",
-    "post_cta": "Post an ad"
+    "post_cta": "Post an ad",
+    "my_listings": "My listings",
+    "my_listings_hint": "Your listings and their status",
+    "new_jobs_hint": "Just posted"
   },
   "aiws": {
     "title": "Helper",

@@ -38,6 +38,23 @@ export interface MyVacancy {
 }
 
 /** Kabinet: foydalanuvchining o'z e'lonlari (ishchi e'loni + ish e'lonlari) */
+/**
+ * Bosh sahifadagi "E'lonlarim" qatori uchun son: o'zi haqidagi e'lon (bo'lsa), vakansiyalar va usta e'lonlari — barcha
+ * holatlarda (sahifada nima ko'rinsa, shu). Faqat son so'raladi (head). Xatoda — null (son ko'rsatilmaydi).
+ */
+export async function countMyListings(session: SessionContext): Promise<number | null> {
+  const supabase = await createClient();
+  const [vac, masters] = await Promise.all([
+    supabase.from("vacancies").select("id", { count: "exact", head: true }).eq("owner_profile_id", session.userId),
+    supabase.from("master_listings").select("id", { count: "exact", head: true }).eq("owner_profile_id", session.userId),
+  ]);
+  if (vac.error || masters.error) {
+    console.error("[cabinet] listing count", vac.error?.message ?? masters.error?.message);
+    return null;
+  }
+  return (session.workerId && session.workerOnboarded ? 1 : 0) + (vac.count ?? 0) + (masters.count ?? 0);
+}
+
 export async function getMyListings(session: SessionContext): Promise<{ worker: MyWorkerListing | null; vacancies: MyVacancy[]; paid: boolean }> {
   const supabase = await createClient();
   const [workerRes, vacRes, paidRes, statesRes] = await Promise.all([
@@ -110,15 +127,4 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
     };
   });
   return { worker, vacancies, paid };
-}
-
-/** Bosh sahifadagi ixcham "Kabinetim" uchun: faol/kutilayotgan e'lonlar soni */
-export async function countMyListings(session: SessionContext): Promise<number> {
-  const supabase = await createClient();
-  const { count } = await supabase
-    .from("vacancies")
-    .select("id", { count: "exact", head: true })
-    .eq("owner_profile_id", session.userId)
-    .in("status", ["active", "pending_review", "draft", "paused"]);
-  return (count ?? 0) + (session.workerOnboarded ? 1 : 0);
 }

@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BriefcaseBusiness,
+  FileText,
   ChevronDown,
   ChevronRight,
   MapPin,
@@ -25,8 +26,10 @@ import { homeMenuLinks, placeChooserHref, seekerFiltersHref } from "./quick-filt
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { DemoVacanciesBlock } from "@/features/demo-vacancies/components/demo-block";
 import { StoriesRow } from "@/features/stories/components/stories-row";
-import { Fold } from "@/components/shared/fold";
 import { HomeMenu } from "./home-menu";
+import { HomeLinkRow } from "./home-link-row";
+import { countMyListings } from "@/features/cabinet/queries";
+import { jobsHref } from "@/features/jobs/search-params";
 
 /** bosh sahifa ro'yxatida haqiqiy e'lon shundan kam bo'lsa — ostida namuna e'lonlar bloki */
 const DEMO_BELOW = 4;
@@ -143,9 +146,27 @@ export async function SeekerHome({
         </div>
       </section>
 
-      {/* telefon va planshet (kirgan): bo'limlar ro'yxati — chap menyudagidek, har biri ostida nima qilishi; eng tagida
-          qizilda rolni almashtirish (ega, 2026-11-15). Kompyuterda — chap yon menyu */}
-      <Suspense fallback={<FeedSkeleton />}>
+      {/* kirgan (telefon va planshet): "E'lonlarim" — o'zi joylagan e'lonlar va holati (alohida sahifa; ega, 2026-11-17) */}
+      {session ? (
+        <div className="-mt-2 lg:hidden">
+          <Suspense fallback={<MyListingsRow />}>
+            <MyListingsRowCounted session={session} />
+          </Suspense>
+        </div>
+      ) : null}
+      {/* "Yangi ishlar": kirganda telefonda — qator-havola (yangi joylangan e'lonlar sahifasi); kompyuterda va mehmonda — ro'yxat */}
+      <Suspense
+        fallback={
+          session ? (
+            <>
+              <div className="-mt-2 h-16 animate-pulse rounded-2xl bg-secondary lg:hidden" aria-hidden />
+              <div className="max-lg:hidden"><FeedSkeleton /></div>
+            </>
+          ) : (
+            <FeedSkeleton />
+          )
+        }
+      >
         <SeekerFeed session={session} place={place} fold={!!session} />
       </Suspense>
 
@@ -326,13 +347,45 @@ async function SeekerFeed({
     </section>
   );
   if (!fold) return body;
-  // kirgan foydalanuvchi, telefonda yig'iladi: "Yangi ishlar  12  Ko'rish ⌄" — bosilsa ro'yxat ochiladi (kompyuterda va
-  // mehmonda har doim ochiq; ega, 2026-11-15)
+  // kirgan foydalanuvchi, telefonda — bitta qator: bosilsa yangi joylangan e'lonlar sahifasi ochiladi (shu yerda ochilmaydi;
+  // ega, 2026-11-17). "Sizga mos ishlar" — kasb bo'yicha natijalar. Kompyuterda — ro'yxat shu yerda
+  const rowHref =
+    feed.kind === "new"
+      ? jobsHref({ sort: "newest", region: feed.region?.slug ?? null, district: feed.district ? [feed.district.id] : [] })
+      : feed.allHref;
   return (
-    <Fold name="home-feed" open="lg" verb="view" icon={<BriefcaseBusiness />} title={title} count={feed.total || null}>
-      {body}
-    </Fold>
+    <>
+      <HomeLinkRow
+        name="new-jobs"
+        href={rowHref}
+        icon={<BriefcaseBusiness />}
+        title={title}
+        hint={feed.kind === "match" && feed.profession ? name(feed.profession) : t("easy.home2.new_jobs_hint")}
+        count={feed.total || null}
+        className="-mt-2 lg:hidden"
+      />
+      <div className="max-lg:hidden">{body}</div>
+    </>
   );
+}
+
+/** "E'lonlarim" qatori (sonsiz — yuklanayotganda yoki xatoda) */
+async function MyListingsRow({ count = null }: { count?: number | null }) {
+  const { t } = await getT();
+  return (
+    <HomeLinkRow
+      name="my-listings"
+      href="/cabinet/elonlar"
+      icon={<FileText />}
+      title={t("easy.home2.my_listings")}
+      hint={t("easy.home2.my_listings_hint")}
+      count={count}
+    />
+  );
+}
+
+async function MyListingsRowCounted({ session }: { session: SessionContext }) {
+  return <MyListingsRow count={await countMyListings(session)} />;
 }
 
 /** Ro'yxat skeleti: yangi karta shakliga yaqin (matn qatorlari) — kontent kelganda sahifa siljimaydi */
