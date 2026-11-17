@@ -3,34 +3,35 @@
 begin;
 
 -- 1. save_simple_worker_listing: yamoqni teskari qo'llash
+create or replace function pg_temp.lf(t text) returns text language sql immutable as $$ select replace(t, E'\r', '') $$;
+
 do $patch$
 declare
   def text := replace(pg_get_functiondef('public.save_simple_worker_listing(jsonb)'::regprocedure), E'\r', '');
+  tail text := pg_temp.lf($x$    where profile_id = me;
+  end if;
+$x$);
   s int;
   e int;
 begin
   if position('listing_phone' in def) = 0 then return; end if;
-  def := replace(def, $x$  v_lphone text := nullif(btrim(coalesce(p->>'listing_phone', '')), '');
+  def := replace(def, pg_temp.lf($x$  v_lphone text := nullif(btrim(coalesce(p->>'listing_phone', '')), '');
   v_lphone2 text := nullif(btrim(coalesce(p->>'listing_phone2', '')), '');
-$x$, '');
-  def := replace(def, $x$  -- 0081: e'londagi raqam oynada qo'lda yoziladi; yozilgan bo'lsa hisobda tasdiqlangan raqam shart emas (vakansiyadagidek)
+$x$), '');
+  def := replace(def, pg_temp.lf($x$  -- 0081: e'londagi raqam oynada qo'lda yoziladi; yozilgan bo'lsa hisobda tasdiqlangan raqam shart emas (vakansiyadagidek)
   if v_lphone is not null and v_lphone !~ '^\+998[0-9]{9}$' then raise exception 'invalid_phone' using errcode = '22023'; end if;
   if v_lphone2 is not null and (v_lphone is null or v_lphone2 !~ '^\+998[0-9]{9}$') then raise exception 'invalid_phone' using errcode = '22023'; end if;
   if v_lphone2 = v_lphone then v_lphone2 := null; end if;
-  if v_lphone is null and not exists$x$, '  if not exists');
+  if v_lphone is null and not exists$x$), '  if not exists');
   s := position('  if v_lphone is not null then' in def);
-  e := position('    where profile_id = me;
-  end if;
-' in def);
+  e := position(tail in def);
   if s = 0 or e = 0 then raise exception '0081 rollback: naqsh topilmadi'; end if;
-  def := left(def, s - 1) || $x$  update public.profile_contacts set phone_visibility = case
+  def := left(def, s - 1) || pg_temp.lf($x$  update public.profile_contacts set phone_visibility = case
       when v_show_phone then 'everyone'::public.phone_visibility
       when phone_visibility = 'everyone' then 'applicants'::public.phone_visibility
       else phone_visibility end
   where profile_id = me;
-$x$ || substr(def, e + length('    where profile_id = me;
-  end if;
-'));
+$x$) || substr(def, e + length(tail));
   execute def;
 end $patch$;
 

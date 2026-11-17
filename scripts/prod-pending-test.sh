@@ -3,7 +3,8 @@
 #   1) toza baza + faqat prod'da bor migratsiyalar (0001…APPLIED_UNTIL);
 #   2) pending.sql — xatosiz qo'llanadi, holat jadvalida hammasi "bor";
 #   3) pending.sql YANA BIR MARTA — xatosiz, sxema o'zgarmaydi (takror ishga tushirish xavfsiz);
-#   4) natija sxemasi barcha migratsiyalar ketma-ket qo'llangan baza bilan bir xil.
+#   4) natija sxemasi barcha migratsiyalar ketma-ket qo'llangan baza bilan bir xil;
+#   5) Windows'dagi SQL Editor faylni CRLF qatorlar bilan yuboradi — shunda ham xatosiz (2 marta), holat — "bor".
 set -euo pipefail
 cd "$(dirname "$0")/.."
 BASE="${DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/ishuz_test}"
@@ -42,5 +43,14 @@ schema "$FULL" > /tmp/pending-schema-full.sql
 diff -q /tmp/pending-schema-1.sql /tmp/pending-schema-full.sql > /dev/null || { echo "XATO: pending.sql natijasi to'liq migratsiyalar bazasidan farq qiladi"; diff /tmp/pending-schema-1.sql /tmp/pending-schema-full.sql | head -20; exit 1; }
 echo "→ natija sxemasi barcha migratsiyalar qo'llangan baza bilan bir xil"
 
-psql "$ADMIN" -q -c "drop database if exists ${SIM##*/} with (force);" -c "drop database if exists ${FULL##*/} with (force);" 2> /dev/null
+CRLF="${BASE%/*}/ishuz_prodcrlf"
+fresh "$CRLF" "$UNTIL"
+sed 's/$/\r/' supabase/prod/pending.sql > /tmp/pending-crlf.sql
+for run in 1 2; do
+  psql "$CRLF" -v ON_ERROR_STOP=1 -q -f /tmp/pending-crlf.sql > /tmp/pending-crlf.out 2>&1 || { echo "XATO: pending.sql CRLF bilan ($run-marta)"; grep -m3 -A1 ERROR /tmp/pending-crlf.out; exit 1; }
+  if grep -q "YO'Q" /tmp/pending-crlf.out; then echo "XATO: CRLF bilan holat jadvalida YO'Q bor"; grep "YO'Q" /tmp/pending-crlf.out; exit 1; fi
+done
+echo "→ Windows SQL Editor (CRLF qatorlar): xatosiz, takror ham; holat jadvalida hammasi \"bor\""
+
+psql "$ADMIN" -q -c "drop database if exists ${SIM##*/} with (force);" -c "drop database if exists ${FULL##*/} with (force);" -c "drop database if exists ${CRLF##*/} with (force);" 2> /dev/null
 echo "✓ pending.sql sinovdan o'tdi"
