@@ -62,14 +62,15 @@ export async function SeekerHome({
   const firstName = session?.profile.first_name?.trim();
   return (
     <div className="flex flex-col gap-6">
-      {/* 5.0 (2026-11-16, ega "ko'k-oq" dizayni): katta oq qidiruv bloki (radius 2rem, yumshoq soya; ko'k nur va 👋 — 2026-11-17 olib tashlandi) —
-          telefon va kompyuterda bir xil tartib: joylashuv · salomlashuv · sarlavha · izoh · qidiruv · 4 ta tez yo'l · havolalar */}
+      {/* bosh qism: joylashuv · salomlashuv · sarlavha · qidiruv · "+ E'lon joylash" · havolalar. Ega (2026-11-17): "oyna ustida
+          oyna turibdi — olib tashla" — tashqi oq karta yo'q (qidiruv maydoni o'zi alohida quti); sarlavha bitta qatorga sig'adi */}
       <section
         aria-labelledby="home-title"
         data-home="seeker-v2"
-        className="relative overflow-hidden rounded-hero border border-border bg-card px-5 py-5 shadow-card sm:px-10 sm:py-10"
+        className="relative px-1 pt-1 sm:px-2"
       >
-        <div className="min-w-0">
+        {/* @container: sarlavha o'lchami shu kenglikka qarab (cqw) — telefonda bitta qator */}
+        <div className="@container min-w-0">
           {/* "Ish Topdim" hikoyalari — eng tepada, kichik doirachalar (bo'lmasa — joy ham qolmaydi) */}
           <Suspense fallback={null}>
             <StoriesRow mode="seeker" className="mb-4" />
@@ -88,7 +89,7 @@ export async function SeekerHome({
           <p className="mt-4 text-sm font-medium text-muted-foreground sm:mt-6">
             {firstName ? t("easy.services.greeting", { name: firstName }) : t("easy.services.greeting_guest")}
           </p>
-          <h1 id="home-title" className="mt-1 text-[2rem] font-extrabold leading-[1.08] tracking-tight sm:mt-1.5 sm:text-5xl lg:text-6xl">
+          <h1 id="home-title" className="mt-1 text-[min(1.75rem,8.2cqw)] font-extrabold leading-[1.1] tracking-tight sm:mt-1.5 sm:text-[min(3rem,8.2cqw)] lg:text-[min(3.5rem,8.2cqw)]">
             {t("easy.home2.title_a")}
             <span className="brand-text">{t("easy.home2.title_em")}</span>
             {t("easy.home2.title_b")}
