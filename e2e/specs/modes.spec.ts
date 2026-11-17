@@ -28,9 +28,9 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
   await expect(modeRadio(page, "Ish izlovchi")).toHaveAttribute("aria-checked", "true");
   await expect(page.getByRole("navigation", { name: "Tez qidiruv" })).toHaveCount(0);
-  expect(await menuKeys(page)).toEqual(["masters", "jobs", "ai", "daily", "remote", "noexp", "near", "map", "help"]);
+  expect(await menuKeys(page)).toEqual(["masters", "ai", "daily", "remote", "noexp", "near"]);
   await expect(menuItem(page, "daily")).toContainText("Kunlik ish");
-  await expect(menuItem(page, "near")).toContainText("Yaqin atrofdan ish qidirish");
+  await expect(menuItem(page, "near")).toContainText("Yaqin atrofdagi ishlar");
   await expect(menuItem(page, "remote")).toContainText("Masofaviy ish");
   await expect(menuItem(page, "noexp")).toContainText("Tajriba talab qilinmaydigan ishlar");
   await expect(windows(page)).toHaveCount(0);
@@ -65,12 +65,11 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(modeRadio(page, "Ish beruvchi")).toHaveAttribute("aria-checked", "true");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
   // ish beruvchi bosh sahifasi — nomzod qidiruvi; tez yo'llar "Bo'limlar"da (ish izlovchi yo'llari yo'q)
-  expect(await menuKeys(page)).toEqual(["masters", "candidates", "ai", "daily", "remote", "exp", "near", "help"]);
+  expect(await menuKeys(page)).toEqual(["masters", "ai", "daily", "remote", "exp", "near"]);
   await expect(menuItem(page, "daily")).toContainText("Kunlik ishchi");
   await expect(menuItem(page, "near")).toContainText("Yaqin atrofdagi ishchi");
   await expect(menuItem(page, "exp")).toContainText("Tajribali ishchi");
   await expect(menuItem(page, "remote")).toContainText("Masofaviy ishchi");
-  await expect(menuItem(page, "candidates")).toContainText("Barcha nomzodlar");
   await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");

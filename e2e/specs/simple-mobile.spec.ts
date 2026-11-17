@@ -24,25 +24,26 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   const menu = page.locator("[data-home-menu]");
   await expect(menu).toBeVisible();
   await expect(menu.getByRole("heading", { name: "Bo'limlar" })).toBeVisible();
-  // tartib (ega, 2026-11-17, ikkinchi): Universal ustalar → Barcha vakansiyalar → Yordamchi → Kunlik → Masofaviy → Tajribasiz → Yaqin atrofdan → qolganlari;
-  // "E'lon joylash" bo'limlarda yo'q (tepada katta tugma bor); hammasi bitta ustunda, qator bo'lib
-  const order = ["masters", "jobs", "ai", "daily", "remote", "noexp", "near", "map", "applications", "saved", "messages", "profile", "settings", "help"];
+  // ega (2026-11-17, uchinchi: "tartibsiz — pastki menyuda bor narsalar, profildagi sozlamalar bosh sahifada ham bor"):
+  // faqat boshqa joyda yo'q 6 ta yo'l, bitta ustunda; "E'lon joylash" — tepada
+  const order = ["masters", "ai", "daily", "remote", "noexp", "near"];
   expect(await menu.locator("[data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")))).toEqual(order);
   await expect(menu.locator('[data-menu-item="post"]')).toHaveCount(0);
   await expect(menu.locator('[data-menu-item="daily"]')).toContainText("Kunlik ish");
   await expect(menu.locator('[data-menu-item="remote"]')).toContainText("Masofaviy ish");
   await expect(menu.locator('[data-menu-item="noexp"]')).toContainText("Tajriba talab qilinmaydigan ishlar");
-  await expect(menu.locator('[data-menu-item="near"]')).toContainText("Yaqin atrofdan ish qidirish");
+  await expect(menu.locator('[data-menu-item="near"]')).toContainText("Yaqin atrofdagi ishlar");
+  // takrorlar yo'q: pastki menyudagilar (ishlar, arizalar, xabarlar, profil) va Profildagilar (saqlanganlar, sozlamalar, yordam)
+  for (const key of ["jobs", "map", "applications", "saved", "messages", "profile", "settings", "help"]) {
+    await expect(menu.locator(`[data-menu-item="${key}"]`)).toHaveCount(0);
+  }
   // bitta ustun: hamma qatorlar bir xil chap chetda
   const lefts = await menu.locator("[data-menu-item]").evaluateAll((els) => els.map((e) => Math.round(e.getBoundingClientRect().left)));
   expect(new Set(lefts).size).toBe(1);
   // tepadagi tez qidiruv kartochkalari yo'q — hammasi bo'limlarda
   await expect(page.locator("[data-home-shortcuts]")).toHaveCount(0);
   // har bir bo'lim — nomi va ostida kichik izoh (nima qiladi)
-  const jobs = menu.locator('[data-menu-item="jobs"]');
-  await expect(jobs).toContainText("Barcha vakansiyalar");
-  await expect(jobs).toContainText("Barcha ishlar");
-  await expect(menu.locator('[data-menu-item="map"]')).toContainText("Yaqin atrofdagi ishlar");
+  await expect(menu.locator('[data-menu-item="daily"]')).toContainText("Bugun ishlab, bugun haq olish");
   // "AI" so'zi yo'q — "Yordamchi" (2026-11-15; avval "Barchasi siz uchun")
   await expect(menu.locator('[data-menu-item="ai"]')).toContainText("Yordamchi");
   await expect(menu).not.toContainText("AI");
@@ -89,7 +90,7 @@ test("rol almashtirish — bir bosishda: ish izlovchi → ish beruvchi va qaytib
     await asMode(context, "employer");
     await page.goto("/");
     const menu = page.locator("[data-home-menu]");
-    await expect(menu.locator('[data-menu-item="my_vacancies"]')).toContainText("Joylagan vakansiyalar");
+    await expect(menu.locator('[data-menu-item="exp"]')).toContainText("Tajribali ishchi");
     await expect(menu.locator("[data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
     await menu.locator("[data-role-switch]").click();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
@@ -187,6 +188,8 @@ test("Profil: tepada rolni almashtirish; sodda — «Mening dunyom», «O'zim ha
   const links = page.locator("[data-cabinet-links]");
   await expect(links.getByRole("link", { name: "Saqlanganlar" })).toBeVisible();
   await expect(links.getByRole("link", { name: "Sozlamalar" })).toBeVisible();
+  // "Yordam" — bosh sahifadan shu yerga ko'chdi (2026-11-17)
+  await expect(links.getByRole("link", { name: "Yordam", exact: true })).toHaveAttribute("href", "/help");
   await expect(links.getByRole("button", { name: "Hisobdan chiqish" })).toBeVisible();
   // eski "Rolni o'zgartirish" havolasi takrorlanmaydi
   await expect(page.getByRole("link", { name: "Rolni o'zgartirish" })).toHaveCount(0);

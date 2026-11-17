@@ -77,12 +77,17 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; tez
   await expect(page.locator("[data-home='seeker-v2']").getByRole("searchbox")).toBeVisible();
   const box = (await search.boundingBox())!;
   expect(box.y + box.height).toBeLessThan(560);
-  // qidiruv ostida katta "+ E'lon joylash" (ega, 2026-11-17)
+  // qidiruv ostida "+ E'lon joylash" — ingichka (44–48 px), och ko'k (ega, 2026-11-17: "juda katta bo'lib ketgan")
   const post = page.locator("[data-home='seeker-v2'] [data-home-post]");
   await expect(post).toHaveText("E'lon joylash");
   // bosilsa — yordamchi (e'lon joylash rejimi)
   await expect(post).toHaveAttribute("href", "/ai/post");
-  expect((await post.boundingBox())!.height).toBeGreaterThanOrEqual(56);
+  const postH = (await post.boundingBox())!.height;
+  expect(postH).toBeGreaterThanOrEqual(44);
+  expect(postH).toBeLessThanOrEqual(48);
+  // sarlavha orqasidagi ko'k nur va salomlashuvdagi 👋 yo'q
+  expect(await page.locator("[data-home='seeker-v2']").evaluate((el) => getComputedStyle(el).backgroundImage)).toBe("none");
+  await expect(page.locator("[data-home='seeker-v2']")).not.toContainText("👋");
   // qidiruv tugmasi — "Izlash" (ega, 2026-11-17; avval "Topish")
   await expect(search.getByRole("button", { name: "Izlash" })).toBeVisible();
   // tez yo'llar plitkalari yo'q (2026-11-17, ega) — ular "Bo'limlar" ro'yxatida, bitta ustunda; mehmon ham ko'radi
@@ -91,7 +96,7 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; tez
   const menu = page.locator("[data-home-menu]");
   await expect(menu).toBeVisible();
   expect(await menu.locator("[data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")))).toEqual([
-    "masters", "jobs", "ai", "daily", "remote", "noexp", "near", "map", "help",
+    "masters", "ai", "daily", "remote", "noexp", "near",
   ]);
   await expect(menu.locator('[data-menu-item="daily"]')).toHaveAttribute("href", /pay=daily/);
   await expect(menu.locator("[data-role-switch]")).toHaveCount(0);
@@ -203,7 +208,9 @@ test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal
     await page.goto("/");
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
-    await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeVisible();
+    // ish izlovchida sarlavhada xabar belgisi yo'q — pastki menyuda "Xabarlar" bor (takror emas, ega 2026-11-17)
+    await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeHidden();
+    await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Xabarlar" })).toBeVisible();
     await expect(page.getByRole("banner").getByRole("link", { name: "Bildirishnomalar" })).toBeVisible();
   }
 });

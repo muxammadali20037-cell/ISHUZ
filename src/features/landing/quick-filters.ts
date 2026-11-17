@@ -61,8 +61,6 @@ export function employerServiceHrefs(place: { region: string | null; district: s
 
 /** "Bo'limlar" ro'yxatidagi tez yo'llar (bosh sahifa menyusi) — eslab qolingan hudud bilan */
 export interface HomeMenuLinks {
-  /** ish izlovchi: barcha vakansiyalar; ish beruvchi: barcha nomzodlar */
-  all: string;
   daily: string;
   remote: string;
   /** ish izlovchi: tajriba talab qilinmaydigan; ish beruvchi: tajribali */
@@ -73,8 +71,8 @@ export interface HomeMenuLinks {
 export function homeMenuLinks(mode: "worker" | "employer", place: { region: string | null; district: string | null }): HomeMenuLinks {
   if (mode === "employer") {
     const h = employerServiceHrefs(place);
-    return { all: h.candidates, daily: h.daily, remote: h.remote, exp: h.experienced, near: h.near };
+    return { daily: h.daily, remote: h.remote, exp: h.experienced, near: h.near };
   }
   const q = Object.fromEntries(seekerQuickFilters(place).map((c) => [c.key, c.href])) as Record<QuickFilterKey, string>;
-  return { all: "/jobs", daily: q.daily, remote: q.remote, exp: q.noexp, near: findHref({ ...EMPTY_FIND, mode: "jobs", near: true }) };
+  return { daily: q.daily, remote: q.remote, exp: q.noexp, near: findHref({ ...EMPTY_FIND, mode: "jobs", near: true }) };
 }

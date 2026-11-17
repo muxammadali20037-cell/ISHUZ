@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Bosh sahifa tartibi (`claude/home-tidy`)
+
+Ega: "bosh sahifa umuman yoqmayapti — tartibsiz: pastda bor ishlar, arizalar, xabarlar, profil; profildagi sozlamalar bosh
+sahifada ham bor — chalkash; e'lon berish juda katta; orqasidagi ikonka bo'rtib turibdi; hamma narsa tiqilmasin, kerakli
+narsalar tursin, Universal ustalar tursin". Taklif chizib ko'rsatildi (Design kanvas), ega ma'qulladi.
+
+- **"Bo'limlar" — faqat 6 ta qator** (boshqa joyda yo'q yo'llar): Universal ustalar, Yordamchi, Kunlik ish, Masofaviy ish,
+  Tajriba talab qilinmaydigan ishlar, Yaqin atrofdagi ishlar (ish beruvchida: … Kunlik/Masofaviy/Tajribali/Yaqin atrofdagi
+  ishchi). Olib tashlandi: Barcha vakansiyalar / Barcha nomzodlar (pastki menyu), arizalar, xabarlar, profil (pastki
+  menyu), saqlanganlar, sozlamalar, yordam (Profil — "Yordam" Profil ro'yxatiga qo'shildi), "Ishlar xaritada" ("Yaqin
+  atrofdagi ishlar" sahifasida xarita havolasi bor). Bo'limlar endi o'qilmagan sonlarni so'ramaydi.
+- **Bosh qism:** "+ E'lon joylash" / "+ Vakansiya joylash" — ingichka (44 px), och ko'k; ko'k nur, 👋 va izoh qatori olib
+  tashlandi.
+- **Yuqori panel:** ish izlovchida telefonda xabar belgisi yo'q (pastki menyuda "Xabarlar" bor); ish beruvchida qoladi.
+
 ## 2026-11-17 · Soddalashtirish 2 (`claude/simplify-2`)
 
 Ega: "kunlik ish, masofaviy, tajriba — hammasini bo'limlarga qo'sh; eng tepada Universal ustalar, keyin Barcha vakansiyalar…
