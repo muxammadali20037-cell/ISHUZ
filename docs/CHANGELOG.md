@@ -1,5 +1,12 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · pending.sql — Windows SQL Editor'da 0081 xatosi tuzatildi (`claude/pending-crlf-fix`)
+
+Ega pending.sql ni ishga tushirganda: "0081: save_simple_worker_listing naqsh #1 0 marta uchradi". Sabab: SQL Editor
+(Windows) faylni CRLF qatorlar bilan yuboradi, 0081 yamog'idagi naqshlar esa `\r` dan tozalanmagan edi (0057 da bu bor
+edi). Bitta tranzaksiya bo'lgani uchun bazada hech narsa o'zgarmagan. Tuzatildi: naqshlar ham LF ga keltiriladi (rollback
+ham). `scripts/prod-pending-test.sh` endi pending.sql ni CRLF ko'rinishida ham ikki marta qo'llab tekshiradi.
+
 ## 2026-11-17 · E'londagi telefon — qo'lda, majburiy, "+ Yana raqam" (`claude/post-phone-manual`)
 
 Ega: "telefon raqamini qo'lda kiritsin, kiritmasa e'lon berilmasin; 2 ta nomer bo'lsa — «yana nomer»; nomer majburiy,

@@ -101,6 +101,9 @@ $n3$  if v_lphone is not null then
 $n3$];
 
   for i in 1 .. array_length(olds, 1) loop
+    -- SQL Editor (Windows) faylni CRLF qatorlar bilan yuboradi, bazadagi funksiya esa LF bilan: naqshlar ham faqat LF bilan
+    olds[i] := replace(olds[i], E'\r', '');
+    news[i] := replace(news[i], E'\r', '');
     n := (length(def) - length(replace(def, olds[i], ''))) / length(olds[i]);
     if n <> 1 then raise exception '0081: save_simple_worker_listing naqsh #% % marta uchradi (1 kutilgan)', i, n; end if;
     def := replace(def, olds[i], news[i]);
