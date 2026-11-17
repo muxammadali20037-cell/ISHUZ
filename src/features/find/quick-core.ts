@@ -135,7 +135,12 @@ function emptyList(href: string): QuickList {
   return { jobs: [], workers: [], images: {}, photos: {}, total: 0, href };
 }
 
-export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; session: SessionContext | null }): Promise<{ ok: true; data: QuickResult } | { ok: false }> {
+/**
+ * `prefetch` — oyna ochilganda oldindan (foydalanuvchi "Qidirish"ni bosmasdan): hech narsa saqlanmaydi va statistikaga
+ * yozilmaydi; topilmasa — o'xshashlar ham qidirilmaydi (bosilganda haqiqiy qidiruv o'zi qiladi).
+ * Tezlik: kasb oldindan tushunilgan bo'lsa — qidiruv kasb ma'lumoti bilan bir vaqtda; o'xshashlar va saqlash — parallel.
+ */
+export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; session: SessionContext | null; prefetch?: boolean }): Promise<{ ok: true; data: QuickResult } | { ok: false }> {
   const { mode, answers, session } = input;
   const { t, name, locale, tEnum } = await getT();
   const where = await resolvePlace(answers.place);
@@ -143,14 +148,7 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
   // kunlik haqli ishda oylik maosh so'ralmaydi
   const salary = mode === "jobs" && !f.pay && answers.salary && answers.salary > 0 ? Math.min(Math.round(answers.salary), 1_000_000_000) : null;
   const text = answers.profession.replace(/\s+/g, " ").trim().slice(0, 120);
-
-  // kasb: oynada o'zgartirilmagan bo'lsa — tushunilgan tugun; aks holda yozilgan nom qaytadan tushuniladi
-  let node: NodeInfo | null = answers.nodeId ? await getNodeInfo(answers.nodeId).catch(() => null) : null;
-  if (!node && text.length >= 2) {
-    const r = await smartResolveQuery(text, session?.userId ?? null, mode);
-    node = r.nodeId ? await getNodeInfo(r.nodeId).catch(() => null) : null;
-  }
-  const words = node ? [] : textKeywords(text, [], 3);
+  const kind = mode === "jobs" ? "vacancy" : "worker";
 
   // o'xshashlarda faqat "kunlik" qoladi (tajriba, grafik va maosh — aynan so'ralganida)
   const params = (p: string | null, w: ResolvedPlace, s: number | null, q = "", strict = true): FindParams => ({
@@ -180,6 +178,19 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
     const res = mode === "jobs" ? await findJobs(fp, w.place, limit) : await findWorkers(fp, w.place, limit);
     return res.ok ? { ok: true, list: list(res.items.slice(0, limit), res, findHref(fp)) } : { ok: false };
   };
+
+  // kasb: oynada o'zgartirilmagan bo'lsa — tushunilgan tugun (qidiruv uning ma'lumoti bilan bir vaqtda boshlanadi);
+  // aks holda yozilgan nom qaytadan tushuniladi
+  const early = answers.nodeId ? byNode(answers.nodeId, where, salary, SHOW) : null;
+  // kasb boshqacha tushunilsa — bu natija ishlatilmaydi (xatosi ham)
+  early?.catch(() => null);
+  let node: NodeInfo | null = answers.nodeId ? await getNodeInfo(answers.nodeId).catch(() => null) : null;
+  if (!node && text.length >= 2) {
+    const r = await smartResolveQuery(text, session?.userId ?? null, mode);
+    node = r.nodeId ? await getNodeInfo(r.nodeId).catch(() => null) : null;
+  }
+  const words = node ? [] : textKeywords(text, [], 3);
+
   const byText = async (w: ResolvedPlace, s: number | null, limit: number, strict = true): Promise<Run> => {
     for (const word of words) {
       const fp = params(null, w, s, word, strict);
@@ -198,13 +209,18 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
     ? { ok: true, list: emptyList(findHref(params(null, where, null))) }
     : textual
       ? await byText(where, salary, SHOW)
-      : await byNode(node?.id ?? null, where, salary, SHOW);
+      : early && node?.id === answers.nodeId
+        ? await early
+        : await byNode(node?.id ?? null, where, salary, SHOW);
   if (!main.ok) return { ok: false };
 
+  const shownIds = [...main.list.jobs, ...main.list.workers].map((x) => x.id);
+  const savedP = savedIdSet(session, kind, shownIds);
   let similar: QuickResult["similar"] = null;
   let save: QuickSaveState = null;
-  if (main.list.total === 0) {
-    // pastda — shunga yaqin kasblar (ota yo'nalish: shu hududda, keyin hamma joyda); bo'lmasa — shu kasb boshqa hududlarda
+  if (main.list.total === 0 && !input.prefetch) {
+    // pastda — shunga yaqin kasblar (ota yo'nalish: shu hududda, keyin hamma joyda); bo'lmasa — shu kasb boshqa hududlarda.
+    // Hammasi bir vaqtda so'raladi, birinchi bo'sh bo'lmagani (shu tartibda) olinadi; qidiruv saqlanishi ham parallel
     const everywhere = await resolvePlace("all");
     const specific = answers.place !== "all";
     const parent = node && node.trail.length > 1 ? node.trail.at(-2)! : null;
@@ -215,20 +231,21 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
         ? [{ kind: "elsewhere" as const, run: () => (textual ? byText(everywhere, null, SIMILAR, false) : byNode(node?.id ?? null, everywhere, null, SIMILAR, false)) }]
         : []),
     ];
-    for (const step of tries) {
-      const res = await step.run();
-      if (res.ok && res.list.total > 0) {
-        const ids = [...res.list.jobs, ...res.list.workers].map((x) => x.id);
-        similar = { ...res.list, kind: step.kind, saved: [...(await savedIdSet(session, mode === "jobs" ? "vacancy" : "worker", ids))] };
-        break;
-      }
+    const [runs, saved] = await Promise.all([
+      Promise.all(tries.map((x) => x.run().catch((): Run => ({ ok: false })))),
+      mode === "jobs" ? saveSearch(session, node, words[0] ?? null, where, salary) : Promise.resolve<QuickSaveState>(null),
+    ]);
+    save = saved;
+    const at = runs.findIndex((res) => res.ok && res.list.total > 0);
+    const hit = at >= 0 ? runs[at]! : null;
+    if (hit?.ok) {
+      const ids = [...hit.list.jobs, ...hit.list.workers].map((x) => x.id);
+      similar = { ...hit.list, kind: tries[at]!.kind, saved: [...(await savedIdSet(session, kind, ids))] };
     }
-    if (mode === "jobs") save = await saveSearch(session, node, words[0] ?? null, where, salary);
   }
 
-  const shownIds = [...main.list.jobs, ...main.list.workers].map((x) => x.id);
-  const savedIds = await savedIdSet(session, mode === "jobs" ? "vacancy" : "worker", shownIds);
-  void trackServer("ai_find", session?.userId ?? null, { source: "quick", mode, results: main.list.total, similar: similar?.total ?? 0, save });
+  const savedIds = await savedP;
+  if (!input.prefetch) void trackServer("ai_find", session?.userId ?? null, { source: "quick", mode, results: main.list.total, similar: similar?.total ?? 0, save });
   const professionLabel = node ? name(node.trail.at(-1)!) : text || (mode === "jobs" ? t("easy.quick.any_job") : t("easy.quick.any_worker"));
   return {
     ok: true,

@@ -4,7 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { betaZodOutputFormat } from "@anthropic-ai/sdk/helpers/beta/zod";
 import type { z } from "zod";
 import { getServerEnv } from "@/lib/env";
-import { AI_MODEL, getAiClient } from "./client";
+import { AI_FAST_MODEL, AI_MODEL, getAiClient } from "./client";
 import { AiBusyError, geminiJson, type AiCallOptions } from "./gemini";
 import { logAiUsage } from "./usage";
 import { hitRate } from "@/lib/rate-limit";
@@ -80,12 +80,14 @@ export async function aiJson<T extends z.ZodType>(schema: T, system: string, use
   const started = Date.now();
   const images = opts.images ?? [];
   const feature = opts.feature ?? "other";
+  const model = opts.fast ? AI_FAST_MODEL : AI_MODEL;
   try {
     const response = await client.beta.messages.parse(
       {
-        model: AI_MODEL,
+        model,
         max_tokens: opts.maxOutputTokens ?? 4000,
-        output_config: { effort: "low", format: betaZodOutputFormat(schema) },
+        // tezkor modelda "effort" berilmaydi (standart qiymati — u qo'llamasa ham so'rov yiqilmasin)
+        output_config: opts.fast ? { format: betaZodOutputFormat(schema) } : { effort: "low", format: betaZodOutputFormat(schema) },
         system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
         messages: [
           {
@@ -104,7 +106,7 @@ export async function aiJson<T extends z.ZodType>(schema: T, system: string, use
     );
     const parsed = response.stop_reason === "refusal" ? null : ((response.parsed_output as z.infer<T> | null) ?? null);
     await logAiUsage({
-      feature, provider: "anthropic", model: AI_MODEL, ok: parsed != null, latencyMs: Date.now() - started,
+      feature, provider: "anthropic", model, ok: parsed != null, latencyMs: Date.now() - started,
       inputTokens: response.usage.input_tokens, outputTokens: response.usage.output_tokens, images: images.length,
       error: parsed == null ? (response.stop_reason === "refusal" ? "refusal" : "invalid_output") : null,
     });
@@ -112,7 +114,7 @@ export async function aiJson<T extends z.ZodType>(schema: T, system: string, use
     return parsed;
   } catch (e) {
     if (!(e instanceof AiInvalidOutputError)) {
-      await logAiUsage({ feature, provider: "anthropic", model: AI_MODEL, ok: false, latencyMs: Date.now() - started, images: images.length, error: e instanceof Error ? e.message : "error" });
+      await logAiUsage({ feature, provider: "anthropic", model, ok: false, latencyMs: Date.now() - started, images: images.length, error: e instanceof Error ? e.message : "error" });
     }
     throw e;
   }

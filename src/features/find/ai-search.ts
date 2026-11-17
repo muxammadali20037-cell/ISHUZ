@@ -47,8 +47,9 @@ export async function aiParseSearch(q: string, userId: string | null): Promise<A
   if (hit && Date.now() - hit.at < TTL) return hit.value;
   if (!(await allowRate(userId ? `ai_search:${userId}` : `ai_search_ip:${await clientKey()}`, 40, 3600))) return null;
   let value: AiSearchParse | null = null;
+  // foydalanuvchi kutib turibdi: tezkor model, 4 soniyadan oshsa — lug'at qoidalari bilan davom etamiz (ega: "tez bo'lsin")
   try {
-    value = await aiJson(parseSchema, SYSTEM, q.slice(0, 300), { feature: "search_parse", timeoutMs: 8_000, maxOutputTokens: 512 });
+    value = await aiJson(parseSchema, SYSTEM, q.slice(0, 300), { feature: "search_parse", timeoutMs: 4_000, maxOutputTokens: 512, fast: true });
   } catch {
     // AI ishlamasa — qoidalar natijasi bilan davom etamiz (qidiruv to'xtamaydi)
     return null;

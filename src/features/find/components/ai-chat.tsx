@@ -41,6 +41,23 @@ import { JobResultCard, WorkerResultCard } from "./result-cards";
  * (AiFinder) va /ai sahifasi.
  */
 
+/** Oyna javoblarining kaliti (oldindan qidirilgan natija shu javoblar uchunmi) — maydonlar doim bir xil tartibda */
+function answersKey(mode: FinderMode, a: QuickAnswers): string {
+  return JSON.stringify([mode, a.profession, a.nodeId, a.place, a.salary, a.filters.pay, a.filters.noexp, a.filters.exp, a.filters.schedule]);
+}
+
+/** Oyna ochilganda standart javoblar ("Qidirish" o'zgarishsiz bosilsa yuboriladiganlar bilan aynan bir xil) */
+export function defaultAnswers(form: QuickForm): QuickAnswers {
+  const filters = form.filters ?? NO_FILTERS;
+  return {
+    profession: form.profession.replace(/\s+/g, " ").trim().slice(0, 120),
+    nodeId: form.nodeId,
+    place: form.place,
+    salary: form.mode === "jobs" && !filters.pay ? form.salary : null,
+    filters,
+  };
+}
+
 export interface AiTurn {
   id: number;
   /** foydalanuvchi yozgan matn */
@@ -136,6 +153,11 @@ export function useAiChat(defaultMode: FinderMode) {
   const seq = useRef(0);
   /** har so'rovning raqami: "To'xtatish" yoki yangi so'rovdan keyin kelgan eski javob e'tiborga olinmaydi */
   const runRef = useRef(0);
+  /**
+   * Oldindan qidiruv (2026-11-17, ega: "hammasi tezlik bilan bo'lsin"): oyna ochilishi bilan standart javoblar bo'yicha
+   * natija so'raladi (hech narsa saqlanmaydi); "Qidirish" o'zgarishsiz bosilsa va natija bor bo'lsa — darhol ko'rsatiladi
+   */
+  const prefetched = useRef<{ key: string; res: ReturnType<typeof quickSearch> } | null>(null);
   const pending = turns.some((x) => x.status === "pending");
 
   // qurilmada saqlangan suhbat — faqat brauzerda, birinchi chizishdan keyin (SSR bilan mos)
@@ -200,8 +222,13 @@ export function useAiChat(defaultMode: FinderMode) {
         if (!res.ok) return patch(id, (x) => ({ ...x, status: "error", stage: undefined, error: errorText(res.error) }));
         const reply = res.data.reply;
         if (reply) return patch(id, (x) => ({ ...x, status: "done", stage: undefined, reply }));
-        patch(id, (x) => ({ ...x, status: "form", stage: undefined, form: res.data }));
+        const form = res.data;
+        patch(id, (x) => ({ ...x, status: "form", stage: undefined, form }));
         setFormFor(id);
+        const answers = defaultAnswers(form);
+        const pre = quickSearch({ mode: m, answers, prefetch: true });
+        pre.catch(() => null);
+        prefetched.current = { key: answersKey(m, answers), res: pre };
       },
       () => {
         if (runRef.current === run) patch(id, (x) => ({ ...x, status: "error", stage: undefined, error: errorText("network") }));
@@ -217,7 +244,14 @@ export function useAiChat(defaultMode: FinderMode) {
     const run = ++runRef.current;
     setFormFor(null);
     patch(id, (x) => ({ ...x, status: "pending", stage: "searching", answers, quick: undefined, error: undefined, stopped: undefined }));
-    quickSearch({ mode: turn.mode, answers }).then(
+    // oldindan olingan natija (javoblar o'zgarmagan va nimadir topilgan) — kutilmaydi; topilmagan bo'lsa — haqiqiy qidiruv
+    // (o'xshashlar va "so'rovingiz saqlandi" faqat unda)
+    const pre = prefetched.current?.key === answersKey(turn.mode, answers) ? prefetched.current.res : null;
+    prefetched.current = null;
+    const call = (pre ?? Promise.resolve(null))
+      .catch(() => null)
+      .then((r) => (r?.ok && r.data.total > 0 ? r : quickSearch({ mode: turn.mode, answers })));
+    call.then(
       (res) => {
         if (runRef.current !== run) return;
         patch(id, (x) => (res.ok ? { ...x, status: "done", stage: undefined, quick: res.data } : { ...x, status: "error", stage: undefined, error: errorText(res.error) }));
