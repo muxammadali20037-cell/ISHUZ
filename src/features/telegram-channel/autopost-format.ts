@@ -5,7 +5,7 @@ import { formatSalaryWithPeriod } from "@/lib/format";
  * "ish beruvchilar kanaliga — ishchi, ishchilarga — ish"). Faqat saytda hammaga ochiq ma'lumot: telefon, ism, foydalanuvchi
  * rasmi, erkin matn (tavsif, "o'zim haqimda") YO'Q. Vakansiya (ega, 2026-11-16): oddiy rasm — faqat ish nomi, maosh, joylashuv,
  * kompaniya (/api/promo/vacancy/…?f=post), izohda faqat vakansiya nomi, "Ariza qoldirish" tugmasi; sayt nomi va odam
- * chizmasi yo'q. Rasm ketmasa — to'liq matn (html). Sarlavhadagi telefon raqami, @nik, havola va email ham olib tashlanadi —
+ * chizmasi yo'q. Ishchi e'loni (2026-11-17) — xuddi shunday rasm (/api/promo/worker/…). Rasm ketmasa — to'liq matn (html). Sarlavhadagi telefon raqami, @nik, havola va email ham olib tashlanadi —
  * bog'lanish faqat sayt orqali (kontakt maxfiyligi, 0074).
  */
 export type T = (key: string, params?: Record<string, string | number>) => string;
@@ -127,5 +127,8 @@ export function workerPost(d: WorkerPostData, t: T, base: string): ChannelPost {
   return {
     html: lines.filter((l) => l !== null).join("\n"),
     button: { text: t("bot.channel.open_worker"), url: `${base}/workers/${d.id}` },
+    // rasm — vakansiyadagidek (ega, 2026-11-17: "e'lon joylandimi — shunaqa rasm bo'lib kelsin"): kasbi, tajriba, joyi, maosh
+    photo: `${base}/api/promo/worker/${d.id}`,
+    caption: `<b>${escapeHtml(sanitizeLine(d.profession, 80))}</b>`,
   };
 }

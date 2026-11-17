@@ -118,7 +118,7 @@ describe("kanalga avtomatik e'lon", () => {
     expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual([expect.stringContaining("ISH"), expect.stringContaining("ISHCHI")]);
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main", button: { text: "Ariza qoldirish", url: "https://ishuz.vercel.app/jobs/v-a" } });
     expect(send.mock.calls[0]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post", caption: expect.stringContaining("<b>") });
-    expect(send.mock.calls[1]![0]).toMatchObject({ photo: undefined });
+    expect(send.mock.calls[1]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/worker/w" });
     expect(tables.channel_posts!.map((r) => r.status)).toEqual(["posted", "posted"]);
     expect(await runChannelAutopost()).toMatchObject({ posted: 0 });
     expect(send).toHaveBeenCalledTimes(2);
@@ -165,5 +165,32 @@ describe("kanalga avtomatik e'lon", () => {
     tables.worker_profiles = [worker("w")];
     expect((await runChannelAutopost()).posted).toBe(1);
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@ishchilar_kanal", button: { url: "https://ishuz.vercel.app/workers/w" } });
+  });
+
+  it("e'lon egasiga: \"E'loningiz joylandi\" — rasm va ilova tugmasi bilan, bir marta; bot ishga tushmagan bo'lsa — yo'q", async () => {
+    tables.vacancies = [vacancy("a", { owner_profile_id: "emp" }), vacancy("b", { owner_profile_id: "quiet" })];
+    tables.worker_profiles = [worker("w", { profile_id: "wrk", onboarding_completed_at: now() })];
+    tables.telegram_accounts = [
+      { profile_id: "emp", telegram_user_id: 111, bot_started: true, language_code: "uz" },
+      { profile_id: "wrk", telegram_user_id: 222, bot_started: true, language_code: "ru" },
+      { profile_id: "quiet", telegram_user_id: 333, bot_started: false, language_code: "uz" },
+    ];
+    tables.profiles = [{ id: "emp", locale: "uz" }, { id: "wrk", locale: null }, { id: "quiet", locale: "uz" }];
+    const r = await runChannelAutopost();
+    expect(r.notified).toBe(2);
+    const dms = send.mock.calls.map(([x]) => x as { chatId: string; photo: string; caption: string; webApp?: boolean; button: { url: string } }).filter((x) => !x.chatId.startsWith("@"));
+    expect(dms.map((d) => d.chatId).sort()).toEqual(["111", "222"]);
+    const emp = dms.find((d) => d.chatId === "111")!;
+    expect(emp).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post", webApp: true, button: { url: "https://ishuz.vercel.app/cabinet/elonlar" } });
+    expect(emp.caption).toContain("E'loningiz joylandi");
+    expect(emp.caption).toContain("Sotuvchi a");
+    const wrk = dms.find((d) => d.chatId === "222")!;
+    expect(wrk.photo).toBe("https://ishuz.vercel.app/api/promo/worker/w");
+    expect(wrk.caption).toContain("опубликовано");
+    // kanal yozuvlari bilan aralashmaydi; ikkinchi qadamda takror yo'q
+    expect(tables.channel_posts!.filter((p) => String(p.chat_id).startsWith("dm:")).map((p) => p.chat_id).sort()).toEqual(["dm:111", "dm:222"]);
+    send.mockClear();
+    expect((await runChannelAutopost()).notified ?? 0).toBe(0);
+    expect(send).not.toHaveBeenCalled();
   });
 });

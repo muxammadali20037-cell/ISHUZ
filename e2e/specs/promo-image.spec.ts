@@ -69,3 +69,28 @@ test("qoralama vakansiyaning rasmi begonaga ko'rinmaydi", async ({ request }) =>
   const slug = await vacancy("draft");
   expect((await request.get(`/api/promo/vacancy/${slug}?f=square`)).status()).toBe(404);
 });
+
+test("ishchi e'loni rasmi (kanal va egasiga xabar, 2026-11-17) — 1200×800 PNG; ommaviy bo'lmasa — 404", async ({ request }) => {
+  const WORKER = USERS.workerB;
+  await sql("delete from public.worker_profiles where profile_id = $1", [WORKER]);
+  try {
+    const [w] = await sql<{ id: string }>(
+      `insert into public.worker_profiles (profile_id, headline, about, region_id, profession_node_id, experience_level, is_public, onboarding_completed_at)
+       select $1, 'Oshpaz', 'Namuna', r.id, n.id, '3_5y', true, now()
+       from public.regions r, lateral (select id from public.profession_nodes where name_uz = 'Oshpaz' and selectable order by depth limit 1) n
+       where r.slug = 'tashkent_city' returning id`,
+      [WORKER],
+    );
+    const res = await request.get(`/api/promo/worker/${w!.id}`);
+    expect(res.status()).toBe(200);
+    expect(res.headers()["content-type"]).toContain("image/png");
+    expect(pngSize(await res.body())).toEqual({ width: 1200, height: 800 });
+    // ommaviy emas (yashirilgan) — rasm yo'q
+    await sql("update public.worker_profiles set is_public = false where id = $1", [w!.id]);
+    expect((await request.get(`/api/promo/worker/${w!.id}`)).status()).toBe(404);
+    // noto'g'ri id
+    expect((await request.get("/api/promo/worker/not-a-uuid")).status()).toBe(404);
+  } finally {
+    await sql("delete from public.worker_profiles where profile_id = $1", [WORKER]);
+  }
+});
