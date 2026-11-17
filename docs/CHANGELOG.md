@@ -1,5 +1,10 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Bo'limlarda Universal ustalar — ko'k (`claude/menu-masters-blue`)
+
+Ega: "faqat ustalarni ko'k rang bilan ajratib qo'y". "Bo'limlar"da faqat Universal ustalar qatorining belgisi (och ko'k
+quti, ko'k belgi) va nomi ko'k; qolganlari rangsiz.
+
 ## 2026-11-17 · "E'lonlarim" — ixcham kartalar (`claude/my-listings-compact`)
 
 Ega: "e'lonlarimdagi juda katta, tushunarsiz — tartibga keltir, soddalashtir".
