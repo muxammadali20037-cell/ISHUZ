@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Usta e'loni — oynama-oyna, darhol joylanadi (`claude/masters-wizard`)
+
+Ega: "Ustalar e'lon joylashda: kategoriyani tanladi — ikkinchi oyna, xizmatini tanlasin; keyin ism-familiya; keyingi
+oynada hudud va telefon; narx ham, ish vaqti ham kerak emas; ish namunalari rasmi; «E'lon joylash»; moderatsiya kerak
+emas — to'g'ridan-to'g'ri joylansin va kategoriyasiga olib borsin".
+
+- **/ustalar/elon** — 5 oyna: 1) "Qanday ustasiz?" (katta plitkalar) → 2) "Qaysi ishlarni qilasiz?" (kategoriya
+  xizmatlari ro'yxati + "Boshqa xizmat") → 3) ism, familiya → 4) hudud, tuman, telefon → 5) ish namunalari (ixtiyoriy) →
+  "E'lon joylash". `?k=<kategoriya>` bilan — xizmatdan boshlanadi. Tahrirlash (`/ustalar/elon/[id]`) — avvalgi to'liq forma.
+- **Darhol joylash** (`publishMasterQuick`): sarlavha va tavsif faqat tanlanganlardan ("Santexnik: Kran va smesitel,
+  Oqishni tuzatish. Hudud: …"), narx — "Kelishiladi", telefon e'londa ochiq. Avtomatik tekshiruv: matn — qoidalar
+  (taqiqlangan — saqlanmaydi, og'irida bloklanadi); rasm — AI. Toza bo'lsa e'lon shu zahoti faol va kategoriya sahifasiga
+  o'tadi ("E'loningiz joylandi!"); shubha bo'lsa (yoki rasmni tekshirib bo'lmasa) — admin navbatida.
+- Joylangan e'lonlar yangi qoidalar bilan baribir qayta tekshirib boriladi (avvalgidek).
+
 ## 2026-11-17 · "+ E'lon joylash" — yordamchi bilan e'lon (`claude/ai-post`)
 
 Ega: "E'lon joylash bosilsa AI yordamchiga kirsin; «men o'qituvchiman», «uqituvchi», «oqtvchi» deb yozsa ham to'g'ri

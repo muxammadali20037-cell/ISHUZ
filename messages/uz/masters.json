@@ -244,5 +244,120 @@
     "all": "Barcha xizmatlar",
     "open": "Ustalarni ko'rish"
   },
-  "blocked": "Taqiqlangan mazmun (erotika, massaj/spa, ekstremizm yoki qonunga xilof) uchun hisobingiz bloklandi."
+  "blocked": "Taqiqlangan mazmun (erotika, massaj/spa, ekstremizm yoki qonunga xilof) uchun hisobingiz bloklandi.",
+  "wizard": {
+    "step": "{current}/{total}",
+    "q_category": "Qanday ustasiz?",
+    "q_category_desc": "Bittasini tanlang.",
+    "q_service": "Qaysi ishlarni qilasiz?",
+    "q_service_desc": "Bir nechtasini tanlash mumkin.",
+    "other_service": "Boshqa xizmat",
+    "other_placeholder": "Xizmat nomini yozing",
+    "add": "Qo'shish",
+    "q_name": "Ism va familiyangiz",
+    "first_name": "Ismingiz",
+    "last_name": "Familiyangiz",
+    "optional": "ixtiyoriy",
+    "q_place": "Qayerda ishlaysiz?",
+    "region": "Viloyat yoki shahar",
+    "region_pick": "Tanlang",
+    "district": "Tuman",
+    "district_any": "Hamma tumanlar",
+    "phone": "Telefon raqamingiz",
+    "phone_note": "Mijozlar shu raqamga qo'ng'iroq qiladi.",
+    "q_photos": "Ish namunalaringiz",
+    "q_photos_desc": "Qilgan ishlaringiz rasmini qo'shing (4 tagacha). Rasmsiz ham joylash mumkin.",
+    "next": "Davom etish",
+    "back": "Orqaga",
+    "publish": "E'lon joylash",
+    "publishing": "Tekshirilmoqda…",
+    "need_category": "Kategoriyani tanlang.",
+    "need_service": "Kamida bitta xizmatni tanlang.",
+    "need_name": "Ismingizni yozing.",
+    "need_region": "Hududni tanlang.",
+    "need_phone": "Telefon raqamini to'liq yozing.",
+    "description": "{category}: {services}. Hudud: {place}.",
+    "done_live": "E'loningiz joylandi! Endi mijozlar sizni shu bo'limda ko'radi.",
+    "review_title": "E'loningiz qabul qilindi",
+    "review_desc": "Ish namunalari tekshirilgach, e'lon katalogda chiqadi. Holatini kabinetda ko'rasiz.",
+    "to_cabinet": "Kabinetga o'tish"
+  },
+  "svc": {
+    "ac": {
+      "install": "Konditsioner o'rnatish",
+      "clean": "Tozalash va servis",
+      "freon": "Freon to'ldirish",
+      "repair": "Ta'mirlash",
+      "dismantle": "Demontaj (yechish)"
+    },
+    "plumber": {
+      "pipes": "Quvur o'tkazish",
+      "taps": "Kran va smesitel",
+      "toilet": "Unitaz va rakovina o'rnatish",
+      "sewer": "Kanalizatsiya tozalash",
+      "heater": "Suv isitgich o'rnatish",
+      "leak": "Oqishni tuzatish"
+    },
+    "electric": {
+      "wiring": "Elektr sim tortish",
+      "sockets": "Rozetka va viklyuchatel",
+      "lights": "Lyustra va chiroq o'rnatish",
+      "panel": "Elektr shchit (avtomatlar)",
+      "fault": "Nosozlikni topish"
+    },
+    "appliance": {
+      "washer": "Kir yuvish mashinasi",
+      "fridge": "Muzlatgich",
+      "stove": "Gaz plita va pech",
+      "tv": "Televizor",
+      "small": "Changyutgich va mayda texnika"
+    },
+    "repair": {
+      "flat": "Kvartira ta'miri",
+      "tiles": "Kafel yotqizish",
+      "drywall": "Gipsokarton",
+      "plaster": "Shpaklyovka va suvoq",
+      "floor": "Pol (laminat, linoleum)",
+      "doors": "Eshik va deraza o'rnatish"
+    },
+    "painter": {
+      "walls": "Devor bo'yash",
+      "ceiling": "Shift bo'yash",
+      "facade": "Fasad bo'yash",
+      "wallpaper": "Gulqog'oz yopishtirish"
+    },
+    "builder": {
+      "brick": "G'isht terish",
+      "concrete": "Beton quyish",
+      "roof": "Tom yopish",
+      "foundation": "Poydevor",
+      "small": "Kichik qurilish ishlari"
+    },
+    "welder": {
+      "gates": "Darvoza va panjara",
+      "frames": "Metall konstruksiya",
+      "canopy": "Ayvon va naves",
+      "welding": "Payvandlash ishlari"
+    },
+    "locksmith": {
+      "open": "Qulf ochish",
+      "replace": "Qulf almashtirish",
+      "install": "Eshikka qulf o'rnatish",
+      "keys": "Kalit yasash"
+    },
+    "moving": {
+      "flat": "Kvartira ko'chirish",
+      "office": "Ofis ko'chirish",
+      "city": "Shahar ichida yuk tashish",
+      "intercity": "Viloyatlararo yuk tashish",
+      "loaders": "Yuk ko'taruvchilar"
+    },
+    "furniture": {
+      "assembly": "Mebel yig'ish",
+      "disassembly": "Mebelni qismlarga ajratish",
+      "kitchen": "Oshxona mebeli o'rnatish",
+      "wardrobe": "Shkaf-kupe yig'ish",
+      "repair": "Mebel ta'miri"
+    }
+  }
 }

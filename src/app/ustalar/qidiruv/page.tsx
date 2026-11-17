@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
+  CheckCircle2,
   ChevronLeft,
   ChevronRight,
   Search,
@@ -47,7 +48,10 @@ export default async function MastersSearchPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const p = parseMasterSearch(await searchParams);
+  const raw = await searchParams;
+  const p = parseMasterSearch(raw);
+  // usta e'loni hozirgina joylandi (oynama-oyna formadan) — kategoriyasida "E'loningiz joylandi"
+  const justPosted = raw.joylandi === "1";
   const [{ t, name }, categories, regions] = await Promise.all([
     getT(),
     getMasterCategories(),
@@ -73,6 +77,11 @@ export default async function MastersSearchPage({
   return (
     <MastersShell>
       <div className="container-wide space-y-5 py-4 sm:py-6">
+        {justPosted ? (
+          <p className="flex items-start gap-2 rounded-2xl border-2 border-success/50 bg-success-soft p-4 text-base font-semibold" role="status" data-masters-posted>
+            <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-success" aria-hidden /> {t("masters.wizard.done_live")}
+          </p>
+        ) : null}
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
             {current ? (

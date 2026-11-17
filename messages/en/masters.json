@@ -244,5 +244,120 @@
     "all": "All services",
     "open": "See handymen"
   },
-  "blocked": "Your account was blocked for prohibited content (erotica, massage/spa, extremism or illegal content)."
+  "blocked": "Your account was blocked for prohibited content (erotica, massage/spa, extremism or illegal content).",
+  "wizard": {
+    "step": "{current}/{total}",
+    "q_category": "What kind of pro are you?",
+    "q_category_desc": "Choose one.",
+    "q_service": "What jobs do you do?",
+    "q_service_desc": "You can choose several.",
+    "other_service": "Other service",
+    "other_placeholder": "Write the service name",
+    "add": "Add",
+    "q_name": "Your name",
+    "first_name": "First name",
+    "last_name": "Last name",
+    "optional": "optional",
+    "q_place": "Where do you work?",
+    "region": "Region or city",
+    "region_pick": "Choose",
+    "district": "District",
+    "district_any": "All districts",
+    "phone": "Phone number",
+    "phone_note": "Clients will call this number.",
+    "q_photos": "Examples of your work",
+    "q_photos_desc": "Add photos of your work (up to 4). You can also post without photos.",
+    "next": "Continue",
+    "back": "Back",
+    "publish": "Post the ad",
+    "publishing": "Checking…",
+    "need_category": "Choose a category.",
+    "need_service": "Choose at least one service.",
+    "need_name": "Write your first name.",
+    "need_region": "Choose a region.",
+    "need_phone": "Enter the full phone number.",
+    "description": "{category}: {services}. Area: {place}.",
+    "done_live": "Your ad is live! Clients now see you in this section.",
+    "review_title": "Your ad was received",
+    "review_desc": "Once your work photos are checked, the ad appears in the catalogue. See the status in your cabinet.",
+    "to_cabinet": "Open cabinet"
+  },
+  "svc": {
+    "ac": {
+      "install": "AC installation",
+      "clean": "Cleaning and service",
+      "freon": "Freon refill",
+      "repair": "Repair",
+      "dismantle": "Dismantling"
+    },
+    "plumber": {
+      "pipes": "Pipe laying",
+      "taps": "Taps and mixers",
+      "toilet": "Toilet and sink installation",
+      "sewer": "Drain cleaning",
+      "heater": "Water heater installation",
+      "leak": "Leak repair"
+    },
+    "electric": {
+      "wiring": "Wiring",
+      "sockets": "Sockets and switches",
+      "lights": "Chandelier and light installation",
+      "panel": "Electrical panel (breakers)",
+      "fault": "Fault finding"
+    },
+    "appliance": {
+      "washer": "Washing machines",
+      "fridge": "Fridges",
+      "stove": "Gas stoves and ovens",
+      "tv": "TVs",
+      "small": "Vacuum cleaners and small appliances"
+    },
+    "repair": {
+      "flat": "Flat renovation",
+      "tiles": "Tiling",
+      "drywall": "Drywall",
+      "plaster": "Plastering",
+      "floor": "Flooring (laminate, linoleum)",
+      "doors": "Door and window installation"
+    },
+    "painter": {
+      "walls": "Wall painting",
+      "ceiling": "Ceiling painting",
+      "facade": "Facade painting",
+      "wallpaper": "Wallpapering"
+    },
+    "builder": {
+      "brick": "Bricklaying",
+      "concrete": "Concrete work",
+      "roof": "Roofing",
+      "foundation": "Foundations",
+      "small": "Small construction jobs"
+    },
+    "welder": {
+      "gates": "Gates and grilles",
+      "frames": "Metal structures",
+      "canopy": "Canopies",
+      "welding": "Welding work"
+    },
+    "locksmith": {
+      "open": "Lock opening",
+      "replace": "Lock replacement",
+      "install": "Lock installation",
+      "keys": "Key cutting"
+    },
+    "moving": {
+      "flat": "Home moving",
+      "office": "Office moving",
+      "city": "City freight",
+      "intercity": "Intercity freight",
+      "loaders": "Loaders"
+    },
+    "furniture": {
+      "assembly": "Furniture assembly",
+      "disassembly": "Furniture disassembly",
+      "kitchen": "Kitchen installation",
+      "wardrobe": "Wardrobe assembly",
+      "repair": "Furniture repair"
+    }
+  }
 }
