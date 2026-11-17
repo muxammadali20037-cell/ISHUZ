@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ChevronLeft, MapPin, Pencil } from "lucide-react";
+import { ChevronLeft, MapPin, Pencil, Phone } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatPhone } from "@/lib/format";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
@@ -70,6 +70,14 @@ export default async function ListingPage({ params }: Params) {
                 <Pencil className="size-5" aria-hidden /> {t("easy.cabinet.edit")}
               </Link>
             </Button>
+            {/* egasi e'londa qaysi raqam(lar) ko'rinishini ko'radi (0081: oynada qo'lda yozilgan) */}
+            {w.phone ? (
+              <p className="flex w-full flex-wrap items-center gap-x-2 text-base" data-listing-own-phones>
+                <Phone className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+                <span className="text-muted-foreground">{t("easy.listing.own_phone")}:</span>
+                <span className="font-semibold tabular">{[w.phone, w.phone2].filter((p): p is string => !!p).map(formatPhone).join(" · ")}</span>
+              </p>
+            ) : null}
           </div>
         ) : null}
 
@@ -131,6 +139,16 @@ export default async function ListingPage({ params }: Params) {
             {w.phone ? (
               <>
                 <CallBlock phone={w.phone} />
+                {/* 0081: qo'shimcha raqam ("+ Yana raqam") */}
+                {w.phone2 ? (
+                  <a
+                    href={`tel:${w.phone2.replace(/[^\d+]/g, "")}`}
+                    className="press flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-semibold hover:bg-secondary"
+                    data-listing-phone2
+                  >
+                    <Phone className="size-5" aria-hidden /> {t("easy.listing.phone2")}: <span className="tabular">{formatPhone(w.phone2)}</span>
+                  </a>
+                ) : null}
                 {isEmployer ? (
                   <Button asChild variant="outline" className="h-12 w-full text-base">
                     <Link href={`/workers/${w.id}`}>{t("easy.listing.open_full")}</Link>

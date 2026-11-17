@@ -43,6 +43,8 @@ export async function quickPostPrepare(input: unknown): Promise<Out<PostUndersto
   }
 }
 
+const phoneSchema = z.string().regex(/^\+998\d{9}$/);
+
 const answersSchema = z.object({
   professionId: z.uuid(),
   firstName: z.string().trim().min(2).max(60),
@@ -50,10 +52,9 @@ const answersSchema = z.object({
   regionId: z.uuid(),
   districtId: z.uuid().nullable(),
   experience: z.enum(["none", "lt1", "1_3", "3plus"]),
-  phone: z
-    .string()
-    .regex(/^\+998\d{9}$/)
-    .nullable(),
+  // e'londagi raqam: oynada qo'lda yoziladi, majburiy; ikkinchisi ixtiyoriy (bir xil bo'lsa — saqlanmaydi)
+  phone: phoneSchema,
+  phone2: phoneSchema.nullable(),
 });
 
 /** "Tasdiqlash": e'lon qanday ko'rinishi (joylanadigan matnning o'zi) */
@@ -62,8 +63,6 @@ export async function quickPostPreview(input: unknown): Promise<Out<PostPreview>
   if (!parsed.success) return { ok: false, error: "validation" };
   const g = await guard();
   if (!g.ok) return g;
-  // mehmon telefonsiz joylay olmaydi (kirish sahifasiga shu raqam bilan o'tadi)
-  if (!g.session && !parsed.data.phone) return { ok: false, error: "phone_required" };
   try {
     const preview = await buildPreview(g.session, parsed.data);
     return preview ? { ok: true, data: preview } : { ok: false, error: "validation" };
@@ -82,7 +81,6 @@ export async function quickPostPublish(input: unknown): Promise<Out<PostOutcome>
   if (session.profile.is_blocked) return { ok: false, error: "blocked" };
   const preview = await buildPreview(session, parsed.data);
   if (!preview) return { ok: false, error: "validation" };
-  if (preview.needPhone) return { ok: false, error: "phone_required" };
   const a = parsed.data;
   const res = await publishWorkerListing({
     professionNodeId: a.professionId,
@@ -98,8 +96,11 @@ export async function quickPostPublish(input: unknown): Promise<Out<PostOutcome>
     // ega: "oylik maosh kerak emas"
     salary: null,
     schedule: null,
-    // ish beruvchilar qo'ng'iroq qilishi uchun (oynada aytiladi)
+    // ish beruvchilar qo'ng'iroq qilishi uchun (oynada aytiladi). 0081 dan keyin e'londa qo'lda yozilgan raqam(lar)
+    // ko'rsatiladi va hisob raqamining ko'rinishi o'zgarmaydi; 0081 qo'llanmagan bazada — avvalgidek hisob raqami.
     showPhone: true,
+    listingPhone: a.phone,
+    listingPhone2: a.phone2 && a.phone2 !== a.phone ? a.phone2 : null,
     source: "ai",
   });
   if (!res.ok || !res.data) return { ok: false, error: res.ok ? "generic" : res.error };

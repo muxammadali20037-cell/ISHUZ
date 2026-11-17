@@ -5,11 +5,14 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
  * "+ E'lon joylash" → Yordamchi (ega, 2026-11-17): "men o'qituvchiman" deb yozadi (yoki "uqituvchi", "oqtvchi") → kerak bo'lsa
  * "Aynan qanday o'qituvchisiz?" variantlari → oyna (kasb, ism, hudud, tajriba, telefon — oylik maosh yo'q) → "Tasdiqlash" →
  * "Sizning e'loningiz shunday ko'rinadi" → "Joylash" → avtomatik tekshiruv → "Tabriklaymiz". Boshqa mavzuda oyna chiqmaydi.
+ * Telefon (ega, 2026-11-17): har doim qo'lda yoziladi va majburiy (hisob raqami oldindan qo'yilmaydi), "+ Yana raqam" — ikkinchisi;
+ * e'londa shu raqam(lar) ko'rinadi, hisob raqami emas (0081).
  */
 
 test.use({ serviceWorkers: "block" });
 
 test.afterEach(async () => {
+  await sql("delete from public.worker_listing_phones where worker_id in (select id from public.worker_profiles where profile_id = $1)", [USERS.workerB]);
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
   await sql("update public.profiles set first_name = 'Botir', last_name = 'Boboyev' where id = $1", [USERS.workerB]);
 });
@@ -53,11 +56,19 @@ test("mehmon (telefon): bosh sahifa → yordamchi → «men o'qituvchiman» → 
   await expect(form.getByText("Ismingizni yozing.")).toBeVisible();
   await expect(form.getByText("Hududni tanlang.")).toBeVisible();
   await expect(form.getByText("Tajribangizni tanlang.")).toBeVisible();
+  // telefon majburiy
+  await expect(form.locator("[data-ai-post-phones]").getByText("Telefon raqamini to'liq yozing.")).toBeVisible();
 
   await form.locator("[data-ai-post-first-name]").fill("Botir");
   await form.locator("[data-ai-post-region]").selectOption({ label: "Toshkent shahri" });
   await form.locator("[data-exp='1_3']").click();
   await form.locator("#phone").fill("901234567");
+  // "+ Yana raqam" — ikkinchi raqam (chala yozilsa — xato; olib tashlash mumkin)
+  await form.locator("[data-ai-post-add-phone]").click();
+  await form.locator("#phone2").fill("93555");
+  await page.locator("[data-ai-post-confirm]").click();
+  await expect(form.locator("[data-ai-post-phone2]").getByText("Telefon raqamini to'liq yozing.")).toBeVisible();
+  await form.locator("#phone2").fill("935551122");
   await page.locator("[data-ai-post-confirm]").click();
 
   // "Sizning e'loningiz shunday ko'rinadi" — joylanadigan matnning o'zi (faqat aytilganlardan)
@@ -70,6 +81,8 @@ test("mehmon (telefon): bosh sahifa → yordamchi → «men o'qituvchiman» → 
   await expect(card.locator("[data-ai-post-about]")).toHaveText("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
   // ekranda telefon raqami ko'rsatilmaydi (faqat "ko'rinadi" degan yozuv)
   await expect(card).not.toContainText("90 123");
+  await expect(card).not.toContainText("93 555");
+  await expect(card.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan ikkala raqam e'londa ko'rinadi — ish beruvchilar qo'ng'iroq qiladi");
 
   // mehmon "Joylash" → telefon bilan kirish (SMS) → shu yerga qaytadi
   await page.locator("[data-ai-post-publish]").click();
@@ -98,6 +111,12 @@ test("mehmon (telefon): bosh sahifa → yordamchi → «men o'qituvchiman» → 
   expect(w?.about).toBe("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
   expect(w?.salary).toBeNull();
   expect(w?.is_public).toBe(true);
+  // e'londa — qo'lda yozilgan ikkala raqam
+  const [lp] = await sql<{ phone: string; phone2: string | null }>(
+    "select phone, phone2 from public.worker_listing_phones where worker_id = (select id from public.worker_profiles where profile_id = $1)",
+    [USERS.workerB],
+  );
+  expect(lp).toEqual({ phone: "+998901234567", phone2: "+998935551122" });
   const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
   expect(overflow).toBeLessThanOrEqual(0);
 });
@@ -123,9 +142,10 @@ test("boshqa mavzu — oyna chiqmaydi; «oqtvchi» (imlo xatosi) → o'qituvchi 
   await say(page, "ish kerak");
   const form = page.locator("[data-ai-post-form]");
   await expect(form).toBeVisible();
-  // kirgan foydalanuvchi: ism va telefon hisobdan (telefon o'zgartirilmaydi)
+  // kirgan foydalanuvchi: ism hisobdan; telefon esa oldindan qo'yilmaydi — qo'lda yoziladi
   await expect(form.locator("[data-ai-post-first-name]")).toHaveValue("Botir");
-  await expect(form.getByText("Tasdiqlangan")).toBeVisible();
+  await expect(form.locator("#phone")).toHaveValue("+998 ");
+  await expect(form.getByText("Tasdiqlangan")).toHaveCount(0);
   await form.locator("[data-ai-post-profession-input]").fill("uqituvchi");
   await form.locator("[data-ai-post-find]").click();
   await options.locator("[data-ai-post-option]", { hasText: "Ingliz tili o'qituvchisi" }).click();
@@ -147,15 +167,40 @@ test("kirgan (kompyuter): «haydovchiman, Samarqand» → oyna darhol (kasb va h
   await expect(form.locator("[data-ai-post-profession]")).toContainText(/haydovchi/i);
   await expect(form.locator("[data-ai-post-region] option:checked")).toHaveText("Samarqand");
   await form.locator("[data-exp='3plus']").click();
+  // hisobida tasdiqlangan raqam bo'lsa ham — raqam yozilmasa e'lon berilmaydi
+  await expect(form.locator("#phone")).toHaveValue("+998 ");
+  await page.locator("[data-ai-post-confirm]").click();
+  await expect(form.getByText("Telefon raqamini to'liq yozing.")).toBeVisible();
+  await expect(page.locator("[data-ai-post-preview]")).toHaveCount(0);
+  await form.locator("#phone").fill("97 444 55 66");
   await page.locator("[data-ai-post-confirm]").click();
   await expect(page.locator("[data-ai-post-preview] [data-ai-post-about]")).toContainText("Tajribam — 3 yildan ko'p. Hudud: Samarqand.");
+  await expect(page.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan raqam e'londa ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi");
   // "O'zgartirish" — oynaga qaytadi, javoblar saqlangan
   await page.locator("[data-ai-post-edit]").click();
   await expect(form.locator("[data-exp='3plus']")).toHaveAttribute("aria-checked", "true");
   await page.locator("[data-ai-post-confirm]").click();
   await page.locator("[data-ai-post-publish]").click();
   await expect(page.getByRole("heading", { level: 1, name: "Tabriklaymiz! E'loningiz joylandi" })).toBeVisible({ timeout: 30_000 });
-  await expect(page.getByRole("link", { name: "E'lonimni ko'rish" })).toHaveAttribute("href", /^\/listing\//);
+  const view = page.getByRole("link", { name: "E'lonimni ko'rish" });
+  await expect(view).toHaveAttribute("href", /^\/listing\//);
+  const href = (await view.getAttribute("href"))!;
+
+  // e'londa — qo'lda yozilgan raqam (hisob raqami emas); hisob raqami va uning sozlamasi o'zgarmadi
+  const [acc] = await sql<{ phone: string | null; vis: string }>("select phone, phone_visibility::text as vis from public.profile_contacts where profile_id = $1", [USERS.workerB]);
+  const [lp] = await sql<{ phone: string; phone2: string | null }>("select phone, phone2 from public.worker_listing_phones where worker_id = (select id from public.worker_profiles where profile_id = $1)", [USERS.workerB]);
+  expect(lp).toEqual({ phone: "+998974445566", phone2: null });
+  expect(acc?.phone).not.toBe("+998974445566");
+  await page.goto(href);
+  await expect(page.locator("[data-listing-own-phones]")).toContainText("+998 97 444 55 66");
+
+  // boshqa kirgan foydalanuvchi (ish beruvchi) e'londa shu raqamni ko'radi
+  await loginAs(context, USERS.employer);
+  await page.goto(href);
+  const contact = page.locator("#contact");
+  await expect(contact).toContainText("+998 97 444 55 66");
+  if (acc?.phone) await expect(contact).not.toContainText(acc.phone.replace(/^\+998(\d{2})(\d{3})(\d{2})(\d{2})$/, "+998 $1 $2 $3 $4"));
+  await expect(contact.locator("[data-listing-phone2]")).toHaveCount(0);
 });
 
 test("ish qidirish (Yordamchi): «salom» — oyna emas, qisqa javob", async ({ page, context }) => {

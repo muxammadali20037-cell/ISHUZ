@@ -398,7 +398,9 @@
     "contact_hidden_logged": "Raqam yashirilgan. Ish beruvchi sifatida to'liq profilni ochib, so'rov yuborishingiz mumkin.",
     "open_full": "To'liq profilni ochish",
     "not_found": "E'lon topilmadi yoki endi faol emas",
-    "back": "Qidiruvga qaytish"
+    "back": "Qidiruvga qaytish",
+    "phone2": "Qo'shimcha raqam",
+    "own_phone": "E'londagi raqam"
   },
   "image": {
     "label": "Kasb tasviri"
@@ -1415,7 +1417,7 @@
     "confirm": "Tasdiqlash",
     "preview_title": "Sizning e'loningiz shunday ko'rinadi",
     "preview_desc": "Hammasi to'g'ri bo'lsa — «Joylash».",
-    "preview_phone": "Telefon raqamingiz e'londa ko'rinadi",
+    "preview_phone": "Siz yozgan raqam e'londa ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi",
     "publish": "Joylash",
     "edit": "O'zgartirish",
     "login_first": "Joylash uchun telefon raqamingizni tasdiqlaysiz (SMS kod).",
@@ -1434,6 +1436,10 @@
       "lt1": "Tajribam — 1 yilgacha.",
       "1_3": "Tajribam — 1–3 yil.",
       "3plus": "Tajribam — 3 yildan ko'p."
-    }
+    },
+    "add_phone": "Yana raqam",
+    "q_phone2": "Qo'shimcha raqam",
+    "remove_phone": "Qo'shimcha raqamni olib tashlash",
+    "preview_phones": "Siz yozgan ikkala raqam e'londa ko'rinadi — ish beruvchilar qo'ng'iroq qiladi"
   }
 }

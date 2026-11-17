@@ -4471,6 +4471,36 @@ export type Database = {
           },
         ];
       };
+      worker_listing_phones: {
+        Row: {
+          phone: string;
+          phone2: string | null;
+          updated_at: string;
+          worker_id: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          phone: string;
+          phone2?: string | null;
+          updated_at?: string;
+          worker_id: string;
+        };
+        Update: {
+          phone?: string;
+          phone2?: string | null;
+          updated_at?: string;
+          worker_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "worker_listing_phones_worker_id_fkey";
+            columns: ["worker_id"];
+            isOneToOne: true;
+            referencedRelation: "worker_profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       worker_locations: {
         Row: {
           district_id: string;
@@ -6675,6 +6705,7 @@ export type Database = {
           last_active_at: string;
           last_initial: string;
           phone: string;
+          phone2: string;
           profession_name_en: string;
           profession_name_ru: string;
           profession_name_uz: string;

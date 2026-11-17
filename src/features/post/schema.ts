@@ -29,8 +29,16 @@ export const workerListingSchema = z
   showPhone: z.boolean(),
   /** "ai" — AI bilan tez tayyorlangan (statistika uchun) */
   source: z.enum(["manual", "ai"]).optional(),
+  /**
+   * E'londa ko'rsatiladigan raqam — oynada qo'lda yoziladi (0081, ega: "profildagi nomer emas, xohlasa boshqa nomer").
+   * Berilmasa — e'londa hisob raqami (rozilik bilan), avvalgidek.
+   */
+  listingPhone: phone.nullable().optional(),
+  /** qo'shimcha raqam ("+ Yana raqam"), ixtiyoriy */
+  listingPhone2: phone.nullable().optional(),
   })
-  .refine(oneProfession, { path: ["professionNodeId"] });
+  .refine(oneProfession, { path: ["professionNodeId"] })
+  .refine((v) => !v.listingPhone2 || !!v.listingPhone, { path: ["listingPhone2"] });
 export type WorkerListingInput = z.infer<typeof workerListingSchema>;
 
 /** Ish beruvchi e'loni */

@@ -43,8 +43,6 @@ export interface PostForm {
   loggedIn: boolean;
   firstName: string;
   lastName: string;
-  /** hisobdagi telefon (kirgan bo'lsa); mehmon — oynada yozadi */
-  phone: string | null;
 }
 
 export interface PostAnswers {
@@ -54,8 +52,13 @@ export interface PostAnswers {
   regionId: string;
   districtId: string | null;
   experience: PostExperience;
-  /** faqat mehmon uchun (kirish sahifasiga o'tkaziladi); kirgan foydalanuvchida — hisob raqami */
-  phone: string | null;
+  /**
+   * E'londagi raqam — har doim oynada qo'lda yoziladi, majburiy (ega, 2026-11-17: "profildagi nomer emas — xohlasa boshqa
+   * nomer, lekin qo'lda yozilsin"). Mehmon uchun kirish sahifasiga ham shu raqam o'tkaziladi.
+   */
+  phone: string;
+  /** "+ Yana raqam" — ixtiyoriy ikkinchi raqam */
+  phone2: string | null;
 }
 
 /** "Sizning e'loningiz shunday ko'rinadi" — serverda, joylanadigan matnning o'zi */
@@ -68,8 +71,6 @@ export interface PostPreview {
   place: string;
   about: string;
   loggedIn: boolean;
-  /** kirgan foydalanuvchida telefon hisobda yo'q — joylashdan oldin tasdiqlash kerak */
-  needPhone: boolean;
 }
 
 /** Joylash natijasi (haqiqiy holat) */

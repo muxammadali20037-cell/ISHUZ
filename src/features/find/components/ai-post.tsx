@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
-import { ArrowUp, BadgeCheck, BriefcaseBusiness, ChevronLeft, ChevronRight, MapPin, Pencil, Phone, RotateCcw, Search } from "lucide-react";
+import { ArrowUp, BadgeCheck, BriefcaseBusiness, ChevronLeft, ChevronRight, MapPin, Pencil, Phone, Plus, RotateCcw, Search, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { celebrate } from "@/lib/celebrate";
@@ -16,8 +16,7 @@ import { AiAvatar } from "@/components/shared/ai-avatar";
 import { BackLink } from "@/components/shared/back-link";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { MESSAGE_MAX_CHARS } from "@/features/assistant/types";
-import { PhoneInput, VerifiedPhone } from "@/features/post/components/inputs";
-import { PhoneField } from "@/features/onboarding/components/steps/step-1-personal";
+import { PhoneInput } from "@/features/post/components/inputs";
 import { PublishResult } from "@/features/post/components/publish-result";
 import { ModerationOutcome } from "@/features/post/components/moderation-outcome";
 import { AlertToggle } from "@/features/alerts/components/alert-toggle";
@@ -29,6 +28,7 @@ import { POST_EXPERIENCES, type PostAnswers, type PostChoice, type PostChoiceGro
  *  1) yozadi: "men o'qituvchiman" (yoki "uqituvchi", "oqtvchi") → kasb tushuniladi; boshqa mavzu bo'lsa — oyna chiqmaydi;
  *  2) kerak bo'lsa: "Aynan qanday o'qituvchisiz?" — variantlar oynasi;
  *  3) oyna: kasb, ism, hudud, tajriba, telefon (oylik maosh yo'q) → "Tasdiqlash";
+ *     telefon har doim qo'lda yoziladi va majburiy (hisob raqami oldindan qo'yilmaydi), "+ Yana raqam" — ikkinchisi;
  *  4) "Sizning e'loningiz shunday ko'rinadi" → "Joylash" → avtomatik tekshiruv → "Tabriklaymiz".
  * Mehmon "Joylash"ni bossa — telefonini tasdiqlab (SMS) shu yerga qaytadi va e'lon o'sha javoblar bilan joylanadi.
  */
@@ -43,7 +43,10 @@ interface Values {
   /** "" — butun viloyat */
   districtId: string;
   experience: PostExperience | null;
+  /** e'londagi raqam — qo'lda yoziladi (bo'sh "+998 " dan boshlanadi) */
   phone: string;
+  /** "+ Yana raqam": null — maydon ochilmagan */
+  phone2: string | null;
 }
 
 type Screen = "options" | "form" | "preview";
@@ -69,11 +72,19 @@ function initialValues(form: PostForm): Values {
     districtId: form.districtId ?? "",
     experience: null,
     phone: "+998 ",
+    phone2: null,
   };
 }
 
-function toAnswers(v: Values, loggedIn: boolean): PostAnswers | null {
-  if (!v.profession || !v.regionId || !v.experience) return null;
+/** ikkinchi raqam: ochilmagan yoki bo'sh qoldirilgan — yo'q; birinchisi bilan bir xil — saqlanmaydi */
+function secondPhone(v: Values): string | null {
+  const p2 = v.phone2 === null ? null : normalizePhone(v.phone2);
+  return p2 && p2 !== normalizePhone(v.phone) ? p2 : null;
+}
+
+function toAnswers(v: Values): PostAnswers | null {
+  const phone = normalizePhone(v.phone);
+  if (!v.profession || !v.regionId || !v.experience || !phone) return null;
   return {
     professionId: v.profession.id,
     firstName: v.firstName.trim(),
@@ -81,7 +92,8 @@ function toAnswers(v: Values, loggedIn: boolean): PostAnswers | null {
     regionId: v.regionId,
     districtId: v.districtId || null,
     experience: v.experience,
-    phone: loggedIn ? null : normalizePhone(v.phone),
+    phone,
+    phone2: secondPhone(v),
   };
 }
 
@@ -181,7 +193,8 @@ export function AiPostClient({ resume }: { resume: boolean }) {
           regionId: answers.regionId,
           districtId: answers.districtId ?? "",
           experience: answers.experience,
-          phone: "+998 ",
+          phone: answers.phone,
+          phone2: answers.phone2,
         },
         screen: "preview",
         question: null,
@@ -206,8 +219,7 @@ export function AiPostClient({ resume }: { resume: boolean }) {
       } catch {
         // xotira yopiq — kirgandan keyin oyna qaytadan to'ldiriladi
       }
-      const q = new URLSearchParams({ next: "/ai/post?resume=1" });
-      if (preview.answers.phone) q.set("phone", preview.answers.phone);
+      const q = new URLSearchParams({ next: "/ai/post?resume=1", phone: preview.answers.phone });
       router.push(`/auth?${q.toString()}`);
       return;
     }
@@ -470,7 +482,7 @@ function OptionsSheet({ flow, onPick }: { flow: Flow; onPick: (p: PostChoice) =>
   );
 }
 
-type Errors = Partial<Record<"profession" | "firstName" | "region" | "experience" | "phone" | "form", string>>;
+type Errors = Partial<Record<"profession" | "firstName" | "region" | "experience" | "phone" | "phone2" | "form", string>>;
 
 function FormSheet({
   flow,
@@ -515,15 +527,16 @@ function FormSheet({
     if (v.firstName.trim().length < 2) err.firstName = t("easy.post_ai.need_name");
     if (!v.regionId) err.region = t("easy.post_ai.need_region");
     if (!v.experience) err.experience = t("easy.post_ai.need_experience");
-    if (!form.loggedIn && !normalizePhone(v.phone)) err.phone = t("easy.post_ai.need_phone");
-    const answers = toAnswers(v, form.loggedIn);
+    // telefon majburiy va qo'lda yoziladi; ikkinchisi — yozila boshlangan bo'lsa, to'liq bo'lishi kerak
+    if (!normalizePhone(v.phone)) err.phone = t("easy.post_ai.need_phone");
+    if (v.phone2 !== null && v.phone2.replace(/\D/g, "").length > 3 && !normalizePhone(v.phone2)) err.phone2 = t("easy.post_ai.need_phone");
+    const answers = toAnswers(v);
     if (Object.keys(err).length || !answers) return setErrors(err);
     setErrors({});
     setPending(true);
     const res = await callAction(() => quickPostPreview(answers));
     setPending(false);
     if (!res.ok || !res.data) return setErrors({ form: errorText(res.ok ? "generic" : res.error) });
-    if (res.data.needPhone) return setErrors({ phone: t("easy.errors.phone_required") });
     onPreview(res.data);
   };
 
@@ -648,24 +661,49 @@ function FormSheet({
           {err(errors.experience)}
         </fieldset>
 
-        <div className="space-y-1.5">
+        {/* ega (2026-11-17): raqam qo'lda yoziladi, majburiy; hisobdagi raqam oldindan qo'yilmaydi; "+ Yana raqam" — ikkinchisi */}
+        <div className="space-y-1.5" data-ai-post-phones>
           <label htmlFor="phone" className={label}>
             {t("easy.post_ai.q_phone")}
           </label>
-          {form.loggedIn ? (
-            form.phone ? (
-              <VerifiedPhone phone={form.phone} />
-            ) : (
-              <PhoneField contacts={null} />
-            )
+          <PhoneInput id="phone" value={v.phone} onChange={(p) => setValues({ phone: p })} invalid={!!errors.phone} describedBy="ai-post-phone-note" />
+          {err(errors.phone)}
+          {v.phone2 === null ? (
+            <button
+              type="button"
+              onClick={() => setValues({ phone2: "+998 " })}
+              className="press inline-flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-base font-semibold text-primary-ink hover:underline"
+              data-ai-post-add-phone
+            >
+              <Plus className="size-5" aria-hidden /> {t("easy.post_ai.add_phone")}
+            </button>
           ) : (
-            <PhoneInput id="phone" value={v.phone} onChange={(p) => setValues({ phone: p })} invalid={!!errors.phone} describedBy="ai-post-phone-note" />
+            <div className="space-y-1.5 pt-1" data-ai-post-phone2>
+              <label htmlFor="phone2" className={label}>
+                {t("easy.post_ai.q_phone2")} <span className="text-sm font-normal text-muted-foreground">({t("easy.post_ai.optional")})</span>
+              </label>
+              <div className="flex items-start gap-2">
+                <div className="min-w-0 flex-1">
+                  <PhoneInput id="phone2" value={v.phone2} onChange={(p) => setValues({ phone2: p })} invalid={!!errors.phone2} />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setValues({ phone2: null })}
+                  aria-label={t("easy.post_ai.remove_phone")}
+                  title={t("easy.post_ai.remove_phone")}
+                  className="press flex size-14 shrink-0 items-center justify-center rounded-2xl border border-border text-muted-foreground hover:bg-secondary hover:text-foreground"
+                  data-ai-post-remove-phone
+                >
+                  <X className="size-5" aria-hidden />
+                </button>
+              </div>
+              {err(errors.phone2)}
+            </div>
           )}
           <p id="ai-post-phone-note" className="flex items-start gap-1.5 text-sm text-muted-foreground">
             <Phone className="mt-0.5 size-4 shrink-0" aria-hidden />
             {form.loggedIn ? t("easy.post_ai.phone_note") : `${t("easy.post_ai.phone_note")} ${t("easy.post_ai.phone_login_note")}`}
           </p>
-          {err(errors.phone)}
         </div>
       </form>
     </Sheet>
@@ -725,8 +763,9 @@ function PreviewSheet({ preview, onEdit, onPublish, busy }: { preview: PostPrevi
         <p className="px-4 pb-3 pt-3 text-base leading-relaxed" data-ai-post-about>
           {preview.about}
         </p>
-        <p className="flex items-center gap-2 border-t border-border px-4 py-3 text-sm text-muted-foreground">
-          <Phone className="size-4 shrink-0" aria-hidden /> {t("easy.post_ai.preview_phone")}
+        {/* raqamning o'zi ekranda ko'rsatilmaydi — faqat "e'londa ko'rinadi" (bitta yoki ikkala raqam) */}
+        <p className="flex items-center gap-2 border-t border-border px-4 py-3 text-sm text-muted-foreground" data-ai-post-preview-phones>
+          <Phone className="size-4 shrink-0" aria-hidden /> {t(preview.answers.phone2 ? "easy.post_ai.preview_phones" : "easy.post_ai.preview_phone")}
         </p>
       </article>
     </Sheet>
