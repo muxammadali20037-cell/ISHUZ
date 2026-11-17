@@ -19,11 +19,14 @@ type Out<T> = { ok: true; data: T } | { ok: false; error: "validation" | "forbid
 
 const mode = z.enum(["jobs", "workers"]);
 
-async function guard(): Promise<{ ok: true; session: Awaited<ReturnType<typeof getSession>> } | { ok: false; error: "forbidden" | "rate_limited" }> {
+async function guard(kind: "find" | "prefetch" = "find"): Promise<{ ok: true; session: Awaited<ReturnType<typeof getSession>> } | { ok: false; error: "forbidden" | "rate_limited" }> {
   const session = await getSession();
   if (session?.profile.is_blocked) return { ok: false, error: "forbidden" };
-  const key = session ? `quick_find:${session.userId}` : `quick_find_ip:${subjectHash("ip", ipBucket(clientIp(await headers())))}`;
-  if (!(await allowRate(key, session ? 120 : 200, 3600))) return { ok: false, error: "rate_limited" };
+  // oldindan qidiruv (oyna ochilganda) — alohida, kengroq limit: "Qidirish" limitini yemasin
+  const prefix = kind === "prefetch" ? "quick_prefetch" : "quick_find";
+  const key = session ? `${prefix}:${session.userId}` : `${prefix}_ip:${subjectHash("ip", ipBucket(clientIp(await headers())))}`;
+  const limit = (session ? 120 : 200) * (kind === "prefetch" ? 2 : 1);
+  if (!(await allowRate(key, limit, 3600))) return { ok: false, error: "rate_limited" };
   return { ok: true, session };
 }
 
@@ -45,6 +48,8 @@ export async function quickPrepare(input: unknown): Promise<Out<QuickForm>> {
 
 const searchSchema = z.object({
   mode,
+  /** oyna ochilganda oldindan: hech narsa saqlanmaydi va statistikaga yozilmaydi */
+  prefetch: z.boolean().optional(),
   answers: z.object({
     profession: z.string().max(120),
     nodeId: z.uuid().nullable(),
@@ -62,10 +67,10 @@ const searchSchema = z.object({
 export async function quickSearch(input: unknown): Promise<Out<QuickResult>> {
   const parsed = searchSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: "validation" };
-  const g = await guard();
+  const g = await guard(parsed.data.prefetch ? "prefetch" : "find");
   if (!g.ok) return g;
   try {
-    const res = await runQuick({ mode: parsed.data.mode, answers: parsed.data.answers, session: g.session });
+    const res = await runQuick({ mode: parsed.data.mode, answers: parsed.data.answers, session: g.session, prefetch: parsed.data.prefetch });
     return res.ok ? res : { ok: false, error: "search_failed" };
   } catch (e) {
     console.error(JSON.stringify({ quick_search_error: e instanceof Error ? e.message.slice(0, 160) : "error" }));

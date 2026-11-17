@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-17 · Qidiruv tezroq (`claude/search-speed`)
+
+Ega: "hammasi tezlik bilan bo'lsin, qulay, sodda bo'lsin".
+
+- **Oldindan qidiruv:** yordamchi oynasi ("Qanday ish?", "Qaysi hududda?") ochilishi bilan standart javoblar bo'yicha natija
+  so'raladi (hech narsa saqlanmaydi, statistikaga yozilmaydi; alohida limit). "Qidirish" o'zgarishsiz bosilsa va e'lon
+  topilgan bo'lsa — natija darhol (sinovda, bazagacha 60 ms kechikish bilan: 420 ms → 70 ms). Topilmasa — haqiqiy qidiruv
+  ("so'rovingiz saqlandi" va o'xshashlar faqat unda).
+- **Kamroq ketma-ket so'rov:** kasb oldindan tushunilgan bo'lsa qidiruv kasb ma'lumoti bilan bir vaqtda; "shunga yaqin
+  ishlar" variantlari va qidiruvni saqlash — parallel; "Aynan qanday o'qituvchisiz?" variantlari — bitta so'rov bilan
+  (avval ~9 ta); e'lon oynasidagi ism va telefon — tushunish bilan bir vaqtda.
+- **AI tushunish:** qidiruv so'rovini tushunishda tezkor model (`claude-haiku-5-5`, `ANTHROPIC_FAST_MODEL` bilan
+  almashtiriladi) va 4 soniya chegara (avval 8) — oshsa, lug'at qoidalari bilan davom etadi.
+
 ## 2026-11-17 · Usta e'loni — oynama-oyna, darhol joylanadi (`claude/masters-wizard`)
 
 Ega: "Ustalar e'lon joylashda: kategoriyani tanladi — ikkinchi oyna, xizmatini tanlasin; keyin ism-familiya; keyingi

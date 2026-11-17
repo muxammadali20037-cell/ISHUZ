@@ -25,6 +25,8 @@ export interface AiCallOptions {
   timeoutMs?: number;
   temperature?: number;
   maxOutputTokens?: number;
+  /** Claude'da tezkor (arzon) model — qisqa, oddiy vazifalar uchun (qidiruv so'rovini tushunish) */
+  fast?: boolean;
 }
 
 type JsonSchema = {

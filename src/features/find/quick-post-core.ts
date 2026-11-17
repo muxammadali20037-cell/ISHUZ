@@ -32,39 +32,47 @@ type NodeFull = NodeRow & { aliases: string[] };
 const namesOf = (n: { name_uz: string; name_ru: string; name_en: string | null; aliases?: string[] }) => [n.name_uz, n.name_ru, n.name_en ?? "", ...(n.aliases ?? [])].filter(Boolean);
 
 /**
- * Guruh ("O'qituvchi") ichidagi tanlanadigan kasblar: bevosita bolalari (sarlavhasiz) va kichik guruhlar
- * ("Chet tillari" → Ingliz tili o'qituvchisi, …) — uch pog'onagacha, daraxtdagi tartibda.
+ * Guruh ("O'qituvchi") ichidagi tanlanadigan kasblar — BITTA so'rov bilan (kasb yo'li `path` bo'yicha): guruhning o'zidagi aniq
+ * kasblar (sarlavhasiz) va kichik guruhlar ("Chet tillari" → Ingliz tili o'qituvchisi, …). Aniq kasbning ichidagi
+ * ixtisosliklar ("IELTS o'qituvchisi") ro'yxatga kirmaydi — asosiy daraja ko'rsatiladi. Daraxtdagi tartibda.
  */
 async function groupOptions(groupId: string): Promise<PostChoiceGroup[]> {
   const { name } = await getT();
-  const db = createPublicClient();
-  const level = async (parents: string[]): Promise<NodeRow[]> => {
-    if (!parents.length) return [];
-    const { data } = await db
-      .from("profession_nodes")
-      .select("id, parent_id, name_uz, name_ru, name_en, selectable, sort_order")
-      .in("parent_id", parents)
-      .eq("is_active", true)
-      .order("sort_order")
-      .order("name_uz");
-    return (data ?? []).filter((n) => !isProhibitedProfession(n));
-  };
-  const top = await level([groupId]);
-  const direct: PostChoice[] = top.filter((n) => n.selectable).map((n) => ({ id: n.id, name: name(n) }));
-  const groups: PostChoiceGroup[] = direct.length ? [{ title: null, items: direct }] : [];
-  let count = direct.length;
-  for (const sub of top.filter((n) => !n.selectable)) {
-    if (count >= MAX_OPTIONS) break;
-    // kichik guruh ichidagilar (bitta pog'ona chuqurroq ham — undan pastini ham shu sarlavha ostida)
-    const kids = await level([sub.id]);
-    const deeper = await level(kids.filter((k) => !k.selectable).map((k) => k.id));
-    const items = [...kids, ...deeper].filter((k) => k.selectable).slice(0, MAX_OPTIONS - count).map((k) => ({ id: k.id, name: name(k) }));
-    if (items.length) {
-      groups.push({ title: name(sub), items });
-      count += items.length;
-    }
+  const { data } = await createPublicClient()
+    .from("profession_nodes")
+    .select("id, parent_id, name_uz, name_ru, name_en, selectable, sort_order, path")
+    .contains("path", [groupId])
+    .eq("is_active", true)
+    .neq("id", groupId)
+    .order("depth")
+    .order("sort_order")
+    .order("name_uz")
+    .limit(600);
+  const rows = data ?? [];
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const buckets = new Map<string, PostChoice[]>();
+  let count = 0;
+  for (const r of rows) {
+    if (!r.selectable || isProhibitedProfession(r) || count >= MAX_OPTIONS) continue;
+    const at = r.path.indexOf(groupId);
+    const between = r.path.slice(at + 1, -1);
+    // faol bo'lmagan oraliq tugun yoki aniq kasbning ichidagi ixtisoslik — o'tkazib yuboriladi
+    if (at < 0 || between.some((id) => !byId.has(id) || byId.get(id)!.selectable)) continue;
+    const key = between[0] ?? "";
+    (buckets.get(key) ?? buckets.set(key, []).get(key)!).push({ id: r.id, name: name(r) });
+    count += 1;
   }
-  return groups;
+  const order = (key: string) => {
+    const n = byId.get(key);
+    return n ? [n.sort_order, n.name_uz] as const : [-Infinity, ""] as const;
+  };
+  return [...buckets.entries()]
+    .sort(([a], [b]) => {
+      const [sa, na] = order(a);
+      const [sb, nb] = order(b);
+      return sa === sb ? na.localeCompare(nb) : sa - sb;
+    })
+    .map(([key, items]) => ({ title: key ? name(byId.get(key)!) : null, items }));
 }
 
 /** "Aynan qanday o'qituvchisiz?" — bitta so'zli guruh nomi bilan; ko'p so'zli bo'lsa — "… : aynan qaysi biri?" */
@@ -76,9 +84,9 @@ function whichQuestion(t: (k: string, p?: Record<string, string | number>) => st
 }
 
 /** E'lon oynasining umumiy qismi: hudud (matndan yoki eslab qolingan), ro'yxatlar, hisobdagi ism va telefon */
-async function baseForm(text: string, session: SessionContext | null, said: { regionSlug: string | null; districtId: string | null }): Promise<PostForm> {
+async function baseForm(text: string, viewerP: ReturnType<typeof getPostViewer>, said: { regionSlug: string | null; districtId: string | null }): Promise<PostForm> {
   const { name } = await getT();
-  const [regions, districts, viewer] = await Promise.all([getRegions(), getDistricts(), getPostViewer(session)]);
+  const [regions, districts, viewer] = await Promise.all([getRegions(), getDistricts(), viewerP]);
   let regionSlug = said.regionSlug;
   let districtId = said.districtId;
   if (!regionSlug) {
@@ -120,7 +128,11 @@ async function selectableNode(id: string): Promise<NodeFull | null> {
 export async function preparePost(input: { text: string; session: SessionContext | null }): Promise<PostUnderstood> {
   const { t, name } = await getT();
   const text = input.text.trim();
-  if (!text) return { kind: "form", form: await baseForm("", input.session, { regionSlug: null, districtId: null }) };
+  // hisobdagi ism va telefon — tushunish bilan bir vaqtda (ketma-ket kutilmaydi)
+  const viewerP = getPostViewer(input.session);
+  // boshqa mavzu bo'lsa kutilmaydi — xatosi ishlanmagan bo'lib qolmasin
+  viewerP.catch(() => null);
+  if (!text) return { kind: "form", form: await baseForm("", viewerP, { regionSlug: null, districtId: null }) };
 
   // salomlashish, rahmat, "kimsan" — darhol qisqa javob (kasb qidirilmaydi)
   const pre = offTopic(text, false);
@@ -162,7 +174,7 @@ export async function preparePost(input: { text: string; session: SessionContext
   // "ish kerak", "e'lon joylamoqchiman" — oyna ochiladi, kasb unda yoziladi
   if (!found && !hasJobIntent(text)) return { kind: "reply", reply: t("easy.post_ai.reply.unclear") };
 
-  const form = { ...(await baseForm(text, input.session, { regionSlug: r.regionSlug, districtId: r.districtId })), profession };
+  const form = { ...(await baseForm(text, viewerP, { regionSlug: r.regionSlug, districtId: r.districtId })), profession };
   if (groups.length) return { kind: "options", question: whichQuestion(t, group), groups, form };
   return { kind: "form", form };
 }

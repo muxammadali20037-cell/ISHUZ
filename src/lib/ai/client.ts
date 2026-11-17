@@ -10,6 +10,11 @@ import { getServerEnv } from "@/lib/env";
  */
 export const AI_DEFAULT_MODEL = "claude-sonnet-5-5";
 export const AI_MODEL = process.env.ANTHROPIC_MODEL?.trim() || AI_DEFAULT_MODEL;
+/**
+ * Tezkor model — foydalanuvchi kutib turadigan qisqa vazifalar (qidiruv so'rovini tushunish): javob 2–3 baravar tezroq.
+ * Vercel'da ANTHROPIC_FAST_MODEL bilan almashtirish mumkin.
+ */
+export const AI_FAST_MODEL = process.env.ANTHROPIC_FAST_MODEL?.trim() || "claude-haiku-5-5";
 
 let cached: Anthropic | null = null;
 
