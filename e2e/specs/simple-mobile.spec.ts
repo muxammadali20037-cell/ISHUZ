@@ -3,7 +3,7 @@ import { USERS, asMode, loginAs, sql, stack } from "../support";
 
 /**
  * Soddalashtirish (2026-11-15, ega: "telefonda kirganda kategoriyalar chiqsin — chap menyudagidek, har birining ostida kichik
- * harf bilan nima qilishi; eng tagida qizilda rolni o'zgartirish; AI o'rniga tushunarli so'z; bugungi va yangi ishlar —
+ * harf bilan nima qilishi; eng tagida rolni o'zgartirish (2026-11-17: rangsiz); AI o'rniga tushunarli so'z; bugungi va yangi ishlar —
  * ichiga yashirilsin («ochish», «ko'rish»); profil ixcham, rolni o'zgartirish eng tepada; ustalarda «E'lon joylash» yozuvi").
  */
 
@@ -17,7 +17,7 @@ test.beforeEach(async () => {
   );
 });
 
-test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagida qizil rol almashtirish; yangi ishlar yig'ilgan", async ({ page, context }) => {
+test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz), eng tagida rol almashtirish; yangi ishlar yig'ilgan", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/");
@@ -50,11 +50,17 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli), eng tagid
   for (const key of order) {
     await expect(menu.locator(`[data-menu-item="${key}"]`)).toBeVisible();
   }
-  // eng tagida — qizil "Ish beruvchiga o'tish"
+  // eng tagida — "Ish beruvchiga o'tish" (2026-11-17: rangsiz — qizil emas)
   const sw = menu.locator("[data-role-switch]");
   await expect(sw).toHaveText(/Ish beruvchiga o'tish/);
   await expect(menu.locator(":scope > *").last()).toHaveAttribute("data-role-switch", "employer");
-  await expect(sw).toHaveClass(/text-destructive/); // qizil
+  await expect(sw).not.toHaveClass(/text-destructive/);
+  // bosh menyu rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): hamma belgi va nom bir xil rangda, "yangi" nuqtalari yo'q
+  const tileColors = await menu.locator("[data-menu-item] > span:first-child").evaluateAll((els) => els.map((e) => getComputedStyle(e).color + "|" + getComputedStyle(e).backgroundColor));
+  expect(new Set(tileColors).size).toBe(1);
+  const labelColors = await menu.locator("[data-menu-item] span.font-bold").evaluateAll((els) => els.map((e) => getComputedStyle(e).color));
+  expect(new Set(labelColors).size).toBe(1);
+  await expect(menu.locator("[data-new-dot]")).toHaveCount(0);
   // menyu sahifadagi oxirgi bo'lim (rol almashtirish eng tagida — yangi ishlar undan oldin)
   const feedY = (await fold(page, "home-feed").boundingBox())!.y;
   expect((await sw.boundingBox())!.y).toBeGreaterThan(feedY);

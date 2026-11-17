@@ -85,19 +85,10 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(entry).toHaveAttribute("data-masters-entry");
   await expect(entry).toContainText("Universal ustalar");
   await expect(page.locator("main [data-masters-home]")).toBeHidden();
-  // alohida rang: asosiy ko'k emas (yashil mavzu)
-  const [entryColor, blue] = await Promise.all([
-    entry.getByText("Universal ustalar", { exact: true }).evaluate((el) => getComputedStyle(el).color),
-    page.evaluate(() => {
-      const probe = document.createElement("span");
-      probe.className = "text-primary-ink";
-      document.body.append(probe);
-      const c = getComputedStyle(probe).color;
-      probe.remove();
-      return c;
-    }),
-  ]);
-  expect(entryColor).not.toBe(blue);
+  // bosh menyu rangsiz (ega, 2026-11-17): "Universal ustalar" ham boshqa qatorlar bilan bir xil rangda
+  const color = (key: string) =>
+    page.locator(`[data-home-menu] [data-menu-item="${key}"] span.font-bold`).first().evaluate((el) => getComputedStyle(el).color);
+  expect(await color("masters")).toBe(await color("daily"));
   await entry.click();
   await expect(page).toHaveURL(/\/ustalar$/);
   await expect(page.getByRole("heading", { level: 1, name: "Universal ustalar" })).toBeVisible();

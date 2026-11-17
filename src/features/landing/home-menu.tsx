@@ -14,9 +14,6 @@ import {
   type MenuItem,
   type MenuMode,
 } from "@/components/shared/nav-items";
-import { NewDot } from "@/components/shared/new-badge";
-import { TINT_TILE, tintFor } from "@/components/shared/tints";
-import { cn } from "@/lib/utils";
 import { RoleSwitchRow } from "./role-switch-row";
 import type { HomeMenuLinks } from "./quick-filters";
 
@@ -26,7 +23,8 @@ import type { HomeMenuLinks } from "./quick-filters";
  * Faqat boshqa joyda yo'q yo'llar — 6 ta qator: Universal ustalar, Yordamchi, Kunlik, Masofaviy, Tajribasiz (ish beruvchida —
  * Tajribali), Yaqin atrofdagi. Takrorlanmaydi: Barcha vakansiyalar / Barcha nomzodlar (pastki menyu), arizalar, xabarlar,
  * profil, saqlanganlar, sozlamalar, yordam (pastki menyu va Profil), xarita ("Yaqin atrofdagi" sahifasida).
- * Kirgan foydalanuvchi: telefon va planshetda (kompyuterda — chap yon menyu), eng tagida qizilda rolni almashtirish.
+ * Rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): hamma belgi, nom va rol almashtirish bir xil, "yangi" nuqtalarsiz.
+ * Kirgan foydalanuvchi: telefon va planshetda (kompyuterda — chap yon menyu), eng tagida rolni almashtirish.
  * Mehmon: hamma ekranda (yon menyu yo'q).
  */
 export async function HomeMenu({
@@ -114,7 +112,7 @@ export async function HomeMenu({
     >
       <h2 className="mb-2 px-1 text-lg font-bold">{t("easy.side.sections")}</h2>
       <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
-        {items.map((item, i) => (
+        {items.map((item) => (
           <li key={item.key}>
             <Link
               href={item.href}
@@ -136,30 +134,17 @@ export async function HomeMenu({
                 : {})}
               className="press flex min-h-16 items-center gap-3 px-4 py-2.5 hover:bg-secondary/60"
             >
+              {/* rangsiz (ega, 2026-11-17: "bosh menyudagi ranglar umuman yoqmayapti — rangni olib tashla"): hamma belgi bir xil */}
               <span
-                className={cn(
-                  "flex size-10 shrink-0 items-center justify-center rounded-xl",
-                  item.tone === "ai"
-                    ? "bg-ai-soft text-ai"
-                    : item.tone === "masters"
-                      ? "theme-masters bg-primary-soft text-primary-ink"
-                      : TINT_TILE[tintFor(item.key, i)],
-                )}
+                className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-foreground"
                 aria-hidden
               >
                 <item.icon className="size-5" />
               </span>
               <span className="min-w-0 flex-1">
-                <span
-                  className={cn(
-                    "flex items-center gap-1.5 text-base font-bold leading-tight",
-                    item.tone === "ai" && "text-ai",
-                    item.tone === "masters" && "theme-masters text-primary-ink",
-                  )}
-                >
+                <span className="block text-base font-bold leading-tight">
                   {/* uzun nomlar ("Tajriba talab qilinmaydigan ishlar") qisqartirilmaydi — ikkinchi qatorga o'tadi */}
-                  <span className="min-w-0">{t(item.labelKey)}</span>
-                  {item.fresh ? <NewDot feature={item.fresh} /> : null}
+                  {t(item.labelKey)}
                 </span>
                 {/* kichik harf bilan — nima qiladi */}
                 <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">
@@ -178,6 +163,7 @@ export async function HomeMenu({
       {guest ? null : (
         <RoleSwitchRow
           className="mt-3"
+          tone="neutral"
           target={target}
           title={t(
             target === "employer"
