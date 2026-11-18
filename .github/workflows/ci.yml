@@ -70,7 +70,8 @@ jobs:
 
   e2e:
     name: Browser E2E (izolyatsiyalangan lokal stend)
-    runs-on: ubuntu-latest
+    # ubuntu-latest 26.04 ga o'tdi (2026-11-18) — Playwright chromium hali qo'llamaydi; 24.04 da qotiriladi
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     services:
       postgres:
