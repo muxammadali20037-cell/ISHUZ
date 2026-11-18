@@ -13,6 +13,11 @@ Ega: "endi 1-o'rinda Telegram mini app va Telegram kanaldan foydalanamiz — obu
   Mini App ichida Telegram'ning o'zida ochiladi; `channel_cta` hodisasi). Bot menyusi: «📱 Ilovani ochish» birinchi qatorda,
   oxirida «📢 Kanalga obuna bo'lish».
 - Testlar: start-param (vitest), kanal tugmasi Mini App rejimida, E2E `telegram-startapp.spec.ts`, bosh sahifadagi kanal qatori.
+## 2026-11-17 · Prod baza: 0079–0081 qo'llandi (`claude/pending-applied-81`)
+
+Ega pending.sql ni (CRLF tuzatishidan keyin) qo'lladi. `APPLIED_UNTIL = 81` — pending.sql endi bo'sh (faqat holat
+jadvali). `/api/health?deep=1` tekshiruviga 0079 (`channel_posts`), 0080 (`public_tariffs`), 0081
+(`worker_listing_phones`) qo'shildi; 0078 — faqat ma'lumot, tekshiradigan obyekt yo'q.
 
 ## 2026-11-17 · pending.sql — Windows SQL Editor'da 0081 xatosi tuzatildi (`claude/pending-crlf-fix`)
 

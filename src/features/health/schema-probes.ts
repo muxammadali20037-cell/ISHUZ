@@ -27,6 +27,10 @@ export const SCHEMA_PROBES: readonly Probe[] = [
   { migration: "0075", run: (db) => db.from("telegram_updates").select("attempts").limit(0) },
   { migration: "0076", run: (db) => db.from("master_listings").select("id").limit(0) },
   { migration: "0077", run: (db) => db.rpc("demo_vacancies_public", { p_limit: 1, p_offset: 0 }) },
+  // 0078 — faqat ma'lumot (taqiqlangan kasblar), tekshiradigan obyekt yo'q
+  { migration: "0079", run: (db) => db.from("channel_posts").select("id").limit(0) },
+  { migration: "0080", run: (db) => db.rpc("public_tariffs") },
+  { migration: "0081", run: (db) => db.from("worker_listing_phones").select("worker_id").limit(0) },
 ];
 
 export type SchemaReport = { ok: boolean; missing: string[]; errors: string[] };
