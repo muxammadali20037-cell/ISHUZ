@@ -187,14 +187,14 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   // 4.0 (ega "MASTER PROMPT"): ish qidiruvchi (rejim tanlamagan mehmon ham) — Bosh sahifa · Ishlar · Arizalar · Sohalar · Profil
   // (mehmonda "Xabarlar" o'rnida "Sohalar" — ega, 2026-11-17)
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]);
+  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
   await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
   await nav.getByRole("link", { name: "Ishlar" }).click();
   await page.waitForURL(/\/jobs$/);
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Bosh sahifa" })).not.toHaveAttribute("aria-current", "page");
   // 360 px da yozuvlar sig'adi (kesilmaydi)
-  for (const name of ["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]) {
+  for (const name of ["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]) {
     const label = nav.getByRole("link", { name }).locator("span").first();
     expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), name).toBe(true);
   }

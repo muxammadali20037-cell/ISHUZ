@@ -104,10 +104,10 @@ test("/companies va /for-employers: haqiqiy kompaniyalar, qidiruv; narx haqida h
   await page.goto(`/companies?q=${encodeURIComponent(TAG)}`);
   const card = page.getByRole("link", { name: new RegExp(`${TAG} Savdo MChJ`) });
   await expect(card).toBeVisible();
-  await expect(card).toContainText("2 ta faol vakansiya");
+  await expect(card).toContainText("2 ta ish");
   await expect(card).toHaveAttribute("href", `/company/${companySlug}`);
   await page.goto("/companies?q=bunday-kompaniya-yoq");
-  await expect(page.getByText("Bunday kompaniya topilmadi")).toBeVisible();
+  await expect(page.getByText("Bunday ish beruvchi topilmadi")).toBeVisible();
 
   await page.goto("/for-employers");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kerakli xodimni tez va ishonchli toping");

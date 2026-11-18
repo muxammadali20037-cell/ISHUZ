@@ -3,6 +3,7 @@ import Link from "next/link";
 import {
   ArrowRight,
   BriefcaseBusiness,
+  FileCheck2,
   FileText,
   ChevronDown,
   ChevronRight,
@@ -18,7 +19,8 @@ import { JobResultCard } from "@/features/find/components/result-cards";
 import { RetryButton } from "@/features/find/components/find-client";
 import { cn } from "@/lib/utils";
 import { savedIdSet } from "@/features/saved/queries";
-import { myApplicationStatuses } from "@/features/applications/queries";
+import { getPendingOffersCount, myApplicationStatuses } from "@/features/applications/queries";
+import { createClient } from "@/lib/supabase/server";
 import { getHomeSettings } from "@/features/home-windows/queries";
 import { TopSearch } from "@/features/find/components/top-search";
 import { getHomePlace, getSeekerFeed, type HomePlace } from "./home-queries";
@@ -146,12 +148,20 @@ export async function SeekerHome({
         </div>
       </section>
 
-      {/* kirgan (telefon va planshet): "E'lonlarim" — o'zi joylagan e'lonlar va holati (alohida sahifa; ega, 2026-11-17) */}
+      {/* kirgan (telefon va planshet): "E'lonlarim" — o'zi joylagan e'lonlar va holati (alohida sahifa; ega, 2026-11-17).
+          "Arizalarim" — pastki menyudan "Ish beruvchilar"ga joy bergani uchun shu yerda (ega, 2026-11-18) */}
       {session ? (
-        <div className="-mt-2 lg:hidden">
+        <div className="-mt-2 space-y-3 lg:hidden">
           <Suspense fallback={<MyListingsRow />}>
             <MyListingsRowCounted session={session} />
           </Suspense>
+          {session.workerId ? (
+            <Suspense fallback={<ApplicationsRow />}>
+              <ApplicationsRowCounted workerId={session.workerId} />
+            </Suspense>
+          ) : (
+            <ApplicationsRow />
+          )}
         </div>
       ) : null}
       {/* "Yangi ishlar": kirganda telefonda — qator-havola (yangi joylangan e'lonlar sahifasi); kompyuterda va mehmonda — ro'yxat */}
@@ -386,6 +396,30 @@ async function MyListingsRow({ count = null }: { count?: number | null }) {
 
 async function MyListingsRowCounted({ session }: { session: SessionContext }) {
   return <MyListingsRow count={await countMyListings(session)} />;
+}
+
+/** "Arizalarim" qatori: yuborilgan arizalar soni (qaytarib olinganlarsiz); yangi taklif bo'lsa — matnda */
+async function ApplicationsRow({ count = null, offers = 0 }: { count?: number | null; offers?: number }) {
+  const { t } = await getT();
+  return (
+    <HomeLinkRow
+      name="my-applications"
+      href="/applications"
+      icon={<FileCheck2 />}
+      title={t("easy.home2.my_applications")}
+      hint={offers > 0 ? t("easy.home2.my_applications_offers", { count: offers }) : t("easy.home2.my_applications_hint")}
+      count={count}
+    />
+  );
+}
+
+async function ApplicationsRowCounted({ workerId }: { workerId: string }) {
+  const supabase = await createClient();
+  const [apps, offers] = await Promise.all([
+    supabase.from("applications").select("id", { count: "exact", head: true }).eq("worker_id", workerId).neq("status", "withdrawn"),
+    getPendingOffersCount(workerId).catch(() => 0),
+  ]);
+  return <ApplicationsRow count={apps.error ? null : (apps.count ?? 0)} offers={offers} />;
 }
 
 /** Ro'yxat skeleti: yangi karta shakliga yaqin (matn qatorlari) — kontent kelganda sahifa siljimaydi */

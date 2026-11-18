@@ -63,7 +63,7 @@ test.describe("bosh sahifa (marketplace)", () => {
     await expect(nav.getByRole("link", { name: "Ish qidirish" })).toHaveAttribute("aria-current", "page");
     await nav.getByRole("link", { name: "Kompaniyalar" }).click();
     await page.waitForURL(/\/companies$/);
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Kompaniyalar");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish beruvchilar");
     await expect(nav.getByRole("link", { name: "Kompaniyalar" })).toHaveAttribute("aria-current", "page");
     await nav.getByRole("link", { name: "Kasblar" }).click();
     await page.waitForURL(/\/kasblar$/);

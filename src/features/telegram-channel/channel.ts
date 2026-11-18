@@ -73,6 +73,19 @@ export async function channelStatus(): Promise<ChannelStatus> {
   return { ...base, state: canPost ? "ready" : "not_admin", canPost, canPin };
 }
 
+/**
+ * Foydalanuvchi kanalga obuna bo'lganmi (getChatMember; bot kanalda admin bo'lishi kerak). Aniqlab bo'lmasa — null
+ * (token/kanal yo'q, tarmoq xatosi) — chaqiruvchi "obuna emas" deb hisoblamaydi, shunchaki taklifni ko'rsatadi.
+ */
+export async function isChannelMember(telegramUserId: number): Promise<boolean | null> {
+  const chatId = channelChatId();
+  if (!chatId || !getServerEnv().TELEGRAM_BOT_TOKEN) return null;
+  const res = await tg<{ status: string; is_member?: boolean }>("getChatMember", { chat_id: chatId, user_id: telegramUserId }, 4_000);
+  if (!res.ok) return res.description.includes("user not found") || res.description.includes("PARTICIPANT_ID_INVALID") ? false : null;
+  const st = res.result.status;
+  return st === "member" || st === "administrator" || st === "creator" || (st === "restricted" && res.result.is_member === true);
+}
+
 export type ChannelPostResult = { ok: true; messageId: number; pinned: boolean; link: string | null } | { ok: false; error: string; description?: string };
 
 /** Kanalga post: matn (oddiy matn — HTML sifatida xavfsizlanadi), ixtiyoriy tayyor media, ixtiyoriy qadash */

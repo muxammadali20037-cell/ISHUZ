@@ -1,5 +1,24 @@
 # O'zgarishlar jurnali
 
+## 2026-11-18 · Pastki menyu: "Ish beruvchilar", "E'lonlarim", "Ishchilar"; har kirishda kanal taklifi (`claude/nav-employers-channel`)
+
+Ega (skrinshotlar bilan): "Nomzodlar bo'limida barcha ishchilar chiqsin… bu yerda e'lonlarim bo'lsin, vakansiyalar emas…
+har kirganda Telegram kanalga ulanish tugmasi chiqsin… o'rtadagi arizalar o'rniga ish beruvchilar ro'yxati bo'lsin, qisqa va
+tushunarli, alohida belgi bilan".
+
+- **Ish izlovchi menyusi:** Bosh sahifa · Ishlar · **Ish beruvchilar** (bino belgisi, `/companies`) · Xabarlar · Profil.
+  "Arizalar" — bosh sahifadagi **"Arizalarim"** qatorida (soni, yangi taklif bo'lsa — matnda) va Profilda; yangi takliflar
+  belgisi — Profil tugmasida. `/companies` — "Ish beruvchilar": har biri bitta qisqa qator (logotip/bosh harf, nomi,
+  tasdiqlangan ✓ va davlat belgisi, soha · hudud, "N ta ish").
+- **Ish beruvchi menyusi:** Boshqaruv · **E'lonlarim** (avval "Vakansiyalar"; sahifa sarlavhasi ham) · E'lon · **Ishchilar**
+  (avval "Nomzodlar") — darhol barcha ishchi e'lonlari (butun O'zbekiston; filtr va qidiruv natijalar sahifasida).
+- Menyu nomlari biroz zichroq (`tracking-tight`, yon bo'shliqsiz): "Ish beruvchilar" 360 px ekranda ham to'liq sig'adi.
+  Rus/kirill: "Компании" / "Ташкилотлар" (to'liq nom sig'maydi; sahifa sarlavhasi — to'liq).
+- **Kanal taklifi:** ilovaga har kirishda (sessiyada bir marta, ~2.5 s dan keyin) "Telegram kanalimizga qo'shiling" oynasi —
+  Telegram belgisi o'z rangida, "Kanalga o'tish" (Mini App'da Telegram'ning o'zida ochiladi) va "Keyinroq". O'tilsa — 30 kun
+  so'ralmaydi; Telegram orqali kirgan va kanalda bor foydalanuvchiga chiqmaydi (bot `getChatMember`, soatiga 20 tagacha);
+  tanishtiruv tugamagan bo'lsa va admin/kirish sahifalarida — chiqmaydi. E2E: `channel-prompt.spec`, `nav-roles.spec`.
+
 ## 2026-11-18 · Qidiruv kirill/lotin, rol almashganda katta yozuv, kanalda to'liq e'lon (`claude/search-roles-channel`)
 
 Ega (skrinshotlar bilan): "bazadagi e'lonni qidirsam topmayapti… ish beruvchidan ish izlovchiga o'tsa ekranda mayin katta

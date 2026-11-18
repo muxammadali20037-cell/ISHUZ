@@ -1,13 +1,13 @@
 {
   "meta": {
-    "list_title": "My vacancies",
+    "list_title": "My listings",
     "new_title": "Post a vacancy",
     "edit_title": "Edit vacancy",
     "manage_title": "Manage vacancy"
   },
   "list": {
-    "title": "My vacancies",
-    "subtitle": "{count} vacancies",
+    "title": "My listings",
+    "subtitle": "{count} listings",
     "new": "Post a vacancy",
     "empty_title": "No vacancies yet",
     "empty_desc": "Post your first vacancy in 2–4 minutes — matching candidates are sorted automatically.",

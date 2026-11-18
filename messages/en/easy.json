@@ -127,7 +127,7 @@
     "master_manage": "Open handyman dashboard",
     "page_sub": "Your listings and their status: live, under review or stopped.",
     "group_self": "About me",
-    "group_vacancies": "My vacancies",
+    "group_vacancies": "My listings",
     "edit_short": "Edit"
   },
   "wizard": {
@@ -480,7 +480,10 @@
     "post_worker_cta": "Post a CV",
     "tab_home_page": "Home",
     "post_cta": "Post an ad",
-    "tab_fields": "Fields"
+    "tab_fields": "Fields",
+    "tab_my_listings": "My listings",
+    "tab_workers": "Workers",
+    "tab_employers": "Employers"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -953,7 +956,7 @@
     "saved": "Saved",
     "messages": "Messages",
     "profile": "Profile",
-    "my_vacancies": "My vacancies",
+    "my_vacancies": "My listings",
     "applications": "Applications",
     "candidates": "Candidates",
     "company": "Company",
@@ -979,7 +982,7 @@
       "saved": "Saved jobs",
       "messages": "Conversations",
       "profile": "Listings and account",
-      "my_vacancies": "Your vacancies",
+      "my_vacancies": "Your listings",
       "emp_applications": "Received applications",
       "candidates": "Find workers",
       "company": "Company details",
@@ -1057,7 +1060,10 @@
     "new_jobs_hint": "Just posted",
     "channel_title": "Subscribe to our Telegram channel",
     "channel_hint": "New jobs every day — {handle}",
-    "channel_hint_plain": "New jobs every day"
+    "channel_hint_plain": "New jobs every day",
+    "my_applications": "My applications",
+    "my_applications_hint": "Applications you sent and replies",
+    "my_applications_offers": "New offers: {count}"
   },
   "aiws": {
     "title": "Helper",
@@ -1083,7 +1089,7 @@
       "workers": "Candidates",
       "candidates": "Matching candidates",
       "emp_applications": "Applications",
-      "vacancies": "My vacancies",
+      "vacancies": "My listings",
       "company": "Company",
       "login": "Sign in"
     },
@@ -1444,5 +1450,12 @@
     "q_phone2": "Additional number",
     "remove_phone": "Remove the additional number",
     "preview_phones": "Both numbers you entered are shown in the ad — employers will call them"
+  },
+  "channel_prompt": {
+    "title": "Join our Telegram channel",
+    "desc": "New jobs and workers every day — {handle}",
+    "desc_plain": "New jobs and workers every day",
+    "join": "Open the channel",
+    "later": "Later"
   }
 }

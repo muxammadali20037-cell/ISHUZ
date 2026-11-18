@@ -27,7 +27,7 @@ test("mehmon: pastki menyuda «Sohalar» (Xabarlar o'rnida); kirganda — «Xaba
   await asMode(context, "worker");
   await page.goto("/");
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]);
+  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
   await expect(nav.getByRole("link", { name: "Xabarlar" })).toHaveCount(0);
   await nav.getByRole("link", { name: "Sohalar" }).click();
   await page.waitForURL(/\/sohalar$/);
@@ -39,7 +39,7 @@ test("mehmon: pastki menyuda «Sohalar» (Xabarlar o'rnida); kirganda — «Xaba
   await asMode(context, "worker");
   await page.goto("/");
   const nav2 = page.getByRole("navigation").last();
-  await expect(nav2.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Xabarlar", "Profil"]);
+  await expect(nav2.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Xabarlar", "Profil"]);
   await expect(nav2.getByRole("link", { name: "Sohalar" })).toHaveCount(0);
 });
 

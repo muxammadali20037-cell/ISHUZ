@@ -14,6 +14,7 @@ import { PaymentDialogHost } from "@/features/billing/components/payment-dialog"
 import { AnalyticsListener } from "@/features/analytics/listener";
 import { NavProgress } from "@/components/shared/nav-progress";
 import { RoleSwitchSplash } from "@/components/shared/role-switch-splash";
+import { ChannelPrompt } from "@/components/shared/channel-prompt";
 
 export function Providers({ locale, messages, children }: { locale: Locale; messages: Dict; children: ReactNode }) {
   const [queryClient] = useState(
@@ -37,6 +38,7 @@ export function Providers({ locale, messages, children }: { locale: Locale; mess
           <AnalyticsListener />
           <NavProgress />
           <RoleSwitchSplash />
+          <ChannelPrompt />
         </TelegramProvider>
       </I18nProvider>
     </QueryClientProvider>

@@ -44,8 +44,9 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
 }
 
 /**
- * /companies — "Kompaniyalar": hozir xodim qidirayotgan haqiqiy kompaniyalar (faol vakansiyasi borlar, 0071). Tasdiqlangan
- * kompaniyalar avval; har birida faol vakansiyalar soni. Qidiruv — oddiy GET forma (JS'siz ham ishlaydi). Soxta logo yoki
+ * /companies — "Ish beruvchilar" (avval "Kompaniyalar"; ish izlovchining pastki menyusida, ega 2026-11-18): hozir xodim
+ * qidirayotgan haqiqiy kompaniya va tashkilotlar (faol vakansiyasi borlar, 0071). Tasdiqlanganlar avval; har birida faol
+ * vakansiyalar soni. Qidiruv — oddiy GET forma (JS'siz ham ishlaydi). Soxta logo yoki
  * kompaniya yo'q: logotip bo'lmasa — bosh harf.
  */
 export default async function CompaniesPage({ searchParams }: { searchParams: SearchParams }) {
@@ -113,42 +114,33 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Se
             <p className="mt-5 text-sm text-muted-foreground" aria-live="polite">
               {t("welcome.companies.count", { count: result.total })}
             </p>
-            <ul className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5">
+            {/* 2026-11-18 (ega): ish izlovchining pastki menyusidagi "Ish beruvchilar" — qisqa va tushunarli: bitta qator —
+                logotip (bo'lmasa — bosh harf), nomi, tasdiqlangan/davlat belgisi, soha · hudud, ishlar soni */}
+            <ul className="mt-3 grid gap-2 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3 3xl:grid-cols-4 4xl:grid-cols-5" data-employers>
               {result.items.map((c) => {
-                const industry = catName(c.industryCategoryId);
-                const place = regionName(c.regionId);
+                const meta = [catName(c.industryCategoryId), regionName(c.regionId)].filter(Boolean).join(" · ");
                 return (
                   <li key={c.id}>
                     <Link
                       href={`/company/${c.slug}`}
-                      className="press flex h-full flex-col gap-3 rounded-2xl border border-border bg-card p-4 transition-colors hover:border-primary/50"
+                      data-employer-row
+                      className="press flex h-full min-h-16 items-center gap-3 rounded-2xl border border-border bg-card px-3 py-2.5 transition-colors hover:border-primary/50"
                     >
-                      <span className="flex items-start gap-3">
-                        <Avatar src={c.logoUrl} fallback={c.name.slice(0, 1).toUpperCase()} size="lg" square className="rounded-xl" />
-                        <span className="min-w-0 flex-1">
-                          <span className="flex items-center gap-1.5">
-                            <span className="truncate text-base font-bold">{c.name}</span>
-                            {c.verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("welcome.companies.verified")} /> : null}
-                          </span>
-                          {industry ? <span className="block truncate text-sm text-muted-foreground">{industry}</span> : null}
-                          {place ? (
-                            <span className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
-                              <MapPin className="size-3.5 shrink-0" aria-hidden />
-                              <span className="truncate">{place}</span>
-                            </span>
-                          ) : null}
+                      <Avatar src={c.logoUrl} fallback={c.name.slice(0, 1).toUpperCase()} size="md" square className="rounded-xl" />
+                      <span className="min-w-0 flex-1">
+                        <span className="flex items-center gap-1.5">
+                          <span className="truncate text-base font-bold leading-tight">{c.name}</span>
+                          {c.verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" role="img" aria-label={t("welcome.companies.verified")} /> : null}
+                          {c.isGovernment ? <Landmark className="size-4 shrink-0 text-muted-foreground" role="img" aria-label={t("welcome.companies.government")} /> : null}
                         </span>
-                      </span>
-                      {c.about ? <span className="line-clamp-2 text-sm text-muted-foreground">{c.about}</span> : null}
-                      <span className="mt-auto flex items-center justify-between gap-2 pt-1">
-                        <span className="text-sm font-bold text-primary-ink">{t("welcome.companies.jobs", { count: c.activeJobs })}</span>
-                        {c.isGovernment ? (
-                          <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs font-semibold text-muted-foreground">
-                            <Landmark className="size-3.5" aria-hidden />
-                            {t("welcome.companies.government")}
+                        {meta ? (
+                          <span className="mt-0.5 flex items-center gap-1 text-sm text-muted-foreground">
+                            <MapPin className="size-3.5 shrink-0" aria-hidden />
+                            <span className="truncate">{meta}</span>
                           </span>
                         ) : null}
                       </span>
+                      <span className="shrink-0 rounded-full bg-primary-soft px-2.5 py-1 text-sm font-bold text-primary-ink">{t("welcome.companies.jobs", { count: c.activeJobs })}</span>
                     </Link>
                   </li>
                 );

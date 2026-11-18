@@ -20,17 +20,17 @@ test("sekin serverda ham: bosilgan zahoti yangi ekran skeleti va faol bo'lim; ja
   await expect(page.getByRole("heading", { level: 1 }).first()).toBeVisible();
   const nav = page.locator("nav.bottom-nav");
   const t0 = Date.now();
-  await nav.getByRole("link", { name: "Arizalar" }).click();
+  await nav.getByRole("link", { name: "Ish beruvchilar" }).click();
   // eski sahifa ustida kutmaydi: 0.4 s ichida skelet va faol bo'lim (manzil hali o'zgarmagan)
   await expect(page.locator("[data-nav-instant]")).toBeVisible({ timeout: 400 });
-  await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Ish beruvchilar" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Profil" })).not.toHaveAttribute("aria-current", "page");
   expect(Date.now() - t0).toBeLessThan(1200);
   expect(new URL(page.url()).pathname).toBe("/cabinet");
   // javob keldi — haqiqiy sahifa, qatlam yo'q
-  await page.waitForURL(/\/applications$/);
+  await page.waitForURL(/\/companies$/);
   await expect(page.locator("[data-nav-instant]")).toHaveCount(0);
-  await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Ish beruvchilar" })).toHaveAttribute("aria-current", "page");
 });
 
 test("sahifa bo'lmagan havola (API, fayl) va havola ichidagi tugma — qatlam chiqmaydi", async ({ page, context }) => {

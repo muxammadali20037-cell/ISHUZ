@@ -127,7 +127,7 @@
     "master_manage": "Usta kabinetida ko'rish",
     "page_sub": "Joylagan e'lonlaringiz va ularning holati: joylandi, tekshiruvda yoki to'xtatilgan.",
     "group_self": "O'zim haqimda e'lon",
-    "group_vacancies": "Vakansiyalarim",
+    "group_vacancies": "E'lonlarim",
     "edit_short": "O'zgartirish"
   },
   "wizard": {
@@ -458,7 +458,7 @@
     "offline": "Internet yo'q. Javoblaringiz shu qurilmada saqlandi — internet qaytgach yana bosing.",
     "network": "Internet aloqasi uzildi yoki server javob bermadi. Javoblaringiz saqlandi — yana bosing.",
     "timeout": "Javob kechikdi. E'lon saqlangan bo'lishi mumkin — yana bosing, ikki marta joylanmaydi.",
-    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («Vakansiyalarim»)."
+    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («E'lonlarim»)."
   },
   "nav": {
     "search": "Qidirish",
@@ -480,7 +480,10 @@
     "post_worker_cta": "E'lon berish",
     "tab_home_page": "Bosh sahifa",
     "post_cta": "E'lon berish",
-    "tab_fields": "Sohalar"
+    "tab_fields": "Sohalar",
+    "tab_my_listings": "E'lonlarim",
+    "tab_workers": "Ishchilar",
+    "tab_employers": "Ish beruvchilar"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -953,7 +956,7 @@
     "saved": "Saqlanganlar",
     "messages": "Xabarlar",
     "profile": "Profil",
-    "my_vacancies": "Vakansiyalarim",
+    "my_vacancies": "E'lonlarim",
     "applications": "Arizalar",
     "candidates": "Nomzodlar",
     "company": "Kompaniya",
@@ -979,7 +982,7 @@
       "saved": "Saqlangan ishlar",
       "messages": "Yozishmalar",
       "profile": "E'lonlar va hisob",
-      "my_vacancies": "Joylagan vakansiyalar",
+      "my_vacancies": "Joylagan e'lonlaringiz",
       "emp_applications": "Kelgan arizalar",
       "candidates": "Ishchi qidirish",
       "company": "Kompaniya ma'lumotlari",
@@ -1057,7 +1060,10 @@
     "new_jobs_hint": "Yangi joylangan e'lonlar",
     "channel_title": "Telegram kanalimizga obuna bo'ling",
     "channel_hint": "Har kuni yangi ishlar — {handle}",
-    "channel_hint_plain": "Har kuni yangi ishlar"
+    "channel_hint_plain": "Har kuni yangi ishlar",
+    "my_applications": "Arizalarim",
+    "my_applications_hint": "Yuborgan arizalaringiz va javoblar",
+    "my_applications_offers": "Yangi taklif: {count} ta"
   },
   "aiws": {
     "title": "Yordamchi",
@@ -1083,7 +1089,7 @@
       "workers": "Nomzodlar",
       "candidates": "Mos nomzodlar",
       "emp_applications": "Arizalar",
-      "vacancies": "Vakansiyalarim",
+      "vacancies": "E'lonlarim",
       "company": "Kompaniya",
       "login": "Kirish"
     },
@@ -1444,5 +1450,12 @@
     "q_phone2": "Qo'shimcha raqam",
     "remove_phone": "Qo'shimcha raqamni olib tashlash",
     "preview_phones": "Siz yozgan ikkala raqam e'londa ko'rinadi — ish beruvchilar qo'ng'iroq qiladi"
+  },
+  "channel_prompt": {
+    "title": "Telegram kanalimizga qo'shiling",
+    "desc": "Har kuni yangi ishlar va ishchilar — {handle}",
+    "desc_plain": "Har kuni yangi ishlar va ishchilar",
+    "join": "Kanalga o'tish",
+    "later": "Keyinroq"
   }
 }

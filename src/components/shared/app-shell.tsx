@@ -6,7 +6,7 @@ import type { SocialLink } from "@/lib/social";
 import { useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, BriefcaseBusiness, FileCheck2, House, LayoutDashboard, LayoutGrid, MessageCircle, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { Bell, BriefcaseBusiness, Building2, House, LayoutDashboard, LayoutGrid, MessageCircle, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -31,8 +31,11 @@ interface NavItem {
 
 /**
  * Rolga xos navigatsiya (2026-10 redizayn):
- *   Ish qidiruvchi (va rejim tanlamagan mehmon): Ishlar · Saqlangan · Arizalar · Profil
- *   Ish beruvchi:                                Boshqaruv · Vakansiyalar · Nomzodlar · Profil
+ *   Ish qidiruvchi (va rejim tanlamagan mehmon): Bosh sahifa · Ishlar · Ish beruvchilar · Xabarlar · Profil
+ *   Ish beruvchi:                                Boshqaruv · E'lonlarim · [E'lon] · Ishchilar · Profil
+ * 2026-11-18 (ega): ish beruvchida "Vakansiyalar" → "E'lonlarim"; "Nomzodlar" → "Ishchilar" — darhol barcha ishchi e'lonlari
+ * (butun O'zbekiston, filtrlar natijalar sahifasida). Ish izlovchida o'rtadagi "Arizalar" → "Ish beruvchilar" (/companies,
+ * alohida belgi — bino); arizalar — bosh sahifadagi "Arizalarim" qatori va Profilda, takliflar belgisi — Profilda.
  * Chat va bildirishnomalar — yuqori panelda. AI qidiruv — qidiruv yonida ("AI bilan qidirish"), AI sahifalari "Ishlar" ichida.
  * Takliflar (ish beruvchidan) — "Arizalar" bilan birga. Eski manzillar (/search, /cabinet, /saved, /applications, /employer…) o'zgarmagan.
  */
@@ -56,14 +59,14 @@ function mainNav(mode: NavMode, guest = false): NavItem[] {
       { href: "/", labelKey: "easy.nav.tab_dashboard", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
       {
         href: "/employer/vacancies",
-        labelKey: "easy.nav.tab_vacancies",
+        labelKey: "easy.nav.tab_my_listings",
         icon: BriefcaseBusiness,
         badgeKey: "applications",
         match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/employer/applications") || p.startsWith("/post/vacancy"),
       },
       {
-        href: "/search?mode=workers",
-        labelKey: "easy.nav.tab_candidates",
+        href: "/search?mode=workers&any=1&region=all",
+        labelKey: "easy.nav.tab_workers",
         icon: Users,
         match: (p) => p.startsWith("/search") || p.startsWith("/workers") || p.startsWith("/listing") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates"),
       },
@@ -85,14 +88,25 @@ function mainNav(mode: NavMode, guest = false): NavItem[] {
       icon: Search,
       match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
     },
-    { href: "/applications", labelKey: "easy.nav.tab_applications", icon: FileCheck2, badgeKey: "offers", match: (p) => p.startsWith("/applications") || p.startsWith("/offers") },
+    {
+      href: "/companies",
+      labelKey: "easy.nav.tab_employers",
+      icon: Building2,
+      match: (p) => p.startsWith("/companies") || (p.startsWith("/company/") && !p.startsWith("/company/settings") && !p.startsWith("/company/join")),
+    },
     guest ? FIELDS_NAV : { href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
     {
       href: "/cabinet",
       labelKey: "easy.nav.tab_profile",
       icon: User,
+      // yangi takliflar (ish beruvchidan) belgisi — Profilda: arizalar va takliflar shu yerda
+      badgeKey: "offers",
       match: (p) =>
-        (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches") && !p.startsWith("/messages")) || p.startsWith("/post") || p.startsWith("/saved"),
+        (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches") && !p.startsWith("/messages")) ||
+        p.startsWith("/post") ||
+        p.startsWith("/saved") ||
+        p.startsWith("/applications") ||
+        p.startsWith("/offers"),
     },
   ];
 }
@@ -139,7 +153,7 @@ export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?:
                   <span className="flex h-8 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground" aria-hidden>
                     <Plus className="size-5" strokeWidth={2.5} />
                   </span>
-                  <span className="max-w-full truncate px-0.5">{t(post.labelKey)}</span>
+                  <span className="max-w-full truncate tracking-tight">{t(post.labelKey)}</span>
                 </Link>
               </li>
             );
@@ -156,7 +170,7 @@ export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?:
                 <span className="flex h-8 items-center" aria-hidden>
                   <item.icon className="size-5" strokeWidth={active ? 2.25 : 1.75} />
                 </span>
-                <span className="max-w-full truncate px-0.5">{t(item.labelKey)}</span>
+                <span className="max-w-full truncate tracking-tight">{t(item.labelKey)}</span>
                 {/* 3.0: faol bo'lim ostida ko'k chiziq (namunadagidek) */}
                 {active ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" aria-hidden /> : null}
                 {badge ? (
