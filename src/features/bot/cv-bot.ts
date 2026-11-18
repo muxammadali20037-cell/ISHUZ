@@ -8,6 +8,7 @@ import type { Json } from "@/types/database.types";
 import type { Locale } from "@/lib/i18n/config";
 import type { TFunction } from "@/lib/i18n/translate";
 import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
+import { getServerEnv } from "@/lib/env";
 import { formatMoney, formatMoneyShort, formatSalaryWithPeriod } from "@/lib/format";
 import {
   answerCallback,
@@ -92,18 +93,23 @@ function rows(buttons: InlineButton[], perRow: number): InlineButton[][] {
 }
 
 /** Bosh menyu tugmalari (salomlashishda va /start da) */
-export function botMenuKeyboard(t: TFunction): InlineKeyboard {
+/**
+ * Bosh menyu. Ega (2026-11-18): "1-o'rinda Telegram mini app va kanal" — ilova tugmasi birinchi qatorda (to'liq kenglikda),
+ * oxirida — kanalga obuna (SOCIAL_TELEGRAM_URL sozlangan bo'lsa).
+ */
+export function botMenuKeyboard(t: TFunction, channelUrl: string | null = getServerEnv().SOCIAL_TELEGRAM_URL ?? null): InlineKeyboard {
   return {
     inline_keyboard: [
+      [{ text: t("bot.menu.app"), web_app: { url: webAppUrl("/") } }],
       [
         { text: t("bot.menu.cv"), callback_data: "menu:cv" },
         { text: t("bot.menu.jobs"), callback_data: "menu:jobs" },
       ],
       [
         { text: t("bot.menu.pdf"), callback_data: "menu:pdf" },
-        { text: t("bot.menu.app"), web_app: { url: webAppUrl("/") } },
+        { text: t("bot.menu.lang"), callback_data: "menu:lang" },
       ],
-      [{ text: t("bot.menu.lang"), callback_data: "menu:lang" }],
+      ...(channelUrl?.startsWith("https://") ? [[{ text: t("bot.menu.channel"), url: channelUrl }]] : []),
     ],
   };
 }

@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-18 · Telegram birinchi o'rinda: Mini App havolalari, kanalga obuna (`claude/telegram-first`)
+
+Ega: "endi 1-o'rinda Telegram mini app va Telegram kanaldan foydalanamiz — obunachi va foydalanuvchi yig'ishimiz kerak".
+
+- **Kanal postidagi tugma → Mini App.** `t.me/<bot>?startapp=…` (`src/lib/telegram/start-param.ts`: `/jobs/<slug>` →
+  `j_<slug>`, e'lon/ishchi — `l_`/`w_` + uuid, boshqasi — `p_` + base64url; ≤ 64 belgi, faqat ichki yo'l). Ilova ochilganda
+  `TelegramStartRoute` kerakli sahifaga o'tadi (bir ochilishda bir marta). Faqat BotFather'da asosiy Mini App yoqilib,
+  Vercel'da `TELEGRAM_MAIN_APP=1` bo'lsa; aks holda — avvalgidek sayt havolasi. Rasm — saytdan.
+- **Kirish sahifasi:** «Telegram orqali kirish» birinchi va asosiy (ko'k); telefon — ikkinchi.
+- **Kanalga obuna:** bosh sahifa menyusida «Telegram kanalimizga obuna bo'ling — har kuni yangi ishlar» (rangsiz qator;
+  Mini App ichida Telegram'ning o'zida ochiladi; `channel_cta` hodisasi). Bot menyusi: «📱 Ilovani ochish» birinchi qatorda,
+  oxirida «📢 Kanalga obuna bo'lish».
+- Testlar: start-param (vitest), kanal tugmasi Mini App rejimida, E2E `telegram-startapp.spec.ts`, bosh sahifadagi kanal qatori.
+
 ## 2026-11-17 · pending.sql — Windows SQL Editor'da 0081 xatosi tuzatildi (`claude/pending-crlf-fix`)
 
 Ega pending.sql ni ishga tushirganda: "0081: save_simple_worker_listing naqsh #1 0 marta uchradi". Sabab: SQL Editor

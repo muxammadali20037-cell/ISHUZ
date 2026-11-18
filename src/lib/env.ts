@@ -10,6 +10,8 @@ const serverSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(10).optional(),
   TELEGRAM_BOT_TOKEN: z.string().optional(),
   TELEGRAM_BOT_USERNAME: z.string().optional(),
+  /** "1" — BotFather'da asosiy Mini App yoqilgan: kanal tugmalari t.me/<bot>?startapp=… (ilova Telegram ichida ochiladi) */
+  TELEGRAM_MAIN_APP: z.string().optional(),
   TELEGRAM_WEBHOOK_SECRET: z.string().optional(),
   CRON_SECRET: z.string().optional(),
   /** Xato monitoringi (Sentry, faqat server). Bo'lmasa o'chiq — `src/lib/monitoring.ts` */
@@ -76,6 +78,7 @@ export function getServerEnv() {
     SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
     TELEGRAM_BOT_TOKEN: process.env.TELEGRAM_BOT_TOKEN,
     TELEGRAM_BOT_USERNAME: process.env.TELEGRAM_BOT_USERNAME,
+    TELEGRAM_MAIN_APP: process.env.TELEGRAM_MAIN_APP || undefined,
     TELEGRAM_WEBHOOK_SECRET: process.env.TELEGRAM_WEBHOOK_SECRET,
     CRON_SECRET: process.env.CRON_SECRET,
     SENTRY_DSN: process.env.SENTRY_DSN || undefined,

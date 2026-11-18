@@ -82,7 +82,10 @@ function salaryLabels(t: T) {
   return { negotiable: t("bot.channel.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") };
 }
 
-export function vacancyPost(d: VacancyPostData, t: T, base: string): ChannelPost {
+/** tugma havolasi: sayt yo'li → manzil (standart — sayt; asosiy Mini App yoqilgan bo'lsa — t.me/<bot>?startapp=…) */
+export type LinkFn = (path: string) => string;
+
+export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn = (p) => `${base}${p}`): ChannelPost {
   const salary = formatSalaryWithPeriod(
     { from: d.salaryFrom, to: d.salaryTo, type: d.salaryType, negotiable: d.negotiable },
     "uz",
@@ -102,13 +105,13 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string): ChannelPost
   ];
   return {
     html: lines.filter((l) => l !== null).join("\n"),
-    button: { text: t("bot.channel.apply"), url: `${base}/jobs/${encodeURIComponent(d.slug)}` },
+    button: { text: t("bot.channel.apply"), url: link(`/jobs/${encodeURIComponent(d.slug)}`) },
     photo: `${base}/api/promo/vacancy/${encodeURIComponent(d.slug)}?f=post`,
     caption: `<b>${escapeHtml(title)}</b>`,
   };
 }
 
-export function workerPost(d: WorkerPostData, t: T, base: string): ChannelPost {
+export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn = (p) => `${base}${p}`): ChannelPost {
   const salary = d.salary
     ? formatSalaryWithPeriod({ from: d.salary, to: null, type: d.salaryType, negotiable: false }, "uz", salaryLabels(t), (type) => t(`enums.salary_type_suffix.${type}`))
     : t("bot.channel.negotiable");
@@ -126,7 +129,7 @@ export function workerPost(d: WorkerPostData, t: T, base: string): ChannelPost {
   ];
   return {
     html: lines.filter((l) => l !== null).join("\n"),
-    button: { text: t("bot.channel.open_worker"), url: `${base}/workers/${d.id}` },
+    button: { text: t("bot.channel.open_worker"), url: link(`/workers/${d.id}`) },
     // rasm — vakansiyadagidek (ega, 2026-11-17: "e'lon joylandimi — shunaqa rasm bo'lib kelsin"): kasbi, tajriba, joyi, maosh
     photo: `${base}/api/promo/worker/${d.id}`,
     caption: `<b>${escapeHtml(sanitizeLine(d.profession, 80))}</b>`,

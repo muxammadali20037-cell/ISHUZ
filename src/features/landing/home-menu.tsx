@@ -16,6 +16,9 @@ import {
 } from "@/components/shared/nav-items";
 import { cn } from "@/lib/utils";
 import { RoleSwitchRow } from "./role-switch-row";
+import { ChannelRow } from "./channel-row";
+import { getServerEnv } from "@/lib/env";
+import { socialLinks } from "@/lib/social";
 import type { HomeMenuLinks } from "./quick-filters";
 
 /**
@@ -106,6 +109,7 @@ export async function HomeMenu({
     ...quick,
   ];
   const target = mode === "employer" ? "worker" : "employer";
+  const channel = socialLinks(getServerEnv()).find((l) => l.key === "telegram") ?? null;
   return (
     <nav
       aria-label={t("easy.side.label")}
@@ -165,6 +169,15 @@ export async function HomeMenu({
           </li>
         ))}
       </ul>
+      {/* Telegram kanal — obunachi yig'ish (ega, 2026-11-18); sozlanmagan bo'lsa — yo'q */}
+      {channel ? (
+        <ChannelRow
+          className="mt-3"
+          href={channel.href}
+          title={t("easy.home2.channel_title")}
+          hint={t(channel.handle ? "easy.home2.channel_hint" : "easy.home2.channel_hint_plain", { handle: channel.handle ?? "" })}
+        />
+      ) : null}
       {/* eng tagida, qizilda — rolni almashtirish (ish izlovchi ↔ ish beruvchi); mehmonda — yo'q */}
       {guest ? null : (
         <RoleSwitchRow

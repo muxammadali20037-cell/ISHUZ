@@ -4,10 +4,22 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getServerEnv } from "@/lib/env";
 import { makeT } from "@/lib/i18n/translate";
 import { miniAppBaseUrl } from "@/lib/telegram/bot";
+import { miniAppLink } from "@/lib/telegram/start-param";
 import { channelChatId, sendChannelMessage } from "./channel";
 import { channelChatIdFrom } from "./media";
 import { AUTOPOST_KEY, parseAutopost } from "./autopost-settings";
-import { sanitizeLine, vacancyPost, workerPost, type ChannelPost } from "./autopost-format";
+import { sanitizeLine, vacancyPost, workerPost, type ChannelPost, type LinkFn } from "./autopost-format";
+
+/**
+ * Kanal postidagi tugma havolasi. Kanalda web_app tugmasi ishlamaydi, shuning uchun BotFather'da asosiy Mini App yoqilgan
+ * bo'lsa (Vercel: TELEGRAM_MAIN_APP=1) — t.me/<bot>?startapp=… : e'lon ilovaning o'zida, Telegram ichida, avtomatik kirish
+ * bilan ochiladi (ega, 2026-11-18: "1-o'rinda Telegram mini app va kanal"). Yoqilmagan bo'lsa — avvalgidek sayt havolasi.
+ */
+export function channelLink(base: string): LinkFn {
+  const { TELEGRAM_MAIN_APP, TELEGRAM_BOT_USERNAME } = getServerEnv();
+  const on = TELEGRAM_MAIN_APP === "1" || TELEGRAM_MAIN_APP === "true";
+  return (path) => (on ? miniAppLink(path, TELEGRAM_BOT_USERNAME) : null) ?? `${base}${path}`;
+}
 import { resolveTelegramLocale } from "@/features/notifications/telegram";
 
 /**
@@ -131,6 +143,7 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
   if (error) throw new Error(error.message);
   const t = makeT("uz");
   const base = miniAppBaseUrl();
+  const link = channelLink(base);
   const out = new Map<string, ChannelPost>();
   for (const v of data ?? []) {
     if (one(v.owner)?.is_blocked) continue;
@@ -152,6 +165,7 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
         },
         t,
         base,
+        link,
       ),
     );
   }
@@ -171,6 +185,7 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
   if (error) throw new Error(error.message);
   const t = makeT("uz");
   const base = miniAppBaseUrl();
+  const link = channelLink(base);
   const out = new Map<string, ChannelPost>();
   for (const w of data ?? []) {
     if (one(w.owner)?.is_blocked) continue;
@@ -193,6 +208,7 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
         },
         t,
         base,
+        link,
       ),
     );
   }
