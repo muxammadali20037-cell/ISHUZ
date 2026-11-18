@@ -1,3 +1,4 @@
+import { LiveStatus } from "@/features/find/components/result-cards";
 import { MapPin, Briefcase, ShieldCheck, Eye, Clock } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { ageFromBirthDate, formatRelative, initials, shortName } from "@/lib/format";
@@ -43,10 +44,14 @@ export async function CandidateHeader({ candidate, phoneVerified }: { candidate:
                 {c.subcategory ? ` · ${name(c.subcategory)}` : ""}
               </Badge>
             ) : null}
-            <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
-              <span className={cn("size-2 rounded-full", statusDot[c.status])} aria-hidden />
-              {tEnum("worker_status_short", c.status)}
-            </span>
+            {c.status === "active" ? (
+              <LiveStatus kind="seeking" className="text-base" />
+            ) : (
+              <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
+                <span className={cn("size-2 rounded-full", statusDot[c.status])} aria-hidden />
+                {tEnum("worker_status_short", c.status)}
+              </span>
+            )}
           </div>
         </div>
       </div>

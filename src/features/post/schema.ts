@@ -31,9 +31,9 @@ export const workerListingSchema = z
   source: z.enum(["manual", "ai"]).optional(),
   /**
    * E'londa ko'rsatiladigan raqam — oynada qo'lda yoziladi (0081, ega: "profildagi nomer emas, xohlasa boshqa nomer").
-   * Berilmasa — e'londa hisob raqami (rozilik bilan), avvalgidek.
+   * 2026-11-18 (ega): majburiy — raqamsiz e'lon joylanmaydi; e'londa hammaga ko'rinadi.
    */
-  listingPhone: phone.nullable().optional(),
+  listingPhone: phone,
   /** qo'shimcha raqam ("+ Yana raqam"), ixtiyoriy */
   listingPhone2: phone.nullable().optional(),
   })

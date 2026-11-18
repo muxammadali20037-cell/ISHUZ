@@ -55,7 +55,8 @@ async function loadExistingWorker(supabase: Awaited<ReturnType<typeof createClie
  */
 export async function publishWorkerListing(input: unknown): Promise<ActionResult<ListingStateInfo & { workerId: string }>> {
   const parsed = workerListingSchema.safeParse(input);
-  if (!parsed.success) return { ok: false, error: "validation" };
+  // raqamsiz (eski oyna) — "raqam kerak" (forma raqam bosqichiga qaytaradi)
+  if (!parsed.success) return { ok: false, error: parsed.error.issues.some((i) => i.path[0] === "listingPhone") ? "phone_required" : "validation" };
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
   if (session.profile.is_blocked) return { ok: false, error: "blocked" };
@@ -89,8 +90,9 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
       salary_expected: v.salary,
       schedule: kept.schedule,
       show_phone: v.showPhone,
-      // 0081: qo'lda yozilgan raqam(lar) e'londa; yo'q bo'lsa — e'lon hisob raqamiga qaytadi
-      ...(v.listingPhone ? { listing_phone: v.listingPhone, listing_phone2: v.listingPhone2 && v.listingPhone2 !== v.listingPhone ? v.listingPhone2 : null } : {}),
+      // 0081: qo'lda yozilgan raqam(lar) e'londa (2026-11-18: majburiy)
+      listing_phone: v.listingPhone,
+      listing_phone2: v.listingPhone2 && v.listingPhone2 !== v.listingPhone ? v.listingPhone2 : null,
     },
   });
   if (error || !data) return { ok: false, error: errorCode(error) };

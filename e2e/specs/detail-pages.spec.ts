@@ -85,12 +85,17 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   await expect(page).toHaveURL(/#manzil$/);
   await expect(main.getByRole("heading", { level: 2, name: "Manzil" })).toBeInViewport();
 
-  // aloqa bloki — bo'limlardan oldin. 0074: mehmonga raqam ochilmaydi (ommaviy yig'ishga qarshi), o'rniga "Kirish"
-  const guestLogin = main.locator("[data-contact-guest]").getByRole("link", { name: "Kirish" });
+  // aloqa bloki — bo'limlardan oldin. 2026-11-18 (ega, "raqam hammaga ko'rinsin"): mehmonga "Raqamni ko'rsatish" —
+  // sahifada raqam yo'q (ommaviy yig'ishga qarshi), bosilganda server IP limiti bilan beradi (0084)
+  const reveal = main.locator("[data-contact-guest]").getByRole("button", { name: "Raqamni ko'rsatish" });
   const about = main.getByRole("heading", { level: 2, name: "Vazifalar" });
-  expect((await guestLogin.boundingBox())!.y).toBeLessThan((await about.boundingBox())!.y);
-  await expect(guestLogin).toHaveAttribute("href", `/auth?next=${encodeURIComponent(`/jobs/${v!.slug}`)}`);
+  expect((await reveal.boundingBox())!.y).toBeLessThan((await about.boundingBox())!.y);
   await expect(main.locator("a[href^='tel:']")).toHaveCount(0);
+  await expect(page.locator("body")).not.toContainText("90 111 22 33");
+  await reveal.click();
+  const shown = main.locator("[data-revealed-phone]");
+  await expect(shown.locator("a[href='tel:+998901112233']")).toBeVisible();
+  await expect(shown).toContainText("+998 90 111 22 33");
 
   // o'xshash vakansiya — ixcham qator
   const similar = main.getByRole("link", { name: new RegExp(OTHER.replace(/[()]/g, "\\$&")) });

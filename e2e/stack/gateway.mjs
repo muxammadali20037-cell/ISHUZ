@@ -1,4 +1,5 @@
-// E2E uchun lokal Supabase shlyuzi: PostgREST'ga proksi + Auth (/auth/v1/user, email+parol, admin users, tiklash xati)
+// E2E uchun lokal Supabase shlyuzi: PostgREST'ga proksi + Auth (/auth/v1/user, email+parol, admin users, tiklash xati,
+// magic link: admin/generate_link + verify — Telegram orqali kirish sessiyasi uchun)
 // va Storage'ning kichik emulyatsiyasi.
 // Faqat sinov muhiti: JWT kaliti har ishga tushirishda tasodifiy (up.sh yaratadi), haqiqiy Supabase kalitlari ishlatilmaydi.
 //
@@ -87,6 +88,7 @@ function verify(token) {
  */
 const AUTH_USERS = new Map(); // id → { email, password }
 const MAILBOX = []; // { email, link }
+const MAGIC = new Map(); // hashed_token → { id, email } (bir martalik)
 const FAR = 4_102_444_800;
 
 function authUser(id, email) {
@@ -94,8 +96,13 @@ function authUser(id, email) {
 }
 
 /** Telegram orqali yaratilgan hisob kabi: email biriktirilmagan bo'lsa — texnik manzil */
+const SYNTH = new Map(); // texnik manzil → id (generate_link uchun)
 function emailOf(id) {
-  return AUTH_USERS.get(id)?.email ?? `tg_${id.slice(-6)}@telegram.ishuz.local`;
+  const own = AUTH_USERS.get(id)?.email;
+  if (own) return own;
+  const email = `tg_${id.slice(-6)}@telegram.ishuz.local`;
+  SYNTH.set(email, id);
+  return email;
 }
 
 function idByEmail(email) {
@@ -200,6 +207,25 @@ async function handle(req, res) {
       MAILBOX.push({ email, link: `${redirectTo}#${hash}` });
     }
     return json(res, 200, {});
+  }
+  // startSessionForProfile: generateLink({ type: "magiclink" }) → verifyOtp({ token_hash }) — haqiqiy GoTrue kabi
+  if (url.startsWith("/auth/v1/admin/generate_link") && req.method === "POST") {
+    const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+    if (c?.role !== "service_role") return authError(res, 403, "not_admin", "User not allowed");
+    const body = await readJson(req);
+    const email = String(body.email || "").toLowerCase();
+    const id = idByEmail(email) ?? SYNTH.get(email) ?? null;
+    if (!id) return authError(res, 404, "user_not_found", "User not found");
+    const hashed = crypto.randomBytes(16).toString("hex");
+    MAGIC.set(hashed, { id, email });
+    return json(res, 200, { ...authUser(id, email), action_link: `http://localhost/verify?token=${hashed}`, email_otp: "000000", hashed_token: hashed, verification_type: "magiclink", redirect_to: "" });
+  }
+  if (url.startsWith("/auth/v1/verify") && req.method === "POST") {
+    const body = await readJson(req);
+    const m = MAGIC.get(String(body.token_hash || ""));
+    if (!m) return authError(res, 403, "otp_expired", "Token has expired or is invalid");
+    MAGIC.delete(String(body.token_hash));
+    return json(res, 200, issueSession(m.id, m.email, "otp"));
   }
   const adminUser = /^\/auth\/v1\/admin\/users\/([0-9a-f-]{36})/.exec(url);
   if (adminUser) {

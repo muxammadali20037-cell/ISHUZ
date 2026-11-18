@@ -1,5 +1,13 @@
 import { clsx, type ClassValue } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+/**
+ * Loyihaning o'z shrift o'lchamlari (globals.css `--text-*`). tailwind-merge ularni bilmasa `text-sub` ni rang deb o'ylab,
+ * yonidagi `text-destructive` kabi rangni olib tashlaydi (2026-11-18: qizil holat yozuvi qora bo'lib qolgan).
+ */
+const twMerge = extendTailwindMerge({
+  extend: { theme: { text: ["2xs", "md", "sub", "section", "page", "page-lg"] } },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));

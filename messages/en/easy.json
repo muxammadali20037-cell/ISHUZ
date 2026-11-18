@@ -383,7 +383,9 @@
     "apply": "Apply",
     "contact": "Contact",
     "no_experience": "No experience",
-    "applied_status": "Application: {status}"
+    "applied_status": "Application: {status}",
+    "hiring_now": "Hiring now",
+    "seeking_now": "Looking for work now"
   },
   "listing": {
     "title": "Job-seeker listing",
@@ -1457,5 +1459,13 @@
     "desc_plain": "New jobs and workers every day",
     "join": "Open the channel",
     "later": "Later"
+  },
+  "phone_public": {
+    "title": "Your number will be visible to everyone in the listing",
+    "vacancy": "Job seekers can call you directly. The number also appears in the Ish topdim Telegram channel post.",
+    "worker": "Employers can call you directly. Your number is not shown in the Telegram channel.",
+    "field_vacancy": "Phone in the listing",
+    "field_worker": "Phone in the listing",
+    "hint": "Type the number yourself — this exact number appears in the listing."
   }
 }

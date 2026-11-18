@@ -35,6 +35,7 @@ import { VacancyActions } from "./vacancy-actions";
 import { VacancyDescription } from "./vacancy-description";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import { Photo } from "@/components/shared/photo";
+import { LiveStatus } from "@/features/find/components/result-cards";
 import { BackLink } from "@/components/shared/back-link";
 
 const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
@@ -127,7 +128,7 @@ export async function VacancyDetail({
     { id: "manzil", label: t("jobs.detail.location") },
     { id: "kompaniya", label: t("jobs.detail.tab_company") },
   ];
-  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} guestNext={guestNext} /> : null;
+  const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} guestNext={guestNext} revealVacancyId={guestNext ? v.id : null} /> : null;
 
   const experienceText = v.experience_min_months === 0 ? t("easy.card.no_experience") : tEnum("experience_min_months", String(experienceKey));
   // "Nima uchun sizga mos?" — faqat ish izlovchi profili bo'lsa va haqiqiy sabablar bilan (soxta foiz yo'q)
@@ -208,6 +209,8 @@ export async function VacancyDetail({
                   ) : null}
                 </p>
                 <h1 className="mt-0.5 break-words text-2xl font-bold leading-tight sm:text-3xl">{v.title}</h1>
+                {/* ega (2026-11-18): "Hozir ishchi qidirmoqda" — qizil qalin, faqat faol (muddati o'tmagan) e'londa */}
+                {status === "active" ? <LiveStatus kind="hiring" className="mt-1.5 text-base" /> : null}
                 {v.category ? (
                   <p className="mt-1 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
                     <Link href={`/jobs?category=${v.category.slug}`} className="tap-target relative hover:underline">

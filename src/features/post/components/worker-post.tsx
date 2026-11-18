@@ -17,7 +17,6 @@ import { normalizePhone, formatPhone, formatMoney } from "@/lib/format";
 import type { Category, District, Region } from "@/lib/reference";
 import { Input, Textarea } from "@/components/ui/input";
 import { ProfessionPicker } from "@/features/professions/components/profession-picker";
-import { PhoneField } from "@/features/onboarding/components/steps/step-1-personal";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { celebrate } from "@/lib/celebrate";
 import { cn } from "@/lib/utils";
@@ -39,9 +38,9 @@ import {
   BigCheckbox,
   MoneyInput,
   PhoneInput,
-  VerifiedPhone,
   bigInput,
 } from "./inputs";
+import { PhonePublicNote } from "./phone-public-note";
 import { PublishResult } from "./publish-result";
 import { ModerationOutcome } from "./moderation-outcome";
 import { AiReadyBanner } from "./ai-quick-fill";
@@ -193,7 +192,7 @@ export function WorkerPost({
     name,
     t("professions.custom_badge"),
   );
-  const phone = viewer.loggedIn ? viewer.phone : normalizePhone(draft.phone);
+  const phone = normalizePhone(draft.phone);
 
   // tanlangan kasb rasmi (bo'lsa) — tekshirish sahifasida ko'rsatiladi
   const professionId = draft.profession?.id;
@@ -243,10 +242,8 @@ export function WorkerPost({
     if (s >= 3) {
       if (draft.firstName.trim().length < 2)
         e.firstName = t("easy.fields.first_name");
-      if (!viewer.loggedIn && !normalizePhone(draft.phone))
-        e.phone = t("easy.fields.phone");
-      if (viewer.loggedIn && !viewer.phone)
-        e.phone = t("easy.errors.phone_required");
+      // 2026-11-18 (ega): e'londagi raqam majburiy va qo'lda yoziladi (kirgan foydalanuvchi ham) — hammaga ko'rinadi
+      if (!normalizePhone(draft.phone)) e.phone = t("easy.fields.phone");
       if (draft.about.trim().length < 10) e.about = t("easy.fields.about");
       if (!draft.experience) e.experience = t("easy.fields.experience");
     }
@@ -305,7 +302,8 @@ export function WorkerPost({
           experience: draft.experience!,
           salary: parseMoney(draft.salary),
           schedule: draft.schedule || null,
-          showPhone: draft.showPhone,
+          showPhone: true,
+          listingPhone: phone!,
           source: draft.source ?? "manual",
         }),
       );
@@ -658,31 +656,19 @@ export function WorkerPost({
           </div>
           <div>
             <label htmlFor="phone" className="mb-2 block text-lg font-semibold">
-              {t("easy.worker.phone")}
+              {t("easy.phone_public.field_worker")}
             </label>
-            {viewer.loggedIn ? (
-              viewer.phone ? (
-                <VerifiedPhone phone={viewer.phone} />
-              ) : (
-                <PhoneField contacts={null} />
-              )
-            ) : (
-              <>
-                <PhoneInput
-                  id="phone"
-                  value={draft.phone}
-                  onChange={(v) => update({ phone: v })}
-                  invalid={!!errors.phone}
-                  describedBy="phone-hint"
-                />
-                <p
-                  id="phone-hint"
-                  className="mt-2 text-base text-muted-foreground"
-                >
-                  {t("easy.worker.phone_hint")}
-                </p>
-              </>
-            )}
+            {/* 2026-11-18 (ega): hamma uchun qo'lda (hisob raqami oldindan qo'yilmaydi), majburiy, e'londa hammaga ko'rinadi */}
+            <PhoneInput
+              id="phone"
+              value={draft.phone}
+              onChange={(v) => update({ phone: v })}
+              invalid={!!errors.phone}
+              describedBy="phone-hint"
+            />
+            <p id="phone-hint" className="mt-2 text-base text-muted-foreground">
+              {t("easy.phone_public.hint")} {t("easy.phone_public.title")}.
+            </p>
             <FieldError message={errors.phone} />
           </div>
           <div>
@@ -907,17 +893,8 @@ export function WorkerPost({
           <p data-channel-note className="rounded-xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
             {t("easy.worker.channel_note")}
           </p>
-          <BigCheckbox
-            id="show-phone"
-            checked={draft.showPhone}
-            onChange={(v) => update({ showPhone: v })}
-            title={t("easy.worker.consent_title")}
-            description={
-              draft.showPhone
-                ? t("easy.worker.consent_desc")
-                : t("easy.worker.consent_off")
-            }
-          />
+          {/* 2026-11-18 (ega): raqam majburiy va hammaga ko'rinadi — tanlov belgisi o'rnida ochiq ogohlantirish */}
+          <PhonePublicNote kind="worker" />
           {!viewer.loggedIn ? (
             <div className="rounded-2xl border-2 border-primary/40 bg-primary-soft/50 p-4">
               <p className="text-lg font-bold">

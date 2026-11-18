@@ -17,7 +17,8 @@ import { vacancyGuideTurn, type GuideParse } from "../guide-actions";
 import { SALARY_PRESETS, composeDescription, guideProgress, nextGuideStep, type GuideStep } from "../guide-logic";
 import { parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type PostViewer, type VacancyDraft } from "../types";
-import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
+import { MoneyInput, PhoneInput, bigInput } from "./inputs";
+import { PhonePublicNote } from "./phone-public-note";
 import { placeLabel } from "./region-picker";
 import { FieldError, ReviewRow } from "./wizard-frame";
 
@@ -445,7 +446,8 @@ export function VacancyGuide({
           {row("phone", t("easy.vacancy.phone"), <span className="tabular">{formatPhone(normalizePhone(draft.phone))}</span>)}
           {row("description", t("easy.vacancy.description"), <span className="whitespace-pre-line font-normal">{draft.description}</span>)}
         </div>
-        <BigCheckbox id="guide-show-phone" checked={draft.showPhone} onChange={(v) => update({ showPhone: v })} title={t("easy.vacancy.consent_title")} description={draft.showPhone ? t("easy.vacancy.consent_desc") : t("easy.vacancy.consent_off")} />
+        {/* 2026-11-18 (ega): raqam majburiy va hammaga ko'rinadi */}
+        <PhonePublicNote kind="vacancy" />
         <FieldError message={error} />
         <Button type="button" size="xl" fullWidth className="h-14 text-lg" loading={pending} onClick={onPublish} data-guide-publish>
           {!pending ? <Check className="size-5" aria-hidden /> : null} {viewer.loggedIn ? t("easy.wizard.publish") : t("easy.wizard.login_to_publish")}

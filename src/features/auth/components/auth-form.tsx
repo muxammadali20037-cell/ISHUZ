@@ -14,6 +14,7 @@ import { BrandWordmark } from "@/components/shared/brand-wordmark";
 import { EntryBack, EntryHeading, EntryIcon, EntryScreen } from "@/features/entry/components/entry-screen";
 import { cn } from "@/lib/utils";
 import { TelegramGate } from "./telegram-login";
+import { TelegramWebLoginButton } from "./telegram-web-login-button";
 
 type Step = "phone" | "link" | "code";
 
@@ -94,20 +95,18 @@ export function LoginMethods({
             {/* ega (2026-11-18): Telegram birinchi o'rinda — bir bosishda, kod va parolsiz (bot sozlangan bo'lsa) */}
             <nav aria-label={t("auth.method.label")} className="mt-8 grid gap-3">
               {botUsername ? (
-                <a
-                  href={`https://t.me/${botUsername}?start=login`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-track="auth_method"
-                  data-track-to="telegram"
-                  className="press flex min-h-16 items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground hover:bg-primary-hover"
+                // 2026-11-18 (ega): kodsiz — Telegram ochiladi, "✅ Kirish" bosiladi, shu sahifa o'zi kiradi (0085)
+                <TelegramWebLoginButton
+                  botUsername={botUsername}
+                  next={next}
+                  className="press flex min-h-16 items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-left text-primary-foreground hover:bg-primary-hover"
                 >
                   <TelegramIcon className="size-6 shrink-0 text-primary-foreground" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-base font-bold leading-tight">{t("auth.method.telegram")}</span>
                     <span className="mt-0.5 block text-sm leading-snug opacity-90">{t("auth.method.telegram_desc")}</span>
                   </span>
-                </a>
+                </TelegramWebLoginButton>
               ) : null}
               <Link
                 href={phoneHref}

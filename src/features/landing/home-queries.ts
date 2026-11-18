@@ -44,7 +44,7 @@ type JobFeedRows = { items: JobRow[]; total: number; images: Record<string, stri
 type WorkerFeedRows = { items: WorkerRow[]; total: number; images: Record<string, string> };
 
 const cachedNewJobs = unstable_cache(loadNewJobs, ["home-new-jobs-v1"], { revalidate: FEED_TTL || 60, tags: [PUBLIC_FEED_TAG] });
-const cachedNewWorkers = unstable_cache(loadNewWorkers, ["home-new-workers-v1"], { revalidate: FEED_TTL || 60, tags: [PUBLIC_FEED_TAG] });
+const cachedNewWorkers = unstable_cache(loadNewWorkers, ["home-new-workers-v2"], { revalidate: FEED_TTL || 60, tags: [PUBLIC_FEED_TAG] });
 
 async function newJobs(regionId: string | null, districtId: string | null, limit: number): Promise<FeedResult<JobFeedRows>> {
   try {

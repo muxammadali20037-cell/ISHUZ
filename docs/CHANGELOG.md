@@ -1,5 +1,31 @@
 # O'zgarishlar jurnali
 
+## 2026-11-18 · Qizil "Hozir … qidirmoqda", telefon hammaga, Telegram orqali kodsiz kirish (`claude/phones-status-tglogin`)
+
+Ega: "vakansiya tagiga «hozir ish qidirmoqda»ni jirniy qizil… telefon raqam hammaga ko'rinsin, e'lon joylayotganda
+kiritish majburiy, qo'lda… Telegram orqali kirishda kod terib yurmasin, shunday kirib ketsin". Tanlovlar: qizil yozuv —
+ikkalasida; raqam — "Raqamni ko'rsatish" tugmasi bilan (OLX kabi).
+
+- **Qizil qalin holat** (`LiveStatus`): vakansiya kartasi va sahifasida "Hozir ishchi qidirmoqda" (faqat faol e'lon),
+  ishchi kartasi, e'lon va nomzod sahifasida "Hozir ish qidirmoqda" (faqat holati `active`; "takliflarga ochiq" — yo'q).
+  Qidiruv natijalariga ishchi holati server kaliti bilan qo'shiladi (faqat ochiq e'lonlar, faqat holat).
+- **Telefon hammaga (0084):** mehmonga "Raqamni ko'rsatish" — bosilganda IP bo'yicha limit (soatiga 20, sutkasiga 60,
+  fail-closed) bilan `listing_phones_public` (faqat server kaliti): vakansiyada rozilik berilgan raqam, ishchida e'londagi
+  raqam(lar) yoki "hamma" ko'rinishidagi hisob raqami. Sahifada raqam oldindan yo'q; ro'yxatlar raqamsiz (0074 kabi).
+  Kirgan foydalanuvchi — avvalgidek (shaxsiy limit).
+- **E'londa raqam majburiy va qo'lda:** vakansiyada hisob/kompaniya raqami oldindan qo'yilmaydi; ishchi formasida kirgan
+  foydalanuvchi ham raqamni o'zi yozadi (`listingPhone` majburiy, eski oyna — "raqam kerak"). "Raqamim ko'rinsin" belgisi
+  o'rnida ochiq ogohlantirish: "Raqamingiz e'londa hammaga ko'rinadi" (vakansiyada — Telegram kanalda ham; ishchida —
+  kanalda yo'q, va'dadagidek). Eski e'lonlar rozilik qoidasida qoladi (egasi qayta saqlasa — yangi qoida).
+- **Telegram orqali kodsiz kirish (0085):** sahifa bir martalik so'rov yaratadi → `t.me/<bot>?start=w_<token>` → bot
+  qaysi brauzer so'rayotganini ko'rsatib "✅ Kirish"ni so'raydi → brauzer (httpOnly cookie'dagi kalit bilan) har 2 s va
+  sahifaga qaytganda holatni so'raydi va sessiya oladi. Token/kalit faqat xesh, 5 daqiqa, bir marta tasdiqlanadi va bir
+  marta ishlatiladi; havola boshqaga o'tib qolsa ham sessiyani faqat so'rovni boshlagan brauzer oladi. Bot yoki 0085
+  sozlanmagan bo'lsa — eski havola. Telefon + kod usuli qoladi.
+- Testlar: SQL (`listing_phones_public`, `telegram_web_login`), unit (yordamchilar), E2E `phones-status.spec` (qizil holat,
+  mehmon raqami, kodsiz kirish — haqiqiy status yo'li va sessiya; E2E shlyuzida magic link qo'shildi).
+- Prod: `pending.sql` — 0082, 0083, 0084, 0085.
+
 ## 2026-11-18 · Pastki menyu: "Ish beruvchilar", "E'lonlarim", "Ishchilar"; har kirishda kanal taklifi (`claude/nav-employers-channel`)
 
 Ega (skrinshotlar bilan): "Nomzodlar bo'limida barcha ishchilar chiqsin… bu yerda e'lonlarim bo'lsin, vakansiyalar emas…

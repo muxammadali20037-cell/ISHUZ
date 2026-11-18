@@ -1,4 +1,4 @@
--- ISH TOPDIM · prod bazani yangilash: 0082…0083 migratsiyalari BITTA faylda (2 ta).
+-- ISH TOPDIM · prod bazani yangilash: 0082…0085 migratsiyalari BITTA faylda (4 ta).
 -- BU FAYL AVTOMATIK YARATILADI (scripts/gen-prod-pending.mjs) — qo'lda tahrirlamang.
 --
 -- Qanday qo'llanadi (ega):
@@ -90,6 +90,169 @@ alter table public.vacancy_contacts add column if not exists channel_phone_at ti
 comment on column public.vacancy_contacts.channel_phone_at is
   'Ish beruvchi raqamni Telegram kanal postida ko''rsatishga rozilik bergan vaqt (null — kanalda raqamsiz)';
 
+-- ═══════════════ 0084_public_listing_phones.sql ═══════════════
+-- 0084 · E'londagi telefon raqamini mehmon ham ko'ra oladi — "Raqamni ko'rsatish" tugmasi orqali
+--
+--   Ega (2026-11-18): "telefon raqam hammaga ko'rinsin" — kirmagan mehmonga ham; tanlangan usul: raqam tugma bosilganda
+--   ochiladi (OLX kabi), ommaviy yig'ish qiyin bo'lsin.
+--
+--   listing_phones_public(kind, id) — bitta faol e'lonning ochiq raqami(lar)i. Qoidalar kirgan foydalanuvchidagi bilan
+--   bir xil (0074 simple_vacancy_phone, 0081 simple_worker_listing), faqat mehmonga ochiq bo'lganlari:
+--     · vakansiya: e'londagi raqam (vacancy_contacts, faqat show_phone — egasi rozi bo'lsa) yoki kompaniya / ish beruvchi
+--       aloqa raqami (eski to'liq formadagi e'lonlar); e'lon faol va egasi bloklanmagan;
+--     · ishchi: e'londagi raqam(lar) (worker_listing_phones — e'lon uchun qo'lda yozilgan) yoki hisob raqami faqat
+--       ko'rinishi "hamma" (everyone) bo'lsa; e'lon ochiq, holati "ish qidirmayapti" emas, egasi bloklanmagan.
+--   Funksiyani faqat server kaliti chaqiradi (anon/authenticated — yo'q): ilova avval IP bo'yicha tezlik cheklovini
+--   tekshiradi (soatiga/sutkasiga), keyin chaqiradi. Kirgan foydalanuvchi avvalgidek 0074 limiti bilan ko'radi.
+--   Ro'yxatlar (qidiruv) raqam qaytarmaydi — o'zgarmaydi.
+--
+--   Faqat yangi funksiya: mavjud ma'lumot va funksiyalarga tegilmaydi. Takror ishga tushirish xavfsiz.
+--   Qaytarish (rollback): supabase/rollbacks/0084_public_listing_phones.down.sql
+
+create or replace function public.listing_phones_public(p_kind text, p_id uuid)
+returns table (phone text, phone2 text)
+language sql stable security definer set search_path = public as $$
+  select x.phone, x.phone2 from (
+    select case
+             when vc.vacancy_id is not null then case when vc.show_phone then vc.phone end
+             else coalesce(co.phone, ep.contact_phone)
+           end as phone,
+           null::text as phone2
+      from public.vacancies v
+      left join public.profiles op on op.id = v.owner_profile_id
+      left join public.vacancy_contacts vc on vc.vacancy_id = v.id
+      left join public.companies co on co.id = v.company_id
+      left join public.employer_profiles ep on ep.profile_id = v.owner_profile_id
+     where p_kind = 'vacancy' and v.id = p_id and v.status = 'active' and coalesce(op.is_blocked, false) = false
+    union all
+    select coalesce(lp.phone, case when pc.phone_visibility = 'everyone' then pc.phone end),
+           lp.phone2
+      from public.worker_profiles w
+      join public.profiles pf on pf.id = w.profile_id
+      left join public.worker_listing_phones lp on lp.worker_id = w.id
+      left join public.profile_contacts pc on pc.profile_id = w.profile_id
+     where p_kind = 'worker' and w.id = p_id
+       and w.is_public and w.status <> 'not_looking' and w.onboarding_completed_at is not null and not pf.is_blocked
+  ) x
+  where x.phone is not null;
+$$;
+revoke execute on function public.listing_phones_public(text, uuid) from public, anon, authenticated;
+grant execute on function public.listing_phones_public(text, uuid) to service_role;
+
+comment on function public.listing_phones_public(text, uuid) is
+  'Mehmon uchun "Raqamni ko''rsatish": faol e''londagi ochiq raqam(lar). Faqat server kaliti (ilova IP limitini tekshiradi).';
+
+-- ═══════════════ 0085_telegram_web_login.sql ═══════════════
+-- 0085 · Telegram orqali kodsiz kirish (brauzerda)
+--
+--   Ega (2026-11-18): "Telegram orqali kirishda bossa Telegramga olib kirsin, kod terib yurmasin — shunday kirib ketsin".
+--   Oqim: sayt bir martalik so'rov yaratadi → Telegram bot `/start w_<token>` bilan ochiladi → bot "✅ Kirish" tugmasini
+--   ko'rsatadi (qaysi brauzer so'rayotgani yozilgan) → bosilganda so'rov tasdiqlanadi → brauzer (o'sha cookie bilan)
+--   holatni so'raydi va sessiya ochiladi. Kod yozilmaydi.
+--
+--   Xavfsizlik:
+--     · token va brauzer kaliti faqat xesh ko'rinishida saqlanadi; token — Telegram havolasida, brauzer kaliti — httpOnly
+--       cookie'da (havola boshqaga o'tib qolsa ham, sessiyani faqat so'rovni boshlagan brauzer oladi);
+--     · 5 daqiqa amal qiladi, bir marta tasdiqlanadi va bir marta ishlatiladi (atomik);
+--     · jadvalga faqat server kaliti (security definer funksiyalar) kiradi: anon/authenticated — yo'q.
+--
+--   Faqat yangi jadval va funksiyalar. Takror ishga tushirish xavfsiz.
+--   Qaytarish (rollback): supabase/rollbacks/0085_telegram_web_login.down.sql
+
+create table if not exists public.telegram_web_logins (
+  id               uuid primary key default gen_random_uuid(),
+  token_hash       text not null unique,
+  browser_hash     text not null,
+  user_agent       text,
+  created_at       timestamptz not null default now(),
+  expires_at       timestamptz not null default now() + interval '5 minutes',
+  telegram_user_id bigint,
+  profile_id       uuid references public.profiles(id) on delete cascade,
+  confirmed_at     timestamptz,
+  consumed_at      timestamptz,
+  constraint telegram_web_logins_hash_format check (token_hash ~ '^[0-9a-f]{64}$' and browser_hash ~ '^[0-9a-f]{64}$'),
+  constraint telegram_web_logins_ua_len check (user_agent is null or length(user_agent) <= 120)
+);
+create index if not exists idx_telegram_web_logins_expires on public.telegram_web_logins (expires_at);
+alter table public.telegram_web_logins enable row level security;
+-- siyosat yo'q: faqat pastdagi funksiyalar (server kaliti)
+revoke all on public.telegram_web_logins from public, anon, authenticated;
+grant all on public.telegram_web_logins to service_role;
+
+-- 1. so'rov yaratish (sayt). Eskilar (1 kundan eski) shu yerda tozalanadi.
+create or replace function public.telegram_web_login_create(p_token_hash text, p_browser_hash text, p_user_agent text)
+returns uuid language plpgsql volatile security definer set search_path = public as $$
+declare v_id uuid;
+begin
+  delete from public.telegram_web_logins where expires_at < now() - interval '1 day';
+  insert into public.telegram_web_logins (token_hash, browser_hash, user_agent)
+  values (p_token_hash, p_browser_hash, left(nullif(trim(p_user_agent), ''), 120))
+  returning id into v_id;
+  return v_id;
+end $$;
+
+-- 2. bot: token bo'yicha so'rovni topish (tasdiqlash tugmasi uchun). status: ok | expired | used | invalid
+create or replace function public.telegram_web_login_preview(p_token_hash text)
+returns table (id uuid, status text, user_agent text)
+language sql stable security definer set search_path = public as $$
+  select l.id,
+         case when l.confirmed_at is not null or l.consumed_at is not null then 'used'
+              when l.expires_at <= now() then 'expired'
+              else 'ok' end,
+         l.user_agent
+    from public.telegram_web_logins l
+   where l.token_hash = p_token_hash
+  union all
+  select null::uuid, 'invalid', null::text
+   where not exists (select 1 from public.telegram_web_logins where token_hash = p_token_hash);
+$$;
+
+-- 3. bot: "✅ Kirish" bosildi — bir marta, muddati ichida. status: ok | expired | used | invalid
+create or replace function public.telegram_web_login_confirm(p_id uuid, p_telegram_user_id bigint, p_profile_id uuid)
+returns text language plpgsql volatile security definer set search_path = public as $$
+declare r public.telegram_web_logins;
+begin
+  update public.telegram_web_logins
+     set telegram_user_id = p_telegram_user_id, profile_id = p_profile_id, confirmed_at = now()
+   where id = p_id and confirmed_at is null and consumed_at is null and expires_at > now()
+  returning * into r;
+  if found then return 'ok'; end if;
+  select * into r from public.telegram_web_logins where id = p_id;
+  if not found then return 'invalid'; end if;
+  if r.confirmed_at is not null or r.consumed_at is not null then return 'used'; end if;
+  return 'expired';
+end $$;
+
+-- 4. brauzer: holat. Tasdiqlangan bo'lsa — atomik ishlatiladi va profil qaytadi (faqat o'sha brauzer kaliti bilan).
+--    status: pending | ok | expired | used | invalid
+create or replace function public.telegram_web_login_consume(p_id uuid, p_browser_hash text)
+returns table (status text, profile_id uuid, telegram_user_id bigint)
+language plpgsql volatile security definer set search_path = public as $$
+declare r public.telegram_web_logins;
+begin
+  select * into r from public.telegram_web_logins l where l.id = p_id and l.browser_hash = p_browser_hash;
+  if not found then return query select 'invalid'::text, null::uuid, null::bigint; return; end if;
+  if r.consumed_at is not null then return query select 'used'::text, null::uuid, null::bigint; return; end if;
+  if r.confirmed_at is null then
+    if r.expires_at <= now() then return query select 'expired'::text, null::uuid, null::bigint; return; end if;
+    return query select 'pending'::text, null::uuid, null::bigint; return;
+  end if;
+  update public.telegram_web_logins l set consumed_at = now()
+   where l.id = p_id and l.consumed_at is null
+  returning * into r;
+  if not found then return query select 'used'::text, null::uuid, null::bigint; return; end if;
+  return query select 'ok'::text, r.profile_id, r.telegram_user_id;
+end $$;
+
+revoke execute on function public.telegram_web_login_create(text, text, text) from public, anon, authenticated;
+revoke execute on function public.telegram_web_login_preview(text) from public, anon, authenticated;
+revoke execute on function public.telegram_web_login_confirm(uuid, bigint, uuid) from public, anon, authenticated;
+revoke execute on function public.telegram_web_login_consume(uuid, text) from public, anon, authenticated;
+grant execute on function public.telegram_web_login_create(text, text, text) to service_role;
+grant execute on function public.telegram_web_login_preview(text) to service_role;
+grant execute on function public.telegram_web_login_confirm(uuid, bigint, uuid) to service_role;
+grant execute on function public.telegram_web_login_consume(uuid, text) to service_role;
+
 commit;
 
 -- Natija: har migratsiya bo'yicha holat (hammasi "bor" bo'lishi kerak)
@@ -111,6 +274,8 @@ from (values
   ('0080', 'tariflar (payments.plan, public_tariffs)',  exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'payments' and column_name = 'plan') and to_regprocedure('public.public_tariffs()') is not null),
   ('0081', 'e''londagi qo''lda yozilgan raqamlar (worker_listing_phones)', to_regclass('public.worker_listing_phones') is not null and position('listing_phone' in pg_get_functiondef('public.save_simple_worker_listing(jsonb)'::regprocedure)) > 0),
   ('0082', 'qidiruv: kirill/lotin (uz_fold)', to_regprocedure('public.uz_fold(text)') is not null and position('uz_fold' in pg_get_functiondef('public.simple_search_vacancies(uuid,uuid,uuid,boolean,integer,work_schedule,boolean,integer,integer)'::regprocedure)) > 0),
-  ('0083', 'vakansiya raqami kanalda: rozilik vaqti (vacancy_contacts.channel_phone_at)', exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'vacancy_contacts' and column_name = 'channel_phone_at'))
+  ('0083', 'vakansiya raqami kanalda: rozilik vaqti (vacancy_contacts.channel_phone_at)', exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'vacancy_contacts' and column_name = 'channel_phone_at')),
+  ('0084', 'mehmonga "Raqamni ko''rsatish" (listing_phones_public)', to_regprocedure('public.listing_phones_public(text, uuid)') is not null),
+  ('0085', 'Telegram orqali kodsiz kirish (telegram_web_logins)', to_regclass('public.telegram_web_logins') is not null)
 ) as m(migration, tekshiruv, bor)
 order by m.migration;

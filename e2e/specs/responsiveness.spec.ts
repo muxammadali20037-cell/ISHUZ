@@ -136,6 +136,8 @@ test("e'lon joylash: internet uzilsa — tushunarli xato, tugma qayta ishlaydi, 
   await next(page);
   await page.locator("#about").fill("Buxgalteriya hisobi, soliq hisobotlari, 1C bilan 5 yil ishlaganman");
   await page.getByRole("radio", { name: "3 yildan ko'p" }).click();
+  // 2026-11-18 (ega): e'londagi raqam majburiy va qo'lda yoziladi
+  await page.locator("#phone").fill("90 123 45 67");
   await next(page);
   // server action so'rovi tarmoqda uziladi
   await page.route("**/post/worker**", (route) => (route.request().method() === "POST" ? route.abort("internetdisconnected") : route.continue()));

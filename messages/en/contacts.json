@@ -43,5 +43,12 @@
     "employer_hint": "Candidates will call this number."
   },
   "guest_hint": "Sign in to see the employer's phone number. Sign-in is via Telegram and takes a minute.",
-  "guest_login": "Sign in"
+  "guest_login": "Sign in",
+  "reveal": {
+    "show": "Show number",
+    "none": "This listing has no public number. Sign in and apply or send a request.",
+    "limit": "Too many numbers viewed. Try again later or sign in.",
+    "unavailable": "Could not show the number right now.",
+    "retry": "Try again"
+  }
 }
