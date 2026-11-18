@@ -114,7 +114,7 @@ test("pastki menyu: hech narsa menyudan yuqoriga chiqmaydi — ostidan o'tayotga
       await page.goto("/");
       const nav = page.locator("nav.bottom-nav");
       // "E'lon" — faqat ish beruvchida (4.0: ish qidiruvchida beshta bo'lim)
-      if (mode === "employer") await expect(nav.getByRole("link", { name: "E'lon" })).toBeVisible();
+      if (mode === "employer") await expect(nav.getByRole("link", { name: "E'lon", exact: true })).toBeVisible();
       const out = await nav.evaluate((n) => {
         const top = n.getBoundingClientRect().top;
         return Array.from(n.querySelectorAll("*"))
