@@ -1,5 +1,14 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Prod baza: 0084–0085 qo'llandi (`claude/prod-applied-85`)
+
+Ega: "SQL'ga o'zing joyla" va Supabase ulanishini ISHUZ loyihasiga berdi. Avval faqat o'qish bilan tekshirildi: 0068–0083
+bor (0082 — beshala qidiruv funksiyasida `uz_fold`, `uz_fold('Ўқитувчи') = 'oqituvchi'`), 0084–0085 yo'q. Keyin Supabase MCP
+`apply_migration` bilan tartib bilan qo'llandi: `0084_public_listing_phones`, `0085_telegram_web_login` (repodagi fayllar
+bilan bir xil). Keyin tekshirildi: beshala yangi funksiya — faqat `service_role` (anon/authenticated — yo'q), security
+definer; `telegram_web_logins` — RLS yoqilgan, anon/authenticated o'qiy olmaydi; noma'lum e'lon — 0 qator, noma'lum token —
+`invalid`. `APPLIED_UNTIL = 85` — pending.sql endi bo'sh (faqat holat jadvali).
+
 ## 2026-11-18 · Qizil "Hozir … qidirmoqda", telefon hammaga, Telegram orqali kodsiz kirish (`claude/phones-status-tglogin`)
 
 Ega: "vakansiya tagiga «hozir ish qidirmoqda»ni jirniy qizil… telefon raqam hammaga ko'rinsin, e'lon joylayotganda
