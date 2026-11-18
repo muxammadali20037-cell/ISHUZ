@@ -29,6 +29,7 @@ import { AiAvatar } from "@/components/shared/ai-avatar";
 import { VacancyGuide } from "./vacancy-guide";
 import type { ProfessionOption } from "../chat-actions";
 import { RegionPicker, placeLabel } from "./region-picker";
+import { PhonePublicNote } from "./phone-public-note";
 import { ChoiceButtons, ChosenLine, CustomProfessionCard, FieldError, LocalChangesNotice, ReviewRow, WizardFrame, professionLabels, scrollToError } from "./wizard-frame";
 
 const TOTAL = 4;
@@ -255,7 +256,7 @@ export function VacancyPost({
         schedule: draft.schedule || null,
         salaryType: payChoice ? (draft.salaryType === "daily" ? "daily" : "monthly") : undefined,
         experienceMonths: draft.experienceMonths,
-        showPhone: draft.showPhone,
+        showPhone: true,
         photoPath: draft.photoPath ?? null,
         source: draft.source ?? "manual",
       }));
@@ -516,7 +517,10 @@ export function VacancyPost({
             <label htmlFor="phone" className="mb-2 block text-lg font-semibold">
               {t("easy.vacancy.phone")}
             </label>
-            <PhoneInput id="phone" value={draft.phone} onChange={(v) => update({ phone: v })} invalid={!!errors.phone} />
+            <PhoneInput id="phone" value={draft.phone} onChange={(v) => update({ phone: v })} invalid={!!errors.phone} describedBy="phone-public-hint" />
+            <p id="phone-public-hint" className="mt-2 text-base text-muted-foreground">
+              {t("easy.phone_public.hint")} {t("easy.phone_public.title")}.
+            </p>
             <FieldError message={errors.phone} />
           </div>
           <div>
@@ -652,7 +656,8 @@ export function VacancyPost({
               </ReviewRow>
             ) : null}
           </div>
-          <BigCheckbox id="show-phone" checked={draft.showPhone} onChange={(v) => update({ showPhone: v })} title={t("easy.vacancy.consent_title")} description={draft.showPhone ? t("easy.vacancy.consent_desc") : t("easy.vacancy.consent_off")} />
+          {/* 2026-11-18 (ega): raqam majburiy va hammaga ko'rinadi — tanlov belgisi o'rnida ochiq ogohlantirish */}
+          <PhonePublicNote kind="vacancy" />
           {!viewer.loggedIn ? (
             <div className="rounded-2xl border-2 border-primary/40 bg-primary-soft/50 p-4">
               <p className="text-lg font-bold">{t("easy.wizard.login_needed_title")}</p>

@@ -43,5 +43,12 @@
     "employer_hint": "Nomzodlar shu raqamga qo'ng'iroq qiladi."
   },
   "guest_hint": "Ish beruvchining telefon raqamini ko'rish uchun kiring. Kirish Telegram orqali, bir daqiqa.",
-  "guest_login": "Kirish"
+  "guest_login": "Kirish",
+  "reveal": {
+    "show": "Raqamni ko'rsatish",
+    "none": "Bu e'londa ochiq raqam yo'q. Kirib, ariza yoki so'rov yuboring.",
+    "limit": "Juda ko'p raqam ko'rildi. Birozdan keyin urinib ko'ring yoki kiring.",
+    "unavailable": "Raqamni hozir ko'rsatib bo'lmadi.",
+    "retry": "Qayta urinish"
+  }
 }

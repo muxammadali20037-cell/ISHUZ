@@ -4,6 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { formatPhone } from "@/lib/format";
 import { CopyButton } from "./copy-button";
 import { ContactCard } from "./contact-card";
+import { RevealPhone } from "./reveal-phone";
 
 /** Telegram foydalanuvchi nomi: "@name", "t.me/name" yoki "https://t.me/name" → "name" (faqat ruxsat etilgan belgilar) */
 export function telegramUsername(raw: string | null | undefined): string | null {
@@ -16,8 +17,8 @@ export function telegramUsername(raw: string | null | undefined): string | null 
  * rozilik bergan bo'lsa yoki kompaniya telefoni) — katta "Qo'ng'iroq qilish" tugmasi; kompaniya Telegram'i bo'lsa —
  * "Telegram'da yozish" (telefon bo'lmasa ham — 2026-10-31 auditi: avval faqat telefon bilan birga chiqardi).
  * Ikkalasi ham bo'lmasa — kirgan foydalanuvchiga oddiy kontakt kartasi (shaxsiy raqam ruxsat bo'yicha).
- * Mehmon (`guestNext` berilgan): 0074 dan beri telefon faqat kirganlarga ochiladi — "kirish" taklifi (raqam bor-yo'qligini
- * oshkor qilmaydi).
+ * Mehmon (`guestNext` berilgan): 2026-11-18 (ega, "raqam hammaga ko'rinsin") — "Raqamni ko'rsatish" tugmasi
+ * (`revealVacancyId`, IP limiti bilan, 0084); raqam yo'q yoki limit — kirish taklifi.
  * `data-contact` — aloqa niyati statistikasi uchun (AnalyticsListener).
  */
 export async function EmployerCallCard({
@@ -25,15 +26,23 @@ export async function EmployerCallCard({
   companyTelegram,
   ownerProfileId,
   guestNext,
+  revealVacancyId,
 }: {
   phone: string | null;
   companyTelegram: string | null;
   ownerProfileId: string | null;
   guestNext?: string | null;
+  /** mehmonga "Raqamni ko'rsatish" (shu vakansiya) */
+  revealVacancyId?: string | null;
 }) {
   const { t } = await getT();
   const tg = telegramUsername(companyTelegram);
   const guest = guestNext ? (
+    revealVacancyId ? (
+      <div data-contact-guest>
+        <RevealPhone kind="vacancy" id={revealVacancyId} loginHref={`/auth?next=${encodeURIComponent(guestNext)}`} />
+      </div>
+    ) : (
     <div className="space-y-2" data-contact-guest>
       <p className="text-base">{t("contacts.guest_hint")}</p>
       <Link
@@ -43,6 +52,7 @@ export async function EmployerCallCard({
         <LogIn className="size-4" aria-hidden /> {t("contacts.guest_login")}
       </Link>
     </div>
+    )
   ) : null;
   if (!phone && !tg) {
     if (ownerProfileId) return <ContactCard profileId={ownerProfileId} />;

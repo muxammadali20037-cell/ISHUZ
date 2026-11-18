@@ -1,5 +1,6 @@
 "use client";
 
+import { LiveStatus } from "@/features/find/components/result-cards";
 import Link from "next/link";
 import { Bookmark, Briefcase, Clock, Images, MapPin, ShieldCheck, Wallet } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -103,8 +104,15 @@ export function WorkerCard({
       </div>
 
       <div className="mt-2 flex items-center gap-1.5 text-xs">
-        <span className={cn("size-2 rounded-full", statusDot[w.status])} />
-        <span className="text-muted-foreground">{tEnum("worker_status_short", w.status)}</span>
+        {/* "Hozir ish qidirmoqda" — qizil qalin (ega, 2026-11-18); boshqa holatlar — avvalgidek kulrang */}
+        {w.status === "active" ? (
+          <LiveStatus kind="seeking" />
+        ) : (
+          <>
+            <span className={cn("size-2 rounded-full", statusDot[w.status])} />
+            <span className="text-muted-foreground">{tEnum("worker_status_short", w.status)}</span>
+          </>
+        )}
         {w.phone_verified ? <ShieldCheck className="ml-1 size-3.5 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
         {w.has_portfolio ? <Images className="size-3.5 text-muted-foreground" aria-label={t("enums.portfolio_type.image")} /> : null}
       </div>

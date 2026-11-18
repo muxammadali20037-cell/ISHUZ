@@ -190,7 +190,8 @@ export async function getNodeInfo(nodeId: string): Promise<NodeInfo | null> {
 }
 
 type JobRow = Database["public"]["Functions"]["simple_search_vacancies"]["Returns"][number];
-type WorkerRow = Database["public"]["Functions"]["simple_search_workers"]["Returns"][number];
+type WorkerStatus = Database["public"]["Enums"]["worker_status"];
+type WorkerRow = Database["public"]["Functions"]["simple_search_workers"]["Returns"][number] & { status?: WorkerStatus | null };
 
 export interface FindResults<T> {
   items: T[];
@@ -347,9 +348,26 @@ export async function findWorkers(params: FindParams, place: Place, limit = PAGE
   // "Kunlik ishchilar" (kunlik to'lov istagi yoki bugun/ertaga tayyor) — 0066 funksiyasi; yo'q bo'lsa — xato
   const { data, error } = params.pay === "daily" ? await supabase.rpc("simple_search_workers_v2", { ...args, p_daily: true }) : await supabase.rpc("simple_search_workers", args);
   if (error) return searchFailure("workers", error);
-  const items = data ?? [];
-  const images = await getProfessionImages(items.map((r) => r.profession_node_id));
-  return { ok: true, items, total: Number(items[0]?.total_count ?? 0), images };
+  const rows = data ?? [];
+  const [images, statuses] = await Promise.all([getProfessionImages(rows.map((r) => r.profession_node_id)), workerStatuses(rows.map((r) => r.id))]);
+  const items = rows.map((r) => ({ ...r, status: statuses.get(r.id) ?? null }));
+  return { ok: true, items, total: Number(rows[0]?.total_count ?? 0), images };
+}
+
+/**
+ * Ro'yxatdagi ishchilar holati — kartada qizil "Hozir ish qidirmoqda" (faqat `active`). worker_profiles faqat kirganlarga
+ * o'qiladi (RLS), mehmon ham ko'rishi uchun server kaliti bilan — faqat qidiruv qaytargan (ochiq) e'lonlar, faqat holat.
+ */
+export async function workerStatuses(ids: string[]): Promise<Map<string, WorkerStatus>> {
+  const out = new Map<string, WorkerStatus>();
+  if (!ids.length || !process.env.SUPABASE_SERVICE_ROLE_KEY) return out;
+  try {
+    const { data } = await createAdminClient().from("worker_profiles").select("id, status").in("id", ids).eq("is_public", true);
+    for (const r of data ?? []) out.set(r.id, r.status);
+  } catch {
+    /* holatsiz ham ro'yxat ishlaydi */
+  }
+  return out;
 }
 
 export type { JobRow, WorkerRow };

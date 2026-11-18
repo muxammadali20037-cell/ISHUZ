@@ -72,6 +72,8 @@ export interface WorkerCardData extends PlaceNames {
   experience_level: Enums<"experience_level">;
   salary_expected: number | null;
   phone: string | null;
+  /** holat ("Hozir ish qidirmoqda" — faqat `active`); ro'yxat manbai bermasa — ko'rsatilmaydi */
+  status?: Enums<"worker_status"> | null;
 }
 
 export function usePlace() {
@@ -155,6 +157,24 @@ function AppliedIcon({ status }: { status: Enums<"application_status"> }) {
   return <Icon className="size-4 shrink-0" aria-hidden />;
 }
 const saveCls = "absolute right-1.5 top-1.5 z-10";
+
+/**
+ * Qizil qalin "jonli" holat (ega, 2026-11-18: "vakansiya tagiga — jirniy qizil, ko'zga tashlanib tursin"):
+ * vakansiyada "Hozir ishchi qidirmoqda", ishchi e'lonida "Hozir ish qidirmoqda". Faqat haqiqiy holatda ko'rsatiladi
+ * (faol vakansiya; ishchi holati `active`). Nuqta sekin "nafas oladi" (harakat kamaytirilgan rejimda — qimirlamaydi).
+ */
+export function LiveStatus({ kind, className }: { kind: "hiring" | "seeking"; className?: string }) {
+  const { t } = useT();
+  return (
+    <p data-live-status={kind} className={cn("flex items-center gap-2 text-sm font-extrabold leading-tight text-destructive", className)}>
+      <span className="relative flex size-2.5 shrink-0" aria-hidden>
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-50 motion-reduce:hidden" />
+        <span className="relative inline-flex size-2.5 rounded-full bg-destructive" />
+      </span>
+      {t(kind === "hiring" ? "easy.card.hiring_now" : "easy.card.seeking_now")}
+    </p>
+  );
+}
 
 /** Kartaning amali (kichik, ikkilamchi): raqam bo'lsa — "Qo'ng'iroq", bo'lmasa — "Ariza yuborish" / "Bog'lanish" (G3) */
 function CardAction({ phone, action }: { phone: string | null; action: { href: string; label: string } }) {
@@ -260,6 +280,8 @@ export function JobResultCard({
           {job.title}
         </Link>
       </h3>
+      {/* kartalarda faqat faol vakansiyalar (qidiruv, xarita, saqlanganlar — status = active) */}
+      <LiveStatus kind="hiring" className="mt-1" />
       <SalaryText
         from={job.salary_from}
         to={job.salary_to}
@@ -364,6 +386,7 @@ export function WorkerResultCard({ worker, imageUrl, saved, savedRefresh }: { wo
               {fullName}
             </Link>
           </h3>
+          {worker.status === "active" ? <LiveStatus kind="seeking" className="my-0.5" /> : null}
           <p className="truncate text-base font-semibold text-primary-ink">{profession}</p>
           <p className="mt-0.5 truncate text-sm text-muted-foreground">
             {place(worker, false)}

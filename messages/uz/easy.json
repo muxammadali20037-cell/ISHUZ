@@ -383,7 +383,9 @@
     "apply": "Ariza yuborish",
     "contact": "Bog'lanish",
     "no_experience": "Tajribasiz",
-    "applied_status": "Ariza: {status}"
+    "applied_status": "Ariza: {status}",
+    "hiring_now": "Hozir ishchi qidirmoqda",
+    "seeking_now": "Hozir ish qidirmoqda"
   },
   "listing": {
     "title": "Ish qidiruvchi e'loni",
@@ -1457,5 +1459,13 @@
     "desc_plain": "Har kuni yangi ishlar va ishchilar",
     "join": "Kanalga o'tish",
     "later": "Keyinroq"
+  },
+  "phone_public": {
+    "title": "Raqamingiz e'londa hammaga ko'rinadi",
+    "vacancy": "Ishchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Raqam Ish topdim Telegram kanalidagi postda ham chiqadi.",
+    "worker": "Ish beruvchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Telegram kanalda raqamingiz ko'rsatilmaydi.",
+    "field_vacancy": "E'londagi telefon raqam",
+    "field_worker": "E'londagi telefon raqam",
+    "hint": "Raqamni qo'lda yozing — e'londa aynan shu raqam ko'rinadi."
   }
 }

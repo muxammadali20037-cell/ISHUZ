@@ -9,6 +9,7 @@ import { parseBotCommand, resolveTelegramLocale, telegramUpdateSchema } from "@/
 import { sendTelegramHtml } from "@/features/notifications/telegram-dispatch";
 import { miniAppBaseUrl } from "@/lib/telegram/bot";
 import { ensureTelegramProfile, normalizeContactPhone } from "@/features/auth/telegram-session";
+import { WEB_LOGIN_CALLBACK, WEB_LOGIN_START_PREFIX, WEB_LOGIN_TOKEN, sha256hex } from "@/features/auth/telegram-web-login";
 import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendLanguagePicker, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
 import { logSecurityEvent } from "@/lib/security/events";
 import { reportError } from "@/lib/monitoring";
@@ -83,6 +84,37 @@ async function handleLink(admin: Admin, chatId: number, from: { id: number; user
 }
 
 /**
+ * Telegram orqali kodsiz kirish (0085; ega, 2026-11-18: "kod terib yurmasin"). /start w_<token> — qaysi brauzer
+ * so'rayotgani ko'rsatilib, "✅ Kirish" so'raladi (begona havola orqali tasodifan kirib yuborilmasin).
+ */
+async function previewWebLogin(admin: Admin, chatId: number, token: string, tt: TT) {
+  const { data, error } = WEB_LOGIN_TOKEN.test(token) ? await admin.rpc("telegram_web_login_preview", { p_token_hash: sha256hex(token) }) : { data: null, error: null };
+  const r = data?.[0];
+  if (!error && r?.status === "ok" && r.id) {
+    const text = `${tt("web_login_confirm", { device: r.user_agent ?? "—" })}\n\n${tt("web_login_warning")}`;
+    await sendTelegramMessage(chatId, text, {
+      inline_keyboard: [[{ text: `✅ ${tt("web_login_button")}`, callback_data: `wl:${r.id}` }], [{ text: tt("link_cancel_button"), callback_data: "wlx" }]],
+    });
+    return;
+  }
+  const key = r?.status === "used" ? "web_login_used" : r?.status === "expired" ? "web_login_expired" : "web_login_invalid";
+  await sendTelegramMessage(chatId, tt(key));
+}
+
+/** "✅ Kirish" bosildi: profil (yangi bo'lsa yaratiladi) va so'rov tasdiqlanadi — brauzer o'zi kiradi */
+async function confirmWebLogin(admin: Admin, chatId: number, from: { id: number; username?: string; first_name?: string; last_name?: string; language_code?: string }, id: string, locale: Parameters<typeof ensureTelegramProfile>[2], blockedText: string, tt: TT) {
+  const profileId = await ensureTelegramProfile(admin, from, locale);
+  const { data: prof } = await admin.from("profiles").select("is_blocked").eq("id", profileId).maybeSingle();
+  if (prof?.is_blocked) {
+    await sendTelegramMessage(chatId, escapeHtml(blockedText));
+    return;
+  }
+  const { data: status } = await admin.rpc("telegram_web_login_confirm", { p_id: id, p_telegram_user_id: from.id, p_profile_id: profileId });
+  const key = status === "ok" ? "web_login_ok" : status === "used" ? "web_login_used" : status === "expired" ? "web_login_expired" : "web_login_invalid";
+  await sendTelegramMessage(chatId, tt(key));
+}
+
+/**
  * Update qayta ishlanmay qoldi: xato logga (monitoring uni ushlaydi) va bazaga yoziladi. Urinishlar qolgan bo'lsa — 500,
  * Telegram update'ni qayta yuboradi; qolmagan bo'lsa (yoki 0075 qo'llanmagan bo'lsa) — 200.
  */
@@ -138,6 +170,18 @@ export async function POST(req: NextRequest) {
       const locale = resolveTelegramLocale([account?.profiles?.locale, account?.language_code, callback.from.language_code]);
       const t = makeT(locale);
       const tt: TT = (key, params) => escapeHtml(t(`notifications.telegram.${key}`, params));
+      // Telegram orqali kodsiz kirish (0085)
+      if (callback.data === "wlx") {
+        await answerCallback(callback.id);
+        await sendTelegramMessage(chat.id, tt("web_login_cancelled"));
+        return NextResponse.json({ ok: true, callback: "web_login_cancel" });
+      }
+      const wl = WEB_LOGIN_CALLBACK.exec(callback.data);
+      if (wl) {
+        await answerCallback(callback.id);
+        await confirmWebLogin(admin, chat.id, callback.from, wl[1]!, locale, t("common.errors.blocked"), tt);
+        return NextResponse.json({ ok: true, callback: "web_login" });
+      }
       // bog'lashni tasdiqlash / bekor qilish
       if (callback.data === "lnkx") {
         await answerCallback(callback.id);
@@ -205,6 +249,12 @@ export async function POST(req: NextRequest) {
     if (account?.profiles?.is_blocked) {
       await sendTelegramMessage(chatId, escapeHtml(t("common.errors.blocked")));
       return NextResponse.json({ ok: true, ignored: "blocked" });
+    }
+
+    // ---------- /start w_<token>: saytga kodsiz kirish (0085) ----------
+    if (command?.name === "start" && command.param?.startsWith(WEB_LOGIN_START_PREFIX)) {
+      await previewWebLogin(admin, chatId, command.param.slice(WEB_LOGIN_START_PREFIX.length), tt);
+      return NextResponse.json({ ok: true, start: "web_login" });
     }
 
     // ---------- kontakt: raqamni ulash ----------

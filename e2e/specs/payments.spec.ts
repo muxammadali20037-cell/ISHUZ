@@ -69,6 +69,8 @@ async function postWorkerListing(page: Page) {
   await page.getByLabel("Ismingiz").fill("Anvar");
   await page.getByRole("radio", { name: "3 yildan ko'p" }).click();
   await page.locator("#about").fill("Buxgalteriya, 1C, soliq hisobotlari, 5 yil tajriba");
+  // 2026-11-18 (ega): e'londagi raqam majburiy va qo'lda yoziladi (kirgan foydalanuvchi ham)
+  await page.locator("#phone").fill("90 123 45 67");
   await next(page);
   await page.getByRole("button", { name: /joylash/i }).last().click();
 }

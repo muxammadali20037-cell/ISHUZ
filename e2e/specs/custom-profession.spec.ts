@@ -31,6 +31,8 @@ test("ishchi: 'Kasbim topilmadi' → asl nom + soha → joylandi, bazada custom 
 
   // 3-qadam: o'zi haqida
   await page.locator("#about").fill("Uyda va ofislarda kaktus va sukkulentlarni parvarish qilaman, 4 yil tajriba");
+  // 2026-11-18 (ega): e'londagi raqam majburiy va qo'lda yoziladi (kirgan foydalanuvchi ham)
+  await page.locator("#phone").fill("90 123 45 67");
   await page.getByRole("radio", { name: "3 yildan ko'p" }).click();
   await next(page);
 

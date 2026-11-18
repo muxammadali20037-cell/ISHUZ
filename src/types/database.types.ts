@@ -3613,6 +3613,45 @@ export type Database = {
           },
         ];
       };
+      telegram_web_logins: {
+        Row: {
+          browser_hash: string;
+          confirmed_at: string | null;
+          consumed_at: string | null;
+          created_at: string;
+          expires_at: string;
+          id: string;
+          profile_id: string | null;
+          telegram_user_id: number | null;
+          token_hash: string;
+          user_agent: string | null;
+        };
+        Insert: {
+          browser_hash: string;
+          confirmed_at?: string | null;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          profile_id?: string | null;
+          telegram_user_id?: number | null;
+          token_hash: string;
+          user_agent?: string | null;
+        };
+        Update: {
+          browser_hash?: string;
+          confirmed_at?: string | null;
+          consumed_at?: string | null;
+          created_at?: string;
+          expires_at?: string;
+          id?: string;
+          profile_id?: string | null;
+          telegram_user_id?: number | null;
+          token_hash?: string;
+          user_agent?: string | null;
+        };
+        Relationships: [];
+      };
       telegram_accounts: {
         Row: {
           bot_started: boolean;
@@ -6817,6 +6856,11 @@ export type Database = {
           offers: number;
         }[];
       };
+      telegram_web_login_create: { Args: { p_token_hash: string; p_browser_hash: string; p_user_agent: string | null }; Returns: string };
+      telegram_web_login_preview: { Args: { p_token_hash: string }; Returns: { id: string | null; status: string; user_agent: string | null }[] };
+      telegram_web_login_confirm: { Args: { p_id: string; p_telegram_user_id: number; p_profile_id: string }; Returns: string };
+      telegram_web_login_consume: { Args: { p_id: string; p_browser_hash: string }; Returns: { status: string; profile_id: string | null; telegram_user_id: number | null }[] };
+      listing_phones_public: { Args: { p_kind: string; p_id: string }; Returns: { phone: string; phone2: string | null }[] };
       uz_fold: { Args: { t: string }; Returns: string };
       vacancy_employer_kind: {
         Args: {

@@ -34,14 +34,15 @@ export async function getWorkerPrefill(session: SessionContext | null): Promise<
   const base: Partial<WorkerDraft> = { firstName: session.profile.first_name ?? "", lastName: session.profile.last_name ?? "" };
   if (!session.workerId) return { draft: base, existing: false };
   const supabase = await createClient();
-  const [{ data: w }, { data: pref }, { data: contact }] = await Promise.all([
+  const [{ data: w }, { data: pref }, { data: listingPhone }] = await Promise.all([
     supabase
       .from("worker_profiles")
       .select("profession_node_id, custom_profession, category_id, region_id, district_id, about, experience_level, remote_preference, onboarding_completed_at")
       .eq("id", session.workerId)
       .maybeSingle(),
     supabase.from("worker_preferences").select("salary_expected, schedules").eq("worker_id", session.workerId).maybeSingle(),
-    supabase.from("profile_contacts").select("phone_visibility").eq("profile_id", session.userId).maybeSingle(),
+    // e'londagi raqam (0081, avval qo'lda yozilgan) — tahrirlashda shu; yo'q bo'lsa — qo'lda yoziladi
+    supabase.from("worker_listing_phones").select("phone").eq("worker_id", session.workerId).maybeSingle(),
   ]);
   if (!w) return { draft: base, existing: false };
   const profession = await picked(w.profession_node_id, w.category_id);
@@ -59,7 +60,8 @@ export async function getWorkerPrefill(session: SessionContext | null): Promise<
       experience: w.onboarding_completed_at ? levelToExperience(w.experience_level) : null,
       salary: pref?.salary_expected ? String(pref.salary_expected) : "",
       schedule: schedule && schedule !== "negotiable" ? schedule : "",
-      showPhone: contact?.phone_visibility === "everyone",
+      ...(listingPhone?.phone ? { phone: listingPhone.phone } : {}),
+      showPhone: true,
     },
   };
 }
@@ -68,16 +70,13 @@ export async function getWorkerPrefill(session: SessionContext | null): Promise<
 export async function getEmployerDefaults(session: SessionContext | null): Promise<Partial<VacancyDraft>> {
   if (!session) return {};
   const supabase = await createClient();
-  const [{ data: ep }, { data: contact }] = await Promise.all([
-    supabase.from("employer_profiles").select("employer_type, display_name, contact_phone, company_id, companies(name, phone)").eq("profile_id", session.userId).maybeSingle(),
-    supabase.from("profile_contacts").select("phone").eq("profile_id", session.userId).maybeSingle(),
-  ]);
-  const company = ep?.companies as { name: string; phone: string | null } | null | undefined;
+  const { data: ep } = await supabase.from("employer_profiles").select("employer_type, display_name, company_id, companies(name)").eq("profile_id", session.userId).maybeSingle();
+  const company = ep?.companies as { name: string } | null | undefined;
   const type = toSimpleEmployerType(ep?.employer_type);
   return {
     employerType: type,
     orgName: (type === "person" ? ep?.display_name : company?.name ?? ep?.display_name) ?? "",
-    phone: ep?.contact_phone ?? company?.phone ?? contact?.phone ?? "",
+    // 2026-11-18 (ega): e'londagi raqam qo'lda yoziladi — hisob/kompaniya raqami oldindan qo'yilmaydi
   };
 }
 
@@ -115,8 +114,9 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
     salaryTo: v.salary_to ? String(v.salary_to) : "",
     schedule: v.schedule !== "negotiable" ? v.schedule : "",
     experienceMonths: exp,
-    phone: contact?.phone ?? defaults.phone ?? "",
-    showPhone: contact?.show_phone ?? false,
+    // tahrirlash: shu e'lonning o'z raqami (avval qo'lda yozilgan); bo'lmasa — bo'sh, qo'lda yoziladi
+    ...(contact?.phone ? { phone: contact.phone } : {}),
+    showPhone: true,
   };
 }
 

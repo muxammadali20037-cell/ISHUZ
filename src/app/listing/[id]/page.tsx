@@ -11,11 +11,13 @@ import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { Photo } from "@/components/shared/photo";
-import { CallBlock } from "@/features/find/components/result-cards";
+import { CallBlock, LiveStatus } from "@/features/find/components/result-cards";
+import { workerStatuses } from "@/features/find/queries";
 import { StatusPill } from "@/features/cabinet/components/status-pill";
 import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
 import { RequestContactButton } from "@/features/contacts/request-contact-button";
+import { RevealPhone } from "@/features/contacts/reveal-phone";
 import { isCityRegion } from "@/lib/geo/city";
 import { BackLink } from "@/components/shared/back-link";
 
@@ -40,7 +42,7 @@ export default async function ListingPage({ params }: Params) {
   const { id } = await params;
   const [{ t, tEnum, name, locale }, w, session] = await Promise.all([getT(), load(id), getSession()]);
   if (!w) notFound();
-  const images = await getProfessionImages([w.profession_node_id]);
+  const [images, statuses] = await Promise.all([getProfessionImages([w.profession_node_id]), workerStatuses([w.id])]);
   const profession = w.profession_name_uz ? name({ name_uz: w.profession_name_uz, name_ru: w.profession_name_ru ?? w.profession_name_uz, name_en: w.profession_name_en }) : (w.headline ?? "");
   const region = w.region_name_uz ? name({ name_uz: w.region_name_uz, name_ru: w.region_name_ru ?? w.region_name_uz, name_en: w.region_name_en, name_oz: w.region_name_oz }) : null;
   const district = w.district_name_uz ? name({ name_uz: w.district_name_uz, name_ru: w.district_name_ru ?? w.district_name_uz, name_en: w.district_name_en, name_oz: w.district_name_oz }) : null;
@@ -97,6 +99,8 @@ export default async function ListingPage({ params }: Params) {
               <p className="break-words text-lg font-semibold text-primary-ink">{profession}</p>
             </div>
           </div>
+          {/* ega (2026-11-18): "Hozir ish qidirmoqda" — qizil qalin, ko'zga tashlanib tursin (faqat haqiqiy holat) */}
+          {statuses.get(w.id) === "active" ? <LiveStatus kind="seeking" className="mt-3 text-base" /> : null}
           <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-3">
             <div className="col-span-2">
               <dt className="text-sm text-muted-foreground">{t("easy.listing.location")}</dt>
@@ -166,12 +170,8 @@ export default async function ListingPage({ params }: Params) {
                 ) : null}
               </>
             ) : (
-              <>
-                <p>{t("easy.listing.contact_hidden")}</p>
-                <Button asChild size="xl" className="h-14 w-full text-lg">
-                  <Link href={`/auth?next=${encodeURIComponent(`/listing/${w.id}`)}`}>{t("easy.cabinet.login")}</Link>
-                </Button>
-              </>
+              // mehmon: "Raqamni ko'rsatish" (ega, 2026-11-18 — raqam hammaga, tugma bosilganda; IP limiti, 0084)
+              <RevealPhone kind="worker" id={w.id} loginHref={`/auth?next=${encodeURIComponent(`/listing/${w.id}`)}`} />
             )}
           </section>
         ) : null}
