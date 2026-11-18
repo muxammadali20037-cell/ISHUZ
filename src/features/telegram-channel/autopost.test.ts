@@ -51,12 +51,13 @@ function builder(table: string) {
 }
 
 vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => ({ from: builder }) }));
-vi.mock("@/lib/env", () => ({ getServerEnv: () => ({ TELEGRAM_BOT_TOKEN: "x" }) }));
+const env = vi.hoisted(() => ({ TELEGRAM_BOT_TOKEN: "x" }) as Record<string, string | undefined>);
+vi.mock("@/lib/env", () => ({ getServerEnv: () => env }));
 vi.mock("@/lib/telegram/bot", () => ({ miniAppBaseUrl: () => "https://ishuz.vercel.app" }));
 const send = vi.fn();
 vi.mock("./channel", () => ({ channelChatId: () => "@main", sendChannelMessage: (x: unknown) => send(x) }));
 
-const { runChannelAutopost } = await import("./autopost");
+const { runChannelAutopost, channelLink } = await import("./autopost");
 
 const now = () => new Date().toISOString();
 const old = new Date(Date.now() - 3 * 86_400_000).toISOString();
@@ -103,6 +104,8 @@ function worker(id: string, over: Row = {}): Row {
 }
 
 beforeEach(() => {
+  delete env.TELEGRAM_MAIN_APP;
+  delete env.TELEGRAM_BOT_USERNAME;
   for (const k of Object.keys(tables)) delete tables[k];
   nextId = 1;
   send.mockReset();
@@ -193,4 +196,16 @@ describe("kanalga avtomatik e'lon", () => {
     expect((await runChannelAutopost()).notified ?? 0).toBe(0);
     expect(send).not.toHaveBeenCalled();
   });
+
+  it("asosiy Mini App yoqilgan (TELEGRAM_MAIN_APP=1) — tugma ilovani Telegram ichida ochadi; rasm — saytdan", async () => {
+    expect(channelLink("https://ishuz.vercel.app")("/jobs/v-a")).toBe("https://ishuz.vercel.app/jobs/v-a");
+    env.TELEGRAM_BOT_USERNAME = "ishberuvchi_bot";
+    expect(channelLink("https://ishuz.vercel.app")("/jobs/v-a")).toBe("https://ishuz.vercel.app/jobs/v-a");
+    env.TELEGRAM_MAIN_APP = "1";
+    expect(channelLink("https://ishuz.vercel.app")("/jobs/v-a")).toBe("https://t.me/ishberuvchi_bot?startapp=j_v-a");
+    tables.vacancies = [vacancy("a")];
+    await runChannelAutopost();
+    expect(send.mock.calls[0]![0]).toMatchObject({ button: { text: "Ariza qoldirish", url: "https://t.me/ishberuvchi_bot?startapp=j_v-a" }, photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post" });
+  });
 });
+

@@ -256,3 +256,14 @@ test("bosh qism (ega, 2026-11-17): sarlavha telefonda bitta qatorda; tashqi kart
     }
   }
 });
+
+test("Telegram kanal qatori: bosh sahifada obuna havolasi (SOCIAL_TELEGRAM_URL)", async ({ page, context }) => {
+  await asMode(context, "worker");
+  await page.goto("/");
+  const row = page.locator("[data-home-menu] [data-channel-row]");
+  await expect(row).toBeVisible();
+  await expect(row).toHaveAttribute("href", "https://t.me/ish_topdim_uz");
+  await expect(row).toHaveAttribute("target", "_blank");
+  await expect(row).toContainText("Telegram kanalimizga obuna bo'ling");
+  await expect(row).toContainText("Har kuni yangi ishlar — @ish_topdim_uz");
+});

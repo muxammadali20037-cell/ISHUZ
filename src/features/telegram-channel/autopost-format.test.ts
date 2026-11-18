@@ -78,4 +78,16 @@ describe("kanal e'lonlari: faqat ochiq ma'lumot, telefon va havolasiz", () => {
     const p = workerPost({ id: "x", profession: "Haydovchi", headline: null, place: null, experience: null, salary: null, salaryType: null, schedules: [] }, t, BASE);
     expect(p.html).toContain("Kutilayotgan maosh: Kelishiladi");
   });
+
+  it("tugma havolasi — berilgan funksiyadan (Mini App), rasm — saytdan", () => {
+    const p = vacancyPost(
+      { slug: "oshpaz-x1", title: "Oshpaz", company: null, place: null, remote: false, salaryFrom: null, salaryTo: null, salaryType: null, negotiable: true, schedule: null, profession: "Oshpaz" },
+      t,
+      BASE,
+      (path) => `https://t.me/ishberuvchi_bot?startapp=${path === "/jobs/oshpaz-x1" ? "j_oshpaz-x1" : "?"}`,
+    );
+    expect(p.button.url).toBe("https://t.me/ishberuvchi_bot?startapp=j_oshpaz-x1");
+    expect(p.photo).toBe(`${BASE}/api/promo/vacancy/oshpaz-x1?f=post`);
+  });
 });
+

@@ -8,6 +8,7 @@ import type { Dict } from "@/lib/i18n/core";
 import { Toaster } from "@/components/ui/toast";
 import { TelegramProvider } from "@/lib/telegram/provider";
 import { TelegramAutoLogin } from "@/lib/telegram/auto-login";
+import { TelegramStartRoute } from "@/lib/telegram/start-route";
 import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { PaymentDialogHost } from "@/features/billing/components/payment-dialog";
 import { AnalyticsListener } from "@/features/analytics/listener";
@@ -29,6 +30,7 @@ export function Providers({ locale, messages, children }: { locale: Locale; mess
           {children}
           <Toaster />
           <TelegramAutoLogin />
+          <TelegramStartRoute />
           <ServiceWorkerRegistrar />
           <PaymentDialogHost />
           <AnalyticsListener />

@@ -1054,7 +1054,10 @@
     "post_cta": "Post an ad",
     "my_listings": "My listings",
     "my_listings_hint": "Your listings and their status",
-    "new_jobs_hint": "Just posted"
+    "new_jobs_hint": "Just posted",
+    "channel_title": "Subscribe to our Telegram channel",
+    "channel_hint": "New jobs every day — {handle}",
+    "channel_hint_plain": "New jobs every day"
   },
   "aiws": {
     "title": "Helper",

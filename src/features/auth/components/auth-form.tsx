@@ -91,19 +91,8 @@ export function LoginMethods({
             </div>
             <EntryHeading className="mt-8" title={t("auth.method.title")} subtitle={t("auth.method.subtitle")} />
             {failed ? <p className="mt-6 rounded-xl bg-warning-soft p-3 text-sm text-warning">{t("auth.telegram_failed")}</p> : null}
+            {/* ega (2026-11-18): Telegram birinchi o'rinda — bir bosishda, kod va parolsiz (bot sozlangan bo'lsa) */}
             <nav aria-label={t("auth.method.label")} className="mt-8 grid gap-3">
-              <Link
-                href={phoneHref}
-                data-track="auth_method"
-                data-track-to="phone"
-                className="press flex min-h-16 items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground hover:bg-primary-hover"
-              >
-                <Phone className="size-6 shrink-0" aria-hidden />
-                <span className="min-w-0 flex-1">
-                  <span className="block text-base font-bold leading-tight">{t("auth.method.phone")}</span>
-                  <span className="mt-0.5 block text-sm leading-snug opacity-90">{t("auth.method.phone_desc")}</span>
-                </span>
-              </Link>
               {botUsername ? (
                 <a
                   href={`https://t.me/${botUsername}?start=login`}
@@ -111,15 +100,31 @@ export function LoginMethods({
                   rel="noopener noreferrer"
                   data-track="auth_method"
                   data-track-to="telegram"
-                  className="press flex min-h-16 items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 hover:border-primary/50"
+                  className="press flex min-h-16 items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground hover:bg-primary-hover"
                 >
-                  <TelegramIcon className="size-6 shrink-0" />
+                  <TelegramIcon className="size-6 shrink-0 text-primary-foreground" />
                   <span className="min-w-0 flex-1">
                     <span className="block text-base font-bold leading-tight">{t("auth.method.telegram")}</span>
-                    <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{t("auth.method.telegram_desc")}</span>
+                    <span className="mt-0.5 block text-sm leading-snug opacity-90">{t("auth.method.telegram_desc")}</span>
                   </span>
                 </a>
               ) : null}
+              <Link
+                href={phoneHref}
+                data-track="auth_method"
+                data-track-to="phone"
+                className={
+                  botUsername
+                    ? "press flex min-h-16 items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 hover:border-primary/50"
+                    : "press flex min-h-16 items-center gap-3 rounded-2xl bg-primary px-4 py-3 text-primary-foreground hover:bg-primary-hover"
+                }
+              >
+                <Phone className={botUsername ? "size-6 shrink-0 text-primary-ink" : "size-6 shrink-0"} aria-hidden />
+                <span className="min-w-0 flex-1">
+                  <span className="block text-base font-bold leading-tight">{t("auth.method.phone")}</span>
+                  <span className={botUsername ? "mt-0.5 block text-sm leading-snug text-muted-foreground" : "mt-0.5 block text-sm leading-snug opacity-90"}>{t("auth.method.phone_desc")}</span>
+                </span>
+              </Link>
               {adminEmailHref ? (
                 <Link
                   href={adminEmailHref}

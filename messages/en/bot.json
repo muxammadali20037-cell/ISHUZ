@@ -10,7 +10,8 @@
     "cmd_pdf": "Get my CV as a PDF",
     "cmd_start": "Main menu",
     "lang": "🌐 Til / Язык / Language",
-    "cmd_lang": "Change language"
+    "cmd_lang": "Change language",
+    "channel": "📢 Subscribe to the channel"
   },
   "cv": {
     "intro": "Let's create a professional CV! 👇\nAnswer each question — tap a button or type. It takes about 2 minutes.",

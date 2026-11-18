@@ -10,7 +10,8 @@
     "cmd_pdf": "CV'ni PDF qilib olish",
     "cmd_start": "Bosh menyu",
     "lang": "🌐 Til / Язык",
-    "cmd_lang": "Tilni o'zgartirish"
+    "cmd_lang": "Tilni o'zgartirish",
+    "channel": "📢 Kanalga obuna bo'lish"
   },
   "cv": {
     "intro": "Keling, professional CV tuzamiz! 👇\nHar bir savolga javob bering — tugmani bosing yoki yozing. Taxminan 2 daqiqa.",
