@@ -74,9 +74,9 @@ test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da, «Barcha nomzodla
   await expect(item("near")).toContainText("Yaqin atrofdagi ishchi");
   await expect(item("exp")).toContainText("Tajribali ishchi");
   await expect(item("remote")).toContainText("Masofaviy ishchi");
-  // barcha nomzodlar — pastki menyudagi "Nomzodlar" (bo'limlarda takrorlanmaydi, ega 2026-11-17)
+  // barcha nomzodlar — pastki menyudagi "Ishchilar" (avval "Nomzodlar") (bo'limlarda takrorlanmaydi, ega 2026-11-17)
   await expect(item("candidates")).toHaveCount(0);
-  await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Nomzodlar" })).toBeVisible();
+  await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Ishchilar" })).toBeVisible();
   // bitta tugma — yordamchi bilan joylash; ingichka (44–48 px), qidiruvdan kichikroq (ega, 2026-11-17)
   const post = page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true });
   await expect(post).toHaveCount(1);

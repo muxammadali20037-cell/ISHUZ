@@ -93,7 +93,7 @@
     "new_candidates": "New candidates",
     "today_seekers": "Available today",
     "nearby": "Candidates nearby",
-    "my_vacancies": "My vacancies",
+    "my_vacancies": "My listings",
     "all": "All",
     "recent_applications": "Recent applications",
     "applications_count": "{count} applications",
@@ -240,7 +240,7 @@
   },
   "sections": {
     "title": "Sections",
-    "vacancies": "My vacancies",
+    "vacancies": "My listings",
     "vacancies_desc": "Active, drafts and paused",
     "applications": "Applications",
     "applications_desc": "All applications to your company",

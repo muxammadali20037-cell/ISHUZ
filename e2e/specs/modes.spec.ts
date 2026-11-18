@@ -39,14 +39,14 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   // "+ E'lon joylash" — yordamchi bilan (2026-11-17)
   await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
-  // pastki menyu (4.0): Bosh sahifa · Ishlar · Arizalar · Sohalar · Profil — mehmonda "Xabarlar" o'rnida "Sohalar"
+  // pastki menyu (4.0): Bosh sahifa · Ishlar · Ish beruvchilar · Sohalar · Profil (2026-11-18: "Arizalar" o'rnida) — mehmonda "Xabarlar" o'rnida "Sohalar"
   // (ega, 2026-11-17; kirganlarda "Xabarlar" o'z joyida)
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]);
+  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
   await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("href", "/");
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/jobs");
   await expect(nav.getByRole("link", { name: "Sohalar" })).toHaveAttribute("href", "/sohalar");
-  await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/applications");
+  await expect(nav.getByRole("link", { name: "Ish beruvchilar" })).toHaveAttribute("href", "/companies");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 });
@@ -73,10 +73,10 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
-  // ish beruvchi menyusi (2026-10): Boshqaruv · Vakansiyalar · Nomzodlar · Profil
-  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Boshqaruv", "Vakansiyalar", "E'lon", "Nomzodlar", "Profil"]);
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "E'lon" })).toHaveAttribute("href", "/post/vacancy");
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Nomzodlar" })).toHaveAttribute("href", "/search?mode=workers");
+  // ish beruvchi menyusi (2026-11-18): Boshqaruv · E'lonlarim · E'lon · Ishchilar · Profil
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Boshqaruv", "E'lonlarim", "E'lon", "Ishchilar", "Profil"]);
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "E'lon", exact: true })).toHaveAttribute("href", "/post/vacancy");
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveAttribute("href", "/search?mode=workers&any=1&region=all");
 });
 
 test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profil tepasidagi tugma, bir bosishda", async ({ page, context }) => {

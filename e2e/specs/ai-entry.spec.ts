@@ -19,8 +19,8 @@ test("mehmon (ish izlovchi rejimi), kompyuter: yuqori menyuda 'Yordamchi' — bo
   await page.goto("/");
   const nav = page.getByRole("banner").getByRole("navigation", { name: "Asosiy bo'limlar" });
   // nomlari bilan (faqat belgi emas): "Yordamchi" birinchi bo'limdan keyin
-  await expect(nav.getByRole("link").filter({ visible: true })).toHaveText(["Bosh sahifa", "Yordamchi", "Ishlar", "Arizalar", "Profil"]);
-  for (const name of ["Bosh sahifa", "Yordamchi", "Ishlar", "Arizalar", "Profil"]) {
+  await expect(nav.getByRole("link").filter({ visible: true })).toHaveText(["Bosh sahifa", "Yordamchi", "Ishlar", "Ish beruvchilar", "Profil"]);
+  for (const name of ["Bosh sahifa", "Yordamchi", "Ishlar", "Ish beruvchilar", "Profil"]) {
     const label = nav.getByRole("link", { name, exact: true }).getByText(name, { exact: true });
     expect(await label.evaluate((el) => el.getBoundingClientRect().width), `"${name}" nomi ko'rinadi`).toBeGreaterThan(10);
   }
@@ -85,7 +85,7 @@ test("telefon: yuqori paneldagi belgi va «Bo'limlar» qatori (alohida karta yo'
   await expect(page.locator("main [data-ai-entry]")).toHaveCount(1);
   await expect(page.locator("main [data-home-menu] [data-ai-entry]")).toContainText("Yordamchi");
   // pastki menyu (4.0): beshta bo'lim — oltinchi katak qo'shilmagan (mehmonda "Xabarlar" o'rnida "Sohalar", 2026-11-17)
-  await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Arizalar", "Sohalar", "Profil"]);
+  await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
   // boshqa sahifadan ham bir bosishda
   await page.goto("/saved");
   await page.getByRole("banner").getByRole("link", { name: "Yordamchi" }).click();

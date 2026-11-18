@@ -122,6 +122,8 @@
   /* ikki panel rangi (rol almashganda katta yozuv — joriy paneldan qat'i nazar): ish izlovchi — ko'k, ish beruvchi — binafsha */
   --panel-worker: oklch(0.52 0.2 260);
   --panel-employer: oklch(0.5 0.2 292);
+  /* Telegram'ning rasmiy rangi — faqat uning belgisi uchun (kanal taklifi) */
+  --telegram: #2aabee;
 }
 
 /* Telegram Mini App to'liq ekranda: tizim paneli + Telegram'ning ✕/⋯ tugmalari (--tg-*: TelegramProvider yozadi) */
@@ -498,6 +500,13 @@ html.no-splash .splash { display: none; }
 @keyframes entry-done-in { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
 @media (prefers-reduced-motion: reduce) {
   .entry-live::after, .intro-slide, .entry-done { animation: none; }
+}
+
+/* "Telegram kanalimizga qo'shiling" oynasi: Telegram belgisi o'z rangida — alohida ajralib tursin (ChannelPrompt) */
+.channel-prompt-icon {
+  color: #ffffff;
+  background: var(--telegram);
+  box-shadow: 0 10px 28px -10px color-mix(in oklch, var(--telegram) 70%, transparent);
 }
 
 /* Rol almashganda: butun ekranda yumshoq katta yozuv — yonib chiqadi, sekin o'chadi (3 s, RoleSwitchSplash) */

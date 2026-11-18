@@ -1,13 +1,13 @@
 {
   "meta": {
-    "list_title": "Vakansiyalarim",
+    "list_title": "E'lonlarim",
     "new_title": "Vakansiya joylash",
     "edit_title": "Vakansiyani tahrirlash",
     "manage_title": "Vakansiyani boshqarish"
   },
   "list": {
-    "title": "Vakansiyalarim",
-    "subtitle": "{count} ta vakansiya",
+    "title": "E'lonlarim",
+    "subtitle": "{count} ta e'lon",
     "new": "Vakansiya joylash",
     "empty_title": "Hali vakansiya yo'q",
     "empty_desc": "Birinchi vakansiyani 2–4 daqiqada joylang — mos nomzodlar avtomatik saralanadi.",
@@ -119,7 +119,7 @@
     "skill_limit": "Ko'pi bilan {max} ta ko'nikma",
     "coords_invalid": "Koordinatalar noto'g'ri (ikkalasi ham kiritilishi kerak)",
     "load_failed": "Ma'lumotlarni yuklab bo'lmadi",
-    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («Vakansiyalarim»)."
+    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («E'lonlarim»)."
   },
   "wizard": {
     "title_new": "Vakansiya joylash",

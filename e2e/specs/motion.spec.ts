@@ -27,7 +27,7 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
 
   await slowNavigation(page, "/search");
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await nav.getByRole("link", { name: "Nomzodlar" }).click();
+  await nav.getByRole("link", { name: "Ishchilar" }).click();
 
   // javob hali kelmagan: skelet ko'rinadi — xuddi shu lahzada panel va menyu ham joyida
   // (bitta "surat": kutib turib, javob kelgandan keyingi holatni tekshirib qo'ymaslik uchun)
@@ -40,11 +40,12 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
     active: document.querySelector("nav.fixed a[aria-current='page']")?.textContent ?? null,
     mainClass: document.querySelector("main")?.className ?? "",
   }));
-  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, active: "Nomzodlar" });
+  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, active: "Ishchilar" });
   expect(snap.mainClass).not.toMatch(/page-(enter|swap)/);
 
   // javob keldi: kontent skelet o'rnida, faqat ochiladi (pastdan ikkinchi marta chiqmaydi)
-  await expect(page.getByRole("heading", { name: "Qanday mutaxassis kerak?" })).toBeVisible();
+  // 2026-11-18: "Ishchilar" — darhol barcha ishchi e'lonlari (kasb tanlash bosqichisiz)
+  await expect(page.getByRole("heading", { level: 1, name: /^Ishchilar:/ })).toBeVisible();
   await expect(skeleton).toHaveCount(0);
   await expect(page.locator("main")).not.toHaveClass(/page-(enter|swap)/);
   await expect(page.locator("header")).toHaveCount(1);

@@ -93,7 +93,7 @@
     "new_candidates": "Новые кандидаты",
     "today_seekers": "Готовы выйти сегодня",
     "nearby": "Кандидаты рядом",
-    "my_vacancies": "Мои вакансии",
+    "my_vacancies": "Мои объявления",
     "all": "Все",
     "recent_applications": "Последние отклики",
     "applications_count": "{count} откл.",
@@ -240,7 +240,7 @@
   },
   "sections": {
     "title": "Разделы",
-    "vacancies": "Мои вакансии",
+    "vacancies": "Мои объявления",
     "vacancies_desc": "Активные, черновики и приостановленные",
     "applications": "Отклики",
     "applications_desc": "Все отклики в вашу компанию",

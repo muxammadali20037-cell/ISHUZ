@@ -20,6 +20,7 @@ const host = new URL(stack.app).hostname;
 /**
  * Mehmon: cookie'lar tozalanadi, til — o'zbek lotin. Ilova rejimi (asMode) saqlanib qoladi — u qurilmadagi tanlov.
  * Birinchi ochilishdagi tanishtiruv "ko'rilgan" (ib_intro) — testlar sahifaning o'zini tekshiradi; tanishtiruvni intro.spec ochadi.
+ * Kanal taklifi oynasi ham "ko'rilgan" (ib_channel) — uni channel-prompt.spec ochadi.
  */
 export async function asGuest(ctx: BrowserContext) {
   const mode = (await ctx.cookies()).find((c) => c.name === "ib_mode");
@@ -28,6 +29,8 @@ export async function asGuest(ctx: BrowserContext) {
     { name: "ishuz_locale", value: "uz", domain: host, path: "/" },
     { name: "ib_intro", value: "1", domain: host, path: "/" },
     { name: "ib_consent", value: "1", domain: host, path: "/" },
+    // "Telegram kanalimizga qo'shiling" oynasi ko'rilgan — uni channel-prompt.spec tekshiradi
+    { name: "ib_channel", value: "1", domain: host, path: "/" },
     ...(mode ? [{ name: "ib_mode", value: mode.value, domain: host, path: "/" }] : []),
   ]);
 }
