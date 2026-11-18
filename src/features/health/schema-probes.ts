@@ -31,6 +31,8 @@ export const SCHEMA_PROBES: readonly Probe[] = [
   { migration: "0079", run: (db) => db.from("channel_posts").select("id").limit(0) },
   { migration: "0080", run: (db) => db.rpc("public_tariffs") },
   { migration: "0081", run: (db) => db.from("worker_listing_phones").select("worker_id").limit(0) },
+  { migration: "0082", run: (db) => db.rpc("uz_fold", { t: "test" }) },
+  { migration: "0083", run: (db) => db.from("vacancy_contacts").select("channel_phone_at").limit(0) },
 ];
 
 export type SchemaReport = { ok: boolean; missing: string[]; errors: string[] };

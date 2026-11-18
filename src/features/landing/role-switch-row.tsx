@@ -8,6 +8,7 @@ import { callAction } from "@/lib/action-call";
 import { toast } from "@/components/ui/toast";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
+import { announceRoleSwitch } from "@/components/shared/role-switch-splash";
 
 /**
  * Rolni almashtirish qatori: ish izlovchi ↔ ish beruvchi — bir bosishda (rol ekrani "/start/rol" bilan bir xil amal: rejim
@@ -39,6 +40,7 @@ export function RoleSwitchRow({
         toast.error(t(`common.errors.${known ? res.error : "generic"}`));
         return;
       }
+      announceRoleSwitch(target);
       router.push("/");
       router.refresh();
     });

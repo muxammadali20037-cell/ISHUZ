@@ -84,8 +84,8 @@
     "changed": "✅ Language: English"
   },
   "channel": {
-    "job_tag": "🟦 JOB",
-    "worker_tag": "🟩 WORKER",
+    "job_tag": "💼 VACANCY · hiring",
+    "worker_tag": "👤 WORKER · looking for work",
     "open_worker": "View worker →",
     "remote": "Remote",
     "negotiable": "Negotiable",
@@ -93,7 +93,10 @@
     "salary_expect": "Expected salary: {value}",
     "apply": "Apply",
     "worker_badge": "LOOKING FOR WORK",
-    "salary_negotiable": "Salary: negotiable"
+    "salary_negotiable": "Salary: negotiable",
+    "vacancy_badge": "VACANCY · HIRING",
+    "no_experience": "No experience required",
+    "phone": "Phone: {value}"
   },
   "owner_post": {
     "vacancy": "✅ <b>Your listing is live!</b>\n{title} — job seekers can now find it in search.",

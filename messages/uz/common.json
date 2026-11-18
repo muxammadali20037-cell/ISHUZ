@@ -255,5 +255,9 @@
   },
   "badge": {
     "new": "Yangi"
+  },
+  "role_switched": {
+    "worker": "Siz ish izlovchi paneliga o'tdingiz",
+    "employer": "Siz ish beruvchi paneliga o'tdingiz"
   }
 }

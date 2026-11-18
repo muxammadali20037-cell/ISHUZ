@@ -84,8 +84,8 @@
     "changed": "✅ Тил: Ўзбекча"
   },
   "channel": {
-    "job_tag": "🟦 ISH",
-    "worker_tag": "🟩 ИШЧИ",
+    "job_tag": "💼 ВАКАНСИЯ · ишчи керак",
+    "worker_tag": "👤 ИШЧИ · иш қидиряпти",
     "open_worker": "Ишчини кўриш →",
     "remote": "Масофавий (уйдан)",
     "negotiable": "Келишилади",
@@ -93,7 +93,10 @@
     "salary_expect": "Кутилаётган маош: {value}",
     "apply": "Ариза қолдириш",
     "worker_badge": "ИШЧИ · иш қидиряпти",
-    "salary_negotiable": "Маош: келишилади"
+    "salary_negotiable": "Маош: келишилади",
+    "vacancy_badge": "ВАКАНСИЯ · ишчи керак",
+    "no_experience": "Тажриба талаб қилинмайди",
+    "phone": "Тел: {value}"
   },
   "owner_post": {
     "vacancy": "✅ <b>Эълонингиз жойланди!</b>\n{title} — энди қидирувда кўринади, иш изловчилар кўради.",

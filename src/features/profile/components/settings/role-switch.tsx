@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Briefcase, Check, Plus, UserRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { setActiveRole } from "@/features/auth/actions";
+import { announceRoleSwitch } from "@/components/shared/role-switch-splash";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
 import { cn } from "@/lib/utils";
@@ -28,6 +29,7 @@ export function RoleSwitch({ roles, activeRole }: { roles: string[]; activeRole:
         toast.error(actionErrorMessage(t, res.error));
         return;
       }
+      announceRoleSwitch(role);
       router.push(role === "employer" ? "/employer" : "/");
       router.refresh();
     });

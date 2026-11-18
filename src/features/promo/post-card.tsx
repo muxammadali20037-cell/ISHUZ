@@ -4,6 +4,8 @@
  * (ega, 2026-11-16: "rasmli qil prosta, rasmda faqat ish nomi, maoshi, lokatsiyasi, kompaniya nomi bo'lsin").
  * Odam chizmasi, logotip, sayt nomi va havola YO'Q. Faqat flexbox va satori qo'llaydigan CSS; belgilar — chiziqli SVG
  * (matn emoji emas). Ranglar — dizayn tizimi palitrasi (asosiy #1558D6, ikkilamchi #EAF1FF).
+ * 2026-11-18 (ega: "kanalda ishchimi u ish beruvchimi bilib bo'lmadi"): vakansiya — ko'k fon va "VAKANSIYA · ishchi kerak",
+ * ishchi e'loni — yashil fon va "ISHCHI · ish qidiryapti"; yorliq oq, katta, belgisi bilan — bir qarashda ajraladi.
  */
 export const POST_SIZE = { width: 1200, height: 800 } as const;
 
@@ -12,7 +14,9 @@ export interface PostCardData {
   company: string | null;
   place: string | null;
   salary: string;
-  /** ishchi e'loni: tepada kichik yorliq ("ISHCHI · ish qidiryapti") — vakansiyadan ajralib tursin */
+  /** turi: vakansiya (ko'k) yoki ishchi e'loni (yashil) — standart vakansiya */
+  kind?: "vacancy" | "worker";
+  /** tepadagi yorliq: "VAKANSIYA · ishchi kerak" / "ISHCHI · ish qidiryapti" */
   badge?: string | null;
   /** ishchi e'loni: tajriba qatori (kompaniya o'rnida) */
   experience?: string | null;
@@ -22,9 +26,12 @@ const BLUE = "#1558D6";
 const BLUE_SOFT = "#EAF1FF";
 const INK = "#101828";
 const GREEN = "#16A36A";
+/** ishchi e'loni foni: oq matn bilan kontrast 5.3:1 */
+const WORKER_BG = "#0F7B53";
+const WORKER_SOFT = "#E3F6EC";
 
 /** Lucide belgilari (ISC) — 24×24 chiziqli */
-function Icon({ name, size, color }: { name: "building" | "pin" | "money" | "briefcase"; size: number; color: string }) {
+function Icon({ name, size, color }: { name: "building" | "pin" | "money" | "briefcase" | "user"; size: number; color: string }) {
   const common = { width: size, height: size, viewBox: "0 0 24 24", fill: "none", stroke: color, strokeWidth: 2, strokeLinecap: "round" as const, strokeLinejoin: "round" as const };
   if (name === "building")
     return (
@@ -40,6 +47,13 @@ function Icon({ name, size, color }: { name: "building" | "pin" | "money" | "bri
       <svg {...common}>
         <path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
         <rect width="20" height="14" x="2" y="6" rx="2" />
+      </svg>
+    );
+  if (name === "user")
+    return (
+      <svg {...common}>
+        <circle cx="12" cy="8" r="5" />
+        <path d="M20 21a8 8 0 0 0-16 0" />
       </svg>
     );
   if (name === "pin")
@@ -72,12 +86,15 @@ export function postTitleSize(title: string): number {
 
 export function PostCard({ data }: { data: PostCardData }) {
   const title = clip(data.title, 70);
+  const worker = data.kind === "worker";
+  const bg = worker ? WORKER_BG : BLUE;
+  const soft = worker ? WORKER_SOFT : BLUE_SOFT;
   const row = (icon: "building" | "pin" | "briefcase", text: string) => (
     <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: 72, height: 72, borderRadius: 20, background: "rgba(255,255,255,0.16)", flexShrink: 0 }}>
         <Icon name={icon} size={40} color="#FFFFFF" />
       </div>
-      <div style={{ display: "flex", fontSize: 44, fontWeight: 600, color: BLUE_SOFT, lineHeight: 1.15 }}>{clip(text, 44)}</div>
+      <div style={{ display: "flex", fontSize: 44, fontWeight: 600, color: soft, lineHeight: 1.15 }}>{clip(text, 44)}</div>
     </div>
   );
 
@@ -90,7 +107,7 @@ export function PostCard({ data }: { data: PostCardData }) {
         flexDirection: "column",
         justifyContent: "space-between",
         padding: 72,
-        background: BLUE,
+        background: bg,
         color: "#FFFFFF",
         fontFamily: "Manrope",
         position: "relative",
@@ -103,8 +120,9 @@ export function PostCard({ data }: { data: PostCardData }) {
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
         {data.badge ? (
           <div style={{ display: "flex" }}>
-            <div style={{ display: "flex", fontSize: 30, fontWeight: 800, letterSpacing: 1, color: "#FFFFFF", background: "rgba(255,255,255,0.18)", borderRadius: 999, padding: "10px 26px" }}>
-              {clip(data.badge, 40)}
+            <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 34, fontWeight: 800, letterSpacing: 1, color: bg, background: "#FFFFFF", borderRadius: 999, padding: "12px 30px 12px 22px" }}>
+              <Icon name={worker ? "user" : "briefcase"} size={36} color={bg} />
+              {clip(data.badge.toUpperCase(), 40)}
             </div>
           </div>
         ) : null}

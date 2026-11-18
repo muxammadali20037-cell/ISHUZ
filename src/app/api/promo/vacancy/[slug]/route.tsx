@@ -61,7 +61,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     // kanal o'zbekcha: til cookie'ga bog'liq emas (CDN keshida boshqa til qolib ketmasin)
     const t = makeT("uz");
     const d = buildPromoData(vacancy, { t, tEnum: makeTEnum(t), locale: "uz", name: (row) => localizedName("uz", row) });
-    return postImageResponse({ title: d.title, company: d.company, place: d.place, salary: d.salary }, cache);
+    return postImageResponse({ kind: "vacancy", badge: t("bot.channel.vacancy_badge"), title: d.title, company: d.company, place: d.place, salary: d.salary }, cache);
   }
   const format: PromoFormat = f === "story" || f === "og" ? f : "square";
   const tt = await getT();

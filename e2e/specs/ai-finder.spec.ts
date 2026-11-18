@@ -93,6 +93,28 @@ test("matn → so'rovnoma (kasb va hudud oldindan to'ldirilgan) → «Qidirish»
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 
+test("kasbi ro'yxatdan tanlanmagan kirillcha e'lon («Ўқитувчи») — «Men oqituvchiman menga ish kerak» bilan topiladi (0082)", async ({ page, context }) => {
+  // ega, 2026-11-18: prod'dagi "Ўқитувчи" e'loni (kasb tuguni yo'q, nomi kirillcha) AI qidiruvda chiqmasdi
+  const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+  await sql(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_negotiable, published_at, expires_at)
+     values ($1, 'Ўқитувчи', $2, 'Sinov e''loni: maktabga matematika o''qituvchisi kerak', 'active', true, now(), now() + interval '10 days')`,
+    [USERS.employer, r!.id],
+  );
+  await vacancy("Oshpaz", "Oshpaz");
+  await asGuest(context);
+  await page.goto("/");
+  await fab(page).click();
+  const dialog = page.getByRole("dialog", { name: "Yordamchi" });
+  await dialog.getByLabel("Nima qidiryapsiz?").fill("Men oqituvchiman menga ish kerak");
+  await dialog.getByRole("button", { name: "Topish" }).click();
+  const answer = await quickSearch(page);
+  const cards = dialog.locator("article");
+  await expect(cards).toHaveCount(1);
+  await expect(cards.first()).toContainText("Ўқитувчи");
+  await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
+});
+
 test("'kunlik ish' tushuniladi — oynada «Kunlik ishlar» sharti (maosh so'ralmaydi), faqat kunliklar; tushunarsiz matn — qisqa «yo'q»", async ({ page, context }) => {
   await vacancy("Yuk tashuvchi", "Buxgalter", "daily");
   await vacancy("Buxgalter", "Buxgalter", "monthly");

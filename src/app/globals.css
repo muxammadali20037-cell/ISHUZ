@@ -434,6 +434,35 @@ html.no-splash .splash { display: none; }
   .entry-live::after, .intro-slide, .entry-done { animation: none; }
 }
 
+/* Rol almashganda: butun ekranda yumshoq katta yozuv — yonib chiqadi, sekin o'chadi (3 s, RoleSwitchSplash) */
+.role-splash {
+  --role-c: var(--primary);
+  background: color-mix(in oklch, var(--background) 86%, transparent);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  color: var(--foreground);
+  animation: role-splash 3s ease-in-out forwards;
+}
+.role-splash[data-role-splash="employer"] { --role-c: var(--employer, var(--primary)); }
+.role-splash-icon {
+  color: var(--role-c);
+  background: color-mix(in oklch, var(--role-c) 12%, transparent);
+  animation: role-splash-glow 3s ease-in-out forwards;
+}
+.role-splash-text { animation: role-splash-rise 3s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+@keyframes role-splash { 0% { opacity: 0; } 12% { opacity: 1; } 78% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
+@keyframes role-splash-rise { 0% { opacity: 0; transform: translateY(10px) scale(0.97); } 18% { opacity: 1; transform: none; } 100% { transform: scale(1.015); } }
+@keyframes role-splash-glow {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--role-c) 0%, transparent); transform: scale(0.85); }
+  20% { box-shadow: 0 0 48px 14px color-mix(in oklch, var(--role-c) 38%, transparent); transform: none; }
+  50% { box-shadow: 0 0 22px 4px color-mix(in oklch, var(--role-c) 22%, transparent); }
+  75% { box-shadow: 0 0 48px 14px color-mix(in oklch, var(--role-c) 38%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in oklch, var(--role-c) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .role-splash-icon, .role-splash-text { animation: none; }
+}
+
 /* Umumiy "‹ Orqaga" (GlobalBack): sahifaning o'z "Orqaga"si bo'lsa — yashiriladi (ikkita bo'lmasin) */
 body:has([data-page-back]) [data-global-back] { display: none; }
 /* sarlavha yonidagi kichik "‹" (PageHeader) — umumiy "‹ Orqaga" bor bo'lsa ortiqcha: hamma joyda bir xil ko'rinish */

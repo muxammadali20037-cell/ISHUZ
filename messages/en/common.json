@@ -255,5 +255,9 @@
   },
   "badge": {
     "new": "New"
+  },
+  "role_switched": {
+    "worker": "You switched to the job seeker panel",
+    "employer": "You switched to the employer panel"
   }
 }
