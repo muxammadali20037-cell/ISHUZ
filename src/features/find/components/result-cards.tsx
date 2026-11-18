@@ -163,16 +163,17 @@ const saveCls = "absolute right-1.5 top-1.5 z-10";
  * vakansiyada "Hozir ishchi qidirmoqda", ishchi e'lonida "Hozir ish qidirmoqda". Faqat haqiqiy holatda ko'rsatiladi
  * (faol vakansiya; ishchi holati `active`). Nuqta sekin "nafas oladi" (harakat kamaytirilgan rejimda — qimirlamaydi).
  */
-export function LiveStatus({ kind, className }: { kind: "hiring" | "seeking"; className?: string }) {
+export function LiveStatus({ kind, wrap, className }: { kind: "hiring" | "seeking"; wrap?: boolean; className?: string }) {
   const { t } = useT();
   return (
-    <p data-live-status={kind} className={cn("flex items-center gap-2 text-sm font-extrabold leading-tight text-destructive", className)}>
-      <span className="relative flex size-2.5 shrink-0" aria-hidden>
+    <span data-live-status={kind} className={cn("flex gap-2 text-sm font-extrabold leading-tight text-destructive", wrap ? "items-start" : "items-center", className)}>
+      <span className={cn("relative flex size-2.5 shrink-0", wrap && "mt-[0.2em]")} aria-hidden>
         <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-50 motion-reduce:hidden" />
         <span className="relative inline-flex size-2.5 rounded-full bg-destructive" />
       </span>
-      {t(kind === "hiring" ? "easy.card.hiring_now" : "easy.card.seeking_now")}
-    </p>
+      {/* wrap: tor joyda kesilmasin — 2 qatorgacha */}
+      <span className={cn("min-w-0", wrap ? "line-clamp-2 break-words" : "truncate")}>{t(kind === "hiring" ? "easy.card.hiring_now" : "easy.card.seeking_now")}</span>
+    </span>
   );
 }
 
@@ -280,8 +281,6 @@ export function JobResultCard({
           {job.title}
         </Link>
       </h3>
-      {/* kartalarda faqat faol vakansiyalar (qidiruv, xarita, saqlanganlar — status = active) */}
-      <LiveStatus kind="hiring" className="mt-1" />
       <SalaryText
         from={job.salary_from}
         to={job.salary_to}
@@ -329,16 +328,18 @@ export function JobResultCard({
             </>
           )}
         </li>
+        {when ? (
+          // e'lon sanasi — qatorning o'ng chetida (bugungi — yashil); hudud kerak bo'lsa qisqaradi
+          <li className={cn("ml-auto shrink-0 whitespace-nowrap font-medium", today && "text-success")} data-posted suppressHydrationWarning>
+            {when}
+          </li>
+        ) : null}
       </ul>
       <div className="mt-2 flex items-center gap-2 sm:mt-4">
         {job.is_featured ? <span className="shrink-0 rounded bg-highlight px-1.5 py-0.5 text-xs font-bold text-highlight-foreground">{t("easy.card.featured")}</span> : null}
-        {when ? (
-          // bugungi e'lon — yashil nuqta bilan
-          <span className={cn("flex min-w-0 items-center gap-1.5 truncate text-xs font-medium", today ? "text-success" : "text-muted-foreground")} suppressHydrationWarning>
-            {today ? <span className="size-1.5 shrink-0 rounded-full bg-brand-green" aria-hidden /> : null}
-            {when}
-          </span>
-        ) : null}
+        {/* qizil "Hozir ishchi qidirmoqda" (ega, 2026-11-18) — amal tugmasi yonida, uning balandligida (karta o'smaydi:
+            390×844 da 3 ta karta to'liq). Tor ekranda kesilmaydi — ikki qatorga o'tadi. Kartalarda faqat faol vakansiyalar. */}
+        <LiveStatus kind="hiring" wrap className="min-w-0 text-[13px]" />
         <span className="ml-auto flex min-w-0 items-center gap-2">
           {applied ? (
             <>
