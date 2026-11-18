@@ -18,6 +18,9 @@ yozuvda… kanalga rasm kelyapti — ishchimi u, ish beruvchimi bilib bo'lmadi�
   (telefon/havola tozalangan) va **telefon — faqat rozilik bo'lsa**. Rozilik matni: "Aloqa raqamim e'londa va Telegram
   kanalda ko'rinsin"; vaqti `vacancy_contacts.channel_phone_at` (0083) — eski roziliklar (kanal tilga olinmagan) raqamsiz.
   Ishchi e'lonida ism va telefon yo'q (ularga shunday va'da berilgan). 1024 belgidan oshsa — tavsif qisqartiriladi.
+- **Ish beruvchi paneli — binafsha** (ega 3 variantdan A ni tanladi). `<html data-panel="employer">` (rejim cookie'si
+  bo'yicha, ildiz layout) — faqat ko'k tokenlar almashadi (tugma, urg'u, och fonlar, hero, yon menyu); holat ranglari va AI
+  rangi o'zgarmaydi; kunduzgi va tungi rejim. Ish izlovchi — ko'k. E2E: modes (binafsha), all-links (qaytganda ko'k).
 - Prod: `supabase/prod/pending.sql` — 0082 va 0083 (ega bir marta ishga tushiradi). `/api/health?deep=1` — 0082, 0083.
 
 ## 2026-11-18 · Telegram birinchi o'rinda: Mini App havolalari, kanalga obuna (`claude/telegram-first`)

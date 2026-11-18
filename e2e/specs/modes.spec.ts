@@ -111,6 +111,14 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
     await expect(splash).toHaveCount(0, { timeout: 6_000 });
+    // ish beruvchi paneli — o'z rangida (binafsha, ega tanlagan A varianti)
+    await expect(page.locator("html")).toHaveAttribute("data-panel", "employer");
+    const colors = await page.evaluate(() => {
+      const cs = getComputedStyle(document.documentElement);
+      return { primary: cs.getPropertyValue("--primary").trim(), employer: cs.getPropertyValue("--panel-employer").trim(), worker: cs.getPropertyValue("--panel-worker").trim() };
+    });
+    expect(colors.primary).toBe(colors.employer);
+    expect(colors.primary).not.toBe(colors.worker);
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
     const [after] = await sql<{ active_role: string }>("select active_role from public.profiles where id = $1", [RET]);

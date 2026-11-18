@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { cookies } from "next/headers";
+import { MODE_COOKIE, parseMode } from "@/features/mode/mode";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { clientMessages } from "@/lib/i18n/translate";
 import { getServerEnv } from "@/lib/env";
@@ -54,10 +55,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const locale = await getLocale();
   const cookieStore = await cookies();
   const theme = cookieStore.get("ishuz_theme")?.value;
+  // ish beruvchi paneli — o'z rangida (globals.css: html[data-panel="employer"]); rol almashganda router.refresh yangilaydi
+  const panel = parseMode(cookieStore.get(MODE_COOKIE)?.value) === "employer" ? "employer" : undefined;
   const adminLink = JSON.stringify(`${adminBaseUrl()}${ADMIN_LINK_PATH}`).replace(/</g, "\\u003c");
   return (
     // "oz" — ilova ichki kodi, BCP-47 da yo'q: ekran o'qigichi o'zbek kirill matnini taniy olishi uchun "uz-Cyrl"
-    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={theme === "dark" ? "dark" : undefined} suppressHydrationWarning>
+    <html lang={locale === "oz" ? "uz-Cyrl" : locale} className={theme === "dark" ? "dark" : undefined} data-panel={panel} suppressHydrationWarning>
       <head>
         {/* Telegram Mini App SDK faqat Telegram ichida (gidratsiyadan oldin, avvalgidek). Oddiy brauzerda yuklanmaydi —
             tashqi skript kutilmagani uchun sahifa darhol "jonlanadi" (bosishlar kechikmaydi) */}
