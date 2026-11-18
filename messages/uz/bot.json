@@ -84,8 +84,8 @@
     "changed": "✅ Til: O'zbekcha"
   },
   "channel": {
-    "job_tag": "🟦 ISH",
-    "worker_tag": "🟩 ISHCHI",
+    "job_tag": "💼 VAKANSIYA · ishchi kerak",
+    "worker_tag": "👤 ISHCHI · ish qidiryapti",
     "open_worker": "Ishchini ko'rish →",
     "remote": "Masofaviy (uydan)",
     "negotiable": "Kelishiladi",
@@ -93,7 +93,10 @@
     "salary_expect": "Kutilayotgan maosh: {value}",
     "apply": "Ariza qoldirish",
     "worker_badge": "ISHCHI · ish qidiryapti",
-    "salary_negotiable": "Maosh: kelishiladi"
+    "salary_negotiable": "Maosh: kelishiladi",
+    "vacancy_badge": "VAKANSIYA · ishchi kerak",
+    "no_experience": "Tajriba talab qilinmaydi",
+    "phone": "Tel: {value}"
   },
   "owner_post": {
     "vacancy": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi qidiruvda ko'rinadi, ish izlovchilar ko'radi.",

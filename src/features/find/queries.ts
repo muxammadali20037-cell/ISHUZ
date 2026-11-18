@@ -56,19 +56,22 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   const results = await Promise.all(candidates.map((c) => db.rpc("search_profession_nodes", { p_query: c.slice(0, 80), p_limit: 3 }).then((r) => ({ c, hits: r.data ?? [] }))));
   // gapdagi barcha so'zlar: nom ularni qanchalik qamrasa, shuncha afzal ("men oila shifokoriman" — "Oilaviy shifokor",
   // "oila" so'zi bo'yicha eng yuqori ball olgan "Oila huquqi yuristi" emas — 2026-11-17)
-  const said = [...new Set(candidates.flatMap((c) => normalizeText(c).split(" ")))];
+  // tutuq belgisisiz taqqoslash: "oqituvchiman" — "O'qituvchi" guruhining o'z nomi (ega, 2026-11-18: "Men oqituvchiman menga
+  // ish kerak" — guruh o'rniga "Katta o'qituvchi" tanlanib, "Ўқитувчи" e'loni chiqmasdi)
+  const bare = (s: string) => normalizeText(s).replace(/['‘’ʻʼ`´]/g, "");
+  const said = [...new Set(candidates.flatMap((c) => bare(c).split(" ")))];
   let best: { id: string; score: number } | null = null;
   for (const { c, hits } of results) {
-    const cn = normalizeText(c);
+    const cn = bare(c);
     for (const h of hits) {
       // uzunroq (aniqroq) ibora va aniq moslik afzal; kasbning o'z nomi boshqa kasbning sinonimidan ustun
       // ("enaga" — "Enaga" kasbi, sinonimi "enaga" bo'lgan "Tarbiyachi yordamchisi" emas)
-      const ownName = [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && normalizeText(n) === cn);
+      const ownName = [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && bare(n) === cn);
       // guruh ("O'qituvchi": ichida aniq kasblar) — faqat nomi aynan yozilganida (qidiruv butun guruh bo'yicha); aks holda
       // sinonimi o'xshash boshqa kasb ("o'qituvchi" → Avtoinstruktor) tanlanib qolardi (ega, 2026-11-17)
       if ((!h.selectable && !ownName) || h.score < 2 || isProhibitedProfession(h)) continue;
       const fit = Math.max(...[h.name_uz, h.name_ru, h.name_en].filter((n): n is string => !!n).map((n) => {
-        const f = nameFit(said, n, normalizeText);
+        const f = nameFit(said, n, bare);
         return f.covered * 0.8 - f.extra * 0.4;
       }));
       const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01 + (ownName ? 0.5 : 0) + fit;

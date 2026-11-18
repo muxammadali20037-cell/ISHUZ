@@ -65,8 +65,11 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     // va orqaga
     await page.goto("/cabinet");
     await page.locator("main [data-role-switch]").click();
+    await expect(page.locator("[data-role-splash='worker']")).toHaveText("Siz ish izlovchi paneliga o'tdingiz");
     await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+    // ish izlovchi paneli — yana ko'k (binafsha rang faqat ish beruvchida)
+    await expect(page.locator("html")).not.toHaveAttribute("data-panel", "employer");
   } finally {
     await sql("update public.profiles set active_role = $2 where id = $1", [USERS.workerA, before!.active_role]);
   }

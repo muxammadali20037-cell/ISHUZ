@@ -178,6 +178,10 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
   });
   if (error || !data) return { ok: false, error: errorCode(error) };
   const res = data as { vacancy_id: string; slug: string; state: string };
+  // 0083: rozilik matni — "raqamim e'londa va Telegram kanalda ko'rinsin"; kanal posti raqamni faqat shu vaqt yozilgan
+  // bo'lsa ko'rsatadi (eski roziliklarda kanal yo'q edi). Egasining o'z RLS huquqi; 0083 qo'llanmagan bo'lsa — xato
+  // e'tiborsiz, e'lon kanalga raqamsiz chiqadi. Kanalga yuborish (after → tick) bundan keyin.
+  await supabase.from("vacancy_contacts").update({ channel_phone_at: v.showPhone ? new Date().toISOString() : null }).eq("vacancy_id", res.vacancy_id);
   const info = await settle("vacancy", res.vacancy_id, res.state);
   if (await blockedNow(session.userId)) {
     revalidatePath("/", "layout");

@@ -49,6 +49,7 @@ export async function getWorkerPostCard(id: string): Promise<PostCardData | null
     experience: w.experience_level ? t("bot.channel.experience", { value: t(`enums.experience_level.${w.experience_level}`) }) : null,
     place,
     salary,
+    kind: "worker",
     badge: t("bot.channel.worker_badge"),
   };
 }

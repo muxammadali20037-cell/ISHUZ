@@ -4040,6 +4040,7 @@ export type Database = {
       };
       vacancy_contacts: {
         Row: {
+          channel_phone_at: string | null;
           phone: string;
           show_phone: boolean;
           updated_at: string;
@@ -4047,12 +4048,14 @@ export type Database = {
         };
         ComputedFields: never;
         Insert: {
+          channel_phone_at?: string | null;
           phone: string;
           show_phone?: boolean;
           updated_at?: string;
           vacancy_id: string;
         };
         Update: {
+          channel_phone_at?: string | null;
           phone?: string;
           show_phone?: boolean;
           updated_at?: string;
@@ -6814,6 +6817,7 @@ export type Database = {
           offers: number;
         }[];
       };
+      uz_fold: { Args: { t: string }; Returns: string };
       vacancy_employer_kind: {
         Args: {
           p_company_id: string;

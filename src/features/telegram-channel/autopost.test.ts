@@ -114,17 +114,32 @@ beforeEach(() => {
 });
 
 describe("kanalga avtomatik e'lon", () => {
-  it("yangi vakansiya (ISH) va ishchi (ISHCHI) — har biri bir marta; ikkinchi qadamda takror yo'q", async () => {
+  it("yangi vakansiya (VAKANSIYA) va ishchi (ISHCHI) — har biri bir marta; ikkinchi qadamda takror yo'q", async () => {
     tables.vacancies = [vacancy("a")];
     tables.worker_profiles = [worker("w")];
     expect(await runChannelAutopost()).toMatchObject({ posted: 2, failed: 0 });
-    expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual([expect.stringContaining("ISH"), expect.stringContaining("ISHCHI")]);
+    expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual([expect.stringContaining("VAKANSIYA"), expect.stringContaining("ISHCHI")]);
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main", button: { text: "Ariza qoldirish", url: "https://ishuz.vercel.app/jobs/v-a" } });
     expect(send.mock.calls[0]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post", caption: expect.stringContaining("<b>") });
     expect(send.mock.calls[1]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/worker/w" });
     expect(tables.channel_posts!.map((r) => r.status)).toEqual(["posted", "posted"]);
     expect(await runChannelAutopost()).toMatchObject({ posted: 0 });
     expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it("vakansiya raqami — faqat show_phone va kanalga rozilik (channel_phone_at, 0083) bo'lsa; eski rozilik — raqamsiz", async () => {
+    tables.vacancies = [vacancy("a", { description: "Tushlik bepul" }), vacancy("b"), vacancy("c")];
+    tables.vacancy_contacts = [
+      { vacancy_id: "a", phone: "+998901234567", show_phone: true, channel_phone_at: now() },
+      { vacancy_id: "b", phone: "+998907654321", show_phone: true, channel_phone_at: null },
+      { vacancy_id: "c", phone: "+998909999999", show_phone: false, channel_phone_at: now() },
+    ];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 3 });
+    const caption = (slug: string) => (send.mock.calls.map(([x]) => x as { caption: string; button: { url: string } }).find((x) => x.button.url.endsWith(`/jobs/v-${slug}`))!).caption;
+    expect(caption("a")).toContain("📞 Tel: +998 90 123 45 67");
+    expect(caption("a")).toContain("Tushlik bepul");
+    expect(caption("b")).not.toMatch(/📞|765/);
+    expect(caption("c")).not.toMatch(/📞|9999/);
   });
 
   it("eski (24 soatdan oldingi), yopilgan, bloklangan muallifniki va kasbsiz ishchi — yuborilmaydi", async () => {

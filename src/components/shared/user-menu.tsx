@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ChevronDown, ChevronsUpDown, LogOut, Settings, User, Briefcase, Repeat } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { setActiveRole, signOut } from "@/features/auth/actions";
+import { announceRoleSwitch } from "@/components/shared/role-switch-splash";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { callAction } from "@/lib/action-call";
 
@@ -32,7 +33,8 @@ export function UserMenu({
 
   const switchRole = (role: "worker" | "employer") => {
     startTransition(async () => {
-      await callAction(() => setActiveRole(role));
+      const res = await callAction(() => setActiveRole(role));
+      if (res.ok) announceRoleSwitch(role);
       router.push(role === "employer" ? "/employer" : "/");
       router.refresh();
     });

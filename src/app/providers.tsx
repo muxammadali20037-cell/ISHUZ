@@ -13,6 +13,7 @@ import { ServiceWorkerRegistrar } from "@/components/shared/service-worker";
 import { PaymentDialogHost } from "@/features/billing/components/payment-dialog";
 import { AnalyticsListener } from "@/features/analytics/listener";
 import { NavProgress } from "@/components/shared/nav-progress";
+import { RoleSwitchSplash } from "@/components/shared/role-switch-splash";
 
 export function Providers({ locale, messages, children }: { locale: Locale; messages: Dict; children: ReactNode }) {
   const [queryClient] = useState(
@@ -35,6 +36,7 @@ export function Providers({ locale, messages, children }: { locale: Locale; mess
           <PaymentDialogHost />
           <AnalyticsListener />
           <NavProgress />
+          <RoleSwitchSplash />
         </TelegramProvider>
       </I18nProvider>
     </QueryClientProvider>

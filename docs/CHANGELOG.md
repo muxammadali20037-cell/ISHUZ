@@ -1,5 +1,28 @@
 # O'zgarishlar jurnali
 
+## 2026-11-18 · Qidiruv kirill/lotin, rol almashganda katta yozuv, kanalda to'liq e'lon (`claude/search-roles-channel`)
+
+Ega (skrinshotlar bilan): "bazadagi e'lonni qidirsam topmayapti… ish beruvchidan ish izlovchiga o'tsa ekranda mayin katta
+yozuvda… kanalga rasm kelyapti — ishchimi u, ish beruvchimi bilib bo'lmadi… rasm tagiga to'liq yozilsin, nomerlar bilan".
+
+- **Qidiruv (0082).** "Men oqituvchiman menga ish kerak" — "Ўқитувчи" e'loni (kasbi ro'yxatdan tanlanmagan, nomi kirillcha)
+  chiqmasdi. Ikki sabab: (1) lug'at tutuq belgisisiz "oqituvchi" ni "O'qituvchi" guruhining o'z nomi deb bilmay, "Katta
+  o'qituvchi" ni tanlardi — endi taqqoslash tutuq belgisiz (`find/queries.ts`); (2) bazadagi zaxira moslik faqat lotin/rus
+  nomini `lower()` bilan solishtirardi — endi `uz_fold()` (kirill → lotin, tutuq belgilari olib tashlanadi) va
+  `custom_profession` ham (5 ta qidiruv funksiyasi, idempotent yamoq, CRLF'ga chidamli). SQL test + E2E.
+- **Rol almashganda** (bosh sahifa menyusi, foydalanuvchi menyusi, Sozlamalar) — butun ekranda ~3 s yumshoq katta yozuv:
+  "Siz ish beruvchi paneliga o'tdingiz" / "Siz ish izlovchi paneliga o'tdingiz" (4 tilda), yonib chiqadi va sekin o'chadi;
+  bosilsa — darhol yopiladi (`RoleSwitchSplash`). E2E: modes, all-links.
+- **Kanal posti.** Rasm: vakansiya — ko'k, "VAKANSIYA · ISHCHI KERAK"; ishchi — yashil, "ISHCHI · ISH QIDIRYAPTI" (oq yorliq,
+  belgisi bilan). Rasm ostida — to'liq matn: vakansiyada turi, nomi, kompaniya, joy, maosh, ish vaqti, tajriba, tavsif
+  (telefon/havola tozalangan) va **telefon — faqat rozilik bo'lsa**. Rozilik matni: "Aloqa raqamim e'londa va Telegram
+  kanalda ko'rinsin"; vaqti `vacancy_contacts.channel_phone_at` (0083) — eski roziliklar (kanal tilga olinmagan) raqamsiz.
+  Ishchi e'lonida ism va telefon yo'q (ularga shunday va'da berilgan). 1024 belgidan oshsa — tavsif qisqartiriladi.
+- **Ish beruvchi paneli — binafsha** (ega 3 variantdan A ni tanladi). `<html data-panel="employer">` (rejim cookie'si
+  bo'yicha, ildiz layout) — faqat ko'k tokenlar almashadi (tugma, urg'u, och fonlar, hero, yon menyu); holat ranglari va AI
+  rangi o'zgarmaydi; kunduzgi va tungi rejim. Ish izlovchi — ko'k. E2E: modes (binafsha), all-links (qaytganda ko'k).
+- Prod: `supabase/prod/pending.sql` — 0082 va 0083 (ega bir marta ishga tushiradi). `/api/health?deep=1` — 0082, 0083.
+
 ## 2026-11-18 · Telegram birinchi o'rinda: Mini App havolalari, kanalga obuna (`claude/telegram-first`)
 
 Ega: "endi 1-o'rinda Telegram mini app va Telegram kanaldan foydalanamiz — obunachi va foydalanuvchi yig'ishimiz kerak".

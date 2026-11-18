@@ -29,8 +29,9 @@ import { resolveTelegramLocale } from "@/features/notifications/telegram";
  *  · Faqat oxirgi 24 soatda chiqqan/yangilangan va hozir ommaviy e'lonlar (eski e'lonlar to'plami kanalni to'ldirib
  *    yubormasin); har biri har kanalga BIR marta (channel_posts — unique).
  *  · Bir qadamda ko'pi bilan 4 ta post (Telegram cheklovi: kanalga daqiqasiga ~20); qolgani keyingi qadamda.
- *  · Muallifi bloklangan e'lon yuborilmaydi. Matnda telefon, ism, tavsif, sayt nomi yo'q (autopost-format.ts); vakansiya —
- *    oddiy rasm (ish nomi, maosh, joylashuv, kompaniya) va izohda vakansiya nomi; rasm ketmasa — to'liq matn.
+ *  · Muallifi bloklangan e'lon yuborilmaydi. Rasm (ish nomi, maosh, joylashuv, kompaniya, turi) va ostida to'liq matn
+ *    (autopost-format.ts). Vakansiya telefoni — faqat kanalga rozilik bo'lsa (vacancy_contacts.channel_phone_at, 0083);
+ *    ishchi e'lonida ism va telefon yo'q.
  *  · Xato: 3 marta qayta urinadi; kanal darajasidagi xato (bot admin emas, kanal yo'q) — qadam to'xtaydi.
  * Ishga tushiruvchilar: fon navbati (tick) va sayt trafigi (moderation/sweep-trigger.ts).
  */
@@ -131,11 +132,24 @@ async function runOwnerNotices(db: Db, res: AutopostResult): Promise<void> {
   }
 }
 
+/**
+ * Kanalda ko'rsatishga rozilik berilgan vakansiya raqamlari: show_phone va channel_phone_at (0083 — rozilik matnida
+ * "Telegram kanal" bor). 0083 hali qo'llanmagan bo'lsa (ustun yo'q) — xato yutiladi, e'lonlar raqamsiz ketadi.
+ */
+async function channelPhones(db: Db, ids: string[]): Promise<Map<string, string>> {
+  const out = new Map<string, string>();
+  if (!ids.length) return out;
+  const { data, error } = await db.from("vacancy_contacts").select("vacancy_id, phone, show_phone, channel_phone_at").in("vacancy_id", ids);
+  if (error) return out;
+  for (const c of data ?? []) if (c.show_phone && c.channel_phone_at && c.phone) out.set(c.vacancy_id, c.phone);
+  return out;
+}
+
 async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promise<Map<string, ChannelPost>> {
   let q = db
     .from("vacancies")
     .select(
-      "id, slug, title, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, company:companies!vacancies_company_id_fkey(name), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
+      "id, slug, title, description, experience_min_months, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, company:companies!vacancies_company_id_fkey(name), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
     )
     .eq("status", "active");
   q = ids ? q.in("id", ids) : q.gte("published_at", since).order("published_at", { ascending: false }).limit(50);
@@ -144,6 +158,7 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
   const t = makeT("uz");
   const base = miniAppBaseUrl();
   const link = channelLink(base);
+  const phones = await channelPhones(db, (data ?? []).map((v) => v.id));
   const out = new Map<string, ChannelPost>();
   for (const v of data ?? []) {
     if (one(v.owner)?.is_blocked) continue;
@@ -162,6 +177,9 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
           negotiable: v.salary_negotiable,
           schedule: v.schedule && v.schedule !== "negotiable" ? t(`enums.work_schedule.${v.schedule}`) : null,
           profession: v.custom_profession ?? one(v.profession)?.name_uz ?? null,
+          description: v.description,
+          experienceMonths: v.experience_min_months,
+          phone: phones.get(v.id) ?? null,
         },
         t,
         base,
