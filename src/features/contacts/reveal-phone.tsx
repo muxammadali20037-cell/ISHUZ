@@ -8,16 +8,29 @@ import { formatPhone, telHref } from "@/lib/format";
 import { CopyButton } from "./copy-button";
 import { revealListingPhone, type RevealedPhones } from "./reveal-actions";
 
-type State = { phase: "idle" | "loading" } | { phase: "shown"; phones: RevealedPhones } | { phase: "error"; error: string };
+export type RevealState = { phase: "idle" | "loading" } | { phase: "shown"; phones: RevealedPhones } | { phase: "error"; error: string };
+type State = RevealState;
 
 /**
  * Mehmon uchun "Raqamni ko'rsatish" (ega, 2026-11-18: raqam hammaga — tugma bosilganda). Bosilganda server IP limiti
  * bilan e'londagi ochiq raqamni beradi; ko'rsatilgach — katta "Qo'ng'iroq qilish", raqam va nusxa olish.
  * Raqam yo'q / limit — kirish taklifi (kirgan foydalanuvchi so'rov yuborishi yoki o'z limiti bilan ko'rishi mumkin).
  */
-export function RevealPhone({ kind, id, loginHref }: { kind: "vacancy" | "worker"; id: string; loginHref: string }) {
+export function RevealPhone({
+  kind,
+  id,
+  loginHref,
+  initial,
+}: {
+  kind: "vacancy" | "worker";
+  id: string;
+  /** null — kirgan foydalanuvchi ("Kirish" tugmasi ko'rsatilmaydi) */
+  loginHref: string | null;
+  /** oldindan olingan natija (yordamchi kartasi: "E'lonni to'liq ko'rish" bosilganda raqam ham birga ochiladi) */
+  initial?: RevealState;
+}) {
   const { t } = useT();
-  const [state, setState] = useState<State>({ phase: "idle" });
+  const [state, setState] = useState<State>(initial ?? { phase: "idle" });
 
   const reveal = async () => {
     setState({ phase: "loading" });
@@ -62,11 +75,11 @@ export function RevealPhone({ kind, id, loginHref }: { kind: "vacancy" | "worker
           <button type="button" onClick={reveal} className="press flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card text-base font-semibold hover:bg-secondary">
             <RotateCw className="size-4" aria-hidden /> {t("contacts.reveal.retry")}
           </button>
-        ) : (
+        ) : loginHref ? (
           <Link href={loginHref} className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-primary/40 bg-card text-md font-semibold text-primary-ink hover:bg-primary-soft/40">
             <LogIn className="size-4" aria-hidden /> {t("contacts.guest_login")}
           </Link>
-        )}
+        ) : null}
       </div>
     );
   }

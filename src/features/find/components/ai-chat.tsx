@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject } from "react";
-import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, Info, LogIn, Pencil, Plus, RotateCcw, Search, SlidersHorizontal, Square, UsersRound } from "lucide-react";
+import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, CheckCircle2, Info, LogIn, Pencil, Plus, RotateCcw, Search, SlidersHorizontal, Square, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,7 +27,7 @@ import {
 } from "../ai-chat-model";
 import { quickPrepare, quickSearch } from "../quick-actions";
 import { NO_FILTERS, type QuickAnswers, type QuickFilters, type QuickForm, type QuickList, type QuickResult } from "../quick-types";
-import { JobResultCard, WorkerResultCard } from "./result-cards";
+import { AiJobCard, AiWorkerCard } from "./ai-cards";
 
 /**
  * Yordamchi — suhbat oynasi, ODDIY QIDIRUV (2026-11-16, ega: "AI uzun matn yozmasin. So'rov qilgandan keyin oyna chiqsin —
@@ -401,18 +401,18 @@ function Dots({ text }: { text: string }) {
   );
 }
 
-/** Natija kartalari (ish yoki nomzod) */
+/** Natija kartalari (ish yoki nomzod) — yordamchining o'z kartasi: alohida rangda, "E'lonni to'liq ko'rish" bilan */
 function Cards({ list, saved }: { list: QuickList; saved: string[] }) {
   return (
     <ul className="grid grid-cols-1 gap-3">
       {list.jobs.map((job) => (
-        <li key={job.id} className="flex [&>article]:w-full">
-          <JobResultCard job={job} imageUrl={job.profession_node_id ? list.images[job.profession_node_id] : null} photoPath={list.photos[job.id] ?? null} saved={saved.includes(job.id)} />
+        <li key={job.id}>
+          <AiJobCard job={job} saved={saved.includes(job.id)} />
         </li>
       ))}
       {list.workers.map((w) => (
-        <li key={w.id} className="flex [&>article]:w-full">
-          <WorkerResultCard worker={w} imageUrl={w.profession_node_id ? list.images[w.profession_node_id] : null} saved={saved.includes(w.id)} />
+        <li key={w.id}>
+          <AiWorkerCard worker={w} saved={saved.includes(w.id)} />
         </li>
       ))}
     </ul>
@@ -504,7 +504,9 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
 
       {r.total > 0 ? (
         <>
-          <p className="text-base font-bold" data-quick-found>
+          {/* "1 ta ish topildi" — yashil belgi bilan (ega, 2026-11-19: rangli, alohida) */}
+          <p className="inline-flex items-center gap-2 rounded-full bg-success-soft px-3.5 py-1.5 text-base font-bold text-success" data-quick-found>
+            <CheckCircle2 className="size-5 shrink-0" aria-hidden />
             {jobs ? t("easy.quick.found_jobs", { count: r.total }) : t("easy.quick.found_workers", { count: r.total })}
           </p>
           {latest ? <Cards list={r} saved={r.saved} /> : null}
