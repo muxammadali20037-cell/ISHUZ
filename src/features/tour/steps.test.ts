@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import uz from "../../../messages/uz/easy.json";
 import ru from "../../../messages/ru/easy.json";
@@ -30,7 +32,17 @@ describe("tanishtiruv", () => {
   });
 
   it("ovoz faqat yozilganlari uchun; kirill o'zbekcha — o'zbekcha ovoz", () => {
-    expect(tourAudioSrc("uz", "W1")).toBeNull();
+    expect(tourAudioSrc("uz", "W1")).toBe("/tour/uz/W1.mp3");
+    expect(tourAudioSrc("oz", "E4")).toBe("/tour/uz/E4.mp3");
+    expect(tourAudioSrc("ru", "W1")).toBeNull();
     expect(tourAudioSrc("de", "W1")).toBeNull();
+  });
+
+  it("o'zbekcha ovoz — har qadam uchun fayl bor", () => {
+    const codes = new Set(Object.values(TOUR_STEPS).flatMap((s) => s.map((x) => x.code)));
+    for (const c of codes) {
+      expect(tourAudioSrc("uz", c), c).not.toBeNull();
+      expect(existsSync(join(process.cwd(), "public", tourAudioSrc("uz", c)!)), c).toBe(true);
+    }
   });
 });

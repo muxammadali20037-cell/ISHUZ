@@ -70,7 +70,10 @@ export function markTourSeen(cookieValue: string | null | undefined, panel: Tour
  * Yozib qo'yilgan ovozlar (ega yuboradi). O'zbekcha ovoz lotin va kirill uchun bitta (oz → uz). Ro'yxatda yo'q kod
  * uchun so'rov yuborilmaydi — tanishtiruv faqat matn bilan ishlaydi.
  */
-export const TOUR_AUDIO: Partial<Record<"uz" | "ru" | "en", readonly string[]>> = {};
+export const TOUR_AUDIO: Partial<Record<"uz" | "ru" | "en", readonly string[]>> = {
+  // ega yuborgan ElevenLabs yozuvi (2026-11-19, "Farruh — Confident"), pauzalar bo'yicha 20 ta qatorga bo'lingan
+  uz: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "U1", "U2", "U3", "U4", "U5", "U6"],
+};
 
 export function tourAudioSrc(locale: string, code: string): string | null {
   const lang = locale === "oz" ? "uz" : locale;
