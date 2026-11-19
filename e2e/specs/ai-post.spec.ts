@@ -193,6 +193,8 @@ test("kirgan (kompyuter): «haydovchiman, Samarqand» → oyna darhol (kasb va h
   expect(acc?.phone).not.toBe("+998974445566");
   await page.goto(href);
   await expect(page.locator("[data-listing-own-phones]")).toContainText("+998 97 444 55 66");
+  // ega (2026-11-19): raqam ustiga bosilsa — qo'ng'iroq
+  await expect(page.locator("[data-listing-own-phones] a[data-tel]")).toHaveAttribute("href", "tel:+998974445566");
 
   // boshqa kirgan foydalanuvchi (ish beruvchi) e'londa shu raqamni ko'radi
   await loginAs(context, USERS.employer);

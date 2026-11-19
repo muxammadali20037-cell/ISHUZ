@@ -1,5 +1,16 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Raqam ustiga bosilsa — qo'ng'iroq; egasi oynasi soddalashtirildi (`claude/tap-to-call`)
+
+Ega (skrinshot bilan): "ustiga bossa vizov ketsin, keyin sal oynani soddalashtir".
+
+- **Egasi oynasi** (`/listing/[id]`, o'z e'loni): uch qator — holat (kichik belgi) → "E'londagi raqam" va har bir raqam alohida
+  qatorda yashil telefon belgisi bilan (bosilsa `tel:` qo'ng'iroq) → pastda "E'lonni o'zgartirish ›" butun qator.
+  Avval: belgi, katta tugma va ikki raqam bitta uzun qatorda " · " bilan.
+- **Raqamning o'zi ham bosiladi:** katta "Qo'ng'iroq qilish" tugmasi ostidagi raqam matni ham `tel:` havola —
+  ishchi e'loni (`CallBlock`), mehmonga ochilgan raqam (`RevealPhone`), vakansiyadagi ish beruvchi kartasi, kontakt kartasi.
+- `telHref()` (`@/lib/format`) — bitta joyda; unit test. E2E: egasi raqami `tel:`, ochilgan raqamda tugma + raqam (2 havola).
+
 ## 2026-11-19 · Prod baza: 0084–0085 qo'llandi (`claude/prod-applied-85`)
 
 Ega: "SQL'ga o'zing joyla" va Supabase ulanishini ISHUZ loyihasiga berdi. Avval faqat o'qish bilan tekshirildi: 0068–0083

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LogIn, Phone, Send } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
-import { formatPhone } from "@/lib/format";
+import { formatPhone, telHref } from "@/lib/format";
 import { CopyButton } from "./copy-button";
 import { ContactCard } from "./contact-card";
 import { RevealPhone } from "./reveal-phone";
@@ -70,13 +70,13 @@ export async function EmployerCallCard({
       {phone ? (
         <>
           <a
-            href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+            href={telHref(phone)}
             className="flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-success text-base font-semibold text-success-foreground shadow-sm transition-opacity hover:opacity-90"
           >
             <Phone className="size-5" /> {t("contacts.call")}
           </a>
           <div className="flex items-center justify-between gap-2">
-            <span className="tabular text-md font-semibold">{formatPhone(phone)}</span>
+            <a href={telHref(phone)} data-tel className="tabular text-md font-semibold underline-offset-4 hover:underline">{formatPhone(phone)}</a>
             <CopyButton value={phone} />
           </div>
         </>

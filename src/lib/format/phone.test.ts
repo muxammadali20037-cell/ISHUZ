@@ -36,3 +36,11 @@ describe("phoneInputChange: o'chirish va ustiga joylash farqlanadi", () => {
     expect(phoneInputChange("93 555 11 22", "+998 90 123 45 67")).toBe("+998 93 555 11 22");
   });
 });
+
+describe("telHref", () => {
+  it("faqat raqam va + qoladi", async () => {
+    const { telHref } = await import("./index");
+    expect(telHref("+998 99 123-45-67")).toBe("tel:+998991234567");
+    expect(telHref("+998991234567")).toBe("tel:+998991234567");
+  });
+});

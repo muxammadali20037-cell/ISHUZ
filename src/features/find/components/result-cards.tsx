@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { BadgeCheck, BriefcaseBusiness, CheckCircle2, ChevronRight, CircleMinus, Clock, MapPin, Phone, Send, Wallet, XCircle } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { formatDate, formatMoney, formatPhone, postedDay } from "@/lib/format";
+import { formatDate, formatMoney, formatPhone, postedDay, telHref } from "@/lib/format";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { Photo } from "@/components/shared/photo";
 import { SalaryText } from "@/components/shared/salary-text";
@@ -110,12 +110,13 @@ export function CallBlock({ phone, className }: { phone: string; className?: str
   return (
     <div className={cn("space-y-2", className)}>
       <a
-        href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+        href={telHref(phone)}
         className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-lg font-bold text-primary-foreground shadow-sm hover:bg-primary-hover"
       >
         <Phone className="size-6" aria-hidden /> {t("easy.card.call")}
       </a>
-      <p className="text-center text-lg font-semibold tabular">{formatPhone(phone)}</p>
+      {/* raqamning o'zi ham bosilsa — qo'ng'iroq (ega, 2026-11-19) */}
+      <p className="text-center">{<a href={telHref(phone)} data-tel className="text-lg font-semibold tabular underline-offset-4 hover:underline">{formatPhone(phone)}</a>}</p>
     </div>
   );
 }
@@ -182,7 +183,7 @@ function CardAction({ phone, action }: { phone: string | null; action: { href: s
   const { t } = useT();
   if (phone) {
     return (
-      <a href={`tel:${phone.replace(/[^\d+]/g, "")}`} className={actionCls} aria-label={`${t("easy.card.call")}: ${formatPhone(phone)}`} title={formatPhone(phone)}>
+      <a href={telHref(phone)} className={actionCls} aria-label={`${t("easy.card.call")}: ${formatPhone(phone)}`} title={formatPhone(phone)}>
         <Phone className="size-4" aria-hidden /> {t("easy.card.call_short")}
       </a>
     );

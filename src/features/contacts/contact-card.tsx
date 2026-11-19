@@ -1,7 +1,7 @@
 import { Phone, Send, Lock } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
-import { formatPhone } from "@/lib/format";
+import { formatPhone, telHref } from "@/lib/format";
 import { CopyButton } from "./copy-button";
 import { RequestContactButton } from "./request-contact-button";
 
@@ -35,13 +35,13 @@ export async function ContactCard({ profileId, hint }: { profileId: string; hint
         <>
           {/* Asosiy harakat — bitta bosish bilan qo'ng'iroq */}
           <a
-            href={`tel:${data.phone}`}
+            href={telHref(data.phone)}
             className="press flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-primary text-base font-semibold text-primary-foreground shadow-sm hover:bg-primary-hover"
           >
             <Phone className="size-5" /> {t("contacts.call")}
           </a>
           <div className="flex items-center justify-between gap-2">
-            <span className="tabular text-md font-semibold">{formatPhone(data.phone)}</span>
+            <a href={telHref(data.phone)} data-tel className="tabular text-md font-semibold underline-offset-4 hover:underline">{formatPhone(data.phone)}</a>
             <CopyButton value={data.phone} />
           </div>
         </>
