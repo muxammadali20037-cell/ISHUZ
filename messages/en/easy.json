@@ -1381,7 +1381,9 @@
       "who_workers": "I'm the Ish topdim assistant — I find staff among real candidates in the database. Who do you need?",
       "other_jobs": "I help with job search. Write what job you need — for example: “driver, Samarkand”.",
       "other_workers": "I help find staff. Write who you need — for example: “sales assistant, Chilanzar”."
-    }
+    },
+    "show": "Show",
+    "hide": "Hide"
   },
   "post_ai": {
     "page_title": "Post an ad",

@@ -1381,7 +1381,9 @@
       "who_workers": "Men Ish topdim yordamchisiman — bazadagi haqiqiy nomzodlardan xodim topib beraman. Qanday xodim kerak?",
       "other_jobs": "Men ish qidirishda yordam beraman. Qanday ish kerakligini yozing — masalan: «haydovchi, Samarqand».",
       "other_workers": "Men xodim qidirishda yordam beraman. Qanday xodim kerakligini yozing — masalan: «sotuvchi, Chilonzor»."
-    }
+    },
+    "show": "Ko'rish",
+    "hide": "Yashirish"
   },
   "post_ai": {
     "page_title": "E'lon joylash",
