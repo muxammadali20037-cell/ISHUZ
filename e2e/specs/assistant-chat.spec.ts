@@ -88,8 +88,14 @@ test("karta (ega, 2026-11-19): alohida rangda; «E'lonni to'liq ko'rish» — ha
   await asMode(context, "worker");
   await open(page);
   await say(page, "Toshkentda buxgalter");
-  const answer = await quickSearch(page);
+  // ega (2026-11-19): topilganlar yashirin — "1 ta ish topildi" yonida ko'z belgili "Ko'rish", bosilsa kartalar ochiladi
+  const answer = await quickSearch(page, { show: false });
   await expect(answer.locator("[data-quick-found]")).toHaveText("1 ta ish topildi");
+  await expect(answer.locator("article")).toHaveCount(0);
+  const show = answer.getByRole("button", { name: "Ko'rish" });
+  await expect(show).toHaveAttribute("aria-expanded", "false");
+  await show.click();
+  await expect(answer.getByRole("button", { name: "Yashirish" })).toHaveAttribute("aria-expanded", "true");
   const card = answer.locator("[data-ai-card='job']");
   await expect(card).toHaveCount(1);
   // yopiq holatda: tafsilot ham, raqam ham yo'q (raqam faqat bosilganda, limit bilan)
@@ -108,6 +114,8 @@ test("karta (ega, 2026-11-19): alohida rangda; «E'lonni to'liq ko'rish» — ha
 
   await card.getByRole("button", { name: "Yopish" }).click();
   await expect(details).toHaveCount(0);
+  await answer.getByRole("button", { name: "Yashirish" }).click();
+  await expect(answer.locator("article")).toHaveCount(0);
   await sql("delete from public.vacancy_contacts where vacancy_id = $1", [v!.id]);
 });
 

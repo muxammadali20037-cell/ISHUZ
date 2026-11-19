@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore, type FormEvent, type KeyboardEvent, type ReactNode, type RefObject } from "react";
-import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, CheckCircle2, Info, LogIn, Pencil, Plus, RotateCcw, Search, SlidersHorizontal, Square, UsersRound } from "lucide-react";
+import { ArrowRight, ArrowUp, BellRing, BriefcaseBusiness, CheckCircle2, Eye, EyeOff, Info, LogIn, Pencil, Plus, RotateCcw, Search, SlidersHorizontal, Square, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -424,6 +424,63 @@ function Cards({ list, saved }: { list: QuickList; saved: string[] }) {
  * qisqa xulosa ("Avtoinstruktor · Toshkent shahri · 4 mln so'mdan"), topilganlar; topilmasa — bitta qisqa xabar va pastda
  * shunga yaqin kasblar. Kartalar faqat oxirgi javobda (oldingilarida — havola).
  */
+/** "1 ta ish topildi" — yashil belgi bilan (ega, 2026-11-19: rangli, alohida) */
+function FoundBadge({ label }: { label: string }) {
+  return (
+    <p className="inline-flex items-center gap-2 rounded-full bg-success-soft px-3.5 py-1.5 text-base font-bold text-success" data-quick-found>
+      <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+      {label}
+    </p>
+  );
+}
+
+/**
+ * Topilganlar yashirin turadi (ega, 2026-11-19: "2 ta ish topildi yoniga ko'z bilan «Ko'rish» — ichiga yashirib qo'y, bossa
+ * e'lonlar ko'rinsin"): yashil yorliq yonida "Ko'rish" (ko'z) — bosilsa kartalar ochiladi, yana bosilsa — "Yashirish".
+ */
+/** ochilgan javoblar — e'lonni ochib, orqaga qaytilganda ro'yxat ochiq turadi (sahifa yangilansa — yana yopiq) */
+const openedFound = new Set<string>();
+
+/** `memo` — javob kaliti (turn + qidiruv havolasi): boshqa suhbatdagi xuddi shu raqamli javob ochiq bo'lib qolmasin */
+function FoundResults({ id, memo, label, children }: { id: number; memo: string; label: string; children: ReactNode }) {
+  const { t } = useT();
+  const [open, setOpenState] = useState(() => openedFound.has(memo));
+  const setOpen = (fn: (o: boolean) => boolean) =>
+    setOpenState((o) => {
+      const next = fn(o);
+      if (next) openedFound.add(memo);
+      else openedFound.delete(memo);
+      return next;
+    });
+  const panelId = `found-${id}`;
+  return (
+    <>
+      <div className="flex flex-wrap items-center gap-2">
+        <FoundBadge label={label} />
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          aria-expanded={open}
+          aria-controls={panelId}
+          className={cn(
+            "press inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-base font-bold",
+            open ? "border border-border bg-card text-foreground hover:bg-secondary" : "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover",
+          )}
+          data-quick-show
+        >
+          {open ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
+          {open ? t("easy.quick.hide") : t("easy.quick.show")}
+        </button>
+      </div>
+      {open ? (
+        <div id={panelId} className="space-y-3" data-quick-results>
+          {children}
+        </div>
+      ) : null}
+    </>
+  );
+}
+
 function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; chat: AiChatState }) {
   const { t } = useT();
   const r = turn.quick ?? null;
@@ -504,19 +561,20 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
 
       {r.total > 0 ? (
         <>
-          {/* "1 ta ish topildi" — yashil belgi bilan (ega, 2026-11-19: rangli, alohida) */}
-          <p className="inline-flex items-center gap-2 rounded-full bg-success-soft px-3.5 py-1.5 text-base font-bold text-success" data-quick-found>
-            <CheckCircle2 className="size-5 shrink-0" aria-hidden />
-            {jobs ? t("easy.quick.found_jobs", { count: r.total }) : t("easy.quick.found_workers", { count: r.total })}
-          </p>
-          {latest ? <Cards list={r} saved={r.saved} /> : null}
-          {latest && r.total > shown ? (
-            <Button asChild variant="outline" size="lg" fullWidth className="text-base">
-              <Link href={r.href}>
-                {t("easy.finder.show_all", { count: r.total })} <ArrowRight className="size-5" aria-hidden />
-              </Link>
-            </Button>
-          ) : null}
+          {latest ? (
+            <FoundResults id={turn.id} memo={`${turn.id}:${r.href}`} label={jobs ? t("easy.quick.found_jobs", { count: r.total }) : t("easy.quick.found_workers", { count: r.total })}>
+              <Cards list={r} saved={r.saved} />
+              {r.total > shown ? (
+                <Button asChild variant="outline" size="lg" fullWidth className="text-base">
+                  <Link href={r.href}>
+                    {t("easy.finder.show_all", { count: r.total })} <ArrowRight className="size-5" aria-hidden />
+                  </Link>
+                </Button>
+              ) : null}
+            </FoundResults>
+          ) : (
+            <FoundBadge label={jobs ? t("easy.quick.found_jobs", { count: r.total }) : t("easy.quick.found_workers", { count: r.total })} />
+          )}
           {!latest ? (
             <Link href={r.href} className="inline-flex min-h-11 items-center gap-1 font-semibold text-primary-ink hover:underline">
               {t("easy.finder.open_results")} <ArrowRight className="size-4" aria-hidden />

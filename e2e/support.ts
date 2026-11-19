@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { Client } from "pg";
-import { expect, type BrowserContext, type Page } from "@playwright/test";
+import { expect, type BrowserContext, type Locator, type Page } from "@playwright/test";
 import { sessionCookie } from "./stack/jwt.mjs";
 
 /** up.sh yozgan stend ma'lumoti (tasodifiy JWT kaliti, baza, ilova manzili) */
@@ -124,8 +124,9 @@ export async function snapshotUser(id: string): Promise<() => Promise<void>> {
  * Yordamchi — oddiy qidiruv (2026-11-16): matn yuborilgach so'rovnoma oynasi chiqadi ("Qanday ish?", "Qaysi hududda?",
  * "Oylik maosh qancha bo'lsin?"). Javoblarni (kerak bo'lsa) o'zgartirib "Qidirish" bosadi va yordamchi javobini qaytaradi.
  * `place` — select qiymati ("all", "remote", "<viloyat slug>"), `salary` — "...dan" tugmasi (so'm).
+ * Topilganlar yashirin turadi (2026-11-19) — `show` (standart: ha) bo'lsa "Ko'rish" bosiladi va kartalar ochiladi.
  */
-export async function quickSearch(page: Page, opts: { profession?: string; place?: string } = {}) {
+export async function quickSearch(page: Page, opts: { profession?: string; place?: string; show?: boolean } = {}) {
   const sheet = page.locator("[data-quick-sheet]");
   await expect(sheet).toBeVisible();
   if (opts.profession !== undefined) await sheet.locator("[data-quick-profession]").fill(opts.profession);
@@ -136,5 +137,14 @@ export async function quickSearch(page: Page, opts: { profession?: string; place
   await expect(page.locator("ol[aria-busy='true']")).toHaveCount(0);
   const answer = page.locator("[data-quick-answer]").last();
   await expect(answer).toBeVisible();
+  if (opts.show !== false) await showFound(answer);
   return answer;
+}
+
+/** "N ta ish topildi" yonidagi "Ko'rish" — bosilsa kartalar ochiladi (topilmagan bo'lsa tugma yo'q — hech narsa qilmaydi) */
+export async function showFound(answer: Locator) {
+  const show = answer.locator("[data-quick-show]");
+  if ((await show.count()) === 0) return;
+  if ((await show.getAttribute("aria-expanded")) !== "true") await show.click();
+  await expect(answer.locator("[data-quick-results]")).toBeVisible();
 }

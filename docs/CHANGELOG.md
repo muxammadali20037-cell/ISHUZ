@@ -1,5 +1,16 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Yordamchi: topilganlar yashirin — "Ko'rish" (ko'z) bilan ochiladi (`claude/assistant-results-toggle`)
+
+Ega (skrinshot bilan): "2 ta ish topildi yoniga «Ko'rish» ko'z bilan — ichiga yashirib qo'y, bossa e'lonlar ko'rinsin".
+
+- Yordamchi javobida yashil "N ta ish topildi" yonida ko'k **"Ko'rish"** (ko'z belgisi) tugmasi. Kartalar va "Hammasini
+  ko'rish" yashirin turadi; bosilsa ochiladi, tugma "Yashirish" (ko'z ustidan chiziq) bo'ladi.
+- Ochilgan holat sahifa ichida eslab qolinadi: e'lonni ochib, orqaga qaytilganda ro'yxat ochiq turadi (yangilansa — yopiq).
+- Topilmaganda va "shunga yaqin" bo'limida o'zgarish yo'q.
+- E2E: `quickSearch()` endi "Ko'rish"ni bosadi (`show: false` — bosmaydi), yangi `showFound()`; `assistant-chat` — avval
+  kartalar yo'q, "Ko'rish" → bor, "Yashirish" → yana yo'q.
+
 ## 2026-11-19 · Yordamchi kartasi: alohida rangda, "E'lonni to'liq ko'rish" — telefongacha (`claude/assistant-job-card`)
 
 Ega (skrinshot bilan): "1 ta ish topildi — tartib bilan, rangli, alohida rangda, ichida telefonigacha ko'rinsin; sodda va
