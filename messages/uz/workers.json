@@ -147,11 +147,7 @@
   "offer": {
     "title": "Ish taklifi yuborish",
     "description": "Nomzod taklifni qabul qilsa, chat ochiladi va kontaktlar ko'rinadi",
-    "choose_vacancy": "Qaysi vakansiya bo'yicha?",
-    "new_offer": "Yangi taklif",
-    "new_offer_desc": "Vakansiyasiz, erkin shakldagi taklif",
-    "already_offered": "Taklif yuborilgan",
-    "offer_title": "Lavozim",
+    "what_vacancy": "Qanday vakansiya taklif qilmoqchisiz?",
     "offer_title_placeholder": "Masalan: Sotuvchi-konsultant",
     "salary_from": "Oylik maosh (dan)",
     "salary_to": "Oylik maosh (gacha)",
@@ -161,9 +157,7 @@
     "template": "Assalomu alaykum, {name}! Profilingiz bizni qiziqtirdi va sizga ish taklif qilmoqchimiz. Qulay bo'lsa, javob yozing — batafsil gaplashamiz.",
     "send": "Taklif yuborish",
     "sent": "Taklif yuborildi",
-    "sent_desc": "Nomzod javob berganda bildirishnoma olasiz",
-    "no_vacancies": "Faol vakansiyangiz yo'q. Yangi taklif yuboring yoki vakansiya joylang",
-    "post_vacancy": "Vakansiya joylash"
+    "sent_desc": "Nomzod javob berganda bildirishnoma olasiz"
   },
   "save": {
     "title": "Nomzodni saqlash",

@@ -2,31 +2,25 @@
 
 import { useId, useState, useTransition } from "react";
 import Link from "next/link";
-import { Bookmark, MessageCircle, Send, Plus } from "lucide-react";
+import { Bookmark, MessageCircle, Send } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { formatSalaryRange } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, Sheet } from "@/components/ui/dialog";
-import { RadioGroup, RadioItem } from "@/components/ui/checkbox";
 import { Input, Textarea } from "@/components/ui/input";
 import { Field } from "@/components/ui/label";
 import { toast } from "@/components/ui/toast";
 import { ReportDialog } from "@/features/reports/report-dialog";
 import { saveWorker, sendOffer, unsaveWorker } from "../actions";
-import type { MyVacancy, SavedEntry } from "../types";
+import type { SavedEntry } from "../types";
 import { MoneyInput } from "./money-input";
 import { errorText } from "./error-text";
 import { callAction } from "@/lib/action-call";
-
-const NEW_OFFER = "__new__";
 
 interface Props {
   workerId: string;
   workerName: string;
   profileId: string;
-  vacancies: MyVacancy[];
-  offeredVacancyIds: string[];
   chatHref: string | null;
   saved: SavedEntry | null;
   folders: string[];
@@ -42,7 +36,6 @@ export function CandidateActions(props: Props) {
   const [saveOpen, setSaveOpen] = useState(false);
   const [saved, setSaved] = useState<SavedEntry | null>(props.saved);
   const [chatHref, setChatHref] = useState(props.chatHref);
-  const [offered, setOffered] = useState(props.offeredVacancyIds);
   const [unsaving, startUnsave] = useTransition();
 
   const isSaved = saved !== null;
@@ -137,12 +130,7 @@ export function CandidateActions(props: Props) {
         onOpenChange={setOfferOpen}
         workerId={props.workerId}
         workerName={props.workerName}
-        vacancies={props.vacancies}
-        offeredVacancyIds={offered}
-        onSent={(offerId, vacancyId) => {
-          if (vacancyId) setOffered((ids) => [...ids, vacancyId]);
-          setChatHref((h) => h ?? `/messages/new?offer_id=${offerId}`);
-        }}
+        onSent={(offerId) => setChatHref((h) => h ?? `/messages/new?offer_id=${offerId}`)}
       />
       <SaveSheet open={saveOpen} onOpenChange={setSaveOpen} workerId={props.workerId} folders={props.folders} onSaved={(entry) => setSaved(entry)} />
     </>
@@ -158,44 +146,38 @@ function OfferSheet({
   onOpenChange,
   workerId,
   workerName,
-  vacancies,
-  offeredVacancyIds,
   onSent,
 }: {
   open: boolean;
   onOpenChange: (o: boolean) => void;
   workerId: string;
   workerName: string;
-  vacancies: MyVacancy[];
-  offeredVacancyIds: string[];
-  onSent: (offerId: string, vacancyId: string | null) => void;
+  onSent: (offerId: string) => void;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      {open ? <OfferSheetBody workerId={workerId} workerName={workerName} vacancies={vacancies} offeredVacancyIds={offeredVacancyIds} onSent={onSent} close={() => onOpenChange(false)} /> : null}
+      {open ? <OfferSheetBody workerId={workerId} workerName={workerName} onSent={onSent} close={() => onOpenChange(false)} /> : null}
     </Dialog>
   );
 }
 
+/**
+ * Taklif — har doim erkin shaklda (ega, 2026-11-19: "o'z joylagan e'loni bo'yicha yuboryapti — vakansiya tanlamasin,
+ * «Qanday vakansiya taklif qilmoqchisiz?» deb chiqsin"): ish beruvchi lavozimni o'zi yozadi, maosh — ixtiyoriy.
+ */
 function OfferSheetBody({
   workerId,
   workerName,
-  vacancies,
-  offeredVacancyIds,
   onSent,
   close,
 }: {
   workerId: string;
   workerName: string;
-  vacancies: MyVacancy[];
-  offeredVacancyIds: string[];
-  onSent: (offerId: string, vacancyId: string | null) => void;
+  onSent: (offerId: string) => void;
   close: () => void;
 }) {
-  const { t, tEnum, locale } = useT();
+  const { t } = useT();
   const ids = useId();
-  const firstFree = vacancies.find((v) => !offeredVacancyIds.includes(v.id));
-  const [choice, setChoice] = useState<string>(firstFree?.id ?? NEW_OFFER);
   const [title, setTitle] = useState("");
   const [salaryFrom, setSalaryFrom] = useState<number | null>(null);
   const [salaryTo, setSalaryTo] = useState<number | null>(null);
@@ -203,33 +185,27 @@ function OfferSheetBody({
   const [errors, setErrors] = useState<{ title?: string; salary?: string }>({});
   const [pending, startTransition] = useTransition();
 
-  const isNew = choice === NEW_OFFER;
-  const salaryLabel = (v: MyVacancy) =>
-    v.salary_negotiable || (!v.salary_from && !v.salary_to)
-      ? t("common.labels.negotiable")
-      : `${formatSalaryRange(v.salary_from, v.salary_to, locale, { negotiable: t("common.labels.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") })}${v.salary_type !== "negotiable" ? tEnum("salary_type_suffix", v.salary_type) : ""}`;
-
   const submit = () => {
     const next: typeof errors = {};
-    if (isNew && title.trim().length < 2) next.title = t("workers.errors.title_required");
+    if (title.trim().length < 2) next.title = t("workers.errors.title_required");
     if (salaryFrom !== null && salaryTo !== null && salaryTo < salaryFrom) next.salary = t("workers.errors.salary_range");
     setErrors(next);
     if (Object.keys(next).length) return;
     startTransition(async () => {
       const res = await callAction(() => sendOffer({
         workerId,
-        vacancyId: isNew ? null : choice,
-        title: isNew ? title.trim() : undefined,
+        vacancyId: null,
+        title: title.trim(),
         message: message.trim() || undefined,
-        salaryFrom: isNew ? salaryFrom : null,
-        salaryTo: isNew ? salaryTo : null,
+        salaryFrom,
+        salaryTo,
       }));
       if (!res.ok) {
         toast.error(errorText(t, res.error));
         return;
       }
       toast.success(t("workers.offer.sent"), t("workers.offer.sent_desc"));
-      onSent(res.data?.id ?? "", isNew ? null : choice);
+      onSent(res.data?.id ?? "");
       close();
     });
   };
@@ -245,63 +221,25 @@ function OfferSheetBody({
       }
     >
       <div className="space-y-4">
-        <div>
-          <p className="mb-2 text-sm font-medium">{t("workers.offer.choose_vacancy")}</p>
-          {!vacancies.length ? (
-            <p className="mb-2 rounded-xl bg-secondary/70 p-3 text-sm text-muted-foreground">
-              {t("workers.offer.no_vacancies")}{" "}
-              <Link href="/employer/vacancies/new" className="font-medium text-primary-ink underline-offset-2 hover:underline">
-                {t("workers.offer.post_vacancy")}
-              </Link>
-            </p>
-          ) : null}
-          <RadioGroup value={choice} onValueChange={setChoice} className="space-y-2">
-            {vacancies.map((v) => {
-              const already = offeredVacancyIds.includes(v.id);
-              return (
-                <RadioItem
-                  key={v.id}
-                  value={v.id}
-                  disabled={already}
-                  label={
-                    <span className="flex items-center justify-between gap-2">
-                      <span className="truncate">{v.title}</span>
-                      {already ? <span className="shrink-0 text-xs text-muted-foreground">{t("workers.offer.already_offered")}</span> : null}
-                    </span>
-                  }
-                  description={salaryLabel(v)}
-                  className={already ? "opacity-60" : undefined}
-                />
-              );
-            })}
-            <RadioItem
-              value={NEW_OFFER}
-              label={
-                <span className="inline-flex items-center gap-1.5">
-                  <Plus className="size-4" /> {t("workers.offer.new_offer")}
-                </span>
-              }
-              description={t("workers.offer.new_offer_desc")}
-            />
-          </RadioGroup>
+        <Field label={t("workers.offer.what_vacancy")} htmlFor={`${ids}-title`} required error={errors.title}>
+          <Input
+            id={`${ids}-title`}
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder={t("workers.offer.offer_title_placeholder")}
+            maxLength={120}
+            invalid={!!errors.title}
+            data-offer-title
+          />
+        </Field>
+        <div className="grid grid-cols-2 gap-3">
+          <Field label={t("workers.offer.salary_from")} htmlFor={`${ids}-from`}>
+            <MoneyInput id={`${ids}-from`} value={salaryFrom} onChange={setSalaryFrom} placeholder="0" suffix={t("workers.offer.salary_currency")} />
+          </Field>
+          <Field label={t("workers.offer.salary_to")} htmlFor={`${ids}-to`} error={errors.salary}>
+            <MoneyInput id={`${ids}-to`} value={salaryTo} onChange={setSalaryTo} placeholder="0" suffix={t("workers.offer.salary_currency")} invalid={!!errors.salary} />
+          </Field>
         </div>
-
-        {isNew ? (
-          <div className="space-y-3 rounded-xl border border-border p-3">
-            <Field label={t("workers.offer.offer_title")} htmlFor={`${ids}-title`} required error={errors.title}>
-              <Input id={`${ids}-title`} value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t("workers.offer.offer_title_placeholder")} maxLength={120} invalid={!!errors.title} />
-            </Field>
-            <div className="grid grid-cols-2 gap-3">
-              <Field label={t("workers.offer.salary_from")} htmlFor={`${ids}-from`}>
-                <MoneyInput id={`${ids}-from`} value={salaryFrom} onChange={setSalaryFrom} placeholder="0" suffix={t("workers.offer.salary_currency")} />
-              </Field>
-              <Field label={t("workers.offer.salary_to")} htmlFor={`${ids}-to`} error={errors.salary}>
-                <MoneyInput id={`${ids}-to`} value={salaryTo} onChange={setSalaryTo} placeholder="0" suffix={t("workers.offer.salary_currency")} invalid={!!errors.salary} />
-              </Field>
-            </div>
-          </div>
-        ) : null}
-
         <Field label={t("workers.offer.message")} htmlFor={`${ids}-msg`}>
           <Textarea id={`${ids}-msg`} value={message} onChange={(e) => setMessage(e.target.value)} placeholder={t("workers.offer.message_placeholder")} maxLength={2000} className="min-h-[110px]" />
         </Field>

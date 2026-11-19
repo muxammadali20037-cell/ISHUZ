@@ -1,5 +1,17 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Ish taklifi: vakansiya tanlanmaydi — "Qanday vakansiya taklif qilmoqchisiz?" (`claude/offer-free-title`)
+
+Ega (skrinshot bilan): "taklif yuborishda o'z joylagan e'loni bo'yicha yuboryapti — uni tanlamasin… «Qanday vakansiya taklif
+qilmoqchisiz» deb chiqsin".
+
+- Nomzod sahifasidagi "Ish taklifi yuborish" oynasida ish beruvchining vakansiyalari ro'yxati (radio) va "Yangi taklif" tanlovi
+  olib tashlandi. O'rnida bitta majburiy maydon: "Qanday vakansiya taklif qilmoqchisiz?" (o'zi yozadi), maosh (dan/gacha) —
+  ixtiyoriy, xabar — oldingidek. Taklif `vacancy_id = null`, `title` — yozilgani bilan yuboriladi (`send_offer` o'zgarmadi).
+- Ishlatilmay qolgan matnlar (`choose_vacancy`, `new_offer*`, `already_offered`, `no_vacancies`, `post_vacancy`, `offer_title`)
+  4 tilda olib tashlandi; yangi kalit `workers.offer.what_vacancy`.
+- E2E (`applications.spec`): ro'yxat yo'q, bo'sh maydon — xato, yozilgan lavozim taklifga tushadi.
+
 ## 2026-11-19 · Raqam ustiga bosilsa — qo'ng'iroq; egasi oynasi soddalashtirildi (`claude/tap-to-call`)
 
 Ega (skrinshot bilan): "ustiga bossa vizov ketsin, keyin sal oynani soddalashtir".
