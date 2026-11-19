@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Loader2, LogIn, Phone, RotateCw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { formatPhone } from "@/lib/format";
+import { formatPhone, telHref } from "@/lib/format";
 import { CopyButton } from "./copy-button";
 import { revealListingPhone, type RevealedPhones } from "./reveal-actions";
 
@@ -31,19 +31,19 @@ export function RevealPhone({ kind, id, loginHref }: { kind: "vacancy" | "worker
     return (
       <div className="space-y-2" data-revealed-phone>
         <a
-          href={`tel:${phone.replace(/[^\d+]/g, "")}`}
+          href={telHref(phone)}
           data-contact="call"
           className="press flex min-h-14 w-full items-center justify-center gap-2 rounded-2xl bg-success px-4 text-lg font-bold text-success-foreground shadow-sm hover:opacity-90"
         >
           <Phone className="size-6" aria-hidden /> {t("contacts.call")}
         </a>
         <div className="flex items-center justify-between gap-2">
-          <span className="tabular text-lg font-bold">{formatPhone(phone)}</span>
+          <a href={telHref(phone)} data-tel className="tabular text-lg font-bold underline-offset-4 hover:underline">{formatPhone(phone)}</a>
           <CopyButton value={phone} />
         </div>
         {phone2 ? (
           <a
-            href={`tel:${phone2.replace(/[^\d+]/g, "")}`}
+            href={telHref(phone2)}
             className="press flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-semibold hover:bg-secondary"
           >
             <Phone className="size-5" aria-hidden /> <span className="tabular">{formatPhone(phone2)}</span>

@@ -91,7 +91,7 @@ test("mehmon: «Raqamni ko'rsatish» — e'londagi raqamlar; raqam yo'q bo'lsa �
   await expect(page.locator("body")).not.toContainText("93 555 00 11");
   await contact.getByRole("button", { name: "Raqamni ko'rsatish" }).click();
   const shown = contact.locator("[data-revealed-phone]");
-  await expect(shown.locator("a[href='tel:+998935550011']")).toBeVisible();
+  await expect(shown.locator("a[href='tel:+998935550011']")).toHaveCount(2); // tugma + raqamning o'zi
   await expect(shown.locator("a[href='tel:+998935550022']")).toBeVisible();
 
   const [b] = await sql<{ id: string }>("select id from public.worker_profiles where profile_id = $1", [USERS.workerB]);

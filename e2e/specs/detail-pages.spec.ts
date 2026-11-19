@@ -94,7 +94,9 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   await expect(page.locator("body")).not.toContainText("90 111 22 33");
   await reveal.click();
   const shown = main.locator("[data-revealed-phone]");
-  await expect(shown.locator("a[href='tel:+998901112233']")).toBeVisible();
+  // katta "Qo'ng'iroq qilish" va raqamning o'zi — ikkalasi ham qo'ng'iroq (2026-11-19)
+  await expect(shown.locator("a[href='tel:+998901112233']")).toHaveCount(2);
+  await expect(shown.locator("a[data-tel]")).toHaveText("+998 90 111 22 33");
   await expect(shown).toContainText("+998 90 111 22 33");
 
   // o'xshash vakansiya — ixcham qator

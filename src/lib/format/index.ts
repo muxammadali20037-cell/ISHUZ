@@ -71,6 +71,11 @@ export function formatPhone(phone: string | null | undefined): string {
   return parsed ? parsed.formatInternational() : phone;
 }
 
+/** Bosilganda qo'ng'iroq: "+998 90 123-45-67" → "tel:+998901234567" (faqat raqam va +) */
+export function telHref(phone: string): string {
+  return `tel:${phone.replace(/[^\d+]/g, "")}`;
+}
+
 /** Foydalanuvchi kiritganini E.164 ga keltiradi; noto'g'ri bo'lsa null */
 export function normalizePhone(input: string): string | null {
   const digits = input.replace(/[^\d+]/g, "");

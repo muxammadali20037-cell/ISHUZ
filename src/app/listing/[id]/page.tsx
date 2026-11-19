@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { z } from "zod";
-import { ChevronLeft, MapPin, Pencil, Phone } from "lucide-react";
+import { ChevronLeft, ChevronRight, MapPin, Pencil, Phone } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
-import { formatMoney, formatPhone } from "@/lib/format";
+import { formatMoney, formatPhone, telHref } from "@/lib/format";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,7 @@ export default async function ListingPage({ params }: Params) {
   const isEmployer = !!session?.employerId;
   // G4: raqam yashirin — kirgan foydalanuvchi shu yerning o'zida so'rov yuboradi (to'liq profilga o'tish shart emas)
   const contact = session && !w.phone && !w.is_owner ? await contactRequestState(w.id) : null;
+  const ownPhones = w.is_owner ? [w.phone, w.phone2].filter((p): p is string => !!p) : [];
 
   return (
     <Shell>
@@ -65,21 +66,39 @@ export default async function ListingPage({ params }: Params) {
         </BackLink>
 
         {w.is_owner ? (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card p-4">
-            <StatusPill tone={w.is_listed ? "ok" : "wait"}>{w.is_listed ? t("easy.cabinet.status.listed") : t("easy.cabinet.status.payment_required")}</StatusPill>
-            <Button asChild variant="outline" className="h-12 px-4 text-base">
-              <Link href="/post/worker">
-                <Pencil className="size-5" aria-hidden /> {t("easy.cabinet.edit")}
-              </Link>
-            </Button>
-            {/* egasi e'londa qaysi raqam(lar) ko'rinishini ko'radi (0081: oynada qo'lda yozilgan) */}
-            {w.phone ? (
-              <p className="flex w-full flex-wrap items-center gap-x-2 text-base" data-listing-own-phones>
-                <Phone className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                <span className="text-muted-foreground">{t("easy.listing.own_phone")}:</span>
-                <span className="font-semibold tabular">{[w.phone, w.phone2].filter((p): p is string => !!p).map(formatPhone).join(" · ")}</span>
-              </p>
+          // egasi oynasi (ega, 2026-11-19: "ustiga bossa qo'ng'iroq ketsin, oynani soddalashtir"): holat → e'londagi raqam(lar)
+          // (0081: oynada qo'lda yozilgan; har biri — bosilsa qo'ng'iroq) → "E'lonni o'zgartirish" — har biri alohida qator
+          <div className="overflow-hidden rounded-2xl border border-border bg-card" data-listing-owner>
+            <div className="px-4 pb-1 pt-3">
+              <StatusPill size="sm" tone={w.is_listed ? "ok" : "wait"}>{w.is_listed ? t("easy.cabinet.status.listed") : t("easy.cabinet.status.payment_required")}</StatusPill>
+            </div>
+            {ownPhones.length ? (
+              <div className="px-4 pb-1 pt-2" data-listing-own-phones>
+                <p className="text-sm text-muted-foreground">{t("easy.listing.own_phone")}</p>
+                {ownPhones.map((p) => (
+                  <a
+                    key={p}
+                    href={telHref(p)}
+                    data-tel
+                    aria-label={`${t("easy.card.call")}: ${formatPhone(p)}`}
+                    className="press -mx-2 flex min-h-12 items-center gap-3 rounded-xl px-2 hover:bg-secondary"
+                  >
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-success-soft text-success">
+                      <Phone className="size-4.5" aria-hidden />
+                    </span>
+                    <span className="text-lg font-semibold tabular">{formatPhone(p)}</span>
+                  </a>
+                ))}
+              </div>
             ) : null}
+            <Link
+              href="/post/worker"
+              className="press mt-1 flex min-h-12 items-center gap-3 border-t border-border px-4 text-base font-semibold text-primary-ink hover:bg-secondary"
+            >
+              <Pencil className="size-5 shrink-0" aria-hidden />
+              <span className="flex-1">{t("easy.cabinet.edit")}</span>
+              <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+            </Link>
           </div>
         ) : null}
 
@@ -146,7 +165,7 @@ export default async function ListingPage({ params }: Params) {
                 {/* 0081: qo'shimcha raqam ("+ Yana raqam") */}
                 {w.phone2 ? (
                   <a
-                    href={`tel:${w.phone2.replace(/[^\d+]/g, "")}`}
+                    href={telHref(w.phone2)}
                     className="press flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-semibold hover:bg-secondary"
                     data-listing-phone2
                   >
