@@ -68,6 +68,7 @@ export function LanguageSelect({ className, tone = "light" }: { className?: stri
   }, []);
   return (
     <label
+      data-tour="lang"
       className={cn(
         "relative inline-flex items-center gap-1 rounded-full border pl-2 pr-1.5 text-sm font-semibold sm:pl-3 sm:pr-2.5",
         // 5.0: matnli tugma (globus · "Ўз" · ⌄), chegarasiz

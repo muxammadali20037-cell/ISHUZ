@@ -9,6 +9,7 @@ import { useTelegram } from "@/lib/telegram/provider";
 import { DOCUMENT_COOKIE_ATTRS } from "@/lib/security/cookies";
 import { Button } from "@/components/ui/button";
 import { channelPromptInfo, type ChannelPromptInfo } from "@/features/telegram-channel/prompt-actions";
+import { TOUR_DONE_EVENT } from "@/features/tour/steps";
 
 /**
  * Ilovaga har kirganda (brauzer/Telegram sessiyasida bir marta) — "Telegram kanalimizga qo'shiling" oynasi (ega, 2026-11-18:
@@ -49,9 +50,14 @@ export function ChannelPrompt() {
       return;
     }
     // sahifa almashsa ham taymer to'xtamaydi (komponent ildizda); vaqti kelganda yana tekshiriladi
-    window.setTimeout(() => {
+    const show = () => {
       if (skipped(current.current)) {
         asked = false;
+        return;
+      }
+      // birinchi kirgandagi tanishtiruv (app-tour) ochiq — u tugagach chiqamiz, ustma-ust emas
+      if (document.documentElement.dataset.tour === "open") {
+        window.addEventListener(TOUR_DONE_EVENT, () => window.setTimeout(show, 1200), { once: true });
         return;
       }
       try {
@@ -64,7 +70,8 @@ export function ChannelPrompt() {
           if (res) setInfo(res);
         })
         .catch(() => undefined);
-    }, DELAY_MS);
+    };
+    window.setTimeout(show, DELAY_MS);
   }, [pathname]);
 
   if (!info) return null;

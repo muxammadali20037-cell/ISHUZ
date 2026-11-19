@@ -106,6 +106,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
             <Link
               href={postAction(mode).href}
               data-track="nav_post"
+              data-tour="post"
               className="press brand-fill mr-1 hidden h-11 items-center gap-1.5 rounded-full px-4 text-sm font-bold shadow-glow hover:opacity-95 lg:inline-flex"
             >
               <Plus className="size-4" strokeWidth={2.5} aria-hidden />
@@ -116,7 +117,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
           {pathname === "/ai" ? null : (
             // rejim tanlamagan mehmon (sayt menyusi): telefonda belgi yo'q — "Yordamchi" ☰ menyuda (nom, til, Kirish sig'sin)
             <Button asChild variant="ghost" size="icon" className={cn("text-primary-ink hover:bg-primary-soft md:hidden", site && "max-sm:hidden")} aria-label={t("easy.aiws.nav.ai")}>
-              <Link href="/ai" data-track="ai_entry" data-track-to="topbar" data-ai-entry>
+              <Link href="/ai" data-track="ai_entry" data-track-to="topbar" data-ai-entry data-tour="ai">
                 <Sparkles className="size-5" />
               </Link>
             </Button>
@@ -127,7 +128,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               {/* ish izlovchida telefonda yo'q — pastki menyuda "Xabarlar" bor (ega, 2026-11-17: takror — chalkash);
                   ish beruvchining pastki menyusida "Xabarlar" yo'q — unda qoladi */}
               <Button asChild variant="ghost" size="icon" className={cn("relative @max-[22rem]:hidden", mode !== "employer" && "max-md:hidden")} aria-label={t("common.nav.messages")}>
-                <Link href="/messages">
+                <Link href="/messages" data-tour="messages">
                   <MessageCircle className="size-5" />
                   {counts?.messages ? (
                     <span className="absolute -right-0.5 -top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-2xs font-bold text-destructive-foreground">
@@ -144,7 +145,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
                 </Button>
               ) : null}
               <Button asChild variant="ghost" size="icon" className="relative" aria-label={t("common.nav.notifications")}>
-                <Link href="/notifications">
+                <Link href="/notifications" data-tour="bell">
                   <Bell className="size-5" />
                   {counts?.notifications ? <span className="absolute right-1 top-1 size-2 rounded-full bg-destructive" /> : null}
                 </Link>
@@ -161,7 +162,7 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
             </>
           ) : (
             <>
-              <Button asChild variant="soft" className="h-11 rounded-full bg-secondary px-3 font-bold text-primary-ink hover:bg-primary-soft sm:px-4">
+              <Button asChild variant="soft" className="h-11 rounded-full bg-secondary px-3 font-bold text-primary-ink hover:bg-primary-soft sm:px-4" data-tour="login">
                 <LoginLink>{t("common.nav.login")}</LoginLink>
               </Button>
               {site ? (

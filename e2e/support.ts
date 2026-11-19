@@ -31,6 +31,8 @@ export async function asGuest(ctx: BrowserContext) {
     { name: "ib_consent", value: "1", domain: host, path: "/" },
     // "Telegram kanalimizga qo'shiling" oynasi ko'rilgan — uni channel-prompt.spec tekshiradi
     { name: "ib_channel", value: "1", domain: host, path: "/" },
+    // birinchi kirgandagi tanishtiruv (app-tour) ko'rilgan — uni tour.spec ochadi
+    { name: "ib_tour", value: "we", domain: host, path: "/" },
     ...(mode ? [{ name: "ib_mode", value: mode.value, domain: host, path: "/" }] : []),
   ]);
 }
