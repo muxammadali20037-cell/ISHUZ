@@ -125,8 +125,6 @@ export default async function CandidatePage({ params, searchParams }: { params: 
               workerId={candidate.id}
               workerName={workerName}
               profileId={candidate.profile_id}
-              vacancies={activeVacancies}
-              offeredVacancyIds={interactions.offeredVacancyIds}
               chatHref={interactions.chatHref}
               saved={saved}
               folders={folders}

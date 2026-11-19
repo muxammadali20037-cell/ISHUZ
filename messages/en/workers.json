@@ -147,11 +147,7 @@
   "offer": {
     "title": "Send a job offer",
     "description": "If the candidate accepts, a chat opens and contact details become visible",
-    "choose_vacancy": "For which vacancy?",
-    "new_offer": "New offer",
-    "new_offer_desc": "A free-form offer, without a vacancy",
-    "already_offered": "Offer sent",
-    "offer_title": "Position",
+    "what_vacancy": "What job do you want to offer?",
     "offer_title_placeholder": "E.g. Sales consultant",
     "salary_from": "Monthly salary (from)",
     "salary_to": "Monthly salary (to)",
@@ -161,9 +157,7 @@
     "template": "Hello, {name}! We're interested in your profile and would like to offer you a job. If you're interested, please reply and we'll discuss the details.",
     "send": "Send offer",
     "sent": "Offer sent",
-    "sent_desc": "You'll get a notification when the candidate responds",
-    "no_vacancies": "You have no active vacancies. Send a new offer or post a vacancy",
-    "post_vacancy": "Post a vacancy"
+    "sent_desc": "You'll get a notification when the candidate responds"
   },
   "save": {
     "title": "Save candidate",

@@ -146,8 +146,16 @@ test("taklif: ish beruvchi yuboradi → ishchi qabul qiladi (asosiy rang tugma) 
   await loginAs(context, USERS.employer);
   await page.goto(`/workers/${workerId}`);
   await page.getByRole("button", { name: "Taklif yuborish" }).first().click();
-  await page.getByRole("dialog").getByRole("button", { name: "Taklif yuborish" }).click();
+  // ega (2026-11-19): o'z vakansiyalari ro'yxatidan tanlanmaydi — "Qanday vakansiya taklif qilmoqchisiz?" deb o'zi yozadi
+  const sheet = page.getByRole("dialog");
+  await expect(sheet.getByRole("radio")).toHaveCount(0);
+  await sheet.getByRole("button", { name: "Taklif yuborish" }).click();
+  await expect(sheet.getByText("Lavozim nomini kiriting (kamida 2 ta belgi)")).toBeVisible();
+  await sheet.getByLabel("Qanday vakansiya taklif qilmoqchisiz?").fill("Buxgalter");
+  await sheet.getByRole("button", { name: "Taklif yuborish" }).click();
   await expect(page.getByText("Taklif yuborildi")).toBeVisible();
+  const [offer] = await sql<{ title: string; vacancy_id: string | null }>("select title, vacancy_id from public.job_offers where employer_profile_id = $1", [USERS.employer]);
+  expect(offer).toEqual({ title: "Buxgalter", vacancy_id: null });
 
   await context.clearCookies();
   await loginAs(context, USERS.workerB);
