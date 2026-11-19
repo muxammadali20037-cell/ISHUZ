@@ -15,6 +15,7 @@ import { AnalyticsListener } from "@/features/analytics/listener";
 import { NavProgress } from "@/components/shared/nav-progress";
 import { RoleSwitchSplash } from "@/components/shared/role-switch-splash";
 import { ChannelPrompt } from "@/components/shared/channel-prompt";
+import { AppTour } from "@/components/shared/app-tour";
 
 export function Providers({ locale, messages, children }: { locale: Locale; messages: Dict; children: ReactNode }) {
   const [queryClient] = useState(
@@ -39,6 +40,7 @@ export function Providers({ locale, messages, children }: { locale: Locale; mess
           <NavProgress />
           <RoleSwitchSplash />
           <ChannelPrompt />
+          <AppTour />
         </TelegramProvider>
       </I18nProvider>
     </QueryClientProvider>

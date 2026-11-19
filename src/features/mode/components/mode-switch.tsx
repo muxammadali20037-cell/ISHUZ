@@ -38,7 +38,7 @@ export function ModeSwitch({ mode, className }: { mode: AppMode; className?: str
 
   return (
     <>
-      <div role="radiogroup" aria-label={t("easy.mode.switch_label")} className={cn("inline-grid w-full max-w-sm grid-cols-2 gap-1 rounded-full border border-border bg-secondary p-1 sm:w-auto", className)}>
+      <div role="radiogroup" aria-label={t("easy.mode.switch_label")} data-tour="role" className={cn("inline-grid w-full max-w-sm grid-cols-2 gap-1 rounded-full border border-border bg-secondary p-1 sm:w-auto", className)}>
         {items.map((it) => {
           const on = it.mode === mode;
           return (

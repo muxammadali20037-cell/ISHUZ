@@ -1478,5 +1478,99 @@
     "phone": "Phone",
     "about": "About the job",
     "open_page": "Open the ad page"
+  },
+  "tour": {
+    "label": "Getting to know the app",
+    "next": "Next",
+    "back": "Back",
+    "skip": "Skip",
+    "start": "Start",
+    "later": "Not now",
+    "done": "Done",
+    "step": "{n} / {total}",
+    "sound_on": "Turn sound on",
+    "sound_off": "Turn sound off",
+    "steps": {
+      "W1": {
+        "title": "Hello!",
+        "text": "Welcome to Ish topdim. Let's take one minute to get to know the buttons."
+      },
+      "W2": {
+        "title": "Home",
+        "text": "Search for jobs here and see the newest ones."
+      },
+      "W3": {
+        "title": "Jobs",
+        "text": "All vacancies are here. Search by profession, area and salary."
+      },
+      "W4": {
+        "title": "Employers",
+        "text": "Companies that are hiring right now."
+      },
+      "W5": {
+        "title": "Fields",
+        "text": "Jobs are grouped by field: the field with the most jobs is at the top."
+      },
+      "W6": {
+        "title": "Profile",
+        "text": "Your applications, offers, saved items and your own listing."
+      },
+      "W7": {
+        "title": "Helper",
+        "text": "Type in plain words, for example “cook in Tashkent”, and it finds matching jobs."
+      },
+      "E1": {
+        "title": "Hello!",
+        "text": "Welcome to Ish topdim. Let's take one minute to get to know the employer buttons."
+      },
+      "E2": {
+        "title": "Dashboard",
+        "text": "Your vacancies, new applications and matching candidates."
+      },
+      "E3": {
+        "title": "My listings",
+        "text": "Your vacancies and the applications for each one."
+      },
+      "E4": {
+        "title": "Post",
+        "text": "A new vacancy — free, in a few minutes."
+      },
+      "E5": {
+        "title": "Workers",
+        "text": "People looking for work. See their number and call, or send a job offer."
+      },
+      "E6": {
+        "title": "Profile",
+        "text": "Stats, applications, saved candidates and settings."
+      },
+      "E7": {
+        "title": "Helper",
+        "text": "Describe who you need in plain words — it finds matching candidates."
+      },
+      "U1": {
+        "title": "Role",
+        "text": "Looking for a job or for a worker — choose here."
+      },
+      "U2": {
+        "title": "Language",
+        "text": "Change the language here."
+      },
+      "U3": {
+        "title": "Log in",
+        "text": "One tap with Telegram, no code needed."
+      },
+      "U4": {
+        "title": "Messages",
+        "text": "Your conversations are here."
+      },
+      "U5": {
+        "title": "The bell",
+        "text": "Find out about new replies and messages here."
+      },
+      "U6": {
+        "title": "All set!",
+        "text": "Enjoy, and good luck!"
+      }
+    }
   }
 }

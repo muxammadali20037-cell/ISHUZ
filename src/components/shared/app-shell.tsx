@@ -22,6 +22,8 @@ export type NavRole = "worker" | "employer" | "guest";
 export type NavMode = "worker" | "employer" | null;
 
 interface NavItem {
+  /** tanishtiruv (features/tour) maqsadi: [data-tour] */
+  tour?: string;
   href: string;
   labelKey: string;
   icon: LucideIcon;
@@ -45,19 +47,20 @@ const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/
  * "Yordamchi" (avval "AI yordamchi", "Barchasi siz uchun") — alohida bo'lim: kompyuterda yon menyu va yuqori menyuda "Bosh sahifa"dan keyin;
  * telefonda — yuqori paneldagi belgi (top-bar) va bosh sahifa menyusida (pastki menyuda joy yo'q: 5 ta katak).
  */
-const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath };
+const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath, tour: "ai" };
 
 /**
  * Mehmon (hisobga kirmagan) ish izlovchi: "Xabarlar" o'rniga "Sohalar" (ega, 2026-11-17: "har bir soha qator bo'lib, eng ko'p
  * ish o'rni bori tepada, tagida nechta ish o'rni; hisobga kirmaganlarga — shunaqa, kirganlarga — o'zgarmasin")
  */
-const FIELDS_NAV: NavItem = { href: "/sohalar", labelKey: "easy.nav.tab_fields", icon: LayoutGrid, match: (p) => p.startsWith("/sohalar") || p.startsWith("/kasblar") };
+const FIELDS_NAV: NavItem = { tour: "fields", href: "/sohalar", labelKey: "easy.nav.tab_fields", icon: LayoutGrid, match: (p) => p.startsWith("/sohalar") || p.startsWith("/kasblar") };
 
 function mainNav(mode: NavMode, guest = false): NavItem[] {
   if (mode === "employer") {
     return [
-      { href: "/", labelKey: "easy.nav.tab_dashboard", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
+      { tour: "dashboard", href: "/", labelKey: "easy.nav.tab_dashboard", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
       {
+        tour: "my-listings",
         href: "/employer/vacancies",
         labelKey: "easy.nav.tab_my_listings",
         icon: BriefcaseBusiness,
@@ -65,12 +68,14 @@ function mainNav(mode: NavMode, guest = false): NavItem[] {
         match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/employer/applications") || p.startsWith("/post/vacancy"),
       },
       {
+        tour: "workers",
         href: "/search?mode=workers&any=1&region=all",
         labelKey: "easy.nav.tab_workers",
         icon: Users,
         match: (p) => p.startsWith("/search") || p.startsWith("/workers") || p.startsWith("/listing") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates"),
       },
       {
+        tour: "profile",
         href: "/cabinet",
         labelKey: "easy.nav.tab_profile",
         icon: User,
@@ -81,21 +86,24 @@ function mainNav(mode: NavMode, guest = false): NavItem[] {
   // 4.0 (ega "MASTER PROMPT", 2026-11-16): Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil. "Saqlanganlar" va
   // "O'zim haqimda e'lon" — Profil (Kabinetim) va bosh sahifa "Bo'limlar" menyusida (o'chirilmadi)
   return [
-    { href: "/", labelKey: "easy.nav.tab_home_page", icon: House, match: (p) => p === "/" || p === "/ai" },
+    { tour: "home", href: "/", labelKey: "easy.nav.tab_home_page", icon: House, match: (p) => p === "/" || p === "/ai" },
     {
+      tour: "jobs",
       href: "/jobs",
       labelKey: "easy.nav.tab_jobs",
       icon: Search,
       match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
     },
     {
+      tour: "employers",
       href: "/companies",
       labelKey: "easy.nav.tab_employers",
       icon: Building2,
       match: (p) => p.startsWith("/companies") || (p.startsWith("/company/") && !p.startsWith("/company/settings") && !p.startsWith("/company/join")),
     },
-    guest ? FIELDS_NAV : { href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
+    guest ? FIELDS_NAV : { tour: "messages", href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
     {
+      tour: "profile",
       href: "/cabinet",
       labelKey: "easy.nav.tab_profile",
       icon: User,
@@ -148,6 +156,7 @@ export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?:
                   href={post.href}
                   aria-current={postActive ? "page" : undefined}
                   data-track="nav_post"
+                  data-tour="post"
                   className="press flex h-full w-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary-ink"
                 >
                   <span className="flex h-8 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground" aria-hidden>
@@ -164,6 +173,7 @@ export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?:
             <li key={item.href} className="min-w-0 flex-1">
               <Link
                 href={item.href}
+                data-tour={item.tour}
                 className={cn("press relative flex h-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary-ink" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
@@ -212,6 +222,7 @@ export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?:
               href={item.href}
               aria-current={active ? "page" : undefined}
               title={t(item.labelKey)}
+              data-tour={item.tour}
               {...(item === AI_NAV ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "top" } : {})}
               className={cn(
                 // 5.0: to'liq yumaloq (pill) tugma — belgi + matn; faol bo'lim och ko'k fonda

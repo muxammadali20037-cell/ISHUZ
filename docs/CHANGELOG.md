@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Birinchi kirgandagi tugmalar tanishtiruvi (`claude/app-tour`)
+
+Ega: "1-chi kirganlarga tugmalar vazifasini tushuntirsin — o'sha tilda; matnlarini tashla, ovozlarini men yozaman".
+
+- `AppTour` (providers): bosh sahifada, xush kelibsiz ekranidan keyin, **har panel uchun bir marta** (`ib_tour` = w/e).
+  Fon xiralashadi, navbatdagi tugma halqa bilan yoritiladi, yonida — nomi va vazifasi, "3 / 11". Tugma pastki yarmida
+  bo'lsa karta ustida, aks holda ostida; boshida va oxirida — o'rtada. "Kerak emas" / "O'tkazib yuborish" / Escape ham
+  eslab qolinadi; `?tour=1` — qayta ko'rsatadi.
+- Qadamlar (`features/tour/steps.ts`): ish izlovchi — salom, rol, Bosh sahifa, Ishlar, Ish beruvchilar, Sohalar / Xabarlar,
+  Profil, Yordamchi, Til, Kirish / qo'ng'iroqcha, yakun; ish beruvchi — Boshqaruv, E'lonlarim, E'lon (+), Ishchilar, Profil, ….
+  Maqsad — `[data-tour]` belgili ko'rinadigan element; ekranda yo'q tugma (mehmonda "Xabarlar") o'tkazib yuboriladi.
+  Telefonda pastki menyu, kompyuterda yuqori menyu.
+- Matnlar 4 tilda (`easy.tour.*`). **Ovoz**: ega yozib beradi — `public/tour/<uz|ru|en>/<kod>.mp3` + `TOUR_AUDIO` ro'yxati;
+  o'zbekcha ovoz lotin va kirill uchun bitta. Ovoz bo'lsa kartada ovozni o'chirish tugmasi chiqadi (tanlov eslab qolinadi).
+- Telegram kanali taklifi tanishtiruv ochiq paytda chiqmaydi — tugagach chiqadi.
+- E2E `tour.spec` (4): mehmon ish izlovchi / ish beruvchi / kirgan ish beruvchi qadamlari ketma-ketligi, yoritish tugma ustida,
+  karta ekranda, bir martalik, Escape, `?tour=1`, ruscha. Boshqa testlarda `ib_tour` "ko'rilgan" (storageState, asGuest).
 ## 2026-11-19 · Ishga tushirishdan oldin ekranlar tekshiruvi (`claude/launch-readiness`)
 
 Ega: "hozir hamma narsa tayyormi — yozuvlar ustiga chiqib ketmaganmi, shriftlar katta bo'lib ko'p joy egallamayaptimi?"

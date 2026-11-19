@@ -1478,5 +1478,99 @@
     "phone": "Telefon",
     "about": "Ish haqida",
     "open_page": "E'lon sahifasini ochish"
+  },
+  "tour": {
+    "label": "Ilova bilan tanishuv",
+    "next": "Keyingi",
+    "back": "Orqaga",
+    "skip": "O'tkazib yuborish",
+    "start": "Boshlash",
+    "later": "Kerak emas",
+    "done": "Tayyor",
+    "step": "{n} / {total}",
+    "sound_on": "Ovozni yoqish",
+    "sound_off": "Ovozni o'chirish",
+    "steps": {
+      "W1": {
+        "title": "Assalomu alaykum!",
+        "text": "Ish topdim'ga xush kelibsiz. Keling, tugmalar bilan bir daqiqada tanishamiz."
+      },
+      "W2": {
+        "title": "Bosh sahifa",
+        "text": "Shu yerdan ish qidirasiz va eng yangi ishlarni ko'rasiz."
+      },
+      "W3": {
+        "title": "Ishlar",
+        "text": "Barcha vakansiyalar shu yerda. Kasb, hudud va maoshni tanlab qidiring."
+      },
+      "W4": {
+        "title": "Ish beruvchilar",
+        "text": "Hozir ishchi qidirayotgan kompaniyalar ro'yxati."
+      },
+      "W5": {
+        "title": "Sohalar",
+        "text": "Ishlar sohalarga bo'lingan: qaysi sohada ish ko'p bo'lsa, o'sha tepada turadi."
+      },
+      "W6": {
+        "title": "Profil",
+        "text": "Arizalaringiz, takliflar, saqlanganlar va o'zingiz haqingizdagi e'lon shu yerda."
+      },
+      "W7": {
+        "title": "Yordamchi",
+        "text": "Oddiy so'z bilan yozing, masalan: «Toshkentda oshpaz». U sizga mos ishlarni topib beradi."
+      },
+      "E1": {
+        "title": "Assalomu alaykum!",
+        "text": "Ish topdim'ga xush kelibsiz. Keling, ish beruvchi tugmalari bilan bir daqiqada tanishamiz."
+      },
+      "E2": {
+        "title": "Boshqaruv",
+        "text": "Vakansiyalaringiz, kelgan arizalar va sizga mos nomzodlar shu yerda."
+      },
+      "E3": {
+        "title": "E'lonlarim",
+        "text": "Joylagan vakansiyalaringiz va har biriga kelgan arizalar."
+      },
+      "E4": {
+        "title": "E'lon",
+        "text": "Yangi vakansiya joylash. Bu bepul va bir necha daqiqa oladi."
+      },
+      "E5": {
+        "title": "Ishchilar",
+        "text": "Ish qidirayotgan odamlar. Raqamini ko'rib qo'ng'iroq qiling yoki ish taklifi yuboring."
+      },
+      "E6": {
+        "title": "Profil",
+        "text": "Statistika, kelgan arizalar, saqlangan nomzodlar va sozlamalar."
+      },
+      "E7": {
+        "title": "Yordamchi",
+        "text": "Kerakli ishchini oddiy so'z bilan yozing. U sizga mos nomzodlarni topib beradi."
+      },
+      "U1": {
+        "title": "Rol",
+        "text": "Ish qidiryapsizmi yoki ishchi qidiryapsizmi — shu yerda tanlaysiz."
+      },
+      "U2": {
+        "title": "Til",
+        "text": "Shu yerda tilni almashtirasiz."
+      },
+      "U3": {
+        "title": "Kirish",
+        "text": "Telegram orqali bir bosishda kirasiz, kod terish shart emas."
+      },
+      "U4": {
+        "title": "Xabarlar",
+        "text": "Yozishmalaringiz shu yerda."
+      },
+      "U5": {
+        "title": "Qo'ng'iroqcha",
+        "text": "Yangi javoblar va xabarlar haqida shu yerda bilib turasiz."
+      },
+      "U6": {
+        "title": "Tayyor!",
+        "text": "Endi bemalol foydalaning. Omad!"
+      }
+    }
   }
 }

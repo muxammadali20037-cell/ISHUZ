@@ -11,12 +11,13 @@ export const AUTH_HANDOFF_EVENT = "ishuz:auth-handoff";
  * "Kirish": kirgandan keyin aynan shu sahifaga (qadam bilan) qaytariladi. JS bo'lmasa — oddiy /auth.
  * Mehmon e'lon formasini to'ldirib turgan bo'lsa, javoblari ham kirgan hisobga o'tadi (avval yo'qolardi).
  */
-export function LoginLink({ className, children }: { className?: string; children: ReactNode }) {
+export function LoginLink({ className, children, "data-tour": tour }: { className?: string; children: ReactNode; "data-tour"?: string }) {
   const router = useRouter();
   return (
     <Link
       href="/auth"
       className={className}
+      data-tour={tour}
       onClick={(e) => {
         const here = `${window.location.pathname}${window.location.search}`;
         if (here === "/" || here.startsWith("/auth")) return;
