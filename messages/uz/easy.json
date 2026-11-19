@@ -1467,5 +1467,14 @@
     "field_vacancy": "E'londagi telefon raqam",
     "field_worker": "E'londagi telefon raqam",
     "hint": "Raqamni qo'lda yozing — e'londa aynan shu raqam ko'rinadi."
+  },
+  "aicard": {
+    "open": "E'lonni to'liq ko'rish",
+    "close": "Yopish",
+    "loading": "Yuklanmoqda…",
+    "load_error": "Ma'lumotni yuklab bo'lmadi.",
+    "phone": "Telefon",
+    "about": "Ish haqida",
+    "open_page": "E'lon sahifasini ochish"
   }
 }

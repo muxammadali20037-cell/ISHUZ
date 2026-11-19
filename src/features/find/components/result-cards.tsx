@@ -122,7 +122,7 @@ export function CallBlock({ phone, className }: { phone: string; className?: str
 }
 
 /** "Bugun" / "Kecha" / "12-oktabr" — Toshkent vaqti bo'yicha (kartadagi e'lon sanasi) */
-function usePosted() {
+export function usePosted() {
   const { t, locale } = useT();
   return (iso: string | null | undefined) => {
     if (!iso) return null;
@@ -197,7 +197,7 @@ function CardAction({ phone, action }: { phone: string | null; action: { href: s
 }
 
 /** Kompaniya belgisi: haqiqiy logotip bo'lmasa — bosh harf (neytral), soxta logotip yo'q */
-function OrgMark({ name }: { name: string }) {
+export function OrgMark({ name }: { name: string }) {
   return (
     <span className="flex size-5 shrink-0 items-center justify-center rounded-md bg-secondary text-2xs font-bold uppercase text-foreground/70 sm:size-6 sm:text-xs" aria-hidden>
       {name.trim().slice(0, 1)}

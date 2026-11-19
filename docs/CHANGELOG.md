@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Yordamchi kartasi: alohida rangda, "E'lonni to'liq ko'rish" — telefongacha (`claude/assistant-job-card`)
+
+Ega (skrinshot bilan): "1 ta ish topildi — tartib bilan, rangli, alohida rangda, ichida telefonigacha ko'rinsin; sodda va
+chiroyli; nomi tagida yashil «E'lonni to'liq ko'rish» — bosilsa hamma ma'lumot tartib bilan".
+
+- Yordamchi javobida o'z kartalari (`ai-cards.tsx`): och rangli fon, lavozim · qizil "Hozir ishchi qidirmoqda" · maosh ·
+  ish beruvchi · hudud (to'liq, kesilmaydi) → yashil **"E'lonni to'liq ko'rish"**. Bosilganda shu kartaning ichida qatorma-qator
+  (rangli belgilar bilan): manzil (+ xarita), ish grafigi, tajriba, bandlik turi · shakli, (ma'lumot, yosh/jins), joylangan sana,
+  "Ish haqida" (to'liq matn), qulayliklar, **telefon** (katta "Qo'ng'iroq qilish" + raqam, ikkalasi `tel:`), "Ariza yuborish",
+  "E'lon sahifasini ochish". Ishchi kartasi ham shunday (hudud, tajriba, maosh, o'zi haqida, telefon).
+- Telefon faqat bosilganda ochiladi — limitlar o'sha-o'sha (mehmon — IP, kirgan — 0074). Server amallari `openVacancyCard`
+  (sahifadagi ochiq maydonlar + raqam), `openWorkerCard` (raqam). `RevealPhone` — `initial` natija va kirgan foydalanuvchiga
+  "Kirish" tugmasisiz (`loginHref = null`).
+- "1 ta ish topildi" — yashil belgili yorliq.
+- E2E (`assistant-chat`): yopiq kartada raqam yo'q; ochilganda tavsif, qatorlar, ikki `tel:` havola va ariza havolasi.
+
 ## 2026-11-19 · Ish taklifi: vakansiya tanlanmaydi — "Qanday vakansiya taklif qilmoqchisiz?" (`claude/offer-free-title`)
 
 Ega (skrinshot bilan): "taklif yuborishda o'z joylagan e'loni bo'yicha yuboryapti — uni tanlamasin… «Qanday vakansiya taklif
