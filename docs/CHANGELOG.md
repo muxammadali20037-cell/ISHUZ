@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Tanishtiruvga o'zbekcha ovoz (`claude/tour-voice`)
+
+Ega ElevenLabs'da ("Farruh — Confident") 20 qatorni bitta faylda yozdirib yubordi. Pauzalar bo'yicha bo'lindi: qatorlar orasidagi
+pauza 0,33–0,40 s, gaplar orasidagi 0,2–0,3 s; kesish joylari matn uzunligiga moslab tanlandi (dinamik moslash), E1/E2 chegarasi
+W1 bilan taqqoslab tuzatildi. Tekshiruv: bir xil boshlanadigan qatorlar ovoz konverti o'xshashligi — W1/E1 0,97, W7/E7 0,90,
+W6/E6 0,77 (bog'liq bo'lmagan juftlik — 0,14). Fayllar: `public/tour/uz/<kod>.mp3` (mono, 64 kbit/s, jami 788 KB), boshi va
+oxiridagi jimlik qirqilgan. `TOUR_AUDIO.uz` — 20 kod; kirill o'zbekcha ham shu ovozni ishlatadi. Ruscha va inglizcha — hali
+matn bilan. Testlar: unit (har qadam uchun fayl mavjud), E2E (ovozni o'chirish tugmasi, "Boshlash"dan keyin ovoz yuklanadi,
+ruscha — ovozsiz).
+
 ## 2026-11-19 · Birinchi kirgandagi tugmalar tanishtiruvi (`claude/app-tour`)
 
 Ega: "1-chi kirganlarga tugmalar vazifasini tushuntirsin — o'sha tilda; matnlarini tashla, ovozlarini men yozaman".

@@ -56,7 +56,11 @@ test("mehmon ish izlovchi: salom → rol → pastki menyu → yordamchi, til, ki
   await expect(card(page)).toContainText("Assalomu alaykum!");
   await expect(card(page).getByRole("button", { name: "Kerak emas" })).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
+  // o'zbekcha ovoz bor (ega yozdirgan): ovozni o'chirish tugmasi; "Boshlash"dan keyin navbatdagi qadam ovozi yuklanadi
+  await expect(card(page).getByRole("button", { name: "Ovozni o'chirish" })).toBeVisible();
+  const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/U1.mp3"));
   const codes = await walk(page);
+  expect([200, 206]).toContain((await voice).status());
   // mehmonda "Xabarlar" va qo'ng'iroqcha yo'q — o'tkazib yuboriladi; "Sohalar" va "Kirish" bor
   expect(codes).toEqual(["W1", "U1", "W2", "W3", "W4", "W5", "W6", "W7", "U2", "U3", "U6"]);
   expect(await tourCookie(page)).toContain("w");
@@ -113,6 +117,8 @@ test("rus tilida — matnlar ruscha", async ({ page, context }) => {
   await context.addCookies([{ name: "ishuz_locale", value: "ru", domain: new URL(stack.app).hostname, path: "/" }]);
   await page.goto("/");
   await expect(card(page)).toContainText("Здравствуйте!");
+  // ruscha ovoz hali yo'q — tugma ham, so'rov ham yo'q
+  await expect(card(page).getByRole("button", { name: /звук/ })).toHaveCount(0);
   await card(page).getByRole("button", { name: "Начать" }).click();
   await expect(card(page)).toContainText("Роль");
 });
