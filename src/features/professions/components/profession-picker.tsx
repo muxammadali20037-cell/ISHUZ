@@ -6,6 +6,7 @@ import { Check, ChevronLeft, ChevronRight, Clock, Loader2, Search, Sparkles, X }
 import { useT } from "@/lib/i18n/client";
 import type { Category } from "@/lib/reference";
 import { cn } from "@/lib/utils";
+import { softHyphenate } from "@/lib/hyphenate";
 import { Input } from "@/components/ui/input";
 import { ambiguousTerm } from "../ambiguous";
 import { CategoryIcon } from "@/components/shared/category-icon";
@@ -379,13 +380,15 @@ export function ProfessionPicker({
                     key={c.id}
                     type="button"
                     onClick={() => openSector(c.id)}
+                    aria-label={name(c)}
                     className="flex min-h-[112px] flex-col items-start justify-between gap-3 rounded-2xl border border-border bg-card p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md active:scale-[0.98]"
                   >
                     <span className={cn("flex size-12 items-center justify-center rounded-2xl", TINT_TILE[tintAt(i)])}>
                       <CategoryIcon name={c.icon} className="size-6" />
                     </span>
-                    {/* uzun so'z (telekommunikatsiya, программирование) plitkadan chiqmasin: kenglik — plitka, so'z kerak bo'lsa bo'linadi */}
-                    <span className="max-w-full text-md font-semibold leading-snug [overflow-wrap:anywhere]">{name(c)}</span>
+                    {/* uzun so'z (telekommunikatsiya, программирование) plitkadan chiqmasin: bo'g'in bo'yicha "-" bilan bo'linadi (softHyphenate);
+                        tugma nomi (aria-label) — belgilarsiz asl nom */}
+                    <span className="max-w-full text-md font-semibold leading-snug [overflow-wrap:anywhere]">{softHyphenate(name(c))}</span>
                   </button>
                 ))}
               </div>

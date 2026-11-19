@@ -30,7 +30,7 @@ export default async function MyListingsPage() {
     <Shell>
       <div className="container-narrow space-y-4 py-6 text-lg sm:py-8" data-my-listings-page>
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight">{t("easy.home2.my_listings")}</h1>
+          <h1 className="text-page font-extrabold tracking-tight sm:text-page-lg">{t("easy.home2.my_listings")}</h1>
           <p className="mt-1 text-base text-muted-foreground">{t("easy.cabinet.page_sub")}</p>
         </div>
         <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} masters={masters} />

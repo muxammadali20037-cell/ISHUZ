@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-19 · Ishga tushirishdan oldin ekranlar tekshiruvi (`claude/launch-readiness`)
+
+Ega: "hozir hamma narsa tayyormi — yozuvlar ustiga chiqib ketmaganmi, shriftlar katta bo'lib ko'p joy egallamayaptimi?"
+23 ta asosiy ekran (mehmon / ish izlovchi / ish beruvchi) × 4 til, 360 px: gorizontal siljish, ekrandan chiqqan va kesilgan
+matn — yo'q. Topilgan va tuzatilgan:
+
+- **Rus tilida "Откликнуться" tugmasi karta chetidan chiqib ketardi** (qizil holat va tugma joy talashardi): holatga faqat
+  qolgan joy (`flex-1`), tugma doim to'liq.
+- **"Ishlar" ro'yxati kartalarida qizil "Hozir ishchi qidirmoqda" yo'q edi** (bosh sahifada bor) — `VacancyCard`ga qo'shildi.
+- **Sahifa sarlavhalari telefonda 30 px** (Profil, Ish beruvchilar, Sohalar, Saqlanganlar, …), "Xabarlar" esa 26 px —
+  hammasi `text-page` (26 px) / kompyuterda 30 px. Vakansiya nomi telefonda 24 → 20 px (uzun nom 4 qatorni egallamasin).
+- **Soha plitkalarida uzun so'z harf o'rtasidan bo'linardi** ("программирова / ние"): `softHyphenate()` — bo'g'in bo'yicha
+  yashirin belgilar ("прог-рам-ми-…"), tugma nomi asl matn (`aria-label`); unit test.
+
 ## 2026-11-19 · Yordamchi: topilganlar yashirin — "Ko'rish" (ko'z) bilan ochiladi (`claude/assistant-results-toggle`)
 
 Ega (skrinshot bilan): "2 ta ish topildi yoniga «Ko'rish» ko'z bilan — ichiga yashirib qo'y, bossa e'lonlar ko'rinsin".

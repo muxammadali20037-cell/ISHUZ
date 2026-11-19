@@ -32,7 +32,7 @@ export default async function Page() {
     return (
       <Shell>
         <div className="container-narrow space-y-4 py-8 text-lg">
-          <h1 className="text-3xl font-extrabold">{t("easy.verification.title")}</h1>
+          <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.verification.title")}</h1>
           <p className="text-muted-foreground">{t("easy.verification.no_employer")}</p>
           <Button asChild size="xl" className="h-14 w-full text-lg">
             <Link href="/post/vacancy">{t("easy.home.employer_cta")}</Link>
@@ -50,7 +50,7 @@ export default async function Page() {
     <Shell>
       <div className="container-narrow space-y-6 py-6 text-lg sm:py-8">
         <div>
-          <h1 className="text-3xl font-extrabold">{t("easy.verification.title")}</h1>
+          <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.verification.title")}</h1>
           <p className="mt-2 text-muted-foreground">{t("easy.verification.intro")}</p>
         </div>
         <div className="space-y-3 rounded-2xl border-2 border-border bg-card p-5">

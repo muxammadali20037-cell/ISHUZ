@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MatchScore } from "./match-score";
 import { SalaryText } from "./salary-text";
+import { LiveStatus } from "@/features/find/components/result-cards";
 
 /** search_vacancies RPC qatori bilan mos (kerakli maydonlar) */
 export interface VacancyCardData {
@@ -88,6 +89,8 @@ export function VacancyCard({
             {v.company_name ?? t("common.role.employer")}
             {v.company_verified ? <BadgeCheck className="size-4 shrink-0 text-primary-ink" aria-label={t("common.labels.verified")} /> : null}
           </p>
+          {/* qizil "Hozir ishchi qidirmoqda" (ega, 2026-11-18/19) — bu kartalarda faqat faol vakansiyalar */}
+          <LiveStatus kind="hiring" wrap className="mt-1 text-sub" />
           {v.is_government ? (
             <Badge variant="primary" size="sm" className="mt-1 gap-1">
               <Landmark className="size-3.5" /> {t("jobs.government.badge")}

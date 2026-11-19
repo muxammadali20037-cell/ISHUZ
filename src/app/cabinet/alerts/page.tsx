@@ -33,7 +33,7 @@ export default async function Page() {
     <Shell>
       <div className="container-narrow space-y-6 py-6 text-lg sm:py-8">
         <div>
-          <h1 className="text-3xl font-extrabold">{t("easy.alerts.title")}</h1>
+          <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.alerts.title")}</h1>
           <p className="mt-2 text-muted-foreground">{t("easy.alerts.intro")}</p>
         </div>
         {showWorker ? <AlertSettings sub={subs.worker} regions={regionOptions} profession={profession} vacancies={[]} /> : null}

@@ -340,7 +340,7 @@ export function JobResultCard({
         {job.is_featured ? <span className="shrink-0 rounded bg-highlight px-1.5 py-0.5 text-xs font-bold text-highlight-foreground">{t("easy.card.featured")}</span> : null}
         {/* qizil "Hozir ishchi qidirmoqda" (ega, 2026-11-18) — amal tugmasi yonida, uning balandligida (karta o'smaydi:
             390×844 da 3 ta karta to'liq). Tor ekranda kesilmaydi — ikki qatorga o'tadi. Kartalarda faqat faol vakansiyalar. */}
-        <LiveStatus kind="hiring" wrap className="min-w-0 text-sub" />
+        <LiveStatus kind="hiring" wrap className="min-w-0 flex-1 text-sub" />
         <span className="ml-auto flex min-w-0 items-center gap-2">
           {applied ? (
             <>

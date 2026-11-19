@@ -208,7 +208,7 @@ export async function VacancyDetail({
                     </Link>
                   ) : null}
                 </p>
-                <h1 className="mt-0.5 break-words text-2xl font-bold leading-tight sm:text-3xl">{v.title}</h1>
+                <h1 className="mt-0.5 break-words text-xl font-bold leading-tight sm:text-3xl">{v.title}</h1>
                 {/* ega (2026-11-18): "Hozir ishchi qidirmoqda" — qizil qalin, faqat faol (muddati o'tmagan) e'londa */}
                 {status === "active" ? <LiveStatus kind="hiring" className="mt-1.5 text-base" /> : null}
                 {v.category ? (

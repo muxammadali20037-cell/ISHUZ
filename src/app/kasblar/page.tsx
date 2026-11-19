@@ -39,7 +39,7 @@ export default async function CatalogPage() {
     <Shell footer={<SiteFooter />}>
       <div className="container-wide py-8 sm:py-12">
         <header className="max-w-2xl">
-          <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">{t("welcome.catalog.page_title")}</h1>
+          <h1 className="text-page font-semibold tracking-tight sm:text-page-lg">{t("welcome.catalog.page_title")}</h1>
           <p className="mt-2 text-lg leading-relaxed text-muted-foreground">{t("welcome.catalog.page_subtitle")}</p>
         </header>
 
