@@ -68,7 +68,7 @@ export default async function CompaniesPage({ searchParams }: { searchParams: Se
     <Shell>
       <div className="container-wide py-6 sm:py-10">
         <header className="max-w-2xl">
-          <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">{t("welcome.companies.title")}</h1>
+          <h1 className="text-page font-extrabold tracking-tight sm:text-page-lg">{t("welcome.companies.title")}</h1>
           <p className="mt-2 text-lg text-muted-foreground">{t("welcome.companies.lead")}</p>
         </header>
 

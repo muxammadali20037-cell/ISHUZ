@@ -36,7 +36,7 @@ export default async function BillingPage() {
     <Shell>
       <div className="container-narrow space-y-6 py-5 sm:py-8">
         <div>
-          <h1 className="text-3xl font-extrabold">{t("billing.wallet.title")}</h1>
+          <h1 className="text-page font-extrabold sm:text-page-lg">{t("billing.wallet.title")}</h1>
           <p className="mt-1 text-lg text-muted-foreground">{t("billing.wallet.subtitle")}</p>
         </div>
 

@@ -29,7 +29,7 @@ export default async function FieldsPage() {
   return (
     <Shell>
       <div className="container-narrow py-5 sm:py-8">
-        <h1 className="text-3xl font-extrabold tracking-tight">{t("easy.sohalar.title")}</h1>
+        <h1 className="text-page font-extrabold tracking-tight sm:text-page-lg">{t("easy.sohalar.title")}</h1>
         <p className="mt-1 text-base text-muted-foreground">{t("easy.sohalar.subtitle")}</p>
         {counts ? null : (
           <p className="mt-3 rounded-xl border border-warning/40 bg-warning-soft px-4 py-3 text-sm" role="status">

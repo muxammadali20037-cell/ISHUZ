@@ -30,7 +30,7 @@ export default async function SavedPage() {
   if (!session) {
     return (
       <div className="container-narrow space-y-5 py-8 text-lg">
-        <h1 className="text-3xl font-extrabold">{t("easy.saved.page_title")}</h1>
+        <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.saved.page_title")}</h1>
         <div className="space-y-4 rounded-2xl border border-border bg-card p-6">
           <span className="flex size-12 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
             <Bookmark className="size-7" />
@@ -71,7 +71,7 @@ export default async function SavedPage() {
   return (
     <div className="container-wide space-y-6 py-5 sm:py-8">
       <div>
-        <h1 className="text-3xl font-extrabold">{t("easy.saved.page_title")}</h1>
+        <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.saved.page_title")}</h1>
         {count ? <p className="mt-1 text-lg text-muted-foreground">{worker ? t("easy.saved.jobs_count", { count }) : t("easy.saved.workers_count", { count })}</p> : null}
       </div>
 

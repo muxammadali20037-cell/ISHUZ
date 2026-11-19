@@ -23,7 +23,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
   if (!session) {
     return (
       <div className="container-narrow space-y-5 py-8 text-lg">
-        <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
+        <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.cabinet.title")}</h1>
         <div className="space-y-4 rounded-2xl border border-border bg-card p-6">
           <h2 className="text-2xl font-bold">{t("easy.cabinet.guest_title")}</h2>
           <p className="text-muted-foreground">{t("easy.cabinet.guest_desc")}</p>
@@ -63,7 +63,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     // ustalar — olib tashla; qator soddalashtir"): rolni almashtirish, profil kartasi, e'lonlarim, PRO kuzatuv va bitta ro'yxat.
     // E'lon joylash — bosh sahifadagi katta tugma; Yordamchi va Universal ustalar — bosh sahifa bo'limlarida
     <div className="container-narrow space-y-4 py-6 text-lg sm:py-8">
-      <h1 className="text-3xl font-extrabold">{t("easy.cabinet.title")}</h1>
+      <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.cabinet.title")}</h1>
       <RoleSwitchRow
         tone="primary"
         target={roleTarget}

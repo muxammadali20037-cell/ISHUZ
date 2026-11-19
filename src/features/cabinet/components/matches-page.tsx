@@ -32,7 +32,7 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
   return (
     <div className="container-narrow space-y-8 py-6 text-lg sm:py-8">
       <div>
-        <h1 className="text-3xl font-extrabold">{t("easy.matches.title")}</h1>
+        <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.matches.title")}</h1>
         <p className="mt-2 flex items-start gap-2 rounded-2xl bg-secondary p-3 text-base text-muted-foreground">
           <Info className="mt-0.5 size-5 shrink-0" aria-hidden /> {t("easy.matches.explain", { threshold })}
         </p>
