@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asMode, loginAs, sql, stack } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql, stack } from "../support";
 
 /**
  * Soddalashtirish (2026-11-15, ega: "telefonda kirganda kategoriyalar chiqsin — chap menyudagidek, har birining ostida kichik
@@ -17,8 +17,10 @@ test.beforeEach(async () => {
   );
 });
 
-test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz), eng tagida rol almashtirish; yangi ishlar yig'ilgan", async ({ page, context }) => {
-  await loginAs(context, USERS.workerA);
+// 2026-11-20 (ega: "kirgandan keyin chatga kirsin"): kirgan foydalanuvchining "/" — chat (/chat); bo'limlar menyusi endi mehmon
+// bosh sahifasida (kirganniki — rol almashtirish, "E'lonlarim" va "Yangi ishlar" qatorlari bilan — ochilmaydi)
+test("mehmon (ish izlovchi), telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz)", async ({ page, context }) => {
+  await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
   const menu = page.locator("[data-home-menu]");
@@ -50,11 +52,8 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz), 
   for (const key of order) {
     await expect(menu.locator(`[data-menu-item="${key}"]`)).toBeVisible();
   }
-  // eng tagida — "Ish beruvchiga o'tish" (2026-11-17: rangsiz — qizil emas)
-  const sw = menu.locator("[data-role-switch]");
-  await expect(sw).toHaveText(/Ish beruvchiga o'tish/);
-  await expect(menu.locator(":scope > *").last()).toHaveAttribute("data-role-switch", "employer");
-  await expect(sw).not.toHaveClass(/text-destructive/);
+  // mehmonda rol almashtirish menyuda yo'q (u — kirgan foydalanuvchining Profilida)
+  await expect(menu.locator("[data-role-switch]")).toHaveCount(0);
   // bosh menyu rangsiz (ega, 2026-11-17: "ranglar umuman yoqmayapti"): boshqa belgi va nomlar bir xil rangda, "yangi" nuqtalari
   // yo'q; faqat Universal ustalar — ko'k (ega: "faqat ustalarni ko'k rang bilan ajratib qo'y")
   const others = menu.locator("[data-menu-item]:not([data-menu-item='masters'])");
@@ -75,52 +74,34 @@ test("ish izlovchi, telefon: bosh sahifada bo'limlar menyusi (izohli, rangsiz), 
   expect(await masters.locator("span.font-bold").evaluate((e) => getComputedStyle(e).color)).toBe(blue);
   expect(labelColors[0]).not.toBe(blue);
   await expect(menu.locator("[data-new-dot]")).toHaveCount(0);
-  // menyu sahifadagi oxirgi bo'lim (rol almashtirish eng tagida — "E'lonlarim" va "Yangi ishlar" undan oldin)
-  const mine = page.locator('main [data-home-row="my-listings"]');
-  const fresh = page.locator('main [data-home-row="new-jobs"]');
-  expect((await sw.boundingBox())!.y).toBeGreaterThan((await fresh.boundingBox())!.y);
-  // ega (2026-11-17): "yangi ishlarni bossa — yangi joylangan e'lonlar ichiga kirsin, o'sha oynada ochilmasin; tepasida e'lonlarim
-  // tursin — bossa o'zi joylagan e'lonlar ichiga kirsin, holatini ko'rsin". Ikkalasi ham qator-havola, rangsiz
-  expect((await mine.boundingBox())!.y).toBeLessThan((await fresh.boundingBox())!.y);
-  await expect(mine).toContainText("E'lonlarim");
-  await expect(mine).toHaveAttribute("href", "/cabinet/elonlar");
-  await expect(fresh).toContainText("Yangi ishlar");
-  await expect(fresh).toHaveAttribute("href", /^\/jobs\?sort=newest/);
-  await expect(page.locator("[data-fold-toggle]")).toHaveCount(0);
-  await mine.click();
-  await page.waitForURL(/\/cabinet\/elonlar$/);
-  await expect(page.getByRole("heading", { level: 1, name: "E'lonlarim" })).toBeVisible();
-  await page.goBack();
-  await expect(page.locator("[data-home-menu]")).toBeVisible();
-  // pastki qism ixcham: katta havolalar ro'yxati yo'q, huquqiy havolalar bor
+  // pastki qismda huquqiy havolalar bor (mehmonda — to'liq footer)
   const footer = page.getByRole("contentinfo");
-  await expect(footer.getByText("Ish izlovchilarga", { exact: true })).toBeHidden();
   await expect(footer.getByRole("link", { name: "Foydalanish shartlari" })).toBeVisible();
   // gorizontal toshish yo'q
   expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(0);
 });
 
-test("rol almashtirish — bir bosishda: ish izlovchi → ish beruvchi va qaytib (bosh sahifa o'sha rolda ochiladi)", async ({ page, context }) => {
+test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi va qaytib (asosiy ekran — chat — o'sha rolda)", async ({ page, context }) => {
   const role = async (id: string) => (await sql<{ active_role: string | null }>("select active_role from public.profiles where id = $1", [id]))[0]!.active_role;
   const beforeA = await role(USERS.workerA);
   const beforeE = await role(USERS.employer);
   try {
     await loginAs(context, USERS.workerA);
     await asMode(context, "worker");
-    await page.goto("/");
-    await page.locator("[data-home-menu] [data-role-switch]").click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+    await page.goto("/cabinet");
+    await page.locator("main [data-role-switch]").click();
+    await page.waitForURL(/\/chat$/);
+    await expect(page.getByPlaceholder("Kim kerak: kasb, tuman…")).toBeVisible();
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
     expect(await role(USERS.workerA)).toBe("employer");
 
     await loginAs(context, USERS.employer);
     await asMode(context, "employer");
-    await page.goto("/");
-    const menu = page.locator("[data-home-menu]");
-    await expect(menu.locator('[data-menu-item="exp"]')).toContainText("Tajribali ishchi");
-    await expect(menu.locator("[data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
-    await menu.locator("[data-role-switch]").click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+    await page.goto("/cabinet");
+    await expect(page.locator("main [data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
+    await page.locator("main [data-role-switch]").click();
+    await page.waitForURL(/\/chat$/);
+    await expect(page.getByPlaceholder("Kasb, tuman, maosh…")).toBeVisible();
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
   } finally {
     await sql("update public.profiles set active_role = $2 where id = $1", [USERS.workerA, beforeA]);
@@ -128,34 +109,31 @@ test("rol almashtirish — bir bosishda: ish izlovchi → ish beruvchi va qaytib
   }
 });
 
-test("ish beruvchi, telefon: raqamlar va menyu; uzun ro'yxatlar telefonda yo'q (kompyuterda bor)", async ({ page, context, browser }) => {
+test("ish beruvchi paneli (/employer), telefon: haqiqiy raqamlar; kompyuterda yon menyu — chat birinchi", async ({ page, context, browser }) => {
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
-  await page.goto("/");
-  await expect(page.locator("[data-home-menu]")).toBeVisible();
+  // 2026-11-20: "/" — chat; panel o'z manzilida (Profil bo'limi ichida)
+  await page.goto("/employer");
   // qisqa ko'rsatkichlar (haqiqiy raqamlar) — telefonda ham bor
   await expect(page.getByRole("group", { name: "Qisqa ko'rsatkichlar" })).toBeVisible();
-  // vakansiya joylash — katta tugma, izohsiz
-  await expect(page.getByRole("link", { name: "Vakansiya joylash" }).first()).toBeVisible();
 
   const desk = await browser.newContext({ baseURL: stack.app, viewport: { width: 1280, height: 900 } });
   await loginAs(desk, USERS.employer);
   await asMode(desk, "employer");
   const p = await desk.newPage();
-  await p.goto("/");
-  // kompyuterda — chap yon menyu bor, bosh sahifa menyusi yo'q
-  await expect(p.locator("[data-home-menu]")).toBeHidden();
-  await expect(p.locator("aside").getByRole("link", { name: /^Yordamchi/ })).toBeVisible();
+  await p.goto("/employer");
+  // kompyuterda — chap yon menyu: birinchi — chat ("Izlash/E'lon")
+  await expect(p.locator("aside").getByRole("link").filter({ hasText: "Izlash/E'lon" })).toBeVisible();
+  await expect(p.locator("aside").getByRole("link", { name: /^Yordamchi/ })).toHaveCount(0);
   await desk.close();
 });
 
-test("kompyuterda yangi ishlar ochiq (yig'ish tugmasi yo'q)", async ({ browser }) => {
+test("kompyuterda (mehmon bosh sahifasi) yangi ishlar ochiq (yig'ish tugmasi yo'q)", async ({ browser }) => {
   const desk = await browser.newContext({ baseURL: stack.app, viewport: { width: 1280, height: 900 } });
-  await loginAs(desk, USERS.workerA);
+  await asGuest(desk);
   await asMode(desk, "worker");
   const p = await desk.newPage();
   await p.goto("/");
-  await expect(p.locator("[data-home-menu]")).toBeHidden();
   await expect(p.locator('[data-home-row="new-jobs"]')).toBeHidden();
   await expect(p.locator("#home-feed")).toBeVisible();
   await desk.close();

@@ -73,9 +73,10 @@ export function AppTour() {
   const titleId = useId();
   const hasAudio = !!TOUR_AUDIO[locale === "oz" ? "uz" : (locale as "uz" | "ru" | "en")]?.length;
 
-  // boshlash: bosh sahifa, xush kelibsiz ekrani o'tilgan, shu panel uchun hali ko'rilmagan (yoki ?tour=1)
+  // boshlash: asosiy ekran (mehmonda "/", kirganda — chat "/chat", 2026-11-20), xush kelibsiz ekrani o'tilgan, shu panel uchun
+  // hali ko'rilmagan (yoki ?tour=1). Ekranda yo'q tugmaning qadami o'tkazib yuboriladi
   useEffect(() => {
-    if (pathname !== "/") return;
+    if (pathname !== "/" && pathname !== "/chat") return;
     const forced = new URLSearchParams(window.location.search).get("tour") === "1";
     if (!forced && (!readCookie("ib_intro") || tourSeen(readCookie(TOUR_COOKIE), panel))) return;
     let tries = 0;

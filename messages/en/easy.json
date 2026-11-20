@@ -1601,6 +1601,8 @@
     "post_worker_hint": "An ad about myself",
     "post_vacancy": "I need a worker",
     "post_vacancy_hint": "A job vacancy ad",
-    "type_hint": "Or type below, for example: «driver in Tashkent»"
+    "type_hint": "Or type below, for example: «driver in Tashkent»",
+    "find_masters": "A tradesperson",
+    "find_masters_hint": "Plumber, electrician, AC technician and more"
   }
 }

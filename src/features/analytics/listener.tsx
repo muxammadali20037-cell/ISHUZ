@@ -11,7 +11,8 @@ import { track } from "./client";
 export function AnalyticsListener() {
   const pathname = usePathname();
   useEffect(() => {
-    if (pathname === "/") track("home_view");
+    // asosiy ekran: mehmonda "/", kirganda — chat ("/" o'zi /chat ga olib boradi, 2026-11-20) — voronka boshi ikkalasida
+    if (pathname === "/" || pathname === "/chat") track("home_view");
   }, [pathname]);
   useEffect(() => {
     const onClick = (e: MouseEvent) => {

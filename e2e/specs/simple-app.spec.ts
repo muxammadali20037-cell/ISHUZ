@@ -87,6 +87,8 @@ test("Izlash → Ish: shu suhbatda so'rovnoma, keyin bazadagi haqiqiy e'lonlar",
   await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
   await chat.locator("[data-chat-choice='find']").click();
   await expect(chat).toContainText("Nimani izlaysiz?");
+  // ustalar (santexnik, elektrik…) — pastki menyuda yo'q, shu yerdan
+  await expect(chat.locator("[data-chat-choice='find_masters']")).toHaveAttribute("href", "/ustalar");
   await chat.locator("[data-chat-choice='find_jobs']").click();
   await expect(chat.locator("[data-ai-you]").last()).toHaveText(/Ish qidiryapman/);
   const sheet = page.getByRole("dialog", { name: "Ish qidirish" });
@@ -111,7 +113,7 @@ test("E'lon berish → «Men ish izlayapman» — o'zi haqida e'lon (yordamchi),
   expect(p!.active_role).toBe("worker");
 });
 
-test("E'lon berish → «Menga ishchi kerak» — vakansiya formasi darhol (ish izlovchi rejimida ham to'siqsiz)", async ({ page, context }) => {
+test("E'lon berish → «Menga ishchi kerak» — yordamchi bilan vakansiya darhol (ish izlovchi rejimida ham to'siqsiz)", async ({ page, context }) => {
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
   await page.goto("/chat");
@@ -119,9 +121,11 @@ test("E'lon berish → «Menga ishchi kerak» — vakansiya formasi darhol (ish 
   await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
   await chat.locator("[data-chat-choice='post']").click();
   await chat.locator("[data-chat-choice='post_vacancy']").click();
-  await expect(page).toHaveURL(/\/post\/vacancy/);
+  // yordamchi bilan vakansiya (bir gap, keyin savollar bittadan)
+  await expect(page).toHaveURL(/\/post\/vacancy\?ai=1$/);
   await expect(page.locator("#mode-gate-title")).toHaveCount(0);
-  await expect(page.getByText("Qanday mutaxassis kerak?")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+  await expect(page.locator("[data-vacancy-guide]")).toBeVisible();
 });
 
 test("«Ishchilar» bo'limi ish izlovchiga ham to'siqsiz ochiladi va belgilanadi", async ({ page, context }) => {

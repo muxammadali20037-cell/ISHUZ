@@ -12,6 +12,7 @@ const menuKeys = (page: Page) =>
   page.locator("[data-home-menu] [data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")));
 const menuItem = (page: Page, key: string) => page.locator(`[data-home-menu] [data-menu-item="${key}"]`);
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
+const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
   await asGuest(context);
@@ -39,14 +40,13 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   // "+ E'lon joylash" — yordamchi bilan (2026-11-17)
   await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
-  // pastki menyu (4.0): Bosh sahifa · Ishlar · Ish beruvchilar · Sohalar · Profil (2026-11-18: "Arizalar" o'rnida) — mehmonda "Xabarlar" o'rnida "Sohalar"
-  // (ega, 2026-11-17; kirganlarda "Xabarlar" o'z joyida)
+  // pastki menyu (2026-11-20, ega): hamma uchun bir xil — Ishchilar · Ishlar · Izlash/E'lon · E'lonlarim · Profil
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
-  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("href", "/");
+  await expect(nav.getByRole("link")).toHaveText(TABS);
+  await expect(nav.getByRole("link", { name: "Ishchilar" })).toHaveAttribute("href", "/search?mode=workers&any=1&region=all");
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/jobs");
-  await expect(nav.getByRole("link", { name: "Sohalar" })).toHaveAttribute("href", "/sohalar");
-  await expect(nav.getByRole("link", { name: "Ish beruvchilar" })).toHaveAttribute("href", "/companies");
+  await expect(nav.getByRole("link", { name: "Izlash/E'lon" })).toHaveAttribute("href", "/chat");
+  await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("href", "/cabinet/elonlar");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 });
@@ -73,9 +73,8 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
-  // ish beruvchi menyusi (2026-11-18): Boshqaruv · E'lonlarim · E'lon · Ishchilar · Profil
-  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(["Boshqaruv", "E'lonlarim", "E'lon", "Ishchilar", "Profil"]);
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "E'lon", exact: true })).toHaveAttribute("href", "/post/vacancy");
+  // pastki menyu rejimga qarab o'zgarmaydi (2026-11-20, ega: "ilova chalkash")
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(TABS);
   await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveAttribute("href", "/search?mode=workers&any=1&region=all");
 });
 
@@ -97,8 +96,10 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
   try {
     await loginAs(context, RET);
     await asMode(context, "worker");
+    // 2026-11-20: kirgan foydalanuvchining asosiy ekrani — chat
     await page.goto("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+    await page.waitForURL(/\/chat$/);
+    await expect(page.getByPlaceholder("Kasb, tuman, maosh…")).toBeVisible();
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
 
     await page.goto("/cabinet");
@@ -108,8 +109,9 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     const splash = page.locator("[data-role-splash]");
     await expect(splash).toHaveAttribute("data-role-splash", "employer");
     await expect(splash).toHaveText("Siz ish beruvchi paneliga o'tdingiz");
-    await page.waitForURL((u) => new URL(u).pathname === "/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
+    // chat endi ishchilar qidiruvi bilan ochiladi (ish beruvchi rejimi)
+    await expect(page.getByPlaceholder("Kim kerak: kasb, tuman…")).toBeVisible();
     await expect(splash).toHaveCount(0, { timeout: 6_000 });
     // ish beruvchi paneli — o'z rangida (binafsha, ega tanlagan A varianti)
     await expect(page.locator("html")).toHaveAttribute("data-panel", "employer");
@@ -128,23 +130,19 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
   }
 });
 
-test("ish izlovchi ishchilar qidiruviga kirsa — tushuntirish; 'qaytish' o'z bo'limiga, 'o'tish' — rejim almashadi", async ({ page, context }) => {
+test("ish izlovchi ishchilar qidiruviga kirsa — to'siqsiz ochiladi (2026-11-20: «Ishchilar» hamma uchun menyuda)", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
-  await page.goto("/search?mode=workers");
-  await expect(page.getByRole("heading", { level: 1, name: "Bu bo'lim ish beruvchilar uchun" })).toBeVisible();
-  await page.getByRole("link", { name: "Ish e'lonlariga qaytish" }).click();
-  await page.waitForURL(/\/search\?mode=jobs/);
+  await page.goto("/search?mode=workers&any=1&region=all");
+  await expect(page.getByRole("heading", { level: 1, name: "Bu bo'lim ish beruvchilar uchun" })).toHaveCount(0);
+  await expect(page.locator("#mode-gate-title")).toHaveCount(0);
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveAttribute("aria-current", "page");
+  // rejim o'zi almashmaydi (tanlov — foydalanuvchiniki)
+  expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 
   // "Qidirish" — "ish yoki ishchi?" so'ralmaydi, darhol shu rejim
   await page.goto("/search");
   await page.waitForURL(/\/search\?mode=jobs/);
-
-  await page.goto("/search?mode=workers");
-  await page.getByRole("button", { name: "Men xodim qidiryapman — o'tish" }).click();
-  await expect(page.getByRole("heading", { level: 1, name: "Bu bo'lim ish beruvchilar uchun" })).toHaveCount(0);
-  await expect(page.getByText("Ishchi qidiraman").first()).toBeVisible();
-  expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
 });
 
 test("e'lon berish: avval o'zini tasdiqlaydi; 'yo'q' — kerakli e'longa", async ({ page, context }) => {

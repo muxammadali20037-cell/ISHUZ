@@ -25,7 +25,7 @@ export default async function ApplicationsPage({ searchParams }: { searchParams:
             icon={FileText}
             title={t("applications.list.empty_title")}
             description={t("applications.list.empty_desc")}
-            action={{ label: t("applications.list.empty_cta"), href: "/" }}
+            action={{ label: t("applications.list.empty_cta"), href: "/jobs" }}
           />
         </div>
       </Shell>

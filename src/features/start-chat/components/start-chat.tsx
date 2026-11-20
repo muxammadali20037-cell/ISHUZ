@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useTransition, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Building2, BriefcaseBusiness, Plus, Search, UserRound, UsersRound, type LucideIcon } from "lucide-react";
+import { Building2, BriefcaseBusiness, ChevronRight, Plus, Search, UserRound, UsersRound, Wrench, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { callAction } from "@/lib/action-call";
@@ -20,7 +21,9 @@ type Step = "start" | "find" | "post";
  * sodda, ortiqcha narsa kerak emas"). Ikki savol, katta tugmalar:
  *   "Nima qilmoqchisiz?" → Izlash / E'lon berish
  *   Izlash      → "Nimani izlaysiz?"        → Ish / Ishchi   (qidiruv shu suhbatning o'zida: oyna, keyin haqiqiy e'lonlar)
- *   E'lon berish → "Qanday e'lon beramiz?" → Men ish izlayapman (o'zim haqimda) / Menga ishchi kerak (vakansiya)
+ *                                              yoki Usta (Universal ustalar — alohida bo'lim, pastki menyuda yo'q)
+ *   E'lon berish → "Qanday e'lon beramiz?" → Men ish izlayapman (o'zim haqimda, /ai/post) / Menga ishchi kerak
+ *                                             (vakansiya, /post/vacancy?ai=1 — ikkalasi ham yordamchi bilan)
  * Pastda yozish maydoni: kasb yoki savolni darhol yozish mumkin (tanlovsiz ham). Natijalar faqat bazadagi haqiqiy e'lonlar.
  */
 export function StartChat({ name, defaultFind }: { name: string | null; defaultFind: FinderMode }) {
@@ -53,7 +56,8 @@ export function StartChat({ name, defaultFind }: { name: string | null; defaultF
         toast.error(t("common.errors.generic"));
         return;
       }
-      router.push(mode === "employer" ? "/post/vacancy" : "/ai/post");
+      // ikkalasi ham yordamchi bilan (ega, 2026-11-17): o'zi haqida — /ai/post; vakansiya — bir gap, keyin savollar bittadan
+      router.push(mode === "employer" ? "/post/vacancy?ai=1" : "/ai/post");
     });
   };
 
@@ -78,6 +82,23 @@ export function StartChat({ name, defaultFind }: { name: string | null; defaultF
             <Choices>
               <Choice icon={BriefcaseBusiness} title={t("easy.start_chat.find_jobs")} hint={t("easy.start_chat.find_jobs_hint")} chosen={find === "jobs" && jobs.turns.length > 0} track="find_jobs" disabled={jobs.pending} onClick={() => pickFind("jobs")} />
               <Choice icon={UsersRound} title={t("easy.start_chat.find_workers")} hint={t("easy.start_chat.find_workers_hint")} chosen={find === "workers" && workers.turns.length > 0} track="find_workers" disabled={workers.pending} onClick={() => pickFind("workers")} />
+              {/* ustalar (santexnik, elektrik…) — alohida mini-ilova; kichik qator, ikki ustun bo'ylab */}
+              <Link
+                href="/ustalar"
+                data-track="chat_choice"
+                data-track-to="find_masters"
+                data-chat-choice="find_masters"
+                className="press col-span-2 flex min-h-14 items-center gap-3 rounded-2xl border border-border bg-card px-3.5 py-2.5 shadow-sm hover:border-primary/50"
+              >
+                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink" aria-hidden>
+                  <Wrench className="size-5" strokeWidth={2.25} />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block text-lg font-bold leading-tight">{t("easy.start_chat.find_masters")}</span>
+                  <span className="block text-sm leading-snug text-muted-foreground">{t("easy.start_chat.find_masters_hint")}</span>
+                </span>
+                <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+              </Link>
             </Choices>
           </>
         ) : null}

@@ -124,17 +124,19 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(page.locator("[data-masters-review]")).toHaveCount(0);
   await expect(page.locator("main")).toContainText("Hali baho yo'q");
 
-  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q — kirish bosh sahifadagi "Bo'limlar"ning birinchi
-  // qatori (2026-11-17, ega: "eng tepada Universal ustalar"; Profildagi karta olib tashlandi)
+  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q, Profilda karta yo'q (2026-11-17) — kirish asosiy
+  // ekrandagi (chat, 2026-11-20) "Izlash" → "Usta" tanlovidan
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/cabinet");
   await expect(page.locator("main [data-masters-entry]")).toHaveCount(0);
   await page.goto("/");
-  const fromMenu = page.locator("[data-home-menu] [data-menu-item]").first();
-  await expect(fromMenu).toHaveAttribute("data-masters-entry");
-  await expect(fromMenu).toContainText("Universal ustalar");
-  await fromMenu.click();
+  await page.waitForURL(/\/chat$/);
+  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
+  await page.locator("[data-chat-choice='find']").click();
+  const fromChat = page.locator("[data-chat-choice='find_masters']");
+  await expect(fromChat).toContainText("Usta");
+  await fromChat.click();
   await expect(page).toHaveURL(/\/ustalar$/);
 });
 

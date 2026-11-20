@@ -1601,6 +1601,8 @@
     "post_worker_hint": "O'zim haqimda e'lon",
     "post_vacancy": "Menga ishchi kerak",
     "post_vacancy_hint": "Vakansiya e'loni",
-    "type_hint": "Yoki pastga yozing, masalan: «Toshkentda haydovchi»"
+    "type_hint": "Yoki pastga yozing, masalan: «Toshkentda haydovchi»",
+    "find_masters": "Usta",
+    "find_masters_hint": "Santexnik, elektrik, konditsioner ustasi va boshqalar"
   }
 }

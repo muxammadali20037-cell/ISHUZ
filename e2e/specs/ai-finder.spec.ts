@@ -144,7 +144,7 @@ test("'kunlik ish' tushuniladi — oynada «Kunlik ishlar» sharti (maosh so'ral
   await expect(dialog.locator("[data-ai-reply]")).toHaveCount(0);
 });
 
-test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ishchilar ichida", async ({ page, context }) => {
+test("ish beruvchi (kirgan): asosiy ekran — chat; yozilgan so'z ishchilar ichida qidiriladi", async ({ page, context }) => {
   await sql(
     `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
      values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
@@ -152,11 +152,14 @@ test("ish beruvchi (kirgan, panel): AI qidiruv nomzod qidiruvi yonida, faqat ish
   );
   await sql("update public.profiles set active_role = 'employer' where id = $1", [USERS.employer]);
   await loginAs(context, USERS.employer);
+  // 2026-11-20: kirgan foydalanuvchining "/" — chat; ish beruvchida yozish maydoni ishchilar qidiruvi
   await page.goto("/");
-  await fab(page).click();
-  // ish beruvchi rejimi: faqat ishchilar ichidan qidiradi (rejim tanlovi ko'rsatilmaydi)
-  await expect(page.getByRole("dialog").getByText("Ishchilar ichidan qidiriladi")).toBeVisible();
-  await expect(page.getByRole("dialog").getByRole("radio")).toHaveCount(0);
+  await page.waitForURL(/\/chat$/);
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await expect(box).toHaveAttribute("placeholder", "Kim kerak: kasb, tuman…");
+  await box.fill("oshpaz");
+  await box.press("Enter");
+  await expect(page.getByRole("dialog", { name: "Xodim qidirish" })).toBeVisible();
 });
 
 const dialogOf = (page: Page) => page.getByRole("dialog", { name: "Yordamchi" });
