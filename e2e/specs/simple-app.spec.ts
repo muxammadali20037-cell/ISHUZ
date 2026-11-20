@@ -114,18 +114,24 @@ test("E'lon berish → «Men ish izlayapman» — o'zi haqida e'lon (yordamchi),
 });
 
 test("E'lon berish → «Menga ishchi kerak» — yordamchi bilan vakansiya darhol (ish izlovchi rejimida ham to'siqsiz)", async ({ page, context }) => {
-  await loginAs(context, USERS.workerB);
-  await asMode(context, "worker");
-  await page.goto("/chat");
-  const chat = page.locator("[data-start-chat]");
-  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
-  await chat.locator("[data-chat-choice='post']").click();
-  await chat.locator("[data-chat-choice='post_vacancy']").click();
-  // yordamchi bilan vakansiya (bir gap, keyin savollar bittadan)
-  await expect(page).toHaveURL(/\/post\/vacancy\?ai=1$/);
-  await expect(page.locator("#mode-gate-title")).toHaveCount(0);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
-  await expect(page.locator("[data-vacancy-guide]")).toBeVisible();
+  const [before] = await sql<{ active_role: string | null }>("select active_role from public.profiles where id = $1", [USERS.workerB]);
+  try {
+    await loginAs(context, USERS.workerB);
+    await asMode(context, "worker");
+    await page.goto("/chat");
+    const chat = page.locator("[data-start-chat]");
+    await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
+    await chat.locator("[data-chat-choice='post']").click();
+    await chat.locator("[data-chat-choice='post_vacancy']").click();
+    // yordamchi bilan vakansiya (bir gap, keyin savollar bittadan)
+    await expect(page).toHaveURL(/\/post\/vacancy\?ai=1$/);
+    await expect(page.locator("#mode-gate-title")).toHaveCount(0);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+    await expect(page.locator("[data-vacancy-guide]")).toBeVisible();
+  } finally {
+    // tanlov workerB ni ish beruvchi rejimiga o'tkazadi — keyingi spec'lar (takliflar) uchun avvalgi holatga qaytaramiz
+    await sql("update public.profiles set active_role = $2 where id = $1", [USERS.workerB, before?.active_role ?? null]);
+  }
 });
 
 test("«Ishchilar» bo'limi ish izlovchiga ham to'siqsiz ochiladi va belgilanadi", async ({ page, context }) => {

@@ -94,8 +94,8 @@ export function StartChat({ name, defaultFind }: { name: string | null; defaultF
                   <Wrench className="size-5" strokeWidth={2.25} />
                 </span>
                 <span className="min-w-0 flex-1">
-                  <span className="block text-lg font-bold leading-tight">{t("easy.start_chat.find_masters")}</span>
-                  <span className="block text-sm leading-snug text-muted-foreground">{t("easy.start_chat.find_masters_hint")}</span>
+                  <span className="block text-lg font-bold leading-tight [overflow-wrap:anywhere]">{t("easy.start_chat.find_masters")}</span>
+                  <span className="block text-sm leading-snug text-muted-foreground [overflow-wrap:anywhere]">{t("easy.start_chat.find_masters_hint")}</span>
                 </span>
                 <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
               </Link>
@@ -184,15 +184,16 @@ function Choice({
       data-track-to={track}
       data-chat-choice={track}
       className={cn(
-        "press flex min-h-28 flex-col items-start gap-2 rounded-2xl border bg-card p-3.5 text-left shadow-sm transition-colors disabled:opacity-60",
+        // min-w-0 + so'z bo'linishi: ruscha uzun so'zlar va katta shriftda (150%) karta ekrandan chiqmaydi
+        "press flex min-h-28 min-w-0 flex-col items-start gap-2 rounded-2xl border bg-card p-3.5 text-left shadow-sm transition-colors disabled:opacity-60",
         chosen ? "border-primary ring-2 ring-primary/25" : "border-border hover:border-primary/50",
       )}
     >
       <span className={cn("flex size-10 items-center justify-center rounded-xl", chosen ? "bg-primary text-primary-foreground" : "bg-primary-soft text-primary-ink")} aria-hidden>
         <Icon className={cn("size-5", busy && "animate-pulse")} strokeWidth={2.25} />
       </span>
-      <span className="text-lg font-bold leading-tight">{title}</span>
-      <span className="text-sm leading-snug text-muted-foreground">{hint}</span>
+      <span className="max-w-full text-lg font-bold leading-tight hyphens-auto [overflow-wrap:anywhere]">{title}</span>
+      <span className="max-w-full text-sm leading-snug text-muted-foreground hyphens-auto [overflow-wrap:anywhere]">{hint}</span>
     </button>
   );
 }
