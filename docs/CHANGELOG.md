@@ -1,5 +1,25 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · Foydalanuvchi sifatida tekshiruv: topilgan xatolar tuzatildi (`fix/qa-findings`)
+
+Ega: "odam sifatida ilovaga kir, odamlar nima qilmoqchi bo'lsa — hammasini qilib ko'r, xato top". Mahalliy stendda
+6 xil foydalanuvchi (mehmon, ish izlovchi, ish beruvchi; uz/ru/en) × 74 sahifa (444 ochilish) va 8 ta to'liq yo'l
+(chat, e'lon berish, arizalar, rol almashtirish, chiqish) o'tildi.
+
+- **Pastki menyu**: ish izlovchida "Sizga mos" ochilganda "Ishlar" ham birga yonib turardi — endi faqat bittasi.
+  Unit-test: har rejimda istalgan sahifada ko'pi bilan bitta faol bo'lim.
+- **Chat: uzun gap tushunilmasdi**: "Toshkentda sotuvchi ish kerak, tajribam 2 yil, oylik kamida 4 million, Chilonzor
+  yoki Yunusobod…" — "sotuvchi" so'zi umuman qidirilmas, "Qanday ish?"ga "chilonzor" yozilib, shu so'z bo'yicha
+  qidirilardi. Endi uzun gapda avval bitta so'zlar tekshiriladi, to'ldiruvchi so'zlar (tajriba, maosh, hafta, tuman…)
+  tashlanadi, viloyatning tuman nomlari kasb deb olinmaydi (ruscha gaplar ham).
+- **Chat izohi**: kasb tushunilmasa ("asdkjhqwe") "Hududni tanlang" emas — "Qanday ish kerakligini aniq yozing";
+  hammasi tushunilsa — "Javoblarni tekshiring va «Qidirish»ni bosing".
+- **Ruscha tor ekran**: bildirishnomalardagi "Отметить все как прочитанные" va ustalar sarlavhasidagi
+  "Разместить объявление" 390 px ekrandan chiqib ketardi; o'rtadagi "Найти/Подать" (va kirillchada "Излаш/Эълон")
+  320 px da kesilardi — endi "Поиск" / "Излаш", ustalarda telefonda qisqa "Объявление".
+- **Sahifa nomi (h1)**: e'lon joylashning 1-qadamida va taklif havolasi sahifasida yo'q edi (ekran o'qigichi uchun).
+- E2E: `qa-user-pass.spec.ts` — yuqoridagilar qaytmasin.
+
 ## 2026-11-21 · Chat ChatGPT kabi sokin: 2 ta ixcham qator, oq kartalar (`feat/chat-clean`)
 
 Ega: "ChatGPT va biznikini solishtir — katta kartalar balo battar, 2 ta qator bo'lsin, uzunasiga, kamtarin va chiroyli;

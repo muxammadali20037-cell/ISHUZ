@@ -49,6 +49,7 @@ export function ProfessionPicker({
   initialQuery = "",
   onCustom,
   extra,
+  headingLevel = 2,
 }: {
   categories: Category[];
   value: PickedProfession | null;
@@ -61,8 +62,11 @@ export function ProfessionPicker({
   onCustom?: (text: string, categoryId: string) => void;
   /** qidiruv maydoni ostida (hali hech narsa yozilmagan va tanlanmagan bo'lsa): masalan "Yordamchi bilan to'ldirish" */
   extra?: ReactNode;
+  /** sahifaning asosiy sarlavhasi bo'lsa (e'lon joylashning 1-qadami) — h1: ekran o'qigichi sahifani nomidan taniydi */
+  headingLevel?: 1 | 2;
 }) {
   const { t, name } = useT();
+  const Heading = headingLevel === 1 ? "h1" : "h2";
   const [browsing, setBrowsing] = useState(!value);
   const [sectorId, setSectorId] = useState<string | null>(value?.categoryId ?? null);
   const [path, setPath] = useState<TrailItem[]>(value ? value.trail.slice(0, -1) : []);
@@ -202,7 +206,7 @@ export function ProfessionPicker({
     return (
       <div ref={topRef} className="scroll-mt-24 space-y-4">
         <div>
-          <h2 className="text-2xl font-extrabold leading-tight tracking-tight">{t("professions.custom_title")}</h2>
+          <Heading className="text-2xl font-extrabold leading-tight tracking-tight">{t("professions.custom_title")}</Heading>
           <p className="mt-1 text-muted-foreground">{t("professions.custom_hint")}</p>
         </div>
         <Input value={custom} onChange={(e) => setCustom(e.target.value.slice(0, 120))} placeholder={t("professions.custom_placeholder")} aria-label={t("professions.custom_title")} className="h-14 rounded-2xl text-base" autoFocus />
@@ -247,7 +251,7 @@ export function ProfessionPicker({
     <div ref={topRef} className="scroll-mt-24 space-y-4">
       {title ? (
         <div>
-          <h2 className="text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">{title}</h2>
+          <Heading className="text-2xl font-extrabold leading-tight tracking-tight sm:text-3xl">{title}</Heading>
           {subtitle ? <p className="mt-1 text-muted-foreground">{subtitle}</p> : null}
         </div>
       ) : null}

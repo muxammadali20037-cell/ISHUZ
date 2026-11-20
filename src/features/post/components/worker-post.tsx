@@ -545,6 +545,7 @@ export function WorkerPost({
                 />
               ) : null}
               <ProfessionPicker
+                headingLevel={1}
                 categories={categories}
                 value={draft.profession}
                 onChange={(p) => {

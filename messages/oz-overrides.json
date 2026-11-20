@@ -1,1 +1,4 @@
-{ "common.app.name": "Ish topdim" }
+{
+  "common.app.name": "Ish topdim",
+  "easy.nav.tab_chat": "Излаш"
+}

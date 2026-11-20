@@ -500,7 +500,8 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
       <div className="ai-bubble-in space-y-2" data-quick-pending-form>
         <AssistantHead />
         <Bubble className="space-y-3">
-          <p>{t("easy.quick.form_note")}</p>
+          {/* nima yetishmasligiga qarab: kasb lug'atdan topilmagan ("asdkjhqwe", bo'sh) → kasbni aniqlashtirishni so'raymiz; hudud tanlanmagan → hudud; hammasi bor → tekshirish */}
+          <p>{!turn.form?.nodeId ? t(`easy.quick.form_note_profession_${turn.mode}`) : turn.form.place === "all" ? t("easy.quick.form_note") : t("easy.quick.form_note_ready")}</p>
           <Button type="button" className="h-11 text-base" onClick={() => chat.openForm(turn.id)} disabled={chat.pending} data-quick-open-form>
             <SlidersHorizontal className="size-5" aria-hidden /> {t("easy.quick.open_form")}
           </Button>

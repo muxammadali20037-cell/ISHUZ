@@ -93,8 +93,10 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
   const regions = await getRegions();
   // kasb tushunilmasa — matndagi asosiy so'z (kompaniya nomi, erkin lavozim; hudud nomi emas); oynada o'zgartirsa bo'ladi
   const said = r.regionSlug ? regions.find((x) => x.slug === r.regionSlug) : undefined;
-  const saidDistrict = said && r.districtId ? (await getDistricts(said.id)).find((d) => d.id === r.districtId) : undefined;
-  const placeNames = [said?.name_uz, said?.name_ru, saidDistrict?.name_uz, saidDistrict?.name_ru].filter((x): x is string => !!x);
+  // shu viloyatning barcha tumanlari: ikki tuman aytilsa ("Chilonzor yoki Yunusobod") tuman tanlanmaydi, lekin uning nomi
+  // kasb deb olinmasin (QA, 2026-11-21: "Qanday ish?" ga "chilonzor" yozilib, shu so'z bo'yicha qidirilardi)
+  const saidDistricts = said ? await getDistricts(said.id) : [];
+  const placeNames = [said?.name_uz, said?.name_ru, ...saidDistricts.flatMap((d) => [d.name_uz, d.name_ru])].filter((x): x is string => !!x);
   const profession = node ? name(node.trail.at(-1)!) : (textKeywords(input.text, placeNames, 1)[0] ?? "");
 
   // hudud: matnda aytilgani, bo'lmasa — shu qurilmada eslab qolingani ("Yaqin atrofda" / bosh sahifadagi joy)
