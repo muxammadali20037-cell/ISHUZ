@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · Chat ChatGPT kabi sokin: 2 ta ixcham qator, oq kartalar (`feat/chat-clean`)
+
+Ega: "ChatGPT va biznikini solishtir — katta kartalar balo battar, 2 ta qator bo'lsin, uzunasiga, kamtarin va chiroyli;
+tagidagi yozuvlar keraksiz; e'lon berish bosilsa — alohida ekranga; qidiruv oynasi ranglari yemagan, bolalarcha;
+yozayotganda ustiga hech narsa chiqmasin".
+
+- **Asosiy chat**: salom va savol — oddiy matn (pufakcha yo'q); ikkita ixcham qator bitta guruhda — "Ish izlash" /
+  "E'lon berish" (ish beruvchida "Ishchi izlash" / "Vakansiya berish"), izohsiz. Izlash bosilsa — yozish maydoni darhol
+  fokusda (klaviatura ochiladi). E'lon berish — darhol alohida ekran (yordamchi). "Yoki pastga yozing…" va pastdagi
+  izoh olib tashlandi. Ustalar — ish beruvchining Izlash qadamida kichik havola.
+- **Yozish maydoni**: sokin chegarali, dumaloq tugma (matn bo'lmasa — xira). Telefonda yozilayotganda pastki menyu
+  yashiriladi va maydon ekran tagiga tushadi — orada bo'shliq, ostidan matn ko'rinmaydi.
+- **Natijalar**: "N ta topildi" — oddiy qalin matn; "Ko'rish" — sokin tugma; yorliqlar kulrang. Topilmadi — oq karta,
+  "+ O'zingiz haqingizda e'lon qoldiring" ekrandan chiqmaydi (to'liq kenglik, qatorga o'raladi).
+- **Kartalar** (chatdagi): oq, sokin; qizil "Hozir ishchi qidirmoqda" chat kartasida yo'q (e'lon sahifasida bor);
+  "E'lonni to'liq ko'rish" — sokin tugma.
+
 ## 2026-11-20 · E'lon rasmi (AI): «Rasm yaratilsinmi?» (`feat/listing-image`)
 
 Ega: "e'lon berayotganda oxirida so'rasin — e'lon rasmi yaratilsinmi? Ha bo'lsa, e'lonni avtomatik o'qib, mos real rasm
