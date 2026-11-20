@@ -21,12 +21,16 @@ export function JoinCompany({ token }: { token: string | null }) {
 
   if (invalid) {
     return (
-      <EmptyState
-        icon={LinkIcon}
-        title={t("employer.join.invalid_title")}
-        description={token ? t("employer.join.invalid_desc") : t("employer.join.missing_token")}
-        action={{ label: t("employer.join.go_home"), href: "/" }}
-      />
+      <>
+        {/* havola noto'g'ri bo'lsa ham sahifaning nomi bor (ekran o'qigichi uchun) */}
+        <h1 className="sr-only">{t("employer.join.title")}</h1>
+        <EmptyState
+          icon={LinkIcon}
+          title={t("employer.join.invalid_title")}
+          description={token ? t("employer.join.invalid_desc") : t("employer.join.missing_token")}
+          action={{ label: t("employer.join.go_home"), href: "/" }}
+        />
+      </>
     );
   }
 

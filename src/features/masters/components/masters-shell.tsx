@@ -96,7 +96,9 @@ export async function MastersShell({
             >
               {/* telefonda ham yozuv bilan (ega, 2026-11-15: "+ emas — «E'lon joylash» bo'lib ko'rinsin") */}
               <Plus className="size-5" aria-hidden />{" "}
-              <span>{t("masters.post")}</span>
+              {/* telefonda qisqa yozuv: ruschada "Разместить объявление" 390 px ekrandan chiqib ketardi */}
+              <span className="sm:hidden">{t("masters.post_short")}</span>
+              <span className="hidden sm:inline">{t("masters.post")}</span>
             </Link>
           ) : null}
           {session ? (

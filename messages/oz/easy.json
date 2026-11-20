@@ -494,7 +494,7 @@
     "tab_my_listings": "Эълонларим",
     "tab_workers": "Ишчилар",
     "tab_employers": "Ташкилотлар",
-    "tab_chat": "Излаш/Эълон",
+    "tab_chat": "Излаш",
     "tab_matches": "Сизга мос"
   },
   "moderation": {
@@ -1378,6 +1378,9 @@
     "q_place_workers": "Қайси ҳудуддан?",
     "search": "Қидириш",
     "form_note": "Ҳудудни танланг — кейин қидираман.",
+    "form_note_profession_jobs": "Қандай иш кераклигини аниқ ёзинг — кейин қидираман.",
+    "form_note_profession_workers": "Қандай ходим кераклигини аниқ ёзинг — кейин қидираман.",
+    "form_note_ready": "Жавобларни текширинг ва «Қидириш»ни босинг.",
     "open_form": "Жавоб бериш",
     "edit": "Ўзгартириш",
     "found_jobs": "{count} та иш топилди",

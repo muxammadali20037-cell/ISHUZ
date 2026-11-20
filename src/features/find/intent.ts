@@ -41,9 +41,21 @@ const STOP = new Set(
     "rabota rabotu raboty nujen nujna nujno nujny trebuetsya trebuyutsya vakansiya vakansii ishchu ishu v na dlya i ili s po " +
     "job jobs need needed hire hiring for a an the in looking " +
     // olmoshlar va salomlashuv ("men instruktorman menga ish kerak": "men" inglizcha "men's" kasbiga tushib qolmasin)
-    "men sen siz biz ular mening meni menda bizning bizni iltimos salom assalomu alaykum"
+    "men sen siz biz ular mening meni menda bizning bizni iltimos salom assalomu alaykum " +
+    // uzun gapdagi to'ldiruvchi so'zlar (maosh, tajriba, vaqt, hudud so'zlari) — kasb emas; ular bo'laklar ro'yxatini to'ldirib,
+    // haqiqiy kasb so'zini siqib chiqarardi (QA, 2026-11-21: "Toshkentda sotuvchi ish kerak, tajribam 2 yil, oylik kamida
+    // 4 million, Chilonzor yoki Yunusobod…" — "sotuvchi" umuman qidirilmasdi). "soat" ("soat ustasi") va "grafik"
+    // ("grafik dizayner") ataylab yo'q.
+    "tajriba tajribam tajribasi tajribasiz kamida oylik maosh maoshi million ming so'm som sum yil yildan kun kunlik " +
+    "hafta haftasiga haftada tuman tumani tumanida bo'lsa bolsa bo'lsin mumkin gacha sifatida ishlayman " +
+    "opit opita opitom goda god let zarplata zarplatoy oklad tisyach mln rayon rayona rayone ryadom ili gde xochu rabotat " +
+    "mojno jelatelno nedelyu nedelya dney chasov"
   ).split(" "),
 );
+
+/** Uzun gap: bundan ko'p so'z qolsa, avval bitta so'zlar (ular kesilib qolmasin), keyin ikki so'zli bo'laklar */
+const LONG_TEXT_WORDS = 4;
+const MAX_CANDIDATES = 14;
 
 /** Qo'shimchalar: "buxgalterlik" → "buxgalter", "haydovchilar" → "haydovchi", "Toshkentda" → "toshkent" */
 // "-man/-miz" (kesim: "instruktorman" — "men instruktorman", "oshpazmiz") ham — o'zak bilan birga asl so'z ham qidiriladi
@@ -72,7 +84,10 @@ const CYR_STOP = new Set(
   (
     "нужен нужна нужно нужны требуется требуются ищу ищем работа работу работы вакансия вакансии в на для и или с по кк керак иш ишчи " +
     // олмошлар ва саломлашув ("мен ўқитувчиман": "мен" "менеджер"га ўхшаб қолмасин — ega, 2026-11-17)
-    "мен менга мени менинг сен сиз биз бизга улар я мне меня мой моя мы вы салом ассалому алайкум здравствуйте привет"
+    "мен менга мени менинг сен сиз биз бизга улар я мне меня мой моя мы вы салом ассалому алайкум здравствуйте привет " +
+    // to'ldiruvchi so'zlar (yuqoridagi STOP bilan bir xil sabab)
+    "опыт опыта опытом года год лет зарплата зарплатой оклад тысяч млн район района районе рядом или где хочу работать " +
+    "можно желательно неделю неделя дней часов тажриба тажрибам ойлик маош минг сўм йил кун ҳафта ҳафтасига туман тумани бўлса камида"
   ).split(" "),
 );
 // "-ман/-миз" (кесим: "ўқитувчиман") — ўзаги ҳам қидирилади
@@ -96,15 +111,17 @@ export function professionCandidates(text: string): string[] {
   const words = normalizeText(text)
     .split(" ")
     .filter((w) => w.length >= 3 && !STOP.has(w) && !/^\d/.test(w));
-  const out: string[] = [];
-  if (words.length > 1) out.push(words.join(" "));
-  for (let i = 0; i < words.length - 1; i++) out.push(`${words[i]} ${words[i + 1]}`);
-  for (const w of words) {
-    out.push(w);
-    out.push(...stripSuffix(w));
-  }
-  out.push(...cyrillicCandidates(text));
-  return [...new Set(out)].slice(0, 14);
+  const pairs: string[] = [];
+  for (let i = 0; i < words.length - 1; i++) pairs.push(`${words[i]} ${words[i + 1]}`);
+  const singles = words.flatMap((w) => [w, ...stripSuffix(w)]);
+  const cyr = cyrillicCandidates(text);
+  // qisqa so'rov ("bosh buxgalter kerak"): to'liq ibora → juftlar → bitta so'zlar. Uzun gapda to'liq ibora hech qachon kasb
+  // nomi emas, juftlar esa ro'yxatni to'ldirib, bitta so'zli kasbni ("sotuvchi") chiqarib yuborardi — avval bitta so'zlar.
+  const out =
+    words.length > LONG_TEXT_WORDS
+      ? [...singles, ...cyr, ...pairs]
+      : [...(words.length > 1 ? [words.join(" ")] : []), ...pairs, ...singles, ...cyr];
+  return [...new Set(out)].slice(0, MAX_CANDIDATES);
 }
 
 /**

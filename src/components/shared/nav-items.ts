@@ -220,12 +220,14 @@ export const APP_APPLICATIONS: MenuItem = {
 };
 /** Ish izlovchining "E'lonlarim"ida arizalar soni yo'q (u ish beruvchiga tegishli) */
 const MY_LISTINGS_WORKER: MenuItem = { ...APP_MY_LISTINGS, badgeKey: undefined };
+/** Ish izlovchida "Sizga mos" alohida bo'lim — u yerda "Ishlar" ham yonib turmasin (bir vaqtda ikkita faol bo'lim bo'lmasin) */
+const JOBS_WORKER: MenuItem = { ...APP_JOBS, match: (p, find) => isJobsPath(p, find) && !isMatchesPath(p) };
 /** Ish beruvchida arizalar — alohida bo'lim, "E'lonlarim" faqat vakansiyalar */
 const MY_LISTINGS_EMPLOYER: MenuItem = { ...APP_MY_LISTINGS, badgeKey: undefined, match: (p) => isMyListingsPath(p) && !isApplicationsPath(p) };
 
 /** Telefondagi pastki menyu: 2 ta bo'lim · o'rtada chat · 2 ta bo'lim (rejimga qarab) */
 export function appTabs(mode: MenuMode): MenuItem[] {
-  if (mode === "worker") return [APP_MATCHES, APP_JOBS, APP_CHAT, MY_LISTINGS_WORKER, APP_PROFILE];
+  if (mode === "worker") return [APP_MATCHES, JOBS_WORKER, APP_CHAT, MY_LISTINGS_WORKER, APP_PROFILE];
   if (mode === "employer") return [APP_WORKERS, APP_APPLICATIONS, APP_CHAT, MY_LISTINGS_EMPLOYER, APP_PROFILE];
   return [APP_WORKERS, APP_JOBS, APP_CHAT, APP_MY_LISTINGS, APP_PROFILE];
 }

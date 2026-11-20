@@ -494,7 +494,7 @@
     "tab_my_listings": "Объявления",
     "tab_workers": "Работники",
     "tab_employers": "Компании",
-    "tab_chat": "Найти/Подать",
+    "tab_chat": "Поиск",
     "tab_matches": "Для вас"
   },
   "moderation": {
@@ -1378,6 +1378,9 @@
     "q_place_workers": "Из какого региона?",
     "search": "Найти",
     "form_note": "Выберите регион — и я начну поиск.",
+    "form_note_profession_jobs": "Уточните, какая работа нужна, — и я начну поиск.",
+    "form_note_profession_workers": "Уточните, какой сотрудник нужен, — и я начну поиск.",
+    "form_note_ready": "Проверьте ответы и нажмите «Найти».",
     "open_form": "Ответить",
     "edit": "Изменить",
     "found_jobs": "Найдено вакансий: {count}",

@@ -443,6 +443,7 @@ export function VacancyPost({
             <CustomProfessionCard text={draft.custom.text} sector={category ? name(category) : null} badge={t("professions.custom_badge")} hint={t("easy.wizard.custom_note")} />
           ) : null}
           <ProfessionPicker
+            headingLevel={1}
             categories={categories}
             value={draft.profession}
             onChange={(p) => {

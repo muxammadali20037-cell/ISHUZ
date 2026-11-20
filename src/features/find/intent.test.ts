@@ -58,6 +58,24 @@ describe("professionCandidates", () => {
   it("ikki so'zli kasb", () => {
     expect(professionCandidates("bosh buxgalter kerak")).toEqual(expect.arrayContaining(["bosh buxgalter", "buxgalter"]));
   });
+  it("uzun gap: kasb so'zi juftlar orasida kesilib qolmaydi, to'ldiruvchi so'zlar (tajriba, maosh, vaqt) tashlanadi", () => {
+    const c = professionCandidates(
+      "Toshkentda sotuvchi ish kerak, tajribam 2 yil, oylik kamida 4 million, Chilonzor yoki Yunusobod tumani bo'lsa yaxshi, haftasiga 5 kun ishlamoqchiman",
+    );
+    expect(c).toContain("sotuvchi");
+    for (const w of ["tajribam", "kamida", "million", "haftasiga", "tumani", "bo'lsa"]) expect(c.join(" ")).not.toContain(w);
+    expect(c.length).toBeLessThanOrEqual(14);
+  });
+  it("uzun ruscha gap: kasb so'zi (asl yozuvida ham) ro'yxatda", () => {
+    const c = professionCandidates("Ищу работу продавцом в Ташкенте, опыт 2 года, зарплата от 4 млн, Чиланзар или Юнусабад, график 5/2");
+    expect(c).toEqual(expect.arrayContaining(["prodavtsom", "продавцом"]));
+    expect(c).not.toContain("opit");
+    expect(c).not.toContain("zarplata");
+  });
+  it("uzun gapda ham ikki so'zli kasb qoladi", () => {
+    const c = professionCandidates("Menga Toshkentda yuk mashinasi haydovchisi sifatida ish kerak, tajribam 5 yil");
+    expect(c).toEqual(expect.arrayContaining(["haydovchisi", "yuk mashinasi"]));
+  });
 });
 
 describe("stripSuffix", () => {
