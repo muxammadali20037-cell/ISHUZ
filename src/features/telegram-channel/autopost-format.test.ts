@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { makeT } from "@/lib/i18n/translate";
-import { hashtag, sanitizeLine, sanitizeText, vacancyPost, workerPost } from "./autopost-format";
+import { dialable, hashtag, sanitizeLine, sanitizeText, vacancyPost, workerPost } from "./autopost-format";
 
 const t = makeT("uz");
 const BASE = "https://ishuz.vercel.app";
@@ -87,7 +87,8 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(p.html).toContain("🧰 Tajriba: 1 yildan");
     expect(p.html).toContain("Matematika fani o'qituvchisi kerak.\nMurojaat: ,");
     expect(p.html).not.toMatch(/999 88 77|hr_maktab|spam/);
-    expect(p.html).toMatch(/📞 Tel: \+998 90 123 45 67$/);
+    // 2026-11-20 (ega): raqam bo'shliqsiz — Telegram uni bosiladigan qiladi (bosilsa qo'ng'iroq)
+    expect(p.html).toMatch(/📞 Tel: \+998901234567$/);
     expect(p.caption).toBe(p.html);
     // tavsif juda uzun bo'lsa — qisqartiriladi, raqam baribir oxirida
     const long = vacancyPost(
@@ -96,13 +97,13 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
       BASE,
     );
     expect(long.caption!.length).toBeLessThanOrEqual(1024);
-    expect(long.caption).toMatch(/…\n\n📞 Tel: \+998 90 123 45 67$/);
+    expect(long.caption).toMatch(/…\n\n📞 Tel: \+998901234567$/);
     expect(vacancyPost({ slug: "y", title: "Qorovul", company: null, place: null, remote: false, salaryFrom: null, salaryTo: null, salaryType: null, negotiable: true, schedule: null, profession: null, experienceMonths: 0 }, t, BASE).html).toContain(
       "🧰 Tajriba talab qilinmaydi",
     );
   });
 
-  it("ishchi: ISHCHI belgisi, ism/telefonsiz (va'da: easy.worker.channel_note), tugma — ishchi sahifasi", () => {
+  it("ishchi: ISHCHI belgisi, ismsiz; raqam berilmasa — telefonsiz (sarlavhadagi raqam ham olib tashlanadi), tugma — ishchi sahifasi", () => {
     const p = workerPost(
       { id: "0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21", profession: "Oshpaz", headline: "Milliy taomlar, tel 998901234567", place: "Samarqand viloyati", experience: "3–5 yil", salary: 5_000_000, salaryType: "monthly", schedules: ["5/2", "Smenali"] },
       t,
@@ -120,6 +121,24 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(p.photo).toBe(`${BASE}/api/promo/worker/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21`);
     expect(p.caption).toBe(p.html);
     expect(p.caption).not.toMatch(/998901234567|📞/);
+  });
+
+  it("ishchi: rozilik bilan saqlangan raqam(lar) — oxirida, bo'shliqsiz (bosilsa qo'ng'iroq); takror va noto'g'ri raqam — yo'q", () => {
+    const p = workerPost(
+      { id: "w1", profession: "Ofitsiant", headline: null, place: "Payariq tumani, Samarqand", experience: "1–2 yil", salary: null, salaryType: null, schedules: [], phones: ["+998932728766", "+998 90 123-45-67", "+998932728766", "12345"] },
+      t,
+      BASE,
+    );
+    expect(p.html).toMatch(/Kelishiladi\n\n📞 Tel: \+998932728766, \+998901234567$/);
+    expect(p.caption).toBe(p.html);
+    expect(workerPost({ id: "w2", profession: "Oshpaz", headline: null, place: null, experience: null, salary: null, salaryType: null, schedules: [], phones: [] }, t, BASE).html).not.toMatch(/📞/);
+  });
+
+  it("dialable: faqat O'zbekiston raqami, xalqaro ko'rinishda", () => {
+    expect(dialable("+998 93 272 87 66")).toBe("+998932728766");
+    expect(dialable("998932728766")).toBe("+998932728766");
+    expect(dialable("+7 999 123 45 67")).toBeNull();
+    expect(dialable("90 123")).toBeNull();
   });
 
   it("ishchi maosh kutmasa — kelishiladi", () => {

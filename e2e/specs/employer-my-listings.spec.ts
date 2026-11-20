@@ -52,3 +52,35 @@ test("ish beruvchi E'lonlarim: vakansiya ro'yxati ostida o'zi haqidagi e'lon ham
   // vakansiyalar shu yerda ikki marta chiqmaydi — ular yuqoridagi ro'yxatda
   await expect(other.locator('[data-my-listing="vacancy"]')).toHaveCount(0);
 });
+
+test("E'lonlarim: raqami ko'rinmaydigan eski e'lonlar egasiga eslatiladi; raqam ochiq bo'lgach — eslatma yo'q", async ({ page, context }) => {
+  await cleanup();
+  const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+  const [v] = await sql<{ id: string }>(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_negotiable, published_at)
+     values ($1, 'E2E qorovul', $2, 'Kechki smenaga qorovul kerak, tajriba shart emas', 'active', true, now()) returning id`,
+    [USERS.employer, r!.id],
+  );
+  // eski e'lon: raqam "ko'rsatilmasin" tanlangan; ishchi e'lonida raqam yozilmagan, hisob raqami faqat arizachilarga
+  await sql("insert into public.vacancy_contacts (vacancy_id, phone, show_phone) values ($1, '+998901110003', false)", [v!.id]);
+  const [w] = await sql<{ id: string }>(
+    "insert into public.worker_profiles (profile_id, headline, region_id, is_public, onboarding_completed_at) values ($1, $2, $3, true, now()) returning id",
+    [USERS.employer, HEADLINE, r!.id],
+  );
+  await sql("update public.profile_contacts set phone_visibility = 'applicants' where profile_id = $1", [USERS.employer]);
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  await page.goto("/cabinet/elonlar");
+  const vacancyCard = page.locator('[data-my-listing="vacancy"]').filter({ hasText: "E2E qorovul" });
+  const workerCard = page.locator('[data-my-listing="worker"]').filter({ hasText: HEADLINE });
+  await expect(vacancyCard.locator("[data-phone-hidden]")).toContainText("raqamingiz bu e'londa ko'rinmayapti");
+  await expect(workerCard.locator("[data-phone-hidden]")).toBeVisible();
+  // "O'zgartirish" — tuzatish yo'li shu kartaning o'zida
+  await expect(vacancyCard.getByRole("link", { name: /O'zgartirish/ })).toHaveAttribute("href", `/post/vacancy?edit=${v!.id}`);
+
+  await sql("update public.vacancy_contacts set show_phone = true where vacancy_id = $1", [v!.id]);
+  await sql("insert into public.worker_listing_phones (worker_id, phone) values ($1, '+998932728766')", [w!.id]);
+  await page.reload();
+  await expect(vacancyCard).toBeVisible();
+  await expect(page.locator("[data-phone-hidden]")).toHaveCount(0);
+});

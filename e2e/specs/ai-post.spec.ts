@@ -82,7 +82,7 @@ test("mehmon (telefon): bosh sahifa → yordamchi → «men o'qituvchiman» → 
   // ekranda telefon raqami ko'rsatilmaydi (faqat "ko'rinadi" degan yozuv)
   await expect(card).not.toContainText("90 123");
   await expect(card).not.toContainText("93 555");
-  await expect(card.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan ikkala raqam e'londa ko'rinadi — ish beruvchilar qo'ng'iroq qiladi");
+  await expect(card.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan ikkala raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar qo'ng'iroq qiladi");
 
   // mehmon "Joylash" → telefon bilan kirish (SMS) → shu yerga qaytadi
   await page.locator("[data-ai-post-publish]").click();
@@ -175,7 +175,7 @@ test("kirgan (kompyuter): «haydovchiman, Samarqand» → oyna darhol (kasb va h
   await form.locator("#phone").fill("97 444 55 66");
   await page.locator("[data-ai-post-confirm]").click();
   await expect(page.locator("[data-ai-post-preview] [data-ai-post-about]")).toContainText("Tajribam — 3 yildan ko'p. Hudud: Samarqand.");
-  await expect(page.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan raqam e'londa ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi");
+  await expect(page.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi");
   // "O'zgartirish" — oynaga qaytadi, javoblar saqlangan
   await page.locator("[data-ai-post-edit]").click();
   await expect(form.locator("[data-exp='3plus']")).toHaveAttribute("aria-checked", "true");

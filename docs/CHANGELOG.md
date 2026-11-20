@@ -1,5 +1,30 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · Telefon raqam kanalda ham — bosilsa qo'ng'iroq (`claude/phones-everywhere`)
+
+Ega: "hammaga majburiy qil telefon nomer kiritsin — ishchi qidiruvchi ham, ish qidiruvchi ham; telefon nomerlar 100%
+ko'rinsin hammaga; kanalga kelyapti, nomer yo'q; kanalda nomer ustiga bossa telefon qilishga o'tsin — raqamlarni qo'shib
+yozish kerak, masalan 998932728766".
+
+Holat (prod, faqat o'qildi): yangi e'londa raqam ikkala formada ham allaqachon majburiy va doim ko'rinadi. Faol
+e'lonlardan 2 ta vakansiya va 2 ta ishchi e'lonida raqam ko'rinmaydi — eski "ko'rsatilmasin" tanlovi; ular egalarining
+roziligisiz ochilmadi (quyidagi eslatma).
+
+- **Kanal posti — raqam bo'shliqsiz** (`+998932728766`): Telegram uni bosiladigan qiladi, bosilsa qo'ng'iroq
+  (`dialable`). Avval "+998 93 272 87 66" edi — bosilmasdi.
+- **Ishchi e'loni ham raqam bilan** (avval kanalda raqam yo'q edi): e'londagi raqam(lar) (`worker_listing_phones`, ikkalasi).
+  Faqat `WORKER_CHANNEL_PHONES_FROM` dan keyin saqlanganlari — shu paytdan forma "raqam Telegram kanalidagi postda ham
+  chiqadi" deydi; avvalgilarga "kanalda ko'rsatilmaydi" deb va'da berilgan edi (qayta joylasa — raqamli chiqadi).
+- **To'liq formadagi vakansiya** (e'londa raqam qatori yo'q): kompaniya / ish beruvchi aloqa raqami — onboarding'da
+  majburiy, "E'lonlarda ko'rsatiladi"; saytda ham shu raqam ochiq (0084).
+- Matnlar 4 tilda: ishchi formasi (kanal izohi, "raqam hammaga ko'rinadi"), AI e'lon oldindan ko'rinishi, suhbat savoli
+  ("ko'rsatish yoki yashirishni keyin tanlaysiz" — endi tanlov yo'q), admin "Telegram kanal" tavsifi.
+- **"E'lonlarim" eslatmasi**: raqami ko'rinmaydigan eski e'lon kartasida — "Telefon raqamingiz bu e'londa ko'rinmayapti…
+  «O'zgartirish»ni bosing" (qayta saqlansa raqam majburiy va ochiq).
+- Testlar: `autopost-format.test.ts` (+2: ishchi raqamlari, `dialable`), `autopost.test.ts` (+2: to'liq forma vakansiyasi —
+  kompaniya / ish beruvchi raqami; ishchi raqami — faqat yangi matndan keyin saqlangani), E2E `employer-my-listings.spec.ts`
+  (+1: eslatma chiqadi va raqam ochilgach yo'qoladi).
+
 ## 2026-11-20 · "E'lonlarim"da barcha e'lonlar; e'lon joylangan zahoti kanalga (`claude/my-listings-channel`)
 
 Ega: "e'lon joylangan — E'lonlarimda ko'rinmayapti, e'lon egasi o'z e'lonlarini, barcha e'lonlarini ko'rolmayapti; e'lon

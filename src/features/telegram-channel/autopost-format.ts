@@ -1,4 +1,4 @@
-import { formatPhone, formatSalaryWithPeriod } from "@/lib/format";
+import { formatSalaryWithPeriod } from "@/lib/format";
 
 /**
  * Kanalga avtomatik e'lon matni (sof funksiyalar): vakansiya — "VAKANSIYA · ishchi kerak", ishchi e'loni — "ISHCHI · ish
@@ -7,11 +7,11 @@ import { formatPhone, formatSalaryWithPeriod } from "@/lib/format";
  * bilib bo'lmadi").
  *
  * Rasm ostida — TO'LIQ matn (ega, 2026-11-18: "rasm tagiga to'liq yozilsin, nomerlar bilan to'liq vakansiya"):
- *  · vakansiya: turi, nomi, kompaniya, joy, maosh, ish vaqti, tajriba, tavsif va telefon. Telefon FAQAT ish beruvchi
- *    kanal uchun rozilik bergan bo'lsa (vacancy_contacts.channel_phone_at, 0083 — "raqamim e'londa va Telegram kanalda
- *    ko'rinsin"); eski roziliklar (kanal tilga olinmagan) — raqamsiz.
- *  · ishchi: turi, kasbi, sarlavha, joy, tajriba, maosh, ish vaqti. Ism, telefon, rasm YO'Q — ishchilarga shunday va'da
- *    berilgan (easy.worker.channel_note).
+ *  · vakansiya: turi, nomi, kompaniya, joy, maosh, ish vaqti, tajriba, tavsif va telefon.
+ *  · ishchi: turi, kasbi, sarlavha, joy, tajriba, maosh, ish vaqti va telefon(lar). Ism va shaxsiy rasm YO'Q.
+ * Telefon — faqat egasi kanal uchun rozi bo'lgani (qaysi raqam — chaqiruvchi, autopost.ts, tanlaydi). Ega (2026-11-20:
+ * "kanalda nomer ustiga bossa telefon qilishga o'tsin — raqamlarni qo'shib yozish kerak"): raqam bo'shliqsiz, xalqaro
+ * ko'rinishda (+998901234567) — Telegram uni bosiladigan raqamga aylantiradi, bosilsa qo'ng'iroq.
  * Erkin matndagi (sarlavha, tavsif) telefon, @nik, havola va email olib tashlanadi — raqam faqat rozilik maydonidan.
  */
 export type T = (key: string, params?: Record<string, string | number>) => string;
@@ -50,6 +50,8 @@ export interface WorkerPostData {
   salary: number | null;
   salaryType: string | null;
   schedules: string[];
+  /** E.164 raqam(lar); faqat kanalga rozilik bo'lsa beriladi (chaqiruvchi tekshiradi) */
+  phones?: string[];
 }
 
 export interface ChannelPost {
@@ -112,6 +114,18 @@ function salaryLabels(t: T) {
 /** tugma havolasi: sayt yo'li → manzil (standart — sayt; asosiy Mini App yoqilgan bo'lsa — t.me/<bot>?startapp=…) */
 export type LinkFn = (path: string) => string;
 
+/** "+998 90 123-45-67" → "+998901234567": bo'shliqsiz xalqaro raqam — Telegram uni bosiladigan (qo'ng'iroq) qiladi */
+export function dialable(phone: string): string | null {
+  const digits = phone.replace(/\D/g, "");
+  return /^998\d{9}$/.test(digits) ? `+${digits}` : null;
+}
+
+/** postning oxiri: bo'sh qator va "📞 Tel: +998…, +998…" (raqam yo'q yoki noto'g'ri — hech narsa) */
+function phoneTail(phones: string[], t: T): string[] {
+  const list = [...new Set(phones.map(dialable).filter((p): p is string => !!p))];
+  return list.length ? ["", `📞 ${escapeHtml(t("bot.channel.phone", { value: list.join(", ") }))}`] : [];
+}
+
 export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn = (p) => `${base}${p}`): ChannelPost {
   const salary = formatSalaryWithPeriod(
     { from: d.salaryFrom, to: d.salaryTo, type: d.salaryType, negotiable: d.negotiable },
@@ -133,8 +147,7 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn
     d.schedule ? `🕘 ${escapeHtml(d.schedule)}` : null,
     step == null ? null : `🧰 ${escapeHtml(step === 0 ? t("bot.channel.no_experience") : t("bot.channel.experience", { value: t(`enums.experience_min_months.${step}`) }))}`,
   ].filter((l) => l !== null);
-  const phone = d.phone ? formatPhone(d.phone) : "";
-  const tail = phone ? ["", `📞 ${escapeHtml(t("bot.channel.phone", { value: phone }))}`] : [];
+  const tail = phoneTail(d.phone ? [d.phone] : [], t);
   // tavsif — qolgan joyga sig'guncha (escape kengaytirishi uchun zaxira: belgi soni ~1.2×)
   const used = [...head, ...tail].join("\n").length + 2;
   const room = Math.floor((CAPTION_MAX - used) / 1.2);
@@ -163,6 +176,7 @@ export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn =
     d.experience ? `🧰 ${escapeHtml(t("bot.channel.experience", { value: d.experience }))}` : null,
     `💰 ${escapeHtml(t("bot.channel.salary_expect", { value: salary }))}`,
     d.schedules.length ? `🕘 ${escapeHtml(d.schedules.join(", "))}` : null,
+    ...phoneTail(d.phones ?? [], t),
   ];
   const html = lines.filter((l) => l !== null).join("\n");
   return {
