@@ -35,16 +35,16 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await knownEmployer();
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
-  // 2026-11-20: kirgan ish beruvchining asosiy ekrani — chat: "Vakansiya berish" → "Qanday ishchi kerak? Pastga yozing"
-  // → yozilgan gap bilan yordamchi darhol boshlanadi (gapni qayta yozish shart emas)
+  // kirgan ish beruvchining asosiy ekrani — chat: "Vakansiya berish" → darhol alohida ekran (yordamchi; 2026-11-21)
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
   await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
   await page.locator("[data-chat-choice='post']").click();
-  const box = page.locator("#start-chat-post");
-  await box.fill("Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, ovqat bilan");
-  await box.press("Enter");
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
+  await expect(h1(page)).toHaveText("Qanday xodim kerak?");
+  await ready(page);
+  await page.locator("[data-guide-sentence]").fill("Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, ovqat bilan");
+  await page.locator("[data-guide-start]").click();
 
   // kasb, tuman va maosh gapdan tushunildi — qayta so'ralmaydi; birinchi savol — ish vaqti
   await expect(h1(page)).toHaveText("Ish vaqti qanday?");

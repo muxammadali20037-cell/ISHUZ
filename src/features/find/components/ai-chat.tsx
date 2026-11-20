@@ -424,11 +424,11 @@ function Cards({ list, saved }: { list: QuickList; saved: string[] }) {
  * qisqa xulosa ("Avtoinstruktor · Toshkent shahri · 4 mln so'mdan"), topilganlar; topilmasa — bitta qisqa xabar va pastda
  * shunga yaqin kasblar. Kartalar faqat oxirgi javobda (oldingilarida — havola).
  */
-/** "1 ta ish topildi" — yashil belgi bilan (ega, 2026-11-19: rangli, alohida) */
+/** "1 ta ish topildi" — sokin: oddiy qalin matn va kichik belgi (ega, 2026-11-21: "ranglar yemagan, bolalarcha") */
 function FoundBadge({ label }: { label: string }) {
   return (
-    <p className="inline-flex items-center gap-2 rounded-full bg-success-soft px-3.5 py-1.5 text-base font-bold text-success" data-quick-found>
-      <CheckCircle2 className="size-5 shrink-0" aria-hidden />
+    <p className="inline-flex items-center gap-2 text-base font-bold" data-quick-found>
+      <CheckCircle2 className="size-5 shrink-0 text-success" aria-hidden />
       {label}
     </p>
   );
@@ -462,10 +462,7 @@ function FoundResults({ id, memo, label, children }: { id: number; memo: string;
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           aria-controls={panelId}
-          className={cn(
-            "press inline-flex min-h-11 items-center gap-2 rounded-full px-4 text-base font-bold",
-            open ? "border border-border bg-card text-foreground hover:bg-secondary" : "bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover",
-          )}
+          className="press inline-flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-4 text-base font-semibold text-foreground hover:bg-secondary"
           data-quick-show
         >
           {open ? <EyeOff className="size-5" aria-hidden /> : <Eye className="size-5" aria-hidden />}
@@ -542,7 +539,7 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
       {/* nima bo'yicha qidirildi + "O'zgartirish" (oyna qayta ochiladi) */}
       <div className="flex flex-wrap items-center gap-1.5" data-quick-summary>
         {r.summary.map((s) => (
-          <span key={s} className="inline-flex min-h-8 items-center rounded-full border border-primary/25 bg-card px-3 text-sm font-semibold text-primary-ink">
+          <span key={s} className="inline-flex min-h-8 items-center rounded-full bg-secondary px-3 text-sm font-semibold text-foreground">
             {s}
           </span>
         ))}
@@ -573,26 +570,21 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
               ) : null}
             </FoundResults>
           ) : (
-            <FoundBadge label={jobs ? t("easy.quick.found_jobs", { count: r.total }) : t("easy.quick.found_workers", { count: r.total })} />
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+              <FoundBadge label={jobs ? t("easy.quick.found_jobs", { count: r.total }) : t("easy.quick.found_workers", { count: r.total })} />
+              <Link href={r.href} className="inline-flex min-h-11 items-center gap-1 font-semibold text-primary-ink hover:underline">
+                {t("easy.finder.open_results")} <ArrowRight className="size-4" aria-hidden />
+              </Link>
+            </div>
           )}
-          {!latest ? (
-            <Link href={r.href} className="inline-flex min-h-11 items-center gap-1 font-semibold text-primary-ink hover:underline">
-              {t("easy.finder.open_results")} <ArrowRight className="size-4" aria-hidden />
-            </Link>
-          ) : null}
         </>
       ) : (
         // topilmadi — bitta qisqa xabar (ega: "bo'ldi, shu yetadi")
-        <div
-          className={cn("flex gap-3 rounded-2xl px-4 py-3 text-base", r.save === "saved" || r.save === "exists" ? "bg-success-soft" : "bg-secondary")}
-          role="status"
-          data-quick-none
-          data-save={r.save ?? undefined}
-        >
-          {r.save === "saved" || r.save === "exists" ? <BellRing className="mt-0.5 size-5 shrink-0 text-success" aria-hidden /> : <Info className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden />}
-          <div className="min-w-0 space-y-2">
+        <div className="flex gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 text-base shadow-sm" role="status" data-quick-none data-save={r.save ?? undefined}>
+          {r.save === "saved" || r.save === "exists" ? <BellRing className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden /> : <Info className="mt-0.5 size-5 shrink-0 text-muted-foreground" aria-hidden />}
+          <div className="min-w-0 flex-1 space-y-2">
             <p className="font-semibold">{jobs ? t("easy.quick.none_jobs") : t("easy.quick.none_workers")}</p>
-            {r.save === "saved" || r.save === "exists" ? <p>{t("easy.quick.saved")}</p> : null}
+            {r.save === "saved" || r.save === "exists" ? <p className="text-muted-foreground">{t("easy.quick.saved")}</p> : null}
             {r.save === "login" ? (
               <>
                 <p>{t("easy.quick.login_note")}</p>
@@ -605,10 +597,11 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
             ) : null}
             {/* topilmadi — o'zi e'lon qoldirsin (ega, 2026-11-20): ish izlovchi — o'zi haqida, ish beruvchi — vakansiya;
                 yozgani (kasb) bilan yordamchi ochiladi */}
+            {/* uzun yozuv ekrandan chiqmasin: to'liq kenglik, qatorga o'raladi */}
             {jobs && latest ? (
               <>
-                <p>{t("easy.finder.empty_post_worker_note")}</p>
-                <Button asChild className="h-11 text-base" data-quick-post="worker">
+                <p className="text-muted-foreground">{t("easy.finder.empty_post_worker_note")}</p>
+                <Button asChild className="h-auto min-h-11 w-full whitespace-normal py-2 text-base" data-quick-post="worker">
                   <Link href={turn.blank || !turn.query ? "/ai/post" : `/ai/post?${new URLSearchParams({ q: turn.query }).toString()}`}>
                     <Plus className="size-5" aria-hidden /> {t("easy.finder.empty_post_worker")}
                   </Link>
@@ -616,7 +609,7 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
               </>
             ) : null}
             {!jobs && latest ? (
-              <Button asChild variant="outline" className="h-11 bg-card text-base" data-quick-post="vacancy">
+              <Button asChild variant="outline" className="h-auto min-h-11 w-full whitespace-normal bg-card py-2 text-base" data-quick-post="vacancy">
                 <Link href={`/post/vacancy?${new URLSearchParams({ ai: "1", ...(turn.blank || !turn.query ? {} : { q: turn.query }) }).toString()}`}>
                   <Plus className="size-5" aria-hidden /> {t("easy.finder.empty_post_vacancy")}
                 </Link>
@@ -827,7 +820,20 @@ export function AiThread({ chat, examples, scrollOnRestore = true, bar: showBar 
  * Aytilgan gap maydonga yoziladi — foydalanuvchi tekshiradi, kerak bo'lsa tuzatadi va o'zi yuboradi (o'zi yuborilmaydi).
  * Mikrofon faqat tugma bosilganda va brauzer ruxsati bilan ishlaydi; ovoz saqlanmaydi.
  */
-export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, inputRef }: { chat: AiChatState; id?: string; autoFocus?: boolean; inputRef?: RefObject<HTMLTextAreaElement | null> }) {
+export function AiPromptBox({
+  chat,
+  id = "ai-finder-text",
+  autoFocus = false,
+  inputRef,
+  note = true,
+}: {
+  chat: AiChatState;
+  id?: string;
+  autoFocus?: boolean;
+  inputRef?: RefObject<HTMLTextAreaElement | null>;
+  /** pastdagi kichik izoh ("Faqat bazadagi haqiqiy e'lonlar…") — asosiy chatda yo'q (ortiqcha matn) */
+  note?: boolean;
+}) {
   const { t } = useT();
   const [text, setText] = useState("");
   const ownRef = useRef<HTMLTextAreaElement>(null);
@@ -855,7 +861,9 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
     }
   };
 
-  const round = "press relative flex size-12 shrink-0 items-center justify-center rounded-xl";
+  // ChatGPT kabi: dumaloq tugma; matn yo'q paytda — xira (bosib bo'ladi, bo'sh bo'lsa maydonga fokus qaytadi)
+  const round = "press relative flex size-11 shrink-0 items-center justify-center rounded-full transition-colors";
+  const empty = !text.trim();
 
   return (
     <form
@@ -867,7 +875,7 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
       data-state={chat.pending ? "processing" : "idle"}
       data-hydrated={hydrated ? "" : undefined}
     >
-      <div className="flex items-end gap-1.5 rounded-2xl border border-input bg-card p-1.5 transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-ring/25">
+      <div className="flex items-end gap-1.5 rounded-2xl border border-border bg-card p-1.5 shadow-sm transition-colors focus-within:border-ring">
         <label htmlFor={id} className="sr-only">
           {t("easy.finder.label")}
         </label>
@@ -883,7 +891,7 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
           enterKeyHint="send"
           placeholder={chat.mode === "workers" ? t("easy.finder.composer_placeholder_workers") : t("easy.finder.composer_placeholder_jobs")}
           // fokus halqasi butun yozish qutisida (focus-within) — ichidagi maydonda ikkinchi halqa chizilmaydi
-          className="min-h-12 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-2.5 py-3 text-base leading-6 text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
+          className="min-h-11 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-2.5 py-2.5 text-base leading-6 text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
         />
         {/* har holatning o'z tugmasi (key): "To'xtatish" bosilganda o'sha tugma "Yuborish"ga aylanib qolmasin */}
         {chat.pending ? (
@@ -891,12 +899,12 @@ export function AiPromptBox({ chat, id = "ai-finder-text", autoFocus = false, in
             <Square className="size-4 fill-current" aria-hidden />
           </button>
         ) : (
-          <button key="send" type="submit" aria-label={t("easy.finder.submit")} className={cn(round, "bg-primary text-primary-foreground hover:bg-primary-hover")}>
+          <button key="send" type="submit" aria-label={t("easy.finder.submit")} className={cn(round, empty ? "bg-secondary text-muted-foreground" : "bg-primary text-primary-foreground hover:bg-primary-hover")}>
             <ArrowUp className="size-5" aria-hidden />
           </button>
         )}
       </div>
-      <p className="min-h-5 px-1 text-xs text-muted-foreground">{t("easy.finder.disclaimer")}</p>
+      {note ? <p className="min-h-5 px-1 text-xs text-muted-foreground">{t("easy.finder.disclaimer")}</p> : null}
     </form>
   );
 }

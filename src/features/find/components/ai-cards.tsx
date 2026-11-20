@@ -30,18 +30,21 @@ import { SaveButton } from "@/features/saved/components/save-button";
 import { RevealPhone } from "@/features/contacts/reveal-phone";
 import { levelToExperience } from "@/features/post/types";
 import { openVacancyCard, openWorkerCard, type CardPhone, type VacancyCardDetails } from "../card-details";
-import { LiveStatus, OrgMark, usePlace, usePosted, type JobCardData, type WorkerCardData } from "./result-cards";
+import { OrgMark, usePlace, usePosted, type JobCardData, type WorkerCardData } from "./result-cards";
 
 /**
  * Yordamchi (AI) javobidagi kartalar (ega, 2026-11-19: "tartib bilan, rangli, alohida rangda, ichida telefonigacha
  * ko'rinsin; sodda va chiroyli; nomi tagida yashil «E'lonni to'liq ko'rish» — bosilsa hamma ma'lumot tartib bilan").
  *
- * Yopiq: lavozim · qizil holat · maosh · ish beruvchi → yashil "E'lonni to'liq ko'rish". Ochilganda — shu kartaning
+ * 2026-11-21 (ega: "ranglar yemagan, bolalarcha"): oq sokin karta, qizil holat chat kartasida yo'q (e'lon sahifasida bor),
+ * "E'lonni to'liq ko'rish" — sokin chegarali tugma.
+ * Yopiq: lavozim · maosh · ish beruvchi → "E'lonni to'liq ko'rish". Ochilganda — shu kartaning
  * o'zida qatorma-qator: manzil, grafik, tajriba, bandlik, (ma'lumot/yosh/jins), joylangan sana, ish haqida, qulayliklar,
  * telefon (bosish — aniq harakat: raqam ham ochiladi, limitlar o'sha-o'sha) va "Ariza yuborish".
  */
 
-const cardCls = "relative rounded-2xl border border-primary/20 bg-primary-soft/50 p-4 shadow-sm";
+// oq, sokin karta (ega, 2026-11-21: "ranglar yemagan, bolalarcha") — rang faqat muhim joyda (maosh, tugma)
+const cardCls = "relative rounded-2xl border border-border bg-card p-4 shadow-sm";
 const openBtnCls = "press mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 text-base font-bold disabled:opacity-70";
 const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
 
@@ -80,8 +83,8 @@ function OpenButton({ open, loading, controls, onClick }: { open: boolean; loadi
       onClick={onClick}
       aria-expanded={open}
       aria-controls={controls}
-      // yopiq — yashil (asosiy amal); ochiq — och ("Yopish" ko'zni olmasin)
-      className={cn(openBtnCls, open ? "border border-success/40 bg-card text-success hover:bg-success-soft" : "bg-success text-success-foreground shadow-sm hover:opacity-90")}
+      // sokin ikkinchi darajali tugma (asosiy amal — ichkarida: "Ariza yuborish" / qo'ng'iroq)
+      className={cn(openBtnCls, "border border-border bg-card text-foreground hover:bg-secondary")}
       data-ai-card-open
     >
       {loading ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <FileText className="size-5" aria-hidden />}
@@ -146,13 +149,12 @@ export function AiJobCard({ job, saved }: { job: JobCardData; saved?: boolean })
         </h3>
         {saved !== undefined ? <SaveButton kind="vacancy" id={job.id} initial={saved} label={job.title} variant="ghost" className="-mr-2 -mt-1.5 shrink-0" /> : null}
       </div>
-      <LiveStatus kind="hiring" wrap className="mt-1" />
       <SalaryText
         from={job.salary_from}
         to={job.salary_to}
         type={job.salary_type}
         negotiable={job.salary_negotiable}
-        className={cn("mt-2 text-sm font-bold", negotiable ? "block font-semibold text-muted-foreground" : "inline-block max-w-full rounded-full bg-card px-3 py-1 text-primary-ink")}
+        className={cn("mt-2 text-sm font-bold", negotiable ? "block font-semibold text-muted-foreground" : "inline-block max-w-full rounded-full bg-primary-soft px-3 py-1 text-primary-ink")}
       />
       {job.employer_name ? (
         <p className="mt-2 flex min-w-0 items-center gap-2 text-base font-semibold">
@@ -166,7 +168,7 @@ export function AiJobCard({ job, saved }: { job: JobCardData; saved?: boolean })
       <OpenButton open={open} loading={open && data.phase === "loading"} controls={panelId} onClick={toggle} />
 
       {open ? (
-        <div id={panelId} className="mt-3 space-y-4 rounded-xl bg-card p-3 sm:p-4" data-ai-card-details>
+        <div id={panelId} className="mt-3 space-y-4 rounded-xl bg-secondary/60 p-3 sm:p-4" data-ai-card-details>
           {data.phase === "ready" ? (
             <JobDetails d={data.details} when={when} place={place(job, job.is_remote)} name={name} t={t} tEnum={tEnum} />
           ) : data.phase === "error" ? (
@@ -307,13 +309,12 @@ export function AiWorkerCard({ worker, saved }: { worker: WorkerCardData; saved?
         </div>
         {saved !== undefined ? <SaveButton kind="worker" id={worker.id} initial={saved} label={fullName} variant="ghost" className="-mr-2 -mt-1.5 shrink-0" /> : null}
       </div>
-      {worker.status === "active" ? <LiveStatus kind="seeking" wrap className="mt-1" /> : null}
       <PlaceLine text={place(worker, worker.remote_ok)} />
 
       <OpenButton open={open} loading={open && data.phase === "loading"} controls={panelId} onClick={toggle} />
 
       {open ? (
-        <div id={panelId} className="mt-3 space-y-4 rounded-xl bg-card p-3 sm:p-4" data-ai-card-details>
+        <div id={panelId} className="mt-3 space-y-4 rounded-xl bg-secondary/60 p-3 sm:p-4" data-ai-card-details>
           <dl className="space-y-3">
             <Row icon={<MapPin />} label={t("easy.listing.location")}>
               {place(worker, worker.remote_ok)}

@@ -92,8 +92,10 @@ test("kirgan foydalanuvchi: «/» → chat; salom, «Nima qilmoqchisiz?», rolga
   await expect(chat).toContainText("Assalomu alaykum, Anvar!");
   await expect(chat).toContainText("Nima qilmoqchisiz?");
   await expect(chat.locator("[data-chat-choice='find']")).toContainText("Ish izlash");
-  await expect(chat.locator("[data-chat-choice='post']")).toContainText("E'lon berish");
-  await expect(chat.locator("[data-chat-choice='post']")).toContainText("O'zim haqimda");
+  await expect(chat.locator("[data-chat-choice='post']")).toHaveText("E'lon berish");
+  // ixcham: ikkita qator, tagida izoh yo'q (2026-11-21)
+  await expect(chat.locator("[data-chat-choices] > *")).toHaveCount(2);
+  await expect(chat.locator("[data-chat-choice='find']")).toHaveText("Ish izlash");
   // "ish yoki ishchi" degan umumiy matn yo'q
   await expect(chat).not.toContainText("Ish yoki ishchi");
   await expect(tabs(page).getByRole("link", { name: "Izlash/E'lon" })).toHaveAttribute("aria-current", "page");
@@ -145,7 +147,7 @@ test("Ish izlash → pastga strelka, yoziladi → so'rovnoma → haqiqiy e'lonla
   await expect(post).toHaveAttribute("href", "/ai/post?q=Kosmonavt");
 });
 
-test("Ishchi izlash (ish beruvchi): yozish so'raladi, «Usta kerakmi?» shu yerda", async ({ page, context }) => {
+test("Ishchi izlash (ish beruvchi): yozish so'raladi, «Ustalar» — kichik havola", async ({ page, context }) => {
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
@@ -153,44 +155,27 @@ test("Ishchi izlash (ish beruvchi): yozish so'raladi, «Usta kerakmi?» shu yerd
   await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
   await chat.locator("[data-chat-choice='find']").click();
   await expect(chat).toContainText("Qanday ishchi kerak? Pastga yozing va toping.");
+  // bosilgan zahoti yozish maydoni fokusda
+  await expect(page.locator("#start-chat-text")).toBeFocused();
   await expect(chat.locator("[data-chat-choice='find_masters']")).toHaveAttribute("href", "/ustalar");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kim kerak: kasb, tuman…");
 });
 
-test("E'lon berish (ish izlovchi) → «Qanday ish qidiryapsiz?» → yozilgani bilan yordamchi ochiladi", async ({ page, context }) => {
+test("E'lon berish (ish izlovchi) → darhol alohida ekran — yordamchi bilan o'zi haqida e'lon", async ({ page, context }) => {
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
   await page.goto("/chat");
-  const chat = page.locator("[data-start-chat]");
-  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
-  await chat.locator("[data-chat-choice='post']").click();
-  await expect(chat).toContainText("Qanday ish qidiryapsiz? Pastga yozing.");
-  await expect(chat).toContainText("telefon raqamingiz");
-  const box = page.locator("#start-chat-post");
-  await expect(box).toHaveAttribute("placeholder", "Kasbingiz, tuman…");
-  await box.fill("Buxgalter");
-  await box.press("Enter");
-  await expect(page).toHaveURL(/\/ai\/post/);
-  // yozilgan gap yuborilgan (yordamchi davom etadi), manzildan olib tashlangan
-  await expect(page.locator("[data-ai-post] [data-ai-you]").first()).toHaveText(/Buxgalter/);
+  await page.locator("[data-start-chat] [data-chat-choice='post']").click();
   await expect(page).toHaveURL(/\/ai\/post$/);
 });
 
-test("E'lon berish (ish beruvchi) → «Qanday ishchi kerak?» → yordamchi bilan vakansiya, gap bilan boshlanadi", async ({ page, context }) => {
+test("E'lon berish (ish beruvchi) → darhol yordamchi bilan vakansiya (alohida ekran)", async ({ page, context }) => {
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
-  const chat = page.locator("[data-start-chat]");
-  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
-  await chat.locator("[data-chat-choice='post']").click();
-  await expect(chat).toContainText("Qanday ishchi kerak? Pastga yozing.");
-  const box = page.locator("#start-chat-post");
-  await box.fill("Buxgalter kerak, Toshkent");
-  await box.press("Enter");
-  await expect(page).toHaveURL(/\/post\/vacancy\?ai=1/);
+  await page.locator("[data-start-chat] [data-chat-choice='post']").click();
+  await expect(page).toHaveURL(/\/post\/vacancy\?ai=1$/);
   await expect(page.locator("#mode-gate-title")).toHaveCount(0);
   await expect(page.locator("[data-vacancy-guide]")).toBeVisible();
-  // birinchi gap yuborilgan — savollar boshlandi (kirish ekrani emas)
-  await expect(page.locator("[data-vacancy-guide]")).not.toHaveAttribute("data-guide-step", "intro");
-  await expect(page).toHaveURL(/\/post\/vacancy\?ai=1$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
 });
