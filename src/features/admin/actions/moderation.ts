@@ -1,10 +1,12 @@
 "use server";
 
+import { after } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { errorCode } from "@/lib/utils";
 import type { ActionResult } from "@/features/auth/actions";
 import { documentUrlSchema, moderateReviewSchema, resolveReportSchema, reviewVerificationSchema } from "../schema";
+import { runChannelAutopost } from "@/features/telegram-channel/autopost";
 import { logAdmin, requirePerm } from "./guard";
 
 /** Shikoyat holati → rpc admin_resolve_report (in_review / resolved / dismissed) */
@@ -56,6 +58,8 @@ export async function reviewVerification(input: unknown): Promise<ActionResult> 
     p_note: parsed.data.note || undefined,
   });
   if (error) return { ok: false, error: errorCode(error) };
+  // tasdiqlangan ish beruvchining kutib turgan vakansiyalari endi ochiq — kanalga va egasiga darhol (navbatni kutmasdan)
+  if (parsed.data.status === "verified") after(() => runChannelAutopost().then(() => undefined));
   revalidatePath("/admin/verifications");
   revalidatePath("/admin/employers");
   revalidatePath("/admin");

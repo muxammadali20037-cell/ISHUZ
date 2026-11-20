@@ -32,7 +32,8 @@
     "updated": "Yangilandi",
     "no_category": "Kategoriya tanlanmagan",
     "remote": "Masofaviy",
-    "view_only": "Faqat ko'rish"
+    "view_only": "Faqat ko'rish",
+    "other_listings": "Boshqa e'lonlaringiz"
   },
   "actions": {
     "view": "Ish izlovchi ko'zi bilan",

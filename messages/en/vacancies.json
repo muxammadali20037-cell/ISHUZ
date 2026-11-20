@@ -32,7 +32,8 @@
     "updated": "Updated",
     "no_category": "No category selected",
     "remote": "Remote",
-    "view_only": "View only"
+    "view_only": "View only",
+    "other_listings": "Your other listings"
   },
   "actions": {
     "view": "View as job seeker",

@@ -12,6 +12,7 @@ import { ensureProfessionImagesSafe } from "@/lib/profession-images/server";
 import { allowRate } from "@/lib/rate-limit";
 import { moderateNow } from "@/features/moderation/service";
 import { runBackgroundTickSafe } from "@/features/notifications/tick";
+import { postListingNow } from "@/features/telegram-channel/autopost";
 import { trackServer } from "@/features/analytics/server";
 import { toListingStateInfo, type ListingStateInfo } from "./types";
 import { keptWorkerFields, type ExistingWorker } from "./keep";
@@ -103,6 +104,8 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
     return { ok: false, error: "blocked" };
   }
   after(async () => {
+    // kanalga — darhol (qayta joylangan e'lon ham, kuniga bir marta); fon navbati og'ir bo'lsa kanal kutib qolmasin
+    if (info.state === "listed") await postListingNow("worker", res.worker_id);
     await trackServer("post_publish", session.userId, { entity: "worker", source: v.source ?? "manual", state: info.state });
     if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
     await runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 });
@@ -190,6 +193,7 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
     return { ok: false, error: "blocked" };
   }
   after(async () => {
+    if (info.state === "active" || info.state === "listed") await postListingNow("vacancy", res.vacancy_id);
     await trackServer("post_publish", session.userId, { entity: "vacancy", source: v.source ?? "manual", state: info.state });
     if (v.professionNodeId) await ensureProfessionImagesSafe([v.professionNodeId], 1);
     await runBackgroundTickSafe({ moderation: 3, matchJobs: 10, telegram: 50, budgetMs: 25_000 });
