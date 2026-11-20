@@ -491,7 +491,8 @@
     "tab_fields": "Fields",
     "tab_my_listings": "My listings",
     "tab_workers": "Workers",
-    "tab_employers": "Employers"
+    "tab_employers": "Employers",
+    "tab_chat": "Find/Post"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -1578,5 +1579,30 @@
         "text": "Enjoy, and good luck!"
       }
     }
+  },
+  "start_chat": {
+    "title": "Find and post",
+    "hello": "Hello!",
+    "hello_name": "Hello, {name}!",
+    "ask_what": "What would you like to do? Choose:",
+    "find": "Find",
+    "find_hint": "A job or a worker",
+    "post": "Post an ad",
+    "post_hint": "About yourself, or that you need a worker",
+    "ask_find": "What are you looking for?",
+    "find_jobs": "A job",
+    "find_jobs_hint": "I need a job",
+    "find_workers": "A worker",
+    "find_workers_hint": "I need a worker",
+    "said_find_jobs": "I'm looking for a job",
+    "said_find_workers": "I'm looking for a worker",
+    "ask_post": "What kind of ad?",
+    "post_worker": "I'm looking for work",
+    "post_worker_hint": "An ad about myself",
+    "post_vacancy": "I need a worker",
+    "post_vacancy_hint": "A job vacancy ad",
+    "type_hint": "Or type below, for example: «driver in Tashkent»",
+    "find_masters": "A tradesperson",
+    "find_masters_hint": "Plumber, electrician, AC technician and more"
   }
 }

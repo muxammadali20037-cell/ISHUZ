@@ -3,12 +3,14 @@ import {
   BriefcaseBusiness,
   Building2,
   CalendarDays,
+  ClipboardList,
   FileCheck2,
   Inbox,
   LayoutDashboard,
   LifeBuoy,
   MapPinned,
   MessageCircle,
+  MessageSquareText,
   Plus,
   Search,
   Settings,
@@ -35,7 +37,8 @@ export interface MenuItem {
   hintKey: string;
   icon: LucideIcon;
   badgeKey?: BadgeKey;
-  match: (path: string) => boolean;
+  /** `find` — /search sahifasidagi ?mode= (ish yoki ishchi): "Ishlar" va "Ishchilar" bo'limlari shu bilan ajraladi */
+  match: (path: string, find?: string | null) => boolean;
   /** muhim yangi bo'lim — yozuvsiz yonib-o'chuvchi nuqta (muddati config/new-features.ts da) */
   fresh?: NewFeature;
   /** alohida rangda ajraladi: "Yordamchi" — to'q sariq, "Universal ustalar" — turkuaz, "E'lon joylash" — gradient */
@@ -157,3 +160,50 @@ export function mainItems(mode: MenuMode): MenuItem[] {
     },
   ];
 }
+
+/*
+ * Soddalashtirilgan asosiy menyu (ega, 2026-11-20: "ilova chalkash — kirgan odam hech nimani tushunmaydi; pastda faqat
+ * Ishchilar, Ishlar, E'lonlarim, Izlash va e'lon berish, Profil — bo'ldi; kirgandan keyin chatga kirsin").
+ * Ikkala rejimda (ish izlovchi va ish beruvchi) bir xil: telefonda pastki menyu, kompyuterda yon menyu.
+ * O'rtada — "Izlash/E'lon" (/chat): suhbatda "Izlash" yoki "E'lon berish" tanlanadi.
+ */
+export const WORKERS_HREF = "/search?mode=workers&any=1&region=all";
+export const CHAT_HREF = "/chat";
+
+const onSearch = (p: string) => p === "/search" || p.startsWith("/search/");
+export const isWorkersPath = (p: string, find?: string | null) =>
+  p.startsWith("/listing") || p.startsWith("/workers") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates") || (onSearch(p) && find === "workers");
+export const isJobsPath = (p: string, find?: string | null) =>
+  p.startsWith("/jobs") ||
+  p.startsWith("/students") ||
+  p.startsWith("/companies") ||
+  (p.startsWith("/company/") && !p.startsWith("/company/settings") && !p.startsWith("/company/join")) ||
+  p.startsWith("/sohalar") ||
+  p.startsWith("/kasblar") ||
+  p.startsWith("/ai-alerts") ||
+  p.startsWith("/cabinet/matches") ||
+  (onSearch(p) && find !== "workers");
+export const isChatPath = (p: string) => p.startsWith(CHAT_HREF) || p === "/ai" || p.startsWith("/ai/") || p.startsWith("/post");
+export const isMyListingsPath = (p: string) => p.startsWith("/cabinet/elonlar") || p.startsWith("/employer/vacancies") || p.startsWith("/employer/applications");
+const PROFILE_PREFIXES = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages", "/saved", "/applications", "/offers", "/company/settings", "/onboarding"];
+export const isProfilePath = (p: string) => p === "/employer" || (PROFILE_PREFIXES.some((x) => p.startsWith(x)) && !isMyListingsPath(p) && !p.startsWith("/cabinet/matches"));
+
+export const APP_WORKERS: MenuItem = { key: "workers", href: WORKERS_HREF, labelKey: "easy.nav.tab_workers", hintKey: "easy.side.hint.candidates", icon: Users, match: isWorkersPath };
+export const APP_JOBS: MenuItem = { key: "jobs", href: "/jobs", labelKey: "easy.nav.tab_jobs", hintKey: "easy.side.hint.jobs", icon: BriefcaseBusiness, match: isJobsPath };
+export const APP_CHAT: MenuItem = { key: "chat", href: CHAT_HREF, labelKey: "easy.nav.tab_chat", hintKey: "easy.start_chat.title", icon: MessageSquareText, match: isChatPath };
+export const APP_MY_LISTINGS: MenuItem = {
+  key: "my-listings",
+  href: "/cabinet/elonlar",
+  labelKey: "easy.nav.tab_my_listings",
+  hintKey: "easy.cabinet.page_sub",
+  icon: ClipboardList,
+  badgeKey: "applications",
+  match: isMyListingsPath,
+};
+export const APP_PROFILE: MenuItem = { key: "profile", href: "/cabinet", labelKey: "easy.nav.tab_profile", hintKey: "easy.side.hint.profile", icon: User, badgeKey: "offers", match: isProfilePath };
+
+/** Telefondagi pastki menyu: 2 ta bo'lim · o'rtada chat · 2 ta bo'lim */
+export const APP_TABS: MenuItem[] = [APP_WORKERS, APP_JOBS, APP_CHAT, APP_MY_LISTINGS, APP_PROFILE];
+
+/** Kompyuterdagi yon menyu: chat birinchi, xabarlar — alohida qator (telefonda ular yuqori panelda) */
+export const APP_SIDE_ITEMS: MenuItem[] = [APP_CHAT, APP_JOBS, APP_WORKERS, APP_MY_LISTINGS, { ...messages, match: (p) => p.startsWith("/messages") }, { ...APP_PROFILE, match: (p) => isProfilePath(p) && !p.startsWith("/messages") }];

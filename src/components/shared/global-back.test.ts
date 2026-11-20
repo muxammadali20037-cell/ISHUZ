@@ -5,6 +5,7 @@ describe("umumiy 'Orqaga'", () => {
   it("bosh sahifalarda yo'q, qolganlarida bor", () => {
     expect(showGlobalBack("/")).toBe(false);
     expect(showGlobalBack("/employer")).toBe(false);
+    expect(showGlobalBack("/chat")).toBe(false);
     expect(showGlobalBack("/ustalar")).toBe(false);
     expect(showGlobalBack(null)).toBe(false);
     for (const p of ["/ai", "/cabinet", "/jobs", "/jobs/xarita", "/employer/vacancies/abc", "/ustalar/kabinet", "/settings"]) expect(showGlobalBack(p)).toBe(true);

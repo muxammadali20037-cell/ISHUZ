@@ -60,9 +60,14 @@ export function homeEntryStep(s: EntryState): EntryStep | null {
   return null;
 }
 
-/** Oqim tugagach (yoki kerak bo'lmasa) — rolning bosh sahifasi yoki kelgan manzil */
+/** Asosiy ekran — chat (ega, 2026-11-20: "kirish oynasidan kirgandan keyin chatga kirsin; chatda tanlansin: ish qidirish yoki e'lon berish") */
+export const CHAT_PATH = "/chat";
+
+/** Oqim tugagach (yoki kerak bo'lmasa) — asosiy ekran (chat) yoki kelgan manzil. Ikkala rol uchun bir xil */
 export function dashboardPath(mode: AppMode | null, employerOnboarded: boolean): string {
-  return mode === "employer" && employerOnboarded ? "/employer" : "/";
+  void mode;
+  void employerOnboarded;
+  return CHAT_PATH;
 }
 
 /** Profil tugagach ko'rsatiladigan ekran (bir marta — faqat profil yaratish yakunidan) */

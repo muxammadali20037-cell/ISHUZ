@@ -91,7 +91,8 @@ test("profil to'ldirilgan bo'lsa ?next= — aynan o'sha vakansiyaga, ariza oynas
   await page.waitForURL(new RegExp(`/jobs/${open.slug}\\?apply=1$`));
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.goto(`/onboarding/worker?next=${encodeURIComponent("https://evil.uz/x")}`);
-  await page.waitForURL((u) => new URL(u).pathname === "/");
+  // begona manzil o'rniga — asosiy ekran ("/" kirgan foydalanuvchini chatga olib boradi, 2026-11-20)
+  await page.waitForURL((u) => new URL(u).pathname === "/chat");
 });
 
 test("profilsiz foydalanuvchi: 'Arizalar' — onboardingga majburan emas, tushuntirish va 'Ishlarni ko'rish'", async ({ page, context }) => {
@@ -101,7 +102,7 @@ test("profilsiz foydalanuvchi: 'Arizalar' — onboardingga majburan emas, tushun
   expect(new URL(page.url()).pathname).toBe("/applications");
   await expect(page.getByRole("heading", { level: 1, name: "Arizalarim" })).toBeVisible();
   await expect(page.getByText("Hozircha arizalaringiz yo'q")).toBeVisible();
-  await expect(page.getByRole("main").getByRole("link", { name: "Ishlarni ko'rish" })).toHaveAttribute("href", "/");
+  await expect(page.getByRole("main").getByRole("link", { name: "Ishlarni ko'rish" })).toHaveAttribute("href", "/jobs");
 });
 
 test.describe("telefon klaviaturasi", () => {

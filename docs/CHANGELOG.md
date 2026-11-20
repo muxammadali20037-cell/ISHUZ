@@ -1,5 +1,27 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · Sodda ilova: 5 ta bo'lim va chat — asosiy ekran (`feat/simple-nav`)
+
+Ega: "ilova chalkash — kirgan odam hech nimani tushunmaydi, ketma-ketliklar chalkash, yozuvlar tushunarsiz. Pastda faqat
+Ishchilar, Ishlar, E'lonlarim, Izlash va e'lon berish, Profil — bo'ldi. Kirish oynasidan kirgandan keyin chatga kirsin,
+chatda tanlansin: ish qidirish yoki e'lon berish".
+
+- **Pastki menyu** — ikkala rejimda va mehmonda bir xil: Ishchilar · Ishlar · **Izlash/E'lon** (o'rtada, chat) ·
+  E'lonlarim · Profil. Xabarlar va bildirishnomalar — yuqori panelda (hamma uchun); alohida "Yordamchi" belgisi olib
+  tashlandi. Kompyuterdagi yon menyu va planshetdagi yuqori menyu — xuddi shu bo'limlar (+ Xabarlar).
+- **`/chat` — asosiy ekran**: "Assalomu alaykum, Ism! Nima qilmoqchisiz?" → [Izlash] [E'lon berish].
+  Izlash → Ish / Ishchi: so'rovnoma va bazadagi haqiqiy e'lonlar shu suhbatda; yoki "Usta" → Universal ustalar
+  (pastki menyuda yo'q, shu yerdan). E'lon berish → "Men ish izlayapman" (`/ai/post`) yoki "Menga ishchi kerak"
+  (`/post/vacancy?ai=1`) — ikkalasi yordamchi bilan; rejim o'zi qo'yiladi, "Siz kimsiz?" deb qayta so'ralmaydi.
+  Pastda yozish maydoni (tanlovsiz ham yozish mumkin).
+- **Yo'naltirish**: kirish oqimi tugagach (ikkala rol) — `/chat`; kirgan foydalanuvchi "/" ni ochsa — `/chat`.
+  Mehmon uchun "/" — avvalgidek ochiq bosh sahifa.
+- **"Ishchilar"** ish izlovchiga ham to'siqsiz ochiladi (qidiruvdagi rejim tushuntirish oynasi olib tashlandi).
+- Kirgan foydalanuvchining avvalgi bosh sahifasi ("Bo'limlar", "Yangi ishlar", "Sizga mos ishlar") endi ochilmaydi;
+  mos e'lonlar — Profil → "Mos ishlar". Tanishtiruv (tour) chatda ham ishlaydi; ekranda yo'q tugmalar qadami o'tkaziladi.
+- Analitika: `nav_chat`, `chat_choice`; `home_view` — "/" va "/chat" da. Test: E2E `simple-app.spec.ts`, eski menyu
+  va bosh sahifa testlari yangi tartibga moslandi.
+
 ## 2026-11-20 · Ishchi bir nechta e'lon joylay oladi — 100 tagacha (`claude/multi-worker-listings`, 0086)
 
 Ega: "men ishchiman — menga faqat 1 ta e'lon joylay olyapman; 10 ta, 100 ta joylasin kerak bo'lsa". Tanlov (ega): har

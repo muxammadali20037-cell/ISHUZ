@@ -108,75 +108,9 @@ test("bosh sahifa (2.0): bitta h1 va bitta qidiruv maydoni birinchi ekranda; tez
   await expect(page.locator("#home-feed")).toBeVisible();
 });
 
-test("bosh sahifa (4.0, telefon, kirgan): qidiruv, tez yo'llar, yig'ilgan 'Yangi ishlar' va bo'limlar menyusi — ortiqcha bloklar yo'q", async ({ page, context }) => {
-  // ro'yxat bo'sh bo'lmasin: bo'sh holatda "O'zim haqimda e'lon berish" — to'g'ri keyingi qadam (bu test kartalar haqida)
-  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
-  await sql(
-    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, published_at, expires_at)
-     select $1, 'Kassir — 3.0 sinovi', r.id, 'Do''konga kassir kerak, 9 dan 18 gacha', 'active', 4000000, 'monthly', now(), now() + interval '10 days'
-     from public.regions r where r.slug = 'tashkent_city'`,
-    [USERS.employer],
-  );
-  await loginAs(context, USERS.workerA);
-  await asMode(context, "worker");
-  await page.goto("/");
-  const main = page.getByRole("main");
-  // "Yangi ishlar" — qator-havola (2026-11-17): ro'yxat bosh sahifada ochilmaydi, alohida sahifada
-  const row = main.locator('[data-home-row="new-jobs"]');
-  await expect(row).toContainText("Yangi ishlar");
-  await expect(main.locator("article:visible")).toHaveCount(0);
-  // ko'chirilganlar: "Mening dunyom" (Profilga), "Yangi ish chiqsa" (Profil → PRO kuzatuv), "O'zim haqimda e'lon" (pastki menyu)
-  await expect(main.getByText("Mening dunyom")).toHaveCount(0);
-  await expect(main.getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveCount(0);
-  await expect(main.getByRole("link", { name: /^O'zim haqimda e'lon berish/ })).toHaveCount(0);
-  // "Yordamchi" va "Universal ustalar" — faqat bo'limlar menyusida (katta bloklar telefonda yo'q)
-  await expect(main.locator("[data-ai-entry]")).toHaveCount(1);
-  await expect(main.locator("[data-home-menu] [data-ai-entry]")).toHaveCount(1);
-  await expect(main.locator("[data-masters-home]")).toBeHidden();
-  const menu = main.locator("[data-home-menu]");
-  expect((await menu.boundingBox())!.y).toBeGreaterThan((await row.boundingBox())!.y);
-  await menu.locator('[data-menu-item="masters"]').click();
-  await page.waitForURL(/\/ustalar$/);
-  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
-});
-
-test("bosh sahifa (390×844, kirgan ish qidiruvchi): qidiruv va «E'lon joylash» birinchi ekranda; keyin «E'lonlarim» va «Yangi ishlar» — bosilsa yangi e'lonlar sahifasi", async ({ page, context }) => {
-  // 2026-11-17 (ega): hero ostida katta "+ E'lon joylash" va katta tez yo'llar — "Yangi ishlar" endi birinchi ekrandan pastda
-  await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
-  await sql(
-    `insert into public.vacancies (owner_profile_id, title, region_id, district_id, description, status, salary_from, salary_to, salary_type, schedule, published_at, expires_at)
-     select $1, 'Sotuvchi — birinchi ekran', r.id, d.id, 'Do''konga sotuvchi kerak, 9 dan 18 gacha', 'active', 4000000, 6000000, 'monthly', '5_2', now() + interval '1 minute', now() + interval '10 days'
-     from public.regions r join public.districts d on d.region_id = r.id and d.name_uz = 'Chilonzor tumani' where r.slug = 'tashkent_city'`,
-    [USERS.employer],
-  );
-  try {
-    await loginAs(context, USERS.workerA);
-    await asMode(context, "worker");
-    await page.goto("/");
-    const navTop = (await page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last().boundingBox())!.y;
-    for (const el of [page.locator("form[data-ai-field]:visible"), page.locator("[data-home-post]")]) {
-      const box = (await el.boundingBox())!;
-      expect(box.y + box.height).toBeLessThanOrEqual(navTop);
-    }
-    // tartib: hero → "E'lonlarim" → "Yangi ishlar" → "Bo'limlar" (ega, 2026-11-17)
-    const mine = page.locator('main [data-home-row="my-listings"]');
-    const fresh = page.locator('main [data-home-row="new-jobs"]');
-    const postBox = (await page.locator("[data-home-post]").boundingBox())!;
-    expect((await mine.boundingBox())!.y).toBeGreaterThan(postBox.y);
-    expect((await fresh.boundingBox())!.y).toBeGreaterThan((await mine.boundingBox())!.y);
-    expect((await page.locator("[data-home-menu]").boundingBox())!.y).toBeGreaterThan((await fresh.boundingBox())!.y);
-    // suzuvchi AI tugmasi yo'q; qidiruv — bosh sahifaning yagona qidiruv maydoni
-    await expect(page.locator(".ai-fab")).toHaveCount(0);
-    await expect(page.locator("form[data-ai-field]:visible")).toHaveCount(1);
-    // "Yangi ishlar" bosilsa — shu yerda ochilmaydi: yangi joylangan e'lonlar sahifasi (eng yangisi tepada)
-    await expect(fresh).toHaveAttribute("href", /^\/jobs\?sort=newest/);
-    await fresh.click();
-    await page.waitForURL(/\/jobs\?sort=newest/);
-    await expect(page.locator("main article").first()).toContainText("Sotuvchi — birinchi ekran");
-  } finally {
-    await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
-  }
-});
+// 2026-11-20 (ega: "kirgandan keyin chatga kirsin"): kirgan foydalanuvchining "/" sahifasi — asosiy ekran (/chat);
+// avvalgi kirgan bosh sahifa (qidiruv, "E'lonlarim", "Yangi ishlar", "Bo'limlar") endi ochilmaydi — uning ikki testi o'rniga
+// simple-app.spec.ts ("kirgan foydalanuvchi: «/» → chat") tekshiradi. Mehmon bosh sahifasi testlari — shu faylda.
 
 test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgilanadi", async ({ page, context }) => {
   await asGuest(context);
@@ -184,17 +118,18 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  // 4.0 (ega "MASTER PROMPT"): ish qidiruvchi (rejim tanlamagan mehmon ham) — Bosh sahifa · Ishlar · Arizalar · Sohalar · Profil
-  // (mehmonda "Xabarlar" o'rnida "Sohalar" — ega, 2026-11-17)
+  // 2026-11-20 (ega): hamma uchun bir xil 5 ta bo'lim — Ishchilar · Ishlar · Izlash/E'lon · E'lonlarim · Profil
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
-  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
+  const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+  await expect(nav.getByRole("link")).toHaveText(TABS);
+  // mehmon bosh sahifasi bo'limlardan biri emas — hech biri belgilanmagan
+  await expect(nav.locator("a[aria-current='page']")).toHaveCount(0);
   await nav.getByRole("link", { name: "Ishlar" }).click();
   await page.waitForURL(/\/jobs$/);
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
-  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).not.toHaveAttribute("aria-current", "page");
+  await expect(nav.locator("a[aria-current='page']")).toHaveCount(1);
   // 360 px da yozuvlar sig'adi (kesilmaydi)
-  for (const name of ["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]) {
+  for (const name of TABS) {
     const label = nav.getByRole("link", { name }).locator("span").first();
     expect(await label.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), name).toBe(true);
   }
@@ -205,11 +140,12 @@ test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal
   for (const width of [360, 390]) {
     await page.setViewportSize({ width, height: 780 });
     await page.goto("/");
+    await page.waitForURL(/\/chat$/);
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
-    // ish izlovchida sarlavhada xabar belgisi yo'q — pastki menyuda "Xabarlar" bor (takror emas, ega 2026-11-17)
-    await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeHidden();
-    await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Xabarlar" })).toBeVisible();
+    // 2026-11-20: xabarlar — sarlavhada (pastki menyuda 5 ta asosiy bo'lim, "Xabarlar" yo'q)
+    await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeVisible();
+    await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Xabarlar" })).toHaveCount(0);
     await expect(page.getByRole("banner").getByRole("link", { name: "Bildirishnomalar" })).toBeVisible();
   }
 });

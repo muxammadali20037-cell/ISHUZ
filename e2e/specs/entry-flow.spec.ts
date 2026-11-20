@@ -67,9 +67,9 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Siz qaysi maqsadda keldingiz?" })).toBeVisible();
     await page.getByText("Men ish qidiryapman", { exact: true }).click();
     await page.getByRole("button", { name: "Davom etish" }).click();
-    // 2026-11-17 (ega): kasb va hudud so'rovnomasi yo'q — rol tanlangach darhol bosh sahifa
-    await page.waitForURL((u) => new URL(u).pathname === "/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+    // 2026-11-17 (ega): kasb va hudud so'rovnomasi yo'q — rol tanlangach darhol asosiy ekran (2026-11-20: chat)
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
+    await expect(page.locator("[data-start-chat]")).toContainText("Nima qilmoqchisiz?");
     expect(await cookie(context, "ib_mode")).toBe("worker");
     expect(await cookie(context, "ib_intro")).toBe("1");
     // oqim tugadi: bosh sahifa endi oqimsiz ochiladi
@@ -78,7 +78,7 @@ test.describe("kirish oqimi", () => {
     await expect(page.locator("html")).toHaveAttribute("lang", "uz");
   });
 
-  test("xush kelibsiz → Boshlash → 'Ishchi qidiryapman' → ish beruvchi bosh sahifasi; JS'siz ham ishlaydi (oddiy havola va forma)", async ({ browser, baseURL }) => {
+  test("xush kelibsiz → Boshlash → 'Ishchi qidiryapman' → asosiy ekran (chat); JS'siz ham ishlaydi (oddiy havola va forma)", async ({ browser, baseURL }) => {
     const ctx = await browser.newContext({ baseURL, javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
     await asGuest(ctx);
     const page = await ctx.newPage();
@@ -91,7 +91,7 @@ test.describe("kirish oqimi", () => {
     await page.waitForURL("**/start/rol?from=welcome");
     await page.locator("label").filter({ hasText: /Я ищу сотрудников/ }).click();
     await page.locator('form[data-role-form="welcome"] button[type="submit"]').click();
-    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
     // (bosh sahifaning o'zi oqim bilan chiziladi — JS'siz to'liq ko'rinmasligi mumkin; muhimi: forma ishladi, rol va til saqlandi)
     const cookies = await ctx.cookies();
     expect(cookies.find((c) => c.name === "ib_mode")?.value).toBe("employer");
@@ -272,7 +272,7 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByLabel("Telefon raqam")).toHaveCount(0);
   });
 
-  test("ish izlovchi: rol → qisqa profil → 'Profilingiz tayyor!' → bosh sahifa; keyin oqim qayta ko'rsatilmaydi", async ({ page, context }) => {
+  test("ish izlovchi: rol → qisqa profil → 'Profilingiz tayyor!' → asosiy ekran (chat); keyin oqim qayta ko'rsatilmaydi", async ({ page, context }) => {
     await freshUser(NEW_WORKER, "+998901110071", "Sardor", "Karimov");
     const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
     const [d] = await sql<{ id: string }>("select id from public.districts where region_id = $1 order by name_uz limit 1", [r!.id]);
@@ -301,20 +301,20 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Profilingiz tayyor!" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Profilni tahrirlash" })).toHaveAttribute("href", "/profile");
     await page.getByRole("button", { name: "Bosh sahifaga o'tish" }).click();
-    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
     expect(await cookie(context, "ib_entry")).toBeUndefined();
 
-    // qaytgan foydalanuvchi: cookie'lar tozalansa ham (yangi qurilma) — til/tanishtiruvsiz, darhol bosh sahifa
+    // qaytgan foydalanuvchi: cookie'lar tozalansa ham (yangi qurilma) — til/tanishtiruvsiz, darhol asosiy ekran (chat)
     await context.clearCookies();
     await loginAs(context, NEW_WORKER);
     await page.goto("/");
-    expect(path(page)).toBe("/");
+    expect(path(page)).toBe("/chat");
     // "tayyor" ekrani faqat profil yakunidan keladi — oqim unga o'zi yo'naltirmaydi
     await page.goto("/start");
-    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
   });
 
-  test("ish beruvchi: rol → ish beruvchi profili → 'Profilingiz tayyor!' → ish beruvchi paneli", async ({ page, context }) => {
+  test("ish beruvchi: rol → ish beruvchi profili → 'Profilingiz tayyor!' → asosiy ekran (chat)", async ({ page, context }) => {
     await freshUser(NEW_EMPLOYER, "+998901110072", "Dilshod", "Rahimov");
     await loginMidFlow(context, NEW_EMPLOYER);
     await page.goto("/start/rol");
@@ -331,7 +331,7 @@ test.describe("kirish oqimi", () => {
     await page.waitForURL("**/start/tayyor");
     await expect(page.getByText("Kompaniyani tasdiqlash va vakansiya joylash — panelingizda.")).toBeVisible();
     await page.getByRole("button", { name: "Bosh sahifaga o'tish" }).click();
-    await page.waitForURL("**/employer");
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
   });
 
   test("tugallanmagan profil: 'tayyor' ekrani ochilmaydi — oqimning kerakli qadamiga", async ({ page, context }) => {
@@ -363,7 +363,7 @@ test.describe("kirish oqimi", () => {
     await page.goto("/auth/telefon?next=%2Fsaved");
     await page.waitForURL("**/saved");
     await page.goto("/auth?next=https%3A%2F%2Fevil.uz");
-    expect(path(page)).toBe("/");
+    expect(path(page)).toBe("/chat");
   });
 
   for (const width of [320, 360, 390, 430]) {

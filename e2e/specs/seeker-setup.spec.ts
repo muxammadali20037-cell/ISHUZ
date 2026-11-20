@@ -7,15 +7,16 @@ import { asGuest } from "../support";
  * tashla"): rol tanlangach darhol bosh sahifa; eski /start/kasblar va /start/hudud havolalari bosh sahifaga olib boradi.
  */
 
-test("ish qidiruvchi: rol → darhol bosh sahifa (kasb va hudud so'ralmaydi); eski so'rovnoma havolalari bosh sahifaga", async ({ page, context }) => {
+test("ish qidiruvchi: rol → darhol asosiy ekran — chat (kasb va hudud so'ralmaydi); eski so'rovnoma havolalari bosh sahifaga", async ({ page, context }) => {
   await asGuest(context);
   await context.clearCookies({ name: "ib_mode" });
   await page.goto("/start/rol?from=welcome");
   await expect(page.getByRole("heading", { level: 1, name: "Siz qaysi maqsadda keldingiz?" })).toBeVisible();
   await page.getByText("Men ish qidiryapman", { exact: true }).click();
   await page.getByRole("button", { name: "Davom etish" }).click();
-  await page.waitForURL((u) => new URL(u).pathname === "/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+  // 2026-11-20: rol tanlangach — asosiy ekran (chat), ish qidiruvi bilan
+  await page.waitForURL((u) => new URL(u).pathname === "/chat");
+  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kasb, tuman, maosh…");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 
   for (const old of ["/start/kasblar", "/start/hudud"]) {
@@ -24,11 +25,12 @@ test("ish qidiruvchi: rol → darhol bosh sahifa (kasb va hudud so'ralmaydi); es
   }
 });
 
-test("ish beruvchi rolida kasb va hudud so'ralmaydi — darhol bosh sahifa", async ({ page, context }) => {
+test("ish beruvchi rolida kasb va hudud so'ralmaydi — darhol asosiy ekran (chat)", async ({ page, context }) => {
   await asGuest(context);
   await context.clearCookies({ name: "ib_mode" });
   await page.goto("/start/rol?from=welcome");
   await page.getByText("Men xodim qidiryapman", { exact: true }).click();
   await page.getByRole("button", { name: "Davom etish" }).click();
-  await page.waitForURL((u) => new URL(u).pathname === "/");
+  await page.waitForURL((u) => new URL(u).pathname === "/chat");
+  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kim kerak: kasb, tuman…");
 });

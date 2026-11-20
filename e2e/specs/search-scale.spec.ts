@@ -179,6 +179,16 @@ async function workersInDb(prof: string, where: { district?: string; region?: st
  */
 async function search(page: Page, text: string) {
   await page.goto("/");
+  // kirgan foydalanuvchi (2026-11-20): "/" — asosiy ekran (chat); qidiruv — shu suhbatning yozish maydonida
+  if (new URL(page.url()).pathname === "/chat") {
+    const chat = page.locator("[data-start-chat]");
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await box.fill(text);
+    await box.press("Enter");
+    await expect(chat.locator("[data-ai-you]").last()).toHaveText(`Siz: ${text}`);
+    await quickSearch(page);
+    return chat;
+  }
   const field = page.locator("form[data-top-search][data-hydrated] input[name='q']");
   // ish qidiruvchida — "O'zingizga mos ishni qidiring...", ish beruvchida — "O'zingizga mos xodimni qidiring..." (2026-11-17)
   await expect(field).toHaveAttribute("placeholder", /^O'zingizga mos (ishni|xodimni) qidiring\.\.\.$/);

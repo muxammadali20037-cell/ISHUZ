@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bell, Bookmark, MessageCircle, Plus, Sparkles } from "lucide-react";
+import { Bell, Bookmark, MessageCircle, Plus } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -113,21 +113,12 @@ export function TopBar({ role, counts, mode = null, user, site = null, place = n
               <span>{t("easy.nav.post_cta")}</span>
             </Link>
           ) : null}
-          {/* telefonda (md dan tor): "AI yordamchi" — har sahifadan bir bosishda; kompyuterda u menyuda (yon yoki yuqori) */}
-          {pathname === "/ai" ? null : (
-            // rejim tanlamagan mehmon (sayt menyusi): telefonda belgi yo'q — "Yordamchi" ☰ menyuda (nom, til, Kirish sig'sin)
-            <Button asChild variant="ghost" size="icon" className={cn("text-primary-ink hover:bg-primary-soft md:hidden", site && "max-sm:hidden")} aria-label={t("easy.aiws.nav.ai")}>
-              <Link href="/ai" data-track="ai_entry" data-track-to="topbar" data-ai-entry data-tour="ai">
-                <Sparkles className="size-5" />
-              </Link>
-            </Button>
-          )}
+          {/* 2026-11-20: "Yordamchi" belgisi yo'q — chat pastki menyuning o'rtasida ("Izlash/E'lon") */}
           <LanguageSelect />
           {session ? (
             <>
-              {/* ish izlovchida telefonda yo'q — pastki menyuda "Xabarlar" bor (ega, 2026-11-17: takror — chalkash);
-                  ish beruvchining pastki menyusida "Xabarlar" yo'q — unda qoladi */}
-              <Button asChild variant="ghost" size="icon" className={cn("relative @max-[22rem]:hidden", mode !== "employer" && "max-md:hidden")} aria-label={t("common.nav.messages")}>
+              {/* xabarlar — hamma uchun shu yerda (2026-11-20: pastki menyuda "Xabarlar" yo'q — 5 ta asosiy bo'lim) */}
+              <Button asChild variant="ghost" size="icon" className="relative @max-[22rem]:hidden" aria-label={t("common.nav.messages")}>
                 <Link href="/messages" data-tour="messages">
                   <MessageCircle className="size-5" />
                   {counts?.messages ? (

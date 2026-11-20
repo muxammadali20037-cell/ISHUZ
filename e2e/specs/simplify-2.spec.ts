@@ -22,25 +22,25 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1 and title like $2", [USERS.employer, `${TAG}%`]);
 });
 
-test("mehmon: pastki menyuda «Sohalar» (Xabarlar o'rnida); kirganda — «Xabarlar»", async ({ page, context }) => {
+test("pastki menyu: mehmonda ham, kirganda ham bir xil 5 ta bo'lim (2026-11-20); «Sohalar» — «Ishlar» bo'limi ichida", async ({ page, context }) => {
+  const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Sohalar", "Profil"]);
-  await expect(nav.getByRole("link", { name: "Xabarlar" })).toHaveCount(0);
-  await nav.getByRole("link", { name: "Sohalar" }).click();
-  await page.waitForURL(/\/sohalar$/);
+  await expect(nav.getByRole("link")).toHaveText(TABS);
+  await page.goto("/sohalar");
   await expect(page.getByRole("heading", { level: 1, name: "Sohalar" })).toBeVisible();
-  // shu sahifada "Sohalar" tanlangan
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Sohalar" })).toHaveAttribute("aria-current", "page");
+  // /sohalar — ishlar katalogi: "Ishlar" belgilanadi
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
 
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
-  await page.goto("/");
+  await page.goto("/jobs");
   const nav2 = page.getByRole("navigation").last();
-  await expect(nav2.getByRole("link")).toHaveText(["Bosh sahifa", "Ishlar", "Ish beruvchilar", "Xabarlar", "Profil"]);
-  await expect(nav2.getByRole("link", { name: "Sohalar" })).toHaveCount(0);
+  await expect(nav2.getByRole("link")).toHaveText(TABS);
+  // xabarlar — yuqori panelda
+  await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeVisible();
 });
 
 test("/sohalar: har bir soha — qator; eng ko'p ish o'rni bor soha tepada; ostida soni (bazadagi faol vakansiyalar bilan bir xil)", async ({ page, context }) => {
@@ -145,7 +145,7 @@ test("qidiruv maydoni: «O'zingizga mos ishni qidiring...» telefonda to'liq ko'
   await expect(page.locator("main form[data-top-search] [data-hero-placeholder]")).toBeHidden();
 });
 
-test("«E'lonlarim» (bosh sahifadan): o'zi joylagan e'lonlar va holati; bo'lmasa — «E'lon joylash»; mehmon — kirishga", async ({ page, context }) => {
+test("«E'lonlarim» (pastki menyudan): o'zi joylagan e'lonlar va holati; bo'lmasa — «E'lon joylash»; mehmon — kirishga", async ({ page, context }) => {
   await sql(
     `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, published_at, expires_at)
      select $1, $2, r.id, 'Sinov e''loni: ish joyi tavsifi, grafik va shartlar', 'active', 3000000, 'monthly', now(), now() + interval '10 days'
@@ -183,16 +183,13 @@ test("«E'lonlarim» (bosh sahifadan): o'zi joylagan e'lonlar va holati; bo'lmas
   expect(new Set(chips.map((c) => c.top)).size).toBe(1);
   expect((await active.boundingBox())!.height).toBeLessThan(240);
 
-  // e'loni yo'q ish izlovchi: bosh sahifadagi qator → bo'sh holat va "E'lon joylash"
+  // e'loni yo'q ish izlovchi: pastki menyudagi "E'lonlarim" (2026-11-20; avval — bosh sahifadagi qator) → bo'sh holat va "E'lon joylash"
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
   await sql("delete from public.master_listings where owner_profile_id = $1", [USERS.workerB]).catch(() => {});
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
-  await page.goto("/");
-  const row = page.locator('main [data-home-row="my-listings"]');
-  await expect(row).toContainText("E'lonlarim");
-  await expect(row.locator("[data-home-row-count]")).toHaveCount(0);
-  await row.click();
+  await page.goto("/jobs");
+  await page.locator("nav.bottom-nav").getByRole("link", { name: "E'lonlarim" }).click();
   await page.waitForURL(/\/cabinet\/elonlar$/);
   await expect(page.locator("[data-my-listings-empty]")).toHaveText("Hozircha e'loningiz yo'q.");
   await expect(page.getByRole("link", { name: "E'lon joylash" })).toHaveAttribute("href", "/ai/post");

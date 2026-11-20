@@ -41,29 +41,9 @@ test.afterEach(async () => {
   await sql("delete from public.worker_profiles where profile_id = $1", [WORKER]);
 });
 
-test("ish qidiruvchi: profilida kasb — bosh sahifada 'Sizga mos ishlar' (kasb va hudud yozilgan), boshqa kasb yo'q", async ({ page, context }) => {
-  await loginAs(context, WORKER);
-  await asMode(context, "worker");
-  await page.goto("/");
-  // telefonda — qator-havola (2026-11-17): "Sizga mos ishlar", ostida kasb; bosilsa — kasb bo'yicha natijalar sahifasi
-  const row = page.locator('main [data-home-row="new-jobs"]');
-  await expect(row).toContainText("Sizga mos ishlar");
-  await expect(row).toContainText("Oshpaz");
-  await row.click();
-  await page.waitForURL(/\/search\?.*mode=jobs/);
-  await expect(page.locator("main article").filter({ hasText: "Oshpaz — choyxona (M1)" })).toHaveCount(1);
-  await expect(page.locator("main article").filter({ hasText: "Kassir — supermarket (M1)" })).toHaveCount(0);
-  // kompyuterda — ro'yxat bosh sahifaning o'zida, sababi bilan
-  await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
-  await expect(page.getByRole("heading", { level: 2, name: /Sizga mos ishlar/ })).toBeVisible();
-  await expect(page.getByText("Kasbingiz bo'yicha: Oshpaz · Toshkent shahri")).toBeVisible();
-  const feed = page.locator("section[aria-labelledby='home-feed'] article");
-  await expect(feed.filter({ hasText: "Oshpaz — choyxona (M1)" })).toHaveCount(1);
-  await expect(feed.filter({ hasText: "Kassir — supermarket (M1)" })).toHaveCount(0);
-  // foiz ko'rsatilmaydi (faqat sabab matni)
-  await expect(page.locator("section[aria-labelledby='home-feed']")).not.toContainText("%");
-});
+// 2026-11-20 (ega: "kirgandan keyin chatga kirsin, ortiqcha narsa kerak emas"): kirgan foydalanuvchining bosh sahifasi
+// ("Sizga mos ishlar" qatori va kompyuterdagi lenta bilan) endi ochilmaydi — "/" chatga olib boradi (simple-app.spec.ts).
+// Mos e'lonlar — Profil → "Mos ishlar" (/cabinet/matches, quyidagi testlar).
 
 test("ish beruvchi: /cabinet/matches — hisoblangan mos nomzod kasbi bilan ko'rinadi", async ({ page, context }) => {
   const [v] = await sql<{ id: string }>("select id from public.vacancies where owner_profile_id = $1 and title = 'Oshpaz — choyxona (M1)'", [USERS.employer]);

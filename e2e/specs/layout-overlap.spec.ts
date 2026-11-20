@@ -105,7 +105,7 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
   }
 });
 
-test("pastki menyu: hech narsa menyudan yuqoriga chiqmaydi — ostidan o'tayotgan yozuvni to'smaydi (\"E'lon\" ham)", async ({ page, context }) => {
+test("pastki menyu: hech narsa menyudan yuqoriga chiqmaydi — ostidan o'tayotgan yozuvni to'smaydi (o'rtadagi chat tugmasi ham)", async ({ page, context }) => {
   for (const mode of ["worker", "employer"] as const) {
     await asGuest(context);
     await asMode(context, mode);
@@ -113,8 +113,8 @@ test("pastki menyu: hech narsa menyudan yuqoriga chiqmaydi — ostidan o'tayotga
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/");
       const nav = page.locator("nav.bottom-nav");
-      // "E'lon" — faqat ish beruvchida (4.0: ish qidiruvchida beshta bo'lim)
-      if (mode === "employer") await expect(nav.getByRole("link", { name: "E'lon", exact: true })).toBeVisible();
+      // o'rtadagi ko'k tugma — chat ("Izlash/E'lon", 2026-11-20: ikkala rejimda bir xil)
+      await expect(nav.getByRole("link", { name: "Izlash/E'lon", exact: true })).toBeVisible();
       const out = await nav.evaluate((n) => {
         const top = n.getBoundingClientRect().top;
         return Array.from(n.querySelectorAll("*"))

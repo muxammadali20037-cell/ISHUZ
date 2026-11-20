@@ -31,15 +31,16 @@ async function knownEmployer() {
   );
 }
 
-test("bosh sahifada alohida kirish → bir gap → faqat tushunilmagani so'raladi (variant bosib) → bir ekranda tekshirib joylanadi", async ({ page, context }) => {
+test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'raladi (variant bosib) → bir ekranda tekshirib joylanadi", async ({ page, context }) => {
   await knownEmployer();
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
+  // 2026-11-20: kirgan ish beruvchining asosiy ekrani — chat: "E'lon berish" → "Menga ishchi kerak" (yordamchi bilan)
   await page.goto("/");
-  const entry = page.locator("[data-guide-entry]");
-  // 2026-11-17: bitta katta "Vakansiya joylash" tugmasi — yordamchi bilan (avvalgi "AI bilan oson joylash" kartasi o'rnida)
-  await expect(entry).toHaveText("Vakansiya joylash");
-  await entry.click();
+  await page.waitForURL(/\/chat$/);
+  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
+  await page.locator("[data-chat-choice='post']").click();
+  await page.locator("[data-chat-choice='post_vacancy']").click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
   await expect(h1(page)).toHaveText("Qanday xodim kerak?");
   await ready(page);
