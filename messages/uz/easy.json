@@ -128,7 +128,8 @@
     "page_sub": "Joylagan e'lonlaringiz va ularning holati: joylandi, tekshiruvda yoki to'xtatilgan.",
     "group_self": "O'zim haqimda e'lon",
     "group_vacancies": "E'lonlarim",
-    "edit_short": "O'zgartirish"
+    "edit_short": "O'zgartirish",
+    "phone_hidden": "Telefon raqamingiz bu e'londa ko'rinmayapti — sizga qo'ng'iroq qila olishmaydi. «O'zgartirish»ni bosing, raqamni yozib saqlang."
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -216,7 +217,7 @@
     "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ish beruvchilarga ko'rinadi.",
     "saved_title": "Ma'lumotlaringiz saqlandi",
     "edit_title": "E'lonni o'zgartirish",
-    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: faqat kasb, hudud, tajriba va maosh. Ismingiz, telefon raqamingiz va rasmingiz kanalda ko'rsatilmaydi — ish beruvchi siz bilan sayt orqali bog'lanadi."
+    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: kasb, hudud, tajriba, maosh va telefon raqamingiz (bosilsa — qo'ng'iroq). Ismingiz va rasmingiz kanalda ko'rsatilmaydi."
   },
   "vacancy": {
     "page_title": "Ishchi qidiryapman",
@@ -1213,7 +1214,7 @@
     "q_schedule": "Qaysi ish grafigi sizga qulay?",
     "q_salary": "Oyiga qancha maosh kutyapsiz? Masalan: 5 mln. Aytishni xohlamasangiz — «Kelishiladi».",
     "q_name": "Ismingiz nima? (e'londa ko'rinadi)",
-    "q_phone": "Telefon raqamingizni yozing (masalan: 90 123 45 67). Uni ko'rsatish yoki yashirishni keyin tanlaysiz.",
+    "q_phone": "Telefon raqamingizni yozing (masalan: 90 123 45 67). U e'londa va Telegram kanalda hammaga ko'rinadi.",
     "q_about": "Oxirgi savol: o'zingiz haqingizda 1–2 gap yozing — nimalarni qila olasiz, transportingiz bormi va hokazo. Yoki «Javoblarimdan tuzib ber» ni bosing.",
     "done": "Tayyor! E'lon uchun hammasi bor. Tekshirib, joylang.",
     "got_profession": "Kasb: {value} ✓",
@@ -1430,7 +1431,7 @@
     "confirm": "Tasdiqlash",
     "preview_title": "Sizning e'loningiz shunday ko'rinadi",
     "preview_desc": "Hammasi to'g'ri bo'lsa — «Joylash».",
-    "preview_phone": "Siz yozgan raqam e'londa ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi",
+    "preview_phone": "Siz yozgan raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi",
     "publish": "Joylash",
     "edit": "O'zgartirish",
     "login_first": "Joylash uchun telefon raqamingizni tasdiqlaysiz (SMS kod).",
@@ -1453,7 +1454,7 @@
     "add_phone": "Yana raqam",
     "q_phone2": "Qo'shimcha raqam",
     "remove_phone": "Qo'shimcha raqamni olib tashlash",
-    "preview_phones": "Siz yozgan ikkala raqam e'londa ko'rinadi — ish beruvchilar qo'ng'iroq qiladi"
+    "preview_phones": "Siz yozgan ikkala raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar qo'ng'iroq qiladi"
   },
   "channel_prompt": {
     "title": "Telegram kanalimizga qo'shiling",
@@ -1465,7 +1466,7 @@
   "phone_public": {
     "title": "Raqamingiz e'londa hammaga ko'rinadi",
     "vacancy": "Ishchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Raqam Ish topdim Telegram kanalidagi postda ham chiqadi.",
-    "worker": "Ish beruvchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Telegram kanalda raqamingiz ko'rsatilmaydi.",
+    "worker": "Ish beruvchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Raqam Ish topdim Telegram kanalidagi postda ham chiqadi.",
     "field_vacancy": "E'londagi telefon raqam",
     "field_worker": "E'londagi telefon raqam",
     "hint": "Raqamni qo'lda yozing — e'londa aynan shu raqam ko'rinadi."

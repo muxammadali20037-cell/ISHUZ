@@ -19,6 +19,8 @@ export interface MyWorkerListing {
   listedUntil: string | null;
   /** haqiqiy holat (moderatsiya, to'lov) — my_listing_state */
   moderation: ListingStateInfo;
+  /** e'londa hech bir raqam ko'rinmaydi (eski e'lon: raqam yozilmagan, hisob raqami yashirin) — egasiga eslatma */
+  phoneHidden: boolean;
 }
 
 export interface MyVacancy {
@@ -35,6 +37,8 @@ export interface MyVacancy {
   moderation: ListingStateInfo;
   /** kelgan arizalar (qaytarib olinganlarsiz) va hali ko'rilmaganlari */
   applications: { total: number; fresh: number };
+  /** e'londagi raqam yashirilgan (eski "ko'rsatilmasin" tanlovi) — egasiga eslatma */
+  phoneHidden: boolean;
 }
 
 /** Kabinet: foydalanuvchining o'z e'lonlari (ishchi e'loni + ish e'lonlari) */
@@ -84,9 +88,20 @@ export async function getMyListings(
   const states = new Map((statesRes.data ?? []).map((r) => [`${r.entity}:${r.id}`, toListingStateInfo(r.info)]));
   // arizalar soni — ish beruvchining asosiy keyingi amali (RLS: faqat o'z vakansiyalarining arizalari)
   const vacancyIds = (vacRes.data ?? []).map((v) => v.id);
-  const appsRes = vacancyIds.length
-    ? await supabase.from("applications").select("vacancy_id, status").in("vacancy_id", vacancyIds).neq("status", "withdrawn")
-    : { data: [], error: null };
+  const wantWorkerPhone = !!workerRes.data;
+  // Ega (2026-11-20): "telefon nomerlar 100% ko'rinsin" — raqami ko'rinmaydigan eski e'lonlar egasiga eslatiladi
+  // (yangi e'londa raqam majburiy va doim ko'rinadi). RLS: faqat o'z e'lonlarining raqam qatorlari.
+  const [appsRes, contactsRes, listingPhoneRes, ownContactRes] = await Promise.all([
+    vacancyIds.length
+      ? supabase.from("applications").select("vacancy_id, status").in("vacancy_id", vacancyIds).neq("status", "withdrawn")
+      : Promise.resolve({ data: [], error: null }),
+    vacancyIds.length ? supabase.from("vacancy_contacts").select("vacancy_id, phone, show_phone").in("vacancy_id", vacancyIds) : Promise.resolve({ data: [], error: null }),
+    wantWorkerPhone && session.workerId
+      ? supabase.from("worker_listing_phones").select("worker_id").eq("worker_id", session.workerId).maybeSingle()
+      : Promise.resolve({ data: null, error: null }),
+    wantWorkerPhone ? supabase.from("profile_contacts").select("phone, phone_visibility").eq("profile_id", session.userId).maybeSingle() : Promise.resolve({ data: null, error: null }),
+  ]);
+  const hiddenVacancyPhones = new Set((contactsRes.data ?? []).filter((c) => !c.show_phone || !c.phone).map((c) => c.vacancy_id));
   if (appsRes.error) console.error("[cabinet] applications", appsRes.error.message);
   const apps = new Map<string, { total: number; fresh: number }>();
   for (const a of appsRes.data ?? []) {
@@ -114,6 +129,9 @@ export async function getMyListings(
       status: listed ? "listed" : w.status === "not_looking" ? "stopped" : paid ? "payment_required" : "stopped",
       listedUntil: w.listed_until,
       moderation: states.get(`worker:${w.id}`) ?? toListingStateInfo({ state: listed ? "listed" : "saved" }),
+      // so'rov xatosida eslatma ko'rsatilmaydi (yolg'on ogohlantirish bo'lmasin)
+      phoneHidden:
+        !listingPhoneRes.error && !ownContactRes.error && !listingPhoneRes.data && !(ownContactRes.data?.phone && ownContactRes.data.phone_visibility === "everyone"),
     };
   }
   const vacancies: MyVacancy[] = (vacRes.data ?? []).map((v) => {
@@ -131,6 +149,7 @@ export async function getMyListings(
       isRemote: v.is_remote,
       moderation: states.get(`vacancy:${v.id}`) ?? toListingStateInfo({ state: v.status === "active" ? "active" : "saved" }),
       applications: apps.get(v.id) ?? { total: 0, fresh: 0 },
+      phoneHidden: hiddenVacancyPhones.has(v.id),
     };
   });
   return { worker, vacancies, paid };

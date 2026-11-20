@@ -136,10 +136,37 @@ describe("kanalga avtomatik e'lon", () => {
     ];
     expect(await runChannelAutopost()).toMatchObject({ posted: 3 });
     const caption = (slug: string) => (send.mock.calls.map(([x]) => x as { caption: string; button: { url: string } }).find((x) => x.button.url.endsWith(`/jobs/v-${slug}`))!).caption;
-    expect(caption("a")).toContain("📞 Tel: +998 90 123 45 67");
+    expect(caption("a")).toContain("📞 Tel: +998901234567");
     expect(caption("a")).toContain("Tushlik bepul");
     expect(caption("b")).not.toMatch(/📞|765/);
     expect(caption("c")).not.toMatch(/📞|9999/);
+  });
+
+  it("to'liq formadagi vakansiya (e'londa raqam qatori yo'q) — kompaniya yoki ish beruvchining aloqa raqami", async () => {
+    tables.vacancies = [
+      vacancy("co", { company: { name: "Baraka", phone: "+998711234567" }, owner_profile_id: "e1" }),
+      vacancy("person", { company: null, owner_profile_id: "e2" }),
+      vacancy("none", { company: null, owner_profile_id: "e3" }),
+    ];
+    tables.employer_profiles = [{ profile_id: "e1", contact_phone: "+998900000001" }, { profile_id: "e2", contact_phone: "+998935556677" }, { profile_id: "e3", contact_phone: null }];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 3 });
+    const caption = (slug: string) => (send.mock.calls.map(([x]) => x as { caption: string; button: { url: string } }).find((x) => x.button.url.endsWith(`/jobs/v-${slug}`))!).caption;
+    expect(caption("co")).toMatch(/📞 Tel: \+998711234567$/);
+    expect(caption("person")).toMatch(/📞 Tel: \+998935556677$/);
+    expect(caption("none")).not.toMatch(/📞/);
+  });
+
+  it("ishchi raqami — kanal tilga olingan matndan keyin saqlangan bo'lsa (ikkala raqam); oldingisi — raqamsiz", async () => {
+    tables.worker_profiles = [worker("new"), worker("old"), worker("bare")];
+    tables.worker_listing_phones = [
+      { worker_id: "new", phone: "+998932728766", phone2: "+998901112233", updated_at: "2026-11-21T09:00:00.5+00:00" },
+      { worker_id: "old", phone: "+998944445566", phone2: null, updated_at: "2026-11-19T10:00:00+00:00" },
+    ];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 3 });
+    const html = (id: string) => (send.mock.calls.map(([x]) => x as { html: string; button: { url: string } }).find((x) => x.button.url.endsWith(`/workers/${id}`))!).html;
+    expect(html("new")).toMatch(/📞 Tel: \+998932728766, \+998901112233$/);
+    expect(html("old")).not.toMatch(/📞|944445566/);
+    expect(html("bare")).not.toMatch(/📞/);
   });
 
   it("eski (24 soatdan oldingi), yopilgan, bloklangan muallifniki va kasbsiz ishchi — yuborilmaydi", async () => {

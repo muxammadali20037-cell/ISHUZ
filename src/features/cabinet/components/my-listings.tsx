@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ChevronRight, Pencil, UsersRound } from "lucide-react";
+import { ChevronRight, Pencil, PhoneOff, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import { isCityRegion } from "@/lib/geo/city";
@@ -25,6 +25,19 @@ function vacancyTone(s: MyVacancy["status"]): "ok" | "wait" | "off" {
 const CHIP = "h-10 gap-1.5 rounded-xl px-3 text-sm font-semibold";
 const CARD = "space-y-2.5 rounded-2xl border border-border/70 bg-card p-4 shadow-sm";
 const GROUP = "px-1 text-sm font-semibold text-muted-foreground";
+
+/**
+ * Raqami ko'rinmaydigan eski e'lon (ega, 2026-11-20: "telefon nomerlar 100% ko'rinsin"): egasiga — sabab va yo'l.
+ * "O'zgartirish" orqali qayta saqlansa raqam majburiy va doim ko'rinadi (yangi forma).
+ */
+function PhoneHiddenNotice({ text }: { text: string }) {
+  return (
+    <p role="status" data-phone-hidden className="flex items-start gap-2 rounded-xl border border-warning/40 bg-warning-soft px-3 py-2 text-sm font-medium text-foreground">
+      <PhoneOff className="mt-0.5 size-4 shrink-0 text-warning" aria-hidden />
+      <span>{text}</span>
+    </p>
+  );
+}
 
 /** kartaning bosh qismi — e'lonning o'zini ochadi (alohida "Ko'rish" tugmasi o'rniga) */
 function TitleLink({ href, children }: { href: string; children: ReactNode }) {
@@ -87,6 +100,7 @@ export async function MyListingsSection({
                   : t("easy.cabinet.status.stopped")}
             </StatusPill>
             <ModerationNotice entity="worker" id={worker.id} info={worker.moderation} editHref="/post/worker?step=3" />
+            {worker.phoneHidden ? <PhoneHiddenNotice text={t("easy.cabinet.phone_hidden")} /> : null}
             <div className="flex flex-wrap gap-2">
               {worker.status === "payment_required" ? <PayButton compact purpose="worker_listing" targetId={worker.id} /> : null}
               <Button asChild variant="outline" className={CHIP}>
@@ -125,6 +139,7 @@ export async function MyListingsSection({
                       : t(`easy.cabinet.status.${v.status}`)}
                 </StatusPill>
                 <ModerationNotice entity="vacancy" id={v.id} info={v.moderation} editHref={`/post/vacancy?edit=${v.id}`} />
+                {v.phoneHidden && editable ? <PhoneHiddenNotice text={t("easy.cabinet.phone_hidden")} /> : null}
                 <div className="flex flex-wrap gap-2">
                   {v.applications.total ? (
                     <Button asChild className={CHIP}>

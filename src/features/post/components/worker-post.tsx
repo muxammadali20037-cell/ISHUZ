@@ -889,7 +889,7 @@ export function WorkerPost({
               </ReviewRow>
             ) : null}
           </div>
-          {/* shaffoflik: e'lon kanalga ham tushadi (telegram-channel/autopost.ts) — faqat kasb, joy, tajriba, maosh */}
+          {/* shaffoflik: e'lon kanalga ham tushadi (telegram-channel/autopost.ts) — kasb, joy, tajriba, maosh va raqam (2026-11-20) */}
           <p data-channel-note className="rounded-xl bg-secondary px-4 py-3 text-sm text-muted-foreground">
             {t("easy.worker.channel_note")}
           </p>

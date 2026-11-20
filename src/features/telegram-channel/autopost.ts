@@ -30,8 +30,8 @@ import { resolveTelegramLocale } from "@/features/notifications/telegram";
  *    yubormasin); har biri har kanalga BIR marta (channel_posts — unique).
  *  · Bir qadamda ko'pi bilan 4 ta post (Telegram cheklovi: kanalga daqiqasiga ~20); qolgani keyingi qadamda.
  *  · Muallifi bloklangan e'lon yuborilmaydi. Rasm (ish nomi, maosh, joylashuv, kompaniya, turi) va ostida to'liq matn
- *    (autopost-format.ts). Vakansiya telefoni — faqat kanalga rozilik bo'lsa (vacancy_contacts.channel_phone_at, 0083);
- *    ishchi e'lonida ism va telefon yo'q.
+ *    (autopost-format.ts). Telefon — bosilsa qo'ng'iroq, faqat egasi kanal uchun rozi bo'lgani (vacancyChannelPhones,
+ *    workerChannelPhones); ishchi e'lonida ism yo'q.
  *  · Xato: 3 marta qayta urinadi; kanal darajasidagi xato (bot admin emas, kanal yo'q) — qadam to'xtaydi.
  * Ishga tushiruvchilar: fon navbati (tick) va sayt trafigi (moderation/sweep-trigger.ts).
  */
@@ -133,15 +133,48 @@ async function runOwnerNotices(db: Db, res: AutopostResult): Promise<void> {
 }
 
 /**
- * Kanalda ko'rsatishga rozilik berilgan vakansiya raqamlari: show_phone va channel_phone_at (0083 — rozilik matnida
- * "Telegram kanal" bor). 0083 hali qo'llanmagan bo'lsa (ustun yo'q) — xato yutiladi, e'lonlar raqamsiz ketadi.
+ * Kanaldagi vakansiya raqami (ega, 2026-11-20: "telefon nomerlar 100% ko'rinsin, kanalga nomer kelmayapti"):
+ *  · e'londa yozilgan raqam (vacancy_contacts) — ko'rsatilsin (show_phone) va kanal tilga olingan rozilik bilan
+ *    saqlangan bo'lsa (channel_phone_at, 0083; hozirgi oddiy forma har saqlashda yozadi). Eski rozilik — raqamsiz;
+ *  · e'londa raqam qatori yo'q (to'liq forma) — kompaniya / ish beruvchi aloqa raqami: onboarding'da majburiy va
+ *    "E'lonlarda ko'rsatiladi" deb yoziladi; saytda ham shu raqam ochiq (0084 listing_phones_public).
+ * 0083 qo'llanmagan bo'lsa (ustun yo'q) — xato yutiladi, e'lonlar raqamsiz ketadi.
  */
-async function channelPhones(db: Db, ids: string[]): Promise<Map<string, string>> {
+async function vacancyChannelPhones(db: Db, rows: { id: string; owner: string | null; companyPhone: string | null }[]): Promise<Map<string, string>> {
   const out = new Map<string, string>();
-  if (!ids.length) return out;
-  const { data, error } = await db.from("vacancy_contacts").select("vacancy_id, phone, show_phone, channel_phone_at").in("vacancy_id", ids);
+  if (!rows.length) return out;
+  const { data, error } = await db.from("vacancy_contacts").select("vacancy_id, phone, show_phone, channel_phone_at").in("vacancy_id", rows.map((r) => r.id));
   if (error) return out;
-  for (const c of data ?? []) if (c.show_phone && c.channel_phone_at && c.phone) out.set(c.vacancy_id, c.phone);
+  const own = new Map((data ?? []).map((c) => [c.vacancy_id, c]));
+  for (const c of own.values()) if (c.show_phone && c.channel_phone_at && c.phone) out.set(c.vacancy_id, c.phone);
+  const bare = rows.filter((r) => !own.has(r.id));
+  if (!bare.length) return out;
+  const owners = [...new Set(bare.map((r) => r.owner).filter((x): x is string => !!x))];
+  const { data: emp } = owners.length ? await db.from("employer_profiles").select("profile_id, contact_phone").in("profile_id", owners) : { data: [] };
+  for (const r of bare) {
+    const phone = r.companyPhone ?? (emp ?? []).find((e) => e.profile_id === r.owner)?.contact_phone ?? null;
+    if (phone) out.set(r.id, phone);
+  }
+  return out;
+}
+
+/**
+ * Ishchi e'lonidagi raqam(lar) kanalga shu vaqtdan keyin saqlanganlari chiqadi: shu paytdan boshlab formada "raqam
+ * Telegram kanalidagi postda ham chiqadi" deb yoziladi (easy.phone_public.worker). Undan oldin saqlanganlarga "kanalda
+ * raqamingiz ko'rsatilmaydi" deb va'da berilgan — ular e'lonni qayta joylagach (yangi matn bilan) raqamli chiqadi.
+ * worker_listing_phones.updated_at har saqlashda yangilanadi (0081 trigger).
+ */
+export const WORKER_CHANNEL_PHONES_FROM = "2026-11-20T07:30:00Z";
+
+async function workerChannelPhones(db: Db, ids: string[]): Promise<Map<string, string[]>> {
+  const out = new Map<string, string[]>();
+  if (!ids.length) return out;
+  const { data, error } = await db.from("worker_listing_phones").select("worker_id, phone, phone2, updated_at").in("worker_id", ids);
+  if (error) return out;
+  for (const p of data ?? []) {
+    if (Date.parse(p.updated_at) < Date.parse(WORKER_CHANNEL_PHONES_FROM)) continue;
+    out.set(p.worker_id, [p.phone, p.phone2].filter((x): x is string => !!x));
+  }
   return out;
 }
 
@@ -149,7 +182,7 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
   let q = db
     .from("vacancies")
     .select(
-      "id, slug, title, description, experience_min_months, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, company:companies!vacancies_company_id_fkey(name), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
+      "id, slug, title, description, experience_min_months, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, owner_profile_id, company:companies!vacancies_company_id_fkey(name, phone), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
     )
     .eq("status", "active");
   q = ids ? q.in("id", ids) : q.gte("published_at", since).order("published_at", { ascending: false }).limit(50);
@@ -158,7 +191,7 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
   const t = makeT("uz");
   const base = miniAppBaseUrl();
   const link = channelLink(base);
-  const phones = await channelPhones(db, (data ?? []).map((v) => v.id));
+  const phones = await vacancyChannelPhones(db, (data ?? []).map((v) => ({ id: v.id, owner: v.owner_profile_id, companyPhone: one(v.company)?.phone ?? null })));
   const out = new Map<string, ChannelPost>();
   for (const v of data ?? []) {
     if (one(v.owner)?.is_blocked) continue;
@@ -204,6 +237,7 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
   const t = makeT("uz");
   const base = miniAppBaseUrl();
   const link = channelLink(base);
+  const phones = await workerChannelPhones(db, (data ?? []).map((w) => w.id));
   const out = new Map<string, ChannelPost>();
   for (const w of data ?? []) {
     if (one(w.owner)?.is_blocked) continue;
@@ -223,6 +257,7 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
           salary: prefs?.salary_expected ?? prefs?.salary_min ?? null,
           salaryType: prefs?.salary_type ?? null,
           schedules: (prefs?.schedules ?? []).filter((s) => s !== "negotiable").map((s) => t(`enums.work_schedule.${s}`)),
+          phones: phones.get(w.id) ?? [],
         },
         t,
         base,

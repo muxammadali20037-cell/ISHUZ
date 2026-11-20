@@ -1010,7 +1010,7 @@
     "media_how_video": "“How it works” video",
     "media_telegram_free": "“On Telegram — free” ad",
     "ap_title": "Auto-posting",
-    "ap_desc": "New listings go to the channel automatically: a vacancy — \"🟦 JOB\", a worker listing (résumé) — \"🟩 WORKER\". No phone, name or photo is published — contact only through the site. Each listing is sent once.",
+    "ap_desc": "New listings go to the channel automatically: a vacancy — \"🟦 JOB\", a worker listing (résumé) — \"🟩 WORKER\". The listing's phone number is published too (tap to call); no name or personal photo. Each listing is sent once; if re-published — at most once a day.",
     "ap_jobs": "Vacancies (JOB)",
     "ap_jobs_hint": "For job seekers: newly approved vacancies",
     "ap_workers": "Worker listings (WORKER)",

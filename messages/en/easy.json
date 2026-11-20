@@ -128,7 +128,8 @@
     "page_sub": "Your listings and their status: live, under review or stopped.",
     "group_self": "About me",
     "group_vacancies": "My listings",
-    "edit_short": "Edit"
+    "edit_short": "Edit",
+    "phone_hidden": "Your phone number isn't shown in this listing — people can't call you. Tap \"Edit\", enter the number and save."
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -216,7 +217,7 @@
     "pay_desc": "Once paid, employers see your listing right away for {days} days.",
     "saved_title": "Your details are saved",
     "edit_title": "Edit listing",
-    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: only profession, area, experience and salary. Your name, phone and photo are not shown there — employers contact you through the site."
+    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: profession, area, experience, salary and your phone number (tap to call). Your name and photo are not shown there."
   },
   "vacancy": {
     "page_title": "I'm looking for a worker",
@@ -1213,7 +1214,7 @@
     "q_schedule": "Which work schedule suits you?",
     "q_salary": "What monthly salary do you expect? For example: 5M. If you'd rather not say — “Negotiable”.",
     "q_name": "What's your name? (shown in the ad)",
-    "q_phone": "Type your phone number (for example: 90 123 45 67). You'll choose later whether to show it.",
+    "q_phone": "Type your phone number (for example: 90 123 45 67). Everyone will see it in the ad and in the Telegram channel.",
     "q_about": "Last question: write 1–2 sentences about yourself — what you can do, whether you have transport, etc. Or tap “Write it from my answers”.",
     "done": "Done! The ad has everything it needs. Check it and publish.",
     "got_profession": "Job: {value} ✓",
@@ -1430,7 +1431,7 @@
     "confirm": "Confirm",
     "preview_title": "This is how your ad will look",
     "preview_desc": "If everything is right — “Post”.",
-    "preview_phone": "The number you entered is shown in the ad — employers will call it",
+    "preview_phone": "The number you entered is shown in the ad and in the Telegram channel — employers will call it",
     "publish": "Post",
     "edit": "Edit",
     "login_first": "To post, you'll confirm your phone number (SMS code).",
@@ -1453,7 +1454,7 @@
     "add_phone": "Another number",
     "q_phone2": "Additional number",
     "remove_phone": "Remove the additional number",
-    "preview_phones": "Both numbers you entered are shown in the ad — employers will call them"
+    "preview_phones": "Both numbers you entered are shown in the ad and in the Telegram channel — employers will call them"
   },
   "channel_prompt": {
     "title": "Join our Telegram channel",
@@ -1465,7 +1466,7 @@
   "phone_public": {
     "title": "Your number will be visible to everyone in the listing",
     "vacancy": "Job seekers can call you directly. The number also appears in the Ish topdim Telegram channel post.",
-    "worker": "Employers can call you directly. Your number is not shown in the Telegram channel.",
+    "worker": "Employers can call you directly. The number also appears in the Ish topdim Telegram channel post.",
     "field_vacancy": "Phone in the listing",
     "field_worker": "Phone in the listing",
     "hint": "Type the number yourself — this exact number appears in the listing."
