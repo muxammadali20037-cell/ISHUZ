@@ -5,7 +5,7 @@ import { getServerEnv } from "@/lib/env";
 import { makeT } from "@/lib/i18n/translate";
 import { miniAppBaseUrl } from "@/lib/telegram/bot";
 import { miniAppLink } from "@/lib/telegram/start-param";
-import { channelChatId, sendChannelMessage } from "./channel";
+import { channelChatId, editChannelPhoto, sendChannelMessage } from "./channel";
 import { channelChatIdFrom } from "./media";
 import { AUTOPOST_KEY, parseAutopost } from "./autopost-settings";
 import { sanitizeLine, vacancyPost, workerPost, type ChannelPost, type LinkFn } from "./autopost-format";
@@ -408,6 +408,32 @@ export async function postListingNow(entity: Entity, id: string): Promise<Autopo
   }
   if (res.posted || res.failed) console.info("[channel-autopost] now", entity, res);
   return res;
+}
+
+/**
+ * E'lon rasmi (AI) tayyor bo'ldi — kanalda allaqachon chiqqan postlarning rasmi yangisiga almashtiriladi (matn va tugma
+ * o'zgarmaydi). E'lon egasiga yuborilgan shaxsiy xabar (dm:) tegilmaydi. Hech qachon xato otmaydi; almashtirilganlar soni.
+ */
+export async function refreshChannelPhoto(entity: Entity, id: string, version: string): Promise<number> {
+  if (!getServerEnv().TELEGRAM_BOT_TOKEN || !process.env.SUPABASE_SERVICE_ROLE_KEY) return 0;
+  try {
+    const db = createAdminClient();
+    const { data: rows } = await db.from("channel_posts").select("chat_id, message_id").eq("entity_type", entity).eq("entity_id", id).eq("status", "posted").not("message_id", "is", null);
+    const targets = (rows ?? []).filter((r) => r.message_id && !r.chat_id.startsWith("dm:"));
+    if (!targets.length) return 0;
+    const since = new Date(Date.now() - FRESH_MS).toISOString();
+    const post = (await (entity === "vacancy" ? vacancyPosts : workerPosts)(db, [id], since)).get(id);
+    if (!post?.photo) return 0;
+    const photo = `${post.photo}${post.photo.includes("?") ? "&" : "?"}img=${encodeURIComponent(version)}`;
+    let done = 0;
+    for (const r of targets) {
+      if (await editChannelPhoto({ chatId: r.chat_id, messageId: r.message_id!, photo, caption: post.caption ?? post.html, button: post.button })) done += 1;
+    }
+    return done;
+  } catch (e) {
+    console.error("[channel-autopost] photo", e instanceof Error ? e.message : e);
+    return 0;
+  }
 }
 
 /** Bir qadam: vakansiyalar va ishchi e'lonlari (sozlamaga ko'ra). Hech qachon xato otmaydi */

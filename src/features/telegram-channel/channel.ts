@@ -141,6 +141,24 @@ export function isChannelLevelError(description: string): boolean {
  * (sendPhoto); Telegram rasmni ololmasa (sayt band, tarmoq) — o'sha e'lon to'liq matn bilan ketadi. Havola ko'rinishi
  * o'chiq — sayt nomi chiqmaydi (ega, 2026-11-16: "sayt nomi kerak emas").
  */
+/**
+ * Kanalda allaqachon chiqqan postning rasmini almashtirish (e'lon rasmi keyin tayyor bo'lganda): matn va tugma o'sha-o'sha.
+ * Rasm manzili yangi bo'lishi kerak (Telegram manzil bo'yicha keshlaydi). Faqat rasmli post bo'lsa ishlaydi.
+ */
+export async function editChannelPhoto(input: { chatId: string; messageId: number; photo: string; caption: string; button: { text: string; url: string } }): Promise<boolean> {
+  const r = await tg<unknown>(
+    "editMessageMedia",
+    {
+      chat_id: input.chatId,
+      message_id: input.messageId,
+      media: { type: "photo", media: input.photo, caption: input.caption, parse_mode: "HTML" },
+      reply_markup: { inline_keyboard: [[{ text: input.button.text, url: input.button.url }]] },
+    },
+    40_000,
+  );
+  return r.ok;
+}
+
 export async function sendChannelMessage(input: {
   chatId: string;
   html: string;

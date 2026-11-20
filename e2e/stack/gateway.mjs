@@ -22,7 +22,9 @@ const STORAGE_DIR = process.env.STORAGE_DIR || path.resolve("e2e/.stack/storage"
 const LATENCY_MS = Number(process.env.E2E_DB_LATENCY_MS || 0);
 const LOG_REQUESTS = process.env.E2E_GATEWAY_LOG === "1";
 
-const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos", "site-media", "story-videos"]);
+/** 48×32 JPEG — soxta OpenAI javobi uchun */
+const MOCK_JPEG = "/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAoHBwgHBgoICAgLCgoLDhgQDg0NDh0VFhEYIx8lJCIfIiEmKzcvJik0KSEiMEExNDk7Pj4+JS5ESUM8SDc9Pjv/2wBDAQoLCw4NDhwQEBw7KCIoOzs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozv/wAARCAAgADADASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDMooor2jzAoorX8O2sc1zJNIA3kgbQR3Pf8MVlVqKnBzfQunB1JqKKi6RftF5gtn24JwcA/l1qoysjFWBVgcEEcg13dYXiS1jCR3SgBy2xsD73HH5Y/wA4rhw+NdSfLJbnbXwihDmi9jAooor0zzwq5pmoNp9zvILRsMOoPb1+tU6KicFOLjLYqMnF8yOxXVLFovMF1HtwTgnB/LrWBrGpi/lEcWRDGeD/AHj64/lWbRXLRwcKUuZanRVxU6keXY//2Q==";
+const PUBLIC_BUCKETS = new Set(["avatars", "company-logos", "profession-images", "vacancy-photos", "site-media", "story-videos", "listing-images"]);
 const RAW_PHOTO = /^[0-9a-f-]{36}\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
 const UUID = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 const RAW_MEDIA = new RegExp(`^(avatar|logo)/(${UUID})/${UUID}\\.(jpg|png|webp)$`);
@@ -174,6 +176,11 @@ async function handle(req, res) {
   const url = req.url || "/";
 
   if (url.startsWith("/auth/v1/.well-known/jwks.json")) return json(res, 200, { keys: [] });
+  // soxta OpenAI Images (e'lon rasmi, 0087): kichik JPEG; kalitsiz so'rov — 401 (haqiqiy API kabi). Pul ketadigan so'rov yo'q
+  if (url.startsWith("/openai/v1/images/generations") && req.method === "POST") {
+    if (!(req.headers.authorization || "").startsWith("Bearer ")) return json(res, 401, { error: { code: "invalid_api_key" } });
+    return json(res, 200, { created: Math.floor(Date.now() / 1000), data: [{ b64_json: MOCK_JPEG }] });
+  }
   if (url.startsWith("/auth/v1/logout")) {
     res.writeHead(204);
     return res.end();

@@ -75,6 +75,12 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await expect(done).toContainText("Dilnoza");
   await page.locator("[data-guide-publish]").click();
   await expect(h1(page)).toHaveText(/E'loningiz joylandi|joylandi/i, { timeout: 20_000 });
+  // oxirida: "E'lon rasmi yaratilsinmi?" (ega, 2026-11-20) — "Ha" → AI rasm (stendda soxta OpenAI) → tayyor
+  const ask = page.locator("[data-listing-image='ask']");
+  await expect(ask).toContainText("E'lon rasmi yaratilsinmi?");
+  await ask.locator("[data-listing-image-yes]").click();
+  await expect(page.locator("[data-listing-image='done']")).toContainText("Tayyor!", { timeout: 30_000 });
+  await expect(page.locator("[data-listing-image='done'] img")).toBeVisible();
 
   const [v] = await sql<{ title: string; district: string; salary_from: number; salary_type: string; schedule: string; experience_min_months: number; description: string }>(
     `select v.title, d.name_uz as district, v.salary_from, v.salary_type::text, v.schedule::text, v.experience_min_months, v.description

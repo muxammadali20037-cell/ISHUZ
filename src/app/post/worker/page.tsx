@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listingImageEnabled } from "@/features/listing-image/server";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
@@ -63,6 +64,7 @@ export default async function PostWorkerPage({ searchParams }: { searchParams: P
           customAllowed={features.customProfession}
           listingId={listingParam}
           newListing={newListing}
+          imageEnabled={listingImageEnabled()}
         />
       </Suspense>
     </Shell>

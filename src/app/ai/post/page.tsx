@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listingImageEnabled } from "@/features/listing-image/server";
 import { redirect } from "next/navigation";
 import { getT } from "@/lib/i18n/server";
 import { getSession } from "@/features/auth/session";
@@ -22,7 +23,7 @@ export default async function AiPostPage({ searchParams }: { searchParams: Promi
   if (mode === "employer") redirect(session?.employerOnboarded ? "/employer/vacancies/new" : "/post/vacancy");
   return (
     <Shell bare>
-      <AiPostClient resume={params.resume === "1" && !!session} initialText={typeof params.q === "string" ? params.q.slice(0, 300) : ""} />
+      <AiPostClient resume={params.resume === "1" && !!session} initialText={typeof params.q === "string" ? params.q.slice(0, 300) : ""} imageEnabled={listingImageEnabled()} />
     </Shell>
   );
 }

@@ -1697,6 +1697,63 @@ export type Database = {
         };
         Relationships: [];
       };
+      listing_images: {
+        Row: {
+          attempts: number;
+          created_at: string;
+          entity: string;
+          entity_id: string;
+          id: string;
+          image_url: string | null;
+          last_error: string | null;
+          model: string | null;
+          owner_profile_id: string;
+          prompt: string | null;
+          status: string;
+          storage_path: string | null;
+          updated_at: string;
+        };
+        ComputedFields: never;
+        Insert: {
+          attempts?: number;
+          created_at?: string;
+          entity: string;
+          entity_id: string;
+          id?: string;
+          image_url?: string | null;
+          last_error?: string | null;
+          model?: string | null;
+          owner_profile_id: string;
+          prompt?: string | null;
+          status?: string;
+          storage_path?: string | null;
+          updated_at?: string;
+        };
+        Update: {
+          attempts?: number;
+          created_at?: string;
+          entity?: string;
+          entity_id?: string;
+          id?: string;
+          image_url?: string | null;
+          last_error?: string | null;
+          model?: string | null;
+          owner_profile_id?: string;
+          prompt?: string | null;
+          status?: string;
+          storage_path?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "listing_images_owner_profile_id_fkey";
+            columns: ["owner_profile_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
       login_codes: {
         Row: {
           attempts: number;
@@ -5130,6 +5187,10 @@ export type Database = {
       check_rate_limit: {
         Args: { p_key: string; p_limit: number; p_window_seconds: number };
         Returns: boolean;
+      };
+      claim_listing_image: {
+        Args: { p_entity: string; p_entity_id: string; p_model: string; p_owner: string; p_prompt: string };
+        Returns: string;
       };
       claim_profession_image: {
         Args: { p_model: string; p_node_id: string; p_prompt: string };

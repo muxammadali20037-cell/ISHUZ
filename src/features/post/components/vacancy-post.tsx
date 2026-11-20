@@ -22,6 +22,7 @@ import { vacancyDraftRules } from "../draft-rules";
 import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
+import { ListingImageAsk } from "@/features/listing-image/components/listing-image-ask";
 import { ModerationOutcome } from "./moderation-outcome";
 import { PhotoUpload } from "./photo-upload";
 import { AiReadyBanner } from "./ai-quick-fill";
@@ -94,7 +95,10 @@ export function VacancyPost({
   customAllowed = false,
   photoQuarantine = false,
   dailyAllowed = false,
+  imageEnabled = false,
 }: {
+  /** e'lon rasmi (AI) sozlangan — joylangach "Rasm yaratilsinmi?" */
+  imageEnabled?: boolean;
   categories: Category[];
   regions: Region[];
   districts: District[];
@@ -340,7 +344,9 @@ export function VacancyPost({
             // ish beruvchining birinchi savoli: "ish izlovchilarga qanday ko'rinyapti?" — holat, qidiruvdagi o'rni, karta, to'liq ko'rinish
             { label: t("easy.vacancy.done_seeker_view"), href: `/employer/vacancies/${result.vacancyId}#korinish` },
           ]}
-        />
+        >
+          {imageEnabled ? <ListingImageAsk entity="vacancy" id={result.vacancyId} preview={`/api/promo/vacancy/${encodeURIComponent(result.slug)}?f=post`} /> : null}
+        </PublishResult>
       );
     }
     if (result.state === "review") {
