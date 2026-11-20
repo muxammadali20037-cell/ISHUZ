@@ -7,7 +7,7 @@ import { parseStatusFilter } from "@/features/vacancies/status";
 import { VacancyList } from "@/features/vacancies/components/vacancy-list";
 import { getMyListings } from "@/features/cabinet/queries";
 import { getMyMasterListings } from "@/features/masters/queries";
-import { MyListingsSection } from "@/features/cabinet/components/my-listings";
+import { RoleSwitchRow } from "@/features/landing/role-switch-row";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -23,7 +23,7 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
   const session = await requireEmployer("/employer/vacancies");
   const params = await searchParams;
   const filter = parseStatusFilter(params.status);
-  const [{ t }, items, { workers, paid }, masters] = await Promise.all([
+  const [{ t }, items, { workers }, masters] = await Promise.all([
     getT(),
     getMyVacancies(session),
     getMyListings(session, { vacancies: false }),
@@ -33,10 +33,16 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
     <Shell>
       <div className="container-app py-5 sm:py-8">
         <VacancyList items={items} filter={filter} />
+        {/* ish izlovchi sifatidagi e'lonlar shu yerda ko'rsatilmaydi (ega, 2026-11-20: rollar aralashmasin) — faqat o'tish qatori */}
         {workers.length || masters.length ? (
-          <div className="mt-8 max-w-2xl space-y-3 border-t border-border/70 pt-6" data-other-listings>
-            <h2 className="text-section font-bold tracking-tight">{t("vacancies.list.other_listings")}</h2>
-            <MyListingsSection workers={workers} vacancies={[]} paid={paid} masters={masters} />
+          <div className="mt-8 max-w-2xl" data-other-listings>
+            <RoleSwitchRow
+              tone="neutral"
+              to="/cabinet/elonlar"
+              target="worker"
+              title={t("easy.side.switch.to_worker")}
+              hint={t("easy.cabinet.other_role_worker", { count: workers.length + masters.length })}
+            />
           </div>
         ) : null}
       </div>

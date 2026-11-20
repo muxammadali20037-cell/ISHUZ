@@ -6,9 +6,14 @@ import { USERS, asGuest, asMode, loginAs } from "../support";
  * 2026-11-12: "Yordamchi" (/ai) bo'limiga nomli kirish. 2026-11-20 (ega: "ilova chalkash — pastda faqat Ishchilar, Ishlar,
  * E'lonlarim, Izlash va e'lon berish, Profil"): asosiy menyu hamma joyda bir xil 5 ta bo'lim, o'rtada chat ("Izlash/E'lon",
  * /chat); alohida "Yordamchi" belgisi va menyu bandi yo'q. /ai (to'liq ekran yordamchi) — mehmon bosh sahifasidagi
- * "Bo'limlar" qatoridan ochiladi.
+ * "Bo'limlar" qatoridan ochiladi. O'sha kuni kechqurun (ega: "ishchi panelida Ishchilar nimaga kerak"): bo'limlar rejimga qarab —
+ * ish izlovchida "Sizga mos" (Ishchilar o'rniga), ish beruvchida "Arizalar" (Ishlar o'rniga).
  */
-const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+const TABS = ["Sizga mos", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+const SIDE = {
+  worker: ["Izlash/E'lon", "Ishlar", "Sizga mos", "E'lonlarim", "Xabarlar", "Profil"],
+  employer: ["Izlash/E'lon", "Arizalar", "Ishchilar", "E'lonlarim", "Xabarlar", "Profil"],
+};
 
 test("mehmon, kompyuter: yuqori menyuda 5 ta bo'lim nomlari bilan; Yordamchi — bosh sahifa «Bo'limlar» qatorida", async ({ page, context }) => {
   await asGuest(context);
@@ -40,14 +45,14 @@ test("mehmon, kompyuter: yuqori menyuda 5 ta bo'lim nomlari bilan; Yordamchi —
 });
 
 for (const who of ["worker", "employer"] as const) {
-  test(`kirgan foydalanuvchi, kompyuter (${who}): yon menyuda chat birinchi, keyin Ishlar, Ishchilar, E'lonlarim, Xabarlar, Profil`, async ({ page, context }) => {
+  test(`kirgan foydalanuvchi, kompyuter (${who}): yon menyuda chat birinchi, keyin rolga mos bo'limlar, Xabarlar, Profil`, async ({ page, context }) => {
     await loginAs(context, who === "worker" ? USERS.workerA : USERS.employer);
     await asMode(context, who);
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/cabinet");
     const side = page.getByRole("navigation", { name: "Kabinet menyusi" });
     const main = side.getByRole("list").first().getByRole("link");
-    await expect(main).toHaveText(["Izlash/E'lon", "Ishlar", "Ishchilar", "E'lonlarim", "Xabarlar", "Profil"]);
+    await expect(main).toHaveText(SIDE[who]);
     await expect(side.getByRole("link", { name: "Profil" })).toHaveAttribute("aria-current", "page");
     await expect(side.locator("[data-masters-entry]")).toBeVisible();
     await side.getByRole("link", { name: "Izlash/E'lon" }).click();

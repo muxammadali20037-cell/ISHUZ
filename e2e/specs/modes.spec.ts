@@ -12,7 +12,11 @@ const menuKeys = (page: Page) =>
   page.locator("[data-home-menu] [data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")));
 const menuItem = (page: Page, key: string) => page.locator(`[data-home-menu] [data-menu-item="${key}"]`);
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
-const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+// 2026-11-20 (kechqurun): pastki menyu rejimga qarab
+const TABS = {
+  worker: ["Sizga mos", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"],
+  employer: ["Ishchilar", "Arizalar", "Izlash/E'lon", "E'lonlarim", "Profil"],
+};
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
   await asGuest(context);
@@ -40,10 +44,10 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   // "+ E'lon joylash" — yordamchi bilan (2026-11-17)
   await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
-  // pastki menyu (2026-11-20, ega): hamma uchun bir xil — Ishchilar · Ishlar · Izlash/E'lon · E'lonlarim · Profil
+  // pastki menyu — ish izlovchiniki: Sizga mos · Ishlar · Izlash/E'lon · E'lonlarim · Profil
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(TABS);
-  await expect(nav.getByRole("link", { name: "Ishchilar" })).toHaveAttribute("href", "/search?mode=workers&any=1&region=all");
+  await expect(nav.getByRole("link")).toHaveText(TABS.worker);
+  await expect(nav.getByRole("link", { name: "Sizga mos" })).toHaveAttribute("href", "/cabinet/matches");
   await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/jobs");
   await expect(nav.getByRole("link", { name: "Izlash/E'lon" })).toHaveAttribute("href", "/chat");
   await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("href", "/cabinet/elonlar");
@@ -73,9 +77,10 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
-  // pastki menyu rejimga qarab o'zgarmaydi (2026-11-20, ega: "ilova chalkash")
-  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(TABS);
+  // pastki menyu — ish beruvchiniki: Ishchilar · Arizalar · Izlash/E'lon · E'lonlarim · Profil
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(TABS.employer);
   await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveAttribute("href", "/search?mode=workers&any=1&region=all");
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/employer/applications");
 });
 
 test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profil tepasidagi tugma, bir bosishda", async ({ page, context }) => {
@@ -130,13 +135,14 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
   }
 });
 
-test("ish izlovchi ishchilar qidiruviga kirsa — to'siqsiz ochiladi (2026-11-20: «Ishchilar» hamma uchun menyuda)", async ({ page, context }) => {
+test("ish izlovchi ishchilar qidiruviga (havola orqali) kirsa — to'siqsiz ochiladi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/search?mode=workers&any=1&region=all");
   await expect(page.getByRole("heading", { level: 1, name: "Bu bo'lim ish beruvchilar uchun" })).toHaveCount(0);
   await expect(page.locator("#mode-gate-title")).toHaveCount(0);
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveAttribute("aria-current", "page");
+  // ish izlovchi menyusida "Ishchilar" yo'q (2026-11-20 kechqurun) — hech bir bo'lim belgilanmaydi
+  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveCount(0);
   // rejim o'zi almashmaydi (tanlov — foydalanuvchiniki)
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 

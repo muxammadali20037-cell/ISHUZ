@@ -6,31 +6,34 @@ import { USERS, asGuest, asMode, loginAs, stack } from "../support";
  * kichkina orqaga chiqib tursin"). Bosh sahifada yo'q; sahifaning o'z "Orqaga"si bo'lsa — bittasi qoladi.
  */
 
-test("kabinetdan 'Orqaga' — oldingi sahifaga; bosh sahifada yo'q", async ({ page, context }) => {
+test("'Orqaga' — oldingi sahifaga; bosh sahifada va pastki menyu bo'limlarida yo'q", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/");
   await expect(page.locator("[data-global-back]")).toHaveCount(0);
-  await page.goto("/saved");
-  // sayt ichida o'tish (pastki menyu) — "Orqaga" aynan oldingi sahifaga qaytaradi
-  await page.locator("nav.bottom-nav").getByRole("link", { name: "Profil" }).click();
-  await page.waitForURL(/\/cabinet$/);
+  // Profil — pastki menyu bo'limi (2026-11-20): "Orqaga" yo'q
+  await page.goto("/cabinet");
+  await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
+  const saved = () => page.locator("main [data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true });
+  // sayt ichida o'tish — "Orqaga" aynan oldingi sahifaga qaytaradi
+  await saved().click();
+  await page.waitForURL(/\/saved$/);
   // telefonda — yuqori panelda (birinchi ekrandagi joyni olmaydi)
   const back = page.getByRole("banner").getByRole("link", { name: "Orqaga" });
   await expect(back).toBeVisible();
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(1);
   await back.click();
-  await page.waitForURL(/\/saved$/);
+  await page.waitForURL(/\/cabinet$/);
 
   // kompyuterda — sahifa tepasida alohida qator (yon menyu bor, yuqori panel yo'q)
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.getByRole("navigation", { name: "Kabinet menyusi" }).getByRole("link", { name: "Profil" }).click();
-  await page.waitForURL(/\/cabinet$/);
+  await saved().click();
+  await page.waitForURL(/\/saved$/);
   const row = page.locator("[data-global-back]:not(header [data-global-back])").getByRole("link", { name: "Orqaga" });
   await expect(row).toBeVisible();
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(1);
   await row.click();
-  await page.waitForURL(/\/saved$/);
+  await page.waitForURL(/\/cabinet$/);
 });
 
 test("havola orqali ochilgan sahifa: 'Orqaga' — bo'lim sahifasiga; sarlavha yonidagi '‹' takrorlanmaydi", async ({ page, context }) => {

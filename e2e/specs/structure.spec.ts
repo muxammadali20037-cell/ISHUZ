@@ -118,15 +118,14 @@ test.describe("tuzilma", () => {
     await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
   });
 
-  test("rol tanlash (7-ekran): ikki karta, tanlov qurilmada saqlanadi", async ({ page, context }) => {
+  test("rol tanlash: ikki savol-karta (rasmsiz), bitta bosish, tanlov qurilmada saqlanadi", async ({ page, context }) => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/start/rol?next=%2Fauth%2Ftelefon");
-    const group = page.getByRole("group", { name: "Siz qaysi maqsadda keldingiz?" });
-    await expect(group.getByRole("radio")).toHaveCount(2);
-    await group.getByText("Men xodim qidiryapman", { exact: true }).click();
-    await expect(group.getByRole("radio", { name: /Men xodim qidiryapman/ })).toBeChecked();
-    await page.getByRole("button", { name: "Davom etish" }).click();
+    const group = page.getByRole("group", { name: "Nima qidiryapsiz?" });
+    await expect(group.getByRole("button")).toHaveCount(2);
+    await expect(group.locator("img")).toHaveCount(0);
+    await group.getByRole("button", { name: /Korxonangizga ishchi qidiryapsizmi\?/ }).click();
     await page.waitForURL("**/auth/telefon");
     await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   });

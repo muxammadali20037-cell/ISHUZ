@@ -21,7 +21,10 @@ export function RoleSwitchRow({
   hint,
   tone = "danger",
   className,
+  to = "/",
 }: {
+  /** almashtirgach ochiladigan sahifa (sukut — asosiy ekran; "E'lonlarim"da — shu sahifaning o'zi) */
+  to?: string;
   target: "worker" | "employer";
   title: string;
   hint: string;
@@ -41,7 +44,7 @@ export function RoleSwitchRow({
         return;
       }
       announceRoleSwitch(target);
-      router.push("/");
+      router.push(to);
       router.refresh();
     });
   return (

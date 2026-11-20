@@ -13,7 +13,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /**
  * /chat — asosiy ekran (pastki menyuning o'rtasi, "Izlash/E'lon"): kirgandan keyin shu yerga kelinadi (ega, 2026-11-20).
- * Suhbatda tanlanadi: Izlash (ish yoki ishchi) yoki E'lon berish (o'zi haqida yoki vakansiya). Mehmon ham ochadi.
+ * Suhbat rejimga qarab: ish izlovchiga — ish izlash / o'zi haqida e'lon, ish beruvchiga — ishchi izlash / vakansiya.
+ * Mehmon ham ochadi (rejim tanlanmagan bo'lsa — ish izlovchi).
  */
 export default async function ChatPage() {
   const [session, mode] = await Promise.all([getSession(), getMode()]);
@@ -21,7 +22,7 @@ export default async function ChatPage() {
   const name = session?.profile.first_name?.trim() || null;
   return (
     <Shell>
-      <StartChat name={name} defaultFind={mode === "employer" ? "workers" : "jobs"} />
+      <StartChat name={name} mode={mode === "employer" ? "employer" : "worker"} />
     </Shell>
   );
 }

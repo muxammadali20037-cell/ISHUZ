@@ -22,8 +22,8 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1 and title like $2", [USERS.employer, `${TAG}%`]);
 });
 
-test("pastki menyu: mehmonda ham, kirganda ham bir xil 5 ta bo'lim (2026-11-20); «Sohalar» — «Ishlar» bo'limi ichida", async ({ page, context }) => {
-  const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+test("pastki menyu: ish izlovchida mehmonda ham, kirganda ham bir xil 5 ta bo'lim (2026-11-20); «Sohalar» — «Ishlar» bo'limi ichida", async ({ page, context }) => {
+  const TABS = ["Sizga mos", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");

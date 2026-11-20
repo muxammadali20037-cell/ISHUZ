@@ -159,7 +159,8 @@ test("ish beruvchi: «Xodim qidirish» — maosh so'ralmaydi; topilmasa — qisq
   await expect(sheet.locator("[data-quick-salary]")).toHaveCount(0);
   const answer = await quickSearch(page);
   await expect(answer.locator("[data-quick-none]")).toContainText("Hozircha mos nomzod yo'q.");
-  await expect(answer.getByRole("link", { name: "Vakansiya joylash" })).toHaveAttribute("href", "/post/vacancy");
+  // yordamchi bilan vakansiya, yozgani bilan darhol boshlanadi (2026-11-20)
+  await expect(answer.getByRole("link", { name: "Vakansiya joylash" })).toHaveAttribute("href", "/post/vacancy?ai=1&q=Termizda+kosmonavt+kerak");
 });
 
 test("xato: tushunarli xabar va «Qayta urinish» — qayta urinilsa so'rovnoma ochiladi; xatodan keyin ham yozish mumkin", async ({ page, context }) => {

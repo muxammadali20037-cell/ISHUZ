@@ -1,13 +1,11 @@
 import { getT } from "@/lib/i18n/server";
 import type { AppMode } from "@/features/mode/mode";
-import { getEntryMedia } from "../queries";
-import { EntryImage } from "./entry-art";
 import { EntryBack, EntryHeading, EntryScreen } from "./entry-screen";
 import { RolePicker } from "./role-picker";
 
 /**
- * 7-ekran: "O'z rolingizni tanlang". /start/rol va har kirishning birinchi qadami (/auth) — bitta ko'rinish.
- * Tanlovdan so'ng `next` ga (kirish usuli yoki oqimning keyingi qadami).
+ * Rol tanlash: /start/rol va har kirishning birinchi qadami (/auth) — bitta ko'rinish, rasmsiz ikki savol-karta
+ * (ega, 2026-11-20). Tanlovdan so'ng `next` ga (kirish usuli yoki oqimning keyingi qadami).
  */
 export async function RoleScreen({
   mode,
@@ -23,7 +21,7 @@ export async function RoleScreen({
   /** xush kelibsiz ekranidagi "Boshlash"dan (02 → 04) */
   welcome?: boolean;
 }) {
-  const [{ t, locale }, media] = await Promise.all([getT(), getEntryMedia()]);
+  const { t, locale } = await getT();
   return (
     <EntryScreen className="sm:max-w-2xl" left={<EntryBack href={backHref} label={t("common.actions.back")} />}>
       <EntryHeading className="pt-2" title={t("welcome.entry.role.title")} subtitle={t("welcome.entry.role.subtitle")} />
@@ -32,15 +30,7 @@ export async function RoleScreen({
           {t("welcome.entry.role.error")}
         </p>
       ) : null}
-      <RolePicker
-        initial={mode}
-        next={next}
-        welcome={welcome ? { locale } : null}
-        images={{
-          worker: <EntryImage slot="role_worker" media={media} sizes="96px" className="size-full" />,
-          employer: <EntryImage slot="role_employer" media={media} sizes="96px" className="size-full" />,
-        }}
-      />
+      <RolePicker initial={mode} next={next} welcome={welcome ? { locale } : null} />
     </EntryScreen>
   );
 }
