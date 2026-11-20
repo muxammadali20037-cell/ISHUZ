@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition, type ReactNode } from "react";
+import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronLeft, RotateCcw, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -43,7 +43,10 @@ export function VacancyGuide({
   error,
   onPublish,
   onClassic,
+  initialSentence = "",
 }: {
+  /** asosiy chatda yozilgan birinchi gap ("Oshpaz kerak, Yunusobod") — darhol shu bilan boshlanadi */
+  initialSentence?: string;
   regions: Region[];
   districts: District[];
   /** kasb savolidagi tez variantlar (sotuvchi, oshpaz, haydovchi…) */
@@ -172,6 +175,16 @@ export function VacancyGuide({
       setStarted(true);
     });
   };
+
+  // asosiy chatdan kelgan gap (?q=): qoralama tiklangach bir marta boshlanadi; manzildan olib tashlanadi
+  const auto = useRef(false);
+  useEffect(() => {
+    if (auto.current || busy || started || initialSentence.trim().length < 2) return;
+    auto.current = true;
+    window.history.replaceState(null, "", `${window.location.pathname}?ai=1`);
+    begin(initialSentence);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- faqat birinchi marta
+  }, [busy, started, initialSentence]);
 
   const pickProfession = (o: ProfessionOption) => {
     if (thinking) return;

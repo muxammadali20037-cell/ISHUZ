@@ -110,7 +110,7 @@ function readHandoff(): PostAnswers | null {
 
 const noopSubscribe = () => () => {};
 
-export function AiPostClient({ resume }: { resume: boolean }) {
+export function AiPostClient({ resume, initialText = "" }: { resume: boolean; /** asosiy chatda yozilgan birinchi gap ("Haydovchi, Chilonzor") — darhol shu bilan boshlanadi */ initialText?: string }) {
   const { t } = useT();
   const router = useRouter();
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -168,6 +168,16 @@ export function AiPostClient({ resume }: { resume: boolean }) {
     });
     return true;
   };
+
+  // asosiy chatdan kelgan gap (?q=) — bir marta, sahifa tayyor bo'lgach; manzildan olib tashlanadi (yangilansa qayta yuborilmasin)
+  const started = useRef(false);
+  useEffect(() => {
+    if (!hydrated || resume || started.current || !initialText.trim()) return;
+    started.current = true;
+    window.history.replaceState(null, "", window.location.pathname);
+    ask(initialText);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- faqat birinchi ochilishda
+  }, [hydrated]);
 
   // mehmon SMS bilan kirib qaytdi: o'sha javoblar bilan "Sizning e'loningiz shunday ko'rinadi" darhol ochiladi
   const resumed = useRef(false);

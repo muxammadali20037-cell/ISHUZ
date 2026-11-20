@@ -76,7 +76,8 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
       </Suspense>
 
       <Fold name="my-listings" icon={<FileText />} tint="blue" verb="view" title={t("easy.cabinet.my_listings")} count={workers.length + vacancies.length || null}>
-        <MyListingsSection workers={workers} vacancies={vacancies} paid={paid} />
+        {/* faqat joriy rolning e'lonlari (ega, 2026-11-20: ishchi va ish beruvchi ma'lumotlari aralashmasin) */}
+        <MyListingsSection workers={mode === "employer" ? [] : workers} vacancies={mode === "worker" ? [] : vacancies} paid={paid} />
       </Fold>
 
       <Fold name="pro" icon={<BellRing />} tint="orange" verb="open" title={t("easy.aihub.pro_title")}>

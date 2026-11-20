@@ -131,7 +131,9 @@
     "edit_short": "Edit",
     "phone_hidden": "Your phone number isn't shown in this listing — people can't call you. Tap \"Edit\", enter the number and save.",
     "group_self_many": "About me ({count})",
-    "add_listing": "Post another listing"
+    "add_listing": "Post another listing",
+    "other_role_worker": "You have {count} listing(s) as a job seeker",
+    "other_role_employer": "You have {count} vacancy(ies) as an employer"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -492,7 +494,8 @@
     "tab_my_listings": "My listings",
     "tab_workers": "Workers",
     "tab_employers": "Employers",
-    "tab_chat": "Find/Post"
+    "tab_chat": "Find/Post",
+    "tab_matches": "For you"
   },
   "moderation": {
     "pending_title": "Your listing is saved",
@@ -563,7 +566,13 @@
     "incomplete_candidate": "The candidate has not provided some details.",
     "view_job": "View listing",
     "view_candidate": "View candidate",
-    "none": "Post a listing first to see matches."
+    "none": "Post a listing first to see matches.",
+    "worker_none": "Post a listing about yourself — we'll show matching jobs here and tell you about new ones.",
+    "worker_cta": "Post a listing",
+    "employer_none": "Post a vacancy — we'll show matching workers here.",
+    "employer_cta": "Post a vacancy",
+    "applications_none_title": "No applications yet",
+    "applications_none": "Post a vacancy — workers will apply and you'll see everything here."
   },
   "verification": {
     "title": "Employer verification",
@@ -731,7 +740,7 @@
     "relaxed_alert": "Notify me on Telegram when exactly what I asked for appears",
     "empty_honest": "Nothing matching anywhere in Uzbekistan yet. To get a Telegram message when something new appears, tap the button below.",
     "empty_alert": "Notify me about new ones",
-    "empty_post_worker": "Post an ad about myself",
+    "empty_post_worker": "Post a listing about yourself",
     "empty_post_vacancy": "Post a vacancy",
     "widened": "Search widened",
     "stop_answer": "Stop the answer",
@@ -755,7 +764,8 @@
     "demos_category": "Sample ads from this field — not real",
     "demos_all": "All samples",
     "top_placeholder": "Find the right employee...",
-    "top_placeholder_jobs": "Find a job that suits you..."
+    "top_placeholder_jobs": "Find a job that suits you...",
+    "empty_post_worker_note": "Employers will find you."
   },
   "mode": {
     "chooser_title": "What are you looking for?",
@@ -1585,24 +1595,32 @@
     "hello": "Hello!",
     "hello_name": "Hello, {name}!",
     "ask_what": "What would you like to do? Choose:",
-    "find": "Find",
-    "find_hint": "A job or a worker",
-    "post": "Post an ad",
-    "post_hint": "About yourself, or that you need a worker",
-    "ask_find": "What are you looking for?",
-    "find_jobs": "A job",
-    "find_jobs_hint": "I need a job",
-    "find_workers": "A worker",
-    "find_workers_hint": "I need a worker",
-    "said_find_jobs": "I'm looking for a job",
-    "said_find_workers": "I'm looking for a worker",
-    "ask_post": "What kind of ad?",
-    "post_worker": "I'm looking for work",
-    "post_worker_hint": "An ad about myself",
-    "post_vacancy": "I need a worker",
-    "post_vacancy_hint": "A job vacancy ad",
-    "type_hint": "Or type below, for example: «driver in Tashkent»",
-    "find_masters": "A tradesperson",
-    "find_masters_hint": "Plumber, electrician, AC technician and more"
+    "find_masters": "Need a handyman?",
+    "find_masters_hint": "Plumber, electrician, AC technician and more",
+    "find_w": "Find a job",
+    "find_w_hint": "Find a job that fits me",
+    "post_w": "Post a listing",
+    "post_w_hint": "About me — employers will find me",
+    "ask_find_w": "Type the job you want below and find it.",
+    "example_find_w": "For example: “Driver in Tashkent” or “Shop assistant in Chilanzar”",
+    "ask_post_w": "What job are you looking for? Type below.",
+    "example_post_w": "For example: “Driver, Chilanzar”",
+    "post_next_w": "Then your phone number and a couple of questions — 1 minute.",
+    "type_hint_w": "Or just type below, for example: “Driver in Tashkent”",
+    "post_placeholder_w": "Your trade, district…",
+    "find_e": "Find a worker",
+    "find_e_hint": "Find the worker you need",
+    "post_e": "Post a vacancy",
+    "post_e_hint": "Let workers apply themselves",
+    "ask_find_e": "What worker do you need? Type below and find.",
+    "example_find_e": "For example: “Shop assistant in Chilanzar” or “Cook, Yunusabad”",
+    "ask_post_e": "What worker do you need? Type below.",
+    "example_post_e": "For example: “Cook needed, Yunusabad, 5 mln”",
+    "post_next_e": "Then your phone number and a couple of questions — 1 minute.",
+    "type_hint_e": "Or just type below, for example: “Need a shop assistant in Chilanzar”",
+    "post_placeholder_e": "What worker do you need…",
+    "write_below": "Type here",
+    "post_send": "Continue",
+    "post_note": "Posting is free. Next we'll ask for your phone number."
   }
 }

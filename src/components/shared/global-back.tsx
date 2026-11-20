@@ -6,8 +6,11 @@ import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { BackLink } from "./back-link";
 
-/** Bosh sahifalar: orqaga yo'q ("/", asosiy ekran — chat "/chat", ish beruvchi paneli "/employer", ustalar mini-ilovasi — "/ustalar") */
-const ROOTS = new Set(["/", "/chat", "/employer", "/ustalar"]);
+/**
+ * Bosh sahifalar: orqaga yo'q ("/", asosiy ekran — chat "/chat", ish beruvchi paneli "/employer", ustalar mini-ilovasi — "/ustalar")
+ * va pastki menyu bo'limlari (2026-11-20: bo'lim ochilganda "Orqaga" chalkashtiradi — Ishlar, Sizga mos, Arizalar, E'lonlarim, Profil).
+ */
+const ROOTS = new Set(["/", "/chat", "/employer", "/ustalar", "/jobs", "/cabinet", "/cabinet/matches", "/cabinet/elonlar", "/employer/applications"]);
 
 /**
  * To'g'ridan-to'g'ri (havola orqali) ochilgan sahifada "Orqaga" qayerga olib boradi: eng yaqin bo'lim sahifasi

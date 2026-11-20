@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { Info, ShieldAlert } from "lucide-react";
+import { Info, Plus, ShieldAlert, Sparkles } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatSalaryWithPeriod } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { MatchReasons } from "@/components/shared/match-score";
 import type { SessionContext } from "@/features/auth/session";
+import type { AppMode } from "@/features/mode/mode";
 import { cn } from "@/lib/utils";
 import { getCandidateMatches, getJobMatches, getMatchThreshold, getMyActiveVacancies } from "../matches-queries";
 
@@ -21,26 +22,34 @@ function ScorePill({ score, threshold, hardFail }: { score: number; threshold: n
  * Mos e'lonlar / nomzodlar. Foiz — profil va e'lon shartlarining hisoblangan mosligi (ishga qabul qilinish ehtimoli emas):
  * har bir mezon sababi, yetishmayotgan ma'lumot va qat'iy nomuvofiqlik ochiq ko'rsatiladi.
  */
-export async function MatchesPage({ session, vacancyId }: { session: SessionContext; vacancyId: string | null }) {
+export async function MatchesPage({ session, vacancyId, mode }: { session: SessionContext; vacancyId: string | null; mode: AppMode | null }) {
   const { t, tEnum, name, locale } = await getT();
-  const [jobs, vacancies, threshold] = await Promise.all([getJobMatches(session), getMyActiveVacancies(session), getMatchThreshold()]);
+  // rejimga qarab (ega, 2026-11-20: rollar aralashmasin): ish izlovchi — faqat mos ishlar, ish beruvchi — faqat mos nomzodlar
+  const showJobs = mode !== "employer";
+  const showCandidates = mode !== "worker";
+  const [jobs, allVacancies, threshold] = await Promise.all([showJobs ? getJobMatches(session) : Promise.resolve([]), showCandidates ? getMyActiveVacancies(session) : Promise.resolve([]), getMatchThreshold()]);
+  const vacancies = allVacancies;
   const selected = vacancies.find((v) => v.id === vacancyId) ?? vacancies[0] ?? null;
   const candidates = selected ? await getCandidateMatches(selected.id) : [];
+  const candidatesShown = candidates.length > 0;
   const place = (r: { name_uz: string; name_ru: string; name_en: string | null } | null, d: { name_uz: string; name_ru: string; name_en: string | null } | null) =>
     [r ? name(r) : null, d ? name(d) : null].filter(Boolean).join(", ");
 
   return (
     <div className="container-narrow space-y-8 py-6 text-lg sm:py-8">
       <div>
-        <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.matches.title")}</h1>
-        <p className="mt-2 flex items-start gap-2 rounded-2xl bg-secondary p-3 text-base text-muted-foreground">
-          <Info className="mt-0.5 size-5 shrink-0" aria-hidden /> {t("easy.matches.explain", { threshold })}
-        </p>
+        <h1 className="text-page font-extrabold sm:text-page-lg">{t(mode === "worker" ? "easy.matches.jobs_title" : mode === "employer" ? "easy.matches.candidates_title" : "easy.matches.title")}</h1>
+        {/* izoh — faqat natijalar bo'lsa (bo'sh holatda ortiqcha matn bo'lmasin) */}
+        {jobs.length || candidatesShown ? (
+          <p className="mt-2 flex items-start gap-2 rounded-2xl bg-secondary p-3 text-base text-muted-foreground">
+            <Info className="mt-0.5 size-5 shrink-0" aria-hidden /> {t("easy.matches.explain", { threshold })}
+          </p>
+        ) : null}
       </div>
 
-      {session.workerId ? (
+      {showJobs && session.workerId ? (
         <section className="space-y-3" aria-labelledby="job-matches">
-          <h2 id="job-matches" className="text-2xl font-bold">{t("easy.matches.jobs_title")}</h2>
+          <h2 id="job-matches" className={cn("text-2xl font-bold", mode === "worker" && "sr-only")}>{t("easy.matches.jobs_title")}</h2>
           {!jobs.length ? <p className="rounded-2xl bg-secondary p-4 text-muted-foreground">{t("easy.matches.jobs_empty")}</p> : null}
           {jobs.map((m) => (
             <article key={m.vacancyId} className="space-y-3 rounded-2xl border border-border bg-card p-5">
@@ -78,7 +87,7 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
 
       {vacancies.length ? (
         <section className="space-y-3" aria-labelledby="candidate-matches">
-          <h2 id="candidate-matches" className="text-2xl font-bold">{t("easy.matches.candidates_title")}</h2>
+          <h2 id="candidate-matches" className={cn("text-2xl font-bold", mode === "employer" && "sr-only")}>{t("easy.matches.candidates_title")}</h2>
           {vacancies.length > 1 ? (
             <div className="flex flex-wrap gap-2">
               {vacancies.map((v) => (
@@ -115,15 +124,39 @@ export async function MatchesPage({ session, vacancyId }: { session: SessionCont
         </section>
       ) : null}
 
-      {!session.workerId && !vacancies.length ? (
+      {mode === "worker" && !session.workerId ? <MatchesInvite mode="worker" /> : null}
+      {mode === "employer" && !vacancies.length ? <MatchesInvite mode="employer" /> : null}
+      {mode === null && !session.workerId && !vacancies.length ? (
         <div className="space-y-3 rounded-2xl border border-border bg-card p-5">
           <p>{t("easy.matches.none")}</p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Button asChild size="xl" className="h-14 text-lg"><Link href="/post/worker">{t("easy.home.worker_cta")}</Link></Button>
-            <Button asChild size="xl" variant="outline" className="h-14 text-lg"><Link href="/post/vacancy">{t("easy.home.employer_cta")}</Link></Button>
+            <Button asChild size="xl" className="h-14 text-lg"><Link href="/ai/post">{t("easy.home.worker_cta")}</Link></Button>
+            <Button asChild size="xl" variant="outline" className="h-14 text-lg"><Link href="/post/vacancy?ai=1">{t("easy.home.employer_cta")}</Link></Button>
           </div>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * "Sizga mos" bo'limiga e'lonsiz (yoki kirmagan) foydalanuvchi: nima uchun bo'sh va bitta tugma — e'lon berish.
+ * Mehmon ham shu ekranni ko'radi (kirish e'lon joylashda so'raladi).
+ */
+export async function MatchesInvite({ mode }: { mode: AppMode }) {
+  const { t } = await getT();
+  const worker = mode === "worker";
+  return (
+    <div className="space-y-4 rounded-2xl border border-border bg-card p-5" data-matches-invite={mode}>
+      <span className="flex size-12 items-center justify-center rounded-2xl bg-primary-soft text-primary-ink" aria-hidden>
+        <Sparkles className="size-6" />
+      </span>
+      <p className="text-lg leading-snug">{t(worker ? "easy.matches.worker_none" : "easy.matches.employer_none")}</p>
+      <Button asChild size="xl" className="h-14 w-full text-lg sm:w-auto">
+        <Link href={worker ? "/ai/post" : "/post/vacancy?ai=1"} data-track="post_start" data-track-to="matches">
+          <Plus className="size-5" aria-hidden /> {t(worker ? "easy.matches.worker_cta" : "easy.matches.employer_cta")}
+        </Link>
+      </Button>
     </div>
   );
 }

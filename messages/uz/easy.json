@@ -131,7 +131,9 @@
     "edit_short": "O'zgartirish",
     "phone_hidden": "Telefon raqamingiz bu e'londa ko'rinmayapti — sizga qo'ng'iroq qila olishmaydi. «O'zgartirish»ni bosing, raqamni yozib saqlang.",
     "group_self_many": "O'zim haqimdagi e'lonlar ({count})",
-    "add_listing": "Yana e'lon joylash"
+    "add_listing": "Yana e'lon joylash",
+    "other_role_worker": "Ish izlovchi sifatida {count} ta e'loningiz bor",
+    "other_role_employer": "Ish beruvchi sifatida {count} ta vakansiyangiz bor"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -492,7 +494,8 @@
     "tab_my_listings": "E'lonlarim",
     "tab_workers": "Ishchilar",
     "tab_employers": "Ish beruvchilar",
-    "tab_chat": "Izlash/E'lon"
+    "tab_chat": "Izlash/E'lon",
+    "tab_matches": "Sizga mos"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -563,7 +566,13 @@
     "incomplete_candidate": "Nomzod ba'zi ma'lumotlarni ko'rsatmagan.",
     "view_job": "E'lonni ko'rish",
     "view_candidate": "Nomzodni ko'rish",
-    "none": "Moslik ko'rish uchun avval e'lon joylang."
+    "none": "Moslik ko'rish uchun avval e'lon joylang.",
+    "worker_none": "O'zingiz haqingizda e'lon bering — sizga mos ishlarni shu yerda ko'rsatamiz, yangisi chiqsa xabar beramiz.",
+    "worker_cta": "E'lon berish",
+    "employer_none": "Vakansiya bering — unga mos ishchilarni shu yerda ko'rsatamiz.",
+    "employer_cta": "Vakansiya berish",
+    "applications_none_title": "Hozircha arizalar yo'q",
+    "applications_none": "Vakansiya bering — ishchilar ariza yuboradi va hammasi shu yerda ko'rinadi."
   },
   "verification": {
     "title": "Ish beruvchini tasdiqlash",
@@ -731,7 +740,7 @@
     "relaxed_alert": "Aynan so'raganingiz chiqsa — Telegram'da xabar olish",
     "empty_honest": "Butun O'zbekiston bo'yicha ham hozircha mos e'lon yo'q. Yangisi chiqqanda Telegram'da xabar olishni xohlasangiz — pastdagi tugmani bosing.",
     "empty_alert": "Yangisi chiqsa xabar olish",
-    "empty_post_worker": "O'zim haqimda e'lon berish",
+    "empty_post_worker": "O'zingiz haqingizda e'lon qoldiring",
     "empty_post_vacancy": "Vakansiya joylash",
     "widened": "Qidiruv kengaytirildi",
     "stop_answer": "Javobni to'xtatish",
@@ -755,7 +764,8 @@
     "demos_category": "Shu sohadagi namuna e'lonlar — haqiqiy emas",
     "demos_all": "Barcha namunalar",
     "top_placeholder": "O'zingizga mos xodimni qidiring...",
-    "top_placeholder_jobs": "O'zingizga mos ishni qidiring..."
+    "top_placeholder_jobs": "O'zingizga mos ishni qidiring...",
+    "empty_post_worker_note": "Ish beruvchilar sizni o'zi topadi."
   },
   "mode": {
     "chooser_title": "Siz nima qidiryapsiz?",
@@ -1585,24 +1595,32 @@
     "hello": "Assalomu alaykum!",
     "hello_name": "Assalomu alaykum, {name}!",
     "ask_what": "Nima qilmoqchisiz? Tanlang:",
-    "find": "Izlash",
-    "find_hint": "Ish yoki ishchi topish",
-    "post": "E'lon berish",
-    "post_hint": "Ish yoki ishchi kerakligini e'lon qilish",
-    "ask_find": "Nimani izlaysiz?",
-    "find_jobs": "Ish",
-    "find_jobs_hint": "Menga ish kerak",
-    "find_workers": "Ishchi",
-    "find_workers_hint": "Menga ishchi kerak",
-    "said_find_jobs": "Ish qidiryapman",
-    "said_find_workers": "Ishchi qidiryapman",
-    "ask_post": "Qanday e'lon beramiz?",
-    "post_worker": "Men ish izlayapman",
-    "post_worker_hint": "O'zim haqimda e'lon",
-    "post_vacancy": "Menga ishchi kerak",
-    "post_vacancy_hint": "Vakansiya e'loni",
-    "type_hint": "Yoki pastga yozing, masalan: «Toshkentda haydovchi»",
-    "find_masters": "Usta",
-    "find_masters_hint": "Santexnik, elektrik, konditsioner ustasi va boshqalar"
+    "find_masters": "Usta kerakmi?",
+    "find_masters_hint": "Santexnik, elektrik, konditsioner ustasi va boshqalar",
+    "find_w": "Ish izlash",
+    "find_w_hint": "O'zimga mos ishni topish",
+    "post_w": "E'lon berish",
+    "post_w_hint": "O'zim haqimda — ish beruvchilar meni topsin",
+    "ask_find_w": "O'zingiz xohlagan ishni pastga yozing va toping.",
+    "example_find_w": "Masalan: «Toshkentda haydovchi» yoki «Chilonzorda sotuvchi»",
+    "ask_post_w": "Qanday ish qidiryapsiz? Pastga yozing.",
+    "example_post_w": "Masalan: «Haydovchi, Chilonzor»",
+    "post_next_w": "Keyin telefon raqamingiz va bir-ikki savol — 1 daqiqa.",
+    "type_hint_w": "Yoki darhol pastga yozing, masalan: «Toshkentda haydovchi»",
+    "post_placeholder_w": "Kasbingiz, tuman…",
+    "find_e": "Ishchi izlash",
+    "find_e_hint": "Kerakli ishchini topish",
+    "post_e": "Vakansiya berish",
+    "post_e_hint": "Ishchilar o'zi murojaat qilsin",
+    "ask_find_e": "Qanday ishchi kerak? Pastga yozing va toping.",
+    "example_find_e": "Masalan: «Chilonzorda sotuvchi» yoki «Oshpaz, Yunusobod»",
+    "ask_post_e": "Qanday ishchi kerak? Pastga yozing.",
+    "example_post_e": "Masalan: «Oshpaz kerak, Yunusobod, 5 mln»",
+    "post_next_e": "Keyin telefon raqamingiz va bir-ikki savol — 1 daqiqa.",
+    "type_hint_e": "Yoki darhol pastga yozing, masalan: «Chilonzorda sotuvchi kerak»",
+    "post_placeholder_e": "Qanday ishchi kerak…",
+    "write_below": "Shu yerga yozing",
+    "post_send": "Davom etish",
+    "post_note": "E'lon bepul. Keyingi qadamda telefon raqam so'raladi."
   }
 }

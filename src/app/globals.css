@@ -579,8 +579,11 @@ body:has([data-global-back]) [data-header-back] { display: none; }
 @keyframes ai-ring { 0% { opacity: 0.7; transform: scale(0.92); } 100% { opacity: 0; transform: scale(1.35); } }
 @keyframes ai-dot { 0%, 100% { opacity: 0.35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
 @keyframes ai-bubble { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* asosiy chat: "Izlash" / "E'lon berish" tanlangach yozish maydoni yoritiladi (3 marta "nafas oladi") */
+.chat-input-glow { box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 28%, transparent); animation: chat-glow 1.6s ease-in-out 3; }
+@keyframes chat-glow { 0%, 100% { box-shadow: 0 0 0 3px color-mix(in oklab, var(--primary) 28%, transparent); } 50% { box-shadow: 0 0 0 7px color-mix(in oklab, var(--primary) 10%, transparent); } }
 @media (prefers-reduced-motion: reduce) {
-  .ai-orb[data-busy="true"]::after, .ai-dots > span, .ai-bubble-in { animation: none; }
+  .ai-orb[data-busy="true"]::after, .ai-dots > span, .ai-bubble-in, .chat-input-glow { animation: none; }
   .ai-dots > span { opacity: 0.7; }
 }
 

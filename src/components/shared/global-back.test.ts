@@ -7,8 +7,10 @@ describe("umumiy 'Orqaga'", () => {
     expect(showGlobalBack("/employer")).toBe(false);
     expect(showGlobalBack("/chat")).toBe(false);
     expect(showGlobalBack("/ustalar")).toBe(false);
+    // pastki menyu bo'limlari — orqaga yo'q
+    for (const p of ["/jobs", "/cabinet", "/cabinet/matches", "/cabinet/elonlar", "/employer/applications"]) expect(showGlobalBack(p)).toBe(false);
     expect(showGlobalBack(null)).toBe(false);
-    for (const p of ["/ai", "/cabinet", "/jobs", "/jobs/xarita", "/employer/vacancies/abc", "/ustalar/kabinet", "/settings"]) expect(showGlobalBack(p)).toBe(true);
+    for (const p of ["/ai", "/cabinet/alerts", "/jobs/xarita", "/employer/vacancies/abc", "/ustalar/kabinet", "/settings"]) expect(showGlobalBack(p)).toBe(true);
   });
 
   it("to'g'ridan-to'g'ri ochilganda — eng yaqin bo'lim sahifasi, topilmasa bosh sahifa", () => {

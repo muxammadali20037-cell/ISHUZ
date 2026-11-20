@@ -16,13 +16,13 @@ export async function generateMetadata(): Promise<Metadata> {
  * tanlaydi, oynada ism, hudud, tajriba va telefon, "Tasdiqlash" → ko'rinishi → "Joylash" → avtomatik tekshiruv.
  * Alohida to'liq ekran (yuqori panel va menyular yo'q). Ish beruvchi rejimida — vakansiya joylash sahifasi.
  */
-export default async function AiPostPage({ searchParams }: { searchParams: Promise<{ resume?: string | string[] }> }) {
+export default async function AiPostPage({ searchParams }: { searchParams: Promise<{ resume?: string | string[]; q?: string | string[] }> }) {
   const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
   if (session?.profile.is_blocked) redirect("/blocked");
   if (mode === "employer") redirect(session?.employerOnboarded ? "/employer/vacancies/new" : "/post/vacancy");
   return (
     <Shell bare>
-      <AiPostClient resume={params.resume === "1" && !!session} />
+      <AiPostClient resume={params.resume === "1" && !!session} initialText={typeof params.q === "string" ? params.q.slice(0, 300) : ""} />
     </Shell>
   );
 }

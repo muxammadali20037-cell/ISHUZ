@@ -370,6 +370,7 @@ export function VacancyPost({
   if (guideOn) {
     return (
       <VacancyGuide
+        initialSentence={(params.get("q") ?? "").slice(0, 300)}
         regions={regions}
         districts={districts}
         quick={quick}

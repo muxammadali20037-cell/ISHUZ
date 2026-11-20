@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CalendarCheck2, Eye, Inbox, UserCheck, type LucideIcon } from "lucide-react";
-import { requireEmployer } from "@/features/auth/session";
+import { redirect } from "next/navigation";
+import { getSession } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { Shell } from "@/components/shared/shell";
 import { EmptyState, PageHeader } from "@/components/ui/misc";
@@ -24,8 +25,21 @@ export async function generateMetadata(): Promise<Metadata> {
  * sana · bosqich). Soxta "AI ball" yo'q: moslik faqat hisoblangan bo'lsa (ariza qatoridagi belgi).
  */
 export default async function EmployerApplicationsPage({ searchParams }: { searchParams: Promise<{ holat?: string }> }) {
-  const session = await requireEmployer("/employer/applications");
-  const [{ t, tEnum }, sp] = await Promise.all([getT(), searchParams]);
+  const [maybe, { t, tEnum }, sp] = await Promise.all([getSession(), getT(), searchParams]);
+  if (maybe?.profile.is_blocked) redirect("/blocked");
+  // "Arizalar" — ish beruvchining pastki menyusida (2026-11-20): hali vakansiya/profil yo'q bo'lsa — kirish yoki profil
+  // to'ldirishga majburlamay, nima bo'lishini tushuntirib, bitta tugma: vakansiya berish (profil o'sha oqimda to'ldiriladi)
+  if (!maybe || !maybe.employerId || !maybe.employerOnboarded) {
+    return (
+      <Shell forceRole="employer">
+        <div className="container-app space-y-5 py-5 sm:py-8" data-applications-invite>
+          <PageHeader title={t("employer.sections.applications")} />
+          <EmptyState icon={Inbox} title={t("easy.matches.applications_none_title")} description={t("easy.matches.applications_none")} action={{ label: t("easy.matches.employer_cta"), href: "/post/vacancy?ai=1" }} />
+        </div>
+      </Shell>
+    );
+  }
+  const session = maybe;
   const counts = await getApplicationStageCounts(session.userId, session.companyId);
   const total = counts ? Object.values(counts).reduce((a, b) => a + (b ?? 0), 0) : 0;
   const status = STATUSES.find((s) => s === sp.holat) ?? null;

@@ -108,15 +108,16 @@
       "slides": "Tanishtiruv"
     },
     "role": {
-      "title": "Siz qaysi maqsadda keldingiz?",
-      "subtitle": "Ilova shu maqsad bo'yicha ochiladi.",
-      "worker_title": "Men ish qidiryapman",
-      "worker_desc": "Vakansiyalarni ko'ring va ariza yuboring",
-      "employer_title": "Men xodim qidiryapman",
-      "employer_desc": "Vakansiya joylang va nomzod toping",
+      "title": "Nima qidiryapsiz?",
+      "subtitle": "Tanlang — ilova shunga moslab ochiladi.",
+      "worker_title": "O'zingizga mos ish qidiryapsizmi?",
+      "worker_desc": "Ishlarni ko'rasiz va o'zingiz haqingizda e'lon berasiz",
+      "employer_title": "Korxonangizga ishchi qidiryapsizmi?",
+      "employer_desc": "Ishchilarni ko'rasiz va vakansiya e'lon qilasiz",
       "continue": "Davom etish",
       "note": "Rolni keyin «Profil»da bir bosishda almashtirasiz.",
-      "error": "Tanlov saqlanmadi. Qayta urinib ko'ring."
+      "error": "Tanlov saqlanmadi. Qayta urinib ko'ring.",
+      "last": "Oxirgi tanlovingiz"
     },
     "done": {
       "title": "Profilingiz tayyor!",
@@ -127,12 +128,14 @@
       "edit": "Profilni tahrirlash"
     },
     "welcome": {
-      "title": "Kelajagingiz uchun to'g'ri imkoniyat shu yerdan boshlanadi.",
-      "subtitle": "Ish toping, yangi imkoniyatlarni kashf eting va karyerangizni rivojlantiring.",
+      "title": "Assalomu alaykum!",
+      "subtitle": "Xush kelibsiz! Nima qidiryapsiz?",
       "how": "Qanday ishlaydi?",
       "start": "Boshlash",
       "have_account": "Hisobim mavjud",
-      "photo_alt": "Ishda turgan odam"
+      "photo_alt": "Ishda turgan odam",
+      "have_account_q": "Hisobingiz bormi?",
+      "login": "Kirish"
     },
     "professions": {
       "step": "{current}/{total}-qadam",

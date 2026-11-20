@@ -10,6 +10,7 @@ import { sendTelegramHtml } from "@/features/notifications/telegram-dispatch";
 import { miniAppBaseUrl } from "@/lib/telegram/bot";
 import { ensureTelegramProfile, normalizeContactPhone } from "@/features/auth/telegram-session";
 import { WEB_LOGIN_CALLBACK, WEB_LOGIN_START_PREFIX, WEB_LOGIN_TOKEN, sha256hex } from "@/features/auth/telegram-web-login";
+import { createSiteHandoff } from "@/features/auth/telegram-web-handoff";
 import { botMenuKeyboard, continueAfterPhone, handleBotCallback, handleBotText, sendCvPdf, sendLanguagePicker, sendMatchingJobs, startCv, type BotCtx } from "@/features/bot/cv-bot";
 import { logSecurityEvent } from "@/lib/security/events";
 import { reportError } from "@/lib/monitoring";
@@ -104,8 +105,8 @@ async function previewWebLogin(admin: Admin, chatId: number, token: string, tt: 
 /**
  * "✅ Kirish" bosildi: profil (yangi bo'lsa yaratiladi) va so'rov tasdiqlanadi — brauzer o'zi kiradi.
  * Muvaffaqiyatda o'sha xabar o'zgartiriladi (eski "Kirish"/"Bekor qilish" tugmalari qolmasin): "Tasdiqlandi" va pastda
- * "Ochish" — ilova shu Telegram ichida (Mini App, initData bilan o'zi kiradi) ochiladi. "Brauzerga qayting" deyilmaydi
- * (ega, 2026-11-20: "ilovaga qayting demasin, pastda «Ochish» tursin").
+ * "Ochish" — SAYT ochiladi va o'sha brauzer ham kirgan bo'ladi (bir martalik havola; ega, 2026-11-20 kechqurun: "Ochish
+ * bosilsa saytga olib borsin", Mini App emas). Havola yaratilmasa — avvalgidek Mini App tugmasi.
  */
 async function confirmWebLogin(admin: Admin, chatId: number, messageId: number | undefined, from: { id: number; username?: string; first_name?: string; last_name?: string; language_code?: string }, id: string, locale: Parameters<typeof ensureTelegramProfile>[2], blockedText: string, tt: TT) {
   const profileId = await ensureTelegramProfile(admin, from, locale);
@@ -116,7 +117,9 @@ async function confirmWebLogin(admin: Admin, chatId: number, messageId: number |
   }
   const { data: status } = await admin.rpc("telegram_web_login_confirm", { p_id: id, p_telegram_user_id: from.id, p_profile_id: profileId });
   if (status === "ok") {
-    const keyboard = openAppKeyboard(tt("open"), "/");
+    // "Ochish" — saytni ochadi va o'sha brauzerni ham kiritadi (bir martalik havola); bo'lmasa — avvalgidek Mini App
+    const site = await createSiteHandoff(admin, from.id, profileId).catch(() => null);
+    const keyboard: InlineKeyboard = site ? { inline_keyboard: [[{ text: tt("open"), url: site }]] } : openAppKeyboard(tt("open"), "/");
     const edited = messageId ? await editBotMessage(chatId, messageId, tt("web_login_ok"), keyboard) : null;
     if (!edited) await sendTelegramMessage(chatId, tt("web_login_ok"), keyboard);
     return;

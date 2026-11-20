@@ -603,9 +603,21 @@ function QuickAnswer({ turn, latest, chat }: { turn: AiTurn; latest: boolean; ch
                 </Button>
               </>
             ) : null}
+            {/* topilmadi — o'zi e'lon qoldirsin (ega, 2026-11-20): ish izlovchi — o'zi haqida, ish beruvchi — vakansiya;
+                yozgani (kasb) bilan yordamchi ochiladi */}
+            {jobs && latest ? (
+              <>
+                <p>{t("easy.finder.empty_post_worker_note")}</p>
+                <Button asChild className="h-11 text-base" data-quick-post="worker">
+                  <Link href={turn.blank || !turn.query ? "/ai/post" : `/ai/post?${new URLSearchParams({ q: turn.query }).toString()}`}>
+                    <Plus className="size-5" aria-hidden /> {t("easy.finder.empty_post_worker")}
+                  </Link>
+                </Button>
+              </>
+            ) : null}
             {!jobs && latest ? (
-              <Button asChild variant="outline" className="h-11 bg-card text-base">
-                <Link href="/post/vacancy">
+              <Button asChild variant="outline" className="h-11 bg-card text-base" data-quick-post="vacancy">
+                <Link href={`/post/vacancy?${new URLSearchParams({ ai: "1", ...(turn.blank || !turn.query ? {} : { q: turn.query }) }).toString()}`}>
                   <Plus className="size-5" aria-hidden /> {t("easy.finder.empty_post_vacancy")}
                 </Link>
               </Button>
