@@ -21,6 +21,8 @@ export interface MyWorkerListing {
   moderation: ListingStateInfo;
   /** e'londa hech bir raqam ko'rinmaydi (eski e'lon: raqam yozilmagan, hisob raqami yashirin) — egasiga eslatma */
   phoneHidden: boolean;
+  /** 0086: shaxsning asosiy e'loni (birinchisi) — tahrirlash /post/worker, qolganlari — /post/worker?listing=<id> */
+  primary: boolean;
 }
 
 export interface MyVacancy {
@@ -56,24 +58,33 @@ export async function countMyListings(session: SessionContext): Promise<number |
     console.error("[cabinet] listing count", vac.error?.message ?? masters.error?.message);
     return null;
   }
-  return (session.workerId && session.workerOnboarded ? 1 : 0) + (vac.count ?? 0) + (masters.count ?? 0);
+  // 0086: ishchi e'lonlari ham bir nechta bo'lishi mumkin
+  const workers = session.workerId
+    ? await supabase.from("worker_profiles").select("id", { count: "exact", head: true }).eq("profile_id", session.userId).not("onboarding_completed_at", "is", null)
+    : { count: 0, error: null };
+  if (workers.error) return null;
+  return (workers.count ?? 0) + (vac.count ?? 0) + (masters.count ?? 0);
 }
 
 export async function getMyListings(
   session: SessionContext,
   /** vacancies: false — faqat o'zi haqidagi e'lon (ish beruvchi "E'lonlarim"ida vakansiyalar o'z ro'yxatida) */
   opts: { vacancies?: boolean } = {},
-): Promise<{ worker: MyWorkerListing | null; vacancies: MyVacancy[]; paid: boolean }> {
+): Promise<{ workers: MyWorkerListing[]; vacancies: MyVacancy[]; paid: boolean }> {
   const supabase = await createClient();
   const withVacancies = opts.vacancies !== false;
   const [workerRes, vacRes, paidRes, statesRes] = await Promise.all([
-    session.workerId && session.workerOnboarded
+    // 0086 (ega, 2026-11-20: "10 ta, 100 ta e'lon joylasin"): barcha o'z ishchi e'lonlari — asosiysi birinchi
+    session.workerId
       ? supabase
           .from("worker_profiles")
-          .select("id, headline, profession_node_id, district_id, is_public, status, listed_until, regions!worker_profiles_region_id_fkey(slug, name_uz, name_ru, name_en, name_oz), districts!worker_profiles_district_id_fkey(name_uz, name_ru, name_oz)")
-          .eq("id", session.workerId)
-          .maybeSingle()
-      : Promise.resolve({ data: null }),
+          .select("id, is_primary, headline, profession_node_id, district_id, is_public, status, listed_until, regions!worker_profiles_region_id_fkey(slug, name_uz, name_ru, name_en, name_oz), districts!worker_profiles_district_id_fkey(name_uz, name_ru, name_oz)")
+          .eq("profile_id", session.userId)
+          .not("onboarding_completed_at", "is", null)
+          .order("is_primary", { ascending: false })
+          .order("created_at", { ascending: true })
+          .limit(100)
+      : Promise.resolve({ data: [], error: null }),
     withVacancies
       ? supabase
           .from("vacancies")
@@ -88,7 +99,7 @@ export async function getMyListings(
   const states = new Map((statesRes.data ?? []).map((r) => [`${r.entity}:${r.id}`, toListingStateInfo(r.info)]));
   // arizalar soni — ish beruvchining asosiy keyingi amali (RLS: faqat o'z vakansiyalarining arizalari)
   const vacancyIds = (vacRes.data ?? []).map((v) => v.id);
-  const wantWorkerPhone = !!workerRes.data;
+  const workerIds = (workerRes.data ?? []).map((w) => w.id);
   // Ega (2026-11-20): "telefon nomerlar 100% ko'rinsin" — raqami ko'rinmaydigan eski e'lonlar egasiga eslatiladi
   // (yangi e'londa raqam majburiy va doim ko'rinadi). RLS: faqat o'z e'lonlarining raqam qatorlari.
   const [appsRes, contactsRes, listingPhoneRes, ownContactRes] = await Promise.all([
@@ -96,10 +107,8 @@ export async function getMyListings(
       ? supabase.from("applications").select("vacancy_id, status").in("vacancy_id", vacancyIds).neq("status", "withdrawn")
       : Promise.resolve({ data: [], error: null }),
     vacancyIds.length ? supabase.from("vacancy_contacts").select("vacancy_id, phone, show_phone").in("vacancy_id", vacancyIds) : Promise.resolve({ data: [], error: null }),
-    wantWorkerPhone && session.workerId
-      ? supabase.from("worker_listing_phones").select("worker_id").eq("worker_id", session.workerId).maybeSingle()
-      : Promise.resolve({ data: null, error: null }),
-    wantWorkerPhone ? supabase.from("profile_contacts").select("phone, phone_visibility").eq("profile_id", session.userId).maybeSingle() : Promise.resolve({ data: null, error: null }),
+    workerIds.length ? supabase.from("worker_listing_phones").select("worker_id").in("worker_id", workerIds) : Promise.resolve({ data: [], error: null }),
+    workerIds.length ? supabase.from("profile_contacts").select("phone, phone_visibility").eq("profile_id", session.userId).maybeSingle() : Promise.resolve({ data: null, error: null }),
   ]);
   const hiddenVacancyPhones = new Set((contactsRes.data ?? []).filter((c) => !c.show_phone || !c.phone).map((c) => c.vacancy_id));
   if (appsRes.error) console.error("[cabinet] applications", appsRes.error.message);
@@ -110,15 +119,15 @@ export async function getMyListings(
     if (a.status === "sent") c.fresh += 1;
     apps.set(a.vacancy_id, c);
   }
-  if ("error" in workerRes && workerRes.error) console.error("[cabinet] worker", workerRes.error.message);
+  if (workerRes.error) console.error("[cabinet] worker", workerRes.error.message);
   if (vacRes.error) console.error("[cabinet] vacancies", vacRes.error.message);
-  const w = workerRes.data;
   const paid = paidRes.data !== false;
-  let worker: MyWorkerListing | null = null;
-  if (w) {
+  const withPhone = new Set((listingPhoneRes.data ?? []).map((r) => r.worker_id));
+  const accountPhonePublic = !!(ownContactRes.data?.phone && ownContactRes.data.phone_visibility === "everyone");
+  const workers: MyWorkerListing[] = (workerRes.data ?? []).map((w) => {
     const listed = w.is_public && w.status !== "not_looking" && (!paid || (!!w.listed_until && new Date(w.listed_until) > new Date()));
     const region = w.regions as MyWorkerListing["regionName"] & { slug: string } | null;
-    worker = {
+    return {
       id: w.id,
       headline: w.headline,
       professionNodeId: w.profession_node_id,
@@ -130,10 +139,10 @@ export async function getMyListings(
       listedUntil: w.listed_until,
       moderation: states.get(`worker:${w.id}`) ?? toListingStateInfo({ state: listed ? "listed" : "saved" }),
       // so'rov xatosida eslatma ko'rsatilmaydi (yolg'on ogohlantirish bo'lmasin)
-      phoneHidden:
-        !listingPhoneRes.error && !ownContactRes.error && !listingPhoneRes.data && !(ownContactRes.data?.phone && ownContactRes.data.phone_visibility === "everyone"),
+      phoneHidden: !listingPhoneRes.error && !ownContactRes.error && !withPhone.has(w.id) && !accountPhonePublic,
+      primary: w.is_primary,
     };
-  }
+  });
   const vacancies: MyVacancy[] = (vacRes.data ?? []).map((v) => {
     const region = v.regions as MyVacancy["regionName"] & { slug: string } | null;
     return {
@@ -152,5 +161,5 @@ export async function getMyListings(
       phoneHidden: hiddenVacancyPhones.has(v.id),
     };
   });
-  return { worker, vacancies, paid };
+  return { workers, vacancies, paid };
 }

@@ -36,6 +36,12 @@ export const workerListingSchema = z
   listingPhone: phone,
   /** qo'shimcha raqam ("+ Yana raqam"), ixtiyoriy */
   listingPhone2: phone.nullable().optional(),
+  /**
+   * 0086 (ega, 2026-11-20: "10 ta, 100 ta e'lon joylasin"): workerId — o'z e'lonlaridan birini tahrirlash;
+   * newListing — yangi e'lon (shu kasb va hududda e'loni bo'lsa — o'sha yangilanadi). Ikkalasi ham yo'q — asosiy e'lon.
+   */
+  workerId: z.uuid().nullable().optional(),
+  newListing: z.boolean().optional(),
   })
   .refine(oneProfession, { path: ["professionNodeId"] })
   .refine((v) => !v.listingPhone2 || !!v.listingPhone, { path: ["listingPhone2"] });

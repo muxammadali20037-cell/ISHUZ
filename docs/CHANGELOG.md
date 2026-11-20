@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · Ishchi bir nechta e'lon joylay oladi — 100 tagacha (`claude/multi-worker-listings`, 0086)
+
+Ega: "men ishchiman — menga faqat 1 ta e'lon joylay olyapman; 10 ta, 100 ta joylasin kerak bo'lsa". Tanlov (ega): har
+biri alohida e'lon (o'z kasbi, hududi, maoshi, raqami), bir kishiga 100 tagacha.
+
+- **Baza (0086)**: har e'lon — `worker_profiles` qatori; shaxsning asosiy qatori (`is_primary`) — avvalgidek arizalar,
+  takliflar, rezyume. Qidiruv, e'lon sahifasi, kanal, moderatsiya, raqamlar, rasm qo'shimcha e'lonlar uchun o'zgarishsiz
+  ishlaydi. `save_simple_worker_listing`: `new_listing` (yangi e'lon; shu kasb va hududda e'loni bo'lsa — o'sha yangilanadi,
+  takror bo'lmasin; 100 tadan ortig'i — `too_many_listings`) va `worker_id` (o'z e'lonini tahrirlash). Taklif qaysi
+  e'londan yuborilsa ham shaxsga yoziladi. Maosh/tuman yozish huquqi — egasining barcha e'lonlari.
+- **"E'lonlarim"**: barcha ishchi e'lonlari ("O'zim haqimdagi e'lonlar (N)"), har birida o'z "O'zgartirish" va "Ishga
+  joylashdim"; pastda **"Yana e'lon joylash"** → `/post/worker?new=1` (bo'sh forma, "Yana bitta e'lon").
+  `/post/worker?listing=<id>` — o'sha e'lonni tahrirlash (begonaniki — "Sahifa topilmadi").
+- **AI bilan joylash** (bosh sahifa → Yordamchi): har joylash — yangi e'lon (avval eskisining ustiga yozardi).
+- "Mening ishchi profilim" so'rovlari (sessiya, onboarding, bot, admin) — asosiy qator.
+- Testlar: SQL `multi_worker_listings.test.sql` (22 tekshiruv), E2E `multi-worker-listings.spec.ts`.
+
 ## 2026-11-20 · Telefon raqam kanalda ham — bosilsa qo'ng'iroq (`claude/phones-everywhere`)
 
 Ega: "hammaga majburiy qil telefon nomer kiritsin — ishchi qidiruvchi ham, ish qidiruvchi ham; telefon nomerlar 100%

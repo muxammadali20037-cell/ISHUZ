@@ -133,7 +133,7 @@ export async function applyWorkerPlan(input: unknown): Promise<ActionResult<{ re
   for (const [step, run] of steps) {
     if (!(await run()) && !onboarded) return stop(step);
   }
-  if (p.about.trim()) await supabase.from("worker_profiles").update({ about: p.about.trim() }).eq("profile_id", session.userId);
+  if (p.about.trim()) await supabase.from("worker_profiles").update({ about: p.about.trim() }).eq("profile_id", session.userId).eq("is_primary", true);
   return done();
 }
 

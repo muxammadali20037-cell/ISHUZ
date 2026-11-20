@@ -23,7 +23,7 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
   const session = await requireEmployer("/employer/vacancies");
   const params = await searchParams;
   const filter = parseStatusFilter(params.status);
-  const [{ t }, items, { worker, paid }, masters] = await Promise.all([
+  const [{ t }, items, { workers, paid }, masters] = await Promise.all([
     getT(),
     getMyVacancies(session),
     getMyListings(session, { vacancies: false }),
@@ -33,10 +33,10 @@ export default async function VacanciesPage({ searchParams }: { searchParams: Pr
     <Shell>
       <div className="container-app py-5 sm:py-8">
         <VacancyList items={items} filter={filter} />
-        {worker || masters.length ? (
+        {workers.length || masters.length ? (
           <div className="mt-8 max-w-2xl space-y-3 border-t border-border/70 pt-6" data-other-listings>
             <h2 className="text-section font-bold tracking-tight">{t("vacancies.list.other_listings")}</h2>
-            <MyListingsSection worker={worker} vacancies={[]} paid={paid} masters={masters} />
+            <MyListingsSection workers={workers} vacancies={[]} paid={paid} masters={masters} />
           </div>
         ) : null}
       </div>

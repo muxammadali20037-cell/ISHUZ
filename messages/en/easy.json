@@ -129,7 +129,9 @@
     "group_self": "About me",
     "group_vacancies": "My listings",
     "edit_short": "Edit",
-    "phone_hidden": "Your phone number isn't shown in this listing — people can't call you. Tap \"Edit\", enter the number and save."
+    "phone_hidden": "Your phone number isn't shown in this listing — people can't call you. Tap \"Edit\", enter the number and save.",
+    "group_self_many": "About me ({count})",
+    "add_listing": "Post another listing"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -217,7 +219,8 @@
     "pay_desc": "Once paid, employers see your listing right away for {days} days.",
     "saved_title": "Your details are saved",
     "edit_title": "Edit listing",
-    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: profession, area, experience, salary and your phone number (tap to call). Your name and photo are not shown there."
+    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: profession, area, experience, salary and your phone number (tap to call). Your name and photo are not shown there.",
+    "new_title": "Another listing"
   },
   "vacancy": {
     "page_title": "I'm looking for a worker",
@@ -461,7 +464,9 @@
     "offline": "You're offline. Your answers are saved on this device — tap again when you're back online.",
     "network": "The connection dropped or the server didn't respond. Your answers are saved — tap again.",
     "timeout": "The response is taking long. The listing may already be saved — tap again, it won't be posted twice.",
-    "duplicate_vacancy": "You already have an active job with the same title and location. Edit or close it instead of posting a new one (“My jobs”)."
+    "duplicate_vacancy": "You already have an active job with the same title and location. Edit or close it instead of posting a new one (“My jobs”).",
+    "too_many_listings": "You can't post more than 100 listings. Stop the ones you don't need.",
+    "not_found": "Listing not found."
   },
   "nav": {
     "search": "Search",

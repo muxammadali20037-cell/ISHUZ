@@ -21,6 +21,8 @@ test("ish izlovchi: «Ish beruvchilar» — qisqa ro'yxat; «Arizalarim» — bo
     [USERS.workerA],
   );
   const row = page.locator("[data-home-row='my-applications']");
+  // oqim (Suspense) almashguncha yashirin nusxa ham DOM'da bo'ladi — bitta qolishini kutamiz
+  await expect(row).toHaveCount(1);
   await expect(row).toHaveAttribute("href", "/applications");
   await expect(row).toContainText("Arizalarim");
   const n = apps?.n ?? "0";

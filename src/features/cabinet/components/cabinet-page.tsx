@@ -37,7 +37,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     );
   }
 
-  const { worker, vacancies, paid } = await getMyListings(session);
+  const { workers, vacancies, paid } = await getMyListings(session);
   // bitta ro'yxat: faoliyat (arizalar, takliflar, saqlangan, xabarlar…), keyin hisob (profil, to'lovlar, sozlamalar)
   const links: { href: string; label: string; icon: typeof Bell; show: boolean }[] = [
     { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId },
@@ -45,7 +45,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { href: "/employer/applications", label: t("easy.cabinet.links.employer_applications"), icon: UsersRound, show: !!session.employerOnboarded },
     { href: "/saved", label: t("easy.cabinet.links.saved"), icon: Bookmark, show: true },
     { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true },
-    { href: "/cabinet/matches", label: t("easy.cabinet.links.matches"), icon: Sparkles, show: !!(worker || vacancies.length) },
+    { href: "/cabinet/matches", label: t("easy.cabinet.links.matches"), icon: Sparkles, show: !!(workers.length || vacancies.length) },
     { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true },
     { href: "/profile", label: t("easy.cabinet.links.profile"), icon: UserRound, show: !!(session.workerOnboarded || session.employerId) },
     { href: "/cabinet/verification", label: t("easy.cabinet.links.verification"), icon: ShieldCheck, show: !!session.employerId || vacancies.length > 0 },
@@ -75,8 +75,8 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         <ProfileHeader session={session} mode={mode} />
       </Suspense>
 
-      <Fold name="my-listings" icon={<FileText />} tint="blue" verb="view" title={t("easy.cabinet.my_listings")} count={(worker ? 1 : 0) + vacancies.length || null}>
-        <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} />
+      <Fold name="my-listings" icon={<FileText />} tint="blue" verb="view" title={t("easy.cabinet.my_listings")} count={workers.length + vacancies.length || null}>
+        <MyListingsSection workers={workers} vacancies={vacancies} paid={paid} />
       </Fold>
 
       <Fold name="pro" icon={<BellRing />} tint="orange" verb="open" title={t("easy.aihub.pro_title")}>

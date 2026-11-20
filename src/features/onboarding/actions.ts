@@ -43,7 +43,7 @@ async function getWorkerCtx(opts: { create: boolean }): Promise<CtxResult> {
   if (session.profile.is_blocked) return { ok: false, error: "blocked" };
   const supabase = await createClient();
 
-  const { data: existing, error } = await supabase.from("worker_profiles").select("id, onboarding_step").eq("profile_id", session.userId).maybeSingle();
+  const { data: existing, error } = await supabase.from("worker_profiles").select("id, onboarding_step").eq("profile_id", session.userId).eq("is_primary", true).maybeSingle();
   if (error) return { ok: false, error: errorCode(error) };
   if (existing) return { ok: true, ctx: { supabase, session, workerId: existing.id, savedStep: existing.onboarding_step } };
   if (!opts.create) return { ok: false, error: "no_worker" };

@@ -35,6 +35,7 @@ export const SCHEMA_PROBES: readonly Probe[] = [
   { migration: "0083", run: (db) => db.from("vacancy_contacts").select("channel_phone_at").limit(0) },
   { migration: "0084", run: (db) => db.rpc("listing_phones_public", { p_kind: "none", p_id: "00000000-0000-0000-0000-000000000000" }) },
   { migration: "0085", run: (db) => db.from("telegram_web_logins").select("id").limit(0) },
+  { migration: "0086", run: (db) => db.from("worker_profiles").select("is_primary").limit(0) },
 ];
 
 export type SchemaReport = { ok: boolean; missing: string[]; errors: string[] };

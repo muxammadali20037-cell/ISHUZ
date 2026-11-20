@@ -20,14 +20,26 @@ const COMPACT = "h-10 gap-1.5 rounded-xl px-3 text-sm font-semibold";
  * "Ishga joylashdim" / "Ishchi topdim" — tasdiqlash bilan; e'lon qidiruvdan chiqadi.
  * Yopuvchi amal — kartaning eng yorqin tugmasi emas (outline); natija rangi faqat belgida.
  */
-export function FoundButton({ kind, vacancyId, compact = false }: { kind: "job" | "worker"; vacancyId?: string; /** "E'lonlarim": kichik tugma */ compact?: boolean }) {
+export function FoundButton({
+  kind,
+  vacancyId,
+  workerId,
+  compact = false,
+}: {
+  kind: "job" | "worker";
+  vacancyId?: string;
+  /** 0086: bir nechta ishchi e'lonidan biri (berilmasa — asosiy e'lon) */
+  workerId?: string;
+  /** "E'lonlarim": kichik tugma */
+  compact?: boolean;
+}) {
   const { t } = useT();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pending, start] = useTransition();
   const confirm = () =>
     start(async () => {
-      const res = kind === "job" ? await callAction(() => markFoundJob()) : await callAction(() => markFoundWorker({ vacancyId }));
+      const res = kind === "job" ? await callAction(() => markFoundJob(workerId ? { workerId } : undefined)) : await callAction(() => markFoundWorker({ vacancyId }));
       setOpen(false);
       if (!res.ok) {
         const key = `easy.errors.${res.error}`;
