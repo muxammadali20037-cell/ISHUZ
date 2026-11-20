@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · E'lon rasmi (AI): «Rasm yaratilsinmi?» (`feat/listing-image`)
+
+Ega: "e'lon berayotganda oxirida so'rasin — e'lon rasmi yaratilsinmi? Ha bo'lsa, e'lonni avtomatik o'qib, mos real rasm
+joylashsin; kanalda ham, ilovada ham ixcham ko'rinsin" (provayder — ChatGPT / OpenAI, ega tanlovi).
+
+- **0087** (`supabase/prod/pending.sql` orqali): `listing_images` (bitta e'longa bitta rasm, holati), ochiq
+  `listing-images` bucket, `claim_listing_image` — navbat va xarajat chegarasi: bir kishiga sutkada 5 ta, umumiy 100 ta
+  (`app_settings`), bir e'longa 3 urinish; faqat server.
+- **Qachon**: e'lon joylangach (yordamchi bilan ishchi e'loni, oddiy forma, vakansiya) — "E'lon rasmi yaratilsinmi?
+  Ha / Yo'q". Ha → 20–60 s, keyin tayyor rasm ko'rsatiladi.
+- **Rasm**: OpenAI `gpt-image-1.5` (medium, 1536×1024 ≈ $0.05). So'rov e'londan avtomatik — kasb, kasb turi va ish joyi;
+  rasmda yozuv yo'q (AI harflarni xato chizadi). Yaratilgan rasm moderatsiyadan o'tadi.
+- **Ko'rinishi**: kanal posti rasmi — fon AI surat, chapda soya, yozuvlar (kasb, kompaniya, joy, maosh) shablondan;
+  kanalda allaqachon chiqqan post rasmi almashtiriladi. E'lon sahifasida — ixcham keng banner.
+- **Yoqish**: Vercel'da `OPENAI_API_KEY` (bo'lmasa savol chiqmaydi, bazaga so'rov ham yo'q). Avval 0087 qo'llanadi.
+- E2E stendida OpenAI — soxta (shlyuzda), pul ketadigan so'rov yo'q.
+
 ## 2026-11-20 · Rolga mos ilova: menyu, chat, kirish savol bilan (`feat/role-chat`)
 
 Ega (kechqurun): "ishchi panelida Ishchilar nimaga kerak — o'rniga qiziqarli narsa; men ishchiman — «ish yoki ishchi»
