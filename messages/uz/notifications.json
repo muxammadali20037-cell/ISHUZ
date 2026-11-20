@@ -120,7 +120,7 @@
     "web_login_confirm": "🔐 Saytga kirish so'raldi: «Ish topdim» ({device}).\nBu siz bo'lsangiz — «Kirish»ni bosing, brauzerda o'zingiz kirasiz. Kod kerak emas.",
     "web_login_warning": "Agar hozir saytga kirmayotgan bo'lsangiz — bosmang.",
     "web_login_button": "Kirish",
-    "web_login_ok": "✅ Tasdiqlandi. Brauzerga qayting — sahifa o'zi ochiladi.",
+    "web_login_ok": "✅ Kirish tasdiqlandi! Pastdagi «Ochish»ni bosing — Ish topdim shu yerning o'zida ochiladi.",
     "web_login_cancelled": "Kirish bekor qilindi.",
     "web_login_used": "Bu kirish so'rovi allaqachon ishlatilgan. Saytda «Telegram orqali kirish»ni qayta bosing.",
     "web_login_expired": "Kirish so'rovi muddati tugagan (5 daqiqa). Saytda «Telegram orqali kirish»ni qayta bosing.",

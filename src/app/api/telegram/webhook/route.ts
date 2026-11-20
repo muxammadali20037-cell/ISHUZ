@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 import { NextResponse, type NextRequest } from "next/server";
 import { getServerEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { answerCallback, escapeHtml, removeKeyboard, sendTelegramMessage, shareContactKeyboard, syncBotMenuButtonOnce, type InlineKeyboard } from "@/lib/telegram/bot";
+import { answerCallback, editBotMessage, escapeHtml, openAppKeyboard, removeKeyboard, sendTelegramMessage, shareContactKeyboard, syncBotMenuButtonOnce, type InlineKeyboard } from "@/lib/telegram/bot";
 import { makeT } from "@/lib/i18n/translate";
 import { formatPhone } from "@/lib/format";
 import { parseBotCommand, resolveTelegramLocale, telegramUpdateSchema } from "@/features/notifications/telegram";
@@ -101,8 +101,13 @@ async function previewWebLogin(admin: Admin, chatId: number, token: string, tt: 
   await sendTelegramMessage(chatId, tt(key));
 }
 
-/** "✅ Kirish" bosildi: profil (yangi bo'lsa yaratiladi) va so'rov tasdiqlanadi — brauzer o'zi kiradi */
-async function confirmWebLogin(admin: Admin, chatId: number, from: { id: number; username?: string; first_name?: string; last_name?: string; language_code?: string }, id: string, locale: Parameters<typeof ensureTelegramProfile>[2], blockedText: string, tt: TT) {
+/**
+ * "✅ Kirish" bosildi: profil (yangi bo'lsa yaratiladi) va so'rov tasdiqlanadi — brauzer o'zi kiradi.
+ * Muvaffaqiyatda o'sha xabar o'zgartiriladi (eski "Kirish"/"Bekor qilish" tugmalari qolmasin): "Tasdiqlandi" va pastda
+ * "Ochish" — ilova shu Telegram ichida (Mini App, initData bilan o'zi kiradi) ochiladi. "Brauzerga qayting" deyilmaydi
+ * (ega, 2026-11-20: "ilovaga qayting demasin, pastda «Ochish» tursin").
+ */
+async function confirmWebLogin(admin: Admin, chatId: number, messageId: number | undefined, from: { id: number; username?: string; first_name?: string; last_name?: string; language_code?: string }, id: string, locale: Parameters<typeof ensureTelegramProfile>[2], blockedText: string, tt: TT) {
   const profileId = await ensureTelegramProfile(admin, from, locale);
   const { data: prof } = await admin.from("profiles").select("is_blocked").eq("id", profileId).maybeSingle();
   if (prof?.is_blocked) {
@@ -110,7 +115,13 @@ async function confirmWebLogin(admin: Admin, chatId: number, from: { id: number;
     return;
   }
   const { data: status } = await admin.rpc("telegram_web_login_confirm", { p_id: id, p_telegram_user_id: from.id, p_profile_id: profileId });
-  const key = status === "ok" ? "web_login_ok" : status === "used" ? "web_login_used" : status === "expired" ? "web_login_expired" : "web_login_invalid";
+  if (status === "ok") {
+    const keyboard = openAppKeyboard(tt("open"), "/");
+    const edited = messageId ? await editBotMessage(chatId, messageId, tt("web_login_ok"), keyboard) : null;
+    if (!edited) await sendTelegramMessage(chatId, tt("web_login_ok"), keyboard);
+    return;
+  }
+  const key = status === "used" ? "web_login_used" : status === "expired" ? "web_login_expired" : "web_login_invalid";
   await sendTelegramMessage(chatId, tt(key));
 }
 
@@ -179,7 +190,7 @@ export async function POST(req: NextRequest) {
       const wl = WEB_LOGIN_CALLBACK.exec(callback.data);
       if (wl) {
         await answerCallback(callback.id);
-        await confirmWebLogin(admin, chat.id, callback.from, wl[1]!, locale, t("common.errors.blocked"), tt);
+        await confirmWebLogin(admin, chat.id, callback.message?.message_id, callback.from, wl[1]!, locale, t("common.errors.blocked"), tt);
         return NextResponse.json({ ok: true, callback: "web_login" });
       }
       // bog'lashni tasdiqlash / bekor qilish

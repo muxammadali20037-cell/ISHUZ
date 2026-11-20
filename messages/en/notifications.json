@@ -120,7 +120,7 @@
     "web_login_confirm": "🔐 Sign-in to «Ish topdim» requested ({device}).\nIf this is you, tap «Sign in» — you will be signed in in the browser. No code needed.",
     "web_login_warning": "If you are not signing in right now, do not tap.",
     "web_login_button": "Sign in",
-    "web_login_ok": "✅ Confirmed. Return to the browser — the page will open by itself.",
+    "web_login_ok": "✅ Login confirmed! Tap “Open” below — Ish topdim opens right here.",
     "web_login_cancelled": "Sign-in cancelled.",
     "web_login_used": "This sign-in request was already used. Tap «Sign in with Telegram» on the site again.",
     "web_login_expired": "The sign-in request expired (5 minutes). Tap «Sign in with Telegram» on the site again.",
