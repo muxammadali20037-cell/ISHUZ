@@ -1,5 +1,17 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · Telegram orqali kirish: "brauzerga qayting" o'rniga "Ochish" (`claude/tg-login-open`)
+
+Ega: "Telegram orqali kirishda «saytga qayting, ochiladi» deyapti — demasin, pastda «Ochish» tursin, bossa ilova ochilsin".
+
+- Botda "✅ Kirish" bosilgach **o'sha xabar o'zgartiriladi** (eski "Kirish / Bekor qilish" tugmalari qolmaydi): "✅ Kirish
+  tasdiqlandi! Pastdagi «Ochish»ni bosing — Ish topdim shu yerning o'zida ochiladi." va pastda **"Ochish"** — Mini App
+  (bosh sahifa), Telegram ichida initData bilan o'zi kiradi. Xabarni o'zgartirib bo'lmasa — yangi xabar, o'sha tugma bilan.
+  Kirishni boshlagan brauzer ham avvalgidek o'zi kiradi.
+- Matn 4 tilda (`notifications.telegram.web_login_ok`).
+- Test: `webhook/web-login.test.ts` (3) — tasdiq → xabar o'zgaradi + Mini App tugmasi, "qayting" yo'q; o'zgartirib
+  bo'lmasa — yangi xabar; muddati o'tgan — tugmasiz izoh.
+
 ## 2026-11-19 · Tanishtiruvga o'zbekcha ovoz (`claude/tour-voice`)
 
 Ega ElevenLabs'da ("Farruh — Confident") 20 qatorni bitta faylda yozdirib yubordi. Pauzalar bo'yicha bo'lindi: qatorlar orasidagi
