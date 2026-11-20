@@ -1622,5 +1622,22 @@
     "write_below": "Type here",
     "post_send": "Continue",
     "post_note": "Posting is free. Next we'll ask for your phone number."
+  },
+  "listing_image": {
+    "ask_title": "Create a picture for your listing?",
+    "ask_desc": "AI reads your listing and prepares a matching realistic picture — it shows in the listing and in the Telegram channel. Free.",
+    "yes": "Yes, create it",
+    "no": "No",
+    "busy": "Preparing the picture…",
+    "busy_note": "20–60 seconds. Don't close the page.",
+    "done": "Done! The picture shows in your listing and in the Telegram channel.",
+    "done_alt": "Listing picture",
+    "error_generic": "The picture didn't work out right now. Try again a bit later.",
+    "error_moderation": "The picture didn't pass the check — the listing stays without it.",
+    "error_user_limit": "You've reached today's picture limit. Try again tomorrow.",
+    "error_daily_limit": "Picture creation is busy today. Try tomorrow.",
+    "error_too_many": "A picture was created 3 times for this listing — no more tries.",
+    "retry": "Try again",
+    "close": "Close"
   }
 }

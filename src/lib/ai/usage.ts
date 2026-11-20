@@ -9,7 +9,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
  */
 export interface AiUsage {
   feature: string;
-  provider: "gemini" | "anthropic";
+  provider: "gemini" | "anthropic" | "openai";
   model: string | null;
   ok: boolean;
   latencyMs: number;

@@ -54,6 +54,16 @@ const serverSchema = z.object({
   IMAGE_GEN_MODEL: z.string().optional(),
   /** Faqat sinov uchun: boshqa manzil (masalan lokal soxta server) */
   IMAGE_GEN_BASE_URL: z.string().url().optional(),
+  /**
+   * E'lon rasmi (ega, 2026-11-20: "e'lon oxirida «rasm yaratilsinmi?» — ha bo'lsa, e'longa mos real rasm"): OpenAI rasm modeli.
+   * Bo'lmasa savol umuman chiqmaydi. Har rasm pulli — kunlik cheklov bazada (listing_images_daily_limit).
+   */
+  OPENAI_API_KEY: z.string().optional(),
+  /** standart: gpt-image-1.5 (sifat: LISTING_IMAGE_QUALITY — low | medium | high, standart medium) */
+  LISTING_IMAGE_MODEL: z.string().optional(),
+  LISTING_IMAGE_QUALITY: z.enum(["low", "medium", "high"]).optional(),
+  /** Faqat sinov uchun: OpenAI API o'rniga boshqa manzil (lokal soxta server) */
+  OPENAI_BASE_URL: z.string().url().optional(),
   /** Payme (Paycom) merchant: kassa ID va kalit; PAYME_TEST=1 — test kassa */
   PAYME_MERCHANT_ID: z.string().optional(),
   PAYME_KEY: z.string().optional(),
@@ -104,6 +114,10 @@ export function getServerEnv() {
     IMAGE_GEN_API_KEY: process.env.IMAGE_GEN_API_KEY || undefined,
     IMAGE_GEN_MODEL: process.env.IMAGE_GEN_MODEL || undefined,
     IMAGE_GEN_BASE_URL: testOnlyOverride(process.env.IMAGE_GEN_BASE_URL),
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY || undefined,
+    LISTING_IMAGE_MODEL: process.env.LISTING_IMAGE_MODEL || undefined,
+    LISTING_IMAGE_QUALITY: (["low", "medium", "high"] as const).find((q) => q === process.env.LISTING_IMAGE_QUALITY),
+    OPENAI_BASE_URL: testOnlyOverride(process.env.OPENAI_BASE_URL),
     PAYME_MERCHANT_ID: process.env.PAYME_MERCHANT_ID || undefined,
     PAYME_KEY: process.env.PAYME_KEY || undefined,
     PAYME_TEST: process.env.PAYME_TEST || undefined,

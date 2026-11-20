@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { listingImageEnabled } from "@/features/listing-image/server";
 import { Suspense } from "react";
 import { notFound, redirect } from "next/navigation";
 import { z } from "zod";
@@ -49,7 +50,7 @@ export default async function PostVacancyPage({ searchParams }: { searchParams: 
   return (
     <Shell hideNav>
       <Suspense>
-        <VacancyPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill ?? {}} editId={editId} pricedDays={days.vacancy} quick={quick} customAllowed={features.customProfession} photoQuarantine={features.photoQuarantine} dailyAllowed={features.dailyJobs} />
+        <VacancyPost categories={categories} regions={regions} districts={districts} viewer={viewer} prefill={prefill ?? {}} editId={editId} pricedDays={days.vacancy} quick={quick} customAllowed={features.customProfession} photoQuarantine={features.photoQuarantine} dailyAllowed={features.dailyJobs} imageEnabled={!editId && listingImageEnabled()} />
       </Suspense>
     </Shell>
   );

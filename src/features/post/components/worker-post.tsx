@@ -42,6 +42,7 @@ import {
 } from "./inputs";
 import { PhonePublicNote } from "./phone-public-note";
 import { PublishResult } from "./publish-result";
+import { ListingImageAsk } from "@/features/listing-image/components/listing-image-ask";
 import { ModerationOutcome } from "./moderation-outcome";
 import { AiReadyBanner } from "./ai-quick-fill";
 import { ListingChat } from "./listing-chat";
@@ -119,7 +120,10 @@ export function WorkerPost({
   customAllowed = false,
   listingId = null,
   newListing = false,
+  imageEnabled = false,
 }: {
+  /** e'lon rasmi (AI) sozlangan — joylangach "Rasm yaratilsinmi?" */
+  imageEnabled?: boolean;
   categories: Category[];
   regions: Region[];
   districts: District[];
@@ -408,7 +412,9 @@ export function WorkerPost({
               href: `/listing/${result.workerId}`,
             },
           ]}
-        />
+        >
+          {imageEnabled ? <ListingImageAsk entity="worker" id={result.workerId} preview={`/api/promo/worker/${result.workerId}`} /> : null}
+        </PublishResult>
       );
     }
     return (

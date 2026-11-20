@@ -1622,5 +1622,22 @@
     "write_below": "Shu yerga yozing",
     "post_send": "Davom etish",
     "post_note": "E'lon bepul. Keyingi qadamda telefon raqam so'raladi."
+  },
+  "listing_image": {
+    "ask_title": "E'lon rasmi yaratilsinmi?",
+    "ask_desc": "AI e'loningizni o'qib, unga mos real rasm tayyorlaydi — e'londa va Telegram kanalda chiroyli ko'rinadi. Bepul.",
+    "yes": "Ha, yaratilsin",
+    "no": "Yo'q",
+    "busy": "Rasm tayyorlanmoqda…",
+    "busy_note": "20–60 soniya. Sahifani yopmang.",
+    "done": "Tayyor! Rasm e'loningizda va Telegram kanalda ko'rinadi.",
+    "done_alt": "E'lon rasmi",
+    "error_generic": "Rasm hozir chiqmadi. Birozdan keyin qayta urinib ko'ring.",
+    "error_moderation": "Rasm talabga javob bermadi — e'lon rasmsiz qoladi.",
+    "error_user_limit": "Bugun rasm yaratish chegarasiga yetdingiz. Ertaga yana urinib ko'ring.",
+    "error_daily_limit": "Bugun rasm yaratish band. Ertaga urinib ko'ring.",
+    "error_too_many": "Bu e'lon uchun rasm 3 marta yaratildi — boshqa urinib bo'lmaydi.",
+    "retry": "Qayta urinish",
+    "close": "Yopish"
   }
 }

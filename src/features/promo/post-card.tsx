@@ -2,12 +2,13 @@
  * Kanal posti rasmi (next/og → PNG, 1200×800): FAQAT ish nomi, maosh, joylashuv va kompaniya nomi; ishchi e'loni (2026-11-17,
  * ega: "e'lon joylandimi — shunaqa rasm bo'lib kelsin") — kasbi, tajribasi, joyi, kutilayotgan maosh va "ISHCHI" yorlig'i
  * (ega, 2026-11-16: "rasmli qil prosta, rasmda faqat ish nomi, maoshi, lokatsiyasi, kompaniya nomi bo'lsin").
- * Odam chizmasi, logotip, sayt nomi va havola YO'Q. Faqat flexbox va satori qo'llaydigan CSS; belgilar — chiziqli SVG
+ * Odam chizmasi, logotip, sayt nomi va havola YO'Q (egasi AI rasm so'ragan bo'lsa — fon shu surat, `photo`). Faqat flexbox va satori qo'llaydigan CSS; belgilar — chiziqli SVG
  * (matn emoji emas). Ranglar — dizayn tizimi palitrasi (asosiy #1558D6, ikkilamchi #EAF1FF).
  * 2026-11-18 (ega: "kanalda ishchimi u ish beruvchimi bilib bo'lmadi"): vakansiya — ko'k fon va "VAKANSIYA · ishchi kerak",
  * ishchi e'loni — yashil fon va "ISHCHI · ish qidiryapti"; yorliq oq, katta, belgisi bilan — bir qarashda ajraladi.
  */
 export const POST_SIZE = { width: 1200, height: 800 } as const;
+const PAD = 72;
 
 export interface PostCardData {
   title: string;
@@ -20,6 +21,11 @@ export interface PostCardData {
   badge?: string | null;
   /** ishchi e'loni: tajriba qatori (kompaniya o'rnida) */
   experience?: string | null;
+  /**
+   * E'lon rasmi (AI, egasi "Ha" degan bo'lsa; 2026-11-20): butun fon — shu surat, chap tomoni to'q soya bilan (matn o'qilsin).
+   * Yozuvlar baribir shablondan (AI harflarni xato chizadi).
+   */
+  photo?: string | null;
 }
 
 const BLUE = "#1558D6";
@@ -106,16 +112,29 @@ export function PostCard({ data }: { data: PostCardData }) {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        padding: 72,
+        padding: PAD,
         background: bg,
         color: "#FFFFFF",
         fontFamily: "Manrope",
         position: "relative",
       }}
     >
-      {/* yumshoq bezak doiralari (matn emas) */}
-      <div style={{ position: "absolute", right: -180, top: -200, width: 560, height: 560, borderRadius: 999, background: "rgba(255,255,255,0.07)", display: "flex" }} />
-      <div style={{ position: "absolute", right: 120, bottom: -260, width: 420, height: 420, borderRadius: 999, background: "rgba(255,255,255,0.05)", display: "flex" }} />
+      {data.photo ? (
+        <>
+          {/* satori absolyut joylashuvni ichki (padding'siz) qutidan hisoblaydi — qatlamlar padding qadar chapga/tepaga surilgan */}
+          {/* eslint-disable-next-line @next/next/no-img-element -- next/og (satori) faqat oddiy img */}
+          <img src={data.photo} alt="" width={POST_SIZE.width} height={POST_SIZE.height} style={{ position: "absolute", left: -PAD, top: -PAD, width: POST_SIZE.width, height: POST_SIZE.height, objectFit: "cover" }} />
+          {/* chapdan o'ngga soya: matn har qanday suratda o'qiladi; pastda ham bir oz (maosh pilyulasi) */}
+          <div style={{ position: "absolute", left: -PAD, top: -PAD, width: POST_SIZE.width, height: POST_SIZE.height, display: "flex", backgroundImage: "linear-gradient(90deg, rgba(8,15,30,0.88) 0%, rgba(8,15,30,0.72) 38%, rgba(8,15,30,0.18) 70%, rgba(8,15,30,0) 100%)" }} />
+          <div style={{ position: "absolute", left: -PAD, top: POST_SIZE.height - 260 - PAD, width: POST_SIZE.width, height: 260, display: "flex", backgroundImage: "linear-gradient(0deg, rgba(8,15,30,0.55) 0%, rgba(8,15,30,0) 100%)" }} />
+        </>
+      ) : (
+        <>
+          {/* yumshoq bezak doiralari (matn emas) */}
+          <div style={{ position: "absolute", right: -180, top: -200, width: 560, height: 560, borderRadius: 999, background: "rgba(255,255,255,0.07)", display: "flex" }} />
+          <div style={{ position: "absolute", right: 120, bottom: -260, width: 420, height: 420, borderRadius: 999, background: "rgba(255,255,255,0.05)", display: "flex" }} />
+        </>
+      )}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
         {data.badge ? (
@@ -126,7 +145,7 @@ export function PostCard({ data }: { data: PostCardData }) {
             </div>
           </div>
         ) : null}
-        <div style={{ display: "flex", fontSize: postTitleSize(title), fontWeight: 800, lineHeight: 1.08, letterSpacing: -2, maxWidth: 1000 }}>{title}</div>
+        <div style={{ display: "flex", fontSize: data.photo ? Math.min(postTitleSize(title), 78) : postTitleSize(title), fontWeight: 800, lineHeight: 1.08, letterSpacing: -2, maxWidth: data.photo ? 720 : 1000 }}>{title}</div>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>

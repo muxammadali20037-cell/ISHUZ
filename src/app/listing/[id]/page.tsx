@@ -1,3 +1,4 @@
+import { ListingPhoto } from "@/features/listing-image/components/listing-photo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -64,6 +65,8 @@ export default async function ListingPage({ params }: Params) {
         >
           <ChevronLeft className="size-5" aria-hidden /> {w.is_owner ? t("easy.cabinet.title") : t("easy.wizard.back")}
         </BackLink>
+
+        <ListingPhoto entity="worker" id={w.id} alt={profession} />
 
         {w.is_owner ? (
           // egasi oynasi (ega, 2026-11-19: "ustiga bossa qo'ng'iroq ketsin, oynani soddalashtir"): holat → e'londagi raqam(lar)

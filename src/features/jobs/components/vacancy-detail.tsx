@@ -1,3 +1,4 @@
+import { ListingPhoto } from "@/features/listing-image/components/listing-photo";
 import { Suspense } from "react";
 import Link from "next/link";
 import {
@@ -170,6 +171,11 @@ export async function VacancyDetail({
         ) : (
           <ReportDialog targetType="vacancy" targetId={v.id} guest={viewer.kind === "guest"} className="text-muted-foreground" />
         )}
+      </div>
+
+      {/* e'lon rasmi (AI, egasi so'ragan bo'lsa) — ixcham banner */}
+      <div className="mb-3 empty:hidden">
+        <ListingPhoto entity="vacancy" id={v.id} alt={v.title} />
       </div>
 
       {/* 2026-11 redizayn ("Talently"): chapda — bitta sarlavha kartasi (logo, kompaniya, nom, shartlar qatori, maosh, amallar,

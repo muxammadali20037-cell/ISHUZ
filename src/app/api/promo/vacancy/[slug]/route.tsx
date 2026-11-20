@@ -10,6 +10,7 @@ import { BRAND } from "@/config/brand";
 import { jobArchetype } from "@/lib/job-art/archetype";
 import { personDataUri } from "@/lib/job-art/person";
 import { postImageResponse } from "@/features/promo/post-image";
+import { getListingImageUrl } from "@/features/listing-image/server";
 
 /** Faqat kerakli harflar bilan Manrope (TTF) — kirill va lotin uchun */
 async function loadFont(text: string, weight: 600 | 800): Promise<ArrayBuffer | null> {
@@ -61,7 +62,9 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
     // kanal o'zbekcha: til cookie'ga bog'liq emas (CDN keshida boshqa til qolib ketmasin)
     const t = makeT("uz");
     const d = buildPromoData(vacancy, { t, tEnum: makeTEnum(t), locale: "uz", name: (row) => localizedName("uz", row) });
-    return postImageResponse({ kind: "vacancy", badge: t("bot.channel.vacancy_badge"), title: d.title, company: d.company, place: d.place, salary: d.salary }, cache);
+    // e'lon rasmi (AI, egasi so'ragan bo'lsa) — fon sifatida
+    const photo = await getListingImageUrl("vacancy", vacancy.id);
+    return postImageResponse({ kind: "vacancy", badge: t("bot.channel.vacancy_badge"), title: d.title, company: d.company, place: d.place, salary: d.salary, photo }, cache);
   }
   const format: PromoFormat = f === "story" || f === "og" ? f : "square";
   const tt = await getT();

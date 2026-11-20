@@ -21,6 +21,7 @@ import { PublishResult } from "@/features/post/components/publish-result";
 import { ModerationOutcome } from "@/features/post/components/moderation-outcome";
 import { AlertToggle } from "@/features/alerts/components/alert-toggle";
 import { quickPostPrepare, quickPostPreview, quickPostPublish } from "../quick-post-actions";
+import { ListingImageAsk } from "@/features/listing-image/components/listing-image-ask";
 import { POST_EXPERIENCES, type PostAnswers, type PostChoice, type PostChoiceGroup, type PostExperience, type PostForm, type PostOutcome, type PostPreview } from "../quick-post-types";
 
 /**
@@ -110,7 +111,7 @@ function readHandoff(): PostAnswers | null {
 
 const noopSubscribe = () => () => {};
 
-export function AiPostClient({ resume, initialText = "" }: { resume: boolean; /** asosiy chatda yozilgan birinchi gap ("Haydovchi, Chilonzor") — darhol shu bilan boshlanadi */ initialText?: string }) {
+export function AiPostClient({ resume, initialText = "", imageEnabled = false }: { resume: boolean; /** asosiy chatda yozilgan birinchi gap ("Haydovchi, Chilonzor") — darhol shu bilan boshlanadi */ initialText?: string; /** e'lon rasmi (AI) sozlangan — joylangach "Rasm yaratilsinmi?" */ imageEnabled?: boolean }) {
   const { t } = useT();
   const router = useRouter();
   const [turns, setTurns] = useState<Turn[]>([]);
@@ -255,6 +256,7 @@ export function AiPostClient({ resume, initialText = "" }: { resume: boolean; /*
     return (
       <Outcome
         outcome={outcome}
+        imageEnabled={imageEnabled}
         onEdit={() => {
           setOutcome(null);
           goScreen("form");
@@ -783,7 +785,7 @@ function PreviewSheet({ preview, onEdit, onPublish, busy }: { preview: PostPrevi
 }
 
 /** Joylash natijasi — faqat haqiqiy holat */
-function Outcome({ outcome, onEdit, onAgain }: { outcome: PostOutcome; onEdit: () => void; onAgain: () => void }) {
+function Outcome({ outcome, onEdit, onAgain, imageEnabled }: { outcome: PostOutcome; onEdit: () => void; onAgain: () => void; imageEnabled: boolean }) {
   const { t } = useT();
   const state = outcome.info.state;
   const header = (
@@ -808,6 +810,7 @@ function Outcome({ outcome, onEdit, onAgain }: { outcome: PostOutcome; onEdit: (
           { label: t("easy.post_ai.done_matches"), href: outcome.matchesHref },
         ]}
       >
+        {imageEnabled ? <ListingImageAsk entity="worker" id={outcome.workerId} preview={`/api/promo/worker/${outcome.workerId}`} /> : null}
         <div className="mt-6 space-y-3" data-ai-post-notify>
           <p className="flex items-start gap-2 text-base">
             <BadgeCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden /> {t("easy.post_ai.done_notify")}
