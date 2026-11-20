@@ -20,12 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function MyListingsPage() {
   const session = await requireSession("/cabinet/elonlar");
-  const [{ t }, { worker, vacancies, paid }, masters] = await Promise.all([
+  const [{ t }, { workers, vacancies, paid }, masters] = await Promise.all([
     getT(),
     getMyListings(session),
     getMyMasterListings(session.userId),
   ]);
-  const empty = !worker && !vacancies.length && !masters.length;
+  const empty = !workers.length && !vacancies.length && !masters.length;
   return (
     <Shell>
       <div className="container-narrow space-y-4 py-6 text-lg sm:py-8" data-my-listings-page>
@@ -33,7 +33,7 @@ export default async function MyListingsPage() {
           <h1 className="text-page font-extrabold tracking-tight sm:text-page-lg">{t("easy.home2.my_listings")}</h1>
           <p className="mt-1 text-base text-muted-foreground">{t("easy.cabinet.page_sub")}</p>
         </div>
-        <MyListingsSection worker={worker} vacancies={vacancies} paid={paid} masters={masters} />
+        <MyListingsSection workers={workers} vacancies={vacancies} paid={paid} masters={masters} addMore />
         {empty ? (
           <Link
             href="/ai/post"

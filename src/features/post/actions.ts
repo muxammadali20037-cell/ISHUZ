@@ -64,8 +64,9 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
   if (!(await allowRate(`publish:${session.userId}`, 20, 3600))) return { ok: false, error: "rate_limited" };
   const v = parsed.data;
   const supabase = await createClient();
-  // qisqa forma o'zgartirmagan batafsil qiymatlar (aniq tajriba, sarlavha, jadvallar, "any") saqlanadi
-  const existing = session.workerId ? await loadExistingWorker(supabase, session.workerId) : null;
+  // qisqa forma o'zgartirmagan batafsil qiymatlar (aniq tajriba, sarlavha, jadvallar, "any") saqlanadi; yangi e'londa — yo'q
+  const targetId = v.newListing ? null : (v.workerId ?? session.workerId);
+  const existing = targetId ? await loadExistingWorker(supabase, targetId) : null;
   const kept = keptWorkerFields(existing, {
     professionNodeId: v.professionNodeId,
     customText: v.customProfession?.text ?? null,
@@ -94,6 +95,9 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
       // 0081: qo'lda yozilgan raqam(lar) e'londa (2026-11-18: majburiy)
       listing_phone: v.listingPhone,
       listing_phone2: v.listingPhone2 && v.listingPhone2 !== v.listingPhone ? v.listingPhone2 : null,
+      // 0086: bir kishida bir nechta e'lon
+      worker_id: v.workerId ?? null,
+      new_listing: v.newListing ?? false,
     },
   });
   if (error || !data) return { ok: false, error: errorCode(error) };
@@ -217,14 +221,26 @@ export async function requestAppeal(input: unknown): Promise<ActionResult<Listin
   return { ok: true, data: toListingStateInfo(data) };
 }
 
-/** "Ish topdim": e'lon qidiruvdan olinadi (keyin qayta joylash mumkin) */
-export async function markFoundJob(): Promise<ActionResult> {
+/**
+ * "Ish topdim": e'lon qidiruvdan olinadi (keyin qayta joylash mumkin). workerId — bir nechta e'londan biri (0086);
+ * berilmasa — asosiy e'lon. Faqat o'z e'loni (RLS: profile_id = auth.uid()).
+ */
+export async function markFoundJob(input?: unknown): Promise<ActionResult> {
+  const parsed = z.object({ workerId: z.uuid().optional() }).optional().safeParse(input);
+  if (!parsed.success) return { ok: false, error: "validation" };
   const session = await getSession();
   if (!session) return { ok: false, error: "not_authenticated" };
-  if (!session.workerId) return { ok: false, error: "forbidden" };
+  const workerId = parsed.data?.workerId ?? session.workerId;
+  if (!workerId) return { ok: false, error: "forbidden" };
   const supabase = await createClient();
-  const { error } = await supabase.from("worker_profiles").update({ status: "not_looking", is_public: false }).eq("id", session.workerId);
+  const { data: hidden, error } = await supabase
+    .from("worker_profiles")
+    .update({ status: "not_looking", is_public: false })
+    .eq("id", workerId)
+    .eq("profile_id", session.userId)
+    .select("id");
   if (error) return { ok: false, error: errorCode(error) };
+  if (!hidden?.length) return { ok: false, error: "forbidden" };
   after(async () => {
     await trackServer("outcome_found_job", session.userId);
     await trackServer("outcome_report", session.userId, { kind: "found_job" });

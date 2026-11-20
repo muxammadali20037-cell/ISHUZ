@@ -4720,6 +4720,7 @@ export type Database = {
           headline: string | null;
           id: string;
           is_public: boolean;
+          is_primary: boolean;
           last_active_at: string;
           listed_until: string | null;
           listing_warned_at: string | null;
@@ -4760,6 +4761,7 @@ export type Database = {
           headline?: string | null;
           id?: string;
           is_public?: boolean;
+          is_primary?: boolean;
           last_active_at?: string;
           listed_until?: string | null;
           listing_warned_at?: string | null;
@@ -4799,6 +4801,7 @@ export type Database = {
           headline?: string | null;
           id?: string;
           is_public?: boolean;
+          is_primary?: boolean;
           last_active_at?: string;
           listed_until?: string | null;
           listing_warned_at?: string | null;
@@ -4851,7 +4854,7 @@ export type Database = {
           {
             foreignKeyName: "worker_profiles_profile_id_fkey";
             columns: ["profile_id"];
-            isOneToOne: true;
+            isOneToOne: false;
             referencedRelation: "profiles";
             referencedColumns: ["id"];
           },

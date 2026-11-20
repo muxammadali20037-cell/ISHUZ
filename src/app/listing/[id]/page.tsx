@@ -92,7 +92,8 @@ export default async function ListingPage({ params }: Params) {
               </div>
             ) : null}
             <Link
-              href="/post/worker"
+              // 0086: bir nechta e'lon — asosiysi /post/worker, qolganlari ?listing=<id>
+              href={session?.workerId === w.id ? "/post/worker" : `/post/worker?listing=${w.id}`}
               className="press mt-1 flex min-h-12 items-center gap-3 border-t border-border px-4 text-base font-semibold text-primary-ink hover:bg-secondary"
             >
               <Pencil className="size-5 shrink-0" aria-hidden />

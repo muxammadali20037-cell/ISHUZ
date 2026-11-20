@@ -102,6 +102,9 @@ export async function quickPostPublish(input: unknown): Promise<Out<PostOutcome>
     listingPhone: a.phone,
     listingPhone2: a.phone2 && a.phone2 !== a.phone ? a.phone2 : null,
     source: "ai",
+    // 0086 (ega, 2026-11-20: "menga faqat 1 ta e'lon joylay olyapman"): har joylash — yangi e'lon; shu kasb va hududda
+    // e'loni bo'lsa — o'sha yangilanadi (takror e'lon bo'lmasin). Birinchi e'lon — asosiy.
+    newListing: true,
   });
   if (!res.ok || !res.data) return { ok: false, error: res.ok ? "generic" : res.error };
   const [alerts, regions] = await Promise.all([getAlertSubscriptions(session).catch(() => null), getRegions()]);

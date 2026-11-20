@@ -139,7 +139,7 @@ export async function getUserDetail(id: string): Promise<UserDetail | null> {
       `id, first_name, last_name, avatar_url, created_at, last_seen_at, is_blocked, blocked_reason, locale, birth_date, gender, blocked_at, user_roles(role),
        profile_contacts(phone, telegram_username, email, phone_verified_at, phone_visibility),
        telegram_accounts(telegram_user_id, username, bot_started, linked_at),
-       worker_profiles!worker_profiles_profile_id_fkey(id, headline, status, completeness, is_public, onboarding_completed_at, categories(name_uz, name_ru), regions(name_uz, name_ru)),
+       worker_profiles!worker_profiles_profile_id_fkey(id, is_primary, headline, status, completeness, is_public, onboarding_completed_at, categories(name_uz, name_ru), regions(name_uz, name_ru)),
        employer_profiles(id, employer_type, display_name, verification_status, onboarding_completed_at, companies(id, name, slug, verification_status)),
        admin_users!admin_users_profile_id_fkey(role, is_active)`,
     )
@@ -147,7 +147,9 @@ export async function getUserDetail(id: string): Promise<UserDetail | null> {
     .maybeSingle();
   if (!p) return null;
 
-  const workerId = p.worker_profiles?.id ?? null;
+  // 0086: bir kishida bir nechta ishchi e'loni — admin kartasida shaxsning asosiy qatori
+  const wp = p.worker_profiles.find((w) => w.is_primary) ?? p.worker_profiles[0] ?? null;
+  const workerId = wp?.id ?? null;
   const [vacancies, applications, reportsAgainst] = await Promise.all([
     supabase.from("vacancies").select("id", { count: "exact", head: true }).eq("owner_profile_id", id),
     workerId ? supabase.from("applications").select("id", { count: "exact", head: true }).eq("worker_id", workerId) : Promise.resolve({ count: 0 }),
@@ -163,16 +165,16 @@ export async function getUserDetail(id: string): Promise<UserDetail | null> {
     gender: p.gender,
     blocked_at: p.blocked_at,
     telegram: p.telegram_accounts,
-    worker: p.worker_profiles
+    worker: wp
       ? {
-          id: p.worker_profiles.id,
-          headline: p.worker_profiles.headline,
-          status: p.worker_profiles.status,
-          completeness: p.worker_profiles.completeness,
-          is_public: p.worker_profiles.is_public,
-          onboarding_completed_at: p.worker_profiles.onboarding_completed_at,
-          category: p.worker_profiles.categories,
-          region: p.worker_profiles.regions,
+          id: wp.id,
+          headline: wp.headline,
+          status: wp.status,
+          completeness: wp.completeness,
+          is_public: wp.is_public,
+          onboarding_completed_at: wp.onboarding_completed_at,
+          category: wp.categories,
+          region: wp.regions,
         }
       : null,
     employer: p.employer_profiles

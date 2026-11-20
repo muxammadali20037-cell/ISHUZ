@@ -129,7 +129,9 @@
     "group_self": "O'zim haqimda e'lon",
     "group_vacancies": "E'lonlarim",
     "edit_short": "O'zgartirish",
-    "phone_hidden": "Telefon raqamingiz bu e'londa ko'rinmayapti — sizga qo'ng'iroq qila olishmaydi. «O'zgartirish»ni bosing, raqamni yozib saqlang."
+    "phone_hidden": "Telefon raqamingiz bu e'londa ko'rinmayapti — sizga qo'ng'iroq qila olishmaydi. «O'zgartirish»ni bosing, raqamni yozib saqlang.",
+    "group_self_many": "O'zim haqimdagi e'lonlar ({count})",
+    "add_listing": "Yana e'lon joylash"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -217,7 +219,8 @@
     "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ish beruvchilarga ko'rinadi.",
     "saved_title": "Ma'lumotlaringiz saqlandi",
     "edit_title": "E'lonni o'zgartirish",
-    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: kasb, hudud, tajriba, maosh va telefon raqamingiz (bosilsa — qo'ng'iroq). Ismingiz va rasmingiz kanalda ko'rsatilmaydi."
+    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: kasb, hudud, tajriba, maosh va telefon raqamingiz (bosilsa — qo'ng'iroq). Ismingiz va rasmingiz kanalda ko'rsatilmaydi.",
+    "new_title": "Yana bitta e'lon"
   },
   "vacancy": {
     "page_title": "Ishchi qidiryapman",
@@ -461,7 +464,9 @@
     "offline": "Internet yo'q. Javoblaringiz shu qurilmada saqlandi — internet qaytgach yana bosing.",
     "network": "Internet aloqasi uzildi yoki server javob bermadi. Javoblaringiz saqlandi — yana bosing.",
     "timeout": "Javob kechikdi. E'lon saqlangan bo'lishi mumkin — yana bosing, ikki marta joylanmaydi.",
-    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («E'lonlarim»)."
+    "duplicate_vacancy": "Sizda shu nom va shu joy bilan faol e'lon bor. Yangisini chiqarish o'rniga mavjudini tahrirlang yoki yoping («E'lonlarim»).",
+    "too_many_listings": "100 tadan ortiq e'lon joylab bo'lmaydi. Keraksizlarini to'xtating.",
+    "not_found": "E'lon topilmadi."
   },
   "nav": {
     "search": "Qidirish",

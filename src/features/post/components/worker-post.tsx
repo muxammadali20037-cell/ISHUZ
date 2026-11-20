@@ -117,6 +117,8 @@ export function WorkerPost({
   existing,
   pricedDays,
   customAllowed = false,
+  listingId = null,
+  newListing = false,
 }: {
   categories: Category[];
   regions: Region[];
@@ -127,7 +129,13 @@ export function WorkerPost({
   pricedDays: number;
   /** baza "Kasbim topilmadi" ni qo'llaydimi (0057) */
   customAllowed?: boolean;
+  /** 0086: o'z e'lonlaridan birini tahrirlash (?listing=<id>) */
+  listingId?: string | null;
+  /** 0086: yana bitta e'lon (?new=1) — asosiy e'lon o'zgarmaydi */
+  newListing?: boolean;
 }) {
+  // shu e'lonning manzili (kirishdan keyin qaytish, qadam havolalari): asosiy / yangi / tahrirlanayotgan e'lon
+  const path = listingId ? `${PATH}?listing=${listingId}&` : newListing ? `${PATH}?new=1&` : `${PATH}?`;
   const { t, name, tEnum, locale } = useT();
   const router = useRouter();
   const {
@@ -141,6 +149,8 @@ export function WorkerPost({
     prepareAuthHandoff,
   } = useDraft<WorkerDraft>({
     entity: "worker",
+    // har e'lonning qoralamasi alohida (yangi e'lon asosiy e'lon qoralamasini ochmasin)
+    editId: listingId ?? (newListing ? "more" : null),
     userId: viewer.userId,
     makeInitial: () => ({ ...emptyDraft(), ...prefill }),
     rules: WORKER_DRAFT_RULES,
@@ -282,7 +292,7 @@ export function WorkerPost({
     }
     if (!viewer.loggedIn) {
       prepareAuthHandoff({ step: TOTAL });
-      const q = new URLSearchParams({ next: `${PATH}?step=${TOTAL}` });
+      const q = new URLSearchParams({ next: `${path}step=${TOTAL}` });
       if (phone) q.set("phone", phone);
       router.push(`/auth?${q.toString()}`);
       return;
@@ -305,6 +315,8 @@ export function WorkerPost({
           showPhone: true,
           listingPhone: phone!,
           source: draft.source ?? "manual",
+          workerId: listingId,
+          newListing,
         }),
       );
       if (!res.ok || !res.data) {
@@ -436,7 +448,7 @@ export function WorkerPost({
     t("easy.wizard.steps.about"),
     t("easy.wizard.steps.review"),
   ];
-  const loginHref = `/auth?${new URLSearchParams({ next: `${PATH}?step=${step}` }).toString()}`;
+  const loginHref = `/auth?${new URLSearchParams({ next: `${path}step=${step}` }).toString()}`;
   const hasAnswers = !!(
     draft.profession ||
     draft.custom ||
@@ -448,7 +460,7 @@ export function WorkerPost({
     <WizardFrame
       busy={!ready}
       title={
-        existing ? t("easy.worker.edit_title") : t("easy.worker.page_title")
+        existing ? t("easy.worker.edit_title") : newListing ? t("easy.worker.new_title") : t("easy.worker.page_title")
       }
       step={step}
       total={TOTAL}

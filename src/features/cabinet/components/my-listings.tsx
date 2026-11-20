@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ChevronRight, Pencil, PhoneOff, UsersRound } from "lucide-react";
+import { ChevronRight, Pencil, PhoneOff, Plus, UsersRound } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { formatDate } from "@/lib/format";
 import { isCityRegion } from "@/lib/geo/city";
@@ -39,6 +39,12 @@ function PhoneHiddenNotice({ text }: { text: string }) {
   );
 }
 
+/** ishchi e'lonini tahrirlash manzili: asosiy — /post/worker, qolganlari — ?listing=<id> (0086); step — shu qadamdan */
+function workerEditHref(w: MyWorkerListing, step?: number): string {
+  const base = w.primary ? "/post/worker" : `/post/worker?listing=${w.id}`;
+  return step ? `${base}${w.primary ? "?" : "&"}step=${step}` : base;
+}
+
 /** kartaning bosh qismi — e'lonning o'zini ochadi (alohida "Ko'rish" tugmasi o'rniga) */
 function TitleLink({ href, children }: { href: string; children: ReactNode }) {
   return (
@@ -58,59 +64,76 @@ function TitleLink({ href, children }: { href: string; children: ReactNode }) {
  * obunasi va "mos ishlar" tugmalari bu yerda yo'q — Profil → "Telegram xabarnomalari", bosh sahifa → "Sizga mos ishlar".
  */
 export async function MyListingsSection({
-  worker,
+  workers,
   vacancies,
   paid,
   masters,
+  addMore = false,
 }: {
-  worker: MyWorkerListing | null;
+  /** 0086: o'zi haqidagi e'lonlar — bir nechta bo'lishi mumkin (asosiysi birinchi) */
+  workers: MyWorkerListing[];
   vacancies: MyVacancy[];
   paid: boolean;
   /** usta e'lonlari — faqat "E'lonlarim" sahifasida */
   masters?: MyMasterListing[];
+  /** "Yana e'lon joylash" (ega, 2026-11-20: "10 ta, 100 ta e'lon joylasin") — "E'lonlarim" sahifasida */
+  addMore?: boolean;
 }) {
   const { t, name, locale } = await getT();
   return (
     <section className="space-y-5" aria-label={t("easy.cabinet.my_listings")} data-my-listings>
-      {!worker && !vacancies.length && !masters?.length ? (
+      {!workers.length && !vacancies.length && !masters?.length ? (
         <p className="rounded-2xl bg-secondary p-4 text-base text-muted-foreground" data-my-listings-empty>
           {t("easy.cabinet.no_listings")}
         </p>
       ) : null}
 
-      {worker ? (
-        <div className="space-y-2">
-          <h2 className={GROUP}>{t("easy.cabinet.group_self")}</h2>
-          <article className={CARD} data-my-listing="worker">
-            <TitleLink href={`/listing/${worker.id}`}>
-              <h3 className="text-lg font-bold leading-tight">{worker.headline || "—"}</h3>
-              {worker.regionName ? (
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  {[name(worker.regionName), worker.districtName ? name(worker.districtName) : t(isCityRegion({ slug: worker.regionSlug, name_uz: worker.regionName?.name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].join(" · ")}
-                </p>
-              ) : null}
-            </TitleLink>
-            <StatusPill size="sm" tone={stateTone(worker.moderation.state)}>
-              {worker.moderation.state === "listed"
-                ? worker.listedUntil && paid
-                  ? t("easy.cabinet.status.listed_until", { date: formatDate(worker.listedUntil, locale) })
-                  : t("easy.cabinet.status.listed")
-                : ["moderation_pending", "review", "rejected", "payment_required"].includes(worker.moderation.state)
-                  ? t(`easy.cabinet.status.${worker.moderation.state}`)
-                  : t("easy.cabinet.status.stopped")}
-            </StatusPill>
-            <ModerationNotice entity="worker" id={worker.id} info={worker.moderation} editHref="/post/worker?step=3" />
-            {worker.phoneHidden ? <PhoneHiddenNotice text={t("easy.cabinet.phone_hidden")} /> : null}
-            <div className="flex flex-wrap gap-2">
-              {worker.status === "payment_required" ? <PayButton compact purpose="worker_listing" targetId={worker.id} /> : null}
-              <Button asChild variant="outline" className={CHIP}>
-                <Link href={worker.status === "stopped" ? "/post/worker?step=4" : "/post/worker"}>
-                  <Pencil className="size-4" aria-hidden /> {worker.status === "stopped" ? t("easy.cabinet.republish") : t("easy.cabinet.edit_short")}
-                </Link>
-              </Button>
-              {worker.status === "listed" ? <FoundButton compact kind="job" /> : null}
-            </div>
-          </article>
+      {workers.length ? (
+        <div className="space-y-2" data-my-workers>
+          <h2 className={GROUP}>{workers.length > 1 ? t("easy.cabinet.group_self_many", { count: workers.length }) : t("easy.cabinet.group_self")}</h2>
+          {workers.map((worker) => (
+            <article key={worker.id} className={CARD} data-my-listing="worker" data-my-worker={worker.id}>
+              <TitleLink href={`/listing/${worker.id}`}>
+                <h3 className="text-lg font-bold leading-tight">{worker.headline || "—"}</h3>
+                {worker.regionName ? (
+                  <p className="mt-0.5 text-sm text-muted-foreground">
+                    {[name(worker.regionName), worker.districtName ? name(worker.districtName) : t(isCityRegion({ slug: worker.regionSlug, name_uz: worker.regionName?.name_uz }) ? "easy.card.city_wide" : "easy.card.region_wide")].join(" · ")}
+                  </p>
+                ) : null}
+              </TitleLink>
+              <StatusPill size="sm" tone={stateTone(worker.moderation.state)}>
+                {worker.moderation.state === "listed"
+                  ? worker.listedUntil && paid
+                    ? t("easy.cabinet.status.listed_until", { date: formatDate(worker.listedUntil, locale) })
+                    : t("easy.cabinet.status.listed")
+                  : ["moderation_pending", "review", "rejected", "payment_required"].includes(worker.moderation.state)
+                    ? t(`easy.cabinet.status.${worker.moderation.state}`)
+                    : t("easy.cabinet.status.stopped")}
+              </StatusPill>
+              <ModerationNotice entity="worker" id={worker.id} info={worker.moderation} editHref={workerEditHref(worker, 3)} />
+              {worker.phoneHidden ? <PhoneHiddenNotice text={t("easy.cabinet.phone_hidden")} /> : null}
+              <div className="flex flex-wrap gap-2">
+                {worker.status === "payment_required" ? <PayButton compact purpose="worker_listing" targetId={worker.id} /> : null}
+                <Button asChild variant="outline" className={CHIP}>
+                  <Link href={worker.status === "stopped" ? workerEditHref(worker, 4) : workerEditHref(worker)}>
+                    <Pencil className="size-4" aria-hidden /> {worker.status === "stopped" ? t("easy.cabinet.republish") : t("easy.cabinet.edit_short")}
+                  </Link>
+                </Button>
+                {worker.status === "listed" ? <FoundButton compact kind="job" workerId={worker.primary ? undefined : worker.id} /> : null}
+              </div>
+            </article>
+          ))}
+          {addMore ? (
+            <Link
+              href="/post/worker?new=1"
+              prefetch={false}
+              data-add-worker-listing
+              className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-primary/40 px-4 text-base font-bold text-primary-ink hover:bg-primary-soft/60"
+            >
+              <Plus className="size-5" strokeWidth={2.6} aria-hidden />
+              {t("easy.cabinet.add_listing")}
+            </Link>
+          ) : null}
         </div>
       ) : null}
 

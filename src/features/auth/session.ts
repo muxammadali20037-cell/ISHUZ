@@ -37,7 +37,8 @@ export const getSession = cache(async (): Promise<SessionContext | null> => {
   const [profileRes, rolesRes, workerRes, employerRes, adminRes] = await Promise.all([
     supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
     supabase.from("user_roles").select("role").eq("profile_id", user.id),
-    supabase.from("worker_profiles").select("id, onboarding_completed_at").eq("profile_id", user.id).maybeSingle(),
+    // 0086: bir kishida bir nechta ishchi e'loni — "mening ishchi profilim" (arizalar, takliflar, rezyume) — asosiy qator
+    supabase.from("worker_profiles").select("id, onboarding_completed_at").eq("profile_id", user.id).eq("is_primary", true).maybeSingle(),
     supabase.from("employer_profiles").select("id, onboarding_completed_at, company_id").eq("profile_id", user.id).maybeSingle(),
     supabase.from("admin_users").select("role, is_active").eq("profile_id", user.id).maybeSingle(),
   ]);

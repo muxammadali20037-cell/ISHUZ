@@ -28,22 +28,32 @@ export async function getPostViewer(session: SessionContext | null): Promise<Pos
   };
 }
 
-/** Mavjud ishchi e'loni (bo'lsa) — formani oldindan to'ldirish uchun */
-export async function getWorkerPrefill(session: SessionContext | null): Promise<{ draft: Partial<WorkerDraft>; existing: boolean }> {
-  if (!session) return { draft: {}, existing: false };
+/**
+ * Mavjud ishchi e'loni (bo'lsa) — formani oldindan to'ldirish uchun.
+ * 0086: `listingId` — o'z e'lonlaridan biri (begonaniki — null: sahifa topilmadi); `newListing` — yangi e'lon, bo'sh forma
+ * (faqat ism; raqam qo'lda yoziladi). Ikkalasi ham yo'q — asosiy e'lon (avvalgidek).
+ */
+export async function getWorkerPrefill(
+  session: SessionContext | null,
+  opts: { listingId?: string | null; newListing?: boolean } = {},
+): Promise<{ draft: Partial<WorkerDraft>; existing: boolean } | null> {
+  if (!session) return opts.listingId ? null : { draft: {}, existing: false };
   const base: Partial<WorkerDraft> = { firstName: session.profile.first_name ?? "", lastName: session.profile.last_name ?? "" };
-  if (!session.workerId) return { draft: base, existing: false };
+  if (opts.newListing) return { draft: base, existing: false };
+  const workerId = opts.listingId ?? session.workerId;
+  if (!workerId) return { draft: base, existing: false };
   const supabase = await createClient();
   const [{ data: w }, { data: pref }, { data: listingPhone }] = await Promise.all([
     supabase
       .from("worker_profiles")
-      .select("profession_node_id, custom_profession, category_id, region_id, district_id, about, experience_level, remote_preference, onboarding_completed_at")
-      .eq("id", session.workerId)
+      .select("profile_id, profession_node_id, custom_profession, category_id, region_id, district_id, about, experience_level, remote_preference, onboarding_completed_at")
+      .eq("id", workerId)
       .maybeSingle(),
-    supabase.from("worker_preferences").select("salary_expected, schedules").eq("worker_id", session.workerId).maybeSingle(),
+    supabase.from("worker_preferences").select("salary_expected, schedules").eq("worker_id", workerId).maybeSingle(),
     // e'londagi raqam (0081, avval qo'lda yozilgan) — tahrirlashda shu; yo'q bo'lsa — qo'lda yoziladi
-    supabase.from("worker_listing_phones").select("phone").eq("worker_id", session.workerId).maybeSingle(),
+    supabase.from("worker_listing_phones").select("phone").eq("worker_id", workerId).maybeSingle(),
   ]);
+  if (opts.listingId && w?.profile_id !== session.userId) return null;
   if (!w) return { draft: base, existing: false };
   const profession = await picked(w.profession_node_id, w.category_id);
   const schedule = pref?.schedules?.[0];

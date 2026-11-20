@@ -150,7 +150,7 @@ export async function hasActiveSession(ctx: BotCtx): Promise<boolean> {
 }
 
 async function workerOf(ctx: BotCtx, profileId: string) {
-  const { data } = await ctx.admin.from("worker_profiles").select("id, onboarding_completed_at").eq("profile_id", profileId).maybeSingle();
+  const { data } = await ctx.admin.from("worker_profiles").select("id, onboarding_completed_at").eq("profile_id", profileId).eq("is_primary", true).maybeSingle();
   return data;
 }
 
@@ -854,6 +854,7 @@ async function createJobAlert(ctx: BotCtx) {
     .from("worker_profiles")
     .select("category_id, subcategory_id, region_id, category:categories(slug, name_uz, name_ru), subcategory:subcategories(slug, name_uz, name_ru), region:regions(slug, name_uz, name_ru)")
     .eq("profile_id", profileId)
+    .eq("is_primary", true)
     .maybeSingle();
   if (!w?.category) {
     await sendBotMessage(ctx.chatId, b(ctx, "cv.no_cv"), { inline_keyboard: [[{ text: ctx.t("bot.menu.cv"), callback_data: "cv:restart" }]] });
