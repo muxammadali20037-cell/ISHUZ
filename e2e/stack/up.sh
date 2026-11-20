@@ -82,6 +82,8 @@ export SUPABASE_SERVICE_ROLE_KEY="$SERVICE_KEY"
 export CRON_SECRET="e2e-cron"
 export SECURITY_PEPPER="e2e-pepper-not-secret-0123456789abcdef"
 export GEMINI_API_KEY="" ANTHROPIC_API_KEY="" IMAGE_GEN_API_KEY="" TELEGRAM_BOT_TOKEN="" TELEGRAM_WEBHOOK_SECRET=""
+# e'lon rasmi (0087): soxta OpenAI — shlyuzda (pul ketadigan so'rov hech qachon yuborilmaydi)
+export OPENAI_API_KEY="e2e-openai-not-secret" OPENAI_BASE_URL="http://localhost:$GATEWAY_PORT/openai"
 # To'lov: sinov kassasi (haqiqiy kalit emas) — tugmalar ko'rinadi, Payme/Click'ga yo'naltirish va ularning
 # server so'rovlari (JSON-RPC / Prepare-Complete) shu qiymatlar bilan E2E'da taqlid qilinadi; tashqariga chiqilmaydi
 export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAYME_TEST=1

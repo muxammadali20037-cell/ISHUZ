@@ -33,8 +33,12 @@ function anon() {
   return createSupabaseClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { persistSession: false } });
 }
 
-/** Tayyor rasm manzili (RLS: faqat status = ready). Jadval hali yo'q (0087 qo'llanmagan) yoki xato — null */
+/**
+ * Tayyor rasm manzili (RLS: faqat status = ready). Xususiyat yoqilmagan (kalit yo'q) — bazaga so'rov ham yo'q (e'lon sahifasi
+ * sekinlashmasin; 0087 hali qo'llanmagan prod'da ham xavfsiz). Jadval yo'q yoki xato — null.
+ */
 export async function getListingImageUrl(entity: ListingEntity, id: string): Promise<string | null> {
+  if (!listingImageEnabled()) return null;
   try {
     const { data, error } = await anon().from("listing_images").select("image_url").eq("entity", entity).eq("entity_id", id).eq("status", "ready").maybeSingle();
     if (error) return null;

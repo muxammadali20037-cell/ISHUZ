@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
- * E'lon rasmi (AI, 0087; ega, 2026-11-20): egasi "Ha" desa yaratiladi va e'londa ixcham ko'rinadi. Stendda rasm modeli
- * kaliti yo'q — "Rasm yaratilsinmi?" savoli chiqmaydi (pul ketadigan so'rov hech qachon yuborilmaydi); tayyor rasm
- * (bazada "ready") e'lon sahifasida banner bo'lib chiqadi, tayyor bo'lmagani — chiqmaydi.
+ * E'lon rasmi (AI, 0087; ega, 2026-11-20): egasi "Ha" desa yaratiladi va e'londa ixcham ko'rinadi. Stendda OpenAI — soxta
+ * (shlyuzda, kichik JPEG; pul ketadigan so'rov hech qachon yuborilmaydi). Tayyor rasm — e'lon sahifasida banner,
+ * tayyorlanayotgani — yo'q; faqat egasi yarata oladi.
  */
 const TITLE = "E2E rasm — farrosh";
 const IMG = "/icons/icon-192.png";
@@ -45,14 +45,35 @@ test("tayyor rasm — vakansiya sahifasida ixcham banner; tayyorlanayotgani ko'r
   expect(box.height).toBeLessThan(box.width * 0.6);
 });
 
-test("kalit sozlanmagan — e'lon joylangach «Rasm yaratilsinmi?» chiqmaydi, API ham ishlamaydi", async ({ page, context }) => {
+test("egasi yaratadi (soxta OpenAI) → saqlanadi → e'londa va post rasmida; begona — 403", async ({ page, context }) => {
+  const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+  const [v] = await sql<{ id: string; slug: string }>(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_negotiable, published_at, expires_at)
+     values ($1, $2, $3, 'Ofisga farrosh kerak, ish vaqti 8:00 dan 17:00 gacha', 'active', true, now(), now() + interval '10 days')
+     returning id, slug`,
+    [USERS.employer, TITLE, r!.id],
+  );
+  // begona foydalanuvchi — rad (OpenAI'ga so'rov ham yo'q)
+  await loginAs(context, USERS.workerA);
+  const denied = await page.request.post("/api/listing-image", { data: { entity: "vacancy", id: v!.id } });
+  expect(denied.status()).toBe(403);
+  expect(await sql("select 1 from public.listing_images where entity_id = $1", [v!.id])).toHaveLength(0);
+
+  await context.clearCookies();
   await loginAs(context, USERS.employer);
-  await asMode(context, "employer");
-  const res = await page.request.post("/api/listing-image", { data: { entity: "vacancy", id: "11111111-1111-4111-8111-111111111111" } });
-  expect([403, 404, 503]).toContain(res.status());
-  const json = (await res.json()) as { ok: boolean; error: string };
-  expect(json.ok).toBe(false);
-  expect(json.error).toBe("not_configured");
-  await page.goto("/post/vacancy?ai=1");
-  await expect(page.locator("[data-listing-image]")).toHaveCount(0);
+  const res = await page.request.post("/api/listing-image", { data: { entity: "vacancy", id: v!.id } });
+  expect(res.status()).toBe(200);
+  const body = (await res.json()) as { ok: boolean; url: string };
+  expect(body.ok).toBe(true);
+  expect(body.url).toMatch(new RegExp(`/listing-images/vacancy/${v!.id}-\\d+\\.jpg$`));
+  const [row] = await sql<{ status: string; prompt: string }>("select status, prompt from public.listing_images where entity_id = $1", [v!.id]);
+  expect(row!.status).toBe("ready");
+  expect(row!.prompt).toMatch(/no text/);
+
+  await page.goto(`/jobs/${v!.slug}`);
+  await expect(page.locator("[data-listing-photo]")).toHaveAttribute("src", body.url);
+  // kanal posti rasmi — surat fonda (PNG chiziladi)
+  const img = await page.request.get(`/api/promo/vacancy/${encodeURIComponent(v!.slug)}?f=post&img=1`);
+  expect(img.status()).toBe(200);
+  expect(img.headers()["content-type"]).toContain("image/png");
 });
