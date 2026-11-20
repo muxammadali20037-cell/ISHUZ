@@ -55,8 +55,13 @@ export async function countMyListings(session: SessionContext): Promise<number |
   return (session.workerId && session.workerOnboarded ? 1 : 0) + (vac.count ?? 0) + (masters.count ?? 0);
 }
 
-export async function getMyListings(session: SessionContext): Promise<{ worker: MyWorkerListing | null; vacancies: MyVacancy[]; paid: boolean }> {
+export async function getMyListings(
+  session: SessionContext,
+  /** vacancies: false — faqat o'zi haqidagi e'lon (ish beruvchi "E'lonlarim"ida vakansiyalar o'z ro'yxatida) */
+  opts: { vacancies?: boolean } = {},
+): Promise<{ worker: MyWorkerListing | null; vacancies: MyVacancy[]; paid: boolean }> {
   const supabase = await createClient();
+  const withVacancies = opts.vacancies !== false;
   const [workerRes, vacRes, paidRes, statesRes] = await Promise.all([
     session.workerId && session.workerOnboarded
       ? supabase
@@ -65,12 +70,14 @@ export async function getMyListings(session: SessionContext): Promise<{ worker: 
           .eq("id", session.workerId)
           .maybeSingle()
       : Promise.resolve({ data: null }),
-    supabase
-      .from("vacancies")
-      .select("id, slug, title, status, expires_at, profession_node_id, district_id, is_remote, regions!vacancies_region_id_fkey(slug, name_uz, name_ru, name_en, name_oz)")
-      .eq("owner_profile_id", session.userId)
-      .order("created_at", { ascending: false })
-      .limit(30),
+    withVacancies
+      ? supabase
+          .from("vacancies")
+          .select("id, slug, title, status, expires_at, profession_node_id, district_id, is_remote, regions!vacancies_region_id_fkey(slug, name_uz, name_ru, name_en, name_oz)")
+          .eq("owner_profile_id", session.userId)
+          .order("created_at", { ascending: false })
+          .limit(30)
+      : Promise.resolve({ data: [], error: null }),
     supabase.rpc("listings_paid"),
     supabase.rpc("my_listing_states"),
   ]);

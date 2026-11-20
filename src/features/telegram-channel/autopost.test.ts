@@ -57,7 +57,7 @@ vi.mock("@/lib/telegram/bot", () => ({ miniAppBaseUrl: () => "https://ishuz.verc
 const send = vi.fn();
 vi.mock("./channel", () => ({ channelChatId: () => "@main", sendChannelMessage: (x: unknown) => send(x) }));
 
-const { runChannelAutopost, channelLink } = await import("./autopost");
+const { runChannelAutopost, channelLink, postListingNow } = await import("./autopost");
 
 const now = () => new Date().toISOString();
 const old = new Date(Date.now() - 3 * 86_400_000).toISOString();
@@ -224,3 +224,61 @@ describe("kanalga avtomatik e'lon", () => {
   });
 });
 
+describe("joylangan zahoti kanalga (postListingNow)", () => {
+  const hoursAgo = (h: number) => new Date(Date.now() - h * 3_600_000).toISOString();
+
+  it("yangi ishchi e'loni — darhol, bir marta; keyingi fon qadami takrorlamaydi", async () => {
+    tables.worker_profiles = [worker("w")];
+    expect(await postListingNow("worker", "w")).toMatchObject({ posted: 1 });
+    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main", photo: "https://ishuz.vercel.app/api/promo/worker/w" });
+    expect(await postListingNow("worker", "w")).toMatchObject({ posted: 0 });
+    expect((await runChannelAutopost()).posted).toBe(0);
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(tables.channel_posts).toHaveLength(1);
+  });
+
+  it("qayta joylangan e'lon — oxirgi postdan 24 soat o'tgan bo'lsa yana chiqadi (o'sha yozuv), yaqinda bo'lsa — yo'q", async () => {
+    tables.worker_profiles = [worker("w"), worker("fresh")];
+    tables.channel_posts = [
+      { id: 1, entity_type: "worker", entity_id: "w", chat_id: "@main", status: "posted", message_id: 7, attempts: 1, created_at: hoursAgo(72), posted_at: hoursAgo(72) },
+      { id: 2, entity_type: "worker", entity_id: "fresh", chat_id: "@main", status: "posted", message_id: 8, attempts: 1, created_at: hoursAgo(2), posted_at: hoursAgo(2) },
+    ];
+    nextId = 3;
+    expect(await postListingNow("worker", "w")).toMatchObject({ posted: 1 });
+    expect(await postListingNow("worker", "fresh")).toMatchObject({ posted: 0 });
+    expect(send).toHaveBeenCalledTimes(1);
+    expect(tables.channel_posts).toHaveLength(2);
+    const w = tables.channel_posts!.find((r) => r.entity_id === "w")!;
+    expect(w).toMatchObject({ status: "posted", message_id: 100, attempts: 1 });
+    expect(String(w.posted_at) > hoursAgo(1)).toBe(true);
+    // shu kunning o'zida yana joylansa — kanal to'lib ketmasin
+    expect(await postListingNow("worker", "w")).toMatchObject({ posted: 0 });
+    expect(send).toHaveBeenCalledTimes(1);
+  });
+
+  it("urinishlari tugab xato bilan qolgan e'lon — qayta joylanganda yana urinadi", async () => {
+    tables.vacancies = [vacancy("a")];
+    tables.channel_posts = [{ id: 1, entity_type: "vacancy", entity_id: "a", chat_id: "@main", status: "failed", attempts: 3, error: "timeout", created_at: hoursAgo(1), posted_at: null }];
+    nextId = 2;
+    expect(await postListingNow("vacancy", "a")).toMatchObject({ posted: 1 });
+    expect(tables.channel_posts![0]).toMatchObject({ status: "posted", error: null });
+  });
+
+  it("ommaviy bo'lmagan e'lon (tekshiruvda, tasdiq kutmoqda) va o'chirilgan tur — hech narsa yuborilmaydi", async () => {
+    tables.vacancies = [vacancy("p", { status: "pending_review" })];
+    tables.worker_profiles = [worker("h", { is_public: false }), worker("w")];
+    expect(await postListingNow("vacancy", "p")).toMatchObject({ posted: 0 });
+    expect(await postListingNow("worker", "h")).toMatchObject({ posted: 0 });
+    tables.app_settings = [{ key: "channel_autopost", value: { jobs: true, workers: false } }];
+    expect(await postListingNow("worker", "w")).toMatchObject({ posted: 0 });
+    expect(send).not.toHaveBeenCalled();
+    expect(tables.channel_posts ?? []).toHaveLength(0);
+  });
+
+  it("alohida kanal sozlangan bo'lsa — o'sha kanalga", async () => {
+    tables.app_settings = [{ key: "channel_autopost", value: { jobsChat: "@ish_kanal" } }];
+    tables.vacancies = [vacancy("a")];
+    expect(await postListingNow("vacancy", "a")).toMatchObject({ posted: 1 });
+    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@ish_kanal" });
+  });
+});

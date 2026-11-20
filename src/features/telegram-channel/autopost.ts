@@ -287,24 +287,92 @@ async function runEntity(db: Db, entity: Entity, chatId: string, budget: number,
       rowId = claimed.id;
     }
     used += 1;
-    const sent = await sendChannelMessage({ chatId, html: item.post.html, button: item.post.button, photo: item.post.photo, caption: item.post.caption });
-    if (sent.ok) {
-      await db.from("channel_posts").update({ status: "posted", message_id: sent.messageId, posted_at: new Date().toISOString(), error: null }).eq("id", rowId);
-      res.posted += 1;
-    } else {
-      await db
-        .from("channel_posts")
-        .update({ status: "failed", error: sent.description.slice(0, 300) })
-        .eq("id", rowId);
-      res.failed += 1;
-      if (sent.channelLevel) {
-        // kanal sozlanmagan / bot huquqi yo'q — qolganlarini hozir urinmaymiz (admin "Telegram kanal" sahifasida ko'radi)
-        res.stopped = sent.description;
-        return budget;
-      }
-    }
+    // kanal sozlanmagan / bot huquqi yo'q — qolganlarini hozir urinmaymiz (admin "Telegram kanal" sahifasida ko'radi)
+    if (await sendClaimed(db, rowId, chatId, item.post, res)) return budget;
   }
   return used;
+}
+
+/** Band qilingan yozuv bo'yicha kanalga yuborish va natijani yozish. true — kanal darajasidagi xato (qadam to'xtasin) */
+async function sendClaimed(db: Db, rowId: number, chatId: string, post: ChannelPost, res: AutopostResult): Promise<boolean> {
+  const sent = await sendChannelMessage({ chatId, html: post.html, button: post.button, photo: post.photo, caption: post.caption });
+  if (sent.ok) {
+    await db.from("channel_posts").update({ status: "posted", message_id: sent.messageId, posted_at: new Date().toISOString(), error: null }).eq("id", rowId);
+    res.posted += 1;
+    return false;
+  }
+  await db
+    .from("channel_posts")
+    .update({ status: "failed", error: sent.description.slice(0, 300) })
+    .eq("id", rowId);
+  res.failed += 1;
+  if (sent.channelLevel) res.stopped = sent.description;
+  return !!sent.channelLevel;
+}
+
+/**
+ * Qayta joylangan e'lon kanalga yana chiqadigan oraliq: bitta e'lon kanalda kuniga ko'pi bilan bir marta (ketma-ket
+ * qayta joylash kanalni to'ldirib yubormasin).
+ */
+export const REPOST_AFTER_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Bitta e'lon uchun kanaldagi "o'rin"ni band qilish: hali yuborilmagan — yangi yozuv; avval yuborilgan — oxirgi post
+ * REPOST_AFTER_MS dan eski bo'lsa o'sha yozuv qayta band qilinadi; urinishlari tugab xato bilan qolgan — darhol. Shartli
+ * yangilash (holat va vaqt bo'yicha) — ikki server nusxasi bir vaqtda ololmaydi. null — yaqinda yuborilgan, navbatdagi
+ * qayta urinishda yoki boshqa nusxa band qildi.
+ */
+async function claimSlot(db: Db, entity: Entity, id: string, chatId: string): Promise<number | null> {
+  const { data: row } = await db
+    .from("channel_posts")
+    .select("id, status, attempts, posted_at")
+    .eq("entity_type", entity)
+    .eq("entity_id", id)
+    .eq("chat_id", chatId)
+    .maybeSingle();
+  if (!row) {
+    const { data: claimed, error } = await db.from("channel_posts").insert({ entity_type: entity, entity_id: id, chat_id: chatId, status: "claimed", attempts: 1 }).select("id").maybeSingle();
+    return error || !claimed ? null : claimed.id;
+  }
+  const cutoff = new Date(Date.now() - REPOST_AFTER_MS).toISOString();
+  const reset = { status: "claimed", attempts: 1, created_at: new Date().toISOString(), posted_at: null, message_id: null, error: null };
+  const base = db.from("channel_posts").update(reset).eq("id", row.id);
+  let took: { id: number }[] | null = null;
+  if (row.status === "posted" && row.posted_at && row.posted_at < cutoff) {
+    ({ data: took } = await base.eq("status", "posted").lt("posted_at", cutoff).select("id"));
+  } else if (row.status === "failed" && row.attempts >= MAX_ATTEMPTS) {
+    ({ data: took } = await base.eq("status", "failed").gte("attempts", MAX_ATTEMPTS).select("id"));
+  }
+  return took?.length ? row.id : null;
+}
+
+/**
+ * E'lon joylangan zahoti (joylash amali → after): shu e'lon kanalga darhol — fon navbatini kutmaydi (ega, 2026-11-20:
+ * "e'lon joylagandan keyin srazu kanalga xabar bormayapti"). Qayta joylangan (yangilangan) e'lon ham yana chiqadi, oxirgi
+ * postidan REPOST_AFTER_MS o'tgan bo'lsa. E'lon hozir ommaviy bo'lmasa (tekshiruvda, ish beruvchi tasdig'ini kutmoqda) —
+ * hech narsa qilmaydi: tasdiqlangach oddiy navbat yuboradi. Kanal sozlamasi (o'chirilgan tur, alohida kanal) hisobga
+ * olinadi. Hech qachon xato otmaydi.
+ */
+export async function postListingNow(entity: Entity, id: string): Promise<AutopostResult> {
+  const res: AutopostResult = { posted: 0, failed: 0 };
+  if (!getServerEnv().TELEGRAM_BOT_TOKEN || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res;
+  try {
+    const db = createAdminClient();
+    const { data: row } = await db.from("app_settings").select("value").eq("key", AUTOPOST_KEY).maybeSingle();
+    const cfg = parseAutopost(row?.value);
+    const on = entity === "vacancy" ? cfg.jobs : cfg.workers;
+    const chatId = on ? (channelChatIdFrom(entity === "vacancy" ? cfg.jobsChat : cfg.workersChat) ?? channelChatId()) : null;
+    if (!chatId) return res;
+    const since = new Date(Date.now() - FRESH_MS).toISOString();
+    const post = (await (entity === "vacancy" ? vacancyPosts : workerPosts)(db, [id], since)).get(id);
+    if (!post) return res;
+    const rowId = await claimSlot(db, entity, id, chatId);
+    if (rowId) await sendClaimed(db, rowId, chatId, post, res);
+  } catch (e) {
+    console.error("[channel-autopost] now", e instanceof Error ? e.message : e);
+  }
+  if (res.posted || res.failed) console.info("[channel-autopost] now", entity, res);
+  return res;
 }
 
 /** Bir qadam: vakansiyalar va ishchi e'lonlari (sozlamaga ko'ra). Hech qachon xato otmaydi */

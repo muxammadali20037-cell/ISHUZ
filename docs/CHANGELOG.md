@@ -1,5 +1,31 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · "E'lonlarim"da barcha e'lonlar; e'lon joylangan zahoti kanalga (`claude/my-listings-channel`)
+
+Ega: "e'lon joylangan — E'lonlarimda ko'rinmayapti, e'lon egasi o'z e'lonlarini, barcha e'lonlarini ko'rolmayapti; e'lon
+joylagandan keyin srazu kanalga xabar bormayapti".
+
+Sabab (prod ma'lumoti, faqat o'qildi): e'lon ish izlovchi rejimida "O'zim haqimda e'lon" sifatida joylangan (har kishida
+bitta — qayta joylash o'shani yangilaydi), egasi esa ish beruvchi rejimida — u yerdagi "E'lonlarim" faqat vakansiyalarni
+ko'rsatardi. Kanal: bu e'lon 17-noyabrda kanalga chiqqan edi, kanal esa har e'lonni faqat BIR marta yuborardi — qayta
+joylangani hech qachon qayta chiqmasdi.
+
+- **Ish beruvchi "E'lonlarim"** (`/employer/vacancies`): vakansiyalar ro'yxati ostida **"Boshqa e'lonlaringiz"** — o'zi
+  haqidagi (ishchi) e'lon va usta e'lonlari, holati va "O'zgartirish" bilan (bo'lmasa bo'lim yo'q). `getMyListings(session,
+  { vacancies: false })` — vakansiyalar ikki marta so'ralmaydi.
+- **Kanalga darhol** (`postListingNow`): joylash amali muvaffaqiyatli bo'lib e'lon ommaga chiqqan zahoti (after) — shu
+  e'lon kanalga, fon navbatini kutmasdan. **Qayta joylangan** (yangilangan) e'lon ham yana chiqadi — oxirgi postidan
+  **24 soat** o'tgan bo'lsa (kanal ketma-ket qayta joylashdan to'lib ketmasin); urinishlari tugab xato bilan qolgani —
+  darhol. O'sha `channel_posts` yozuvi shartli qayta band qilinadi (migratsiyasiz; ikki server nusxasi bir vaqtda olmaydi).
+  Tekshiruvdagi / ish beruvchi tasdig'ini kutayotgan e'lon yuborilmaydi; kanal sozlamasi (o'chirilgan tur, alohida kanal)
+  hisobga olinadi.
+- **Ish beruvchi tasdiqlanganda** (admin → verifikatsiya "tasdiqlash") kutib turgan vakansiyalari kanalga va egasiga
+  darhol (after → `runChannelAutopost`).
+- Testlar: `autopost.test.ts` (+5) — yangi e'lon darhol va bir marta; 3 kun oldin chiqqan qayta joylansa — yana, 2 soat
+  oldin chiqqani — yo'q, o'sha kuni yana — yo'q; xato bilan tugagani — qayta; ommaviy bo'lmagan / o'chirilgan tur — yo'q;
+  alohida kanal. E2E `employer-my-listings.spec.ts` — ish beruvchi "E'lonlarim"ida o'zi haqidagi e'lon (holati,
+  "O'zgartirish"), vakansiya ikki marta chiqmaydi; ishchi e'loni bo'lmasa bo'lim yo'q.
+
 ## 2026-11-20 · Telegram orqali kirish: "brauzerga qayting" o'rniga "Ochish" (`claude/tg-login-open`)
 
 Ega: "Telegram orqali kirishda «saytga qayting, ochiladi» deyapti — demasin, pastda «Ochish» tursin, bossa ilova ochilsin".
