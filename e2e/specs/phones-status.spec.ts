@@ -32,17 +32,17 @@ async function seed() {
     await sql(
       `insert into public.worker_profiles (profile_id, headline, custom_profession, region_id, category_id, experience_level, is_public, status, onboarding_completed_at)
        select $1, $2, $2, r.id, (select id from public.categories limit 1), '3_5y', true, $3, now() from public.regions r where r.slug = 'tashkent_city'
-       on conflict (profile_id) do update set headline = excluded.headline, custom_profession = excluded.custom_profession, status = excluded.status, is_public = true, onboarding_completed_at = now()`,
+       on conflict (profile_id) where is_primary do update set headline = excluded.headline, custom_profession = excluded.custom_profession, status = excluded.status, is_public = true, onboarding_completed_at = now()`,
       [id, headline, status],
     );
   }
   await sql("update public.worker_profiles set is_public = true where profile_id in ($1, $2)", [USERS.workerA, USERS.workerB]);
   await sql(
-    `insert into public.worker_listing_phones (worker_id, phone, phone2) select id, '+998935550011', '+998935550022' from public.worker_profiles where profile_id = $1
+    `insert into public.worker_listing_phones (worker_id, phone, phone2) select id, '+998935550011', '+998935550022' from public.worker_profiles where profile_id = $1 and is_primary
      on conflict (worker_id) do update set phone = excluded.phone, phone2 = excluded.phone2`,
     [USERS.workerA],
   );
-  await sql("delete from public.worker_listing_phones where worker_id = (select id from public.worker_profiles where profile_id = $1)", [USERS.workerB]);
+  await sql("delete from public.worker_listing_phones where worker_id = (select id from public.worker_profiles where profile_id = $1 and is_primary)", [USERS.workerB]);
   await sql("update public.profile_contacts set phone_visibility = 'on_request' where profile_id = $1", [USERS.workerB]);
 }
 
@@ -84,7 +84,7 @@ test("qizil qalin holat: vakansiyada «Hozir ishchi qidirmoqda», faol ishchida 
 test("mehmon: «Raqamni ko'rsatish» — e'londagi raqamlar; raqam yo'q bo'lsa — kirish taklifi; sahifada oldindan raqam yo'q", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
-  const [a] = await sql<{ id: string }>("select id from public.worker_profiles where profile_id = $1", [USERS.workerA]);
+  const [a] = await sql<{ id: string }>("select id from public.worker_profiles where profile_id = $1 and is_primary", [USERS.workerA]);
   await page.goto(`/listing/${a!.id}`);
   const contact = page.locator("#contact");
   await expect(contact.locator("a[href^='tel:']")).toHaveCount(0);
@@ -94,7 +94,7 @@ test("mehmon: «Raqamni ko'rsatish» — e'londagi raqamlar; raqam yo'q bo'lsa �
   await expect(shown.locator("a[href='tel:+998935550011']")).toHaveCount(2); // tugma + raqamning o'zi
   await expect(shown.locator("a[href='tel:+998935550022']")).toBeVisible();
 
-  const [b] = await sql<{ id: string }>("select id from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  const [b] = await sql<{ id: string }>("select id from public.worker_profiles where profile_id = $1 and is_primary", [USERS.workerB]);
   await page.goto(`/listing/${b!.id}`);
   await page.locator("#contact").getByRole("button", { name: "Raqamni ko'rsatish" }).click();
   const none = page.locator("#contact [data-reveal-error='none']");
