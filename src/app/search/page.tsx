@@ -12,8 +12,7 @@ import { trackServer } from "@/features/analytics/server";
 import { FindAskIntent, FindResultsView, FindStart } from "@/features/find/components/find-page";
 import { FindSteps } from "@/features/find/components/find-steps";
 import { getMode } from "@/features/mode/server";
-import { findModeOf, modeOfFind } from "@/features/mode/mode";
-import { ModeGate } from "@/features/mode/components/mode-gate";
+import { findModeOf } from "@/features/mode/mode";
 import { cookies } from "next/headers";
 import { PLACE_COOKIE, parsePlace } from "@/features/find/place";
 import { NearMe } from "@/features/find/components/near-me";
@@ -33,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * Qidirish — har qadam URL'da: ish/ishchi → kasb → viloyat → tuman → natijalar.
  * Yozilgan matndan ("Toshkentda haydovchi kerak") maqsad, kasb va hudud oldindan to'ldiriladi; aniqlanmaganini so'raydi.
  * Rejim tanlangan bo'lsa (ish izlovchi / ish beruvchi) — "ish yoki ishchi?" so'ralmaydi, matn shu rejimda tushuniladi;
- * boshqa rejimning qidiruvi ochilsa — tushuntirish va tanlov (ModeGate), avtomatik almashtirilmaydi.
+ * boshqa rejimning qidiruvi (pastki menyudagi "Ishlar" / "Ishchilar") — to'siqsiz ochiladi.
  */
 export default async function SearchPage({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const [params, mode, jar] = await Promise.all([searchParams.then(parseFindParams), getMode(), cookies()]);
@@ -64,14 +63,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
   // rejim bor, URL'da maqsad yo'q — savol bermasdan shu rejimning qidiruvi (sahifani birinchi ochishda buni layout bajaradi)
   const toMode = modeHref(params, stored);
   if (toMode) redirect(toMode);
-  // boshqa rejimning qidiruvi: tushuntirish + "o'tish" yoki o'z bo'limiga qaytish
-  if (params.mode && mode && modeOfFind(params.mode) !== mode) {
-    return (
-      <Shell>
-        <ModeGate variant="search" need={modeOfFind(params.mode)} otherHref={findHref(EMPTY_FIND, { mode: stored })} />
-      </Shell>
-    );
-  }
+  // 2026-11-20 (ega: "ilova chalkash"): boshqa rejimning qidiruvi ham to'siqsiz ochiladi — pastki menyuda "Ishlar" va
+  // "Ishchilar" hamma uchun; bo'lim tanlovi foydalanuvchining niyati (avvalgi tushuntirish oynasi — ModeGate — olib tashlandi)
 
   // ma'lumotnoma (kesh): kasb → viloyat → tuman qadamlari shu ma'lumot bilan telefonda almashadi
   const [categories, regions, allDistricts] = await Promise.all([getCategories(), getRegions(), getDistricts()]);

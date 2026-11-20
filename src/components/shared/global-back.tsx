@@ -6,8 +6,8 @@ import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { BackLink } from "./back-link";
 
-/** Bosh sahifalar: orqaga yo'q (ish izlovchi — "/", ish beruvchi — "/" yoki "/employer", ustalar mini-ilovasi — "/ustalar") */
-const ROOTS = new Set(["/", "/employer", "/ustalar"]);
+/** Bosh sahifalar: orqaga yo'q ("/", asosiy ekran — chat "/chat", ish beruvchi paneli "/employer", ustalar mini-ilovasi — "/ustalar") */
+const ROOTS = new Set(["/", "/chat", "/employer", "/ustalar"]);
 
 /**
  * To'g'ridan-to'g'ri (havola orqali) ochilgan sahifada "Orqaga" qayerga olib boradi: eng yaqin bo'lim sahifasi

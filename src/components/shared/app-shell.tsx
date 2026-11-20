@@ -3,10 +3,10 @@
 import { SocialLinks } from "./social-links";
 import { NewDot } from "./new-badge";
 import type { SocialLink } from "@/lib/social";
-import { useLayoutEffect, useRef, useState } from "react";
+import { Suspense, useLayoutEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Bell, BriefcaseBusiness, Building2, House, LayoutDashboard, LayoutGrid, MessageCircle, Plus, Search, Sparkles, User, Users, Wrench, type LucideIcon } from "lucide-react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Bell, Plus, Wrench } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { initials } from "@/lib/format";
@@ -15,111 +15,20 @@ import { BrandMark } from "@/components/shared/brand-mark";
 import { LanguageSelect } from "./language-switcher";
 import { UserMenu } from "./user-menu";
 import type { TopBarUser } from "./top-bar";
-import { HOME_ITEM, MORE_ITEMS, isAiPath, mainItems, type MenuItem } from "./nav-items";
+import { APP_CHAT, APP_SIDE_ITEMS, APP_TABS, MORE_ITEMS, type BadgeKey, type MenuItem } from "./nav-items";
 import { usePendingPath } from "./nav-pending";
 
 export type NavRole = "worker" | "employer" | "guest";
 export type NavMode = "worker" | "employer" | null;
-
-interface NavItem {
-  /** tanishtiruv (features/tour) maqsadi: [data-tour] */
-  tour?: string;
-  href: string;
-  labelKey: string;
-  icon: LucideIcon;
-  badgeKey?: "messages" | "applications" | "offers" | "notifications";
-  match?: (path: string) => boolean;
-}
+type Counts = Partial<Record<BadgeKey, number>>;
 
 /**
- * Rolga xos navigatsiya (2026-10 redizayn):
- *   Ish qidiruvchi (va rejim tanlamagan mehmon): Bosh sahifa · Ishlar · Ish beruvchilar · Xabarlar · Profil
- *   Ish beruvchi:                                Boshqaruv · E'lonlarim · [E'lon] · Ishchilar · Profil
- * 2026-11-18 (ega): ish beruvchida "Vakansiyalar" → "E'lonlarim"; "Nomzodlar" → "Ishchilar" — darhol barcha ishchi e'lonlari
- * (butun O'zbekiston, filtrlar natijalar sahifasida). Ish izlovchida o'rtadagi "Arizalar" → "Ish beruvchilar" (/companies,
- * alohida belgi — bino); arizalar — bosh sahifadagi "Arizalarim" qatori va Profilda, takliflar belgisi — Profilda.
- * Chat va bildirishnomalar — yuqori panelda. AI qidiruv — qidiruv yonida ("AI bilan qidirish"), AI sahifalari "Ishlar" ichida.
- * Takliflar (ish beruvchidan) — "Arizalar" bilan birga. Eski manzillar (/search, /cabinet, /saved, /applications, /employer…) o'zgarmagan.
+ * Asosiy menyu (ega, 2026-11-20: "ilova chalkash — pastda faqat Ishchilar, Ishlar, E'lonlarim, Izlash va e'lon berish,
+ * Profil"): ikkala rejimda bir xil 5 ta bo'lim, o'rtada — chat ("Izlash/E'lon"). Xabarlar va bildirishnomalar — yuqori
+ * panelda. Bo'limlar ro'yxati — nav-items.ts (APP_TABS). Eski manzillar (/ai, /employer, /search…) o'zgarmagan.
  */
-const PROFILE_PATHS = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages"];
 
-/**
- * "Yordamchi" (avval "AI yordamchi", "Barchasi siz uchun") — alohida bo'lim: kompyuterda yon menyu va yuqori menyuda "Bosh sahifa"dan keyin;
- * telefonda — yuqori paneldagi belgi (top-bar) va bosh sahifa menyusida (pastki menyuda joy yo'q: 5 ta katak).
- */
-const AI_NAV: NavItem = { href: "/ai", labelKey: "easy.aiws.nav.ai", icon: Sparkles, match: isAiPath, tour: "ai" };
-
-/**
- * Mehmon (hisobga kirmagan) ish izlovchi: "Xabarlar" o'rniga "Sohalar" (ega, 2026-11-17: "har bir soha qator bo'lib, eng ko'p
- * ish o'rni bori tepada, tagida nechta ish o'rni; hisobga kirmaganlarga — shunaqa, kirganlarga — o'zgarmasin")
- */
-const FIELDS_NAV: NavItem = { tour: "fields", href: "/sohalar", labelKey: "easy.nav.tab_fields", icon: LayoutGrid, match: (p) => p.startsWith("/sohalar") || p.startsWith("/kasblar") };
-
-function mainNav(mode: NavMode, guest = false): NavItem[] {
-  if (mode === "employer") {
-    return [
-      { tour: "dashboard", href: "/", labelKey: "easy.nav.tab_dashboard", icon: LayoutDashboard, match: (p) => p === "/" || p === "/employer" },
-      {
-        tour: "my-listings",
-        href: "/employer/vacancies",
-        labelKey: "easy.nav.tab_my_listings",
-        icon: BriefcaseBusiness,
-        badgeKey: "applications",
-        match: (p) => p.startsWith("/employer/vacancies") || p.startsWith("/employer/applications") || p.startsWith("/post/vacancy"),
-      },
-      {
-        tour: "workers",
-        href: "/search?mode=workers&any=1&region=all",
-        labelKey: "easy.nav.tab_workers",
-        icon: Users,
-        match: (p) => p.startsWith("/search") || p.startsWith("/workers") || p.startsWith("/listing") || p.startsWith("/employer/saved") || p.startsWith("/employer/candidates"),
-      },
-      {
-        tour: "profile",
-        href: "/cabinet",
-        labelKey: "easy.nav.tab_profile",
-        icon: User,
-        match: (p) => PROFILE_PATHS.some((x) => p.startsWith(x)) || p.startsWith("/ai") || p.startsWith("/company") || p.startsWith("/offers"),
-      },
-    ];
-  }
-  // 4.0 (ega "MASTER PROMPT", 2026-11-16): Bosh sahifa · Ishlar · Arizalar · Xabarlar · Profil. "Saqlanganlar" va
-  // "O'zim haqimda e'lon" — Profil (Kabinetim) va bosh sahifa "Bo'limlar" menyusida (o'chirilmadi)
-  return [
-    { tour: "home", href: "/", labelKey: "easy.nav.tab_home_page", icon: House, match: (p) => p === "/" || p === "/ai" },
-    {
-      tour: "jobs",
-      href: "/jobs",
-      labelKey: "easy.nav.tab_jobs",
-      icon: Search,
-      match: (p) => p.startsWith("/search") || p.startsWith("/jobs") || p.startsWith("/listing") || p.startsWith("/students") || p.startsWith("/ai-alerts") || p.startsWith("/cabinet/matches"),
-    },
-    {
-      tour: "employers",
-      href: "/companies",
-      labelKey: "easy.nav.tab_employers",
-      icon: Building2,
-      match: (p) => p.startsWith("/companies") || (p.startsWith("/company/") && !p.startsWith("/company/settings") && !p.startsWith("/company/join")),
-    },
-    guest ? FIELDS_NAV : { tour: "messages", href: "/messages", labelKey: "easy.nav.tab_messages", icon: MessageCircle, badgeKey: "messages", match: (p) => p.startsWith("/messages") },
-    {
-      tour: "profile",
-      href: "/cabinet",
-      labelKey: "easy.nav.tab_profile",
-      icon: User,
-      // yangi takliflar (ish beruvchidan) belgisi — Profilda: arizalar va takliflar shu yerda
-      badgeKey: "offers",
-      match: (p) =>
-        (PROFILE_PATHS.some((x) => p.startsWith(x)) && !p.startsWith("/cabinet/matches") && !p.startsWith("/messages")) ||
-        p.startsWith("/post") ||
-        p.startsWith("/saved") ||
-        p.startsWith("/applications") ||
-        p.startsWith("/offers"),
-    },
-  ];
-}
-
-/** Markaziy "E'lon" tugmasi (OLX/super-ilovalar uslubi): ish qidiruvchi — o'zi haqida e'lon (CV), ish beruvchi — vakansiya */
+/** Markaziy "E'lon" tugmasi (kompyuter: yon menyu va yuqori panel): ish qidiruvchi — o'zi haqida e'lon (CV), ish beruvchi — vakansiya */
 export function postAction(mode: NavMode): { href: string; labelKey: string; ctaKey: string } {
   return mode === "employer"
     ? { href: "/post/vacancy", labelKey: "easy.nav.tab_post", ctaKey: "easy.start.post_vacancy" }
@@ -127,53 +36,73 @@ export function postAction(mode: NavMode): { href: string; labelKey: string; cta
       { href: "/ai/post", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
 }
 
-export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
-  // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
+/**
+ * Hozirgi (yoki bosilgan, hali ochilmagan) sahifa: yo'l va /search dagi ?mode= ("Ishlar" yoki "Ishchilar").
+ * Bosilgan havola so'rov qismi bilan yoziladi (nav-progress) — bo'lim darhol to'g'ri belgilanadi.
+ */
+function useNavPlace(find: string | null): { path: string; find: string | null } {
   const pendingPath = usePendingPath();
   const currentPath = usePathname();
-  const pathname = pendingPath ?? currentPath;
+  if (!pendingPath) return { path: currentPath, find };
+  const [path, query = ""] = pendingPath.split("?");
+  return { path: path || currentPath, find: new URLSearchParams(query).get("mode") };
+}
+
+/** ?mode= faqat brauzerda o'qiladi (useSearchParams) — Suspense ichida; u kelguncha /search "Ishlar" deb belgilanadi */
+function WithFind({ children }: { children: (find: string | null) => ReactNode }) {
+  return <Suspense fallback={children(null)}><FindParam>{children}</FindParam></Suspense>;
+}
+function FindParam({ children }: { children: (find: string | null) => ReactNode }) {
+  const params = useSearchParams();
+  return children(params.get("mode"));
+}
+
+export function BottomNav({ counts }: { role: NavRole; mode?: NavMode; counts?: Counts }) {
+  return <WithFind>{(find) => <BottomNavView counts={counts} find={find} />}</WithFind>;
+}
+
+function BottomNavView({ counts, find: urlFind }: { counts?: Counts; find: string | null }) {
   const { t } = useT();
-  const items = mainNav(mode, role === "guest");
-  const post = postAction(mode);
-  const postActive = pathname.startsWith(post.href);
-  // o'rtada — "E'lon" (2 ta bo'lim · E'lon · 2 ta bo'lim): ko'k pilyula, menyu ichida (yozuvni to'smaydi). Hamma bo'limda belgi
-  // maydoni bir xil balandlikda (h-8) — nomlar bitta chiziqda turadi
-  // ish beruvchi: o'rtada "E'lon" (vakansiya); ish qidiruvchi (4.0): beshta bo'lim, "E'lon" — Profilda
-  const cells: (NavItem | "post")[] = mode === "employer" ? [...items.slice(0, 2), "post", ...items.slice(2)] : items;
+  const { path, find } = useNavPlace(urlFind);
   return (
     <nav
       className="bottom-nav fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
       style={{ paddingBottom: "var(--safe-bottom)" }}
       aria-label={t("common.nav.main_label")}
+      data-app-tabs
     >
       <ul className="flex h-[var(--tabbar-height)] items-stretch">
-        {cells.map((item) => {
-          if (item === "post") {
+        {APP_TABS.map((item) => {
+          const active = item.match(path, find);
+          const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
+          if (item === APP_CHAT) {
+            // o'rtada — chat: ko'k pilyula (asosiy amal), menyu ichida — yozuvni to'smaydi
             return (
               // min-w-0 + truncate: ruscha va katta shriftda (150%) beshta nom ekranga sig'adi — menyu yonga surilmaydi
-              <li key="post" className="flex min-w-0 flex-1 justify-center">
+              <li key={item.key} className="flex min-w-0 flex-1 justify-center">
                 <Link
-                  href={post.href}
-                  aria-current={postActive ? "page" : undefined}
-                  data-track="nav_post"
-                  data-tour="post"
-                  className="press flex h-full w-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-medium text-primary-ink"
+                  href={item.href}
+                  aria-current={active ? "page" : undefined}
+                  data-track="nav_chat"
+                  data-tour="chat"
+                  data-tab={item.key}
+                  // pilyula doim ko'k (asosiy amal); nomi faqat shu bo'lim ochiq bo'lsa ko'k — qaysi bo'lim faolligi chalkashmasin
+                  className={cn("press flex h-full w-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-semibold", active ? "text-primary-ink" : "text-muted-foreground")}
                 >
-                  <span className="flex h-8 w-12 items-center justify-center rounded-md bg-primary text-primary-foreground" aria-hidden>
-                    <Plus className="size-5" strokeWidth={2.5} />
+                  <span className={cn("flex h-8 w-12 items-center justify-center rounded-md text-primary-foreground", active ? "bg-primary-hover" : "bg-primary")} aria-hidden>
+                    <item.icon className="size-5" strokeWidth={2.25} />
                   </span>
-                  <span className="max-w-full truncate tracking-tight">{t(post.labelKey)}</span>
+                  <span className="max-w-full truncate tracking-tight">{t(item.labelKey)}</span>
                 </Link>
               </li>
             );
           }
-          const active = item.match ? item.match(pathname) : pathname === item.href;
-          const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
           return (
-            <li key={item.href} className="min-w-0 flex-1">
+            <li key={item.key} className="min-w-0 flex-1">
               <Link
                 href={item.href}
-                data-tour={item.tour}
+                data-tour={item.key}
+                data-tab={item.key}
                 className={cn("press relative flex h-full min-w-0 flex-col items-center justify-center gap-0.5 text-2xs font-medium", active ? "text-primary-ink" : "text-muted-foreground hover:text-foreground")}
                 aria-current={active ? "page" : undefined}
               >
@@ -181,7 +110,7 @@ export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?:
                   <item.icon className="size-5" strokeWidth={active ? 2.25 : 1.75} />
                 </span>
                 <span className="max-w-full truncate tracking-tight">{t(item.labelKey)}</span>
-                {/* 3.0: faol bo'lim ostida ko'k chiziq (namunadagidek) */}
+                {/* faol bo'lim ostida ko'k chiziq */}
                 {active ? <span className="absolute inset-x-3 bottom-0 h-0.5 rounded-full bg-primary" aria-hidden /> : null}
                 {badge ? (
                   <span className="absolute left-1/2 top-2 ml-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-destructive px-1 text-2xs font-bold text-destructive-foreground">
@@ -197,51 +126,45 @@ export function BottomNav({ counts, mode = null, role }: { role: NavRole; mode?:
   );
 }
 
-/** Desktop uchun yon/ustki navigatsiya havolalari */
-export function DesktopNavLinks({ counts, mode = null }: { role: NavRole; mode?: NavMode; counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>> }) {
-  // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
-  const pendingPath = usePendingPath();
-  const currentPath = usePathname();
-  const pathname = pendingPath ?? currentPath;
+/** Planshet (md) va kirmagan kompyuter uchun yuqori paneldagi bo'lim havolalari — telefondagi pastki menyu bilan bir xil */
+export function DesktopNavLinks({ counts }: { role: NavRole; mode?: NavMode; counts?: Counts }) {
+  return <WithFind>{(find) => <DesktopNavView counts={counts} find={find} />}</WithFind>;
+}
+
+function DesktopNavView({ counts, find: urlFind }: { counts?: Counts; find: string | null }) {
   const { t } = useT();
-  // "AI yordamchi" — birinchi bo'limdan keyin; /ai ochiq bo'lsa faqat u belgilanadi (telefonda /ai — "Ishlar"/"Profil" ichida)
-  // "Xabarlar" — kompyuterda yuqori panel belgisida (bu qatorda takrorlanmaydi)
-  const [first, ...rest] = mainNav(mode).filter((i) => i.href !== "/messages");
-  const items: NavItem[] = first ? [first, AI_NAV, ...rest] : [AI_NAV];
-  const onAi = isAiPath(pathname);
+  const { path, find } = useNavPlace(urlFind);
+  const items = APP_TABS;
   const [navRef, compact] = useFitLabels(items.map((i) => t(i.labelKey)).join("|"));
   return (
     <nav ref={navRef} aria-label={t("common.nav.main_label")} className="hidden md:block">
     <ul className="flex items-center gap-1">
       {items.map((item) => {
-        const active = item === AI_NAV ? onAi : !onAi && (item.match ? item.match(pathname) : pathname === item.href);
+        const active = item.match(path, find);
         const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
         return (
-          <li key={item.href}>
+          <li key={item.key}>
             <Link
               href={item.href}
               aria-current={active ? "page" : undefined}
               title={t(item.labelKey)}
-              data-tour={item.tour}
-              {...(item === AI_NAV ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "top" } : {})}
+              data-tour={item.key}
+              {...(item === APP_CHAT ? { "data-track": "nav_chat", "data-track-to": "top" } : {})}
               className={cn(
-                // 5.0: to'liq yumaloq (pill) tugma — belgi + matn; faol bo'lim och ko'k fonda
+                // to'liq yumaloq (pill) tugma — belgi + matn; faol bo'lim och ko'k fonda
                 "relative flex min-h-11 min-w-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-full px-3.5 py-2 text-sm font-semibold transition-colors",
                 active ? "bg-primary-soft text-primary-ink" : "text-muted-foreground hover:bg-secondary hover:text-foreground",
               )}
             >
               <item.icon className="size-4" aria-hidden />
-              {/* planshetda (md) va joy yetmaganda (uzun nomlar, o'ng tomonda "Vakansiya joylash") — faqat belgi: menyu o'ngdagi
-                  tugmalar ostiga kirib, ularni to'smaydi; nom ekran o'quvchisi va title uchun saqlanadi */}
-              {/* "AI yordamchi" nomi kompyuterda doim ko'rinadi (joy yetmasa ham): yangi bo'lim faqat belgi bo'lib qolmasin */}
-              <span className={compact && item !== AI_NAV ? "sr-only" : "sr-only lg:not-sr-only"}>{t(item.labelKey)}</span>
+              {/* planshetda (md) va joy yetmaganda — faqat belgi; nom ekran o'quvchisi va title uchun saqlanadi */}
+              <span className={compact ? "sr-only" : "sr-only lg:not-sr-only"}>{t(item.labelKey)}</span>
               {badge ? <span className="ml-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-bold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span> : null}
             </Link>
           </li>
         );
       })}
-      {/* "Universal ustalar" (turkuaz) — planshetda belgi bilan; kompyuterda nomli bo'limlar sig'ishi uchun bu yerda yo'q:
-          kirgan foydalanuvchida yon menyuda, mehmonda — bosh sahifadagi kartada */}
+      {/* "Universal ustalar" (turkuaz) — planshetda belgi bilan; kompyuterda yon menyuda */}
       <li className="lg:hidden">
         <Link
           href="/ustalar"
@@ -310,39 +233,33 @@ function useFitLabels(labelsKey: string) {
  * Yordam (asosiy amal — yuqori paneldagi tugma). Telefon va planshetda — pastki va yuqori menyu hamda bosh sahifa menyusi.
  * Hisoblagichlar — haqiqiy o'qilmaganlar (yuqori paneldagi bilan bir xil).
  */
-function sideNav(mode: NavMode): { main: MenuItem[]; more: MenuItem[] } {
-  return { main: [HOME_ITEM(mode), ...mainItems(mode)], more: MORE_ITEMS };
+function sideNav(): { main: MenuItem[]; more: MenuItem[] } {
+  return { main: APP_SIDE_ITEMS, more: MORE_ITEMS };
 }
 
-export function SideNav({
-  counts,
-  mode = null,
-  user,
-  social = [],
-}: {
-  mode?: NavMode;
-  counts?: Partial<Record<NonNullable<NavItem["badgeKey"]>, number>>;
-  user?: TopBarUser | null;
-  social?: SocialLink[];
-}) {
+type SideNavProps = { mode?: NavMode; counts?: Counts; user?: TopBarUser | null; social?: SocialLink[] };
+
+export function SideNav(props: SideNavProps) {
+  return <WithFind>{(find) => <SideNavView {...props} find={find} />}</WithFind>;
+}
+
+function SideNavView({ counts, mode = null, user, social = [], find: urlFind }: SideNavProps & { find: string | null }) {
   // bosilgan bo'lim darhol belgilanadi (sahifa hali ochilmagan bo'lsa ham)
-  const pendingPath = usePendingPath();
-  const currentPath = usePathname();
-  const pathname = pendingPath ?? currentPath;
+  const { path: pathname, find } = useNavPlace(urlFind);
   const { t } = useT();
-  const { main, more } = sideNav(mode);
+  const { main, more } = sideNav();
   const post = postAction(mode);
   const link = (item: MenuItem) => {
-    const active = item.match(pathname);
+    const active = item.match(pathname, find);
     const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
-    // "Yordamchi" — to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
-    const ai = item.tone === "ai";
+    // asosiy amal (chat) — yon menyuda to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
+    const ai = item === APP_CHAT;
     return (
       <li key={item.href}>
         <Link
           href={item.href}
           aria-current={active ? "page" : undefined}
-          {...(ai ? { "data-ai-entry": true, "data-track": "ai_entry", "data-track-to": "side" } : {})}
+          {...(ai ? { "data-track": "nav_chat", "data-track-to": "side" } : {})}
           className={cn(
             "flex h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors",
             ai

@@ -1,5 +1,23 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · Sodda ilova: 5 ta bo'lim va chat — asosiy ekran (`feat/simple-nav`)
+
+Ega: "ilova chalkash — kirgan odam hech nimani tushunmaydi, ketma-ketliklar chalkash, yozuvlar tushunarsiz. Pastda faqat
+Ishchilar, Ishlar, E'lonlarim, Izlash va e'lon berish, Profil — bo'ldi. Kirish oynasidan kirgandan keyin chatga kirsin,
+chatda tanlansin: ish qidirish yoki e'lon berish".
+
+- **Pastki menyu** — ikkala rejimda va mehmonda bir xil: Ishchilar · Ishlar · **Izlash/E'lon** (o'rtada, chat) ·
+  E'lonlarim · Profil. Xabarlar va bildirishnomalar — yuqori panelda (hamma uchun); alohida "Yordamchi" belgisi olib
+  tashlandi. Kompyuterdagi yon menyu va planshetdagi yuqori menyu — xuddi shu bo'limlar (+ Xabarlar).
+- **`/chat` — asosiy ekran**: "Assalomu alaykum, Ism! Nima qilmoqchisiz?" → [Izlash] [E'lon berish].
+  Izlash → Ish / Ishchi: so'rovnoma va bazadagi haqiqiy e'lonlar shu suhbatda. E'lon berish → "Men ish izlayapman"
+  (o'zi haqida e'lon, yordamchi bilan) yoki "Menga ishchi kerak" (vakansiya formasi) — rejim o'zi qo'yiladi, "Siz
+  kimsiz?" deb qayta so'ralmaydi. Pastda yozish maydoni (tanlovsiz ham yozish mumkin).
+- **Yo'naltirish**: kirish oqimi tugagach (ikkala rol) — `/chat`; kirgan foydalanuvchi "/" ni ochsa — `/chat`.
+  Mehmon uchun "/" — avvalgidek ochiq bosh sahifa.
+- **"Ishchilar"** ish izlovchiga ham to'siqsiz ochiladi (qidiruvdagi rejim tushuntirish oynasi olib tashlandi).
+- Analitika: `nav_chat`, `chat_choice`. Test: E2E `simple-app.spec.ts`.
+
 ## 2026-11-20 · Ishchi bir nechta e'lon joylay oladi — 100 tagacha (`claude/multi-worker-listings`, 0086)
 
 Ega: "men ishchiman — menga faqat 1 ta e'lon joylay olyapman; 10 ta, 100 ta joylasin kerak bo'lsa". Tanlov (ega): har

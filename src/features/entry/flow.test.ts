@@ -68,15 +68,18 @@ describe("qadam manzillari", () => {
     expect(entryPath("profile", { mode: "employer" })).toBe("/onboarding/employer?next=%2Fstart%2Ftayyor");
   });
 
-  it("tugagach: ish beruvchi — panel, ish izlovchi — bosh sahifa; kelgan manzil saqlanadi", () => {
-    expect(entryPath("done", { mode: "employer", employerOnboarded: true })).toBe("/employer");
-    expect(entryPath("done", { mode: "worker" })).toBe("/");
+  it("tugagach: ikkala rol ham asosiy ekranga (chat); kelgan manzil saqlanadi", () => {
+    // 2026-11-20: oqim tugagach ikkala rol ham asosiy ekranga — chat
+    expect(entryPath("done", { mode: "employer", employerOnboarded: true })).toBe("/chat");
+    expect(entryPath("done", { mode: "employer", employerOnboarded: false })).toBe("/chat");
+    expect(entryPath("done", { mode: "worker" })).toBe("/chat");
+    expect(entryPath("done", { mode: null })).toBe("/chat");
     expect(entryPath("done", { mode: "worker", next: "/jobs/kassir-123?apply=1" })).toBe("/jobs/kassir-123?apply=1");
     expect(entryPath("login", { mode: null, next: "/jobs/kassir-123" })).toBe(`/auth?next=${encodeURIComponent("/start?next=%2Fjobs%2Fkassir-123")}`);
   });
 
   it("tashqi manzil qabul qilinmaydi", () => {
-    expect(entryPath("done", { mode: "worker", next: "https://evil.example/x" })).toBe("/");
-    expect(entryPath("done", { mode: "worker", next: "//evil.example" })).toBe("/");
+    expect(entryPath("done", { mode: "worker", next: "https://evil.example/x" })).toBe("/chat");
+    expect(entryPath("done", { mode: "worker", next: "//evil.example" })).toBe("/chat");
   });
 });

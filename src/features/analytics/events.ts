@@ -35,6 +35,9 @@ export const CLIENT_EVENTS = [
   "mode_choose",
   "mode_switch",
   "nav_post",
+  // asosiy ekran (chat, 2026-11-20): pastki menyuning o'rtasi va suhbatdagi tanlov (izlash / e'lon berish)
+  "nav_chat",
+  "chat_choice",
   "near_me",
   "save_toggle",
   "search_all",

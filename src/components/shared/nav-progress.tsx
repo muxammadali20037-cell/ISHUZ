@@ -72,7 +72,8 @@ function NavProgressBar() {
       const same = to.pathname === window.location.pathname;
       setPending((p) => ({ from, to: to.pathname, same, n: (p?.n ?? 0) + 1, rect: contentRect() }));
       setShown(false);
-      if (!same) setPendingPath(to.pathname);
+      // so'rov qismi bilan: /search?mode=workers — "Ishchilar", /search?mode=jobs — "Ishlar" (pastki menyu darhol belgilaydi)
+      if (!same) setPendingPath(to.pathname + to.search);
       window.clearTimeout(showTimer);
       window.clearTimeout(hideTimer);
       // oldindan yuklangan sahifa ~0.1 s da o'zi ochiladi — undan tezroq qatlam chiqmaydi (miltillamasin)

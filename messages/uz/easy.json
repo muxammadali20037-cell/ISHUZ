@@ -491,7 +491,8 @@
     "tab_fields": "Sohalar",
     "tab_my_listings": "E'lonlarim",
     "tab_workers": "Ishchilar",
-    "tab_employers": "Ish beruvchilar"
+    "tab_employers": "Ish beruvchilar",
+    "tab_chat": "Izlash/E'lon"
   },
   "moderation": {
     "pending_title": "E'loningiz saqlandi",
@@ -1578,5 +1579,28 @@
         "text": "Endi bemalol foydalaning. Omad!"
       }
     }
+  },
+  "start_chat": {
+    "title": "Izlash va e'lon berish",
+    "hello": "Assalomu alaykum!",
+    "hello_name": "Assalomu alaykum, {name}!",
+    "ask_what": "Nima qilmoqchisiz? Tanlang:",
+    "find": "Izlash",
+    "find_hint": "Ish yoki ishchi topish",
+    "post": "E'lon berish",
+    "post_hint": "Ish yoki ishchi kerakligini e'lon qilish",
+    "ask_find": "Nimani izlaysiz?",
+    "find_jobs": "Ish",
+    "find_jobs_hint": "Menga ish kerak",
+    "find_workers": "Ishchi",
+    "find_workers_hint": "Menga ishchi kerak",
+    "said_find_jobs": "Ish qidiryapman",
+    "said_find_workers": "Ishchi qidiryapman",
+    "ask_post": "Qanday e'lon beramiz?",
+    "post_worker": "Men ish izlayapman",
+    "post_worker_hint": "O'zim haqimda e'lon",
+    "post_vacancy": "Menga ishchi kerak",
+    "post_vacancy_hint": "Vakansiya e'loni",
+    "type_hint": "Yoki pastga yozing, masalan: «Toshkentda haydovchi»"
   }
 }
