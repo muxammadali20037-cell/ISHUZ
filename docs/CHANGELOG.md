@@ -1,5 +1,27 @@
 # O'zgarishlar jurnali
 
+## 2026-11-20 · Rolga mos ilova: menyu, chat, kirish savol bilan (`feat/role-chat`)
+
+Ega (kechqurun): "ishchi panelida Ishchilar nimaga kerak — o'rniga qiziqarli narsa; men ishchiman — «ish yoki ishchi»
+nimaga kerak, menga ish qidirish va o'zim haqimda e'lon kerak; Izlash bosilsa pastga strelka — yozing va toping,
+chiqmasa «+ e'lon qoldiring»; E'lon berish — «Qanday ish qidiryapsiz?» yozsin, keyin telefon; bitta odam ikkala rolda
+bo'lsa adashmasin, ma'lumotlari alohida; kirishdagi rasmlar yoqmayapti — savol bilan kirsin; Telegram'da «Ochish»
+bosilsa saytga olib borsin".
+
+- **Kirish ekrani** rasmsiz: "Assalomu alaykum! Nima qidiryapsiz?" → «O'zingizga mos ish qidiryapsizmi?» /
+  «Korxonangizga ishchi qidiryapsizmi?» — bitta bosishda (JS'siz ham). Rol ekrani (/auth, /start/rol) — xuddi shunday.
+- **Pastki menyu rejimga qarab**: ish izlovchi — **Sizga mos** · Ishlar · Izlash/E'lon · E'lonlarim · Profil;
+  ish beruvchi — Ishchilar · **Arizalar** · Izlash/E'lon · E'lonlarim · Profil (tanlov — ega). Bo'limlarda "Orqaga" yo'q.
+  "Sizga mos" va "Arizalar" — kirmagan yoki e'lonsiz foydalanuvchiga ham ochiladi: nima bo'lishi va bitta tugma.
+- **Chat rolga mos**: ish izlovchi — Ish izlash / E'lon berish (o'zim haqimda); ish beruvchi — Ishchi izlash /
+  Vakansiya berish (+ "Usta kerakmi?"). Izlash → "Pastga yozing va toping" + qimirlaydigan strelka, yozish maydoni
+  yoritiladi. Topilmasa — "+ O'zingiz haqingizda e'lon qoldiring" (yozgani bilan). E'lon berish → "Qanday ish
+  qidiryapsiz? Pastga yozing" → yordamchi (/ai/post yoki /post/vacancy?ai=1) shu gap bilan darhol boshlanadi.
+- **Rollar aralashmaydi**: E'lonlarim, Profil va "Sizga mos" — faqat joriy rol; boshqa roldagi e'lonlar — soni va bir
+  bosishda o'tish qatori (e'lon "yo'qoldi" deb o'ylamasin). Ish beruvchi vakansiyalari sahifasida ham shunday.
+- **Telegram orqali kirish**: botdagi "Ochish" endi Mini App emas — saytni ochadi va o'sha brauzerni ham kiritadi
+  (bir martalik havola, 5 daqiqa, 0085 jadvali — yangi migratsiya yo'q). Havola yaratilmasa — avvalgidek Mini App.
+
 ## 2026-11-20 · Sodda ilova: 5 ta bo'lim va chat — asosiy ekran (`feat/simple-nav`)
 
 Ega: "ilova chalkash — kirgan odam hech nimani tushunmaydi, ketma-ketliklar chalkash, yozuvlar tushunarsiz. Pastda faqat

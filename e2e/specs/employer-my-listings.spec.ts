@@ -2,9 +2,9 @@ import { expect, test } from "@playwright/test";
 import { USERS, asMode, loginAs, sql } from "../support";
 
 /**
- * Ish beruvchi rejimidagi "E'lonlarim" (/employer/vacancies) — vakansiyalardan tashqari egasining boshqa e'lonlari ham
- * (o'zi haqidagi ishchi e'loni, holati bilan). Ega, 2026-11-20: "e'lon egasi e'lonlarimdan o'z e'lonlarini, barcha
- * e'lonlarini ko'rolmayapti" — ish izlovchi rejimida joylagan e'lon rejim almashganda yo'qolib qolmasin.
+ * Ish beruvchi rejimidagi "E'lonlarim". Ega, 2026-11-20 (kechqurun): "bitta odam ham ish beruvchi, ham ishchi bo'lsa —
+ * adashmasin, bir-biriga ko'rinmasin, ma'lumotlari alohida". Ish beruvchi rejimida faqat vakansiyalar; o'zi haqidagi
+ * ishchi e'lonlari — faqat soni va bir bosishda ish izlovchi rejimiga o'tish qatori (e'lon "yo'qoldi" deb o'ylamasin).
  */
 const HEADLINE = "E2E boshqa e'lon — oshpaz";
 
@@ -15,7 +15,7 @@ async function cleanup() {
 
 test.afterEach(cleanup);
 
-test("ish beruvchi E'lonlarim: vakansiya ro'yxati ostida o'zi haqidagi e'lon ham ko'rinadi (holati va o'zgartirish bilan)", async ({ page, context }) => {
+test("ish beruvchi E'lonlarim: faqat vakansiyalar; o'zi haqidagi e'lon — ko'rinmaydi, soni va o'tish qatori bor", async ({ page, context }) => {
   await cleanup();
   await sql(
     `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
@@ -31,7 +31,7 @@ test("ish beruvchi E'lonlarim: vakansiya ro'yxati ostida o'zi haqidagi e'lon ham
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
 
-  // ishchi e'loni yo'q — qo'shimcha bo'lim ham yo'q
+  // ishchi e'loni yo'q — o'tish qatori ham yo'q
   await page.goto("/employer/vacancies");
   await expect(page.getByText("E2E kassir")).toBeVisible();
   await expect(page.locator("[data-other-listings]")).toHaveCount(0);
@@ -41,16 +41,20 @@ test("ish beruvchi E'lonlarim: vakansiya ro'yxati ostida o'zi haqidagi e'lon ham
      values ($1, $2, $3, true, now())`,
     [USERS.employer, HEADLINE, r!.id],
   );
-  await page.reload();
-  await expect(page.getByText("E2E kassir")).toBeVisible();
-  const other = page.locator("[data-other-listings]");
-  await expect(other.getByRole("heading", { name: "Boshqa e'lonlaringiz" })).toBeVisible();
-  const card = other.locator('[data-my-listing="worker"]');
-  await expect(card).toContainText(HEADLINE);
-  await expect(card).toContainText("Qidiruvda ko'rinadi");
-  await expect(card.getByRole("link", { name: /O'zgartirish/ })).toHaveAttribute("href", "/post/worker");
-  // vakansiyalar shu yerda ikki marta chiqmaydi — ular yuqoridagi ro'yxatda
-  await expect(other.locator('[data-my-listing="vacancy"]')).toHaveCount(0);
+  for (const url of ["/employer/vacancies", "/cabinet/elonlar"]) {
+    await page.goto(url);
+    await expect(page.getByText("E2E kassir").first()).toBeVisible();
+    await expect(page.locator('[data-my-listing="worker"]')).toHaveCount(0);
+    await expect(page.getByText(HEADLINE)).toHaveCount(0);
+    const sw = page.locator("[data-role-switch='worker']");
+    await expect(sw).toContainText("Ish izlovchi sifatida 1 ta e'loningiz bor");
+  }
+  // bir bosishda — ish izlovchi rejimi, o'sha sahifa: endi faqat o'zi haqidagi e'lon
+  await page.locator("[data-role-switch='worker']").click();
+  await expect(page.locator('[data-my-listing="worker"]')).toContainText(HEADLINE);
+  await expect(page.locator('[data-my-listing="vacancy"]')).toHaveCount(0);
+  await expect(page.locator("[data-role-switch='employer']")).toContainText("Ish beruvchi sifatida 1 ta vakansiyangiz bor");
+  expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 });
 
 test("E'lonlarim: raqami ko'rinmaydigan eski e'lonlar egasiga eslatiladi; raqam ochiq bo'lgach — eslatma yo'q", async ({ page, context }) => {
@@ -74,7 +78,12 @@ test("E'lonlarim: raqami ko'rinmaydigan eski e'lonlar egasiga eslatiladi; raqam 
   const vacancyCard = page.locator('[data-my-listing="vacancy"]').filter({ hasText: "E2E qorovul" });
   const workerCard = page.locator('[data-my-listing="worker"]').filter({ hasText: HEADLINE });
   await expect(vacancyCard.locator("[data-phone-hidden]")).toContainText("raqamingiz bu e'londa ko'rinmayapti");
+  // o'zi haqidagi e'lon — ish izlovchi rejimida (rollar aralashmaydi)
+  await asMode(context, "worker");
+  await page.reload();
   await expect(workerCard.locator("[data-phone-hidden]")).toBeVisible();
+  await asMode(context, "employer");
+  await page.reload();
   // "O'zgartirish" — tuzatish yo'li shu kartaning o'zida
   await expect(vacancyCard.getByRole("link", { name: /O'zgartirish/ })).toHaveAttribute("href", `/post/vacancy?edit=${v!.id}`);
 
@@ -82,5 +91,9 @@ test("E'lonlarim: raqami ko'rinmaydigan eski e'lonlar egasiga eslatiladi; raqam 
   await sql("insert into public.worker_listing_phones (worker_id, phone) values ($1, '+998932728766')", [w!.id]);
   await page.reload();
   await expect(vacancyCard).toBeVisible();
+  await expect(page.locator("[data-phone-hidden]")).toHaveCount(0);
+  await asMode(context, "worker");
+  await page.reload();
+  await expect(workerCard).toBeVisible();
   await expect(page.locator("[data-phone-hidden]")).toHaveCount(0);
 });

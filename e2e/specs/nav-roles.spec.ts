@@ -6,17 +6,22 @@ import { USERS, asMode, loginAs, sql } from "../support";
  * 2026-11-20 (ega: "ilova chalkash — pastda faqat Ishchilar, Ishlar, E'lonlarim, Izlash va e'lon berish, Profil"): ikkala
  * rolda bir xil 5 ta bo'lim. "E'lonlarim" — o'zi joylagan barcha e'lonlar (o'zi haqida, vakansiyalar, usta e'lonlari);
  * vakansiya kartasidan — arizalari. "Ishchilar" — darhol barcha ishchi e'lonlari.
+ * O'sha kuni kechqurun (ega): menyu rejimga qarab — ish izlovchida "Sizga mos", ish beruvchida "Arizalar"; E'lonlarim —
+ * faqat joriy rolning e'lonlari.
  */
-const TABS = ["Ishchilar", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+const TABS = {
+  worker: ["Sizga mos", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"],
+  employer: ["Ishchilar", "Arizalar", "Izlash/E'lon", "E'lonlarim", "Profil"],
+};
 
 test("ish izlovchi: 5 ta bo'lim, nomlar sig'adi; «E'lonlarim» — o'z e'lonlari; «Profil» belgilanadi", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/jobs");
   const nav = page.locator("nav.bottom-nav");
-  await expect(nav.getByRole("link")).toHaveText(TABS);
+  await expect(nav.getByRole("link")).toHaveText(TABS.worker);
   // nomlar to'liq sig'adi (kesilmaydi)
-  for (const name of TABS) {
+  for (const name of TABS.worker) {
     const fits = await nav.getByRole("link", { name }).locator("span").last().evaluate((el) => el.scrollWidth <= el.clientWidth);
     expect(fits, name).toBe(true);
   }
@@ -42,9 +47,13 @@ test("ish beruvchi: «E'lonlarim» — vakansiyalari (arizalari bilan); «Ishchi
   );
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
-  await page.goto("/jobs");
+  await page.goto("/chat");
   const nav = page.locator("nav.bottom-nav");
-  await expect(nav.getByRole("link")).toHaveText(TABS);
+  await expect(nav.getByRole("link")).toHaveText(TABS.employer);
+  for (const name of TABS.employer) {
+    const fits = await nav.getByRole("link", { name }).locator("span").last().evaluate((el) => el.scrollWidth <= el.clientWidth);
+    expect(fits, name).toBe(true);
+  }
 
   await nav.getByRole("link", { name: "E'lonlarim" }).click();
   await page.waitForURL(/\/cabinet\/elonlar$/);
@@ -55,7 +64,11 @@ test("ish beruvchi: «E'lonlarim» — vakansiyalari (arizalari bilan); «Ishchi
   await expect(nav.getByRole("link", { name: "Ishchilar" })).toHaveAttribute("aria-current", "page");
   // kasb tanlash bosqichi emas — natijalar (ro'yxat) darhol
   await expect(page.getByRole("heading", { name: "Qanday mutaxassis kerak?" })).toHaveCount(0);
-  // eski ish beruvchi manzillari ham "E'lonlarim" bo'limida
+  // eski ish beruvchi manzillari ham "E'lonlarim" bo'limida; arizalar — "Arizalar"
   await page.goto("/employer/vacancies");
   await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: "Arizalar" }).click();
+  await page.waitForURL(/\/employer\/applications$/);
+  await expect(nav.getByRole("link", { name: "Arizalar" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "E'lonlarim" })).not.toHaveAttribute("aria-current", "page");
 });
