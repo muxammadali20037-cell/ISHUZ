@@ -2,7 +2,8 @@ import { getServerEnv } from "@/lib/env";
 import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
-import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Settings, ShieldCheck, Sparkles, UserRound, Wallet } from "lucide-react";
+import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Settings, ShieldCheck, Sparkles, UserRound, Wallet, Wrench } from "lucide-react";
+import type { TFunction } from "@/lib/i18n/translate";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { signOut } from "@/features/auth/actions";
@@ -33,6 +34,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
             </Link>
           </Button>
         </div>
+        <MastersRow t={t} />
       </div>
     );
   }
@@ -122,6 +124,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
 
       <Fold name="more" icon={<Settings />} tint="blue" verb="open" title={t("easy.cabinet.more_settings")}>
         <div className="space-y-3">
+          <MastersRow t={t} />
           <RoleSwitchRow
             tone="neutral"
             target={roleTarget}
@@ -153,5 +156,22 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
         </button>
       </form>
     </div>
+  );
+}
+
+/**
+ * "Universal ustalar" (santexnik, elektrik…) — telefonda bosh sahifa chati juda sodda bo'lgani uchun shu yerda (ega,
+ * 2026-11-21: "Profil ichiga"); mehmonga ham ko'rinadi
+ */
+function MastersRow({ t }: { t: TFunction }) {
+  return (
+    <Link href="/ustalar" data-cabinet-masters className="press flex min-h-16 items-center gap-3 rounded-2xl border border-border/70 bg-card px-4 py-3 shadow-sm hover:bg-secondary/60">
+      <Wrench className="size-6 shrink-0 text-primary-ink" aria-hidden />
+      <span className="min-w-0 flex-1">
+        <span className="block text-base font-semibold">{t("masters.name")}</span>
+        <span className="block text-sm text-muted-foreground">{t("easy.side.menu.masters_hint")}</span>
+      </span>
+      <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+    </Link>
   );
 }

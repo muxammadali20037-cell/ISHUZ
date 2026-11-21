@@ -16,7 +16,7 @@ import { TOUR_DONE_EVENT } from "@/features/tour/steps";
  * "har kirganda ilovaga Telegram kanalga ulanish tugmasi chiqsin, bossa kanalga olib borsin").
  *  · Kanal havolasi sozlanmagan yoki Telegram orqali kirgan foydalanuvchi kanalda bo'lsa — chiqmaydi (server tekshiradi).
  *  · "Kanalga o'tish" bosilsa — 30 kun so'ralmaydi (ib_channel); "Keyinroq" — keyingi kirishda yana.
- *  · Birinchi ochilishdagi tanishtiruv tugamagan bo'lsa, admin, kirish va ro'yxatdan o'tish sahifalarida — chiqmaydi.
+ *  · Admin, kirish va ro'yxatdan o'tish sahifalarida — chiqmaydi; birinchi ochilishdagi tanishtiruv ochiq bo'lsa — u tugagach.
  * Mini App ichida kanal Telegram'ning o'zida ochiladi (openTelegramLink), brauzerda — yangi oynada.
  */
 const SEEN_KEY = "ishuz:channel-prompt";
@@ -41,8 +41,8 @@ export function ChannelPrompt() {
   useEffect(() => {
     current.current = pathname;
     if (asked || skipped(pathname)) return;
-    // tanishtiruv (birinchi ochilish) hali tugamagan — uning ustiga chiqmaymiz; keyingi sahifada tekshiriladi
-    if (!hasCookie("ib_intro")) return;
+    // 2026-11-21: birinchi ochilishda til/rol ekrani yo'q (bosh sahifa — darhol chat), shuning uchun "ib_intro" kutilmaydi —
+    // ega: "kirgandan keyin «Obuna bo'lish» yoki «Keyinroq» deb chiqsin". Tanishtiruv ochiq bo'lsa — u tugagach (pastda)
     asked = true;
     try {
       if (sessionStorage.getItem(SEEN_KEY) || hasCookie(JOINED_COOKIE)) return;

@@ -78,9 +78,9 @@ async function approveAsAdmin(page: Page, context: import("@playwright/test").Br
 
 test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo e'lon — telefon, reyting va bog'lanish yo'q", async ({ page, context }) => {
   await asGuest(context);
-  await page.goto("/");
-  // 2026-11-21: bosh sahifa — chat; misollar ostida "Santexnik, elektrik — Universal ustalar" havolasi (ish izlovchidan boshqalarga)
-  const entry = page.locator("main [data-chat-choice='find_masters']");
+  // 2026-11-21 kechqurun: bosh sahifa chati juda sodda — "Universal ustalar" Profilda (mehmonga ham)
+  await page.goto("/cabinet");
+  const entry = page.locator("main [data-cabinet-masters]");
   await expect(entry).toContainText("Universal ustalar");
   await entry.click();
   await expect(page).toHaveURL(/\/ustalar$/);
@@ -117,17 +117,15 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(page.locator("[data-masters-review]")).toHaveCount(0);
   await expect(page.locator("main")).toContainText("Hali baho yo'q");
 
-  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q, Profilda karta yo'q (2026-11-17) — kirish asosiy
-  // ekrandagi (chat, 2026-11-21) misollar ostidagi "Santexnik, elektrik — Universal ustalar" havolasidan
+  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q — kirish Profildagi "Boshqa sozlamalar" ichidan
+  // (2026-11-21: chatda havola yo'q)
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
+  await page.goto("/chat");
+  await expect(page.locator("main [data-chat-choice='find_masters']")).toHaveCount(0);
   await page.goto("/cabinet");
-  await expect(page.locator("main [data-masters-entry]")).toHaveCount(0);
-  await page.goto("/");
-  await page.waitForURL(/\/chat$/);
-  const fromChat = page.locator("[data-chat-choice='find_masters']");
-  await expect(fromChat).toContainText("Universal ustalar");
-  await fromChat.click();
+  await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
+  await page.locator("main [data-cabinet-masters]").click();
   await expect(page).toHaveURL(/\/ustalar$/);
 });
 

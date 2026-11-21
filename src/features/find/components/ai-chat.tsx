@@ -836,7 +836,6 @@ export function AiPromptBox({
   inputRef,
   note = true,
   placeholder,
-  fill,
   action,
 }: {
   chat: PromptTarget;
@@ -847,28 +846,13 @@ export function AiPromptBox({
   note?: boolean;
   /** maydon ichidagi ko'rsatma (bo'lmasa — rejimga qarab) */
   placeholder?: string;
-  /** tashqaridan matn qo'yish (misol tugmasi): `n` o'zgarganda maydonga yoziladi va fokus beriladi — o'zi yuborilmaydi */
-  fill?: { text: string; n: number } | null;
   /** sekin telefon: skriptlar yuklanmasdan yuborilsa — matn shu manzilga ?q=… bilan oddiy forma bo'lib boradi (boshi berk yo'q) */
   action?: string;
 }) {
   const { t } = useT();
   const [text, setText] = useState("");
-  const [filled, setFilled] = useState(0);
-  if (fill && fill.n !== filled) {
-    // render paytida (effektsiz): yangi misol — maydonga
-    setFilled(fill.n);
-    setText(fill.text.slice(0, MESSAGE_MAX_CHARS));
-  }
   const ownRef = useRef<HTMLTextAreaElement>(null);
   const ref = inputRef ?? ownRef;
-  // misol qo'yilgach — maydonga fokus, kursor oxirida (tuzatib yuborishi mumkin)
-  useEffect(() => {
-    const el = ref.current;
-    if (!filled || !el) return;
-    el.focus();
-    el.setSelectionRange(el.value.length, el.value.length);
-  }, [filled, ref]);
   // sahifa skriptlari yuklandi (testlar va sekin telefon: shundan keyin yozish maydoni ishlaydi)
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 

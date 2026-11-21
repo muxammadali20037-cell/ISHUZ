@@ -1640,19 +1640,7 @@
     "close": "Close"
   },
   "guided": {
-    "hello_guest": "Need a job or a worker?",
-    "hello_worker": "What job are you looking for?",
-    "hello_employer": "What worker do you need?",
-    "hello_sub": "Type it — we'll find it.",
-    "examples_label": "For example, tap:",
-    "ex_guest_1": "I need a driver",
-    "ex_guest_2": "I'm an electrician, looking for work",
-    "ex_worker_1": "I'm a driver, looking for work",
-    "ex_worker_2": "I want to work as a sales clerk in Samarkand",
-    "ex_worker_3": "I want to post a listing about myself",
-    "ex_employer_1": "I need a driver",
-    "ex_employer_2": "Need 2 builders in Tashkent",
-    "ex_employer_3": "I want to post a vacancy",
+    "hello": "Find the right job or worker",
     "placeholder_guest": "For example: I need a driver",
     "placeholder_worker": "For example: I'm a cook",
     "placeholder_employer": "E.g.: I need a sales clerk",
@@ -1684,7 +1672,6 @@
     "post_worker_btn": "Prepare a listing",
     "post_employer_btn": "Post a vacancy",
     "post_who_worker": "About myself",
-    "post_who_employer": "Vacancy",
-    "masters_link": "Plumber, electrician — Universal masters"
+    "post_who_employer": "Vacancy"
   }
 }

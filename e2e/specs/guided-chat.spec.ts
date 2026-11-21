@@ -4,7 +4,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 /**
  * Asosiy ekran — chat (ega, 2026-11-21, master prompt + tanlovlar; "muloyim, aniq, jaydari so'zlar bilan so'rasin —
  * odamlar nima haqda so'ralayotganini aniq bilsin"):
- *  - bosh sahifa ("/") mehmonga ham darhol chat: "Ish kerakmi yoki ishchi? Yozing — topib beramiz.", bosiladigan misollar;
+ *  - bosh sahifa ("/") mehmonga ham darhol chat: "O'zingizga mos ishni yoki ishchini toping" va pastga strelka (2026-11-21
+ *    kechqurun: misollar va boshqa ortiqcha narsalar olib tashlandi);
  *  - AI maqsadni yozilgan matndan aniqlaydi; aniq bo'lmasa — bitta savol, ikki tugma;
  *  - yetishmagan narsa bittadan: kasb — yoziladi, hudud — tugmalardan tanlanadi (yozilmaydi), tanlov eslab qolinadi;
  *  - natijalar shu chatda kartalar bilan (birinchi 3 tasi, "Yana N tasini ko'rsatish");
@@ -45,20 +46,16 @@ test.afterAll(async () => {
   await sql("delete from public.worker_profiles where profile_id in (select id from auth.users where raw_user_meta_data->>'first_name' like $1)", [`${TAG}%`]);
 });
 
-test("mehmon: bosh sahifa — darhol chat; misol bosilsa yozish maydoniga tushadi (o'zi yuborilmaydi)", async ({ page, context }) => {
+test("mehmon: bosh sahifa — darhol chat: bitta yozuv, pastga strelka va yozish maydoni (ortiqcha hech narsa yo'q)", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish kerakmi yoki ishchi?");
-  await expect(page.locator("[data-start-chat]")).toContainText("Yozing — topib beramiz.");
-  // eski reklama sahifasi va "Ishchi izlash / Vakansiya berish" qatorlari yo'q
-  await expect(page.locator("[data-chat-choices]")).toHaveCount(0);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.locator("[data-guided-arrow]")).toBeVisible();
+  // eski reklama sahifasi, "Ishchi izlash / Vakansiya berish" qatorlari va misollar yo'q (ega, 2026-11-21 kechqurun)
+  await expect(page.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
   await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toHaveCount(0);
-  const examples = page.locator("[data-guided-example]");
-  await expect(examples).toHaveText(["Menga haydovchi kerak", "Men elektrikman, ish kerak"]);
-  await examples.first().click();
-  await expect(box(page)).toHaveValue("Menga haydovchi kerak");
-  await expect(box(page)).toBeFocused();
+  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
   await expect(page.locator("[data-guided-thread]")).toHaveCount(0);
 });
 
@@ -95,8 +92,7 @@ test("ish beruvchi bir xabarda hammasini yozsa — savolsiz natija: birinchi 3 t
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sizga qanday ishchi kerak?");
-  await expect(page.locator("[data-guided-example]")).toHaveCount(3);
+  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
   await send(page, "Menga Toshkentdan haydovchi kerak");
   await expect(page.locator("[data-guided-ai^='ask']")).toHaveCount(0);
   const res = lastAi(page);
@@ -113,7 +109,7 @@ test("kasb aytilmasa — kasb so'raladi (yoziladi), keyin hudud; e'lon berish ni
   await asMode(context, "worker");
   await context.clearCookies({ name: "ib_place" });
   await page.goto("/chat");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: men oshpazman");
   await send(page, "Ish kerak");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   await expect(lastAi(page)).toContainText("Qanday ish qidiryapsiz? Kasbingizni yozing — masalan: haydovchi, sotuvchi, oshpaz.");
@@ -149,5 +145,5 @@ test("suhbat boshqa hisobga ko'rinmaydi (bitta tabda chiqib, boshqasi bilan kiri
   await asMode(context, "employer");
   await page.goto("/chat");
   await expect(page.locator("[data-guided-thread]")).toHaveCount(0);
-  await expect(page.locator("[data-guided-example]").first()).toBeVisible();
+  await expect(page.locator("[data-guided-arrow]")).toBeVisible();
 });

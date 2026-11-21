@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, ChevronDown, Info, MapPin, Plus, RotateCcw, UsersRound, Wrench } from "lucide-react";
+import { ArrowDown, ArrowRight, BriefcaseBusiness, ChevronDown, Info, MapPin, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -24,27 +24,22 @@ export function postHref(who: "worker" | "employer", text = ""): string {
 const FIRST = 3;
 
 /**
- * Asosiy ekran — chat (ega, 2026-11-21, master prompt + tanlovlar): tepada oddiy, jaydari savol ("Sizga qanday ishchi
- * kerak? Yozing — topib beramiz."), ostida bosiladigan misollar (yozish maydoniga tushadi, o'zi yuborilmaydi), pastda yozish
- * maydoni. Yozilgach — AI maqsadni o'zi aniqlaydi, yetishmaganini bittadan muloyim so'raydi (hudud — tugmalar), natijalar
- * shu chatda kartalar bilan. Mehmon ("Ish kerakmi yoki ishchi?") ham, kirgan foydalanuvchi ham — bir xil ekran.
+ * Asosiy ekran — chat. Bo'sh holatda juda sodda (ega, 2026-11-21 kechqurun: "ortiqcha narsalar kerakmas — bitta strelka
+ * pastga, «O'zingizga mos ishni yoki ishchini toping», bo'ldi"): bitta yozuv, pastga strelka va yozish maydoni. Yozilgach —
+ * AI maqsadni o'zi aniqlaydi, yetishmaganini bittadan muloyim so'raydi (hudud — tugmalar), natijalar shu chatda kartalar
+ * bilan. Mehmon ham, kirgan foydalanuvchi ham — bir xil ekran. Telegram kanal — kirgandan keyin chiqadigan oynada
+ * (ChannelPrompt), bu yerda emas.
  */
 export function StartChat({
   mode,
   owner,
   initialQuery = "",
-  top,
-  channel,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
   owner: string;
   /** ?q=… — sekin telefonda skriptlar yuklanmasdan yuborilgan matn: yuklangach o'zi yuboriladi */
   initialQuery?: string;
-  /** sarlavha ustida (server qismi): admin joylagan hikoyalar — faol hikoya bo'lmasa hech narsa chizilmaydi */
-  top?: ReactNode;
-  /** misollar ostida (server qismi): Telegram kanal qatori — sozlanmagan bo'lsa hech narsa */
-  channel?: ReactNode;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
@@ -57,58 +52,31 @@ export function StartChat({
     chat.ask(initialQuery);
   }, [chat, initialQuery]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [fill, setFill] = useState<{ text: string; n: number } | null>(null);
   const who = mode === "employer" ? "employer" : mode === "worker" ? "worker" : "guest";
-  const examples = who === "guest" ? [1, 2] : [1, 2, 3];
   const placeholder = chat.awaiting === "profession" ? t("easy.guided.placeholder_profession") : t(`easy.guided.placeholder_${who}`);
   // skriptlarsiz yuborilgan matn shu sahifaning o'ziga qaytadi (mehmon — "/", kirgan — "/chat")
   const action = owner === "guest" ? "/" : "/chat";
+  const empty = !chat.msgs.length;
 
   return (
     <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" data-start-chat data-chat-mode={mode ?? "guest"}>
-      <div className="flex-1 space-y-5 py-6">
-        {top}
-        <header className="space-y-1">
-          {/* 320 px telefonda ham bitta qatorda ("Sizga qanday ishchi kerak?") — tor ekranda bir pog'ona kichikroq */}
-          <h1 className="text-2xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] max-[359px]:text-xl">{t(`easy.guided.hello_${who}`)}</h1>
-          <p className="text-base text-muted-foreground">{t("easy.guided.hello_sub")}</p>
-        </header>
-
-        {!chat.msgs.length ? (
-          <div className="space-y-3" data-guided-examples>
-            <p className="text-sm font-semibold text-muted-foreground">{t("easy.guided.examples_label")}</p>
-            <ul className="flex flex-wrap gap-2">
-              {examples.map((n) => {
-                const text = t(`easy.guided.ex_${who}_${n}`);
-                return (
-                  <li key={n} className="flex">
-                    <button
-                      type="button"
-                      onClick={() => setFill((f) => ({ text, n: (f?.n ?? 0) + 1 }))}
-                      className="press inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-left text-base font-medium text-foreground hover:bg-secondary"
-                      data-guided-example
-                    >
-                      {text}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-            {who !== "worker" ? (
-              <Link href="/ustalar" className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-primary-ink hover:underline" data-chat-choice="find_masters">
-                <Wrench className="size-4" aria-hidden /> {t("easy.guided.masters_link")}
-              </Link>
-            ) : null}
-            {channel ? <div className="pt-2">{channel}</div> : null}
-          </div>
-        ) : (
+      {empty ? (
+        // bo'sh holat: o'rtada bitta yozuv va yozish maydoniga qaragan strelka — boshqa hech narsa
+        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center" data-guided-empty>
+          <h1 className="max-w-xs text-2xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:max-w-md sm:text-3xl">{t("easy.guided.hello")}</h1>
+          <ArrowDown className="size-8 text-primary-ink motion-safe:animate-bounce" strokeWidth={2.5} aria-hidden data-guided-arrow />
+        </div>
+      ) : (
+        <div className="flex-1 py-6">
+          {/* suhbat paytida sarlavha ko'rinmaydi (joy suhbatga), lekin sahifaning nomi sifatida qoladi */}
+          <h1 className="sr-only">{t("easy.guided.hello")}</h1>
           <Thread chat={chat} />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
       <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2">
-        <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} fill={fill} action={action} />
+        <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} />
       </div>
     </div>
   );

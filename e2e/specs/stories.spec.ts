@@ -57,11 +57,27 @@ async function removeAll(page: Page) {
   }
 }
 
+/**
+ * 2026-11-21 kechqurun (ega: "chat juda sodda bo'lsin, ortiqcha narsa kerakmas"): bosh sahifa chatida hikoyalar yo'q —
+ * ular ish beruvchi panelida (/employer) ko'rinadi
+ */
+async function employerPage(browser: import("@playwright/test").Browser) {
+  await sql(
+    `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
+     values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
+    [USERS.employer],
+  );
+  const ctx = await browser.newContext(phone());
+  await loginAs(ctx, USERS.employer);
+  await asMode(ctx, "employer");
+  return { ctx, page: await ctx.newPage() };
+}
+
 test.afterEach(async () => {
   await sql("delete from public.admin_users where profile_id = $1", [USERS.workerB]);
 });
 
-test("admin rasm joylaydi → mehmon bosh sahifasi tepasida doiracha → to'liq ekranda, reklama tugmasi ishlaydi; ko'rilgani eslanadi", async ({ page, context, browser }) => {
+test("admin rasm joylaydi → ish beruvchi paneli tepasida doiracha (chatda yo'q) → to'liq ekranda, reklama tugmasi ishlaydi; ko'rilgani eslanadi", async ({ page, context, browser }) => {
   test.setTimeout(120_000);
   await asAdmin(context);
   try {
@@ -80,11 +96,18 @@ test("admin rasm joylaydi → mehmon bosh sahifasi tepasida doiracha → to'liq 
     expect((await sharp(stored).metadata()).format).toBe("webp");
     expect(stored.includes(Buffer.from("admin uyi"))).toBe(false);
 
-    // mehmon (rejimsiz) — bosh sahifa tepasida
+    // mehmon bosh sahifasi (chat) — hikoyalar yo'q
     const guestCtx = await browser.newContext(phone());
-    const guest = await guestCtx.newPage();
     await asGuest(guestCtx);
-    await guest.goto("/");
+    const g = await guestCtx.newPage();
+    await g.goto("/");
+    await expect(g.locator("main h1").first()).toBeVisible();
+    await expect(g.locator("[data-stories]")).toHaveCount(0);
+    await guestCtx.close();
+
+    // ish beruvchi paneli tepasida ("hammaga" deb belgilangan)
+    const { ctx: empCtx, page: guest } = await employerPage(browser);
+    await guest.goto("/employer");
     const circle = guest.locator("[data-stories] [data-story]").filter({ hasText: "Aksiya E2E" });
     await expect(circle).toBeVisible();
     await expect(circle).not.toHaveAttribute("data-story-seen");
@@ -104,17 +127,15 @@ test("admin rasm joylaydi → mehmon bosh sahifasi tepasida doiracha → to'liq 
     await guest.getByRole("dialog", { name: "Aksiya E2E" }).getByRole("link", { name: "Vakansiya joylash" }).click();
     await guest.waitForURL(/\/post\/vacancy/);
     // qayta kirganda — ko'rilgan (kulrang halqa)
-    await guest.goto("/");
+    await guest.goto("/employer");
     await expect(guest.locator("[data-stories] [data-story]").filter({ hasText: "Aksiya E2E" })).toHaveAttribute("data-story-seen", "");
-    await guestCtx.close();
+    await empCtx.close();
   } finally {
     await removeAll(page);
   }
   // o'chirilgach — saytda darhol yo'q
-  const after = await browser.newContext(phone());
-  const p2 = await after.newPage();
-  await asGuest(after);
-  await p2.goto("/");
+  const { ctx: after, page: p2 } = await employerPage(browser);
+  await p2.goto("/employer");
   await expect(p2.locator("main h1").first()).toBeVisible();
   await expect(p2.locator("[data-stories]")).toHaveCount(0);
   await after.close();
@@ -152,11 +173,8 @@ test("video (imzolangan havola bilan to'g'ridan-to'g'ri) faqat ish beruvchilarga
     await expect(seeker.locator("[data-story]").filter({ hasText: "Video E2E" })).toHaveCount(0);
     await seekerCtx.close();
 
-    const empCtx = await browser.newContext(phone());
-    const emp = await empCtx.newPage();
-    await asGuest(empCtx);
-    await asMode(empCtx, "employer");
-    await emp.goto("/");
+    const { ctx: empCtx, page: emp } = await employerPage(browser);
+    await emp.goto("/employer");
     const circle = emp.locator("[data-stories] [data-story]").filter({ hasText: "Video E2E" });
     await expect(circle).toBeVisible();
     await circle.click();

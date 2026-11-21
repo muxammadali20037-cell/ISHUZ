@@ -14,7 +14,7 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await asGuest(context);
   await page.goto("/");
   // 2026-11-21 (ega): bosh sahifa — chat; ikki yo'l kartalari va rejim almashtirgichi yo'q — AI maqsadni o'zi aniqlaydi
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish kerakmi yoki ishchi?");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
   // ko'rish rejim tanlovini o'zi yozmaydi
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
@@ -29,9 +29,9 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await box.fill("Men sotuvchiman, ish kerak");
   await box.press("Enter");
   await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
-  // keyingi ochilishda — ish izlovchiga savol
+  // keyingi ochilishda — ish izlovchining yozish maydoni (misol ko'rsatmasi rejimga mos)
   await page.goto("/chat");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
+  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
 });
 
 test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profildagi «Boshqa sozlamalar» ichida, bir bosishda", async ({ page, context }) => {
@@ -124,7 +124,7 @@ test("chat: rejim tanlangan bo'lsa — rol qayta so'ralmaydi, shu rejim ichida q
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sizga qanday ishchi kerak?");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
   const box = page.locator("form[data-hydrated] #start-chat-text");
   await box.fill("oshpaz");
   await box.press("Enter");

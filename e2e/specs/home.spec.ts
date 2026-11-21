@@ -3,7 +3,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * Bosh sahifa va navigatsiya. 2026-11-21 (ega: "kirgan zahoti chat"): bosh sahifa — chat (guided-chat.spec.ts); reklama
- * sahifasidagi qidiruv qatori va "Bo'limlar" tez yo'llari olib tashlandi — ularning testlari ham; Telegram kanal qatori — chatda.
+ * sahifasidagi qidiruv qatori va "Bo'limlar" tez yo'llari olib tashlandi — ularning testlari ham. Telegram kanal — kirgandan keyin
+ * chiqadigan oynada (channel-prompt.spec).
  */
 
 test("qidiruv sahifasi: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbga aylanmasa ham)", async ({ page, context }) => {
@@ -98,37 +99,34 @@ test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikk
   expect(bad).toEqual([]);
 });
 
-test("chat sarlavhasi (ega, 2026-11-21): telefonda bitta qatorda, rejimga mos jaydari savol", async ({ page, context }) => {
+test("chat bo'sh holati (ega, 2026-11-21 kechqurun: «ortiqcha narsalar kerakmas»): bitta yozuv va pastga strelka — boshqa hech narsa", async ({ page, context }) => {
   await asGuest(context);
-  for (const [mode, text] of [[null, "Ish kerakmi yoki ishchi?"], ["worker", "Qanday ish qidiryapsiz?"], ["employer", "Sizga qanday ishchi kerak?"]] as const) {
+  for (const mode of [null, "worker", "employer"] as const) {
     if (mode) await asMode(context, mode);
     else await context.clearCookies({ name: "ib_mode" });
-    for (const width of [320, 360, 390, 412]) {
+    for (const width of [320, 360, 390, 412, 1280]) {
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/");
-      const h1 = page.locator("main h1");
-      await expect(h1).toHaveText(text);
-      // bitta qator: balandlik ≈ bitta qator balandligi
-      const [h, lh] = await h1.evaluate((el) => [el.getBoundingClientRect().height, parseFloat(getComputedStyle(el).lineHeight)]);
-      expect(h, `${mode} ${width}px`).toBeLessThan(lh * 1.5);
+      const main = page.locator("main [data-start-chat]");
+      // hamma uchun bir xil yozuv, o'rtada; ostida — yozish maydoniga qaragan strelka
+      const h1 = main.locator("h1");
+      await expect(h1).toHaveText("O'zingizga mos ishni yoki ishchini toping");
       expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), `${mode} ${width}px`).toBe(true);
+      const [hb, ab, cb] = [(await h1.boundingBox())!, (await main.locator("[data-guided-arrow]").boundingBox())!, (await page.locator("#start-chat-text").boundingBox())!];
+      expect(ab.y, `${mode} ${width}px`).toBeGreaterThan(hb.y + hb.height - 1);
+      expect(cb.y, `${mode} ${width}px`).toBeGreaterThan(ab.y + ab.height);
+      expect(Math.abs(hb.x + hb.width / 2 - (ab.x + ab.width / 2)), `${mode} ${width}px: strelka yozuv ostida, o'rtada`).toBeLessThan(4);
+      // ortiqcha narsalar yo'q: misollar, hikoyalar, kanal qatori, ustalar havolasi, ostki izoh
+      await expect(main.locator("[data-guided-example], [data-stories], [data-channel-row], [data-chat-choice], p")).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), `${mode} ${width}px`).toBeLessThanOrEqual(0);
     }
   }
 });
 
-test("Telegram kanal qatori (ega, 2026-11-21: «Telegram kanal qolsin»): chat misollari ostida obuna havolasi", async ({ page, context }) => {
+test("Telegram kanal: chatda qator yo'q — kirgandan keyin oyna chiqadi (channel-prompt.spec)", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
-  const row = page.locator("main [data-start-chat] [data-channel-row]");
-  await expect(row).toBeVisible();
-  await expect(row).toHaveAttribute("href", "https://t.me/ish_topdim_uz");
-  await expect(row).toHaveAttribute("target", "_blank");
-  await expect(row).toContainText("Telegram kanalimizga obuna bo'ling");
-  await expect(row).toContainText("Har kuni yangi ishlar — @ish_topdim_uz");
-  // suhbat boshlangach — misollar bilan birga yo'qoladi (yozishga xalaqit bermaydi)
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("Men oshpazman, ish kerak");
-  await box.press("Enter");
-  await expect(row).toHaveCount(0);
+  await expect(page.locator("main [data-start-chat]")).toBeVisible();
+  await expect(page.locator("main [data-channel-row]")).toHaveCount(0);
 });
