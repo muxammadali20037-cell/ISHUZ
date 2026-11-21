@@ -111,6 +111,8 @@ test("chat bo'sh holati (ega, 2026-11-21 kechqurun: «ortiqcha narsalar kerakmas
       // hamma uchun bir xil yozuv, o'rtada; ostida — yozish maydoniga qaragan strelka
       const h1 = main.locator("h1");
       await expect(h1).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+      // oqim bilan kelgan kontent ko'rinadigan bo'lgach o'lchanadi (avval yashirin nusxada turadi)
+      await expect(main.locator("[data-guided-arrow]")).toBeVisible();
       expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), `${mode} ${width}px`).toBe(true);
       const [hb, ab, cb] = [(await h1.boundingBox())!, (await main.locator("[data-guided-arrow]").boundingBox())!, (await page.locator("#start-chat-text").boundingBox())!];
       expect(ab.y, `${mode} ${width}px`).toBeGreaterThan(hb.y + hb.height - 1);

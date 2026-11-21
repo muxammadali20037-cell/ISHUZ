@@ -34,3 +34,16 @@ export function BareSkeleton() {
     </div>
   );
 }
+
+/** Bosh ekran — chat (2026-11-21): o'rtada sarlavha joyi, pastda yozish maydoni joyi — sodda ekran o'rnida kartalar chiqmasin */
+export function ChatSkeleton() {
+  return (
+    <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" aria-busy="true">
+      <div className="flex flex-1 flex-col items-center justify-center gap-3 py-10">
+        <Skeleton className="h-7 w-64 max-w-full" />
+        <Skeleton className="h-7 w-48 max-w-full" />
+      </div>
+      <Skeleton className="mb-2 h-14 rounded-2xl" />
+    </div>
+  );
+}
