@@ -122,7 +122,7 @@ function Thread({ chat }: { chat: GuidedChat }) {
       </div>
       <ol className="space-y-4" aria-live="polite" aria-busy={chat.pending}>
         {chat.msgs.map((m) => (
-          <li key={m.id} ref={m.id === last?.id ? lastRef : undefined} className="scroll-mt-16 scroll-mb-28">
+          <li key={m.id} ref={m.id === last?.id ? lastRef : undefined} className="scroll-mt-16 scroll-mb-40">
             {m.you !== undefined ? (
               <div className="ai-bubble-in flex justify-end">
                 <p data-ai-you className="max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-base text-primary-foreground [overflow-wrap:anywhere]">
