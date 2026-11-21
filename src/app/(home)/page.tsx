@@ -25,12 +25,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * yoki ishchi? Yozing — topib beramiz."; AI maqsadni o'zi aniqlaydi. Kirgan foydalanuvchi — /chat (layout yo'naltiradi).
  * Qidiruv tizimlari uchun sarlavha, tavsif va pastki qism (sayt haqida, havolalar) — o'z joyida.
  */
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[] }> }) {
   // yo'naltirishlar (bloklangan, kirish oqimi, kirgan foydalanuvchi) — (home)/layout.tsx da
   const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
   return (
     <Shell footer={<SiteFooter compact={!!session} />}>
-      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} />
+      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null} />
     </Shell>
   );
 }

@@ -192,7 +192,7 @@ test("«E'lonlarim» (pastki menyudan): o'zi joylagan e'lonlar va holati; bo'lma
   await page.locator("nav.bottom-nav").getByRole("link", { name: "E'lonlarim" }).click();
   await page.waitForURL(/\/cabinet\/elonlar$/);
   await expect(page.locator("[data-my-listings-empty]")).toHaveText("Hozircha e'loningiz yo'q.");
-  await expect(page.getByRole("link", { name: "E'lon joylash" })).toHaveAttribute("href", "/ai/post");
+  await expect(page.getByRole("link", { name: "E'lon joylash" })).toHaveAttribute("href", "/chat?post=new");
 
   // mehmon — kirishga (qaytish manzili bilan)
   await asGuest(context);

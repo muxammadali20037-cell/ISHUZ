@@ -32,8 +32,8 @@ type Counts = Partial<Record<BadgeKey, number>>;
 export function postAction(mode: NavMode): { href: string; labelKey: string; ctaKey: string } {
   return mode === "employer"
     ? { href: "/post/vacancy", labelKey: "easy.nav.tab_post", ctaKey: "easy.start.post_vacancy" }
-    : // ega (2026-11-17): "+ E'lon joylash" — yordamchi bilan (kasbni yozadi, oyna, "Tasdiqlash", "Joylash")
-      { href: "/ai/post", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
+    : // ega (2026-11-21, 3-bosqich): "+ E'lon joylash" — chatning o'zida (savollar bittadan, karta, "Joylash")
+      { href: "/chat?post=new", labelKey: "easy.nav.tab_post", ctaKey: "easy.nav.post_worker_cta" };
 }
 
 /**

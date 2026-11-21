@@ -100,7 +100,10 @@ test("ish beruvchi bir xabarda hammasini yozsa — savolsiz natija: birinchi 3 t
   const total = Number((await res.locator("p").first().textContent())!.match(/(\d+)/)![1]);
   expect(total).toBeGreaterThanOrEqual(5);
   await expect(res.locator("[data-guided-cards] > li")).toHaveCount(3);
+  // telefon emulyatsiyasi: avval klaviatura yopiladi (fokusdagi maydon bosilganda pastki menyu qaytib, tugma siljiydi)
+  await box(page).blur();
   await res.locator("[data-guided-more]").click();
+  await expect(res.locator("[data-guided-cards] > li")).not.toHaveCount(3);
   expect(await res.locator("[data-guided-cards] > li").count()).toBeGreaterThan(3);
 });
 
@@ -125,11 +128,14 @@ test("kasb aytilmasa — kasb so'raladi (yoziladi), keyin hudud; e'lon berish ni
   await send(page, "Vakansiya joylamoqchiman");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post");
   await expect(page.locator("[data-guided-post-to='employer']")).toHaveAttribute("href", /^\/post\/vacancy\?ai=1/);
+  // ishchi e'loni — shu chatda, savollar bittadan (3-bosqich; to'liq yo'l — chat-post.spec)
   await send(page, "O'zim haqimda e'lon bermoqchiman");
-  await expect(page.locator("[data-guided-post-to='worker']").last()).toHaveAttribute("href", "/ai/post");
-  // kasb aytilgan bo'lsa — yordamchi shu bilan boshlaydi
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-profession");
+  // kasb aytilgan bo'lsa — kasb so'ralmaydi
   await send(page, "Men oshpazman, o'zim haqimda e'lon bermoqchiman");
-  await expect(page.locator("[data-guided-post-to='worker']").last()).toHaveAttribute("href", "/ai/post?q=oshpazman");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|name|experience)$/);
 });
 
 test("suhbat boshqa hisobga ko'rinmaydi (bitta tabda chiqib, boshqasi bilan kirilsa)", async ({ page, context }) => {

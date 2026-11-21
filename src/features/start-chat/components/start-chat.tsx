@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BriefcaseBusiness, ChevronDown, Info, MapPin, Plus, RotateCcw, UsersRound } from "lucide-react";
+import { ArrowDown, ArrowRight, BriefcaseBusiness, ChevronDown, Info, MapPin, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -10,14 +10,16 @@ import { AiAvatar } from "@/components/shared/ai-avatar";
 import { AiPromptBox } from "@/features/find/components/ai-chat";
 import { AiJobCard, AiWorkerCard } from "@/features/find/components/ai-cards";
 import type { QuickList } from "@/features/find/quick-types";
+import { POST_EXPERIENCES } from "@/features/find/quick-post-types";
+import { CheckoutPanel } from "@/features/billing/components/checkout-panel";
+import { formatPhone } from "@/lib/format";
 import type { AppMode } from "@/features/mode/mode";
 import { useGuidedChat, type AiPart, type GuidedChat, type Msg } from "../guided";
 
-/** E'lon berish — alohida ekran (yordamchi): ish beruvchiga vakansiya, ish izlovchiga o'zi haqida e'lon */
-export function postHref(who: "worker" | "employer", text = ""): string {
+/** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
+export function vacancyHref(text = ""): string {
   const q = text.replace(/\s+/g, " ").trim().slice(0, 300);
-  if (who === "employer") return `/post/vacancy?${new URLSearchParams({ ai: "1", ...(q ? { q } : {}) }).toString()}`;
-  return q ? `/ai/post?${new URLSearchParams({ q }).toString()}` : "/ai/post";
+  return `/post/vacancy?${new URLSearchParams({ ai: "1", ...(q ? { q } : {}) }).toString()}`;
 }
 
 /** Chatda birinchi ko'rinadigan kartalar soni (qolgani "Yana N tasini ko'rsatish" bilan) */
@@ -34,12 +36,18 @@ export function StartChat({
   mode,
   owner,
   initialQuery = "",
+  post = null,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
   owner: string;
   /** ?q=… — sekin telefonda skriptlar yuklanmasdan yuborilgan matn: yuklangach o'zi yuboriladi */
   initialQuery?: string;
+  /**
+   * ?post=1 — mehmon e'lonni joylash uchun kirib qaytdi: o'sha e'lon kartasi "Joylash" bilan qaytadi;
+   * ?post=new — "E'lonlarim"dagi "+ E'lon joylash": e'lon savollari darhol boshlanadi
+   */
+  post?: "resume" | "new" | null;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
@@ -51,6 +59,14 @@ export function StartChat({
     window.history.replaceState(null, "", window.location.pathname);
     chat.ask(initialQuery);
   }, [chat, initialQuery]);
+  const posted = useRef(false);
+  useEffect(() => {
+    if (!chat.ready || posted.current || !post) return;
+    posted.current = true;
+    window.history.replaceState(null, "", window.location.pathname);
+    if (post === "resume") chat.resumePost();
+    else chat.beginPost("", t("easy.guided.post_new_you"));
+  }, [chat, post, t]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const who = mode === "employer" ? "employer" : mode === "worker" ? "worker" : "guest";
   const placeholder = chat.awaiting === "profession" ? t("easy.guided.placeholder_profession") : t(`easy.guided.placeholder_${who}`);
@@ -106,7 +122,7 @@ function Thread({ chat }: { chat: GuidedChat }) {
       </div>
       <ol className="space-y-4" aria-live="polite" aria-busy={chat.pending}>
         {chat.msgs.map((m) => (
-          <li key={m.id} ref={m.id === last?.id ? lastRef : undefined} className="scroll-mt-16">
+          <li key={m.id} ref={m.id === last?.id ? lastRef : undefined} className="scroll-mt-16 scroll-mb-40">
             {m.you !== undefined ? (
               <div className="ai-bubble-in flex justify-end">
                 <p data-ai-you className="max-w-[85%] rounded-2xl rounded-br-md bg-primary px-4 py-2.5 text-base text-primary-foreground [overflow-wrap:anywhere]">
@@ -156,7 +172,7 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
               <span />
               <span />
             </span>
-            <span className="text-sm font-semibold">{part.kind === "thinking" ? t("easy.guided.thinking") : t(`easy.guided.searching_${part.mode}`)}</span>
+            <span className="text-sm font-semibold">{part.kind === "thinking" ? (part.text ?? t("easy.guided.thinking")) : t(`easy.guided.searching_${part.mode}`)}</span>
           </p>
         </Ai>
       );
@@ -178,21 +194,20 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
       );
 
     case "post": {
-      const text = part.who === "employer" ? t("easy.guided.post_employer") : part.who === "worker" ? t("easy.guided.post_worker") : t("easy.guided.post_ask");
+      // vakansiya — yordamchi bilan alohida ekran; kimligi noma'lum — "O'zim haqimda" shu chatda davom etadi
+      const text = part.who === "employer" ? t("easy.guided.post_employer") : t("easy.guided.post_ask");
       return (
         <Ai kind="post">
           <Say>{text}</Say>
           <div className="flex flex-wrap gap-2" data-guided-post>
-            {part.who !== "employer" ? (
-              <Button asChild className="h-auto min-h-11 whitespace-normal py-2 text-base" data-guided-post-to="worker">
-                <Link href={postHref("worker", part.query)}>
-                  <Plus className="size-5" aria-hidden /> {part.who ? t("easy.guided.post_worker_btn") : t("easy.guided.post_who_worker")}
-                </Link>
+            {part.who !== "employer" && open ? (
+              <Button type="button" className="h-auto min-h-11 whitespace-normal py-2 text-base" onClick={() => chat.beginPost(part.query, t("easy.guided.post_who_worker"))} data-guided-post-to="worker">
+                <Plus className="size-5" aria-hidden /> {t("easy.guided.post_who_worker")}
               </Button>
             ) : null}
             {part.who !== "worker" ? (
               <Button asChild variant={part.who ? "default" : "outline"} className="h-auto min-h-11 whitespace-normal py-2 text-base" data-guided-post-to="employer">
-                <Link href={postHref("employer", part.query)}>
+                <Link href={vacancyHref(part.query)}>
                   <Plus className="size-5" aria-hidden /> {part.who ? t("easy.guided.post_employer_btn") : t("easy.guided.post_who_employer")}
                 </Link>
               </Button>
@@ -201,6 +216,15 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
         </Ai>
       );
     }
+
+    case "post-ask":
+      return <PostAsk part={part} chat={chat} open={open} />;
+
+    case "post-preview":
+      return <PostPreviewCard part={part} chat={chat} open={open} />;
+
+    case "post-done":
+      return <PostDone part={part} />;
 
     case "ask": {
       if (part.ask === "role") {
@@ -341,11 +365,18 @@ function Results({ part, chat, latest }: { part: Extract<AiPart, { kind: "result
       {latest ? (
         <div className={cn("space-y-2 rounded-2xl border border-border bg-card p-3")} data-guided-none>
           <p className="text-base">{jobs ? t("easy.guided.none_post_worker") : t("easy.guided.none_post_employer")}</p>
-          <Button asChild className="h-auto min-h-11 w-full whitespace-normal py-2 text-base" data-quick-post={jobs ? "worker" : "vacancy"}>
-            <Link href={postHref(jobs ? "worker" : "employer", part.query)}>
-              <Plus className="size-5" aria-hidden /> {jobs ? t("easy.finder.empty_post_worker") : t("easy.finder.empty_post_vacancy")}
-            </Link>
-          </Button>
+          {jobs ? (
+            // o'zi haqida e'lon — shu chatning o'zida, qidirilgan kasb bilan boshlanadi (3-bosqich)
+            <Button type="button" className="h-auto min-h-11 w-full whitespace-normal py-2 text-base" disabled={chat.pending} onClick={() => chat.beginPost(part.query, t("easy.finder.empty_post_worker"))} data-quick-post="worker">
+              <Plus className="size-5" aria-hidden /> {t("easy.finder.empty_post_worker")}
+            </Button>
+          ) : (
+            <Button asChild className="h-auto min-h-11 w-full whitespace-normal py-2 text-base" data-quick-post="vacancy">
+              <Link href={vacancyHref(part.query)}>
+                <Plus className="size-5" aria-hidden /> {t("easy.finder.empty_post_vacancy")}
+              </Link>
+            </Button>
+          )}
           {part.draft.place !== "all" ? (
             <Button type="button" variant="outline" className="h-auto min-h-11 w-full whitespace-normal py-2 text-base" disabled={chat.pending} onClick={() => chat.otherPlace(part.draft, part.mode)} data-guided-other-place>
               <MapPin className="size-5" aria-hidden /> {t("easy.guided.other_place")}
@@ -359,6 +390,194 @@ function Results({ part, chat, latest }: { part: Extract<AiPart, { kind: "result
           <CardList list={r.similar} saved={r.similar.saved} limit={FIRST} />
         </section>
       ) : null}
+    </Ai>
+  );
+}
+
+/** Pastdagi tugmalar (viloyat, "aynan qaysi biri", tajriba): o'z kengligida, qatorma-qator */
+function Pills({ items, attr }: { items: { key: string; label: string; onClick: () => void }[]; attr: string }) {
+  return (
+    <ul className="flex flex-wrap gap-2" {...{ [`data-post-${attr}s`]: "" }}>
+      {items.map((it) => (
+        <li key={it.key} className="flex max-w-full">
+          <button
+            type="button"
+            onClick={it.onClick}
+            className="press flex min-h-11 max-w-full items-center rounded-full border border-border bg-card px-4 py-2 text-left text-sm font-semibold text-foreground hover:bg-secondary"
+            {...{ [`data-post-${attr}`]: it.key }}
+          >
+            <span className="min-w-0 [overflow-wrap:anywhere]">{it.label}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+/**
+ * Chatda ishchi e'loni — bittadan savol (ega, 2026-11-21: "kasb, viloyat, ism, tajriba — tajriba bormi degan joyiga
+ * yozsin"): kasb, ism, tajriba, telefon — yoziladi; viloyat va "aynan qaysi biri" — tugmalar; tajriba — yozsa ham, bossa ham
+ */
+function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask" }>; chat: GuidedChat; open: boolean }) {
+  const { t } = useT();
+  const intro = part.intro ? <Say>{t("easy.guided.post_intro")}</Say> : null;
+  const kind = `post-${part.ask.replace("post_", "")}`;
+  switch (part.ask) {
+    case "post_profession":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.word ? t("easy.guided.ask_post_prof_unknown", { word: part.word }) : t("easy.guided.ask_post_prof")}</Say>
+        </Ai>
+      );
+    case "post_which":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.question ?? t("easy.guided.ask_post_prof")}</Say>
+          {open
+            ? (part.groups ?? []).map((g, i) => (
+                <div key={g.title ?? i} className="space-y-2">
+                  {g.title ? <p className="px-1 text-sm font-semibold text-muted-foreground">{g.title}</p> : null}
+                  <Pills attr="choice" items={g.items.map((c) => ({ key: c.id, label: c.name, onClick: () => chat.pickPostChoice(c) }))} />
+                </div>
+              ))
+            : null}
+        </Ai>
+      );
+    case "post_region":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.retry ? t("easy.guided.ask_post_region_tap") : t("easy.guided.ask_post_region")}</Say>
+          {open && part.options?.length ? <Pills attr="region" items={part.options.map((o) => ({ key: o.value, label: o.label, onClick: () => chat.pickPostRegion(o) }))} /> : null}
+        </Ai>
+      );
+    case "post_name":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.retry ? t("easy.guided.ask_post_name_retry") : t("easy.guided.ask_post_name")}</Say>
+        </Ai>
+      );
+    case "post_experience":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.retry ? t("easy.guided.ask_post_exp_retry") : t("easy.guided.ask_post_exp")}</Say>
+          {open ? (
+            <Pills
+              attr="exp"
+              items={POST_EXPERIENCES.map((x) => {
+                const label = t(`easy.worker.exp.${x}`);
+                return { key: x, label, onClick: () => chat.pickPostExperience(x, label) };
+              })}
+            />
+          ) : null}
+        </Ai>
+      );
+    case "post_phone":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.retry ? t("easy.guided.ask_post_phone_retry") : t("easy.guided.ask_post_phone")}</Say>
+        </Ai>
+      );
+  }
+}
+
+/**
+ * Kartada raqamning o'rtasi yopiq ("+998 90 ••• •• 67") — ekranni kimgadir ko'rsatsa ham raqam ochilib qolmasin (to'liq
+ * raqam foydalanuvchining o'z xabarida turibdi)
+ */
+function maskPhone(formatted: string): string {
+  const parts = formatted.split(" ");
+  return parts.length === 5 ? [parts[0], parts[1], "•••", "••", parts[4]].join(" ") : formatted;
+}
+
+/** "E'loningiz shunday ko'rinadi" — joylanadigan matnning o'zi; "Joylash" va uning ostida rozilik yozuvi */
+function PostPreviewCard({ part, chat, open }: { part: Extract<AiPart, { kind: "post-preview" }>; chat: GuidedChat; open: boolean }) {
+  const { t } = useT();
+  const p = part.preview;
+  return (
+    <Ai kind="post-preview">
+      <Say>{t("easy.guided.post_preview")}</Say>
+      <article className="space-y-2 rounded-2xl border border-border bg-card p-4 shadow-sm" data-post-card>
+        <h3 className="text-lg font-bold leading-snug [overflow-wrap:anywhere]">{p.profession}</h3>
+        <p className="flex flex-wrap items-center gap-x-1.5 text-sm text-muted-foreground">
+          <span className="font-semibold text-foreground">{p.name}</span>
+          <span aria-hidden>·</span>
+          <MapPin className="size-4 shrink-0" aria-hidden />
+          <span>{p.place}</span>
+        </p>
+        <p className="text-base leading-relaxed [overflow-wrap:anywhere]">{p.about}</p>
+        <p className="flex items-center gap-2 text-base font-semibold" data-post-phone>
+          <Phone className="size-4 shrink-0 text-primary-ink" aria-hidden />
+          {maskPhone(formatPhone(p.answers.phone))}
+        </p>
+      </article>
+      {open ? (
+        <div className="space-y-2">
+          <Button type="button" size="lg" fullWidth className="text-base" disabled={chat.pending} onClick={() => chat.publishPost(p.answers, p.loggedIn)} data-post-publish>
+            {t("easy.guided.post_publish")}
+          </Button>
+          {/* rozilik — "Joylash" tugmasi ostida (ega, master prompt; to'lov haqida so'z yo'q — 2026-11-21) */}
+          <p className="px-1 text-sm leading-snug text-muted-foreground" data-post-consent>
+            {t("easy.guided.post_consent")}
+          </p>
+          {!p.loggedIn ? (
+            <p className="px-1 text-sm leading-snug text-muted-foreground" data-post-login-note>
+              {t("easy.guided.post_login_note")}
+            </p>
+          ) : null}
+        </div>
+      ) : null}
+    </Ai>
+  );
+}
+
+/** Joylash natijasi — haqiqiy holat: joylandi / tekshiruvda / rad etildi / to'lov kerak */
+function PostDone({ part }: { part: Extract<AiPart, { kind: "post-done" }> }) {
+  const { t } = useT();
+  const o = part.outcome;
+  const state = o.info.state;
+  const mine = (
+    <Button asChild variant="outline" size="lg" fullWidth className="text-base">
+      <Link href="/cabinet/elonlar">{t("easy.guided.post_mine")}</Link>
+    </Button>
+  );
+  if (state === "listed") {
+    return (
+      <Ai kind="post-done">
+        <Say>{t("easy.guided.post_done")}</Say>
+        <div className="grid gap-2" data-post-done="listed">
+          <Button asChild size="lg" fullWidth className="text-base">
+            <Link href={`/listing/${o.workerId}`}>{t("easy.post_ai.done_view")}</Link>
+          </Button>
+          {mine}
+        </div>
+      </Ai>
+    );
+  }
+  if (state === "payment_required" || state === "saved") {
+    return (
+      <Ai kind="post-done">
+        <Say>{`${t("easy.post_ai.pay_title")}. ${t("easy.post_ai.pay_desc")}`}</Say>
+        <div className="space-y-2" data-post-done={state}>
+          {state === "payment_required" ? <CheckoutPanel purpose="worker_listing" targetId={o.workerId} variant="inline" /> : null}
+          {mine}
+        </div>
+      </Ai>
+    );
+  }
+  const key = state === "rejected" ? "rejected" : state === "verification_pending" ? "verification" : state === "review" ? "review" : "pending";
+  return (
+    <Ai kind="post-done">
+      <Say>{`${t(`easy.moderation.${key}_title`)}. ${t(`easy.moderation.${key}_desc`)}`}</Say>
+      {state === "rejected" && o.info.message ? <Say>{o.info.message}</Say> : null}
+      <div className="grid gap-2" data-post-done={state}>
+        {mine}
+      </div>
     </Ai>
   );
 }

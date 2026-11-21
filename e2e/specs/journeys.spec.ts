@@ -24,12 +24,12 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // 2026-11-21: bosh sahifa — chat; "e'lon bermoqchiman" deb yozilsa — e'lon tayyorlashga yo'l (yordamchi — ai-post.spec).
+    // 2026-11-21: bosh sahifa — chat; "e'lon bermoqchiman" deb yozilsa — e'lon shu chatda boshlanadi (chat-post.spec).
     // Bu sayohat — batafsil forma (kabinetdan tahrirlash ham shu forma)
     const box = page.locator("form[data-hydrated] #start-chat-text");
     await box.fill("O'zim haqimda e'lon bermoqchiman");
     await box.press("Enter");
-    await expect(page.locator("[data-guided-post-to='worker']")).toHaveAttribute("href", /^\/ai\/post/);
+    await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "post-profession");
     await asMode(context, "worker");
     await page.goto("/post/worker");
     await pickProfession(page, "Buxgalter", "Buxgalter");

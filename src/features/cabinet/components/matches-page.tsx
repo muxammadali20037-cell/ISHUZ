@@ -130,7 +130,7 @@ export async function MatchesPage({ session, vacancyId, mode }: { session: Sessi
         <div className="space-y-3 rounded-2xl border border-border bg-card p-5">
           <p>{t("easy.matches.none")}</p>
           <div className="grid gap-3 sm:grid-cols-2">
-            <Button asChild size="xl" className="h-14 text-lg"><Link href="/ai/post">{t("easy.home.worker_cta")}</Link></Button>
+            <Button asChild size="xl" className="h-14 text-lg"><Link href="/chat?post=new">{t("easy.home.worker_cta")}</Link></Button>
             <Button asChild size="xl" variant="outline" className="h-14 text-lg"><Link href="/post/vacancy?ai=1">{t("easy.home.employer_cta")}</Link></Button>
           </div>
         </div>
@@ -153,7 +153,7 @@ export async function MatchesInvite({ mode }: { mode: AppMode }) {
       </span>
       <p className="text-lg leading-snug">{t(worker ? "easy.matches.worker_none" : "easy.matches.employer_none")}</p>
       <Button asChild size="xl" className="h-14 w-full text-lg sm:w-auto">
-        <Link href={worker ? "/ai/post" : "/post/vacancy?ai=1"} data-track="post_start" data-track-to="matches">
+        <Link href={worker ? "/chat?post=new" : "/post/vacancy?ai=1"} data-track="post_start" data-track-to="matches">
           <Plus className="size-5" aria-hidden /> {t(worker ? "easy.matches.worker_cta" : "easy.matches.employer_cta")}
         </Link>
       </Button>
