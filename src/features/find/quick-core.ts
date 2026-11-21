@@ -11,6 +11,7 @@ import { saveJobsSearch } from "@/features/saved-searches/actions";
 import { smartResolveQuery } from "./ai-search";
 import { textKeywords } from "./ai-keywords";
 import { offTopic } from "./post-intent";
+import { detectIntent, detectPostIntent } from "./intent";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
 import { PLACE_COOKIE, parsePlace } from "./place";
 import { findJobs, findJobsByText, findWorkers, getNodeInfo, type NodeInfo } from "./queries";
@@ -84,6 +85,10 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
   // boshqa mavzu ("salom", "rahmat", "kimsan") — oyna chiqmaydi, qisqa javob (ega, 2026-11-17); tushunishga (AI) ham bormaydi
   const pre = input.text ? offTopic(input.text, false) : null;
   if (pre && pre !== "other") return { ...emptyForm(input.mode, input.text), reply: t(`easy.quick.reply.${pre}_${input.mode}`) };
+  // e'lon berish ("vakansiya joylamoqchiman") — qidiruv emas: chat e'lon berishga yo'naltiradi
+  const post = input.text ? detectPostIntent(input.text) : null;
+  if (post) return { ...emptyForm(input.mode, input.text), post };
+  const intent = input.text ? detectIntent(input.text) : null;
   const empty = { mode: input.mode, nodeId: null, regionSlug: null, districtId: null, remote: false, salary: null, pay: null, noexp: false, exp: false, schedule: null };
   const r = input.text ? await smartResolveQuery(input.text, input.session?.userId ?? null, input.mode) : empty;
   const node = r.nodeId ? await getNodeInfo(r.nodeId).catch(() => null) : null;
@@ -101,9 +106,12 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
 
   // hudud: matnda aytilgani, bo'lmasa — shu qurilmada eslab qolingani ("Yaqin atrofda" / bosh sahifadagi joy)
   let place = "all";
+  let placeKnown = false;
   let extra: QuickOption | null = null;
-  if (r.remote && input.mode === "jobs") place = "remote";
-  else {
+  if (r.remote && input.mode === "jobs") {
+    place = "remote";
+    placeKnown = true;
+  } else {
     const remembered = parsePlace((await cookies()).get(PLACE_COOKIE)?.value);
     const slug = r.regionSlug ?? remembered?.region ?? null;
     const region = slug ? regions.find((x) => x.slug === slug) : undefined;
@@ -111,6 +119,7 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
     const district = region && districtId ? ((await getDistricts(region.id)).find((d) => d.id === districtId) ?? null) : null;
     if (region) {
       place = district ? `${region.slug}~${district.id}` : region.slug;
+      placeKnown = true;
       if (district) extra = { value: place, label: `${name(region)}, ${name(district)}` };
     }
   }
@@ -129,6 +138,8 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
       schedule: input.mode === "jobs" ? r.schedule : null,
     },
     places: await placeOptions(input.mode, extra),
+    intent,
+    placeKnown,
   };
 }
 

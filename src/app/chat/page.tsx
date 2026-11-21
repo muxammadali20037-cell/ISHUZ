@@ -5,6 +5,8 @@ import { getSession } from "@/features/auth/session";
 import { getMode } from "@/features/mode/server";
 import { Shell } from "@/components/shared/shell";
 import { StartChat } from "@/features/start-chat/components/start-chat";
+import { chatQuery } from "@/features/start-chat/query";
+import { StoriesRow } from "@/features/stories/components/stories-row";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -12,17 +14,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * /chat — asosiy ekran (pastki menyuning o'rtasi, "Izlash/E'lon"): kirgandan keyin shu yerga kelinadi (ega, 2026-11-20).
- * Suhbat rejimga qarab: ish izlovchiga — ish izlash / o'zi haqida e'lon, ish beruvchiga — ishchi izlash / vakansiya.
- * Mehmon ham ochadi (rejim tanlanmagan bo'lsa — ish izlovchi).
+ * /chat — asosiy ekran (pastki menyuning "Qidiruv" bo'limi; mehmon uchun "/" ham shu chat). AI maqsadni yozilgan matndan
+ * o'zi aniqlaydi (ega, 2026-11-21); rejim faqat salom matni va misollar uchun (rejimi yo'q mehmon — "Ish kerakmi yoki ishchi?").
  */
-export default async function ChatPage() {
-  const [session, mode] = await Promise.all([getSession(), getMode()]);
+export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
+  const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
   if (session?.profile.is_blocked) redirect("/blocked");
-  const name = session?.profile.first_name?.trim() || null;
   return (
     <Shell>
-      <StartChat name={name} mode={mode === "employer" ? "employer" : "worker"} />
+      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} top={<StoriesRow mode={mode === "employer" ? "employer" : mode === "worker" ? "seeker" : null} />} />
     </Shell>
   );
 }

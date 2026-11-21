@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
- * Qabul #32 · to'liq yo'llar (mobil va desktop): mehmon bosh sahifada kimligini tanlaydi va e'lon beradi → oxirgi qadamda kiradi →
+ * Qabul #32 · to'liq yo'llar (mobil va desktop): mehmon bosh sahifadagi chatda e'lon bermoqchi ekanini yozadi → oxirgi qadamda kiradi →
  * o'sha formaga barcha javoblari bilan qaytadi → joylaydi → kabinetda e'lonini ko'radi.
  * Kirish (Telegram kodi) stendda sessiya cookie'si bilan almashtiriladi — qolgan hamma narsa haqiqiy.
  */
@@ -24,12 +24,13 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish: bosh sahifa — "Ish qidiraman"; keyin "O'zim haqimda e'lon berish"
-    // (kompyuterda — o'ng paneldagi "Rezyume joylash"). Rejim tanlangan — e'lon turi qayta so'ralmaydi (tasdiq — modes.spec)
-    await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-    // bosh sahifadagi "+ E'lon joylash" endi yordamchiga olib kiradi (ai-post.spec); bu yo'l — batafsil forma (kabinetdan tahrirlash)
-    await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
+    // 2026-11-21: bosh sahifa — chat; "e'lon bermoqchiman" deb yozilsa — e'lon tayyorlashga yo'l (yordamchi — ai-post.spec).
+    // Bu sayohat — batafsil forma (kabinetdan tahrirlash ham shu forma)
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await box.fill("O'zim haqimda e'lon bermoqchiman");
+    await box.press("Enter");
+    await expect(page.locator("[data-guided-post-to='worker']")).toHaveAttribute("href", /^\/ai\/post/);
+    await asMode(context, "worker");
     await page.goto("/post/worker");
     await pickProfession(page, "Buxgalter", "Buxgalter");
     await next(page);
@@ -88,12 +89,13 @@ for (const vp of [
     await page.setViewportSize({ width: vp.width, height: vp.height });
 
     await page.goto("/");
-    // birinchi ochilish: bosh sahifa — "Ish beruvchiman" (ish beruvchi rejimi, tasdiqsiz — o'zi tanladi)
-    await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
-    // bosh sahifadagi katta tugma — yordamchi bilan joylash (2026-11-17); bu sayohat — oddiy forma (pastki menyudagi "E'lon")
-    await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
-    await page.waitForURL(/\/post\/vacancy\?ai=1$/);
+    // 2026-11-21: bosh sahifa — chat; "vakansiya joylamoqchiman" → "Vakansiya joylash" (yordamchi bilan); bu sayohat — oddiy forma
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await box.fill("Vakansiya joylamoqchiman");
+    await box.press("Enter");
+    await page.locator("[data-guided-post-to='employer']").click();
+    await page.waitForURL(/\/post\/vacancy\?ai=1/);
+    await asMode(context, "employer");
     await page.goto("/post/vacancy");
     await pickProfession(page, "Buxgalter", "Buxgalter");
     await next(page);

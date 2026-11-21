@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql, quickSearch } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 import { findLayoutIssues, fullHeight, zoomText } from "../overlap";
 
 /**
@@ -70,7 +70,7 @@ for (const c of CASES) {
   });
 }
 
-test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift)", async ({ page, context }) => {
+test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi» bloki ustma-ust emas (320 va katta shrift)", async ({ page, context }) => {
   test.setTimeout(120_000);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await asGuest(context);
@@ -81,27 +81,34 @@ test("AI yordamchi oynasi: javob va kartalar ustma-ust emas (320 va katta shrift
   ] as const) {
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
-    // 2.0: bosh sahifaning yagona qidiruv maydoni — yozadi va "Izlash" (skriptlar yuklangach: [data-hydrated])
-    const field = page.locator("form[data-ai-field][data-hydrated]:visible");
-    await field.getByRole("searchbox").fill("Toshkentda omborchi");
-    await field.getByRole("button", { name: "Izlash" }).click();
-    const dialog = page.getByRole("dialog", { name: "Yordamchi" });
-    // so'rovnoma oynasi (2026-11-16): savollar, maosh tugmalari va "Qidirish" sig'adi
-    const sheet = page.locator("[data-quick-sheet]");
-    await expect(sheet).toBeVisible();
+    // har aylanish — yangi suhbat (oldingisi shu tabda saqlangan) va hudud qayta so'raladi (tanlangani eslab qolinadi)
+    await context.clearCookies({ name: "ib_place" });
+    await page.evaluate(() => sessionStorage.removeItem("ib_guided_chat"));
+    await page.reload();
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await box.fill("Men omborchiman, ish kerak");
+    await box.press("Enter");
+    const last = page.locator("[data-guided-ai]").last();
+    // savol: viloyatlar tugmalari (uzun nomlar ham — "Qoraqalpog'iston Respublikasi") sig'adi
+    await expect(last).toHaveAttribute("data-guided-ai", "ask-place");
     if (zoom) await zoomText(page, zoom);
-    expect(await findLayoutIssues(page, "[data-quick-sheet]")).toEqual([]);
-    await quickSearch(page);
+    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi)
+    await fullHeight(page);
+    expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
+    await page.locator("[data-guided-place='tashkent_city']").last().click();
+    await expect(last).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
-    expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
-    // hech narsa topilmagan javob: qisqa xabar va "Kirish" tugmasi ham sig'adi (uzun yozuv tugmadan chiqmaydi)
-    await dialog.getByLabel("Nima qidiryapsiz?").fill("Termizda elektrik kerak");
-    await dialog.getByRole("button", { name: "Topish" }).click();
-    await quickSearch(page);
-    await expect(dialog.locator("[data-quick-none]").last()).toBeVisible();
+    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi)
+    await fullHeight(page);
+    expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
+    // hech narsa topilmagan javob: qisqa xabar va tugmalar ham sig'adi
+    await box.fill("Termizda kosmonavt bo'lib ishlamoqchiman");
+    await box.press("Enter");
+    await expect(last).toHaveAttribute("data-guided-ai", /^(none|ask-profession)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
-    expect(await findLayoutIssues(page, "[role=dialog]")).toEqual([]);
-    await page.keyboard.press("Escape");
+    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi)
+    await fullHeight(page);
+    expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
   }
 });
 

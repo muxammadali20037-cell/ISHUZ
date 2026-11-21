@@ -78,17 +78,10 @@ async function approveAsAdmin(page: Page, context: import("@playwright/test").Br
 
 test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo e'lon — telefon, reyting va bog'lanish yo'q", async ({ page, context }) => {
   await asGuest(context);
-  await asMode(context, "worker");
   await page.goto("/");
-  // telefonda (2026-11-17): "Bo'limlar"ning birinchi qatori — "Universal ustalar" (katta yashil bo'lim — kompyuterda)
-  const entry = page.locator("[data-home-menu] [data-menu-item]").first();
-  await expect(entry).toHaveAttribute("data-masters-entry");
+  // 2026-11-21: bosh sahifa — chat; misollar ostida "Santexnik, elektrik — Universal ustalar" havolasi (ish izlovchidan boshqalarga)
+  const entry = page.locator("main [data-chat-choice='find_masters']");
   await expect(entry).toContainText("Universal ustalar");
-  await expect(page.locator("main [data-masters-home]")).toBeHidden();
-  // bosh menyu rangsiz, faqat "Universal ustalar" ko'k bilan ajratilgan (ega, 2026-11-17)
-  const color = (key: string) =>
-    page.locator(`[data-home-menu] [data-menu-item="${key}"] span.font-bold`).first().evaluate((el) => getComputedStyle(el).color);
-  expect(await color("masters")).not.toBe(await color("daily"));
   await entry.click();
   await expect(page).toHaveURL(/\/ustalar$/);
   await expect(page.getByRole("heading", { level: 1, name: "Universal ustalar" })).toBeVisible();
@@ -125,17 +118,15 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(page.locator("main")).toContainText("Hali baho yo'q");
 
   // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q, Profilda karta yo'q (2026-11-17) — kirish asosiy
-  // ekrandagi (chat, 2026-11-20) "Izlash" → "Usta" tanlovidan
+  // ekrandagi (chat, 2026-11-21) misollar ostidagi "Santexnik, elektrik — Universal ustalar" havolasidan
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/cabinet");
   await expect(page.locator("main [data-masters-entry]")).toHaveCount(0);
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
-  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
-  await page.locator("[data-chat-choice='find']").click();
   const fromChat = page.locator("[data-chat-choice='find_masters']");
-  await expect(fromChat).toContainText("Usta");
+  await expect(fromChat).toContainText("Universal ustalar");
   await fromChat.click();
   await expect(page).toHaveURL(/\/ustalar$/);
 });

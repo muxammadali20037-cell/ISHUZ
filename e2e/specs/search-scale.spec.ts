@@ -1,11 +1,11 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { asGuest, asMode, loginAs, sql, quickSearch } from "../support";
+import { asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * 100 ta vakansiya + 100 ta ishchi (2026-11-15, egasi: "ozing 100 ta vakansiya joylada 100 lasnyam ishch paneldan oddiy sozlar
  * bilan qidrb kor"). FAQAT lokal sinov stendida: jonli saytga soxta e'lon qo'yilmaydi (haqiqiy foydalanuvchini aldaydi).
  *
- * Oddiy odam yozadigan so'zlar sarlavhadagi qidiruvdan ("Ish va ishchilar izlash") yuboriladi va natija tekshiriladi:
+ * Oddiy odam yozadigan so'zlar bosh sahifa chatidan (2026-11-21) yuboriladi va natija tekshiriladi:
  *  - topilgan son bazadagi haqiqatga teng (o'ylab topilgan e'lon yo'q, bittasi ham tushib qolmagan);
  *  - ko'rsatilgan kartochkalarning har biri so'ralgan kasb (va joy) bo'yicha;
  *  - ish beruvchi rejimida xuddi shu maydon ishchilarni qidiradi.
@@ -177,41 +177,43 @@ async function workersInDb(prof: string, where: { district?: string; region?: st
  * Bosh sahifadagi qidiruvga oddiy so'z yozib, Enter — yordamchi oynasi; so'rovnoma (2026-11-16) matndan to'ldirilgan holda
  * "Qidirish" bosiladi va javob qaytariladi. Har so'rov yangi suhbatda: sahifa skriptlaridan oldin suhbat xotirasi tozalanadi.
  */
+/**
+ * Bosh sahifa chati (2026-11-21): yozadi va yuboradi; hudud so'ralsa — "Butun O'zbekiston" bosiladi. Har qidiruv — yangi
+ * suhbat (oldingi javoblar aralashmasin). Qaytaradi: yordamchining oxirgi javobi (natijalar yoki "topilmadi").
+ */
 async function search(page: Page, text: string) {
   await page.goto("/");
-  // kirgan foydalanuvchi (2026-11-20): "/" — asosiy ekran (chat); qidiruv — shu suhbatning yozish maydonida
-  if (new URL(page.url()).pathname === "/chat") {
-    const chat = page.locator("[data-start-chat]");
-    const box = page.locator("form[data-hydrated] #start-chat-text");
-    await box.fill(text);
-    await box.press("Enter");
-    await expect(chat.locator("[data-ai-you]").last()).toHaveText(`Siz: ${text}`);
-    await quickSearch(page);
-    return chat;
+  await page.evaluate(() => sessionStorage.removeItem("ib_guided_chat"));
+  await page.reload();
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await box.fill(text);
+  await box.press("Enter");
+  await expect(page.locator("[data-ai-you]").last()).toHaveText(`Siz: ${text}`);
+  const last = page.locator("[data-guided-ai]").last();
+  await expect(last).toHaveAttribute("data-guided-ai", /^(results|none|ask-place)$/, { timeout: 20_000 });
+  if ((await last.getAttribute("data-guided-ai")) === "ask-place") {
+    await last.locator("[data-guided-place='all']").click();
+    await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
   }
-  const field = page.locator("form[data-top-search][data-hydrated] input[name='q']");
-  // ish qidiruvchida — "O'zingizga mos ishni qidiring...", ish beruvchida — "O'zingizga mos xodimni qidiring..." (2026-11-17)
-  await expect(field).toHaveAttribute("placeholder", /^O'zingizga mos (ishni|xodimni) qidiring\.\.\.$/);
-  await field.fill(text);
-  await field.press("Enter");
-  const dialog = page.getByRole("dialog", { name: "Yordamchi" });
-  await expect(dialog.locator("[data-ai-you]")).toHaveText(`Siz: ${text}`);
-  await quickSearch(page);
-  return dialog;
+  return page.locator("[data-guided-ai]").last();
 }
 
 /** Javobda aynan `n` ta topilgani aytilgan, ko'rsatilgan kartochkalarning hammasi so'ralgan kasb (va joy) bo'yicha */
-async function expectFound(dialog: Locator, n: number, prof: string, place?: string, card: string | RegExp = prof) {
+async function expectFound(answer: Locator, n: number, prof: string, place?: string, card: string | RegExp = prof) {
   expect(n, `bazada "${prof}" bo'lishi kerak`).toBeGreaterThan(0);
-  await expect(dialog.locator("[data-quick-found]").last()).toHaveText(new RegExp(`^${n} ta (ish|nomzod) topildi$`));
-  await expect(dialog.locator("[data-quick-summary]").last()).toContainText(prof);
-  const cards = dialog.locator("article");
+  await expect(answer).toHaveAttribute("data-guided-ai", "results");
+  await expect(answer).toContainText(new RegExp(`Mana, ${n} ta (ish|ishchi) topdim:`));
+  await expect(answer.locator("[data-guided-summary]")).toContainText(prof);
+  // avval 3 tasi, qolgani "Yana N tasini ko'rsatish" bilan
+  const more = answer.locator("[data-guided-more]");
+  if (await more.count()) await more.click();
+  const cards = answer.locator("[data-guided-cards] article");
   await expect(cards).toHaveCount(Math.min(n, 10));
   await expect(cards.filter({ hasText: card })).toHaveCount(Math.min(n, 10));
   if (place) await expect(cards.filter({ hasText: place })).toHaveCount(Math.min(n, 10));
 }
 
-test.describe("ish izlovchi: bosh sahifadagi qidiruvdan oddiy so'zlar bilan", () => {
+test.describe("ish izlovchi: bosh sahifa chatidan oddiy so'zlar bilan", () => {
   test.beforeEach(async ({ context }) => {
     await asGuest(context);
     await asMode(context, "worker");
@@ -223,10 +225,11 @@ test.describe("ish izlovchi: bosh sahifadagi qidiruvdan oddiy so'zlar bilan", ()
 
     d = await search(page, "Chilonzorda oshpaz");
     await expectFound(d, await jobsInDb("Oshpaz", { district: "Chilonzor tumani" }), "Oshpaz", "Chilonzor");
-    await expect(d.locator("[data-quick-similar]")).toHaveCount(0);
+    await expect(d.locator("[data-guided-similar]")).toHaveCount(0);
 
-    d = await search(page, "haydovchi kerak");
-    // "Taksi haydovchisi" alohida kasb — "haydovchi kerak" deganda aynan haydovchilar
+    // "haydovchi kerak" — ishchi qidirish niyati (AI rolni o'zi aniqlaydi); ish izlovchi "haydovchi ishi kerak" deydi.
+    // "Taksi haydovchisi" alohida kasb — aynan haydovchilar
+    d = await search(page, "haydovchi ishi kerak");
     await expectFound(d, await jobsInDb("Haydovchi"), "Haydovchi", undefined, /Haydovchi kerak —/);
 
     d = await search(page, "Samarqandda sotuvchi");
@@ -234,26 +237,29 @@ test.describe("ish izlovchi: bosh sahifadagi qidiruvdan oddiy so'zlar bilan", ()
   });
 
   test("«kunlik ish» — faqat kunlik haqli ishlar, hammasi", async ({ page }) => {
+    // kasb aytilmagan, turi aytilgan — kasb so'ralmaydi (faqat hudud)
     const d = await search(page, "kunlik ish");
     const n = await jobsInDb(null, { daily: true });
     expect(n).toBe(25);
-    await expect(d.locator("[data-quick-found]")).toHaveText(`${n} ta ish topildi`);
-    await expect(d.locator("[data-quick-summary]")).toContainText("Kunlik ishlar");
-    await expect(d.locator("article")).toHaveCount(10);
+    await expect(d).toContainText(`Mana, ${n} ta ish topdim:`);
+    await expect(d.locator("[data-guided-summary]")).toContainText("Kunlik ishlar");
+    await d.locator("[data-guided-more]").click();
+    await expect(d.locator("[data-guided-cards] article")).toHaveCount(10);
+    await expect(d.locator("[data-guided-all]")).toHaveText(`Hammasini ro'yxatda ko'rish (${n})`);
   });
 
   test("imlo xatosi bilan ham topadi: «oshpz», «kasir»", async ({ page }) => {
     let d = await search(page, "oshpz");
     await expectFound(d, await jobsInDb("Oshpaz"), "Oshpaz");
 
-    d = await search(page, "kasir kerak");
+    d = await search(page, "kasir ishi kerak");
     await expectFound(d, await jobsInDb("Kassir"), "Kassir");
   });
 
   test("ruscha va kirillcha yozilsa ham: «повар», «ошпаз»", async ({ page }) => {
     const n = await jobsInDb("Oshpaz");
-    await expectFound(await search(page, "повар нужен"), n, "Oshpaz");
-    await expectFound(await search(page, "ошпаз керак"), n, "Oshpaz");
+    await expectFound(await search(page, "работа повар"), n, "Oshpaz");
+    await expectFound(await search(page, "ошпаз иши керак"), n, "Oshpaz");
   });
 
   test("«enaga» — Enaga kasbi (sinonimi o'xshash boshqa kasb emas)", async ({ page }) => {
@@ -263,15 +269,16 @@ test.describe("ish izlovchi: bosh sahifadagi qidiruvdan oddiy so'zlar bilan", ()
   test("so'ralgan tumanda yo'q — qisqa «yo'q» va pastda shunga yaqin ishlar", async ({ page }) => {
     expect(await jobsInDb("Kassir", { region: "tashkent_city" })).toBe(0);
     const d = await search(page, "Yunusobodda kassir");
-    await expect(d.locator("[data-quick-summary]")).toContainText("Kassir");
-    await expect(d.locator("[data-quick-none]")).toContainText("Hozircha bunday ish yo'q.");
-    const similar = d.locator("[data-quick-similar]");
+    await expect(d.locator("[data-guided-summary]")).toContainText("Kassir");
+    await expect(d).toHaveAttribute("data-guided-ai", "none");
+    await expect(d).toContainText("Afsuski, hozircha bunday ish topilmadi.");
+    const similar = d.locator("[data-guided-similar]");
     await expect(similar).toContainText("Shunga yaqin ishlar");
     expect(await similar.locator("article").count()).toBeGreaterThan(0);
   });
 });
 
-test.describe("ish beruvchi: o'sha maydon ishchilarni qidiradi", () => {
+test.describe("ish beruvchi: o'sha chat ishchilarni qidiradi", () => {
   test.beforeEach(async ({ context }) => {
     await loginAs(context, BOSS);
     await asMode(context, "employer");
@@ -282,7 +289,7 @@ test.describe("ish beruvchi: o'sha maydon ishchilarni qidiradi", () => {
     await expectFound(await search(page, "Toshkentda sotuvchi kerak"), await workersInDb("Sotuvchi", { region: "tashkent_city" }), "Sotuvchi", "Toshkent");
     const d = await search(page, "Chilonzorda sotuvchi");
     await expectFound(d, await workersInDb("Sotuvchi", { district: "Chilonzor tumani" }), "Sotuvchi", "Chilonzor");
-    await expect(d.locator("[data-quick-similar]")).toHaveCount(0);
+    await expect(d.locator("[data-guided-similar]")).toHaveCount(0);
     await expectFound(await search(page, "tajribali haydovchi"), await workersInDb("Haydovchi", { experienced: true }), "Haydovchi");
   });
 
@@ -294,8 +301,9 @@ test.describe("ish beruvchi: o'sha maydon ishchilarni qidiradi", () => {
   test("so'ralgan viloyatda yo'q — qisqa «yo'q» va pastda shunga yaqin nomzodlar; telefon raqami ochiq emas", async ({ page }) => {
     expect(await workersInDb("Tikuvchi", { region: "fergana" })).toBe(0);
     const d = await search(page, "Farg'onada tikuvchi");
-    await expect(d.locator("[data-quick-none]")).toContainText("Hozircha mos nomzod yo'q.");
-    const similar = d.locator("[data-quick-similar]");
+    await expect(d).toHaveAttribute("data-guided-ai", "none");
+    await expect(d).toContainText("Afsuski, hozircha bunday ishchi topilmadi.");
+    const similar = d.locator("[data-guided-similar]");
     await expect(similar).toContainText("Shunga yaqin nomzodlar");
     expect(await similar.locator("article").count()).toBeGreaterThan(0);
     // raqamlar ro'yxatda ochiq emas (standart: faqat ariza bergan ish beruvchiga)

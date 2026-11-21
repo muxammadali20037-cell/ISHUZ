@@ -3,7 +3,9 @@ import { getT } from "@/lib/i18n/server";
 import { DEFAULT_OG_IMAGE, localeAlternates } from "@/lib/seo";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
-import { HomePage as Home } from "@/features/landing/home-page";
+import { StartChat } from "@/features/start-chat/components/start-chat";
+import { chatQuery } from "@/features/start-chat/query";
+import { StoriesRow } from "@/features/stories/components/stories-row";
 import { getMode } from "@/features/mode/server";
 import { SiteFooter } from "@/features/landing/market/site-footer";
 import { BRAND } from "@/config/brand";
@@ -20,17 +22,16 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Bosh sahifa: qidiruv va haqiqiy e'lonlar darhol (features/landing/home-page). Rejim tanlanmagan mehmon — ish qidiruvchi
- * ko'rinishi; ish beruvchi — o'z paneli.
- * Birinchi ochilishda (robot emas) — avval til va tanishtiruv; oqimni boshlab, profilini tugatmagan — to'xtagan qadamiga
- * (features/entry/flow). Qaytgan foydalanuvchi va to'g'ridan-to'g'ri havolalar (vakansiya, qidiruv) — hech qachon.
+ * Bosh sahifa — darhol chat (ega, 2026-11-21: "reklama sahifasi kerak emas, kirgan zahoti chat"). Mehmonga: "Ish kerakmi
+ * yoki ishchi? Yozing — topib beramiz."; AI maqsadni o'zi aniqlaydi. Kirgan foydalanuvchi — /chat (layout yo'naltiradi).
+ * Qidiruv tizimlari uchun sarlavha, tavsif va pastki qism (sayt haqida, havolalar) — o'z joyida.
  */
-export default async function HomePage() {
-  // yo'naltirishlar (bloklangan, birinchi ochilish) — (home)/layout.tsx da
-  const [session, mode] = await Promise.all([getSession(), getMode()]);
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
+  // yo'naltirishlar (bloklangan, kirish oqimi, kirgan foydalanuvchi) — (home)/layout.tsx da
+  const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
   return (
     <Shell footer={<SiteFooter compact={!!session} />}>
-      <Home session={session} mode={mode} />
+      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} top={<StoriesRow mode={mode === "employer" ? "employer" : mode === "worker" ? "seeker" : null} />} />
     </Shell>
   );
 }

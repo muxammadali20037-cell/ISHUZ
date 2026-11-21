@@ -48,6 +48,15 @@ export interface QuickForm {
   places: QuickOption[];
   /** boshqa mavzu ("salom", "kimsan") — oyna o'rniga shu qisqa javob */
   reply?: string;
+  /**
+   * Matndan tushunilgan maqsad (ega, 2026-11-21: "AI rolni o'zi aniqlasin"): "jobs" — ish qidiryapti ("men elektrikman"),
+   * "workers" — ishchi kerak ("menga elektrik kerak"), null — aniq emas (chat bitta savol beradi)
+   */
+  intent?: QuickMode | null;
+  /** hudud matnda aytilgan yoki shu qurilmada eslab qolingan (aks holda chat hududni so'raydi) */
+  placeKnown?: boolean;
+  /** e'lon berish niyati ("vakansiya joylamoqchiman"): kim uchun; null — rejimdan */
+  post?: { who: "worker" | "employer" | null } | null;
 }
 
 export interface QuickAnswers {

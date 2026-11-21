@@ -3,8 +3,8 @@ import { USERS, asGuest, asMode, sql } from "../support";
 
 /**
  * Telegram birinchi o'rinda (ega, 2026-11-18): kanal postidagi tugma t.me/<bot>?startapp=… bilan Mini App'ni ochadi —
- * ilova kerakli sahifaga (vakansiyaga) o'zi o'tadi. Faqat ichki yo'l (tashqi manzilga yo'naltirib bo'lmaydi). Kanal qatori
- * Mini App ichida Telegram'ning o'zida ochiladi (openTelegramLink). Telegram muhiti (window.Telegram.WebApp) taqlid qilinadi.
+ * ilova kerakli sahifaga (vakansiyaga) o'zi o'tadi. Faqat ichki yo'l (tashqi manzilga yo'naltirib bo'lmaydi). Telegram
+ * muhiti (window.Telegram.WebApp) taqlid qilinadi.
  */
 
 async function miniApp(page: Page, startParam: string | null) {
@@ -59,17 +59,11 @@ test("startapp=j_<slug> — ilova vakansiya sahifasida ochiladi", async ({ page 
 test("xavfli start_param — bosh sahifada qoladi", async ({ page }) => {
   await miniApp(page, "p_" + Buffer.from("//evil.example/x").toString("base64url"));
   await page.goto("/");
-  await expect(page.locator("main form[data-top-search]").first()).toBeVisible();
+  // bosh sahifa — chat (2026-11-21)
+  await expect(page.locator("main [data-start-chat]")).toBeVisible();
   await page.waitForTimeout(800);
   await expect(page).toHaveURL(/localhost:\d+\/$/);
 });
 
-test("kanal qatori Mini App ichida Telegram'ning o'zida ochiladi", async ({ page }) => {
-  await miniApp(page, null);
-  await page.goto("/");
-  const row = page.locator("[data-home-menu] [data-channel-row]");
-  await row.scrollIntoViewIfNeeded();
-  await row.click();
-  await expect.poll(() => page.evaluate(() => (window as unknown as { __opened: string[] }).__opened)).toEqual(["https://t.me/ish_topdim_uz"]);
-  await expect(page).toHaveURL(/localhost:\d+\/$/);
-});
+// 2026-11-21: bosh sahifa — chat; "Bo'limlar" ichidagi kanal qatori olib tashlandi (uning testi ham). Kanalga obuna —
+// ChannelPrompt oynasi orqali (Mini App ichida ham Telegram'ning o'zida ochiladi)

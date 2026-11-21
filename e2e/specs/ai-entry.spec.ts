@@ -4,15 +4,15 @@ import { USERS, asGuest, asMode, loginAs } from "../support";
 /**
  * Yordamchi va asosiy menyu. 2026-11-21 (ega, master prompt): menyu 3 ta bo'lim — Qidiruv · E'lonlarim · Profil.
  * 2026-11-12: "Yordamchi" (/ai) bo'limiga nomli kirish. Asosiy menyu hamma joyda bir xil, chat (/chat) — birinchi;
- * alohida "Yordamchi" belgisi va menyu bandi yo'q. /ai (to'liq ekran yordamchi) — mehmon bosh sahifasidagi
- * "Bo'limlar" qatoridan ochiladi. O'sha kuni kechqurun (ega: "ishchi panelida Ishchilar nimaga kerak"): bo'limlar rejimga qarab —
+ * alohida "Yordamchi" belgisi va menyu bandi yo'q. /ai (to'liq ekran yordamchi) — to'g'ridan-to'g'ri havola bilan
+ * (2026-11-21: bosh sahifa — chat, "Bo'limlar" qatori yo'q). O'sha kuni kechqurun (ega: "ishchi panelida Ishchilar nimaga kerak"): bo'limlar rejimga qarab —
  * ish izlovchida "Sizga mos" (Ishchilar o'rniga), ish beruvchida "Arizalar" (Ishlar o'rniga).
  */
 // 2026-11-21 (ega, master prompt): asosiy menyu — 3 ta bo'lim; kompyuterning yon menyusida yana "Xabarlar"
 const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
 const SIDE = ["Qidiruv", "E'lonlarim", "Xabarlar", "Profil"];
 
-test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; Yordamchi — bosh sahifa «Bo'limlar» qatorida", async ({ page, context }) => {
+test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; /ai — alohida to'liq ekran", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -28,11 +28,12 @@ test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; Yordamchi —
   await expect(nav.getByRole("link", { name: "Universal ustalar" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Qidiruv" })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
-  await expect(page.locator("main [data-home-menu] [data-ai-entry]")).toHaveCount(1);
-  await expect(page.locator("main [data-masters-home]")).toContainText("Universal ustalar");
+  // bosh sahifa — chat (2026-11-21): ishchi rejimida ustalar havolasi yo'q (ish izlovchiga kerak emas), menyuda bor
+  await expect(page.locator("main [data-start-chat]")).toBeVisible();
+  await expect(page.locator("main [data-chat-choice='find_masters']")).toHaveCount(0);
 
-  await page.locator("main [data-home-menu] [data-ai-entry]").click();
-  await page.waitForURL(/\/ai$/);
+  // /ai (to'liq ekran yordamchi) — to'g'ridan-to'g'ri havola bilan (bosh sahifadagi "Bo'limlar" qatori olib tashlandi)
+  await page.goto("/ai");
   await expect(page.locator("[data-ai-workspace]")).toBeVisible();
   // "Yordamchi" — alohida to'liq ekran: sayt menyusi va pastki menyu yo'q; "‹" bilan oldingi sahifaga
   await expect(page.getByRole("navigation", { name: "Asosiy bo'limlar" })).toHaveCount(0);
@@ -69,7 +70,6 @@ test("telefon: yuqori panelda alohida «Yordamchi» belgisi yo'q; pastki menyu �
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   await expect(page.getByRole("banner").getByRole("link", { name: "Yordamchi" })).toHaveCount(0);
-  await expect(page.locator("main [data-home-menu] [data-ai-entry]")).toContainText("Yordamchi");
   await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(TABS);
   await page.locator("nav.bottom-nav").getByRole("link", { name: "Qidiruv" }).click();
   await page.waitForURL(/\/chat$/);

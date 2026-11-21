@@ -12,8 +12,6 @@ const WRK = "7e2e0000-0000-4000-8000-000000000067";
 
 const sections = (page: Page) =>
   page.getByRole("region", { name: "Bo'limlar", exact: true });
-const tile = (page: Page, name: string) =>
-  sections(page).getByRole("link", { name: new RegExp(`^${name}`) });
 
 test.describe("bo'limlar", () => {
   test.beforeAll(async () => {
@@ -62,23 +60,19 @@ test.describe("bo'limlar", () => {
     ]);
   });
 
-  test("ish qidiruvchi (2.0): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtrda", async ({
+  test("ish qidiruvchi: bosh sahifada (chat) bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtrda", async ({
     page,
     context,
   }) => {
     await asGuest(context);
     await asMode(context, "worker");
     await page.goto("/");
-    // bosh sahifa — bitta qidiruv va yangi ishlar; bo'limlar plitkasi/ro'yxati yo'q (bir ekranda bitta vazifa)
-    await expect(page.locator("#home-feed")).toBeVisible();
+    // bosh sahifa — chat (2026-11-21); bo'limlar plitkasi/ro'yxati yo'q (bir ekranda bitta vazifa)
+    await expect(page.locator("main [data-start-chat]")).toBeVisible();
     await expect(sections(page)).toHaveCount(0);
     await expect(page.locator("#home-sections")).toHaveCount(0);
-    // "Filtrlar bilan qidirish" → natijalar; filtr oynasida ish beruvchi turi (YaTT va boshqalar), ommaviy va TOP bo'limlari
-    await page
-      .getByRole("main")
-      .getByRole("link", { name: "Filtrlar bilan qidirish" })
-      .click();
-    await page.waitForURL(/\/search\?mode=jobs&region=all&any=1$/);
+    // barcha ish e'lonlari → filtr oynasida ish beruvchi turi (YaTT va boshqalar), ommaviy va TOP bo'limlari
+    await page.goto("/search?mode=jobs&region=all&any=1");
     await page.getByRole("button", { name: /^Filtr/ }).click();
     const dialog = page.getByRole("dialog");
     await expect(
@@ -137,18 +131,14 @@ test.describe("bo'limlar", () => {
     );
   });
 
-  test("ish beruvchi: bosh sahifa «Bo'limlar»idagi 'Kunlik ishchi' — natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
+  test("ish beruvchi: 'Kunlik ishchilar' natijasi (kunlik to'lovga yoki bugun tayyor)", async ({
     page,
     context,
   }) => {
     await asGuest(context);
     await asMode(context, "employer");
-    await page.goto("/");
-    await expect(sections(page)).toHaveCount(0);
-    const daily = page.locator('[data-home-menu] [data-menu-item="daily"]');
-    await expect(daily).toContainText("Kunlik ishchi");
-    await daily.click();
-    await page.waitForURL(/mode=workers.*pay=daily/);
+    // 2026-11-21: bosh sahifa — chat ("Bo'limlar" qatorlari yo'q); "Kunlik ishchilar" ro'yxati o'z manzilida
+    await page.goto("/search?mode=workers&region=all&pay=daily&any=1");
     await expect(
       page
         .locator("main article")

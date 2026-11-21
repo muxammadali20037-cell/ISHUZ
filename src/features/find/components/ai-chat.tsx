@@ -821,24 +821,54 @@ export function AiThread({ chat, examples, scrollOnRestore = true, bar: showBar 
  * Aytilgan gap maydonga yoziladi — foydalanuvchi tekshiradi, kerak bo'lsa tuzatadi va o'zi yuboradi (o'zi yuborilmaydi).
  * Mikrofon faqat tugma bosilganda va brauzer ruxsati bilan ishlaydi; ovoz saqlanmaydi.
  */
+/** Yozish maydoni nimaga yuboradi: oddiy qidiruv (useAiChat) yoki asosiy ekrandagi chat (start-chat/guided) */
+export interface PromptTarget {
+  ask: (text: string) => boolean;
+  pending: boolean;
+  stop: () => void;
+  mode: FinderMode;
+}
+
 export function AiPromptBox({
   chat,
   id = "ai-finder-text",
   autoFocus = false,
   inputRef,
   note = true,
+  placeholder,
+  fill,
+  action,
 }: {
-  chat: AiChatState;
+  chat: PromptTarget;
   id?: string;
   autoFocus?: boolean;
   inputRef?: RefObject<HTMLTextAreaElement | null>;
   /** pastdagi kichik izoh ("Faqat bazadagi haqiqiy e'lonlar…") — asosiy chatda yo'q (ortiqcha matn) */
   note?: boolean;
+  /** maydon ichidagi ko'rsatma (bo'lmasa — rejimga qarab) */
+  placeholder?: string;
+  /** tashqaridan matn qo'yish (misol tugmasi): `n` o'zgarganda maydonga yoziladi va fokus beriladi — o'zi yuborilmaydi */
+  fill?: { text: string; n: number } | null;
+  /** sekin telefon: skriptlar yuklanmasdan yuborilsa — matn shu manzilga ?q=… bilan oddiy forma bo'lib boradi (boshi berk yo'q) */
+  action?: string;
 }) {
   const { t } = useT();
   const [text, setText] = useState("");
+  const [filled, setFilled] = useState(0);
+  if (fill && fill.n !== filled) {
+    // render paytida (effektsiz): yangi misol — maydonga
+    setFilled(fill.n);
+    setText(fill.text.slice(0, MESSAGE_MAX_CHARS));
+  }
   const ownRef = useRef<HTMLTextAreaElement>(null);
   const ref = inputRef ?? ownRef;
+  // misol qo'yilgach — maydonga fokus, kursor oxirida (tuzatib yuborishi mumkin)
+  useEffect(() => {
+    const el = ref.current;
+    if (!filled || !el) return;
+    el.focus();
+    el.setSelectionRange(el.value.length, el.value.length);
+  }, [filled, ref]);
   // sahifa skriptlari yuklandi (testlar va sekin telefon: shundan keyin yozish maydoni ishlaydi)
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
 
@@ -868,6 +898,8 @@ export function AiPromptBox({
 
   return (
     <form
+      action={action}
+      method={action ? "get" : undefined}
       onSubmit={(e) => {
         e.preventDefault();
         send();
@@ -883,6 +915,7 @@ export function AiPromptBox({
         <textarea
           ref={ref}
           id={id}
+          name={action ? "q" : undefined}
           rows={1}
           value={text}
           autoFocus={autoFocus}
@@ -890,7 +923,7 @@ export function AiPromptBox({
           onKeyDown={onKeyDown}
           maxLength={MESSAGE_MAX_CHARS}
           enterKeyHint="send"
-          placeholder={chat.mode === "workers" ? t("easy.finder.composer_placeholder_workers") : t("easy.finder.composer_placeholder_jobs")}
+          placeholder={placeholder ?? (chat.mode === "workers" ? t("easy.finder.composer_placeholder_workers") : t("easy.finder.composer_placeholder_jobs"))}
           // fokus halqasi butun yozish qutisida (focus-within) — ichidagi maydonda ikkinchi halqa chizilmaydi
           className="min-h-11 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-2.5 py-2.5 text-base leading-6 text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
         />

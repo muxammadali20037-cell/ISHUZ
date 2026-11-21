@@ -47,7 +47,7 @@ async function walk(page: Page): Promise<string[]> {
 
 const tourCookie = async (page: Page) => (await page.context().cookies()).find((c) => c.name === "ib_tour")?.value ?? "";
 
-test("mehmon ish izlovchi: salom → rol → pastki menyu → til, kirish → yakun; bir marta", async ({ page, context }) => {
+test("mehmon ish izlovchi: salom → pastki menyu → til, kirish → yakun; bir marta", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await context.clearCookies({ name: "ib_tour" });
@@ -58,12 +58,12 @@ test("mehmon ish izlovchi: salom → rol → pastki menyu → til, kirish → ya
   await expect(page.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
   // o'zbekcha ovoz bor (ega yozdirgan): ovozni o'chirish tugmasi; "Boshlash"dan keyin navbatdagi qadam ovozi yuklanadi
   await expect(card(page).getByRole("button", { name: "Ovozni o'chirish" })).toBeVisible();
-  const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/U1.mp3"));
+  const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/W7.mp3"));
   const codes = await walk(page);
   expect([200, 206]).toContain((await voice).status());
-  // mehmonda "Xabarlar" va qo'ng'iroqcha yo'q — o'tkazib yuboriladi; 2026-11-20 dan pastki menyu 5 ta bo'lim — "Bosh sahifa",
-  // "Ish beruvchilar", "Sohalar" va alohida "Yordamchi" belgisi yo'q (ularning qadamlari ham)
-  expect(codes).toEqual(["W1", "U1", "W7", "W6", "U2", "U3", "U6"]);
+  // mehmonda "Xabarlar" va qo'ng'iroqcha yo'q — o'tkazib yuboriladi; 2026-11-21 dan "Rol" qadami ham yo'q (bosh sahifa — chat,
+  // rolni AI aniqlaydi)
+  expect(codes).toEqual(["W1", "W7", "W6", "U2", "U3", "U6"]);
   expect(await tourCookie(page)).toContain("w");
   await page.reload();
   await page.waitForTimeout(1500);
@@ -86,7 +86,7 @@ test("mehmon ish beruvchi: «E'lon» (+) ham tushuntiriladi; «Kerak emas» — 
   await page.goto("/?tour=1");
   const codes = await walk(page);
   // 2026-11-20: "Boshqaruv", markaziy "E'lon" va "Yordamchi" o'rnida — umumiy 5 ta bo'lim (E'lonlarim, Ishchilar, Profil bor)
-  expect(codes).toEqual(["E1", "U1", "E7", "E3", "E6", "U2", "U3", "U6"]);
+  expect(codes).toEqual(["E1", "E7", "E3", "E6", "U2", "U3", "U6"]);
 });
 
 test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'iroqcha bor; Escape — o'tkazib yuboradi", async ({ page, context }) => {
@@ -125,5 +125,5 @@ test("rus tilida — matnlar ruscha", async ({ page, context }) => {
   // ruscha ovoz hali yo'q — tugma ham, so'rov ham yo'q
   await expect(card(page).getByRole("button", { name: /звук/ })).toHaveCount(0);
   await card(page).getByRole("button", { name: "Начать" }).click();
-  await expect(card(page)).toContainText("Роль");
+  await expect(card(page)).toContainText("Помощник");
 });
