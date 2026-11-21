@@ -100,7 +100,10 @@ test("ish beruvchi bir xabarda hammasini yozsa — savolsiz natija: birinchi 3 t
   const total = Number((await res.locator("p").first().textContent())!.match(/(\d+)/)![1]);
   expect(total).toBeGreaterThanOrEqual(5);
   await expect(res.locator("[data-guided-cards] > li")).toHaveCount(3);
+  // telefon emulyatsiyasi: avval klaviatura yopiladi (fokusdagi maydon bosilganda pastki menyu qaytib, tugma siljiydi)
+  await box(page).blur();
   await res.locator("[data-guided-more]").click();
+  await expect(res.locator("[data-guided-cards] > li")).not.toHaveCount(3);
   expect(await res.locator("[data-guided-cards] > li").count()).toBeGreaterThan(3);
 });
 
