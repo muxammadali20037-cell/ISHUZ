@@ -1,5 +1,32 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · Bosh sahifa — darhol chat (`feat/chat-home`)
+
+Ega (master prompt, 2-bosqich): "reklama sahifasi kerak emas — kirgan zahoti chat; jaydari tilda so'rasin; AI kimligini
+o'zi aniqlasin; yetishmaganini bittadan so'rasin, hududni bosib tanlasin; natija kartalar bilan shu chatda". Keyin:
+"muloyim, aniq, jaydari so'zlar bilan so'rasin — odamlar nima haqda so'ralayotganini aniq bilsin".
+
+- **Bosh sahifa ("/") = chat** (mehmon ham, kirgan ham — bir xil ekran). Tepada savol: mehmonga "Ish kerakmi yoki
+  ishchi? Yozing — topib beramiz.", ish izlovchiga "Qanday ish qidiryapsiz?", ish beruvchiga "Sizga qanday ishchi
+  kerak?". Ostida bosiladigan misollar — maydonga tushadi, o'zi yuborilmaydi. Birinchi ochilishda ham til/rol ekrani
+  yo'q (u faqat kirish oqimida). Reklama sahifasi (qidiruv paneli, "Bo'limlar", yangi vakansiyalar, raqamlar, rejim
+  almashtirgich) olib tashlandi; admin joylagan hikoyalar (doirachalar) sarlavha ustida, "Telegram kanalimizga obuna
+  bo'ling" qatori misollar ostida qoladi (ega: "Telegram kanal qolsin").
+- **AI rolni o'zi aniqlaydi**: "men elektrikman, ish kerak" — ish qidiradi; "menga haydovchi kerak" — ishchi qidiradi.
+  Aniq bo'lmasa — bitta savol, ikki tugma ("Men ish qidiryapman" / "Menga ishchi kerak"). Mehmonning tanlovi eslab
+  qolinadi.
+- **Yetishmagani bittadan**: kasb aytilmagan bo'lsa — "Qanday ish qidiryapsiz? Kasbingizni yozing — masalan: …";
+  tushunilmasa — bir marta aniqlashtiriladi (yozilganidek: «Kosmonavt»). Hudud — viloyat tugmalari, "Butun
+  O'zbekiston", ish uchun "Masofaviy". "Kunlik ish", "masofaviy ish" kabi so'rovda kasb so'ralmaydi.
+- **Natija — chatda kartalar**: "Mana, N ta ish topdim:" — avval 3 tasi, "Yana N tasini ko'rsatish", ko'p bo'lsa —
+  "Hammasini ro'yxatda ko'rish". Topilmasa — e'lon qoldirish va "Boshqa viloyatda qidirish", pastda shunga yaqinlari.
+- **E'lon niyati**: "vakansiya joylamoqchiman" / "o'zim haqimda e'lon bermoqchiman" — qidirmaydi, e'lon tayyorlashga
+  tugma beradi (yordamchiga faqat mazmun — kasb, joy — o'tadi).
+- **Sekin telefon**: skriptlar yuklanmasdan yuborilsa ham matn yo'qolmaydi (`/?q=…`), yuklangach o'zi yuboriladi.
+- Suhbat shu tabda 30 daqiqa saqlanadi; boshqa hisob bilan kirilsa — ko'rinmaydi.
+- Tanishtiruvdan "Rol" qadami olib tashlandi (almashtirgich yo'q). Eski reklama sahifasi testlari olib tashlandi,
+  qolganlari chatga moslandi.
+
 ## 2026-11-21 · Menyu 3 ta bo'lim, E'lonlarim yorliqlari, sodda Profil (`feat/simple-3-tabs`)
 
 Ega (master prompt, ekranma-ekran tanlovlar): "asosiy navigatsiya faqat 3 ta bo'lim; E'lonlarimda faol, yopilgan,

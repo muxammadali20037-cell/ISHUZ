@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, loginAs, pickProfession, sql } from "../support";
+import { USERS, asGuest, loginAs, sql } from "../support";
 
 /**
- * C8.10 · qabul mezoni #32 (J1): bosh sahifa → qidiruv → batafsil → ariza, mobil va desktop.
- * Mehmon qidiradi; "Ariza yuborish" kirishga aynan shu vakansiyaga qaytish yo'li bilan olib boradi; kirgach ariza yuboriladi.
+ * C8.10 · qabul mezoni #32 (J1): bosh sahifa (chat) → natija → batafsil → ariza, mobil va desktop.
+ * Mehmon chatda qidiradi (bosqichli qidiruv — search.spec.ts); "Ariza yuborish" kirishga aynan shu vakansiyaga qaytish yo'li bilan olib boradi; kirgach ariza yuboriladi.
  * Kirish — imzolangan sinov cookie'si (Telegram kodi stendda yo'q, C8.6).
  */
 
@@ -35,40 +35,33 @@ test.afterEach(async () => {
 });
 
 for (const vp of VIEWPORTS) {
-  test(`${vp.name}: bosh sahifa → qidiruv → batafsil → ariza (kirish bilan, shu vakansiyaga qaytib)`, async ({ page, context }) => {
+  test(`${vp.name}: bosh sahifa (chat) → natija → batafsil → ariza (kirish bilan, shu vakansiyaga qaytib)`, async ({ page, context }) => {
     test.setTimeout(90_000);
     await setup();
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await asGuest(context);
 
-    // 1. bosh sahifa (birinchi ochilish): "Ish qidiraman"; 2.0 — bosqichli qidiruv "Filtrlar bilan qidirish" orqali
+    // 1. bosh sahifa — chat (2026-11-21): kasb yoziladi, viloyat bosib tanlanadi, natija kartalari chatning o'zida
     await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
-    await page.goto("/search?mode=jobs");
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await box.fill("Men buxgalterman, ish kerak");
+    await box.press("Enter");
+    await page.locator("[data-guided-ai='ask-place'] [data-guided-place='tashkent_city']").last().click();
 
-    // 2. qidiruv: kasb → hudud → tuman (har qadamda savol sarlavhada)
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish qidiraman");
-    await expect(page.getByText("Qaysi kasb bo'yicha ish qidiryapsiz?")).toBeVisible();
-    await pickProfession(page, "Buxgalter", "Buxgalter");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qaysi viloyatda?");
-    await page.getByRole("link", { name: "Toshkent shahri", exact: true }).click();
-    await page.getByRole("link", { name: /^Butun (viloyat|shahar)/ }).click();
-    await page.waitForURL(/district=all/);
-
-    // 3. natija → batafsil
-    const card = page.locator("main article").filter({ hasText: "Buxgalter" }).first();
-    await expect(card).toBeVisible();
-    // karta ixcham (H1): sarlavha — e'lon sahifasiga havola, butun karta bosiladi
+    // 2. natija → batafsil
+    const card = page.locator("[data-guided-cards] article").filter({ hasText: "Buxgalter" }).first();
+    await expect(card).toBeVisible({ timeout: 20_000 });
+    // karta ixcham (H1): sarlavha — e'lon sahifasiga havola
     await card.getByRole("heading").getByRole("link").click();
     await page.waitForURL(/\/jobs\/[^/]+$/);
     const jobUrl = new URL(page.url()).pathname;
 
-    // 4. mehmon "Ariza yuborish" → kirish, qaytish yo'li — aynan shu vakansiya, ariza oynasi bilan (G2)
+    // 3. mehmon "Ariza yuborish" → kirish, qaytish yo'li — aynan shu vakansiya, ariza oynasi bilan (G2)
     await page.getByRole("button", { name: "Ariza yuborish" }).last().click();
     await page.waitForURL(/\/auth\?next=/);
     expect(new URL(page.url()).searchParams.get("next")).toBe(`${jobUrl}?apply=1`);
 
-    // 5. kirdi → qaytdi → ariza oynasi o'zi ochiq → "Ariza yuborildi" → arizani ko'rish
+    // 4. kirdi → qaytdi → ariza oynasi o'zi ochiq → "Ariza yuborildi" → arizani ko'rish
     await loginAs(context, USERS.workerB);
     await page.goto(`${jobUrl}?apply=1`);
     for (let i = 0; i < 2; i++) await page.getByRole("dialog").getByRole("button", { name: "Davom etish" }).click();

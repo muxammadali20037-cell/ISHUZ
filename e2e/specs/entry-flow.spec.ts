@@ -39,8 +39,12 @@ test.describe("kirish oqimi", () => {
   test("yangi foydalanuvchi: xush kelibsiz — rasmsiz, savol bilan: «O'zingizga mos ish qidiryapsizmi?» / «Korxonangizga ishchi qidiryapsizmi?»; bitta bosishda chat, kirish so'ralmaydi", async ({ page, context }) => {
     // ega (2026-11-20): "rasmlar yoqmayapti — savol bilan kirish kerak"
     await context.clearCookies();
+    // 2026-11-21 (ega: "kirgan zahoti chat"): birinchi ochilishda ham bosh sahifa — chat; xush kelibsiz ekrani kirish oqimida
+    // (kirgan, profili yo'q) va to'g'ridan-to'g'ri havola bilan ochiladi
     await page.goto("/");
-    await page.waitForURL("**/start/til");
+    expect(path(page)).toBe("/");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish kerakmi yoki ishchi?");
+    await page.goto("/start/til");
     await expect(page.getByRole("heading", { level: 1, name: "Assalomu alaykum!" })).toBeVisible();
     await expect(page.getByText("Xush kelibsiz! Nima qidiryapsiz?")).toBeVisible();
     // til — bir qator: bosilgan til darhol qo'llanadi ("Davom etish" yo'q)
@@ -64,8 +68,7 @@ test.describe("kirish oqimi", () => {
     await worker.click();
     // kasb va hudud so'rovnomasi yo'q — rol tanlangach darhol asosiy ekran (chat)
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
-    await expect(page.locator("[data-start-chat]")).toContainText("Nima qilmoqchisiz?");
-    await expect(page.locator("[data-start-chat] [data-chat-choice='find']")).toContainText("Ish izlash");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
     expect(await cookie(context, "ib_mode")).toBe("worker");
     expect(await cookie(context, "ib_intro")).toBe("1");
     // oqim tugadi: bosh sahifa endi oqimsiz ochiladi
@@ -341,7 +344,7 @@ test.describe("kirish oqimi", () => {
     const p = await bot.newPage();
     await p.goto("/");
     expect(path(p)).toBe("/");
-    await expect(p.getByRole("heading", { level: 1 })).toHaveText("Ish toping. Yoki jamoangizga odam toping.");
+    await expect(p.getByRole("heading", { level: 1 })).toHaveText("Ish kerakmi yoki ishchi?");
     await bot.close();
   });
 
@@ -459,7 +462,8 @@ test.describe("admin: kirish ekranlari rasmlari", () => {
       await asMode(c, mode);
       const p = await c.newPage();
       await p.goto("/");
-      await expect(p.locator(`[data-home='${mode === "worker" ? "seeker" : "employer"}-v2']`)).toBeVisible();
+      // 2026-11-21: bosh sahifa — chat
+      await expect(p.locator("main [data-start-chat]")).toBeVisible();
       await expect(p.locator("main .hero-surface")).toHaveCount(0);
       await expect(p.locator('main img[src*="/site-media/entry/"]')).toHaveCount(0);
       await c.close();

@@ -35,11 +35,13 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await knownEmployer();
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
-  // kirgan ish beruvchining asosiy ekrani — chat: "Vakansiya berish" → darhol alohida ekran (yordamchi; 2026-11-21)
+  // kirgan ish beruvchining asosiy ekrani — chat: "vakansiya joylamoqchiman" → "Vakansiya joylash" → alohida ekran (yordamchi)
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
-  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
-  await page.locator("[data-chat-choice='post']").click();
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await box.fill("Vakansiya joylamoqchiman");
+  await box.press("Enter");
+  await page.locator("[data-guided-post-to='employer']").click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
   await expect(h1(page)).toHaveText("Qanday xodim kerak?");
   await ready(page);

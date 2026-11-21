@@ -116,10 +116,12 @@ test.describe("telefon klaviaturasi", () => {
     expect(meta).toContain("interactive-widget=resizes-content");
     const nav = page.locator("nav.bottom-nav");
     await expect(nav).toBeVisible();
-    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).focus();
+    // bosh sahifa — chat (2026-11-21): yozish maydoniga bosilganda
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await box.focus();
     await expect(nav).toBeHidden();
     await expect(page.locator(".ai-fab")).toBeHidden();
-    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).blur();
+    await box.blur();
     await expect(nav).toBeVisible();
   });
 });

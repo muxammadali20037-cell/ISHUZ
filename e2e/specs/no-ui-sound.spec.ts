@@ -36,14 +36,18 @@ async function instrument(page: import("@playwright/test").Page) {
 
 const counts = (page: import("@playwright/test").Page) => page.evaluate(() => (window as unknown as { __audio: { contexts: number; tones: number } }).__audio);
 
-test("mehmon: bosh sahifa → qidiruv → hudud → natija — ovoz yo'q", async ({ page, context }) => {
+test("mehmon: bosh sahifa (chat) → hudud tugmasi → natija → qidiruv sahifasi — ovoz yo'q", async ({ page, context }) => {
   await asGuest(context);
   await instrument(page);
   await page.goto("/");
   await expect(page.getByRole("button", { name: /Ovozni (o'chirish|yoqish)/ })).toHaveCount(0);
-  // bosh sahifadan to'g'ridan-to'g'ri "Ish e'lonlari" ("Filtrlar bilan qidirish" — barcha e'lonlar, filtrlar bilan)
-  await page.locator("main a[data-track='direction_select'][href='/search?mode=jobs&region=all&any=1']").click();
-  await page.waitForURL(/mode=jobs/);
+  // bosh sahifa — chat (2026-11-21): yozib yuboradi, savolga tugma bilan javob beradi
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await box.fill("Men buxgalterman, ish kerak");
+  await box.press("Enter");
+  await page.locator("[data-guided-place='all']").last().click();
+  await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
+  await page.goto("/search?mode=jobs&region=all&any=1");
   await page.waitForLoadState("networkidle");
   const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
   await page.goto(`/search?mode=jobs&p=${n!.id}&region=all`);

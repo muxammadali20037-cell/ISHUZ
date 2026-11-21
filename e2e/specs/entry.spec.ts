@@ -2,17 +2,12 @@ import { expect, test, type BrowserContext } from "@playwright/test";
 import { USERS, asGuest, sql } from "../support";
 
 /**
- * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi), rejim tanlanmagan mehmon uchun bosh sahifa
- * (haqiqiy raqamlar, "Ish qidiraman" / "Ish beruvchiman", tezkor filtrlar, yangi ishlar). Birinchi ochilishdagi til va
- * tanishtiruv — entry-flow.spec.ts; bosh sahifaning qolgan qismlari — home-market.spec.ts.
+ * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi) va rejim tanlanmagan mehmon uchun bosh sahifa.
+ * 2026-11-21 (ega): bosh sahifa — darhol chat ("Ish kerakmi yoki ishchi?"), maqsadni AI yozilganidan aniqlaydi; chatning
+ * to'liq oqimi — guided-chat.spec.ts.
  */
 
 const cookie = async (ctx: BrowserContext, name: string) => (await ctx.cookies()).find((c) => c.name === name)?.value;
-
-async function activeJobs(): Promise<number> {
-  const [r] = await sql<{ n: string }>("select coalesce((select total_count from public.simple_search_vacancies(p_remote => false, p_no_experience => false, p_limit => 1, p_offset => 0) limit 1), 0) as n");
-  return Number(r!.n);
-}
 
 test.describe("kirish", () => {
   test.beforeAll(async () => {
@@ -29,23 +24,16 @@ test.describe("kirish", () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   });
 
-  test("bosh sahifa (mehmon): haqiqiy raqamlar, ikki aniq yo'l, qidiruv paneli, yangi ishlar; ko'rish rejim yozmaydi", async ({ page, context }) => {
+  test("bosh sahifa (mehmon) — darhol chat: jaydari savol, bosiladigan misollar, yozish maydoni; ko'rish rejim yozmaydi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish toping. Yoki jamoangizga odam toping.");
-    const jobs = await activeJobs();
-    // haqiqiy raqam — sarlavha ustida (telefonda ham)
-    await expect(main.getByText(`${jobs} ta faol vakansiya`).first()).toBeVisible();
-    await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toBeVisible();
-    await expect(main.getByRole("button", { name: /^Menga ishchi kerak/ })).toBeVisible();
-    await expect(page.getByRole("search", { name: "Ish qidirish" }).getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
-    await expect(main.getByRole("heading", { level: 2, name: "Yangi vakansiyalar" })).toBeVisible();
-    const cards = main.getByRole("region", { name: "Yangi vakansiyalar" }).locator("article");
-    await expect(cards.first()).toBeVisible();
-    expect(await cards.count()).toBeLessThanOrEqual(6);
-    // ro'yxatdan o'tmasdan ko'rish mumkin; kirish — sarlavhada
-    await expect(main.getByText("Ro'yxatdan o'tmasdan ham ko'rishingiz mumkin.", { exact: false })).toBeVisible();
+    // 2026-11-21 (ega): reklama sahifasi va rol kartalari yo'q — birinchi ochilishda ham chat
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish kerakmi yoki ishchi?");
+    await expect(main.getByText("Yozing — topib beramiz.")).toBeVisible();
+    await expect(main.locator("[data-guided-example]")).toHaveText(["Menga haydovchi kerak", "Men elektrikman, ish kerak"]);
+    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
+    await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toHaveCount(0);
     await expect(page.getByRole("banner").getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", /^\/auth/);
     // faqat ko'rish rejimni tanlamaydi
     expect(await cookie(context, "ib_mode")).toBeUndefined();
@@ -54,37 +42,24 @@ test.describe("kirish", () => {
     expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
   });
 
-  test("ikki yo'l: 'Ish qidiraman' → ish qidiruvchi bosh sahifasi; 'Ish beruvchiman' → ish beruvchi", async ({ page, context }) => {
-    await asGuest(context);
-    await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Men ish qidiryapman/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-    expect(await cookie(context, "ib_mode")).toBe("worker");
-
-    await asGuest(context);
-    await context.clearCookies({ name: "ib_mode" });
-    await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
-    expect(await cookie(context, "ib_mode")).toBe("employer");
-  });
-
-  test("tezkor filtr: 'Kunlik ishlar' → kunlik ishlar natijasi; 'Menga ishchi kerak' → 'Vakansiya joylash' (rejim shunga mos)", async ({ page, context }) => {
-    await asGuest(context);
-    await page.goto("/");
-    await page.getByRole("main").getByRole("button", { name: "Kunlik ishlar", exact: true }).click();
-    await page.waitForURL(/\/search\?.*pay=daily/);
-    await expect(page.locator("main article").filter({ hasText: "Omborchi" })).toHaveCount(1);
-    expect(await cookie(context, "ib_mode")).toBe("worker");
-
-    await asGuest(context);
-    await context.clearCookies({ name: "ib_mode" });
-    await page.goto("/");
-    // 3.0 (2026-11-13): alohida ish beruvchilar bloki yo'q — hero'dagi ikki yo'ldan biri, keyin ish beruvchi bosh sahifasi
-    await page.getByRole("main").getByRole("button", { name: /^Menga ishchi kerak/ }).click();
-    await expect.poll(() => cookie(context, "ib_mode")).toBe("employer");
-    await page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true }).click();
-    await page.waitForURL(/\/post\/vacancy/);
+  test("maqsad yozilganidan aniqlanadi: «ish kerak» → ish qidiruvchi; «menga … kerak» → ish beruvchi (rejim eslab qolinadi)", async ({ context }) => {
+    for (const [example, mode] of [["Men elektrikman, ish kerak", "worker"], ["Menga haydovchi kerak", "employer"]] as const) {
+      await asGuest(context);
+      await context.clearCookies({ name: "ib_mode" });
+      // yangi tab — oldingi suhbat (shu tabda saqlanadi) aralashmasin
+      const page = await context.newPage();
+      await page.goto("/");
+      await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
+      // misol faqat maydonni to'ldiradi — o'zi yuborilmaydi
+      await page.locator("[data-guided-example]", { hasText: example }).click();
+      const box = page.locator("form[data-hydrated] #start-chat-text");
+      await expect(box).toHaveValue(example);
+      await expect(page.locator("[data-ai-you]")).toHaveCount(0);
+      await box.press("Enter");
+      await expect(page.locator("[data-ai-you]").first()).toHaveText(`Siz: ${example}`);
+      await expect.poll(() => cookie(context, "ib_mode"), example).toBe(mode);
+      await page.close();
+    }
   });
 
   test("ochilish ekrani: sessiyada bir marta, bosishni to'smaydi, ~1.3 s da yo'qoladi; harakat kamaytirilganda yo'q", async ({ page, context }) => {
@@ -96,7 +71,7 @@ test.describe("kirish", () => {
     expect(await page.evaluate(() => document.documentElement.classList.contains("no-splash"))).toBe(false);
     // kontent ostida allaqachon chizilgan; splash bosishlarni o'tkazib yuboradi (sun'iy kutish yo'q)
     expect(await splash.evaluate((el) => [getComputedStyle(el).display, getComputedStyle(el).pointerEvents])).toEqual(["flex", "none"]);
-    await page.getByRole("searchbox", { name: "Kasb yoki lavozim" }).fill("kassir");
+    await page.locator("#start-chat-text").fill("kassir");
     await expect(splash).toBeHidden({ timeout: 2500 });
     // shu sessiyada qayta ochilsa — yo'q
     await page.reload();

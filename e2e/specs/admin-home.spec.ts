@@ -7,8 +7,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 /**
  * D6 · admin → "Bosh sahifa": oynalar matni, tartibi, ko'rinishi, rasmi va lupa tugmasi admin panelda sozlanadi;
  * saqlangach saytda darhol (kesh yangilanadi) ko'rinadi, har o'zgarish audit jurnaliga yoziladi.
- * 2.0 (2026-11): oynalar bosh sahifalarda ko'rsatilmaydi (admin muharriri qayta qurilguncha qoladi); ikkala bosh sahifa —
- * bitta qidiruv maydoni (AI yoqilgan bo'lsa — AI maydoni, o'chirilsa — oddiy matnli qidiruv).
+ * 2.0 (2026-11): oynalar bosh sahifalarda ko'rsatilmaydi (admin muharriri qayta qurilguncha qoladi). 2026-11-21: bosh
+ * sahifa — chat; "AI bilan qidirish" tugmasi sozlamasi — qidiruv natijasi bo'sh bo'lgandagi yordamchi tugmasi.
  */
 
 const STORAGE = path.join(__dirname, "../.stack/storage");
@@ -95,19 +95,19 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await page.getByRole("button", { name: "Saqlash" }).click();
   await expect(page.getByText("Bosh sahifa yangilandi").first()).toBeVisible();
 
-  // sayt (mehmon, ish beruvchi rejimida, alohida kontekst) — 2.0: oynalar bosh sahifada ko'rsatilmaydi (admin muharriri
-  // saqlaydi, lekin sayt sodda: bitta AI qidiruv maydoni)
+  // sayt (mehmon, ish beruvchi rejimida, alohida kontekst): 2026-11-21 dan bosh sahifa — chat; oynalar ko'rsatilmaydi
+  // (admin muharriri saqlaydi)
   const base = page.url().replace(/\/admin.*$/, "");
   const guestCtx = await browser.newContext({ baseURL: base, viewport: { width: 390, height: 844 } });
   const guest = await guestCtx.newPage();
   await asGuest(guestCtx);
   await asMode(guestCtx, "employer");
   await guest.goto("/");
-  await expect(guest.getByRole("heading", { level: 1, name: "Qanday xodim kerak?" })).toBeVisible();
+  await expect(guest.getByRole("heading", { level: 1, name: "Sizga qanday ishchi kerak?" })).toBeVisible();
   await expect(windowsOf(guest)).toHaveCount(0);
-  await expect(guest.locator("form[data-ai-field]:visible")).toBeVisible();
+  await expect(guest.locator("#start-chat-text")).toBeVisible();
 
-  // ish izlovchi bosh sahifasi (2.0): oynalar yo'q, bitta AI qidiruv maydoni
+  // ish izlovchi: oynalar yo'q, chat
   const seekerCtx = await browser.newContext({ baseURL: base, viewport: { width: 390, height: 844 } });
   const seeker = await seekerCtx.newPage();
   await asGuest(seekerCtx);
@@ -115,19 +115,21 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await seeker.goto("/");
   await expect(seeker.getByRole("heading", { level: 1, name: "Qanday ish qidiryapsiz?" })).toBeVisible();
   await expect(seeker.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
-  await expect(seeker.locator("form[data-ai-field]:visible")).toBeVisible();
+  await expect(seeker.locator("#start-chat-text")).toBeVisible();
+  // qidiruv natijasi bo'sh — "Oddiy so'z bilan qidirish" (yordamchi) tugmasi bor
+  const [node] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Oilaviy shifokor' and selectable limit 1");
+  await seeker.goto(`/search?mode=jobs&region=all&p=${node!.id}`);
+  await expect(seeker.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).toBeVisible();
 
-  // AI qidiruv o'chiriladi — ikkala bosh sahifada ham o'rnida oddiy matnli qidiruv qoladi
+  // AI qidiruv tugmasi o'chiriladi — bo'sh natijada yordamchi tugmasi yo'qoladi; bosh sahifa chati joyida (AI kalitisiz
+  // ham lug'at bilan ishlaydi)
   const aiSwitch = page.getByRole("switch", { name: "«AI bilan qidirish» tugmasi (qidiruv yonida)" });
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "false");
-  await guest.reload();
-  await expect(guest.locator("form[data-ai-field]")).toHaveCount(0);
-  // telefonda: sarlavhadagi qidiruv oddiy matnli bo'ladi (sahifadagisi telefonda ko'rinmaydi)
-  await expect(guest.getByRole("searchbox", { name: "O'zingizga mos xodimni qidiring..." })).toBeVisible();
   await seeker.reload();
-  await expect(seeker.locator("form[data-ai-field]")).toHaveCount(0);
-  await expect(seeker.getByRole("searchbox", { name: "O'zingizga mos ishni qidiring..." })).toBeVisible();
+  await expect(seeker.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).toHaveCount(0);
+  await guest.reload();
+  await expect(guest.locator("#start-chat-text")).toBeVisible();
 
   const logs = await sql<{ target_id: string }>(
     "select target_id from public.audit_logs where actor_id = $1 and action = 'settings.update' and target_id in ('home_banners', 'ai_search_button') and created_at >= $2::timestamptz order by id",
@@ -138,10 +140,8 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   // AI qidiruv tugmasi qayta yoqiladi, oynalar standartga qaytariladi
   await aiSwitch.click();
   await expect(aiSwitch).toHaveAttribute("aria-checked", "true");
-  await guest.reload();
-  await expect(guest.locator("form[data-ai-field]:visible")).toBeVisible();
   await seeker.reload();
-  await expect(seeker.locator("form[data-ai-field]:visible")).toBeVisible();
+  await expect(seeker.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).toBeVisible();
   await seekerCtx.close();
   await page.getByRole("button", { name: "Standartga qaytarish" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Standartga qaytarish" }).click();

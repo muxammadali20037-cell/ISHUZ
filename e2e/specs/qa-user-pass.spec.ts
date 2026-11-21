@@ -99,20 +99,24 @@ test("chat: uzun gapdan kasb to'g'ri olinadi (tuman nomi kasb bo'lmaydi); tushun
   await asMode(context, "worker");
   await page.goto("/chat");
   const box = page.locator("form[data-hydrated] #start-chat-text");
+  const settled = () => expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
+  const last = () => page.locator("[data-guided-ai]").last();
   await box.fill("asdkjhqwe");
   await box.press("Enter");
-  const sheet = page.locator("[data-quick-sheet]");
-  await expect(sheet).toBeVisible();
-  await expect(sheet.locator("[data-quick-profession]")).toHaveValue("asdkjhqwe");
-  await page.keyboard.press("Escape");
-  await expect(sheet).toBeHidden();
-  await expect(page.locator("[data-quick-pending-form]").last()).toContainText("Qanday ish kerakligini aniq yozing");
+  await settled();
+  // 2026-11-21: forma oynasi o'rniga chatda bitta aniq savol
+  await expect(last()).toHaveAttribute("data-guided-ai", "ask-profession");
+  await expect(last()).toContainText("«asdkjhqwe» degan kasbni tushunmadim.");
 
   await box.fill(
     "Toshkentda sotuvchi ish kerak, tajribam 2 yil, oylik kamida 4 million, Chilonzor yoki Yunusobod tumani bo'lsa yaxshi, haftasiga 5 kun ishlamoqchiman",
   );
   await box.press("Enter");
-  await expect(sheet).toBeVisible();
-  await expect(sheet.locator("[data-quick-profession]")).toHaveValue(/sotuvchi/i);
-  await expect(sheet.locator("[data-quick-place]")).toHaveValue("tashkent_city");
+  await settled();
+  // kasb ham, hudud ham tushunildi — savolsiz qidiruv; "chilonzor" kasb emas
+  await expect(last()).toHaveAttribute("data-guided-ai", /results|none/);
+  const summary = page.locator("[data-guided-summary]").last();
+  await expect(summary).toContainText(/sotuvchi/i);
+  await expect(summary).toContainText("Toshkent shahri");
+  await expect(summary).not.toContainText(/chilonzor/i);
 });

@@ -55,8 +55,9 @@ export function nextEntryStep(s: EntryState): EntryStep {
  */
 export function homeEntryStep(s: EntryState): EntryStep | null {
   const step = nextEntryStep(s);
-  if (step === "welcome") return step;
-  if (s.session && s.inFlow && (step === "role" || step === "profile")) return step;
+  // 2026-11-21 (ega, master prompt): birinchi ochilishda ham darhol chat — rol so'ralmaydi (AI yozilgan matndan aniqlaydi),
+  // til — yuqori paneldagi tanlagichda. Xush kelibsiz ekrani (/start/til) faqat kirish oqimida (kirgan, profili yo'q)
+  if (s.session && s.inFlow && (step === "welcome" || step === "role" || step === "profile")) return step;
   return null;
 }
 

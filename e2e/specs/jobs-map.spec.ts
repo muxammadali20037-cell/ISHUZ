@@ -100,7 +100,7 @@ test("haqiqiy e'lon yo'q viloyat: kulrang namuna belgilari ochiq yozilgan; JS'si
   }
 });
 
-test("'Joylashuvim bo'yicha': eng yaqin tuman tanlanadi, koordinata manzilda yo'q; bosh sahifadan kirish", async ({ page, context }) => {
+test("'Joylashuvim bo'yicha': eng yaqin tuman tanlanadi, koordinata manzilda yo'q; bosh sahifa pastki qismidan kirish", async ({ page, context }) => {
   await seed();
   await asGuest(context);
   await asMode(context, "worker");
@@ -108,7 +108,8 @@ test("'Joylashuvim bo'yicha': eng yaqin tuman tanlanadi, koordinata manzilda yo'
   await context.setGeolocation({ latitude: 41.2856, longitude: 69.2034 });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
-  await page.locator("main [data-map-entry]").click();
+  // 2026-11-21: bosh sahifa — chat; xarita — sahifa pastki qismidagi havoladan
+  await page.getByRole("contentinfo").locator("a[href='/jobs/xarita']").click();
   await page.waitForURL(/\/jobs\/xarita/);
   await page.locator("[data-map-locate]").click();
   await page.waitForURL(/district=/);

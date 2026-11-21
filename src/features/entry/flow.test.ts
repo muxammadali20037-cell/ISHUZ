@@ -34,9 +34,9 @@ describe("kirish oqimi: keyingi qadam", () => {
 });
 
 describe("bosh sahifa: qachon oqimga o'tkaziladi", () => {
-  it("birinchi ochilish — xush kelibsiz ekrani (til + rol)", () => {
-    expect(homeEntryStep(fresh)).toBe("welcome");
-    expect(homeEntryStep({ ...fresh, localeChosen: true })).toBe("welcome");
+  it("birinchi ochilish — darhol chat (2026-11-21: rol so'ralmaydi, AI o'zi aniqlaydi)", () => {
+    expect(homeEntryStep(fresh)).toBeNull();
+    expect(homeEntryStep({ ...fresh, localeChosen: true })).toBeNull();
   });
 
   it("xush kelibsiz ekranini o'tgan mehmon kirishga majburlanmaydi (bosh sahifa ochiq)", () => {

@@ -4,9 +4,8 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 /**
  * Namuna (demo) vakansiyalar (0077) — ega: "barcha sohalar bo'yicha vakansiyalar qo'sh … bir marta olib tashla desam olib
  * tashlaysan". Alohida jadval (public.demo_vacancies), haqiqiy e'lonlar bilan aralashmaydi:
- *  - haqiqiy e'lon yo'q joyda (bosh sahifa ro'yxati, /jobs va /search ning bo'sh holati) — "Namuna e'lonlar" bloki, har kartada
- *    "Namuna" belgisi; ariza, saqlash, telefon, kompaniya yo'q;
- *  - haqiqiy e'lonlar yetarli bo'lsa — blok chizilmaydi;
+ *  - haqiqiy e'lon yo'q joyda (/jobs va /search ning bo'sh holati; 2026-11-21 dan bosh sahifa — chat) — "Namuna e'lonlar"
+ *    bloki, har kartada "Namuna" belgisi; ariza, saqlash, telefon, kompaniya yo'q;
  *  - /jobs/namuna — hammasi (soha bo'yicha), /jobs/namuna/<slug> — "Bu namuna e'lon" ogohlantirishi bilan, noindex;
  *  - admin bir bosishda olib tashlaydi va qaytaradi; oddiy foydalanuvchi boshqara olmaydi;
  *  - haqiqiy vakansiyalar jadvaliga, sitemap'ga va JobPosting'ga tushmaydi.
@@ -25,25 +24,22 @@ test.afterAll(async () => {
   await sql("delete from public.admin_users where profile_id = $1", [USERS.workerB]);
 });
 
-test("bosh sahifa: haqiqiy e'lon yo'q — 'Namuna e'lonlar' bloki; karta → namuna sahifasi (ogohlantirish, ariza yo'q, noindex)", async ({ page, context }) => {
+test("bo'sh ro'yxat: 'Namuna e'lonlar' bloki (belgi bilan, ariza va telefonsiz); karta → namuna sahifasi (ogohlantirish, ariza yo'q, noindex)", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
-  // haqiqiy ro'yxat bo'sh ekani yashirilmaydi
-  await expect(page.locator("#home-feed")).toBeVisible();
-  await expect(page.getByText("Hozircha faol vakansiya yo'q")).toBeVisible();
+  // 2026-11-21: bosh sahifa — chat (e'lonlar ro'yxati yo'q); namuna bloki — qidiruv natijasi bo'sh bo'lganda
+  await page.goto("/jobs?category=it");
   const block = page.locator("[data-demo-block]");
   await expect(block.getByRole("heading", { level: 2, name: "Namuna e'lonlar" })).toBeVisible();
-  await expect(block.locator("[data-demo-note]")).toContainText("haqiqiy ish emas");
+  await expect(block.locator("[data-demo-note]")).toContainText("haqiqiy e'lon yo'q");
   const cards = block.locator("[data-demo-card]");
-  await expect(cards).toHaveCount(6);
+  await expect(cards).toHaveCount(4);
   // har kartada "Namuna" belgisi; kompaniya nomi, telefon, saqlash va ariza tugmasi yo'q
-  await expect(block.locator("[data-demo-badge]")).toHaveCount(6);
+  await expect(block.locator("[data-demo-badge]")).toHaveCount(4);
   await expect(block.getByRole("button")).toHaveCount(0);
   await expect(block.locator("a[href^='tel:']")).toHaveCount(0);
   await expect(block.getByText("Ariza yuborish")).toHaveCount(0);
-  await expect(block.getByRole("link", { name: "Barcha namunalar" })).toHaveAttribute("href", "/jobs/namuna");
 
   const title = (await cards.first().getByRole("heading", { level: 3 }).innerText()).trim();
   await cards.first().getByRole("link").click();
@@ -60,40 +56,6 @@ test("bosh sahifa: haqiqiy e'lon yo'q — 'Namuna e'lonlar' bloki; karta → nam
   // qidiruv tizimlariga chiqmaydi: noindex, JobPosting belgilanishi yo'q
   await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", /noindex/);
   expect(await page.locator("script[type='application/ld+json']").allInnerTexts()).not.toEqual(expect.arrayContaining([expect.stringContaining("JobPosting")]));
-});
-
-test("haqiqiy e'lonlar yetarli bo'lsa — namuna bloki ko'rinmaydi; kam bo'lsa — haqiqiylaridan keyin", async ({ page, context }) => {
-  const add = (n: number) =>
-    sql(
-      `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_from, salary_type, schedule, published_at, expires_at)
-       select $1, 'Haqiqiy e''lon ' || g, r.id, 'Namuna bloki sinovi uchun haqiqiy e''lon', 'active', 4000000, 'monthly', '5_2', now() - (g || ' minutes')::interval, now() + interval '10 days'
-       from generate_series(1, $2::int) g cross join (select id from public.regions where slug = 'tashkent_city') r`,
-      [USERS.employer, n],
-    );
-  try {
-    await asGuest(context);
-    await asMode(context, "worker");
-    await page.setViewportSize({ width: 1280, height: 900 });
-    await add(2);
-    await page.goto("/");
-    // 2 ta haqiqiy e'lon: avval ular, keyin namuna bloki (aralashmaydi)
-    const feedCards = page.locator("#home-feed").locator("xpath=ancestor::section").locator("article");
-    await expect(feedCards.first().getByRole("heading", { level: 3 })).toContainText("Haqiqiy e'lon");
-    await expect(page.locator("[data-demo-block]")).toBeVisible();
-    await expect(page.locator("[data-demo-block] article").first().locator("[data-demo-badge]")).toBeVisible();
-    const order = await page.locator("main article").evaluateAll((els) => els.map((el) => (el.hasAttribute("data-demo-card") ? "namuna" : "haqiqiy")));
-    expect(order.slice(0, 2)).toEqual(["haqiqiy", "haqiqiy"]);
-    expect(order.indexOf("haqiqiy", 2)).toBe(-1);
-
-    await clearReal();
-    await add(5);
-    await page.goto("/");
-    await expect(page.locator("#home-feed")).toBeVisible();
-    await expect(page.locator("[data-demo-block]")).toHaveCount(0);
-    await expect(page.locator("[data-demo-card]")).toHaveCount(0);
-  } finally {
-    await clearReal();
-  }
 });
 
 test("/jobs va /search: hech narsa topilmasa — o'sha sohadan namunalar; /jobs/namuna — barcha sohalar, saralash va sahifalash", async ({ page, context }) => {
@@ -186,8 +148,8 @@ test("admin: bir bosishda olib tashlaydi (tasdiq bilan) va qaytaradi; sayt darho
   await asGuest(guest);
   await asMode(guest, "worker");
   const g = await guest.newPage();
-  await g.goto("/");
-  await expect(g.locator("#home-feed")).toBeVisible();
+  await g.goto("/jobs?category=it");
+  await expect(g.getByRole("heading", { level: 1 })).toBeVisible();
   await expect(g.locator("[data-demo-block]")).toHaveCount(0);
   await g.goto("/jobs/namuna");
   await expect(g.locator("[data-demo-empty]")).toBeVisible();

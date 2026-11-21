@@ -52,7 +52,7 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     // 2026-11-20: kirgan foydalanuvchining "/" — asosiy ekran (chat)
     await page.goto("/");
     await page.waitForURL(/\/chat$/);
-    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kasb, tuman, maosh…");
+    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
     await expectAllOpen(page, await linksOn(page, ["/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=jobs"]));
 
     // rolni almashtirish — "Profil" → "Boshqa sozlamalar" ichidagi bitta tugma (2026-11-21)
@@ -60,7 +60,7 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
-    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kim kerak: kasb, tuman…");
+    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
     await expectAllOpen(page, await linksOn(page, ["/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=workers"]));
 
     // va orqaga
@@ -69,7 +69,7 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     await page.locator("main [data-role-switch]").click();
     await expect(page.locator("[data-role-splash='worker']")).toHaveText("Siz ish izlovchi paneliga o'tdingiz");
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
-    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kasb, tuman, maosh…");
+    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
     // ish izlovchi paneli — yana ko'k (binafsha rang faqat ish beruvchida)
     await expect(page.locator("html")).not.toHaveAttribute("data-panel", "employer");
   } finally {

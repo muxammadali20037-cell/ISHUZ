@@ -8,6 +8,10 @@ export type FindMode = "jobs" | "workers";
  */
 const JOB_PATTERNS: RegExp[] = [
   /\bish\s+(kerak|qidir|izla|bormi|bor|top)/, // ish kerak, ish qidiryapman
+  // "men elektrikman", "haydovchiman" — kesim: o'zi shu kasb egasi (ega, 2026-11-21: AI rolni o'zi aniqlasin).
+  // Fe'llar emas: "qidiryapman", "izlayman", "qilaman" (…yapman / …ayman / …aman)
+  /\b(?!\S*(?:yap|[ay])man\b)\S{3,}man\b/,
+  /\bya\s+(?!ishchu|ishu|ischu|xochu|hochu|ishem)\S{4,}/, // я водитель
   /\bbo'?yicha\s+ish\b/, // buxgalterlik bo'yicha ish
   /\bish(i|ga|lar|larni)?\b(?!chi)/, // "haydovchi ishi", "ishga kiraman", yolg'iz "ish"
   /\bishla(moqchi|yman|y olaman|sh)/, // ishlamoqchiman
@@ -23,7 +27,41 @@ const WORKER_PATTERNS: RegExp[] = [
   /\b(nujen|nujna|nujno|nujny|trebuetsya|trebuyutsya|ishchu|ishu|ischu|ishem|nanimayu|nanyat)\b/, // нужен, требуется, ищу (бухгалтера)
   /\b(hire|hiring|need(ed)?|looking for)\b/,
   /\bbor\s+mi\b/,
+  // "elektrik qidiryapman", "haydovchi izlayapmiz" ("ish qidiryapman" — yuqorida, ish qidirish)
+  /\b(qidir|izla)\S*/,
 ];
+
+/**
+ * E'lon berish niyati ("vakansiya joylamoqchiman", "o'zim haqimda e'lon bermoqchiman"): kim uchun — "employer" (vakansiya),
+ * "worker" (o'zi haqida) yoki null (e'lon deyilgan, kimligi aniq emas — rejimdan olinadi). Qidiruv emas.
+ */
+export function detectPostIntent(text: string): { who: "worker" | "employer" | null } | null {
+  const s = normalizeText(text);
+  if (!s) return null;
+  const verb = /(joyla|qo'?y|chiqar|ber(moqchi|aman|ish|ay)|razmest|podat|dat\b|post)\S*/;
+  if (/\b(vakansiya|vakansii|vakansiyu)\S*/.test(s) && verb.test(s)) return { who: "employer" };
+  if (/\b(o'?zim|ozim)\s+(haqimda|haqida)\b/.test(s)) return { who: "worker" };
+  if (/\b(e'?lon|elon|obyavlen)\S*/.test(s) && verb.test(s)) return { who: null };
+  return null;
+}
+
+/** E'lon niyatining o'z so'zlari ("vakansiya joylamoqchiman", "o'zim haqimda e'lon bermoqchiman") va bog'lovchilar */
+const POST_WORD =
+  /^(vakansiya\S*|vakansii\S*|vakansiyu|e'?lon\S*|elon\S*|obyavlen\S*|o'?zim|ozim|haqimda|haqida|joyla\S*|qo'?y\S*|chiqar\S*|ber(moqchi|aman|ish|ay|ib)\S*|razmest\S*|podat\S*|dat|post\S*|bitta|yangi|ham|men|menga|biz|bizga|uchun|qilib|kerak|edi|salom|assalomu|alaykum)$/;
+
+/**
+ * E'lon niyatidan qolgan mazmun (kasb, joy): "Men oshpazman, o'zim haqimda e'lon bermoqchiman" → "Men oshpazman";
+ * "Vakansiya joylamoqchiman" → "" (e'lon yordamchisi bo'sh gap bilan boshlanmasin — o'zi "Qanday ish qilasiz?" deb so'raydi).
+ */
+export function postTopic(text: string): string {
+  const words = text.replace(/\s+/g, " ").trim().split(" ").filter(Boolean);
+  const keep = words.filter((w) => {
+    const n = normalizeText(w).replace(/[^a-z']/g, "");
+    return n.length > 0 && !POST_WORD.test(n);
+  });
+  const rest = keep.join(" ").replace(/^[\s,.;:!?—-]+|[\s,.;:!?—-]+$/g, "");
+  return keep.some((w) => normalizeText(w).replace(/[^a-z']/g, "").length >= 3) ? rest : "";
+}
 
 export function detectIntent(text: string): FindMode | null {
   const s = normalizeText(text);

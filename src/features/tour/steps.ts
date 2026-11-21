@@ -16,10 +16,10 @@ export interface TourStep {
 }
 
 export const TOUR_STEPS: Record<TourPanel, readonly TourStep[]> = {
+  // 2026-11-21: "Rol" qadami (U1) yo'q — bosh sahifa chat bo'ldi, rolni AI yozilganidan aniqlaydi (almashtirgich yo'q)
   worker: [
     { code: "W1", target: null },
-    { code: "U1", target: "role" },
-    // 2026-11-21: asosiy menyu — Chat · E'lonlarim · Profil; "Yordamchi" tushuntirishi endi "Chat" bo'limida
+    // asosiy menyu — Qidiruv (chat) · E'lonlarim · Profil; "Yordamchi" tushuntirishi endi "Qidiruv" bo'limida
     { code: "W7", target: "chat" },
     { code: "W2", target: "home" },
     { code: "W3", target: "jobs" },
@@ -34,7 +34,6 @@ export const TOUR_STEPS: Record<TourPanel, readonly TourStep[]> = {
   ],
   employer: [
     { code: "E1", target: null },
-    { code: "U1", target: "role" },
     { code: "E7", target: "chat" },
     { code: "E2", target: "dashboard" },
     { code: "E3", target: "my-listings" },

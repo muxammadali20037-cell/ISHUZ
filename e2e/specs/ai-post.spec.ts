@@ -23,15 +23,19 @@ async function say(page: Page, text: string) {
   await page.locator("#ai-post-text").press("Enter");
 }
 
-test("mehmon (telefon): bosh sahifa → yordamchi → «men o'qituvchiman» → variant → oyna → ko'rinishi → kirish → joylandi", async ({ page, context }) => {
+test("mehmon (telefon): bosh sahifa (chat) → «e'lon bermoqchiman» → yordamchi → «men o'qituvchiman» → variant → oyna → ko'rinishi → kirish → joylandi", async ({ page, context }) => {
   test.setTimeout(120_000);
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
   await asMode(context, "worker");
   await asGuest(context);
   await page.setViewportSize({ width: 390, height: 844 });
 
+  // 2026-11-21: bosh sahifa — chat; "e'lon bermoqchiman" deb yozilsa — "E'lon tayyorlash" tugmasi
   await page.goto("/");
-  await page.locator("[data-home='seeker-v2'] [data-home-post]").click();
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await box.fill("O'zim haqimda e'lon bermoqchiman");
+  await box.press("Enter");
+  await page.locator("[data-guided-post-to='worker']").click();
   await page.waitForURL(/\/ai\/post$/);
   await expect(page.getByRole("heading", { level: 1, name: "E'lon joylash" })).toBeVisible();
   await expect(page.locator("[data-ai-post-greeting]")).toContainText("Qanday ish qilasiz?");

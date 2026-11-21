@@ -3,13 +3,13 @@ import { USERS, asGuest, asMode, quickSearch, sql } from "../support";
 
 /**
  * 2.0 (2026-11-11, egasi: "AI bilan qidirganda tushunsin, bazadan topsin, «yo'q» deb o'tirmasin"):
- *  - bosh sahifada BITTA qidiruv maydoni: yozilgan matn darhol yordamchiga yuboriladi, bosqichlarsiz natija;
+ *  - 2026-11-21: bosh sahifa — chat (guided-chat.spec.ts); "Yordamchi" oynasi (so'rovnoma bilan) — /ai sahifasida;
  *  - 2026-11-16 (ega: "AI uzun matn yozmasin"): yozilgandan keyin so'rovnoma oynasi (kasb, hudud, maosh) va "Qidirish";
  *  - aniq so'rov bo'sh chiqsa — bitta qisqa "Hozircha bunday ish yo'q" (mehmonga — "kirsangiz, xabar beramiz") va pastda
  *    "Shunga yaqin ishlar" (yaqin kasblar yoki shu kasb boshqa hududlarda);
  *  - kasblar ro'yxatida yo'q so'z (do'kon yoki kompaniya nomi, erkin lavozim) — e'lon matnlaridan qidiriladi;
- *  - sekin telefon: sahifa skriptlari yuklanmasdan "Izlash" bosilsa ham boshi berk yo'q — matn /ai?q=… sahifasiga boradi va
- *    savol o'sha yerda o'zi yuboriladi.
+ *  - sekin telefon: bosh sahifa chatida skriptlar yuklanmasdan yuborilsa ham boshi berk yo'q — matn /?q=… bilan qaytadi va
+ *    yuklangach o'zi yuboriladi; /ai?q=… — o'sha yerda.
  */
 
 const TITLE = "Oshpaz — Samarqand (AI kengaytirish)";
@@ -41,29 +41,15 @@ test.afterAll(async () => {
 });
 
 async function ask(page: import("@playwright/test").Page, text: string) {
-  await page.goto("/");
-  // [data-hydrated] — skriptlar yuklangan: natija shu sahifadagi oynada (undan oldin yuborilsa — /ai sahifasida, pastdagi test)
-  const field = page.locator("form[data-ai-field][data-hydrated]:visible input[name='q']");
+  // 2026-11-21: bosh sahifa — chat (guided-chat.spec.ts); "Yordamchi" (so'rovnoma oynasi bilan) — /ai sahifasida
+  await page.goto("/ai");
+  // [data-hydrated] — skriptlar yuklangan
+  const field = page.locator("form[data-hydrated]").getByLabel("Nima qidiryapsiz?");
   await expect(field).toBeVisible();
   await field.fill(text);
   await field.press("Enter");
-  return page.getByRole("dialog", { name: "Yordamchi" });
+  return page.getByRole("main");
 }
-
-test("bosh sahifa: bitta qidiruv maydoni, nol ko'rsatkich va fon surati yo'q", async ({ page, context }) => {
-  await asGuest(context);
-  await asMode(context, "worker");
-  await page.goto("/");
-  const hero = page.locator("[data-home='seeker-v2']");
-  await expect(hero.getByRole("heading", { level: 1 })).toHaveText("Qanday ish qidiryapsiz?");
-  await expect(hero.locator("form[data-ai-field]")).toHaveCount(1);
-  await expect(hero.locator("input[type='search']")).toHaveCount(1);
-  await expect(hero.locator("img")).toHaveCount(0);
-  // katta "+ E'lon joylash" heroda; tez yo'llar — plitka emas, "Bo'limlar" qatorlari (ega, 2026-11-17)
-  await expect(hero.locator("[data-home-post]")).toBeVisible();
-  await expect(page.getByRole("navigation", { name: "Tez qidiruv" })).toHaveCount(0);
-  await expect(page.locator('[data-home-menu] [data-menu-item="daily"]')).toBeVisible();
-});
 
 test("Chilonzorda oshpaz → oynada «Oshpaz» va Chilonzor; tumanda yo'q → qisqa «yo'q» va pastda shunga yaqin ishlar (Samarqanddagi)", async ({ page, context }) => {
   await seed();
@@ -135,20 +121,27 @@ test("Telegram xabari sahifasi yozilgan matnni tayyor ko'rsatadi", async ({ page
   await expect(page.locator("textarea").first()).toHaveValue("Toshkentda kosmonavt kerak");
 });
 
-test("skriptlar yuklanmasdan yuborilsa: forma /ai?q=… ga boradi (sahifa shunchaki qayta ochilib qolmaydi)", async ({ page, context }) => {
+test("bosh sahifa chati: skriptlar yuklanmasdan yuborilsa — matn yo'qolmaydi (?q=…), yuklangach o'zi yuboriladi va manzildan olinadi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   // "sahifa ko'rindi, lekin hali jonlanmagan" holati: ilova skriptlari (chunk'lar) yuklanmaydi — sahifa matni oqim bilan keladi
   await page.route("**/_next/static/chunks/**", (route) => route.abort());
   await page.goto("/");
-  // telefonda qidiruv sarlavhada (2026-11-15)
-  const form = page.locator("form[data-top-search]");
+  const form = page.locator("form:has(#start-chat-text)");
   await expect(form).toBeVisible();
   await expect(form).not.toHaveAttribute("data-hydrated", "");
-  await expect(form).toHaveAttribute("action", "/ai");
-  await form.locator("input[name='q']").fill("Samarqandda oshpaz");
-  await form.getByRole("button", { name: "Izlash" }).click();
-  await page.waitForURL((u) => new URL(u).pathname === "/ai" && new URL(u).searchParams.get("q") === "Samarqandda oshpaz");
+  await expect(form).toHaveAttribute("action", "/");
+  await page.locator("#start-chat-text").fill("Samarqandda oshpaz");
+  await form.locator("button[type='submit']").click();
+  await page.waitForURL((u) => new URL(u).pathname === "/" && new URL(u).searchParams.get("q") === "Samarqandda oshpaz");
+  // skriptlar keldi: savol o'zi yuboriladi, manzildan q olib tashlanadi (yangilansa qayta yuborilmaydi)
+  await page.unroute("**/_next/static/chunks/**");
+  await page.reload();
+  await expect(page.locator("[data-ai-you]")).toHaveText(["Siz: Samarqandda oshpaz"]);
+  await expect(page).toHaveURL((u) => u.pathname === "/" && !u.searchParams.has("q"));
+  await expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
+  await page.reload();
+  await expect(page.locator("[data-ai-you]")).toHaveText(["Siz: Samarqandda oshpaz"]);
 });
 
 test("/ai?q=… — savol o'zi yuboriladi, natija shu sahifada; manzildan q olib tashlanadi (yangilansa qayta yuborilmaydi)", async ({ page, context }) => {

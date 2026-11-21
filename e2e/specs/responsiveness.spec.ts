@@ -49,7 +49,7 @@ test("navigatsiya: sahifa almashganda bosish bloklangan vaqt (View Transition)",
   await page.waitForLoadState("networkidle");
   const lost: number[] = [];
   for (const [from, to] of [
-    ["main a[data-track='direction_select']", /mode=jobs/], // 2.0: "Filtrlar bilan qidirish"
+    ["nav.bottom-nav a[href='/cabinet']", /\/cabinet$/], // 2026-11-21: bosh sahifa — chat; pastki menyudagi "Profil"
     // logotip (yuqori panelda endi "‹ Orqaga" ham bor — u tarix bo'yicha qaytadi, bu yerda logotip bosiladi)
     ["header a[data-bar-logo]", (u: URL) => u.pathname === "/"],
   ] as const) {
@@ -183,13 +183,10 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
     }
     return prev;
   };
-  // bosh sahifa bo'limlari oqim bilan keladi (ro'yxat, kasblar, qo'shimcha) — o'lchov faqat to'liq chizilgan sahifada
-  // (aks holda 1-o'lchov yarim sahifada olinib, keyingilar "o'sgan" ko'rinadi)
+  // bosh sahifa (2026-11-21 dan chat) to'liq chizilib, skriptlari ulangan bo'lsin — o'lchov faqat shunda
   const homeReady = async () => {
-    await expect(page.locator("#home-feed")).toBeVisible();
-    // oxirgi oqim bilan keladigan bo'limlar — "Bo'limlar" ro'yxati (telefonda; 2026-11-17) va "Universal ustalar" (kompyuterda)
-    await expect(page.locator("main [data-home-menu]")).toBeVisible();
-    await expect(page.locator("main [data-masters-home]")).toHaveCount(1);
+    await expect(page.locator("main [data-start-chat]")).toBeVisible();
+    await expect(page.locator("form[data-hydrated] #start-chat-text")).toBeVisible();
     await expect(page.locator("main .skeleton-shimmer")).toHaveCount(0);
   };
   await page.goto("/");
@@ -197,8 +194,8 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   await homeReady();
   const samples: { round: number; listeners: number; nodes: number }[] = [];
   for (let i = 1; i <= 20; i++) {
-    await page.locator("main a[data-track='direction_select']").click(); // 2.0: "Filtrlar bilan qidirish"
-    await page.waitForURL(/\/search/);
+    await page.locator("nav.bottom-nav a[href='/cabinet']").click(); // pastki menyudagi "Profil"
+    await page.waitForURL(/\/cabinet$/);
     await page.locator("header a[data-bar-logo]").click(); // logotip
     await page.waitForURL((u) => new URL(u).pathname === "/");
     // har bir aylanish o'lchanadi: CI'da beqarorlik qaysi qadamda paydo bo'lishini ko'rish uchun (xato matnida chiqadi)

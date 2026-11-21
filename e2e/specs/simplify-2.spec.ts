@@ -111,37 +111,32 @@ test("birinchi kirish — kunduzgi rejim (telefon tungi rejimda bo'lsa ham); tun
 test("«men oila shifokoriman» → «Oilaviy shifokor» (oila huquqi yuristi emas); maosh so'ralmaydi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
+  // 2026-11-21: bosh sahifa — chat; hudud tugma bilan, maosh umuman so'ralmaydi
   await page.goto("/");
-  const field = page.locator("form[data-ai-field][data-hydrated]:visible input[name='q']");
-  await expect(field).toBeVisible();
-  await field.fill("men oila shifokoriman");
-  await page.locator("form[data-ai-field][data-hydrated]:visible").getByRole("button", { name: "Izlash" }).click();
-  const sheet = page.getByRole("dialog", { name: "Ish qidirish" });
-  await expect(sheet.getByLabel("Qanday ish?")).toHaveValue("Oilaviy shifokor");
-  await expect(sheet).not.toContainText("Oylik maosh");
-  await expect(sheet.getByRole("radiogroup", { name: /maosh/i })).toHaveCount(0);
-  await expect(page.getByRole("dialog", { name: "Yordamchi" })).not.toContainText("maosh");
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await box.fill("men oila shifokoriman");
+  await box.press("Enter");
+  await page.locator("[data-guided-ai='ask-place'] [data-guided-place='all']").last().click();
+  const answer = page.locator("[data-guided-ai]").last();
+  await expect(answer).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
+  await expect(answer.locator("[data-guided-summary]")).toContainText("Oilaviy shifokor");
+  await expect(answer.locator("[data-guided-summary]")).not.toContainText(/yurist/i);
+  await expect(page.locator("[data-guided-thread]")).not.toContainText(/maosh/i);
 });
 
-test("qidiruv maydoni: «O'zingizga mos ishni qidiring...» telefonda to'liq ko'rinadi (kesilmaydi); yozilganda yo'qoladi", async ({ page, context }) => {
+test("chat yozish maydoni: ko'rsatma («Masalan: men oshpazman») telefonda ham bitta qatorga sig'adi; maydon ekrandan chiqmaydi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
-  for (const width of [360, 390, 1280]) {
+  for (const width of [320, 360, 390, 1280]) {
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
-    const form = page.locator("main form[data-top-search]");
-    const hint = form.locator("[data-hero-placeholder]");
-    await expect(hint, `${width}px`).toHaveText("O'zingizga mos ishni qidiring...");
-    await expect(hint, `${width}px`).toBeVisible();
-    // matn o'z qutisiga sig'adi (kesilmagan) va qidiruv maydonidan chiqmaydi
-    expect(await hint.evaluate((el) => el.scrollHeight <= el.clientHeight + 1 && el.scrollWidth <= el.clientWidth + 1), `${width}px`).toBe(true);
-    const [h, f] = [(await hint.boundingBox())!, (await form.locator("input").boundingBox())!];
-    expect(h.y, `${width}px`).toBeGreaterThanOrEqual(f.y - 1);
-    expect(h.y + h.height, `${width}px`).toBeLessThanOrEqual(f.y + f.height + 1);
-    await expect(form.getByRole("button", { name: "Izlash" })).toBeVisible();
+    const box = page.locator("form[data-hydrated] #start-chat-text");
+    await expect(box, `${width}px`).toHaveAttribute("placeholder", "Masalan: men oshpazman");
+    // bitta qator (ko'rsatma ikkinchi qatorga o'tib, kesilib qolmaydi) va maydon ekran ichida
+    expect(await box.evaluate((el) => el.scrollHeight <= el.clientHeight + 1), `${width}px`).toBe(true);
+    const r = (await box.boundingBox())!;
+    expect(r.x + r.width, `${width}px`).toBeLessThanOrEqual(width);
   }
-  await page.locator("main form[data-top-search][data-hydrated] input").fill("oshpaz");
-  await expect(page.locator("main form[data-top-search] [data-hero-placeholder]")).toBeHidden();
 });
 
 test("«E'lonlarim» (pastki menyudan): o'zi joylagan e'lonlar va holati; bo'lmasa — «E'lon joylash»; mehmon — kirishga", async ({ page, context }) => {
