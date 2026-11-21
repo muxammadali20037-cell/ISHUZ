@@ -3,7 +3,7 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * Bosh sahifa va navigatsiya. 2026-11-21 (ega: "kirgan zahoti chat"): bosh sahifa — chat (guided-chat.spec.ts); reklama
- * sahifasidagi qidiruv qatori, "Bo'limlar" tez yo'llari va Telegram kanal qatori olib tashlandi — ularning testlari ham.
+ * sahifasidagi qidiruv qatori va "Bo'limlar" tez yo'llari olib tashlandi — ularning testlari ham; Telegram kanal qatori — chatda.
  */
 
 test("qidiruv sahifasi: qidiruv qatori → kompaniya nomi bo'yicha natija (matn kasbga aylanmasa ham)", async ({ page, context }) => {
@@ -114,4 +114,21 @@ test("chat sarlavhasi (ega, 2026-11-21): telefonda bitta qatorda, rejimga mos ja
       expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), `${mode} ${width}px`).toBe(true);
     }
   }
+});
+
+test("Telegram kanal qatori (ega, 2026-11-21: «Telegram kanal qolsin»): chat misollari ostida obuna havolasi", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await page.goto("/");
+  const row = page.locator("main [data-start-chat] [data-channel-row]");
+  await expect(row).toBeVisible();
+  await expect(row).toHaveAttribute("href", "https://t.me/ish_topdim_uz");
+  await expect(row).toHaveAttribute("target", "_blank");
+  await expect(row).toContainText("Telegram kanalimizga obuna bo'ling");
+  await expect(row).toContainText("Har kuni yangi ishlar — @ish_topdim_uz");
+  // suhbat boshlangach — misollar bilan birga yo'qoladi (yozishga xalaqit bermaydi)
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  await box.fill("Men oshpazman, ish kerak");
+  await box.press("Enter");
+  await expect(row).toHaveCount(0);
 });

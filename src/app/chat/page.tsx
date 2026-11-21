@@ -6,7 +6,7 @@ import { getMode } from "@/features/mode/server";
 import { Shell } from "@/components/shared/shell";
 import { StartChat } from "@/features/start-chat/components/start-chat";
 import { chatQuery } from "@/features/start-chat/query";
-import { StoriesRow } from "@/features/stories/components/stories-row";
+import { ChatChannel, ChatStories } from "@/features/start-chat/components/chat-extras";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -22,7 +22,7 @@ export default async function ChatPage({ searchParams }: { searchParams: Promise
   if (session?.profile.is_blocked) redirect("/blocked");
   return (
     <Shell>
-      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} top={<StoriesRow mode={mode === "employer" ? "employer" : mode === "worker" ? "seeker" : null} />} />
+      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} top={<ChatStories mode={mode} />} channel={<ChatChannel />} />
     </Shell>
   );
 }

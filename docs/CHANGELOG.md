@@ -10,7 +10,8 @@ o'zi aniqlasin; yetishmaganini bittadan so'rasin, hududni bosib tanlasin; natija
   ishchi? Yozing — topib beramiz.", ish izlovchiga "Qanday ish qidiryapsiz?", ish beruvchiga "Sizga qanday ishchi
   kerak?". Ostida bosiladigan misollar — maydonga tushadi, o'zi yuborilmaydi. Birinchi ochilishda ham til/rol ekrani
   yo'q (u faqat kirish oqimida). Reklama sahifasi (qidiruv paneli, "Bo'limlar", yangi vakansiyalar, raqamlar, rejim
-  almashtirgich) olib tashlandi; admin joylagan hikoyalar (doirachalar) sarlavha ustida qoladi.
+  almashtirgich) olib tashlandi; admin joylagan hikoyalar (doirachalar) sarlavha ustida, "Telegram kanalimizga obuna
+  bo'ling" qatori misollar ostida qoladi (ega: "Telegram kanal qolsin").
 - **AI rolni o'zi aniqlaydi**: "men elektrikman, ish kerak" — ish qidiradi; "menga haydovchi kerak" — ishchi qidiradi.
   Aniq bo'lmasa — bitta savol, ikki tugma ("Men ish qidiryapman" / "Menga ishchi kerak"). Mehmonning tanlovi eslab
   qolinadi.

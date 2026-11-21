@@ -34,6 +34,7 @@ export function StartChat({
   owner,
   initialQuery = "",
   top,
+  channel,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
@@ -42,6 +43,8 @@ export function StartChat({
   initialQuery?: string;
   /** sarlavha ustida (server qismi): admin joylagan hikoyalar — faol hikoya bo'lmasa hech narsa chizilmaydi */
   top?: ReactNode;
+  /** misollar ostida (server qismi): Telegram kanal qatori — sozlanmagan bo'lsa hech narsa */
+  channel?: ReactNode;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
@@ -96,6 +99,7 @@ export function StartChat({
                 <Wrench className="size-4" aria-hidden /> {t("easy.guided.masters_link")}
               </Link>
             ) : null}
+            {channel ? <div className="pt-2">{channel}</div> : null}
           </div>
         ) : (
           <Thread chat={chat} />

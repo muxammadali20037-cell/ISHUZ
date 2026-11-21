@@ -70,21 +70,20 @@ for (const c of CASES) {
   });
 }
 
-test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi» bloki ustma-ust emas (320 va katta shrift)", async ({ page, context }) => {
+test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi» bloki ustma-ust emas (320 va katta shrift)", async ({ context }) => {
   test.setTimeout(120_000);
-  await page.emulateMedia({ reducedMotion: "reduce" });
   await asGuest(context);
   await asMode(context, "worker");
   for (const [width, zoom] of [
     [320, undefined],
     [390, 1.3],
   ] as const) {
+    // har aylanish — yangi tab (suhbat tab ichida saqlanadi) va hudud qayta so'raladi (tanlangani eslab qolinadi)
+    await context.clearCookies({ name: "ib_place" });
+    const page = await context.newPage();
+    await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
-    // har aylanish — yangi suhbat (oldingisi shu tabda saqlangan) va hudud qayta so'raladi (tanlangani eslab qolinadi)
-    await context.clearCookies({ name: "ib_place" });
-    await page.evaluate(() => sessionStorage.removeItem("ib_guided_chat"));
-    await page.reload();
     const box = page.locator("form[data-hydrated] #start-chat-text");
     await box.fill("Men omborchiman, ish kerak");
     await box.press("Enter");
@@ -101,8 +100,6 @@ test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi»
     await page.locator("[data-guided-place='tashkent_city']").last().click();
     await expect(last).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
-    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi). Chat ekrani kamida ekran
-    // balandligida (100dvh) — balandlik oshgach sahifa tepaga qaytariladi (yopishqoq sarlavha ostida yozuv qolmasin)
     await fullHeight(page);
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
     await page.waitForTimeout(200);
@@ -112,12 +109,11 @@ test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi»
     await box.press("Enter");
     await expect(last).toHaveAttribute("data-guided-ai", /^(none|ask-profession)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
-    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi). Chat ekrani kamida ekran
-    // balandligida (100dvh) — balandlik oshgach sahifa tepaga qaytariladi (yopishqoq sarlavha ostida yozuv qolmasin)
     await fullHeight(page);
     await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
     await page.waitForTimeout(200);
     expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
+    await page.close();
   }
 });
 
