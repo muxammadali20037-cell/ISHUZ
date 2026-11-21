@@ -3,8 +3,8 @@ import { USERS, asGuest, asMode, sql } from "../support";
 
 /**
  * Telegram birinchi o'rinda (ega, 2026-11-18): kanal postidagi tugma t.me/<bot>?startapp=… bilan Mini App'ni ochadi —
- * ilova kerakli sahifaga (vakansiyaga) o'zi o'tadi. Faqat ichki yo'l (tashqi manzilga yo'naltirib bo'lmaydi). Kanal qatori
- * Mini App ichida Telegram'ning o'zida ochiladi (openTelegramLink). Telegram muhiti (window.Telegram.WebApp) taqlid qilinadi.
+ * ilova kerakli sahifaga (vakansiyaga) o'zi o'tadi. Faqat ichki yo'l (tashqi manzilga yo'naltirib bo'lmaydi). Kanal oynasidagi
+ * "Kanalga o'tish" Mini App ichida Telegram'ning o'zida ochiladi (openTelegramLink). Telegram muhiti (window.Telegram.WebApp) taqlid qilinadi.
  */
 
 async function miniApp(page: Page, startParam: string | null) {
@@ -65,13 +65,16 @@ test("xavfli start_param — bosh sahifada qoladi", async ({ page }) => {
   await expect(page).toHaveURL(/localhost:\d+\/$/);
 });
 
-test("kanal qatori Mini App ichida Telegram'ning o'zida ochiladi", async ({ page }) => {
+test("kanal oynasi Mini App ichida: «Kanalga o'tish» — kanal Telegram'ning o'zida ochiladi", async ({ page, context }) => {
+  // 2026-11-21: chatda kanal qatori yo'q — kirgandan keyin oyna chiqadi (ega: "Obuna bo'lish yoki Keyinroq")
+  const keep = (await context.cookies()).filter((c) => c.name !== "ib_channel");
+  await context.clearCookies();
+  await context.addCookies(keep);
   await miniApp(page, null);
   await page.goto("/");
-  // 2026-11-21: bosh sahifa — chat; qator misollar ostida
-  const row = page.locator("main [data-start-chat] [data-channel-row]");
-  await row.scrollIntoViewIfNeeded();
-  await row.click();
+  const prompt = page.locator("[data-channel-prompt]");
+  await expect(prompt).toBeVisible({ timeout: 10_000 });
+  await prompt.getByRole("button", { name: "Kanalga o'tish" }).click();
   await expect.poll(() => page.evaluate(() => (window as unknown as { __opened: string[] }).__opened)).toEqual(["https://t.me/ish_topdim_uz"]);
   await expect(page).toHaveURL(/localhost:\d+\/$/);
 });

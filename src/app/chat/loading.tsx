@@ -1,11 +1,11 @@
 import { LoadingShell } from "@/components/shared/app-frame";
-import { PageSkeleton } from "@/components/shared/page-skeleton";
+import { ChatSkeleton } from "@/components/shared/page-skeleton";
 
-/** Bosilgan zahoti: menyu joyida, kontent o'rnida skelet (sahifa oldindan yuklanadi — "SAT MASTER" kabi tezlik) */
+/** Bosilgan zahoti: menyu joyida, chat skeleti (sahifa oldindan yuklanadi) */
 export default function Loading() {
   return (
     <LoadingShell>
-      <PageSkeleton />
+      <ChatSkeleton />
     </LoadingShell>
   );
 }

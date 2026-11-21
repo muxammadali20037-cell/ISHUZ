@@ -73,12 +73,13 @@ export function AppTour() {
   const titleId = useId();
   const hasAudio = !!TOUR_AUDIO[locale === "oz" ? "uz" : (locale as "uz" | "ru" | "en")]?.length;
 
-  // boshlash: asosiy ekran (mehmonda "/", kirganda — chat "/chat", 2026-11-20), xush kelibsiz ekrani o'tilgan, shu panel uchun
-  // hali ko'rilmagan (yoki ?tour=1). Ekranda yo'q tugmaning qadami o'tkazib yuboriladi
+  // boshlash: asosiy ekran (chat: mehmonda "/", kirganda "/chat"), shu panel uchun hali ko'rilmagan (yoki ?tour=1). Ekranda
+  // yo'q tugmaning qadami o'tkazib yuboriladi. 2026-11-21: xush kelibsiz ekrani endi birinchi ochilishda yo'q — "ib_intro"
+  // kutilmaydi (ega: "tanishtiruvni qaytar"); kanal oynasi tanishtiruv tugagach chiqadi
   useEffect(() => {
     if (pathname !== "/" && pathname !== "/chat") return;
     const forced = new URLSearchParams(window.location.search).get("tour") === "1";
-    if (!forced && (!readCookie("ib_intro") || tourSeen(readCookie(TOUR_COOKIE), panel))) return;
+    if (!forced && tourSeen(readCookie(TOUR_COOKIE), panel)) return;
     let tries = 0;
     let timer = 0;
     const start = () => {

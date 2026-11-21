@@ -3,7 +3,7 @@ import { USERS, asGuest, sql } from "../support";
 
 /**
  * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi) va rejim tanlanmagan mehmon uchun bosh sahifa.
- * 2026-11-21 (ega): bosh sahifa — darhol chat ("Ish kerakmi yoki ishchi?"), maqsadni AI yozilganidan aniqlaydi; chatning
+ * 2026-11-21 (ega): bosh sahifa — darhol chat ("O'zingizga mos ishni yoki ishchini toping"), maqsadni AI yozilganidan aniqlaydi; chatning
  * to'liq oqimi — guided-chat.spec.ts.
  */
 
@@ -24,14 +24,13 @@ test.describe("kirish", () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   });
 
-  test("bosh sahifa (mehmon) — darhol chat: jaydari savol, bosiladigan misollar, yozish maydoni; ko'rish rejim yozmaydi", async ({ page, context }) => {
+  test("bosh sahifa (mehmon) — darhol chat: bitta yozuv, pastga strelka, yozish maydoni; ko'rish rejim yozmaydi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    // 2026-11-21 (ega): reklama sahifasi va rol kartalari yo'q — birinchi ochilishda ham chat
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish kerakmi yoki ishchi?");
-    await expect(main.getByText("Yozing — topib beramiz.")).toBeVisible();
-    await expect(main.locator("[data-guided-example]")).toHaveText(["Menga haydovchi kerak", "Men elektrikman, ish kerak"]);
+    // 2026-11-21 (ega): reklama sahifasi, rol kartalari va misollar yo'q — birinchi ochilishda ham sodda chat
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+    await expect(main.locator("[data-guided-arrow]")).toBeVisible();
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
     await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toHaveCount(0);
     await expect(page.getByRole("banner").getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", /^\/auth/);
@@ -43,21 +42,19 @@ test.describe("kirish", () => {
   });
 
   test("maqsad yozilganidan aniqlanadi: «ish kerak» → ish qidiruvchi; «menga … kerak» → ish beruvchi (rejim eslab qolinadi)", async ({ context }) => {
-    for (const [example, mode] of [["Men elektrikman, ish kerak", "worker"], ["Menga haydovchi kerak", "employer"]] as const) {
+    for (const [text, mode] of [["Men elektrikman, ish kerak", "worker"], ["Menga haydovchi kerak", "employer"]] as const) {
       await asGuest(context);
       await context.clearCookies({ name: "ib_mode" });
       // yangi tab — oldingi suhbat (shu tabda saqlanadi) aralashmasin
       const page = await context.newPage();
       await page.goto("/");
-      await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
-      // misol faqat maydonni to'ldiradi — o'zi yuborilmaydi
-      await page.locator("[data-guided-example]", { hasText: example }).click();
       const box = page.locator("form[data-hydrated] #start-chat-text");
-      await expect(box).toHaveValue(example);
-      await expect(page.locator("[data-ai-you]")).toHaveCount(0);
+      await box.fill(text);
       await box.press("Enter");
-      await expect(page.locator("[data-ai-you]").first()).toHaveText(`Siz: ${example}`);
-      await expect.poll(() => cookie(context, "ib_mode"), example).toBe(mode);
+      await expect(page.locator("[data-ai-you]").first()).toHaveText(`Siz: ${text}`);
+      // suhbat boshlangach — bo'sh holatdagi yozuv va strelka ko'rinmaydi (sarlavha faqat ekran o'qigich uchun)
+      await expect(page.locator("[data-guided-arrow]")).toHaveCount(0);
+      await expect.poll(() => cookie(context, "ib_mode"), text).toBe(mode);
       await page.close();
     }
   });

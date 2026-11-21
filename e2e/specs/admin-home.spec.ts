@@ -103,7 +103,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await asGuest(guestCtx);
   await asMode(guestCtx, "employer");
   await guest.goto("/");
-  await expect(guest.getByRole("heading", { level: 1, name: "Sizga qanday ishchi kerak?" })).toBeVisible();
+  await expect(guest.getByRole("heading", { level: 1, name: "O'zingizga mos ishni yoki ishchini toping" })).toBeVisible();
   await expect(windowsOf(guest)).toHaveCount(0);
   await expect(guest.locator("#start-chat-text")).toBeVisible();
 
@@ -113,7 +113,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await asGuest(seekerCtx);
   await asMode(seekerCtx, "worker");
   await seeker.goto("/");
-  await expect(seeker.getByRole("heading", { level: 1, name: "Qanday ish qidiryapsiz?" })).toBeVisible();
+  await expect(seeker.getByRole("heading", { level: 1, name: "O'zingizga mos ishni yoki ishchini toping" })).toBeVisible();
   await expect(seeker.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
   await expect(seeker.locator("#start-chat-text")).toBeVisible();
   // qidiruv natijasi bo'sh — "Oddiy so'z bilan qidirish" (yordamchi) tugmasi bor

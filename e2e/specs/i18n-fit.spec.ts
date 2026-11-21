@@ -59,18 +59,15 @@ test.afterAll(async () => {
   await sql("delete from public.worker_profiles where profile_id = $1", [WORKER]);
 });
 
-test("ru, 360 px: chat sarlavhasi va misollar to'liq ko'rinadi (kesilmaydi); <html lang> — BCP-47", async ({ page, context }) => {
+test("ru, 360 px: chat sarlavhasi to'liq ko'rinadi (kesilmaydi); <html lang> — BCP-47", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await locale(context, "ru");
   await page.goto("/");
   // 2026-11-21: bosh sahifa — chat (rejim almashtirgichi yo'q)
   const h1 = page.getByRole("heading", { level: 1 });
-  await expect(h1).toHaveText("Какую работу вы ищете?");
+  await expect(h1).toHaveText("Найдите подходящую работу или работника");
   expect(await fits(h1), "sarlavha").toBe(true);
-  const examples = page.locator("[data-guided-example]");
-  await expect(examples).toHaveText(["Я водитель, ищу работу", "Хочу работать продавцом в Самарканде", "Хочу разместить объявление о себе"]);
-  for (const ex of await examples.all()) expect(await fits(ex), await ex.innerText()).toBe(true);
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Например: я повар");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   await locale(context, "oz");

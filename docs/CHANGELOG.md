@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · Chat juda sodda: bitta yozuv va strelka; kanal — oynada (`feat/chat-simple`)
+
+Ega (telefondagi rasm bilan): "panel to'lib qolgan, ortiqcha narsalar kerakmas — bitta strelka pastga belgisi,
+«O'zingizga mos ishni yoki ishchini toping», bo'ldi. Telegram kanal ekranga chiqsin — kirgandan keyin «Obuna bo'lish»
+yoki «Keyinroq»". Tanlovlar: yozuv o'rtada (A), ustalar — Profilga, tanishtiruv — qaytarilsin.
+
+- **Chatning bo'sh holati**: o'rtada «O'zingizga mos ishni yoki ishchini toping» (hamma uchun bir xil), ostida yozish
+  maydoniga qaragan strelka va yozish maydoni. Olib tashlandi: hikoya doirachalari (endi faqat ish beruvchi panelida),
+  ostki izoh, misollar, kanal qatori, "Universal ustalar" havolasi. Suhbat boshlangach sarlavha faqat ekran o'qigich uchun.
+- **Telegram kanal oynasi** ("Kanalga o'tish" / "Keyinroq") endi birinchi ochilishda ham chiqadi — 2-bosqichdan beri
+  til ekrani yo'qligi sababli umuman chiqmay qolgan edi.
+- **Tanishtiruv** (tugmalarni tushuntirish, ovozli) yangi mehmonga yana chiqadi — u ham shu sababdan to'xtab qolgan edi;
+  kanal oynasi tanishtiruv tugagach chiqadi.
+- **Universal ustalar** — Profilda: mehmonga kirish tugmasi ostida, kirganga "Boshqa sozlamalar" ichida birinchi qator.
+
 ## 2026-11-21 · Bosh sahifa — darhol chat (`feat/chat-home`)
 
 Ega (master prompt, 2-bosqich): "reklama sahifasi kerak emas — kirgan zahoti chat; jaydari tilda so'rasin; AI kimligini

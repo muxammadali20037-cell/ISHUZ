@@ -5,7 +5,8 @@ import { USERS, asGuest, asMode, loginAs, stack } from "../support";
  * Ega (2026-11-18): "har kirganda ilovaga Telegram kanalga ulanish tugmasi chiqsin, bossa kanalga olib borsin".
  *  - har kirishda (sessiyada) bir marta, ~2.5 s dan keyin; "Keyinroq" — shu sessiyada qayta chiqmaydi, yangi kirishda yana;
  *  - "Kanalga o'tish" — kanal ochiladi va 30 kun so'ralmaydi;
- *  - tanishtiruv tugamagan bo'lsa va admin/kirish sahifalarida — chiqmaydi.
+ *  - admin/kirish sahifalarida — chiqmaydi; birinchi ochilishda (2026-11-21 dan til ekranisiz) — chiqadi, tanishtiruv bo'lsa
+ *    u tugagach.
  */
 async function withoutJoinedCookie(ctx: BrowserContext) {
   const keep = (await ctx.cookies()).filter((c) => c.name !== "ib_channel");
@@ -51,19 +52,19 @@ test("kanal taklifi: har kirishda bir marta; «Keyinroq» — yana keyingi kiris
   await expect(third.locator("[data-channel-prompt]")).toHaveCount(0);
 });
 
-test("kanal taklifi: tanishtiruv tugamagan va kirish sahifasida — chiqmaydi", async ({ page, context }) => {
+test("kanal taklifi: kirish sahifasida chiqmaydi; birinchi ochilishda (til ekranisiz, darhol chat) — chiqadi", async ({ page, context }) => {
   await asGuest(context);
   await withoutJoinedCookie(context);
   await page.goto("/auth");
   await page.waitForTimeout(3500);
   await expect(page.locator("[data-channel-prompt]")).toHaveCount(0);
 
+  // 2026-11-21: birinchi ochilishda xush kelibsiz ekrani yo'q ("ib_intro" yo'q) — ega: "kirgandan keyin chiqsin"
   const host = new URL(stack.app).hostname;
   const keep = (await context.cookies()).filter((c) => c.name !== "ib_intro");
   await context.clearCookies();
   await context.addCookies(keep.map((c) => ({ ...c, domain: host })));
   const fresh = await context.newPage();
   await fresh.goto("/");
-  await fresh.waitForTimeout(3500);
-  await expect(fresh.locator("[data-channel-prompt]")).toHaveCount(0);
+  await expect(fresh.locator("[data-channel-prompt]")).toBeVisible({ timeout: 10_000 });
 });

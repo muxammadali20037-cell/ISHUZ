@@ -1640,19 +1640,7 @@
     "close": "Yopish"
   },
   "guided": {
-    "hello_guest": "Ish kerakmi yoki ishchi?",
-    "hello_worker": "Qanday ish qidiryapsiz?",
-    "hello_employer": "Sizga qanday ishchi kerak?",
-    "hello_sub": "Yozing — topib beramiz.",
-    "examples_label": "Masalan, bosing:",
-    "ex_guest_1": "Menga haydovchi kerak",
-    "ex_guest_2": "Men elektrikman, ish kerak",
-    "ex_worker_1": "Men haydovchiman, ish kerak",
-    "ex_worker_2": "Samarqandda sotuvchi bo'lib ishlamoqchiman",
-    "ex_worker_3": "O'zim haqimda e'lon bermoqchiman",
-    "ex_employer_1": "Menga haydovchi kerak",
-    "ex_employer_2": "Toshkentdan 2 ta quruvchi kerak",
-    "ex_employer_3": "Vakansiya joylamoqchiman",
+    "hello": "O'zingizga mos ishni yoki ishchini toping",
     "placeholder_guest": "Masalan: menga haydovchi kerak",
     "placeholder_worker": "Masalan: men oshpazman",
     "placeholder_employer": "Masalan: menga sotuvchi kerak",
@@ -1684,7 +1672,6 @@
     "post_worker_btn": "E'lon tayyorlash",
     "post_employer_btn": "Vakansiya joylash",
     "post_who_worker": "O'zim haqimda",
-    "post_who_employer": "Vakansiya",
-    "masters_link": "Santexnik, elektrik — Universal ustalar"
+    "post_who_employer": "Vakansiya"
   }
 }
