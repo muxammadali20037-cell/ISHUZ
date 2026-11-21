@@ -46,7 +46,8 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
   const shownEmpty = !shown.workers.length && !shown.vacancies.length && !shown.masters.length;
   // boshqa roldagi e'lonlar ko'rsatilmaydi — faqat soni va bir bosishda o'sha rolga o'tish (e'lon "yo'qolib qoldi" deb o'ylamasin)
   const otherCount = employer ? mine.workers.length + allMasters.length : worker ? mine.vacancies.length : 0;
-  const postHref = employer ? "/post/vacancy?ai=1" : "/ai/post";
+  // ishchi e'loni — chatning o'zida (3-bosqich); vakansiya — yordamchi bilan alohida ekran
+  const postHref = employer ? "/post/vacancy?ai=1" : "/chat?post=new";
 
   return (
     <Shell>

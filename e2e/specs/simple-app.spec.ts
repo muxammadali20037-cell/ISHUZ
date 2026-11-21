@@ -77,7 +77,8 @@ test("mehmon: «Sizga mos» kirishga majburlamaydi — e'lon berishga taklif", a
   await page.goto("/cabinet/matches");
   const invite = page.locator("[data-matches-invite='worker']");
   await expect(invite).toContainText("O'zingiz haqingizda e'lon bering");
-  await expect(invite.getByRole("link", { name: "E'lon berish" })).toHaveAttribute("href", "/ai/post");
+  // 2026-11-21 (3-bosqich): e'lon chatning o'zida
+  await expect(invite.getByRole("link", { name: "E'lon berish" })).toHaveAttribute("href", "/chat?post=new");
 });
 
 test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma rolga qarab, orqaga tugmasi yo'q", async ({ page, context }) => {
@@ -142,9 +143,18 @@ test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — �
   await box.press("Enter");
   await settled();
   await expect(last()).toHaveAttribute("data-guided-ai", "none");
-  const post = last().locator("a[data-quick-post='worker']");
+  // "O'zingiz haqingizda e'lon qoldiring" — shu chatda, qidirilgan so'z bilan boshlanadi (3-bosqich)
+  const post = last().locator("[data-quick-post='worker']");
   await expect(post).toContainText("O'zingiz haqingizda e'lon qoldiring");
-  await expect(post).toHaveAttribute("href", "/ai/post?q=Kosmonavt");
+  // telefon emulyatsiyasi: yozish maydoni fokusda (klaviatura "ochiq", pastki menyu yashirin) — sichqoncha bosganda fokus
+  // ketib, menyu qaytadi va tugma joyidan siljiydi; haqiqiy telefonda bosish tegilgan joyga tushadi. Avval klaviatura yopiladi
+  await page.locator("#start-chat-text").blur();
+  await expect(page.locator("nav.bottom-nav")).toBeVisible();
+  await post.click();
+  await settled();
+  await expect(last()).toHaveAttribute("data-guided-ai", "post-profession");
+  await expect(last()).toContainText("«Kosmonavt» degan kasbni tushunmadim.");
+  await expect(page).toHaveURL(/\/chat$/);
 });
 
 test("«Universal ustalar» — Profilda (chat juda sodda; ega, 2026-11-21: «Profil ichiga»), mehmonga ham", async ({ page, context }) => {
@@ -163,18 +173,17 @@ test("«Universal ustalar» — Profilda (chat juda sodda; ega, 2026-11-21: «Pr
   await expect(page).toHaveURL(/\/ustalar$/);
 });
 
-test("E'lon berish (ish izlovchi): «O'zim haqimda e'lon bermoqchiman» → yordamchi bilan o'zi haqida e'lon", async ({ page, context }) => {
+test("E'lon berish (ish izlovchi): «O'zim haqimda e'lon bermoqchiman» → shu chatda savollar (3-bosqich; to'liq yo'l — chat-post.spec)", async ({ page, context }) => {
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
   await page.goto("/chat");
   const box = page.locator("form[data-hydrated] #start-chat-text");
   await box.fill("O'zim haqimda e'lon bermoqchiman");
   await box.press("Enter");
-  // niyat gapining o'zi yordamchiga uzatilmaydi — u o'zi "Qanday ish qilasiz?" deb so'raydi
-  await expect(page.locator("[data-guided-post-to='worker']")).toHaveAttribute("href", "/ai/post");
-  await page.locator("[data-guided-post-to='worker']").click();
-  await page.waitForURL((u) => new URL(u).pathname === "/ai/post");
-  await expect(page.locator("[data-ai-post-greeting]")).toContainText("Qanday ish qilasiz?");
+  // alohida ekranga o'tmaydi — shu chatda "Qanday ish qilasiz?"
+  await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "post-profession");
+  await expect(page.locator("[data-guided-ai]").last()).toContainText("Qanday ish qilasiz?");
+  await expect(page).toHaveURL(/\/chat$/);
 });
 
 test("E'lon berish (ish beruvchi): «Vakansiya joylamoqchiman» → yordamchi bilan vakansiya (alohida ekran)", async ({ page, context }) => {

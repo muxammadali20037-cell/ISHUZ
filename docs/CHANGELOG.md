@@ -1,5 +1,24 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · E'lon chatning o'zida (3-bosqich, `feat/chat-post`)
+
+Ega (master prompt, 3-bosqich): "e'lon berish shu chatning o'zida: bittadan savol, so'ng tayyor e'lon kartasi va «Joylash»
+tugmasi; rozilik — tugma ostida yozuv". Tanlov: "kasb, viloyat, ism, tajriba — tajriba bormi degan joyiga yozsin;
+«raqamingizni to'lagan» deyilmasin".
+
+- **Ishchi e'loni chatda**: "o'zim haqimda e'lon bermoqchiman" (yoki "E'lonlarim"dagi "+ E'lon joylash", "topilmadi"
+  blokidagi "O'zingiz haqingizda e'lon qoldiring") — alohida ekranga o'tmaydi. Savollar bittadan: kasb (yoziladi;
+  tushunilmasa — yozilganidek qaytarib, yana so'raladi; guruh bo'lsa — "aynan qaysi biri?" tugmalari) → viloyat
+  (tugmalar) → ism (hisobda bo'lsa so'ralmaydi) → tajriba (yozadi — "2 yil", "6 oy", "yo'q" — yoki tugma) → telefon
+  (yoziladi, majburiy; chala bo'lsa qayta so'raladi). Gapda aytilgani qayta so'ralmaydi ("Men oshpazman, …").
+- **Tayyor karta**: kasb, ism, joy, e'lon matni (faqat aytilganlardan), raqam o'rtasi yopiq. Ostida "Joylash" va
+  rozilik: "«Joylash»ni bossangiz, e'loningiz va telefon raqamingiz ish beruvchilarga ko'rsatilishiga rozilik
+  bildirasiz." (to'lov haqida so'z yo'q).
+- **Mehmon**: "Joylash" — bir marta kirib qaytadi (javoblar shu qurilmada saqlanadi), chatda o'sha karta qaytadi.
+- Natija chatda: joylandi / tekshiruvda / rad etildi / to'lov kerak — haqiqiy holat bilan.
+- E'lon paytida boshqa narsa yozilsa ("menga haydovchi kerak", "vakansiya joylamoqchiman") — e'lon to'xtaydi, oddiy so'rov.
+- Vakansiya — hozircha yordamchi bilan alohida ekranda (o'zgarmadi).
+
 ## 2026-11-21 · Chat juda sodda: bitta yozuv va strelka; kanal — oynada (`feat/chat-simple`)
 
 Ega (telefondagi rasm bilan): "panel to'lib qolgan, ortiqcha narsalar kerakmas — bitta strelka pastga belgisi,

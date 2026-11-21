@@ -16,12 +16,12 @@ export async function generateMetadata(): Promise<Metadata> {
  * /chat — asosiy ekran (pastki menyuning "Qidiruv" bo'limi; mehmon uchun "/" ham shu chat). AI maqsadni yozilgan matndan
  * o'zi aniqlaydi (ega, 2026-11-21); rejim faqat salom matni va misollar uchun (rejimi yo'q mehmon — "Ish kerakmi yoki ishchi?").
  */
-export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
+export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[] }> }) {
   const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
   if (session?.profile.is_blocked) redirect("/blocked");
   return (
     <Shell>
-      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} />
+      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null} />
     </Shell>
   );
 }

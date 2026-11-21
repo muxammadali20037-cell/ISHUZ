@@ -23,20 +23,15 @@ async function say(page: Page, text: string) {
   await page.locator("#ai-post-text").press("Enter");
 }
 
-test("mehmon (telefon): bosh sahifa (chat) → «e'lon bermoqchiman» → yordamchi → «men o'qituvchiman» → variant → oyna → ko'rinishi → kirish → joylandi", async ({ page, context }) => {
+test("mehmon (telefon): yordamchi sahifasi (/ai/post) → «men o'qituvchiman» → variant → oyna → ko'rinishi → kirish → joylandi", async ({ page, context }) => {
   test.setTimeout(120_000);
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
   await asMode(context, "worker");
   await asGuest(context);
   await page.setViewportSize({ width: 390, height: 844 });
 
-  // 2026-11-21: bosh sahifa — chat; "e'lon bermoqchiman" deb yozilsa — "E'lon tayyorlash" tugmasi
-  await page.goto("/");
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("O'zim haqimda e'lon bermoqchiman");
-  await box.press("Enter");
-  await page.locator("[data-guided-post-to='worker']").click();
-  await page.waitForURL(/\/ai\/post$/);
+  // 2026-11-21 (3-bosqich): chatdagi e'lon shu chatning o'zida (chat-post.spec); /ai/post — alohida yordamchi sahifasi
+  await page.goto("/ai/post");
   await expect(page.getByRole("heading", { level: 1, name: "E'lon joylash" })).toBeVisible();
   await expect(page.locator("[data-ai-post-greeting]")).toContainText("Qanday ish qilasiz?");
 

@@ -1,5 +1,7 @@
 import type { AppMode } from "@/features/mode/mode";
 import { NO_FILTERS, type QuickFilters, type QuickForm, type QuickMode, type QuickOption, type QuickResult } from "@/features/find/quick-types";
+import type { PostChoiceGroup, PostOutcome, PostPreview } from "@/features/find/quick-post-types";
+import type { PostAsk } from "./post-logic";
 
 /** Asosiy ekrandagi chat — sof qismlar (turlar va qaror qoidalari): mijoz komponenti va unit test uchun */
 
@@ -22,11 +24,20 @@ export interface Draft {
 }
 
 export type AiPart =
-  | { kind: "thinking" }
+  | { kind: "thinking"; text?: string }
   | { kind: "searching"; mode: Role }
   | { kind: "reply"; text: string }
   | { kind: "ask"; ask: Ask; mode: Role | null; word?: string; profession?: string; options?: QuickOption[] }
   | { kind: "post"; who: "worker" | "employer" | null; query: string }
+  /**
+   * Chatda ishchi e'loni (3-bosqich): bittadan savol. `word` — tushunilmagan kasb; `retry` — javob tushunilmadi (qayta
+   * so'ralmoqda); `question`/`groups` — "aynan qaysi biri?" variantlari; `options` — viloyat tugmalari
+   */
+  | { kind: "post-ask"; ask: PostAsk; intro?: boolean; word?: string; retry?: boolean; question?: string; groups?: PostChoiceGroup[]; options?: QuickOption[] }
+  /** "E'loningiz shunday ko'rinadi" — "Joylash" tugmasi va rozilik yozuvi bilan */
+  | { kind: "post-preview"; preview: PostPreview }
+  /** joylash natijasi (haqiqiy holat) */
+  | { kind: "post-done"; outcome: PostOutcome }
   | { kind: "results"; mode: Role; result: QuickResult; query: string; draft: Draft }
   | { kind: "error"; message: string };
 
