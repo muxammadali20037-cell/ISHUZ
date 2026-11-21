@@ -92,22 +92,31 @@ test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi»
     // savol: viloyatlar tugmalari (uzun nomlar ham — "Qoraqalpog'iston Respublikasi") sig'adi
     await expect(last).toHaveAttribute("data-guided-ai", "ask-place");
     if (zoom) await zoomText(page, zoom);
-    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi)
+    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi). Chat ekrani kamida ekran
+    // balandligida (100dvh) — balandlik oshgach sahifa tepaga qaytariladi (yopishqoq sarlavha ostida yozuv qolmasin)
     await fullHeight(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(200);
     expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
     await page.locator("[data-guided-place='tashkent_city']").last().click();
     await expect(last).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
-    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi)
+    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi). Chat ekrani kamida ekran
+    // balandligida (100dvh) — balandlik oshgach sahifa tepaga qaytariladi (yopishqoq sarlavha ostida yozuv qolmasin)
     await fullHeight(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(200);
     expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
     // hech narsa topilmagan javob: qisqa xabar va tugmalar ham sig'adi
     await box.fill("Termizda kosmonavt bo'lib ishlamoqchiman");
     await box.press("Enter");
     await expect(last).toHaveAttribute("data-guided-ai", /^(none|ask-profession)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
-    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi)
+    // butun suhbat bir ekranda (yopishqoq yozish maydoni ostidan o'tmasin — fullHeight izohi). Chat ekrani kamida ekran
+    // balandligida (100dvh) — balandlik oshgach sahifa tepaga qaytariladi (yopishqoq sarlavha ostida yozuv qolmasin)
     await fullHeight(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(200);
     expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
   }
 });

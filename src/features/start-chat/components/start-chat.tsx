@@ -261,13 +261,14 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
         <Ai kind="ask-place">
           <Say>{t(`easy.guided.ask_place_${mode}`)}</Say>
           {open && part.options?.length ? (
-            <ul className="grid grid-cols-2 gap-2" data-guided-places>
+            // o'z kengligidagi tugmalar (ikki ustunli to'r emas): uzun nom ("Qoraqalpog'iston") so'z o'rtasida bo'linmaydi
+            <ul className="flex flex-wrap gap-2" data-guided-places>
               {part.options.map((o) => (
-                <li key={o.value} className="flex">
+                <li key={o.value} className="flex max-w-full">
                   <button
                     type="button"
                     onClick={() => chat.pickPlace(o)}
-                    className="press flex min-h-11 w-full items-center gap-1.5 rounded-xl border border-border bg-card px-3 py-2 text-left text-sm font-semibold text-foreground hover:bg-secondary"
+                    className="press flex min-h-11 max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-left text-sm font-semibold text-foreground hover:bg-secondary"
                     data-guided-place={o.value}
                   >
                     <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
