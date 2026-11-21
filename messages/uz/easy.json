@@ -133,7 +133,23 @@
     "group_self_many": "O'zim haqimdagi e'lonlar ({count})",
     "add_listing": "Yana e'lon joylash",
     "other_role_worker": "Ish izlovchi sifatida {count} ta e'loningiz bor",
-    "other_role_employer": "Ish beruvchi sifatida {count} ta vakansiyangiz bor"
+    "other_role_employer": "Ish beruvchi sifatida {count} ta vakansiyangiz bor",
+    "bucket_active": "Faol",
+    "bucket_closed": "Yopilgan",
+    "bucket_expired": "Tugagan",
+    "buckets_label": "E'lonlar holati",
+    "empty_active": "Faol e'loningiz yo'q.",
+    "empty_closed": "Yopilgan e'lon yo'q.",
+    "empty_expired": "Muddati tugagan e'lon yo'q.",
+    "more_title": "Yana",
+    "matches_hint": "E'loningizga mos ishlar",
+    "more_settings": "Boshqa sozlamalar",
+    "language_row": "Til",
+    "phone_none": "Telefon raqami qo'shilmagan",
+    "phone_add": "Qo'shish",
+    "phone_verified": "Tasdiqlangan",
+    "edit_name": "Ismni o'zgartirish",
+    "pro_link": "PRO kuzatuv"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -494,7 +510,7 @@
     "tab_my_listings": "E'lonlarim",
     "tab_workers": "Ishchilar",
     "tab_employers": "Ish beruvchilar",
-    "tab_chat": "Izlash/E'lon",
+    "tab_chat": "Qidiruv",
     "tab_matches": "Sizga mos"
   },
   "moderation": {

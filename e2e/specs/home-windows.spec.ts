@@ -62,7 +62,7 @@ test("bosh sahifa (ish izlovchi): rasmli oynalar va tez yo'l plitkalari yo'q —
   await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
-test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da, «Barcha nomzodlar» — pastki menyuda; tepada «Vakansiya joylash»", async ({ page, context }) => {
+test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da; tepada «Vakansiya joylash»", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
@@ -74,9 +74,9 @@ test("bosh sahifa (ish beruvchi): tez yo'llar «Bo'limlar»da, «Barcha nomzodla
   await expect(item("near")).toContainText("Yaqin atrofdagi ishchi");
   await expect(item("exp")).toContainText("Tajribali ishchi");
   await expect(item("remote")).toContainText("Masofaviy ishchi");
-  // barcha nomzodlar — pastki menyudagi "Ishchilar" (avval "Nomzodlar") (bo'limlarda takrorlanmaydi, ega 2026-11-17)
+  // barcha nomzodlar — "Qidiruv" (chat) orqali (2026-11-21: menyu 3 ta bo'lim); bo'limlarda takrorlanmaydi
   await expect(item("candidates")).toHaveCount(0);
-  await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Ishchilar" })).toBeVisible();
+  await expect(page.locator("nav.bottom-nav").getByRole("link", { name: "Qidiruv" })).toBeVisible();
   // bitta tugma — yordamchi bilan joylash; ingichka (44–48 px), qidiruvdan kichikroq (ega, 2026-11-17)
   const post = page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true });
   await expect(post).toHaveCount(1);

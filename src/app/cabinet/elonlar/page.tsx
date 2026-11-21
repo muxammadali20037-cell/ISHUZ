@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import type { ReactNode } from "react";
+import { ChevronRight, Plus, Sparkles } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
+import { cn } from "@/lib/utils";
 import { requireSession } from "@/features/auth/session";
 import { getMode } from "@/features/mode/server";
 import { Shell } from "@/components/shared/shell";
 import { getMyListings } from "@/features/cabinet/queries";
 import { getMyMasterListings } from "@/features/masters/queries";
 import { MyListingsSection } from "@/features/cabinet/components/my-listings";
+import { LISTING_BUCKETS, bucketSlug, masterBucket, parseBucket, vacancyBucket, workerBucket } from "@/features/cabinet/listing-buckets";
 import { RoleSwitchRow } from "@/features/landing/role-switch-row";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -16,45 +19,98 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * /cabinet/elonlar — "E'lonlarim": o'zi joylagan e'lonlar (o'zi haqida, vakansiyalar, usta e'lonlari) va ularning haqiqiy
- * holati, amallar bilan (ega, 2026-11-17: "e'lonlarim — bossa o'zi joylagan e'lonlar ichiga kirsin, holatlarini ko'rsin").
- * Bosh sahifadagi "E'lonlarim" qatoridan ochiladi; Profildagi "Mening e'lonlarim" bo'limi bilan bir xil ko'rinish.
+ * /cabinet/elonlar — "E'lonlarim" (pastki menyuning 2-bo'limi). Ega, 2026-11-21 (master prompt): tepada 3 ta yorliq —
+ * Faol · Yopilgan · Muddati tugagan (?holat=faol|yopilgan|tugagan, JS'siz oddiy havolalar), har birida soni. Pastda
+ * menyudan bu yerga ko'chgan "Sizga mos" (ish izlovchida).
  */
-export default async function MyListingsPage() {
+export default async function MyListingsPage({ searchParams }: { searchParams: Promise<{ holat?: string | string[] }> }) {
   const session = await requireSession("/cabinet/elonlar");
-  const [{ t }, mine, allMasters, mode] = await Promise.all([getT(), getMyListings(session), getMyMasterListings(session.userId), getMode()]);
-  // rollar aralashmaydi (ega, 2026-11-20: "bitta odam ham ishchi, ham ish beruvchi bo'lsa — adashmasin, bir-biriga ko'rinmasin"):
-  // ish beruvchi rejimida faqat vakansiyalar, ish izlovchida — o'zi haqidagi va usta e'lonlari
-  // (rejim hali tanlanmagan bo'lsa — hammasi)
+  const [{ t }, mine, allMasters, mode, sp] = await Promise.all([getT(), getMyListings(session), getMyMasterListings(session.userId), getMode(), searchParams]);
+  // rollar aralashmaydi (ega, 2026-11-20): ish beruvchi rejimida faqat vakansiyalar, ish izlovchida — o'zi haqidagi va
+  // usta e'lonlari (rejim hali tanlanmagan bo'lsa — hammasi)
   const employer = mode === "employer";
   const worker = mode === "worker";
   const workers = employer ? [] : mine.workers;
   const vacancies = worker ? [] : mine.vacancies;
   const masters = employer ? [] : allMasters;
-  const paid = mine.paid;
-  const empty = !workers.length && !vacancies.length && !masters.length;
+  const bucket = parseBucket(sp.holat);
+
+  const inBucket = {
+    workers: (b: string) => workers.filter((w) => workerBucket({ status: w.status, listedUntil: w.listedUntil, moderationState: w.moderation.state }) === b),
+    vacancies: (b: string) => vacancies.filter((v) => vacancyBucket(v.status) === b),
+    masters: (b: string) => masters.filter((m) => masterBucket(m.status) === b),
+  };
+  const count = (b: string) => inBucket.workers(b).length + inBucket.vacancies(b).length + inBucket.masters(b).length;
+  const shown = { workers: inBucket.workers(bucket), vacancies: inBucket.vacancies(bucket), masters: inBucket.masters(bucket) };
+  const none = !workers.length && !vacancies.length && !masters.length;
+  const shownEmpty = !shown.workers.length && !shown.vacancies.length && !shown.masters.length;
   // boshqa roldagi e'lonlar ko'rsatilmaydi — faqat soni va bir bosishda o'sha rolga o'tish (e'lon "yo'qolib qoldi" deb o'ylamasin)
   const otherCount = employer ? mine.workers.length + allMasters.length : worker ? mine.vacancies.length : 0;
+  const postHref = employer ? "/post/vacancy?ai=1" : "/ai/post";
+
   return (
     <Shell>
-      <div className="container-narrow space-y-4 py-6 text-lg sm:py-8" data-my-listings-page>
-        <div>
-          <h1 className="text-page font-extrabold tracking-tight sm:text-page-lg">{t("easy.home2.my_listings")}</h1>
-          <p className="mt-1 text-base text-muted-foreground">{t("easy.cabinet.page_sub")}</p>
-        </div>
-        <MyListingsSection workers={workers} vacancies={vacancies} paid={paid} masters={masters} addMore />
-        {empty ? (
+      <div className="container-narrow space-y-4 py-6 text-lg sm:py-8" data-my-listings-page data-bucket={bucket}>
+        <h1 className="text-page font-extrabold tracking-tight sm:text-page-lg">{t("easy.home2.my_listings")}</h1>
+
+        {/* yorliqlar: Faol · Yopilgan · Muddati tugagan */}
+        <nav aria-label={t("easy.cabinet.buckets_label")} className="flex gap-1 rounded-xl bg-secondary p-1" data-listing-buckets>
+          {LISTING_BUCKETS.map((b) => {
+            const active = b === bucket;
+            const n = count(b);
+            return (
+              <Link
+                key={b}
+                href={b === "active" ? "/cabinet/elonlar" : `/cabinet/elonlar?holat=${bucketSlug(b)}`}
+                scroll={false}
+                aria-current={active ? "page" : undefined}
+                data-bucket-tab={b}
+                className={cn(
+                  // tor ekranda (320 px) soni nom ostiga tushadi — nom kesilmaydi
+                  "press flex min-h-11 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg px-2 text-sm font-semibold max-[359px]:flex-col max-[359px]:gap-0 max-[359px]:px-1 max-[359px]:py-1",
+                  active ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground",
+                )}
+              >
+                <span className="truncate">{t(`easy.cabinet.bucket_${b}`)}</span>
+                <span className={cn("shrink-0 rounded-md px-1.5 text-xs font-bold", active ? "bg-primary-soft text-primary-ink" : "bg-card/70")}>{n}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {none ? (
+          <p className="rounded-2xl bg-secondary p-4 text-base text-muted-foreground" data-my-listings-empty>
+            {t("easy.cabinet.no_listings")}
+          </p>
+        ) : shownEmpty ? (
+          <p className="rounded-2xl bg-secondary p-4 text-base text-muted-foreground" data-bucket-empty>
+            {t(`easy.cabinet.empty_${bucket}`)}
+          </p>
+        ) : (
+          <MyListingsSection workers={shown.workers} vacancies={shown.vacancies} paid={mine.paid} masters={shown.masters} addMore={bucket === "active"} />
+        )}
+
+        {none || (bucket === "active" && !shown.workers.length) ? (
           <Link
-            href={employer ? "/post/vacancy?ai=1" : "/ai/post"}
+            href={postHref}
             prefetch={false}
             data-track="post_start"
             data-track-to="my_listings"
+            data-my-listings-post
             className="press flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-soft px-4 text-base font-bold text-primary-ink hover:bg-primary/15"
           >
             <Plus className="size-5" strokeWidth={2.6} aria-hidden />
             {employer ? t("easy.matches.employer_cta") : t("easy.home2.post_cta")}
           </Link>
         ) : null}
+
+        {/* menyudan ko'chgan bo'lim (2026-11-21): ish izlovchida "Sizga mos". Arizalar yo'q — bog'lanish faqat telefon orqali */}
+        {!employer ? (
+          <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-my-listings-more>
+            <MoreRow href="/cabinet/matches" icon={<Sparkles />} title={t("easy.nav.tab_matches")} hint={t("easy.cabinet.matches_hint")} tag="matches" />
+          </ul>
+        ) : null}
+
         {otherCount ? (
           <RoleSwitchRow
             tone="neutral"
@@ -66,5 +122,22 @@ export default async function MyListingsPage() {
         ) : null}
       </div>
     </Shell>
+  );
+}
+
+function MoreRow({ href, icon, title, hint, tag }: { href: string; icon: ReactNode; title: string; hint: string; tag: string }) {
+  return (
+    <li>
+      <Link href={href} data-my-listings-link={tag} className="press flex min-h-16 items-center gap-3 px-4 py-3 hover:bg-secondary/60">
+        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink [&_svg]:size-5" aria-hidden>
+          {icon}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-base font-bold leading-tight">{title}</span>
+          <span className="block text-sm text-muted-foreground">{hint}</span>
+        </span>
+        <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
+      </Link>
+    </li>
   );
 }

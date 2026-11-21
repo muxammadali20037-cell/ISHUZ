@@ -55,8 +55,9 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kasb, tuman, maosh…");
     await expectAllOpen(page, await linksOn(page, ["/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=jobs"]));
 
-    // rolni almashtirish — "Profil" sahifasidagi bitta tugma
+    // rolni almashtirish — "Profil" → "Boshqa sozlamalar" ichidagi bitta tugma (2026-11-21)
     await page.goto("/cabinet");
+    await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Kim kerak: kasb, tuman…");
@@ -64,6 +65,7 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
 
     // va orqaga
     await page.goto("/cabinet");
+    await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
     await expect(page.locator("[data-role-splash='worker']")).toHaveText("Siz ish izlovchi paneliga o'tdingiz");
     await page.waitForURL((u) => new URL(u).pathname === "/chat");

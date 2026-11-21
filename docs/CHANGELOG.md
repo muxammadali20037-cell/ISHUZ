@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · Menyu 3 ta bo'lim, E'lonlarim yorliqlari, sodda Profil (`feat/simple-3-tabs`)
+
+Ega (master prompt, ekranma-ekran tanlovlar): "asosiy navigatsiya faqat 3 ta bo'lim; E'lonlarimda faol, yopilgan,
+muddati tugagan; profil juda sodda". Keyin: "bir-biriga ariza topshirish bo'lmaydi — bog'lanish faqat telefon orqali".
+
+- **Pastki menyu**: ikkala rejimda bir xil — Qidiruv · E'lonlarim · Profil (avval 5 ta, rejimga qarab). "Qidiruv" —
+  AI yordamchi bilan chat (/chat), ko'k pilyula; odamlar o'rtasidagi yozishma bilan adashmasligi uchun shunday nomlandi.
+  Ishlar/ishchilar ro'yxatlari, e'lon sahifalari va e'lon berish — "Qidiruv" bo'limida; "Sizga mos" — "E'lonlarim"da.
+  Arizalar va takliflar son belgilari menyudan olib tashlandi. Kompyuterning yon menyusi: Qidiruv · E'lonlarim ·
+  Xabarlar · Profil.
+- **E'lonlarim**: tepada 3 ta yorliq — Faol · Yopilgan · Tugagan (`?holat=`), har birida soni; 320 px da son nom
+  ostiga tushadi. Pastda ish izlovchiga "Sizga mos".
+- **Profil**: ism, rol, telefon (tasdiqlangan belgisi bilan), ismni o'zgartirish, til, ish beruvchida to'lovlar va
+  chiqish. Qolgan hamma narsa (rolni almashtirish, saqlanganlar, xabarlar, xabarnomalar, PRO kuzatuv, sozlamalar,
+  yordam) — bitta yig'ma "Boshqa sozlamalar" ichida. "Yuborgan arizalarim" va "Ishga takliflar" qatorlari olib tashlandi.
+- Tanishtiruvda "Yordamchi" qadami endi "Qidiruv" bo'limini yoritadi.
+
 ## 2026-11-21 · Foydalanuvchi sifatida tekshiruv: topilgan xatolar tuzatildi (`fix/qa-findings`)
 
 Ega: "odam sifatida ilovaga kir, odamlar nima qilmoqchi bo'lsa — hammasini qilib ko'r, xato top". Mahalliy stendda

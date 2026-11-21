@@ -4,7 +4,7 @@ import { useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { ChevronDown, Globe } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { LOCALES, LOCALE_LABELS, type Locale } from "@/lib/i18n/config";
+import { LOCALES, LOCALE_LABELS, LOCALE_NAMES, type Locale } from "@/lib/i18n/config";
 import { setLocale } from "@/features/auth/actions";
 import { cn } from "@/lib/utils";
 
@@ -44,7 +44,6 @@ export function LanguageSwitcher({ className, size = "sm" }: { className?: strin
   );
 }
 
-const LOCALE_NAMES: Record<Locale, string> = { uz: "O'zbekcha", oz: "Ўзбекча", ru: "Русский", en: "English" };
 
 /** Ixcham til tanlagich (telefonda ham sig'adi): globus + qisqa nom, ochilganda to'liq nomlar */
 export function LanguageSelect({ className, tone = "light" }: { className?: string; tone?: "light" | "dark" }) {

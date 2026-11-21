@@ -28,10 +28,11 @@ async function vacancy(title: string) {
   return { id: v!.id, node: n!.id };
 }
 
-/** S2: "Saqlanganlar" — Profil (kabinet) ichida: pastki menyudan Profil → ro'yxatdagi "Saqlanganlar" (2026-11-17: yig'ilmagan) */
+/** S2: "Saqlanganlar" — Profil ichida: pastki menyudan Profil → "Boshqa sozlamalar" (2026-11-21: yig'ma) → "Saqlanganlar" */
 async function openSaved(page: Page) {
   await page.getByRole("navigation").last().getByRole("link", { name: "Profil" }).click();
   await page.waitForURL("**/cabinet");
+  await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
   await page.getByRole("main").getByRole("link", { name: "Saqlanganlar" }).click();
 }
 

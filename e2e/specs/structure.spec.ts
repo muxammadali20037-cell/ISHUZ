@@ -105,17 +105,18 @@ test.describe("tuzilma", () => {
     await expect(main.getByText(TITLE)).toBeVisible();
   });
 
-  test("profil: ism, rol, haqiqiy to'liqlik foizi va faoliyat sonlari; menyu guruhlarga bo'lingan", async ({ page, context }) => {
+  test("profil (2026-11-21, sodda): ism, rol, telefon qatori; havolalar — «Boshqa sozlamalar» ichida", async ({ page, context }) => {
     await loginAs(context, WRK);
     await page.goto("/cabinet");
-    const [w] = await sql<{ completeness: number }>("select completeness from public.worker_profiles where profile_id = $1", [WRK]);
     const main = page.getByRole("main");
     await expect(main.getByRole("heading", { level: 2, name: "Jasur Ishchi" })).toBeVisible();
-    await expect(main.getByText(`Profil to'liqligi: ${w!.completeness}%`)).toBeVisible();
-    const activity = main.getByRole("list", { name: "Faoliyat" });
-    await expect(activity.getByRole("link", { name: /^1\s*Arizalar$/ })).toHaveAttribute("href", "/applications");
-    // 2026-11-17: havolalar — bitta oddiy ro'yxat (yig'ilmagan, guruhlarsiz)
+    await expect(main.locator("[data-profile-card]")).toContainText("Ish izlovchi");
+    await expect(main.locator("[data-profile-phone]")).toBeVisible();
+    await main.locator("[data-fold='more'] [data-fold-toggle]").click();
     await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
+    // arizalar va takliflar yo'q (2026-11-21: "bog'lanish faqat telefon orqali")
+    await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Yuborgan arizalarim" })).toHaveCount(0);
+    await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Ishga takliflar" })).toHaveCount(0);
   });
 
   test("rol tanlash: ikki savol-karta (rasmsiz), bitta bosish, tanlov qurilmada saqlanadi", async ({ page, context }) => {

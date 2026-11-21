@@ -25,27 +25,27 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
   await expect(main).not.toHaveClass(/page-(enter|swap)/);
   await page.waitForLoadState("networkidle");
 
-  await slowNavigation(page, "/search");
+  // 2026-11-21: menyu — Qidiruv · E'lonlarim · Profil; sekin ochiladigan bo'lim — Profil (/cabinet, skelet — loading.tsx)
+  await slowNavigation(page, "/cabinet");
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  await nav.getByRole("link", { name: "Ishchilar" }).click();
+  await nav.getByRole("link", { name: "Profil" }).click();
 
   // javob hali kelmagan: skelet ko'rinadi — xuddi shu lahzada panel va menyu ham joyida
   // (bitta "surat": kutib turib, javob kelgandan keyingi holatni tekshirib qo'ymaslik uchun)
-  const skeleton = page.locator("[data-step-loading]");
-  await page.waitForSelector("[data-step-loading]");
+  const skeleton = page.locator("main [aria-busy='true']");
+  await page.waitForSelector("main [aria-busy='true']");
   const snap = await page.evaluate(() => ({
-    skeleton: !!document.querySelector("[data-step-loading]"),
+    skeleton: !!document.querySelector("main [aria-busy='true']"),
     header: !!document.querySelector("header"),
     nav: !!document.querySelector("nav.fixed"),
     active: document.querySelector("nav.fixed a[aria-current='page']")?.textContent ?? null,
     mainClass: document.querySelector("main")?.className ?? "",
   }));
-  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, active: "Ishchilar" });
+  expect(snap).toMatchObject({ skeleton: true, header: true, nav: true, active: "Profil" });
   expect(snap.mainClass).not.toMatch(/page-(enter|swap)/);
 
   // javob keldi: kontent skelet o'rnida, faqat ochiladi (pastdan ikkinchi marta chiqmaydi)
-  // 2026-11-18: "Ishchilar" — darhol barcha ishchi e'lonlari (kasb tanlash bosqichisiz)
-  await expect(page.getByRole("heading", { level: 1, name: /^Ishchilar:/ })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Profil" })).toBeVisible();
   await expect(skeleton).toHaveCount(0);
   await expect(page.locator("main")).not.toHaveClass(/page-(enter|swap)/);
   await expect(page.locator("header")).toHaveCount(1);
