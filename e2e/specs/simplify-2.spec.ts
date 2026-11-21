@@ -22,23 +22,22 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1 and title like $2", [USERS.employer, `${TAG}%`]);
 });
 
-test("pastki menyu: ish izlovchida mehmonda ham, kirganda ham bir xil 5 ta bo'lim (2026-11-20); «Sohalar» — «Ishlar» bo'limi ichida", async ({ page, context }) => {
-  const TABS = ["Sizga mos", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"];
+test("pastki menyu: mehmonda ham, kirganda ham bir xil 3 ta bo'lim (2026-11-21); /sohalar — «Chat» bo'limida", async ({ page, context }) => {
+  const TABS = ["Chat", "E'lonlarim", "Profil"];
   await asGuest(context);
   await asMode(context, "worker");
-  await page.goto("/");
-  const nav = page.getByRole("navigation").last();
+  await page.goto("/jobs");
+  const nav = page.locator("nav.bottom-nav");
   await expect(nav.getByRole("link")).toHaveText(TABS);
   await page.goto("/sohalar");
   await expect(page.getByRole("heading", { level: 1, name: "Sohalar" })).toBeVisible();
-  // /sohalar — ishlar katalogi: "Ishlar" belgilanadi
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishlar" })).toHaveAttribute("aria-current", "page");
+  // /sohalar — ishlar katalogi (chatdan ochiladi): "Chat" belgilanadi
+  await expect(nav.getByRole("link", { name: "Chat" })).toHaveAttribute("aria-current", "page");
 
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/jobs");
-  const nav2 = page.getByRole("navigation").last();
-  await expect(nav2.getByRole("link")).toHaveText(TABS);
+  await expect(nav.getByRole("link")).toHaveText(TABS);
   // xabarlar — yuqori panelda
   await expect(page.getByRole("banner").getByRole("link", { name: "Xabarlar" })).toBeVisible();
 });
@@ -165,9 +164,10 @@ test("«E'lonlarim» (pastki menyudan): o'zi joylagan e'lonlar va holati; bo'lma
   await expect(page.getByRole("heading", { level: 1, name: "E'lonlarim" })).toBeVisible();
   const active = page.locator("article").filter({ hasText: `${TAG} faol` });
   await expect(active).toContainText(/Faol/);
+  // to'xtatilgan vakansiya — "Yopilgan" yorlig'ida (2026-11-21: Faol · Yopilgan · Muddati tugagan)
   const paused = page.locator("article").filter({ hasText: `${TAG} to'xtatilgan` });
-  await expect(paused).toBeVisible();
-  await expect(paused.locator("p").filter({ hasText: /To'xtatilgan|to'xtatilgan/ }).first()).toBeVisible();
+  await expect(paused).toHaveCount(0);
+  await expect(page.locator("[data-bucket-tab='closed']")).toContainText("1");
   await expect(page.locator("[data-my-listings-empty]")).toHaveCount(0);
   // ixcham (ega, 2026-11-17: "juda katta, tushunarsiz — soddalashtir"): kichik karta, tugmalar kichik va bir qatorda;
   // xabarnoma obunasi va "mos ishchilar" bu yerda yo'q
@@ -182,6 +182,11 @@ test("«E'lonlarim» (pastki menyudan): o'zi joylagan e'lonlar va holati; bo'lma
   for (const c of chips) expect(c.h).toBeLessThanOrEqual(44);
   expect(new Set(chips.map((c) => c.top)).size).toBe(1);
   expect((await active.boundingBox())!.height).toBeLessThan(240);
+  await page.locator("[data-bucket-tab='closed']").click();
+  await page.waitForURL(/holat=yopilgan$/);
+  await expect(paused).toBeVisible();
+  await expect(paused.locator("p").filter({ hasText: /To'xtatilgan|to'xtatilgan/ }).first()).toBeVisible();
+  await expect(active).toHaveCount(0);
 
   // e'loni yo'q ish izlovchi: pastki menyudagi "E'lonlarim" (2026-11-20; avval — bosh sahifadagi qator) → bo'sh holat va "E'lon joylash"
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);

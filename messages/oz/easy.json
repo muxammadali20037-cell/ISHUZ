@@ -133,7 +133,24 @@
     "group_self_many": "Ўзим ҳақимдаги эълонлар ({count})",
     "add_listing": "Яна эълон жойлаш",
     "other_role_worker": "Иш изловчи сифатида {count} та эълонингиз бор",
-    "other_role_employer": "Иш берувчи сифатида {count} та вакансиянгиз бор"
+    "other_role_employer": "Иш берувчи сифатида {count} та вакансиянгиз бор",
+    "bucket_active": "Фаол",
+    "bucket_closed": "Ёпилган",
+    "bucket_expired": "Тугаган",
+    "buckets_label": "Эълонлар ҳолати",
+    "empty_active": "Фаол эълонингиз йўқ.",
+    "empty_closed": "Ёпилган эълон йўқ.",
+    "empty_expired": "Муддати тугаган эълон йўқ.",
+    "more_title": "Яна",
+    "matches_hint": "Эълонингизга мос ишлар",
+    "applications_hint": "Вакансияларингизга келган аризалар",
+    "more_settings": "Бошқа созламалар",
+    "language_row": "Тил",
+    "phone_none": "Телефон рақами қўшилмаган",
+    "phone_add": "Қўшиш",
+    "phone_verified": "Тасдиқланган",
+    "edit_name": "Исмни ўзгартириш",
+    "pro_link": "PRO кузатув"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -494,7 +511,7 @@
     "tab_my_listings": "Эълонларим",
     "tab_workers": "Ишчилар",
     "tab_employers": "Ташкилотлар",
-    "tab_chat": "Излаш",
+    "tab_chat": "Чат",
     "tab_matches": "Сизга мос"
   },
   "moderation": {

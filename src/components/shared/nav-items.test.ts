@@ -38,10 +38,20 @@ describe("menyu: bir vaqtda bitta faol bo'lim", () => {
     });
   }
 
-  it("ish izlovchi: /cabinet/matches — faqat «Sizga mos»", () => {
-    expect(appTabs("worker").filter((i) => i.match("/cabinet/matches", null)).map((i) => i.key)).toEqual(["matches"]);
+  it("3 ta bo'lim: Chat · E'lonlarim · Profil (har rejimda)", () => {
+    for (const mode of ["worker", "employer", null] as const) expect(appTabs(mode).map((i) => i.key)).toEqual(["chat", "my-listings", "profile"]);
   });
-  it("rejim tanlanmagan: /cabinet/matches — «Ishlar» (alohida «Sizga mos» bo'limi yo'q)", () => {
-    expect(appTabs(null).filter((i) => i.match("/cabinet/matches", null)).map((i) => i.key)).toEqual(["jobs"]);
+  const activeKey = (path: string, find: string | null = null) => appTabs("worker").filter((i) => i.match(path, find)).map((i) => i.key);
+  it("«Sizga mos» va arizalar — E'lonlarim ichida", () => {
+    expect(activeKey("/cabinet/matches")).toEqual(["my-listings"]);
+    expect(appTabs("employer").filter((i) => i.match("/employer/applications", null)).map((i) => i.key)).toEqual(["my-listings"]);
+  });
+  it("chatdan ochiladigan ro'yxatlar va e'lonlar — Chat", () => {
+    for (const [p, f] of [["/", null], ["/chat", null], ["/jobs", null], ["/search", "workers"], ["/listing/abc", null], ["/post/vacancy", null], ["/ai/post", null]] as const) {
+      expect(activeKey(p, f), p).toEqual(["chat"]);
+    }
+  });
+  it("hisob sahifalari — Profil", () => {
+    for (const p of ["/cabinet", "/settings", "/notifications", "/billing", "/applications"]) expect(activeKey(p), p).toEqual(["profile"]);
   });
 });

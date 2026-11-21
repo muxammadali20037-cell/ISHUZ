@@ -23,9 +23,9 @@ export type NavMode = "worker" | "employer" | null;
 type Counts = Partial<Record<BadgeKey, number>>;
 
 /**
- * Asosiy menyu (ega, 2026-11-20: "ilova chalkash — pastda faqat Ishchilar, Ishlar, E'lonlarim, Izlash va e'lon berish,
- * Profil"): ikkala rejimda bir xil 5 ta bo'lim, o'rtada — chat ("Izlash/E'lon"). Xabarlar va bildirishnomalar — yuqori
- * panelda. Bo'limlar ro'yxati — nav-items.ts (APP_TABS). Eski manzillar (/ai, /employer, /search…) o'zgarmagan.
+ * Asosiy menyu (ega, 2026-11-21, master prompt): 3 ta bo'lim — Chat · E'lonlarim · Profil, ikkala rejimda bir xil.
+ * Chat — ko'k pilyula (asosiy amal). Xabarlar va bildirishnomalar — yuqori panelda. Bo'limlar ro'yxati — nav-items.ts
+ * (appTabs). Eski manzillar (/ai, /employer, /search…) o'zgarmagan.
  */
 
 /** Markaziy "E'lon" tugmasi (kompyuter: yon menyu va yuqori panel): ish qidiruvchi — o'zi haqida e'lon (CV), ish beruvchi — vakansiya */
@@ -76,9 +76,9 @@ function BottomNavView({ counts, mode, find: urlFind }: { counts?: Counts; mode:
           const active = item.match(path, find);
           const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
           if (item === APP_CHAT) {
-            // o'rtada — chat: ko'k pilyula (asosiy amal), menyu ichida — yozuvni to'smaydi
+            // chat: ko'k pilyula (asosiy amal), menyu ichida — yozuvni to'smaydi
             return (
-              // min-w-0 + truncate: ruscha va katta shriftda (150%) beshta nom ekranga sig'adi — menyu yonga surilmaydi
+              // min-w-0 + truncate: ruscha va katta shriftda (150%) ham nomlar ekranga sig'adi — menyu yonga surilmaydi
               <li key={item.key} className="flex min-w-0 flex-1 justify-center">
                 <Link
                   href={item.href}

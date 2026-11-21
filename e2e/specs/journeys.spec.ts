@@ -67,10 +67,9 @@ for (const vp of [
     const [c] = await sql<{ n: string }>("select count(*) as n from public.worker_profiles where profile_id = $1", [USERS.workerB]);
     expect(Number(c!.n)).toBe(1);
 
-    // kabinetda — o'z e'loni va uning holati
-    await page.goto("/cabinet");
+    // "E'lonlarim" bo'limida (2026-11-21) — o'z e'loni va uning holati
+    await page.goto("/cabinet/elonlar");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
-    await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
     await expect(page.getByText("Buxgalter").first()).toBeVisible();
     await expect(page.getByText(/Qidiruvda ko'rinadi|Tekshiruvda/).first()).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
@@ -137,8 +136,7 @@ for (const vp of [
       await expect(page.locator("[data-seeker-view=visible] [data-seeker-card]")).toContainText("Dilnoza opa");
     }
 
-    await page.goto("/cabinet");
-    await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
+    await page.goto("/cabinet/elonlar");
     await expect(page.getByText("Buxgalter").first()).toBeVisible();
 
     // mehmon qidiruvida — e'lon va oylik maosh

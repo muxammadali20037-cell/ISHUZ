@@ -133,7 +133,24 @@
     "group_self_many": "About me ({count})",
     "add_listing": "Post another listing",
     "other_role_worker": "You have {count} listing(s) as a job seeker",
-    "other_role_employer": "You have {count} vacancy(ies) as an employer"
+    "other_role_employer": "You have {count} vacancy(ies) as an employer",
+    "bucket_active": "Active",
+    "bucket_closed": "Closed",
+    "bucket_expired": "Expired",
+    "buckets_label": "Listing status",
+    "empty_active": "No active listings.",
+    "empty_closed": "No closed listings.",
+    "empty_expired": "No expired listings.",
+    "more_title": "More",
+    "matches_hint": "Jobs that match your listing",
+    "applications_hint": "Applications to your vacancies",
+    "more_settings": "More settings",
+    "language_row": "Language",
+    "phone_none": "No phone number added",
+    "phone_add": "Add",
+    "phone_verified": "Verified",
+    "edit_name": "Change name",
+    "pro_link": "PRO tracking"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",
@@ -494,7 +511,7 @@
     "tab_my_listings": "My listings",
     "tab_workers": "Workers",
     "tab_employers": "Employers",
-    "tab_chat": "Find/Post",
+    "tab_chat": "Chat",
     "tab_matches": "For you"
   },
   "moderation": {

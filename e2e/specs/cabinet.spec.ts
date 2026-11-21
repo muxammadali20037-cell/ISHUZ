@@ -40,9 +40,8 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
   await activeVacancy();
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
-  await page.goto("/cabinet");
-  // e'lonlar yig'ilgan bo'limda ("Mening e'lonlarim — Ko'rish", 2026-11-15)
-  await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
+  // e'lonlar — "E'lonlarim" bo'limida (2026-11-21: pastki menyuning 2-bo'limi, "Faol" yorlig'i)
+  await page.goto("/cabinet/elonlar");
   await expect(page.getByText("Faol — qidiruvda ko'rinadi · 22-oktabr 2026 gacha")).toBeVisible();
   const found = page.getByRole("button", { name: "Ishchi topdim" });
   await expect(found).toBeVisible();
@@ -57,11 +56,12 @@ test("kabinet: faol e'lon muddati 'gacha' bilan; 'Ishchi topdim' yopuvchi amal �
     return c;
   });
   expect(bg).not.toBe(success);
-  // "yangi e'lon" bloki Profilda yo'q (2026-11-17, ega: "profil juda chalkash") — e'lon bosh sahifadagi katta tugmadan
+  // Profil sodda (2026-11-21): "yangi e'lon" bloki yo'q; rejim almashtirgichi yo'q; rol — "Boshqa sozlamalar" ichida
+  await page.goto("/cabinet");
   await expect(page.getByRole("link", { name: "Ish e'loni berish" })).toHaveCount(0);
   await expect(page.getByRole("link", { name: "O'zim haqimda e'lon berish" })).toHaveCount(0);
-  // kirgandan keyin rejim almashtirgichi yo'q; rolni almashtirish — Profil tepasida, bir bosishda (2026-11-15)
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+  await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
   await expect(page.locator("main [data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
 });
 

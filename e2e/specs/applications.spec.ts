@@ -80,9 +80,8 @@ test("ariza: ishchi yuboradi → ish beruvchi kabinetdan ochadi, holatni o'zgart
   // ish beruvchi: kabinetdagi vakansiya kartasida arizalar soni va havola (asosiy keyingi amal)
   await context.clearCookies();
   await loginAs(context, USERS.employer);
-  await page.goto("/cabinet");
-  // e'lonlar — yig'ilgan "Mening e'lonlarim" bo'limida (2026-11-15)
-  await page.locator('[data-fold="my-listings"] [data-fold-toggle]').click();
+  // e'lonlar — "E'lonlarim" bo'limida (2026-11-21: pastki menyuning 2-bo'limi)
+  await page.goto("/cabinet/elonlar");
   const apps = page.getByRole("link", { name: /Arizalar: 1 ta/ });
   await expect(apps).toBeVisible();
   await expect(apps).toContainText("1 ta yangi");

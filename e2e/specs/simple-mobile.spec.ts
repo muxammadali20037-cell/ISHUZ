@@ -89,6 +89,8 @@ test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi 
     await loginAs(context, USERS.workerA);
     await asMode(context, "worker");
     await page.goto("/cabinet");
+    // 2026-11-21: rol almashtirish — "Boshqa sozlamalar" ichida
+    await fold(page, "more").locator("[data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL(/\/chat$/);
     await expect(page.getByPlaceholder("Kim kerak: kasb, tuman…")).toBeVisible();
@@ -98,6 +100,7 @@ test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi 
     await loginAs(context, USERS.employer);
     await asMode(context, "employer");
     await page.goto("/cabinet");
+    await fold(page, "more").locator("[data-fold-toggle]").click();
     await expect(page.locator("main [data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL(/\/chat$/);
@@ -122,8 +125,8 @@ test("ish beruvchi paneli (/employer), telefon: haqiqiy raqamlar; kompyuterda yo
   await asMode(desk, "employer");
   const p = await desk.newPage();
   await p.goto("/employer");
-  // kompyuterda — chap yon menyu: birinchi — chat ("Izlash/E'lon")
-  await expect(p.locator("aside").getByRole("link").filter({ hasText: "Izlash/E'lon" })).toBeVisible();
+  // kompyuterda — chap yon menyu: birinchi — chat (2026-11-21: Chat · E'lonlarim · Xabarlar · Profil)
+  await expect(p.locator("aside").getByRole("link").filter({ hasText: /^Chat$/ }).first()).toBeVisible();
   await expect(p.locator("aside").getByRole("link", { name: /^Yordamchi/ })).toHaveCount(0);
   await desk.close();
 });
@@ -166,38 +169,38 @@ test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq �
   await expect(page.locator("[data-ai-brief] li").first()).toBeVisible();
 });
 
-test("Profil: tepada rolni almashtirish; sodda — «Mening dunyom», «O'zim haqimda e'lon», Yordamchi, Universal ustalar yo'q; bitta ro'yxat", async ({ page, context }) => {
+test("Profil — sodda (2026-11-21, master prompt): ism, telefon, til, chiqish; qolgani — yig'ma «Boshqa sozlamalar» ichida", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/cabinet");
   await expect(page.getByRole("heading", { level: 1, name: "Profil" })).toBeVisible();
-  // rolni almashtirish — sarlavhadan keyingi birinchi narsa
-  const sw = page.locator("main [data-role-switch]");
-  await expect(sw).toHaveText(/Ish beruvchiga o'tish/);
-  await expect(sw).toContainText("Hozir: Ish izlovchi");
-  const h1Box = (await page.getByRole("heading", { level: 1 }).boundingBox())!;
-  const swBox = (await sw.boundingBox())!;
-  expect(swBox.y).toBeGreaterThan(h1Box.y);
-  expect(swBox.y - (h1Box.y + h1Box.height)).toBeLessThan(40);
-  // faqat ikkita yig'ilgan bo'lim: e'lonlarim va PRO kuzatuv (ega, 2026-11-17: "profil juda chalkash")
-  expect(await page.locator("main [data-fold]").evaluateAll((els) => els.map((e) => e.getAttribute("data-fold")))).toEqual(["my-listings", "pro"]);
-  for (const name of ["my-listings", "pro"]) {
-    await expect(fold(page, name).locator("[data-fold-toggle]")).toHaveAttribute("aria-expanded", "false");
-  }
-  await expect(fold(page, "my-listings").locator("[data-fold-toggle]")).toContainText("Ko'rish");
-  const main = page.locator("main");
-  await expect(main).not.toContainText("Mening dunyom");
-  await expect(main).not.toContainText("O'zim haqimda e'lon");
-  await expect(main.locator("[data-ai-entry], [data-masters-entry]")).toHaveCount(0);
-  // bitta oddiy ro'yxat, chiqish tugmasi oxirida — hech narsani ochmasdan ko'rinadi
+  // profil kartasi: ism, rol, telefon qatori (raqam yoki "qo'shilmagan"), ismni o'zgartirish
+  const card = page.locator("[data-profile-card]");
+  await expect(card).toContainText("Anvar Aliyev");
+  await expect(card).toContainText("Ish izlovchi");
+  await expect(card.locator("[data-profile-phone]")).toBeVisible();
+  await expect(card.getByRole("link", { name: "Ismni o'zgartirish" })).toHaveAttribute("href", "/profile/edit");
+  // asosiy qatorlar: til (joriy til nomi bilan); ish izlovchida to'lovlar qatori yo'q
+  await expect(page.locator("[data-cabinet-row='language']")).toContainText("O'zbekcha");
+  await expect(page.locator("[data-cabinet-row='billing']")).toHaveCount(0);
+  // faqat bitta yig'ma bo'lim — "Boshqa sozlamalar", yopiq
+  expect(await page.locator("main [data-fold]").evaluateAll((els) => els.map((e) => e.getAttribute("data-fold")))).toEqual(["more"]);
+  const more = fold(page, "more");
+  await expect(more.locator("[data-fold-toggle]")).toHaveAttribute("aria-expanded", "false");
+  await expect(more).toContainText("Boshqa sozlamalar");
   const links = page.locator("[data-cabinet-links]");
+  await expect(links).toBeHidden();
+  // chiqish — hech narsani ochmasdan ko'rinadi
+  await expect(page.locator("[data-cabinet-logout]")).toBeVisible();
+  // "Boshqa sozlamalar" ichida hech narsa yo'qolmagan: rol, saqlanganlar, sozlamalar, yordam
+  await more.locator("[data-fold-toggle]").click();
+  await expect(more.locator("[data-role-switch]")).toContainText("Ish beruvchiga o'tish");
   await expect(links.getByRole("link", { name: "Saqlanganlar" })).toBeVisible();
   await expect(links.getByRole("link", { name: "Sozlamalar" })).toBeVisible();
-  // "Yordam" — bosh sahifadan shu yerga ko'chdi (2026-11-17)
   await expect(links.getByRole("link", { name: "Yordam", exact: true })).toHaveAttribute("href", "/help");
-  await expect(links.getByRole("button", { name: "Hisobdan chiqish" })).toBeVisible();
-  // eski "Rolni o'zgartirish" havolasi takrorlanmaydi
-  await expect(page.getByRole("link", { name: "Rolni o'zgartirish" })).toHaveCount(0);
+  const main = page.locator("main");
+  await expect(main).not.toContainText("Mening dunyom");
+  await expect(main.locator("[data-ai-entry], [data-masters-entry]")).toHaveCount(0);
   // eski /dunyo manzili — profilga
   await page.goto("/dunyo");
   await expect(page).toHaveURL(/\/cabinet$/);

@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-21 · Menyu 3 ta bo'lim, E'lonlarim yorliqlari, sodda Profil (`feat/simple-3-tabs`)
+
+Ega (master prompt, ekranma-ekran tanlovlar): "asosiy navigatsiya faqat 3 ta bo'lim: Chat, E'lonlarim, Profil;
+E'lonlarimda faol, yopilgan, muddati tugagan; profil juda sodda".
+
+- **Pastki menyu**: ikkala rejimda bir xil — Chat · E'lonlarim · Profil (avval 5 ta, rejimga qarab). Chat — ko'k
+  pilyula. Ishlar/ishchilar ro'yxatlari, e'lon sahifalari va e'lon berish — "Chat" bo'limida; "Sizga mos" va kelgan
+  arizalar — "E'lonlarim"da. Kompyuterning yon menyusi: Chat · E'lonlarim · Xabarlar · Profil.
+- **E'lonlarim**: tepada 3 ta yorliq — Faol · Yopilgan · Muddati tugagan (`?holat=`), har birida soni. Pastda ish
+  izlovchiga "Sizga mos", ish beruvchiga "Arizalar" (yangilari soni bilan).
+- **Profil**: ism, rol, telefon (tasdiqlangan belgisi bilan), ismni o'zgartirish, til, ish beruvchida to'lovlar va
+  chiqish. Qolgan hamma narsa (rolni almashtirish, arizalar, takliflar, saqlanganlar, xabarnomalar, PRO kuzatuv,
+  sozlamalar, yordam) — bitta yig'ma "Boshqa sozlamalar" ichida.
+- Tanishtiruvda "Yordamchi" qadami endi "Chat" bo'limini yoritadi.
+
 ## 2026-11-21 · Foydalanuvchi sifatida tekshiruv: topilgan xatolar tuzatildi (`fix/qa-findings`)
 
 Ega: "odam sifatida ilovaga kir, odamlar nima qilmoqchi bo'lsa — hammasini qilib ko'r, xato top". Mahalliy stendda

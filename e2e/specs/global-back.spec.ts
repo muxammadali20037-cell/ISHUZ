@@ -14,9 +14,14 @@ test("'Orqaga' — oldingi sahifaga; bosh sahifada va pastki menyu bo'limlarida 
   // Profil — pastki menyu bo'limi (2026-11-20): "Orqaga" yo'q
   await page.goto("/cabinet");
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
-  const saved = () => page.locator("main [data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true });
+  // 2026-11-21: havolalar — Profildagi yig'ma "Boshqa sozlamalar" ichida (yopiq bo'lsa — ochiladi)
+  const saved = async () => {
+    const toggle = page.locator("main [data-fold='more'] [data-fold-toggle]");
+    if ((await toggle.getAttribute("aria-expanded")) === "false") await toggle.click();
+    return page.locator("main [data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true });
+  };
   // sayt ichida o'tish — "Orqaga" aynan oldingi sahifaga qaytaradi
-  await saved().click();
+  await (await saved()).click();
   await page.waitForURL(/\/saved$/);
   // telefonda — yuqori panelda (birinchi ekrandagi joyni olmaydi)
   const back = page.getByRole("banner").getByRole("link", { name: "Orqaga" });
@@ -27,7 +32,7 @@ test("'Orqaga' — oldingi sahifaga; bosh sahifada va pastki menyu bo'limlarida 
 
   // kompyuterda — sahifa tepasida alohida qator (yon menyu bor, yuqori panel yo'q)
   await page.setViewportSize({ width: 1440, height: 900 });
-  await saved().click();
+  await (await saved()).click();
   await page.waitForURL(/\/saved$/);
   const row = page.locator("[data-global-back]:not(header [data-global-back])").getByRole("link", { name: "Orqaga" });
   await expect(row).toBeVisible();

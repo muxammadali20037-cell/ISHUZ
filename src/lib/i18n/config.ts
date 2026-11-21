@@ -9,6 +9,8 @@ export function isLocale(value: unknown): value is Locale {
 }
 
 export const LOCALE_LABELS: Record<Locale, string> = { uz: "UZ", oz: "ЎЗ", ru: "RU", en: "EN" };
+/** Til nomi o'sha tilning o'zida (til tanlagich va Profildagi "Til" qatori) */
+export const LOCALE_NAMES: Record<Locale, string> = { uz: "O'zbekcha", oz: "Ўзбекча", ru: "Русский", en: "English" };
 
 /** Intl formatlash uchun BCP-47 teglari */
 export const INTL_LOCALE: Record<Locale, string> = { uz: "uz-Latn-UZ", oz: "uz-Cyrl-UZ", ru: "ru-RU", en: "en-US" };

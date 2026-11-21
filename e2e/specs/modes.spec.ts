@@ -12,11 +12,8 @@ const menuKeys = (page: Page) =>
   page.locator("[data-home-menu] [data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")));
 const menuItem = (page: Page, key: string) => page.locator(`[data-home-menu] [data-menu-item="${key}"]`);
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
-// 2026-11-20 (kechqurun): pastki menyu rejimga qarab
-const TABS = {
-  worker: ["Sizga mos", "Ishlar", "Izlash/E'lon", "E'lonlarim", "Profil"],
-  employer: ["Ishchilar", "Arizalar", "Izlash/E'lon", "E'lonlarim", "Profil"],
-};
+// 2026-11-21 (ega, master prompt): pastki menyu ikkala rejimda bir xil — Chat · E'lonlarim · Profil
+const TABS = ["Chat", "E'lonlarim", "Profil"];
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
   await asGuest(context);
@@ -44,12 +41,10 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   // "+ E'lon joylash" — yordamchi bilan (2026-11-17)
   await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
-  // pastki menyu — ish izlovchiniki: Sizga mos · Ishlar · Izlash/E'lon · E'lonlarim · Profil
+  // pastki menyu: Chat · E'lonlarim · Profil
   const nav = page.getByRole("navigation").last();
-  await expect(nav.getByRole("link")).toHaveText(TABS.worker);
-  await expect(nav.getByRole("link", { name: "Sizga mos" })).toHaveAttribute("href", "/cabinet/matches");
-  await expect(nav.getByRole("link", { name: "Ishlar" })).toHaveAttribute("href", "/jobs");
-  await expect(nav.getByRole("link", { name: "Izlash/E'lon" })).toHaveAttribute("href", "/chat");
+  await expect(nav.getByRole("link")).toHaveText(TABS);
+  await expect(nav.getByRole("link", { name: "Chat" })).toHaveAttribute("href", "/chat");
   await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("href", "/cabinet/elonlar");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
@@ -77,13 +72,11 @@ test("rejim almashtirgich: tasdiqsiz almashmaydi; tasdiqlansa — ish beruvchi b
   await expect(windows(page)).toHaveCount(0);
   await expect(page.getByRole("main").getByRole("link", { name: "Vakansiya joylash", exact: true })).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
-  // pastki menyu — ish beruvchiniki: Ishchilar · Arizalar · Izlash/E'lon · E'lonlarim · Profil
-  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(TABS.employer);
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Ishchilar" })).toHaveAttribute("href", "/search?mode=workers&any=1&region=all");
-  await expect(page.getByRole("navigation").last().getByRole("link", { name: "Arizalar" })).toHaveAttribute("href", "/employer/applications");
+  // pastki menyu — o'sha 3 ta bo'lim (rejimga qarab o'zgarmaydi)
+  await expect(page.getByRole("navigation").last().getByRole("link")).toHaveText(TABS);
 });
 
-test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profil tepasidagi tugma, bir bosishda", async ({ page, context }) => {
+test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profildagi «Boshqa sozlamalar» ichida, bir bosishda", async ({ page, context }) => {
   // profili tayyor ish izlovchi (yangi foydalanuvchi emas — rol almashganda ro'yxatdan o'tish oqimiga tushmaydi)
   const RET = "7e2e0000-0000-4000-8000-000000000073";
   await sql(
@@ -109,6 +102,8 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
 
     await page.goto("/cabinet");
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
+    // 2026-11-21: rol almashtirish — Profildagi "Boshqa sozlamalar" ichida
+    await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
     // 2026-11-18 (ega): butun ekranda ~3 s yumshoq katta yozuv — joriy tilda; o'zi yo'qoladi
     const splash = page.locator("[data-role-splash]");

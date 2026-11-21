@@ -2,23 +2,23 @@ import { getServerEnv } from "@/lib/env";
 import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
-import { Suspense } from "react";
-import { Bell, BellRing, Bookmark, ChevronRight, FileText, Handshake, LifeBuoy, LogIn, LogOut, MessageCircle, Settings, ShieldCheck, Sparkles, UserRound, UsersRound, Wallet } from "lucide-react";
+import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, FileText, Handshake, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Settings, ShieldCheck, Sparkles, UserRound, Wallet } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { signOut } from "@/features/auth/actions";
 import { Button } from "@/components/ui/button";
 import { getMyListings } from "../queries";
-import { MyListingsSection } from "./my-listings";
-import { AiProCard } from "@/features/ai-alerts/components/ai-pro-card";
 import type { AppMode } from "@/features/mode/mode";
-import { ProfileHeader } from "./profile-header";
+import { Avatar } from "@/components/ui/avatar";
+import { createClient } from "@/lib/supabase/server";
+import { formatPhone, initials } from "@/lib/format";
+import { LOCALE_NAMES } from "@/lib/i18n/config";
 import { Fold } from "@/components/shared/fold";
 import { RoleSwitchRow } from "@/features/landing/role-switch-row";
 
-/** Kabinetim: e'lonlarim (o'zgartirish, topdim), yangi e'lon va boshqa bo'limlar — hammasi bir joyda, ixcham */
+/** Profil (pastki menyuning 3-bo'limi): ism, telefon, til, chiqish; qolgani — "Boshqa sozlamalar" ichida */
 export async function CabinetPage({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
-  const { t } = await getT();
+  const { t, locale } = await getT();
 
   if (!session) {
     return (
@@ -37,80 +37,123 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     );
   }
 
-  const { workers, vacancies, paid } = await getMyListings(session);
-  // bitta ro'yxat: faoliyat (arizalar, takliflar, saqlangan, xabarlar…), keyin hisob (profil, to'lovlar, sozlamalar)
+  const supabase = await createClient();
+  const [{ vacancies }, contactRes] = await Promise.all([
+    getMyListings(session),
+    supabase.from("profile_contacts").select("phone, phone_verified_at").eq("profile_id", session.userId).maybeSingle(),
+  ]);
+  const employer = mode === "employer" || (!mode && !session.workerId && !!session.employerId);
+  const phone = contactRes.data?.phone ?? null;
+  const fullName = [session.profile.first_name, session.profile.last_name].filter((x) => x?.trim()).join(" ") || t("easy.cabinet.title");
+  // ismni o'zgartirish: ish izlovchi — shaxsiy ma'lumotlar, faqat ish beruvchi — kompaniya sozlamalari (/profile/edit shunga yo'naltiradi)
+  const editHref = !session.workerId && session.employerId ? "/company/settings" : "/profile/edit";
+  // qolgan hamma narsa — bitta yig'ma "Boshqa sozlamalar" ichida (hech narsa yo'qolmaydi)
   const links: { href: string; label: string; icon: typeof Bell; show: boolean }[] = [
     { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId },
     { href: "/offers", label: t("easy.cabinet.links.offers"), icon: Handshake, show: !!session.workerId },
-    { href: "/employer/applications", label: t("easy.cabinet.links.employer_applications"), icon: UsersRound, show: !!session.employerOnboarded },
     { href: "/saved", label: t("easy.cabinet.links.saved"), icon: Bookmark, show: true },
     { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true },
-    { href: "/cabinet/matches", label: t("easy.cabinet.links.matches"), icon: Sparkles, show: !!(workers.length || vacancies.length) },
     { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true },
+    { href: "/ai-alerts", label: t("easy.cabinet.pro_link"), icon: Sparkles, show: true },
     { href: "/profile", label: t("easy.cabinet.links.profile"), icon: UserRound, show: !!(session.workerOnboarded || session.employerId) },
     { href: "/cabinet/verification", label: t("easy.cabinet.links.verification"), icon: ShieldCheck, show: !!session.employerId || vacancies.length > 0 },
     { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true },
-    { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: true },
+    { href: "/billing", label: t("easy.cabinet.links.billing"), icon: Wallet, show: !employer },
     { href: "/settings", label: t("easy.cabinet.links.settings"), icon: Settings, show: true },
-    // yordam — bosh sahifa bo'limlaridan shu yerga (2026-11-17: bosh sahifada takrorlanmasin)
     { href: "/help", label: t("easy.side.help"), icon: LifeBuoy, show: true },
   ];
 
   const roleTarget = mode === "employer" ? "worker" : "employer";
 
   return (
-    // Profil — 3.0 (2026-11-17, ega: "profil juda chalkash; Mening dunyom, O'zim haqimda e'lon berish, Yordamchi, Universal
-    // ustalar — olib tashla; qator soddalashtir"): rolni almashtirish, profil kartasi, e'lonlarim, PRO kuzatuv va bitta ro'yxat.
-    // E'lon joylash — bosh sahifadagi katta tugma; Yordamchi va Universal ustalar — bosh sahifa bo'limlarida
-    <div className="container-narrow space-y-4 py-6 text-lg sm:py-8">
+    // Profil — 4.0 (ega, 2026-11-21, master prompt: "profil juda sodda bo'lsin: ism, telefon, til, e'lonlarim, chiqish;
+    // ish beruvchiga — to'lovlar"). E'lonlar — pastki menyuning "E'lonlarim" bo'limida. Qolgan hamma narsa —
+    // bitta yig'ma "Boshqa sozlamalar" ichida
+    <div className="container-narrow space-y-4 py-6 text-lg sm:py-8" data-cabinet>
       <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.cabinet.title")}</h1>
-      <RoleSwitchRow
-        tone="primary"
-        target={roleTarget}
-        title={t(roleTarget === "employer" ? "easy.side.switch.to_employer" : "easy.side.switch.to_worker")}
-        hint={t("easy.cabinet.role_now", { role: t(roleTarget === "employer" ? "easy.cabinet.header.worker" : "easy.cabinet.header.employer") })}
-      />
-      {/* profil sarlavhasi — avatar, ism, rol, to'liqlik va faoliyat sonlari (haqiqiy) */}
-      <Suspense fallback={<div className="h-44 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
-        <ProfileHeader session={session} mode={mode} />
-      </Suspense>
 
-      <Fold name="my-listings" icon={<FileText />} tint="blue" verb="view" title={t("easy.cabinet.my_listings")} count={workers.length + vacancies.length || null}>
-        {/* faqat joriy rolning e'lonlari (ega, 2026-11-20: ishchi va ish beruvchi ma'lumotlari aralashmasin) */}
-        <MyListingsSection workers={mode === "employer" ? [] : workers} vacancies={mode === "worker" ? [] : vacancies} paid={paid} />
-      </Fold>
-
-      <Fold name="pro" icon={<BellRing />} tint="orange" verb="open" title={t("easy.aihub.pro_title")}>
-        <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-secondary" aria-hidden />}>
-          <AiProCard userId={session.userId} only={mode} />
-        </Suspense>
-      </Fold>
-
-      {/* bitta oddiy ro'yxat (ega, 2026-11-17: "profil juda chalkash — qator soddalashtir"): faoliyat va hisob, oxirida chiqish */}
-      <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-cabinet-links>
-        {links
-          .filter((l) => l.show)
-          .map((l) => (
-            <li key={l.href}>
-              <Link href={l.href} className="press flex min-h-14 items-center gap-3 px-4 py-3 text-base font-semibold hover:bg-secondary/60">
-                <l.icon className="size-6 shrink-0 text-primary-ink" aria-hidden />
-                <span className="flex-1">{l.label}</span>
-                <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+      <section aria-labelledby="cabinet-name" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm" data-profile-card>
+        <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="lg" alt="" />
+        <div className="min-w-0 flex-1">
+          <h2 id="cabinet-name" className="truncate text-xl font-extrabold leading-tight">
+            {fullName}
+          </h2>
+          <p className="text-sm text-muted-foreground">{employer ? t("easy.cabinet.header.employer") : t("easy.cabinet.header.worker")}</p>
+          {phone ? (
+            <p className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-base font-semibold" data-profile-phone>
+              <span className="whitespace-nowrap tabular-nums">{formatPhone(phone)}</span>
+              {contactRes.data?.phone_verified_at ? (
+                <span className="inline-flex items-center gap-1 text-sm font-semibold text-success">
+                  <BadgeCheck className="size-4" aria-hidden /> {t("easy.cabinet.phone_verified")}
+                </span>
+              ) : null}
+            </p>
+          ) : (
+            <p className="mt-1 text-sm text-muted-foreground" data-profile-phone="none">
+              {t("easy.cabinet.phone_none")} ·{" "}
+              <Link href="/settings" className="font-semibold text-primary-ink hover:underline">
+                {t("easy.cabinet.phone_add")}
               </Link>
-            </li>
-          ))}
+            </p>
+          )}
+        </div>
+        <Link href={editHref} aria-label={t("easy.cabinet.edit_name")} title={t("easy.cabinet.edit_name")} className="press flex size-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground">
+          <Pencil className="size-5" aria-hidden />
+        </Link>
+      </section>
+
+      <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-cabinet-main>
         <li>
-          <form action={signOut}>
-            <button type="submit" className="flex min-h-14 w-full items-center gap-3 px-4 py-3 text-left text-base font-semibold text-destructive hover:bg-destructive-soft/50">
-              <LogOut className="size-6 shrink-0" aria-hidden />
-              <span className="flex-1">{t("easy.cabinet.links.logout")}</span>
-            </button>
-          </form>
+          <Link href="/settings" data-cabinet-row="language" className="press flex min-h-14 items-center gap-3 px-4 py-3 text-base font-semibold hover:bg-secondary/60">
+            <Languages className="size-6 shrink-0 text-primary-ink" aria-hidden />
+            <span className="flex-1">{t("easy.cabinet.language_row")}</span>
+            <span className="text-sm font-medium text-muted-foreground">{LOCALE_NAMES[locale]}</span>
+            <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+          </Link>
         </li>
+        {employer ? (
+          <li>
+            <Link href="/billing" data-cabinet-row="billing" className="press flex min-h-14 items-center gap-3 px-4 py-3 text-base font-semibold hover:bg-secondary/60">
+              <Wallet className="size-6 shrink-0 text-primary-ink" aria-hidden />
+              <span className="flex-1">{t("easy.cabinet.links.billing")}</span>
+              <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+            </Link>
+          </li>
+        ) : null}
       </ul>
 
-      {/* telefonda yon menyu yo'q — rasmiy Telegram va Instagram shu yerda */}
-      <SocialLinks links={socialLinks(getServerEnv())} className="rounded-2xl border border-border bg-card p-4" />
+      <Fold name="more" icon={<Settings />} tint="blue" verb="open" title={t("easy.cabinet.more_settings")}>
+        <div className="space-y-3">
+          <RoleSwitchRow
+            tone="neutral"
+            target={roleTarget}
+            title={t(roleTarget === "employer" ? "easy.side.switch.to_employer" : "easy.side.switch.to_worker")}
+            hint={t("easy.cabinet.role_now", { role: t(roleTarget === "employer" ? "easy.cabinet.header.worker" : "easy.cabinet.header.employer") })}
+          />
+          <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card" data-cabinet-links>
+            {links
+              .filter((l) => l.show)
+              .map((l) => (
+                <li key={l.href}>
+                  <Link href={l.href} className="press flex min-h-14 items-center gap-3 px-4 py-3 text-base font-semibold hover:bg-secondary/60">
+                    <l.icon className="size-6 shrink-0 text-primary-ink" aria-hidden />
+                    <span className="flex-1">{l.label}</span>
+                    <ChevronRight className="size-5 text-muted-foreground" aria-hidden />
+                  </Link>
+                </li>
+              ))}
+          </ul>
+          {/* telefonda yon menyu yo'q — rasmiy Telegram va Instagram shu yerda */}
+          <SocialLinks links={socialLinks(getServerEnv())} className="rounded-2xl border border-border bg-card p-4" />
+        </div>
+      </Fold>
+
+      <form action={signOut}>
+        <button type="submit" data-cabinet-logout className="press flex min-h-14 w-full items-center gap-3 rounded-2xl border border-border/70 bg-card px-4 py-3 text-left text-base font-semibold text-destructive shadow-sm hover:bg-destructive-soft/50">
+          <LogOut className="size-6 shrink-0" aria-hidden />
+          <span className="flex-1">{t("easy.cabinet.links.logout")}</span>
+        </button>
+      </form>
     </div>
   );
 }

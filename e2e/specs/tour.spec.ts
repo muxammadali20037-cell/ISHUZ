@@ -63,7 +63,7 @@ test("mehmon ish izlovchi: salom → rol → pastki menyu → til, kirish → ya
   expect([200, 206]).toContain((await voice).status());
   // mehmonda "Xabarlar" va qo'ng'iroqcha yo'q — o'tkazib yuboriladi; 2026-11-20 dan pastki menyu 5 ta bo'lim — "Bosh sahifa",
   // "Ish beruvchilar", "Sohalar" va alohida "Yordamchi" belgisi yo'q (ularning qadamlari ham)
-  expect(codes).toEqual(["W1", "U1", "W3", "W6", "U2", "U3", "U6"]);
+  expect(codes).toEqual(["W1", "U1", "W7", "W6", "U2", "U3", "U6"]);
   expect(await tourCookie(page)).toContain("w");
   await page.reload();
   await page.waitForTimeout(1500);
@@ -86,7 +86,7 @@ test("mehmon ish beruvchi: «E'lon» (+) ham tushuntiriladi; «Kerak emas» — 
   await page.goto("/?tour=1");
   const codes = await walk(page);
   // 2026-11-20: "Boshqaruv", markaziy "E'lon" va "Yordamchi" o'rnida — umumiy 5 ta bo'lim (E'lonlarim, Ishchilar, Profil bor)
-  expect(codes).toEqual(["E1", "U1", "E3", "E5", "E6", "U2", "U3", "U6"]);
+  expect(codes).toEqual(["E1", "U1", "E7", "E3", "E6", "U2", "U3", "U6"]);
 });
 
 test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'iroqcha bor; Escape — o'tkazib yuboradi", async ({ page, context }) => {
@@ -103,7 +103,8 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
   await page.waitForURL(/\/chat$/);
   await expect(card(page)).toHaveAttribute("data-tour-card", "E1");
   await card(page).locator("[data-tour-next]").click();
-  await expect(card(page)).toHaveAttribute("data-tour-card", "E3");
+  // 2026-11-21: ikkinchi qadam — "Chat" bo'limi (yordamchi)
+  await expect(card(page)).toHaveAttribute("data-tour-card", "E7");
   await card(page).getByRole("button", { name: "Orqaga" }).waitFor();
   await page.keyboard.press("Escape");
   await expect(card(page)).toHaveCount(0);
@@ -111,7 +112,7 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
 
   await page.goto("/chat?tour=1");
   const codes = await walk(page);
-  expect(codes).toEqual(["E1", "E3", "E5", "E6", "U2", "U4", "U5", "U6"]);
+  expect(codes).toEqual(["E1", "E7", "E3", "E6", "U2", "U4", "U5", "U6"]);
 });
 
 test("rus tilida — matnlar ruscha", async ({ page, context }) => {
