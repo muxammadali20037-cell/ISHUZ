@@ -33,6 +33,8 @@ test("sayt pastki qismi, yordam va kabinet: Telegram va Instagram", async ({ pag
   await loginAs(context, USERS.workerB, "aal2");
   await asMode(context, "worker");
   await page.goto("/cabinet");
+  // 2026-11-21: Profilda — "Boshqa sozlamalar" ichida
+  await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
   await expectLinks(page.getByRole("main"), true);
 });
 
