@@ -103,7 +103,7 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
   await page.waitForURL(/\/chat$/);
   await expect(card(page)).toHaveAttribute("data-tour-card", "E1");
   await card(page).locator("[data-tour-next]").click();
-  // 2026-11-21: ikkinchi qadam — "Chat" bo'limi (yordamchi)
+  // 2026-11-21: ikkinchi qadam — "Qidiruv" bo'limi (yordamchi)
   await expect(card(page)).toHaveAttribute("data-tour-card", "E7");
   await card(page).getByRole("button", { name: "Orqaga" }).waitFor();
   await page.keyboard.press("Escape");

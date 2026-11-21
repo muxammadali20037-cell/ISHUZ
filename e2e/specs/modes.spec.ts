@@ -12,8 +12,8 @@ const menuKeys = (page: Page) =>
   page.locator("[data-home-menu] [data-menu-item]").evaluateAll((els) => els.map((e) => e.getAttribute("data-menu-item")));
 const menuItem = (page: Page, key: string) => page.locator(`[data-home-menu] [data-menu-item="${key}"]`);
 const modeRadio = (page: Page, name: string) => page.getByRole("radiogroup", { name: "Rejim" }).getByRole("radio", { name });
-// 2026-11-21 (ega, master prompt): pastki menyu ikkala rejimda bir xil — Chat · E'lonlarim · Profil
-const TABS = ["Chat", "E'lonlarim", "Profil"];
+// 2026-11-21 (ega, master prompt): pastki menyu ikkala rejimda bir xil — Qidiruv · E'lonlarim · Profil
+const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' → faqat ish qidiruvchi bo'limlari", async ({ page, context }) => {
   await asGuest(context);
@@ -41,10 +41,10 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — avval maqsad; 'Ish qidiraman' 
   await expect(page.locator("main a[href='/post/vacancy']")).toHaveCount(0);
   // "+ E'lon joylash" — yordamchi bilan (2026-11-17)
   await expect(page.locator("main a[href='/ai/post']:visible").first()).toBeVisible();
-  // pastki menyu: Chat · E'lonlarim · Profil
+  // pastki menyu: Qidiruv · E'lonlarim · Profil
   const nav = page.getByRole("navigation").last();
   await expect(nav.getByRole("link")).toHaveText(TABS);
-  await expect(nav.getByRole("link", { name: "Chat" })).toHaveAttribute("href", "/chat");
+  await expect(nav.getByRole("link", { name: "Qidiruv" })).toHaveAttribute("href", "/chat");
   await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("href", "/cabinet/elonlar");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");

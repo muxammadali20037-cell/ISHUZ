@@ -118,13 +118,13 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  // 2026-11-21 (ega, master prompt): hamma uchun bir xil 3 ta bo'lim — Chat · E'lonlarim · Profil
+  // 2026-11-21 (ega, master prompt): hamma uchun bir xil 3 ta bo'lim — Qidiruv · E'lonlarim · Profil
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  const TABS = ["Chat", "E'lonlarim", "Profil"];
+  const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
   await expect(nav.getByRole("link")).toHaveText(TABS);
-  // bosh sahifa — "Chat" bo'limi (keyingi bosqichda bosh sahifaning o'zi chat bo'ladi)
+  // bosh sahifa — "Qidiruv" bo'limi (keyingi bosqichda bosh sahifaning o'zi chat bo'ladi)
   await expect(nav.locator("a[aria-current='page']")).toHaveCount(1);
-  await expect(nav.getByRole("link", { name: "Chat" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
   await nav.getByRole("link", { name: "Profil" }).click();
   await page.waitForURL(/\/cabinet$/);
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("aria-current", "page");

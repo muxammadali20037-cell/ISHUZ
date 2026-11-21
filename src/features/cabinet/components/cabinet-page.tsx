@@ -2,7 +2,7 @@ import { getServerEnv } from "@/lib/env";
 import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
-import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, FileText, Handshake, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Settings, ShieldCheck, Sparkles, UserRound, Wallet } from "lucide-react";
+import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Settings, ShieldCheck, Sparkles, UserRound, Wallet } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
 import { signOut } from "@/features/auth/actions";
@@ -49,8 +49,6 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
   const editHref = !session.workerId && session.employerId ? "/company/settings" : "/profile/edit";
   // qolgan hamma narsa — bitta yig'ma "Boshqa sozlamalar" ichida (hech narsa yo'qolmaydi)
   const links: { href: string; label: string; icon: typeof Bell; show: boolean }[] = [
-    { href: "/applications", label: t("easy.cabinet.links.applications"), icon: FileText, show: !!session.workerId },
-    { href: "/offers", label: t("easy.cabinet.links.offers"), icon: Handshake, show: !!session.workerId },
     { href: "/saved", label: t("easy.cabinet.links.saved"), icon: Bookmark, show: true },
     { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true },
     { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true },

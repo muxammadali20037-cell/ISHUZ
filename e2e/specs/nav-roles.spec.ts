@@ -2,11 +2,11 @@ import { expect, test } from "@playwright/test";
 import { USERS, asMode, loginAs, sql } from "../support";
 
 /**
- * Pastki menyu va rollar (ega, 2026-11-21, master prompt): ikkala rolda bir xil 3 ta bo'lim — Chat · E'lonlarim · Profil.
+ * Pastki menyu va rollar (ega, 2026-11-21, master prompt): ikkala rolda bir xil 3 ta bo'lim — Qidiruv · E'lonlarim · Profil.
  * "E'lonlarim" — faqat joriy rolning e'lonlari, tepada Faol · Yopilgan · Muddati tugagan yorliqlari; ish beruvchida
  * "Arizalar", ish izlovchida "Sizga mos" — shu bo'lim ichida.
  */
-const TABS = ["Chat", "E'lonlarim", "Profil"];
+const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
 
 test("ish izlovchi: 3 ta bo'lim, nomlar sig'adi; «E'lonlarim» — o'z e'lonlari; «Profil» belgilanadi", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
@@ -45,7 +45,7 @@ test("ish izlovchi: 3 ta bo'lim, nomlar sig'adi; «E'lonlarim» — o'z e'lonlar
   await expect(page.getByRole("heading", { level: 1, name: "Profil" })).toBeVisible();
 });
 
-test("ish beruvchi: «E'lonlarim» — vakansiyalari va «Arizalar»; ishchilar ro'yxati — Chat bo'limida", async ({ page, context }) => {
+test("ish beruvchi: «E'lonlarim» — vakansiyalari; ishchilar ro'yxati — Qidiruv bo'limida", async ({ page, context }) => {
   // ish beruvchi profili to'ldirilgan bo'lsin (aks holda bo'limlar o'rniga profil ekrani)
   await sql(
     `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
@@ -67,7 +67,7 @@ test("ish beruvchi: «E'lonlarim» — vakansiyalari va «Arizalar»; ishchilar 
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("E'lonlarim");
 
   await page.goto("/search?mode=workers&any=1&region=all");
-  await expect(nav.getByRole("link", { name: "Chat" })).toHaveAttribute("aria-current", "page");
+  await expect(nav.getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
   // kasb tanlash bosqichi emas — natijalar (ro'yxat) darhol
   await expect(page.getByRole("heading", { name: "Qanday mutaxassis kerak?" })).toHaveCount(0);
   // eski ish beruvchi manzillari va arizalar ham "E'lonlarim" bo'limida

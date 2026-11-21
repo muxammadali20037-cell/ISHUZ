@@ -113,8 +113,8 @@ test("pastki menyu: hech narsa menyudan yuqoriga chiqmaydi — ostidan o'tayotga
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/");
       const nav = page.locator("nav.bottom-nav");
-      // ko'k tugma — chat (2026-11-21: Chat · E'lonlarim · Profil, ikkala rejimda bir xil)
-      await expect(nav.getByRole("link", { name: "Chat", exact: true })).toBeVisible();
+      // ko'k tugma — chat (2026-11-21: Qidiruv · E'lonlarim · Profil, ikkala rejimda bir xil)
+      await expect(nav.getByRole("link", { name: "Qidiruv", exact: true })).toBeVisible();
       const out = await nav.evaluate((n) => {
         const top = n.getBoundingClientRect().top;
         return Array.from(n.querySelectorAll("*"))

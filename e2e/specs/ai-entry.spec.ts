@@ -2,15 +2,15 @@ import { expect, test } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs } from "../support";
 
 /**
- * Yordamchi va asosiy menyu. 2026-11-21 (ega, master prompt): menyu 3 ta bo'lim — Chat · E'lonlarim · Profil.
+ * Yordamchi va asosiy menyu. 2026-11-21 (ega, master prompt): menyu 3 ta bo'lim — Qidiruv · E'lonlarim · Profil.
  * 2026-11-12: "Yordamchi" (/ai) bo'limiga nomli kirish. Asosiy menyu hamma joyda bir xil, chat (/chat) — birinchi;
  * alohida "Yordamchi" belgisi va menyu bandi yo'q. /ai (to'liq ekran yordamchi) — mehmon bosh sahifasidagi
  * "Bo'limlar" qatoridan ochiladi. O'sha kuni kechqurun (ega: "ishchi panelida Ishchilar nimaga kerak"): bo'limlar rejimga qarab —
  * ish izlovchida "Sizga mos" (Ishchilar o'rniga), ish beruvchida "Arizalar" (Ishlar o'rniga).
  */
 // 2026-11-21 (ega, master prompt): asosiy menyu — 3 ta bo'lim; kompyuterning yon menyusida yana "Xabarlar"
-const TABS = ["Chat", "E'lonlarim", "Profil"];
-const SIDE = ["Chat", "E'lonlarim", "Xabarlar", "Profil"];
+const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
+const SIDE = ["Qidiruv", "E'lonlarim", "Xabarlar", "Profil"];
 
 test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; Yordamchi — bosh sahifa «Bo'limlar» qatorida", async ({ page, context }) => {
   await asGuest(context);
@@ -26,7 +26,7 @@ test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; Yordamchi —
   // planshetda: bo'limlar belgi bilan, "Universal ustalar" ham shu qatorda
   await page.setViewportSize({ width: 800, height: 900 });
   await expect(nav.getByRole("link", { name: "Universal ustalar" })).toBeVisible();
-  await expect(nav.getByRole("link", { name: "Chat" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Qidiruv" })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
   await expect(page.locator("main [data-home-menu] [data-ai-entry]")).toHaveCount(1);
   await expect(page.locator("main [data-masters-home]")).toContainText("Universal ustalar");
@@ -52,10 +52,10 @@ for (const who of ["worker", "employer"] as const) {
     await expect(main).toHaveText(SIDE);
     await expect(side.getByRole("link", { name: "Profil" })).toHaveAttribute("aria-current", "page");
     await expect(side.locator("[data-masters-entry]")).toBeVisible();
-    await side.getByRole("link", { name: "Chat", exact: true }).click();
+    await side.getByRole("link", { name: "Qidiruv", exact: true }).click();
     await page.waitForURL(/\/chat$/);
     // chat — oddiy sahifa: yon menyu joyida, bo'lim belgilangan
-    await expect(side.getByRole("link", { name: "Chat", exact: true })).toHaveAttribute("aria-current", "page");
+    await expect(side.getByRole("link", { name: "Qidiruv", exact: true })).toHaveAttribute("aria-current", "page");
     await expect(page.locator("[data-start-chat]")).toBeVisible();
     // Profilda AI kartasi yo'q
     await page.goto("/cabinet");
@@ -71,7 +71,7 @@ test("telefon: yuqori panelda alohida «Yordamchi» belgisi yo'q; pastki menyu �
   await expect(page.getByRole("banner").getByRole("link", { name: "Yordamchi" })).toHaveCount(0);
   await expect(page.locator("main [data-home-menu] [data-ai-entry]")).toContainText("Yordamchi");
   await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveText(TABS);
-  await page.locator("nav.bottom-nav").getByRole("link", { name: "Chat" }).click();
+  await page.locator("nav.bottom-nav").getByRole("link", { name: "Qidiruv" }).click();
   await page.waitForURL(/\/chat$/);
   await expect(page.locator("[data-start-chat]")).toBeVisible();
 

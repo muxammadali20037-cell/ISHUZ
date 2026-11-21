@@ -23,7 +23,7 @@ test.afterEach(async () => {
 });
 
 test("pastki menyu: mehmonda ham, kirganda ham bir xil 3 ta bo'lim (2026-11-21); /sohalar — «Chat» bo'limida", async ({ page, context }) => {
-  const TABS = ["Chat", "E'lonlarim", "Profil"];
+  const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/jobs");
@@ -31,8 +31,8 @@ test("pastki menyu: mehmonda ham, kirganda ham bir xil 3 ta bo'lim (2026-11-21);
   await expect(nav.getByRole("link")).toHaveText(TABS);
   await page.goto("/sohalar");
   await expect(page.getByRole("heading", { level: 1, name: "Sohalar" })).toBeVisible();
-  // /sohalar — ishlar katalogi (chatdan ochiladi): "Chat" belgilanadi
-  await expect(nav.getByRole("link", { name: "Chat" })).toHaveAttribute("aria-current", "page");
+  // /sohalar — ishlar katalogi (chatdan ochiladi): "Qidiruv" belgilanadi
+  await expect(nav.getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
 
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");

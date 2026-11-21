@@ -125,8 +125,8 @@ test("ish beruvchi paneli (/employer), telefon: haqiqiy raqamlar; kompyuterda yo
   await asMode(desk, "employer");
   const p = await desk.newPage();
   await p.goto("/employer");
-  // kompyuterda — chap yon menyu: birinchi — chat (2026-11-21: Chat · E'lonlarim · Xabarlar · Profil)
-  await expect(p.locator("aside").getByRole("link").filter({ hasText: /^Chat$/ }).first()).toBeVisible();
+  // kompyuterda — chap yon menyu: birinchi — chat (2026-11-21: Qidiruv · E'lonlarim · Xabarlar · Profil)
+  await expect(p.locator("aside").getByRole("link").filter({ hasText: /^Qidiruv$/ }).first()).toBeVisible();
   await expect(p.locator("aside").getByRole("link", { name: /^Yordamchi/ })).toHaveCount(0);
   await desk.close();
 });

@@ -10,7 +10,6 @@ import {
   LifeBuoy,
   MapPinned,
   MessageCircle,
-  MessageSquareText,
   Plus,
   Search,
   Settings,
@@ -163,8 +162,8 @@ export function mainItems(mode: MenuMode): MenuItem[] {
 
 /*
  * Asosiy menyu — 3 ta bo'lim (ega, 2026-11-21, master prompt: "asosiy navigatsiya faqat 3 ta bo'limdan iborat bo'lsin:
- * Chat, E'lonlarim, Profil"). Ikkala rejimda bir xil; rejimga qarab faqat E'lonlarim ichidagi bo'limlar farq qiladi
- * (ish izlovchida "Sizga mos", ish beruvchida "Arizalar"). Telefonda pastki menyu, kompyuterda yon menyu.
+ * Chat, E'lonlarim, Profil"; AI bo'limi nomi — "Qidiruv"). Ikkala rejimda bir xil; ish izlovchining E'lonlarimida
+ * "Sizga mos". Telefonda pastki menyu, kompyuterda yon menyu.
  * Ishlar/ishchilar ro'yxatlari, e'lon sahifalari va e'lon berish — chatdan ochiladi, shuning uchun "Chat" bo'limida.
  */
 export const WORKERS_HREF = "/search?mode=workers&any=1&region=all";
@@ -194,31 +193,28 @@ export const isProfilePath = (p: string) => p === "/employer" || (PROFILE_PREFIX
 
 export const APP_WORKERS: MenuItem = { key: "workers", href: WORKERS_HREF, labelKey: "easy.nav.tab_workers", hintKey: "easy.side.hint.candidates", icon: Users, match: isWorkersPath };
 export const APP_JOBS: MenuItem = { key: "jobs", href: "/jobs", labelKey: "easy.nav.tab_jobs", hintKey: "easy.side.hint.jobs", icon: BriefcaseBusiness, match: isJobsPath };
-export const APP_CHAT: MenuItem = { key: "chat", href: CHAT_HREF, labelKey: "easy.nav.tab_chat", hintKey: "easy.start_chat.title", icon: MessageSquareText, match: isChatPath };
+/** AI yordamchi bilan qidiruv (ega, 2026-11-21: odamlar o'rtasidagi yozishma bilan adashmasin — nomi "Qidiruv") */
+export const APP_CHAT: MenuItem = { key: "chat", href: CHAT_HREF, labelKey: "easy.nav.tab_chat", hintKey: "easy.start_chat.title", icon: Search, match: isChatPath };
 export const APP_MY_LISTINGS: MenuItem = {
   key: "my-listings",
   href: "/cabinet/elonlar",
   labelKey: "easy.nav.tab_my_listings",
   hintKey: "easy.cabinet.page_sub",
   icon: ClipboardList,
-  badgeKey: "applications",
   match: isMyListingsPath,
 };
-export const APP_PROFILE: MenuItem = { key: "profile", href: "/cabinet", labelKey: "easy.nav.tab_profile", hintKey: "easy.side.hint.profile", icon: User, badgeKey: "offers", match: isProfilePath };
+/** arizalar va ishga takliflar yo'q (ega, 2026-11-21: "bog'lanish faqat telefon orqali") — bo'limlarda son belgisi ham yo'q */
+export const APP_PROFILE: MenuItem = { key: "profile", href: "/cabinet", labelKey: "easy.nav.tab_profile", hintKey: "easy.side.hint.profile", icon: User, match: isProfilePath };
 
-/** Ish izlovchida yangi arizalar soni yo'q (u ish beruvchiga tegishli) */
-const MY_LISTINGS_WORKER: MenuItem = { ...APP_MY_LISTINGS, badgeKey: undefined };
-
-/** Telefondagi pastki menyu: Chat · E'lonlarim · Profil */
-export function appTabs(mode: MenuMode): MenuItem[] {
-  return [APP_CHAT, mode === "worker" ? MY_LISTINGS_WORKER : APP_MY_LISTINGS, APP_PROFILE];
+/** Telefondagi pastki menyu: Qidiruv · E'lonlarim · Profil (ikkala rejimda bir xil) */
+export function appTabs(): MenuItem[] {
+  return [APP_CHAT, APP_MY_LISTINGS, APP_PROFILE];
 }
-/** Rejim tanlanmagan holat (eski import'lar uchun) */
-export const APP_TABS: MenuItem[] = appTabs(null);
+export const APP_TABS: MenuItem[] = appTabs();
 
 /** Kompyuterdagi yon menyu: o'sha 3 ta bo'lim; xabarlar — alohida qator (telefonda yuqori panelda) */
-export function appSideItems(mode: MenuMode): MenuItem[] {
-  const [chat, mine, profile] = appTabs(mode);
+export function appSideItems(): MenuItem[] {
+  const [chat, mine, profile] = appTabs();
   return [chat!, mine!, { ...messages, match: (p) => p.startsWith("/messages") }, { ...profile!, match: (p) => isProfilePath(p) && !p.startsWith("/messages") }];
 }
-export const APP_SIDE_ITEMS: MenuItem[] = appSideItems(null);
+export const APP_SIDE_ITEMS: MenuItem[] = appSideItems();

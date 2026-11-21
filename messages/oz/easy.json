@@ -143,7 +143,6 @@
     "empty_expired": "Муддати тугаган эълон йўқ.",
     "more_title": "Яна",
     "matches_hint": "Эълонингизга мос ишлар",
-    "applications_hint": "Вакансияларингизга келган аризалар",
     "more_settings": "Бошқа созламалар",
     "language_row": "Тил",
     "phone_none": "Телефон рақами қўшилмаган",
@@ -511,7 +510,7 @@
     "tab_my_listings": "Эълонларим",
     "tab_workers": "Ишчилар",
     "tab_employers": "Ташкилотлар",
-    "tab_chat": "Чат",
+    "tab_chat": "Қидирув",
     "tab_matches": "Сизга мос"
   },
   "moderation": {

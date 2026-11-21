@@ -143,7 +143,6 @@
     "empty_expired": "Muddati tugagan e'lon yo'q.",
     "more_title": "Yana",
     "matches_hint": "E'loningizga mos ishlar",
-    "applications_hint": "Vakansiyalaringizga kelgan arizalar",
     "more_settings": "Boshqa sozlamalar",
     "language_row": "Til",
     "phone_none": "Telefon raqami qo'shilmagan",
@@ -511,7 +510,7 @@
     "tab_my_listings": "E'lonlarim",
     "tab_workers": "Ishchilar",
     "tab_employers": "Ish beruvchilar",
-    "tab_chat": "Chat",
+    "tab_chat": "Qidiruv",
     "tab_matches": "Sizga mos"
   },
   "moderation": {

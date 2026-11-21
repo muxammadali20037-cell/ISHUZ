@@ -143,7 +143,6 @@
     "empty_expired": "No expired listings.",
     "more_title": "More",
     "matches_hint": "Jobs that match your listing",
-    "applications_hint": "Applications to your vacancies",
     "more_settings": "More settings",
     "language_row": "Language",
     "phone_none": "No phone number added",
@@ -511,7 +510,7 @@
     "tab_my_listings": "My listings",
     "tab_workers": "Workers",
     "tab_employers": "Employers",
-    "tab_chat": "Chat",
+    "tab_chat": "Search",
     "tab_matches": "For you"
   },
   "moderation": {

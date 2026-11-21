@@ -114,7 +114,9 @@ test.describe("tuzilma", () => {
     await expect(main.locator("[data-profile-phone]")).toBeVisible();
     await main.locator("[data-fold='more'] [data-fold-toggle]").click();
     await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Saqlanganlar", exact: true })).toHaveAttribute("href", "/saved");
-    await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Yuborgan arizalarim" })).toHaveAttribute("href", "/applications");
+    // arizalar va takliflar yo'q (2026-11-21: "bog'lanish faqat telefon orqali")
+    await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Yuborgan arizalarim" })).toHaveCount(0);
+    await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Ishga takliflar" })).toHaveCount(0);
   });
 
   test("rol tanlash: ikki savol-karta (rasmsiz), bitta bosish, tanlov qurilmada saqlanadi", async ({ page, context }) => {

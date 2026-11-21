@@ -143,7 +143,6 @@
     "empty_expired": "Истёкших объявлений нет.",
     "more_title": "Ещё",
     "matches_hint": "Вакансии под ваше объявление",
-    "applications_hint": "Отклики на ваши вакансии",
     "more_settings": "Другие настройки",
     "language_row": "Язык",
     "phone_none": "Номер телефона не добавлен",
@@ -511,7 +510,7 @@
     "tab_my_listings": "Объявления",
     "tab_workers": "Работники",
     "tab_employers": "Компании",
-    "tab_chat": "Чат",
+    "tab_chat": "Поиск",
     "tab_matches": "Для вас"
   },
   "moderation": {

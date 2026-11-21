@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { ChevronRight, Inbox, Plus, Sparkles } from "lucide-react";
+import { ChevronRight, Plus, Sparkles } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 import { requireSession } from "@/features/auth/session";
@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * /cabinet/elonlar — "E'lonlarim" (pastki menyuning 2-bo'limi). Ega, 2026-11-21 (master prompt): tepada 3 ta yorliq —
  * Faol · Yopilgan · Muddati tugagan (?holat=faol|yopilgan|tugagan, JS'siz oddiy havolalar), har birida soni. Pastda
- * menyudan bu yerga ko'chgan bo'limlar: ish izlovchida "Sizga mos", ish beruvchida "Arizalar" (yangilari soni bilan).
+ * menyudan bu yerga ko'chgan "Sizga mos" (ish izlovchida).
  */
 export default async function MyListingsPage({ searchParams }: { searchParams: Promise<{ holat?: string | string[] }> }) {
   const session = await requireSession("/cabinet/elonlar");
@@ -46,7 +46,6 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
   const shownEmpty = !shown.workers.length && !shown.vacancies.length && !shown.masters.length;
   // boshqa roldagi e'lonlar ko'rsatilmaydi — faqat soni va bir bosishda o'sha rolga o'tish (e'lon "yo'qolib qoldi" deb o'ylamasin)
   const otherCount = employer ? mine.workers.length + allMasters.length : worker ? mine.vacancies.length : 0;
-  const freshApplications = vacancies.reduce((n, v) => n + v.applications.fresh, 0);
   const postHref = employer ? "/post/vacancy?ai=1" : "/ai/post";
 
   return (
@@ -105,22 +104,12 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
           </Link>
         ) : null}
 
-        {/* menyudan ko'chgan bo'limlar (ega, 2026-11-21: menyu 3 ta bo'lim) */}
-        <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-my-listings-more>
-          {!employer ? (
+        {/* menyudan ko'chgan bo'lim (2026-11-21): ish izlovchida "Sizga mos". Arizalar yo'q — bog'lanish faqat telefon orqali */}
+        {!employer ? (
+          <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-my-listings-more>
             <MoreRow href="/cabinet/matches" icon={<Sparkles />} title={t("easy.nav.tab_matches")} hint={t("easy.cabinet.matches_hint")} tag="matches" />
-          ) : null}
-          {!worker ? (
-            <MoreRow
-              href="/employer/applications"
-              icon={<Inbox />}
-              title={t("easy.nav.tab_applications")}
-              hint={t("easy.cabinet.applications_hint")}
-              badge={freshApplications ? t("easy.cabinet.applications_new", { count: freshApplications }) : null}
-              tag="applications"
-            />
-          ) : null}
-        </ul>
+          </ul>
+        ) : null}
 
         {otherCount ? (
           <RoleSwitchRow
@@ -136,7 +125,7 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
   );
 }
 
-function MoreRow({ href, icon, title, hint, badge, tag }: { href: string; icon: ReactNode; title: string; hint: string; badge?: string | null; tag: string }) {
+function MoreRow({ href, icon, title, hint, tag }: { href: string; icon: ReactNode; title: string; hint: string; tag: string }) {
   return (
     <li>
       <Link href={href} data-my-listings-link={tag} className="press flex min-h-16 items-center gap-3 px-4 py-3 hover:bg-secondary/60">
@@ -147,7 +136,6 @@ function MoreRow({ href, icon, title, hint, badge, tag }: { href: string; icon: 
           <span className="block text-base font-bold leading-tight">{title}</span>
           <span className="block text-sm text-muted-foreground">{hint}</span>
         </span>
-        {badge ? <span className="shrink-0 rounded-md bg-destructive px-2 py-0.5 text-xs font-bold text-destructive-foreground">{badge}</span> : null}
         <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
       </Link>
     </li>
