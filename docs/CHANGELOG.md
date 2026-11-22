@@ -1,5 +1,12 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Kanal postida turi va heshteglar qatori yo'q (`fix/channel-no-hashtags`)
+
+Ega (kanaldagi postni belgilab): "shu belgilagan narsani olib tashla".
+
+- Kanaldagi vakansiya va ishchi postlari matni endi darhol nomidan boshlanadi: "💼 VAKANSIYA · ishchi kerak · #…" va
+  "👤 ISHCHI · ish qidiryapti · #…" qatori yo'q. Turi rasmda (ko'k — vakansiya, yashil — ishchi) avvalgidek yozilgan.
+
 ## 2026-11-22 · Korporativ uslub, chat ketma-ketligi, kanalda ishchi raqamisiz (`feat/corporate-chat`)
 
 Ega: "har bir oyna jiddiy, korporativ bo'lsin (oq + to'q ko'k)"; "avval 2 ta variant — ish qidiryapman / ishchi qidiryapman,

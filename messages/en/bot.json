@@ -84,8 +84,6 @@
     "changed": "✅ Language: English"
   },
   "channel": {
-    "job_tag": "💼 VACANCY · hiring",
-    "worker_tag": "👤 WORKER · looking for work",
     "open_worker": "View worker →",
     "remote": "Remote",
     "negotiable": "Negotiable",
