@@ -23,6 +23,8 @@ Audit: `docs/ISH_TOPDIM_2_AUDIT.md`, hisobot: `docs/ISH_TOPDIM_2_FINAL_REPORT.md
   - Profilda telefon raqami tahrirlash tugmasi ostida qolardi — tuzatildi.
   - Tariflarda narx pastki qatorga tegardi — tuzatildi.
   - CI'ga 768 va 1920 qo'shildi.
+- **Chat:** Profilda rol almashtirilsa, oldingi rolning yarim qolgan suhbati tiklanmaydi. Avval ish beruvchi
+  ekranida ishchi savoli ("Kasbingiz qanday?") kutib turardi.
 - **Benchmark:** `npm run bench:search` — lokal stendda 1224 ta namunaviy vakansiya va 84 so'rov. Natija: 84/84,
   p95 ≈ 170 ms. Seed faqat `ishuz_e2e` bazasida ishlaydi.
 

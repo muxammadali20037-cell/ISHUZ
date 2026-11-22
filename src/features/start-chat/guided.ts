@@ -38,6 +38,8 @@ interface Stored {
   at: number;
   /** kimning suhbati (foydalanuvchi id yoki "guest"): hisob almashsa — boshqa odamning suhbati ko'rinmaydi */
   owner: string;
+  /** saqlangan paytdagi ilova rejimi (ish izlovchi / ish beruvchi): Profilda rol almashsa — suhbat tiklanmaydi */
+  mode?: AppMode | null;
   role: Role | null;
   msgs: Msg[];
   draft: Draft | null;
@@ -101,7 +103,17 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   const pending = msgs.some((m) => m.ai?.kind === "thinking" || m.ai?.kind === "searching");
 
   useEffect(() => {
-    const s = load(owner);
+    let s = load(owner);
+    // rol almashtirilgan (Profil → "Ish beruvchiga o'tish"): oldingi rolning suhbati (masalan, yarim qolgan ishchi e'loni)
+    // tiklanmaydi — aks holda ish beruvchi ekranida "Kasbingiz qanday?" (ishchi savoli) kutib turardi (2026-11-22, CI)
+    if (s && appMode && s.mode && s.mode !== appMode) {
+      try {
+        sessionStorage.removeItem(STORE);
+      } catch {
+        // xotira yopiq — baribir tiklanmaydi
+      }
+      s = null;
+    }
     if (s) {
       seq.current = Math.max(Date.now(), ...s.msgs.map((m) => m.id));
       // eslint-disable-next-line react-hooks/set-state-in-effect -- tashqi xotiradan bir martalik tiklash
@@ -112,11 +124,12 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
       if (s.role) setRole(s.role);
     } else seq.current = Date.now();
     setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- rol faqat ochilganda solishtiriladi (keyin rol suhbat ichida o'zgaradi)
   }, [owner]);
 
   useEffect(() => {
-    if (ready && !pending) save({ owner, role, msgs, draft, awaiting, post });
-  }, [ready, pending, owner, role, msgs, draft, awaiting, post]);
+    if (ready && !pending) save({ owner, mode: appMode, role, msgs, draft, awaiting, post });
+  }, [ready, pending, owner, appMode, role, msgs, draft, awaiting, post]);
 
   useEffect(() => () => void (runRef.current += 1), []);
 

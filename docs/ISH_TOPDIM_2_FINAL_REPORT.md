@@ -36,6 +36,7 @@ To'liq jadval — auditda. Qisqacha:
 | Q5 | "manual qa" → "Manual terapevt" | O'rta | Tuzatildi |
 | M1–M3 | Katta shriftda: profilda telefon tugma ostida, tariflarda narx pastki qatorga tegadi | O'rta | Tuzatildi |
 | Q6–Q7 | "grushik", "vakansiya" | Past | Tuzatildi |
+| C1 | Rol almashtirilgach chat oldingi rolning yarim qolgan suhbatini tiklardi (ish beruvchiga ishchi savoli). CI e2e'da topildi | O'rta | Tuzatildi (`guided.ts`: saqlangan rejim ≠ hozirgi — tiklanmaydi) |
 | Q8 | "baliqchi" — tuman nomi ham | Past | Ataylab qoldirildi |
 | Q9 | Ikkinchi so'zdagi imlo xatosi ("o'qituvchi matimatika") | Past | Qoldi |
 
@@ -122,6 +123,7 @@ Lokal stendda, 2026-11-22. CI natijasi PR'da alohida ko'rinadi.
 | `eslint .` | ✅ xatosiz |
 | `vitest` (unit, 143 fayl) | ✅ 1084 o'tdi, 18 o'tkazib yuborilgan (avvaldan). `telegram/webhook/web-login.test.ts` bir marta yiqildi: kompyuter og'ir yuklangan paytda, kenglik auditi bilan bir vaqtda. Alohida va qayta ishga tushirilganda o'tdi |
 | Yangi unit testlar | ✅ `families.test.ts` (soha so'zlari, tegishli so'zlar), `guided-logic.test.ts` ("Hamma ishlar", "любая"), `intent.test.ts` ("manual qa", "grushik"), `rules.test.ts` ("Sex boshlig'i", "tikuv sexi" — toza; "sexy", "sexual" — bloklanadi) |
+| CI (PR #100, 1-urinish) | 393/394. Yiqilgan `all-links`: rol almashgach chat eski suhbatni tiklagan (C1) → tuzatildi. Shu va chatga oid 5 spec lokal qayta ishga tushirildi: ✅ 27/27. "Hozir shu kasblarda ish bor" keshsiz qilindi (sonlar doim hozirgi) |
 | E2E to'liq (394 test) | 392 o'tdi, 2 yiqildi. Ikkalasining sababi bir: men ishga tushirgan kenglik auditi (`e2e/screens/demo-seed.ts`) stendda namunaviy ishchi e'lonini qoldirgan, va "Sotuvchi" ishchilar soni 1 taga ko'p chiqqan. Audit tozalashi tuzatildi (`cleanDemo`). Shu 2 spec qayta ishga tushirildi: ✅ 11/11 |
 | Yangi e2e: `search-quality.spec.ts` | ✅ 5/5: "ish kerak" → Hamma ishlar; "работа" + "любая"; "voditel"; "kuryer" (butun soha); topilmadi → takliflar |
 | Kenglik auditi (`overlap.audit.ts`) | 434 tekshiruvda 3 muammo topildi → tuzatildi → shu sahifalar 14 sozlamada qayta tekshirildi: ✅ 0 |

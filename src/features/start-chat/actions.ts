@@ -65,31 +65,28 @@ export interface ChatProfessionCount extends ChatProfession {
 /**
  * Hozir e'lonlari BOR kasblar (soni bilan) — qidiruv bo'sh chiqqanda "boshqa qidiruv" takliflari (ega, 2026-11-22: haqiqiy
  * ma'lumot, o'ylab topilgan e'lon yo'q). Ish qidirishda — faol vakansiyalar, ishchi qidirishda — ochiq ishchi e'lonlari.
- * Faqat RLS bo'yicha hammaga ko'rinadigan qatorlar sanaladi; 10 daqiqa keshda.
+ * Faqat RLS bo'yicha hammaga ko'rinadigan qatorlar sanaladi. Keshsiz: faqat "topilmadi" holatida chaqiriladi, soni esa
+ * hozirgi bo'lishi kerak (keshdagi eski son bosilganda "topilmadi" chiqarishi mumkin edi).
  */
-const withListings = unstable_cache(
-  async (mode: "jobs" | "workers"): Promise<Array<Node & { count: number }>> => {
-    const db = createPublicClient();
-    const nowIso = new Date().toISOString();
-    const rows =
-      mode === "jobs"
-        ? (await db.from("vacancies").select("profession_node_id").eq("status", "active").or(`expires_at.is.null,expires_at.gt.${nowIso}`).not("profession_node_id", "is", null).limit(5000)).data
-        : (await db.from("worker_profiles").select("profession_node_id").eq("is_public", true).not("profession_node_id", "is", null).limit(5000)).data;
-    const count = new Map<string, number>();
-    for (const r of rows ?? []) if (r.profession_node_id) count.set(r.profession_node_id, (count.get(r.profession_node_id) ?? 0) + 1);
-    const top = [...count.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
-    if (!top.length) return [];
-    const { data } = await db.from("profession_nodes").select("id, name_uz, name_ru, name_en, selectable").in("id", top.map(([id]) => id));
-    return top
-      .map(([id, n]) => {
-        const node = (data ?? []).find((x) => x.id === id);
-        return node ? { ...node, count: n } : null;
-      })
-      .filter((x): x is Node & { count: number } => !!x && !isProhibitedProfession(x));
-  },
-  ["chat:professions-with-listings"],
-  { revalidate: 600, tags: ["professions"] },
-);
+const withListings = async (mode: "jobs" | "workers"): Promise<Array<Node & { count: number }>> => {
+  const db = createPublicClient();
+  const nowIso = new Date().toISOString();
+  const rows =
+    mode === "jobs"
+      ? (await db.from("vacancies").select("profession_node_id").eq("status", "active").or(`expires_at.is.null,expires_at.gt.${nowIso}`).not("profession_node_id", "is", null).limit(5000)).data
+      : (await db.from("worker_profiles").select("profession_node_id").eq("is_public", true).not("profession_node_id", "is", null).limit(5000)).data;
+  const count = new Map<string, number>();
+  for (const r of rows ?? []) if (r.profession_node_id) count.set(r.profession_node_id, (count.get(r.profession_node_id) ?? 0) + 1);
+  const top = [...count.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+  if (!top.length) return [];
+  const { data } = await db.from("profession_nodes").select("id, name_uz, name_ru, name_en, selectable").in("id", top.map(([id]) => id));
+  return top
+    .map(([id, n]) => {
+      const node = (data ?? []).find((x) => x.id === id);
+      return node ? { ...node, count: n } : null;
+    })
+    .filter((x): x is Node & { count: number } => !!x && !isProhibitedProfession(x));
+};
 
 export async function chatProfessionsWithListings(input: unknown): Promise<ChatProfessionCount[]> {
   const parsed = z.object({ mode: z.enum(["jobs", "workers"]), exclude: z.uuid().nullable().optional() }).safeParse(input);
