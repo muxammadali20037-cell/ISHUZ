@@ -98,7 +98,7 @@ export function StartChat({
       )}
 
       {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
-      <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2">
+      <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2" data-tour="composer">
         <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} />
       </div>
     </div>
@@ -320,7 +320,8 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
  */
 function RoleStart({ chat, onPick, roles = false }: { chat: GuidedChat; onPick: (r: Role, label: string) => void; roles?: boolean }) {
   const { t } = useT();
-  const tag = (r: Role) => (roles ? { "data-guided-role": r } : { "data-guided-start": r });
+  // bo'sh ekrandagi tugmalar — tanishuvda ham yoritiladi (data-tour)
+  const tag = (r: Role) => (roles ? { "data-guided-role": r } : { "data-guided-start": r, "data-tour": r === "jobs" ? "start-jobs" : "start-workers" });
   return (
     <div className="grid gap-2.5" data-guided-roles={roles ? "" : undefined} data-guided-starts={roles ? undefined : ""}>
       <NextOption primary icon={<BriefcaseBusiness />} title={t("easy.guided.start_jobs")} sub={t("easy.guided.start_jobs_sub")} disabled={chat.pending} onClick={() => onPick("jobs", t("easy.guided.start_jobs"))} {...tag("jobs")} />

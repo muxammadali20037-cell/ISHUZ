@@ -5,6 +5,8 @@ import { USERS, asGuest, asMode, loginAs, sql, stack } from "../support";
  * Birinchi kirgandagi tanishtiruv (ega, 2026-11-19: "1-chi kirganlarga tugmalar vazifasini tushuntirsin, o'sha tilda"):
  * tugmalar navbat bilan yoritiladi, yonida nomi va vazifasi; har panel uchun bir marta; "Kerak emas" / "O'tkazib yuborish"
  * ham eslab qolinadi; ekranda yo'q tugma (mehmonda "Xabarlar", qo'ng'iroqcha) o'tkazib yuboriladi; ?tour=1 — qayta.
+ * 2026-11-22 (ega: "tugmalar nima vazifani bajarishini — ovozi bilan"): hozirgi tugmalar (ikki katta tugma, yozish maydoni,
+ * Qidiruv · E'lonlarim · Profil, yuqori panel); video-tushuntirish ochiq bo'lsa — u tugagach/yopilgach boshlanadi.
  */
 
 const card = (page: Page) => page.locator("[data-tour-card]");
@@ -52,30 +54,30 @@ test("mehmon ish izlovchi: salom → pastki menyu → til, kirish → yakun; bir
   await asMode(context, "worker");
   await context.clearCookies({ name: "ib_tour" });
   await page.goto("/");
-  await expect(card(page)).toHaveAttribute("data-tour-card", "W1");
-  await expect(card(page)).toContainText("Assalomu alaykum!");
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B0");
+  await expect(card(page)).toContainText("Tugmalar bilan tanishuv");
   await expect(card(page).getByRole("button", { name: "Kerak emas" })).toBeVisible();
   await expect(page.getByRole("dialog")).toHaveAttribute("aria-modal", "true");
   // o'zbekcha ovoz bor (ega yozdirgan): ovozni o'chirish tugmasi; "Boshlash"dan keyin navbatdagi qadam ovozi yuklanadi
   await expect(card(page).getByRole("button", { name: "Ovozni o'chirish" })).toBeVisible();
-  const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/W7.mp3"));
+  const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/B1.mp3"));
   const codes = await walk(page);
   expect([200, 206]).toContain((await voice).status());
-  // mehmonda "Xabarlar" va qo'ng'iroqcha yo'q — o'tkazib yuboriladi; 2026-11-21 dan "Rol" qadami ham yo'q (bosh sahifa — chat,
-  // rolni AI aniqlaydi)
-  expect(codes).toEqual(["W1", "W7", "W6", "U2", "U3", "U6"]);
+  // ikki katta tugma, yozish maydoni, Qidiruv · E'lonlarim · Profil; mehmonda "Xabarlar" va qo'ng'iroqcha yo'q, "E'lon berish"
+  // — faqat kompyuterda (o'tkazib yuboriladi)
+  expect(codes).toEqual(["B0", "B1", "B2", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
   expect(await tourCookie(page)).toContain("w");
   await page.reload();
   await page.waitForTimeout(1500);
   await expect(card(page)).toHaveCount(0);
 });
 
-test("mehmon ish beruvchi: «E'lon» (+) ham tushuntiriladi; «Kerak emas» — eslab qolinadi; ?tour=1 — qayta", async ({ page, context }) => {
+test("mehmon ish beruvchi: «Kerak emas» — eslab qolinadi; ?tour=1 — qayta; kompyuterda «E'lon berish» ham", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
   await context.clearCookies({ name: "ib_tour" });
   await page.goto("/");
-  await expect(card(page)).toHaveAttribute("data-tour-card", "E1");
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B0");
   await card(page).getByRole("button", { name: "Kerak emas" }).click();
   await expect(card(page)).toHaveCount(0);
   expect(await tourCookie(page)).toBe("e");
@@ -85,8 +87,11 @@ test("mehmon ish beruvchi: «E'lon» (+) ham tushuntiriladi; «Kerak emas» — 
 
   await page.goto("/?tour=1");
   const codes = await walk(page);
-  // 2026-11-20: "Boshqaruv", markaziy "E'lon" va "Yordamchi" o'rnida — umumiy 5 ta bo'lim (E'lonlarim, Ishchilar, Profil bor)
-  expect(codes).toEqual(["E1", "E7", "E3", "E6", "U2", "U3", "U6"]);
+  expect(codes).toEqual(["B0", "B1", "B2", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
+  // kompyuterda: "E'lon berish" tugmasi yuqori panelda — u ham tushuntiriladi
+  await page.setViewportSize({ width: 1280, height: 860 });
+  await page.goto("/chat?tour=1");
+  expect(await walk(page)).toContain("B6");
 });
 
 test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'iroqcha bor; Escape — o'tkazib yuboradi", async ({ page, context }) => {
@@ -101,10 +106,10 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
   // kirgan foydalanuvchi: "/" — chat; tanishtiruv shu asosiy ekranda
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
-  await expect(card(page)).toHaveAttribute("data-tour-card", "E1");
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B0");
   await card(page).locator("[data-tour-next]").click();
-  // 2026-11-21: ikkinchi qadam — "Qidiruv" bo'limi (yordamchi)
-  await expect(card(page)).toHaveAttribute("data-tour-card", "E7");
+  // ikkinchi qadam — "Ish qidiryapman" tugmasi
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B1");
   await card(page).getByRole("button", { name: "Orqaga" }).waitFor();
   await page.keyboard.press("Escape");
   await expect(card(page)).toHaveCount(0);
@@ -112,7 +117,7 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
 
   await page.goto("/chat?tour=1");
   const codes = await walk(page);
-  expect(codes).toEqual(["E1", "E7", "E3", "E6", "U2", "U4", "U5", "U6"]);
+  expect(codes).toEqual(["B0", "B1", "B2", "B3", "B4", "B5", "B7", "U4", "U2", "U5", "U6"]);
 });
 
 test("rus tilida — matnlar ruscha", async ({ page, context }) => {
@@ -121,9 +126,30 @@ test("rus tilida — matnlar ruscha", async ({ page, context }) => {
   await context.clearCookies({ name: "ib_tour" });
   await context.addCookies([{ name: "ishuz_locale", value: "ru", domain: new URL(stack.app).hostname, path: "/" }]);
   await page.goto("/");
-  await expect(card(page)).toContainText("Здравствуйте!");
+  await expect(card(page)).toContainText("Знакомство с кнопками");
   // ruscha ovoz hali yo'q — tugma ham, so'rov ham yo'q
   await expect(card(page).getByRole("button", { name: /звук/ })).toHaveCount(0);
   await card(page).getByRole("button", { name: "Начать" }).click();
-  await expect(card(page)).toContainText("Помощник");
+  await expect(card(page)).toContainText("Ищу работу");
+});
+
+test("video-tushuntirish ochiq — tanishuv kutadi; «Ovozsiz» ko'rilib yopilgach boshlanadi va u ham jim", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await context.clearCookies({ name: "ib_tour" });
+  await context.clearCookies({ name: "ib_intro_v" });
+  await page.goto("/");
+  const intro = page.locator("[data-intro]");
+  await expect(intro).toHaveAttribute("data-intro-phase", "ask");
+  await page.waitForTimeout(1500);
+  await expect(card(page)).toHaveCount(0);
+  await intro.locator("[data-intro-sound='off']").click();
+  await expect(intro).toHaveAttribute("data-intro-phase", "playing");
+  await intro.locator("[data-intro-close]").click();
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B0");
+  // videoda "Ovozsiz" tanlangan — tanishuv ham jim (ovozni yoqish tugmasi bilan)
+  await expect(card(page).getByRole("button", { name: "Ovozni yoqish" })).toBeVisible();
+  await card(page).locator("[data-tour-next]").click();
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B1");
+  await expect(page.locator("[data-tour-spot='start-jobs']")).toBeVisible();
 });
