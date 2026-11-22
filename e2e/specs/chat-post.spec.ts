@@ -61,8 +61,21 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   await expect(lastAi(page)).toContainText("Tushunmadim. Necha yil ishlaganingizni yozing");
   await send(page, "2 yil");
   await settled(page);
-  // telefon — yoziladi, majburiy; chala bo'lsa — qayta
+  // izoh (ega, 2026-11-22): tayyor variant belgilanadi va/yoki pastda yoziladi — e'longa ✅ ro'yxat bo'lib tushadi
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-note");
+  await expect(lastAi(page)).toContainText("Qo'shimcha izoh bormi?");
+  await expect(box(page)).toHaveAttribute("placeholder", /mashinam bor/);
+  await expect(lastAi(page).locator("[data-post-notes-done]")).toBeDisabled();
+  await lastAi(page).locator("[data-post-note='car']").click();
+  await expect(lastAi(page).locator("[data-post-note='car']")).toHaveAttribute("aria-pressed", "true");
+  await send(page, "tungi smenada ham ishlayman, rus tilini bilaman");
+  await settled(page);
+  // "Siz:" qatorida — e'longa tushadigan bandlar (belgilangani ham, yozilgani ham)
+  await expect(page.locator("[data-ai-you]").last()).toHaveText("Siz: O'z mashinam bor, Tungi smenada ham ishlayman, Rus tilini bilaman");
+  // telefon — yoziladi, majburiy; chala bo'lsa — qayta. Pastdagi yozuv har savolga mos (ega: "har bitta so'rovda o'zgarsin")
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-phone");
+  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: 90 123 45 67");
+  await expect(box(page)).toHaveAttribute("inputmode", "tel");
   await send(page, "90 123");
   await expect(lastAi(page)).toContainText("Raqam to'liq emas.");
   await send(page, "90 123 45 67");
@@ -76,6 +89,7 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   await expect(card).toContainText("Botir B.");
   await expect(card).toContainText("Toshkent shahri");
   await expect(card).toContainText("Oshpaz sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
+  await expect(card.locator("[data-notes-list] li")).toHaveText(["O'z mashinam bor", "Tungi smenada ham ishlayman", "Rus tilini bilaman"]);
   await expect(card.locator("[data-post-phone]")).toHaveText("+998 90 ••• •• 67");
   await expect(preview.locator("[data-post-publish]")).toHaveText("Joylash");
   const consent = preview.locator("[data-post-consent]");
@@ -99,6 +113,8 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   expect(w).toMatchObject({ name: "Oshpaz", is_public: true });
   const phones = await sql<{ phone: string }>("select phone from public.worker_listing_phones where worker_id in (select id from public.worker_profiles where profile_id = $1)", [USERS.workerB]);
   expect(phones.map((p) => p.phone)).toContain("+998901234567");
+  const [wp] = await sql<{ about: string }>("select about from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  expect(wp!.about).toMatch(/\n\n✅ O'z mashinam bor\n✅ Tungi smenada ham ishlayman\n✅ Rus tilini bilaman$/);
 });
 
 test("mehmon: gapda kasb aytilgan — so'ralmaydi; ism yoziladi; «Joylash» — bir marta kirib qaytadi va o'sha karta qaytadi", async ({ page, context }) => {
@@ -124,6 +140,11 @@ test("mehmon: gapda kasb aytilgan — so'ralmaydi; ism yoziladi; «Joylash» —
   // tugma bilan ham bo'ladi
   await lastAi(page).locator("[data-post-exp='3plus']").click();
   await settled(page);
+  // izohsiz ham bo'ladi ("yo'q" deb yozsa ham)
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-note");
+  await send(page, "yo'q");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-phone");
   await send(page, "+998 90 123 45 67");
   await settled(page);
   const preview = lastAi(page);
@@ -182,4 +203,35 @@ test("«E'lonlarim» → «+ E'lon joylash» — chatda savollar darhol boshlana
   await settled(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post");
   await expect(page.locator("[data-guided-post-to='employer']")).toHaveAttribute("href", /^\/post\/vacancy\?ai=1/);
+});
+
+test("ish izlovchi: e'lonlarni ko'rdi — ostida kichik «+ E'lon joylash» → shu chatda, qidirgan kasbi bilan e'lon boshlanadi", async ({ page, context }) => {
+  const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Oshpaz' and selectable order by depth limit 1");
+  await sql(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, profession_node_id, salary_from, salary_type, published_at, expires_at)
+     select $1, 'PL1 Oshpaz — kafe', r.id, 'Sinov e''loni: kafega oshpaz kerak, 9 dan 18 gacha', 'active', $2, 5000000, 'monthly', now(), now() + interval '10 days'
+     from public.regions r where r.slug = 'tashkent_city'`,
+    [USERS.employer, n!.id],
+  );
+  try {
+    await loginAs(context, USERS.workerB);
+    await asMode(context, "worker");
+    await context.clearCookies({ name: "ib_place" });
+    await page.goto("/chat");
+    await send(page, "Toshkentdan oshpaz ishi kerak");
+    await settled(page);
+    const res = lastAi(page);
+    await expect(res).toHaveAttribute("data-guided-ai", "results");
+    const link = res.locator("[data-guided-post-link='worker']");
+    await expect(link).toHaveText("E'lon joylash");
+    await page.locator("#start-chat-text").blur();
+    await link.click();
+    await settled(page);
+    // kasb qidiruvdan olindi — so'ralmaydi; savollar shu chatda
+    await expect(page).toHaveURL(/\/chat$/);
+    await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|experience)$/);
+    await expect(page.locator("[data-guided-post-link]")).toHaveCount(0);
+  } finally {
+    await sql("delete from public.vacancies where title = 'PL1 Oshpaz — kafe'");
+  }
 });

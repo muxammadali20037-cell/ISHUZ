@@ -19,7 +19,7 @@
         "desc": "Kasb va hududni tanlang — mos ishchilar darhol chiqadi"
       },
       "jobs": {
-        "title": "Endi o'zingizga mos ish topish oson",
+        "title": "Endi ish topish oson",
         "desc": "Kasbingizni tanlang — yaqin atrofdagi ish e'lonlari"
       },
       "daily": {
@@ -234,7 +234,7 @@
     "consent_off": "Belgilamasangiz, raqamingiz ko'rinmaydi: ish beruvchi faqat so'rov yuborib bog'lanadi.",
     "done_title": "E'loningiz joylandi.",
     "done_desc": "Endi ish beruvchilar siz bilan bog'lanishi mumkin.",
-    "done_matches": "Mos ishlarni ko'rish",
+    "done_matches": "Ishlarni ko'rish",
     "done_view": "E'lonimni ko'rish",
     "pay_title": "E'loningiz tayyor! Joylash uchun to'lov qoldi",
     "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ish beruvchilarga ko'rinadi.",
@@ -283,7 +283,7 @@
     "consent_off": "Belgilamasangiz, raqam ko'rinmaydi (kanalda ham): ishchilar faqat ariza yuborib bog'lanadi.",
     "done_title": "Ish e'loningiz joylandi.",
     "done_desc": "Ishchilar endi sizga qo'ng'iroq qilishi yoki ariza yuborishi mumkin.",
-    "done_matches": "Mos ishchilarni ko'rish",
+    "done_matches": "Ishchilarni ko'rish",
     "done_view": "E'lonimni ko'rish",
     "done_seeker_view": "Ish izlovchilar qanday ko'radi",
     "review_state_title": "E'loningiz tekshiruvga yuborildi",
@@ -351,7 +351,7 @@
     "region_wide": "Butun viloyat bo'yicha",
     "remote": "Masofadan",
     "post_jobs": "Ishchi topilmadimi? O'zingiz e'lon bering",
-    "post_workers": "Mos ish topilmadimi? O'zingiz haqingizda e'lon bering",
+    "post_workers": "Ish topilmadimi? O'zingiz haqingizda e'lon bering",
     "salary_over": "{amount} so'mdan yuqori",
     "error_title": "Natijalarni yuklab bo'lmadi",
     "error_desc": "Internet yoki serverda vaqtinchalik nosozlik. Tanlagan kasb, hudud va filtrlaringiz saqlanib qoldi.",
@@ -538,7 +538,7 @@
   },
   "alerts": {
     "title": "Telegram xabarnomalari",
-    "intro": "Siz e'lon berasiz — tizim sizga mos ish yoki ishchini topib, Telegramda xabar beradi. Faqat roziligingiz bilan.",
+    "intro": "Yangi xabarlar, e'loningiz holati va boshqa bildirishnomalar Telegram'ga keladi.",
     "worker_cta": "Menga mos ish chiqsa xabar bering",
     "employer_cta": "Menga mos ishchi topilsa xabar bering",
     "hint": "Telegram orqali. Istalgan vaqtda to'xtatish mumkin.",
@@ -727,8 +727,8 @@
     "try_label": "Masalan, bosing:",
     "you": "Siz",
     "thinking_understand": "So'zlaringizni tushunmoqdaman…",
-    "thinking_jobs": "Mos e'lonlarni saralamoqdaman…",
-    "thinking_workers": "Mos ishchilarni saralamoqdaman…",
+    "thinking_jobs": "E'lonlarni qidirmoqdaman…",
+    "thinking_workers": "Ishchilarni qidirmoqdaman…",
     "found_jobs_chat": "{count} ta mos e'lon topdim",
     "found_workers_chat": "{count} ta mos ishchi topdim",
     "refine_label": "Aniqlashtiraymi?",
@@ -744,8 +744,8 @@
     "new_chat": "Yangi suhbat",
     "disclaimer": "Faqat bazadagi haqiqiy e'lonlar. Qaror — sizniki.",
     "card_title": "Yordamchiga yozing",
-    "card_desc_jobs": "Oddiy so'z bilan: kasb, tuman, maosh — mos e'lonlarni darhol topadi",
-    "card_desc_workers": "Oddiy so'z bilan: kasb, tuman, tajriba — mos ishchilarni darhol topadi",
+    "card_desc_jobs": "Oddiy so'z bilan: kasb, tuman, maosh — e'lonlarni darhol topadi",
+    "card_desc_workers": "Oddiy so'z bilan: kasb, tuman, tajriba — ishchilarni darhol topadi",
     "card_open": "Yozishni boshlash",
     "empty_ai_hint": "Yoki oddiy so'z bilan yozing — yordamchi boshqacha qidirib ko'radi",
     "composer_placeholder_jobs": "Kasb, tuman, maosh…",
@@ -784,8 +784,8 @@
     "demos_exact": "Namuna e'lonlar — haqiqiy emas",
     "demos_category": "Shu sohadagi namuna e'lonlar — haqiqiy emas",
     "demos_all": "Barcha namunalar",
-    "top_placeholder": "O'zingizga mos xodimni qidiring...",
-    "top_placeholder_jobs": "O'zingizga mos ishni qidiring...",
+    "top_placeholder": "Xodim qidiring...",
+    "top_placeholder_jobs": "Ish qidiring...",
     "empty_post_worker_note": "Ish beruvchilar sizni o'zi topadi."
   },
   "mode": {
@@ -883,7 +883,7 @@
     "f_daily": "Kunlik",
     "f_remote": "Masofaviy",
     "f_experienced": "Tajribali",
-    "match_title": "Sizga mos ishlar",
+    "match_title": "Kasbingiz bo'yicha ishlar",
     "match_reason": "Kasbingiz bo'yicha: {profession} · {place}",
     "new_title": "Yangi ishlar",
     "new_reason": "{place} · eng yangilari birinchi",
@@ -909,7 +909,7 @@
     "new_workers_title": "Yangi nomzodlar",
     "all_workers": "Barcha nomzodlar · {count} ta",
     "workers_empty_title": "Hozircha ochiq nomzod yo'q",
-    "workers_empty_desc": "Vakansiya joylang — mos ishchilar sizga ariza yuboradi.",
+    "workers_empty_desc": "Vakansiya joylang — ishchilar sizga ariza yuboradi.",
     "finish_company_title": "Kompaniya ma'lumotlarini to'ldiring",
     "finish_company_desc": "Bir daqiqa: nomi va hudud — keyin vakansiya joylaysiz va arizalarni ko'rasiz",
     "metrics_label": "Qisqa ko'rsatkichlar",
@@ -1014,8 +1014,8 @@
     "sections": "Bo'limlar",
     "hint": {
       "home": "Asosiy sahifa",
-      "ai": "Mos ishlar va maslahat",
-      "ai_employer": "Mos nomzodlar va maslahat",
+      "ai": "Qidiruv va maslahat",
+      "ai_employer": "Ishchi qidirish va maslahat",
       "jobs": "Barcha ishlar",
       "map": "Yaqin atrofdagi ishlar",
       "my_applications": "Arizalar va takliflar",
@@ -1148,15 +1148,15 @@
     "greeting_intro_employer": "Qanday xodim kerak? Yozing — bazadagi haqiqiy nomzodlardan topaman.",
     "brief_title": "Bugungi ishlar",
     "brief": {
-      "login_worker": "Kiring — mos ishlar, arizalar va saqlanganlar bir joyda bo'ladi",
+      "login_worker": "Kiring — e'lonlaringiz, arizalar va saqlanganlar bir joyda bo'ladi",
       "login_employer": "Kiring — vakansiyalar, arizalar va nomzodlar bir joyda bo'ladi",
       "finish_company": "Kompaniya ma'lumotini to'ldiring va birinchi vakansiyani joylang",
       "new_applications": "{count} ta yangi ariza keldi",
       "active_vacancies": "{count} ta faol vakansiyangiz bor",
       "no_vacancy": "Hali faol vakansiya yo'q — joylang, nomzodlar ko'ra boshlaydi",
-      "create_profile": "Profil yarating — mos ishlar o'zi topiladi, ariza bir bosishda",
-      "matches": "«{profession}» bo'yicha {count} ta mos vakansiya",
-      "pick_profession": "Kasbingizni tanlang — mos ishlar o'zi topiladi",
+      "create_profile": "O'zingiz haqingizda e'lon bering — ish beruvchilar sizni topadi",
+      "matches": "«{profession}» bo'yicha {count} ta vakansiya",
+      "pick_profession": "Kasbingizni tanlang — ishlarni tezroq topasiz",
       "completeness": "Profilingiz {percent} % to'ldirilgan",
       "my_applications": "{count} ta arizangiz ko'rib chiqilmoqda",
       "cta_view": "Ko'rish",
@@ -1357,7 +1357,8 @@
       "org_name": "Tashkilot nomi?",
       "person_name": "Ismingiz?",
       "phone": "Bog'lanish uchun telefon",
-      "description": "E'lon matni. Ma'qulmi?"
+      "description": "E'lon matni. Ma'qulmi?",
+      "notes": "Qo'shimcha izoh bormi?"
     },
     "other_profession": "Boshqa kasb",
     "profession_input": "Kasb nomini yozing",
@@ -1383,7 +1384,10 @@
       "exp_0": "Tajriba shart emas.",
       "exp_12": "Tajriba: 1 yildan.",
       "exp_36": "Tajriba: 3 yildan."
-    }
+    },
+    "notes_hint": "Masalan: obed, yo'lkira tekin. Bir nechtasini tanlang yoki o'zingiz yozing — e'londa chiroyli ro'yxat bo'lib chiqadi.",
+    "notes_placeholder": "O'zingiz yozing: obed, yo'lkira tekin…",
+    "notes_skip": "Izohsiz davom etish"
   },
   "quick": {
     "remote": "Masofaviy (internet orqali)",
@@ -1407,9 +1411,9 @@
     "found_jobs": "{count} ta ish topildi",
     "found_workers": "{count} ta nomzod topildi",
     "none_jobs": "Hozircha bunday ish yo'q.",
-    "none_workers": "Hozircha mos nomzod yo'q.",
-    "saved": "So'rovingiz saqlandi. Mos ish chiqsa, sizga xabar beramiz.",
-    "login_note": "Kirsangiz — mos ish chiqsa, sizga xabar beramiz.",
+    "none_workers": "Hozircha nomzod topilmadi.",
+    "saved": "So'rovingiz saqlandi. Shu bo'yicha yangi ish chiqsa, xabar beramiz.",
+    "login_note": "Kirsangiz — shu bo'yicha yangi ish chiqsa, xabar beramiz.",
     "login": "Kirish",
     "similar_near_jobs": "Shunga yaqin ishlar",
     "similar_near_workers": "Shunga yaqin nomzodlar",
@@ -1479,7 +1483,7 @@
     "done_desc": "E'loningiz avtomatik tekshiruvdan o'tdi va ish beruvchilarga ko'rinmoqda.",
     "done_notify": "Sizga mos ish chiqsa, ilovada xabar beramiz.",
     "done_view": "E'lonimni ko'rish",
-    "done_matches": "Mos ishlarni ko'rish",
+    "done_matches": "Ishlarni ko'rish",
     "again": "Yana e'lon joylash",
     "pay_title": "E'loningiz saqlandi",
     "pay_desc": "E'lonni joylash uchun to'lov kerak. Kabinetda davom ettiring.",
@@ -1494,7 +1498,9 @@
     "add_phone": "Yana raqam",
     "q_phone2": "Qo'shimcha raqam",
     "remove_phone": "Qo'shimcha raqamni olib tashlash",
-    "preview_phones": "Siz yozgan ikkala raqam e'loningizda bo'ladi — ish beruvchilar ularni ochib, qo'ng'iroq qiladi"
+    "preview_phones": "Siz yozgan ikkala raqam e'loningizda bo'ladi — ish beruvchilar ularni ochib, qo'ng'iroq qiladi",
+    "q_notes": "Qo'shimcha izoh",
+    "notes_placeholder": "O'zingiz yozing: o'z mashinam bor, tungi smenada ham ishlayman…"
   },
   "channel_prompt": {
     "title": "Telegram kanalimizga qo'shiling",
@@ -1620,7 +1626,7 @@
     "error_provider_unavailable": "Rasm xizmati hozir ishlamayapti. E'lonni rasmsiz joylashingiz mumkin."
   },
   "guided": {
-    "hello": "O'zingizga mos ishni yoki ishchini toping",
+    "hello": "Ish yoki ishchini oson toping",
     "placeholder_guest": "Masalan: menga haydovchi kerak",
     "placeholder_worker": "Masalan: men oshpazman",
     "placeholder_employer": "Masalan: menga sotuvchi kerak",
@@ -1688,7 +1694,20 @@
     "next_see_workers": "Mavjud ishchilarni ko'rish",
     "next_see_workers_sub": "Ish izlayotganlar e'lonlari",
     "next_post_vacancy": "Vakansiya joylash",
-    "next_post_vacancy_sub": "Ishchilar sizni topadi"
+    "next_post_vacancy_sub": "Ishchilar sizni topadi",
+    "placeholder_role": "Ish kerakmi yoki ishchi?",
+    "placeholder_place": "Viloyat yoki tuman…",
+    "placeholder_post_profession": "Kasbingiz — masalan: oshpaz",
+    "placeholder_post_which": "Aniq kasbni yozing…",
+    "placeholder_post_region": "Viloyatni yozing…",
+    "placeholder_post_name": "Ismingiz — masalan: Botir",
+    "placeholder_post_experience": "Masalan: 2 yil",
+    "placeholder_post_phone": "Masalan: 90 123 45 67",
+    "post_link": "E'lon joylash",
+    "ask_post_note": "Qo'shimcha izoh bormi? Pastdan tanlang yoki o'zingiz yozing — masalan: o'z mashinam bor. Bo'lmasa — «Izohsiz».",
+    "post_note_done": "Davom etish",
+    "post_note_skip": "Izohsiz",
+    "placeholder_post_note": "Masalan: o'z mashinam bor"
   },
   "intro": {
     "title": "Ish topdim qanday ishlaydi",
@@ -1718,5 +1737,22 @@
     "demo_name": "Ism",
     "demo_exp": "Tajriba",
     "demo_phone": "Telefon raqam"
+  },
+  "notes": {
+    "vacancy": {
+      "lunch": "Obed tekin",
+      "fare": "Yo'lkira tekin",
+      "dorm": "Yotoqxona bor",
+      "uniform": "Forma beriladi",
+      "official": "Rasmiy ishga olinadi",
+      "ontime": "Oylik o'z vaqtida"
+    },
+    "worker": {
+      "car": "O'z mashinam bor",
+      "night": "Tungi smenada ham ishlayman",
+      "now": "Darhol ishga chiqa olaman",
+      "docs": "Hujjatlarim tayyor",
+      "russian": "Rus tilini bilaman"
+    }
   }
 }

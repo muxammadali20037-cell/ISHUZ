@@ -6,6 +6,7 @@ import { localizedName, makeT, makeTEnum } from "@/lib/i18n/translate";
 import { formatSalaryWithPeriod } from "@/lib/format";
 import type { createAdminClient } from "@/lib/supabase/admin";
 import type { Json, Tables, TablesUpdate } from "@/types/database.types";
+import { MATCH_ALERT_KINDS, MATCH_NOTIFICATION_TYPES, isMatchNotification } from "@/features/matching/off";
 import { renderNotification } from "./render";
 import { jobSlugFromLink, vacancyStillOpen } from "./eligibility";
 import { isTelegramBlockedError, resolveTelegramLocale } from "./telegram";
@@ -148,14 +149,38 @@ function subscriptionOk(ctx: Ctx, profileId: string, role: "worker" | "employer"
  *  - bir foydalanuvchiga bir nechta moslik — bitta jamlangan xabar (eng moslari);
  *  - 403 (bot bloklangan) → cheksiz urinish yo'q; 429 → retry_after; 5xx/tarmoq → ortib boruvchi kutish, 6 urinishdan keyin "failed".
  */
+/**
+ * Moslik o'chirilgan (features/matching/off.ts): baza yaratgan "mos ish / mos nomzod" va AI xabarnomalari — o'qilgan va
+ * "yuborilmaydi" deb belgilanadi (qo'ng'iroqchada qizil nuqta ham chiqmaydi). Xato yuborishni to'xtatmaydi.
+ */
+export async function suppressMatchNotifications(admin: AdminClient): Promise<void> {
+  const patch = { read_at: new Date().toISOString(), tg_status: "skipped", tg_error: "matching_off" };
+  try {
+    await Promise.all([
+      admin.from("notifications").update(patch).in("type", [...MATCH_NOTIFICATION_TYPES]).is("read_at", null),
+      admin.from("notifications").update(patch).eq("type", "system").in("payload->>kind", [...MATCH_ALERT_KINDS]).is("read_at", null),
+    ]);
+  } catch (e) {
+    console.error("[notifications] matching off", e instanceof Error ? e.message : e);
+  }
+}
+
 export async function dispatchTelegramNotifications(admin: AdminClient, opts: { limit?: number; budgetMs?: number } = {}): Promise<DispatchCounts> {
   const started = Date.now();
   const budget = opts.budgetMs ?? 40_000;
   const counts: DispatchCounts = { scanned: 0, sent: 0, blocked: 0, failed: 0, skipped: 0 };
+  await suppressMatchNotifications(admin);
   const { data, error } = await admin.rpc("telegram_outbox_claim", { p_limit: Math.min(Math.max(opts.limit ?? 200, 1), 500) });
   if (error) throw new Error(`outbox claim: ${error.message}`);
-  const rows = (data ?? []) as Row[];
-  counts.scanned = rows.length;
+  const claimed = (data ?? []) as Row[];
+  counts.scanned = claimed.length;
+  // moslik o'chirilgan: shu orada navbatga tushganlari ham yuborilmaydi
+  const off = claimed.filter(isMatchNotification);
+  if (off.length) {
+    counts.skipped += off.length;
+    await admin.from("notifications").update({ tg_status: "skipped", tg_error: "matching_off", read_at: new Date().toISOString() }).in("id", off.map((r) => r.id));
+  }
+  const rows = claimed.filter((r) => !isMatchNotification(r));
   if (!rows.length) return counts;
 
   const profileIds = [...new Set(rows.map((r) => r.profile_id))];

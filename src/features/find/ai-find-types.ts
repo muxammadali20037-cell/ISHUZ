@@ -29,8 +29,7 @@ export interface AiFindResult {
    * masalan "Chilonzorda yo'q — butun Toshkent bo'yicha". Natija topilmasa — bo'sh.
    */
   relaxed: string[];
-  /** hech narsa topilmadi: yangi mos e'lon chiqsa Telegram'ga xabar (yozgan matni tayyor) va o'zi e'lon berishi */
-  alertHref: string;
+  /** hech narsa topilmadi: o'zi e'lon berishi */
   postHref: string;
   /**
    * Matndan nima tushunildi (suhbat konteksti uchun): `profession` — kasb yoki e'lon matnidagi kalit so'z topildi;

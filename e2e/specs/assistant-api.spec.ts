@@ -89,10 +89,12 @@ test("hech narsa yo'q — halol javob, o'ylab topilgan e'lon yo'q", async ({ pag
   await asMode(context, "worker");
   await page.goto("/ai");
   const ev = events((await chat(page, [{ role: "user", text: "Toshkentda elektrik ish kerak" }])).lines);
-  const data = ev.find((e) => e.type === "results")!.data as { total: number; jobs: unknown[]; alertHref: string };
+  const data = ev.find((e) => e.type === "results")!.data as { total: number; jobs: unknown[]; postHref: string; alertHref?: string };
   expect(data.total).toBe(0);
   expect(data.jobs).toEqual([]);
-  expect(data.alertHref).toContain("/ai-alerts?role=worker");
+  // "mos ish chiqsa — xabar" yo'q (moslik olib tashlandi); o'zi e'lon berishi mumkin
+  expect(data.alertHref).toBeUndefined();
+  expect(data.postHref).toBe("/post/worker");
   expect(textOf(ev)).toMatch(/yo'q|topilmadi/);
   expect(ev.find((e) => e.type === "suggestions")!.items).toEqual(["Kunlik ish bormi?", "Tajribasiz ishlar", "Oshpaz maoshi qancha?"]);
 });

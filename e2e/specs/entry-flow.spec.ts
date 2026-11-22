@@ -43,7 +43,7 @@ test.describe("kirish oqimi", () => {
     // (kirgan, profili yo'q) va to'g'ridan-to'g'ri havola bilan ochiladi
     await page.goto("/");
     expect(path(page)).toBe("/");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
     await page.goto("/start/til");
     await expect(page.getByRole("heading", { level: 1, name: "Assalomu alaykum!" })).toBeVisible();
     await expect(page.getByText("Xush kelibsiz! Nima qidiryapsiz?")).toBeVisible();
@@ -68,7 +68,7 @@ test.describe("kirish oqimi", () => {
     await worker.click();
     // kasb va hudud so'rovnomasi yo'q — rol tanlangach darhol asosiy ekran (chat)
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
     expect(await cookie(context, "ib_mode")).toBe("worker");
     expect(await cookie(context, "ib_intro")).toBe("1");
     // oqim tugadi: bosh sahifa endi oqimsiz ochiladi
@@ -344,7 +344,7 @@ test.describe("kirish oqimi", () => {
     const p = await bot.newPage();
     await p.goto("/");
     expect(path(p)).toBe("/");
-    await expect(p.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+    await expect(p.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
     await bot.close();
   });
 

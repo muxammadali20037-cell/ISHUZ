@@ -17,12 +17,10 @@ const LAYOUTS: Record<VacancyListLayout, string> = {
 export function VacancyList({
   items,
   layout = "list",
-  hideMatch,
   className,
 }: {
   items: VacancyCardData[];
   layout?: VacancyListLayout;
-  hideMatch?: boolean;
   className?: string;
 }) {
   const { toggle, pendingId, dialog } = useSaveVacancy();
@@ -43,7 +41,6 @@ export function VacancyList({
             vacancy={{ ...v, is_saved: overrides[v.id] ?? v.is_saved }}
             onToggleSave={onToggleSave}
             saving={pendingId === v.id}
-            hideMatch={hideMatch}
             className={layout === "row" ? "w-[300px] shrink-0 snap-start sm:w-[340px]" : undefined}
           />
         ))}

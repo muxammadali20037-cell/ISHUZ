@@ -27,7 +27,6 @@ import {
 import { ensureTelegramProfile, type TelegramIdentity } from "@/features/auth/telegram-session";
 import { buildCvData, cvFileName } from "@/features/cv/data";
 import { renderCvPdf } from "@/features/cv/pdf";
-import { matchLevel } from "@/features/matching/level";
 import { serializeJobsSearchParams } from "@/features/jobs/search-params";
 import {
   AVAILABILITY_CHOICES,
@@ -833,7 +832,7 @@ export async function sendMatchingJobs(ctx: BotCtx, offset: number) {
       v.company_name ? `🏢 ${escapeHtml(v.company_name)}` : null,
       `💰 ${escapeHtml(salary)}`,
       place ? `📍 ${escapeHtml(place)}` : null,
-      `⭐ ${escapeHtml(ctx.t(`common.labels.match_level.${matchLevel(v.score)}`))}`,
+      // moslik darajasi ("Juda mos") ko'rsatilmaydi (ega, 2026-11-22: "moslik umuman kerak emas")
     ]
       .filter(Boolean)
       .join("\n");

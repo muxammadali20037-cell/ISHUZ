@@ -51,7 +51,8 @@ test("bo'sh ro'yxat: 'Namuna e'lonlar' bloki (belgi bilan, ariza va telefonsiz);
   // ariza, telefon, saqlash yo'q; keyingi qadamlar — haqiqiy imkoniyatlar
   await expect(page.locator("main").getByText("Ariza yuborish")).toHaveCount(0);
   await expect(page.locator("main a[href^='tel:']")).toHaveCount(0);
-  await expect(page.locator("main").getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveAttribute("href", "/ai-alerts?role=worker");
+  // "Yangi ish chiqsa — xabar" (moslik) olib tashlandi (ega, 2026-11-22)
+  await expect(page.locator("main").getByRole("link", { name: /Yangi ish chiqsa/ })).toHaveCount(0);
   await expect(page.locator("main").getByRole("link", { name: "Haqiqiy vakansiyalar" })).toHaveAttribute("href", "/jobs");
   // qidiruv tizimlariga chiqmaydi: noindex, JobPosting belgilanishi yo'q
   await expect(page.locator("meta[name='robots']")).toHaveAttribute("content", /noindex/);

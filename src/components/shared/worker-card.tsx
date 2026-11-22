@@ -10,7 +10,6 @@ import type { Enums } from "@/types/database.types";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MatchScore } from "./match-score";
 
 /** search_workers RPC qatori bilan mos */
 export interface WorkerCardData {
@@ -46,14 +45,12 @@ export function WorkerCard({
   onToggleSave,
   saving,
   className,
-  hideMatch,
   href,
 }: {
   worker: WorkerCardData;
   onToggleSave?: (id: string, next: boolean) => void;
   saving?: boolean;
   className?: string;
-  hideMatch?: boolean;
   href?: string;
 }) {
   const { t, tEnum, locale, name } = useT();
@@ -73,7 +70,6 @@ export function WorkerCard({
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className="truncate text-base font-semibold">{shortName(w.first_name, w.last_initial)}</h3>
-            {!hideMatch ? <MatchScore score={w.match_score} size="sm" className={onToggleSave ? "mr-9" : undefined} /> : null}
           </div>
           <p className="truncate text-sm text-foreground/90">{w.headline ?? name({ name_uz: w.category_name_uz ?? "", name_ru: w.category_name_ru ?? "" })}</p>
         </div>

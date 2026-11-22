@@ -17,7 +17,7 @@ test("ish izlovchi: 2 tugma → kasb (3 ta, qidiruv) → viloyat (3 ta, qidiruv)
   await context.clearCookies({ name: "ib_mode" });
   await page.goto("/");
   const empty = page.locator("[data-guided-empty]");
-  await expect(empty.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(empty.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   // video-tushuntirish ko'rilgan (cookie) — yig'ilgan qator
   await expect(empty.locator("[data-intro-open]")).toContainText("Qanday ishlaydi?");
   await expect(empty.locator("[data-guided-start]")).toHaveCount(2);

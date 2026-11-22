@@ -6,17 +6,17 @@ const uz = makeT("uz");
 const ru = makeT("ru");
 
 describe("renderNotification", () => {
-  it("application_received: moslik darajasi bilan (foiz emas — ilovadagi kabi)", () => {
+  it("application_received: moslik darajasi ko'rsatilmaydi (ega, 2026-11-22: \"moslik umuman kerak emas\")", () => {
     const r = renderNotification("application_received", { vacancy_title: "Kassir", worker_name: "Ali V.", match_score: 95 }, uz, "uz");
     expect(r.title).toBe("Yangi ariza: Kassir");
-    expect(r.body).toBe("Ali V. ariza yubordi · Juda mos");
+    expect(r.body).toBe("Ali V. ariza yubordi");
     expect(r.icon).toBe("application");
-    expect(renderNotification("application_received", { vacancy_title: "Kassir", worker_name: "Ali V.", match_score: 60 }, ru, "ru").body).toBe("Ali V. отправил(а) отклик · Подходит");
+    expect(renderNotification("application_received", { vacancy_title: "Kassir", worker_name: "Ali V.", match_score: 60 }, ru, "ru").body).toBe("Ali V. отправил(а) отклик");
   });
 
   it("application_received: familiyasi bo'sh — 'Botir .' emas, 'Botir'", () => {
     const r = renderNotification("application_received", { vacancy_title: "Buxgalter", worker_name: "Botir .", match_score: 97 }, uz, "uz");
-    expect(r.body).toBe("Botir ariza yubordi · Juda mos");
+    expect(r.body).toBe("Botir ariza yubordi");
   });
 
   it("application_received: foizsiz", () => {

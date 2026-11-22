@@ -43,12 +43,7 @@ export async function runBackgroundTick(opts: { moderation?: number; matchJobs?:
   } catch (e) {
     console.error("[tick] rules sweep", e instanceof Error ? e.message : e);
   }
-  try {
-    const { data } = await admin.rpc("process_match_jobs", { p_limit: opts.matchJobs ?? 20 });
-    result.matchJobs = data ?? 0;
-  } catch (e) {
-    console.error("[tick] match jobs", e instanceof Error ? e.message : e);
-  }
+  // moslik navbati (process_match_jobs) ishga tushirilmaydi — moslik o'chirilgan (ega, 2026-11-22; features/matching/off.ts)
   try {
     const left = Math.max(5_000, budget - (Date.now() - started));
     result.telegram = await dispatchTelegramNotifications(admin, { limit: opts.telegram ?? 200, budgetMs: left });

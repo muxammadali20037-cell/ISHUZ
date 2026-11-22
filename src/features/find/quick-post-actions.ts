@@ -57,6 +57,8 @@ const answersSchema = z.object({
   phone2: phoneSchema.nullable(),
   /** tekshirish oynasida yaratilgan AI rasm qoralamasi (joylanganda e'longa) */
   imageDraft: z.uuid().nullable().optional(),
+  /** "Izoh" bandlari (mijozda tartibga keltirilgan; serverda yana tozalanadi) */
+  notes: z.array(z.string().max(80)).max(8).optional(),
 });
 
 /** "Tasdiqlash": e'lon qanday ko'rinishi (joylanadigan matnning o'zi) */

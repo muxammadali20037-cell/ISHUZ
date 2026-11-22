@@ -47,7 +47,7 @@ export async function EmployerDashboard({ session, embedded = false }: { session
   const latestCategoryId = latestActive?.category_id ?? latestAny?.category_id ?? null;
   const latestCategorySlug = categorySlug(latestCategoryId);
   const withCategory = (base: string) => (latestCategorySlug ? `${base}&category=${latestCategorySlug}` : base);
-  const candidatesHref = latestActive ? withCategory(`/workers?vacancy=${latestActive.id}&sort=relevant`) : "/workers";
+  const candidatesHref = latestActive ? withCategory(`/workers?vacancy=${latestActive.id}&sort=newest`) : "/workers";
 
   // kompaniya holati: tasdiq belgisi, tasdiqlash havolasi, ommaviy sahifa
   const status = (
@@ -91,25 +91,14 @@ export async function EmployerDashboard({ session, embedded = false }: { session
           </Suspense>
         ) : null}
 
-        {latestActive ? (
-          <Suspense fallback={<CardsSectionSkeleton />}>
-            <CandidatesSection
-              title={t("employer.dashboard.review_candidates")}
-              subtitle={t("employer.dashboard.for_you_vacancy", { title: latestActive.title })}
-              viewAllHref={candidatesHref}
-              search={{ vacancyId: latestActive.id, categoryId: latestActive.category_id, sort: "relevant", limit: 3 }}
-              hrefVacancyId={latestActive.id}
-            />
-          </Suspense>
-        ) : (
-          <Suspense fallback={<CardsSectionSkeleton />}>
-            <CandidatesSection
-              title={t("employer.dashboard.new_candidates")}
-              viewAllHref={withCategory("/workers?sort=newest")}
-              search={{ categoryId: latestCategoryId, sort: "newest", limit: 3 }}
-            />
-          </Suspense>
-        )}
+        {/* moslik bo'yicha saralangan nomzodlar yo'q (ega, 2026-11-22: "moslik umuman kerak emas") — eng yangi ishchilar */}
+        <Suspense fallback={<CardsSectionSkeleton />}>
+          <CandidatesSection
+            title={t("employer.dashboard.new_candidates")}
+            viewAllHref={withCategory("/workers?sort=newest")}
+            search={{ categoryId: latestCategoryId, sort: "newest", limit: 3 }}
+          />
+        </Suspense>
 
         {hasVacancies ? (
           <Suspense fallback={<RowsSectionSkeleton />}>

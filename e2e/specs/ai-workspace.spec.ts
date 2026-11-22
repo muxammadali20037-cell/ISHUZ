@@ -5,7 +5,7 @@ import { USERS, asGuest, asMode, loginAs, quickSearch, sql } from "../support";
  * /ai — AI yordamchi ish maydoni (2026-11, "ChatGPT kabi"):
  *  - alohida to'liq ekran (2026-11-15): sayt menyulari yo'q, o'z sarlavhasi ("‹", "Yordamchi");
  *  - chap panel ("Suhbatlar"): "Yangi suhbat", so'nggi suhbatlar (qurilmada), profil;
- *  - "Bugungi ishlar" va "Sizga mos ishlar" — faqat bazadagi haqiqiy raqamlar (profil to'liqligi, mos vakansiyalar soni,
+ *  - "Bugungi ishlar" va "Kasbingiz bo'yicha ishlar" — faqat bazadagi haqiqiy raqamlar (profil to'liqligi, mos vakansiyalar soni,
  *    faol vakansiyalar) — bazadagi qiymat bilan solishtiriladi;
  *  - 2026-11-16 (ega: "AI uzun matn yozmasin"): savol → so'rovnoma oynasi (kasb, hudud, maosh) → "Qidirish" → qisqa xulosa
  *    va kartalar; suhbat ro'yxatga tushadi, qayta ochiladi, o'chiriladi;
@@ -82,7 +82,7 @@ const guestTest = async ({ page, context }: Ctx) => {
   // "Bugungi ishlar" va "Yangi ishlar" — yig'ilgan (2026-11-15): "Ochish" / "Ko'rish" bilan ochiladi
   await openFolds(page);
   const brief = page.locator("[data-ai-brief]");
-  await expect(brief.getByText(/Kiring — mos ishlar/)).toBeVisible();
+  await expect(brief.getByText(/Kiring — e'lonlaringiz, arizalar/)).toBeVisible();
   await expect(brief.getByRole("link", { name: /Kirish/ })).toHaveAttribute("href", "/auth?next=%2Fai");
   // soxta raqam yo'q: mehmonga foiz/son ko'rsatilmaydi
   await expect(brief).not.toContainText("%");
@@ -105,11 +105,12 @@ const guestTest = async ({ page, context }: Ctx) => {
   // tezkor imkoniyatlar (kompyuterda o'ng panel, telefonda salomlashuv ostida) va maslahat
   const quick = page.locator("[data-ai-quick]:visible").first();
   // 2026-11-16: faqat qidiruv va sahifalarga havolalar (erkin suhbat — karyera maslahati va h.k. — yo'q); "Masalan, bosing" yo'q
-  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /CV yaratish/, /PRO kuzatuv/]);
+  // "PRO kuzatuv" (mos ish chiqsa — xabar) olib tashlandi (ega, 2026-11-22)
+  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /CV yaratish/]);
   await expect(page.locator("[data-ai-promo]")).toHaveCount(0);
   await expect(page.getByText("Masalan, bosing:")).toHaveCount(0);
   await expect(quick.locator("[data-quick='cv']")).toHaveAttribute("href", "/post/worker");
-  await expect(quick.locator("[data-quick='alerts']")).toHaveAttribute("href", "/ai-alerts");
+  await expect(quick.locator("[data-quick='alerts']")).toHaveCount(0);
   if (!narrow(page)) {
     await expect(page.locator("[data-ai-tip]")).toContainText(/maslahat/i);
     await page.locator("[data-ai-tip]").getByRole("button", { name: "Keyingi maslahat" }).click();
@@ -127,11 +128,11 @@ const seekerTest = async ({ page, context }: Ctx) => {
   await openFolds(page);
   const brief = page.locator("[data-ai-brief]");
   // 3 ta faol "Sotuvchi" vakansiyasi — profil kasbi va viloyati bo'yicha
-  await expect(brief.getByText(/«Sotuvchi» bo'yicha 3 ta mos vakansiya/)).toBeVisible();
+  await expect(brief.getByText(/«Sotuvchi» bo'yicha 3 ta vakansiya/)).toBeVisible();
   // profil to'liqligi — bazadagi trigger hisoblagan qiymat (soxta foiz emas)
   await expect(brief.getByText(`Profilingiz ${wp!.completeness} % to'ldirilgan`)).toBeVisible();
   await expect(brief.getByRole("link", { name: /Davom etish/ })).toHaveAttribute("href", "/profile/edit");
-  await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Sizga mos/ })).toBeVisible();
+  await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Kasbingiz bo'yicha ishlar/ })).toBeVisible();
   await expect(page.locator("[data-ai-feed] article")).toHaveCount(3);
 
   // alohida to'liq ekran: sayt yon menyusi ham yo'q; "Suhbatlar" panelida — profil
@@ -216,7 +217,7 @@ const employerTest = async ({ page, context }: Ctx) => {
   await expect(brief.getByRole("link", { name: /Ko'rish/ }).first()).toHaveAttribute("href", "/employer/vacancies");
   await expect(page.locator('[data-fold="ai-feed"]').getByRole("heading", { name: /Yangi nomzodlar/ })).toBeVisible();
   const quick = page.locator("[data-ai-quick]:visible").first();
-  await expect(quick.locator("[data-quick]")).toHaveText([/Nomzod topish/, /Vakansiya joylash/, /PRO kuzatuv/]);
+  await expect(quick.locator("[data-quick]")).toHaveText([/Nomzod topish/, /Vakansiya joylash/]);
   await expect(quick.locator("[data-quick='post']")).toHaveAttribute("href", "/employer/vacancies/new");
   await expect(quick.locator("[data-quick='candidates']")).toBeVisible();
   await expect(page.getByLabel("Nima qidiryapsiz?")).toHaveAttribute("placeholder", /Kim kerak/);

@@ -44,6 +44,11 @@ test("sozlamalar: Telegram ulanmagan — xavfsiz ulash sahifasiga tugma (boshi b
   const link = page.getByRole("main").getByRole("link", { name: "Telegramni bog'lash" });
   await expect(link).toHaveAttribute("href", "/cabinet/alerts");
   await expect(page.getByText(/Mini App orqali kiring/)).toHaveCount(0);
+  // ulash sahifasi — faqat Telegram; "mos ish chiqsa xabar" sozlamalari yo'q (ega, 2026-11-22)
+  await link.click();
+  await expect(page).toHaveURL(/\/cabinet\/alerts$/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Telegram xabarnomalari");
+  await expect(page.getByRole("main")).not.toContainText(/mos ish|mos ishchi|PRO kuzatuv/i);
 });
 
 test("ish beruvchi profili ('O'zim uchun'): o'zbekcha 'Boshqaruv paneli', 'Profil sozlamalari'; 'Ish beruvchi' kichik harf", async ({ page, context }) => {

@@ -16,6 +16,7 @@ import { cn } from "@/lib/utils";
 import type { ProfessionOption } from "../chat-actions";
 import { vacancyGuideTurn, type GuideParse } from "../guide-actions";
 import { SALARY_PRESETS, composeDescription, guideProgress, nextGuideStep, type GuideStep } from "../guide-logic";
+import { VACANCY_NOTE_PRESETS, formatNotes, notesBlock, withNotes } from "../notes";
 import { parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type PostViewer, type VacancyDraft } from "../types";
 import { MoneyInput, PhoneInput, bigInput } from "./inputs";
@@ -76,6 +77,8 @@ export function VacancyGuide({
   const [typing, setTyping] = useState<GuideStep | null>(null);
   const [text, setText] = useState("");
   const [err, setErr] = useState<string | null>(null);
+  /** "Izoh" savolida belgilangan tayyor variantlar */
+  const [notePicks, setNotePicks] = useState<string[]>([]);
   const [thinking, start] = useTransition();
 
   const step = started ? nextGuideStep(draft, asked) : null;
@@ -115,12 +118,13 @@ export function VacancyGuide({
     if (s === "employerType") patch.employerType = null;
     if (s === "orgName") patch.orgName = "";
     if (s === "phone") patch.phone = "+998 ";
+    if (s === "notes") Object.assign(patch, { notes: undefined, description: "" });
     update(patch);
     setAsked((a) => {
       const n = new Set(a);
       n.delete(s);
       // matn yig'ilgan javoblardan tuziladi — kasb, joy, grafik yoki tajriba o'zgarsa, qayta ko'rsatiladi
-      if (["profession", "region", "district", "schedule", "experience"].includes(s)) n.delete("description");
+      if (["profession", "region", "district", "schedule", "experience", "notes"].includes(s)) n.delete("description");
       return n;
     });
     setHistory((h) => h.filter((x) => x !== s));
@@ -396,9 +400,43 @@ export function VacancyGuide({
       onSubmit: () => answer("phone", { phone: value }),
       input: <PhoneInput id="guide-phone" value={value} onChange={(v) => (setTyping("phone"), setText(v))} />,
     });
+  } else if (step === "notes") {
+    // ixtiyoriy izoh (ega, 2026-11-22): tayyor variantlar (bir nechtasi) va/yoki o'z so'zi bilan; e'lon matniga ✅ bilan
+    title = t("easy.vguide.q.notes");
+    const picks = VACANCY_NOTE_PRESETS.filter((k) => notePicks.includes(k)).map((k) => t(`easy.notes.vacancy.${k}`));
+    body = (
+      <div className="space-y-3" data-guide-notes>
+        <p className="text-base text-muted-foreground">{t("easy.vguide.notes_hint")}</p>
+        <ul className="flex flex-wrap gap-2">
+          {VACANCY_NOTE_PRESETS.map((k) => {
+            const on = notePicks.includes(k);
+            return (
+              <li key={k}>
+                <button
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setNotePicks((p) => (on ? p.filter((x) => x !== k) : [...p, k]))}
+                  className={cn("press inline-flex min-h-11 items-center gap-1.5 rounded-full border-2 px-3.5 text-base font-semibold", on ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card hover:border-primary/60")}
+                  data-guide-note={k}
+                >
+                  {on ? <Check className="size-4" aria-hidden /> : null} {t(`easy.notes.vacancy.${k}`)}
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+        <Textarea value={typing === "notes" ? text : ""} onChange={(e) => (setTyping("notes"), setText(e.target.value.slice(0, 300)))} placeholder={t("easy.vguide.notes_placeholder")} aria-label={t("easy.vguide.q.notes")} className="min-h-24 rounded-2xl text-lg" data-guide-input />
+        <Button type="button" size="xl" fullWidth disabled={!picks.length && !(typing === "notes" && text.trim())} onClick={() => answer("notes", { notes: formatNotes(typing === "notes" ? text : "", picks), description: "" })} data-guide-next>
+          {t("easy.vguide.next")} <ArrowRight className="size-5" aria-hidden />
+        </Button>
+        <Button type="button" variant="ghost" size="lg" fullWidth className="text-base" onClick={() => answer("notes", { notes: [], description: "" })} data-guide-notes-skip>
+          {t("easy.vguide.notes_skip")}
+        </Button>
+      </div>
+    );
   } else if (step === "description") {
     title = t("easy.vguide.q.description");
-    const proposed =
+    const base =
       draft.description.trim().length >= 10
         ? draft.description
         : composeDescription({
@@ -408,6 +446,9 @@ export function VacancyGuide({
             schedule: draft.schedule ? t("easy.vguide.tpl.schedule", { schedule: tEnum("work_schedule", draft.schedule) }) : null,
             experience: t(`easy.vguide.tpl.exp_${draft.experienceMonths}`),
           });
+    // izoh — matn oxirida, ✅ bilan (bir marta)
+    const block = notesBlock(draft.notes ?? []);
+    const proposed = block && !base.includes(block) ? withNotes(base, draft.notes ?? []) : base;
     body =
       typing === "description" ? (
         <form

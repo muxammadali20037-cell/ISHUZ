@@ -108,9 +108,9 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
 
   switch (type) {
     case "application_received": {
-      const score = num(p, "match_score");
-      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: personName(p, "worker_name"), level: levelText(t, score) };
-      return { title: t(`${k}.title`, params), body: score !== null ? t(`${k}.body_score`, params) : t(`${k}.body`, params), icon: "application" };
+      // moslik darajasi ("Juda mos") ko'rsatilmaydi (ega, 2026-11-22: "moslik umuman kerak emas")
+      const params = { vacancy_title: str(p, "vacancy_title"), worker_name: personName(p, "worker_name") };
+      return { title: t(`${k}.title`, params), body: t(`${k}.body`, params), icon: "application" };
     }
     case "application_status": {
       const status = str(p, "status");

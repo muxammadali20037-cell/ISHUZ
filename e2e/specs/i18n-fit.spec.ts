@@ -66,7 +66,7 @@ test("ru, 360 px: chat sarlavhasi to'liq ko'rinadi (kesilmaydi); <html lang> —
   await page.goto("/");
   // 2026-11-21: bosh sahifa — chat (rejim almashtirgichi yo'q)
   const h1 = page.getByRole("heading", { level: 1 });
-  await expect(h1).toHaveText("Найдите подходящую работу или работника");
+  await expect(h1).toHaveText("Легко найдите работу или работника");
   expect(await fits(h1), "sarlavha").toBe(true);
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Например: я повар");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");

@@ -34,12 +34,10 @@ export async function AiWorkspace({
     ? [
         { key: "candidates", label: t("easy.aiws.quick.candidates"), icon: "workers", prompt: t("easy.aiws.quick.candidates") },
         { key: "post", label: t("easy.aiws.quick.post"), icon: "post", href: session?.employerOnboarded ? "/employer/vacancies/new" : "/post/vacancy" },
-        { key: "alerts", label: t("easy.aihub.pro_title"), icon: "alerts", href: "/ai-alerts?role=employer" },
       ]
     : [
         { key: "find", label: t("easy.aiws.quick.find"), icon: "jobs", prompt: t("easy.aiws.quick.find") },
         { key: "cv", label: t("easy.aiws.quick.cv"), icon: "cv", href: session?.workerId ? "/profile/cv" : "/post/worker" },
-        { key: "alerts", label: t("easy.aihub.pro_title"), icon: "alerts", href: "/ai-alerts" },
       ];
 
   const user: WorkspaceUser | null = session

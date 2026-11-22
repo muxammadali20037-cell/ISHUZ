@@ -2,10 +2,10 @@
   "role": {
     "greeting": "Welcome, {name}!",
     "worker_title": "I'm looking for a job",
-    "worker_desc": "Create a profile — we'll find the right jobs for you",
+    "worker_desc": "Post a listing about yourself — employers will find you",
     "worker_cta": "Create profile",
     "employer_title": "I'm hiring",
-    "employer_desc": "Post a vacancy — matching candidates arrive already sorted",
+    "employer_desc": "Post a vacancy — candidates apply on their own",
     "employer_cta": "Get started"
   },
   "worker": {
@@ -202,7 +202,7 @@
       "present": "present",
       "files": "{count} files",
       "done_toast": "Your profile is ready!",
-      "done_desc": "Now we'll show you jobs that match",
+      "done_desc": "You can browse jobs now",
       "finish_hint": "Once you finish, your profile will be visible to employers. You can edit it anytime"
     },
     "errors": {
@@ -245,7 +245,7 @@
       "incomplete_profession": "Select a profession",
       "listing_payment_required": "Listings are paid. Please pay to appear in search."
     },
-    "quick_done": "Done! Now we'll show jobs that fit you.",
+    "quick_done": "Done! You can browse jobs now.",
     "quick_finish": "Finish"
   }
 }

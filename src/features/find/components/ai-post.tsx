@@ -9,7 +9,7 @@ import { celebrate } from "@/lib/celebrate";
 import { normalizePhone } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Input, Textarea } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Dialog, Sheet } from "@/components/ui/dialog";
 import { AiAvatar } from "@/components/shared/ai-avatar";
@@ -17,10 +17,11 @@ import { BackLink } from "@/components/shared/back-link";
 import { ProfessionImage } from "@/components/shared/profession-image";
 import { MESSAGE_MAX_CHARS } from "@/features/assistant/types";
 import { PhoneInput } from "@/features/post/components/inputs";
+import { WORKER_NOTE_PRESETS, formatNotes } from "@/features/post/notes";
 import { PublishResult } from "@/features/post/components/publish-result";
 import { ModerationOutcome } from "@/features/post/components/moderation-outcome";
-import { AlertToggle } from "@/features/alerts/components/alert-toggle";
 import { quickPostPrepare, quickPostPreview, quickPostPublish } from "../quick-post-actions";
+import { VacancyDescription } from "@/features/jobs/components/vacancy-description";
 import { ListingImageDraft, type DraftImage } from "@/features/listing-image/components/listing-image-draft";
 import { POST_EXPERIENCES, type PostAnswers, type PostChoice, type PostChoiceGroup, type PostExperience, type PostForm, type PostOutcome, type PostPreview } from "../quick-post-types";
 
@@ -48,6 +49,9 @@ interface Values {
   phone: string;
   /** "+ Yana raqam": null — maydon ochilmagan */
   phone2: string | null;
+  /** ixtiyoriy izoh (ega, 2026-11-22): belgilangan tayyor variantlar (kalitlar) va o'zi yozgani */
+  notePicks: string[];
+  noteText: string;
 }
 
 type Screen = "options" | "form" | "preview";
@@ -74,6 +78,8 @@ function initialValues(form: PostForm): Values {
     experience: null,
     phone: "+998 ",
     phone2: null,
+    notePicks: [],
+    noteText: "",
   };
 }
 
@@ -83,10 +89,12 @@ function secondPhone(v: Values): string | null {
   return p2 && p2 !== normalizePhone(v.phone) ? p2 : null;
 }
 
-function toAnswers(v: Values): PostAnswers | null {
+function toAnswers(v: Values, noteLabel: (key: string) => string): PostAnswers | null {
   const phone = normalizePhone(v.phone);
   if (!v.profession || !v.regionId || !v.experience || !phone) return null;
+  const notes = formatNotes(v.noteText, WORKER_NOTE_PRESETS.filter((k) => v.notePicks.includes(k)).map(noteLabel));
   return {
+    notes,
     professionId: v.profession.id,
     firstName: v.firstName.trim(),
     lastName: v.lastName.trim(),
@@ -208,6 +216,8 @@ export function AiPostClient({ resume, initialText = "", imageEnabled = false }:
           experience: answers.experience,
           phone: answers.phone,
           phone2: answers.phone2,
+          notePicks: [],
+          noteText: (answers.notes ?? []).join("\n"),
         },
         screen: "preview",
         question: null,
@@ -549,7 +559,7 @@ function FormSheet({
     // telefon majburiy va qo'lda yoziladi; ikkinchisi — yozila boshlangan bo'lsa, to'liq bo'lishi kerak
     if (!normalizePhone(v.phone)) err.phone = t("easy.post_ai.need_phone");
     if (v.phone2 !== null && v.phone2.replace(/\D/g, "").length > 3 && !normalizePhone(v.phone2)) err.phone2 = t("easy.post_ai.need_phone");
-    const answers = toAnswers(v);
+    const answers = toAnswers(v, (k) => t(`easy.notes.worker.${k}`));
     if (Object.keys(err).length || !answers) return setErrors(err);
     setErrors({});
     setPending(true);
@@ -680,6 +690,24 @@ function FormSheet({
           {err(errors.experience)}
         </fieldset>
 
+        {/* ixtiyoriy izoh (ega, 2026-11-22): tayyor variantlar va/yoki o'z so'zi — e'longa ✅ ro'yxat bo'lib tushadi */}
+        <fieldset className="space-y-2" data-ai-post-notes>
+          <legend className={label}>
+            {t("easy.post_ai.q_notes")} <span className="text-sm font-normal text-muted-foreground">({t("easy.post_ai.optional")})</span>
+          </legend>
+          <div className="flex flex-wrap gap-2">
+            {WORKER_NOTE_PRESETS.map((k) => {
+              const on = v.notePicks.includes(k);
+              return (
+                <button key={k} type="button" aria-pressed={on} onClick={() => setValues({ notePicks: on ? v.notePicks.filter((x) => x !== k) : [...v.notePicks, k] })} className={chip(on)} data-ai-post-note={k}>
+                  {t(`easy.notes.worker.${k}`)}
+                </button>
+              );
+            })}
+          </div>
+          <Textarea value={v.noteText} onChange={(e) => setValues({ noteText: e.target.value.slice(0, 300) })} placeholder={t("easy.post_ai.notes_placeholder")} aria-label={t("easy.post_ai.q_notes")} className="min-h-20 text-base" data-ai-post-note-text />
+        </fieldset>
+
         {/* ega (2026-11-17): raqam qo'lda yoziladi, majburiy; hisobdagi raqam oldindan qo'yilmaydi; "+ Yana raqam" — ikkinchisi */}
         <div className="space-y-1.5" data-ai-post-phones>
           <label htmlFor="phone" className={label}>
@@ -792,9 +820,9 @@ function PreviewSheet({
         <div className="flex flex-wrap gap-2 px-4">
           <span className="inline-flex min-h-8 items-center rounded-full bg-primary-soft px-3 text-sm font-semibold text-primary-ink">{t(`easy.worker.exp.${preview.answers.experience}`)}</span>
         </div>
-        <p className="px-4 pb-3 pt-3 text-base leading-relaxed" data-ai-post-about>
-          {preview.about}
-        </p>
+        <div className="px-4 pb-3 pt-3" data-ai-post-about>
+          <VacancyDescription text={preview.about} className="text-base" />
+        </div>
         {/* raqamning o'zi ekranda ko'rsatilmaydi — faqat "e'londa ko'rinadi" (bitta yoki ikkala raqam) */}
         <p className="flex items-center gap-2 border-t border-border px-4 py-3 text-sm text-muted-foreground" data-ai-post-preview-phones>
           <Phone className="size-4 shrink-0" aria-hidden /> {t(preview.answers.phone2 ? "easy.post_ai.preview_phones" : "easy.post_ai.preview_phone")}
@@ -835,12 +863,6 @@ function Outcome({ outcome, onEdit, onAgain }: { outcome: PostOutcome; onEdit: (
           { label: t("easy.post_ai.done_matches"), href: outcome.matchesHref },
         ]}
       >
-        <div className="mt-6 space-y-3" data-ai-post-notify>
-          <p className="flex items-start gap-2 text-base">
-            <BadgeCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden /> {t("easy.post_ai.done_notify")}
-          </p>
-          <AlertToggle role="worker" initialStatus={outcome.alert} defaults={{ professionNodeId: outcome.professionId, regionId: outcome.regionId }} compact />
-        </div>
       </PublishResult>
     );
   } else if (state === "payment_required" || state === "saved") {

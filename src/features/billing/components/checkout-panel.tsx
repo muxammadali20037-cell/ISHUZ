@@ -115,7 +115,6 @@ export function CheckoutPanel({
     ...(upgrade && tier ? [] : [0, 1, 2].map((i) => t(`billing.checkout.benefits.${purpose}.${i}`, { days, hours: quote.hours }))),
     ...(tier && (upgrade || tier.plan !== "basic") ? [t("billing.tiers.benefit_days", { days: tier.days })] : []),
     ...(tier && tier.topDays > 0 ? [t(purpose === "worker_listing" ? "billing.tiers.benefit_top_worker" : "billing.tiers.benefit_top", { days: tier.topDays })] : []),
-    ...(tier && tier.aiDays > 0 ? [t("billing.tiers.benefit_ai", { days: tier.aiDays })] : []),
   ];
 
   const pay = (provider: "payme" | "click") => {
@@ -187,7 +186,6 @@ export function CheckoutPanel({
                     {[
                       t("billing.tiers.days", { days: x.days }),
                       x.topDays ? t("billing.tiers.top", { days: x.topDays }) : null,
-                      x.aiDays ? t("billing.tiers.ai") : null,
                     ]
                       .filter(Boolean)
                       .join(" · ")}

@@ -7,7 +7,7 @@ import { USERS, asGuest, sql } from "../support";
  * kasblar katalogi, yangi vakansiyalar ro'yxati va raqamlar olib tashlandi — ularning testlari ham.
  */
 
-const HOME_H1 = "O'zingizga mos ishni yoki ishchini toping";
+const HOME_H1 = "Ish yoki ishchini oson toping";
 
 async function seed() {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);

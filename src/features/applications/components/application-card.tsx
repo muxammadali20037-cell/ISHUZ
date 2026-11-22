@@ -6,7 +6,6 @@ import { useT } from "@/lib/i18n/client";
 import { formatRelative } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
-import { MatchScore } from "@/components/shared/match-score";
 import type { WorkerApplicationItem } from "../types";
 import { ApplicationStatusBadge } from "./status-badge";
 
@@ -24,7 +23,6 @@ export function ApplicationCard({ item, className }: { item: WorkerApplicationIt
         <div className="min-w-0 flex-1">
           <div className="flex items-start justify-between gap-2">
             <h3 className={cn("line-clamp-2 text-base font-semibold leading-snug", !v && "text-muted-foreground")}>{title}</h3>
-            <MatchScore score={item.match_score} />
           </div>
           {company ? (
             <p className="mt-0.5 flex items-center gap-1 truncate text-sm text-muted-foreground">

@@ -6,6 +6,8 @@ import { isBool, isCustomProfession, isId, isPickedProfession, isPlace, isStep, 
 const isSchedule = (v: unknown) => v === "" || (SCHEDULES as unknown[]).includes(v);
 const isSource = (v: unknown) => v === undefined || v === "manual" || v === "ai";
 const PHOTO_PATH = /^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/;
+/** "Izoh" bandlari: ko'pi bilan 8 ta, har biri 80 belgigacha */
+const isNotes = (x: unknown) => x === undefined || (Array.isArray(x) && x.length <= 8 && x.every((i) => typeof i === "string" && i.length <= 80));
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** tekshirish sahifasidagi AI rasm qoralamasi: id va https manzil (boshqasi — qabul qilinmaydi) */
 const isImage = (x: unknown) =>
@@ -57,5 +59,6 @@ export function vacancyDraftRules(editId: string | null): DraftRules<VacancyDraf
     photoPath: (x) => x === undefined || x === null || (typeof x === "string" && PHOTO_PATH.test(x)),
     source: isSource,
     image: isImage,
+    notes: isNotes,
   };
 }

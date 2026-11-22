@@ -19,7 +19,7 @@
         "desc": "Pick a profession and region — matching workers right away"
       },
       "jobs": {
-        "title": "Finding the right job is easy now",
+        "title": "Finding a job is easy now",
         "desc": "Pick your profession — job posts near you"
       },
       "daily": {
@@ -234,7 +234,7 @@
     "consent_off": "If unchecked, your number stays hidden: employers can only send a request.",
     "done_title": "Your listing is published.",
     "done_desc": "Employers can now contact you.",
-    "done_matches": "See matching jobs",
+    "done_matches": "See jobs",
     "done_view": "View my listing",
     "pay_title": "Your listing is ready! Just pay to publish",
     "pay_desc": "Once paid, employers see your listing right away for {days} days.",
@@ -283,7 +283,7 @@
     "consent_off": "If unchecked, the number stays hidden (in the channel too): job seekers can only apply.",
     "done_title": "Your job is published.",
     "done_desc": "Job seekers can now call you or apply.",
-    "done_matches": "See matching workers",
+    "done_matches": "See workers",
     "done_view": "View my listing",
     "done_seeker_view": "How job seekers see it",
     "review_state_title": "Your listing was sent for review",
@@ -351,7 +351,7 @@
     "region_wide": "Whole region",
     "remote": "Remote",
     "post_jobs": "No worker found? Post a job",
-    "post_workers": "No suitable job? Post a listing about yourself",
+    "post_workers": "No job found? Post a listing about yourself",
     "salary_over": "from {amount} UZS",
     "error_title": "Could not load results",
     "error_desc": "A temporary internet or server problem. Your profession, region and filters are kept.",
@@ -538,7 +538,7 @@
   },
   "alerts": {
     "title": "Telegram notifications",
-    "intro": "You post a listing — the system finds a matching job or worker and tells you in Telegram. Only with your consent.",
+    "intro": "New messages, listing status and other notifications come to Telegram.",
     "worker_cta": "Notify me about matching jobs",
     "employer_cta": "Notify me about matching workers",
     "hint": "Via Telegram. You can stop any time.",
@@ -727,8 +727,8 @@
     "try_label": "For example, tap:",
     "you": "You",
     "thinking_understand": "Understanding your request…",
-    "thinking_jobs": "Sorting matching listings…",
-    "thinking_workers": "Sorting matching workers…",
+    "thinking_jobs": "Searching listings…",
+    "thinking_workers": "Searching workers…",
     "found_jobs_chat": "Found {count} matching listings",
     "found_workers_chat": "Found {count} matching workers",
     "refine_label": "Narrow it down?",
@@ -744,8 +744,8 @@
     "new_chat": "New chat",
     "disclaimer": "Only real listings. The decision is yours.",
     "card_title": "Ask the helper",
-    "card_desc_jobs": "In plain words: job, area, pay — finds matching listings instantly",
-    "card_desc_workers": "In plain words: job, area, experience — finds matching workers instantly",
+    "card_desc_jobs": "In plain words: job, area, pay — finds listings instantly",
+    "card_desc_workers": "In plain words: job, area, experience — finds workers instantly",
     "card_open": "Start typing",
     "empty_ai_hint": "Or describe it in plain words — the helper will try another way",
     "composer_placeholder_jobs": "Job, area, pay…",
@@ -784,8 +784,8 @@
     "demos_exact": "Sample ads — not real",
     "demos_category": "Sample ads from this field — not real",
     "demos_all": "All samples",
-    "top_placeholder": "Find the right employee...",
-    "top_placeholder_jobs": "Find a job that suits you...",
+    "top_placeholder": "Find an employee...",
+    "top_placeholder_jobs": "Find a job...",
     "empty_post_worker_note": "Employers will find you."
   },
   "mode": {
@@ -883,7 +883,7 @@
     "f_daily": "Daily pay",
     "f_remote": "Remote",
     "f_experienced": "Experienced",
-    "match_title": "Jobs for you",
+    "match_title": "Jobs in your profession",
     "match_reason": "Based on your profession: {profession} · {place}",
     "new_title": "New jobs",
     "new_reason": "{place} · newest first",
@@ -909,7 +909,7 @@
     "new_workers_title": "New candidates",
     "all_workers": "All candidates · {count}",
     "workers_empty_title": "No open candidates yet",
-    "workers_empty_desc": "Post a job — matching candidates will apply.",
+    "workers_empty_desc": "Post a job — workers will apply.",
     "finish_company_title": "Complete your company details",
     "finish_company_desc": "One minute: name and area — then post jobs and see applications",
     "metrics_label": "Key numbers",
@@ -1014,8 +1014,8 @@
     "sections": "Sections",
     "hint": {
       "home": "Main page",
-      "ai": "Matching jobs and tips",
-      "ai_employer": "Matching candidates and tips",
+      "ai": "Search and tips",
+      "ai_employer": "Find workers and tips",
       "jobs": "All jobs",
       "map": "Jobs nearby",
       "my_applications": "Applications and offers",
@@ -1148,15 +1148,15 @@
     "greeting_intro_employer": "What kind of employee do you need? Type it — I search real candidates in the database.",
     "brief_title": "Today's tasks",
     "brief": {
-      "login_worker": "Sign in — matching jobs, applications and saved items in one place",
+      "login_worker": "Sign in — your listings, applications and saved items in one place",
       "login_employer": "Sign in — vacancies, applications and candidates in one place",
       "finish_company": "Complete your company details and post the first vacancy",
       "new_applications": "{count} new applications",
       "active_vacancies": "You have {count} active vacancies",
       "no_vacancy": "No active vacancy yet — post one so candidates can see it",
-      "create_profile": "Create a profile — matching jobs are found for you, apply in one tap",
-      "matches": "{count} matching vacancies for “{profession}”",
-      "pick_profession": "Choose your profession — matching jobs are found for you",
+      "create_profile": "Post a listing about yourself — employers will find you",
+      "matches": "{count} vacancies for “{profession}”",
+      "pick_profession": "Choose your profession — find jobs faster",
       "completeness": "Your profile is {percent}% complete",
       "my_applications": "{count} of your applications are under review",
       "cta_view": "View",
@@ -1357,7 +1357,8 @@
       "org_name": "Organization name?",
       "person_name": "Your name?",
       "phone": "Contact phone",
-      "description": "Ad text. Looks good?"
+      "description": "Ad text. Looks good?",
+      "notes": "Anything to add?"
     },
     "other_profession": "Another job",
     "profession_input": "Type the job",
@@ -1383,7 +1384,10 @@
       "exp_0": "No experience required.",
       "exp_12": "Experience: 1+ year.",
       "exp_36": "Experience: 3+ years."
-    }
+    },
+    "notes_hint": "E.g. free lunch and fare. Pick a few or type your own — they appear as a neat list in the listing.",
+    "notes_placeholder": "Type your own: free lunch, fare…",
+    "notes_skip": "Continue without notes"
   },
   "quick": {
     "remote": "Remote (online)",
@@ -1407,9 +1411,9 @@
     "found_jobs": "{count} jobs found",
     "found_workers": "{count} candidates found",
     "none_jobs": "No such jobs yet.",
-    "none_workers": "No matching candidates yet.",
-    "saved": "Your request is saved. We'll let you know when a matching job appears.",
-    "login_note": "Sign in and we'll let you know when a matching job appears.",
+    "none_workers": "No candidates found yet.",
+    "saved": "Your request is saved. We'll let you know when a new job for it appears.",
+    "login_note": "Sign in and we'll let you know when a new job for this appears.",
     "login": "Sign in",
     "similar_near_jobs": "Similar jobs",
     "similar_near_workers": "Similar candidates",
@@ -1479,7 +1483,7 @@
     "done_desc": "Your ad passed the automatic check and is visible to employers.",
     "done_notify": "When a matching job appears, we'll notify you in the app.",
     "done_view": "View my ad",
-    "done_matches": "See matching jobs",
+    "done_matches": "See jobs",
     "again": "Post another ad",
     "pay_title": "Your ad is saved",
     "pay_desc": "Posting requires payment. Continue in your cabinet.",
@@ -1494,7 +1498,9 @@
     "add_phone": "Another number",
     "q_phone2": "Additional number",
     "remove_phone": "Remove the additional number",
-    "preview_phones": "Both numbers you entered go on your listing — employers unlock them and call you"
+    "preview_phones": "Both numbers you entered go on your listing — employers unlock them and call you",
+    "q_notes": "Extra notes",
+    "notes_placeholder": "Write your own: I have a car, can work night shifts…"
   },
   "channel_prompt": {
     "title": "Join our Telegram channel",
@@ -1620,7 +1626,7 @@
     "error_provider_unavailable": "The image service isn't working right now. You can post the listing without an image."
   },
   "guided": {
-    "hello": "Find the right job or worker",
+    "hello": "Find a job or a worker, easily",
     "placeholder_guest": "For example: I need a driver",
     "placeholder_worker": "For example: I'm a cook",
     "placeholder_employer": "E.g.: I need a sales clerk",
@@ -1688,7 +1694,20 @@
     "next_see_workers": "See available workers",
     "next_see_workers_sub": "Listings from job seekers",
     "next_post_vacancy": "Post a vacancy",
-    "next_post_vacancy_sub": "Job seekers will find you"
+    "next_post_vacancy_sub": "Job seekers will find you",
+    "placeholder_role": "Job or worker?",
+    "placeholder_place": "Region or district…",
+    "placeholder_post_profession": "Profession — e.g. cook",
+    "placeholder_post_which": "Exact profession…",
+    "placeholder_post_region": "Type the region…",
+    "placeholder_post_name": "Name — e.g. Botir",
+    "placeholder_post_experience": "E.g. 2 years",
+    "placeholder_post_phone": "E.g. 90 123 45 67",
+    "post_link": "Post a listing",
+    "ask_post_note": "Anything to add? Pick below or type your own — e.g. I have a car. If not — “No notes”.",
+    "post_note_done": "Continue",
+    "post_note_skip": "No notes",
+    "placeholder_post_note": "E.g. I have a car"
   },
   "intro": {
     "title": "How Ish topdim works",
@@ -1718,5 +1737,22 @@
     "demo_name": "Name",
     "demo_exp": "Experience",
     "demo_phone": "Phone number"
+  },
+  "notes": {
+    "vacancy": {
+      "lunch": "Free lunch",
+      "fare": "Travel paid",
+      "dorm": "Dormitory provided",
+      "uniform": "Uniform provided",
+      "official": "Official employment",
+      "ontime": "Salary paid on time"
+    },
+    "worker": {
+      "car": "I have a car",
+      "night": "I can work night shifts",
+      "now": "I can start right away",
+      "docs": "My documents are ready",
+      "russian": "I speak Russian"
+    }
   }
 }

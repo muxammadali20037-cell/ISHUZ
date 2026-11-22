@@ -2,10 +2,10 @@
   "role": {
     "greeting": "Xush kelibsiz, {name}!",
     "worker_title": "Ish qidiryapman",
-    "worker_desc": "Profil yarating — sizga mos ishlarni o'zimiz topib beramiz",
+    "worker_desc": "O'zingiz haqingizda e'lon bering — ish beruvchilar sizni topadi",
     "worker_cta": "Profil yaratish",
     "employer_title": "Ishchi qidiryapman",
-    "employer_desc": "Vakansiya joylang — mos nomzodlar saralangan holda keladi",
+    "employer_desc": "Vakansiya joylang — nomzodlar o'zi ariza yuboradi",
     "employer_cta": "Boshlash"
   },
   "worker": {
@@ -202,7 +202,7 @@
       "present": "hozir",
       "files": "{count} ta fayl",
       "done_toast": "Profil tayyor!",
-      "done_desc": "Endi sizga mos ishlarni ko'rsatamiz",
+      "done_desc": "Endi ishlarni ko'rishingiz mumkin",
       "finish_hint": "Yakunlagach profilingiz ish beruvchilarga ko'rinadi. Istalgan vaqt tahrirlashingiz mumkin"
     },
     "errors": {
@@ -245,7 +245,7 @@
       "incomplete_profession": "Kasbni tanlang",
       "listing_payment_required": "E'lon joylash pullik. Qidiruvga chiqish uchun to'lov qiling."
     },
-    "quick_done": "Tayyor! Endi sizga mos ishlarni ko'rsatamiz.",
+    "quick_done": "Tayyor! Endi ishlarni ko'rishingiz mumkin.",
     "quick_finish": "Tugatish"
   }
 }

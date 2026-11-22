@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PageHeader, SectionHeader } from "@/components/ui/misc";
-import { MatchReasons, MatchRing } from "@/components/shared/match-score";
 import { ContactCard } from "@/features/contacts/contact-card";
 import { STATUS_TONE, type EmployerApplicationDetail as Detail, type ManagedVacancy } from "../types";
 import { ApplicationStatusBadge } from "./status-badge";
@@ -99,15 +98,6 @@ export async function EmployerApplicationDetail({ app, vacancy, canAct }: { app:
           ) : null}
 
           {app.my_review ? <ReviewCard review={app.my_review} /> : null}
-
-          {/* Moslik */}
-          {app.match_score !== null ? (
-            <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
-              <SectionHeader title={t("applications.detail.match")} />
-              <MatchRing score={app.match_score} />
-              <MatchReasons reasons={app.match_reasons} className="mt-4" perspective="employer" />
-            </section>
-          ) : null}
 
           {/* Xabar */}
           <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">

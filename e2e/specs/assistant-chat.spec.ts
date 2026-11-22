@@ -128,7 +128,7 @@ test("kirgan ish izlovchi, topilmadi → «So'rovingiz saqlandi», qidiruv bazad
   const answer = await quickSearch(page);
   const none = answer.locator("[data-quick-none]");
   await expect(none).toHaveAttribute("data-save", "saved");
-  await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*So'rovingiz saqlandi\. Mos ish chiqsa, sizga xabar beramiz\./);
+  await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*So'rovingiz saqlandi\. Shu bo'yicha yangi ish chiqsa, xabar beramiz\./);
   // haqiqatan saqlangan: kasb va viloyat bilan (kuniga bir marta tekshiriladi — mos yangi e'lon bo'lsa bildirishnoma)
   const rows = await sql<{ q: string; region: string; salary_min: number | null; notify: boolean }>(
     "select s.q, r.slug as region, s.salary_min, s.notify from public.saved_searches s left join public.regions r on r.id = s.region_id where s.profile_id = $1",
@@ -158,7 +158,7 @@ test("ish beruvchi: «Xodim qidirish» — maosh so'ralmaydi; topilmasa — qisq
   await expect(sheet.getByLabel("Qaysi hududdan?")).toBeVisible();
   await expect(sheet.locator("[data-quick-salary]")).toHaveCount(0);
   const answer = await quickSearch(page);
-  await expect(answer.locator("[data-quick-none]")).toContainText("Hozircha mos nomzod yo'q.");
+  await expect(answer.locator("[data-quick-none]")).toContainText("Hozircha nomzod topilmadi.");
   // yordamchi bilan vakansiya, yozgani bilan darhol boshlanadi (2026-11-20)
   await expect(answer.getByRole("link", { name: "Vakansiya joylash" })).toHaveAttribute("href", "/post/vacancy?ai=1&q=Termizda+kosmonavt+kerak");
 });

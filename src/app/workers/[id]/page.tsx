@@ -1,23 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ChevronLeft, Sparkles } from "lucide-react";
+import { ChevronLeft } from "lucide-react";
 import { requireEmployer } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { getBenefits } from "@/lib/reference";
 import { shortName } from "@/lib/format";
 import { Shell } from "@/components/shared/shell";
-import { MatchRing, MatchReasons } from "@/components/shared/match-score";
 import { ContactCard } from "@/features/contacts/contact-card";
 import {
   getCandidate,
   getCandidateInteractions,
-  getCandidateMatch,
   getCandidateRating,
   getCandidateReviews,
   getContactFlags,
   getManagedVacancy,
-  getMyActiveVacancies,
   getSavedEntry,
   getSavedFolders,
   recordWorkerView,
@@ -31,12 +28,10 @@ import {
   LocationSection,
   PreferencesSection,
   RatingSection,
-  Section,
   SkillsSection,
 } from "@/features/workers/components/candidate-sections";
 import { PortfolioGallery } from "@/features/workers/components/portfolio-gallery";
 import { CandidateActions } from "@/features/workers/components/candidate-actions";
-import { MatchVacancySelect } from "@/features/workers/components/match-vacancy-select";
 
 type Params = Promise<{ id: string }>;
 type Search = Promise<{ vacancy?: string | string[] }>;
@@ -59,9 +54,8 @@ export default async function CandidatePage({ params, searchParams }: { params: 
   const candidate = await getCandidate(id);
   if (!candidate) notFound();
 
-  const [{ t }, activeVacancies, vacancy, interactions, saved, folders, rating, reviews, contact, officialTermBenefits] = await Promise.all([
+  const [{ t }, vacancy, interactions, saved, folders, rating, reviews, contact, officialTermBenefits] = await Promise.all([
     getT(),
-    getMyActiveVacancies(session),
     getManagedVacancy(vacancyParam, session),
     getCandidateInteractions(candidate.id, session.userId),
     getSavedEntry(candidate.id, session.userId),
@@ -72,30 +66,9 @@ export default async function CandidatePage({ params, searchParams }: { params: 
     getBenefits("official_term"),
     recordWorkerView(candidate.id),
   ]);
-  const match = vacancy ? await getCandidateMatch(candidate.id, vacancy.id) : null;
   const officialTerms = (candidate.preferences?.official_terms ?? []).map((code) => officialTermBenefits.find((b) => b.code === code)).filter((b): b is NonNullable<typeof b> => !!b);
   const workerName = shortName(candidate.first_name, candidate.last_initial);
   const backHref = vacancy ? `/workers?vacancy=${vacancy.id}` : "/workers";
-
-  const matchCard = (
-    <Section title={t("workers.candidate.match_title")} icon={Sparkles}>
-      {vacancy && match ? (
-        <div className="space-y-3">
-          <MatchRing score={match.score} />
-          <p className="text-sm text-muted-foreground">{t("workers.candidate.match_for", { title: vacancy.title })}</p>
-          <MatchReasons reasons={match.reasons} perspective="employer" />
-        </div>
-      ) : null}
-      {activeVacancies.length || vacancy ? (
-        <div className={vacancy && match ? "mt-4" : ""}>
-          <p className="mb-1.5 text-sm text-muted-foreground">{t("workers.candidate.match_select")}</p>
-          <MatchVacancySelect workerId={candidate.id} vacancies={vacancy && !activeVacancies.some((v) => v.id === vacancy.id) ? [vacancy, ...activeVacancies] : activeVacancies} current={vacancy?.id ?? null} />
-        </div>
-      ) : (
-        <p className="text-sm text-muted-foreground">{t("workers.candidate.no_active_vacancies")}</p>
-      )}
-    </Section>
-  );
 
   return (
     <Shell>
@@ -106,7 +79,6 @@ export default async function CandidatePage({ params, searchParams }: { params: 
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_340px] md:gap-6">
           <div className="space-y-4">
             <CandidateHeader candidate={candidate} phoneVerified={contact.phoneVerified} />
-            <div className="md:hidden">{matchCard}</div>
             <AboutSection about={candidate.about} />
             <LocationSection region={candidate.region} district={candidate.district} workDistricts={candidate.work_districts} remotePreference={candidate.remote_preference} />
             <ExperienceSection items={candidate.experience} />
@@ -129,7 +101,6 @@ export default async function CandidatePage({ params, searchParams }: { params: 
               saved={saved}
               folders={folders}
             />
-            <div className="hidden md:block">{matchCard}</div>
             <div className="hidden md:block">
               <ContactCard profileId={candidate.profile_id} />
             </div>

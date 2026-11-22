@@ -2,7 +2,7 @@
   "currency": "UZS",
   "pay_title": "Payment",
   "vacancy_title": "Publish vacancy",
-  "vacancy_desc": "Active for {days} days: visible to candidates, and matching job seekers get notified",
+  "vacancy_desc": "Active for {days} days: visible to candidates and open for applications",
   "promotion_title": "Boost profile to TOP",
   "promotion_desc": "For {hours} hours your profile will appear at the top of employers' lists",
   "pay_with": "Pay with {provider}",
@@ -110,7 +110,7 @@
     "benefits": {
       "vacancy_publish": [
         "{days} days in search — workers find you",
-        "Matching workers are notified right away",
+        "Also posted in our Telegram channel",
         "Applications and calls come straight to you"
       ],
       "worker_listing": [
@@ -212,8 +212,8 @@
     "f_vacancy_days": "Vacancy in search for {days} days",
     "f_worker_days": "Listing in employers' search for {days} days",
     "f_channel": "Also posted in our Telegram channel",
-    "f_vacancy_base": "Alerts to matching workers, applications and chat",
-    "f_worker_base": "Unlimited applications and matching job alerts",
+    "f_vacancy_base": "Applications and chat",
+    "f_worker_base": "Unlimited applications",
     "discount": "Launch offer: −{percent}% on your first payment (until {date})",
     "always_free": "Searching for jobs and workers, applying and chat — always free",
     "how_to_buy": "Choose a plan when posting, or with the \"Boost to TOP\" button on your listing page",

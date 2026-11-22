@@ -1,12 +1,12 @@
 {
   "menu": {
     "cv": "📝 Create CV",
-    "jobs": "🔍 Matching jobs",
+    "jobs": "🔍 Jobs",
     "pdf": "📄 CV (PDF)",
     "app": "📱 Open app",
     "title": "What would you like to do?",
     "cmd_cv": "Create a CV (Q&A)",
-    "cmd_jobs": "Jobs that match me",
+    "cmd_jobs": "New jobs",
     "cmd_pdf": "Get my CV as a PDF",
     "cmd_start": "Main menu",
     "lang": "🌐 Til / Язык / Language",
@@ -68,12 +68,12 @@
     "progress": "{index}/{total}"
   },
   "jobs": {
-    "title": "🔍 Jobs that match you ({from}–{to} of {total}):",
+    "title": "🔍 Jobs ({from}–{to} of {total}):",
     "empty": "There are no active vacancies for your profession yet. Tap “🔔 Notify me” so we can let you know when new jobs appear.",
     "more": "➡️ 5 more",
     "open": "{n}. Open and apply",
     "alert": "🔔 Notify me about new jobs",
-    "alert_done": "✅ We'll message you every morning when new matching jobs appear.",
+    "alert_done": "✅ We'll message you every morning when new jobs in this profession appear.",
     "alert_exists": "This search is already saved — you'll receive notifications.",
     "negotiable": "negotiable",
     "remote": "remote",

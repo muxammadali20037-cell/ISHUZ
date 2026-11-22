@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { MatchScore } from "@/components/shared/match-score";
 import { EMPLOYER_NEXT_STATUSES, type EmployerApplicationItem } from "../types";
 import { ApplicationStatusBadge } from "./status-badge";
 import { StatusSheet, type SheetStatus } from "./status-sheet";
@@ -55,7 +54,6 @@ export function ApplicantCard({
           <div className="flex items-start justify-between gap-2">
             <h3 className={cn("truncate text-base font-semibold", !c && "text-muted-foreground")}>{name}</h3>
             <div className="flex shrink-0 items-center gap-1">
-              <MatchScore score={item.match_score} />
               {canAct && quick.length ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import { CircleCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { parseDescription, type Inline } from "../description";
 
@@ -30,6 +31,21 @@ export function VacancyDescription({ text, className }: { text: string | null | 
                 </li>
               ))}
             </Tag>
+          );
+        }
+        // "Izoh" bandlari (✅ bilan boshlanadigan qatorlar — features/post/notes.ts) — yashil belgili ro'yxat
+        if (b.lines.length && b.lines.every((line) => line[0]?.type !== "bold" && (line[0]?.value ?? "").trimStart().startsWith("✅"))) {
+          return (
+            <ul key={i} className="space-y-1.5" data-notes-list>
+              {b.lines.map((line, j) => (
+                <li key={j} className="flex items-start gap-2">
+                  <CircleCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden />
+                  <span className="min-w-0">
+                    <Inlines inlines={[{ ...line[0]!, value: line[0]!.value.replace(/^\s*✅\s*/u, "") }, ...line.slice(1)]} />
+                  </span>
+                </li>
+              ))}
+            </ul>
           );
         }
         return (

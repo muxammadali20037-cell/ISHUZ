@@ -5,7 +5,7 @@
     "title_category": "{category} — jobs and vacancies",
     "title_region": "Jobs in {region} — vacancies",
     "title_category_region": "{category} jobs in {region}",
-    "description": "Active vacancies across Uzbekistan. Filter by region, salary, schedule and experience to find the job that fits you.",
+    "description": "Active vacancies across Uzbekistan. Filter by region, salary, schedule and experience and find the job you need.",
     "detail_description": "{title} — {company}. {salary}. {location}."
   },
   "search": {
@@ -14,7 +14,7 @@
     "results_for": "{count} vacancies for “{query}”",
     "smart_category": "Category selected automatically: {name}",
     "sort_label": "Sort",
-    "understood": "“{query}” — got it, matching filters applied.",
+    "understood": "“{query}” — got it, filters applied.",
     "search_exact": "Search for this exact phrase"
   },
   "filters": {
@@ -73,9 +73,9 @@
     "title": "No vacancies found",
     "description": "Try changing the filters or shortening your search query.",
     "action": "Clear filters",
-    "exact_title": "No exact matches yet",
+    "exact_title": "No vacancies exactly like this yet",
     "relax_title": "Try this to find more:",
-    "relax_description": "Broaden your criteria a little and matching vacancies will appear.",
+    "relax_description": "Broaden your criteria a little and vacancies will appear.",
     "count": "{count}"
   },
   "error": {
@@ -155,7 +155,7 @@
     "description_quick": "The employer will see your name and message.",
     "message_label": "Short message",
     "message_hint": "optional",
-    "message_placeholder": "Why is this job a good fit for you?",
+    "message_placeholder": "Tell them briefly about yourself",
     "default_message": "Hello! I'm interested in the “{title}” vacancy. I'd appreciate it if you could take a look at my profile.",
     "default_message_quick": "Hello! I'm interested in the “{title}” vacancy. Please get in touch with me.",
     "chars": "{count} / {max}",
@@ -215,7 +215,7 @@
   },
   "home": {
     "greeting": "Hi, {name} 👋",
-    "subtitle": "We've picked jobs that match you",
+    "subtitle": "New jobs in one place",
     "stats_applications": "Active applications",
     "stats_offers": "Offers",
     "stats_views": "Profile views",

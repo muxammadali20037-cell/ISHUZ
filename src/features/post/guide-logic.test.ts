@@ -43,7 +43,7 @@ describe("AI bilan oson joylash: savollar tartibi", () => {
     expect(nextGuideStep(d, new Set<GuideStep>(["schedule"]))).toBe("experience");
   });
 
-  it("profildan ma'lum ish beruvchi turi, nomi va telefon so'ralmaydi; oxirida e'lon matni, keyin tayyor", () => {
+  it("profildan ma'lum ish beruvchi turi, nomi va telefon so'ralmaydi; oxirida izoh (ixtiyoriy), e'lon matni, keyin tayyor", () => {
     const d = {
       ...base,
       profession: prof,
@@ -53,7 +53,9 @@ describe("AI bilan oson joylash: savollar tartibi", () => {
       orgName: "Gulnora kafe",
       phone: "+998 90 123 45 67",
     };
-    const asked = new Set<GuideStep>(["schedule", "experience"]);
+    // 2026-11-22: e'lon matnidan oldin — "Qo'shimcha izoh bormi?" ("Izohsiz" ham javob)
+    expect(nextGuideStep(d, new Set<GuideStep>(["schedule", "experience"]))).toBe("notes");
+    const asked = new Set<GuideStep>(["schedule", "experience", "notes"]);
     expect(nextGuideStep(d, asked)).toBe("description");
     expect(nextGuideStep({ ...d, description: "Oshpaz kerak. Ish joyi: Toshkent." }, new Set<GuideStep>([...asked, "description"]))).toBeNull();
     // matn qisqa bo'lsa — tayyor emas
@@ -66,7 +68,7 @@ describe("AI bilan oson joylash: savollar tartibi", () => {
   });
 
   it("jarayon ko'rsatkichi javoblar soniga qarab o'sadi", () => {
-    expect(guideProgress(base, none)).toEqual({ done: 0, total: 10 });
+    expect(guideProgress(base, none)).toEqual({ done: 0, total: 11 });
     expect(guideProgress({ ...base, profession: prof, negotiable: true }, none).done).toBe(2);
   });
 });

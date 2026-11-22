@@ -180,8 +180,8 @@
     "edit_education": "Ta'limni tahrirlash",
     "delete_confirm_title": "O'chirilsinmi?",
     "delete_confirm_desc": "Bu amalni qaytarib bo'lmaydi.",
-    "category_hint": "Kasb yo'nalishi mos vakansiyalarni tanlashda asosiy mezon",
-    "preferences_hint": "Bu ma'lumotlar mos vakansiyalarni topishda ishlatiladi",
+    "category_hint": "Kasb yo'nalishi e'loningizda ko'rinadi va qidiruvda ishlatiladi",
+    "preferences_hint": "Bu ma'lumotlar e'loningizda ko'rinadi va qidiruvda ishlatiladi",
     "sections_nav": "Bo'limlar"
   },
   "portfolio": {
@@ -339,7 +339,7 @@
     "step_about": "Qisqa tanishtiruv",
     "visibility": "Kim ko'radi?",
     "mode_search": "Ish beruvchilar qidiruvida ko'rinsin",
-    "mode_search_desc": "Mos ish beruvchilar sizni topib, taklif yuborishi mumkin.",
+    "mode_search_desc": "Ish beruvchilar sizni topib, taklif yuborishi mumkin.",
     "mode_applied": "Faqat ariza yuborgan ish beruvchilarim ko'rsin",
     "mode_applied_desc": "Qidiruvda chiqmaysiz; e'loningizni faqat siz murojaat qilganlar ko'radi.",
     "mode_hidden": "Hozircha yashirin",

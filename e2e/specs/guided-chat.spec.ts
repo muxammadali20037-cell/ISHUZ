@@ -4,7 +4,7 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 /**
  * Asosiy ekran — chat (ega, 2026-11-21, master prompt + tanlovlar; "muloyim, aniq, jaydari so'zlar bilan so'rasin —
  * odamlar nima haqda so'ralayotganini aniq bilsin"):
- *  - bosh sahifa ("/") mehmonga ham darhol chat: "O'zingizga mos ishni yoki ishchini toping" va pastga strelka (2026-11-21
+ *  - bosh sahifa ("/") mehmonga ham darhol chat: "Ish yoki ishchini oson toping" va pastga strelka (2026-11-21
  *    kechqurun: misollar va boshqa ortiqcha narsalar olib tashlandi);
  *  - AI maqsadni yozilgan matndan aniqlaydi; aniq bo'lmasa — bitta savol, ikki tugma;
  *  - yetishmagan narsa bittadan: kasb — yoziladi, hudud — tugmalardan tanlanadi (yozilmaydi), tanlov eslab qolinadi;
@@ -50,7 +50,7 @@ test("mehmon: bosh sahifa — darhol chat: yozuv, ikki katta tugma va yozish may
   await asGuest(context);
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   // ega (2026-11-22): "2 ta variant chiqsin ekranga — ish qidiryapman / ishchi qidiryapman"
   await expect(page.locator("[data-guided-start='jobs']")).toContainText("Ish qidiryapman");
   await expect(page.locator("[data-guided-start='workers']")).toContainText("Ishchi qidiryapman");
@@ -86,11 +86,17 @@ test("maqsad aniq emas — savolsiz ikki tugma; hudud — tugmalardan, «Endi ni
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "results");
   await expect(lastAi(page)).toContainText(/Mana, \d+ ta ishchi topdim/);
   await expect(page.locator("[data-guided-summary]").last()).toContainText("Toshkent shahri");
+  // e'lonlar ostida kichik "+ E'lon joylash" (ega, 2026-11-22) — ish beruvchiga vakansiya yordamchisi
+  const postLink = lastAi(page).locator("[data-guided-post-link='vacancy']");
+  await expect(postLink).toHaveText("E'lon joylash");
+  await expect(postLink).toHaveAttribute("href", /^\/post\/vacancy\?ai=1/);
   // javob berilgan savollarning tugmalari yo'qoladi
   await expect(page.locator("[data-guided-roles], [data-guided-places], [data-guided-next]")).toHaveCount(0);
   // tanlangan hudud eslab qolinadi — keyingi savolda so'ralmaydi; rol ham shu suhbatda ma'lum
   await send(page, "haydovchi");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "results");
+  // havola faqat oxirgi natija ostida
+  await expect(page.locator("[data-guided-post-link]")).toHaveCount(1);
   expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
 });
 

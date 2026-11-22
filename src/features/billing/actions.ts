@@ -46,6 +46,8 @@ const purposeSchema = z.enum(["vacancy_publish", "worker_promotion", "worker_lis
 const targetSchema = z
   .object({ purpose: purposeSchema, targetId: uuid.nullish(), plan: z.enum(["basic", "boost", "max"]).optional() })
   .refine((v) => v.purpose === "ai_alerts" || !!v.targetId, { message: "target" })
+  // "Sizga mos ish chiqsa — xabar" (PRO kuzatuv) to'xtatildi (ega, 2026-11-22: "moslik umuman kerak emas") — yangi to'lov qabul qilinmaydi
+  .refine((v) => v.purpose !== "ai_alerts", { message: "retired" })
   .refine((v) => !v.plan || v.plan === "basic" || v.purpose === "vacancy_publish" || v.purpose === "worker_listing", { message: "plan" });
 
 /** Tezkor/Maksimal — daraja bilan (0080); "Oddiy" — eski 2 argumentli chaqiruv (0080 qo'llanmagan bazada ham ishlaydi) */

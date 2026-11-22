@@ -3,7 +3,7 @@ import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
  * Pastki menyu (ega, 2026-11-21, master prompt): 3 ta bo'lim — Qidiruv · E'lonlarim · Profil, ikkala rejimda bir xil.
- * "Sizga mos" (ish izlovchi) va "Arizalar" (ish beruvchi) — E'lonlarim ichida. Chatdan ochiladigan ro'yxatlar va
+ * "Arizalar" (ish beruvchi) — E'lonlarim ichida; "Sizga mos" 2026-11-22 dan yo'q. Chatdan ochiladigan ro'yxatlar va
  * e'lonlar (/jobs, /search, /listing) — "Qidiruv" bo'limida.
  *  - asosiy ekran — chat: kirgan foydalanuvchi /chat ga ("/" yo'naltiradi), mehmonga "/" ning o'zi chat;
  *  - AI maqsadni matndan aniqlaydi, yetishmaganini bittadan so'raydi (batafsil — guided-chat.spec.ts).
@@ -34,7 +34,7 @@ test.afterEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
 });
 
-test("pastki menyu — ish izlovchida: Qidiruv, E'lonlarim, Profil; «Sizga mos» — E'lonlarim ichida", async ({ page, context }) => {
+test("pastki menyu — ish izlovchida: Qidiruv, E'lonlarim, Profil; «Sizga mos» yo'q", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/jobs");
@@ -45,12 +45,14 @@ test("pastki menyu — ish izlovchida: Qidiruv, E'lonlarim, Profil; «Sizga mos�
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
   for (const old of ["Sizga mos", "Ishlar", "Ishchilar", "Arizalar", "Bosh sahifa", "Xabarlar"]) await expect(tabs(page).getByRole("link", { name: old, exact: true })).toHaveCount(0);
   await expect(page.locator("header a[href='/ai']")).toHaveCount(0);
-  // "Sizga mos" — E'lonlarim ichida
+  // "Sizga mos" olib tashlandi (ega, 2026-11-22: "moslik umuman kerak emas") — E'lonlarimda ham yo'q
   await tabs(page).getByRole("link", { name: "E'lonlarim" }).click();
   await expect(page).toHaveURL(/\/cabinet\/elonlar$/);
-  await page.locator("[data-my-listings-link='matches']").click();
-  await expect(page).toHaveURL(/\/cabinet\/matches$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Sizga mos ishlar");
+  await expect(page.locator("[data-my-listings-link='matches']")).toHaveCount(0);
+  await expect(page.getByRole("main")).not.toContainText("Sizga mos");
+  // eski havola — E'lonlarimga
+  await page.goto("/cabinet/matches");
+  await expect(page).toHaveURL(/\/cabinet\/elonlar$/);
   await expect(tabs(page).getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("aria-current", "page");
 });
 
@@ -69,16 +71,14 @@ test("pastki menyu — ish beruvchida: Qidiruv, E'lonlarim, Profil; arizalar yo'
   await expect(tabs(page).getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
 });
 
-test("mehmon: «Sizga mos» kirishga majburlamaydi — e'lon berishga taklif", async ({ page, context }) => {
+test("mehmon: eski «Sizga mos» havolasi — E'lonlarimga (u yerdan kirishga)", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/jobs");
   await expect(tabs(page).getByRole("link")).toHaveText(TABS);
   await page.goto("/cabinet/matches");
-  const invite = page.locator("[data-matches-invite='worker']");
-  await expect(invite).toContainText("O'zingiz haqingizda e'lon bering");
-  // 2026-11-21 (3-bosqich): e'lon chatning o'zida
-  await expect(invite.getByRole("link", { name: "E'lon berish" })).toHaveAttribute("href", "/chat?post=new");
+  await page.waitForURL(/\/auth/);
+  expect(new URL(page.url()).searchParams.get("next")).toBe("/cabinet/elonlar");
 });
 
 test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma rolga qarab, orqaga tugmasi yo'q", async ({ page, context }) => {
@@ -88,7 +88,7 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   await expect(page).toHaveURL(/\/chat$/);
   const chat = page.locator("[data-start-chat]");
   // 2026-11-21 kechqurun (ega): "ortiqcha narsalar kerakmas" — bitta yozuv va pastga strelka; qatorlar, misollar yo'q
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   await expect(chat.locator("[data-guided-start]")).toHaveCount(2);
   await expect(chat.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
@@ -99,7 +99,7 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   await asMode(context, "employer");
   await page.goto("/");
   await expect(page).toHaveURL(/\/chat$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
 });
 
@@ -107,9 +107,9 @@ test("mehmon uchun «/» — darhol chat (yo'naltirishsiz); /chat ham o'sha", as
   await asGuest(context);
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   await page.goto("/chat");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
 });
 
 test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — «+ O'zingiz haqingizda e'lon qoldiring»", async ({ page, context }) => {

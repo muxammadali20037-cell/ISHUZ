@@ -61,6 +61,9 @@ test("mehmon (telefon): yordamchi sahifasi (/ai/post) → «men o'qituvchiman» 
   await form.locator("[data-ai-post-first-name]").fill("Botir");
   await form.locator("[data-ai-post-region]").selectOption({ label: "Toshkent shahri" });
   await form.locator("[data-exp='1_3']").click();
+  // ixtiyoriy izoh (ega, 2026-11-22): tayyor variant + o'zi yozgani → e'londa ✅ ro'yxat
+  await form.locator("[data-ai-post-note='docs']").click();
+  await form.locator("[data-ai-post-note-text]").fill("onlayn dars ham beraman");
   await form.locator("#phone").fill("901234567");
   // "+ Yana raqam" — ikkinchi raqam (chala yozilsa — xato; olib tashlash mumkin)
   await form.locator("[data-ai-post-add-phone]").click();
@@ -77,7 +80,8 @@ test("mehmon (telefon): yordamchi sahifasi (/ai/post) → «men o'qituvchiman» 
   await expect(card).toContainText("Matematika o'qituvchisi");
   await expect(card).toContainText("Botir");
   await expect(card).toContainText("Toshkent shahri");
-  await expect(card.locator("[data-ai-post-about]")).toHaveText("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
+  await expect(card.locator("[data-ai-post-about] p").first()).toHaveText("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
+  await expect(card.locator("[data-ai-post-about] [data-notes-list] li")).toHaveText(["Hujjatlarim tayyor", "Onlayn dars ham beraman"]);
   // ekranda telefon raqami ko'rsatilmaydi (faqat "ko'rinadi" degan yozuv)
   await expect(card).not.toContainText("90 123");
   await expect(card).not.toContainText("93 555");
@@ -93,11 +97,13 @@ test("mehmon (telefon): yordamchi sahifasi (/ai/post) → «men o'qituvchiman» 
   await loginAs(context, USERS.workerB);
   await page.goto(back!);
   // qaytgach — o'sha e'lon ko'rinishi darhol ochiladi; "Joylash" → avtomatik tekshiruv → "Tabriklaymiz"
-  await expect(page.locator("[data-ai-post-preview] [data-ai-post-about]")).toHaveText("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
+  await expect(page.locator("[data-ai-post-preview] [data-ai-post-about] p").first()).toHaveText("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
+  await expect(page.locator("[data-ai-post-preview] [data-ai-post-about] [data-notes-list] li")).toHaveCount(2);
   await page.locator("[data-ai-post-publish]").click();
   await expect(page.getByRole("heading", { level: 1, name: "Tabriklaymiz! E'loningiz joylandi" })).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator("[data-ai-post-notify]")).toContainText("Sizga mos ish chiqsa, ilovada xabar beramiz.");
-  await expect(page.locator("[data-ai-post-notify]").getByRole("button", { name: /xabar bering/i })).toBeVisible();
+  // "mos ish chiqsa — xabar beramiz" bloki yo'q (ega, 2026-11-22: "moslik umuman kerak emas")
+  await expect(page.locator("[data-ai-post-notify]")).toHaveCount(0);
+  await expect(page.getByText(/Sizga mos/)).toHaveCount(0);
 
   const [w] = await sql<{ name: string; about: string; experience_level: string; salary: number | null; is_public: boolean }>(
     `select n.name_uz as name, w.about, w.experience_level::text as experience_level, p.salary_expected as salary, w.is_public
@@ -107,7 +113,7 @@ test("mehmon (telefon): yordamchi sahifasi (/ai/post) → «men o'qituvchiman» 
     [USERS.workerB],
   );
   expect(w?.name).toBe("Matematika o'qituvchisi");
-  expect(w?.about).toBe("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
+  expect(w?.about).toBe("Matematika o'qituvchisi sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.\n\n✅ Hujjatlarim tayyor\n✅ Onlayn dars ham beraman");
   expect(w?.salary).toBeNull();
   expect(w?.is_public).toBe(true);
   // e'londa — qo'lda yozilgan ikkala raqam

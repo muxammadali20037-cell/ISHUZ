@@ -62,7 +62,7 @@ export default async function PricingPage() {
     [
       t(kind === "vacancy" ? "billing.tariffs.f_vacancy_days" : "billing.tariffs.f_worker_days", { days: x.days }),
       x.topDays ? t(kind === "vacancy" ? "billing.tiers.benefit_top" : "billing.tiers.benefit_top_worker", { days: x.topDays }) : null,
-      x.aiDays ? t("billing.tiers.benefit_ai", { days: x.aiDays }) : null,
+      // "PRO kuzatuv" (mos ish chiqsa — xabar) to'xtatildi (ega, 2026-11-22) — foyda sifatida va'da qilinmaydi
       t("billing.tariffs.f_channel"),
       t(kind === "vacancy" ? "billing.tariffs.f_vacancy_base" : "billing.tariffs.f_worker_base"),
     ].filter((f): f is string => !!f);

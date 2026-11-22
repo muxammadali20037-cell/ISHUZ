@@ -9,10 +9,9 @@ import { useT } from "@/lib/i18n/client";
 import { formatDate } from "@/lib/format";
 import type { Benefit } from "@/lib/reference";
 import { Button } from "@/components/ui/button";
-import { EmptyState, PageHeader, SectionHeader } from "@/components/ui/misc";
+import { PageHeader, SectionHeader } from "@/components/ui/misc";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { WorkerCard, type WorkerCardData } from "@/components/shared/worker-card";
 import type { VacancyAccess } from "../queries";
 import { canClose, canDelete, canPause, canPublish, isEditable, isPublic, publishLabelKey } from "../status";
 import type { ApplicationStats, ApplicationStatus, VacancyFull } from "../types";
@@ -29,7 +28,6 @@ export function VacancyManage({
   vacancy: v,
   access,
   stats,
-  workers,
   benefits,
   seekerView,
   canBoost = false,
@@ -38,7 +36,6 @@ export function VacancyManage({
   vacancy: VacancyFull;
   access: VacancyAccess;
   stats: ApplicationStats;
-  workers: WorkerCardData[];
   benefits: Benefit[];
   /** "Ish izlovchilar qanday ko'radi" bloki (serverda yig'iladi) — amallar ostida, statistikadan oldin */
   seekerView?: React.ReactNode;
@@ -54,7 +51,6 @@ export function VacancyManage({
   const busy = actions.busyId === v.id;
   const canEdit = access.canEdit;
   const applicationsHref = `/employer/vacancies/${v.id}/applications`;
-  const workersHref = `/workers?vacancy=${v.id}`;
 
   const onConfirm = () => {
     const done = () => setConfirm(null);
@@ -196,19 +192,6 @@ export function VacancyManage({
         ) : null}
       </section>
 
-      <section id="matching" className="mt-8">
-        <SectionHeader title={t("vacancies.manage.matching_title")} href={workersHref} linkLabel={t("vacancies.actions.all_workers")} />
-        <p className="-mt-2 mb-3 text-sm text-muted-foreground">{t("vacancies.manage.matching_desc")}</p>
-        {workers.length ? (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {workers.map((w) => (
-              <WorkerCard key={w.id} worker={w} href={`/workers/${w.id}?vacancy=${v.id}`} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState icon={UserSearch} title={t("vacancies.manage.matching_empty_title")} description={t("vacancies.manage.matching_empty_desc")} action={{ label: t("vacancies.actions.find_workers"), href: workersHref }} />
-        )}
-      </section>
 
       <section className="mt-8">
         <SectionHeader title={t("vacancies.manage.preview_title")} />

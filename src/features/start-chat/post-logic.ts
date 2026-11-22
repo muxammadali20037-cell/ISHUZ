@@ -6,13 +6,14 @@ import type { PostAnswers, PostChoice, PostExperience, PostForm } from "@/featur
 /**
  * Chatning o'zida ishchi e'loni (master prompt, 3-bosqich; ega, 2026-11-21: "kasb, viloyat, ism, tajriba — tajriba bormi
  * degan joyiga yozsin"). Savollar bittadan: kasb (yoziladi; guruh bo'lsa — "aynan qaysi biri?" tugmalari) → viloyat
- * (tugmalar) → ism (yoziladi; hisobda bo'lsa so'ralmaydi) → tajriba (yoziladi yoki tugma) → telefon (yoziladi, majburiy —
+ * (tugmalar) → ism (yoziladi; hisobda bo'lsa so'ralmaydi) → tajriba (yoziladi yoki tugma) → izoh (ixtiyoriy, tayyor
+ * variantlar yoki o'z so'zi bilan — 2026-11-22) → telefon (yoziladi, majburiy —
  * 2026-11-17 va 2026-11-21 qarorlari) → tayyor e'lon kartasi va "Joylash". Sof qismlar — mijoz va unit test uchun.
  */
 
-export type PostAsk = "post_profession" | "post_which" | "post_region" | "post_name" | "post_experience" | "post_phone";
+export type PostAsk = "post_profession" | "post_which" | "post_region" | "post_name" | "post_experience" | "post_note" | "post_phone";
 
-export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", "post_region", "post_name", "post_experience", "post_phone"];
+export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", "post_region", "post_name", "post_experience", "post_note", "post_phone"];
 
 export function isPostAsk(a: string | null | undefined): a is PostAsk {
   return !!a && (POST_ASKS as readonly string[]).includes(a);
@@ -28,6 +29,8 @@ export interface PostDraft {
   firstName: string;
   lastName: string;
   experience: PostExperience | null;
+  /** "Izoh" (ega, 2026-11-22) — tartibga keltirilgan bandlar; null — hali so'ralmagan ("Izohsiz" — bo'sh ro'yxat) */
+  notes: string[] | null;
   /** "+998901234567" */
   phone: string | null;
 }
@@ -41,6 +44,7 @@ export function postDraftFromForm(form: PostForm): PostDraft {
     firstName: form.firstName.trim(),
     lastName: form.lastName.trim(),
     experience: null,
+    notes: null,
     phone: null,
   };
 }
@@ -51,6 +55,7 @@ export function nextPostAsk(d: PostDraft): Exclude<PostAsk, "post_which"> | null
   if (!d.regionId) return "post_region";
   if (d.firstName.trim().length < 2) return "post_name";
   if (!d.experience) return "post_experience";
+  if (d.notes === null) return "post_note";
   if (!d.phone) return "post_phone";
   return null;
 }
@@ -67,6 +72,7 @@ export function postAnswers(d: PostDraft): PostAnswers | null {
     experience: d.experience,
     phone: d.phone,
     phone2: null,
+    notes: d.notes ?? [],
   };
 }
 

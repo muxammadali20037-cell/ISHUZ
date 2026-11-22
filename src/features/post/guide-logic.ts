@@ -7,7 +7,7 @@ import type { VacancyDraft } from "./types";
  * o'tkazsin, yozuvlar kam bo'lsin"). Bir gapdan tushunilmagan narsalar ekranda BITTADAN so'raladi — tayyor variantlar bilan.
  * Qaysi savol navbatda ekanini shu sof funksiyalar hal qiladi (komponent ham, testlar ham shundan foydalanadi).
  */
-export const GUIDE_STEPS = ["profession", "region", "district", "salary", "schedule", "experience", "employerType", "orgName", "phone", "description"] as const;
+export const GUIDE_STEPS = ["profession", "region", "district", "salary", "schedule", "experience", "employerType", "orgName", "phone", "notes", "description"] as const;
 export type GuideStep = (typeof GUIDE_STEPS)[number];
 
 /** Savol berildi va javob olindi (ixtiyoriy savollar uchun: "farqi yo'q" ham javob) */
@@ -36,6 +36,9 @@ export function guideAnswered(step: GuideStep, d: View, asked: GuideAsked): bool
       return d.orgName.trim().length >= 2;
     case "phone":
       return !!normalizePhone(d.phone);
+    case "notes":
+      // ixtiyoriy ("Izohsiz" ham javob)
+      return asked.has("notes");
     case "description":
       return asked.has("description") && d.description.trim().length >= 10;
   }

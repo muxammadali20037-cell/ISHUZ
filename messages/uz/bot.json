@@ -1,12 +1,12 @@
 {
   "menu": {
     "cv": "📝 CV tuzish",
-    "jobs": "🔍 Mos ishlar",
+    "jobs": "🔍 Ishlar",
     "pdf": "📄 CV (PDF)",
     "app": "📱 Ilovani ochish",
     "title": "Nima qilamiz?",
     "cmd_cv": "CV tuzish (savol-javob)",
-    "cmd_jobs": "Menga mos ishlar",
+    "cmd_jobs": "Yangi ishlar",
     "cmd_pdf": "CV'ni PDF qilib olish",
     "cmd_start": "Bosh menyu",
     "lang": "🌐 Til / Язык",
@@ -68,12 +68,12 @@
     "progress": "{index}/{total}"
   },
   "jobs": {
-    "title": "🔍 Sizga mos ishlar ({from}–{to} / {total}):",
+    "title": "🔍 Ishlar ({from}–{to} / {total}):",
     "empty": "Hozircha sizning kasbingiz bo'yicha faol vakansiya yo'q. Yangi ish chiqsa xabar berishimiz uchun «🔔 Xabar berish»ni bosing.",
     "more": "➡️ Yana 5 ta",
     "open": "{n}. Ochish va ariza berish",
     "alert": "🔔 Yangi ishlar haqida xabar berish",
-    "alert_done": "✅ Yangi mos ishlar chiqsa, har kuni ertalab xabar beramiz.",
+    "alert_done": "✅ Shu kasb bo'yicha yangi ish chiqsa, har kuni ertalab xabar beramiz.",
     "alert_exists": "Bu qidiruv allaqachon saqlangan — xabarlar keladi.",
     "negotiable": "kelishiladi",
     "remote": "masofaviy",

@@ -128,7 +128,7 @@ test("ish beruvchi (kirgan): asosiy ekran — chat; yozilgan so'z ishchilar ichi
   // hudud noma'lum bo'lsa, chatning o'zida bitta savol (viloyat — bosib tanlanadi)
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
-  await expect(page.getByRole("heading", { level: 1, name: "O'zingizga mos ishni yoki ishchini toping" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Ish yoki ishchini oson toping" })).toBeVisible();
   const box = page.locator("form[data-hydrated] #start-chat-text");
   await expect(box).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
   await box.fill("oshpaz");

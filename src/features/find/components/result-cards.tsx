@@ -172,8 +172,8 @@ export function LiveStatus({ kind, wrap, className }: { kind: "hiring" | "seekin
         <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-50 motion-reduce:hidden" />
         <span className="relative inline-flex size-2.5 rounded-full bg-destructive" />
       </span>
-      {/* wrap: tor joyda kesilmasin — 2 qatorgacha */}
-      <span className={cn("min-w-0", wrap ? "line-clamp-2 break-words" : "truncate")}>{t(kind === "hiring" ? "easy.card.hiring_now" : "easy.card.seeking_now")}</span>
+      {/* wrap: tor joyda kesilmasin — kerak bo'lsa bir necha qatorga (ega skrinshoti, 2026-11-22: "Hozir ishchi…" kesilardi) */}
+      <span className={cn("min-w-0", wrap ? "break-words" : "truncate")}>{t(kind === "hiring" ? "easy.card.hiring_now" : "easy.card.seeking_now")}</span>
     </span>
   );
 }
@@ -302,7 +302,9 @@ export function JobResultCard({
         </p>
       ) : null}
       {/* bitta qator: hudud (qisqa: tuman birinchi; to'liq — title va ekran o'qigichida) · grafik · tajriba */}
-      <ul className="mt-1.5 flex min-w-0 items-center gap-x-3 text-xs text-muted-foreground sm:mt-2">
+      {/* tor joyda (masalan, ish beruvchining "ish izlovchilar qanday ko'radi" bo'limida) hudud "T…" bo'lib qolmasin —
+          sig'masa keyingi qatorga o'tadi (ega skrinshoti, 2026-11-22) */}
+      <ul className="mt-1.5 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground sm:mt-2">
         <li className="flex min-w-0 items-center gap-1" title={where}>
           <MapPin className="size-3.5 shrink-0" aria-hidden />
           <span className="truncate" aria-hidden>

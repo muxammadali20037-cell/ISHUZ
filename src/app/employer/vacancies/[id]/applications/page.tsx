@@ -4,7 +4,7 @@ import { requireEmployer } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { Shell } from "@/components/shared/shell";
 import { getManagedVacancy } from "@/features/applications/queries";
-import { isApplicationStatus, isPipelineSort } from "@/features/applications/types";
+import { isApplicationStatus } from "@/features/applications/types";
 import { EmployerPipeline } from "@/features/applications/components/employer-pipeline";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -18,7 +18,7 @@ export default async function VacancyApplicationsPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ status?: string | string[]; sort?: string | string[] }>;
+  searchParams: Promise<{ status?: string | string[] }>;
 }) {
   const { id } = await params;
   await requireEmployer(`/employer/vacancies/${id}/applications`);
@@ -26,12 +26,11 @@ export default async function VacancyApplicationsPage({
   if (!vacancy) notFound();
   const sp = await searchParams;
   const rawStatus = Array.isArray(sp.status) ? sp.status[0] : sp.status;
-  const rawSort = Array.isArray(sp.sort) ? sp.sort[0] : sp.sort;
   const status = isApplicationStatus(rawStatus) ? rawStatus : "all";
-  const sort = isPipelineSort(rawSort) ? rawSort : "match";
   return (
     <Shell forceRole="employer">
-      <EmployerPipeline vacancy={vacancy} status={status} sort={sort} />
+      {/* saralash — har doim eng yangisi (moslik yo'q, ega 2026-11-22) */}
+      <EmployerPipeline vacancy={vacancy} status={status} sort="newest" />
     </Shell>
   );
 }

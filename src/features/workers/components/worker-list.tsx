@@ -9,7 +9,7 @@ import { errorText } from "./error-text";
 import { callAction } from "@/lib/action-call";
 
 /** Nomzod kartalari ro'yxati: saqlash tugmasi optimistik ishlaydi, xato bo'lsa qaytariladi */
-export function WorkerList({ rows, vacancyId, hideMatch }: { rows: WorkerCardData[]; vacancyId?: string | null; hideMatch?: boolean }) {
+export function WorkerList({ rows, vacancyId }: { rows: WorkerCardData[]; vacancyId?: string | null }) {
   const { t } = useT();
   const [overrides, setOverrides] = useState<Record<string, boolean>>({});
   const [busy, setBusy] = useState<string | null>(null);
@@ -40,7 +40,6 @@ export function WorkerList({ rows, vacancyId, hideMatch }: { rows: WorkerCardDat
               worker={{ ...w, is_saved: isSaved }}
               onToggleSave={toggle}
               saving={busy === w.id}
-              hideMatch={hideMatch}
               href={vacancyId ? `/workers/${w.id}?vacancy=${vacancyId}` : `/workers/${w.id}`}
             />
           </li>

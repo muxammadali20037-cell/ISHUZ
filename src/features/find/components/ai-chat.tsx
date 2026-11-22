@@ -837,6 +837,7 @@ export function AiPromptBox({
   note = true,
   placeholder,
   action,
+  inputMode,
 }: {
   chat: PromptTarget;
   id?: string;
@@ -848,6 +849,8 @@ export function AiPromptBox({
   placeholder?: string;
   /** sekin telefon: skriptlar yuklanmasdan yuborilsa — matn shu manzilga ?q=… bilan oddiy forma bo'lib boradi (boshi berk yo'q) */
   action?: string;
+  /** telefon raqami so'ralganda — raqamli klaviatura */
+  inputMode?: "text" | "tel";
 }) {
   const { t } = useT();
   const [text, setText] = useState("");
@@ -907,6 +910,7 @@ export function AiPromptBox({
           onKeyDown={onKeyDown}
           maxLength={MESSAGE_MAX_CHARS}
           enterKeyHint="send"
+          inputMode={inputMode}
           placeholder={placeholder ?? (chat.mode === "workers" ? t("easy.finder.composer_placeholder_workers") : t("easy.finder.composer_placeholder_jobs"))}
           // fokus halqasi butun yozish qutisida (focus-within) — ichidagi maydonda ikkinchi halqa chizilmaydi
           className="min-h-11 min-w-0 flex-1 resize-none overflow-hidden bg-transparent px-2.5 py-2.5 text-base leading-6 text-foreground outline-none placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0"
@@ -918,7 +922,8 @@ export function AiPromptBox({
           </button>
         ) : (
           <button key="send" type="submit" aria-label={t("easy.finder.submit")} className={cn(round, empty ? "bg-secondary text-muted-foreground" : "bg-primary text-primary-foreground hover:bg-primary-hover")}>
-            <ArrowUp className="size-5" aria-hidden />
+            {/* ega (2026-11-22): "jo'natish belgisi tepaga ildirib tursin, qimirlab" — o'q yengil yuqoriga turtiladi */}
+            <ArrowUp className="send-nudge size-5" aria-hidden />
           </button>
         )}
       </div>

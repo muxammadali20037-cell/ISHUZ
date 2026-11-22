@@ -4,7 +4,6 @@ import { getT } from "@/lib/i18n/server";
 import { formatRelative, fullName, initials } from "@/lib/format";
 import { Avatar } from "@/components/ui/avatar";
 import { SectionHeader } from "@/components/ui/misc";
-import { MatchScore } from "@/components/shared/match-score";
 import { getRecentApplications } from "../../queries";
 import { ApplicationStatusBadge } from "./status-badge";
 import type { Enums } from "@/types/database.types";
@@ -46,7 +45,6 @@ export async function RecentApplicationsSection({
               <div className="min-w-0 flex-1">
                 <div className="flex min-w-0 items-center gap-2">
                   <span className="truncate font-semibold">{a.name}</span>
-                  <MatchScore score={a.match_score} size="sm" />
                 </div>
                 <p className="truncate text-sm text-muted-foreground">
                   {a.vacancy_title} · {formatRelative(a.created_at, locale)}
@@ -77,7 +75,6 @@ export async function RecentApplicationsSection({
                     <Link href={a.href} className="truncate text-base font-semibold after:absolute after:inset-0 after:content-[''] hover:text-primary-ink">
                       {a.name}
                     </Link>
-                    <MatchScore score={a.match_score} size="sm" />
                   </span>
                 </td>
                 <td className="max-w-0 truncate px-5 py-3">{a.vacancy_title}</td>
