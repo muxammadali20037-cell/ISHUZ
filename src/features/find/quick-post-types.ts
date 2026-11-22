@@ -59,6 +59,8 @@ export interface PostAnswers {
   phone: string;
   /** "+ Yana raqam" — ixtiyoriy ikkinchi raqam */
   phone2: string | null;
+  /** tekshirish oynasida yaratilgan AI rasm qoralamasi (ega, 2026-11-22: "joylashdan oldin") */
+  imageDraft?: string | null;
 }
 
 /** "Sizning e'loningiz shunday ko'rinadi" — serverda, joylanadigan matnning o'zi */

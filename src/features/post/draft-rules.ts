@@ -6,6 +6,12 @@ import { isBool, isCustomProfession, isId, isPickedProfession, isPlace, isStep, 
 const isSchedule = (v: unknown) => v === "" || (SCHEDULES as unknown[]).includes(v);
 const isSource = (v: unknown) => v === undefined || v === "manual" || v === "ai";
 const PHOTO_PATH = /^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+/** tekshirish sahifasidagi AI rasm qoralamasi: id va https manzil (boshqasi — qabul qilinmaydi) */
+const isImage = (x: unknown) =>
+  x === undefined ||
+  x === null ||
+  (typeof x === "object" && typeof (x as { draft?: unknown }).draft === "string" && UUID.test((x as { draft: string }).draft) && typeof (x as { url?: unknown }).url === "string" && /^https:\/\/\S{1,500}$/.test((x as { url: string }).url));
 
 export const WORKER_DRAFT_RULES: DraftRules<WorkerDraft> = {
   v: (x) => x === 1,
@@ -23,6 +29,7 @@ export const WORKER_DRAFT_RULES: DraftRules<WorkerDraft> = {
   schedule: isSchedule,
   showPhone: isBool,
   source: isSource,
+  image: isImage,
 };
 
 /** Tahrirlanayotgan vakansiya qoralamasi faqat o'sha vakansiyaga tegishli bo'lsa qabul qilinadi */
@@ -49,5 +56,6 @@ export function vacancyDraftRules(editId: string | null): DraftRules<VacancyDraf
     showPhone: isBool,
     photoPath: (x) => x === undefined || x === null || (typeof x === "string" && PHOTO_PATH.test(x)),
     source: isSource,
+    image: isImage,
   };
 }

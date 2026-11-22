@@ -55,6 +55,8 @@ const answersSchema = z.object({
   // e'londagi raqam: oynada qo'lda yoziladi, majburiy; ikkinchisi ixtiyoriy (bir xil bo'lsa — saqlanmaydi)
   phone: phoneSchema,
   phone2: phoneSchema.nullable(),
+  /** tekshirish oynasida yaratilgan AI rasm qoralamasi (joylanganda e'longa) */
+  imageDraft: z.uuid().nullable().optional(),
 });
 
 /** "Tasdiqlash": e'lon qanday ko'rinishi (joylanadigan matnning o'zi) */
@@ -102,6 +104,7 @@ export async function quickPostPublish(input: unknown): Promise<Out<PostOutcome>
     listingPhone: a.phone,
     listingPhone2: a.phone2 && a.phone2 !== a.phone ? a.phone2 : null,
     source: "ai",
+    imageDraft: a.imageDraft ?? null,
     // 0086 (ega, 2026-11-20: "menga faqat 1 ta e'lon joylay olyapman"): har joylash — yangi e'lon; shu kasb va hududda
     // e'loni bo'lsa — o'sha yangilanadi (takror e'lon bo'lmasin). Birinchi e'lon — asosiy.
     newListing: true,

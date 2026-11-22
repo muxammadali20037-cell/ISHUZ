@@ -1600,21 +1600,24 @@
     "find_masters_link": "Ustalar (santexnik, elektrik…)"
   },
   "listing_image": {
-    "ask_title": "E'lon rasmi yaratilsinmi?",
-    "ask_desc": "AI e'loningizni o'qib, unga mos real rasm tayyorlaydi — e'londa va Telegram kanalda chiroyli ko'rinadi. Bepul.",
-    "yes": "Ha, yaratilsin",
-    "no": "Yo'q",
+    "ask_title": "E'lon rasmi",
+    "ask_desc": "AI e'loningizga mos real rasm chizadi. Ma'qul kelsa — e'lon shu rasm bilan joylanadi, kelmasa — boshqasini yaratasiz yoki rasmsiz joylaysiz.",
     "busy": "Rasm tayyorlanmoqda…",
     "busy_note": "20–60 soniya. Sahifani yopmang.",
-    "done": "Tayyor! Rasm e'loningizda va Telegram kanalda ko'rinadi.",
     "done_alt": "E'lon rasmi",
     "error_generic": "Rasm hozir chiqmadi. Birozdan keyin qayta urinib ko'ring.",
-    "error_moderation": "Rasm talabga javob bermadi — e'lon rasmsiz qoladi.",
+    "error_moderation": "Rasm talabga javob bermadi. Boshqasini yarating yoki rasmsiz joylang.",
     "error_user_limit": "Bugun rasm yaratish chegarasiga yetdingiz. Ertaga yana urinib ko'ring.",
     "error_daily_limit": "Bugun rasm yaratish band. Ertaga urinib ko'ring.",
-    "error_too_many": "Bu e'lon uchun rasm 3 marta yaratildi — boshqa urinib bo'lmaydi.",
+    "error_too_many": "Bu rasmni 3 marta yaratib bo'lmadi. «Rasmsiz davom etish»ni bosing yoki keyinroq urinib ko'ring.",
     "retry": "Qayta urinish",
-    "close": "Yopish"
+    "create": "Rasm yaratish",
+    "ready": "E'lon shu rasm bilan joylanadi.",
+    "again": "Boshqa rasm",
+    "remove": "Rasmsiz",
+    "keep": "Avvalgi rasm qolsin",
+    "skip": "Rasmsiz davom etish",
+    "error_provider_unavailable": "Rasm xizmati hozir ishlamayapti. E'lonni rasmsiz joylashingiz mumkin."
   },
   "guided": {
     "hello": "O'zingizga mos ishni yoki ishchini toping",

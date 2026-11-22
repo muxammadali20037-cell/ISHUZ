@@ -1,5 +1,6 @@
 "use client";
 
+import { ListingImageDraft } from "@/features/listing-image/components/listing-image-draft";
 import { useEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronLeft, RotateCcw, Sparkles } from "lucide-react";
@@ -44,7 +45,10 @@ export function VacancyGuide({
   onPublish,
   onClassic,
   initialSentence = "",
+  imageEnabled = false,
 }: {
+  /** AI e'lon rasmi sozlangan — oxirgi ekranda joylashdan oldin rasm (kirgan foydalanuvchiga) */
+  imageEnabled?: boolean;
   /** asosiy chatda yozilgan birinchi gap ("Oshpaz kerak, Yunusobod") — darhol shu bilan boshlanadi */
   initialSentence?: string;
   regions: Region[];
@@ -459,6 +463,10 @@ export function VacancyGuide({
           {row("phone", t("easy.vacancy.phone"), <span className="tabular">{formatPhone(normalizePhone(draft.phone))}</span>)}
           {row("description", t("easy.vacancy.description"), <span className="whitespace-pre-line font-normal">{draft.description}</span>)}
         </div>
+        {/* e'lon rasmi — joylashdan OLDIN (ega, 2026-11-22: "ma'qul kelsa joylash kerak") */}
+        {imageEnabled && viewer.loggedIn ? (
+          <ListingImageDraft entity="vacancy" professionId={draft.profession?.id ?? null} title={draft.title.trim() || professionName} value={draft.image ?? null} onChange={(image) => update({ image })} />
+        ) : null}
         {/* 2026-11-18 (ega): raqam majburiy va hammaga ko'rinadi */}
         <PhonePublicNote kind="vacancy" />
         <FieldError message={error} />

@@ -6,6 +6,7 @@ import { Shell } from "@/components/shared/shell";
 import { cookies } from "next/headers";
 import { StartChat } from "@/features/start-chat/components/start-chat";
 import { INTRO_COOKIE } from "@/features/start-chat/intro";
+import { listingImageEnabled } from "@/features/listing-image/server";
 import { chatQuery } from "@/features/start-chat/query";
 import { getMode } from "@/features/mode/server";
 import { SiteFooter } from "@/features/landing/market/site-footer";
@@ -38,6 +39,7 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         initialQuery={chatQuery(params.q)}
         post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
         introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
+        imageEnabled={listingImageEnabled()}
       />
     </Shell>
   );

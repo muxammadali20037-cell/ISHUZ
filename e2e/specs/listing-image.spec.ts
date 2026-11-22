@@ -109,3 +109,20 @@ test("chat natijasida — karta rasm bilan (belgisiz); rasmsiz e'lon — avvalgi
   // boshqa (rasmsiz) kartalarda rasm joyi yo'q
   await expect(page.locator("[data-ai-card='job']").filter({ hasNotText: TITLE }).locator("[data-ai-card-image]")).toHaveCount(0);
 });
+
+test("joylashdan oldingi qoralama: mehmon — 401; begona e'lon id'si qoralama sifatida — 403 (rasm qo'yib bo'lmaydi)", async ({ page, context }) => {
+  const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+  const [v] = await sql<{ id: string }>(
+    `insert into public.vacancies (owner_profile_id, title, region_id, description, status, salary_negotiable, published_at, expires_at)
+     values ($1, $2, $3, 'Ofisga farrosh kerak, ish vaqti 8:00 dan 17:00 gacha', 'active', true, now(), now() + interval '10 days')
+     returning id`,
+    [USERS.employer, TITLE, r!.id],
+  );
+  await asGuest(context);
+  const guest = await page.request.post("/api/listing-image", { data: { entity: "vacancy", draft: v!.id, title: "Farrosh" } });
+  expect(guest.status()).toBe(401);
+  await loginAs(context, USERS.workerA);
+  const res = await page.request.post("/api/listing-image", { data: { entity: "vacancy", draft: v!.id, title: "Farrosh" } });
+  expect(res.status()).toBe(403);
+  expect(await sql("select 1 from public.listing_images where entity_id = $1", [v!.id])).toHaveLength(0);
+});

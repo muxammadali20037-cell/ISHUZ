@@ -42,7 +42,7 @@ import {
 } from "./inputs";
 import { PhonePublicNote } from "./phone-public-note";
 import { PublishResult } from "./publish-result";
-import { ListingImageAsk } from "@/features/listing-image/components/listing-image-ask";
+import { ListingImageDraft } from "@/features/listing-image/components/listing-image-draft";
 import { ModerationOutcome } from "./moderation-outcome";
 import { AiReadyBanner } from "./ai-quick-fill";
 import { ListingChat } from "./listing-chat";
@@ -321,6 +321,8 @@ export function WorkerPost({
           source: draft.source ?? "manual",
           workerId: listingId,
           newListing,
+          // tekshirish sahifasida tanlangan AI rasm (ega, 2026-11-22: "ma'qul kelsa joylash")
+          imageDraft: imageEnabled ? (draft.image?.draft ?? null) : null,
         }),
       );
       if (!res.ok || !res.data) {
@@ -412,9 +414,7 @@ export function WorkerPost({
               href: `/listing/${result.workerId}`,
             },
           ]}
-        >
-          {imageEnabled ? <ListingImageAsk entity="worker" id={result.workerId} preview={`/api/promo/worker/${result.workerId}`} /> : null}
-        </PublishResult>
+        />
       );
     }
     return (
@@ -815,18 +815,23 @@ export function WorkerPost({
           {draft.source === "ai" ? (
             <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} />
           ) : null}
-          <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-            <ProfessionImage
-              url={imageUrl}
-              icon={category?.icon}
-              name={professionName}
-              label={t("easy.image.label")}
-              className="aspect-[4/3] w-32 shrink-0 sm:w-40"
-            />
-            <p className="text-base text-muted-foreground">
-              {t("easy.wizard.image_note")}
-            </p>
-          </div>
+          {imageEnabled && viewer.loggedIn ? (
+            // e'lon rasmi — joylashdan OLDIN (ega, 2026-11-22: "ma'qul kelsa joylash kerak")
+            <ListingImageDraft entity="worker" professionId={draft.profession?.id ?? null} title={professionName} value={draft.image ?? null} onChange={(image) => update({ image })} />
+          ) : (
+            <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
+              <ProfessionImage
+                url={imageUrl}
+                icon={category?.icon}
+                name={professionName}
+                label={t("easy.image.label")}
+                className="aspect-[4/3] w-32 shrink-0 sm:w-40"
+              />
+              <p className="text-base text-muted-foreground">
+                {t("easy.wizard.image_note")}
+              </p>
+            </div>
+          )}
           <div className="rounded-2xl border border-border bg-card px-4">
             <ReviewRow
               label={t("easy.wizard.steps.profession")}

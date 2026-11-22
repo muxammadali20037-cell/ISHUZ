@@ -1,3 +1,4 @@
+import type { DraftImage } from "@/features/listing-image/components/listing-image-draft";
 import type { PickedProfession } from "@/features/professions/types";
 import type { Enums } from "@/types/database.types";
 
@@ -70,6 +71,8 @@ export interface WorkerDraft {
   showPhone: boolean;
   /** "ai" — AI bilan tez tayyorlangan (statistika uchun) */
   source?: "manual" | "ai";
+  /** tekshirish sahifasida yaratilgan AI rasm (joylashda e'longa biriktiriladi) */
+  image?: DraftImage | null;
 }
 
 export interface VacancyDraft {
@@ -98,6 +101,8 @@ export interface VacancyDraft {
   /** haqiqiy ish joyi surati (vacancy-photos bucket yo'li), ixtiyoriy */
   photoPath?: string | null;
   source?: "manual" | "ai";
+  /** tekshirish sahifasida yaratilgan AI rasm (joylashda e'longa biriktiriladi) */
+  image?: DraftImage | null;
 }
 
 /**

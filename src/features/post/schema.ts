@@ -29,6 +29,8 @@ export const workerListingSchema = z
   showPhone: z.boolean(),
   /** "ai" — AI bilan tez tayyorlangan (statistika uchun) */
   source: z.enum(["manual", "ai"]).optional(),
+  /** tekshirish sahifasida yaratilgan AI rasm qoralamasi (joylanganda e'longa biriktiriladi) */
+  imageDraft: z.uuid().nullable().optional(),
   /**
    * E'londa ko'rsatiladigan raqam — oynada qo'lda yoziladi (0081, ega: "profildagi nomer emas, xohlasa boshqa nomer").
    * 2026-11-18 (ega): majburiy — raqamsiz e'lon joylanmaydi; e'londa hammaga ko'rinadi.
@@ -71,6 +73,8 @@ export const vacancyListingSchema = z
     experienceMonths: z.union([z.literal(0), z.literal(12), z.literal(36)]),
     showPhone: z.boolean(),
     source: z.enum(["manual", "ai"]).optional(),
+    /** tekshirish sahifasida yaratilgan AI rasm qoralamasi (joylanganda e'longa biriktiriladi) */
+    imageDraft: z.uuid().nullable().optional(),
     photoPath: z.string().regex(/^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/).nullable().optional(),
   })
   .refine(oneProfession, { path: ["professionNodeId"] })

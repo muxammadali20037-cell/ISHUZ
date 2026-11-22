@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, ChevronDown, ClipboardList, Info, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { AiPromptBox } from "@/features/find/components/ai-chat";
 import { AiJobCard, AiWorkerCard, type CardImage } from "@/features/find/components/ai-cards";
+import { ListingImageDraft, type DraftImage } from "@/features/listing-image/components/listing-image-draft";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import type { QuickList } from "@/features/find/quick-types";
 import { POST_EXPERIENCES } from "@/features/find/quick-post-types";
@@ -42,6 +43,7 @@ export function StartChat({
   initialQuery = "",
   post = null,
   introSeen = false,
+  imageEnabled = false,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
@@ -55,6 +57,8 @@ export function StartChat({
   post?: "resume" | "new" | null;
   /** video-tushuntirish ko'rilgan/yopilgan (cookie) — yig'ilgan holda ("Qanday ishlaydi?") */
   introSeen?: boolean;
+  /** AI e'lon rasmi sozlangan (OpenAI kaliti) — e'lon kartasida joylashdan oldin "Rasm yaratish" */
+  imageEnabled?: boolean;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
@@ -82,27 +86,29 @@ export function StartChat({
   const empty = !chat.msgs.length;
 
   return (
-    <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" data-start-chat data-chat-mode={mode ?? "guest"}>
-      {empty ? (
-        // bo'sh holat: video-tushuntirish, sarlavha va ikki katta tugma (ketma-ketlik shu yerdan boshlanadi)
-        <div className="flex flex-1 flex-col gap-4 py-4" data-guided-empty>
-          <ChatIntro seen={introSeen} />
-          <h1 className="mx-auto mt-1 max-w-xs text-center text-2xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:max-w-md sm:text-3xl">{t("easy.guided.hello")}</h1>
-          <RoleStart chat={chat} onPick={chat.start} />
-        </div>
-      ) : (
-        <div className="flex-1 py-6">
-          {/* suhbat paytida sarlavha ko'rinmaydi (joy suhbatga), lekin sahifaning nomi sifatida qoladi */}
-          <h1 className="sr-only">{t("easy.guided.hello")}</h1>
-          <Thread chat={chat} />
-        </div>
-      )}
+    <ImageEnabled.Provider value={imageEnabled}>
+      <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" data-start-chat data-chat-mode={mode ?? "guest"}>
+        {empty ? (
+          // bo'sh holat: video-tushuntirish, sarlavha va ikki katta tugma (ketma-ketlik shu yerdan boshlanadi)
+          <div className="flex flex-1 flex-col gap-4 py-4" data-guided-empty>
+            <ChatIntro seen={introSeen} />
+            <h1 className="mx-auto mt-1 max-w-xs text-center text-2xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:max-w-md sm:text-3xl">{t("easy.guided.hello")}</h1>
+            <RoleStart chat={chat} onPick={chat.start} />
+          </div>
+        ) : (
+          <div className="flex-1 py-6">
+            {/* suhbat paytida sarlavha ko'rinmaydi (joy suhbatga), lekin sahifaning nomi sifatida qoladi */}
+            <h1 className="sr-only">{t("easy.guided.hello")}</h1>
+            <Thread chat={chat} />
+          </div>
+        )}
 
-      {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
-      <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2" data-tour="composer">
-        <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} />
+        {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
+        <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2" data-tour="composer">
+          <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} />
+        </div>
       </div>
-    </div>
+    </ImageEnabled.Provider>
   );
 }
 
@@ -553,9 +559,15 @@ function maskPhone(formatted: string): string {
 }
 
 /** "E'loningiz shunday ko'rinadi" — joylanadigan matnning o'zi; "Joylash" va uning ostida rozilik yozuvi */
+/** AI e'lon rasmi sozlanganmi (StartChat → e'lon kartasi) */
+const ImageEnabled = createContext(false);
+
 function PostPreviewCard({ part, chat, open }: { part: Extract<AiPart, { kind: "post-preview" }>; chat: GuidedChat; open: boolean }) {
   const { t } = useT();
   const p = part.preview;
+  const imageEnabled = useContext(ImageEnabled);
+  /** joylashdan oldin yaratilgan AI rasm (ega, 2026-11-22: "ma'qul kelsa joylash") */
+  const [image, setImage] = useState<DraftImage | null>(null);
   return (
     <Ai kind="post-preview">
       <Say>{t("easy.guided.post_preview")}</Say>
@@ -573,9 +585,12 @@ function PostPreviewCard({ part, chat, open }: { part: Extract<AiPart, { kind: "
           {maskPhone(formatPhone(p.answers.phone))}
         </p>
       </article>
+      {open && imageEnabled && p.loggedIn ? (
+        <ListingImageDraft entity="worker" professionId={p.answers.professionId} title={p.profession} value={image} onChange={setImage} />
+      ) : null}
       {open ? (
         <div className="space-y-2">
-          <Button type="button" size="lg" fullWidth className="text-base" disabled={chat.pending} onClick={() => chat.publishPost(p.answers, p.loggedIn)} data-post-publish>
+          <Button type="button" size="lg" fullWidth className="text-base" disabled={chat.pending} onClick={() => chat.publishPost({ ...p.answers, imageDraft: image?.draft ?? null }, p.loggedIn)} data-post-publish>
             {t("easy.guided.post_publish")}
           </Button>
           {/* rozilik — "Joylash" tugmasi ostida (ega, master prompt; to'lov haqida so'z yo'q — 2026-11-21) */}
