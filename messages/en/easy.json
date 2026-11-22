@@ -1600,21 +1600,24 @@
     "find_masters_link": "Handymen (plumber, electrician…)"
   },
   "listing_image": {
-    "ask_title": "Create a picture for your listing?",
-    "ask_desc": "AI reads your listing and prepares a matching realistic picture — it shows in the listing and in the Telegram channel. Free.",
-    "yes": "Yes, create it",
-    "no": "No",
+    "ask_title": "Listing image",
+    "ask_desc": "AI draws a realistic picture for your listing. If you like it, the listing is posted with it; if not, make another or post without one.",
     "busy": "Preparing the picture…",
     "busy_note": "20–60 seconds. Don't close the page.",
-    "done": "Done! The picture shows in your listing and in the Telegram channel.",
     "done_alt": "Listing picture",
     "error_generic": "The picture didn't work out right now. Try again a bit later.",
-    "error_moderation": "The picture didn't pass the check — the listing stays without it.",
+    "error_moderation": "The image didn't pass the check. Make another or post without an image.",
     "error_user_limit": "You've reached today's picture limit. Try again tomorrow.",
     "error_daily_limit": "Picture creation is busy today. Try tomorrow.",
-    "error_too_many": "A picture was created 3 times for this listing — no more tries.",
+    "error_too_many": "This image failed 3 times. Continue without one or try later.",
     "retry": "Try again",
-    "close": "Close"
+    "create": "Create image",
+    "ready": "Your listing will be posted with this image.",
+    "again": "Another image",
+    "remove": "No image",
+    "keep": "Keep the previous one",
+    "skip": "Continue without an image",
+    "error_provider_unavailable": "The image service isn't working right now. You can post the listing without an image."
   },
   "guided": {
     "hello": "Find the right job or worker",

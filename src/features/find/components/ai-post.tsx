@@ -21,7 +21,7 @@ import { PublishResult } from "@/features/post/components/publish-result";
 import { ModerationOutcome } from "@/features/post/components/moderation-outcome";
 import { AlertToggle } from "@/features/alerts/components/alert-toggle";
 import { quickPostPrepare, quickPostPreview, quickPostPublish } from "../quick-post-actions";
-import { ListingImageAsk } from "@/features/listing-image/components/listing-image-ask";
+import { ListingImageDraft, type DraftImage } from "@/features/listing-image/components/listing-image-draft";
 import { POST_EXPERIENCES, type PostAnswers, type PostChoice, type PostChoiceGroup, type PostExperience, type PostForm, type PostOutcome, type PostPreview } from "../quick-post-types";
 
 /**
@@ -120,6 +120,8 @@ export function AiPostClient({ resume, initialText = "", imageEnabled = false }:
   const [busy, setBusy] = useState(false);
   /** "Joylash"dan keyin: tekshirilmoqda / natija */
   const [publishing, setPublishing] = useState(false);
+  /** tekshirish oynasida yaratilgan AI rasm (ega, 2026-11-22: "joylashdan oldin, ma'qul kelsa joylash") */
+  const [image, setImage] = useState<DraftImage | null>(null);
   const [outcome, setOutcome] = useState<PostOutcome | null>(null);
   const seq = useRef(0);
   const run = useRef(0);
@@ -236,7 +238,7 @@ export function AiPostClient({ resume, initialText = "", imageEnabled = false }:
     }
     setOpen(false);
     setPublishing(true);
-    callAction(() => quickPostPublish(preview.answers)).then((res) => {
+    callAction(() => quickPostPublish({ ...preview.answers, imageDraft: imageEnabled ? (image?.draft ?? null) : null })).then((res) => {
       setPublishing(false);
       if (!res.ok || !res.data) {
         push({ id: ++seq.current, kind: "error", text: errorText(res.ok ? "generic" : res.error) });
@@ -256,7 +258,6 @@ export function AiPostClient({ resume, initialText = "", imageEnabled = false }:
     return (
       <Outcome
         outcome={outcome}
-        imageEnabled={imageEnabled}
         onEdit={() => {
           setOutcome(null);
           goScreen("form");
@@ -374,7 +375,13 @@ export function AiPostClient({ resume, initialText = "", imageEnabled = false }:
               errorText={errorText}
             />
           ) : flow.preview ? (
-            <PreviewSheet preview={flow.preview} onEdit={() => goScreen("form")} onPublish={publish} busy={publishing} />
+            <PreviewSheet
+              preview={flow.preview}
+              onEdit={() => goScreen("form")}
+              onPublish={publish}
+              busy={publishing}
+              aiImage={imageEnabled && flow.preview.loggedIn ? { value: image, onChange: setImage } : null}
+            />
           ) : null
         ) : null}
       </Dialog>
@@ -723,7 +730,20 @@ function FormSheet({
 }
 
 /** "Sizning e'loningiz shunday ko'rinadi" — joylanadigan matnning o'zi */
-function PreviewSheet({ preview, onEdit, onPublish, busy }: { preview: PostPreview; onEdit: () => void; onPublish: () => void; busy: boolean }) {
+function PreviewSheet({
+  preview,
+  onEdit,
+  onPublish,
+  busy,
+  aiImage,
+}: {
+  preview: PostPreview;
+  onEdit: () => void;
+  onPublish: () => void;
+  busy: boolean;
+  /** AI e'lon rasmi — joylashdan oldin (kirgan foydalanuvchiga, sozlangan bo'lsa) */
+  aiImage: { value: DraftImage | null; onChange: (v: DraftImage | null) => void } | null;
+}) {
   const { t } = useT();
   const [image, setImage] = useState<string | null>(null);
   const id = preview.answers.professionId;
@@ -780,12 +800,17 @@ function PreviewSheet({ preview, onEdit, onPublish, busy }: { preview: PostPrevi
           <Phone className="size-4 shrink-0" aria-hidden /> {t(preview.answers.phone2 ? "easy.post_ai.preview_phones" : "easy.post_ai.preview_phone")}
         </p>
       </article>
+      {aiImage ? (
+        <div className="mt-3">
+          <ListingImageDraft entity="worker" professionId={preview.answers.professionId} title={preview.profession} value={aiImage.value} onChange={aiImage.onChange} />
+        </div>
+      ) : null}
     </Sheet>
   );
 }
 
 /** Joylash natijasi — faqat haqiqiy holat */
-function Outcome({ outcome, onEdit, onAgain, imageEnabled }: { outcome: PostOutcome; onEdit: () => void; onAgain: () => void; imageEnabled: boolean }) {
+function Outcome({ outcome, onEdit, onAgain }: { outcome: PostOutcome; onEdit: () => void; onAgain: () => void }) {
   const { t } = useT();
   const state = outcome.info.state;
   const header = (
@@ -810,7 +835,6 @@ function Outcome({ outcome, onEdit, onAgain, imageEnabled }: { outcome: PostOutc
           { label: t("easy.post_ai.done_matches"), href: outcome.matchesHref },
         ]}
       >
-        {imageEnabled ? <ListingImageAsk entity="worker" id={outcome.workerId} preview={`/api/promo/worker/${outcome.workerId}`} /> : null}
         <div className="mt-6 space-y-3" data-ai-post-notify>
           <p className="flex items-start gap-2 text-base">
             <BadgeCheck className="mt-0.5 size-5 shrink-0 text-success" aria-hidden /> {t("easy.post_ai.done_notify")}

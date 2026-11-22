@@ -9,9 +9,13 @@ import { USERS, asMode, loginAs, sql } from "../support";
 
 test.beforeEach(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  // e'lon rasmlari (qoralamalar ham) va ularning kunlik hisoblagichi — har yugurish toza
+  await sql("delete from public.listing_images where owner_profile_id = $1", [USERS.employer]);
+  await sql("delete from public.rate_limits where key like 'listing_images:%'");
 });
 test.afterAll(async () => {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  await sql("delete from public.listing_images where owner_profile_id = $1", [USERS.employer]);
 });
 
 const h1 = (page: Page) => page.getByRole("heading", { level: 1 });
@@ -75,14 +79,26 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await expect(done).toContainText("Oshpaz");
   await expect(done).toContainText("Chilonzor");
   await expect(done).toContainText("Dilnoza");
+  // e'lon rasmi — JOYLASHDAN OLDIN (ega, 2026-11-22: "ma'qul kelsa joylash kerak"): yaratish → ko'rish → boshqasi → joylash
+  // (stendda soxta OpenAI)
+  const image = page.locator("[data-listing-image]");
+  await expect(image).toHaveAttribute("data-listing-image", "ask");
+  await image.locator("[data-listing-image-create]").click();
+  await expect(image).toHaveAttribute("data-listing-image", "ready", { timeout: 30_000 });
+  const first = await image.locator("[data-listing-image-preview]").getAttribute("src");
+  await image.locator("[data-listing-image-again]").click();
+  await expect(image).toHaveAttribute("data-listing-image", "ready", { timeout: 30_000 });
+  const chosen = await image.locator("[data-listing-image-preview]").getAttribute("src");
+  expect(chosen).not.toBe(first);
   await page.locator("[data-guide-publish]").click();
   await expect(h1(page)).toHaveText(/E'loningiz joylandi|joylandi/i, { timeout: 20_000 });
-  // oxirida: "E'lon rasmi yaratilsinmi?" (ega, 2026-11-20) — "Ha" → AI rasm (stendda soxta OpenAI) → tayyor
-  const ask = page.locator("[data-listing-image='ask']");
-  await expect(ask).toContainText("E'lon rasmi yaratilsinmi?");
-  await ask.locator("[data-listing-image-yes]").click();
-  await expect(page.locator("[data-listing-image='done']")).toContainText("Tayyor!", { timeout: 30_000 });
-  await expect(page.locator("[data-listing-image='done'] img")).toBeVisible();
+  // joylangandan keyin savol yo'q — tanlangan rasm e'lonning o'zida
+  await expect(page.locator("[data-listing-image]")).toHaveCount(0);
+  const [img] = await sql<{ image_url: string; status: string }>(
+    "select li.image_url, li.status from public.listing_images li join public.vacancies v on v.id = li.entity_id where li.entity = 'vacancy' and v.owner_profile_id = $1",
+    [USERS.employer],
+  );
+  expect(img).toEqual({ image_url: chosen, status: "ready" });
 
   const [v] = await sql<{ title: string; district: string; salary_from: number; salary_type: string; schedule: string; experience_min_months: number; description: string }>(
     `select v.title, d.name_uz as district, v.salary_from, v.salary_type::text, v.schedule::text, v.experience_min_months, v.description

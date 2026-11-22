@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · E'lon rasmi — joylashdan oldin (`feat/image-before-publish`)
+
+Ega: "nimaga rasm yaratilmadi? rasmni e'lon joylashdan oldin yaratish kerak, ma'qul kelsa joylash kerak". Sabab: OpenAI
+hisobida balans yo'q edi (429 credit_balance_exhausted) — ega to'ldiradi.
+
+- **Rasm endi tekshirish sahifasida**, «Joylash»dan oldin: «Rasm yaratish» → rasm shu yerda ko'rinadi → ma'qul bo'lsa —
+  e'lon shu rasm bilan joylanadi; «Boshqa rasm» — yangisi; «Rasmsiz» — olib tashlanadi. Vakansiya (oddiy forma va AI bilan
+  oson joylash), ishchi e'loni (forma, /ai/post, chatdagi e'lon kartasi) — hammasida. Joylangandan keyingi savol olib
+  tashlandi. Tahrirda ham shu yo'l (yangi rasm eskisining o'rnini oladi).
+- Rasm qoralama sifatida yaratiladi va joylanganda e'longa biriktiriladi; begona e'lon id'si qoralama bo'la olmaydi.
+- **OpenAI tomonidagi xato** (balans tugagan, chegara, xizmat ishlamayapti) urinish hisoblanmaydi va «Rasm xizmati hozir
+  ishlamayapti — e'lonni rasmsiz joylashingiz mumkin» deb aytiladi (avval e'lon «3 marta urinildi» deb qulflanib qolardi).
+
 ## 2026-11-22 · Chatdagi kartalar rasm bilan (`feat/card-images`)
 
 Ega: "rasm yaratib bersin chiroyli qilib e'lonlar uchun, ilovada ham rasm bilan ko'rinsin". Tanlov: yangi e'londa rasm —

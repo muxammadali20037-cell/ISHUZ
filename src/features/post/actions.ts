@@ -18,6 +18,7 @@ import { toListingStateInfo, type ListingStateInfo } from "./types";
 import { keptWorkerFields, type ExistingWorker } from "./keep";
 import { vacancyListingSchema, workerListingSchema } from "./schema";
 import { finalizeVacancyPhoto } from "./photo-finalize";
+import { attachDraftImage } from "@/features/listing-image/server";
 
 type Entity = "vacancy" | "worker";
 
@@ -102,6 +103,8 @@ export async function publishWorkerListing(input: unknown): Promise<ActionResult
   });
   if (error || !data) return { ok: false, error: errorCode(error) };
   const res = data as { worker_id: string; state: string };
+  // tekshirish sahifasida tanlangan AI rasm — e'longa (kanal posti undan keyin, rasm bilan chiqadi)
+  if (v.imageDraft) await attachDraftImage("worker", v.imageDraft, res.worker_id, session.userId);
   const info = await settle("worker", res.worker_id, res.state);
   if (await blockedNow(session.userId)) {
     revalidatePath("/", "layout");
@@ -187,6 +190,8 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
   });
   if (error || !data) return { ok: false, error: errorCode(error) };
   const res = data as { vacancy_id: string; slug: string; state: string };
+  // tekshirish sahifasida tanlangan AI rasm — e'longa (kanal posti undan keyin, rasm bilan chiqadi)
+  if (v.imageDraft) await attachDraftImage("vacancy", v.imageDraft, res.vacancy_id, session.userId);
   // 0083: rozilik matni — "raqamim e'londa va Telegram kanalda ko'rinsin"; kanal posti raqamni faqat shu vaqt yozilgan
   // bo'lsa ko'rsatadi (eski roziliklarda kanal yo'q edi). Egasining o'z RLS huquqi; 0083 qo'llanmagan bo'lsa — xato
   // e'tiborsiz, e'lon kanalga raqamsiz chiqadi. Kanalga yuborish (after → tick) bundan keyin.

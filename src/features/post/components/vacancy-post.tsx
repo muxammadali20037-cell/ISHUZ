@@ -22,7 +22,7 @@ import { vacancyDraftRules } from "../draft-rules";
 import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
 import { PublishResult } from "./publish-result";
-import { ListingImageAsk } from "@/features/listing-image/components/listing-image-ask";
+import { ListingImageDraft } from "@/features/listing-image/components/listing-image-draft";
 import { ModerationOutcome } from "./moderation-outcome";
 import { PhotoUpload } from "./photo-upload";
 import { AiReadyBanner } from "./ai-quick-fill";
@@ -124,7 +124,7 @@ export function VacancyPost({
     userId: viewer.userId,
     makeInitial: () => ({ ...emptyDraft(), ...prefill }),
     rules,
-    compareIgnore: ["step", "clientRef"],
+    compareIgnore: ["step", "clientRef", "image"],
   });
   const { step, go } = useStep(TOTAL, draft.step);
   // "AI bilan oson joylash" — savollar bittadan (?ai=1); "Oddiy forma" bosilsa — shu qoralama bilan oddiy qadamlar
@@ -263,6 +263,8 @@ export function VacancyPost({
         showPhone: true,
         photoPath: draft.photoPath ?? null,
         source: draft.source ?? "manual",
+        // tekshirish sahifasida tanlangan AI rasm (ega, 2026-11-22: "ma'qul kelsa joylash")
+        imageDraft: imageEnabled ? (draft.image?.draft ?? null) : null,
       }));
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
@@ -344,9 +346,7 @@ export function VacancyPost({
             // ish beruvchining birinchi savoli: "ish izlovchilarga qanday ko'rinyapti?" — holat, qidiruvdagi o'rni, karta, to'liq ko'rinish
             { label: t("easy.vacancy.done_seeker_view"), href: `/employer/vacancies/${result.vacancyId}#korinish` },
           ]}
-        >
-          {imageEnabled ? <ListingImageAsk entity="vacancy" id={result.vacancyId} preview={`/api/promo/vacancy/${encodeURIComponent(result.slug)}?f=post`} /> : null}
-        </PublishResult>
+        />
       );
     }
     if (result.state === "review") {
@@ -387,6 +387,7 @@ export function VacancyPost({
         busy={!ready}
         pending={pending}
         error={errors.form ?? null}
+        imageEnabled={imageEnabled}
         onPublish={() => {
           // savollar majburiy maydonlarni to'ldiradi; baribir xato bo'lsa — oddiy formada o'sha maydon ko'rsatiladi
           if (stepOf(validate(3))) leaveGuide(TOTAL);
@@ -629,13 +630,18 @@ export function VacancyPost({
         <section className="space-y-5">
           <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl">{t("easy.vacancy.review_title")}</h1>
           {draft.source === "ai" ? <AiReadyBanner questions={aiQuestions} onEdit={() => goTo(3)} /> : null}
-          <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
-            <ProfessionImage url={imageUrl} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
-            <div className="min-w-0">
-              <p className="text-xl font-bold leading-snug">{draft.title.trim() || professionName}</p>
-              <p className="mt-1 text-base text-muted-foreground">{t("easy.wizard.image_note")}</p>
+          {imageEnabled && viewer.loggedIn ? (
+            // e'lon rasmi — joylashdan OLDIN (ega, 2026-11-22: "ma'qul kelsa joylash kerak")
+            <ListingImageDraft entity="vacancy" professionId={draft.profession?.id ?? null} title={draft.title.trim() || professionName} value={draft.image ?? null} onChange={(image) => update({ image })} />
+          ) : (
+            <div className="flex items-center gap-4 rounded-2xl border border-border bg-card p-4">
+              <ProfessionImage url={imageUrl} icon={category?.icon} name={professionName} label={t("easy.image.label")} className="aspect-[4/3] w-32 shrink-0 sm:w-40" />
+              <div className="min-w-0">
+                <p className="text-xl font-bold leading-snug">{draft.title.trim() || professionName}</p>
+                <p className="mt-1 text-base text-muted-foreground">{t("easy.wizard.image_note")}</p>
+              </div>
             </div>
-          </div>
+          )}
           <div className="rounded-2xl border border-border bg-card px-4">
             <ReviewRow label={t("easy.wizard.steps.specialist")} onChange={() => goTo(1)} changeLabel={t("easy.wizard.change")}>
               {/* asosiysi — kasb nomi; soha yo'li ostida kichik */}
