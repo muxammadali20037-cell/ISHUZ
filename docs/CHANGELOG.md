@@ -1,5 +1,13 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Kanal postida heshteglar yo'q (`fix/channel-no-hashtags`)
+
+Ega (kanaldagi postni belgilab): "shu belgilagan narsani olib tashla"; "ishchi ish qidiryapti, ish beruvchi ishchi
+qidiryapti deb kelsin".
+
+- Post matni boshida endi oddiy yozuv: "💼 Ish beruvchi ishchi qidiryapti" (vakansiya) / "👤 Ishchi ish qidiryapti"
+  (ishchi). Heshteglar (#kasb #tuman) va "VAKANSIYA · / ISHCHI ·" yo'q. Faqat yangi postlarga; eskilari o'zgarmaydi.
+
 ## 2026-11-22 · Korporativ uslub, chat ketma-ketligi, kanalda ishchi raqamisiz (`feat/corporate-chat`)
 
 Ega: "har bir oyna jiddiy, korporativ bo'lsin (oq + to'q ko'k)"; "avval 2 ta variant — ish qidiryapman / ishchi qidiryapman,

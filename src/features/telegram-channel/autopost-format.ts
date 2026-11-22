@@ -1,8 +1,9 @@
 import { formatSalaryWithPeriod } from "@/lib/format";
 
 /**
- * Kanalga avtomatik e'lon matni (sof funksiyalar): vakansiya — "VAKANSIYA · ishchi kerak", ishchi e'loni — "ISHCHI · ish
- * qidiryapti" (ega, 2026-11-14: "ish beruvchilar kanaliga — ishchi, ishchilarga — ish"). Rasm (/api/promo/…) — ish nomi, maosh,
+ * Kanalga avtomatik e'lon matni (sof funksiyalar): vakansiya va ishchi e'loni (ega, 2026-11-14: "ish beruvchilar kanaliga —
+ * ishchi, ishchilarga — ish"). Matn boshida — oddiy yozuv, heshteglarsiz (ega, 2026-11-22): "💼 Ish beruvchi ishchi
+ * qidiryapti" / "👤 Ishchi ish qidiryapti". Rasm (/api/promo/…) — ish nomi, maosh,
  * joylashuv, kompaniya; vakansiya ko'k, ishchi yashil, tepasida turi yozilgan (ega, 2026-11-18: "ishchimi u ish beruvchimi
  * bilib bo'lmadi").
  *
@@ -93,19 +94,6 @@ export function sanitizeText(s: string | null | undefined, max: number, maxLines
   return out.length > max ? `${out.slice(0, max - 1).trimEnd()}…` : out;
 }
 
-/** "Sotuvchi-kassir" → "#sotuvchi_kassir"; harfsiz — null. Telegram heshtegi: harf, raqam, _ */
-export function hashtag(s: string | null | undefined): string | null {
-  if (!s) return null;
-  const tag = s
-    .toLowerCase()
-    .replace(/[ʻʼ'’`‘]/g, "")
-    .replace(/[^\p{L}\p{N}]+/gu, "_")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 30)
-    .replace(/_+$/, "");
-  return tag && /\p{L}/u.test(tag) ? `#${tag}` : null;
-}
-
 function salaryLabels(t: T) {
   return { negotiable: t("bot.channel.negotiable"), from: t("common.labels.salary_from"), to: t("common.labels.salary_to") };
 }
@@ -132,12 +120,12 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn
     salaryLabels(t),
     (type) => t(`enums.salary_type_suffix.${type}`),
   );
-  const tags = [hashtag(d.profession ?? d.title), hashtag(d.place?.split(",")[0])].filter(Boolean).join(" ");
   const title = sanitizeLine(d.title) || d.profession || "";
   const months = d.experienceMonths;
   const step = months == null ? null : [60, 36, 24, 12, 6].find((m) => months >= m) ?? (months > 0 ? 6 : 0);
+  // ega (2026-11-22): boshida heshteglarsiz oddiy yozuv — "Ish beruvchi ishchi qidiryapti"
   const head = [
-    `${escapeHtml(t("bot.channel.job_tag"))}${tags ? ` · ${escapeHtml(tags)}` : ""}`,
+    escapeHtml(t("bot.channel.job_tag")),
     "",
     `<b>${escapeHtml(title)}</b>`,
     d.company ? `🏢 ${escapeHtml(sanitizeLine(d.company, 80))}` : null,
@@ -164,10 +152,10 @@ export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn =
   const salary = d.salary
     ? formatSalaryWithPeriod({ from: d.salary, to: null, type: d.salaryType, negotiable: false }, "uz", salaryLabels(t), (type) => t(`enums.salary_type_suffix.${type}`))
     : t("bot.channel.negotiable");
-  const tags = [hashtag(d.profession), hashtag(d.place?.split(",")[0])].filter(Boolean).join(" ");
   const headline = sanitizeLine(d.headline, 100);
+  // ega (2026-11-22): boshida heshteglarsiz oddiy yozuv — "Ishchi ish qidiryapti"
   const lines = [
-    `${escapeHtml(t("bot.channel.worker_tag"))}${tags ? ` · ${escapeHtml(tags)}` : ""}`,
+    escapeHtml(t("bot.channel.worker_tag")),
     "",
     `<b>${escapeHtml(sanitizeLine(d.profession, 80))}</b>`,
     headline && headline.toLowerCase() !== d.profession.toLowerCase() ? `<i>${escapeHtml(headline)}</i>` : null,

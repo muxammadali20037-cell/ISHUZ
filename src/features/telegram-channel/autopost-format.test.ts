@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { makeT } from "@/lib/i18n/translate";
-import { dialable, hashtag, sanitizeLine, sanitizeText, vacancyPost, workerPost } from "./autopost-format";
+import { dialable, sanitizeLine, sanitizeText, vacancyPost, workerPost } from "./autopost-format";
 
 const t = makeT("uz");
 const BASE = "https://ishuz.vercel.app";
@@ -13,15 +13,6 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(sanitizeLine("a".repeat(200), 20)).toHaveLength(20);
   });
 
-  it("heshteg: harflar va pastki chiziq", () => {
-    expect(hashtag("Sotuvchi-kassir")).toBe("#sotuvchi_kassir");
-    expect(hashtag("Toshkent shahri")).toBe("#toshkent_shahri");
-    expect(hashtag("Ta'mirlovchi")).toBe("#tamirlovchi");
-    expect(hashtag("Повар")).toBe("#повар");
-    expect(hashtag("123")).toBeNull();
-    expect(hashtag(null)).toBeNull();
-  });
-
   it("ko'p qatorli tavsif: qatorlar saqlanadi, telefon/havola olib tashlanadi, bo'sh qatorlar va ortiqchasi tashlanadi", () => {
     expect(sanitizeText("Ish 9:00–18:00\n\nTel: +998 90 123 45 67\nTushlik bepul\nt.me/xyz", 200)).toBe("Ish 9:00–18:00\nTel:\nTushlik bepul");
     expect(sanitizeText("a\nb\nc", 200, 2)).toBe("a\nb");
@@ -29,7 +20,7 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(sanitizeText(null, 100)).toBe("");
   });
 
-  it("vakansiya: VAKANSIYA belgisi, maosh davri bilan, tugma — vakansiya sahifasi; rozilik raqami berilmasa — raqamsiz", () => {
+  it("vakansiya: «Ish beruvchi ishchi qidiryapti» (heshtegsiz), maosh davri bilan, tugma — vakansiya sahifasi; rozilik raqami berilmasa — raqamsiz", () => {
     const p = vacancyPost(
       {
         slug: "sotuvchi-abc123",
@@ -47,9 +38,9 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
       t,
       BASE,
     );
-    expect(p.html).toContain("💼 VAKANSIYA · ishchi kerak");
-    expect(p.html).toContain("#sotuvchi #toshkent_shahri");
-    expect(p.html).toContain("<b>Sotuvchi &lt;kassir&gt;</b>");
+    // ega (2026-11-22): boshida oddiy yozuv, heshteglarsiz — "Ish beruvchi ishchi qidiryapti", keyin nomi
+    expect(p.html.startsWith("💼 Ish beruvchi ishchi qidiryapti\n\n<b>Sotuvchi &lt;kassir&gt;</b>\n")).toBe(true);
+    expect(p.html).not.toMatch(/VAKANSIYA|#/);
     expect(p.html).toContain("Baraka &amp; Co");
     expect(p.html).toContain("4 000 000 – 6 000 000 so'm");
     expect(p.html).not.toMatch(/90 123/);
@@ -103,14 +94,15 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     );
   });
 
-  it("ishchi: ISHCHI belgisi, ismsiz, raqamsiz (sarlavhadagi raqam ham olib tashlanadi); tugma — «Bog'lanish», e'londagi raqam ochish", () => {
+  it("ishchi: «Ishchi ish qidiryapti» (heshtegsiz), ismsiz, raqamsiz (sarlavhadagi raqam ham olib tashlanadi); tugma — «Bog'lanish», e'londagi raqam ochish", () => {
     const p = workerPost(
       { id: "0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21", profession: "Oshpaz", headline: "Milliy taomlar, tel 998901234567", place: "Samarqand viloyati", experience: "3–5 yil", salary: 5_000_000, salaryType: "monthly", schedules: ["5/2", "Smenali"] },
       t,
       BASE,
     );
-    expect(p.html).toContain("👤 ISHCHI · ish qidiryapti");
-    expect(p.html).toContain("<b>Oshpaz</b>");
+    // ega (2026-11-22): boshida oddiy yozuv, heshteglarsiz — "Ishchi ish qidiryapti", keyin kasbi
+    expect(p.html.startsWith("👤 Ishchi ish qidiryapti\n\n<b>Oshpaz</b>\n")).toBe(true);
+    expect(p.html).not.toMatch(/ISHCHI|#/);
     expect(p.html).toContain("<i>Milliy taomlar, tel</i>");
     expect(p.html).toContain("Tajriba: 3–5 yil");
     expect(p.html).toContain("Kutilayotgan maosh:");

@@ -118,7 +118,8 @@ describe("kanalga avtomatik e'lon", () => {
     tables.vacancies = [vacancy("a")];
     tables.worker_profiles = [worker("w")];
     expect(await runChannelAutopost()).toMatchObject({ posted: 2, failed: 0 });
-    expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual([expect.stringContaining("VAKANSIYA"), expect.stringContaining("ISHCHI")]);
+    // ega (2026-11-22): boshida oddiy yozuv, heshteglarsiz
+    expect(send.mock.calls.map(([x]) => (x as { html: string }).html.split("\n")[0])).toEqual(["💼 Ish beruvchi ishchi qidiryapti", "👤 Ishchi ish qidiryapti"]);
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main", button: { text: "Ariza qoldirish", url: "https://ishuz.vercel.app/jobs/v-a" } });
     expect(send.mock.calls[0]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post", caption: expect.stringContaining("<b>") });
     expect(send.mock.calls[1]![0]).toMatchObject({ photo: "https://ishuz.vercel.app/api/promo/worker/w" });
