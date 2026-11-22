@@ -82,7 +82,7 @@ test("'Yordamchi': alohida to'liq ekran (menyular yo'q); bugungi ishlar yopiq â€
   // tezkor imkoniyatlar (2026-11-16: erkin suhbat yo'q): ish qidirish, CV, xabarlar â€” hammasi ekranda (yonga surilmaydi);
   // "Masalan, bosing" yo'q
   const quick = page.locator("[data-ai-quick]:visible");
-  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /CV yaratish/, /PRO kuzatuv/]);
+  await expect(quick.locator("[data-quick]")).toHaveText([/Ish qidirish/, /CV yaratish/]);
   for (const box of await quick.locator("[data-quick]").evaluateAll((els) => els.map((e) => e.getBoundingClientRect().right))) {
     expect(box).toBeLessThanOrEqual(390);
   }

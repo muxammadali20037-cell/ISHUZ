@@ -1,5 +1,31 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Moslik olib tashlandi, e'longa izoh, chatdagi tuzatishlar (`feat/no-matching`)
+
+Ega: "moslikni hamma joydan olib tashla, umuman kerak emas — ish beruvchilar uchun ham, ish qidiruvchilar uchun ham";
+"mavjud e'lonlarni ko'rdi — tagida kichkina «+ E'lon joylash»"; "izoh yozish bo'lsin — obed, yo'lkira tekin… chiroyli
+e'lon qilib taxlash kerak, keyin joylash"; "pastdagi yozuv har bitta so'rovda o'zgarsin, jo'natish belgisi qimirlab
+tursin"; skrinshotlardagi xatolar. Moslik bildirishnomalari: "ular ham o'chsin". Migratsiya yo'q.
+
+- **Moslik yo'q**: kartalardagi «Mos»/foiz belgisi, vakansiya va ishchi sahifasidagi moslik bloki, «Sizga mos» bo'limi,
+  arizalardagi «Mosligi bo'yicha» saralash, vakansiya boshqaruvidagi «Mos ishchilar», «Moslik tahlili» sahifasi, «PRO
+  kuzatuv» (mos ish chiqsa — xabar) va uning tugmalari olib tashlandi. Eski havolalar boshi berk emas: `/cabinet/matches` →
+  E'lonlarim, `/jobs/…/moslik` → vakansiyaning o'zi, `/ai-alerts` → Profil. «Telegramni bog'lash» sahifasi — faqat ulash.
+- **Bildirishnomalar**: «mos ish / mos nomzod topildi» xabarlari ro'yxatda va sonda ko'rinmaydi, Telegram'ga yuborilmaydi
+  (o'qilgan, `skipped`/`matching_off`); moslik navbati ishga tushirilmaydi. «Yangi ariza» xabarida «· Juda mos» yo'q.
+- Tariflar va to'lov oynasida «PRO kuzatuv» va «mos ishchilarga xabar» endi va'da qilinmaydi; PRO kuzatuvga yangi to'lov
+  qabul qilinmaydi. Matnlardagi «mos» so'zi (sarlavha, yordamchi, bo'sh holatlar) oddiyroq so'zlarga almashtirildi.
+  Saqlangan qidiruv xabari qoldi («Shu so'rov bo'yicha yangi ish chiqsa, xabar beramiz»).
+- **Izoh**: vakansiya yordamchisida «Qo'shimcha izoh bormi?» qadami (Obed tekin, Yo'lkira tekin, Yotoqxona bor… yoki o'zi
+  yozadi), ishchi e'lonida — chatda (tajribadan keyin) va /ai/post oynasida. «obed, yo'lkira tekin» → «✅ Obed tekin» /
+  «✅ Yo'lkira tekin»: bandlarga ajratiladi, telefon/havola olib tashlanadi, takrorlar yo'q. E'lon sahifasida va
+  ko'rinishida yashil belgili ro'yxat. «yo'q» deb yozsa — izohsiz.
+- **Chat**: natijalar ostida kichik «+ E'lon joylash» (ish izlovchi — shu chatda, qidirgan kasbi bilan; ish beruvchi —
+  vakansiya yordamchisi); pastdagi yozuv har savolga mos (telefon savolida «Masalan: 90 123 45 67» va raqam klaviaturasi);
+  jo'natish strelkasi sekin tepaga qimirlab turadi (harakatni kamaytirish yoqilgan bo'lsa — yo'q).
+- **Tuzatishlar**: arizalar filtri qatori sig'adi; «Ish qidiruvchi ko'rinishi»dagi tugma va joy nomi kesilmaydi; vakansiya
+  sahifasidagi bo'limlar qatori («Manzil» va boshqalar) kesilmaydi.
+
 ## 2026-11-22 · E'lon rasmi — joylashdan oldin (`feat/image-before-publish`)
 
 Ega: "nimaga rasm yaratilmadi? rasmni e'lon joylashdan oldin yaratish kerak, ma'qul kelsa joylash kerak". Sabab: OpenAI

@@ -5,7 +5,7 @@
     "title_category": "{category} — ish va vakansiyalar",
     "title_region": "Ish: {region} — vakansiyalar",
     "title_category_region": "{category} — ish, {region}",
-    "description": "O'zbekiston bo'ylab faol vakansiyalar. Hudud, maosh, grafik va tajriba bo'yicha filtrlang, sizga mos ishni toping.",
+    "description": "O'zbekiston bo'ylab faol vakansiyalar. Hudud, maosh, grafik va tajriba bo'yicha filtrlang va kerakli ishni toping.",
     "detail_description": "{title} — {company}. {salary}. {location}."
   },
   "search": {
@@ -14,7 +14,7 @@
     "results_for": "«{query}» bo'yicha {count} ta vakansiya",
     "smart_category": "Kategoriya avtomatik tanlandi: {name}",
     "sort_label": "Saralash",
-    "understood": "«{query}» — tushundim, mos filtrlar qo'yildi.",
+    "understood": "«{query}» — tushundim, filtrlar qo'yildi.",
     "search_exact": "Aynan shu so'z bilan qidirish"
   },
   "filters": {
@@ -73,9 +73,9 @@
     "title": "Vakansiya topilmadi",
     "description": "Filtrlarni o'zgartirib yoki qidiruv so'zini qisqartirib ko'ring.",
     "action": "Filtrlarni tozalash",
-    "exact_title": "Aynan mos vakansiya hozircha yo'q",
+    "exact_title": "Aynan shunday vakansiya hozircha yo'q",
     "relax_title": "Shunday qilsangiz topiladi:",
-    "relax_description": "Talabni biroz kengaytirsangiz, mos vakansiyalar chiqadi.",
+    "relax_description": "Talabni biroz kengaytirsangiz, vakansiyalar chiqadi.",
     "count": "{count} ta"
   },
   "error": {
@@ -155,7 +155,7 @@
     "description_quick": "Ish beruvchi ismingizni va xabaringizni ko'radi.",
     "message_label": "Qisqacha xabar",
     "message_hint": "ixtiyoriy",
-    "message_placeholder": "Nima uchun bu ish sizga mos?",
+    "message_placeholder": "O'zingiz haqingizda qisqacha yozing",
     "default_message": "Assalomu alaykum! «{title}» vakansiyasiga qiziqyapman. Profilim bilan tanishib chiqishingizni so'rayman.",
     "default_message_quick": "Assalomu alaykum! «{title}» vakansiyasiga qiziqyapman. Iltimos, men bilan bog'laning.",
     "chars": "{count} / {max}",
@@ -215,7 +215,7 @@
   },
   "home": {
     "greeting": "Salom, {name} 👋",
-    "subtitle": "Sizga mos ishlarni tanlab qo'ydik",
+    "subtitle": "Yangi ishlar bir joyda",
     "stats_applications": "Faol arizalar",
     "stats_offers": "Takliflar",
     "stats_views": "Profil ko'rildi",

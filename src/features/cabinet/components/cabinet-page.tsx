@@ -2,7 +2,7 @@ import { getServerEnv } from "@/lib/env";
 import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
-import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, PhoneOff, Settings, ShieldCheck, Sparkles, UserRound, Wallet, Wrench } from "lucide-react";
+import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, PhoneOff, Settings, ShieldCheck, UserRound, Wallet, Wrench } from "lucide-react";
 import type { TFunction } from "@/lib/i18n/translate";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
@@ -54,7 +54,6 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     { href: "/saved", label: t("easy.cabinet.links.saved"), icon: Bookmark, show: true },
     { href: "/messages", label: t("easy.cabinet.links.messages"), icon: MessageCircle, show: true },
     { href: "/cabinet/alerts", label: t("easy.cabinet.links.alerts"), icon: BellRing, show: true },
-    { href: "/ai-alerts", label: t("easy.cabinet.pro_link"), icon: Sparkles, show: true },
     { href: "/profile", label: t("easy.cabinet.links.profile"), icon: UserRound, show: !!(session.workerOnboarded || session.employerId) },
     { href: "/cabinet/verification", label: t("easy.cabinet.links.verification"), icon: ShieldCheck, show: !!session.employerId || vacancies.length > 0 },
     { href: "/notifications", label: t("easy.cabinet.links.notifications"), icon: Bell, show: true },

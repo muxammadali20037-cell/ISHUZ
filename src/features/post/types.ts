@@ -103,6 +103,8 @@ export interface VacancyDraft {
   source?: "manual" | "ai";
   /** tekshirish sahifasida yaratilgan AI rasm (joylashda e'longa biriktiriladi) */
   image?: DraftImage | null;
+  /** "Izoh" (ega, 2026-11-22: "obed, yo'lkira tekin…") — tartibga keltirilgan bandlar; e'lon matniga ✅ bilan qo'shiladi */
+  notes?: string[];
 }
 
 /**

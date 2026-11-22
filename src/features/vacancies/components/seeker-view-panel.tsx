@@ -56,7 +56,8 @@ export function SeekerViewPanel({ view }: { view: SeekerViewData }) {
       </div>
 
       <div className="mt-4">
-        <Button asChild>
+        {/* uzun yozuv tor ekranda kartadan chiqib ketmasin (ega skrinshoti, 2026-11-22) — ikki qatorga o'tadi */}
+        <Button asChild className="h-auto min-h-11 w-full whitespace-normal py-2.5 text-center sm:w-auto">
           <Link href={view.previewHref} data-seeker-preview-link>
             <Eye className="size-4" aria-hidden /> {t("vacancies.seeker_view.open_preview")}
           </Link>

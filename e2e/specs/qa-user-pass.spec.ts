@@ -3,7 +3,8 @@ import { USERS, asGuest, asMode, loginAs, sql, stack } from "../support";
 
 /**
  * QA (2026-11-21, ega: "odam sifatida ilovaga kirib, hamma narsani qilib ko'r, xato top"): topilgan xatolar qaytmasin.
- *  1) ish izlovchida "Sizga mos" ochilganda pastki menyuda ikkita bo'lim birga yonib turardi (2026-11-21 dan menyu 3 ta);
+ *  1) ish izlovchida "Sizga mos" ochilganda pastki menyuda ikkita bo'lim birga yonib turardi (2026-11-21 dan menyu 3 ta;
+ *     2026-11-22 dan "Sizga mos" yo'q — eski havola E'lonlarimga);
  *  2) ruschada 390 px ekranda bildirishnomalar va ustalar sarlavhasi ekrandan chiqib ketardi; 320 px da o'rtadagi
  *     "Найти/Подать" yozuvi kesilardi;
  *  3) e'lon joylashning 1-qadamida va taklif havolasi sahifasida sahifa nomi (h1) yo'q edi;
@@ -15,11 +16,13 @@ const host = new URL(stack.app).hostname;
 const locale = (ctx: BrowserContext, value: string) => ctx.addCookies([{ name: "ishuz_locale", value, domain: host, path: "/" }]);
 const overflow = (p: Page) => p.evaluate(() => document.documentElement.scrollWidth - innerWidth);
 
-test("ish izlovchi: «Sizga mos» ochiq — pastki menyuda faqat bitta faol bo'lim (E'lonlarim)", async ({ page, context }) => {
+test("ish izlovchi: E'lonlarim ochiq — pastki menyuda faqat bitta faol bo'lim (eski «Sizga mos» havolasi ham shu yerga)", async ({ page, context }) => {
   await page.setViewportSize({ width: 390, height: 800 });
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
+  // "Sizga mos" olib tashlandi (ega, 2026-11-22) — eski havola E'lonlarimga olib boradi
   await page.goto("/cabinet/matches");
+  await expect(page).toHaveURL(/\/cabinet\/elonlar$/);
   const tabs = page.locator("[data-app-tabs]");
   await expect(tabs.locator("[aria-current='page']")).toHaveCount(1);
   await expect(tabs.locator("[aria-current='page']")).toHaveAttribute("data-tab", "my-listings");

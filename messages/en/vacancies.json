@@ -10,7 +10,7 @@
     "subtitle": "{count} listings",
     "new": "Post a vacancy",
     "empty_title": "No vacancies yet",
-    "empty_desc": "Post your first vacancy in 2–4 minutes — matching candidates are sorted automatically.",
+    "empty_desc": "Post your first vacancy in 2–4 minutes — applications will appear here.",
     "empty_cta": "Post your first vacancy",
     "empty_filtered_title": "No vacancies in this section",
     "empty_filtered_desc": "Choose another section or post a new vacancy.",

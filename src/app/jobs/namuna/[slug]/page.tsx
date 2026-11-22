@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { BellRing, BriefcaseBusiness, ChevronLeft, ChevronRight, FileUser, FlaskConical } from "lucide-react";
+import { BriefcaseBusiness, ChevronLeft, ChevronRight, FileUser, FlaskConical } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { Button } from "@/components/ui/button";
 import { SalaryText } from "@/components/shared/salary-text";
@@ -47,7 +47,6 @@ export default async function DemoVacancyPage({ params }: { params: Params }) {
     ...(category ? [{ label: t("demo.detail.category"), value: category }] : []),
   ];
   const steps = [
-    { href: "/ai-alerts?role=worker", icon: BellRing, title: t("demo.detail.alert_title"), desc: t("demo.detail.alert_desc") },
     { href: "/post/worker", icon: FileUser, title: t("demo.detail.resume_title"), desc: t("demo.detail.resume_desc") },
     { href: "/post/vacancy", icon: BriefcaseBusiness, title: t("demo.detail.employer_title"), desc: t("demo.detail.employer_desc") },
   ];

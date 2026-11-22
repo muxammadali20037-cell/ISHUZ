@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { asGuest, loginAs, sql } from "../support";
 
 /**
- * S3 · ilova tuzilmasi: vakansiya tablari (faqat ma'lumoti borlari), moslik tahlili (foiz faqat to'liq hisoblanganda),
+ * S3 · ilova tuzilmasi: vakansiya tablari (faqat ma'lumoti borlari), moslik tahlili yo'q (2026-11-22 dan),
  * xabarlar qidiruvi, profil sarlavhasi (haqiqiy to'liqlik), rol kartalari (kirish oqimining 7-ekrani).
  */
 
@@ -64,28 +64,18 @@ test.describe("tuzilma", () => {
     await expect(main.getByRole("region", { name: "Kompaniya" })).toBeVisible();
   });
 
-  test("moslik tahlili: mehmon — kirishga; ishchi — foiz faqat to'liq hisoblanganda, aks holda nima yetishmasligi", async ({ page, context }) => {
+  test("moslik tahlili olib tashlandi (ega, 2026-11-22): eski /moslik havolasi — vakansiyaning o'ziga; sahifada foiz yo'q", async ({ page, context }) => {
     await asGuest(context);
     await page.goto(`/jobs/${slug}/moslik`);
-    await page.waitForURL(/\/auth\?next=/);
+    await expect(page).toHaveURL(new RegExp(`/jobs/${slug}$`));
 
     await loginAs(context, WRK);
     await page.goto(`/jobs/${slug}/moslik`);
+    await expect(page).toHaveURL(new RegExp(`/jobs/${slug}$`));
     const main = page.getByRole("main");
-    await expect(main.getByRole("heading", { level: 1, name: "Moslik tahlili" })).toBeVisible();
-    const [m] = await sql<{ r: { score: number; complete: boolean; hard_fail: boolean; missing: string[] } }>(
-      "select public.compute_match_v2((select id from public.worker_profiles where profile_id = $1), (select id from public.vacancies where slug = $2)) as r",
-      [WRK, slug],
-    );
-    const r = m!.r;
-    if (r.complete && !r.hard_fail) {
-      await expect(main.locator("svg text", { hasText: `${r.score}%` })).toBeVisible();
-    } else {
-      // hisoblanmagan foiz ko'rsatilmaydi
-      await expect(main.locator("svg text", { hasText: "%" })).toHaveCount(0);
-      if (!r.hard_fail) await expect(main.getByRole("heading", { name: "Aniq foiz uchun ma'lumot yetarli emas" })).toBeVisible();
-      if (r.missing.length) await expect(main.getByRole("heading", { level: 2, name: "Nima yetishmaydi" })).toBeVisible();
-    }
+    await expect(main.getByRole("heading", { level: 1 })).toHaveText(TITLE);
+    await expect(main.getByText(/Moslik|\d+% mos|Sizga mos/)).toHaveCount(0);
+    await expect(main.locator("svg text", { hasText: "%" })).toHaveCount(0);
   });
 
   test("xabarlar: qidiruv (topilmasa — tushuntirish), bitta turdagi suhbatlarda filtr ko'rsatilmaydi", async ({ page, context }) => {

@@ -4,7 +4,7 @@ import { asGuest, asMode, sql, quickSearch } from "../support";
 /**
  * S2 / 2026-10 · bo'limlar: bosilsa — o'sha bo'lim natijalari, faol filtr chip sifatida ko'rinadi va olib tashlanadi.
  * Ish qidiruvchi (2.0, 2026-11): bosh sahifada bo'limlar ro'yxati yo'q — bo'limlar natijalar sahifasidagi filtr oynasida.
- * Ish beruvchi (2.0) — bosh sahifada "Kunlik ishchi" tez yo'li. /ai — aqlli qidiruv va "Sizga mos".
+ * Ish beruvchi (2.0) — bosh sahifada "Kunlik ishchi" tez yo'li. /ai — aqlli qidiruv.
  */
 
 const EMP = "7e2e0000-0000-4000-8000-000000000066";
@@ -151,7 +151,7 @@ test.describe("bo'limlar", () => {
     ).toBeVisible();
   });
 
-  test("AI bo'limi: oddiy so'z bilan suhbat — natija shu sahifada; 'Sizga mos' mehmonda — kirishga", async ({
+  test("AI bo'limi: oddiy so'z bilan suhbat — natija shu sahifada; «PRO kuzatuv» (mos ish chiqsa — xabar) yo'q", async ({
     page,
     context,
   }) => {
@@ -163,9 +163,8 @@ test.describe("bo'limlar", () => {
     ).toBeVisible();
     // alohida to'liq ekran (2026-11-15): pastki menyu yo'q
     await expect(page.locator("nav.bottom-nav")).toHaveCount(0);
-    await expect(
-      page.locator("[data-ai-quick] [data-quick='alerts']").first(),
-    ).toHaveAttribute("href", "/ai-alerts");
+    // moslik olib tashlandi (ega, 2026-11-22) — tez tugmalarda "PRO kuzatuv" yo'q
+    await expect(page.locator("[data-ai-quick] [data-quick='alerts']")).toHaveCount(0);
     await page.getByLabel("Nima qidiryapsiz?").fill("omborchi");
     await page.getByRole("button", { name: "Topish", exact: true }).click();
     // so'z kasbga aylandi ("Omborchi"), hudud aytilmagan — butun O'zbekiston bo'yicha; so'rovnoma → natija shu sahifada

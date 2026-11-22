@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BellRing, ChevronRight, ExternalLink, MapPin } from "lucide-react";
+import { ChevronRight, ExternalLink, MapPin } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { localeAlternates } from "@/lib/seo";
 import { getDistricts, getRegions } from "@/lib/reference";
@@ -199,11 +199,6 @@ export default async function JobsMapPage({ searchParams }: { searchParams: Sear
             ) : null}
 
             <nav className="flex flex-wrap gap-2" aria-label={t("map.title")}>
-              <Button asChild variant="outline" className="h-12 text-base">
-                <Link href="/ai-alerts?role=worker">
-                  <BellRing className="size-5" aria-hidden /> {t("map.alert")}
-                </Link>
-              </Button>
               <Button asChild variant="outline" className="h-12 text-base">
                 <Link href={`/jobs?region=${encodeURIComponent(region.slug)}`}>
                   {t("map.all_jobs")} <ChevronRight className="size-5" aria-hidden />

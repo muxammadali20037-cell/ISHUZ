@@ -3,7 +3,7 @@ import { USERS, asGuest, sql } from "../support";
 
 /**
  * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi) va rejim tanlanmagan mehmon uchun bosh sahifa.
- * 2026-11-21 (ega): bosh sahifa — darhol chat ("O'zingizga mos ishni yoki ishchini toping"), maqsadni AI yozilganidan aniqlaydi; chatning
+ * 2026-11-21 (ega): bosh sahifa — darhol chat ("Ish yoki ishchini oson toping"), maqsadni AI yozilganidan aniqlaydi; chatning
  * to'liq oqimi — guided-chat.spec.ts.
  */
 
@@ -29,7 +29,7 @@ test.describe("kirish", () => {
     await page.goto("/");
     const main = page.getByRole("main");
     // 2026-11-21 (ega): reklama sahifasi va misollar yo'q; 2026-11-22: "Ish qidiryapman / Ishchi qidiryapman" tugmalari
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
     await expect(main.locator("[data-guided-start]")).toHaveCount(2);
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
     await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toHaveCount(0);

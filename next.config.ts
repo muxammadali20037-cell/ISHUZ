@@ -32,6 +32,15 @@ const nextConfig: NextConfig = {
       ...(supabaseHost ? [{ protocol: "https" as const, hostname: supabaseHost }] : []),
     ],
   },
+  // moslik olib tashlandi (ega, 2026-11-22: "moslik umuman kerak emas") — eski havolalar sahifa chizilmasdan (HTTP 307) tegishli
+  // joyga: "Sizga mos" → E'lonlarim, "Moslik tahlili" → vakansiyaning o'zi, "PRO kuzatuv" → Profil
+  async redirects() {
+    return [
+      { source: "/cabinet/matches", destination: "/cabinet/elonlar", permanent: false },
+      { source: "/jobs/:slug/moslik", destination: "/jobs/:slug", permanent: false },
+      { source: "/ai-alerts", destination: "/cabinet", permanent: false },
+    ];
+  },
   async headers() {
     const csp = {
       supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,

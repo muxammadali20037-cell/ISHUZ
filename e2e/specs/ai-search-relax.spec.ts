@@ -108,17 +108,17 @@ test("umuman yo'q → bitta qisqa xabar; mehmonga — «kirsangiz, xabar beramiz
   const dialog = await ask(page, "Toshkentda kosmonavt kerak");
   const answer = await quickSearch(page);
   const none = answer.locator("[data-quick-none]");
-  await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*Kirsangiz — mos ish chiqsa, sizga xabar beramiz\.\s*Kirish/);
+  await expect(none).toHaveText(/Hozircha bunday ish yo'q\.\s*Kirsangiz — shu bo'yicha yangi ish chiqsa, xabar beramiz\.\s*Kirish/);
   await expect(none.getByRole("link", { name: "Kirish" })).toHaveAttribute("href", "/auth?next=%2Fai");
   await expect(answer.locator("[data-quick-similar]")).toHaveCount(0);
   await expect(dialog.locator("[data-ai-reply], [data-ai-suggestions], [data-ai-demos]")).toHaveCount(0);
 });
 
-test("Telegram xabari sahifasi yozilgan matnni tayyor ko'rsatadi", async ({ page, context }) => {
+test("eski «mos ish chiqsa — Telegram xabari» sahifasi olib tashlandi — Profilga", async ({ page, context }) => {
   const { loginAs } = await import("../support");
   await loginAs(context, USERS.workerB);
   await page.goto("/ai-alerts?role=worker&q=Toshkentda%20kosmonavt%20kerak");
-  await expect(page.locator("textarea").first()).toHaveValue("Toshkentda kosmonavt kerak");
+  await expect(page).toHaveURL(/\/cabinet(\?|$)/);
 });
 
 test("bosh sahifa chati: skriptlar yuklanmasdan yuborilsa — matn yo'qolmaydi (?q=…), yuklangach o'zi yuboriladi va manzildan olinadi", async ({ page, context }) => {

@@ -2,6 +2,7 @@ import "server-only";
 
 import { createClient } from "@/lib/supabase/server";
 import type { Tables } from "@/types/database.types";
+import { NOT_MATCH_KINDS_OR, NOT_MATCH_TYPES } from "@/features/matching/off";
 
 export const NOTIFICATIONS_PAGE_SIZE = 30;
 
@@ -24,10 +25,13 @@ export async function getNotificationsPage(page: number): Promise<NotificationsP
     supabase
       .from("notifications")
       .select("*", { count: "exact" })
+      // moslik xabarlari ko'rsatilmaydi (features/matching/off.ts)
+      .not("type", "in", NOT_MATCH_TYPES)
+      .or(NOT_MATCH_KINDS_OR)
       .order("created_at", { ascending: false })
       .order("id", { ascending: false })
       .range(from, from + NOTIFICATIONS_PAGE_SIZE - 1),
-    supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null),
+    supabase.from("notifications").select("id", { count: "exact", head: true }).is("read_at", null).not("type", "in", NOT_MATCH_TYPES).or(NOT_MATCH_KINDS_OR),
   ]);
   if (listRes.error) {
     console.error("[notifications] list", listRes.error.message);

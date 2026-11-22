@@ -82,7 +82,7 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
     : p.purpose === "worker_listing"
       ? { href: "/profile/listing", label: t("profile.listing.title") }
       : p.purpose === "ai_alerts"
-        ? { href: "/ai-alerts", label: t("billing.return.to_ai_alerts") }
+        ? { href: "/cabinet", label: t("easy.side.profile") }
         : p.purpose === "wallet_topup"
           ? { href: "/billing", label: t("billing.return.to_wallet") }
           : p.purpose === "contact_unlock" && p.worker_id
@@ -92,7 +92,8 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
             : null;
   const failed = status === "cancelled" || status === "failed";
   const retryTarget = p?.purpose === "vacancy_publish" ? p.vacancy_id : p?.purpose === "ai_alerts" ? null : p?.worker_id ?? null;
-  const canRetry = !!p && failed && p.purpose !== "wallet_topup" && (p.purpose === "ai_alerts" || !!retryTarget);
+  // PRO kuzatuv to'xtatilgan — uni qayta to'lash taklif qilinmaydi
+  const canRetry = !!p && failed && p.purpose !== "wallet_topup" && p.purpose !== "ai_alerts" && !!retryTarget;
 
   return (
     <Shell>

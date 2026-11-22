@@ -14,7 +14,7 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await asGuest(context);
   await page.goto("/");
   // 2026-11-21 (ega): bosh sahifa — chat; ikki yo'l kartalari va rejim almashtirgichi yo'q — AI maqsadni o'zi aniqlaydi
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
   // ko'rish rejim tanlovini o'zi yozmaydi
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
@@ -124,7 +124,7 @@ test("chat: rejim tanlangan bo'lsa — rol qayta so'ralmaydi, shu rejim ichida q
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
   const box = page.locator("form[data-hydrated] #start-chat-text");
   await box.fill("oshpaz");
   await box.press("Enter");

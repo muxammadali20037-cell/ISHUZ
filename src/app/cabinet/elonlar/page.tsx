@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { ChevronRight, Plus, Sparkles } from "lucide-react";
+import { Plus } from "lucide-react";
 import { getT } from "@/lib/i18n/server";
 import { cn } from "@/lib/utils";
 import { requireSession } from "@/features/auth/session";
@@ -105,13 +104,7 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
           </Link>
         ) : null}
 
-        {/* menyudan ko'chgan bo'lim (2026-11-21): ish izlovchida "Sizga mos". Arizalar yo'q — bog'lanish faqat telefon orqali */}
-        {!employer ? (
-          <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-my-listings-more>
-            <MoreRow href="/cabinet/matches" icon={<Sparkles />} title={t("easy.nav.tab_matches")} hint={t("easy.cabinet.matches_hint")} tag="matches" />
-          </ul>
-        ) : null}
-
+        {/* "Sizga mos" bo'limi yo'q (ega, 2026-11-22: "moslik umuman kerak emas"). Arizalar yo'q — bog'lanish faqat telefon orqali */}
         {otherCount ? (
           <RoleSwitchRow
             tone="neutral"
@@ -123,22 +116,5 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
         ) : null}
       </div>
     </Shell>
-  );
-}
-
-function MoreRow({ href, icon, title, hint, tag }: { href: string; icon: ReactNode; title: string; hint: string; tag: string }) {
-  return (
-    <li>
-      <Link href={href} data-my-listings-link={tag} className="press flex min-h-16 items-center gap-3 px-4 py-3 hover:bg-secondary/60">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary-ink [&_svg]:size-5" aria-hidden>
-          {icon}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-base font-bold leading-tight">{title}</span>
-          <span className="block text-sm text-muted-foreground">{hint}</span>
-        </span>
-        <ChevronRight className="size-5 shrink-0 text-muted-foreground" aria-hidden />
-      </Link>
-    </li>
   );
 }

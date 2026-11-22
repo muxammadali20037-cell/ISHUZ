@@ -90,16 +90,12 @@ test("ariza: ishchi yuboradi → ish beruvchi kabinetdan ochadi, holatni o'zgart
   await page.getByRole("link", { name: /Botir/ }).first().click();
   await expect(page).toHaveURL(new RegExp(`/employer/vacancies/${vacancy.id}/applications/[0-9a-f-]{36}$`));
 
-  // moslik sabablari nomzod haqida (ishchiga murojaat emas)
+  // moslik bloki yo'q (ega, 2026-11-22: "moslik umuman kerak emas") — foiz, daraja, sabablar ko'rsatilmaydi
   const main = page.getByRole("main");
-  await expect(main.getByText("Kasbi aynan mos")).toBeVisible();
-  await expect(main.getByText(/Kasbingiz|sizga mos/)).toHaveCount(0);
-  // mobil: "Yozish" va kontakt holat blokidan keyin, moslik/tarixdan oldin
+  await expect(main.getByRole("heading", { name: "Moslik" })).toHaveCount(0);
+  await expect(main.getByText(/Kasbi aynan mos|Juda mos|\d+% mos/)).toHaveCount(0);
   const write = main.getByRole("link", { name: "Yozish" });
-  const matchHeading = main.getByRole("heading", { name: "Moslik" });
   await expect(write).toBeVisible();
-  await expect(matchHeading).toBeVisible();
-  expect((await write.boundingBox())!.y).toBeLessThan((await matchHeading.boundingBox())!.y);
 
   await main.getByRole("button", { name: "Tanlovga olish" }).click();
   await expect.poll(async () => (await sql<{ status: string }>("select status from public.applications where vacancy_id = $1", [vacancy.id]))[0]?.status).toBe("shortlisted");
@@ -115,7 +111,8 @@ test("ariza: ishchi yuboradi → ish beruvchi kabinetdan ochadi, holatni o'zgart
 
   // ish beruvchi bildirishnomasi: "Botir ." emas, foiz emas
   await page.goto("/notifications");
-  await expect(page.getByText("Botir ariza yubordi · Juda mos")).toBeVisible();
+  await expect(page.getByText("Botir ariza yubordi", { exact: true })).toBeVisible();
+  await expect(page.getByRole("main").getByText(/Juda mos/)).toHaveCount(0);
   await expect(page.getByRole("main").getByText(/Botir \.|\d+% mos/)).toHaveCount(0);
 
   // ishchi: bildirishnomalar (holat — ogohlantirish rangida emas), chat javobi

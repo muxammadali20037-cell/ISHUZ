@@ -15,6 +15,7 @@ import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
 import { draftFromForm, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
 import type { ChatProfession } from "./actions";
 import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, type PostAsk, type PostDraft } from "./post-logic";
+import { formatNotes } from "@/features/post/notes";
 
 export type { AiPart, Ask, Draft, Msg, Role } from "./guided-logic";
 
@@ -72,6 +73,9 @@ function save(s: Omit<Stored, "at">) {
 }
 
 /** `owner` — kirgan foydalanuvchi id'si yoki "guest" (suhbat faqat o'sha odamga tiklanadi) */
+/** izoh savoliga "yo'q" deb yozilsa — izohsiz */
+const NO_NOTE = /^(?:yo['‘’`ʻ]?q|izohsiz|izoh\s*yo['‘’`ʻ]?q|kerak\s*emas|kerakmas|йўқ|йук|нет|не\s*надо|no|none|-)[.!]?$/i;
+
 export function useGuidedChat(appMode: AppMode | null, owner: string) {
   const { t } = useT();
   const known = roleOfMode(appMode);
@@ -79,6 +83,8 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [awaiting, setAwaiting] = useState<Ask | PostAsk | null>(null);
+  /** "Izoh" savolida belgilangan tayyor variantlar (matni) */
+  const [notePicks, setNotePicks] = useState<string[]>([]);
   const [post, setPost] = useState<PostDraft | null>(null);
   const router = useRouter();
   const [ready, setReady] = useState(false);
@@ -343,11 +349,20 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   /** Yozish maydonidan kelgan javob — kutilayotgan savolga */
   const answerPost = (q: string, a: PostAsk, d: PostDraft) => {
     // yangi e'lon niyati ("vakansiya joylamoqchiman") yoki kasbdan keyingi savollarda yangi maqsad ("menga haydovchi kerak") —
-    // bu e'lon to'xtaydi, oddiy so'rov
-    if (detectPostIntent(q) || (a !== "post_profession" && a !== "post_which" && detectIntent(q) && q.split(" ").length >= 3)) return newQuery(q);
+    // bu e'lon to'xtaydi, oddiy so'rov. Izoh savolida erkin matn ("tungi smenada ham ishlayman") — izohning o'zi
+    const free = a === "post_profession" || a === "post_which" || a === "post_note";
+    if (detectPostIntent(q) || (!free && detectIntent(q) && q.split(" ").length >= 3)) return newQuery(q);
     const mid = id();
     markAnswered();
     setAwaiting(null);
+    // izoh: belgilangan tayyor variantlar + yozilgani, tartibga keltirilib (ega, 2026-11-22: "chiroyli taxlab");
+    // "Siz:" qatorida — e'longa tushadigan bandlarning o'zi. "yo'q", "izohsiz" — izoh emas, o'tkazib yuborish
+    if (a === "post_note") {
+      const notes = formatNotes(NO_NOTE.test(q) ? "" : q, notePicks);
+      setNotePicks([]);
+      push(notes.length ? notes.join(", ") : q, mid);
+      return postNext({ ...d, notes }, mid);
+    }
     push(q, mid);
     if (a === "post_profession" || a === "post_which") return answerPostProfession(q, d, mid);
     if (a === "post_region") {
@@ -377,6 +392,20 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   const pickPostChoice = (choice: PostChoice) => pickPost({ profession: choice }, choice.name);
   const pickPostRegion = (opt: QuickOption) => pickPost({ regionId: opt.value, districtId: null }, opt.label);
   const pickPostExperience = (x: PostExperience, label: string) => pickPost({ experience: x }, label);
+  /** izoh savolida tayyor variantni belgilash / olib tashlash */
+  const toggleNotePick = (label: string) => setNotePicks((p) => (p.includes(label) ? p.filter((x) => x !== label) : [...p, label]));
+  /** "Davom etish" — belgilanganlar bilan */
+  const pickPostNotes = () => {
+    const notes = formatNotes("", notePicks);
+    if (!notes.length) return;
+    setNotePicks([]);
+    pickPost({ notes }, notes.join(", "));
+  };
+  /** "Izohsiz" */
+  const skipPostNotes = (label: string) => {
+    setNotePicks([]);
+    pickPost({ notes: [] }, label);
+  };
 
   /** "Joylash": mehmon — bir marta kirib qaytadi (javoblar shu qurilmada saqlanadi); kirgan — joylanadi va tekshiriladi */
   const publishPost = (answers: PostAnswers, loggedIn: boolean) => {
@@ -565,6 +594,10 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     otherPlace,
     beginPost,
     pickPostChoice,
+    notePicks,
+    toggleNotePick,
+    pickPostNotes,
+    skipPostNotes,
     pickPostRegion,
     pickPostExperience,
     publishPost,

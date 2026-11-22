@@ -13,7 +13,6 @@ import {
   GraduationCap,
   MapPin,
   Settings2,
-  Sparkles,
   Wifi,
   Landmark,
   type LucideIcon,
@@ -27,7 +26,6 @@ import { ReportDialog } from "@/features/reports/report-dialog";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MatchReasons, MatchRing } from "@/components/shared/match-score";
 import { SalaryText } from "@/components/shared/salary-text";
 import { descriptionExcerpt } from "../description";
 import type { VacancyDetail as VacancyDetailData, VacancyViewerState } from "../types";
@@ -133,25 +131,6 @@ export async function VacancyDetail({
   const contactCard = showContact ? <EmployerCallCard phone={adPhone ?? null} companyTelegram={company?.telegram ?? null} ownerProfileId={contactProfileId} guestNext={guestNext} revealVacancyId={guestNext ? v.id : null} /> : null;
 
   const experienceText = v.experience_min_months === 0 ? t("easy.card.no_experience") : tEnum("experience_min_months", String(experienceKey));
-  // "Nima uchun sizga mos?" — faqat ish izlovchi profili bo'lsa va haqiqiy sabablar bilan (soxta foiz yo'q)
-  const matchCard = viewer.match ? (
-    <section aria-labelledby="match-title" className="rounded-2xl border border-primary/20 bg-primary-soft p-5">
-      <h2 id="match-title" className="mb-3 flex items-center gap-2 text-lg font-bold">
-        <Sparkles className="size-5 text-primary-ink" aria-hidden />
-        {t("jobs.detail.match_why")}
-      </h2>
-      <MatchRing score={viewer.match.score} />
-      <MatchReasons reasons={viewer.match.reasons} className="mt-3" />
-      <p className="mt-3 text-xs text-muted-foreground">{t("jobs.detail.match_hint")}</p>
-      <Link
-        href={`/jobs/${v.slug}/moslik`}
-        className="mt-3 inline-flex min-h-11 w-full items-center justify-center gap-1 rounded-xl bg-card px-4 text-sm font-semibold text-primary-ink shadow-sm hover:bg-card/80"
-      >
-        {t("jobs.fit.open")} <ChevronRight className="size-4" aria-hidden />
-      </Link>
-    </section>
-  ) : null;
-
   return (
     <div className="container-app pb-24 pt-3 sm:pt-6 lg:pb-10">
       <div className="mb-2 flex items-center justify-between gap-2">
@@ -295,15 +274,15 @@ export async function VacancyDetail({
             </dl>
           </header>
 
-          {/* Bog'lanish va moslik — telefonda bo'limlardan oldin (asosiy amal birinchi ekranlarda); kompyuterda — o'ng ustunda */}
+          {/* Bog'lanish — telefonda bo'limlardan oldin (asosiy amal birinchi ekranlarda); kompyuterda — o'ng ustunda */}
           {contactCard ? <div className="lg:hidden">{contactCard}</div> : null}
-          {matchCard ? <div className="lg:hidden">{matchCard}</div> : null}
 
           {/* Bo'limlar: Vazifalar · Talablar · Sharoitlar · Manzil · Kompaniya — bitta kartada, ajratgichlar bilan; yuqorida havolalar */}
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
             {/* bo'limlar havolalari — namunadagidek ostiga chizilgan qator (tab ko'rinishi; bo'limlar baribir ochiq) */}
             <nav aria-label={t("jobs.detail.tabs_label")} className="border-b border-border">
-              <ul className="flex gap-5 overflow-x-auto px-4 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
+              {/* hammasi ko'rinadi: sig'masa keyingi qatorga (ega skrinshoti, 2026-11-22: "Manzi…" kesilib qolardi) */}
+              <ul className="flex flex-wrap gap-x-5 px-4 sm:px-6">
                 {sections.map((sec) => (
                   <li key={sec.id} className="flex">
                     <a
@@ -439,7 +418,6 @@ export async function VacancyDetail({
 
         {/* telefonda `contents`: o'xshash ishlar asosiy ustundan keyin keladi */}
         <aside className="contents lg:block lg:space-y-4 lg:self-start">
-          {matchCard ? <div className="hidden lg:block">{matchCard}</div> : null}
           {contactCard ? <div className="hidden lg:block">{contactCard}</div> : null}
           <Suspense
             fallback={

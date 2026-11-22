@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ArrowDown, Eye, PartyPopper } from "lucide-react";
+import { Eye, PartyPopper } from "lucide-react";
 import { requireEmployer } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { getBenefits } from "@/lib/reference";
 import { Shell } from "@/components/shared/shell";
-import { getApplicationStats, getMatchingWorkers, getVacancyForManager } from "@/features/vacancies/queries";
+import { getApplicationStats, getVacancyForManager } from "@/features/vacancies/queries";
 import { isUuid } from "@/features/vacancies/utils";
 import { VacancyManage } from "@/features/vacancies/components/vacancy-manage";
 import { getVacancyBySlug } from "@/features/jobs/queries";
@@ -31,9 +31,8 @@ export default async function ManageVacancyPage({ params, searchParams }: { para
   const res = await getVacancyForManager(id);
   if (!res) notFound();
 
-  const [stats, workers, benefits, detail, tt] = await Promise.all([
+  const [stats, benefits, detail, tt] = await Promise.all([
     getApplicationStats(id),
-    getMatchingWorkers(id, res.vacancy.category_id),
     getBenefits(),
     getVacancyBySlug(res.vacancy.slug),
     getT(),
@@ -51,9 +50,6 @@ export default async function ManageVacancyPage({ params, searchParams }: { para
               <PartyPopper className="size-9 shrink-0" aria-hidden />
               <span className="min-w-0 flex-1">
                 <span className="block text-lg font-extrabold">{tt.t("vacancies.published_banner.title")}</span>
-                <span className="block text-sm opacity-90">
-                  {workers.length ? tt.t("vacancies.published_banner.found", { count: workers.length }) : tt.t("vacancies.published_banner.none")}
-                </span>
               </span>
             </div>
             {/* e'lon joylangach birinchi savol — "ish izlovchilarga qanday ko'rinyapti?" */}
@@ -63,11 +59,6 @@ export default async function ManageVacancyPage({ params, searchParams }: { para
                   <Eye className="size-4" aria-hidden /> {tt.t("vacancies.published_banner.see_as_seeker")}
                 </a>
               ) : null}
-              {workers.length ? (
-                <a href="#matching" className="inline-flex min-h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold ring-1 ring-success-foreground/60 hover:bg-success-foreground/10">
-                  {tt.t("vacancies.published_banner.see_matching")} <ArrowDown className="size-4" aria-hidden />
-                </a>
-              ) : null}
             </div>
           </div>
         ) : null}
@@ -75,7 +66,6 @@ export default async function ManageVacancyPage({ params, searchParams }: { para
           vacancy={res.vacancy}
           access={res.access}
           stats={stats}
-          workers={workers}
           benefits={benefits}
           seekerView={seekerView ? <SeekerViewPanel view={seekerView} /> : null}
           canBoost={enabledProviders().length > 0}

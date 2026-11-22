@@ -63,8 +63,8 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await expect(first.getByRole("combobox", { name: "Kimga ko'rinadi" })).toHaveValue("worker");
   await expect(fourth.getByRole("combobox", { name: "Kimga ko'rinadi" })).toHaveValue("employer");
   // bo'sh maydonda — saytda ko'rinadigan standart matn (har tilda o'zi), "Standart matn" emas
-  await expect(first.getByRole("textbox", { name: "Sarlavha (O'zbek)" })).toHaveAttribute("placeholder", "Endi o'zingizga mos ish topish oson");
-  await expect(first.getByRole("textbox", { name: "Sarlavha (Русский)" })).toHaveAttribute("placeholder", "Найти подходящую работу теперь просто");
+  await expect(first.getByRole("textbox", { name: "Sarlavha (O'zbek)" })).toHaveAttribute("placeholder", "Endi ish topish oson");
+  await expect(first.getByRole("textbox", { name: "Sarlavha (Русский)" })).toHaveAttribute("placeholder", "Найти работу теперь просто");
   // telefonda pastki yopishqoq panel — faqat "Saqlash", ekranni yopmaydi
   const bar = page.getByRole("button", { name: "Saqlash" }).locator("xpath=ancestor::div[contains(@class,'sticky')][1]");
   await expect(bar).toBeVisible();
@@ -103,7 +103,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await asGuest(guestCtx);
   await asMode(guestCtx, "employer");
   await guest.goto("/");
-  await expect(guest.getByRole("heading", { level: 1, name: "O'zingizga mos ishni yoki ishchini toping" })).toBeVisible();
+  await expect(guest.getByRole("heading", { level: 1, name: "Ish yoki ishchini oson toping" })).toBeVisible();
   await expect(windowsOf(guest)).toHaveCount(0);
   await expect(guest.locator("#start-chat-text")).toBeVisible();
 
@@ -113,7 +113,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await asGuest(seekerCtx);
   await asMode(seekerCtx, "worker");
   await seeker.goto("/");
-  await expect(seeker.getByRole("heading", { level: 1, name: "O'zingizga mos ishni yoki ishchini toping" })).toBeVisible();
+  await expect(seeker.getByRole("heading", { level: 1, name: "Ish yoki ishchini oson toping" })).toBeVisible();
   await expect(seeker.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
   await expect(seeker.locator("#start-chat-text")).toBeVisible();
   // qidiruv natijasi bo'sh — "Oddiy so'z bilan qidirish" (yordamchi) tugmasi bor

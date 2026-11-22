@@ -1,3 +1,4 @@
+import { VacancyDescription } from "@/features/jobs/components/vacancy-description";
 import { ListingPhoto } from "@/features/listing-image/components/listing-photo";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -188,9 +189,10 @@ export default async function ListingPage({ params }: Params) {
                 {facts}
               </TabsContent>
               <TabsContent value="about" className="p-4 sm:p-6">
-                <p className="whitespace-pre-line text-base" data-listing-about>
-                  {w.about}
-                </p>
+                {/* izoh bandlari (✅) — yashil belgili ro'yxat bo'lib */}
+                <div data-listing-about>
+                  <VacancyDescription text={w.about} className="text-base" />
+                </div>
               </TabsContent>
             </Tabs>
           ) : (

@@ -59,19 +59,32 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await expect(understood).toContainText("Chilonzor");
   await expect(understood).toContainText("5 mln");
   // kasb, tuman (ikkalasi), maosh — gapdan; ish beruvchi, ismi, telefon — profildan
-  await expect(page.locator("[data-guide-progress]")).toHaveText("7/10");
+  await expect(page.locator("[data-guide-progress]")).toHaveText("7/11");
   await choice(page, "2_2").click();
 
   await expect(h1(page)).toHaveText("Tajriba kerakmi?");
   await choice(page, "0").click();
 
+  // izoh (ega, 2026-11-22: "obed, yo'lkira tekin shunga o'xshash narsalar — chiroyli e'lon qilib taxlash"): tayyor variant
+  // tanlanadi va/yoki o'zi yoziladi; tanlamasdan va yozmasdan "Davom etish" bosilmaydi
+  await expect(h1(page)).toHaveText("Qo'shimcha izoh bormi?");
+  await expect(page.locator("[data-guide-next]")).toBeDisabled();
+  await page.locator("[data-guide-note='dorm']").click();
+  await expect(page.locator("[data-guide-note='dorm']")).toHaveAttribute("aria-pressed", "true");
+  await page.locator("[data-guide-notes] [data-guide-input]").fill("obed, yo'lkira tekin. Tel: 90 123 45 67");
+  await page.locator("[data-guide-next]").click();
+
   // ish beruvchi, ism va telefon profildan — so'ralmaydi (oxirgi ekranda ko'rinadi, o'zgartirish mumkin);
-  // e'lon matni gap va tanlovlardan (o'ylab topilgan narsa yo'q)
+  // e'lon matni gap va tanlovlardan (o'ylab topilgan narsa yo'q); izoh — oxirida ✅ ro'yxat, raqamsiz
   await expect(h1(page)).toHaveText("E'lon matni. Ma'qulmi?");
   const desc = page.locator("[data-guide-description]");
   await expect(desc).toContainText("Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, ovqat bilan.");
   await expect(desc).toContainText("Ish vaqti: 2/2.");
   await expect(desc).toContainText("Tajriba shart emas.");
+  await expect(desc).toContainText("✅ Yotoqxona bor");
+  await expect(desc).toContainText("✅ Obed tekin");
+  await expect(desc).toContainText("✅ Yo'lkira tekin");
+  await expect(desc).not.toContainText("123");
   await choice(page, "ok").click();
 
   await expect(h1(page)).toHaveText("Hammasi tayyor");
@@ -107,6 +120,13 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   );
   expect(v).toMatchObject({ title: "Oshpaz", district: "Chilonzor tumani", salary_from: 5_000_000, salary_type: "monthly", schedule: "2_2", experience_min_months: 0 });
   expect(v!.description).toContain("kafemizga oshpaz kerak");
+  expect(v!.description).toMatch(/\n\n✅ Yotoqxona bor\n✅ Obed tekin\n✅ Yo'lkira tekin$/);
+
+  // e'lon sahifasida izoh — yashil belgili ro'yxat
+  const [pub] = await sql<{ slug: string }>("select slug from public.vacancies where owner_profile_id = $1", [USERS.employer]);
+  await page.goto(`/jobs/${pub!.slug}`);
+  const list = page.locator("[data-notes-list]");
+  await expect(list.locator("li")).toHaveText(["Yotoqxona bor", "Obed tekin", "Yo'lkira tekin"]);
 });
 
 test("kasb aniq bo'lmasa — variantlar; viloyat → tuman tugmalari, «Orqaga» — oldingi savol; kunlik haq; «Oddiy forma» javoblarni saqlaydi", async ({ page, context }) => {
@@ -145,7 +165,11 @@ test("kasb aniq bo'lmasa — variantlar; viloyat → tuman tugmalari, «Orqaga»
   await choice(page, "any").click();
   await expect(h1(page)).toHaveText("Tajriba kerakmi?");
   await choice(page, "12").click();
+  // izohsiz ham bo'ladi
+  await expect(h1(page)).toHaveText("Qo'shimcha izoh bormi?");
+  await page.locator("[data-guide-notes-skip]").click();
   await expect(h1(page)).toHaveText("E'lon matni. Ma'qulmi?");
+  await expect(page.locator("[data-guide-description]")).not.toContainText("✅");
   await choice(page, "ok").click();
   await expect(h1(page)).toHaveText("Hammasi tayyor");
   const done = page.locator("[data-guide-done]");

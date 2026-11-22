@@ -220,19 +220,13 @@ test("bekor bo'lgan to'lov: 'Qayta to'lash' shu xizmat oynasini ochadi; Click �
   expect(w!.is_public).toBe(true);
 });
 
-test("AI PRO: ixcham to'lov — balansdan bir bosishda obuna yoqiladi", async ({ page, context }) => {
+test("PRO kuzatuv (mos ish chiqsa — xabar) to'xtatildi: sahifasi Profilga, yangi to'lov qabul qilinmaydi", async ({ page, context }) => {
   await sql("update public.app_settings set value = 'true'::jsonb where key = 'ai_alerts_paid'");
-  await sql("insert into public.wallets (profile_id, balance) values ($1, 20000)", [USERS.workerA]);
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/ai-alerts?role=worker");
-  const checkout = page.getByTestId("checkout");
-  await expect(checkout.getByRole("button", { name: "Payme orqali to'lash" })).toBeVisible();
-  await checkout.getByRole("button", { name: /Balansdan to'lash · 15 000 so'm/ }).click();
-  await page.waitForURL(/\/billing\/return\?order=\d+/);
-  await expect(page.getByText("PRO kuzatuv 1 oyga yoqildi")).toBeVisible();
-  const [s] = await sql<{ n: number }>("select count(*)::int as n from public.ai_alert_subscriptions where profile_id = $1 and paid_until > now() + interval '29 days'", [USERS.workerA]);
-  expect(s!.n).toBe(1);
+  await expect(page).toHaveURL(/\/cabinet(\?|$)/);
+  await expect(page.getByTestId("checkout")).toHaveCount(0);
 });
 
 test("mehmon: 'To'lovlarim' — kirishga, keyin shu sahifaga", async ({ page, context }) => {

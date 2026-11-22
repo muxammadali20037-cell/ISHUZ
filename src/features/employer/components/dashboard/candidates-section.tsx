@@ -29,7 +29,7 @@ export async function CandidatesSection({
       {subtitle ? <p className="mb-3 text-sm text-muted-foreground">{subtitle}</p> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {workers.map((w) => (
-          <WorkerCard key={w.id} worker={w} href={hrefVacancyId ? `/workers/${w.id}?vacancy=${hrefVacancyId}` : undefined} hideMatch={!hrefVacancyId} />
+          <WorkerCard key={w.id} worker={w} href={hrefVacancyId ? `/workers/${w.id}?vacancy=${hrefVacancyId}` : undefined} />
         ))}
       </div>
     </section>

@@ -63,9 +63,8 @@ export async function runAiFind(input: { text: string; mode: "jobs" | "workers" 
   ].filter((x): x is string => !!x);
 
   const applied: AppliedFilters = { daily: params.pay === "daily", noexp: params.noexp, exp: params.exp, remote: r.remote, shift: params.schedule === "shift" };
-  const alertHref = `/ai-alerts?${new URLSearchParams({ role: mode === "workers" ? "employer" : "worker", q: parsed.data.text })}`;
   const postHref = mode === "workers" ? "/post/vacancy" : "/post/worker";
-  const baseCommon = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, alertHref, postHref };
+  const baseCommon = { mode, understood, source: r.source, aiAvailable: aiProviderConfigured(), applied, postHref };
   // kasb aniqlanmadi (kunlik ishlar bundan mustasno). Boshqa shart tushunilgan bo'lsa (hudud, maosh, grafik, tajriba, masofaviy) —
   // shu shartlar bilan barcha kasblar bo'yicha qidiriladi; hech narsa tushunilmagan bo'lsa (masalan "qwerty") — aniq savol
   const needProfession = !node && params.pay !== "daily";

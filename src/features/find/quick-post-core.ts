@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { getT } from "@/lib/i18n/server";
+import { formatNotes, stripNotes, withNotes } from "@/features/post/notes";
 import { getDistricts, getRegions } from "@/lib/reference";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createClient } from "@/lib/supabase/server";
@@ -204,9 +205,12 @@ export async function buildPreview(session: SessionContext | null, answers: Post
   if (answers.districtId && !district) return null;
   const profession = name(node);
   const place = [name(region), district ? name(district) : null].filter(Boolean).join(", ");
-  const about =
-    (await keptAbout(session, node.id)) ??
-    t("easy.post_ai.about", { profession, experience: t(`easy.post_ai.about_exp.${answers.experience}`), place });
+  const kept = await keptAbout(session, node.id);
+  const own = kept ?? t("easy.post_ai.about", { profession, experience: t(`easy.post_ai.about_exp.${answers.experience}`), place });
+  // "Izoh" (ega, 2026-11-22: "obed, yo'lkira tekin…" — chiroyli taxlab) — matn oxirida ✅ bilan; yangisi eskisining o'rniga
+  const notes = formatNotes("", answers.notes ?? []);
+  // izoh savoliga javob berilgan bo'lsa (bo'sh — "Izohsiz") avvalgi e'londagi eski ✅ qatorlar olib tashlanadi
+  const about = answers.notes ? withNotes(stripNotes(own), notes) : own;
   return {
     answers,
     profession,

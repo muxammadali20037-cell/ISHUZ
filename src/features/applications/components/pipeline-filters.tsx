@@ -2,30 +2,29 @@
 
 import { useCallback } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { ArrowDownWideNarrow, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Chip } from "@/components/ui/chip";
-import { ALL_STATUSES, type PipelineCounts, type PipelineSort, type PipelineStatusFilter } from "../types";
+import { ALL_STATUSES, type PipelineCounts, type PipelineStatusFilter } from "../types";
 
-/** Holat chiplari (sonlar bilan) + saralash — URL (?status=&sort=) orqali */
-export function PipelineFilters({ counts, status, sort }: { counts: PipelineCounts; status: PipelineStatusFilter; sort: PipelineSort }) {
+/**
+ * Holat chiplari (sonlar bilan) — URL (?status=) orqali. Saralash ("Moslik bo'yicha") yo'q (ega, 2026-11-22: "moslik umuman
+ * kerak emas") — arizalar har doim eng yangisi birinchi.
+ */
+export function PipelineFilters({ counts, status }: { counts: PipelineCounts; status: PipelineStatusFilter }) {
   const { t, tEnum } = useT();
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
 
   const update = useCallback(
-    (patch: Partial<{ status: PipelineStatusFilter; sort: PipelineSort }>) => {
+    (patch: Partial<{ status: PipelineStatusFilter }>) => {
       const next = new URLSearchParams(params.toString());
       if (patch.status !== undefined) {
         if (patch.status === "all") next.delete("status");
         else next.set("status", patch.status);
       }
-      if (patch.sort !== undefined) {
-        if (patch.sort === "match") next.delete("sort");
-        else next.set("sort", patch.sort);
-      }
+      next.delete("sort");
       const qs = next.toString();
       router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
     },
@@ -47,15 +46,6 @@ export function PipelineFilters({ counts, status, sort }: { counts: PipelineCoun
             </Chip>
           );
         })}
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="text-xs font-medium text-muted-foreground">{t("applications.pipeline.sort")}:</span>
-        <Chip size="sm" selected={sort === "match"} onClick={() => update({ sort: "match" })} icon={<Sparkles />}>
-          {t("applications.pipeline.sort_match")}
-        </Chip>
-        <Chip size="sm" selected={sort === "newest"} onClick={() => update({ sort: "newest" })} icon={<ArrowDownWideNarrow />}>
-          {t("applications.pipeline.sort_newest")}
-        </Chip>
       </div>
     </div>
   );

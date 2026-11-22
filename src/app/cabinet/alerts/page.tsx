@@ -3,32 +3,23 @@ import { getT } from "@/lib/i18n/server";
 import { requireSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { createClient } from "@/lib/supabase/server";
-import { getAlertSubscriptions } from "@/features/alerts/queries";
-import { AlertSettings } from "@/features/alerts/components/alert-settings";
-import { getMyActiveVacancies } from "@/features/cabinet/matches-queries";
+import { getServerEnv } from "@/lib/env";
+import { TelegramConnect } from "@/features/ai-alerts/components/telegram-connect";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
   return { title: t("easy.alerts.title"), robots: { index: false } };
 }
 
-/** /cabinet/alerts — mos ish / ishchi haqida Telegram xabarnomalari (rozilik, rejim, filtrlar, to'xtatish) */
+/**
+ * /cabinet/alerts — Telegram'ni ulash (xabarlar, e'lon holati va boshqa bildirishnomalar Telegram'ga keladi). "Mos ish /
+ * mos ishchi chiqsa xabar bering" sozlamalari yo'q (ega, 2026-11-22: "moslik umuman kerak emas").
+ */
 export default async function Page() {
   const session = await requireSession("/cabinet/alerts");
-  const { t, name } = await getT();
+  const { t } = await getT();
   const supabase = await createClient();
-  const [{ subs }, vacancies, { data: regions }, worker] = await Promise.all([
-    getAlertSubscriptions(session),
-    getMyActiveVacancies(session),
-    supabase.from("regions").select("id, name_uz, name_ru, name_en, name_oz").order("sort_order"),
-    session.workerId
-      ? supabase.from("worker_profiles").select("profession_node_id, profession_nodes!worker_profiles_profession_node_id_fkey(id, name_uz, name_ru, name_en)").eq("id", session.workerId).maybeSingle()
-      : Promise.resolve({ data: null }),
-  ]);
-  const profession = worker.data?.profession_nodes ? { id: worker.data.profession_nodes.id, name: name(worker.data.profession_nodes) } : null;
-  const regionOptions = (regions ?? []).map((r) => ({ id: r.id, name: name(r) }));
-  const showWorker = !!session.workerId || !vacancies.length;
-  const showEmployer = vacancies.length > 0 || !!session.employerId;
+  const { data: tg } = await supabase.from("telegram_accounts").select("bot_started").eq("profile_id", session.userId).maybeSingle();
   return (
     <Shell>
       <div className="container-narrow space-y-6 py-6 text-lg sm:py-8">
@@ -36,8 +27,7 @@ export default async function Page() {
           <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.alerts.title")}</h1>
           <p className="mt-2 text-muted-foreground">{t("easy.alerts.intro")}</p>
         </div>
-        {showWorker ? <AlertSettings sub={subs.worker} regions={regionOptions} profession={profession} vacancies={[]} /> : null}
-        {showEmployer ? <AlertSettings sub={subs.employer} regions={regionOptions} profession={null} vacancies={vacancies} /> : null}
+        <TelegramConnect connected={tg?.bot_started === true} botConfigured={!!getServerEnv().TELEGRAM_BOT_USERNAME} />
         <p className="text-sm text-muted-foreground">{t("easy.alerts.privacy")}</p>
       </div>
     </Shell>

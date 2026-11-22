@@ -72,7 +72,7 @@
   },
   "sort": {
     "label": "Sort",
-    "relevant": "Best match",
+    "relevant": "Default",
     "newest": "Recently active",
     "distance": "Nearest"
   },

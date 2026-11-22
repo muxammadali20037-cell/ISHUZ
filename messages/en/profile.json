@@ -180,8 +180,8 @@
     "edit_education": "Edit education",
     "delete_confirm_title": "Delete?",
     "delete_confirm_desc": "This action can't be undone.",
-    "category_hint": "Your professional field is the main criterion for matching vacancies",
-    "preferences_hint": "This information is used to find matching vacancies",
+    "category_hint": "Your field is shown on your listing and used in search",
+    "preferences_hint": "This information is shown on your listing and used in search",
     "sections_nav": "Sections"
   },
   "portfolio": {
@@ -339,7 +339,7 @@
     "step_about": "Short intro",
     "visibility": "Who can see it?",
     "mode_search": "Show in employer search",
-    "mode_search_desc": "Matching employers can find you and send invitations.",
+    "mode_search_desc": "Employers can find you and send invitations.",
     "mode_applied": "Only employers I applied to",
     "mode_applied_desc": "You don't appear in search; only employers you applied to see your listing.",
     "mode_hidden": "Hidden for now",

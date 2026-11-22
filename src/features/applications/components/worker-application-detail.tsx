@@ -5,7 +5,6 @@ import { cn } from "@/lib/utils";
 import { Avatar } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { PageHeader, SectionHeader } from "@/components/ui/misc";
-import { MatchReasons, MatchRing } from "@/components/shared/match-score";
 import { SalaryText } from "@/components/shared/salary-text";
 import { ContactCard } from "@/features/contacts/contact-card";
 import { isTerminalStatus, STATUS_TONE, type WorkerApplicationDetail as Detail } from "../types";
@@ -103,15 +102,6 @@ export async function WorkerApplicationDetail({ app, userId }: { app: Detail; us
         </aside>
 
         <div className="space-y-4 md:col-start-1 md:row-start-2">
-          {/* Moslik */}
-          {app.match_score !== null ? (
-            <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
-              <SectionHeader title={t("applications.detail.match")} />
-              <MatchRing score={app.match_score} />
-              <MatchReasons reasons={app.match_reasons} className="mt-4" />
-            </section>
-          ) : null}
-
           {/* Xabar */}
           <section className="rounded-2xl border border-border/70 bg-card p-4 shadow-sm">
             <SectionHeader title={t("applications.detail.cover")} />

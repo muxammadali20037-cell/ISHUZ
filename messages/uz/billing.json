@@ -2,7 +2,7 @@
   "currency": "so'm",
   "pay_title": "To'lov",
   "vacancy_title": "Vakansiyani e'lon qilish",
-  "vacancy_desc": "{days} kun davomida faol: nomzodlarga ko'rinadi, mos ishchilarga bildirishnoma boradi",
+  "vacancy_desc": "{days} kun davomida faol: nomzodlarga ko'rinadi va ariza qabul qiladi",
   "promotion_title": "Profilni TOP ga chiqarish",
   "promotion_desc": "{hours} soat davomida profilingiz ish beruvchilar ro'yxatida eng yuqorida turadi",
   "pay_with": "{provider} orqali to'lash",
@@ -110,7 +110,7 @@
     "benefits": {
       "vacancy_publish": [
         "{days} kun qidiruvda — ishchilar sizni topadi",
-        "Mos ishchilarga darhol xabar boradi",
+        "Telegram kanalimizda ham e'lon qilinadi",
         "Arizalar va qo'ng'iroqlar to'g'ridan-to'g'ri sizga"
       ],
       "worker_listing": [
@@ -212,8 +212,8 @@
     "f_vacancy_days": "Vakansiya {days} kun qidiruvda",
     "f_worker_days": "E'lon {days} kun ish beruvchilar qidiruvida",
     "f_channel": "Telegram kanalimizda ham e'lon qilinadi",
-    "f_vacancy_base": "Mos ishchilarga xabar, arizalar va chat",
-    "f_worker_base": "Cheksiz ariza va mos ishlar haqida xabar",
+    "f_vacancy_base": "Arizalar va chat",
+    "f_worker_base": "Cheksiz ariza",
     "discount": "Ishga tushish aksiyasi: birinchi to'lovga −{percent}% ({date} gacha)",
     "always_free": "Ish va ishchi qidirish, ariza yuborish va chat — har doim bepul",
     "how_to_buy": "Tarif e'lon joylashda yoki e'lon sahifasidagi «TOP qilish» tugmasidan tanlanadi",

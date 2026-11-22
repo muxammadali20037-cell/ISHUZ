@@ -29,7 +29,7 @@ export async function EmployerPipeline({ vacancy, status, sort }: { vacancy: Man
         }
       />
       <Suspense fallback={null}>
-        <PipelineFilters counts={counts} status={status} sort={sort} />
+        <PipelineFilters counts={counts} status={status} />
       </Suspense>
       <div className="mt-4 grid gap-3 md:grid-cols-2">
         {items.length ? (

@@ -9,15 +9,19 @@ const full: PostDraft = {
   firstName: "Botir",
   lastName: "",
   experience: "1_3",
+  notes: ["Obed tekin"],
   phone: "+998901234567",
 };
 
 describe("chatda e'lon: savollar bittadan, tartib bilan", () => {
-  it("kasb → viloyat → ism → tajriba → telefon → tayyor", () => {
+  it("kasb → viloyat → ism → tajriba → izoh (ixtiyoriy) → telefon → tayyor", () => {
     expect(nextPostAsk({ ...full, profession: null, regionId: null })).toBe("post_profession");
     expect(nextPostAsk({ ...full, regionId: null })).toBe("post_region");
     expect(nextPostAsk({ ...full, firstName: "" })).toBe("post_name");
     expect(nextPostAsk({ ...full, experience: null })).toBe("post_experience");
+    // 2026-11-22: izoh — tajribadan keyin; "Izohsiz" (bo'sh ro'yxat) ham javob
+    expect(nextPostAsk({ ...full, notes: null })).toBe("post_note");
+    expect(nextPostAsk({ ...full, notes: [], phone: null })).toBe("post_phone");
     expect(nextPostAsk({ ...full, phone: null })).toBe("post_phone");
     expect(nextPostAsk(full)).toBeNull();
   });
@@ -25,7 +29,7 @@ describe("chatda e'lon: savollar bittadan, tartib bilan", () => {
     expect(nextPostAsk({ ...full, experience: null })).toBe("post_experience");
   });
   it("to'liq bo'lsa — javoblar; bo'lmasa — null", () => {
-    expect(postAnswers(full)).toEqual({ professionId: full.profession!.id, firstName: "Botir", lastName: "", regionId: full.regionId, districtId: null, experience: "1_3", phone: "+998901234567", phone2: null });
+    expect(postAnswers(full)).toEqual({ professionId: full.profession!.id, firstName: "Botir", lastName: "", regionId: full.regionId, districtId: null, experience: "1_3", phone: "+998901234567", phone2: null, notes: ["Obed tekin"] });
     expect(postAnswers({ ...full, phone: null })).toBeNull();
   });
 });

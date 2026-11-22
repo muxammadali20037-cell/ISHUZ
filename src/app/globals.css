@@ -943,3 +943,17 @@ body:has([data-global-back]) [data-header-back] { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .intro-scan, .intro-pop, .intro-tap, .intro-bob { animation: none; }
 }
+
+/*
+ * Yozish maydonidagi "Yuborish" o'qi (ai-chat.tsx, ega 2026-11-22: "jo'natish belgisi tepaga ildirib tursin, qimirlab"):
+ * vaqti-vaqti bilan yengil yuqoriga turtiladi. Kamroq harakat tanlanganda — harakatsiz.
+ */
+@keyframes send-nudge {
+  0%, 55%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  40% { transform: translateY(0); }
+}
+.send-nudge { animation: send-nudge 1.8s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .send-nudge { animation: none; }
+}

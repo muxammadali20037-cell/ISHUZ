@@ -90,7 +90,7 @@ export function SavedWorkersList({ items: initial }: { items: SavedWorkerItem[] 
           {visible.map((item) => (
             <li key={item.worker_id} className="rounded-2xl border border-border/70 bg-card shadow-sm">
               {item.card ? (
-                <WorkerCard worker={item.card} hideMatch className="rounded-b-none border-0 shadow-none" />
+                <WorkerCard worker={item.card} className="rounded-b-none border-0 shadow-none" />
               ) : (
                 <div className="flex items-center gap-3 p-4 text-sm text-muted-foreground">
                   <UserX className="size-5 shrink-0" />

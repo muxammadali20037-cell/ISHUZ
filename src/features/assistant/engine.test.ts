@@ -29,7 +29,6 @@ const result = (over: Partial<AiFindResult> = {}): AiFindResult => ({
   total: 1,
   href: "/search?mode=jobs",
   relaxed: [],
-  alertHref: "/ai-alerts?role=worker&q=x",
   postHref: "/post/worker",
   flags: { profession: true, filters: false },
   ...over,

@@ -15,7 +15,7 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 export async function GET(req: NextRequest, ctx: { params: Promise<{ token: string }> }) {
   const { token } = await ctx.params;
   const all = req.nextUrl.searchParams.get("all") === "1";
-  let target = "/cabinet/matches";
+  let target = "/cabinet/elonlar";
   if (UUID.test(token)) {
     const db = createSupabaseClient<Database>(publicEnv.NEXT_PUBLIC_SUPABASE_URL, publicEnv.NEXT_PUBLIC_SUPABASE_ANON_KEY, { auth: { persistSession: false } });
     const { data } = await db.rpc("notification_open", { p_token: token });

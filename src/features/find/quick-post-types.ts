@@ -61,6 +61,8 @@ export interface PostAnswers {
   phone2: string | null;
   /** tekshirish oynasida yaratilgan AI rasm qoralamasi (ega, 2026-11-22: "joylashdan oldin") */
   imageDraft?: string | null;
+  /** "Izoh" bandlari (ega, 2026-11-22: "obed, yo'lkira tekin…") — e'lon matniga ✅ bilan qo'shiladi */
+  notes?: string[];
 }
 
 /** "Sizning e'loningiz shunday ko'rinadi" — serverda, joylanadigan matnning o'zi */

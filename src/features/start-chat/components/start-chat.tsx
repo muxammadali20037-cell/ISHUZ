@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, ChevronDown, ClipboardList, Info, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, Check, ChevronDown, ClipboardList, Info, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ import { AiPromptBox } from "@/features/find/components/ai-chat";
 import { AiJobCard, AiWorkerCard, type CardImage } from "@/features/find/components/ai-cards";
 import { ListingImageDraft, type DraftImage } from "@/features/listing-image/components/listing-image-draft";
 import { vacancyPhotoUrl } from "@/features/post/photo";
+import { WORKER_NOTE_PRESETS } from "@/features/post/notes";
+import { VacancyDescription } from "@/features/jobs/components/vacancy-description";
 import type { QuickList } from "@/features/find/quick-types";
 import { POST_EXPERIENCES } from "@/features/find/quick-post-types";
 import { CheckoutPanel } from "@/features/billing/components/checkout-panel";
@@ -31,7 +33,7 @@ const FIRST = 3;
 
 /**
  * Asosiy ekran — chat. Bo'sh holatda (ega, 2026-11-22): tepada qisqa video-tushuntirish (ovozli — ruxsat so'raladi),
- * «O'zingizga mos ishni yoki ishchini toping» va ikki katta tugma — «Ish qidiryapman» / «Ishchi qidiryapman»; keyin
+ * «Ish yoki ishchini oson toping» va ikki katta tugma — «Ish qidiryapman» / «Ishchi qidiryapman»; keyin
  * ketma-ket: kasb (3 ta + hammasi + qidiruv) → viloyat → «Endi nima qilamiz?». Yozish ham ishlaydi: yozilgach —
  * AI maqsadni o'zi aniqlaydi, yetishmaganini bittadan muloyim so'raydi (hudud — tugmalar), natijalar shu chatda kartalar
  * bilan. Mehmon ham, kirgan foydalanuvchi ham — bir xil ekran. Telegram kanal — kirgandan keyin chiqadigan oynada
@@ -80,7 +82,8 @@ export function StartChat({
   }, [chat, post, t]);
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const who = mode === "employer" ? "employer" : mode === "worker" ? "worker" : "guest";
-  const placeholder = chat.awaiting === "profession" ? t("easy.guided.placeholder_profession") : t(`easy.guided.placeholder_${who}`);
+  // ko'rsatma — har savolga mos (ega, 2026-11-22: "telefon so'raganda «Masalan: men oshpazman» nima bu — har so'rovda o'zgarsin")
+  const placeholder = chat.awaiting ? t(`easy.guided.placeholder_${chat.awaiting}`) : t(`easy.guided.placeholder_${who}`);
   // skriptlarsiz yuborilgan matn shu sahifaning o'ziga qaytadi (mehmon — "/", kirgan — "/chat")
   const action = owner === "guest" ? "/" : "/chat";
   const empty = !chat.msgs.length;
@@ -105,7 +108,7 @@ export function StartChat({
 
         {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
         <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2" data-tour="composer">
-          <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} />
+          <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} inputMode={chat.awaiting === "post_phone" ? "tel" : undefined} />
         </div>
       </div>
     </ImageEnabled.Provider>
@@ -396,6 +399,25 @@ function Results({ part, chat, latest }: { part: Extract<AiPart, { kind: "result
             </Link>
           </Button>
         ) : null}
+        {/* e'lonlar ostida kichik yozuv (ega, 2026-11-22: "mavjud e'lonlarni ko'rdi — tagida kichkina «+ E'lon joylash»"):
+            ish izlovchi — o'zi haqida (shu chatda, qidirilgan kasb bilan), ish beruvchi — vakansiya */}
+        {latest ? (
+          jobs ? (
+            <button
+              type="button"
+              disabled={chat.pending}
+              onClick={() => chat.beginPost(part.query, t("easy.finder.empty_post_worker"))}
+              className="press inline-flex min-h-11 items-center gap-1 self-start rounded-lg px-1 text-sm font-bold text-primary-ink hover:underline"
+              data-guided-post-link="worker"
+            >
+              <Plus className="size-4" aria-hidden /> {t("easy.guided.post_link")}
+            </button>
+          ) : (
+            <Link href={vacancyHref(part.query)} className="press inline-flex min-h-11 items-center gap-1 self-start rounded-lg px-1 text-sm font-bold text-primary-ink hover:underline" data-guided-post-link="vacancy">
+              <Plus className="size-4" aria-hidden /> {t("easy.guided.post_link")}
+            </Link>
+          )
+        ) : null}
       </Ai>
     );
   }
@@ -539,6 +561,46 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
           ) : null}
         </Ai>
       );
+    case "post_note":
+      // ixtiyoriy izoh (ega, 2026-11-22): tayyor variantlar (bir nechtasi) yoki pastda o'z so'zi bilan; e'longa ✅ bilan
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{t("easy.guided.ask_post_note")}</Say>
+          {open ? (
+            <div className="space-y-2.5" data-post-notes>
+              <ul className="flex flex-wrap gap-2">
+                {WORKER_NOTE_PRESETS.map((k) => {
+                  const label = t(`easy.notes.worker.${k}`);
+                  const on = chat.notePicks.includes(label);
+                  return (
+                    <li key={k}>
+                      <button
+                        type="button"
+                        aria-pressed={on}
+                        disabled={chat.pending}
+                        onClick={() => chat.toggleNotePick(label)}
+                        className={cn("press inline-flex min-h-11 items-center gap-1.5 rounded-lg border px-3 text-sm font-semibold", on ? "border-primary bg-primary-soft text-primary-ink" : "border-border bg-card hover:border-primary/60")}
+                        data-post-note={k}
+                      >
+                        {on ? <Check className="size-4" aria-hidden /> : null} {label}
+                      </button>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="grid grid-cols-2 gap-2">
+                <Button type="button" size="lg" className="text-base" disabled={chat.pending || !chat.notePicks.length} onClick={chat.pickPostNotes} data-post-notes-done>
+                  {t("easy.guided.post_note_done")}
+                </Button>
+                <Button type="button" variant="outline" size="lg" className="text-base" disabled={chat.pending} onClick={() => chat.skipPostNotes(t("easy.guided.post_note_skip"))} data-post-notes-skip>
+                  {t("easy.guided.post_note_skip")}
+                </Button>
+              </div>
+            </div>
+          ) : null}
+        </Ai>
+      );
     case "post_phone":
       return (
         <Ai kind={kind}>
@@ -579,7 +641,8 @@ function PostPreviewCard({ part, chat, open }: { part: Extract<AiPart, { kind: "
           <MapPin className="size-4 shrink-0" aria-hidden />
           <span>{p.place}</span>
         </p>
-        <p className="text-base leading-relaxed [overflow-wrap:anywhere]">{p.about}</p>
+        {/* izoh bandlari (✅) — yashil belgili ro'yxat bo'lib */}
+        <VacancyDescription text={p.about} className="text-base [overflow-wrap:anywhere]" />
         <p className="flex items-center gap-2 text-base font-semibold" data-post-phone>
           <Phone className="size-4 shrink-0 text-primary-ink" aria-hidden />
           {maskPhone(formatPhone(p.answers.phone))}
