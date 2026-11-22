@@ -29,9 +29,13 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await box.fill("Men sotuvchiman, ish kerak");
   await box.press("Enter");
   await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
-  // keyingi ochilishda — ish izlovchining yozish maydoni (misol ko'rsatmasi rejimga mos)
-  await page.goto("/chat");
-  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
+  // hudud so'raldi — pastdagi yozuv shu savolga mos (ega, 2026-11-22: "har bitta so'rovda o'zgarsin")
+  await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "ask-place");
+  await expect(box).toHaveAttribute("placeholder", "Viloyat yoki tuman…");
+  // keyingi ochilishda (yangi oyna — suhbat yangi) — ish izlovchining yozish maydoni (misol ko'rsatmasi rejimga mos)
+  const fresh = await context.newPage();
+  await fresh.goto("/chat");
+  await expect(fresh.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
 });
 
 test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol — Profildagi «Boshqa sozlamalar» ichida, bir bosishda", async ({ page, context }) => {
