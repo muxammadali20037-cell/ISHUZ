@@ -6,8 +6,9 @@ Ega: "rasm yaratib bersin chiroyli qilib e'lonlar uchun, ilovada ham rasm bilan 
 so'rab (hozirgidek), eski e'lonlarga yaratilmaydi.
 
 - Chat natijasidagi vakansiya va ishchi kartalari tepasida rasm: haqiqiy ish joyi surati («Ish joyi surati»), bo'lmasa —
-  egasi yaratgan AI e'lon rasmi («AI rasm» belgisi bilan). Rasmsiz e'lon — avvalgidek.
-- E'lon sahifasidagi AI rasmda ham «AI rasm» belgisi — haqiqiy surat (ish joyi yoki ishchining o'zi) deb o'ylanmasin.
+  egasi yaratgan AI e'lon rasmi (belgisiz — ega: "«AI rasm» yozuvi bo'lmasin"). Rasmsiz e'lon — avvalgidek.
+- Ishchi e'loni uchun AI rasmda endi kameraga qaragan portret chizilmaydi — ish joyi va asboblari (odam bo'lsa — orqadan yoki
+  uzoqdan): belgisiz rasm e'lon egasining o'z surati deb o'ylanmasin.
 
 ## 2026-11-22 · Ovozli video va tugmalar bilan ovozli tanishuv (`feat/intro-voice`)
 

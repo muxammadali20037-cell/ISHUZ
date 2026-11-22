@@ -6,6 +6,7 @@ import type { Archetype } from "@/lib/job-art/person";
  * shu, bo'lmasa sarlavha), kasb turi (archetype — kiyim va ish joyi) va e'lon turi. Rasmda HECH QANDAY yozuv bo'lmaydi:
  * matn (kasb, maosh, joy) ustiga o'zimiz shablon bilan yozamiz — AI harflarni (ayniqsa o'zbekcha) xato chizadi.
  * Kompozitsiya: asosiy obyekt o'ng tomonda, chap tomon — matn uchun tinch fon. Bolalar, brend va real shaxslar yo'q.
+ * Ishchi e'lonida kameraga qaragan portret yo'q (rasm belgisiz ko'rsatiladi — kimningdir surati deb o'ylanmasin).
  */
 const SCENES: Record<Archetype, string> = {
   doctor: "a doctor in a white coat in a bright modern clinic",
@@ -60,9 +61,11 @@ export function buildListingImagePrompt(input: ListingImageInput): string {
   const archetype = jobArchetype({ names: input.names, categorySlug: input.categorySlug ?? null });
   const job = clean(input.names.find((n) => n && n.trim()) ?? "") || "worker";
   const scene = SCENES[archetype];
+  // ishchi e'loni: rasm belgisiz ko'rsatiladi (ega, 2026-11-22) — shuning uchun kameraga qaragan "portret" yo'q, aks holda
+  // ish beruvchi uni e'lon egasining o'z surati deb o'ylashi mumkin. Ish joyi va asboblari; odam — faqat orqadan/uzoqdan
   const who =
     input.kind === "worker"
-      ? "A friendly, confident adult Central Asian person, ready to work, looking at the camera with a warm smile."
+      ? "Focus on the workplace and the tools of this profession. No portrait and no close-up face: if a person is visible, show them only from behind or far away, busy at work, so the image never looks like a photo of a specific person."
       : "The workplace of this job with an adult Central Asian employee busy at work.";
   return [
     `Photorealistic, high-quality commercial photograph for a job advertisement in Uzbekistan. Job: ${job}.`,

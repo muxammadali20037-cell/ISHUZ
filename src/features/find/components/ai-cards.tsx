@@ -66,7 +66,10 @@ function Row({ icon, label, children }: { icon: ReactNode; label: string; childr
 }
 
 /** Yopiq kartada hudud — to'liq (kesilmaydi), kichik kulrang qator */
-/** kartaning rasmi: haqiqiy ish joyi surati yoki egasi so'ragan AI rasm; har biri belgisi bilan (AI rasm haqiqiy deb o'ylanmasin) */
+/**
+ * kartaning rasmi: haqiqiy ish joyi surati («Ish joyi surati» belgisi bilan) yoki egasi so'ragan AI rasm (belgisiz — ega,
+ * 2026-11-22). AI rasmda aniq odam portreti chizilmaydi (listing-image/prompt.ts) — u kimningdir surati deb o'ylanmaydi.
+ */
 export interface CardImage {
   src: string;
   ai: boolean;
@@ -78,9 +81,7 @@ function CardBanner({ image, alt }: { image: CardImage; alt: string }) {
     <figure className="relative mb-3 overflow-hidden rounded-lg border border-border bg-secondary" data-ai-card-image={image.ai ? "ai" : "photo"}>
       {/* eslint-disable-next-line @next/next/no-img-element -- ochiq bucket'dagi tayyor JPEG; kartada kichik, lazy */}
       <img src={image.src} alt={alt} width={1536} height={1024} loading="lazy" decoding="async" className="aspect-[16/7] w-full object-cover" />
-      <figcaption className="absolute bottom-1.5 left-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-xs font-semibold text-white">
-        {image.ai ? t("easy.photo.ai_label") : t("easy.photo.label")}
-      </figcaption>
+      {image.ai ? null : <figcaption className="absolute bottom-1.5 left-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-xs font-semibold text-white">{t("easy.photo.label")}</figcaption>}
     </figure>
   );
 }

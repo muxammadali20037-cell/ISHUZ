@@ -40,8 +40,8 @@ test("tayyor rasm — vakansiya sahifasida ixcham banner; tayyorlanayotgani ko'r
   await expect(photo).toBeVisible();
   await expect(photo).toHaveAttribute("src", IMG);
   await expect(photo).toHaveAttribute("alt", TITLE);
-  // AI rasm haqiqiy surat deb o'ylanmasin (2026-11-22)
-  await expect(page.locator("[data-listing-photo] figcaption")).toHaveText("AI rasm");
+  // ega (2026-11-22): «AI rasm» yozuvi yo'q
+  await expect(page.locator("[data-listing-photo] figcaption")).toHaveCount(0);
   // ixcham: keng banner (balandligi kengligidan ancha kichik)
   const box = (await photo.boundingBox())!;
   expect(box.height).toBeLessThan(box.width * 0.6);
@@ -80,7 +80,7 @@ test("egasi yaratadi (soxta OpenAI) → saqlanadi → e'londa va post rasmida; b
   expect(img.headers()["content-type"]).toContain("image/png");
 });
 
-test("chat natijasida — karta rasm bilan («AI rasm» belgisi); rasmsiz e'lon — avvalgidek (2026-11-22)", async ({ page, context }) => {
+test("chat natijasida — karta rasm bilan (belgisiz); rasmsiz e'lon — avvalgidek (2026-11-22)", async ({ page, context }) => {
   const [n] = await sql<{ id: string; category_id: string }>("select id, category_id from public.profession_nodes where name_uz = 'Farrosh' and selectable limit 1");
   const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
   const [v] = await sql<{ id: string }>(
@@ -105,7 +105,7 @@ test("chat natijasida — karta rasm bilan («AI rasm» belgisi); rasmsiz e'lon 
   }
   const card = page.locator("[data-ai-card='job']").filter({ hasText: TITLE });
   await expect(card.locator("[data-ai-card-image='ai'] img")).toHaveAttribute("src", IMG);
-  await expect(card.locator("[data-ai-card-image='ai'] figcaption")).toHaveText("AI rasm");
+  await expect(card.locator("[data-ai-card-image='ai'] figcaption")).toHaveCount(0);
   // boshqa (rasmsiz) kartalarda rasm joyi yo'q
   await expect(page.locator("[data-ai-card='job']").filter({ hasNotText: TITLE }).locator("[data-ai-card-image]")).toHaveCount(0);
 });
