@@ -103,7 +103,7 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     );
   });
 
-  it("ishchi: ISHCHI belgisi, ismsiz; raqam berilmasa — telefonsiz (sarlavhadagi raqam ham olib tashlanadi), tugma — ishchi sahifasi", () => {
+  it("ishchi: ISHCHI belgisi, ismsiz, raqamsiz (sarlavhadagi raqam ham olib tashlanadi); tugma — «Bog'lanish», e'londagi raqam ochish", () => {
     const p = workerPost(
       { id: "0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21", profession: "Oshpaz", headline: "Milliy taomlar, tel 998901234567", place: "Samarqand viloyati", experience: "3–5 yil", salary: 5_000_000, salaryType: "monthly", schedules: ["5/2", "Smenali"] },
       t,
@@ -115,23 +115,13 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(p.html).toContain("Tajriba: 3–5 yil");
     expect(p.html).toContain("Kutilayotgan maosh:");
     expect(p.html).not.toMatch(/998901234567/);
-    expect(p.button.url).toBe(`${BASE}/workers/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21`);
+    expect(p.button).toEqual({ text: "📞 Bog'lanish", url: `${BASE}/listing/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21#contact` });
+    expect(p.html).toMatch(/\n\n📞 Raqam — «Bog'lanish» tugmasi orqali saytda$/);
     // 2026-11-17 (ega): ishchi e'loni ham rasm bilan — kasbi, tajribasi, joyi, maosh (ism, telefon yo'q);
     // 2026-11-18: rasm ostida to'liq matn
     expect(p.photo).toBe(`${BASE}/api/promo/worker/0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21`);
     expect(p.caption).toBe(p.html);
-    expect(p.caption).not.toMatch(/998901234567|📞/);
-  });
-
-  it("ishchi: rozilik bilan saqlangan raqam(lar) — oxirida, bo'shliqsiz (bosilsa qo'ng'iroq); takror va noto'g'ri raqam — yo'q", () => {
-    const p = workerPost(
-      { id: "w1", profession: "Ofitsiant", headline: null, place: "Payariq tumani, Samarqand", experience: "1–2 yil", salary: null, salaryType: null, schedules: [], phones: ["+998932728766", "+998 90 123-45-67", "+998932728766", "12345"] },
-      t,
-      BASE,
-    );
-    expect(p.html).toMatch(/Kelishiladi\n\n📞 Tel: \+998932728766, \+998901234567$/);
-    expect(p.caption).toBe(p.html);
-    expect(workerPost({ id: "w2", profession: "Oshpaz", headline: null, place: null, experience: null, salary: null, salaryType: null, schedules: [], phones: [] }, t, BASE).html).not.toMatch(/📞/);
+    expect(p.caption).not.toMatch(/998901234567|Tel:/);
   });
 
   it("dialable: faqat O'zbekiston raqami, xalqaro ko'rinishda", () => {

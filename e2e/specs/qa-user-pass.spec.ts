@@ -113,7 +113,12 @@ test("chat: uzun gapdan kasb to'g'ri olinadi (tuman nomi kasb bo'lmaydi); tushun
   );
   await box.press("Enter");
   await settled();
-  // kasb ham, hudud ham tushunildi — savolsiz qidiruv; "chilonzor" kasb emas
+  // kasb ham, hudud ham tushunildi — boshqa savol yo'q; savol-javob bilan kelingani uchun avval tanlov (2026-11-22)
+  await expect(last()).toHaveAttribute("data-guided-ai", "next");
+  await box.blur();
+  await last().locator("[data-guided-next-to='see']").click();
+  await settled();
+  // "chilonzor" kasb emas
   await expect(last()).toHaveAttribute("data-guided-ai", /results|none/);
   const summary = page.locator("[data-guided-summary]").last();
   await expect(summary).toContainText(/sotuvchi/i);

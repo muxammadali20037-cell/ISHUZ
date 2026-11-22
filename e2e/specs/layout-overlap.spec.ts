@@ -98,6 +98,15 @@ test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi»
     await page.waitForTimeout(200);
     expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
     await page.locator("[data-guided-place='tashkent_city']").last().click();
+    // 2026-11-22: viloyatdan keyin tanlov ("Endi nima qilamiz?") — u ham ustma-ust emas
+    await expect(last).toHaveAttribute("data-guided-ai", "next", { timeout: 20_000 });
+    if (zoom) await zoomText(page, zoom);
+    await fullHeight(page);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.waitForTimeout(200);
+    expect(await findLayoutIssues(page, "[data-guided-thread]")).toEqual([]);
+    await box.blur();
+    await last.locator("[data-guided-next-to='see']").click();
     await expect(last).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
     if (zoom) await zoomText(page, zoom);
     await fullHeight(page);

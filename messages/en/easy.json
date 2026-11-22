@@ -240,7 +240,7 @@
     "pay_desc": "Once paid, employers see your listing right away for {days} days.",
     "saved_title": "Your details are saved",
     "edit_title": "Edit listing",
-    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: profession, area, experience, salary and your phone number (tap to call). Your name and photo are not shown there.",
+    "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: profession, area, experience and salary. Your name, photo and phone number are not shown there — employers unlock the number on the site via the “Contact” button.",
     "new_title": "Another listing"
   },
   "vacancy": {
@@ -427,7 +427,9 @@
     "not_found": "Listing not found or no longer active",
     "back": "Back to search",
     "phone2": "Additional number",
-    "own_phone": "Number in the ad"
+    "own_phone": "Number in the ad",
+    "field": "Field",
+    "format": "Work format"
   },
   "image": {
     "label": "Profession image"
@@ -1249,7 +1251,7 @@
     "q_schedule": "Which work schedule suits you?",
     "q_salary": "What monthly salary do you expect? For example: 5M. If you'd rather not say — “Negotiable”.",
     "q_name": "What's your name? (shown in the ad)",
-    "q_phone": "Type your phone number (for example: 90 123 45 67). Everyone will see it in the ad and in the Telegram channel.",
+    "q_phone": "Type your phone number (for example: 90 123 45 67). It goes on your listing — employers unlock it and call you.",
     "q_about": "Last question: write 1–2 sentences about yourself — what you can do, whether you have transport, etc. Or tap “Write it from my answers”.",
     "done": "Done! The ad has everything it needs. Check it and publish.",
     "got_profession": "Job: {value} ✓",
@@ -1469,7 +1471,7 @@
     "confirm": "Confirm",
     "preview_title": "This is how your ad will look",
     "preview_desc": "If everything is right — “Post”.",
-    "preview_phone": "The number you entered is shown in the ad and in the Telegram channel — employers will call it",
+    "preview_phone": "The number you entered goes on your listing — employers unlock it and call you",
     "publish": "Post",
     "edit": "Edit",
     "login_first": "To post, you'll confirm your phone number (SMS code).",
@@ -1492,7 +1494,7 @@
     "add_phone": "Another number",
     "q_phone2": "Additional number",
     "remove_phone": "Remove the additional number",
-    "preview_phones": "Both numbers you entered are shown in the ad and in the Telegram channel — employers will call them"
+    "preview_phones": "Both numbers you entered go on your listing — employers unlock them and call you"
   },
   "channel_prompt": {
     "title": "Join our Telegram channel",
@@ -1504,7 +1506,7 @@
   "phone_public": {
     "title": "Your number will be visible to everyone in the listing",
     "vacancy": "Job seekers can call you directly. The number also appears in the Ish topdim Telegram channel post.",
-    "worker": "Employers can call you directly. The number also appears in the Ish topdim Telegram channel post.",
+    "worker": "Employers unlock your number on your listing and call you. The Telegram channel post won't show your number.",
     "field_vacancy": "Phone in the listing",
     "field_worker": "Phone in the listing",
     "hint": "Type the number yourself — this exact number appears in the listing."
@@ -1655,8 +1657,8 @@
     "ask_role_p": "Let me check one thing: do you want to work as «{p}» yourself, or do you need a «{p}»?",
     "role_jobs": "I'm looking for a job",
     "role_workers": "I need a worker",
-    "ask_prof_jobs": "What job are you looking for? Type your profession — for example: driver, sales clerk, cook.",
-    "ask_prof_workers": "What worker do you need? Type the profession — for example: driver, sales clerk, cleaner.",
+    "ask_prof_jobs": "What's your profession? Pick below or type it.",
+    "ask_prof_workers": "What kind of worker do you need? Pick below or type it.",
     "ask_prof_unknown": "I didn't understand the profession «{word}». Please type it differently — for example: driver, sales clerk, cook.",
     "ask_place_jobs": "In which region do you want to work? Pick below.",
     "ask_place_workers": "Which region should the worker be from? Pick below.",
@@ -1692,6 +1694,54 @@
     "post_publishing": "Posting…",
     "post_done": "Congratulations! Your listing is posted — employers can now find you.",
     "post_mine": "My listings",
-    "post_new_you": "I want to post a listing about myself"
+    "post_new_you": "I want to post a listing about myself",
+    "start_jobs": "I'm looking for a job",
+    "start_jobs_sub": "Vacancies and a listing about you",
+    "start_workers": "I'm looking for a worker",
+    "start_workers_sub": "Workers and posting a vacancy",
+    "pick_all": "Show all · {count}",
+    "pick_all_places": "Other region · {count} in total",
+    "pick_less": "Show less",
+    "pick_search_prof": "Search: e.g. sales assistant",
+    "pick_search_place": "Type a region name",
+    "pick_none": "Nothing found — try another word or type in the box below.",
+    "next_ask": "What's next?",
+    "next_see_jobs": "See available jobs",
+    "next_see_jobs_sub": "Jobs posted by employers",
+    "next_post_worker": "Post a listing about me",
+    "next_post_worker_sub": "Employers will find you",
+    "next_see_workers": "See available workers",
+    "next_see_workers_sub": "Listings from job seekers",
+    "next_post_vacancy": "Post a vacancy",
+    "next_post_vacancy_sub": "Job seekers will find you"
+  },
+  "intro": {
+    "title": "How Ish topdim works",
+    "how": "How does it work?",
+    "watch": "Watch how it works",
+    "ask_sound": "Turn on the voice explanation?",
+    "sound_on": "Yes, turn on",
+    "sound_off": "No sound",
+    "play": "Play",
+    "pause": "Pause",
+    "replay": "Watch again",
+    "s1": "Hello! We're glad to see you.",
+    "s2": "This is Ish topdim: here you find both jobs and workers.",
+    "s3": "Looking for a job? Tap “I'm looking for a job”. Need a worker? Tap “I'm looking for a worker”.",
+    "s4": "Then pick your profession and region: browse listings or post your own.",
+    "s5": "Posting is easy — name, experience and phone, that's it!",
+    "s6": "If you have a question, type it in the box below.",
+    "demo_job1": "Sales assistant · Tashkent",
+    "demo_job2": "Driver · Samarkand",
+    "demo_job3": "Cook · Bukhara",
+    "demo_jobs": "Jobs",
+    "demo_workers": "Workers",
+    "demo_prof": "Profession: cook",
+    "demo_region": "Samarkand",
+    "demo_see": "Listings",
+    "demo_post": "Post",
+    "demo_name": "Name",
+    "demo_exp": "Experience",
+    "demo_phone": "Phone number"
   }
 }

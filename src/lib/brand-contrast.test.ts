@@ -129,7 +129,7 @@ describe("5.0 palitrasi (2026-11-16, ega \"ko'k-oq\" dizayni; docs/DESIGN_SYSTEM
     expect(raw("warm")).toBe("oklch(0.66 0.18 45)");
     expect(raw("border")).toBe("oklch(0.92 0.01 255)");
     expect(raw("ring")).toBe("oklch(0.52 0.2 260)");
-    expect(raw("radius")).toBe("0.875rem");
+    expect(raw("radius")).toBe("0.75rem"); // K1 korporativ (2026-11-22): avval 0.875rem
     expect(raw("gradient-brand")).toBe("linear-gradient(135deg, oklch(0.55 0.21 262), oklch(0.62 0.17 230))");
   });
   it("qorong'i mavzu foni va kartochkasi", () => {

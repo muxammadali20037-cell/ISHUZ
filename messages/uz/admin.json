@@ -1015,7 +1015,7 @@
     "media_how_video": "«Qanday ishlaydi» videosi",
     "media_telegram_free": "«Telegramda — bepul» reklamasi",
     "ap_title": "Avtomatik e'lonlar",
-    "ap_desc": "Yangi chiqqan e'lonlar kanalga o'zi tushadi: vakansiya — \"🟦 ISH\", ishchi e'loni (rezyume) — \"🟩 ISHCHI\". E'londagi telefon raqami ham chiqadi (bosilsa — qo'ng'iroq); ism va shaxsiy rasm chiqmaydi. Har e'lon bir marta; qayta joylansa — kuniga ko'pi bilan bir marta.",
+    "ap_desc": "Yangi chiqqan e'lonlar kanalga o'zi tushadi: vakansiya — \"🟦 ISH\", ishchi e'loni (rezyume) — \"🟩 ISHCHI\". Vakansiyadagi telefon raqami ham chiqadi (bosilsa — qo'ng'iroq); ishchi e'lonida raqam chiqmaydi — «Bog'lanish» tugmasi saytda raqam ochishga olib boradi. Ism va shaxsiy rasm chiqmaydi. Har e'lon bir marta; qayta joylansa — kuniga ko'pi bilan bir marta.",
     "ap_jobs": "Vakansiyalar (ISH)",
     "ap_jobs_hint": "Ish izlovchilar uchun: yangi tasdiqlangan vakansiyalar",
     "ap_workers": "Ishchi e'lonlari (ISHCHI)",

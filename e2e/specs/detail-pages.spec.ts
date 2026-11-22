@@ -89,7 +89,9 @@ test("ish e'loni: nomi, maosh, ish beruvchi, joy va faktlar birinchi ekranda; qo
   // sahifada raqam yo'q (ommaviy yig'ishga qarshi), bosilganda server IP limiti bilan beradi (0084)
   const reveal = main.locator("[data-contact-guest]").getByRole("button", { name: "Raqamni ko'rsatish" });
   const about = main.getByRole("heading", { level: 2, name: "Vazifalar" });
-  expect((await reveal.boundingBox())!.y).toBeLessThan((await about.boundingBox())!.y);
+  // sahifa boshidan hisoblanadi ("Manzil" havolasidan keyingi silliq aylantirish o'lchovga ta'sir qilmasin)
+  const docTop = (l: typeof reveal) => l.evaluate((el) => el.getBoundingClientRect().top + window.scrollY);
+  expect(await docTop(reveal)).toBeLessThan(await docTop(about));
   await expect(main.locator("a[href^='tel:']")).toHaveCount(0);
   await expect(page.locator("body")).not.toContainText("90 111 22 33");
   await reveal.click();
@@ -149,7 +151,7 @@ test("'Orqaga': qidiruvdan kelganda — o'sha natijalarga; havola orqali ochilga
   await fresh.close();
 });
 
-test("ishchi e'loni: ism birinchi ekran tepasida, katta bo'sh rasm yo'q, faktlar ixcham, 'Bog'lanish' birinchi ekranda", async ({ page, context }) => {
+test("ishchi e'loni: kasb va ism birinchi ekran tepasida, katta bo'sh rasm yo'q, faktlar ixcham, 'Bog'lanish' birinchi ekranda", async ({ page, context }) => {
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
   const [n] = await sql<{ id: string; category_id: string }>("select id, category_id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
   const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
@@ -164,9 +166,11 @@ test("ishchi e'loni: ism birinchi ekran tepasida, katta bo'sh rasm yo'q, faktlar
     await page.goto(`/listing/${w!.id}`);
     await page.waitForLoadState("networkidle");
     const main = page.getByRole("main");
+    // professional ko'rinish (ega, 2026-11-22): sarlavha — kasb, ostida odam qatori (ism, hudud)
     const h1 = main.getByRole("heading", { level: 1 });
-    await expect(h1).toContainText("Botir");
+    await expect(h1).toContainText("Buxgalter");
     expect((await h1.boundingBox())!.y).toBeLessThan(250); // avval ~460 px (240 px'lik rasm ostida)
+    await expect(main.locator("[data-listing-person]")).toContainText("Botir");
     // rasm/kasb belgisi — ism yonida kichik
     const thumb = main.getByRole("img", { name: "Buxgalter" }).first();
     expect((await thumb.boundingBox())!.height).toBeLessThanOrEqual(64);

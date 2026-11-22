@@ -21,6 +21,10 @@ export interface Draft {
   formMode: Role;
   /** kasb bir marta so'raldi — ikkinchi marta so'ralmaydi (tushunilmasa ham yozilgan so'z bilan qidiriladi) */
   askedProfession: boolean;
+  /** kamida bitta savol berildi (rol, kasb yoki hudud) — oxirida "Endi nima qilamiz?" tanlovi (ega, 2026-11-22) */
+  guided?: boolean;
+  /** "Mavjud e'lonlarni ko'rish" tanlangan — keyingi qidiruvlarda (boshqa viloyat) tanlov qayta so'ralmaydi */
+  see?: boolean;
 }
 
 export type AiPart =
@@ -38,6 +42,11 @@ export type AiPart =
   | { kind: "post-preview"; preview: PostPreview }
   /** joylash natijasi (haqiqiy holat) */
   | { kind: "post-done"; outcome: PostOutcome }
+  /**
+   * Kasb va hudud tayyor, savol-javob bilan kelindi — "Endi nima qilamiz?": ish izlovchi — mavjud e'lonlar yoki o'zi haqida
+   * e'lon; ish beruvchi — mavjud ishchilar yoki vakansiya joylash (ega, 2026-11-22)
+   */
+  | { kind: "next"; mode: Role; draft: Draft; label: string }
   | { kind: "results"; mode: Role; result: QuickResult; query: string; draft: Draft }
   | { kind: "error"; message: string };
 
@@ -93,12 +102,25 @@ export function draftFromForm(form: QuickForm): Draft {
   };
 }
 
-/** Hudud tugmalari: avval viloyatlar, keyin "Butun O'zbekiston"; masofaviy — faqat ish qidirishda */
+/**
+ * Hudud tanlovi: "Butun O'zbekiston", keyin viloyatlar (bazadagi tartibda: Toshkent shahri, Toshkent viloyati, …); masofaviy —
+ * faqat ish qidirishda, oxirida. Chatda avval birinchi 3 tasi, qolgani "Hammasi" yoki qidiruv bilan (ega, 2026-11-22).
+ */
 export function placeChoices(places: QuickOption[], mode: Role): QuickOption[] {
   const regions = places.filter((p) => p.value !== "all" && p.value !== "remote" && !p.value.includes("~"));
   const all = places.find((p) => p.value === "all");
   const remote = mode === "jobs" ? places.find((p) => p.value === "remote") : undefined;
-  return [...regions, ...(all ? [all] : []), ...(remote ? [remote] : [])];
+  return [...(all ? [all] : []), ...regions, ...(remote ? [remote] : [])];
+}
+
+/** Hamma narsa tayyor: savol-javob bilan kelingan bo'lsa — avval tanlov, aks holda (bitta to'liq gap) — darhol qidiruv */
+export function readyStep(d: Pick<Draft, "guided" | "see">): "next" | "search" {
+  return d.guided && !d.see ? "next" : "search";
+}
+
+/** Tanlovdan keyingi e'lon uchun hudud: viloyat tanlangan bo'lsa — o'sha (slug), "Butun O'zbekiston"/masofaviy — yo'q */
+export function regionSlugOf(place: string): string | null {
+  return place && place !== "all" && place !== "remote" ? (place.split("~")[0] ?? null) : null;
 }
 
 export function roleOfMode(mode: AppMode | null): Role | null {

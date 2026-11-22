@@ -156,26 +156,14 @@ describe("kanalga avtomatik e'lon", () => {
     expect(caption("none")).not.toMatch(/📞/);
   });
 
-  it("ishchi raqami — kanal tilga olingan matndan keyin saqlangan bo'lsa (ikkala raqam); oldingisi — raqamsiz", async () => {
-    tables.worker_profiles = [worker("new"), worker("old"), worker("bare")];
-    tables.worker_listing_phones = [
-      { worker_id: "new", phone: "+998932728766", phone2: "+998901112233", updated_at: "2026-11-21T09:00:00.5+00:00" },
-      { worker_id: "old", phone: "+998944445566", phone2: null, updated_at: "2026-11-19T10:00:00+00:00" },
-    ];
-    expect(await runChannelAutopost()).toMatchObject({ posted: 3 });
-    const html = (id: string) => (send.mock.calls.map(([x]) => x as { html: string; button: { url: string } }).find((x) => x.button.url.endsWith(`/workers/${id}`))!).html;
-    expect(html("new")).toMatch(/📞 Tel: \+998932728766, \+998901112233$/);
-    expect(html("old")).not.toMatch(/📞|944445566/);
-    expect(html("bare")).not.toMatch(/📞/);
-  });
-
-  it("ishchi raqami pullik bo'lsa (0088, admin yoqqan) — kanal postida raqam yo'q", async () => {
-    tables.app_settings = [{ key: "contact_unlock_paid", value: true }];
+  it("ishchi postida raqam hech qachon yo'q (ega, 2026-11-22) — «Bog'lanish» tugmasi saytdagi e'londa raqam ochishga", async () => {
     tables.worker_profiles = [worker("new")];
-    tables.worker_listing_phones = [{ worker_id: "new", phone: "+998932728766", phone2: null, updated_at: "2026-11-21T09:00:00.5+00:00" }];
+    tables.worker_listing_phones = [{ worker_id: "new", phone: "+998932728766", phone2: "+998901112233", updated_at: "2026-11-21T09:00:00.5+00:00" }];
     expect(await runChannelAutopost()).toMatchObject({ posted: 1 });
-    const html = (send.mock.calls[0]![0] as { html: string }).html;
-    expect(html).not.toMatch(/📞|932728766/);
+    const post = send.mock.calls[0]![0] as { html: string; button: { text: string; url: string } };
+    expect(post.html).not.toMatch(/932728766|901112233|Tel:/);
+    expect(post.html).toMatch(/📞 Raqam — «Bog'lanish» tugmasi orqali saytda$/);
+    expect(post.button).toEqual({ text: "📞 Bog'lanish", url: "https://ishuz.vercel.app/listing/new#contact" });
   });
 
   it("eski (24 soatdan oldingi), yopilgan, bloklangan muallifniki va kasbsiz ishchi — yuborilmaydi", async () => {
@@ -218,7 +206,7 @@ describe("kanalga avtomatik e'lon", () => {
     tables.vacancies = [vacancy("a")];
     tables.worker_profiles = [worker("w")];
     expect((await runChannelAutopost()).posted).toBe(1);
-    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@ishchilar_kanal", button: { url: "https://ishuz.vercel.app/workers/w" } });
+    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@ishchilar_kanal", button: { url: "https://ishuz.vercel.app/listing/w#contact" } });
   });
 
   it("e'lon egasiga: \"E'loningiz joylandi\" — rasm va ilova tugmasi bilan, bir marta; bot ishga tushmagan bo'lsa — yo'q", async () => {

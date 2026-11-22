@@ -34,6 +34,8 @@ export default defineConfig({
         { name: "ib_channel", value: "1", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" },
         // birinchi kirgandagi tugmalar tanishtiruvi (app-tour) — ko'rilgan; uni tour.spec tekshiradi
         { name: "ib_tour", value: "we", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" },
+        // chat tepasidagi video-tushuntirish ko'rilgan (yig'ilgan "Qanday ishlaydi?"); uni chat-intro.spec ochadi
+        { name: "ib_intro_v", value: "1", domain: new URL(app).hostname, path: "/", expires: -1, httpOnly: false, secure: false, sameSite: "Lax" },
       ],
       origins: [],
     },

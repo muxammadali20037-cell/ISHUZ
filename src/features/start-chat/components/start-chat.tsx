@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowDown, ArrowRight, BriefcaseBusiness, ChevronDown, Info, MapPin, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
+import { ArrowRight, BriefcaseBusiness, ChevronDown, ClipboardList, Info, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,9 @@ import { POST_EXPERIENCES } from "@/features/find/quick-post-types";
 import { CheckoutPanel } from "@/features/billing/components/checkout-panel";
 import { formatPhone } from "@/lib/format";
 import type { AppMode } from "@/features/mode/mode";
-import { useGuidedChat, type AiPart, type GuidedChat, type Msg } from "../guided";
+import { useGuidedChat, type AiPart, type GuidedChat, type Msg, type Role } from "../guided";
+import { ChoicePicker, NextOption, PlaceIcon, ProfessionChoices } from "./chat-pickers";
+import { ChatIntro } from "./chat-intro";
 
 /** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
 export function vacancyHref(text = ""): string {
@@ -26,8 +28,9 @@ export function vacancyHref(text = ""): string {
 const FIRST = 3;
 
 /**
- * Asosiy ekran — chat. Bo'sh holatda juda sodda (ega, 2026-11-21 kechqurun: "ortiqcha narsalar kerakmas — bitta strelka
- * pastga, «O'zingizga mos ishni yoki ishchini toping», bo'ldi"): bitta yozuv, pastga strelka va yozish maydoni. Yozilgach —
+ * Asosiy ekran — chat. Bo'sh holatda (ega, 2026-11-22): tepada qisqa video-tushuntirish (ovozli — ruxsat so'raladi),
+ * «O'zingizga mos ishni yoki ishchini toping» va ikki katta tugma — «Ish qidiryapman» / «Ishchi qidiryapman»; keyin
+ * ketma-ket: kasb (3 ta + hammasi + qidiruv) → viloyat → «Endi nima qilamiz?». Yozish ham ishlaydi: yozilgach —
  * AI maqsadni o'zi aniqlaydi, yetishmaganini bittadan muloyim so'raydi (hudud — tugmalar), natijalar shu chatda kartalar
  * bilan. Mehmon ham, kirgan foydalanuvchi ham — bir xil ekran. Telegram kanal — kirgandan keyin chiqadigan oynada
  * (ChannelPrompt), bu yerda emas.
@@ -37,6 +40,7 @@ export function StartChat({
   owner,
   initialQuery = "",
   post = null,
+  introSeen = false,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
@@ -48,6 +52,8 @@ export function StartChat({
    * ?post=new — "E'lonlarim"dagi "+ E'lon joylash": e'lon savollari darhol boshlanadi
    */
   post?: "resume" | "new" | null;
+  /** video-tushuntirish ko'rilgan/yopilgan (cookie) — yig'ilgan holda ("Qanday ishlaydi?") */
+  introSeen?: boolean;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
@@ -77,10 +83,11 @@ export function StartChat({
   return (
     <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" data-start-chat data-chat-mode={mode ?? "guest"}>
       {empty ? (
-        // bo'sh holat: o'rtada bitta yozuv va yozish maydoniga qaragan strelka — boshqa hech narsa
-        <div className="flex flex-1 flex-col items-center justify-center gap-4 py-10 text-center" data-guided-empty>
-          <h1 className="max-w-xs text-2xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:max-w-md sm:text-3xl">{t("easy.guided.hello")}</h1>
-          <ArrowDown className="size-8 text-primary-ink motion-safe:animate-bounce" strokeWidth={2.5} aria-hidden data-guided-arrow />
+        // bo'sh holat: video-tushuntirish, sarlavha va ikki katta tugma (ketma-ketlik shu yerdan boshlanadi)
+        <div className="flex flex-1 flex-col gap-4 py-4" data-guided-empty>
+          <ChatIntro seen={introSeen} />
+          <h1 className="mx-auto mt-1 max-w-xs text-center text-2xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:max-w-md sm:text-3xl">{t("easy.guided.hello")}</h1>
+          <RoleStart chat={chat} onPick={chat.start} />
         </div>
       ) : (
         <div className="flex-1 py-6">
@@ -228,27 +235,20 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
 
     case "ask": {
       if (part.ask === "role") {
-        return (
+        // savol matnisiz — faqat ikki variant (ega, 2026-11-22: "so'ramasin, 2 ta variant chiqsin ekranga")
+        // javob berilgach — hech narsa (tanlangan rol foydalanuvchi xabari sifatida ko'rinadi)
+        return open ? (
           <Ai kind="ask-role">
-            <Say>{part.profession ? t("easy.guided.ask_role_p", { p: part.profession }) : t("easy.guided.ask_role")}</Say>
-            {open ? (
-              <div className="grid gap-2 sm:grid-cols-2" data-guided-roles>
-                <ChoiceButton icon={<BriefcaseBusiness />} onClick={() => chat.pickRole("jobs", t("easy.guided.role_jobs"))} tag="jobs">
-                  {t("easy.guided.role_jobs")}
-                </ChoiceButton>
-                <ChoiceButton icon={<UsersRound />} onClick={() => chat.pickRole("workers", t("easy.guided.role_workers"))} tag="workers">
-                  {t("easy.guided.role_workers")}
-                </ChoiceButton>
-              </div>
-            ) : null}
+            <RoleStart chat={chat} onPick={chat.pickRole} roles />
           </Ai>
-        );
+        ) : null;
       }
       if (part.ask === "profession") {
         const mode = part.mode ?? "jobs";
         return (
           <Ai kind="ask-profession">
             <Say>{part.word ? t("easy.guided.ask_prof_unknown", { word: part.word }) : t(`easy.guided.ask_prof_${mode}`)}</Say>
+            {open ? <ProfessionChoices mode={mode} onPick={chat.pickProfession} /> : null}
           </Ai>
         );
       }
@@ -257,22 +257,53 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
         <Ai kind="ask-place">
           <Say>{t(`easy.guided.ask_place_${mode}`)}</Say>
           {open && part.options?.length ? (
-            // o'z kengligidagi tugmalar (ikki ustunli to'r emas): uzun nom ("Qoraqalpog'iston") so'z o'rtasida bo'linmaydi
-            <ul className="flex flex-wrap gap-2" data-guided-places>
-              {part.options.map((o) => (
-                <li key={o.value} className="flex max-w-full">
-                  <button
-                    type="button"
-                    onClick={() => chat.pickPlace(o)}
-                    className="press flex min-h-11 max-w-full items-center gap-1.5 rounded-full border border-border bg-card px-3.5 py-2 text-left text-sm font-semibold text-foreground hover:bg-secondary"
-                    data-guided-place={o.value}
-                  >
-                    <MapPin className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-                    <span className="min-w-0 [overflow-wrap:anywhere]">{o.label}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <ChoicePicker
+              attr="guided-place"
+              icon={PlaceIcon}
+              items={part.options.map((o) => ({ key: o.value, label: o.label, onClick: () => chat.pickPlace(o) }))}
+              moreLabel={(n) => t("easy.guided.pick_all_places", { count: n })}
+              searchPlaceholder={t("easy.guided.pick_search_place")}
+            />
+          ) : null}
+        </Ai>
+      );
+    }
+
+    case "next": {
+      // "Endi nima qilamiz?" — kasb va hudud tayyor (ega, 2026-11-22)
+      const jobs = part.mode === "jobs";
+      const prof = part.draft.profession.trim();
+      return (
+        <Ai kind="next">
+          <div className="flex flex-wrap items-center gap-1.5" data-guided-summary>
+            {prof ? <span className="inline-flex min-h-8 items-center rounded-lg border border-border bg-card px-3 text-sm font-semibold">{prof}</span> : null}
+            <span className="inline-flex min-h-8 items-center gap-1 rounded-lg border border-border bg-card px-3 text-sm font-semibold">
+              <MapPin className="size-3.5 text-primary-ink" aria-hidden /> {part.label}
+            </span>
+          </div>
+          <Say>{t("easy.guided.next_ask")}</Say>
+          {open ? (
+            <div className="grid gap-2.5" data-guided-next>
+              <NextOption
+                primary
+                icon={<ClipboardList />}
+                title={t(jobs ? "easy.guided.next_see_jobs" : "easy.guided.next_see_workers")}
+                sub={t(jobs ? "easy.guided.next_see_jobs_sub" : "easy.guided.next_see_workers_sub")}
+                onClick={() => chat.chooseNext("see", part.draft, part.mode, t(jobs ? "easy.guided.next_see_jobs" : "easy.guided.next_see_workers"))}
+                data-guided-next-to="see"
+              />
+              {jobs ? (
+                <NextOption
+                  icon={<PenLine />}
+                  title={t("easy.guided.next_post_worker")}
+                  sub={t("easy.guided.next_post_worker_sub")}
+                  onClick={() => chat.chooseNext("post", part.draft, part.mode, t("easy.guided.next_post_worker"))}
+                  data-guided-next-to="post"
+                />
+              ) : (
+                <NextOption icon={<PenLine />} title={t("easy.guided.next_post_vacancy")} sub={t("easy.guided.next_post_vacancy_sub")} href={vacancyHref(prof)} data-guided-next-to="vacancy" />
+              )}
+            </div>
           ) : null}
         </Ai>
       );
@@ -283,17 +314,18 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
   }
 }
 
-function ChoiceButton({ icon, onClick, tag, children }: { icon: ReactNode; onClick: () => void; tag: string; children: ReactNode }) {
+/**
+ * Ikki katta tugma — "Ish qidiryapman" / "Ishchi qidiryapman": bo'sh ekranda (ketma-ketlik boshlanadi) va rol noma'lum
+ * bo'lganda suhbat ichida (`roles` — data-guided-role belgisi bilan)
+ */
+function RoleStart({ chat, onPick, roles = false }: { chat: GuidedChat; onPick: (r: Role, label: string) => void; roles?: boolean }) {
+  const { t } = useT();
+  const tag = (r: Role) => (roles ? { "data-guided-role": r } : { "data-guided-start": r });
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="press flex min-h-12 w-full items-center gap-2.5 rounded-xl border border-border bg-card px-4 py-2 text-left text-base font-semibold text-foreground hover:bg-secondary [&_svg]:size-5 [&_svg]:shrink-0 [&_svg]:text-primary-ink"
-      data-guided-role={tag}
-    >
-      {icon}
-      <span className="min-w-0">{children}</span>
-    </button>
+    <div className="grid gap-2.5" data-guided-roles={roles ? "" : undefined} data-guided-starts={roles ? undefined : ""}>
+      <NextOption primary icon={<BriefcaseBusiness />} title={t("easy.guided.start_jobs")} sub={t("easy.guided.start_jobs_sub")} disabled={chat.pending} onClick={() => onPick("jobs", t("easy.guided.start_jobs"))} {...tag("jobs")} />
+      <NextOption icon={<UsersRound />} title={t("easy.guided.start_workers")} sub={t("easy.guided.start_workers_sub")} disabled={chat.pending} onClick={() => onPick("workers", t("easy.guided.start_workers"))} {...tag("workers")} />
+    </div>
   );
 }
 
@@ -403,7 +435,7 @@ function Pills({ items, attr }: { items: { key: string; label: string; onClick: 
           <button
             type="button"
             onClick={it.onClick}
-            className="press flex min-h-11 max-w-full items-center rounded-full border border-border bg-card px-4 py-2 text-left text-sm font-semibold text-foreground hover:bg-secondary"
+            className="press flex min-h-11 max-w-full items-center rounded-lg border border-border-strong bg-card px-4 py-2 text-left text-sm font-semibold text-foreground shadow-sm hover:border-primary/50 hover:bg-primary-soft/40"
             {...{ [`data-post-${attr}`]: it.key }}
           >
             <span className="min-w-0 [overflow-wrap:anywhere]">{it.label}</span>
@@ -428,6 +460,14 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
         <Ai kind={kind}>
           {intro}
           <Say>{part.word ? t("easy.guided.ask_post_prof_unknown", { word: part.word }) : t("easy.guided.ask_post_prof")}</Say>
+          {open ? (
+            <ProfessionChoices
+              mode="jobs"
+              attr="post-prof"
+              // aniq kasb — darhol; guruh ("O'qituvchi") — "aynan qaysi biri?" variantlari bilan
+              onPick={(p) => (p.selectable ? chat.pickPostChoice({ id: p.id, name: p.name }) : chat.ask(p.name))}
+            />
+          ) : null}
         </Ai>
       );
     case "post_which":
@@ -435,14 +475,14 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
         <Ai kind={kind}>
           {intro}
           <Say>{part.question ?? t("easy.guided.ask_post_prof")}</Say>
-          {open
-            ? (part.groups ?? []).map((g, i) => (
-                <div key={g.title ?? i} className="space-y-2">
-                  {g.title ? <p className="px-1 text-sm font-semibold text-muted-foreground">{g.title}</p> : null}
-                  <Pills attr="choice" items={g.items.map((c) => ({ key: c.id, label: c.name, onClick: () => chat.pickPostChoice(c) }))} />
-                </div>
-              ))
-            : null}
+          {open ? (
+            // ega, 2026-11-22: "boshida 3 tasi ko'rinsin, «Tanlash» bosilsa hammasi chiqsin yoki qidiruvga yozsin"
+            <ChoicePicker
+              attr="post-choice"
+              items={(part.groups ?? []).flatMap((g) => g.items.map((c) => ({ key: c.id, label: c.name, group: g.title, onClick: () => chat.pickPostChoice(c) })))}
+              searchPlaceholder={t("easy.guided.pick_search_prof")}
+            />
+          ) : null}
         </Ai>
       );
     case "post_region":
@@ -450,7 +490,15 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
         <Ai kind={kind}>
           {intro}
           <Say>{part.retry ? t("easy.guided.ask_post_region_tap") : t("easy.guided.ask_post_region")}</Say>
-          {open && part.options?.length ? <Pills attr="region" items={part.options.map((o) => ({ key: o.value, label: o.label, onClick: () => chat.pickPostRegion(o) }))} /> : null}
+          {open && part.options?.length ? (
+            <ChoicePicker
+              attr="post-region"
+              icon={PlaceIcon}
+              items={part.options.map((o) => ({ key: o.value, label: o.label, onClick: () => chat.pickPostRegion(o) }))}
+              moreLabel={(n) => t("easy.guided.pick_all_places", { count: n })}
+              searchPlaceholder={t("easy.guided.pick_search_place")}
+            />
+          ) : null}
         </Ai>
       );
     case "post_name":

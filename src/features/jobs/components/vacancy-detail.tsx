@@ -10,6 +10,7 @@ import {
   ExternalLink,
   FileCheck2,
   Gift,
+  GraduationCap,
   MapPin,
   Settings2,
   Sparkles,
@@ -43,7 +44,7 @@ const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
 
 function Section({ id, title, icon: Icon, children, className }: { id?: string; title: string; icon?: LucideIcon; children: React.ReactNode; className?: string }) {
   return (
-    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={`scroll-mt-20 border-t border-border pt-5 mt-5 first-of-type:mt-4 ${className ?? ""}`}>
+    <section id={id} aria-labelledby={id ? `${id}-title` : undefined} className={`scroll-mt-20 border-t border-border pt-5 mt-5 first-of-type:mt-0 first-of-type:border-t-0 first-of-type:pt-0 ${className ?? ""}`}>
       <h2 id={id ? `${id}-title` : undefined} className="mb-3 flex items-center gap-2 text-lg font-bold">
         {Icon ? <Icon className="size-4.5 text-primary-ink" aria-hidden /> : null}
         {title}
@@ -193,91 +194,104 @@ export async function VacancyDetail({
             <figcaption className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-semibold text-white">{t("easy.photo.label")}</figcaption>
           </Photo>
 
-          <header className="rounded-2xl border border-border bg-card p-4 sm:p-6">
-            <div className="flex items-start gap-3 sm:gap-4">
-              <Avatar src={company?.logo_url} fallback={companyName.slice(0, 1)} square size="lg" alt="" className="shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm">
-                  {company ? (
-                    <Link href={`/company/${company.slug}`} className="inline-flex items-center gap-1 font-semibold text-foreground hover:text-primary-ink hover:underline">
-                      {company.name}
-                      {company.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
-                    </Link>
-                  ) : (
-                    <span className="font-semibold">{companyName}</span>
-                  )}
-                  {v.is_government ? (
-                    <Link href="/jobs?gov=1" className="inline-flex">
-                      <Badge variant="primary" className="gap-1">
-                        <Landmark className="size-3.5" /> {t("jobs.government.badge")}
-                      </Badge>
-                    </Link>
-                  ) : null}
-                </p>
-                <h1 className="mt-0.5 break-words text-xl font-bold leading-tight sm:text-3xl">{v.title}</h1>
-                {/* ega (2026-11-18): "Hozir ishchi qidirmoqda" — qizil qalin, faqat faol (muddati o'tmagan) e'londa */}
-                {status === "active" ? <LiveStatus kind="hiring" className="mt-1.5 text-base" /> : null}
-                {v.category ? (
-                  <p className="mt-1 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
-                    <Link href={`/jobs?category=${v.category.slug}`} className="tap-target relative hover:underline">
-                      {name(v.category)}
-                    </Link>
-                    {v.profession || v.subcategory ? (
-                      <>
-                        <ChevronRight className="size-3.5" aria-hidden />
-                        <span>{name(v.profession ?? v.subcategory!)}</span>
-                      </>
-                    ) : null}
-                  </p>
+          {/*
+            Professional ko'rinish (ega, 2026-11-22: "ish beruvchiniki huddi shunaqa ko'rinishi kerak" — namunadagidek, ishchi
+            e'loni bilan bir xil): yorliq, sarlavha, maosh (katta, ko'k), holat; ish beruvchi qatori; asosiy shartlar ikki
+            ustunda (yorliq ustida, qiymat ostida); amallar; pastda kichik raqamlar qatori. Hammasi haqiqiy ma'lumot.
+          */}
+          <header className="overflow-hidden rounded-xl border border-border bg-card shadow-sm" data-vacancy-card>
+            <div className="p-4 sm:p-6">
+              <p className="flex flex-wrap items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-primary-ink">
+                {t("jobs.detail.kicker")}
+                {v.is_government ? (
+                  <Link href="/jobs?gov=1" className="inline-flex normal-case tracking-normal">
+                    <Badge variant="primary" className="gap-1">
+                      <Landmark className="size-3.5" /> {t("jobs.government.badge")}
+                    </Badge>
+                  </Link>
                 ) : null}
+              </p>
+              <h1 className="mt-1 break-words text-2xl font-extrabold leading-tight sm:text-3xl">{v.title}</h1>
+              <SalaryText
+                from={v.salary_from}
+                to={v.salary_to}
+                type={v.salary_type}
+                negotiable={v.salary_negotiable}
+                className={`mt-1.5 block text-xl font-extrabold tabular sm:text-2xl ${v.salary_negotiable || (!v.salary_from && !v.salary_to) ? "text-muted-foreground" : "text-primary-ink"}`}
+              />
+              {/* ega (2026-11-18): "Hozir ishchi qidirmoqda" — qizil qalin, faqat faol (muddati o'tmagan) e'londa */}
+              {status === "active" ? <LiveStatus kind="hiring" className="mt-2 text-base" /> : null}
+              {status !== "active" ? (
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <Badge variant="warning" size="lg">
+                    {tEnum("vacancy_status", status)}
+                  </Badge>
+                  {!isManager ? <p className="text-sm text-warning">{t("jobs.detail.status_inactive")}</p> : null}
+                </div>
+              ) : null}
+
+              {/* ish beruvchi qatori (ishchi e'lonidagi odam qatoridek) */}
+              <div className="mt-4 flex items-center gap-3 border-t border-border pt-4" data-vacancy-employer>
+                <Avatar src={company?.logo_url} fallback={companyName.slice(0, 1)} square size="md" alt="" className="size-12 shrink-0 rounded-lg" />
+                <div className="min-w-0">
+                  <p className="flex flex-wrap items-center gap-x-1 text-lg font-bold leading-tight">
+                    {company ? (
+                      <Link href={`/company/${company.slug}`} className="inline-flex items-center gap-1 hover:text-primary-ink hover:underline">
+                        {company.name}
+                        {company.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
+                      </Link>
+                    ) : (
+                      <span>{companyName}</span>
+                    )}
+                  </p>
+                  {v.category ? (
+                    <p className="mt-0.5 flex flex-wrap items-center gap-1 text-sm text-muted-foreground">
+                      <Link href={`/jobs?category=${v.category.slug}`} className="tap-target relative hover:underline">
+                        {name(v.category)}
+                      </Link>
+                      {v.profession || v.subcategory ? (
+                        <>
+                          <ChevronRight className="size-3.5" aria-hidden />
+                          <span>{name(v.profession ?? v.subcategory!)}</span>
+                        </>
+                      ) : null}
+                    </p>
+                  ) : null}
+                </div>
               </div>
             </div>
 
-            {/* asosiy shartlar bir qatorda (to'liq — "Sharoitlar" bo'limida) */}
-            <ul className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-base text-muted-foreground">
-              <li className="inline-flex items-center gap-1.5">
-                <BriefcaseBusiness className="size-4 shrink-0" aria-hidden />
+            {/* asosiy shartlar (namunadagidek): to'liq ro'yxat — "Sharoitlar" bo'limida */}
+            <dl className="grid grid-cols-2 gap-x-4 gap-y-4 border-t border-border p-4 sm:grid-cols-4 sm:p-6" data-vacancy-facts>
+              <HeadFact label={t("jobs.detail.employment")} icon={BriefcaseBusiness}>
                 {tEnum("employment_type", v.employment_type)}
-              </li>
-              <li className="inline-flex items-center gap-1.5">
-                <Clock className="size-4 shrink-0" aria-hidden />
+              </HeadFact>
+              <HeadFact label={t("jobs.detail.schedule")} icon={Clock}>
                 {tEnum("work_schedule", v.schedule)}
-                {time ? <span>· {time}</span> : null}
-              </li>
-              <li className="inline-flex min-w-0 items-center gap-1.5">
-                {v.is_remote ? <Wifi className="size-4 shrink-0" aria-hidden /> : <MapPin className="size-4 shrink-0" aria-hidden />}
-                <span className="min-w-0">{placeLine}</span>
-              </li>
-            </ul>
-            <SalaryText
-              from={v.salary_from}
-              to={v.salary_to}
-              type={v.salary_type}
-              negotiable={v.salary_negotiable}
-              className={`mt-3 block text-xl font-extrabold sm:text-2xl ${v.salary_negotiable || (!v.salary_from && !v.salary_to) ? "text-muted-foreground" : "text-foreground"}`}
-            />
-            {status !== "active" ? (
-              <div className="mt-3 flex flex-wrap items-center gap-2">
-                <Badge variant="warning" size="lg">
-                  {tEnum("vacancy_status", status)}
-                </Badge>
-                {!isManager ? <p className="text-sm text-warning">{t("jobs.detail.status_inactive")}</p> : null}
-              </div>
-            ) : null}
+                {time ? <span className="font-normal text-muted-foreground"> · {time}</span> : null}
+              </HeadFact>
+              <HeadFact label={t("jobs.detail.experience")} icon={GraduationCap}>
+                {experienceText}
+              </HeadFact>
+              <HeadFact label={t("jobs.detail.location")} icon={v.is_remote ? Wifi : MapPin} wide>
+                {placeLine}
+              </HeadFact>
+            </dl>
 
-            {/* amallar: kompyuterda shu yerda; telefonda — pastki yopishqoq panel */}
-            <VacancyActions
-              layout="inline"
-              vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status }}
-              viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application, quickApply: viewer.quickApply }}
-            />
+            <div className="lg:px-6 lg:pb-6 [&>*]:mt-0">
+              {/* amallar: kompyuterda shu yerda; telefonda — pastki yopishqoq panel */}
+              <VacancyActions
+                layout="inline"
+                vacancy={{ id: v.id, slug: v.slug, title: v.title, companyName: company?.name ?? null, status }}
+                viewer={{ kind: viewer.kind, isSaved: viewer.isSaved, application: viewer.application, quickApply: viewer.quickApply }}
+              />
+            </div>
 
-            {/* raqamlar qutisi — hammasi haqiqiy: talab qilinadigan tajriba, arizalar, sana, ko'rishlar */}
-            <dl className="mt-5 grid grid-cols-2 gap-px overflow-hidden rounded-xl border border-border bg-border sm:grid-cols-4">
-              <Stat label={t("jobs.detail.experience")} value={experienceText} />
-              <Stat label={t("jobs.detail.stat_applications")} value={v.applications_count > 0 ? String(v.applications_count) : t("jobs.detail.stat_none")} />
+            {/* raqamlar — hammasi haqiqiy: arizalar, sana, ko'rishlar (kichik, bitta qatorda) */}
+            <dl className="flex flex-wrap gap-x-4 gap-y-1 border-t border-border bg-secondary/40 px-4 py-2.5 text-sm text-muted-foreground sm:px-6" data-vacancy-stats>
               <Stat label={t("jobs.detail.stat_published")} value={v.published_at ? formatRelative(v.published_at, locale) : "—"} />
               <Stat label={t("jobs.detail.stat_views")} value={String(v.views_count)} />
+              <Stat label={t("jobs.detail.stat_applications")} value={v.applications_count > 0 ? String(v.applications_count) : t("jobs.detail.stat_none")} />
             </dl>
           </header>
 
@@ -286,14 +300,15 @@ export async function VacancyDetail({
           {matchCard ? <div className="lg:hidden">{matchCard}</div> : null}
 
           {/* Bo'limlar: Vazifalar · Talablar · Sharoitlar · Manzil · Kompaniya — bitta kartada, ajratgichlar bilan; yuqorida havolalar */}
-          <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
-            <nav aria-label={t("jobs.detail.tabs_label")} className="-mx-4 mb-1 sm:mx-0">
-              <ul className="flex gap-2 overflow-x-auto px-4 pb-0.5 [scrollbar-width:none] sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden">
+          <div className="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
+            {/* bo'limlar havolalari — namunadagidek ostiga chizilgan qator (tab ko'rinishi; bo'limlar baribir ochiq) */}
+            <nav aria-label={t("jobs.detail.tabs_label")} className="border-b border-border">
+              <ul className="flex gap-5 overflow-x-auto px-4 [scrollbar-width:none] sm:px-6 [&::-webkit-scrollbar]:hidden">
                 {sections.map((sec) => (
                   <li key={sec.id} className="flex">
                     <a
                       href={`#${sec.id}`}
-                      className="press inline-flex min-h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-secondary px-4 text-sm font-semibold text-foreground hover:bg-primary-soft hover:text-primary-ink"
+                      className="-mb-px inline-flex min-h-12 shrink-0 items-center whitespace-nowrap border-b-2 border-transparent text-base font-bold text-muted-foreground transition-colors hover:border-primary hover:text-primary-ink"
                     >
                       {sec.label}
                     </a>
@@ -301,122 +316,124 @@ export async function VacancyDetail({
                 ))}
               </ul>
             </nav>
+            <div className="p-4 sm:p-6">
 
-            <Section id="vazifalar" title={t("jobs.detail.sec_duties")}>
-              {v.description?.trim() ? <VacancyDescription text={v.description} /> : <p className="text-sm text-muted-foreground">{t("jobs.detail.no_description")}</p>}
-            </Section>
+              <Section id="vazifalar" title={t("jobs.detail.sec_duties")}>
+                {v.description?.trim() ? <VacancyDescription text={v.description} /> : <p className="text-sm text-muted-foreground">{t("jobs.detail.no_description")}</p>}
+              </Section>
 
-            <Section id="talablar" title={t("jobs.detail.tab_requirements")}>
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-                <Fact label={t("jobs.detail.experience")}>{tEnum("experience_min_months", String(experienceKey))}</Fact>
-                {v.education_min ? <Fact label={t("jobs.detail.education")}>{tEnum("education_level", v.education_min)}</Fact> : null}
-                {age ? <Fact label={t("jobs.detail.age")}>{age}</Fact> : null}
-                {v.gender ? <Fact label={t("jobs.detail.gender")}>{tEnum("gender", v.gender)}</Fact> : null}
-                {v.languages.length ? (
-                  <Fact label={t("jobs.detail.languages")} wide>
-                    {v.languages.map((l) => `${name(l)} — ${tEnum("language_level", l.min_level)}`).join(", ")}
-                  </Fact>
+              <Section id="talablar" title={t("jobs.detail.tab_requirements")}>
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+                  <Fact label={t("jobs.detail.experience")}>{tEnum("experience_min_months", String(experienceKey))}</Fact>
+                  {v.education_min ? <Fact label={t("jobs.detail.education")}>{tEnum("education_level", v.education_min)}</Fact> : null}
+                  {age ? <Fact label={t("jobs.detail.age")}>{age}</Fact> : null}
+                  {v.gender ? <Fact label={t("jobs.detail.gender")}>{tEnum("gender", v.gender)}</Fact> : null}
+                  {v.languages.length ? (
+                    <Fact label={t("jobs.detail.languages")} wide>
+                      {v.languages.map((l) => `${name(l)} — ${tEnum("language_level", l.min_level)}`).join(", ")}
+                    </Fact>
+                  ) : null}
+                </dl>
+                {requiredSkills.length || niceSkills.length ? (
+                  <div className="mt-4 space-y-3">
+                    {requiredSkills.length ? (
+                      <ChipGroup label={t("jobs.detail.skills_required")}>
+                        {requiredSkills.map((sk) => (
+                          <Badge key={sk.id} variant="primary" size="lg">
+                            {name(sk)}
+                          </Badge>
+                        ))}
+                      </ChipGroup>
+                    ) : null}
+                    {niceSkills.length ? (
+                      <ChipGroup label={t("jobs.detail.skills_nice")}>
+                        {niceSkills.map((sk) => (
+                          <Badge key={sk.id} variant="outline" size="lg">
+                            {name(sk)}
+                          </Badge>
+                        ))}
+                      </ChipGroup>
+                    ) : null}
+                  </div>
                 ) : null}
-              </dl>
-              {requiredSkills.length || niceSkills.length ? (
-                <div className="mt-4 space-y-3">
-                  {requiredSkills.length ? (
-                    <ChipGroup label={t("jobs.detail.skills_required")}>
-                      {requiredSkills.map((sk) => (
-                        <Badge key={sk.id} variant="primary" size="lg">
-                          {name(sk)}
-                        </Badge>
-                      ))}
-                    </ChipGroup>
-                  ) : null}
-                  {niceSkills.length ? (
-                    <ChipGroup label={t("jobs.detail.skills_nice")}>
-                      {niceSkills.map((sk) => (
-                        <Badge key={sk.id} variant="outline" size="lg">
-                          {name(sk)}
-                        </Badge>
-                      ))}
-                    </ChipGroup>
-                  ) : null}
-                </div>
-              ) : null}
-            </Section>
+              </Section>
 
-            <Section id="sharoitlar" title={t("jobs.detail.sec_conditions")}>
-              <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
-                <Fact label={t("jobs.detail.schedule")}>
-                  {tEnum("work_schedule", v.schedule)}
-                  {time ? <span className="block text-sm font-normal text-muted-foreground">{time}</span> : null}
-                </Fact>
-                <Fact label={t("jobs.detail.employment")}>{tEnum("employment_type", v.employment_type)}</Fact>
-                <Fact label={t("jobs.detail.format")}>
-                  <span className={v.work_format === "official" ? "text-success" : undefined}>{tEnum("work_format", v.work_format)}</span>
-                </Fact>
-                {v.positions_count > 1 ? <Fact label={t("jobs.detail.positions")}>{t("vacancies.preview.positions", { count: v.positions_count })}</Fact> : null}
-                {v.opportunity_type !== "job" ? (
-                  <Fact label={t("jobs.filters.opportunity")}>
-                    {tEnum("opportunity_type", v.opportunity_type)}
-                    {v.is_paid === false ? <span className="block text-sm font-normal text-warning">{t("jobs.card.unpaid")}</span> : null}
+              <Section id="sharoitlar" title={t("jobs.detail.sec_conditions")}>
+                <dl className="grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-3">
+                  <Fact label={t("jobs.detail.schedule")}>
+                    {tEnum("work_schedule", v.schedule)}
+                    {time ? <span className="block text-sm font-normal text-muted-foreground">{time}</span> : null}
                   </Fact>
+                  <Fact label={t("jobs.detail.employment")}>{tEnum("employment_type", v.employment_type)}</Fact>
+                  <Fact label={t("jobs.detail.format")}>
+                    <span className={v.work_format === "official" ? "text-success" : undefined}>{tEnum("work_format", v.work_format)}</span>
+                  </Fact>
+                  {v.positions_count > 1 ? <Fact label={t("jobs.detail.positions")}>{t("vacancies.preview.positions", { count: v.positions_count })}</Fact> : null}
+                  {v.opportunity_type !== "job" ? (
+                    <Fact label={t("jobs.filters.opportunity")}>
+                      {tEnum("opportunity_type", v.opportunity_type)}
+                      {v.is_paid === false ? <span className="block text-sm font-normal text-warning">{t("jobs.card.unpaid")}</span> : null}
+                    </Fact>
+                  ) : null}
+                </dl>
+                {hasBenefits ? (
+                  <div className="mt-4 space-y-3">
+                    {v.officialTerms.length ? (
+                      <ChipGroup label={t("jobs.detail.official_terms")}>
+                        {v.officialTerms.map((b) => (
+                          <Badge key={b.code} variant="success" size="lg">
+                            <FileCheck2 /> {name(b)}
+                          </Badge>
+                        ))}
+                      </ChipGroup>
+                    ) : null}
+                    {v.benefits.length ? (
+                      <ChipGroup label={t("jobs.detail.benefits")}>
+                        {v.benefits.map((b) => (
+                          <Badge key={b.code} size="lg">
+                            <Gift /> {name(b)}
+                          </Badge>
+                        ))}
+                      </ChipGroup>
+                    ) : null}
+                  </div>
                 ) : null}
-              </dl>
-              {hasBenefits ? (
-                <div className="mt-4 space-y-3">
-                  {v.officialTerms.length ? (
-                    <ChipGroup label={t("jobs.detail.official_terms")}>
-                      {v.officialTerms.map((b) => (
-                        <Badge key={b.code} variant="success" size="lg">
-                          <FileCheck2 /> {name(b)}
-                        </Badge>
-                      ))}
-                    </ChipGroup>
-                  ) : null}
-                  {v.benefits.length ? (
-                    <ChipGroup label={t("jobs.detail.benefits")}>
-                      {v.benefits.map((b) => (
-                        <Badge key={b.code} size="lg">
-                          <Gift /> {name(b)}
-                        </Badge>
-                      ))}
-                    </ChipGroup>
-                  ) : null}
-                </div>
-              ) : null}
-            </Section>
+              </Section>
 
-            <Section id="manzil" title={t("jobs.detail.location")}>
-              <p className="flex items-start gap-1.5 text-base">
-                {v.is_remote ? <Wifi className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden /> : <MapPin className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden />}
-                <span className="min-w-0">
-                  {placeLine}
-                  {v.address && !v.is_remote ? <span className="block text-sm text-muted-foreground">{v.address}</span> : null}
-                </span>
-              </p>
-              {mapHref ? (
-                <a href={mapHref} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
-                  {t("jobs.detail.map")} <ExternalLink className="size-4" aria-hidden />
-                </a>
-              ) : null}
-            </Section>
+              <Section id="manzil" title={t("jobs.detail.location")}>
+                <p className="flex items-start gap-1.5 text-base">
+                  {v.is_remote ? <Wifi className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden /> : <MapPin className="mt-0.5 size-5 shrink-0 text-primary-ink" aria-hidden />}
+                  <span className="min-w-0">
+                    {placeLine}
+                    {v.address && !v.is_remote ? <span className="block text-sm text-muted-foreground">{v.address}</span> : null}
+                  </span>
+                </p>
+                {mapHref ? (
+                  <a href={mapHref} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-11 items-center gap-1 text-base font-semibold text-primary-ink hover:underline">
+                    {t("jobs.detail.map")} <ExternalLink className="size-4" aria-hidden />
+                  </a>
+                ) : null}
+              </Section>
 
-            <Section id="kompaniya" title={t("jobs.detail.tab_company")}>
-              <div className="flex items-start gap-3">
-                <Avatar src={company?.logo_url} fallback={companyName.slice(0, 1)} square size="md" alt="" className="size-10 shrink-0" />
-                <div className="min-w-0 flex-1">
-                  <p className="flex items-center gap-1 font-semibold">
-                    {companyName}
-                    {company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
-                  </p>
-                  {company?.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
-                  {company?.about ? <p className="mt-1.5 text-sm text-foreground/90">{descriptionExcerpt(company.about, 600)}</p> : null}
-                  {company ? (
-                    <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
-                      {t("jobs.detail.company_page")} <ChevronRight className="size-4" aria-hidden />
-                    </Link>
-                  ) : null}
+              <Section id="kompaniya" title={t("jobs.detail.tab_company")}>
+                <div className="flex items-start gap-3">
+                  <Avatar src={company?.logo_url} fallback={companyName.slice(0, 1)} square size="md" alt="" className="size-10 shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <p className="flex items-center gap-1 font-semibold">
+                      {companyName}
+                      {company?.verification_status === "verified" ? <BadgeCheck className="size-4 text-primary-ink" aria-label={t("jobs.detail.company_verified")} /> : null}
+                    </p>
+                    {company?.size ? <p className="text-sm text-muted-foreground">{tEnum("company_size", company.size)}</p> : null}
+                    {company?.about ? <p className="mt-1.5 text-sm text-foreground/90">{descriptionExcerpt(company.about, 600)}</p> : null}
+                    {company ? (
+                      <Link href={`/company/${company.slug}`} className="mt-2 inline-flex min-h-11 items-center gap-1 text-sm font-semibold text-primary-ink hover:underline">
+                        {t("jobs.detail.company_page")} <ChevronRight className="size-4" aria-hidden />
+                      </Link>
+                    ) : null}
+                  </div>
                 </div>
-              </div>
-            </Section>
+              </Section>
+            </div>
           </div>
         </div>
 
@@ -439,12 +456,25 @@ export async function VacancyDetail({
   );
 }
 
-/** Raqamlar qutisidagi bitta katak (Talently): kichik yorliq, qalin qiymat; kataklar orasida ajratgich chiziq */
+/** Pastki raqamlar qatoridagi bitta yozuv: "Yorliq: qiymat" (kichik, bitta qatorda) */
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 bg-card px-4 py-3">
-      <dt className="truncate text-sm text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 truncate text-base font-bold">{value}</dd>
+    <div className="flex min-w-0 items-baseline gap-1">
+      <dt>{label}:</dt>
+      <dd className="font-semibold text-foreground">{value}</dd>
+    </div>
+  );
+}
+
+/** Sarlavha kartasidagi asosiy shart (namunadagidek): kichik yorliq ustida, ikonka bilan qalin qiymat ostida */
+function HeadFact({ label, icon: Icon, wide, children }: { label: string; icon: LucideIcon; wide?: boolean; children: React.ReactNode }) {
+  return (
+    <div className={wide ? "col-span-2 min-w-0" : "min-w-0"}>
+      <dt className="text-sm text-muted-foreground">{label}</dt>
+      <dd className="mt-0.5 flex items-start gap-1.5 break-words text-base font-semibold leading-snug">
+        <Icon className="mt-0.5 size-4.5 shrink-0 text-primary-ink" aria-hidden />
+        <span className="min-w-0">{children}</span>
+      </dd>
     </div>
   );
 }

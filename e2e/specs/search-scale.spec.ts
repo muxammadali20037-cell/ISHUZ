@@ -193,6 +193,9 @@ async function search(page: Page, text: string) {
   await expect(last).toHaveAttribute("data-guided-ai", /^(results|none|ask-place)$/, { timeout: 20_000 });
   if ((await last.getAttribute("data-guided-ai")) === "ask-place") {
     await last.locator("[data-guided-place='all']").click();
+    // 2026-11-22: viloyatdan keyin tanlov — "Mavjud e'lonlarni ko'rish"
+    await box.blur();
+    await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
     await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
   }
   return page.locator("[data-guided-ai]").last();

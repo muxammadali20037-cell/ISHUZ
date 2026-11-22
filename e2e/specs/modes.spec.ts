@@ -71,7 +71,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     // chat endi ishchilar qidiruvi bilan ochiladi (ish beruvchi rejimi)
     await expect(page.getByPlaceholder("Masalan: menga sotuvchi kerak")).toBeVisible();
     await expect(splash).toHaveCount(0, { timeout: 6_000 });
-    // ish beruvchi paneli — o'z rangida (binafsha, ega tanlagan A varianti)
+    // ish beruvchi paneli — o'z rangida (to'q ko'k, K1; avval binafsha)
     await expect(page.locator("html")).toHaveAttribute("data-panel", "employer");
     const colors = await page.evaluate(() => {
       const cs = getComputedStyle(document.documentElement);

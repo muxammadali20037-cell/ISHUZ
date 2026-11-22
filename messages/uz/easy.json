@@ -240,7 +240,7 @@
     "pay_desc": "To'lovdan keyin e'loningiz darhol {days} kun ish beruvchilarga ko'rinadi.",
     "saved_title": "Ma'lumotlaringiz saqlandi",
     "edit_title": "E'lonni o'zgartirish",
-    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: kasb, hudud, tajriba, maosh va telefon raqamingiz (bosilsa — qo'ng'iroq). Ismingiz va rasmingiz kanalda ko'rsatilmaydi.",
+    "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: kasb, hudud, tajriba va maosh. Ismingiz, rasmingiz va telefon raqamingiz kanalda ko'rsatilmaydi — ish beruvchilar «Bog'lanish» tugmasi orqali saytda raqamni ochadi.",
     "new_title": "Yana bitta e'lon"
   },
   "vacancy": {
@@ -427,7 +427,9 @@
     "not_found": "E'lon topilmadi yoki endi faol emas",
     "back": "Qidiruvga qaytish",
     "phone2": "Qo'shimcha raqam",
-    "own_phone": "E'londagi raqam"
+    "own_phone": "E'londagi raqam",
+    "field": "Soha",
+    "format": "Ish formati"
   },
   "image": {
     "label": "Kasb tasviri"
@@ -1249,7 +1251,7 @@
     "q_schedule": "Qaysi ish grafigi sizga qulay?",
     "q_salary": "Oyiga qancha maosh kutyapsiz? Masalan: 5 mln. Aytishni xohlamasangiz — «Kelishiladi».",
     "q_name": "Ismingiz nima? (e'londa ko'rinadi)",
-    "q_phone": "Telefon raqamingizni yozing (masalan: 90 123 45 67). U e'londa va Telegram kanalda hammaga ko'rinadi.",
+    "q_phone": "Telefon raqamingizni yozing (masalan: 90 123 45 67). U e'loningizda bo'ladi — ish beruvchilar uni ochib, qo'ng'iroq qiladi.",
     "q_about": "Oxirgi savol: o'zingiz haqingizda 1–2 gap yozing — nimalarni qila olasiz, transportingiz bormi va hokazo. Yoki «Javoblarimdan tuzib ber» ni bosing.",
     "done": "Tayyor! E'lon uchun hammasi bor. Tekshirib, joylang.",
     "got_profession": "Kasb: {value} ✓",
@@ -1469,7 +1471,7 @@
     "confirm": "Tasdiqlash",
     "preview_title": "Sizning e'loningiz shunday ko'rinadi",
     "preview_desc": "Hammasi to'g'ri bo'lsa — «Joylash».",
-    "preview_phone": "Siz yozgan raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi",
+    "preview_phone": "Siz yozgan raqam e'loningizda bo'ladi — ish beruvchilar uni ochib, qo'ng'iroq qiladi",
     "publish": "Joylash",
     "edit": "O'zgartirish",
     "login_first": "Joylash uchun telefon raqamingizni tasdiqlaysiz (SMS kod).",
@@ -1492,7 +1494,7 @@
     "add_phone": "Yana raqam",
     "q_phone2": "Qo'shimcha raqam",
     "remove_phone": "Qo'shimcha raqamni olib tashlash",
-    "preview_phones": "Siz yozgan ikkala raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar qo'ng'iroq qiladi"
+    "preview_phones": "Siz yozgan ikkala raqam e'loningizda bo'ladi — ish beruvchilar ularni ochib, qo'ng'iroq qiladi"
   },
   "channel_prompt": {
     "title": "Telegram kanalimizga qo'shiling",
@@ -1504,7 +1506,7 @@
   "phone_public": {
     "title": "Raqamingiz e'londa hammaga ko'rinadi",
     "vacancy": "Ishchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Raqam Ish topdim Telegram kanalidagi postda ham chiqadi.",
-    "worker": "Ish beruvchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qiladi. Raqam Ish topdim Telegram kanalidagi postda ham chiqadi.",
+    "worker": "Ish beruvchilar raqamingizni e'loningizda ochib, sizga qo'ng'iroq qiladi. Telegram kanaldagi postda raqam chiqmaydi.",
     "field_vacancy": "E'londagi telefon raqam",
     "field_worker": "E'londagi telefon raqam",
     "hint": "Raqamni qo'lda yozing — e'londa aynan shu raqam ko'rinadi."
@@ -1655,8 +1657,8 @@
     "ask_role_p": "Bir narsani aniqlab olay: siz o'zingiz «{p}» bo'lib ishlamoqchimisiz yoki sizga «{p}» kerakmi?",
     "role_jobs": "Men ish qidiryapman",
     "role_workers": "Menga ishchi kerak",
-    "ask_prof_jobs": "Qanday ish qidiryapsiz? Kasbingizni yozing — masalan: haydovchi, sotuvchi, oshpaz.",
-    "ask_prof_workers": "Sizga qanday ishchi kerak? Kasbini yozing — masalan: haydovchi, sotuvchi, farrosh.",
+    "ask_prof_jobs": "Kasbingiz qanday? Pastdan tanlang yoki yozing.",
+    "ask_prof_workers": "Qanday ishchi kerak? Pastdan tanlang yoki yozing.",
     "ask_prof_unknown": "«{word}» degan kasbni tushunmadim. Iltimos, boshqacha yozing — masalan: haydovchi, sotuvchi, oshpaz.",
     "ask_place_jobs": "Qaysi viloyatda ishlamoqchisiz? Pastdan tanlang.",
     "ask_place_workers": "Ishchi qaysi viloyatdan bo'lsin? Pastdan tanlang.",
@@ -1692,6 +1694,54 @@
     "post_publishing": "Joylanyapti…",
     "post_done": "Tabriklaymiz! E'loningiz joylandi — ish beruvchilar endi sizni topa oladi.",
     "post_mine": "E'lonlarim",
-    "post_new_you": "O'zim haqimda e'lon bermoqchiman"
+    "post_new_you": "O'zim haqimda e'lon bermoqchiman",
+    "start_jobs": "Ish qidiryapman",
+    "start_jobs_sub": "Vakansiyalar va o'zim haqimda e'lon",
+    "start_workers": "Ishchi qidiryapman",
+    "start_workers_sub": "Ishchilar va vakansiya joylash",
+    "pick_all": "Hammasini ko'rish · {count} ta",
+    "pick_all_places": "Boshqa viloyat · hammasi {count} ta",
+    "pick_less": "Kamroq ko'rsatish",
+    "pick_search_prof": "Qidirish: masalan, sotuvchi",
+    "pick_search_place": "Viloyat nomini yozing",
+    "pick_none": "Topilmadi — boshqacha yozib ko'ring yoki pastdagi oynaga yozing.",
+    "next_ask": "Endi nima qilamiz?",
+    "next_see_jobs": "Mavjud e'lonlarni ko'rish",
+    "next_see_jobs_sub": "Ish beruvchilar joylagan ishlar",
+    "next_post_worker": "O'zim haqimda e'lon berish",
+    "next_post_worker_sub": "Ish beruvchilar sizni topadi",
+    "next_see_workers": "Mavjud ishchilarni ko'rish",
+    "next_see_workers_sub": "Ish izlayotganlar e'lonlari",
+    "next_post_vacancy": "Vakansiya joylash",
+    "next_post_vacancy_sub": "Ishchilar sizni topadi"
+  },
+  "intro": {
+    "title": "Ish topdim qanday ishlaydi",
+    "how": "Qanday ishlaydi?",
+    "watch": "Qanday ishlaydi — ko'rish",
+    "ask_sound": "Ovozli tushuntirishni yoqaymi?",
+    "sound_on": "Ha, yoqing",
+    "sound_off": "Ovozsiz",
+    "play": "Davom ettirish",
+    "pause": "To'xtatish",
+    "replay": "Qayta ko'rish",
+    "s1": "Assalomu alaykum! Biz sizni ko'rganimizdan mamnunmiz.",
+    "s2": "Bu — Ish topdim: bu yerda ish ham, ishchi ham topiladi.",
+    "s3": "Ish izlasangiz — «Ish qidiryapman»ni bosing. Ishchi kerak bo'lsa — «Ishchi qidiryapman»ni bosing.",
+    "s4": "Keyin kasbingiz va viloyatingizni tanlaysiz: mavjud e'lonlarni ko'rasiz yoki o'zingiz haqingizda e'lon berasiz.",
+    "s5": "E'lon berish oson — ism, tajriba va telefon raqam, tamom!",
+    "s6": "Savolingiz bo'lsa, pastdagi oynaga yozing.",
+    "demo_job1": "Sotuvchi · Toshkent",
+    "demo_job2": "Haydovchi · Samarqand",
+    "demo_job3": "Oshpaz · Buxoro",
+    "demo_jobs": "Ish",
+    "demo_workers": "Ishchi",
+    "demo_prof": "Kasb: Oshpaz",
+    "demo_region": "Samarqand",
+    "demo_see": "E'lonlar",
+    "demo_post": "E'lon berish",
+    "demo_name": "Ism",
+    "demo_exp": "Tajriba",
+    "demo_phone": "Telefon raqam"
   }
 }

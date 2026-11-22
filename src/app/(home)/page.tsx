@@ -3,7 +3,9 @@ import { getT } from "@/lib/i18n/server";
 import { DEFAULT_OG_IMAGE, localeAlternates } from "@/lib/seo";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
+import { cookies } from "next/headers";
 import { StartChat } from "@/features/start-chat/components/start-chat";
+import { INTRO_COOKIE } from "@/features/start-chat/intro";
 import { chatQuery } from "@/features/start-chat/query";
 import { getMode } from "@/features/mode/server";
 import { SiteFooter } from "@/features/landing/market/site-footer";
@@ -27,10 +29,16 @@ export async function generateMetadata(): Promise<Metadata> {
  */
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[] }> }) {
   // yo'naltirishlar (bloklangan, kirish oqimi, kirgan foydalanuvchi) — (home)/layout.tsx da
-  const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
+  const [session, mode, params, jar] = await Promise.all([getSession(), getMode(), searchParams, cookies()]);
   return (
     <Shell footer={<SiteFooter compact={!!session} />}>
-      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null} />
+      <StartChat
+        mode={mode}
+        owner={session?.userId ?? "guest"}
+        initialQuery={chatQuery(params.q)}
+        post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
+        introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
+      />
     </Shell>
   );
 }

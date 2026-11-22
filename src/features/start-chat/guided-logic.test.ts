@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { NO_FILTERS, type QuickForm } from "@/features/find/quick-types";
-import { draftFromForm, nextAsk, placeChoices, roleOfMode, shownWord } from "./guided-logic";
+import { draftFromForm, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord } from "./guided-logic";
 
 const base = { nodeId: "n1", profession: "Haydovchi", placeKnown: true, askedProfession: false };
 
@@ -41,9 +41,9 @@ describe("hudud tugmalari", () => {
     { value: "tashkent_city", label: "Toshkent shahri" },
     { value: "samarkand", label: "Samarqand" },
   ];
-  it("avval viloyatlar, keyin butun O'zbekiston; masofaviy — faqat ish qidirishda", () => {
-    expect(placeChoices(places, "jobs").map((p) => p.value)).toEqual(["tashkent_city", "samarkand", "all", "remote"]);
-    expect(placeChoices(places, "workers").map((p) => p.value)).toEqual(["tashkent_city", "samarkand", "all"]);
+  it("avval butun O'zbekiston, keyin viloyatlar (tuman emas); masofaviy — faqat ish qidirishda, oxirida", () => {
+    expect(placeChoices(places, "jobs").map((p) => p.value)).toEqual(["all", "tashkent_city", "samarkand", "remote"]);
+    expect(placeChoices(places, "workers").map((p) => p.value)).toEqual(["all", "tashkent_city", "samarkand"]);
   });
 });
 
@@ -65,5 +65,21 @@ describe("tushunilmagan so'z — odam yozganidek", () => {
     expect(shownWord("kosmonavt", "Kosmonavt")).toBe("Kosmonavt");
     expect(shownWord("asdkjhqwe", "Menga ASDKJHQWE kerak")).toBe("ASDKJHQWE");
     expect(shownWord("oshpaz", "boshqa matn")).toBe("oshpaz");
+  });
+});
+
+describe("tayyor bo'lganda: tanlov yoki darhol qidiruv (ega, 2026-11-22)", () => {
+  it("savol-javob bilan kelindi — «Endi nima qilamiz?»; «Mavjud e'lonlar» tanlangach — qidiruv", () => {
+    expect(readyStep({ guided: true })).toBe("next");
+    expect(readyStep({ guided: true, see: true })).toBe("search");
+  });
+  it("bitta to'liq gap («Toshkentda haydovchi ishi») — darhol qidiruv", () => {
+    expect(readyStep({})).toBe("search");
+  });
+  it("e'lon uchun viloyat: viloyat yoki tuman — viloyat; butun O'zbekiston/masofaviy — yo'q", () => {
+    expect(regionSlugOf("samarkand")).toBe("samarkand");
+    expect(regionSlugOf("tashkent_city~d1")).toBe("tashkent_city");
+    expect(regionSlugOf("all")).toBeNull();
+    expect(regionSlugOf("remote")).toBeNull();
   });
 });

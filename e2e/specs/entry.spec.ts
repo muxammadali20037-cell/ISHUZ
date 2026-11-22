@@ -24,13 +24,13 @@ test.describe("kirish", () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   });
 
-  test("bosh sahifa (mehmon) — darhol chat: bitta yozuv, pastga strelka, yozish maydoni; ko'rish rejim yozmaydi", async ({ page, context }) => {
+  test("bosh sahifa (mehmon) — darhol chat: yozuv, ikki katta tugma, yozish maydoni; ko'rish rejim yozmaydi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    // 2026-11-21 (ega): reklama sahifasi, rol kartalari va misollar yo'q — birinchi ochilishda ham sodda chat
+    // 2026-11-21 (ega): reklama sahifasi va misollar yo'q; 2026-11-22: "Ish qidiryapman / Ishchi qidiryapman" tugmalari
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
-    await expect(main.locator("[data-guided-arrow]")).toBeVisible();
+    await expect(main.locator("[data-guided-start]")).toHaveCount(2);
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
     await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toHaveCount(0);
     await expect(page.getByRole("banner").getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", /^\/auth/);
@@ -52,8 +52,8 @@ test.describe("kirish", () => {
       await box.fill(text);
       await box.press("Enter");
       await expect(page.locator("[data-ai-you]").first()).toHaveText(`Siz: ${text}`);
-      // suhbat boshlangach — bo'sh holatdagi yozuv va strelka ko'rinmaydi (sarlavha faqat ekran o'qigich uchun)
-      await expect(page.locator("[data-guided-arrow]")).toHaveCount(0);
+      // suhbat boshlangach — bo'sh holatdagi yozuv va tugmalar ko'rinmaydi (sarlavha faqat ekran o'qigich uchun)
+      await expect(page.locator("[data-guided-start]")).toHaveCount(0);
       await expect.poll(() => cookie(context, "ib_mode"), text).toBe(mode);
       await page.close();
     }

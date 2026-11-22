@@ -146,7 +146,8 @@
     "stat_applications": "Аризалар",
     "stat_none": "Ҳали йўқ",
     "stat_published": "Жойланган",
-    "stat_views": "Кўришлар"
+    "stat_views": "Кўришлар",
+    "kicker": "Вакансия"
   },
   "apply": {
     "title": "Ариза юбориш",

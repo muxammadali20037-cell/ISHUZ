@@ -89,7 +89,7 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   const chat = page.locator("[data-start-chat]");
   // 2026-11-21 kechqurun (ega): "ortiqcha narsalar kerakmas" — bitta yozuv va pastga strelka; qatorlar, misollar yo'q
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("O'zingizga mos ishni yoki ishchini toping");
-  await expect(chat.locator("[data-guided-arrow]")).toBeVisible();
+  await expect(chat.locator("[data-guided-start]")).toHaveCount(2);
   await expect(chat.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
   await expect(tabs(page).getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
@@ -130,6 +130,12 @@ test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — �
   await expect(last()).toHaveAttribute("data-guided-ai", "ask-place");
   await page.locator("[data-guided-place='tashkent_city']").click();
   await settled();
+  // 2026-11-22: viloyatdan keyin tanlov — "Mavjud e'lonlarni ko'rish" / "O'zim haqimda e'lon berish"
+  await expect(last()).toHaveAttribute("data-guided-ai", "next");
+  await expect(last().locator("[data-guided-next-to]")).toHaveCount(2);
+  await box.blur();
+  await last().locator("[data-guided-next-to='see']").click();
+  await settled();
   await expect(last()).toHaveAttribute("data-guided-ai", "results");
   await expect(last()).toContainText("Mana, 1 ta ish topdim:");
   await expect(last().locator("article").first()).toContainText("Buxgalter");
@@ -141,6 +147,11 @@ test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — �
   await expect(last()).toContainText("«Kosmonavt» degan kasbni tushunmadim.");
   await box.fill("Kosmonavt");
   await box.press("Enter");
+  await settled();
+  // savolga javob berildi — avval tanlov, keyin natija (topilmadi)
+  await expect(last()).toHaveAttribute("data-guided-ai", "next");
+  await box.blur();
+  await last().locator("[data-guided-next-to='see']").click();
   await settled();
   await expect(last()).toHaveAttribute("data-guided-ai", "none");
   // "O'zingiz haqingizda e'lon qoldiring" — shu chatda, qidirilgan so'z bilan boshlanadi (3-bosqich)

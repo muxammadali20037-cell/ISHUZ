@@ -47,6 +47,9 @@ for (const vp of VIEWPORTS) {
     await box.fill("Men buxgalterman, ish kerak");
     await box.press("Enter");
     await page.locator("[data-guided-ai='ask-place'] [data-guided-place='tashkent_city']").last().click();
+    // 2026-11-22: viloyatdan keyin tanlov — "Mavjud e'lonlarni ko'rish"
+    await box.blur();
+    await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
 
     // 2. natija → batafsil
     const card = page.locator("[data-guided-cards] article").filter({ hasText: "Buxgalter" }).first();

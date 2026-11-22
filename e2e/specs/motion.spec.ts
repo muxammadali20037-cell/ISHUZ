@@ -20,7 +20,8 @@ test("sekin javobda ham: yuqori panel va menyu joyida, bosilgan bo'lim darhol fa
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  const main = page.locator("main");
+  // getByRole: oqimda kelayotgan (hali yashirin) sahifa nusxasi hisobga olinmaydi — faqat ko'rinib turgan <main>
+  const main = page.getByRole("main");
   // birinchi ochilish: animatsiya yo'q
   await expect(main).not.toHaveClass(/page-(enter|swap)/);
   await page.waitForLoadState("networkidle");

@@ -1,5 +1,29 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Korporativ uslub, chat ketma-ketligi, kanalda ishchi raqamisiz (`feat/corporate-chat`)
+
+Ega: "har bir oyna jiddiy, korporativ bo'lsin (oq + to'q ko'k)"; "avval 2 ta variant — ish qidiryapman / ishchi qidiryapman,
+keyin ketma-ket"; "tanlashda boshida 3 tasi, «Tanlash» bosilsa hammasi yoki qidiruvga yozsin"; "kanalga nomeri bilan
+bormasin — «Bog'lanish» raqam ochishga olib borsin"; "tepada video bilan tushuntirsin, ovozga ruxsat so'rasin".
+
+- **Uslub (K1)**: ish beruvchi paneli to'q ko'k (avval binafsha), ishchi — yorqin ko'k; burchaklar kichikroq, soyalar yassi.
+- **Chat bosh ekrani**: tepada qisqa video-tushuntirish (animatsiya, yozuv; ovoz — keyin qo'shiladi), sarlavha va ikki katta
+  tugma — «Ish qidiryapman» / «Ishchi qidiryapman». Tugma bosilsa rejim ham shunga o'tadi.
+- **Ketma-ketlik**: kasb (ommabop 3 tasi + «Hammasini ko'rish» + qidiruv) → viloyat (3 tasi + qolgani + qidiruv) →
+  «Endi nima qilamiz?»: ish izlovchiga «Mavjud e'lonlarni ko'rish» / «O'zim haqimda e'lon berish» (kasb va viloyat bilan
+  boshlanadi), ish beruvchiga «Mavjud ishchilarni ko'rish» / «Vakansiya joylash». Bitta to'liq gap yozilsa — darhol natija.
+- «Aynan qanday o'qituvchisiz?» va e'londagi viloyat ham shu tanlovda: 3 tasi, hammasi, qidiruv.
+- «E'lon joylamoqchiman» (kimligi aytilmagan) — rejimdan taxmin qilinmaydi, ikkala variant chiqadi.
+- **Ishchi e'loni sahifasi** professional ko'rinishda: sarlavha (kasb), kutilayotgan maosh, odam qatori, «Ma'lumotlar» /
+  «O'zi haqida» bo'limlari (hudud, tajriba, soha, ish grafigi).
+- **Vakansiya sahifasi** ham shu uslubda: «Vakansiya» yorlig'i, sarlavha, katta ko'k maosh, holat; ish beruvchi qatori;
+  asosiy shartlar (bandlik, grafik, tajriba, manzil) ikki ustunda; raqamlar (joylangan, ko'rishlar, arizalar) — pastda
+  kichik qatorda; bo'limlar havolalari — tab ko'rinishida (bo'limlar avvalgidek ochiq).
+- Testlar: ochilgan raqam oldingi yugurishdan qolmaydi (ai-post), joylashuv sahifa boshidan o'lchanadi (detail-pages),
+  oqimda kelayotgan yashirin sahifa nusxasi hisobga olinmaydi (motion).
+- **Telegram kanal**: ishchi postida raqam yo'q, tugma — «📞 Bog'lanish» (saytda e'londagi raqam ochish bo'limi). Vakansiya
+  postida raqam avvalgidek. Formadagi yozuvlar shunga moslandi.
+
 ## 2026-11-22 · Ishchi raqamini ochish (4-bosqich, `feat/contact-unlock`)
 
 Ega (master prompt, 4-bosqich): "ish beruvchi ishchi raqamini 5 000 so'mga ochadi (narx — admin), bir marta to'lanadi,
