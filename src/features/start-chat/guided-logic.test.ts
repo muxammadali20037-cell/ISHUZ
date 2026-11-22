@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { NO_FILTERS, type QuickForm } from "@/features/find/quick-types";
-import { draftFromForm, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord } from "./guided-logic";
+import { draftFromForm, isAnyProfession, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord } from "./guided-logic";
 
 const base = { nodeId: "n1", profession: "Haydovchi", placeKnown: true, askedProfession: false };
 
@@ -81,5 +81,21 @@ describe("tayyor bo'lganda: tanlov yoki darhol qidiruv (ega, 2026-11-22)", () =>
     expect(regionSlugOf("tashkent_city~d1")).toBe("tashkent_city");
     expect(regionSlugOf("all")).toBeNull();
     expect(regionSlugOf("remote")).toBeNull();
+  });
+});
+
+describe("\"ish kerak\" / \"работа\": kasbsiz qidiruv ham bor (ega, 2026-11-22)", () => {
+  const base = { nodeId: null, profession: "", placeKnown: false, askedProfession: false };
+  it("\"Hamma ishlar\" tanlansa yoki soha aytilgan bo'lsa — kasb qayta so'ralmaydi, keyingisi hudud", () => {
+    expect(nextAsk(base, "jobs")).toBe("profession");
+    expect(nextAsk({ ...base, anyProfession: true, askedProfession: true }, "jobs")).toBe("place");
+    expect(nextAsk({ ...base, anyProfession: true, askedProfession: true }, "workers")).toBe("place");
+    expect(nextAsk({ ...base, category: "courier", profession: "Kuryer va yetkazib berish" }, "jobs")).toBe("place");
+    // soha bo'yicha ishchi qidiruvi yo'q — ish beruvchidan kasb so'raladi
+    expect(nextAsk({ ...base, category: "courier" }, "workers")).toBe("profession");
+  });
+  it("\"farqi yo'q\", \"hammasi\", \"любая\" — har qanday kasb", () => {
+    for (const q of ["hammasi", "Farqi yo'q", "farqi yoq", "istalgan", "Har qanday", "любая", "Все", "без разницы", "ҳаммаси", "Hamma ishlar."]) expect(isAnyProfession(q), q).toBe(true);
+    for (const q of ["oshpaz", "hamshira", "har qanday oshpaz", "kerak"]) expect(isAnyProfession(q), q).toBe(false);
   });
 });

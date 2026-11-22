@@ -6,6 +6,7 @@ import { getSession } from "@/features/auth/session";
 import { allowRate } from "@/lib/rate-limit";
 import { clientIp, ipBucket, subjectHash } from "@/lib/security/request";
 import { MESSAGE_MAX_CHARS } from "@/features/assistant/types";
+import { FAMILY_CATEGORIES } from "./families";
 import { prepareQuick, runQuick } from "./quick-core";
 import type { QuickForm, QuickResult } from "./quick-types";
 
@@ -61,6 +62,8 @@ const searchSchema = z.object({
       exp: z.boolean(),
       schedule: z.enum(["5_2", "6_1", "2_2", "shift", "flexible"]).nullable(),
     }),
+    category: z.enum(FAMILY_CATEGORIES).nullable().optional(),
+    query: z.string().max(MESSAGE_MAX_CHARS).optional(),
   }),
 });
 

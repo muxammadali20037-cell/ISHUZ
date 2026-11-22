@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { getT } from "@/lib/i18n/server";
 import { getListingImageUrls } from "@/features/listing-image/server";
 import { formatMoneyShort } from "@/lib/format";
-import { getDistricts, getRegions } from "@/lib/reference";
+import { getCategories, getDistricts, getRegions } from "@/lib/reference";
 import type { SessionContext } from "@/features/auth/session";
 import { savedIdSet } from "@/features/saved/queries";
 import { trackServer } from "@/features/analytics/server";
@@ -15,7 +15,8 @@ import { offTopic } from "./post-intent";
 import { detectIntent, detectPostIntent } from "./intent";
 import { EMPTY_FIND, findHref, type FindParams } from "./params";
 import { PLACE_COOKIE, parsePlace } from "./place";
-import { findJobs, findJobsByText, findWorkers, getNodeInfo, type NodeInfo } from "./queries";
+import { findJobs, findJobsByText, findJobsInCategory, findWorkers, getNodeInfo, getNodeTerms, type NodeInfo } from "./queries";
+import { familyOf, wordsRelatedTo, type FamilyCategory } from "./families";
 import type { JobCardData } from "./components/result-cards";
 import type { WorkerRow } from "./queries";
 import { NO_FILTERS, type QuickAnswers, type QuickFilters, type QuickForm, type QuickList, type QuickMode, type QuickOption, type QuickResult, type QuickSaveState } from "./quick-types";
@@ -103,7 +104,10 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
   // kasb deb olinmasin (QA, 2026-11-21: "Qanday ish?" ga "chilonzor" yozilib, shu so'z bo'yicha qidirilardi)
   const saidDistricts = said ? await getDistricts(said.id) : [];
   const placeNames = [said?.name_uz, said?.name_ru, ...saidDistricts.flatMap((d) => [d.name_uz, d.name_ru])].filter((x): x is string => !!x);
-  const profession = node ? name(node.trail.at(-1)!) : (textKeywords(input.text, placeNames, 1)[0] ?? "");
+  // butun soha ("kuryer", "IT sohasida ish", "call-markaz") — bitta kasb emas, shu sohaning hamma vakansiyalari (faqat ish qidirishda)
+  const family = input.mode === "jobs" && input.text ? familyOf(input.text, placeNames.flatMap((n) => n.split(/\s+/))) : null;
+  const familyCat = family ? (await getCategories()).find((c) => c.slug === family) : undefined;
+  const profession = familyCat ? name(familyCat) : node ? name(node.trail.at(-1)!) : (textKeywords(input.text, placeNames, 1)[0] ?? "");
 
   // hudud: matnda aytilgani, bo'lmasa — shu qurilmada eslab qolingani ("Yaqin atrofda" / bosh sahifadagi joy)
   let place = "all";
@@ -128,7 +132,9 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
     mode: input.mode,
     text: input.text,
     profession,
+    // ishchi qidirishga o'tilsa — aniq kasb bilan (soha bo'yicha ishchi qidiruvi yo'q)
     nodeId: node?.id ?? null,
+    category: familyCat ? family : null,
     place,
     // ega (2026-11-17): "oylik maosh kerak emas" — oynada so'ralmaydi va qidiruvga qo'shilmaydi
     salary: null,
@@ -196,15 +202,18 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
 
   // kasb: oynada o'zgartirilmagan bo'lsa — tushunilgan tugun (qidiruv uning ma'lumoti bilan bir vaqtda boshlanadi);
   // aks holda yozilgan nom qaytadan tushuniladi
-  const early = answers.nodeId ? byNode(answers.nodeId, where, salary, SHOW) : null;
+  // butun soha ("kuryer", "IT") — aniq kasb o'rniga shu kategoriyaning hamma vakansiyalari (faqat ish qidirishda)
+  const category: FamilyCategory | null = mode === "jobs" && answers.category ? answers.category : null;
+  const categoryRef = category ? ((await getCategories()).find((c) => c.slug === category) ?? null) : null;
+  const early = !categoryRef && answers.nodeId ? byNode(answers.nodeId, where, salary, SHOW) : null;
   // kasb boshqacha tushunilsa — bu natija ishlatilmaydi (xatosi ham)
   early?.catch(() => null);
-  let node: NodeInfo | null = answers.nodeId ? await getNodeInfo(answers.nodeId).catch(() => null) : null;
-  if (!node && text.length >= 2) {
+  let node: NodeInfo | null = !categoryRef && answers.nodeId ? await getNodeInfo(answers.nodeId).catch(() => null) : null;
+  if (!categoryRef && !node && text.length >= 2) {
     const r = await smartResolveQuery(text, session?.userId ?? null, mode);
     node = r.nodeId ? await getNodeInfo(r.nodeId).catch(() => null) : null;
   }
-  const words = node ? [] : textKeywords(text, [], 3);
+  const words = node || categoryRef ? [] : textKeywords(text, [], 3);
 
   const byText = async (w: ResolvedPlace, s: number | null, limit: number, strict = true): Promise<Run> => {
     for (const word of words) {
@@ -215,14 +224,21 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
     }
     return { ok: true, list: emptyList(findHref(params(null, w, s, words[0] ?? "", strict))) };
   };
+  const byCategory = async (w: ResolvedPlace, s: number | null, limit: number, strict = true): Promise<Run> => {
+    const fp = params(null, w, s, "", strict);
+    const res = await findJobsInCategory(fp, w.place, categoryRef!.id, limit);
+    return res.ok ? { ok: true, list: list(res.items.slice(0, limit), res, findHref({ ...fp, q: name(categoryRef!) })) } : { ok: false };
+  };
   // kasb aniqlanmagan, lekin so'z bor (kompaniya nomi, erkin lavozim) — e'lon matnlaridan; xodim qidirishda matnli qidiruv yo'q
-  const textual = !node && words.length > 0 && mode === "jobs";
+  const textual = !node && !categoryRef && words.length > 0 && mode === "jobs";
 
   // xodim qidirishda kasbga aylanmagan so'z ("kosmonavt") — hamma nomzodlar emas, "topilmadi"
   const unknownWorker = mode === "workers" && !node && words.length > 0;
   const main: Run = unknownWorker
     ? { ok: true, list: emptyList(findHref(params(null, where, null))) }
-    : textual
+    : categoryRef
+      ? await byCategory(where, salary, SHOW)
+      : textual
       ? await byText(where, salary, SHOW)
       : early && node?.id === answers.nodeId
         ? await early
@@ -239,16 +255,35 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
     const everywhere = await resolvePlace("all");
     const specific = answers.place !== "all";
     const parent = node && node.trail.length > 1 ? node.trail.at(-2)! : null;
+    // aniq kasb bo'yicha yo'q — foydalanuvchi yozgan va shu kasbga tegishli so'z e'lon nomlarida ("kuryer" — "Piyoda kuryer"
+    // tuguni bo'sh, lekin "Posilka kuryeri", "Oziq-ovqat kuryeri" e'lonlari bor). Faqat ish qidirishda
+    const related = mode === "jobs" && node && answers.query ? wordsRelatedTo(textKeywords(answers.query, [], 3), await getNodeTerms(node.id).catch(() => [])) : [];
+    const byRelated = (w: ResolvedPlace) => async (): Promise<Run> => {
+      for (const word of related) {
+        const fp = params(null, w, null, word, false);
+        const res = await findJobsByText(fp, w.place, SIMILAR);
+        if (!res.ok) return { ok: false };
+        if (res.total > 0) return { ok: true, list: list(res.items.slice(0, SIMILAR), res, findHref(fp)) };
+      }
+      return { ok: true, list: emptyList(findHref(params(null, w, null))) };
+    };
     const tries: { kind: "near" | "elsewhere"; run: () => Promise<Run> }[] = [
       ...(parent ? [{ kind: "near" as const, run: () => byNode(parent.id, where, null, SIMILAR, false) }] : []),
+      ...(related.length ? [{ kind: "near" as const, run: byRelated(where) }] : []),
       ...(parent && specific ? [{ kind: "near" as const, run: () => byNode(parent.id, everywhere, null, SIMILAR, false) }] : []),
+      ...(related.length && specific ? [{ kind: "near" as const, run: byRelated(everywhere) }] : []),
       ...((specific || salary || f.noexp || f.exp || f.schedule) && !unknownWorker
-        ? [{ kind: "elsewhere" as const, run: () => (textual ? byText(everywhere, null, SIMILAR, false) : byNode(node?.id ?? null, everywhere, null, SIMILAR, false)) }]
+        ? [
+            {
+              kind: "elsewhere" as const,
+              run: () => (categoryRef ? byCategory(everywhere, null, SIMILAR, false) : textual ? byText(everywhere, null, SIMILAR, false) : byNode(node?.id ?? null, everywhere, null, SIMILAR, false)),
+            },
+          ]
         : []),
     ];
     const [runs, saved] = await Promise.all([
       Promise.all(tries.map((x) => x.run().catch((): Run => ({ ok: false })))),
-      mode === "jobs" ? saveSearch(session, node, words[0] ?? null, where, salary) : Promise.resolve<QuickSaveState>(null),
+      mode === "jobs" ? saveSearch(session, node, words[0] ?? null, where, salary, categoryRef?.slug ?? null) : Promise.resolve<QuickSaveState>(null),
     ]);
     save = saved;
     const at = runs.findIndex((res) => res.ok && res.list.total > 0);
@@ -263,7 +298,7 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
   const listed = [...main.list.jobs, ...main.list.workers, ...(similar ? [...similar.jobs, ...similar.workers] : [])].map((x) => x.id);
   const [savedIds, aiImages] = await Promise.all([savedP, getListingImageUrls(kind, listed)]);
   if (!input.prefetch) void trackServer("ai_find", session?.userId ?? null, { source: "quick", mode, results: main.list.total, similar: similar?.total ?? 0, save });
-  const professionLabel = node ? name(node.trail.at(-1)!) : text || (mode === "jobs" ? t("easy.quick.any_job") : t("easy.quick.any_worker"));
+  const professionLabel = node ? name(node.trail.at(-1)!) : categoryRef ? name(categoryRef) : text || (mode === "jobs" ? t("easy.quick.any_job") : t("easy.quick.any_worker"));
   return {
     ok: true,
     data: {
@@ -290,12 +325,13 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
  * Hech narsa topilmadi — qidiruv saqlanadi (bepul, kuniga bir marta tekshiriladi: mos yangi e'lon bo'lsa bildirishnoma).
  * Kasb nomi (yoki matndagi kalit so'z) bilan; kuzatadigan narsa bo'lmasa yoki saqlab bo'lmasa — "xabar beramiz" deyilmaydi.
  */
-async function saveSearch(session: SessionContext | null, node: NodeInfo | null, word: string | null, where: ResolvedPlace, salary: number | null): Promise<QuickSaveState> {
+async function saveSearch(session: SessionContext | null, node: NodeInfo | null, word: string | null, where: ResolvedPlace, salary: number | null, category: string | null = null): Promise<QuickSaveState> {
   if (!session) return "login";
   const q = node ? node.trail.at(-1)!.name_uz : word;
-  if (!q || q.trim().length < 2) return "unclear";
-  const query = new URLSearchParams({ q: q.trim().slice(0, 120) });
+  if ((!q || q.trim().length < 2) && !category) return "unclear";
+  const query = new URLSearchParams(q && q.trim().length >= 2 ? { q: q.trim().slice(0, 120) } : {});
   if (node?.categorySlug) query.set("category", node.categorySlug);
+  else if (category) query.set("category", category);
   if (where.place.remote) query.set("remote", "1");
   else if (where.regionSlug) {
     query.set("region", where.regionSlug);

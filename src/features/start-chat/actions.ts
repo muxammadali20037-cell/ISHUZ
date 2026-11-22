@@ -57,6 +57,55 @@ const popular = unstable_cache(
   { revalidate: 600, tags: ["professions"] },
 );
 
+export interface ChatProfessionCount extends ChatProfession {
+  /** shu kasbdagi ochiq e'lonlar soni (butun O'zbekiston bo'yicha) */
+  count: number;
+}
+
+/**
+ * Hozir e'lonlari BOR kasblar (soni bilan) — qidiruv bo'sh chiqqanda "boshqa qidiruv" takliflari (ega, 2026-11-22: haqiqiy
+ * ma'lumot, o'ylab topilgan e'lon yo'q). Ish qidirishda — faol vakansiyalar, ishchi qidirishda — ochiq ishchi e'lonlari.
+ * Faqat RLS bo'yicha hammaga ko'rinadigan qatorlar sanaladi; 10 daqiqa keshda.
+ */
+const withListings = unstable_cache(
+  async (mode: "jobs" | "workers"): Promise<Array<Node & { count: number }>> => {
+    const db = createPublicClient();
+    const nowIso = new Date().toISOString();
+    const rows =
+      mode === "jobs"
+        ? (await db.from("vacancies").select("profession_node_id").eq("status", "active").or(`expires_at.is.null,expires_at.gt.${nowIso}`).not("profession_node_id", "is", null).limit(5000)).data
+        : (await db.from("worker_profiles").select("profession_node_id").eq("is_public", true).not("profession_node_id", "is", null).limit(5000)).data;
+    const count = new Map<string, number>();
+    for (const r of rows ?? []) if (r.profession_node_id) count.set(r.profession_node_id, (count.get(r.profession_node_id) ?? 0) + 1);
+    const top = [...count.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12);
+    if (!top.length) return [];
+    const { data } = await db.from("profession_nodes").select("id, name_uz, name_ru, name_en, selectable").in("id", top.map(([id]) => id));
+    return top
+      .map(([id, n]) => {
+        const node = (data ?? []).find((x) => x.id === id);
+        return node ? { ...node, count: n } : null;
+      })
+      .filter((x): x is Node & { count: number } => !!x && !isProhibitedProfession(x));
+  },
+  ["chat:professions-with-listings"],
+  { revalidate: 600, tags: ["professions"] },
+);
+
+export async function chatProfessionsWithListings(input: unknown): Promise<ChatProfessionCount[]> {
+  const parsed = z.object({ mode: z.enum(["jobs", "workers"]), exclude: z.uuid().nullable().optional() }).safeParse(input);
+  if (!parsed.success) return [];
+  const { name } = await getT();
+  try {
+    return (await withListings(parsed.data.mode))
+      .filter((n) => n.id !== parsed.data.exclude)
+      .slice(0, 6)
+      .map((n) => ({ id: n.id, name: name(n), selectable: n.selectable, count: n.count }));
+  } catch (e) {
+    console.error("[chat] professions with listings", e instanceof Error ? e.message : e);
+    return [];
+  }
+}
+
 /**
  * Chatdagi kasb tanlash (ega, 2026-11-22: "boshida 3 tasi ko'rinsin, «Hammasi» bosilsa hammasi, yoki qidiruvga yozsin"):
  * `q` bo'lmasa — ommabop kasblar, bo'lsa — kasblar daraxtidan qidiruv.

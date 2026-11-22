@@ -1,5 +1,7 @@
 import type { AppMode } from "@/features/mode/mode";
 import { NO_FILTERS, type QuickFilters, type QuickForm, type QuickMode, type QuickOption, type QuickResult } from "@/features/find/quick-types";
+import type { FamilyCategory } from "@/features/find/families";
+import { normalizeText } from "@/features/search/understand";
 import type { PostChoiceGroup, PostOutcome, PostPreview } from "@/features/find/quick-post-types";
 import type { PostAsk } from "./post-logic";
 
@@ -25,6 +27,10 @@ export interface Draft {
   guided?: boolean;
   /** "Mavjud e'lonlarni ko'rish" tanlangan — keyingi qidiruvlarda (boshqa viloyat) tanlov qayta so'ralmaydi */
   see?: boolean;
+  /** butun soha ("kuryer", "IT") — kasb so'ralmaydi, shu sohaning hamma vakansiyalari (families.ts) */
+  category?: FamilyCategory | null;
+  /** "Hamma ishlar" / "Hamma ishchilar" tanlandi (yoki "farqi yo'q" deb yozildi) — kasbsiz qidiruv */
+  anyProfession?: boolean;
 }
 
 export type AiPart =
@@ -69,10 +75,13 @@ function broadAsk(d: Pick<Draft, "filters" | "place">): boolean {
 }
 
 /** Keyingi savol (yoki null — qidirishga tayyor). Sof funksiya — unit testda */
-export function nextAsk(d: Pick<Draft, "nodeId" | "profession" | "placeKnown" | "askedProfession"> & Partial<Pick<Draft, "filters" | "place">>, role: Role | null): Ask | null {
+export function nextAsk(
+  d: Pick<Draft, "nodeId" | "profession" | "placeKnown" | "askedProfession"> & Partial<Pick<Draft, "filters" | "place" | "category" | "anyProfession">>,
+  role: Role | null,
+): Ask | null {
   if (!role) return "role";
   const prof = d.profession.trim();
-  const skip = !prof && broadAsk({ filters: d.filters ?? NO_FILTERS, place: d.place ?? "" });
+  const skip = (!prof && broadAsk({ filters: d.filters ?? NO_FILTERS, place: d.place ?? "" })) || !!d.anyProfession || (role === "jobs" && !!d.category);
   if (!d.nodeId && !skip && (!prof || !d.askedProfession)) return "profession";
   if (!d.placeKnown) return "place";
   return null;
@@ -99,7 +108,24 @@ export function draftFromForm(form: QuickForm): Draft {
     places: form.places,
     formMode: form.mode,
     askedProfession: false,
+    category: form.category ?? null,
   };
+}
+
+/**
+ * "Kasbingiz qanday?" savoliga "farqi yo'q", "hammasi", "любая" deb yozildi — kasbsiz qidiruv ("Hamma ishlar" tugmasi bilan bir xil).
+ * Ega, 2026-11-22: "«ish kerak», «работа» deb yozsa ham natija topilsin".
+ */
+const ANY_PROFESSION = new Set(
+  [
+    "hammasi", "hamma", "hamma ishlar", "hamma ish", "hamma ishchilar", "barchasi", "barcha", "barcha ishlar", "farqi yoq", "farqi yo'q", "farq qilmaydi",
+    "istalgan", "istalgan ish", "har qanday", "har qanday ish", "bari bir", "baribir", "nima bolsa ham", "nima bo'lsa ham", "boshqasi",
+    "lyubaya", "lyuboy", "lyubaya rabota", "vse", "vsyo", "bez raznitsy", "bez raznitsi", "nevajno", "ne vajno", "any", "all", "anything", "whatever",
+  ].map((w) => normalizeText(w)),
+);
+
+export function isAnyProfession(text: string): boolean {
+  return ANY_PROFESSION.has(normalizeText(text).replace(/[.!?,]+$/g, "").trim());
 }
 
 /**

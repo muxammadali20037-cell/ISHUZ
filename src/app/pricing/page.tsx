@@ -83,7 +83,8 @@ export default async function PricingPage() {
               {t(`billing.tiers.${x.plan}`)}
             </p>
             <p className="mt-2 flex flex-wrap items-baseline gap-x-2">
-              <span className="text-3xl font-extrabold tracking-tight tabular">{free ? t("billing.tariffs.free") : money(sale ?? x.price)}</span>
+              {/* leading-snug: katta shriftda (1.25×) narx harflari ostidagi qatorga tegib ketardi (audit, 390 ru) */}
+              <span className="text-3xl font-extrabold leading-snug tracking-tight tabular">{free ? t("billing.tariffs.free") : money(sale ?? x.price)}</span>
               {sale ? <s className="text-base text-muted-foreground tabular">{money(x.price)}</s> : null}
             </p>
             <p className="text-sm text-muted-foreground">{free ? t("billing.tariffs.free_now") : t("billing.tariffs.per_listing", { days: x.days })}</p>

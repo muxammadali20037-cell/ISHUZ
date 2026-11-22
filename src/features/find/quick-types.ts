@@ -1,4 +1,5 @@
 import type { JobCardData } from "./components/result-cards";
+import type { FamilyCategory } from "./families";
 import type { WorkerRow } from "./queries";
 
 /**
@@ -57,6 +58,8 @@ export interface QuickForm {
   placeKnown?: boolean;
   /** e'lon berish niyati ("vakansiya joylamoqchiman"): kim uchun; null — rejimdan */
   post?: { who: "worker" | "employer" | null } | null;
+  /** butun soha so'raldi ("kuryer", "IT", "call-markaz") — shu kategoriyadagi hamma vakansiyalar (families.ts) */
+  category?: FamilyCategory | null;
 }
 
 export interface QuickAnswers {
@@ -66,6 +69,10 @@ export interface QuickAnswers {
   /** faqat ish qidirishda */
   salary: number | null;
   filters: QuickFilters;
+  /** butun soha (faqat ish qidirishda; nodeId bo'lsa — e'tiborsiz) */
+  category?: FamilyCategory | null;
+  /** foydalanuvchi yozgan asl matn: aniq kasb bo'yicha hech narsa chiqmasa — shu kasbga tegishli so'zlar e'lon nomlarida qidiriladi */
+  query?: string;
 }
 
 export interface QuickList {

@@ -8,6 +8,7 @@ import { DEMO, cleanDemo, seedDemo } from "./demo-seed";
 /**
  * Keng audit (CI'da emas): asosiy sahifalar × kenglik × til × shrift o'lchami — ustma-ust yozuv, to'silgan belgi, qirqilgan matn.
  *   npx playwright test -c e2e/screens/shots.config.ts e2e/screens/overlap.audit.ts
+ *   AUDIT_ONLY=cabinet,pricing npx playwright test …   — faqat shu sahifalar
  * Natija: e2e/.stack/overlap/report.json va har muammoli holat uchun belgilangan skrinshot.
  */
 const OUT = path.join(__dirname, "../.stack/overlap");
@@ -16,15 +17,19 @@ const LONG_CO = "7e2e0000-0000-4000-8000-0000000000c2";
 
 type Who = "first" | "guest" | "guest-worker" | "guest-employer" | "worker" | "employer";
 const CONFIGS: { width: number; locale: "uz" | "ru" | "oz" | "en"; scale: number; textZoom?: number }[] = [
+  // ega (2026-11-22): "320px dan 1920px gacha hech qanday matn boshqa element ustiga chiqmasin" — telefon, planshet, kompyuter
   { width: 320, locale: "uz", scale: 1 },
   { width: 360, locale: "ru", scale: 1 },
+  { width: 375, locale: "uz", scale: 1 },
   { width: 390, locale: "uz", scale: 1 },
   { width: 390, locale: "ru", scale: 1.25 },
-  { width: 412, locale: "oz", scale: 1.15 },
-  { width: 768, locale: "ru", scale: 1 },
-  { width: 1024, locale: "en", scale: 1 },
-  { width: 1440, locale: "uz", scale: 1 },
+  { width: 414, locale: "oz", scale: 1.15 },
+  { width: 430, locale: "ru", scale: 1 },
+  { width: 768, locale: "uz", scale: 1 },
+  { width: 1024, locale: "ru", scale: 1 },
+  { width: 1280, locale: "uz", scale: 1 },
   { width: 1440, locale: "ru", scale: 1 },
+  { width: 1920, locale: "uz", scale: 1 },
   // telefondagi "katta shrift" (faqat yozuv kattalashadi)
   { width: 360, locale: "ru", scale: 1, textZoom: 1.3 },
   { width: 390, locale: "uz", scale: 1, textZoom: 1.3 },
@@ -97,22 +102,42 @@ test("overlap audit", async ({ browser }) => {
     { who: "worker", url: "/settings", name: "settings" },
     { who: "guest", url: "/help", name: "help" },
     { who: "guest-worker", url: "/students", name: "students" },
-    { who: "guest-worker", url: "/ai-alerts", name: "ai-alerts" },
+    { who: "guest", url: "/pricing", name: "pricing" },
+    { who: "guest", url: "/jobs/namuna", name: "demo-list" },
+    { who: "guest", url: "/masters", name: "masters" },
+    { who: "guest", url: "/companies", name: "companies" },
+    { who: "employer", url: "/notifications", name: "employer-notifications" },
     {
-      who: "worker",
-      url: "/",
-      name: "ai-dialog",
+      // chat: natija kartalari, "+ E'lon joylash", xulosa tugmalari
+      who: "guest-worker",
+      url: "/chat",
+      name: "chat-results",
       action: async (p) => {
-        await p.getByRole("button", { name: /AI|ИИ/ }).first().click();
-        const d = p.getByRole("dialog");
-        await d.locator("textarea").fill("Toshkentda sotuvchi");
-        await d.locator("textarea").press("Enter");
-        await expect(d.locator("article").first()).toBeVisible({ timeout: 15_000 });
+        const box = p.locator("form[data-hydrated] #start-chat-text");
+        await box.fill("Toshkentda sotuvchi ishi kerak");
+        await box.press("Enter");
+        await expect(p.locator("[data-guided-ai='results'], [data-guided-ai='none']").last()).toBeVisible({ timeout: 20_000 });
+        await box.blur();
+      },
+    },
+    {
+      // chat: "Kasbingiz qanday?" — "Hamma ishlar" va kasb tugmalari
+      who: "guest-worker",
+      url: "/chat",
+      name: "chat-ask-profession",
+      action: async (p) => {
+        const box = p.locator("form[data-hydrated] #start-chat-text");
+        await box.fill("ish kerak");
+        await box.press("Enter");
+        await expect(p.locator("[data-guided-ai='ask-profession']").last()).toBeVisible({ timeout: 20_000 });
+        await box.blur();
       },
     },
   ];
   const report: Record<string, LayoutIssue[]> = {};
-  for (const pg of pages) {
+  // AUDIT_ONLY=cabinet,pricing — faqat shu sahifalar (tuzatishdan keyin qayta tekshirish)
+  const only = process.env.AUDIT_ONLY?.split(",").map((x) => x.trim()).filter(Boolean);
+  for (const pg of pages.filter((x) => !only?.length || only.includes(x.name))) {
     for (const cfg of CONFIGS) {
       const ctx = await context(browser, cfg.width, cfg.locale, pg.who);
       const p = await ctx.newPage();
@@ -125,11 +150,12 @@ test("overlap audit", async ({ browser }) => {
         if (cfg.textZoom) await zoomText(p, cfg.textZoom);
         await p.waitForTimeout(300);
         if (!pg.action) await fullHeight(p);
-        const issues = await findLayoutIssues(p, pg.action ? "[role=dialog]" : "body");
+        if (pg.action) await fullHeight(p);
+        const issues = await findLayoutIssues(p, "body");
         if (issues.length) {
           report[key] = issues;
           await markIssues(p, issues);
-          await p.screenshot({ path: path.join(OUT, `${key.replace(/[^a-z0-9.-]+/gi, "_")}.jpg`), type: "jpeg", quality: 60, fullPage: !pg.action });
+          await p.screenshot({ path: path.join(OUT, `${key.replace(/[^a-z0-9.-]+/gi, "_")}.jpg`), type: "jpeg", quality: 60, fullPage: true });
         }
       } catch (e) {
         report[key] = [{ kind: "clipped", text: `ERROR ${(e as Error).message.slice(0, 120)}`, box: { x: 0, y: 0, w: 0, h: 0 } }];

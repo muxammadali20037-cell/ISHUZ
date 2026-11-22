@@ -181,7 +181,21 @@ const popularCache = new Map<string, Promise<ChatProfession[]>>();
  * Kasb tanlash (chatda): ommabop kasblar (avval 3 tasi) va qidiruv — butun kasblar daraxtidan. Yozish maydoniga yozish ham
  * ishlaydi (yozilgan so'z tushuniladi).
  */
-export function ProfessionChoices({ mode, onPick, attr = "guided-prof" }: { mode: "jobs" | "workers"; onPick: (p: ChatProfession) => void; attr?: string }) {
+/**
+ * `lead` — ro'yxat boshidagi qo'shimcha tanlov ("Hamma ishlar" / "Hamma ishchilar": kasbsiz qidiruv — ega, 2026-11-22:
+ * "«ish kerak», «работа» deb yozsa ham natija topilsin"); e'lon berishda yo'q
+ */
+export function ProfessionChoices({
+  mode,
+  onPick,
+  attr = "guided-prof",
+  lead,
+}: {
+  mode: "jobs" | "workers";
+  onPick: (p: ChatProfession) => void;
+  attr?: string;
+  lead?: PickItem;
+}) {
   const { t } = useT();
   const [list, setList] = useState<ChatProfession[] | null>(null);
   useEffect(() => {
@@ -209,7 +223,16 @@ export function ProfessionChoices({ mode, onPick, attr = "guided-prof" }: { mode
       </p>
     );
   }
-  return <ChoicePicker items={list.map(toItem)} attr={attr} searchPlaceholder={t("easy.guided.pick_search_prof")} remote={remote} />;
+  const items = list.map(toItem);
+  return (
+    <ChoicePicker
+      items={lead ? [lead, ...items] : items}
+      attr={attr}
+      moreLabel={(n) => t("easy.guided.pick_all", { count: lead ? n - 1 : n })}
+      searchPlaceholder={t("easy.guided.pick_search_prof")}
+      remote={remote}
+    />
+  );
 }
 
 /** "Endi nima qilamiz?" va bo'sh ekrandagi katta tugma — ikki qatorli (asosiysi — to'ldirilgan rangda); `href` — havola */

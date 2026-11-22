@@ -12,6 +12,9 @@ export const DEMO = {
 
 export async function cleanDemo() {
   await sql("delete from public.vacancies where owner_profile_id = $1", [DEMO.employer]);
+  // namunaviy ishchi e'loni ham (aks holda stendda ochiq "Sotuvchi" e'loni qolib, keyingi e2e testlarning sanog'ini buzardi —
+  // search-scale: "6 ta ishchi" ≠ bazadagi 5, 2026-11-22)
+  await sql("delete from public.worker_profiles where profile_id = $1", [DEMO.worker]);
 }
 
 /** Namunaviy ma'lumotni yozadi; "Sotuv menejeri" e'lonining slug'ini qaytaradi */
