@@ -96,7 +96,9 @@
     "no_experience": "No experience required",
     "phone": "Phone: {value}",
     "contact": "📞 Contact",
-    "contact_on_site": "Number — on the site, via the “Contact” button"
+    "contact_on_site": "Number — on the site, via the “Contact” button",
+    "job_tag": "💼 Employer looking for a worker",
+    "worker_tag": "👤 Worker looking for a job"
   },
   "owner_post": {
     "vacancy": "✅ <b>Your listing is live!</b>\n{title} — job seekers can now find it in search.",

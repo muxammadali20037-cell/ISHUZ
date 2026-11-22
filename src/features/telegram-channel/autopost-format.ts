@@ -2,14 +2,14 @@ import { formatSalaryWithPeriod } from "@/lib/format";
 
 /**
  * Kanalga avtomatik e'lon matni (sof funksiyalar): vakansiya va ishchi e'loni (ega, 2026-11-14: "ish beruvchilar kanaliga —
- * ishchi, ishchilarga — ish"). Turi ("VAKANSIYA" / "ISHCHI") faqat rasmda; matn boshida turi va heshteglar qatori yo'q
- * (ega, 2026-11-22). Rasm (/api/promo/…) — ish nomi, maosh,
+ * ishchi, ishchilarga — ish"). Matn boshida — oddiy yozuv, heshteglarsiz (ega, 2026-11-22): "💼 Ish beruvchi ishchi
+ * qidiryapti" / "👤 Ishchi ish qidiryapti". Rasm (/api/promo/…) — ish nomi, maosh,
  * joylashuv, kompaniya; vakansiya ko'k, ishchi yashil, tepasida turi yozilgan (ega, 2026-11-18: "ishchimi u ish beruvchimi
  * bilib bo'lmadi").
  *
  * Rasm ostida — TO'LIQ matn (ega, 2026-11-18: "rasm tagiga to'liq yozilsin, nomerlar bilan to'liq vakansiya"):
- *  · vakansiya: nomi, kompaniya, joy, maosh, ish vaqti, tajriba, tavsif va telefon.
- *  · ishchi: kasbi, sarlavha, joy, tajriba, maosh, ish vaqti. Ism, shaxsiy rasm va telefon YO'Q (ega, 2026-11-22:
+ *  · vakansiya: turi, nomi, kompaniya, joy, maosh, ish vaqti, tajriba, tavsif va telefon.
+ *  · ishchi: turi, kasbi, sarlavha, joy, tajriba, maosh, ish vaqti. Ism, shaxsiy rasm va telefon YO'Q (ega, 2026-11-22:
  *    raqam saytda ochiladi) — "📞 Bog'lanish" tugmasi e'londagi raqam ochish bo'limiga olib boradi.
  * Vakansiya telefoni — faqat egasi kanal uchun rozi bo'lgani (qaysi raqam — chaqiruvchi, autopost.ts, tanlaydi). Ega (2026-11-20:
  * "kanalda nomer ustiga bossa telefon qilishga o'tsin — raqamlarni qo'shib yozish kerak"): raqam bo'shliqsiz, xalqaro
@@ -123,8 +123,10 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn
   const title = sanitizeLine(d.title) || d.profession || "";
   const months = d.experienceMonths;
   const step = months == null ? null : [60, 36, 24, 12, 6].find((m) => months >= m) ?? (months > 0 ? 6 : 0);
-  // ega (2026-11-22): matn boshidagi "VAKANSIYA · ishchi kerak · #heshteglar" qatori yo'q — turi rasmda yozilgan
+  // ega (2026-11-22): boshida heshteglarsiz oddiy yozuv — "Ish beruvchi ishchi qidiryapti"
   const head = [
+    escapeHtml(t("bot.channel.job_tag")),
+    "",
     `<b>${escapeHtml(title)}</b>`,
     d.company ? `🏢 ${escapeHtml(sanitizeLine(d.company, 80))}` : null,
     d.remote ? `🌐 ${escapeHtml(t("bot.channel.remote"))}` : d.place ? `📍 ${escapeHtml(d.place)}` : null,
@@ -151,8 +153,10 @@ export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn =
     ? formatSalaryWithPeriod({ from: d.salary, to: null, type: d.salaryType, negotiable: false }, "uz", salaryLabels(t), (type) => t(`enums.salary_type_suffix.${type}`))
     : t("bot.channel.negotiable");
   const headline = sanitizeLine(d.headline, 100);
-  // ega (2026-11-22): matn boshidagi "ISHCHI · ish qidiryapti · #heshteglar" qatori yo'q — turi rasmda yozilgan
+  // ega (2026-11-22): boshida heshteglarsiz oddiy yozuv — "Ishchi ish qidiryapti"
   const lines = [
+    escapeHtml(t("bot.channel.worker_tag")),
+    "",
     `<b>${escapeHtml(sanitizeLine(d.profession, 80))}</b>`,
     headline && headline.toLowerCase() !== d.profession.toLowerCase() ? `<i>${escapeHtml(headline)}</i>` : null,
     d.place ? `📍 ${escapeHtml(d.place)}` : null,

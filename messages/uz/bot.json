@@ -96,7 +96,9 @@
     "no_experience": "Tajriba talab qilinmaydi",
     "phone": "Tel: {value}",
     "contact": "📞 Bog'lanish",
-    "contact_on_site": "Raqam — «Bog'lanish» tugmasi orqali saytda"
+    "contact_on_site": "Raqam — «Bog'lanish» tugmasi orqali saytda",
+    "job_tag": "💼 Ish beruvchi ishchi qidiryapti",
+    "worker_tag": "👤 Ishchi ish qidiryapti"
   },
   "owner_post": {
     "vacancy": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi qidiruvda ko'rinadi, ish izlovchilar ko'radi.",

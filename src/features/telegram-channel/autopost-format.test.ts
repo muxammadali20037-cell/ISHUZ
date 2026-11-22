@@ -20,7 +20,7 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(sanitizeText(null, 100)).toBe("");
   });
 
-  it("vakansiya: turi/heshtegsiz, maosh davri bilan, tugma — vakansiya sahifasi; rozilik raqami berilmasa — raqamsiz", () => {
+  it("vakansiya: «Ish beruvchi ishchi qidiryapti» (heshtegsiz), maosh davri bilan, tugma — vakansiya sahifasi; rozilik raqami berilmasa — raqamsiz", () => {
     const p = vacancyPost(
       {
         slug: "sotuvchi-abc123",
@@ -38,9 +38,9 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
       t,
       BASE,
     );
-    // ega (2026-11-22): matn boshida turi va heshteglar qatori yo'q — darhol nomi (turi rasmda)
+    // ega (2026-11-22): boshida oddiy yozuv, heshteglarsiz — "Ish beruvchi ishchi qidiryapti", keyin nomi
+    expect(p.html.startsWith("💼 Ish beruvchi ishchi qidiryapti\n\n<b>Sotuvchi &lt;kassir&gt;</b>\n")).toBe(true);
     expect(p.html).not.toMatch(/VAKANSIYA|#/);
-    expect(p.html.startsWith("<b>Sotuvchi &lt;kassir&gt;</b>\n")).toBe(true);
     expect(p.html).toContain("Baraka &amp; Co");
     expect(p.html).toContain("4 000 000 – 6 000 000 so'm");
     expect(p.html).not.toMatch(/90 123/);
@@ -94,15 +94,15 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     );
   });
 
-  it("ishchi: turi/heshtegsiz, ismsiz, raqamsiz (sarlavhadagi raqam ham olib tashlanadi); tugma — «Bog'lanish», e'londagi raqam ochish", () => {
+  it("ishchi: «Ishchi ish qidiryapti» (heshtegsiz), ismsiz, raqamsiz (sarlavhadagi raqam ham olib tashlanadi); tugma — «Bog'lanish», e'londagi raqam ochish", () => {
     const p = workerPost(
       { id: "0b9c8a3e-1f2d-4c5b-9a8e-7d6c5b4a3f21", profession: "Oshpaz", headline: "Milliy taomlar, tel 998901234567", place: "Samarqand viloyati", experience: "3–5 yil", salary: 5_000_000, salaryType: "monthly", schedules: ["5/2", "Smenali"] },
       t,
       BASE,
     );
-    // ega (2026-11-22): matn boshida turi va heshteglar qatori yo'q — darhol kasbi (turi rasmda)
+    // ega (2026-11-22): boshida oddiy yozuv, heshteglarsiz — "Ishchi ish qidiryapti", keyin kasbi
+    expect(p.html.startsWith("👤 Ishchi ish qidiryapti\n\n<b>Oshpaz</b>\n")).toBe(true);
     expect(p.html).not.toMatch(/ISHCHI|#/);
-    expect(p.html.startsWith("<b>Oshpaz</b>\n")).toBe(true);
     expect(p.html).toContain("<i>Milliy taomlar, tel</i>");
     expect(p.html).toContain("Tajriba: 3–5 yil");
     expect(p.html).toContain("Kutilayotgan maosh:");
