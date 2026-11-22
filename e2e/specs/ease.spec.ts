@@ -164,7 +164,7 @@ test("G2+G3: kartada 'Ariza yuborish' → kirish → ariza oynasi o'zi ochiladi 
   await expect(page.getByText("Jasur").first()).toBeVisible();
 });
 
-test("G3+G4: ishchi kartasida 'Bog'lanish' → e'lon sahifasida bir bosishda raqam so'rovi", async ({ page, context }) => {
+test("G3: ishchi kartasida 'Bog'lanish' → e'lon sahifasida raqam (so'rov yo'q — 4-bosqich); raqam ochilsa — chat ham", async ({ page, context }) => {
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
   const [n] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Buxgalter' and selectable limit 1");
   const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
@@ -174,7 +174,7 @@ test("G3+G4: ishchi kartasida 'Bog'lanish' → e'lon sahifasida bir bosishda raq
     [USERS.workerB, r!.id, n!.id],
   );
   await sql("update public.profile_contacts set phone_visibility = 'on_request' where profile_id = $1", [USERS.workerB]);
-  await sql("delete from public.contact_requests where requester_profile_id = $1", [USERS.employer]);
+  await sql("delete from public.contact_unlocks where viewer_profile_id = $1", [USERS.employer]);
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto(`/search?mode=workers&p=${n!.id}&region=all`);
@@ -182,18 +182,19 @@ test("G3+G4: ishchi kartasida 'Bog'lanish' → e'lon sahifasida bir bosishda raq
   await card.getByRole("link", { name: "Bog'lanish" }).click();
   await page.waitForURL(/\/listing\/[0-9a-f-]{36}#contact$/);
   const contact = page.locator("#contact");
-  await contact.getByRole("button", { name: "Telefon raqamini so'rash" }).click();
-  await expect(contact.getByText("So'rov yuborildi — javobini kutyapmiz")).toBeVisible();
-  const [q] = await sql<{ status: string }>("select status from public.contact_requests where requester_profile_id = $1 and owner_profile_id = $2", [USERS.employer, USERS.workerB]);
-  expect(q!.status).toBe("pending");
-  // qayta ochilganda ham holat saqlanadi
+  // e'londa ochiq raqam yo'q — shuni aytadi; ariza/raqam so'rovi tugmasi yo'q
+  await contact.getByRole("button", { name: "Raqamni ko'rsatish" }).click();
+  await expect(contact.locator("[data-reveal-error='none']")).toContainText("Bu e'londa ochiq raqam yo'q");
+  await expect(contact.getByRole("button", { name: "Telefon raqamini so'rash" })).toHaveCount(0);
+  // egasi raqamni e'longa yozdi — endi ochiladi va chat ham bor
+  await sql(
+    "insert into public.worker_listing_phones (worker_id, phone) select id, '+998935550044' from public.worker_profiles where profile_id = $1 on conflict (worker_id) do update set phone = excluded.phone",
+    [USERS.workerB],
+  );
   await page.reload();
-  await expect(page.locator("#contact").getByText("So'rov yuborildi — javobini kutyapmiz")).toBeVisible();
-  // egasi raqamni umuman yashirgan — so'rash tugmasi yo'q (so'rov baribir rad etilardi)
-  await sql("update public.profile_contacts set phone_visibility = 'nobody' where profile_id = $1", [USERS.workerB]);
-  await sql("delete from public.contact_requests where requester_profile_id = $1", [USERS.employer]);
-  await page.reload();
-  await expect(page.locator("#contact").getByText("Telefon raqam ariza yoki taklif qabul qilingandan keyin ochiladi.")).toBeVisible();
-  await expect(page.locator("#contact").getByRole("button", { name: "Telefon raqamini so'rash" })).toHaveCount(0);
+  await page.locator("#contact").getByRole("button", { name: "Raqamni ko'rsatish" }).click();
+  await expect(page.locator("#contact a[href='tel:+998935550044']").first()).toBeVisible();
+  await expect(page.locator("#contact").getByRole("button", { name: "Chatda yozish" })).toBeVisible();
+  await sql("delete from public.contact_unlocks where viewer_profile_id = $1", [USERS.employer]);
   await sql("update public.profile_contacts set phone_visibility = 'applicants' where profile_id = $1", [USERS.workerB]);
 });
