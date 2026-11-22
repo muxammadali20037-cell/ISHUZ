@@ -48,6 +48,22 @@ export async function getListingImageUrl(entity: ListingEntity, id: string): Pro
   }
 }
 
+/**
+ * Bir nechta e'lonning tayyor AI rasmlari (id → manzil) — chatdagi natija kartalari uchun bitta so'rov bilan. Xususiyat
+ * yoqilmagan yoki xato — bo'sh (kartalar rasmsiz, avvalgidek).
+ */
+export async function getListingImageUrls(entity: ListingEntity, ids: string[]): Promise<Record<string, string>> {
+  const list = [...new Set(ids)].slice(0, 60);
+  if (!list.length || !listingImageEnabled()) return {};
+  try {
+    const { data, error } = await anon().from("listing_images").select("entity_id, image_url").eq("entity", entity).eq("status", "ready").in("entity_id", list);
+    if (error) return {};
+    return Object.fromEntries((data ?? []).filter((r) => r.image_url).map((r) => [r.entity_id, r.image_url as string]));
+  } catch {
+    return {};
+  }
+}
+
 /** OpenAI Images API (gpt-image): bitta landshaft rasm, JPEG */
 async function openAiImage(cfg: NonNullable<ReturnType<typeof listingImageConfig>>, prompt: string): Promise<{ bytes: Buffer; mime: string }> {
   const res = await fetch(`${cfg.baseUrl}/v1/images/generations`, {

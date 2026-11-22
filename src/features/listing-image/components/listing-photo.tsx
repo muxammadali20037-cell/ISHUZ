@@ -8,7 +8,10 @@ export async function ListingPhoto({ entity, id, alt }: { entity: ListingEntity;
   const url = await getListingImageUrl(entity, id);
   if (!url) return null;
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- Supabase ochiq bucket'idagi tayyor JPEG (o'lchami ma'lum)
-    <img src={url} alt={alt} width={1536} height={1024} loading="lazy" decoding="async" className="aspect-[16/7] w-full rounded-2xl border border-border bg-secondary object-cover" data-listing-photo />
+    // belgisiz (ega, 2026-11-22: "«AI rasm» yozuvi bo'lmasin"); rasmda aniq odam portreti yo'q — prompt.ts
+    <figure className="relative overflow-hidden rounded-xl border border-border bg-secondary" data-listing-photo>
+      {/* eslint-disable-next-line @next/next/no-img-element -- Supabase ochiq bucket'idagi tayyor JPEG (o'lchami ma'lum) */}
+      <img src={url} alt={alt} width={1536} height={1024} loading="lazy" decoding="async" className="aspect-[16/7] w-full object-cover" />
+    </figure>
   );
 }

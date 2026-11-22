@@ -73,6 +73,8 @@ export interface QuickList {
   workers: WorkerRow[];
   images: Record<string, string>;
   photos: Record<string, string>;
+  /** egasi so'ragan AI e'lon rasmi (0087; id → manzil) — chat kartasida, "AI rasm" belgisi bilan */
+  aiImages?: Record<string, string>;
   total: number;
   /** to'liq natijalar sahifasi */
   href: string;

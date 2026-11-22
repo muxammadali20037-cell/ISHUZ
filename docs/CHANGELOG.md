@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Chatdagi kartalar rasm bilan (`feat/card-images`)
+
+Ega: "rasm yaratib bersin chiroyli qilib e'lonlar uchun, ilovada ham rasm bilan ko'rinsin". Tanlov: yangi e'londa rasm —
+so'rab (hozirgidek), eski e'lonlarga yaratilmaydi.
+
+- Chat natijasidagi vakansiya va ishchi kartalari tepasida rasm: haqiqiy ish joyi surati («Ish joyi surati»), bo'lmasa —
+  egasi yaratgan AI e'lon rasmi (belgisiz — ega: "«AI rasm» yozuvi bo'lmasin"). Rasmsiz e'lon — avvalgidek.
+- Ishchi e'loni uchun AI rasmda endi kameraga qaragan portret chizilmaydi — ish joyi va asboblari (odam bo'lsa — orqadan yoki
+  uzoqdan): belgisiz rasm e'lon egasining o'z surati deb o'ylanmasin.
+
 ## 2026-11-22 · Ovozli video va tugmalar bilan ovozli tanishuv (`feat/intro-voice`)
 
 Ega: "video ovozini ber, keyin ilovaga kirganda ilovani ovozli tushuntirsin, tugmalar nima vazifani bajarishini — uni ham

@@ -11,11 +11,12 @@ describe("e'lon rasmi so'rovi", () => {
     expect(p).toContain("Adults only");
   });
 
-  it("ishchi e'loni — odam kameraga qaraydi; haydovchi — mashina yonida", () => {
+  it("ishchi e'loni — portret yo'q (rasm kimningdir surati deb o'ylanmasin); haydovchi — mashina yonida", () => {
     const p = buildListingImagePrompt({ kind: "worker", names: [null, "Haydovchi"] });
     expect(p).toContain("Job: Haydovchi.");
     expect(p).toContain("beside a clean modern car");
-    expect(p).toContain("looking at the camera");
+    expect(p).toContain("No portrait and no close-up face");
+    expect(p).not.toContain("looking at the camera");
   });
 
   it("so'rovni buzadigan belgilar olib tashlanadi, kasb noma'lum — umumiy sahna", () => {
