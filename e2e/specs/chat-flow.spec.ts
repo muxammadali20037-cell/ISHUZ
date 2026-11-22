@@ -123,6 +123,10 @@ test("video-tushuntirish: birinchi marta ochiq, ko'rsatiladi (yozuv almashadi), 
   await expect(intro).toBeVisible();
   await expect(intro.locator("[data-intro-ask]")).toBeVisible();
   await expect(intro.locator("[data-intro-caption]")).toHaveText("Assalomu alaykum! Biz sizni ko'rganimizdan mamnunmiz.");
+  // ovoz (ega yuborgan, erkak ovozi) — ruxsat so'raladi: "Ha" / "Ovozsiz"; fayl joyida
+  await expect(intro.locator("[data-intro-sound='on']")).toBeVisible();
+  await expect(intro.locator("audio")).toHaveAttribute("src", "/audio/intro-uz.mp3");
+  expect((await page.request.get("/audio/intro-uz.mp3")).status()).toBe(200);
   await intro.locator("[data-intro-sound='off']").click();
   await expect(intro).toHaveAttribute("data-intro-phase", "playing");
   await expect(intro.locator("[data-intro-caption]")).toHaveText("Bu — Ish topdim: bu yerda ish ham, ishchi ham topiladi.", { timeout: 8_000 });

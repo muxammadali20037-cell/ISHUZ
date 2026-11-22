@@ -1,5 +1,17 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Ovozli video va tugmalar bilan ovozli tanishuv (`feat/intro-voice`)
+
+Ega: "video ovozini ber, keyin ilovaga kirganda ilovani ovozli tushuntirsin, tugmalar nima vazifani bajarishini — uni ham
+ovozini ber". Ovozlarni ega ElevenLabs'da yaratib yubordi ("Farruh — Confident", erkak ovozi).
+
+- **Video-tushuntirish** endi ovozli: "Ha, yoqing" — ovoz bilan, "Ovozsiz" — yozuv bilan. Sahnalar ovozdagi gaplar bilan
+  bir vaqtda almashadi (29 soniya).
+- **Tugmalar bilan tanishuv** video tugagach yoki yopilgach boshlanadi (avval ikkalasi bir vaqtda chiqib qolardi): ikki
+  katta tugma, yozish maydoni, Qidiruv · E'lonlarim · Profil, keyin yuqori panel (E'lon berish, xabarlar, til, kirish,
+  qo'ng'iroqcha). Har biri yoritiladi va ovoz bilan aytiladi. Videoda "Ovozsiz" tanlansa — tanishuv ham jim.
+- Eski (endi yo'q bo'lgan) tugmalar — "Bosh sahifa", "Ishlar", "Sohalar", "Boshqaruv"… — tanishuvdan olib tashlandi.
+
 ## 2026-11-22 · Kanal postida heshteglar yo'q (`fix/channel-no-hashtags`)
 
 Ega (kanaldagi postni belgilab): "shu belgilagan narsani olib tashla"; "ishchi ish qidiryapti, ish beruvchi ishchi

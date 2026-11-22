@@ -6,7 +6,8 @@ import { Volume2, VolumeX } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { DOCUMENT_COOKIE_ATTRS } from "@/lib/security/cookies";
 import { Button } from "@/components/ui/button";
-import { TOUR_AUDIO, TOUR_COOKIE, TOUR_DONE_EVENT, TOUR_STEPS, markTourSeen, tourAudioSrc, tourSeen, type TourPanel, type TourStep } from "@/features/tour/steps";
+import { TOUR_AUDIO, TOUR_COOKIE, TOUR_DONE_EVENT, TOUR_SOUND_KEY, TOUR_STEPS, markTourSeen, tourAudioSrc, tourSeen, type TourPanel, type TourStep } from "@/features/tour/steps";
+import { INTRO_DONE_EVENT } from "@/features/start-chat/intro";
 
 /**
  * Birinchi kirgandagi tanishtiruv (features/tour/steps.ts): bosh sahifada, xush kelibsiz ekranidan keyin, har panel uchun
@@ -14,7 +15,9 @@ import { TOUR_AUDIO, TOUR_COOKIE, TOUR_DONE_EVENT, TOUR_STEPS, markTourSeen, tou
  * "?tour=1" — qayta ko'rsatadi (yordam sahifasidan). Telegram kanali taklifi tanishtiruv tugagach chiqadi (channel-prompt).
  */
 const START_DELAY_MS = 900;
-const SOUND_KEY = "ishuz:tour-sound";
+/** video-tushuntirish tugagach — qisqa tanaffus */
+const AFTER_INTRO_MS = 500;
+const SOUND_KEY = TOUR_SOUND_KEY;
 const PAD = 6;
 const GAP = 14;
 
@@ -82,10 +85,21 @@ export function AppTour() {
     if (!forced && tourSeen(readCookie(TOUR_COOKIE), panel)) return;
     let tries = 0;
     let timer = 0;
+    let waiting = false;
+    const afterIntro = () => {
+      if (!waiting) return;
+      waiting = false;
+      timer = window.setTimeout(start, AFTER_INTRO_MS);
+    };
     const start = () => {
       // rol almashish ekrani (role-switch-splash) hali ko'rinib turgan bo'lsa — kutamiz
       if (document.querySelector(".role-splash") && tries++ < 10) {
         timer = window.setTimeout(start, 400);
+        return;
+      }
+      // chat tepasidagi video-tushuntirish ochiq — avval u (ovozli tushuntirish), tugagach yoki yopilgach — tugmalar
+      if (document.querySelector("[data-intro]")) {
+        waiting = true;
         return;
       }
       const steps = TOUR_STEPS[panel].filter((s) => !s.target || findTarget(s.target));
@@ -96,8 +110,12 @@ export function AppTour() {
       }
       setRun({ panel, steps, i: 0 });
     };
+    window.addEventListener(INTRO_DONE_EVENT, afterIntro);
     timer = window.setTimeout(start, START_DELAY_MS);
-    return () => window.clearTimeout(timer);
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener(INTRO_DONE_EVENT, afterIntro);
+    };
   }, [pathname, panel]);
 
   const step = run ? run.steps[run.i] : undefined;

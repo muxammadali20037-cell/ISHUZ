@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ArrowDown, BriefcaseBusiness, Check, ClipboardList, MapPin, Pause, PenLine, Play, RotateCcw, Search, UsersRound, Volume2, VolumeX, X } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
-import { INTRO_COOKIE } from "../intro";
+import { TOUR_SOUND_KEY } from "@/features/tour/steps";
+import { INTRO_COOKIE, INTRO_DONE_EVENT } from "../intro";
 
 /**
  * Chat tepasidagi qisqa video-tushuntirish (ega, 2026-11-22: "tepada kichkina oynada, shu oyna bilan birlashgan, animatsiya
@@ -12,18 +13,25 @@ import { INTRO_COOKIE } from "../intro";
  * qilish kerak, qanday e'lon joylanadi — hammasini tushuntirsin"). Video fayl emas: sahna animatsiyasi (SVG/CSS, mavzu
  * ranglari) + ovoz (erkak ovozi, faqat o'zbekcha — ega tasdiqlagan matn) + har tilda yozuv (subtitr).
  *  · Birinchi marta — ochiq, "Ovozli tushuntirishni yoqaymi?" (Ha / Ovozsiz). Ovozsiz — yozuv bilan.
- *  · Yopilsa yoki oxirigacha ko'rilsa — cookie (ib_intro_v): keyingi safar yig'ilgan "Qanday ishlaydi?" qatori.
+ *  · Yopilsa yoki oxirigacha ko'rilsa — cookie (ib_intro_v): keyingi safar yig'ilgan "Qanday ishlaydi?" qatori; shundan
+ *    keyin tugmalar bilan tanishuv boshlanadi (ega, 2026-11-22: "tugmalar nima vazifani bajarishini — ovoz bilan"), video
+ *    "Ovozsiz" ko'rilgan bo'lsa — tanishuv ham jim.
  *  · Kamroq harakat (prefers-reduced-motion) — sahnalar almashadi, harakatsiz.
  */
 
-/** sahna boshlanish vaqtlari (soniya) — ovoz faylining uzunligiga mutanosib cho'ziladi */
-const CUES = [0, 4.5, 9, 16, 23.5, 28];
-const TOTAL = 31;
-/** ovoz fayllari (public/): faqat tayyorlangan tillar — boshqalarda faqat yozuv bilan */
-const VOICE: Partial<Record<string, string>> = {};
+/**
+ * sahna boshlanish vaqtlari (soniya) — ega yuborgan ovozdagi gaplar boshi bilan bir xil (2026-11-22, "Farruh — Confident",
+ * 28.9 s; jimlik oraliqlari bo'yicha o'lchangan). Ovozsiz ko'rilganda ham shu sur'at
+ */
+const CUES = [0, 3.6, 7.9, 13.85, 21.55, 26.2];
+const TOTAL = 29;
+/** ovoz fayllari (public/): faqat tayyorlangan tillar — boshqalarda faqat yozuv bilan (kirill o'zbekcha — o'zbekcha ovoz) */
+const VOICE: Partial<Record<string, string>> = { uz: "/audio/intro-uz.mp3" };
 
 function remember() {
   document.cookie = `${INTRO_COOKIE}=1; path=/; max-age=31536000; samesite=lax`;
+  // tugmalar bilan tanishuv (app-tour) — endi boshlanadi
+  window.dispatchEvent(new Event(INTRO_DONE_EVENT));
 }
 
 type Phase = "ask" | "playing" | "paused" | "ended";
@@ -79,6 +87,14 @@ export function ChatIntro({ seen }: { seen: boolean }) {
   useEffect(() => () => audio.current?.pause(), []);
 
   const play = (withVoice: boolean) => {
+    // birinchi tanlov ("Ha" / "Ovozsiz") — keyingi tugmalar tanishuvida ham shunday (ovozli yoki jim)
+    if (phase === "ask" && voice) {
+      try {
+        localStorage.setItem(TOUR_SOUND_KEY, withVoice ? "1" : "0");
+      } catch {
+        // xususiy rejim — tanishuv o'z sozlamasi bilan
+      }
+    }
     const from = phase === "ended" ? 0 : time;
     setTime(from);
     const a = audio.current;

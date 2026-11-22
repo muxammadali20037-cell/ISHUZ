@@ -32,10 +32,12 @@ describe("tanishtiruv", () => {
   });
 
   it("ovoz faqat yozilganlari uchun; kirill o'zbekcha — o'zbekcha ovoz", () => {
-    expect(tourAudioSrc("uz", "W1")).toBe("/tour/uz/W1.mp3");
-    expect(tourAudioSrc("oz", "E4")).toBe("/tour/uz/E4.mp3");
-    expect(tourAudioSrc("ru", "W1")).toBeNull();
-    expect(tourAudioSrc("de", "W1")).toBeNull();
+    expect(tourAudioSrc("uz", "B1")).toBe("/tour/uz/B1.mp3");
+    expect(tourAudioSrc("oz", "U6")).toBe("/tour/uz/U6.mp3");
+    expect(tourAudioSrc("ru", "B1")).toBeNull();
+    expect(tourAudioSrc("de", "B1")).toBeNull();
+    // eski qadamlar (bosh sahifa, ishlar, sohalar...) — endi yo'q
+    expect(tourAudioSrc("uz", "W3")).toBeNull();
   });
 
   it("o'zbekcha ovoz — har qadam uchun fayl bor", () => {

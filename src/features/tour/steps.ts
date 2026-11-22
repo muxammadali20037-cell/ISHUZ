@@ -15,38 +15,34 @@ export interface TourStep {
   target: string | null;
 }
 
-export const TOUR_STEPS: Record<TourPanel, readonly TourStep[]> = {
-  // 2026-11-21: "Rol" qadami (U1) yo'q — bosh sahifa chat bo'ldi, rolni AI yozilganidan aniqlaydi (almashtirgich yo'q)
-  worker: [
-    { code: "W1", target: null },
-    // asosiy menyu — Qidiruv (chat) · E'lonlarim · Profil; "Yordamchi" tushuntirishi endi "Qidiruv" bo'limida
-    { code: "W7", target: "chat" },
-    { code: "W2", target: "home" },
-    { code: "W3", target: "jobs" },
-    { code: "W4", target: "employers" },
-    { code: "W5", target: "fields" },
-    { code: "U4", target: "messages" },
-    { code: "W6", target: "profile" },
-    { code: "U2", target: "lang" },
-    { code: "U3", target: "login" },
-    { code: "U5", target: "bell" },
-    { code: "U6", target: null },
-  ],
-  employer: [
-    { code: "E1", target: null },
-    { code: "E7", target: "chat" },
-    { code: "E2", target: "dashboard" },
-    { code: "E3", target: "my-listings" },
-    { code: "E4", target: "post" },
-    { code: "E5", target: "workers" },
-    { code: "E6", target: "profile" },
-    { code: "U2", target: "lang" },
-    { code: "U4", target: "messages" },
-    { code: "U3", target: "login" },
-    { code: "U5", target: "bell" },
-    { code: "U6", target: null },
-  ],
-};
+/**
+ * 2026-11-22 (ega: "ilovaga kirganda ovozli tushuntirsin, tugmalar nima vazifani bajarishini — uni ham ovozini ber"):
+ * chat tepasidagi video-tushuntirishdan keyin — hozirgi tugmalar: bo'sh ekrandagi ikki katta tugma, yozish maydoni,
+ * asosiy menyu (Qidiruv · E'lonlarim · Profil), keyin yuqori panel: "E'lon berish" (kompyuterda), xabarlar, til, kirish,
+ * qo'ng'iroqcha.
+ * Ikkala panelda bir xil (bosh ekran ikkalasida ham bir xil); ko'rilgani panel bo'yicha alohida eslab qolinadi.
+ */
+const STEPS: readonly TourStep[] = [
+  { code: "B0", target: null },
+  { code: "B1", target: "start-jobs" },
+  { code: "B2", target: "start-workers" },
+  { code: "B3", target: "composer" },
+  { code: "B4", target: "chat" },
+  { code: "B5", target: "my-listings" },
+  { code: "B7", target: "profile" },
+  // yuqori panel: "E'lon berish" (kompyuterda), xabarlar, til, kirish, qo'ng'iroqcha
+  { code: "B6", target: "post" },
+  { code: "U4", target: "messages" },
+  { code: "U2", target: "lang" },
+  { code: "U3", target: "login" },
+  { code: "U5", target: "bell" },
+  { code: "U6", target: null },
+];
+
+export const TOUR_STEPS: Record<TourPanel, readonly TourStep[]> = { worker: STEPS, employer: STEPS };
+
+/** tanishuv ovozi yoqilgan/o'chirilgan (localStorage); video-tushuntirishdagi birinchi tanlov ham shu yerga yoziladi */
+export const TOUR_SOUND_KEY = "ishuz:tour-sound";
 
 /** Ko'rilgan panellar: "w", "e" yoki "we" */
 export const TOUR_COOKIE = "ib_tour";
@@ -71,8 +67,8 @@ export function markTourSeen(cookieValue: string | null | undefined, panel: Tour
  * uchun so'rov yuborilmaydi — tanishtiruv faqat matn bilan ishlaydi.
  */
 export const TOUR_AUDIO: Partial<Record<"uz" | "ru" | "en", readonly string[]>> = {
-  // ega yuborgan ElevenLabs yozuvi (2026-11-19, "Farruh — Confident"), pauzalar bo'yicha 20 ta qatorga bo'lingan
-  uz: ["W1", "W2", "W3", "W4", "W5", "W6", "W7", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "U1", "U2", "U3", "U4", "U5", "U6"],
+  // ega yuborgan ElevenLabs yozuvlari ("Farruh — Confident"): U2–U6 — 2026-11-19 dagi yozuvdan; B0–B7 — 2026-11-22
+  uz: ["B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "U2", "U3", "U4", "U5", "U6"],
 };
 
 export function tourAudioSrc(locale: string, code: string): string | null {
