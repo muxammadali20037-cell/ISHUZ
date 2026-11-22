@@ -42,7 +42,8 @@ export interface ChatMember {
 }
 
 export interface ConversationContext {
-  kind: "application" | "offer";
+  /** listing — raqami ochilgan ishchi e'loni (0088) */
+  kind: "application" | "offer" | "listing";
   id: string;
   title: string;
   company: string | null;

@@ -88,7 +88,8 @@
       "moderation_pending": "Being checked",
       "review": "Moderator is reviewing",
       "verification_pending": "Waiting for employer verification",
-      "active_until": "Active — visible in search · until {date}"
+      "active_until": "Active — visible in search · until {date}",
+      "phone_required": "No phone — hidden from search"
     },
     "more": "Other sections",
     "links": {
@@ -149,7 +150,9 @@
     "phone_add": "Add",
     "phone_verified": "Verified",
     "edit_name": "Change name",
-    "pro_link": "PRO tracking"
+    "pro_link": "PRO tracking",
+    "phone_banner": "Your listing has no phone number — people can't reach you.",
+    "phone_banner_cta": "Add number"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",

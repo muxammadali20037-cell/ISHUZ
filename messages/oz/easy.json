@@ -88,7 +88,8 @@
       "moderation_pending": "Текширувда",
       "review": "Модератор кўриб чиқмоқда",
       "verification_pending": "Иш берувчи тасдиқланиши кутилмоқда",
-      "active_until": "Фаол — қидирувда кўринади · {date} гача"
+      "active_until": "Фаол — қидирувда кўринади · {date} гача",
+      "phone_required": "Рақам йўқ — қидирувда кўринмайди"
     },
     "more": "Бошқа бўлимлар",
     "links": {
@@ -149,7 +150,9 @@
     "phone_add": "Қўшиш",
     "phone_verified": "Тасдиқланган",
     "edit_name": "Исмни ўзгартириш",
-    "pro_link": "PRO кузатув"
+    "pro_link": "PRO кузатув",
+    "phone_banner": "Эълонингизда телефон рақам йўқ — сизга боғлана олишмайди.",
+    "phone_banner_cta": "Рақам қўшиш"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",

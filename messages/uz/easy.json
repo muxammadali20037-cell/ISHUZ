@@ -88,7 +88,8 @@
       "moderation_pending": "Tekshiruvda",
       "review": "Moderator ko'rib chiqmoqda",
       "verification_pending": "Ish beruvchi tasdiqlanishi kutilmoqda",
-      "active_until": "Faol — qidiruvda ko'rinadi · {date} gacha"
+      "active_until": "Faol — qidiruvda ko'rinadi · {date} gacha",
+      "phone_required": "Raqam yo'q — qidiruvda ko'rinmaydi"
     },
     "more": "Boshqa bo'limlar",
     "links": {
@@ -149,7 +150,9 @@
     "phone_add": "Qo'shish",
     "phone_verified": "Tasdiqlangan",
     "edit_name": "Ismni o'zgartirish",
-    "pro_link": "PRO kuzatuv"
+    "pro_link": "PRO kuzatuv",
+    "phone_banner": "E'loningizda telefon raqam yo'q — sizga bog'lana olishmaydi.",
+    "phone_banner_cta": "Raqam qo'shish"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",

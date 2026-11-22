@@ -195,10 +195,11 @@ test("kirgan (kompyuter): «haydovchiman, Samarqand» → oyna darhol (kasb va h
   // ega (2026-11-19): raqam ustiga bosilsa — qo'ng'iroq
   await expect(page.locator("[data-listing-own-phones] a[data-tel]")).toHaveAttribute("href", "tel:+998974445566");
 
-  // boshqa kirgan foydalanuvchi (ish beruvchi) e'londa shu raqamni ko'radi
+  // boshqa kirgan foydalanuvchi (ish beruvchi) e'londa shu raqamni ko'radi — "Raqamni ko'rsatish" bosilganda (4-bosqich)
   await loginAs(context, USERS.employer);
   await page.goto(href);
   const contact = page.locator("#contact");
+  await contact.getByRole("button", { name: "Raqamni ko'rsatish" }).click();
   await expect(contact).toContainText("+998 97 444 55 66");
   if (acc?.phone) await expect(contact).not.toContainText(acc.phone.replace(/^\+998(\d{2})(\d{3})(\d{2})(\d{2})$/, "+998 $1 $2 $3 $4"));
   await expect(contact.locator("[data-listing-phone2]")).toHaveCount(0);

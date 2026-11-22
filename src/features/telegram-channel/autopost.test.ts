@@ -169,6 +169,15 @@ describe("kanalga avtomatik e'lon", () => {
     expect(html("bare")).not.toMatch(/📞/);
   });
 
+  it("ishchi raqami pullik bo'lsa (0088, admin yoqqan) — kanal postida raqam yo'q", async () => {
+    tables.app_settings = [{ key: "contact_unlock_paid", value: true }];
+    tables.worker_profiles = [worker("new")];
+    tables.worker_listing_phones = [{ worker_id: "new", phone: "+998932728766", phone2: null, updated_at: "2026-11-21T09:00:00.5+00:00" }];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 1 });
+    const html = (send.mock.calls[0]![0] as { html: string }).html;
+    expect(html).not.toMatch(/📞|932728766/);
+  });
+
   it("eski (24 soatdan oldingi), yopilgan, bloklangan muallifniki va kasbsiz ishchi — yuborilmaydi", async () => {
     tables.vacancies = [vacancy("old", { published_at: old }), vacancy("closed", { status: "expired" }), vacancy("bad", { owner: { is_blocked: true } })];
     tables.worker_profiles = [worker("hidden", { is_public: false }), worker("noprof", { profession: null }), worker("blocked", { owner: { is_blocked: true } })];

@@ -38,7 +38,7 @@ $$;
 
 begin;
 -- prod holati: e'lon joylash bepul, to'lovlar (billing) o'chiq; aksiya chegirmasi amalda
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'ai_alerts_paid', 'listings_paid', 'billing_enabled');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'ai_alerts_paid', 'listings_paid', 'billing_enabled');
 update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until';
 update public.app_settings set value = to_jsonb((now() + interval '30 days')::text) where key = 'listing_discount_until';
 update public.app_settings set value = '50'::jsonb where key = 'listing_discount_percent';

@@ -1,5 +1,25 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · Ishchi raqamini ochish (4-bosqich, `feat/contact-unlock`)
+
+Ega (master prompt, 4-bosqich): "ish beruvchi ishchi raqamini 5 000 so'mga ochadi (narx — admin), bir marta to'lanadi,
+raqam ochilgach ochiq qoladi; Payme/Click kalitlari bo'lmaguncha — bepul". Tanlov: A varianti (narx tugmaning o'zida);
+bepul davrda ham raqam ochilganda chat ochilsin; raqami yo'q e'lon — eslatma va qidiruvdan yashirish.
+
+- **E'lon sahifasi va chatdagi ishchi kartasi**: bepul davrda "Raqamni ko'rsatish" — raqam, "Qo'ng'iroq qilish" va
+  "Chatda yozish". Pullik rejimda "Raqamni ochish · 5 000 so'm" → to'lov oynasi (balans yetsa — hamyondan bir bosishda,
+  aks holda Payme/Click) → raqam va chat shu sahifaning o'zida. Mehmonga — avval kirish, keyin shu e'longa qaytadi.
+- **Bir marta — doim ochiq**: juftlik (kim kimning raqamini ochgan) saqlanadi; qayta ochish bepul, ochishlar soni
+  cheklanmaydi. Ikki marta to'lab qo'yilsa — ortiqchasi hamyonga qaytadi.
+- **Chat faqat raqam ochilgan juftlik uchun**: "Chatda yozish" suhbatni ochadi, sarlavhada "E'lon: <kasb>".
+- **Admin → Tezkor boshqaruv**: "Ishchi raqamini ochish pullik" (o'chiq; Payme/Click ulanmaguncha yoqilmaydi) va
+  "Raqam ochish narxi" (5 000 so'm).
+- Pullik rejimda ishchi raqami boshqa yo'llardan ham chiqmaydi: mehmon tugmasi, eski sahifa chaqiruvi, hisob raqami,
+  saqlangan ishchilar, Telegram kanal posti. Ish izlovchi uchun hammasi bepul (vakansiya raqamlari o'zgarmadi).
+- **Raqami yo'q ishchi e'loni** qidiruvga chiqmaydi; egasiga Profilda va E'lonlarimda "Raqam qo'shish" eslatmasi, holat —
+  "Raqam yo'q — qidiruvda ko'rinmaydi". Raqam qo'shilishi bilan e'lon o'zi qaytadi.
+- Baza: `0088_contact_unlocks.sql` (pending.sql da, 0087 bilan birga). Qo'llanmaguncha sayt avvalgidek ishlaydi.
+
 ## 2026-11-21 · E'lon chatning o'zida (3-bosqich, `feat/chat-post`)
 
 Ega (master prompt, 3-bosqich): "e'lon berish shu chatning o'zida: bittadan savol, so'ng tayyor e'lon kartasi va «Joylash»

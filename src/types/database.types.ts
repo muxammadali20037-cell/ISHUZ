@@ -1102,6 +1102,34 @@ export type Database = {
           },
         ];
       };
+      contact_unlocks: {
+        Row: {
+          amount: number;
+          created_at: string;
+          payment_id: string | null;
+          target_profile_id: string;
+          viewer_profile_id: string;
+          worker_id: string | null;
+        };
+        ComputedFields: never;
+        Insert: {
+          amount?: number;
+          created_at?: string;
+          payment_id?: string | null;
+          target_profile_id: string;
+          viewer_profile_id: string;
+          worker_id?: string | null;
+        };
+        Update: {
+          amount?: number;
+          created_at?: string;
+          payment_id?: string | null;
+          target_profile_id?: string;
+          viewer_profile_id?: string;
+          worker_id?: string | null;
+        };
+        Relationships: [];
+      };
       contact_reveals: {
         Row: {
           revealed_at: string;
@@ -1183,6 +1211,8 @@ export type Database = {
           job_offer_id: string | null;
           last_message_at: string | null;
           last_message_preview: string | null;
+          unlock_target: string | null;
+          unlock_viewer: string | null;
         };
         ComputedFields: never;
         Insert: {
@@ -1192,6 +1222,8 @@ export type Database = {
           job_offer_id?: string | null;
           last_message_at?: string | null;
           last_message_preview?: string | null;
+          unlock_target?: string | null;
+          unlock_viewer?: string | null;
         };
         Update: {
           application_id?: string | null;
@@ -1200,6 +1232,8 @@ export type Database = {
           job_offer_id?: string | null;
           last_message_at?: string | null;
           last_message_preview?: string | null;
+          unlock_target?: string | null;
+          unlock_viewer?: string | null;
         };
         Relationships: [
           {
@@ -5246,6 +5280,9 @@ export type Database = {
         Returns: boolean;
       };
       contact_status_for: { Args: { p_owner: string }; Returns: string };
+      contact_unlock_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
+      contact_unlock_price: { Args: Record<PropertyKey, never>; Returns: number };
+      contact_unlock_quote: { Args: { p_worker_id: string }; Returns: Json };
       create_payment:
         | {
             Args: {
@@ -5708,6 +5745,16 @@ export type Database = {
         }[];
       };
       my_duplicate_vacancy: { Args: { p_vacancy_id: string }; Returns: string };
+      my_listings_without_phone: {
+        Args: Record<PropertyKey, never>;
+        Returns: {
+          headline: string;
+          profession_name_en: string;
+          profession_name_ru: string;
+          profession_name_uz: string;
+          worker_id: string;
+        }[];
+      };
       my_listing_state: {
         Args: { p_entity: string; p_id: string };
         Returns: Json;
@@ -5823,6 +5870,7 @@ export type Database = {
         Args: { p_min_score?: number; p_vacancy_id: string };
         Returns: number;
       };
+      open_contact_chat: { Args: { p_other: string }; Returns: string };
       payme_cancel: {
         Args: { p_reason: number; p_txn: string };
         Returns: Json;
@@ -6792,7 +6840,7 @@ export type Database = {
       };
       simple_vacancy_phone: { Args: { p_vacancy_id: string }; Returns: string };
       simple_worker_listing: {
-        Args: { p_id: string };
+        Args: { p_id: string; p_phone?: boolean };
         Returns: {
           about: string;
           avatar_url: string;
@@ -6823,6 +6871,7 @@ export type Database = {
           remote_ok: boolean;
           salary_expected: number;
           schedules: Database["public"]["Enums"]["work_schedule"][];
+          unlocked: boolean;
         }[];
       };
       slugify: { Args: { input: string }; Returns: string };
@@ -6911,6 +6960,7 @@ export type Database = {
         Returns: boolean;
       };
       touch_last_seen: { Args: Record<PropertyKey, never>; Returns: undefined };
+      unlock_worker_contact: { Args: { p_worker_id: string }; Returns: Json };
       unread_counts: {
         Args: Record<PropertyKey, never>;
         Returns: {
@@ -7097,7 +7147,8 @@ export type Database = {
         | "worker_promotion"
         | "ai_alerts"
         | "worker_listing"
-        | "wallet_topup";
+        | "wallet_topup"
+        | "contact_unlock";
       payment_status: "pending" | "paid" | "cancelled" | "failed";
       phone_visibility: "nobody" | "applicants" | "on_request" | "everyone";
       portfolio_type: "image" | "video" | "pdf" | "document" | "link";
@@ -7379,6 +7430,7 @@ export const Constants = {
         "ai_alerts",
         "worker_listing",
         "wallet_topup",
+        "contact_unlock",
       ],
       payment_status: ["pending", "paid", "cancelled", "failed"],
       phone_visibility: ["nobody", "applicants", "on_request", "everyone"],

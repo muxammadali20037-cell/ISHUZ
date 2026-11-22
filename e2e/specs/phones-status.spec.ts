@@ -81,7 +81,7 @@ test("qizil qalin holat: vakansiyada «Hozir ishchi qidirmoqda», faol ishchida 
   await expect(page.locator("article", { hasText: "Santexnik" }).locator("[data-live-status]")).toHaveCount(0);
 });
 
-test("mehmon: «Raqamni ko'rsatish» — e'londagi raqamlar; raqam yo'q bo'lsa — kirish taklifi; sahifada oldindan raqam yo'q", async ({ page, context }) => {
+test("mehmon: «Raqamni ko'rsatish» — e'londagi raqamlar; raqam yo'q bo'lsa — shuni aytadi; sahifada oldindan raqam yo'q", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "employer");
   const [a] = await sql<{ id: string }>("select id from public.worker_profiles where profile_id = $1 and is_primary", [USERS.workerA]);
@@ -99,7 +99,8 @@ test("mehmon: «Raqamni ko'rsatish» — e'londagi raqamlar; raqam yo'q bo'lsa �
   await page.locator("#contact").getByRole("button", { name: "Raqamni ko'rsatish" }).click();
   const none = page.locator("#contact [data-reveal-error='none']");
   await expect(none).toContainText("Bu e'londa ochiq raqam yo'q");
-  await expect(none.getByRole("link", { name: "Kirish" })).toHaveAttribute("href", `/auth?next=${encodeURIComponent(`/listing/${b!.id}`)}`);
+  // 4-bosqich: ariza va raqam so'rovi yo'q — kirish ham yordam bermaydi, shuning uchun taklif qilinmaydi
+  await expect(none.getByRole("link", { name: "Kirish" })).toHaveCount(0);
 });
 
 test("Telegram orqali kodsiz kirish: bot tasdiqlagach — o'sha brauzer kiradi; boshqa brauzer va qayta ishlatish — yo'q", async ({ page, context, browser }) => {

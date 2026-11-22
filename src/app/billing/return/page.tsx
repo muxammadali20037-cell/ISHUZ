@@ -21,6 +21,7 @@ const PAID_DESC = {
   ai_alerts: "billing.return.paid_ai_alerts",
   worker_listing: "billing.return.paid_listing",
   worker_promotion: "billing.return.paid_promotion",
+  contact_unlock: "billing.return.paid_contact",
 } as const;
 
 /**
@@ -84,6 +85,8 @@ export default async function BillingReturnPage({ searchParams }: { searchParams
         ? { href: "/ai-alerts", label: t("billing.return.to_ai_alerts") }
         : p.purpose === "wallet_topup"
           ? { href: "/billing", label: t("billing.return.to_wallet") }
+          : p.purpose === "contact_unlock" && p.worker_id
+            ? { href: `/listing/${p.worker_id}`, label: t("billing.return.to_listing") }
           : p.vacancy_id
             ? { href: `/employer/vacancies/${p.vacancy_id}`, label: t("billing.return.to_vacancy") }
             : null;

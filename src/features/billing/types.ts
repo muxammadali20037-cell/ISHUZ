@@ -37,7 +37,8 @@ export interface PromotionQuote {
 }
 
 /** To'lov oynasi qaysi xizmat uchun ochiladi */
-export type CheckoutPurpose = "vacancy_publish" | "worker_promotion" | "worker_listing" | "ai_alerts";
+/** contact_unlock (0088) — ishchi raqamini ochish (bir marta, doim ochiq) */
+export type CheckoutPurpose = "vacancy_publish" | "worker_promotion" | "worker_listing" | "ai_alerts" | "contact_unlock";
 
 /** Tarif darajasi (0080): Oddiy · Tezkor · Maksimal */
 export type TariffPlan = "basic" | "boost" | "max";

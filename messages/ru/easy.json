@@ -88,7 +88,8 @@
       "moderation_pending": "На проверке",
       "review": "Проверяет модератор",
       "verification_pending": "Ожидает подтверждения работодателя",
-      "active_until": "Активно — видно в поиске · до {date}"
+      "active_until": "Активно — видно в поиске · до {date}",
+      "phone_required": "Нет номера — не показывается в поиске"
     },
     "more": "Другие разделы",
     "links": {
@@ -149,7 +150,9 @@
     "phone_add": "Добавить",
     "phone_verified": "Подтверждён",
     "edit_name": "Изменить имя",
-    "pro_link": "PRO-отслеживание"
+    "pro_link": "PRO-отслеживание",
+    "phone_banner": "В вашем объявлении нет номера — с вами не смогут связаться.",
+    "phone_banner_cta": "Добавить номер"
   },
   "wizard": {
     "step_of": "{n}/{total} — {name}",

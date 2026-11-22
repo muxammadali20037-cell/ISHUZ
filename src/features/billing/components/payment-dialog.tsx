@@ -47,6 +47,7 @@ const TITLES = {
   worker_listing: "billing.listing_title",
   worker_promotion: "billing.promotion_title",
   ai_alerts: "saved.ai_alerts.pro",
+  contact_unlock: "billing.contact_title",
 } as const;
 
 function PaymentSheet({ req, onDone }: { req: Request; onDone: () => void }) {

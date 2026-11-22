@@ -60,7 +60,8 @@
     "delete": "Удалить",
     "delete_confirm_title": "Удалить сообщение?",
     "delete_confirm_desc": "Сообщение будет удалено у обоих участников.",
-    "deleted_toast": "Сообщение удалено"
+    "deleted_toast": "Сообщение удалено",
+    "context_listing": "Объявление"
   },
   "composer": {
     "placeholder": "Напишите сообщение...",

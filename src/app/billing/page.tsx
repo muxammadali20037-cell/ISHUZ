@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { BellRing, BriefcaseBusiness, Crown, Megaphone, ReceiptText, Wallet } from "lucide-react";
+import { BellRing, BriefcaseBusiness, Crown, Megaphone, Phone, ReceiptText, Wallet } from "lucide-react";
 import { requireSession } from "@/features/auth/session";
 import { getT } from "@/lib/i18n/server";
 import { formatDateTime, formatMoney } from "@/lib/format";
@@ -20,6 +20,7 @@ const ICONS: Record<PaymentPurpose, typeof Wallet> = {
   worker_promotion: Crown,
   ai_alerts: BellRing,
   wallet_topup: Wallet,
+  contact_unlock: Phone,
 };
 const TONES = { paid: "success", pending: "warning", unpaid: "default", cancelled: "default", failed: "destructive" } as const;
 

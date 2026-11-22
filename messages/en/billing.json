@@ -55,7 +55,9 @@
     "receipt_amount": "Amount",
     "receipt_method": "Payment method",
     "receipt_date": "Date",
-    "receipt_order": "Order"
+    "receipt_order": "Order",
+    "paid_contact": "The number is unlocked. You can now call or message in chat.",
+    "to_listing": "Back to the listing"
   },
   "pricing": {
     "title": "Pricing",
@@ -125,6 +127,11 @@
         "A Telegram message as soon as a matching listing appears",
         "Jobs and workers — one subscription",
         "Works for {days} days"
+      ],
+      "contact_unlock": [
+        "The worker's number opens right away",
+        "Call them or message in chat",
+        "Pay once — it stays open"
       ]
     },
     "trust": {
@@ -132,7 +139,8 @@
       "receipt": "Receipt and payment history — on the “My payments” page",
       "resubmit": "Not approved? Fix it and resubmit — no extra payment within {days} days"
     },
-    "not_needed": "No payment needed right now — the service is active or free"
+    "not_needed": "No payment needed right now — the service is active or free",
+    "contact_paid_toast": "Paid — the number is unlocked"
   },
   "wallet": {
     "title": "My payments",
@@ -156,7 +164,8 @@
       "worker_listing": "Job-seeker listing",
       "worker_promotion": "Profile in TOP",
       "ai_alerts": "PRO watch",
-      "wallet_topup": "Wallet top-up"
+      "wallet_topup": "Wallet top-up",
+      "contact_unlock": "Worker number unlock"
     },
     "statuses": {
       "paid": "Paid",
@@ -212,5 +221,6 @@
     "unavailable": "Plans didn't load — please try again shortly.",
     "cta_employer": "Post a vacancy",
     "cta_worker": "Post a listing (looking for work)"
-  }
+  },
+  "contact_title": "Unlock number"
 }

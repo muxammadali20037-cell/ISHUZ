@@ -30,7 +30,8 @@ export function ChatHeader({
   const reportRef = useRef<HTMLDivElement>(null);
   const [first, ...rest] = view.other.name.split(" ");
   const avatar = <Avatar src={view.other.avatar_url} fallback={initials(first, rest.join(" "))} alt={view.other.name} size="md" />;
-  const contextLabel = view.context.kind === "application" ? t("chat.room.context_application") : t("chat.room.context_offer");
+  const contextLabel =
+    view.context.kind === "application" ? t("chat.room.context_application") : view.context.kind === "listing" ? t("chat.room.context_listing") : t("chat.room.context_offer");
 
   return (
     <header className="shrink-0 border-b border-border/70 bg-card">

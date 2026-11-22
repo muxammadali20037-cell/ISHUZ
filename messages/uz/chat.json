@@ -60,7 +60,8 @@
     "delete": "O'chirish",
     "delete_confirm_title": "Xabarni o'chirasizmi?",
     "delete_confirm_desc": "Xabar ikkala tomon uchun ham o'chiriladi.",
-    "deleted_toast": "Xabar o'chirildi"
+    "deleted_toast": "Xabar o'chirildi",
+    "context_listing": "E'lon"
   },
   "composer": {
     "placeholder": "Xabar yozing...",

@@ -55,7 +55,9 @@
     "receipt_amount": "Summa",
     "receipt_method": "To'lov usuli",
     "receipt_date": "Sana",
-    "receipt_order": "Buyurtma"
+    "receipt_order": "Buyurtma",
+    "paid_contact": "Raqam ochildi. Endi qo'ng'iroq qilishingiz yoki chatda yozishingiz mumkin.",
+    "to_listing": "E'longa qaytish"
   },
   "pricing": {
     "title": "Narxlar",
@@ -125,6 +127,11 @@
         "Mos e'lon chiqishi bilan Telegram'ga xabar",
         "Ish ham, ishchi ham — bitta obuna",
         "{days} kun davomida ishlaydi"
+      ],
+      "contact_unlock": [
+        "Ishchining raqami darhol ochiladi",
+        "Qo'ng'iroq qilasiz yoki chatda yozasiz",
+        "Bir marta to'laysiz — doim ochiq qoladi"
       ]
     },
     "trust": {
@@ -132,7 +139,8 @@
       "receipt": "Chek va to'lovlar tarixi — «To'lovlarim» sahifasida",
       "resubmit": "Tekshiruvdan o'tmasa — tuzatib qayta yuborasiz, {days} kun ichida qayta to'lamaysiz"
     },
-    "not_needed": "Hozir to'lov kerak emas — xizmat faol yoki bepul"
+    "not_needed": "Hozir to'lov kerak emas — xizmat faol yoki bepul",
+    "contact_paid_toast": "To'landi — raqam ochildi"
   },
   "wallet": {
     "title": "To'lovlarim",
@@ -156,7 +164,8 @@
       "worker_listing": "Ish qidirish e'loni",
       "worker_promotion": "Profil TOP da",
       "ai_alerts": "PRO kuzatuv",
-      "wallet_topup": "Hamyonni to'ldirish"
+      "wallet_topup": "Hamyonni to'ldirish",
+      "contact_unlock": "Ishchi raqamini ochish"
     },
     "statuses": {
       "paid": "To'langan",
@@ -212,5 +221,6 @@
     "unavailable": "Tariflar hozircha yuklanmadi — birozdan keyin qayta oching.",
     "cta_employer": "Vakansiya joylash",
     "cta_worker": "E'lon berish (ish izlayman)"
-  }
+  },
+  "contact_title": "Raqamni ochish"
 }

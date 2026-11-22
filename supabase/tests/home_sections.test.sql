@@ -17,7 +17,7 @@ begin
 end $$;
 
 begin;
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'listings_paid');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'listings_paid');
 
 -- oldingi holat (seed'da boshqa e'lonlar bo'lishi mumkin — farqni tekshiramiz)
 create temp table before_v as select * from public.vacancy_section_counts((select id from public.regions where slug = 'tashkent_city'), null);

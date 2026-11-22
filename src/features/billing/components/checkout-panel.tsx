@@ -18,6 +18,9 @@ import type { CheckoutPurpose, CheckoutQuote, TariffPlan, Tier } from "../types"
 import { selectableTiers } from "../tiers";
 import { InAppNote } from "./in-app-note";
 
+/** reveal-phone.tsx dagi CONTACT_UNLOCKED_EVENT bilan bir xil (billing → contacts bog'liqligi bo'lmasin) */
+const CONTACT_UNLOCKED_EVENT = "ib:contact-unlocked";
+
 const PROVIDER_NAME = { payme: "Payme", click: "Click" } as const;
 
 function lastProvider(): string | null {
@@ -142,8 +145,14 @@ export function CheckoutPanel({
         toast.error(errorText(res.ok ? "generic" : res.error));
         return;
       }
-      toast.success(t("billing.checkout.paid_toast"));
+      toast.success(t(purpose === "contact_unlock" ? "billing.checkout.contact_paid_toast" : "billing.checkout.paid_toast"));
       onDone?.();
+      if (purpose === "contact_unlock") {
+        // raqam shu sahifaning o'zida ochiladi (to'lov cheki — "To'lovlarim"da)
+        window.dispatchEvent(new CustomEvent(CONTACT_UNLOCKED_EVENT, { detail: targetId }));
+        router.refresh();
+        return;
+      }
       router.push(`/billing/return?order=${res.data.orderNo}`);
     });
   };

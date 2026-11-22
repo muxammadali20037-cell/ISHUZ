@@ -3,7 +3,7 @@
 import { z } from "zod";
 import type { ActionResult } from "@/features/auth/actions";
 import { getSession } from "@/features/auth/session";
-import { revealListingPhone, type RevealedPhones } from "@/features/contacts/reveal-actions";
+import { revealPhone, type RevealOutcome } from "@/features/contacts/reveal-actions";
 import { getVacancyBySlug } from "@/features/jobs/queries";
 import type { VacancyDetail } from "@/features/jobs/types";
 import { formatWorkTime } from "@/lib/format";
@@ -18,7 +18,7 @@ export interface NamedItem {
 
 /**
  * Yordamchi kartasidagi "E'lonni to'liq ko'rish" (ega, 2026-11-19): e'lonning qolgan ma'lumotlari tartib bilan.
- * Faqat sahifada hammaga ochiq maydonlar; telefon bu yerda yo'q (u alohida — revealListingPhone, limit bilan).
+ * Faqat sahifada hammaga ochiq maydonlar; telefon bu yerda yo'q (u alohida — revealPhone, limit bilan).
  */
 export interface VacancyCardDetails {
   description: string | null;
@@ -58,12 +58,11 @@ function toDetails(v: VacancyDetail): VacancyCardDetails {
   };
 }
 
-export type CardPhone = { phase: "shown"; phones: RevealedPhones } | { phase: "error"; error: string };
+export type CardPhone = RevealOutcome;
 
 async function cardPhone(kind: "vacancy" | "worker", id: string): Promise<{ phone: CardPhone; signedIn: boolean }> {
-  const [res, session] = await Promise.all([revealListingPhone({ kind, id }).catch(() => null), getSession().catch(() => null)]);
-  const phone: CardPhone = res?.ok && res.data ? { phase: "shown", phones: res.data } : { phase: "error", error: res && !res.ok ? res.error : "unavailable" };
-  return { phone, signedIn: !!session };
+  const [res, session] = await Promise.all([revealPhone({ kind, id }).catch(() => null), getSession().catch(() => null)]);
+  return { phone: res ?? { phase: "error", error: "unavailable" }, signedIn: !!session };
 }
 
 /**
