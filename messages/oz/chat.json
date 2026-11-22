@@ -60,7 +60,8 @@
     "delete": "Ўчириш",
     "delete_confirm_title": "Хабарни ўчирасизми?",
     "delete_confirm_desc": "Хабар иккала томон учун ҳам ўчирилади.",
-    "deleted_toast": "Хабар ўчирилди"
+    "deleted_toast": "Хабар ўчирилди",
+    "context_listing": "Эълон"
   },
   "composer": {
     "placeholder": "Хабар ёзинг...",

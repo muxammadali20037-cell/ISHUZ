@@ -40,7 +40,7 @@ end $$;
 
 begin;
 -- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'employer_verification_required');
 -- 0043 dan oldingi qoidalar bilan sinaladi (yangi 10 kunlik pullik e'lonlar — paid_listings.test.sql)
 update public.app_settings set value = 'false'::jsonb where key = 'listings_paid';
 update public.app_settings set value = '30'::jsonb where key = 'vacancy_lifetime_days';

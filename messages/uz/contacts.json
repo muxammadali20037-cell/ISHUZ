@@ -46,9 +46,15 @@
   "guest_login": "Kirish",
   "reveal": {
     "show": "Raqamni ko'rsatish",
-    "none": "Bu e'londa ochiq raqam yo'q. Kirib, ariza yoki so'rov yuboring.",
+    "none": "Bu e'londa ochiq raqam yo'q.",
     "limit": "Juda ko'p raqam ko'rildi. Birozdan keyin urinib ko'ring yoki kiring.",
     "unavailable": "Raqamni hozir ko'rsatib bo'lmadi.",
     "retry": "Qayta urinish"
+  },
+  "unlock": {
+    "button": "Raqamni ochish",
+    "note": "Bir marta to'laysiz — raqam va chat shu odam bilan doim ochiq qoladi.",
+    "chat": "Chatda yozish",
+    "chat_failed": "Chatni ochib bo'lmadi. Qayta urinib ko'ring."
   }
 }

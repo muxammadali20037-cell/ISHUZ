@@ -38,7 +38,7 @@ end $$;
 
 begin;
 -- 0049+: bu fayl eski oqimlarni sinaydi; majburiy moderatsiya va ish beruvchi darvozasi — moderation.test.sql da
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'employer_verification_required');
 update public.app_settings set value = 'true'::jsonb where key = 'listings_paid';
 update public.app_settings set value = 'false'::jsonb where key = 'listing_free_trial';
 update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until';

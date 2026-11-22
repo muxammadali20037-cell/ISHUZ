@@ -169,6 +169,9 @@ export const WORKER_CHANNEL_PHONES_FROM = "2026-11-20T07:30:00Z";
 async function workerChannelPhones(db: Db, ids: string[]): Promise<Map<string, string[]>> {
   const out = new Map<string, string[]>();
   if (!ids.length) return out;
+  // 0088: ishchi raqami pullik bo'lsa (admin yoqqan) — kanalda raqamsiz (saytda "Raqamni ochish")
+  const { data: paid } = await db.from("app_settings").select("value").eq("key", "contact_unlock_paid").maybeSingle();
+  if (paid?.value === true) return out;
   const { data, error } = await db.from("worker_listing_phones").select("worker_id, phone, phone2, updated_at").in("worker_id", ids);
   if (error) return out;
   for (const p of data ?? []) {

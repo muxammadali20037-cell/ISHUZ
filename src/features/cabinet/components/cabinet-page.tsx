@@ -2,7 +2,7 @@ import { getServerEnv } from "@/lib/env";
 import { socialLinks } from "@/lib/social";
 import { SocialLinks } from "@/components/shared/social-links";
 import Link from "next/link";
-import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, Settings, ShieldCheck, Sparkles, UserRound, Wallet, Wrench } from "lucide-react";
+import { BadgeCheck, Bell, BellRing, Bookmark, ChevronRight, Languages, LifeBuoy, LogIn, LogOut, MessageCircle, Pencil, PhoneOff, Settings, ShieldCheck, Sparkles, UserRound, Wallet, Wrench } from "lucide-react";
 import type { TFunction } from "@/lib/i18n/translate";
 import { getT } from "@/lib/i18n/server";
 import type { SessionContext } from "@/features/auth/session";
@@ -40,7 +40,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
   }
 
   const supabase = await createClient();
-  const [{ vacancies }, contactRes] = await Promise.all([
+  const [{ vacancies, workers }, contactRes] = await Promise.all([
     getMyListings(session),
     supabase.from("profile_contacts").select("phone, phone_verified_at").eq("profile_id", session.userId).maybeSingle(),
   ]);
@@ -64,6 +64,8 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
   ];
 
   const roleTarget = mode === "employer" ? "worker" : "employer";
+  // 4-bosqich (ega, 2026-11-22): raqami yo'q ishchi e'loni qidiruvga chiqmaydi — egasiga Profilda ham eslatma
+  const noPhone = workers.find((w) => w.phoneHidden);
 
   return (
     // Profil — 4.0 (ega, 2026-11-21, master prompt: "profil juda sodda bo'lsin: ism, telefon, til, e'lonlarim, chiqish;
@@ -101,6 +103,23 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
           <Pencil className="size-5" aria-hidden />
         </Link>
       </section>
+
+      {noPhone ? (
+        <Link
+          href={noPhone.primary ? "/post/worker?step=3" : `/post/worker?listing=${noPhone.id}&step=3`}
+          role="status"
+          data-cabinet-phone-missing
+          className="press flex items-start gap-3 rounded-2xl border border-warning/40 bg-warning-soft p-4 text-base hover:bg-warning-soft/70"
+        >
+          <PhoneOff className="mt-0.5 size-5 shrink-0 text-warning" aria-hidden />
+          <span className="min-w-0 flex-1">
+            <span className="block font-semibold">{t("easy.cabinet.phone_banner")}</span>
+            <span className="mt-1 inline-flex items-center gap-1 font-bold text-primary-ink">
+              {t("easy.cabinet.phone_banner_cta")} <ChevronRight className="size-4" aria-hidden />
+            </span>
+          </span>
+        </Link>
+      ) : null}
 
       <ul className="divide-y divide-border overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm" data-cabinet-main>
         <li>

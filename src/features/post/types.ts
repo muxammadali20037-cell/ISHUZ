@@ -113,6 +113,8 @@ export type ListingState =
   | "rejected"
   | "verification_pending"
   | "payment_required"
+  /** 0088: ishchi e'lonida ochiq telefon raqam yo'q — qidiruvga chiqmaydi (raqam qo'shilishi bilan chiqadi) */
+  | "phone_required"
   | "saved"
   | "closed"
   | "expired"

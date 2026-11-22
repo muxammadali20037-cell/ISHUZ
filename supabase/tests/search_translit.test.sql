@@ -20,7 +20,7 @@ select pg_temp.ok(public.uz_fold('Шофёр, Ғалла-қоровул!') = 'sh
 select pg_temp.ok(public.uz_fold(null) = '', 'null → bo''sh');
 
 -- majburiy moderatsiya bu yerda sinalmaydi (moderation.test.sql): e'lonlar darhol faol bo'lsin
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required', 'listings_paid');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'employer_verification_required', 'listings_paid');
 
 -- ma'lumot: ish beruvchi va kasbi ro'yxatdan tanlanmagan e'lonlar
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values

@@ -33,7 +33,7 @@ begin
 end $$;
 
 begin;
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'listings_paid');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'listings_paid');
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('65000000-0000-0000-0000-000000000001', '+998906500001', now(), '{"first_name":"Ish beruvchi"}'),

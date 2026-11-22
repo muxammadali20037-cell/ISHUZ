@@ -566,7 +566,8 @@
     "purposes": {
       "vacancy_publish": "Vacancy posting",
       "worker_promotion": "TOP profile",
-      "wallet_topup": "Wallet top-up"
+      "wallet_topup": "Wallet top-up",
+      "contact_unlock": "Worker number unlock"
     },
     "statuses": {
       "pending": "Pending",
@@ -809,7 +810,11 @@
     "wallet_bonus_hint": "Percent bonus for top-ups from the set amount (0 — off, max 50%)",
     "wallet_bonus_min": "Minimum top-up for the bonus",
     "wallet_bonus_min_hint": "The bonus applies to top-ups of this amount or more",
-    "sum": "UZS"
+    "sum": "UZS",
+    "contact_paid": "Worker number unlock is paid",
+    "contact_paid_hint": "Don't turn on until Payme/Click are connected. When off, numbers unlock for free (with limits), chat too.",
+    "contact_price": "Number unlock price",
+    "contact_price_hint": "Per worker, one time."
   },
   "ai": {
     "title": "AI status",

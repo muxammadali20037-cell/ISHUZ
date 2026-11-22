@@ -40,8 +40,8 @@ export async function getWorkerListingQuote(): Promise<ActionResult<ListingQuote
   return { ok: true, data: { ...(data as unknown as Omit<ListingQuote, "providers">), providers: enabledProviders() } };
 }
 
-const purposeSchema = z.enum(["vacancy_publish", "worker_promotion", "worker_listing", "ai_alerts"]);
-// ai_alerts — obuna foydalanuvchining o'ziga (obyekt yo'q); qolganlari — e'lon yoki ishchi profili.
+const purposeSchema = z.enum(["vacancy_publish", "worker_promotion", "worker_listing", "ai_alerts", "contact_unlock"]);
+// ai_alerts — obuna foydalanuvchining o'ziga (obyekt yo'q); qolganlari — e'lon yoki ishchi profili (contact_unlock — ishchi e'loni).
 // plan (0080): Oddiy · Tezkor · Maksimal — faqat vakansiya va ishchi e'loni uchun; narx doim serverda
 const targetSchema = z
   .object({ purpose: purposeSchema, targetId: uuid.nullish(), plan: z.enum(["basic", "boost", "max"]).optional() })
@@ -93,6 +93,13 @@ export async function getCheckout(input: unknown): Promise<ActionResult<Checkout
     const val = (k: string, d: number) => Number(settings.data?.find((r) => r.key === k)?.value ?? d) || d;
     const price = val("price_ai_alerts", 15000);
     quote = { mode: paid.data === false ? "free" : "payment_required", price, fullPrice: price, discountPercent: 0, discountUntil: null, days: val("ai_alerts_days", 30), hours: null, tiers: null };
+  } else if (purpose === "contact_unlock") {
+    // 0088: ishchi raqamini ochish — bir marta (muddatsiz), daraja yo'q; holat: payment_required / free / unlocked / owner / none
+    const { data, error } = await supabase.rpc("contact_unlock_quote", { p_worker_id: targetId! });
+    if (error || !data) return { ok: false, error: errorCode(error) };
+    const q = data as { mode?: string; price?: number };
+    const price = Number(q.price) || 0;
+    quote = { mode: String(q.mode ?? "none"), price, fullPrice: price, discountPercent: 0, discountUntil: null, days: null, hours: null, tiers: null };
   } else {
     const rpc =
       purpose === "vacancy_publish"
@@ -143,6 +150,7 @@ export async function payFromWallet(input: unknown): Promise<ActionResult<{ orde
   if (error || !data) return { ok: false, error: walletError(error, status) };
   const res = data as { order_no: number; balance: number };
   for (const path of ["/", "/cabinet", "/billing", "/ai-alerts", "/profile/listing"]) revalidatePath(path);
+  if (purpose === "contact_unlock") revalidatePath(`/listing/${parsed.data.targetId}`);
   return { ok: true, data: { orderNo: Number(res.order_no), balance: Number(res.balance) } };
 }
 

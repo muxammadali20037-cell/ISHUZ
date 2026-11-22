@@ -17,8 +17,9 @@ import { workerStatuses } from "@/features/find/queries";
 import { StatusPill } from "@/features/cabinet/components/status-pill";
 import { levelToExperience } from "@/features/post/types";
 import { getProfessionImages } from "@/lib/profession-images/server";
-import { RequestContactButton } from "@/features/contacts/request-contact-button";
-import { RevealPhone } from "@/features/contacts/reveal-phone";
+import { ChatButton, RevealPhone } from "@/features/contacts/reveal-phone";
+import { getContactUnlockConfig } from "@/features/contacts/unlock-config";
+import { isMissingRelation } from "@/features/saved/missing";
 import { isCityRegion } from "@/lib/geo/city";
 import { BackLink } from "@/components/shared/back-link";
 
@@ -27,8 +28,14 @@ type Params = { params: Promise<{ id: string }> };
 async function load(id: string) {
   if (!z.uuid().safeParse(id).success) return null;
   const supabase = await createClient();
-  const { data } = await supabase.rpc("simple_worker_listing", { p_id: id });
-  return data?.[0] ?? null;
+  // 0088: p_phone = false — raqam faqat egasi, admin va raqamni ochgan uchun (sahifani ko'rish raqamni "ochmaydi");
+  // 0088 qo'llanmagan baza — avvalgi chaqiruv
+  const res = await supabase.rpc("simple_worker_listing", { p_id: id, p_phone: false });
+  if (res.error && isMissingRelation(res.error, res.status)) {
+    const { data } = await supabase.rpc("simple_worker_listing", { p_id: id });
+    return data?.[0] ?? null;
+  }
+  return res.data?.[0] ?? null;
 }
 
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
@@ -41,7 +48,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
 /** Ish qidiruvchi e'loni (ochiq): kasb, hudud, tajriba, o'zi haqida, ruxsat bo'lsa telefon va "Qo'ng'iroq qilish" */
 export default async function ListingPage({ params }: Params) {
   const { id } = await params;
-  const [{ t, tEnum, name, locale }, w, session] = await Promise.all([getT(), load(id), getSession()]);
+  const [{ t, tEnum, name, locale }, w, session, unlockConfig] = await Promise.all([getT(), load(id), getSession(), getContactUnlockConfig()]);
   if (!w) notFound();
   const [images, statuses] = await Promise.all([getProfessionImages([w.profession_node_id]), workerStatuses([w.id])]);
   const profession = w.profession_name_uz ? name({ name_uz: w.profession_name_uz, name_ru: w.profession_name_ru ?? w.profession_name_uz, name_en: w.profession_name_en }) : (w.headline ?? "");
@@ -50,8 +57,6 @@ export default async function ListingPage({ params }: Params) {
   const exp = levelToExperience(w.experience_level);
   const fullName = `${w.first_name}${w.last_initial ? ` ${w.last_initial}.` : ""}`;
   const isEmployer = !!session?.employerId;
-  // G4: raqam yashirin — kirgan foydalanuvchi shu yerning o'zida so'rov yuboradi (to'liq profilga o'tish shart emas)
-  const contact = session && !w.phone && !w.is_owner ? await contactRequestState(w.id) : null;
   const ownPhones = w.is_owner ? [w.phone, w.phone2].filter((p): p is string => !!p) : [];
 
   return (
@@ -164,6 +169,7 @@ export default async function ListingPage({ params }: Params) {
           <section id="contact" className="scroll-mt-24 space-y-3 rounded-2xl border border-success/30 bg-success-soft/40 p-4 text-base sm:p-5">
             <h2 className="text-lg font-bold">{t("easy.listing.contact")}</h2>
             {w.phone ? (
+              // raqam ochilgan (yoki admin): qo'ng'iroq, qo'shimcha raqam va — raqamni ochgan bo'lsa — chat
               <>
                 <CallBlock phone={w.phone} />
                 {/* 0081: qo'shimcha raqam ("+ Yana raqam") */}
@@ -176,42 +182,26 @@ export default async function ListingPage({ params }: Params) {
                     <Phone className="size-5" aria-hidden /> {t("easy.listing.phone2")}: <span className="tabular">{formatPhone(w.phone2)}</span>
                   </a>
                 ) : null}
-                {isEmployer ? (
-                  <Button asChild variant="outline" className="h-12 w-full text-base">
-                    <Link href={`/workers/${w.id}`}>{t("easy.listing.open_full")}</Link>
-                  </Button>
-                ) : null}
-              </>
-            ) : session ? (
-              <>
-                <p>{contact?.canRequest ? t("contacts.request.hint") : t("common.contact_locked")}</p>
-                {contact?.canRequest ? <RequestContactButton profileId={contact.ownerId} initial={contact.status} size="xl" /> : null}
-                {isEmployer ? (
-                  <Button asChild variant="outline" className="h-12 w-full text-base">
-                    <Link href={`/workers/${w.id}`}>{t("easy.listing.open_full")}</Link>
-                  </Button>
-                ) : null}
+                {session && "unlocked" in w && w.unlocked ? <ChatButton workerId={w.id} /> : null}
               </>
             ) : (
-              // mehmon: "Raqamni ko'rsatish" (ega, 2026-11-18 — raqam hammaga, tugma bosilganda; IP limiti, 0084)
-              <RevealPhone kind="worker" id={w.id} loginHref={`/auth?next=${encodeURIComponent(`/listing/${w.id}`)}`} />
+              // ega (2026-11-22, A varianti): "Raqamni ko'rsatish" (bepul davr) yoki "Raqamni ochish · 5 000 so'm";
+              // mehmon pullik rejimda — avval kirish, keyin shu e'longa qaytadi
+              <RevealPhone
+                kind="worker"
+                id={w.id}
+                loginHref={session ? null : `/auth?next=${encodeURIComponent(`/listing/${w.id}`)}`}
+                price={unlockConfig.paid ? unlockConfig.price : null}
+              />
             )}
+            {isEmployer ? (
+              <Button asChild variant="outline" className="h-12 w-full text-base">
+                <Link href={`/workers/${w.id}`}>{t("easy.listing.open_full")}</Link>
+              </Button>
+            ) : null}
           </section>
         ) : null}
       </div>
     </Shell>
   );
-}
-
-/**
- * E'lon egasi (profil) va raqam so'rovi holati — kontakt kartasidagi qoida bilan bir xil (`contact_status_for`):
- * egasi raqamni umuman yashirgan bo'lsa ("nobody") so'rash tugmasi ko'rsatilmaydi.
- */
-async function contactRequestState(workerId: string): Promise<{ ownerId: string; status: "none" | "pending" | "declined"; canRequest: boolean } | null> {
-  const supabase = await createClient();
-  const { data: wp } = await supabase.from("worker_profiles").select("profile_id").eq("id", workerId).maybeSingle();
-  if (!wp?.profile_id) return null;
-  const { data: status } = await supabase.rpc("contact_status_for", { p_owner: wp.profile_id });
-  const canRequest = status === "none" || status === "pending" || status === "declined";
-  return { ownerId: wp.profile_id, status: canRequest ? status : "none", canRequest };
 }

@@ -53,7 +53,7 @@ $$;
 
 begin;
 -- eski oqim sozlamalari: moderatsiya va to'lovlar — o'z testlarida
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'employer_verification_required', 'listings_paid', 'ai_alerts_paid');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'employer_verification_required', 'listings_paid', 'ai_alerts_paid');
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('e5400000-0000-0000-0000-000000000001', '+998905400001', now(), '{"first_name":"Restoran","last_name":"Egasi"}'),

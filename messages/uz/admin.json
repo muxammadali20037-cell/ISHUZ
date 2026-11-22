@@ -566,7 +566,8 @@
     "purposes": {
       "vacancy_publish": "Vakansiya e'loni",
       "worker_promotion": "TOP profil",
-      "wallet_topup": "Hamyonni to'ldirish"
+      "wallet_topup": "Hamyonni to'ldirish",
+      "contact_unlock": "Ishchi raqamini ochish"
     },
     "statuses": {
       "pending": "Kutilmoqda",
@@ -809,7 +810,11 @@
     "wallet_bonus_hint": "Belgilangan summadan ko'p to'ldirganlarga foiz bonus (0 — o'chiq, eng ko'pi 50%)",
     "wallet_bonus_min": "Bonus uchun eng kam to'ldirish",
     "wallet_bonus_min_hint": "Shu summa va undan ko'p to'ldirilsa bonus beriladi",
-    "sum": "so'm"
+    "sum": "so'm",
+    "contact_paid": "Ishchi raqamini ochish pullik",
+    "contact_paid_hint": "Payme/Click ulanmaguncha yoqmang. O'chiq bo'lsa — raqam bepul ochiladi (limit bilan), chat ham ochiladi.",
+    "contact_price": "Raqam ochish narxi",
+    "contact_price_hint": "Bir ishchi uchun, bir marta."
   },
   "ai": {
     "title": "AI holati",

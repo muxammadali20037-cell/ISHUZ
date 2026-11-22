@@ -46,9 +46,15 @@
   "guest_login": "Sign in",
   "reveal": {
     "show": "Show number",
-    "none": "This listing has no public number. Sign in and apply or send a request.",
+    "none": "This listing has no public number.",
     "limit": "Too many numbers viewed. Try again later or sign in.",
     "unavailable": "Could not show the number right now.",
     "retry": "Try again"
+  },
+  "unlock": {
+    "button": "Unlock number",
+    "note": "Pay once — the number and chat with this person stay open.",
+    "chat": "Message in chat",
+    "chat_failed": "Couldn't open the chat. Please try again."
   }
 }

@@ -60,7 +60,8 @@
     "delete": "Delete",
     "delete_confirm_title": "Delete this message?",
     "delete_confirm_desc": "The message will be deleted for both sides.",
-    "deleted_toast": "Message deleted"
+    "deleted_toast": "Message deleted",
+    "context_listing": "Listing"
   },
   "composer": {
     "placeholder": "Write a message...",

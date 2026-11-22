@@ -242,7 +242,7 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
       }
       if (str(p, "kind") === "payment_success") {
         if (str(p, "purpose") === "wallet_topup") return { title: t("billing.return.paid_topup"), body: t("billing.wallet.purposes.wallet_topup"), icon: "system" };
-        return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : str(p, "purpose") === "ai_alerts" ? "billing.return.paid_ai_alerts" : str(p, "purpose") === "worker_listing" ? "billing.return.paid_listing" : "billing.return.paid_promotion"), icon: "system" };
+        return { title: t("billing.return.paid"), body: t(str(p, "purpose") === "vacancy_publish" ? "billing.return.paid_vacancy" : str(p, "purpose") === "ai_alerts" ? "billing.return.paid_ai_alerts" : str(p, "purpose") === "worker_listing" ? "billing.return.paid_listing" : str(p, "purpose") === "contact_unlock" ? "billing.return.paid_contact" : "billing.return.paid_promotion"), icon: "system" };
       }
     // falls through
     default: {

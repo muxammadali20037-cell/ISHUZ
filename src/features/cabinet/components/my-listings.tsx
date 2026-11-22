@@ -14,7 +14,7 @@ import { StatusPill } from "./status-pill";
 
 /** Haqiqiy holat → ko'rinish (faqat ommaga chiqqan e'lon "joylandi") */
 function stateTone(s: ListingState): "ok" | "wait" | "off" {
-  return s === "listed" || s === "active" ? "ok" : s === "moderation_pending" || s === "review" || s === "verification_pending" || s === "payment_required" || s === "rejected" ? "wait" : "off";
+  return s === "listed" || s === "active" ? "ok" : s === "moderation_pending" || s === "review" || s === "verification_pending" || s === "payment_required" || s === "phone_required" || s === "rejected" ? "wait" : "off";
 }
 
 function vacancyTone(s: MyVacancy["status"]): "ok" | "wait" | "off" {
@@ -106,7 +106,7 @@ export async function MyListingsSection({
                   ? worker.listedUntil && paid
                     ? t("easy.cabinet.status.listed_until", { date: formatDate(worker.listedUntil, locale) })
                     : t("easy.cabinet.status.listed")
-                  : ["moderation_pending", "review", "rejected", "payment_required"].includes(worker.moderation.state)
+                  : ["moderation_pending", "review", "rejected", "payment_required", "phone_required"].includes(worker.moderation.state)
                     ? t(`easy.cabinet.status.${worker.moderation.state}`)
                     : t("easy.cabinet.status.stopped")}
               </StatusPill>

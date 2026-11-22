@@ -31,6 +31,9 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
   // Tezkor boshqaruv: eng kerakli sozlamalar oddiy tilda (qolganlari — Sozlamalar sahifasida)
   const setting = (key: string) => settings.rows.find((r) => r.key === key);
   const quick: QuickControl[] = [
+    // 0088: ishchi raqamini ochish — Payme/Click ulanmaguncha o'chiq (bepul); narx — bir ishchi uchun bir marta
+    { key: "contact_unlock_paid", kind: "boolean" as const, label: t("admin.quick.contact_paid"), hint: t("admin.quick.contact_paid_hint"), onText: t("admin.quick.paid"), offText: t("admin.quick.free") },
+    { key: "price_contact_unlock", kind: "number" as const, label: t("admin.quick.contact_price"), hint: t("admin.quick.contact_price_hint"), suffix: t("admin.quick.sum") },
     { key: "ai_alerts_paid", kind: "boolean" as const, label: t("admin.quick.ai_paid"), hint: t("admin.quick.ai_paid_hint"), onText: t("admin.quick.paid"), offText: t("admin.quick.free") },
     { key: "price_ai_alerts", kind: "number" as const, label: t("admin.quick.ai_price"), hint: t("admin.quick.ai_price_hint"), suffix: t("admin.quick.sum_month") },
     { key: "listings_paid", kind: "boolean" as const, label: t("admin.quick.listings_paid"), hint: t("admin.quick.listings_paid_hint"), onText: t("admin.quick.paid"), offText: t("admin.quick.free") },

@@ -33,7 +33,7 @@ begin
 end $$;
 
 begin;
-update public.app_settings set value = 'false'::jsonb where key in ('moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'listings_paid');
+update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'listings_paid');
 
 -- A — ish izlovchi (profil to'ldirmagan), B — ish beruvchi (profil to'ldirmagan), C — boshqa odam, E — e'lon egasi, W — ishchi
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values

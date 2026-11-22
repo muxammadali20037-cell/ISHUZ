@@ -89,7 +89,7 @@ export async function getConversationView(conversationId: string, session: Sessi
   const me = session.userId;
 
   const [convRes, membersRes, listRes] = await Promise.all([
-    supabase.from("conversations").select("id, application_id, job_offer_id").eq("id", conversationId).maybeSingle(),
+    supabase.from("conversations").select("*").eq("id", conversationId).maybeSingle(),
     supabase
       .from("conversation_members")
       .select("profile_id, is_blocked, is_muted, last_read_at, joined_at, profiles(first_name, last_name, avatar_url)")
@@ -122,7 +122,20 @@ export async function getConversationView(conversationId: string, session: Sessi
   let context: ConversationView["context"];
   let otherHref: string | null = null;
 
-  if (conv.application_id) {
+  // 0088: raqami ochilgan juftlik — qaysi e'londan ochilgan bo'lsa, o'sha e'lon (ustunlar hali yo'q bazada — undefined)
+  const unlock = conv as { unlock_viewer?: string | null; unlock_target?: string | null };
+  if (unlock.unlock_viewer && unlock.unlock_target) {
+    const { data: u } = await supabase
+      .from("contact_unlocks")
+      .select("worker_id")
+      .eq("viewer_profile_id", unlock.unlock_viewer)
+      .eq("target_profile_id", unlock.unlock_target)
+      .maybeSingle();
+    const workerId = u?.worker_id ?? null;
+    context = { kind: "listing", id: workerId ?? conv.id, title: listRow?.context_title ?? "", company: null, href: workerId ? `/listing/${workerId}` : null };
+    // ish beruvchi — ishchi e'loniga; ishchi — o'z e'loniga havola kontekstda bor, suhbatdosh sahifasi yo'q
+    otherHref = me === unlock.unlock_viewer && workerId ? `/listing/${workerId}` : null;
+  } else if (conv.application_id) {
     const { data: app } = await supabase
       .from("applications")
       .select("id, vacancy_id, worker_id, vacancies(id, slug, title, companies(name, slug))")
