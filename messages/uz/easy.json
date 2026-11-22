@@ -652,7 +652,8 @@
     "too_large": "Rasm 5 MB dan katta bo'lmasin.",
     "failed": "Rasmni yuklab bo'lmadi. Qayta urinib ko'ring.",
     "checking": "Rasm tekshirilmoqda…",
-    "invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa surat tanlang."
+    "invalid": "Rasmni o'qib bo'lmadi yoki u surat emas. Boshqa surat tanlang.",
+    "ai_label": "AI rasm"
   },
   "ai": {
     "ready": "Yordamchi e'loningizni tayyorladi. Tekshirib, joylashingiz mumkin.",

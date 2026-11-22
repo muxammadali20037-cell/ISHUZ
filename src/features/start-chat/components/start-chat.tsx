@@ -8,7 +8,8 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { AiPromptBox } from "@/features/find/components/ai-chat";
-import { AiJobCard, AiWorkerCard } from "@/features/find/components/ai-cards";
+import { AiJobCard, AiWorkerCard, type CardImage } from "@/features/find/components/ai-cards";
+import { vacancyPhotoUrl } from "@/features/post/photo";
 import type { QuickList } from "@/features/find/quick-types";
 import { POST_EXPERIENCES } from "@/features/find/quick-post-types";
 import { CheckoutPanel } from "@/features/billing/components/checkout-panel";
@@ -331,16 +332,23 @@ function RoleStart({ chat, onPick, roles = false }: { chat: GuidedChat; onPick: 
 }
 
 function CardList({ list, saved, limit }: { list: QuickList; saved: string[]; limit: number }) {
+  // rasm bilan (ega, 2026-11-22: "ilovada ham rasm bilan ko'rinsin"): haqiqiy ish joyi surati, bo'lmasa — AI e'lon rasmi
+  const jobImage = (id: string): CardImage | null => {
+    const photo = vacancyPhotoUrl(list.photos[id]);
+    if (photo) return { src: photo, ai: false };
+    const ai = list.aiImages?.[id];
+    return ai ? { src: ai, ai: true } : null;
+  };
   return (
     <ul className="grid grid-cols-1 gap-3" data-guided-cards>
       {list.jobs.slice(0, limit).map((job) => (
         <li key={job.id}>
-          <AiJobCard job={job} saved={saved.includes(job.id)} />
+          <AiJobCard job={job} saved={saved.includes(job.id)} image={jobImage(job.id)} />
         </li>
       ))}
       {list.workers.slice(0, limit).map((w) => (
         <li key={w.id}>
-          <AiWorkerCard worker={w} saved={saved.includes(w.id)} />
+          <AiWorkerCard worker={w} saved={saved.includes(w.id)} image={list.aiImages?.[w.id] ? { src: list.aiImages[w.id]!, ai: true } : null} />
         </li>
       ))}
     </ul>

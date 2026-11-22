@@ -66,6 +66,25 @@ function Row({ icon, label, children }: { icon: ReactNode; label: string; childr
 }
 
 /** Yopiq kartada hudud — to'liq (kesilmaydi), kichik kulrang qator */
+/** kartaning rasmi: haqiqiy ish joyi surati yoki egasi so'ragan AI rasm; har biri belgisi bilan (AI rasm haqiqiy deb o'ylanmasin) */
+export interface CardImage {
+  src: string;
+  ai: boolean;
+}
+
+function CardBanner({ image, alt }: { image: CardImage; alt: string }) {
+  const { t } = useT();
+  return (
+    <figure className="relative mb-3 overflow-hidden rounded-lg border border-border bg-secondary" data-ai-card-image={image.ai ? "ai" : "photo"}>
+      {/* eslint-disable-next-line @next/next/no-img-element -- ochiq bucket'dagi tayyor JPEG; kartada kichik, lazy */}
+      <img src={image.src} alt={alt} width={1536} height={1024} loading="lazy" decoding="async" className="aspect-[16/7] w-full object-cover" />
+      <figcaption className="absolute bottom-1.5 left-1.5 rounded-md bg-black/60 px-1.5 py-0.5 text-xs font-semibold text-white">
+        {image.ai ? t("easy.photo.ai_label") : t("easy.photo.label")}
+      </figcaption>
+    </figure>
+  );
+}
+
 function PlaceLine({ text }: { text: string }) {
   return (
     <p className="mt-1.5 flex items-start gap-1.5 text-sm text-muted-foreground" data-ai-card-place>
@@ -118,7 +137,7 @@ function LoadError({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-export function AiJobCard({ job, saved }: { job: JobCardData; saved?: boolean }) {
+export function AiJobCard({ job, saved, image }: { job: JobCardData; saved?: boolean; image?: CardImage | null }) {
   const { t, tEnum, name } = useT();
   const place = usePlace();
   const posted = usePosted();
@@ -141,6 +160,7 @@ export function AiJobCard({ job, saved }: { job: JobCardData; saved?: boolean })
   const when = posted(job.published_at);
   return (
     <article className={cardCls} data-ai-card="job">
+      {image ? <CardBanner image={image} alt={job.title} /> : null}
       <div className="flex items-start gap-2">
         <h3 className="min-w-0 flex-1 break-words text-lg font-bold leading-snug">
           <Link href={`/jobs/${job.slug}`} className="hover:underline">
@@ -273,7 +293,7 @@ function JobDetails({ d, when, place, name, t, tEnum }: { d: VacancyCardDetails;
   );
 }
 
-export function AiWorkerCard({ worker, saved }: { worker: WorkerCardData; saved?: boolean }) {
+export function AiWorkerCard({ worker, saved, image }: { worker: WorkerCardData; saved?: boolean; image?: CardImage | null }) {
   const { t, tEnum, name, locale } = useT();
   const place = usePlace();
   const panelId = useId();
@@ -298,6 +318,7 @@ export function AiWorkerCard({ worker, saved }: { worker: WorkerCardData; saved?
 
   return (
     <article className={cardCls} data-ai-card="worker">
+      {image ? <CardBanner image={image} alt={profession || fullName} /> : null}
       <div className="flex items-start gap-2">
         <div className="min-w-0 flex-1">
           <h3 className="break-words text-lg font-bold leading-snug">

@@ -1,3 +1,4 @@
+import { getT } from "@/lib/i18n/server";
 import { getListingImageUrl, type ListingEntity } from "../server";
 
 /**
@@ -7,8 +8,13 @@ import { getListingImageUrl, type ListingEntity } from "../server";
 export async function ListingPhoto({ entity, id, alt }: { entity: ListingEntity; id: string; alt: string }) {
   const url = await getListingImageUrl(entity, id);
   if (!url) return null;
+  const { t } = await getT();
   return (
-    // eslint-disable-next-line @next/next/no-img-element -- Supabase ochiq bucket'idagi tayyor JPEG (o'lchami ma'lum)
-    <img src={url} alt={alt} width={1536} height={1024} loading="lazy" decoding="async" className="aspect-[16/7] w-full rounded-2xl border border-border bg-secondary object-cover" data-listing-photo />
+    // "AI rasm" belgisi — rasm haqiqiy surat (ish joyi yoki ishchining o'zi) deb o'ylanmasin
+    <figure className="relative overflow-hidden rounded-xl border border-border bg-secondary" data-listing-photo>
+      {/* eslint-disable-next-line @next/next/no-img-element -- Supabase ochiq bucket'idagi tayyor JPEG (o'lchami ma'lum) */}
+      <img src={url} alt={alt} width={1536} height={1024} loading="lazy" decoding="async" className="aspect-[16/7] w-full object-cover" />
+      <figcaption className="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-xs font-semibold text-white">{t("easy.photo.ai_label")}</figcaption>
+    </figure>
   );
 }

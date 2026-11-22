@@ -2,6 +2,7 @@ import "server-only";
 
 import { cookies } from "next/headers";
 import { getT } from "@/lib/i18n/server";
+import { getListingImageUrls } from "@/features/listing-image/server";
 import { formatMoneyShort } from "@/lib/format";
 import { getDistricts, getRegions } from "@/lib/reference";
 import type { SessionContext } from "@/features/auth/session";
@@ -258,13 +259,16 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
     }
   }
 
-  const savedIds = await savedP;
+  // AI e'lon rasmlari (bor bo'lsa) — asosiy ro'yxat va o'xshashlar uchun bitta so'rov
+  const listed = [...main.list.jobs, ...main.list.workers, ...(similar ? [...similar.jobs, ...similar.workers] : [])].map((x) => x.id);
+  const [savedIds, aiImages] = await Promise.all([savedP, getListingImageUrls(kind, listed)]);
   if (!input.prefetch) void trackServer("ai_find", session?.userId ?? null, { source: "quick", mode, results: main.list.total, similar: similar?.total ?? 0, save });
   const professionLabel = node ? name(node.trail.at(-1)!) : text || (mode === "jobs" ? t("easy.quick.any_job") : t("easy.quick.any_worker"));
   return {
     ok: true,
     data: {
       ...main.list,
+      aiImages,
       mode,
       summary: [
         professionLabel,
@@ -277,7 +281,7 @@ export async function runQuick(input: { mode: QuickMode; answers: QuickAnswers; 
       ].filter((x): x is string => !!x),
       saved: [...savedIds],
       save,
-      similar,
+      similar: similar ? { ...similar, aiImages } : null,
     },
   };
 }

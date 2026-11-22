@@ -652,7 +652,8 @@
     "too_large": "The image must be under 5 MB.",
     "failed": "Could not upload the photo. Please try again.",
     "checking": "Checking the photo…",
-    "invalid": "We couldn't read this image, or it isn't a photo. Choose another photo."
+    "invalid": "We couldn't read this image, or it isn't a photo. Choose another photo.",
+    "ai_label": "AI image"
   },
   "ai": {
     "ready": "The helper prepared your listing. Check it and publish.",
