@@ -18,6 +18,8 @@ const STOP = new Set(
     "qidiryapman qidiraman qidirmoqdaman izlayapman izlayman topib toping topish ber bering kirmoqchiman xohlayman istayman joy joyi",
     "yaxshi qanday qaysi qayerda qayer shu bu eng yaqin atrofda atrofida oylik kunlik maosh maoshi haq tajriba tajribasiz",
     "iltimos salom assalomu alaykum rahmat xodim ishchi kishi odam",
+    // e'lon/vakansiya so'zining o'zi — kalit so'z emas (aks holda "vakansiya" tavsifida shu so'z bor hamma e'lonni topardi)
+    "vakansiya vakansiyalar vakansiyasi elon elonlar e'lon e'lonlar e'loni yangi hamma barcha",
     // uzun gapdagi to'ldiruvchilar (eng uzun so'z kalit deb olinadi — "haftasiga" kalit bo'lib qolmasin)
     "tajribam tajribasi kamida tuman tumani tumanida shahri viloyati bo'lsa bolsa bo'lsin haftasiga haftada hafta yil yildan kun sifatida mumkin gacha ishlayman",
     "опыта опытом года лет район района районе можно желательно неделю",

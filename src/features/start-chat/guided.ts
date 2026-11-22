@@ -12,7 +12,7 @@ import type { PostAnswers, PostChoice, PostExperience } from "@/features/find/qu
 import { chooseMode } from "@/features/mode/actions";
 import type { AppMode } from "@/features/mode/mode";
 import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
-import { draftFromForm, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
+import { draftFromForm, isAnyProfession, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
 import type { ChatProfession } from "./actions";
 import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, type PostAsk, type PostDraft } from "./post-logic";
 import { formatNotes } from "@/features/post/notes";
@@ -38,6 +38,8 @@ interface Stored {
   at: number;
   /** kimning suhbati (foydalanuvchi id yoki "guest"): hisob almashsa — boshqa odamning suhbati ko'rinmaydi */
   owner: string;
+  /** saqlangan paytdagi ilova rejimi (ish izlovchi / ish beruvchi): Profilda rol almashsa — suhbat tiklanmaydi */
+  mode?: AppMode | null;
   role: Role | null;
   msgs: Msg[];
   draft: Draft | null;
@@ -101,7 +103,17 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   const pending = msgs.some((m) => m.ai?.kind === "thinking" || m.ai?.kind === "searching");
 
   useEffect(() => {
-    const s = load(owner);
+    let s = load(owner);
+    // rol almashtirilgan (Profil → "Ish beruvchiga o'tish"): oldingi rolning suhbati (masalan, yarim qolgan ishchi e'loni)
+    // tiklanmaydi — aks holda ish beruvchi ekranida "Kasbingiz qanday?" (ishchi savoli) kutib turardi (2026-11-22, CI)
+    if (s && appMode && s.mode && s.mode !== appMode) {
+      try {
+        sessionStorage.removeItem(STORE);
+      } catch {
+        // xotira yopiq — baribir tiklanmaydi
+      }
+      s = null;
+    }
     if (s) {
       seq.current = Math.max(Date.now(), ...s.msgs.map((m) => m.id));
       // eslint-disable-next-line react-hooks/set-state-in-effect -- tashqi xotiradan bir martalik tiklash
@@ -112,11 +124,12 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
       if (s.role) setRole(s.role);
     } else seq.current = Date.now();
     setReady(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- rol faqat ochilganda solishtiriladi (keyin rol suhbat ichida o'zgaradi)
   }, [owner]);
 
   useEffect(() => {
-    if (ready && !pending) save({ owner, role, msgs, draft, awaiting, post });
-  }, [ready, pending, owner, role, msgs, draft, awaiting, post]);
+    if (ready && !pending) save({ owner, mode: appMode, role, msgs, draft, awaiting, post });
+  }, [ready, pending, owner, appMode, role, msgs, draft, awaiting, post]);
 
   useEffect(() => () => void (runRef.current += 1), []);
 
@@ -148,7 +161,9 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     const run = ++runRef.current;
     replace(mid, { kind: "searching", mode: r });
     const filters = d.formMode === r ? d.filters : NO_FILTERS;
-    quickSearch({ mode: r, answers: { profession: d.profession.replace(/\s+/g, " ").trim().slice(0, 120), nodeId: d.nodeId, place: d.place, salary: null, filters } }).then(
+    const category = r === "jobs" && !d.anyProfession ? (d.category ?? null) : null;
+    const answers = { profession: d.anyProfession ? "" : d.profession.replace(/\s+/g, " ").trim().slice(0, 120), nodeId: d.nodeId, place: d.place, salary: null, filters, category, query: d.text.slice(0, 500) };
+    quickSearch({ mode: r, answers }).then(
       (res) => {
         if (runRef.current !== run) return;
         if (!res.ok) return replace(mid, { kind: "error", message: errorText(res.error) });
@@ -225,6 +240,8 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     markAnswered();
     setAwaiting(null);
     push(q, mid);
+    // "farqi yo'q", "hammasi", "любая" — kasbsiz ("Hamma ishlar" tugmasi bilan bir xil)
+    if (isAnyProfession(q)) return proceed({ ...d, profession: "", nodeId: null, category: null, anyProfession: true, askedProfession: true, guided: true }, role, mid);
     const r = role ?? "jobs";
     const run = ++runRef.current;
     prepare(q, r).then(
@@ -244,6 +261,8 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
           text: q,
           profession: f.profession || q,
           nodeId: f.nodeId,
+          category: f.category ?? null,
+          anyProfession: false,
           ...(f.placeKnown && !d.placeKnown ? { place: f.place, placeKnown: true } : {}),
           places: f.places.length ? f.places : d.places,
         };
@@ -530,7 +549,29 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     setAwaiting(null);
     const mid = id();
     push(p.name, mid);
-    proceed({ ...draft, profession: p.name, nodeId: p.id, askedProfession: true, guided: true }, role, mid);
+    proceed({ ...draft, profession: p.name, nodeId: p.id, category: null, anyProfession: false, askedProfession: true, guided: true }, role, mid);
+  };
+
+  /** "Hamma ishlar" / "Hamma ishchilar" — kasbsiz qidiruv (ega, 2026-11-22: "«ish kerak», «работа» deb yozsa ham natija") */
+  const pickAnyProfession = (label: string) => {
+    if (pending || !draft) return;
+    markAnswered();
+    setAwaiting(null);
+    const mid = id();
+    push(label, mid);
+    proceed({ ...draft, profession: "", nodeId: null, category: null, anyProfession: true, askedProfession: true, guided: true }, role, mid);
+  };
+
+  /**
+   * Hech narsa topilmadi → "Hozir e'lonlari bor kasblar" tugmasi: shu kasb butun O'zbekiston bo'yicha (sanalgan e'lonlar —
+   * butun mamlakat bo'yicha, shuning uchun natija albatta chiqadi)
+   */
+  const searchSuggested = (p: { id: string; name: string }, d: Draft, r: Role) => {
+    if (pending) return;
+    markAnswered();
+    const mid = id();
+    push(p.name, mid);
+    search({ ...d, text: p.name, profession: p.name, nodeId: p.id, category: null, anyProfession: false, place: "all", placeKnown: true, see: true }, r, mid);
   };
 
   /** "Endi nima qilamiz?": mavjud e'lonlar (qidiruv) yoki o'zi haqida e'lon (shu chatda, kasb va viloyat bilan boshlanadi) */
@@ -589,6 +630,8 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     pickRole,
     start,
     pickProfession,
+    pickAnyProfession,
+    searchSuggested,
     chooseNext,
     pickPlace,
     otherPlace,

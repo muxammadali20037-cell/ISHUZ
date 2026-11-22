@@ -106,6 +106,8 @@ describe("qat'iy taqiq (ega, 2026-11-13): so'zning o'zi yetarli — e'lon joylan
     ["Erotika saytiga model kerak", "strict_erotic"],
     ["Порно съемки, высокая оплата", "strict_erotic"],
     ["Seks", "strict_erotic"],
+    ["Sexy qizlar kerak", "strict_erotic"],
+    ["sexual xizmatlar", "strict_erotic"],
     ["s3ks xizmat", "strict_erotic"],
     ["Интим", "strict_erotic"],
     ["webcam model ishi", "strict_erotic"],
@@ -130,6 +132,12 @@ describe("qat'iy taqiq (ega, 2026-11-13): so'zning o'zi yetarli — e'lon joylan
 
   // yolg'on topilma bo'lmasin: ism, kasb, oddiy so'zlar
   const clean = [
+    // "sex" — o'zbekcha "цех" (ishlab chiqarish bo'limi): katalogdagi kasb va oddiy e'lonlar
+    "Sex boshlig'i",
+    "Sex boshlig'i kerak, tajriba 3 yil",
+    "Tikuv sexiga tikuvchilar kerak",
+    "Non sexida ishlash uchun xodim",
+    "Ishlab chiqarish sexi ustasi",
     "Sport seksiyasiga murabbiy kerak",
     "Narkologik dispanserga narkolog shifokor kerak",
     "Talab: giyohvand moddalar va spirtli ichimlik iste'mol qilmaydigan haydovchi",

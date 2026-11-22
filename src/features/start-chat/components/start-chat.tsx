@@ -20,6 +20,7 @@ import { formatPhone } from "@/lib/format";
 import type { AppMode } from "@/features/mode/mode";
 import { useGuidedChat, type AiPart, type GuidedChat, type Msg, type Role } from "../guided";
 import { ChoicePicker, NextOption, PlaceIcon, ProfessionChoices } from "./chat-pickers";
+import { chatProfessionsWithListings, type ChatProfessionCount } from "../actions";
 import { ChatIntro } from "./chat-intro";
 
 /** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
@@ -258,7 +259,13 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
         return (
           <Ai kind="ask-profession">
             <Say>{part.word ? t("easy.guided.ask_prof_unknown", { word: part.word }) : t(`easy.guided.ask_prof_${mode}`)}</Say>
-            {open ? <ProfessionChoices mode={mode} onPick={chat.pickProfession} /> : null}
+            {open ? (
+              <ProfessionChoices
+                mode={mode}
+                onPick={chat.pickProfession}
+                lead={{ key: "any", label: t(mode === "jobs" ? "easy.guided.any_jobs" : "easy.guided.any_workers"), onClick: () => chat.pickAnyProfession(t(mode === "jobs" ? "easy.guided.any_jobs" : "easy.guided.any_workers")) }}
+              />
+            ) : null}
           </Ai>
         );
       }
@@ -453,6 +460,7 @@ function Results({ part, chat, latest }: { part: Extract<AiPart, { kind: "result
           ) : null}
         </div>
       ) : null}
+      {latest && !r.similar ? <Suggested part={part} chat={chat} /> : null}
       {latest && r.similar ? (
         <section className="space-y-2" data-guided-similar={r.similar.kind}>
           <h3 className="text-base font-bold">{jobs ? t("easy.quick.similar_near_jobs") : t("easy.quick.similar_near_workers")}</h3>
@@ -460,6 +468,49 @@ function Results({ part, chat, latest }: { part: Extract<AiPart, { kind: "result
         </section>
       ) : null}
     </Ai>
+  );
+}
+
+/**
+ * Hech narsa topilmadi va yaqini ham yo'q — "boshqa qidiruv" takliflari: hozir e'lonlari BOR kasblar (soni bilan, butun
+ * O'zbekiston bo'yicha). Ma'lumot haqiqiy: sanalgan ochiq e'lonlar (ega, 2026-11-22: soxta natija yo'q).
+ */
+function Suggested({ part, chat }: { part: Extract<AiPart, { kind: "results" }>; chat: GuidedChat }) {
+  const { t } = useT();
+  const [list, setList] = useState<ChatProfessionCount[] | null>(null);
+  const mode = part.mode;
+  const exclude = part.draft.nodeId;
+  useEffect(() => {
+    let alive = true;
+    chatProfessionsWithListings({ mode, exclude }).then(
+      (r) => alive && setList(r),
+      () => alive && setList([]),
+    );
+    return () => {
+      alive = false;
+    };
+  }, [mode, exclude]);
+  if (!list?.length) return null;
+  return (
+    <section className="space-y-2" data-guided-suggested>
+      <h3 className="text-base font-bold">{t(mode === "jobs" ? "easy.guided.suggest_jobs" : "easy.guided.suggest_workers")}</h3>
+      <ul className="flex flex-wrap gap-2">
+        {list.map((p) => (
+          <li key={p.id} className="flex max-w-full">
+            <button
+              type="button"
+              disabled={chat.pending}
+              onClick={() => chat.searchSuggested(p, part.draft, mode)}
+              className="press flex min-h-11 max-w-full items-center gap-2 rounded-lg border border-border-strong bg-card px-3.5 py-2 text-left text-sm font-semibold text-foreground shadow-sm hover:border-primary/50 hover:bg-primary-soft/40"
+              data-guided-suggest={p.id}
+            >
+              <span className="min-w-0 [overflow-wrap:anywhere]">{p.name}</span>
+              <span className="shrink-0 rounded-full bg-secondary px-2 text-xs font-bold text-muted-foreground">{p.count}</span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

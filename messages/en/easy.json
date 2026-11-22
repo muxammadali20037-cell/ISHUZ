@@ -1707,7 +1707,11 @@
     "ask_post_note": "Anything to add? Pick below or type your own — e.g. I have a car. If not — “No notes”.",
     "post_note_done": "Continue",
     "post_note_skip": "No notes",
-    "placeholder_post_note": "E.g. I have a car"
+    "placeholder_post_note": "E.g. I have a car",
+    "any_jobs": "All jobs",
+    "any_workers": "All workers",
+    "suggest_jobs": "Jobs are open right now in:",
+    "suggest_workers": "Workers are available right now in:"
   },
   "intro": {
     "title": "How Ish topdim works",

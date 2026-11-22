@@ -73,10 +73,12 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
     <div className="container-narrow space-y-4 py-6 text-lg sm:py-8" data-cabinet>
       <h1 className="text-page font-extrabold sm:text-page-lg">{t("easy.cabinet.title")}</h1>
 
-      <section aria-labelledby="cabinet-name" className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm" data-profile-card>
+      {/* tahrirlash tugmasi — burchakda (alohida ustun emas): katta shriftda (1.25×) telefon raqami tugma ostida qolardi
+          (audit, 390 ru); endi matn ustuni butun kenglikda, faqat ism tugmaga joy qoldiradi */}
+      <section aria-labelledby="cabinet-name" className="relative flex items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-sm" data-profile-card>
         <Avatar src={session.profile.avatar_url} fallback={initials(session.profile.first_name, session.profile.last_name)} size="lg" alt="" />
         <div className="min-w-0 flex-1">
-          <h2 id="cabinet-name" className="truncate text-xl font-extrabold leading-tight">
+          <h2 id="cabinet-name" className="pr-10 text-xl font-extrabold leading-tight [overflow-wrap:anywhere]">
             {fullName}
           </h2>
           <p className="text-sm text-muted-foreground">{employer ? t("easy.cabinet.header.employer") : t("easy.cabinet.header.worker")}</p>
@@ -98,7 +100,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
             </p>
           )}
         </div>
-        <Link href={editHref} aria-label={t("easy.cabinet.edit_name")} title={t("easy.cabinet.edit_name")} className="press flex size-11 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground">
+        <Link href={editHref} aria-label={t("easy.cabinet.edit_name")} title={t("easy.cabinet.edit_name")} className="press absolute right-2 top-2 flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground">
           <Pencil className="size-5" aria-hidden />
         </Link>
       </section>

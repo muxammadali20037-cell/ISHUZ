@@ -1707,7 +1707,11 @@
     "ask_post_note": "Qo'shimcha izoh bormi? Pastdan tanlang yoki o'zingiz yozing — masalan: o'z mashinam bor. Bo'lmasa — «Izohsiz».",
     "post_note_done": "Davom etish",
     "post_note_skip": "Izohsiz",
-    "placeholder_post_note": "Masalan: o'z mashinam bor"
+    "placeholder_post_note": "Masalan: o'z mashinam bor",
+    "any_jobs": "Hamma ishlar",
+    "any_workers": "Hamma ishchilar",
+    "suggest_jobs": "Hozir shu kasblarda ish bor:",
+    "suggest_workers": "Hozir shu kasblarda ishchilar bor:"
   },
   "intro": {
     "title": "Ish topdim qanday ishlaydi",

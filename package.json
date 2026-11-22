@@ -18,7 +18,8 @@
     "prod:pending": "node scripts/gen-prod-pending.mjs",
     "prod:pending:test": "bash scripts/prod-pending-test.sh",
     "db:types": "supabase gen types typescript --db-url \"${DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/ishuz_dev}\" --schema public > src/types/database.types.ts && prettier --write src/types/database.types.ts",
-    "db:seed-demo": "psql \"${DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/ishuz_dev}\" -v ON_ERROR_STOP=1 -f supabase/seed-demo.sql"
+    "db:seed-demo": "psql \"${DATABASE_URL:-postgres://postgres:postgres@127.0.0.1:5432/ishuz_dev}\" -v ON_ERROR_STOP=1 -f supabase/seed-demo.sql",
+    "bench:search": "vitest run --config scripts/search-bench/vitest.config.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.128.0",

@@ -1,5 +1,33 @@
 # O'zgarishlar jurnali
 
+## 2026-11-22 · ISH TOPDIM 2.0 — 1-bosqich: qidiruv, matnlar, haqiqiylik (`feat/ish-topdim-2`)
+
+Ega: "foydalanuvchi «ish kerak», «voditel», «oshpaz», «работа» deb yozsa ham mazmunan mos natijalarni topishi kerak";
+"320px dan 1920px gacha hech qanday matn boshqa element ustiga chiqmasin"; "mavjud bo'lmagan ish o'rinlari, soxta
+kompaniyalar va sun'iy statistikalar ko'rsatilmasin"; "Supabase'dagi ma'lumotlar saqlansin". Migratsiya yo'q.
+Audit: `docs/ISH_TOPDIM_2_AUDIT.md`, hisobot: `docs/ISH_TOPDIM_2_FINAL_REPORT.md`.
+
+- **"ish kerak", "работа":** "Kasbingiz qanday?" savolida birinchi tugma **«Hamma ishlar»** (ish beruvchida —
+  «Hamma ishchilar»). "farqi yo'q", "hammasi", "любая", "все" deb yozish ham shu ma'noda tushuniladi.
+- **Butun soha so'zlari:** "kuryer", "доставка", "IT", "айти", "call-markaz" yozilsa, shu sohaning hamma vakansiyalari
+  chiqadi. Avval faqat "Piyoda kuryer" qidirilardi.
+- **Bo'sh natijada:**
+  - Shu kasbga tegishli so'z e'lon nomlarida qidiriladi ("Shunga yaqin ishlar").
+  - Yaqini ham bo'lmasa — **"Hozir shu kasblarda ish bor:"**: haqiqiy, sanalgan e'lonlari bor kasblar, bir bosishda
+    qidiriladi.
+- **Kasbni tushunish:** "manual qa" endi "Manual QA" (avval "Manual terapevt"). Qisqa so'zlar (qa, hr, ux, it)
+  tashlab yuborilmaydi. "grushik" → "gruzchik". "vakansiya" so'zi kalit so'z emas.
+- **Moderatsiya xatosi:** katalogdagi "Sex boshlig'i" ("цех") va "tikuv sexi" kabi e'lonlar yashirilib, egasi
+  bloklanardi. Yalang'och "sex" qoidadan olindi. "seks", "sexy", "sexual" o'z joyida.
+- **Matnlar (434 tekshiruv: 320…1920px, uz/ru/oz, katta shrift):**
+  - Profilda telefon raqami tahrirlash tugmasi ostida qolardi — tuzatildi.
+  - Tariflarda narx pastki qatorga tegardi — tuzatildi.
+  - CI'ga 768 va 1920 qo'shildi.
+- **Chat:** Profilda rol almashtirilsa, oldingi rolning yarim qolgan suhbati tiklanmaydi. Avval ish beruvchi
+  ekranida ishchi savoli ("Kasbingiz qanday?") kutib turardi.
+- **Benchmark:** `npm run bench:search` — lokal stendda 1224 ta namunaviy vakansiya va 84 so'rov. Natija: 84/84,
+  p95 ≈ 170 ms. Seed faqat `ishuz_e2e` bazasida ishlaydi.
+
 ## 2026-11-22 · Moslik olib tashlandi, e'longa izoh, chatdagi tuzatishlar (`feat/no-matching`)
 
 Ega: "moslikni hamma joydan olib tashla, umuman kerak emas — ish beruvchilar uchun ham, ish qidiruvchilar uchun ham";

@@ -145,10 +145,29 @@ function cyrillicCandidates(text: string): string[] {
  * Kasb nomini qidirish uchun bo'laklar: avval to'liq ibora, keyin ikki so'zli, keyin bitta so'z va uning qo'shimchasiz shakli.
  * Maqsad so'zlari (kerak, ish, нужен) tashlab yuboriladi.
  */
+/**
+ * Qisqa, lekin kasb ma'nosidagi so'zlar ("manual qa" — dasturiy ta'minot sinovchisi, "Manual terapevt" emas; "hr menejer",
+ * "ux tadqiqotchi") — 3 harfdan qisqa bo'lsa ham tashlab yuborilmaydi
+ */
+const SHORT_TERMS = new Set(["qa", "hr", "ux", "ui", "pr", "1c", "3d", "ai", "bi"]);
+
+/**
+ * Xalq yozuvi / ruscha so'zlashuv shakllari → lug'atdagi shakli (ega, 2026-11-22: "foydalanuvchi qanday yozsa ham tushunsin").
+ * Faqat kasblar daraxtidagi sinonimlar qamramagan, haqiqiy qidiruvlarda uchragan shakllar.
+ */
+const SLANG: Record<string, string> = {
+  grushik: "gruzchik",
+  grushchik: "gruzchik",
+  gruzchiq: "gruzchik",
+  gruschik: "gruzchik",
+  aytishnik: "dasturchi",
+};
+
 export function professionCandidates(text: string): string[] {
   const words = normalizeText(text)
     .split(" ")
-    .filter((w) => w.length >= 3 && !STOP.has(w) && !/^\d/.test(w));
+    .map((w) => SLANG[w] ?? w)
+    .filter((w) => (w.length >= 3 || SHORT_TERMS.has(w)) && !STOP.has(w) && !/^\d/.test(w));
   const pairs: string[] = [];
   for (let i = 0; i < words.length - 1; i++) pairs.push(`${words[i]} ${words[i + 1]}`);
   const singles = words.flatMap((w) => [w, ...stripSuffix(w)]);

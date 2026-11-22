@@ -10,10 +10,14 @@ import { findLayoutIssues, fullHeight, zoomText } from "../overlap";
  */
 const LONG = "Omborxona bo'yicha katta mutaxassis (yuk qabul qilish, hisobga olish va jo'natish) — Toshkent Xalqaro Logistika Markazi";
 
+// ega (2026-11-22): "320px dan 1920px gacha hech qanday matn boshqa element ustiga chiqmasin" — CI'da telefon, planshet va
+// katta monitor; barcha kengliklar (320…1920 × uz/ru/oz × shrift) — e2e/screens/overlap.audit.ts
 const CASES: { name: string; width: number; locale: "uz" | "ru"; zoom?: number }[] = [
   { name: "320 uz", width: 320, locale: "uz" },
   { name: "390 ru katta shrift", width: 390, locale: "ru", zoom: 1.3 },
+  { name: "768 uz (planshet)", width: 768, locale: "uz" },
   { name: "1440 uz", width: 1440, locale: "uz" },
+  { name: "1920 ru", width: 1920, locale: "ru" },
 ];
 
 const PAGES: { name: string; url: string; who: "guest" | "worker" | "employer" | "seeker-guest" }[] = [

@@ -152,3 +152,13 @@ describe("postTopic — e'lon niyatidan qolgan mazmun", () => {
     expect(postTopic("Toshkentga haydovchi kerak, vakansiya joylamoqchiman")).toBe("Toshkentga haydovchi");
   });
 });
+
+describe("qisqa kasb so'zlari va xalq yozuvi (2026-11-22)", () => {
+  it("\"manual qa\" — \"qa\" tashlab yuborilmaydi (aks holda \"Manual terapevt\" tanlanardi)", () => {
+    expect(professionCandidates("manual qa")[0]).toBe("manual qa");
+    expect(professionCandidates("hr menejer")).toContain("hr menejer");
+  });
+  it("\"grushik\" → \"gruzchik\"", () => {
+    expect(professionCandidates("grushik kerak")).toContain("gruzchik");
+  });
+});

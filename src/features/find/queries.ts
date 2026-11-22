@@ -189,6 +189,13 @@ export async function getNodeInfo(nodeId: string): Promise<NodeInfo | null> {
   return { id: nodeId, trail, categorySlug: cat?.slug ?? null, categoryIcon: cat?.icon ?? null };
 }
 
+/** Kasbning nomlari va sinonimlari (bo'sh natijada e'lon nomlaridan qidirish uchun — quick-core) */
+export async function getNodeTerms(nodeId: string): Promise<string[]> {
+  const { data } = await anon().from("profession_nodes").select("name_uz, name_ru, name_en, aliases").eq("id", nodeId).maybeSingle();
+  if (!data) return [];
+  return [data.name_uz, data.name_ru, data.name_en, ...(data.aliases ?? [])].filter((x): x is string => !!x);
+}
+
 type JobRow = Database["public"]["Functions"]["simple_search_vacancies"]["Returns"][number];
 type WorkerStatus = Database["public"]["Enums"]["worker_status"];
 type WorkerRow = Database["public"]["Functions"]["simple_search_workers"]["Returns"][number] & { status?: WorkerStatus | null };
@@ -279,16 +286,27 @@ async function withMedia(supabase: ReadClient, items: JobRow[], pageOnly: boolea
 export async function findJobsByText(params: FindParams, place: Place, limit = PAGE_SIZE): Promise<FindOutcome<JobCardData>> {
   const q = params.q.trim();
   if (q.length < 2) return { ok: true, items: [], total: 0, images: {}, photos: {} };
+  return searchV2Cards(params, place, limit, { p_query: q, p_sort: "relevant" });
+}
+
+/**
+ * Butun soha bo'yicha (families.ts: "kuryer", "IT", "call-markaz"): shu kategoriyadagi hamma faol vakansiyalar, eng yangisi
+ * birinchi (TOP — har doimgidek tepada). Hudud va filtrlar oddiy qidiruvdagidek.
+ */
+export async function findJobsInCategory(params: FindParams, place: Place, categoryId: string, limit = PAGE_SIZE): Promise<FindOutcome<JobCardData>> {
+  return searchV2Cards(params, place, limit, { p_category_id: categoryId, p_sort: "newest" });
+}
+
+async function searchV2Cards(params: FindParams, place: Place, limit: number, by: { p_query?: string; p_category_id?: string; p_sort: "relevant" | "newest" }): Promise<FindOutcome<JobCardData>> {
   const supabase = await createClient();
   const { data, error } = await supabase.rpc("search_vacancies_v2", {
-    p_query: q,
+    ...by,
     p_region_id: place.remote ? undefined : (place.regionId ?? undefined),
     p_district_ids: !place.remote && place.districtId ? [place.districtId] : undefined,
     p_is_remote: place.remote ? true : undefined,
     p_salary_min: params.salary ?? undefined,
     p_schedules: params.schedule ? [params.schedule] : undefined,
     p_no_experience: params.noexp,
-    p_sort: "relevant",
     p_limit: limit,
     p_offset: (params.page - 1) * limit,
   });
