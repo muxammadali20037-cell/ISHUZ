@@ -19,7 +19,7 @@ Namuna rasmlar — sifat darajasi uchun, piksel nusxasi uchun emas. Ulardan **ol
 ### 5.0 "ko'k-oq" (2026-11-16, ega dizayn topshirig'i) — amaldagi qiymatlar
 
 Tokenlar `oklch` da (`src/app/globals.css`), shrift **Manrope Variable** 400–800 (`@fontsource-variable/manrope`),
-radius `0.875rem`. Kontrast `brand-contrast.test.ts` da oklch → hex orqali tekshiriladi (barcha AA juftlari ✓).
+radius `0.75rem` (K1 korporativ, 2026-11-22; burchaklar: lg 10, xl/2xl 12 px; soyalar yassi). Ish beruvchi paneli — to'q ko'k (avval binafsha). Kontrast `brand-contrast.test.ts` da oklch → hex orqali tekshiriladi (barcha AA juftlari ✓).
 
 | Token | Qiymat |
 | --- | --- |

@@ -117,6 +117,8 @@ test("«men oila shifokoriman» → «Oilaviy shifokor» (oila huquqi yuristi em
   await box.fill("men oila shifokoriman");
   await box.press("Enter");
   await page.locator("[data-guided-ai='ask-place'] [data-guided-place='all']").last().click();
+  await box.blur();
+  await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
   const answer = page.locator("[data-guided-ai]").last();
   await expect(answer).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
   await expect(answer.locator("[data-guided-summary]")).toContainText("Oilaviy shifokor");

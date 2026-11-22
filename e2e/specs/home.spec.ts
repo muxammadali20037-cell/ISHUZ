@@ -99,7 +99,7 @@ test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikk
   expect(bad).toEqual([]);
 });
 
-test("chat bo'sh holati (ega, 2026-11-21 kechqurun: «ortiqcha narsalar kerakmas»): bitta yozuv va pastga strelka — boshqa hech narsa", async ({ page, context }) => {
+test("chat bo'sh holati (ega, 2026-11-21 kechqurun: «ortiqcha narsalar kerakmas»): yozuv va ikki katta tugma (2026-11-22) — boshqa hech narsa", async ({ page, context }) => {
   await asGuest(context);
   for (const mode of [null, "worker", "employer"] as const) {
     if (mode) await asMode(context, mode);
@@ -108,16 +108,15 @@ test("chat bo'sh holati (ega, 2026-11-21 kechqurun: «ortiqcha narsalar kerakmas
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/");
       const main = page.locator("main [data-start-chat]");
-      // hamma uchun bir xil yozuv, o'rtada; ostida — yozish maydoniga qaragan strelka
+      // hamma uchun bir xil yozuv, o'rtada; ostida — ikki katta tugma (ega, 2026-11-22), keyin yozish maydoni
       const h1 = main.locator("h1");
       await expect(h1).toHaveText("O'zingizga mos ishni yoki ishchini toping");
       // oqim bilan kelgan kontent ko'rinadigan bo'lgach o'lchanadi (avval yashirin nusxada turadi)
-      await expect(main.locator("[data-guided-arrow]")).toBeVisible();
+      await expect(main.locator("[data-guided-starts]")).toBeVisible();
       expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), `${mode} ${width}px`).toBe(true);
-      const [hb, ab, cb] = [(await h1.boundingBox())!, (await main.locator("[data-guided-arrow]").boundingBox())!, (await page.locator("#start-chat-text").boundingBox())!];
+      const [hb, ab, cb] = [(await h1.boundingBox())!, (await main.locator("[data-guided-starts]").boundingBox())!, (await page.locator("#start-chat-text").boundingBox())!];
       expect(ab.y, `${mode} ${width}px`).toBeGreaterThan(hb.y + hb.height - 1);
       expect(cb.y, `${mode} ${width}px`).toBeGreaterThan(ab.y + ab.height);
-      expect(Math.abs(hb.x + hb.width / 2 - (ab.x + ab.width / 2)), `${mode} ${width}px: strelka yozuv ostida, o'rtada`).toBeLessThan(4);
       // ortiqcha narsalar yo'q: misollar, hikoyalar, kanal qatori, ustalar havolasi, ostki izoh
       await expect(main.locator("[data-guided-example], [data-stories], [data-channel-row], [data-chat-choice], p")).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), `${mode} ${width}px`).toBeLessThanOrEqual(0);

@@ -141,7 +141,9 @@ test("ishchilar: 390×844 da kamida 3 ta karta to'liq; karta bosilsa ishchi e'lo
     await expect(card).toContainText("Tajriba: 3 yildan ko'p");
     await tap(page, card.getByText("3+ yil", { exact: true }));
     await page.waitForURL(/\/listing\/[0-9a-f-]{36}$/);
-    await expect(page.getByRole("heading", { level: 1 })).toContainText("Charos");
+    // ishchi e'loni: sarlavha — kasb, ostida odam (ega, 2026-11-22: professional ko'rinish)
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Buxgalter");
+    await expect(page.locator("[data-listing-person]")).toContainText("Charos");
   } finally {
     await sql("delete from public.worker_profiles where profile_id = any($1)", [ids]);
   }

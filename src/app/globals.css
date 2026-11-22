@@ -73,10 +73,11 @@
   --hero-fg: oklch(0.2 0.03 260);
   --hero-muted: oklch(0.52 0.03 260);
   --glow: oklch(0.52 0.2 260 / 0.28);
-  --radius: 0.875rem; /* 5.0 */
+  --radius: 0.75rem; /* K1 korporativ (avval 0.875rem) */
   /* 3.0: yumshoq ko'kish soya (namunadagi kartalar) — chegara deyarli ko'rinmaydi, karta soyadan ajraladi */
-  --shadow-sm: 0 1px 2px oklch(0.2 0.03 260 / 4%), 0 8px 24px -12px oklch(0.2 0.03 260 / 12%); /* = --shadow-card */
-  --shadow-md: 0 2px 4px oklch(0.2 0.03 260 / 5%), 0 14px 32px -14px oklch(0.2 0.03 260 / 18%);
+  /* K1 korporativ: soyalar yassi va qisqa (avval yumshoq "suzuvchi") */
+  --shadow-sm: 0 1px 2px oklch(0.2 0.03 260 / 6%), 0 1px 3px oklch(0.2 0.03 260 / 6%); /* = --shadow-card */
+  --shadow-md: 0 1px 2px oklch(0.2 0.03 260 / 6%), 0 6px 16px -6px oklch(0.2 0.03 260 / 14%);
   --shadow-lg: 0 12px 32px oklch(0.2 0.03 260 / 14%);
   --tabbar-height: 58px;
   color-scheme: light;
@@ -117,11 +118,11 @@
   --warm-soft: oklch(0.95 0.04 50);
   --gradient-brand: linear-gradient(135deg, oklch(0.55 0.21 262), oklch(0.62 0.17 230));
   --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.93 0.05 260) 0%, transparent 45%);
-  --shadow-card: 0 1px 2px oklch(0.2 0.03 260 / 4%), 0 8px 24px -12px oklch(0.2 0.03 260 / 12%);
+  --shadow-card: 0 1px 2px oklch(0.2 0.03 260 / 6%), 0 1px 3px oklch(0.2 0.03 260 / 6%);
   --shadow-glow: 0 12px 32px -12px oklch(0.52 0.2 260 / 45%);
   /* ikki panel rangi (rol almashganda katta yozuv — joriy paneldan qat'i nazar): ish izlovchi — ko'k, ish beruvchi — binafsha */
   --panel-worker: oklch(0.52 0.2 260);
-  --panel-employer: oklch(0.5 0.2 292);
+  --panel-employer: oklch(0.4 0.13 258); /* K1: to'q ko'k (avval binafsha) */
   /* Telegram'ning rasmiy rangi — faqat uning belgisi uchun (kanal taklifi) */
   --telegram: #2aabee;
 }
@@ -211,68 +212,69 @@ html.tg-fullscreen {
   --shadow-card: 0 1px 2px oklch(0 0 0 / 30%), 0 8px 24px -12px oklch(0 0 0 / 50%);
   --shadow-glow: 0 12px 32px -12px oklch(0.6 0.2 260 / 45%);
   --panel-worker: #6b93f2;
-  --panel-employer: #9b87f5;
+  --panel-employer: #7fa6ff;
 }
 
 /*
- * Ish beruvchi paneli — binafsha (ega, 2026-11-18: "ish beruvchi panelining dizayni boshqacharoq — ranglar"; A varianti).
- * <html data-panel="employer"> — rejim cookie'si (ib_mode) bo'yicha ildiz layoutda. Faqat ko'k tokenlar almashadi: matn,
- * holat ranglari (yashil, sariq, qizil) va AI rangi o'sha-o'sha. Kontrast: primary oq matn bilan ~6:1, fonda ~5.6:1,
- * och fonda ~5.2:1. Tungi rejim — pastdagi blok (o'sha xossalar, yuqoriroq aniqlik).
+ * Ish beruvchi paneli — to'q ko'k (ega, 2026-11-22, K1 "korporativ, jiddiy: oq + to'q ko'k"; avval — binafsha, 2026-11-18:
+ * "ish beruvchi panelining dizayni boshqacharoq"). Ishchi paneli — yorqin ko'k, ish beruvchi — to'q (navy) ko'k: farq
+ * qoladi, lekin bitta korporativ palitra. <html data-panel="employer"> — rejim cookie'si (ib_mode) bo'yicha ildiz layoutda.
+ * Faqat ko'k tokenlar almashadi; holat ranglari (yashil, sariq, qizil) va AI rangi o'sha-o'sha. Kontrast: primary oq matn
+ * bilan ~9:1, fonda ~8.5:1, och fonda ~8:1. Tungi rejim — pastdagi blok.
  */
 html[data-panel="employer"] {
-  --background: oklch(0.982 0.006 292);
-  --primary: oklch(0.5 0.2 292);
-  --primary-ink: oklch(0.5 0.2 292);
-  --primary-hover: oklch(0.45 0.2 292);
-  --primary-soft: oklch(0.95 0.035 292);
-  --accent: oklch(0.95 0.035 292);
-  --accent-foreground: oklch(0.5 0.2 292);
-  --ring: oklch(0.5 0.2 292);
-  --brand: oklch(0.5 0.2 292);
-  --hero-from: oklch(0.95 0.035 292);
-  --hero-via: oklch(0.95 0.035 292);
-  --hero-to: oklch(0.95 0.035 292);
-  --hero-soft: oklch(0.95 0.035 292);
-  --hero-accent: #b9a3ff;
-  --tint-blue: oklch(0.95 0.035 292);
-  --tint-blue-ink: oklch(0.5 0.2 292);
-  --glow: oklch(0.5 0.2 292 / 0.28);
-  --shadow-glow: 0 12px 32px -12px oklch(0.5 0.2 292 / 45%);
-  --gradient-brand: linear-gradient(135deg, oklch(0.52 0.21 292), oklch(0.6 0.17 320));
-  --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.93 0.05 292) 0%, transparent 45%);
-  --navy: #1d1440;
-  --navy-2: #2e2163;
-  --navy-line: #3a2d70;
-  --sidebar-active: #2e1f5e;
-  --sidebar-accent: #b9a3ff;
+  --background: oklch(0.978 0.005 255);
+  --primary: oklch(0.4 0.13 258);
+  --primary-ink: oklch(0.4 0.13 258);
+  --primary-hover: oklch(0.35 0.12 258);
+  --primary-soft: oklch(0.95 0.025 255);
+  --accent: oklch(0.95 0.025 255);
+  --accent-foreground: oklch(0.4 0.13 258);
+  --ring: oklch(0.4 0.13 258);
+  --brand: oklch(0.4 0.13 258);
+  --hero-from: oklch(0.95 0.025 255);
+  --hero-via: oklch(0.95 0.025 255);
+  --hero-to: oklch(0.95 0.025 255);
+  --hero-soft: oklch(0.95 0.025 255);
+  --hero-accent: #8fb4ff;
+  --tint-blue: oklch(0.95 0.025 255);
+  --tint-blue-ink: oklch(0.4 0.13 258);
+  --glow: oklch(0.4 0.13 258 / 0.22);
+  --shadow-glow: 0 8px 20px -10px oklch(0.4 0.13 258 / 35%);
+  --gradient-brand: linear-gradient(135deg, oklch(0.4 0.13 258), oklch(0.46 0.14 252));
+  --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.94 0.03 255) 0%, transparent 45%);
+  --navy: #0b1f3a;
+  --navy-2: #14305a;
+  --navy-line: #22406e;
+  --sidebar-active: #173664;
+  --sidebar-accent: #8fb4ff;
 }
 html.dark[data-panel="employer"] {
-  --background: oklch(0.13 0.04 288);
-  --primary: #9b87f5;
-  --primary-ink: #9b87f5;
-  --primary-hover: #ab9af7;
-  --primary-soft: #2a2150;
-  --accent: #2a2150;
-  --accent-foreground: #c4b5fd;
-  --ring: #a78bfa;
-  --brand: #8b5cf6;
-  --hero-from: #1c1736;
-  --hero-via: #1c1736;
-  --hero-to: #1c1736;
-  --hero-soft: #1c1736;
-  --hero-accent: #c4b5fd;
-  --tint-blue: #2b2358;
-  --tint-blue-ink: #c4b5fd;
-  --glow: rgb(167 139 250 / 0.32);
-  --shadow-glow: 0 12px 32px -12px oklch(0.65 0.18 292 / 45%);
-  --gradient-brand: linear-gradient(135deg, oklch(0.55 0.2 292), oklch(0.62 0.16 320));
-  --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.32 0.08 292) 0%, transparent 45%);
-  --navy: #120d24;
-  --navy-2: #221a45;
-  --navy-line: #2c2452;
-  --sidebar-active: #241c48;
-  --sidebar-accent: #a78bfa;
+  --background: oklch(0.13 0.035 262);
+  --primary: #7fa6ff;
+  --primary-ink: #7fa6ff;
+  --primary-hover: #93b4ff;
+  --primary-soft: #18294a;
+  --accent: #18294a;
+  --accent-foreground: #a9c3ff;
+  --ring: #7fa6ff;
+  --brand: #5b86f0;
+  --hero-from: #121d35;
+  --hero-via: #121d35;
+  --hero-to: #121d35;
+  --hero-soft: #121d35;
+  --hero-accent: #a9c3ff;
+  --tint-blue: #172745;
+  --tint-blue-ink: #a9c3ff;
+  --glow: rgb(127 166 255 / 0.28);
+  --shadow-glow: 0 8px 20px -10px oklch(0.65 0.13 258 / 40%);
+  --gradient-brand: linear-gradient(135deg, oklch(0.5 0.14 258), oklch(0.56 0.14 250));
+  --gradient-hero: radial-gradient(circle at 90% 0%, oklch(0.3 0.06 258) 0%, transparent 45%);
+  --navy: #0a1426;
+  --navy-2: #13213d;
+  --navy-line: #1d2e50;
+  --sidebar-active: #172a4d;
+  --sidebar-accent: #7fa6ff;
 }
 
 @theme inline {
@@ -352,9 +354,9 @@ html.dark[data-panel="employer"] {
   --radius-xs: 4px;
   --radius-sm: 6px;
   --radius-md: 10px;
-  --radius-lg: 12px;
-  --radius-xl: 14px;
-  --radius-2xl: 16px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 12px; /* K1 (2026-11-22): korporativ — burchaklar kichikroq (avval 16px) */
   --shadow-sm: var(--shadow-sm);
   --shadow-md: var(--shadow-md);
   --shadow-lg: var(--shadow-lg);
@@ -910,4 +912,34 @@ body:has([data-global-back]) [data-header-back] { display: none; }
   .press:active { scale: none; }
   .lift:hover,
   .lift-sm:hover { translate: none; }
+}
+
+/*
+ * Chat tepasidagi video-tushuntirish (chat-intro.tsx, 2026-11-22): lupa e'lonlarni ko'zdan kechiradi, kartalar paydo bo'ladi,
+ * tugma "bosiladi". Kamroq harakat tanlanganda — harakatsiz (sahnalar baribir almashadi).
+ */
+@keyframes intro-scan {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  35% { transform: translate(120px, 34px) rotate(-6deg); }
+  70% { transform: translate(40px, 70px) rotate(4deg); }
+}
+@keyframes intro-pop {
+  from { opacity: 0; transform: translateY(8px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes intro-tap {
+  0% { box-shadow: 0 0 0 0 var(--glow); }
+  70% { box-shadow: 0 0 0 12px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+@keyframes intro-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(8px); }
+}
+.intro-scan { animation: intro-scan 3.6s ease-in-out infinite; }
+.intro-pop { animation: intro-pop 0.45s ease-out both; }
+.intro-tap { animation: intro-pop 0.45s ease-out both, intro-tap 1.4s ease-out 0.5s infinite; }
+.intro-bob { animation: intro-bob 1.2s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .intro-scan, .intro-pop, .intro-tap, .intro-bob { animation: none; }
 }

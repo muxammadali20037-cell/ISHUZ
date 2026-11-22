@@ -96,7 +96,9 @@
     "salary_negotiable": "Maosh: kelishiladi",
     "vacancy_badge": "VAKANSIYA · ishchi kerak",
     "no_experience": "Tajriba talab qilinmaydi",
-    "phone": "Tel: {value}"
+    "phone": "Tel: {value}",
+    "contact": "📞 Bog'lanish",
+    "contact_on_site": "Raqam — «Bog'lanish» tugmasi orqali saytda"
   },
   "owner_post": {
     "vacancy": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi qidiruvda ko'rinadi, ish izlovchilar ko'radi.",

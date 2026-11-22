@@ -146,7 +146,8 @@
     "stat_applications": "Applicants",
     "stat_none": "None yet",
     "stat_published": "Posted",
-    "stat_views": "Views"
+    "stat_views": "Views",
+    "kicker": "Vacancy"
   },
   "apply": {
     "title": "Apply for this job",

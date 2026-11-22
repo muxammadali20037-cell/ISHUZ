@@ -4,7 +4,9 @@ import { getT } from "@/lib/i18n/server";
 import { getSession } from "@/features/auth/session";
 import { getMode } from "@/features/mode/server";
 import { Shell } from "@/components/shared/shell";
+import { cookies } from "next/headers";
 import { StartChat } from "@/features/start-chat/components/start-chat";
+import { INTRO_COOKIE } from "@/features/start-chat/intro";
 import { chatQuery } from "@/features/start-chat/query";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -17,11 +19,17 @@ export async function generateMetadata(): Promise<Metadata> {
  * o'zi aniqlaydi (ega, 2026-11-21); rejim faqat salom matni va misollar uchun (rejimi yo'q mehmon — "Ish kerakmi yoki ishchi?").
  */
 export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[] }> }) {
-  const [session, mode, params] = await Promise.all([getSession(), getMode(), searchParams]);
+  const [session, mode, params, jar] = await Promise.all([getSession(), getMode(), searchParams, cookies()]);
   if (session?.profile.is_blocked) redirect("/blocked");
   return (
     <Shell>
-      <StartChat mode={mode} owner={session?.userId ?? "guest"} initialQuery={chatQuery(params.q)} post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null} />
+      <StartChat
+        mode={mode}
+        owner={session?.userId ?? "guest"}
+        initialQuery={chatQuery(params.q)}
+        post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
+        introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
+      />
     </Shell>
   );
 }

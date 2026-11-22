@@ -8,8 +8,9 @@ import { formatSalaryWithPeriod } from "@/lib/format";
  *
  * Rasm ostida — TO'LIQ matn (ega, 2026-11-18: "rasm tagiga to'liq yozilsin, nomerlar bilan to'liq vakansiya"):
  *  · vakansiya: turi, nomi, kompaniya, joy, maosh, ish vaqti, tajriba, tavsif va telefon.
- *  · ishchi: turi, kasbi, sarlavha, joy, tajriba, maosh, ish vaqti va telefon(lar). Ism va shaxsiy rasm YO'Q.
- * Telefon — faqat egasi kanal uchun rozi bo'lgani (qaysi raqam — chaqiruvchi, autopost.ts, tanlaydi). Ega (2026-11-20:
+ *  · ishchi: turi, kasbi, sarlavha, joy, tajriba, maosh, ish vaqti. Ism, shaxsiy rasm va telefon YO'Q (ega, 2026-11-22:
+ *    raqam saytda ochiladi) — "📞 Bog'lanish" tugmasi e'londagi raqam ochish bo'limiga olib boradi.
+ * Vakansiya telefoni — faqat egasi kanal uchun rozi bo'lgani (qaysi raqam — chaqiruvchi, autopost.ts, tanlaydi). Ega (2026-11-20:
  * "kanalda nomer ustiga bossa telefon qilishga o'tsin — raqamlarni qo'shib yozish kerak"): raqam bo'shliqsiz, xalqaro
  * ko'rinishda (+998901234567) — Telegram uni bosiladigan raqamga aylantiradi, bosilsa qo'ng'iroq.
  * Erkin matndagi (sarlavha, tavsif) telefon, @nik, havola va email olib tashlanadi — raqam faqat rozilik maydonidan.
@@ -50,8 +51,6 @@ export interface WorkerPostData {
   salary: number | null;
   salaryType: string | null;
   schedules: string[];
-  /** E.164 raqam(lar); faqat kanalga rozilik bo'lsa beriladi (chaqiruvchi tekshiradi) */
-  phones?: string[];
 }
 
 export interface ChannelPost {
@@ -176,12 +175,15 @@ export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn =
     d.experience ? `🧰 ${escapeHtml(t("bot.channel.experience", { value: d.experience }))}` : null,
     `💰 ${escapeHtml(t("bot.channel.salary_expect", { value: salary }))}`,
     d.schedules.length ? `🕘 ${escapeHtml(d.schedules.join(", "))}` : null,
-    ...phoneTail(d.phones ?? [], t),
+    "",
+    `📞 ${escapeHtml(t("bot.channel.contact_on_site"))}`,
   ];
   const html = lines.filter((l) => l !== null).join("\n");
+  // Mini App havolasida (t.me/…?startapp=) # bo'lmaydi — e'lon sahifasi; oddiy havolada — to'g'ri raqam ochish bo'limiga
+  const url = link(`/listing/${d.id}`);
   return {
     html,
-    button: { text: t("bot.channel.open_worker"), url: link(`/workers/${d.id}`) },
+    button: { text: t("bot.channel.contact"), url: url.startsWith(base) ? `${url}#contact` : url },
     // rasm — vakansiyadagidek (ega, 2026-11-17: "e'lon joylandimi — shunaqa rasm bo'lib kelsin"): kasbi, tajriba, joyi, maosh
     photo: `${base}/api/promo/worker/${d.id}`,
     caption: html.length <= CAPTION_MAX ? html : `<b>${escapeHtml(sanitizeLine(d.profession, 80))}</b>`,

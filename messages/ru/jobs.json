@@ -146,7 +146,8 @@
     "stat_applications": "Отклики",
     "stat_none": "Пока нет",
     "stat_published": "Опубликовано",
-    "stat_views": "Просмотры"
+    "stat_views": "Просмотры",
+    "kicker": "Вакансия"
   },
   "apply": {
     "title": "Отклик на вакансию",

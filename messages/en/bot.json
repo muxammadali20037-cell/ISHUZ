@@ -96,7 +96,9 @@
     "salary_negotiable": "Salary: negotiable",
     "vacancy_badge": "VACANCY · HIRING",
     "no_experience": "No experience required",
-    "phone": "Phone: {value}"
+    "phone": "Phone: {value}",
+    "contact": "📞 Contact",
+    "contact_on_site": "Number — on the site, via the “Contact” button"
   },
   "owner_post": {
     "vacancy": "✅ <b>Your listing is live!</b>\n{title} — job seekers can now find it in search.",

@@ -12,13 +12,15 @@ import type { PostAnswers, PostChoice, PostExperience } from "@/features/find/qu
 import { chooseMode } from "@/features/mode/actions";
 import type { AppMode } from "@/features/mode/mode";
 import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
-import { draftFromForm, nextAsk, placeChoices, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
+import { draftFromForm, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
+import type { ChatProfession } from "./actions";
 import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, type PostAsk, type PostDraft } from "./post-logic";
 
 export type { AiPart, Ask, Draft, Msg, Role } from "./guided-logic";
 
 /**
- * Asosiy ekrandagi chat (ega, 2026-11-21, master prompt): foydalanuvchi oddiy so'z bilan yozadi, AI maqsadini o'zi
+ * Asosiy ekrandagi chat (ega, 2026-11-21, master prompt; 2026-11-22 — ketma-ketlik: "Ish qidiryapman / Ishchi
+ * qidiryapman" → kasb → viloyat → "Mavjud e'lonlar / O'zim haqimda e'lon"): foydalanuvchi oddiy so'z bilan yozadi, AI maqsadini o'zi
  * aniqlaydi (ish qidiryaptimi yoki ishchi kerakmi), yetishmagan narsani BITTADAN, muloyim va aniq so'raydi (rol — ikki
  * tugma, kasb — yoziladi, hudud — tugmalardan tanlanadi, yozilmaydi), keyin bazadagi HAQIQIY e'lonlarni shu chatda kartalar
  * bilan ko'rsatadi. Bir marta aytilgani qayta so'ralmaydi: rol — rejimdan yoki shu suhbatdan, hudud — matndan yoki shu
@@ -85,6 +87,11 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   const runRef = useRef(0);
   /** rejim faqat bir marta yoziladi (mehmon rolni tanlaganda yoki AI aniqlaganda) */
   const modeSaved = useRef(appMode !== null);
+  /**
+   * shu suhbatda rol tugma bilan tanlandimi: tanlanmagan bo'lsa, "e'lon bermoqchiman" (kimligi aytilmagan) — ikkala variant
+   * chiqadi, rejimdan taxmin qilinmaydi (ega, 2026-11-22: "so'ramasin — 2 ta variant chiqsin ekranga")
+   */
+  const roleChosen = useRef(false);
   const pending = msgs.some((m) => m.ai?.kind === "thinking" || m.ai?.kind === "searching");
 
   useEffect(() => {
@@ -150,9 +157,15 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
   /** Yetishmagan narsani so'raydi yoki qidiradi. `mid` — yordamchining shu javob o'rni */
   const proceed = (d: Draft, r: Role | null, mid: number) => {
     const a = nextAsk(d, r);
-    if (!a) return search(d, r!, mid);
-    let next = d;
-    if (a === "profession") next = { ...d, askedProfession: true };
+    if (!a) {
+      if (readyStep(d) === "search") return search(d, r!, mid);
+      // savol-javob bilan kelindi — "Endi nima qilamiz?" (mavjud e'lonlar yoki e'lon berish)
+      setDraft(d);
+      setAwaiting(null);
+      return replace(mid, { kind: "next", mode: r!, draft: d, label: placeLabel(d) });
+    }
+    let next: Draft = { ...d, guided: true };
+    if (a === "profession") next = { ...next, askedProfession: true };
     setDraft(next);
     setAwaiting(a);
     replace(mid, {
@@ -182,7 +195,8 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
         const form = res.data;
         if (form.reply) return replace(mid, { kind: "reply", text: form.reply });
         if (form.post) {
-          const who = form.post.who ?? (role === "workers" ? "employer" : role === "jobs" ? "worker" : null);
+          // kimligi gapda aytilmagan — faqat shu suhbatda tugma bilan tanlangan rol hisobga olinadi; aks holda ikkala variant
+          const who = form.post.who ?? (!roleChosen.current ? null : role === "workers" ? "employer" : role === "jobs" ? "worker" : null);
           // ishchi e'loni — shu chatning o'zida, bittadan savol bilan (3-bosqich); mazmun (kasb, joy) darhol hisobga olinadi
           if (who === "worker") return startPost(postTopic(q), mid, run);
           // vakansiya — yordamchi bilan alohida ekran; kimligi noma'lum — bitta savol (tugmalar)
@@ -432,15 +446,73 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     return true;
   };
 
-  /** "Men ish qidiryapman" / "Menga ishchi kerak" */
+  /** hudud nomi (qisqa yozuv uchun): tanlangan viloyat yoki "Butun O'zbekiston" */
+  const placeLabel = (d: Draft) => d.places.find((p) => p.value === d.place)?.label ?? t("easy.location.whole_country");
+
+  /** rol tugma bilan tanlandi: rejim ham shunga o'tadi (rang, "E'lonlarim" va boshqalar shunga qarab) */
+  const commitRole = (r: Role) => {
+    roleChosen.current = true;
+    setRole(r);
+    const m = r === "workers" ? "employer" : "worker";
+    if (appMode === m) return;
+    modeSaved.current = true;
+    void chooseMode(m).then(
+      () => router.refresh(),
+      () => null,
+    );
+  };
+
+  /** "Men ish qidiryapman" / "Menga ishchi kerak" (savolga javob) */
   const pickRole = (r: Role, label: string) => {
     if (pending || !draft) return;
     markAnswered();
-    setRole(r);
-    persistRole(r);
+    commitRole(r);
     const mid = id();
     push(label, mid);
     proceed(draft, r, mid);
+  };
+
+  /**
+   * Bo'sh ekrandagi ikki katta tugma — "Ish qidiryapman" / "Ishchi qidiryapman": ketma-ketlik boshlanadi (kasb → viloyat →
+   * "Endi nima qilamiz?")
+   */
+  const start = (r: Role, label: string) => {
+    if (pending) return;
+    markAnswered();
+    commitRole(r);
+    setPost(null);
+    const mid = id();
+    push(label, mid);
+    const run = ++runRef.current;
+    prepare("", r).then(
+      (res) => {
+        if (runRef.current !== run) return;
+        if (!res.ok) return replace(mid, { kind: "error", message: errorText(res.error) });
+        proceed({ ...draftFromForm(res.data), guided: true }, r, mid);
+      },
+      () => runRef.current === run && replace(mid, { kind: "error", message: errorText("network") }),
+    );
+  };
+
+  /** Kasb tugmadan yoki qidiruvdan tanlandi (yozilmadi) */
+  const pickProfession = (p: ChatProfession) => {
+    if (pending || !draft) return;
+    markAnswered();
+    setAwaiting(null);
+    const mid = id();
+    push(p.name, mid);
+    proceed({ ...draft, profession: p.name, nodeId: p.id, askedProfession: true, guided: true }, role, mid);
+  };
+
+  /** "Endi nima qilamiz?": mavjud e'lonlar (qidiruv) yoki o'zi haqida e'lon (shu chatda, kasb va viloyat bilan boshlanadi) */
+  const chooseNext = (choice: "see" | "post", d: Draft, r: Role, label: string) => {
+    if (pending) return;
+    markAnswered();
+    const mid = id();
+    push(label, mid);
+    if (choice === "see") return search({ ...d, see: true }, r, mid);
+    const region = regionSlugOf(d.place) ? placeLabel(d) : "";
+    startPost([d.profession.trim(), region].filter(Boolean).join(", "), mid);
   };
 
   /** Hudud tugmasi: tanlov shu qurilmada eslab qolinadi (keyingi safar so'ralmaydi) */
@@ -486,6 +558,9 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     stop,
     clear,
     pickRole,
+    start,
+    pickProfession,
+    chooseNext,
     pickPlace,
     otherPlace,
     beginPost,

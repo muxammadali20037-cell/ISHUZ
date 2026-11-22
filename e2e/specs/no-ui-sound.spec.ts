@@ -46,6 +46,8 @@ test("mehmon: bosh sahifa (chat) → hudud tugmasi → natija → qidiruv sahifa
   await box.fill("Men buxgalterman, ish kerak");
   await box.press("Enter");
   await page.locator("[data-guided-place='all']").last().click();
+  await box.blur();
+  await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
   await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
   await page.goto("/search?mode=jobs&region=all&any=1");
   await page.waitForLoadState("networkidle");

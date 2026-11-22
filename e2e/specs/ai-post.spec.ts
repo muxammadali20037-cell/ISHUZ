@@ -81,7 +81,7 @@ test("mehmon (telefon): yordamchi sahifasi (/ai/post) → «men o'qituvchiman» 
   // ekranda telefon raqami ko'rsatilmaydi (faqat "ko'rinadi" degan yozuv)
   await expect(card).not.toContainText("90 123");
   await expect(card).not.toContainText("93 555");
-  await expect(card.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan ikkala raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar qo'ng'iroq qiladi");
+  await expect(card.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan ikkala raqam e'loningizda bo'ladi — ish beruvchilar ularni ochib, qo'ng'iroq qiladi");
 
   // mehmon "Joylash" → telefon bilan kirish (SMS) → shu yerga qaytadi
   await page.locator("[data-ai-post-publish]").click();
@@ -154,6 +154,8 @@ test("boshqa mavzu — oyna chiqmaydi; «oqtvchi» (imlo xatosi) → o'qituvchi 
 test("kirgan (kompyuter): «haydovchiman, Samarqand» → oyna darhol (kasb va hudud tushunilgan) → ko'rinishi → joylandi", async ({ page, context }) => {
   test.setTimeout(90_000);
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  // oldingi yugurishda ochilgan raqam (0088: ochish ishchi profiliga bog'liq, e'lon o'chsa ham qoladi) — toza holatdan
+  await sql("delete from public.contact_unlocks where target_profile_id = $1", [USERS.workerB]);
   await asMode(context, "worker");
   await loginAs(context, USERS.workerB);
   await page.setViewportSize({ width: 1440, height: 900 });
@@ -174,7 +176,7 @@ test("kirgan (kompyuter): «haydovchiman, Samarqand» → oyna darhol (kasb va h
   await form.locator("#phone").fill("97 444 55 66");
   await page.locator("[data-ai-post-confirm]").click();
   await expect(page.locator("[data-ai-post-preview] [data-ai-post-about]")).toContainText("Tajribam — 3 yildan ko'p. Hudud: Samarqand.");
-  await expect(page.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan raqam e'londa va Telegram kanalda ko'rinadi — ish beruvchilar shu raqamga qo'ng'iroq qiladi");
+  await expect(page.locator("[data-ai-post-preview-phones]")).toHaveText("Siz yozgan raqam e'loningizda bo'ladi — ish beruvchilar uni ochib, qo'ng'iroq qiladi");
   // "O'zgartirish" — oynaga qaytadi, javoblar saqlangan
   await page.locator("[data-ai-post-edit]").click();
   await expect(form.locator("[data-exp='3plus']")).toHaveAttribute("aria-checked", "true");
