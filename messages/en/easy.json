@@ -1711,7 +1711,25 @@
     "any_jobs": "All jobs",
     "any_workers": "All workers",
     "suggest_jobs": "Jobs are open right now in:",
-    "suggest_workers": "Workers are available right now in:"
+    "suggest_workers": "Workers are available right now in:",
+    "home": {
+      "title": "Your work starts here!",
+      "subtitle": "Find a job or the worker you need.",
+      "search_label": "Search jobs and workers",
+      "q_label_jobs": "Job title or profession",
+      "q_label_workers": "Which worker you need",
+      "placeholder_jobs": "Job: cook, driver…",
+      "placeholder_workers": "Who: cook, driver…",
+      "region_label": "Region",
+      "search": "Search",
+      "post": "Post an ad",
+      "latest_jobs": "Latest jobs",
+      "latest_workers": "New workers",
+      "all_jobs": "All jobs ({count})",
+      "all_workers": "All workers ({count})",
+      "students": "For students",
+      "quick_label": "Quick sections"
+    }
   },
   "intro": {
     "title": "How Ish topdim works",

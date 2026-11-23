@@ -99,27 +99,50 @@ test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikk
   expect(bad).toEqual([]);
 });
 
-test("chat bo'sh holati (ega, 2026-11-21 kechqurun: «ortiqcha narsalar kerakmas»): yozuv va ikki katta tugma (2026-11-22) — boshqa hech narsa", async ({ page, context }) => {
+test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, uchta tugma, tezkor bo'limlar; 320–1280 px da sig'adi", async ({ page, context }) => {
   await asGuest(context);
   for (const mode of [null, "worker", "employer"] as const) {
     if (mode) await asMode(context, mode);
     else await context.clearCookies({ name: "ib_mode" });
     for (const width of [320, 360, 390, 412, 1280]) {
+      const at = `${mode} ${width}px`;
       await page.setViewportSize({ width, height: 800 });
       await page.goto("/");
       const main = page.locator("main [data-start-chat]");
-      // hamma uchun bir xil yozuv, o'rtada; ostida — ikki katta tugma (ega, 2026-11-22), keyin yozish maydoni
       const h1 = main.locator("h1");
-      await expect(h1).toHaveText("Ish yoki ishchini oson toping");
+      await expect(h1).toHaveText("Ishingiz shu yerdan boshlanadi!");
       // oqim bilan kelgan kontent ko'rinadigan bo'lgach o'lchanadi (avval yashirin nusxada turadi)
       await expect(main.locator("[data-guided-starts]")).toBeVisible();
-      expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), `${mode} ${width}px`).toBe(true);
-      const [hb, ab, cb] = [(await h1.boundingBox())!, (await main.locator("[data-guided-starts]").boundingBox())!, (await page.locator("#start-chat-text").boundingBox())!];
-      expect(ab.y, `${mode} ${width}px`).toBeGreaterThan(hb.y + hb.height - 1);
-      expect(cb.y, `${mode} ${width}px`).toBeGreaterThan(ab.y + ab.height);
-      // ortiqcha narsalar yo'q: misollar, hikoyalar, kanal qatori, ustalar havolasi, ostki izoh
-      await expect(main.locator("[data-guided-example], [data-stories], [data-channel-row], [data-chat-choice], p")).toHaveCount(0);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), `${mode} ${width}px`).toBeLessThanOrEqual(0);
+      expect(await h1.evaluate((el) => el.scrollWidth <= el.clientWidth + 1), at).toBe(true);
+      // tartib: sarlavha → qidiruv qatori → uchta tugma → tezkor bo'limlar
+      const box = async (sel: string) => (await main.locator(sel).boundingBox())!;
+      const [hb, sb, ab, qb] = [await box("h1"), await box("form[data-home-search]"), await box("[data-guided-starts]"), await box("[data-home-quick]")];
+      expect(sb.y, at).toBeGreaterThan(hb.y + hb.height - 1);
+      expect(ab.y, at).toBeGreaterThan(sb.y + sb.height - 1);
+      expect(qb.y, at).toBeGreaterThan(ab.y + ab.height - 1);
+      await expect(main.locator("[data-guided-start]")).toHaveText(["Ish qidiryapman", "Ishchi qidiryapman", "E'lon berish"]);
+      // pastdagi yozish maydoni bosh ekranda yo'q — uning o'rnida qidiruv qatori (ikkita matn maydoni bo'lmasin)
+      await expect(page.locator("#start-chat-text")).toBeHidden();
+      // uchta tugma yonma-yon: so'z o'rtasidan bo'linmaydi ("qidiryapma-n" emas), 320 px da ham
+      const broken = await main.locator("[data-guided-start]").evaluateAll((els) =>
+        els.flatMap((el) => {
+          const node = Array.from(el.childNodes).find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
+          if (!node) return [];
+          const text = node.textContent!;
+          const out: string[] = [];
+          for (const m of text.matchAll(/\S+/g)) {
+            const r = document.createRange();
+            r.setStart(node, m.index!);
+            r.setEnd(node, m.index! + m[0].length);
+            if (new Set(Array.from(r.getClientRects()).map((x) => Math.round(x.top))).size > 1) out.push(m[0]);
+          }
+          return out;
+        }),
+      );
+      expect(broken, at).toEqual([]);
+      // ortiqcha narsalar yo'q: misollar, hikoyalar, kanal qatori
+      await expect(main.locator("[data-guided-example], [data-stories], [data-channel-row], [data-chat-choice]")).toHaveCount(0);
+      expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth), at).toBeLessThanOrEqual(0);
     }
   }
 });

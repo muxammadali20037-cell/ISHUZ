@@ -63,9 +63,9 @@ test("mehmon ish izlovchi: salom → pastki menyu → til, kirish → yakun; bir
   const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/B1.mp3"));
   const codes = await walk(page);
   expect([200, 206]).toContain((await voice).status());
-  // ikki katta tugma, yozish maydoni, Qidiruv · E'lonlarim · Profil; mehmonda "Xabarlar" va qo'ng'iroqcha yo'q, "E'lon berish"
-  // — faqat kompyuterda (o'tkazib yuboriladi)
-  expect(codes).toEqual(["B0", "B1", "B2", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
+  // uchta katta tugma (2026-11-23: sariq "E'lon berish" ham), qidiruv qatori, Qidiruv · E'lonlarim · Profil; mehmonda
+  // "Xabarlar" va qo'ng'iroqcha yo'q
+  expect(codes).toEqual(["B0", "B1", "B2", "B6", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
   expect(await tourCookie(page)).toContain("w");
   await page.reload();
   await page.waitForTimeout(1500);
@@ -87,7 +87,7 @@ test("mehmon ish beruvchi: «Kerak emas» — eslab qolinadi; ?tour=1 — qayta;
 
   await page.goto("/?tour=1");
   const codes = await walk(page);
-  expect(codes).toEqual(["B0", "B1", "B2", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
+  expect(codes).toEqual(["B0", "B1", "B2", "B6", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
   // kompyuterda: "E'lon berish" tugmasi yuqori panelda — u ham tushuntiriladi
   await page.setViewportSize({ width: 1280, height: 860 });
   await page.goto("/chat?tour=1");
@@ -117,7 +117,7 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
 
   await page.goto("/chat?tour=1");
   const codes = await walk(page);
-  expect(codes).toEqual(["B0", "B1", "B2", "B3", "B4", "B5", "B7", "U4", "U2", "U5", "U6"]);
+  expect(codes).toEqual(["B0", "B1", "B2", "B6", "B3", "B4", "B5", "B7", "U4", "U2", "U5", "U6"]);
 });
 
 test("rus tilida — matnlar ruscha", async ({ page, context }) => {

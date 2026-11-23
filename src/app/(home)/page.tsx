@@ -8,6 +8,7 @@ import { StartChat } from "@/features/start-chat/components/start-chat";
 import { INTRO_COOKIE } from "@/features/start-chat/intro";
 import { listingImageEnabled } from "@/features/listing-image/server";
 import { chatQuery } from "@/features/start-chat/query";
+import { homeData } from "@/features/start-chat/home";
 import { getMode } from "@/features/mode/server";
 import { SiteFooter } from "@/features/landing/market/site-footer";
 import { BRAND } from "@/config/brand";
@@ -28,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * yoki ishchi? Yozing — topib beramiz."; AI maqsadni o'zi aniqlaydi. Kirgan foydalanuvchi — /chat (layout yo'naltiradi).
  * Qidiruv tizimlari uchun sarlavha, tavsif va pastki qism (sayt haqida, havolalar) — o'z joyida.
  */
-export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[] }> }) {
+export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[]; region?: string | string[] }> }) {
   // yo'naltirishlar (bloklangan, kirish oqimi, kirgan foydalanuvchi) — (home)/layout.tsx da
   const [session, mode, params, jar] = await Promise.all([getSession(), getMode(), searchParams, cookies()]);
   return (
@@ -40,6 +41,8 @@ export default async function HomePage({ searchParams }: { searchParams: Promise
         post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
         introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
         imageEnabled={listingImageEnabled()}
+        home={await homeData(mode, session, (name) => jar.get(name)?.value)}
+        initialRegion={typeof params.region === "string" ? params.region : null}
       />
     </Shell>
   );

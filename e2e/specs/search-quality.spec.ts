@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, sql } from "../support";
 
 /**
  * Qidiruv sifati (ega, 2026-11-22: "foydalanuvchi «ish kerak», «voditel», «oshpaz», «работа» deb yozsa ham mazmunan mos
@@ -24,12 +24,16 @@ async function send(page: Page, text: string) {
   await box(page).press("Enter");
   await settled(page);
 }
-/** hudud — butun O'zbekiston; keyin "Mavjud e'lonlarni ko'rish" */
-async function allPlacesAndSee(page: Page) {
-  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-place");
-  await lastAi(page).locator("[data-guided-place='all']").click();
+/** bosh ekrandagi qidiruv qatoridan — hudud: "Butun O'zbekiston" (2026-11-23, C varianti) */
+async function search(page: Page, text: string) {
+  await homeSearch(page, text);
   await settled(page);
+}
+/** savol-javobdan keyin (hudud qatorda tanlangan) — "Mavjud e'lonlarni ko'rish" */
+async function see(page: Page) {
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "next");
+  await expect(lastAi(page).locator("[data-guided-summary]")).toContainText("Butun O'zbekiston");
+  await box(page).blur();
   await lastAi(page).locator("[data-guided-next-to='see']").click();
   await settled(page);
 }
@@ -61,14 +65,14 @@ test.afterEach(async () => {
 test("«ish kerak» — «Kasbingiz qanday?» da birinchi «Hamma ishlar» → hamma ishlar", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/");
-  await send(page, "ish kerak");
+  await search(page, "ish kerak");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   const any = lastAi(page).locator("[data-guided-prof='any']");
   await expect(lastAi(page).locator("[data-guided-prof]").first()).toHaveAttribute("data-guided-prof", "any");
   await expect(any).toHaveText("Hamma ishlar");
   await any.click();
   await settled(page);
-  await allPlacesAndSee(page);
+  await see(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "results");
   await expect(lastAi(page).locator("[data-guided-summary]")).toContainText("Butun O'zbekiston");
   await expect(lastAi(page)).toContainText(TAG);
@@ -77,10 +81,10 @@ test("«ish kerak» — «Kasbingiz qanday?» da birinchi «Hamma ishlar» → h
 test("«работа» — savolga «любая» deb yozsa ham hamma ishlar", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/");
-  await send(page, "работа");
+  await search(page, "работа");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   await send(page, "любая");
-  await allPlacesAndSee(page);
+  await see(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "results");
   await expect(lastAi(page)).toContainText(TAG);
 });
@@ -89,8 +93,8 @@ test("«voditel» (ruscha, lotinda) — Haydovchi", async ({ page, context }) =>
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/chat");
-  await send(page, "voditel");
-  await allPlacesAndSee(page);
+  // kasb va hudud (qatorda) ma'lum — savolsiz natija
+  await search(page, "voditel");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "results");
   await expect(lastAi(page).locator("[data-guided-summary]")).toContainText("Haydovchi");
   await expect(lastAi(page)).toContainText(`Haydovchi, B toifa (${TAG})`);
@@ -101,8 +105,7 @@ test("«kuryer» — butun soha: posilka va oziq-ovqat kuryerlari ikkalasi ham (
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/chat");
-  await send(page, "kuryer");
-  await allPlacesAndSee(page);
+  await search(page, "kuryer");
   const res = lastAi(page);
   await expect(res).toHaveAttribute("data-guided-ai", "results");
   await expect(res.locator("[data-guided-summary]")).toContainText("Kuryer va yetkazib berish");
@@ -115,7 +118,7 @@ test("hech narsa yo'q — haqiqiy e'loni bor kasblar taklif qilinadi (soni bilan
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/chat");
-  await send(page, "Toshkentda kosmonavt ishi kerak");
+  await search(page, "Toshkentda kosmonavt ishi kerak");
   // tushunilmagan kasb — bir marta aniqlashtiriladi; o'sha so'z bilan qidiriladi
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   await send(page, "kosmonavt");

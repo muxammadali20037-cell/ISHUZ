@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs } from "../support";
 
 /**
  * Chat ketma-ketligi (ega, 2026-11-22): bo'sh ekranda ikki katta tugma — «Ish qidiryapman» / «Ishchi qidiryapman»; keyin kasb
@@ -12,15 +12,15 @@ async function blurComposer(page: Page) {
   await page.locator("#start-chat-text").blur();
 }
 
-test("ish izlovchi: 2 tugma → kasb (3 ta, qidiruv) → viloyat (3 ta, qidiruv) → «Endi nima qilamiz?» → mavjud e'lonlar", async ({ page, context }) => {
+test("ish izlovchi: «Ish qidiryapman» → kasb (3 ta, qidiruv) → viloyat (3 ta, qidiruv) → «Endi nima qilamiz?» → mavjud e'lonlar", async ({ page, context }) => {
   await asGuest(context);
   await context.clearCookies({ name: "ib_mode" });
   await page.goto("/");
   const empty = page.locator("[data-guided-empty]");
-  await expect(empty.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
-  // video-tushuntirish ko'rilgan (cookie) — yig'ilgan qator
+  await expect(empty.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
+  // video-tushuntirish ko'rilgan (cookie) — yig'ilgan qator (bosh ekranning pastida)
   await expect(empty.locator("[data-intro-open]")).toContainText("Qanday ishlaydi?");
-  await expect(empty.locator("[data-guided-start]")).toHaveCount(2);
+  await expect(empty.locator("[data-guided-start]")).toHaveCount(3);
   await empty.locator("[data-guided-start='jobs']").click();
 
   // kasb: savol, 3 ta tugma, "Hammasini ko'rish", qidiruv
@@ -108,8 +108,7 @@ test("e'lon niyati, rol shu suhbatda tanlanmagan — ikkala variant (rejimdan ta
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
-  await page.locator("#start-chat-text").fill("e'lon joylamoqchiman");
-  await page.locator("#start-chat-text").press("Enter");
+  await homeSearch(page, "e'lon joylamoqchiman");
   const post = page.locator("[data-guided-ai='post']");
   await expect(post.locator("[data-guided-post-to='worker']")).toBeVisible();
   await expect(post.locator("[data-guided-post-to='employer']")).toBeVisible();
@@ -130,12 +129,49 @@ test("video-tushuntirish: birinchi marta ochiq, ko'rsatiladi (yozuv almashadi), 
   await intro.locator("[data-intro-sound='off']").click();
   await expect(intro).toHaveAttribute("data-intro-phase", "playing");
   await expect(intro.locator("[data-intro-caption]")).toHaveText("Bu — Ish topdim: bu yerda ish ham, ishchi ham topiladi.", { timeout: 8_000 });
-  // rol tugmalari baribir ekranda
-  await expect(page.locator("[data-guided-start]")).toHaveCount(2);
+  // bosh ekran (qidiruv qatori, tugmalar) baribir ekranda — video uning tepasida
+  await expect(page.locator("[data-guided-start]")).toHaveCount(3);
+  await expect(page.locator("form[data-home-search]")).toBeVisible();
   await intro.locator("[data-intro-close]").click();
   await expect(page.locator("[data-intro-open]")).toBeVisible();
   expect((await context.cookies()).find((c) => c.name === "ib_intro_v")?.value).toBe("1");
   await page.reload();
   await expect(page.locator("[data-intro]")).toHaveCount(0);
   await expect(page.locator("[data-intro-open]")).toBeVisible();
+});
+
+test("bosh ekrandagi sariq «E'lon berish» (2026-11-23): kimligi so'ralmaydi — ikkala variant; «O'zim haqimda» shu chatda", async ({ page, context }) => {
+  await asGuest(context);
+  await context.clearCookies({ name: "ib_mode" });
+  await page.goto("/");
+  const tile = page.locator("[data-guided-start='post']");
+  await expect(tile).toHaveText("E'lon berish");
+  // sariq urg'u (globals.css --highlight) — ustida to'q matn
+  expect(await tile.evaluate((el) => getComputedStyle(el).backgroundColor)).toBe("rgb(255, 200, 61)");
+  await tile.click();
+  await expect(page.locator("[data-ai-you]").last()).toHaveText(/E'lon berish/);
+  const post = page.locator("[data-guided-ai='post']");
+  await expect(post.locator("[data-guided-post-to='employer']")).toHaveAttribute("href", /^\/post\/vacancy\?ai=1/);
+  await post.locator("[data-guided-post-to='worker']").click();
+  await expect(page.locator("[data-guided-ai='post-profession']")).toBeVisible();
+  // rejim taxmin qilinmadi va yozilmadi
+  expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
+});
+
+test("bosh ekrandagi qidiruv qatori: kasb + tanlangan viloyat → savolsiz natija; viloyat eslab qolinadi", async ({ page, context }) => {
+  await asGuest(context);
+  await asMode(context, "worker");
+  await context.clearCookies({ name: "ib_place" });
+  await page.goto("/");
+  await expect(page.locator("[data-home-place]")).toHaveValue("all");
+  await homeSearch(page, "buxgalter", "samarkand");
+  const res = page.locator("[data-guided-ai='results'], [data-guided-ai='none']").last();
+  await expect(res).toBeVisible({ timeout: 20_000 });
+  await expect(page.locator("[data-guided-ai^='ask']")).toHaveCount(0);
+  await expect(res.locator("[data-guided-summary]")).toContainText("Buxgalter");
+  await expect(res.locator("[data-guided-summary]")).toContainText("Samarqand");
+  // yangi suhbat — qatorda eslab qolingan viloyat
+  await page.locator("#start-chat-text").blur();
+  await page.locator("[data-guided-new]").click();
+  await expect(page.locator("[data-home-place]")).toHaveValue("samarkand");
 });

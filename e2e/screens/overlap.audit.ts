@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { asGuest, asMode, loginAs, sql, stack } from "../support";
+import { asGuest, asMode, homeSearch, loginAs, sql, stack } from "../support";
 import { findLayoutIssues, fullHeight, markIssues, zoomText, type LayoutIssue } from "../overlap";
 import { DEMO, cleanDemo, seedDemo } from "./demo-seed";
 
@@ -113,9 +113,9 @@ test("overlap audit", async ({ browser }) => {
       url: "/chat",
       name: "chat-results",
       action: async (p) => {
-        const box = p.locator("form[data-hydrated] #start-chat-text");
-        await box.fill("Toshkentda sotuvchi ishi kerak");
-        await box.press("Enter");
+        // birinchi xabar — bosh ekrandagi qidiruv qatoridan (2026-11-23)
+        await homeSearch(p, "Toshkentda sotuvchi ishi kerak");
+        const box = p.locator("#start-chat-text");
         await expect(p.locator("[data-guided-ai='results'], [data-guided-ai='none']").last()).toBeVisible({ timeout: 20_000 });
         await box.blur();
       },
@@ -126,9 +126,9 @@ test("overlap audit", async ({ browser }) => {
       url: "/chat",
       name: "chat-ask-profession",
       action: async (p) => {
-        const box = p.locator("form[data-hydrated] #start-chat-text");
-        await box.fill("ish kerak");
-        await box.press("Enter");
+        // birinchi xabar — bosh ekrandagi qidiruv qatoridan (2026-11-23)
+        await homeSearch(p, "ish kerak");
+        const box = p.locator("#start-chat-text");
         await expect(p.locator("[data-guided-ai='ask-profession']").last()).toBeVisible({ timeout: 20_000 });
         await box.blur();
       },

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * E1/E3/R-C/S1 · ish izlovchi va ish beruvchi: rejim tanlanmagan mehmon — bosh sahifa (chat), maqsad yozilganidan aniqlanadi
@@ -14,7 +14,7 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await asGuest(context);
   await page.goto("/");
   // 2026-11-21 (ega): bosh sahifa — chat; ikki yo'l kartalari va rejim almashtirgichi yo'q — AI maqsadni o'zi aniqlaydi
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
   // ko'rish rejim tanlovini o'zi yozmaydi
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
@@ -25,13 +25,11 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("href", "/cabinet/elonlar");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
 
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("Men sotuvchiman, ish kerak");
-  await box.press("Enter");
+  await homeSearch(page, "Men sotuvchiman, ish kerak");
   await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
-  // hudud so'raldi — pastdagi yozuv shu savolga mos (ega, 2026-11-22: "har bitta so'rovda o'zgarsin")
-  await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "ask-place");
-  await expect(box).toHaveAttribute("placeholder", "Viloyat yoki tuman…");
+  // hudud qidiruv qatorida tanlangan ("Butun O'zbekiston") — savolsiz natija; pastdagi yozuv endi ish izlovchiniki
+  await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
+  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
   // keyingi ochilishda (yangi oyna — suhbat yangi) — ish izlovchining yozish maydoni (misol ko'rsatmasi rejimga mos)
   const fresh = await context.newPage();
   await fresh.goto("/chat");
@@ -59,7 +57,8 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     // 2026-11-20: kirgan foydalanuvchining asosiy ekrani — chat
     await page.goto("/");
     await page.waitForURL(/\/chat$/);
-    await expect(page.getByPlaceholder("Masalan: men oshpazman")).toBeVisible();
+    // bosh ekran: qidiruv qatori — ish izlovchiniki
+    await expect(page.getByPlaceholder("Kasb: oshpaz, haydovchi…")).toBeVisible();
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
 
     await page.goto("/cabinet");
@@ -73,7 +72,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await expect(splash).toHaveText("Siz ish beruvchi paneliga o'tdingiz");
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
     // chat endi ishchilar qidiruvi bilan ochiladi (ish beruvchi rejimi)
-    await expect(page.getByPlaceholder("Masalan: menga sotuvchi kerak")).toBeVisible();
+    await expect(page.getByPlaceholder("Kim kerak: oshpaz, haydovchi…")).toBeVisible();
     await expect(splash).toHaveCount(0, { timeout: 6_000 });
     // ish beruvchi paneli — o'z rangida (to'q ko'k, K1; avval binafsha)
     await expect(page.locator("html")).toHaveAttribute("data-panel", "employer");
@@ -128,13 +127,13 @@ test("chat: rejim tanlangan bo'lsa — rol qayta so'ralmaydi, shu rejim ichida q
   await asGuest(context);
   await asMode(context, "employer");
   await page.goto("/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("oshpaz");
-  await box.press("Enter");
-  const ask = page.locator("[data-guided-ai]").last();
-  await expect(ask).toHaveAttribute("data-guided-ai", "ask-place");
-  await expect(ask).toContainText("Ishchi qaysi viloyatdan bo'lsin?");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
+  // bosh ekrandagi qidiruv qatori — ishchilar (hudud qatorda: "Butun O'zbekiston")
+  await expect(page.getByRole("searchbox", { name: "Qanday ishchi kerak" })).toBeVisible();
+  await homeSearch(page, "oshpaz");
+  const res = page.locator("[data-guided-ai]").last();
+  await expect(res).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
+  await expect(res).toContainText(/ta ishchi topdim|bunday ishchi topilmadi/);
   await expect(page.locator("[data-guided-roles]")).toHaveCount(0);
 });
 

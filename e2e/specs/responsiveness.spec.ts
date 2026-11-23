@@ -186,7 +186,7 @@ test("20 marta sahifa almashtirish: tinglovchi va DOM tugunlari to'xtovsiz o'sma
   // bosh sahifa (2026-11-21 dan chat) to'liq chizilib, skriptlari ulangan bo'lsin — o'lchov faqat shunda
   const homeReady = async () => {
     await expect(page.locator("main [data-start-chat]")).toBeVisible();
-    await expect(page.locator("form[data-hydrated] #start-chat-text")).toBeVisible();
+    await expect(page.locator("form[data-home-search][data-hydrated]")).toBeVisible();
     await expect(page.locator("main .skeleton-shimmer")).toHaveCount(0);
   };
   await page.goto("/");

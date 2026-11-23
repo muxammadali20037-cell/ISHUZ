@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, chatSend, loginAs, sql } from "../support";
 
 /**
  * 3-bosqich (master prompt; ega, 2026-11-21: "kasb, viloyat, ism, tajriba — tajriba bormi degan joyiga yozsin; raqamingizni
@@ -18,10 +18,8 @@ test.afterEach(async () => {
 
 const box = (page: Page) => page.locator("form[data-hydrated] #start-chat-text");
 const lastAi = (page: Page) => page.locator("[data-guided-ai]").last();
-async function send(page: Page, text: string) {
-  await box(page).fill(text);
-  await box(page).press("Enter");
-}
+/** birinchi xabar — bosh ekrandagi qidiruv qatoridan (2026-11-23), keyingilari — yozish maydonidan */
+const send = chatSend;
 const settled = (page: Page) => expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
 
 test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajriba (yozib) → telefon → karta, «Joylash» va rozilik → joylandi", async ({ page, context }) => {

@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
+import { createContext, Suspense, use, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, BriefcaseBusiness, Check, ChevronDown, ClipboardList, Info, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -22,6 +22,8 @@ import { useGuidedChat, type AiPart, type GuidedChat, type Msg, type Role } from
 import { ChoicePicker, NextOption, PlaceIcon, ProfessionChoices } from "./chat-pickers";
 import { chatProfessionsWithListings, type ChatProfessionCount } from "../actions";
 import { ChatIntro } from "./chat-intro";
+import { HomeStart } from "./home-start";
+import type { HomeData, HomeLatest } from "../home";
 
 /** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
 export function vacancyHref(text = ""): string {
@@ -33,7 +35,9 @@ export function vacancyHref(text = ""): string {
 const FIRST = 3;
 
 /**
- * Asosiy ekran — chat. Bo'sh holatda (ega, 2026-11-22): tepada qisqa video-tushuntirish (ovozli — ruxsat so'raladi),
+ * Asosiy ekran — chat. Bo'sh holatda — bosh ekran (ega, 2026-11-23, C varianti; home-start.tsx): sarlavha, qidiruv qatori
+ * (kasb + hudud), uchta tugma (Ish qidiryapman / Ishchi qidiryapman / sariq E'lon berish), tezkor bo'limlar va eng yangi
+ * e'lonlar. Bosh ekran ma'lumoti bo'lmasa (xato) — avvalgi ekran (2026-11-22): tepada qisqa video-tushuntirish,
  * «Ish yoki ishchini oson toping» va ikki katta tugma — «Ish qidiryapman» / «Ishchi qidiryapman»; keyin
  * ketma-ket: kasb (3 ta + hammasi + qidiruv) → viloyat → «Endi nima qilamiz?». Yozish ham ishlaydi: yozilgach —
  * AI maqsadni o'zi aniqlaydi, yetishmaganini bittadan muloyim so'raydi (hudud — tugmalar), natijalar shu chatda kartalar
@@ -47,6 +51,8 @@ export function StartChat({
   post = null,
   introSeen = false,
   imageEnabled = false,
+  home = null,
+  initialRegion = null,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
@@ -62,6 +68,10 @@ export function StartChat({
   introSeen?: boolean;
   /** AI e'lon rasmi sozlangan (OpenAI kaliti) — e'lon kartasida joylashdan oldin "Rasm yaratish" */
   imageEnabled?: boolean;
+  /** bosh ekran (qidiruv qatori, hududlar, eng yangi e'lonlar) — bo'lmasa avvalgi ikki tugmali ekran */
+  home?: HomeData | null;
+  /** ?region=… — skriptlar yuklanmasdan qidiruv qatoridan yuborilgan hudud */
+  initialRegion?: string | null;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
@@ -71,8 +81,10 @@ export function StartChat({
     sent.current = true;
     // manzildan q olib tashlanadi — sahifa yangilansa savol qayta yuborilmaydi
     window.history.replaceState(null, "", window.location.pathname);
-    chat.ask(initialQuery);
-  }, [chat, initialQuery]);
+    const place = initialRegion ? home?.places.find((p) => p.value === initialRegion) : undefined;
+    if (place) chat.find(initialQuery, place);
+    else chat.ask(initialQuery);
+  }, [chat, initialQuery, initialRegion, home]);
   const posted = useRef(false);
   useEffect(() => {
     if (!chat.ready || posted.current || !post) return;
@@ -92,7 +104,21 @@ export function StartChat({
   return (
     <ImageEnabled.Provider value={imageEnabled}>
       <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" data-start-chat data-chat-mode={mode ?? "guest"}>
-        {empty ? (
+        {empty && home ? (
+          <HomeStart
+            chat={chat}
+            mode={home.mode}
+            places={home.places}
+            place={home.place}
+            action={action}
+            introSeen={introSeen}
+            latest={
+              <Suspense fallback={null}>
+                <Latest promise={home.latest} />
+              </Suspense>
+            }
+          />
+        ) : empty ? (
           // bo'sh holat: video-tushuntirish, sarlavha va ikki katta tugma (ketma-ketlik shu yerdan boshlanadi)
           <div className="flex flex-1 flex-col gap-4 py-4" data-guided-empty>
             <ChatIntro seen={introSeen} />
@@ -102,13 +128,14 @@ export function StartChat({
         ) : (
           <div className="flex-1 py-6">
             {/* suhbat paytida sarlavha ko'rinmaydi (joy suhbatga), lekin sahifaning nomi sifatida qoladi */}
-            <h1 className="sr-only">{t("easy.guided.hello")}</h1>
+            <h1 className="sr-only">{t(home ? "easy.guided.home.title" : "easy.guided.hello")}</h1>
             <Thread chat={chat} />
           </div>
         )}
 
         {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
-        <div className="chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2" data-tour="composer">
+        {/* bosh ekranda yozish o'rnini qidiruv qatori egallaydi (ikkita matn maydoni bo'lmasin); suhbat boshlangach — shu */}
+        <div className={cn("chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2", empty && home && "hidden")} data-tour="composer">
           <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} inputMode={chat.awaiting === "post_phone" ? "tel" : undefined} />
         </div>
       </div>
@@ -344,6 +371,32 @@ function RoleStart({ chat, onPick, roles = false }: { chat: GuidedChat; onPick: 
       <NextOption primary icon={<BriefcaseBusiness />} title={t("easy.guided.start_jobs")} sub={t("easy.guided.start_jobs_sub")} disabled={chat.pending} onClick={() => onPick("jobs", t("easy.guided.start_jobs"))} {...tag("jobs")} />
       <NextOption icon={<UsersRound />} title={t("easy.guided.start_workers")} sub={t("easy.guided.start_workers_sub")} disabled={chat.pending} onClick={() => onPick("workers", t("easy.guided.start_workers"))} {...tag("workers")} />
     </div>
+  );
+}
+
+/** Bosh ekrandagi eng yangi haqiqiy e'lonlar (2 ta) va "Barcha vakansiyalar (N)"; yo'q yoki xato — bo'lim ko'rinmaydi */
+function Latest({ promise }: { promise: Promise<HomeLatest | null> }) {
+  const { t } = useT();
+  const data = use(promise);
+  if (!data) return null;
+  const jobs = data.mode === "jobs";
+  return (
+    <section aria-labelledby="home-latest" className="space-y-3" data-home-latest={data.mode}>
+      <h2 id="home-latest" className="text-xl font-extrabold">
+        {t(jobs ? "easy.guided.home.latest_jobs" : "easy.guided.home.latest_workers")}
+      </h2>
+      <CardList list={data.list} saved={data.saved} limit={2} />
+      <Link
+        href={data.allHref}
+        prefetch={false}
+        className="press flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-bold text-primary-ink hover:border-primary/50"
+        data-track="search_all"
+        data-home-all
+      >
+        {t(jobs ? "easy.guided.home.all_jobs" : "easy.guided.home.all_workers", { count: data.list.total })}
+        <ArrowRight className="size-5 shrink-0" aria-hidden />
+      </Link>
+    </section>
   );
 }
 

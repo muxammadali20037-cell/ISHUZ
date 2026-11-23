@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, quickSearch, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, quickSearch, sql } from "../support";
 
 /**
  * D4 / 2026-10 · "AI bilan qidirish" — qidiruv blokida: "Yordamchi" oynasi (suhbat ko'rinishi).
@@ -124,18 +124,17 @@ test("ish beruvchi (kirgan): asosiy ekran — chat; yozilgan so'z ishchilar ichi
   );
   await sql("update public.profiles set active_role = 'employer' where id = $1", [USERS.employer]);
   await loginAs(context, USERS.employer);
-  // 2026-11-21: kirgan foydalanuvchining "/" — chat; ish beruvchida yozilgan kasb ishchilar ichida qidiriladi —
-  // hudud noma'lum bo'lsa, chatning o'zida bitta savol (viloyat — bosib tanlanadi)
+  // 2026-11-21: kirgan foydalanuvchining "/" — chat; ish beruvchida yozilgan kasb ishchilar ichida qidiriladi.
+  // 2026-11-23 (C varianti): bosh ekranda qidiruv qatori — hudud qatorda tanlanadi ("Butun O'zbekiston"), savolsiz natija
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Ish yoki ishchini oson toping" })).toBeVisible();
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await expect(box).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
-  await box.fill("oshpaz");
-  await box.press("Enter");
-  const ask = page.locator("[data-guided-ai='ask-place']").last();
-  await expect(ask).toContainText("Ishchi qaysi viloyatdan bo'lsin? Pastdan tanlang.");
-  await expect(ask.locator("[data-guided-place]").first()).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Ishingiz shu yerdan boshlanadi!" })).toBeVisible();
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kim kerak: oshpaz, haydovchi…");
+  await homeSearch(page, "oshpaz");
+  const res = page.locator("[data-guided-ai]").last();
+  await expect(res).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
+  await expect(res).toContainText(/ta ishchi topdim|bunday ishchi topilmadi/);
+  await expect(res.locator("[data-guided-summary]")).toContainText("Butun O'zbekiston");
   await expect(page.getByRole("dialog")).toHaveCount(0);
 });
 

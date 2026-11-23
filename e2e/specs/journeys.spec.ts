@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, formReady, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
+import { USERS, asGuest, asMode, formReady, homeSearch, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
  * Qabul #32 · to'liq yo'llar (mobil va desktop): mehmon bosh sahifadagi chatda e'lon bermoqchi ekanini yozadi → oxirgi qadamda kiradi →
@@ -26,9 +26,7 @@ for (const vp of [
     await page.goto("/");
     // 2026-11-21: bosh sahifa — chat; "e'lon bermoqchiman" deb yozilsa — e'lon shu chatda boshlanadi (chat-post.spec).
     // Bu sayohat — batafsil forma (kabinetdan tahrirlash ham shu forma)
-    const box = page.locator("form[data-hydrated] #start-chat-text");
-    await box.fill("O'zim haqimda e'lon bermoqchiman");
-    await box.press("Enter");
+    await homeSearch(page, "O'zim haqimda e'lon bermoqchiman");
     await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "post-profession");
     await asMode(context, "worker");
     await page.goto("/post/worker");
@@ -90,9 +88,7 @@ for (const vp of [
 
     await page.goto("/");
     // 2026-11-21: bosh sahifa — chat; "vakansiya joylamoqchiman" → "Vakansiya joylash" (yordamchi bilan); bu sayohat — oddiy forma
-    const box = page.locator("form[data-hydrated] #start-chat-text");
-    await box.fill("Vakansiya joylamoqchiman");
-    await box.press("Enter");
+    await homeSearch(page, "Vakansiya joylamoqchiman");
     await page.locator("[data-guided-post-to='employer']").click();
     await page.waitForURL(/\/post\/vacancy\?ai=1/);
     await asMode(context, "employer");

@@ -103,9 +103,9 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await asGuest(guestCtx);
   await asMode(guestCtx, "employer");
   await guest.goto("/");
-  await expect(guest.getByRole("heading", { level: 1, name: "Ish yoki ishchini oson toping" })).toBeVisible();
+  await expect(guest.getByRole("heading", { level: 1, name: "Ishingiz shu yerdan boshlanadi!" })).toBeVisible();
   await expect(windowsOf(guest)).toHaveCount(0);
-  await expect(guest.locator("#start-chat-text")).toBeVisible();
+  await expect(guest.locator("[data-home-q]")).toBeVisible();
 
   // ish izlovchi: oynalar yo'q, chat
   const seekerCtx = await browser.newContext({ baseURL: base, viewport: { width: 390, height: 844 } });
@@ -113,9 +113,9 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await asGuest(seekerCtx);
   await asMode(seekerCtx, "worker");
   await seeker.goto("/");
-  await expect(seeker.getByRole("heading", { level: 1, name: "Ish yoki ishchini oson toping" })).toBeVisible();
+  await expect(seeker.getByRole("heading", { level: 1, name: "Ishingiz shu yerdan boshlanadi!" })).toBeVisible();
   await expect(seeker.getByRole("region", { name: "Tezkor bo'limlar" })).toHaveCount(0);
-  await expect(seeker.locator("#start-chat-text")).toBeVisible();
+  await expect(seeker.locator("[data-home-q]")).toBeVisible();
   // qidiruv natijasi bo'sh — "Oddiy so'z bilan qidirish" (yordamchi) tugmasi bor
   const [node] = await sql<{ id: string }>("select id from public.profession_nodes where name_uz = 'Oilaviy shifokor' and selectable limit 1");
   await seeker.goto(`/search?mode=jobs&region=all&p=${node!.id}`);
@@ -129,7 +129,7 @@ test("admin: oyna matni, ko'rinishi va rasmi; lupa tugmasini o'chirish — saytd
   await seeker.reload();
   await expect(seeker.getByRole("button", { name: "Oddiy so'z bilan qidirish" })).toHaveCount(0);
   await guest.reload();
-  await expect(guest.locator("#start-chat-text")).toBeVisible();
+  await expect(guest.locator("[data-home-q]")).toBeVisible();
 
   const logs = await sql<{ target_id: string }>(
     "select target_id from public.audit_logs where actor_id = $1 and action = 'settings.update' and target_id in ('home_banners', 'ai_search_button') and created_at >= $2::timestamptz order by id",

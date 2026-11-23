@@ -65,6 +65,9 @@ const PAIRS: [string, string][] = [
   ["info-foreground", "info"],
   ["info", "info-soft"],
   ["info", "card"],
+  // sariq urg'u (TOP belgisi, bosh ekrandagi "E'lon berish"): ustida doim to'q matn
+  ["highlight-foreground", "highlight"],
+  ["highlight-foreground", "highlight-hover"],
   // "AI yordamchi" (to'q sariq): matn kartada, fonda va och sariq fonda; tugma ustidagi matn; yon menyuda (navy)
   ["ai", "card"],
   ["ai", "background"],

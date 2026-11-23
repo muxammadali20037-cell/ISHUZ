@@ -48,7 +48,8 @@ interface ResolvedPlace {
   regionSlug: string | null;
 }
 
-async function placeOptions(mode: QuickMode, extra: QuickOption | null): Promise<QuickOption[]> {
+/** Hudud tanlovi: "Butun O'zbekiston", (eslab qolingan tuman), "Masofaviy" (faqat ish qidirishda) va viloyatlar */
+export async function placeOptions(mode: QuickMode, extra: QuickOption | null = null): Promise<QuickOption[]> {
   const [{ t, name }, regions] = await Promise.all([getT(), getRegions()]);
   return [
     { value: "all", label: t("easy.location.whole_country") },
@@ -147,6 +148,7 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
     places: await placeOptions(input.mode, extra),
     intent,
     placeKnown,
+    placeSaid: (r.remote && input.mode === "jobs") || !!r.regionSlug,
   };
 }
 

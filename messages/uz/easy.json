@@ -1711,7 +1711,25 @@
     "any_jobs": "Hamma ishlar",
     "any_workers": "Hamma ishchilar",
     "suggest_jobs": "Hozir shu kasblarda ish bor:",
-    "suggest_workers": "Hozir shu kasblarda ishchilar bor:"
+    "suggest_workers": "Hozir shu kasblarda ishchilar bor:",
+    "home": {
+      "title": "Ishingiz shu yerdan boshlanadi!",
+      "subtitle": "Ish toping yoki o'zingizga kerakli ishchini toping.",
+      "search_label": "Ish va ishchi qidirish",
+      "q_label_jobs": "Kasb yoki lavozim",
+      "q_label_workers": "Qanday ishchi kerak",
+      "placeholder_jobs": "Kasb: oshpaz, haydovchi…",
+      "placeholder_workers": "Kim kerak: oshpaz, haydovchi…",
+      "region_label": "Hudud",
+      "search": "Qidirish",
+      "post": "E'lon berish",
+      "latest_jobs": "Eng yangi vakansiyalar",
+      "latest_workers": "Yangi ishchilar",
+      "all_jobs": "Barcha vakansiyalar ({count})",
+      "all_workers": "Barcha ishchilar ({count})",
+      "students": "Talabalar uchun",
+      "quick_label": "Tezkor bo'limlar"
+    }
   },
   "intro": {
     "title": "Ish topdim qanday ishlaydi",

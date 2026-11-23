@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, loginAs, sql } from "../support";
+import { USERS, asGuest, homeSearch, loginAs, sql } from "../support";
 
 /**
  * C8.10 · qabul mezoni #32 (J1): bosh sahifa (chat) → natija → batafsil → ariza, mobil va desktop.
@@ -41,15 +41,10 @@ for (const vp of VIEWPORTS) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
     await asGuest(context);
 
-    // 1. bosh sahifa — chat (2026-11-21): kasb yoziladi, viloyat bosib tanlanadi, natija kartalari chatning o'zida
+    // 1. bosh sahifa — chat (2026-11-21): qidiruv qatorida kasb yoziladi, viloyat ro'yxatdan tanlanadi (2026-11-23),
+    // natija kartalari chatning o'zida
     await page.goto("/");
-    const box = page.locator("form[data-hydrated] #start-chat-text");
-    await box.fill("Men buxgalterman, ish kerak");
-    await box.press("Enter");
-    await page.locator("[data-guided-ai='ask-place'] [data-guided-place='tashkent_city']").last().click();
-    // 2026-11-22: viloyatdan keyin tanlov — "Mavjud e'lonlarni ko'rish"
-    await box.blur();
-    await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
+    await homeSearch(page, "Men buxgalterman, ish kerak", "tashkent_city");
 
     // 2. natija → batafsil
     const card = page.locator("[data-guided-cards] article").filter({ hasText: "Buxgalter" }).first();

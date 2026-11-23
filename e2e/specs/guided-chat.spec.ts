@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * Asosiy ekran — chat (ega, 2026-11-21, master prompt + tanlovlar; "muloyim, aniq, jaydari so'zlar bilan so'rasin —
@@ -18,6 +18,11 @@ const box = (page: Page) => page.locator("form[data-hydrated] #start-chat-text")
 async function send(page: Page, text: string) {
   await box(page).fill(text);
   await box(page).press("Enter");
+  await settled(page);
+}
+/** bosh ekrandagi qidiruv qatoridan (suhbatning birinchi xabari; 2026-11-23 — C varianti) */
+async function search(page: Page, text: string) {
+  await homeSearch(page, text);
   await settled(page);
 }
 async function settled(page: Page) {
@@ -46,26 +51,30 @@ test.afterAll(async () => {
   await sql("delete from public.worker_profiles where profile_id in (select id from auth.users where raw_user_meta_data->>'first_name' like $1)", [`${TAG}%`]);
 });
 
-test("mehmon: bosh sahifa — darhol chat: yozuv, ikki katta tugma va yozish maydoni (ortiqcha hech narsa yo'q)", async ({ page, context }) => {
+test("mehmon: bosh sahifa — darhol chat: sarlavha, qidiruv qatori va uchta tugma (ortiqcha hech narsa yo'q)", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
-  // ega (2026-11-22): "2 ta variant chiqsin ekranga — ish qidiryapman / ishchi qidiryapman"
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
+  // ega (2026-11-22): "ish qidiryapman / ishchi qidiryapman"; 2026-11-23 (C varianti): + sariq "E'lon berish"
   await expect(page.locator("[data-guided-start='jobs']")).toContainText("Ish qidiryapman");
   await expect(page.locator("[data-guided-start='workers']")).toContainText("Ishchi qidiryapman");
+  await expect(page.locator("[data-guided-start='post']")).toContainText("E'lon berish");
   // eski reklama sahifasi, "Ishchi izlash / Vakansiya berish" qatorlari va misollar yo'q (ega, 2026-11-21 kechqurun)
   await expect(page.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
-  await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toHaveCount(0);
-  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
+  // yozish — qidiruv qatorida (kasb + hudud); pastdagi yozish maydoni suhbat boshlangach chiqadi
+  await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
+  await expect(page.getByRole("combobox", { name: "Hudud" })).toHaveValue("all");
+  await expect(page.locator("#start-chat-text")).toBeHidden();
   await expect(page.locator("[data-guided-thread]")).toHaveCount(0);
 });
 
 test("maqsad aniq emas — savolsiz ikki tugma; hudud — tugmalardan, «Endi nima qilamiz?», keyin natija", async ({ page, context }) => {
   await seedWorkers(1);
   await asGuest(context);
-  await page.goto("/chat");
-  await send(page, "haydovchi");
+  // qidiruv qatori ish qidirish tomoniga qaraydi; yozish maydonidan (yoki havoladan, ?q=) — maqsad aniq bo'lmasa so'raladi
+  await page.goto("/chat?q=haydovchi");
+  await settled(page);
   // ega (2026-11-22): "so'ramasin — 2 ta variant chiqsin ekranga"
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-role");
   await expect(lastAi(page).locator("[data-guided-role]")).toHaveCount(2);
@@ -105,8 +114,8 @@ test("ish beruvchi bir xabarda hammasini yozsa — savolsiz natija: birinchi 3 t
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
-  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
-  await send(page, "Menga Toshkentdan haydovchi kerak");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kim kerak: oshpaz, haydovchi…");
+  await search(page, "Menga Toshkentdan haydovchi kerak");
   await expect(page.locator("[data-guided-ai^='ask']")).toHaveCount(0);
   const res = lastAi(page);
   await expect(res).toHaveAttribute("data-guided-ai", "results");
@@ -125,13 +134,23 @@ test("kasb aytilmasa — kasb so'raladi (yoziladi), keyin hudud; e'lon berish ni
   await asMode(context, "worker");
   await context.clearCookies({ name: "ib_place" });
   await page.goto("/chat");
-  await expect(box(page)).toHaveAttribute("placeholder", "Masalan: men oshpazman");
-  await send(page, "Ish kerak");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
+  await search(page, "Ish kerak");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   await expect(lastAi(page)).toContainText("Kasbingiz qanday? Pastdan tanlang yoki yozing.");
   // ommabop kasblar — avval 3 tasi (2026-11-22)
   await expect(lastAi(page).locator("[data-guided-prof]")).toHaveCount(3);
   await expect(box(page)).toHaveAttribute("placeholder", "Kasbni yozing…");
+  // hudud qidiruv qatorida tanlangan ("Butun O'zbekiston") — qayta so'ralmaydi
+  await send(page, "sotuvchi");
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "next");
+  await expect(lastAi(page)).toContainText("Butun O'zbekiston");
+  // "Ish qidiryapman" tugmasi bilan — hudud tugmalardan so'raladi
+  await box(page).blur();
+  await page.locator("[data-guided-new]").click();
+  await page.locator("[data-guided-start='jobs']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   await send(page, "sotuvchi");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-place");
   await expect(lastAi(page)).toContainText("Qaysi viloyatda ishlamoqchisiz?");
@@ -164,7 +183,7 @@ test("suhbat boshqa hisobga ko'rinmaydi (bitta tabda chiqib, boshqasi bilan kiri
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/chat");
-  await send(page, "Men haydovchiman, ish kerak");
+  await search(page, "Men haydovchiman, ish kerak");
   await expect(page.locator("[data-guided-thread]")).toBeVisible();
   // boshqa ochilishda (shu tab) — suhbat joyida
   await page.goto("/chat");

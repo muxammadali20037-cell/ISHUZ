@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { NO_FILTERS, type QuickForm } from "@/features/find/quick-types";
-import { draftFromForm, isAnyProfession, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord } from "./guided-logic";
+import { answerPlace, draftFromForm, isAnyProfession, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, withPlace } from "./guided-logic";
 
 const base = { nodeId: "n1", profession: "Haydovchi", placeKnown: true, askedProfession: false };
 
@@ -97,5 +97,45 @@ describe("\"ish kerak\" / \"работа\": kasbsiz qidiruv ham bor (ega, 2026-1
   it("\"farqi yo'q\", \"hammasi\", \"любая\" — har qanday kasb", () => {
     for (const q of ["hammasi", "Farqi yo'q", "farqi yoq", "istalgan", "Har qanday", "любая", "Все", "без разницы", "ҳаммаси", "Hamma ishlar."]) expect(isAnyProfession(q), q).toBe(true);
     for (const q of ["oshpaz", "hamshira", "har qanday oshpaz", "kerak"]) expect(isAnyProfession(q), q).toBe(false);
+  });
+});
+
+describe("bosh sahifadagi qidiruv qatori: tanlangan hudud (ega, 2026-11-23 — C varianti)", () => {
+  const form: QuickForm = { mode: "jobs", text: "oshpaz", profession: "Oshpaz", nodeId: "n1", place: "all", salary: null, filters: NO_FILTERS, places: [] };
+  const tashkent = { value: "tashkent-city", label: "Toshkent shahri" };
+  it("matnda hudud yo'q — tanlangan hudud olinadi, hudud qayta so'ralmaydi", () => {
+    const d = withPlace(draftFromForm(form), "jobs", tashkent);
+    expect(d).toMatchObject({ place: "tashkent-city", placeKnown: true });
+    expect(nextAsk(d, "jobs")).toBeNull();
+    // "Butun O'zbekiston" ham aniq tanlov — so'ralmaydi
+    expect(nextAsk(withPlace(draftFromForm(form), "jobs", { value: "all", label: "Butun O'zbekiston" }), "jobs")).toBeNull();
+  });
+  it("matnda hudud aytilgan («Samarqandda oshpaz») — o'shanisi qoladi", () => {
+    const d = withPlace(draftFromForm({ ...form, place: "samarkand", placeKnown: true, placeSaid: true }), "jobs", tashkent);
+    expect(d.place).toBe("samarkand");
+  });
+  it("eslab qolingan viloyat — qatorda tanlangani ustun («Butun O'zbekiston» tanlansa — butun O'zbekiston)", () => {
+    const remembered = draftFromForm({ ...form, place: "samarkand", placeKnown: true });
+    expect(withPlace(remembered, "jobs", { value: "all", label: "Butun O'zbekiston" })).toMatchObject({ place: "all", placeKnown: true });
+    expect(withPlace(remembered, "jobs", tashkent).place).toBe("tashkent-city");
+  });
+  it("«Kasbingiz qanday?» javobida aytilgan hudud — oldingisidan ustun; aytilmasa — oldingisi", () => {
+    const before = { place: "all", placeKnown: true, placeSaid: false };
+    expect(answerPlace(before, { place: "tashkent_city", placeKnown: true, placeSaid: true })).toEqual({ place: "tashkent_city", placeKnown: true, placeSaid: true });
+    // javobda hudud yo'q, faqat eslab qolingan — oldingi tanlov saqlanadi
+    expect(answerPlace(before, { place: "samarkand", placeKnown: true, placeSaid: false })).toEqual(before);
+    // oldin hudud yo'q edi — eslab qolingani olinadi
+    expect(answerPlace({ place: "all", placeKnown: false }, { place: "samarkand", placeKnown: true, placeSaid: false })).toMatchObject({ place: "samarkand", placeKnown: true });
+  });
+  it("«Masofaviy» — faqat ish qidirishda; ishchi qidirilsa hudud so'raladi", () => {
+    const remote = { value: "remote", label: "Masofaviy" };
+    expect(withPlace(draftFromForm(form), "jobs", remote).place).toBe("remote");
+    const w = withPlace(draftFromForm({ ...form, mode: "workers" }), "workers", remote);
+    expect(w.placeKnown).toBe(false);
+    expect(nextAsk(w, "workers")).toBe("place");
+  });
+  it("hudud berilmagan — o'zgarmaydi", () => {
+    const d = draftFromForm(form);
+    expect(withPlace(d, "jobs")).toBe(d);
   });
 });

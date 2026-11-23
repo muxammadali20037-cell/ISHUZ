@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext } from "@playwright/test";
-import { USERS, asGuest, sql } from "../support";
+import { USERS, asGuest, homeSearch, sql } from "../support";
 
 /**
  * S1 · ilovaga kirish: ochilish ekrani ("topdim" so'ziga yaqinlashib kiradi) va rejim tanlanmagan mehmon uchun bosh sahifa.
@@ -24,14 +24,15 @@ test.describe("kirish", () => {
     await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   });
 
-  test("bosh sahifa (mehmon) — darhol chat: yozuv, ikki katta tugma, yozish maydoni; ko'rish rejim yozmaydi", async ({ page, context }) => {
+  test("bosh sahifa (mehmon) — darhol chat: sarlavha, qidiruv qatori, uchta tugma; ko'rish rejim yozmaydi", async ({ page, context }) => {
     await asGuest(context);
     await page.goto("/");
     const main = page.getByRole("main");
-    // 2026-11-21 (ega): reklama sahifasi va misollar yo'q; 2026-11-22: "Ish qidiryapman / Ishchi qidiryapman" tugmalari
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
-    await expect(main.locator("[data-guided-start]")).toHaveCount(2);
-    await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga haydovchi kerak");
+    // 2026-11-21 (ega): reklama sahifasi va misollar yo'q; 2026-11-23: C varianti — qidiruv qatori va uchta tugma
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
+    await expect(main.locator("[data-guided-start]")).toHaveCount(3);
+    await expect(main.getByRole("search")).toBeVisible();
+    await expect(main.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
     await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toHaveCount(0);
     await expect(page.getByRole("banner").getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", /^\/auth/);
     // faqat ko'rish rejimni tanlamaydi
@@ -48,9 +49,7 @@ test.describe("kirish", () => {
       // yangi tab — oldingi suhbat (shu tabda saqlanadi) aralashmasin
       const page = await context.newPage();
       await page.goto("/");
-      const box = page.locator("form[data-hydrated] #start-chat-text");
-      await box.fill(text);
-      await box.press("Enter");
+      await homeSearch(page, text);
       await expect(page.locator("[data-ai-you]").first()).toHaveText(`Siz: ${text}`);
       // suhbat boshlangach — bo'sh holatdagi yozuv va tugmalar ko'rinmaydi (sarlavha faqat ekran o'qigich uchun)
       await expect(page.locator("[data-guided-start]")).toHaveCount(0);
@@ -68,7 +67,7 @@ test.describe("kirish", () => {
     expect(await page.evaluate(() => document.documentElement.classList.contains("no-splash"))).toBe(false);
     // kontent ostida allaqachon chizilgan; splash bosishlarni o'tkazib yuboradi (sun'iy kutish yo'q)
     expect(await splash.evaluate((el) => [getComputedStyle(el).display, getComputedStyle(el).pointerEvents])).toEqual(["flex", "none"]);
-    await page.locator("#start-chat-text").fill("kassir");
+    await page.locator("[data-home-q]").fill("kassir");
     await expect(splash).toBeHidden({ timeout: 2500 });
     // shu sessiyada qayta ochilsa — yo'q
     await page.reload();

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * Pastki menyu (ega, 2026-11-21, master prompt): 3 ta bo'lim — Qidiruv · E'lonlarim · Profil, ikkala rejimda bir xil.
@@ -87,10 +87,11 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   await page.goto("/");
   await expect(page).toHaveURL(/\/chat$/);
   const chat = page.locator("[data-start-chat]");
-  // 2026-11-21 kechqurun (ega): "ortiqcha narsalar kerakmas" — bitta yozuv va pastga strelka; qatorlar, misollar yo'q
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
-  await expect(chat.locator("[data-guided-start]")).toHaveCount(2);
+  // 2026-11-21 kechqurun (ega): "ortiqcha narsalar kerakmas"; 2026-11-23 — C varianti: qidiruv qatori va uchta tugma
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
+  await expect(chat.locator("[data-guided-start]")).toHaveCount(3);
   await expect(chat.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
   await expect(tabs(page).getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
@@ -99,7 +100,8 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   await asMode(context, "employer");
   await page.goto("/");
   await expect(page).toHaveURL(/\/chat$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kim kerak: oshpaz, haydovchi…");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
 });
 
@@ -107,9 +109,9 @@ test("mehmon uchun «/» — darhol chat (yo'naltirishsiz); /chat ham o'sha", as
   await asGuest(context);
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
   await page.goto("/chat");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ish yoki ishchini oson toping");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
 });
 
 test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — «+ O'zingiz haqingizda e'lon qoldiring»", async ({ page, context }) => {
@@ -118,23 +120,14 @@ test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — �
   await asMode(context, "worker");
   await context.clearCookies({ name: "ib_place" });
   await page.goto("/chat");
-  await expect(page.locator("form[data-hydrated]")).toHaveCount(1);
+  await expect(page.locator("form[data-home-search][data-hydrated]")).toBeVisible();
   const box = page.locator("#start-chat-text");
   const settled = () => expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
   const last = () => page.locator("[data-guided-ai]").last();
   // ish izlovchida "Universal ustalar" havolasi yo'q (u ishchi qidiruvchilar uchun)
   await expect(page.locator("[data-chat-choice='find_masters']")).toHaveCount(0);
-  await box.fill("Buxgalter");
-  await box.press("Enter");
-  await settled();
-  await expect(last()).toHaveAttribute("data-guided-ai", "ask-place");
-  await page.locator("[data-guided-place='tashkent_city']").click();
-  await settled();
-  // 2026-11-22: viloyatdan keyin tanlov — "Mavjud e'lonlarni ko'rish" / "O'zim haqimda e'lon berish"
-  await expect(last()).toHaveAttribute("data-guided-ai", "next");
-  await expect(last().locator("[data-guided-next-to]")).toHaveCount(2);
-  await box.blur();
-  await last().locator("[data-guided-next-to='see']").click();
+  // 2026-11-23: bosh ekrandagi qidiruv qatori — kasb va viloyat bir joyda, savolsiz natija
+  await homeSearch(page, "Buxgalter", "tashkent_city");
   await settled();
   await expect(last()).toHaveAttribute("data-guided-ai", "results");
   await expect(last()).toContainText("Mana, 1 ta ish topdim:");
@@ -188,9 +181,7 @@ test("E'lon berish (ish izlovchi): «O'zim haqimda e'lon bermoqchiman» → shu 
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
   await page.goto("/chat");
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("O'zim haqimda e'lon bermoqchiman");
-  await box.press("Enter");
+  await homeSearch(page, "O'zim haqimda e'lon bermoqchiman");
   // alohida ekranga o'tmaydi — shu chatda "Qanday ish qilasiz?"
   await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "post-profession");
   await expect(page.locator("[data-guided-ai]").last()).toContainText("Qanday ish qilasiz?");
@@ -201,9 +192,7 @@ test("E'lon berish (ish beruvchi): «Vakansiya joylamoqchiman» → yordamchi bi
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("Vakansiya joylamoqchiman");
-  await box.press("Enter");
+  await homeSearch(page, "Vakansiya joylamoqchiman");
   await expect(page.locator("[data-guided-post-to='worker']")).toHaveCount(0);
   await page.locator("[data-guided-post-to='employer']").click();
   await expect(page).toHaveURL(/\/post\/vacancy\?ai=1/);
