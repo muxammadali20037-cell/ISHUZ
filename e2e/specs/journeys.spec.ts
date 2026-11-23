@@ -127,9 +127,15 @@ for (const vp of [
     expect(rows).toHaveLength(1);
     expect(rows[0]).toMatchObject({ salary_from: 4000000, salary_to: 6000000, salary_type: "monthly" });
 
-    // e'lon joylangach — "Ish izlovchilar qanday ko'radi": boshqaruv sahifasidagi blok (holat, ro'yxat kartasi)
+    // e'lon joylangach (2026-11-23, ega tanlagan "A — yengil"): joylangan e'lon kartasi ("Faol"), "Ulashish"; "E'lonni
+    // ko'rish" — boshqaruv sahifasidagi "ish izlovchilar qanday ko'radi" bloki (holat, ro'yxat kartasi)
     if (rows[0]!.status === "active") {
-      await page.getByRole("link", { name: "Ish izlovchilar qanday ko'radi" }).click();
+      const card = page.locator("[data-publish-listing]");
+      await expect(card).toContainText("Faol");
+      await expect(card).toContainText("Qidiruvda ko'rinyapti");
+      await expect(card).toContainText("Buxgalter");
+      await expect(page.locator("[data-publish-share]")).toHaveText("Ulashish");
+      await page.getByRole("link", { name: "E'lonni ko'rish" }).click();
       await page.waitForURL(/\/employer\/vacancies\/[0-9a-f-]{36}#korinish$/);
       await expect(page.locator("[data-seeker-view=visible] [data-seeker-card]")).toContainText("Dilnoza opa");
     }

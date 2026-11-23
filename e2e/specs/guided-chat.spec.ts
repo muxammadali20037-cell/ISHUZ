@@ -63,7 +63,7 @@ test("mehmon: bosh sahifa — darhol chat: sarlavha, qidiruv qatori va uchta tug
   // eski reklama sahifasi, "Ishchi izlash / Vakansiya berish" qatorlari va misollar yo'q (ega, 2026-11-21 kechqurun)
   await expect(page.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
   // yozish — qidiruv qatorida (kasb + hudud); pastdagi yozish maydoni suhbat boshlangach chiqadi
-  await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
+  await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await expect(page.getByRole("combobox", { name: "Hudud" })).toHaveValue("all");
   await expect(page.locator("#start-chat-text")).toBeHidden();
   await expect(page.locator("[data-guided-thread]")).toHaveCount(0);
@@ -114,7 +114,7 @@ test("ish beruvchi bir xabarda hammasini yozsa — savolsiz natija: birinchi 3 t
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kim kerak: oshpaz, haydovchi…");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await search(page, "Menga Toshkentdan haydovchi kerak");
   await expect(page.locator("[data-guided-ai^='ask']")).toHaveCount(0);
   const res = lastAi(page);
@@ -134,7 +134,7 @@ test("kasb aytilmasa — kasb so'raladi (yoziladi), keyin hudud; e'lon berish ni
   await asMode(context, "worker");
   await context.clearCookies({ name: "ib_place" });
   await page.goto("/chat");
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await search(page, "Ish kerak");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "ask-profession");
   await expect(lastAi(page)).toContainText("Kasbingiz qanday? Pastdan tanlang yoki yozing.");

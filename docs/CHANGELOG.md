@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-23 · Qidiruv qatoridagi yozuv va yangi "E'loningiz joylandi" ekrani (`feat/home-hint-done`)
+
+Ega: qidiruv qatoridagi "Kim kerak: oshpaz, haydovchi…" kesilib qolardi — "Yozing, o'zingizga mosini toping" bo'lsin va
+sig'sin; "E'loningiz joylandi" ekranining dizayni yoqmadi — variantlardan **A (yengil)** tanlandi. Migratsiya yo'q.
+
+- **Qidiruv qatori:** ichidagi yozuv — "Yozing, o'zingizga mosini toping" (ish beruvchi va ish izlovchida bir xil).
+  Tor telefonda kesilmaydi, ikkinchi qatorga o'tadi (320px'da ham to'liq).
+- **"E'loningiz joylandi" ekrani** (vakansiya, ishchi e'loni, AI bilan e'lon — bitta komponent):
+  - Katta yashil ramka o'rniga — yumaloq belgi, "E'loningiz joylandi!" va qisqa matn.
+  - Joylangan e'lonning kartasi: nomi, maoshi, joyi va "Faol · Qidiruvda ko'rinyapti". Bu yozuv faqat e'lon
+    haqiqatan qidiruvda ko'ringanda chiqadi.
+  - Bitta katta tugma ("Ishchilarni ko'rish"). Ostida yonma-yon ikkita kichik tugma: "E'lonni ko'rish" va "Ulashish".
+    "Ulashish" telefonda ulashish oynasini ochadi, kompyuterda havolani nusxalaydi.
+  - Tekshiruvdagi va to'lov kutayotgan holatlar ham shu uslubda; "joylandi" deyilmaydi.
+
 ## 2026-11-23 · Yangi bosh ekran: qidiruv qatori va sariq "E'lon berish" (`feat/home-search-first`)
 
 Ega variantlardan tanladi: bosh sahifa — **C (qidiruv qatori)**, pastki menyu — **hozirgidek 3 ta**, rang — hozirgi ko'k,

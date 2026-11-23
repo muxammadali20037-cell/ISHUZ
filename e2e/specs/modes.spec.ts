@@ -58,7 +58,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await page.goto("/");
     await page.waitForURL(/\/chat$/);
     // bosh ekran: qidiruv qatori — ish izlovchiniki
-    await expect(page.getByPlaceholder("Kasb: oshpaz, haydovchi…")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
 
     await page.goto("/cabinet");
@@ -72,7 +72,7 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     await expect(splash).toHaveText("Siz ish beruvchi paneliga o'tdingiz");
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
     // chat endi ishchilar qidiruvi bilan ochiladi (ish beruvchi rejimi)
-    await expect(page.getByPlaceholder("Kim kerak: oshpaz, haydovchi…")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Qanday ishchi kerak" })).toBeVisible();
     await expect(splash).toHaveCount(0, { timeout: 6_000 });
     // ish beruvchi paneli — o'z rangida (to'q ko'k, K1; avval binafsha)
     await expect(page.locator("html")).toHaveAttribute("data-panel", "employer");

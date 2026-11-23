@@ -129,7 +129,7 @@ test("ish beruvchi (kirgan): asosiy ekran — chat; yozilgan so'z ishchilar ichi
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
   await expect(page.getByRole("heading", { level: 1, name: "Ishingiz shu yerdan boshlanadi!" })).toBeVisible();
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kim kerak: oshpaz, haydovchi…");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await homeSearch(page, "oshpaz");
   const res = page.locator("[data-guided-ai]").last();
   await expect(res).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });

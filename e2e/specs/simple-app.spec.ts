@@ -91,7 +91,7 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
   await expect(chat.locator("[data-guided-start]")).toHaveCount(3);
   await expect(chat.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
   await expect(tabs(page).getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
@@ -101,7 +101,7 @@ test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma ro
   await page.goto("/");
   await expect(page).toHaveURL(/\/chat$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kim kerak: oshpaz, haydovchi…");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
 });
 

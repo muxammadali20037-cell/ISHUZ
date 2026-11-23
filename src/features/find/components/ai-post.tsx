@@ -858,12 +858,12 @@ function Outcome({ outcome, onEdit, onAgain }: { outcome: PostOutcome; onEdit: (
         tone="success"
         title={t("easy.post_ai.done_title")}
         description={t("easy.post_ai.done_desc")}
+        share={{ path: `/listing/${outcome.workerId}`, text: t("easy.post_ai.done_title") }}
         actions={[
           { label: t("easy.post_ai.done_view"), href: `/listing/${outcome.workerId}`, primary: true },
           { label: t("easy.post_ai.done_matches"), href: outcome.matchesHref },
         ]}
-      >
-      </PublishResult>
+      />
     );
   } else if (state === "payment_required" || state === "saved") {
     body = (
