@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronDown, ChevronRight, RotateCcw } from "lucide-react";
+import { ChevronDown, ChevronRight, Eye, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { normalizePhone, formatPhone } from "@/lib/format";
@@ -21,7 +21,7 @@ import { useDraft, useStep } from "../use-draft";
 import { vacancyDraftRules } from "../draft-rules";
 import { track } from "@/features/analytics/client";
 import { BigCheckbox, MoneyInput, PhoneInput, bigInput } from "./inputs";
-import { PublishResult } from "./publish-result";
+import { PublishResult, type PublishedListing } from "./publish-result";
 import { ListingImageDraft } from "@/features/listing-image/components/listing-image-draft";
 import { ModerationOutcome } from "./moderation-outcome";
 import { PhotoUpload } from "./photo-upload";
@@ -148,7 +148,7 @@ export function VacancyPost({
     [rawUpdate],
   );
   const [pending, start] = useTransition();
-  const [result, setResult] = useState<(ListingStateInfo & { vacancyId: string; slug: string }) | null>(null);
+  const [result, setResult] = useState<(ListingStateInfo & { vacancyId: string; slug: string; listing?: PublishedListing }) | null>(null);
   const [moreOpen, setMoreOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
@@ -224,6 +224,12 @@ export function VacancyPost({
     goTo(step + 1);
   };
 
+  const salaryText = draft.negotiable
+    ? t("easy.vacancy.negotiable")
+    : [parseMoney(draft.salaryFrom) !== null ? `${formatMoneyInput(draft.salaryFrom)} ${t("easy.vacancy.salary_from")}` : null, parseMoney(draft.salaryTo) !== null ? `${formatMoneyInput(draft.salaryTo)} ${t("easy.vacancy.salary_to")}` : null]
+        .filter(Boolean)
+        .join(" ") + ` ${t("billing.currency")}`;
+
   const publish = () => {
     const e = validate(3);
     const bad = stepOf(e);
@@ -273,9 +279,15 @@ export function VacancyPost({
         scrollToError();
         return;
       }
+      // joylangan e'lonning qisqa ko'rinishi — qoralama tozalanishidan oldin ("E'loningiz joylandi" ekranidagi karta)
+      const listing: PublishedListing = {
+        title: draft.title.trim() || professionName,
+        salary: { from: draft.negotiable ? null : parseMoney(draft.salaryFrom), to: draft.negotiable ? null : parseMoney(draft.salaryTo), type: draft.salaryType === "daily" ? "daily" : "monthly", negotiable: draft.negotiable },
+        place: placeLabel(draft.place, regions, districts, name, t),
+      };
       // rad etilsa — yozilgan ma'lumot saqlanib qoladi (tuzatib qayta yuborish uchun; o'sha e'lon yangilanadi)
       if (res.data.state !== "rejected") clear();
-      setResult(res.data);
+      setResult({ ...res.data, listing });
       if (res.data.state === "active") celebrate();
       router.refresh();
     });
@@ -341,10 +353,12 @@ export function VacancyPost({
           tone="success"
           title={t("easy.vacancy.done_title")}
           description={t("easy.vacancy.done_desc")}
+          listing={result.listing}
+          share={{ path: `/jobs/${result.slug}`, text: result.listing?.title ?? t("easy.vacancy.done_title") }}
           actions={[
-            { label: t("easy.vacancy.done_matches"), href: searchHref, primary: true },
+            { label: t("easy.vacancy.done_matches"), href: searchHref, primary: true, icon: <UsersRound className="size-5 shrink-0" aria-hidden /> },
             // ish beruvchining birinchi savoli: "ish izlovchilarga qanday ko'rinyapti?" — holat, qidiruvdagi o'rni, karta, to'liq ko'rinish
-            { label: t("easy.vacancy.done_seeker_view"), href: `/employer/vacancies/${result.vacancyId}#korinish` },
+            { label: t("easy.publish.view"), href: `/employer/vacancies/${result.vacancyId}#korinish`, icon: <Eye className="size-5 shrink-0" aria-hidden /> },
           ]}
         />
       );
@@ -355,6 +369,7 @@ export function VacancyPost({
           tone="review"
           title={t("easy.vacancy.review_state_title")}
           description={t("easy.vacancy.review_state_desc")}
+          listing={result.listing}
           actions={[
             { label: t("easy.vacancy.done_view"), href: `/employer/vacancies/${result.vacancyId}#korinish`, primary: true },
             { label: t("easy.cabinet.title"), href: "/cabinet" },
@@ -412,11 +427,6 @@ export function VacancyPost({
   const stepNames = [t("easy.wizard.steps.specialist"), t("easy.wizard.steps.location"), t("easy.wizard.steps.job"), t("easy.wizard.steps.review")];
   const loginHref = `/auth?${new URLSearchParams({ next: `${editId ? `${PATH}?edit=${editId}&` : `${PATH}?`}step=${step}` }).toString()}`;
   const hasAnswers = !editId && !!(draft.profession || draft.custom || draft.place.regionId || draft.description);
-  const salaryText = draft.negotiable
-    ? t("easy.vacancy.negotiable")
-    : [parseMoney(draft.salaryFrom) !== null ? `${formatMoneyInput(draft.salaryFrom)} ${t("easy.vacancy.salary_from")}` : null, parseMoney(draft.salaryTo) !== null ? `${formatMoneyInput(draft.salaryTo)} ${t("easy.vacancy.salary_to")}` : null]
-        .filter(Boolean)
-        .join(" ") + ` ${t("billing.currency")}`;
 
   return (
     <WizardFrame

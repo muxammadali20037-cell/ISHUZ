@@ -232,7 +232,7 @@
     "consent_title": "Telefon raqamim e'londa ko'rinsin",
     "consent_desc": "Ish beruvchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qila oladi.",
     "consent_off": "Belgilamasangiz, raqamingiz ko'rinmaydi: ish beruvchi faqat so'rov yuborib bog'lanadi.",
-    "done_title": "E'loningiz joylandi.",
+    "done_title": "E'loningiz joylandi!",
     "done_desc": "Endi ish beruvchilar siz bilan bog'lanishi mumkin.",
     "done_matches": "Ishlarni ko'rish",
     "done_view": "E'lonimni ko'rish",
@@ -281,7 +281,7 @@
     "consent_title": "Aloqa raqamim e'londa va Telegram kanalda ko'rinsin",
     "consent_desc": "Ishchilar sizga to'g'ridan-to'g'ri qo'ng'iroq qila oladi. E'lon Ish topdim Telegram kanalida raqamingiz bilan chiqadi.",
     "consent_off": "Belgilamasangiz, raqam ko'rinmaydi (kanalda ham): ishchilar faqat ariza yuborib bog'lanadi.",
-    "done_title": "Ish e'loningiz joylandi.",
+    "done_title": "E'loningiz joylandi!",
     "done_desc": "Ishchilar endi sizga qo'ng'iroq qilishi yoki ariza yuborishi mumkin.",
     "done_matches": "Ishchilarni ko'rish",
     "done_view": "E'lonimni ko'rish",
@@ -1718,8 +1718,6 @@
       "search_label": "Ish va ishchi qidirish",
       "q_label_jobs": "Kasb yoki lavozim",
       "q_label_workers": "Qanday ishchi kerak",
-      "placeholder_jobs": "Kasb: oshpaz, haydovchi…",
-      "placeholder_workers": "Kim kerak: oshpaz, haydovchi…",
       "region_label": "Hudud",
       "search": "Qidirish",
       "post": "E'lon berish",
@@ -1728,7 +1726,8 @@
       "all_jobs": "Barcha vakansiyalar ({count})",
       "all_workers": "Barcha ishchilar ({count})",
       "students": "Talabalar uchun",
-      "quick_label": "Tezkor bo'limlar"
+      "quick_label": "Tezkor bo'limlar",
+      "placeholder": "Yozing, o'zingizga mosini toping"
     }
   },
   "intro": {
@@ -1776,5 +1775,12 @@
       "docs": "Hujjatlarim tayyor",
       "russian": "Rus tilini bilaman"
     }
+  },
+  "publish": {
+    "active": "Faol",
+    "active_hint": "Qidiruvda ko'rinyapti",
+    "share": "Ulashish",
+    "view": "E'lonni ko'rish",
+    "link_copied": "Havola nusxalandi"
   }
 }

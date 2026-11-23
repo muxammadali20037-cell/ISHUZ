@@ -32,7 +32,7 @@ test.describe("kirish", () => {
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
     await expect(main.locator("[data-guided-start]")).toHaveCount(3);
     await expect(main.getByRole("search")).toBeVisible();
-    await expect(main.locator("[data-home-q]")).toHaveAttribute("placeholder", "Kasb: oshpaz, haydovchi…");
+    await expect(main.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
     await expect(main.getByRole("button", { name: /^Men ish qidiryapman/ })).toHaveCount(0);
     await expect(page.getByRole("banner").getByRole("link", { name: "Kirish", exact: true })).toHaveAttribute("href", /^\/auth/);
     // faqat ko'rish rejimni tanlamaydi

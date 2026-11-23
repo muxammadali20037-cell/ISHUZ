@@ -121,6 +121,15 @@ test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, uch
       expect(ab.y, at).toBeGreaterThan(sb.y + sb.height - 1);
       expect(qb.y, at).toBeGreaterThan(ab.y + ab.height - 1);
       await expect(main.locator("[data-guided-start]")).toHaveText(["Ish qidiryapman", "Ishchi qidiryapman", "E'lon berish"]);
+      // qidiruv maydonidagi ko'rsatma (ega, 2026-11-23: "Yozing, o'zingizga mosini toping" — sig'sin): kesilmaydi, maydon ichida
+      const hint = main.locator("[data-home-hint]");
+      await expect(hint).toHaveText("Yozing, o'zingizga mosini toping");
+      const fit = await hint.evaluate((el) => {
+        const f = el.closest("[data-home-field]")!.getBoundingClientRect();
+        const r = el.getBoundingClientRect();
+        return el.scrollWidth <= el.clientWidth + 1 && r.bottom <= f.bottom + 1 && r.right <= f.right + 1;
+      });
+      expect(fit, at).toBe(true);
       // pastdagi yozish maydoni bosh ekranda yo'q — uning o'rnida qidiruv qatori (ikkita matn maydoni bo'lmasin)
       await expect(page.locator("#start-chat-text")).toBeHidden();
       // uchta tugma yonma-yon: so'z o'rtasidan bo'linmaydi ("qidiryapma-n" emas), 320 px da ham

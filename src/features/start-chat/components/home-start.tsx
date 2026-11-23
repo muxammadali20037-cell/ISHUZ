@@ -6,7 +6,6 @@ import { Award, BriefcaseBusiness, CalendarClock, GraduationCap, Hammer, Laptop,
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import type { QuickMode, QuickOption } from "@/features/find/quick-types";
@@ -49,6 +48,7 @@ export function HomeStart({
   const hydrated = useSyncExternalStore(noopSubscribe, () => true, () => false);
   const jobs = mode === "jobs";
   const chosen = places.find((p) => p.value === place) ?? places[0];
+  const hint = t("easy.guided.home.placeholder");
 
   return (
     <div className="flex flex-1 flex-col gap-5 py-4" data-guided-empty data-home-start={mode}>
@@ -77,20 +77,30 @@ export function HomeStart({
           <label htmlFor="home-q" className="sr-only">
             {t(jobs ? "easy.guided.home.q_label_jobs" : "easy.guided.home.q_label_workers")}
           </label>
-          <Input
-            id="home-q"
-            name="q"
-            type="search"
-            enterKeyHint="search"
-            maxLength={120}
-            autoComplete="off"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            leftIcon={<Search />}
-            placeholder={t(jobs ? "easy.guided.home.placeholder_jobs" : "easy.guided.home.placeholder_workers")}
-            className="h-12 rounded-xl"
-            data-home-q
-          />
+          {/*
+            ko'rsatma (ega, 2026-11-23: "Yozing, o'zingizga mosini toping" — sig'sin): tor telefonda kesilmaydi, ikkinchi
+            qatorga o'tadi. Ko'rinadigan matn — maydon ostidagi qatlam (maydon balandligi shunga qarab); maydonning o'z
+            placeholder'i shaffof — ekran o'qigich uchun
+          */}
+          <div className="relative rounded-xl border border-input bg-card transition-colors focus-within:border-primary" data-home-field>
+            <Search className="pointer-events-none absolute left-4 top-3.5 size-5 text-muted-foreground" aria-hidden />
+            <span aria-hidden className={cn("pointer-events-none block min-h-12 py-3 pl-11 pr-3.5 text-base leading-6 text-muted-foreground", q && "invisible")} data-home-hint>
+              {hint}
+            </span>
+            <input
+              id="home-q"
+              name="q"
+              type="search"
+              enterKeyHint="search"
+              maxLength={120}
+              autoComplete="off"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={hint}
+              className="absolute inset-0 size-full rounded-xl bg-transparent pl-11 pr-3.5 text-base text-foreground outline-none placeholder:text-transparent focus-visible:ring-2 focus-visible:ring-primary/20 [&::-webkit-search-cancel-button]:hidden"
+              data-home-q
+            />
+          </div>
         </div>
         <div className="relative min-w-0">
           <label htmlFor="home-place" className="sr-only">

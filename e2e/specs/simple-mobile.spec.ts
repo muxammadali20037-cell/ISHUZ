@@ -32,7 +32,7 @@ test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi 
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL(/\/chat$/);
     // bosh ekrandagi qidiruv qatori — ish beruvchida ishchilar (2026-11-23)
-    await expect(page.getByPlaceholder("Kim kerak: oshpaz, haydovchi…")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Qanday ishchi kerak" })).toBeVisible();
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
     expect(await role(USERS.workerA)).toBe("employer");
 
@@ -43,7 +43,7 @@ test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi 
     await expect(page.locator("main [data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
     await page.locator("main [data-role-switch]").click();
     await page.waitForURL(/\/chat$/);
-    await expect(page.getByPlaceholder("Kasb: oshpaz, haydovchi…")).toBeVisible();
+    await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
   } finally {
     await sql("update public.profiles set active_role = $2 where id = $1", [USERS.workerA, beforeA]);

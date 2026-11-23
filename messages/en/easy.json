@@ -232,7 +232,7 @@
     "consent_title": "Show my phone number on the listing",
     "consent_desc": "Employers will be able to call you directly.",
     "consent_off": "If unchecked, your number stays hidden: employers can only send a request.",
-    "done_title": "Your listing is published.",
+    "done_title": "Your listing is live!",
     "done_desc": "Employers can now contact you.",
     "done_matches": "See jobs",
     "done_view": "View my listing",
@@ -281,7 +281,7 @@
     "consent_title": "Show my number on the listing and in the Telegram channel",
     "consent_desc": "Job seekers can call you directly. The listing will be posted in the Ish topdim Telegram channel with your number.",
     "consent_off": "If unchecked, the number stays hidden (in the channel too): job seekers can only apply.",
-    "done_title": "Your job is published.",
+    "done_title": "Your ad is live!",
     "done_desc": "Job seekers can now call you or apply.",
     "done_matches": "See workers",
     "done_view": "View my listing",
@@ -1718,8 +1718,6 @@
       "search_label": "Search jobs and workers",
       "q_label_jobs": "Job title or profession",
       "q_label_workers": "Which worker you need",
-      "placeholder_jobs": "Job: cook, driver…",
-      "placeholder_workers": "Who: cook, driver…",
       "region_label": "Region",
       "search": "Search",
       "post": "Post an ad",
@@ -1728,7 +1726,8 @@
       "all_jobs": "All jobs ({count})",
       "all_workers": "All workers ({count})",
       "students": "For students",
-      "quick_label": "Quick sections"
+      "quick_label": "Quick sections",
+      "placeholder": "Type here — find what suits you"
     }
   },
   "intro": {
@@ -1776,5 +1775,12 @@
       "docs": "My documents are ready",
       "russian": "I speak Russian"
     }
+  },
+  "publish": {
+    "active": "Active",
+    "active_hint": "Visible in search",
+    "share": "Share",
+    "view": "View the ad",
+    "link_copied": "Link copied"
   }
 }

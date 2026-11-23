@@ -9,7 +9,7 @@ import {
   useTransition,
 } from "react";
 import { useRouter } from "next/navigation";
-import { ChevronDown, ChevronLeft, ChevronRight, RotateCcw } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, Eye, RotateCcw } from "lucide-react";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
@@ -41,7 +41,7 @@ import {
   bigInput,
 } from "./inputs";
 import { PhonePublicNote } from "./phone-public-note";
-import { PublishResult } from "./publish-result";
+import { PublishResult, type PublishedListing } from "./publish-result";
 import { ListingImageDraft } from "@/features/listing-image/components/listing-image-draft";
 import { ModerationOutcome } from "./moderation-outcome";
 import { AiReadyBanner } from "./ai-quick-fill";
@@ -171,7 +171,7 @@ export function WorkerPost({
   );
   const [pending, start] = useTransition();
   const [result, setResult] = useState<
-    (ListingStateInfo & { workerId: string }) | null
+    (ListingStateInfo & { workerId: string; listing?: PublishedListing }) | null
   >(null);
   const [moreOpen, setMoreOpen] = useState(!!(draft.salary || draft.schedule));
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -333,9 +333,16 @@ export function WorkerPost({
         scrollToError();
         return;
       }
+      // joylangan e'lonning qisqa ko'rinishi — qoralama tozalanishidan oldin ("E'loningiz joylandi" ekranidagi karta)
+      const money = parseMoney(draft.salary);
+      const listing: PublishedListing = {
+        title: professionName,
+        salary: money !== null ? { from: money, to: null, type: "monthly" } : null,
+        place: placeLabel(draft.place, regions, districts, name, t),
+      };
       // rad etilsa — yozilgan ma'lumot saqlanib qoladi (tuzatib qayta yuborish uchun)
       if (res.data.state !== "rejected") clear();
-      setResult(res.data);
+      setResult({ ...res.data, listing });
       if (res.data.state === "listed") celebrate();
       router.refresh();
     });
@@ -403,6 +410,8 @@ export function WorkerPost({
           tone="success"
           title={t("easy.worker.done_title")}
           description={t("easy.worker.done_desc")}
+          listing={result.listing}
+          share={{ path: `/listing/${result.workerId}`, text: result.listing?.title ?? t("easy.worker.done_title") }}
           actions={[
             {
               label: t("easy.worker.done_matches"),
@@ -410,8 +419,9 @@ export function WorkerPost({
               primary: true,
             },
             {
-              label: t("easy.worker.done_view"),
+              label: t("easy.publish.view"),
               href: `/listing/${result.workerId}`,
+              icon: <Eye className="size-5 shrink-0" aria-hidden />,
             },
           ]}
         />
