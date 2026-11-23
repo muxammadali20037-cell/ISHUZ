@@ -1,5 +1,25 @@
 # O'zgarishlar jurnali
 
+## 2026-11-23 · Bosh sahifa kompyuterda kengroq va oynali yon menyu (`feat/home-wide`)
+
+Ega (kompyuter skrinshoti): "sahifa juda tor" — katta ekranda o'rtada ingichka ustun, ikki yon bo'sh; "yon bar oynani
+dizaynini mukammal qil, oynali qilib, ranglar ketma-ketligini mukammal ishla" — variantlardan **A (och shisha)**.
+Migratsiya yo'q.
+
+- **Yon menyu (kompyuter, kirgan foydalanuvchi):**
+  - Ekran chetidan ajralgan, yumaloq burchakli oynali (shisha) panel. Orqasidan ko'k, sariq va turkuaz rangli xira
+    dog'lar ko'rinib turadi.
+  - Ranglar bir tartibda: "E'lon berish" — sariq (bosh sahifadagi tugma bilan bir xil), tanlangan bo'lim — och ko'k
+    plita va chap chiziq, qolgan bo'limlar — bir xil kulrang. Avvalgi jigarrang "Qidiruv" va turkuaz "Universal
+    ustalar" o'rniga oddiy qatorlar.
+  - Brend qo'riqchisi: `app-shell.tsx` uchun "blur" — ega so'rovi bilan istisno.
+
+- **Kenglik:** bosh ekran (chat bo'sh holati) kompyuterda kengroq: 1024px'dan — 64rem, 1280px'dan — 72rem,
+  1536px'dan — 80rem. Telefon va planshetda o'zgarish yo'q. Suhbat boshlangach — avvalgidek o'qish uchun tor ustun.
+- **Joylashuv (keng ekranda):** qidiruv qatori bir qatorda (matn · hudud · "Qidirish"); tezkor bo'limlar bir qatorda;
+  "Eng yangi vakansiyalar" — 2 ta karta yonma-yon; "Barcha vakansiyalar (N)" o'rtada; sarlavha kattaroq.
+- **Video:** birinchi kirishda ochiladigan video kengaymaydi (o'rtada, avvalgi o'lchamda).
+
 ## 2026-11-23 · Qidiruv qatoridagi yozuv va yangi "E'loningiz joylandi" ekrani (`feat/home-hint-done`)
 
 Ega: qidiruv qatoridagi "Kim kerak: oshpaz, haydovchi…" kesilib qolardi — "Yozing, o'zingizga mosini toping" bo'lsin va

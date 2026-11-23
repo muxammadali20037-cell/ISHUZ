@@ -163,3 +163,21 @@ test("Telegram kanal: chatda qator yo'q — kirgandan keyin oyna chiqadi (channe
   await expect(page.locator("main [data-start-chat]")).toBeVisible();
   await expect(page.locator("main [data-channel-row]")).toHaveCount(0);
 });
+
+test("bosh ekran kompyuterda keng (ega, 2026-11-23: «sahifa juda tor»), suhbat boshlangach — o'qish uchun tor ustun", async ({ page, context }) => {
+  await asGuest(context);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/");
+  const root = page.locator("main [data-start-chat]");
+  await expect(root.locator("[data-guided-starts]")).toBeVisible();
+  expect((await root.boundingBox())!.width).toBeGreaterThan(1000);
+  // qidiruv qatori bir qatorda: matn · hudud · "Qidirish"
+  const [q, p, b] = [await root.locator("[data-home-field]").boundingBox(), await root.locator("[data-home-place]").boundingBox(), await root.locator("[data-home-submit]").boundingBox()];
+  expect(Math.abs(q!.y - p!.y)).toBeLessThan(8);
+  expect(Math.abs(p!.y - b!.y)).toBeLessThan(8);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(0);
+  await expect(page.locator("form[data-home-search][data-hydrated]")).toBeVisible();
+  await page.locator("[data-guided-start='post']").click();
+  await expect(page.locator("[data-guided-ai='post']")).toBeVisible();
+  expect((await root.boundingBox())!.width).toBeLessThanOrEqual(672 + 1);
+});

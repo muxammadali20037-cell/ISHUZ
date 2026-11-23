@@ -53,9 +53,13 @@ export function HomeStart({
   return (
     <div className="flex flex-1 flex-col gap-5 py-4" data-guided-empty data-home-start={mode}>
       {/* birinchi marta — ovozli video-tushuntirish tepada ochiq (ega, 2026-11-22); ko'rilgach — pastda kichik tugma */}
-      {introSeen ? null : <ChatIntro seen={false} />}
+      {introSeen ? null : (
+        <div className="mx-auto w-full max-w-2xl">
+          <ChatIntro seen={false} />
+        </div>
+      )}
       <div className="space-y-1.5">
-        <h1 className="text-3xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-4xl">{t("easy.guided.home.title")}</h1>
+        <h1 className="text-3xl font-extrabold leading-tight tracking-tight [overflow-wrap:anywhere] sm:text-4xl xl:text-5xl">{t("easy.guided.home.title")}</h1>
         <p className="text-lg leading-snug text-muted-foreground">{t("easy.guided.home.subtitle")}</p>
       </div>
 
@@ -68,12 +72,12 @@ export function HomeStart({
           e.preventDefault();
           if (chosen) chat.find(q, chosen);
         }}
-        className="grid grid-cols-1 gap-2 rounded-2xl border border-border bg-card p-3 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto]"
+        className="grid grid-cols-1 gap-2 rounded-2xl border border-border bg-card p-3 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_17rem_auto]"
         data-home-search
         data-hydrated={hydrated ? "" : undefined}
         data-tour="composer"
       >
-        <div className="min-w-0 sm:col-span-2">
+        <div className="min-w-0 sm:col-span-2 xl:col-span-1">
           <label htmlFor="home-q" className="sr-only">
             {t(jobs ? "easy.guided.home.q_label_jobs" : "easy.guided.home.q_label_workers")}
           </label>

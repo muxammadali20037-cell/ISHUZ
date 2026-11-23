@@ -103,7 +103,16 @@ export function StartChat({
 
   return (
     <ImageEnabled.Provider value={imageEnabled}>
-      <div className="container-narrow flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col" data-start-chat data-chat-mode={mode ?? "guest"}>
+      {/* bosh ekran kompyuterda kengroq (ega, 2026-11-23: "sahifa juda tor"); suhbat — o'qish uchun tor ustunda */}
+      <div
+        className={cn(
+          "flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col",
+          // .container-narrow (utilities qatlami) lg:max-w-* ni bosib ketadi — bosh ekranda kenglik shu yerda to'liq beriladi
+          empty && home ? "mx-auto w-full max-w-2xl px-4 sm:px-6 lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl" : "container-narrow",
+        )}
+        data-start-chat
+        data-chat-mode={mode ?? "guest"}
+      >
         {empty && home ? (
           <HomeStart
             chat={chat}
@@ -385,11 +394,11 @@ function Latest({ promise }: { promise: Promise<HomeLatest | null> }) {
       <h2 id="home-latest" className="text-xl font-extrabold">
         {t(jobs ? "easy.guided.home.latest_jobs" : "easy.guided.home.latest_workers")}
       </h2>
-      <CardList list={data.list} saved={data.saved} limit={2} />
+      <CardList list={data.list} saved={data.saved} limit={2} wide />
       <Link
         href={data.allHref}
         prefetch={false}
-        className="press flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-bold text-primary-ink hover:border-primary/50"
+        className="press flex min-h-12 items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 text-base font-bold text-primary-ink hover:border-primary/50 lg:mx-auto lg:w-fit lg:px-10"
         data-track="search_all"
         data-home-all
       >
@@ -400,7 +409,7 @@ function Latest({ promise }: { promise: Promise<HomeLatest | null> }) {
   );
 }
 
-function CardList({ list, saved, limit }: { list: QuickList; saved: string[]; limit: number }) {
+function CardList({ list, saved, limit, wide }: { list: QuickList; saved: string[]; limit: number; wide?: boolean }) {
   // rasm bilan (ega, 2026-11-22: "ilovada ham rasm bilan ko'rinsin"): haqiqiy ish joyi surati, bo'lmasa — AI e'lon rasmi
   const jobImage = (id: string): CardImage | null => {
     const photo = vacancyPhotoUrl(list.photos[id]);
@@ -409,7 +418,7 @@ function CardList({ list, saved, limit }: { list: QuickList; saved: string[]; li
     return ai ? { src: ai, ai: true } : null;
   };
   return (
-    <ul className="grid grid-cols-1 gap-3" data-guided-cards>
+    <ul className={cn("grid grid-cols-1 gap-3", wide && "items-start lg:grid-cols-2 lg:gap-4")} data-guided-cards>
       {list.jobs.slice(0, limit).map((job) => (
         <li key={job.id}>
           <AiJobCard job={job} saved={saved.includes(job.id)} image={jobImage(job.id)} />
