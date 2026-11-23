@@ -745,6 +745,14 @@ body:has([data-global-back]) [data-header-back] { display: none; }
   .container-wide {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 2xl:max-w-[90rem] 3xl:max-w-[110rem] 4xl:max-w-[130rem];
   }
+  /* yon menyu — och shisha (ega, 2026-11-23): panel ichida "navy" tokenlari oddiy matn ranglariga o'tadi (til tanlash,
+     foydalanuvchi kartasi — to'q ko'k fon uchun yozilgan qismlar oq shisha ustida ham o'qiladi) */
+  .side-glass {
+    --navy-foreground: var(--foreground);
+    /* kulrang yozuv shisha orqasidagi rang dog'lari ustida ham AA dan o'tsin — oddiy kulrangdan biroz to'qroq */
+    --navy-muted: color-mix(in oklab, var(--muted-foreground) 70%, var(--foreground));
+    --navy-line: var(--border);
+  }
   .container-narrow {
     @apply mx-auto w-full max-w-2xl px-4 sm:px-6;
   }

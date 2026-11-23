@@ -229,8 +229,8 @@ function useFitLabels(labelsKey: string) {
 }
 
 /**
- * Kompyuter (lg+) uchun chap yon menyu — kirgan foydalanuvchi (2026-11 redizayn, "Hirelly" uslubi): to'q ko'k panel, faol bo'lim —
- * ko'k plita. Bo'limlar ro'yxati — nav-items.ts (telefondagi bosh sahifa menyusi bilan bitta manba); pastda — Sozlamalar,
+ * Kompyuter (lg+) uchun chap yon menyu — kirgan foydalanuvchi (2026-11-23, ega: "oynali", "A — och shisha" varianti): oynali
+ * panel, faol bo'lim — och ko'k plita. Bo'limlar ro'yxati — nav-items.ts (telefondagi bosh sahifa menyusi bilan bitta manba); pastda — Sozlamalar,
  * Yordam (asosiy amal — yuqori paneldagi tugma). Telefon va planshetda — pastki va yuqori menyu hamda bosh sahifa menyusi.
  * Hisoblagichlar — haqiqiy o'qilmaganlar (yuqori paneldagi bilan bir xil).
  */
@@ -250,33 +250,21 @@ function SideNavView({ counts, mode = null, user, social = [], find: urlFind }: 
   const { t } = useT();
   const { main, more } = sideNav();
   const post = postAction(mode);
+  // bo'lim qatori — hammasi bir xil rangda (ega, 2026-11-23: "ranglar ketma-ketligi"); tanlangani — och ko'k plita va chap chiziq
+  const row = (active: boolean) =>
+    // yozuv — to'q (shisha orqasidagi ko'k dog' ustida ham AA kontrast), belgi — kulrang
+    cn("relative flex h-11 items-center gap-3 rounded-xl px-3 text-sm transition-colors", active ? "bg-primary-soft font-semibold text-primary-ink" : "text-foreground hover:bg-foreground/5");
+  const bar = <span className="absolute inset-y-2.5 left-0 w-1 rounded-full bg-primary" aria-hidden />;
   const link = (item: MenuItem) => {
     const active = item.match(pathname, find);
     const badge = item.badgeKey ? counts?.[item.badgeKey] : undefined;
-    // asosiy amal (chat) — yon menyuda to'q sariq rangda ajralib turadi ("Universal ustalar" turkuaz bo'lgani kabi)
-    const ai = item === APP_CHAT;
     return (
       <li key={item.href}>
-        <Link
-          href={item.href}
-          aria-current={active ? "page" : undefined}
-          {...(ai ? { "data-track": "nav_chat", "data-track-to": "side" } : {})}
-          className={cn(
-            "flex h-11 items-center gap-3 rounded-md px-3 text-sm transition-colors",
-            ai
-              ? cn(
-                  // bo'rtib turadi: rangli halqa + yumshoq to'q sariq soya, ustiga kelganda biroz ko'tariladi
-                  "font-semibold text-ai-bright shadow-md shadow-ai-bright/20 ring-1 ring-ai-bright/40 transition hover:-translate-y-px",
-                  active ? "bg-ai-bright/25" : "bg-ai-bright/15 hover:bg-ai-bright/25",
-                )
-              : active
-                ? "bg-sidebar-active font-medium text-navy-foreground"
-                : "text-navy-muted hover:bg-navy-foreground/5 hover:text-navy-foreground",
-          )}
-        >
-          <item.icon className={cn("size-4 shrink-0", ai ? "" : active ? "text-sidebar-accent" : "opacity-80")} aria-hidden />
+        <Link href={item.href} aria-current={active ? "page" : undefined} {...(item === APP_CHAT ? { "data-track": "nav_chat", "data-track-to": "side" } : {})} className={row(active)}>
+          {active ? bar : null}
+          <item.icon className={cn("size-4.5 shrink-0", active ? "text-primary-ink" : "text-muted-foreground")} aria-hidden />
           <span className="min-w-0 flex-1 truncate">{t(item.labelKey)}</span>
-          {item.fresh ? <NewDot feature={item.fresh} className={ai ? undefined : "text-sidebar-accent"} /> : null}
+          {item.fresh ? <NewDot feature={item.fresh} /> : null}
           {badge ? (
             <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-2xs font-semibold text-destructive-foreground">{badge > 99 ? "99+" : badge}</span>
           ) : null}
@@ -284,76 +272,82 @@ function SideNavView({ counts, mode = null, user, social = [], find: urlFind }: 
       </li>
     );
   };
+  const masters = pathname.startsWith("/ustalar");
   const name = user ? `${user.firstName} ${user.lastName}`.trim() : "";
   return (
-    // "SAT MASTER" uslubi (2026-11): ekranning butun balandligidagi to'q ko'k ustun — logotip, bildirishnomalar, asosiy amal,
-    // bo'limlar; pastda — sozlamalar, til va foydalanuvchi kartasi (rejimni almashtirish, chiqish)
-    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 flex-col bg-navy lg:flex" style={{ paddingTop: "var(--safe-top)" }}>
-      <div className="flex h-16 shrink-0 items-center gap-2 px-5">
-        <Link href="/" className="flex min-h-11 min-w-0 items-center gap-2 rounded-md" aria-label={BRAND.name}>
-          <BrandMark className="size-8" sizes="32px" />
-          <span className="truncate font-display text-md font-semibold tracking-tight text-navy-foreground">{BRAND.name}</span>
-        </Link>
-        <Link
-          href="/notifications"
-          aria-label={t("common.nav.notifications")}
-          className="relative ml-auto inline-flex size-11 items-center justify-center rounded-md text-navy-muted hover:bg-navy-foreground/10 hover:text-navy-foreground"
-        >
-          <Bell className="size-4.5" aria-hidden />
-          {counts?.notifications ? <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-destructive" aria-hidden /> : null}
-        </Link>
+    // ega (2026-11-23, variantlardan "A — och shisha"): ekran chetidan ajralgan yumaloq oynali (shisha) panel — orqasida ko'k,
+    // sariq va turkuaz rangli xira dog'lar ko'rinib turadi. Ichida ranglar bir tartibda: asosiy amal ("E'lon berish") — sariq
+    // (bosh sahifadagi tugma bilan bir xil), tanlangan bo'lim — och ko'k, qolganlari — bir xil kulrang. .side-glass — panel
+    // ichidagi "navy" tokenlarini oddiy matn ranglariga o'tkazadi (til tanlash, ijtimoiy tarmoqlar, foydalanuvchi kartasi)
+    <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 p-3 lg:flex" style={{ paddingTop: "calc(var(--safe-top) + 0.75rem)" }}>
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+        <span className="absolute -left-20 -top-16 size-64 rounded-full bg-primary/30 blur-3xl" />
+        <span className="absolute -right-12 top-1/3 size-44 rounded-full bg-highlight/45 blur-3xl" />
+        <span className="absolute -left-12 bottom-10 size-56 rounded-full bg-accent-bright/35 blur-3xl" />
       </div>
-      {pathname.startsWith("/post/") ? null : (
-        <div className="px-3 pb-3">
+      <div className="side-glass relative flex w-full flex-col overflow-hidden rounded-2xl border border-card/80 bg-card/55 shadow-lg backdrop-blur-xl" data-side-glass>
+        <div className="flex h-16 shrink-0 items-center gap-2 px-4">
+          <Link href="/" className="flex min-h-11 min-w-0 items-center gap-2 rounded-md" aria-label={BRAND.name}>
+            <BrandMark className="size-8" sizes="32px" />
+            <span className="truncate font-display text-md font-semibold tracking-tight text-foreground">{BRAND.name}</span>
+          </Link>
           <Link
-            href={post.href}
-            data-track="nav_post"
-            data-track-to="side"
-            className="flex h-11 items-center justify-center gap-2 rounded-md bg-primary px-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary-hover"
+            href="/notifications"
+            aria-label={t("common.nav.notifications")}
+            className="relative ml-auto inline-flex size-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
           >
-            <Plus className="size-4" aria-hidden />
-            {t(post.ctaKey)}
+            <Bell className="size-4.5" aria-hidden />
+            {counts?.notifications ? <span className="absolute right-2.5 top-2.5 size-2 rounded-full bg-destructive" aria-hidden /> : null}
           </Link>
         </div>
-      )}
-      <nav aria-label={t("easy.side.label")} className="flex-1 space-y-5 overflow-y-auto px-3 pb-4">
-        <ul className="space-y-0.5">{main.map(link)}</ul>
-        {/* "Universal ustalar" — alohida mini-ilova, turkuaz rangda ajralib turadi */}
-        <Link
-          href="/ustalar"
-          data-track="masters_entry"
-          data-masters-entry
-          aria-current={pathname.startsWith("/ustalar") ? "page" : undefined}
-          className="flex h-11 items-center gap-3 rounded-md bg-accent-bright/15 px-3 text-sm font-semibold text-accent-bright shadow-md shadow-accent-bright/20 ring-1 ring-accent-bright/40 transition hover:-translate-y-px hover:bg-accent-bright/25"
-        >
-          <Wrench className="size-4 shrink-0" aria-hidden />
-          <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
-          <NewDot feature="masters" />
-        </Link>
-        <div>
-          <p className="mb-1.5 px-3 text-xs font-medium text-navy-muted/60">{t("easy.side.more")}</p>
-          <ul className="space-y-0.5">{more.map(link)}</ul>
-        </div>
-        {/* rasmiy Telegram kanal va Instagram — bosilsa yangi oynada */}
-        <SocialLinks links={social} tone="dark" compact />
-      </nav>
-      {user ? (
-        <div className="shrink-0 space-y-2 border-t border-navy-line px-3 py-3">
-          <LanguageSelect tone="dark" className="w-full" />
-          <UserMenu
-            variant="sidebar"
-            name={name}
-            subtitle={t(mode === "employer" ? "easy.side.mode_employer" : "easy.side.mode_worker")}
-            roles={user.roles}
-            activeRole={user.activeRole}
-            avatar={
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-navy-foreground/10 text-sub font-semibold text-navy-foreground" aria-hidden>
-                {initials(user.firstName, user.lastName)}
-              </span>
-            }
-          />
-        </div>
-      ) : null}
+        {pathname.startsWith("/post/") ? null : (
+          <div className="px-3 pb-3">
+            <Link
+              href={post.href}
+              data-track="nav_post"
+              data-track-to="side"
+              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-highlight px-3 text-sm font-bold text-highlight-foreground shadow-md transition-colors hover:bg-highlight-hover"
+            >
+              <Plus className="size-4.5" aria-hidden />
+              {t(post.ctaKey)}
+            </Link>
+          </div>
+        )}
+        <nav aria-label={t("easy.side.label")} className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 pb-4">
+          <ul className="space-y-1">{main.map(link)}</ul>
+          {/* "Universal ustalar" — boshqa bo'limlar qatorida, bir xil rangda ("Yangi" nuqtasi bilan) */}
+          <Link href="/ustalar" data-track="masters_entry" data-masters-entry aria-current={masters ? "page" : undefined} className={row(masters)}>
+            {masters ? bar : null}
+            <Wrench className={cn("size-4.5 shrink-0", masters ? "text-primary-ink" : "text-muted-foreground")} aria-hidden />
+            <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
+            <NewDot feature="masters" />
+          </Link>
+          <div className="mt-2 border-t border-border pt-3">
+            <ul className="space-y-1">{more.map(link)}</ul>
+          </div>
+          {/* rasmiy Telegram kanal va Instagram — bosilsa yangi oynada */}
+          <div className="mt-2">
+            <SocialLinks links={social} tone="light" compact />
+          </div>
+        </nav>
+        {user ? (
+          <div className="shrink-0 space-y-2 border-t border-border px-3 py-3">
+            <LanguageSelect className="w-full" />
+            <UserMenu
+              variant="sidebar"
+              name={name}
+              subtitle={t(mode === "employer" ? "easy.side.mode_employer" : "easy.side.mode_worker")}
+              roles={user.roles}
+              activeRole={user.activeRole}
+              avatar={
+                <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary-soft text-sub font-semibold text-primary-ink" aria-hidden>
+                  {initials(user.firstName, user.lastName)}
+                </span>
+              }
+            />
+          </div>
+        ) : null}
+      </div>
     </aside>
   );
 }
