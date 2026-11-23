@@ -88,8 +88,12 @@ test("bosh sahifa chati: savol tugmalari (viloyatlar), kartalar va «topilmadi»
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
+    // "Ish qidiryapman" → kasb yoziladi → viloyat tugmalari (bosh ekrandagi qidiruv qatorida hudud oldindan tanlanadi)
+    await expect(page.locator("form[data-home-search][data-hydrated]")).toBeVisible();
+    await page.locator("[data-guided-start='jobs']").click();
+    await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", "ask-profession", { timeout: 20_000 });
     const box = page.locator("form[data-hydrated] #start-chat-text");
-    await box.fill("Men omborchiman, ish kerak");
+    await box.fill("omborchi");
     await box.press("Enter");
     const last = page.locator("[data-guided-ai]").last();
     // savol: viloyatlar tugmalari (uzun nomlar ham — "Qoraqalpog'iston Respublikasi") sig'adi

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * E'lon rasmi (AI, 0087; ega, 2026-11-20): egasi "Ha" desa yaratiladi va e'londa ixcham ko'rinadi. Stendda OpenAI — soxta
@@ -93,9 +93,8 @@ test("chat natijasida — karta rasm bilan (belgisiz); rasmsiz e'lon — avvalgi
   await asGuest(context);
   await asMode(context, "worker");
   await page.goto("/");
+  await homeSearch(page, "Men farroshman, Toshkent shahrida ish kerak");
   const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("Men farroshman, Toshkent shahrida ish kerak");
-  await box.press("Enter");
   const last = page.locator("[data-guided-ai]").last();
   await expect(last).toHaveAttribute("data-guided-ai", /^(results|next)$/, { timeout: 20_000 });
   if ((await last.getAttribute("data-guided-ai")) === "next") {

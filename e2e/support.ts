@@ -152,3 +152,27 @@ export async function showFound(answer: Locator) {
   if ((await show.getAttribute("aria-expanded")) !== "true") await show.click();
   await expect(answer.locator("[data-quick-results]")).toBeVisible();
 }
+
+/**
+ * Bosh ekran (bo'sh chat) — qidiruv qatori (ega, 2026-11-23, C varianti): pastdagi yozish maydoni o'rnida. Matn yozilib
+ * "Qidirish" bosiladi; hudud — ro'yxatdan tanlangani ("Butun O'zbekiston" yoki shu qurilmada eslab qolingan viloyat), `region`
+ * berilsa — o'shanisi. Suhbat boshlangach yozish — pastdagi maydon (#start-chat-text).
+ */
+export const homeBox = (page: Page) => page.locator("form[data-home-search][data-hydrated] [data-home-q]");
+export async function homeSearch(page: Page, text: string, region?: string) {
+  const q = homeBox(page);
+  await q.fill(text);
+  if (region) await page.locator("[data-home-place]").selectOption(region);
+  await q.press("Enter");
+}
+
+/** Chatga yozish: bosh ekranda — qidiruv qatoridan (birinchi xabar), suhbat boshlangach — pastdagi yozish maydonidan */
+export async function chatSend(page: Page, text: string) {
+  const home = page.locator("form[data-home-search][data-hydrated]");
+  const box = page.locator("form[data-hydrated] #start-chat-text");
+  // sahifa (yuklanish skeleti o'rniga) chizilib, skriptlari ulangach — qaysi biri ko'rinsa, o'sha
+  await expect(home.or(box).first()).toBeVisible();
+  if (await home.isVisible()) return homeSearch(page, text);
+  await box.fill(text);
+  await box.press("Enter");
+}

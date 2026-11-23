@@ -7,7 +7,7 @@ import { USERS, asGuest, sql } from "../support";
  * kasblar katalogi, yangi vakansiyalar ro'yxati va raqamlar olib tashlandi — ularning testlari ham.
  */
 
-const HOME_H1 = "Ish yoki ishchini oson toping";
+const HOME_H1 = "Ishingiz shu yerdan boshlanadi!";
 
 async function seed() {
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
@@ -141,7 +141,7 @@ test.describe("bosh sahifa (marketplace)", () => {
     await expect(page.getByRole("contentinfo")).toBeAttached();
   });
 
-  test("320–1440 px: gorizontal siljish yo'q; chat sarlavhasi, ikki katta tugma va yozish maydoni ko'rinadi", async ({ page, context }) => {
+  test("320–1440 px: gorizontal siljish yo'q; sarlavha, qidiruv qatori va uchta tugma ko'rinadi", async ({ page, context }) => {
     await asGuest(context);
     for (const width of [320, 360, 390, 430, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: width < 768 ? 780 : 900 });
@@ -150,8 +150,9 @@ test.describe("bosh sahifa (marketplace)", () => {
       const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
       expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
       await expect(main(page).locator("[data-guided-start='jobs']"), `${width}px`).toBeVisible();
-      await expect(page.locator("#start-chat-text"), `${width}px`).toBeVisible();
-      const submit = page.locator("form:has(#start-chat-text) button[type='submit']");
+      await expect(main(page).locator("[data-guided-start]"), `${width}px`).toHaveCount(3);
+      await expect(page.locator("[data-home-q]"), `${width}px`).toBeVisible();
+      const submit = page.locator("[data-home-submit]");
       const box = (await submit.boundingBox())!;
       expect(box.height, `${width}px`).toBeGreaterThanOrEqual(44);
       expect(box.x + box.width, `${width}px`).toBeLessThanOrEqual(width);

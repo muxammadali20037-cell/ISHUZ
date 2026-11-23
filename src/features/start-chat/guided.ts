@@ -12,7 +12,7 @@ import type { PostAnswers, PostChoice, PostExperience } from "@/features/find/qu
 import { chooseMode } from "@/features/mode/actions";
 import type { AppMode } from "@/features/mode/mode";
 import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
-import { draftFromForm, isAnyProfession, nextAsk, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
+import { answerPlace, draftFromForm, isAnyProfession, nextAsk, withPlace, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
 import type { ChatProfession } from "./actions";
 import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, type PostAsk, type PostDraft } from "./post-logic";
 import { formatNotes } from "@/features/post/notes";
@@ -201,7 +201,11 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
 
   const prepare = (text: string, mode: Role) => quickPrepare({ text, mode });
 
-  const newQuery = (q: string) => {
+  /**
+   * Yangi so'rov. `place` — bosh sahifadagi qidiruv qatorida tanlangan hudud: matnda hudud aytilmagan bo'lsa — shu hudud
+   * (hudud qayta so'ralmaydi; natijalar sarlavhasida ko'rinadi)
+   */
+  const newQuery = (q: string, place?: QuickOption, fallback?: Role) => {
     const mid = id();
     markAnswered();
     setAwaiting(null);
@@ -223,12 +227,13 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
           // vakansiya — yordamchi bilan alohida ekran; kimligi noma'lum — bitta savol (tugmalar)
           return replace(mid, { kind: "post", who, query: postTopic(q) });
         }
-        const r = form.intent ?? role;
+        // qidiruv qatoridan: maqsad gapda aytilmagan bo'lsa — qator qaysi qidiruvniki bo'lsa, o'sha (rol so'ralmaydi)
+        const r = form.intent ?? role ?? fallback ?? null;
         if (form.intent) {
           setRole(form.intent);
           persistRole(form.intent);
         }
-        proceed(draftFromForm(form), r, mid);
+        proceed(withPlace(draftFromForm(form), r, place), r, mid);
       },
       () => runRef.current === run && replace(mid, { kind: "error", message: errorText("network") }),
     );
@@ -263,7 +268,7 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
           nodeId: f.nodeId,
           category: f.category ?? null,
           anyProfession: false,
-          ...(f.placeKnown && !d.placeKnown ? { place: f.place, placeKnown: true } : {}),
+          ...answerPlace(d, f),
           places: f.places.length ? f.places : d.places,
         };
         // javobda maqsad ham aytilgan bo'lsa ("menga haydovchi kerak") — shunga o'tiladi
@@ -494,6 +499,35 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     return true;
   };
 
+  /**
+   * Bosh sahifadagi qidiruv qatori (ega, 2026-11-23 — C varianti): kasb matni + ro'yxatdan hudud. Matn AI/lug'at bilan
+   * tushuniladi (yozish maydoni bilan bir xil); matnda hudud aytilgan bo'lsa ("Samarqandda oshpaz") — o'shanisi. Matn bo'sh —
+   * ketma-ketlik shu hudud bilan boshlanadi (kasb so'raladi). Tanlangan viloyat shu qurilmada eslab qolinadi.
+   */
+  const find = (text: string, place: QuickOption) => {
+    const q = text.replace(/\s+/g, " ").trim().slice(0, MESSAGE_MAX_CHARS);
+    if (pending) return false;
+    if (place.value !== "all" && place.value !== "remote") void rememberPlace({ region: place.value, district: "all" }).catch(() => null);
+    const r = role ?? "jobs";
+    if (!q) start(r, t(r === "jobs" ? "easy.guided.start_jobs" : "easy.guided.start_workers"), place);
+    else newQuery(q, place, r);
+    return true;
+  };
+
+  /** Bosh sahifadagi "E'lon berish": kim ekani noma'lum — ikkala variant ("O'zim haqimda" shu chatda / "Vakansiya") */
+  const offerPost = (label: string) => {
+    if (pending) return;
+    markAnswered();
+    setAwaiting(null);
+    setDraft(null);
+    setPost(null);
+    const offer: Msg[] = [
+      { id: id(), you: label },
+      { id: id(), ai: { kind: "post", who: null, query: "" } },
+    ];
+    setMsgs((cur) => [...cur, ...offer].slice(-KEEP));
+  };
+
   /** hudud nomi (qisqa yozuv uchun): tanlangan viloyat yoki "Butun O'zbekiston" */
   const placeLabel = (d: Draft) => d.places.find((p) => p.value === d.place)?.label ?? t("easy.location.whole_country");
 
@@ -524,7 +558,7 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
    * Bo'sh ekrandagi ikki katta tugma — "Ish qidiryapman" / "Ishchi qidiryapman": ketma-ketlik boshlanadi (kasb → viloyat →
    * "Endi nima qilamiz?")
    */
-  const start = (r: Role, label: string) => {
+  const start = (r: Role, label: string, place?: QuickOption) => {
     if (pending) return;
     markAnswered();
     commitRole(r);
@@ -536,7 +570,7 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
       (res) => {
         if (runRef.current !== run) return;
         if (!res.ok) return replace(mid, { kind: "error", message: errorText(res.error) });
-        proceed({ ...draftFromForm(res.data), guided: true }, r, mid);
+        proceed(withPlace({ ...draftFromForm(res.data), guided: true }, r, place), r, mid);
       },
       () => runRef.current === run && replace(mid, { kind: "error", message: errorText("network") }),
     );
@@ -625,6 +659,8 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     role,
     awaiting,
     ask,
+    find,
+    offerPost,
     stop,
     clear,
     pickRole,

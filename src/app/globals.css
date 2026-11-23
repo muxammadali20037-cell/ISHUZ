@@ -36,6 +36,7 @@
   /* sariq urg'u: faqat muhim belgi (TOP, yangi) — ustida doim to'q matn (10.4:1) */
   --highlight: #ffc83d;
   --highlight-foreground: oklch(0.2 0.03 260);
+  --highlight-hover: #f5b818; /* 2026-11-23: sariq "E'lon berish" tugmasi (bosh ekran) — bosilganda biroz to'qroq */
   --highlight-soft: #fff4d6;
   --highlight-soft-foreground: #8a5a00; /* 5.4:1 */
   --success: oklch(0.5 0.13 155); /* matn varianti (oq 5.6); talabdagi oklch(0.62 0.15 155) — nuqta/belgi: --brand-green */
@@ -153,6 +154,7 @@ html.tg-fullscreen {
   --accent-foreground: #a9bdff;
   --highlight: #ffc83d;
   --highlight-foreground: #0e1729;
+  --highlight-hover: #ffd466;
   --highlight-soft: #3a2e0c;
   --highlight-soft-foreground: #ffd76b;
   --success: #34c38a;
@@ -304,6 +306,7 @@ html.dark[data-panel="employer"] {
   --color-accent-foreground: var(--accent-foreground);
   --color-highlight: var(--highlight);
   --color-highlight-foreground: var(--highlight-foreground);
+  --color-highlight-hover: var(--highlight-hover);
   --color-highlight-soft: var(--highlight-soft);
   --color-highlight-soft-foreground: var(--highlight-soft-foreground);
   --color-success: var(--success);

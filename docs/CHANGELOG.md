@@ -1,5 +1,28 @@
 # O'zgarishlar jurnali
 
+## 2026-11-23 · Yangi bosh ekran: qidiruv qatori va sariq "E'lon berish" (`feat/home-search-first`)
+
+Ega variantlardan tanladi: bosh sahifa — **C (qidiruv qatori)**, pastki menyu — **hozirgidek 3 ta**, rang — hozirgi ko'k,
+faqat **"E'lon berish" sariq**. Migratsiya yo'q.
+
+- **Bosh ekran (chat bo'sh holati, "/" va "/chat"):**
+  - Sarlavha "Ishingiz shu yerdan boshlanadi!".
+  - Qidiruv qatori: kasb + hudud ro'yxati ("Butun O'zbekiston", viloyatlar, "Masofaviy") + "Qidirish". Natija shu
+    chatda chiqadi, tanlangan hudud qayta so'ralmaydi. Matnda hudud aytilgan bo'lsa ("Samarqandda oshpaz") — o'sha
+    hudud olinadi. Viloyat shu qurilmada eslab qolinadi. Ish beruvchi rejimida qator ishchilarni qidiradi.
+  - Uchta katta tugma: "Ish qidiryapman", "Ishchi qidiryapman" va sariq **"E'lon berish"**. "E'lon berish"da kimligi
+    so'ralmaydi: ikkala variant chiqadi ("O'zim haqimda" / "Vakansiya").
+  - Tezkor bo'limlar: Yangi vakansiyalar, Kunlik ishlar, Talabalar uchun, Universal ustalar, Masofaviy. Ish
+    beruvchida: Barcha ishchilar, Tajribali, Yaqin ishchilar, Universal ustalar.
+  - **"Eng yangi vakansiyalar"**: bazadagi haqiqiy 2 ta e'lon va "Barcha vakansiyalar (N)". E'lon bo'lmasa bo'lim
+    ko'rinmaydi. Ish beruvchida — yangi ishchilar.
+  - "Qanday ishlaydi?" videosi birinchi kirishda tepada ochiq (avvalgidek), ko'rilgach — pastda kichik tugma.
+  - Pastdagi yozish maydoni bosh ekranda yashirin (ikkita matn maydoni bo'lmasin), suhbat boshlangach chiqadi.
+- **Tanishuv (tugmalar bilan):** sariq "E'lon berish" telefonda ham tushuntiriladi, "Ishchi qidiryapman"dan keyin.
+- **Rang:** `--highlight-hover` qo'shildi. Sariq ustida to'q matn (kontrast testida tekshiriladi).
+- **Testlar:** e2e'da bosh ekrandan yozish endi qidiruv qatoridan (`homeSearch`). Yangi testlar: tartib va 320–1280px
+  sig'ishi (tugma yozuvi so'z o'rtasidan bo'linmaydi), qator + viloyat → savolsiz natija, sariq tugma.
+
 ## 2026-11-22 · ISH TOPDIM 2.0 — 1-bosqich: qidiruv, matnlar, haqiqiylik (`feat/ish-topdim-2`)
 
 Ega: "foydalanuvchi «ish kerak», «voditel», «oshpaz», «работа» deb yozsa ham mazmunan mos natijalarni topishi kerak";

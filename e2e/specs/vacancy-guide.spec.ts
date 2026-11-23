@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asMode, loginAs, sql } from "../support";
+import { USERS, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * "AI bilan oson joylash" (2026-11-16, ega: "ish beruvchi panelida ajralib tursin; menga shunaqa kerak desa — ekranda savol
@@ -42,9 +42,7 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   // kirgan ish beruvchining asosiy ekrani — chat: "vakansiya joylamoqchiman" → "Vakansiya joylash" → alohida ekran (yordamchi)
   await page.goto("/");
   await page.waitForURL(/\/chat$/);
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("Vakansiya joylamoqchiman");
-  await box.press("Enter");
+  await homeSearch(page, "Vakansiya joylamoqchiman");
   await page.locator("[data-guided-post-to='employer']").click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
   await expect(h1(page)).toHaveText("Qanday xodim kerak?");

@@ -1,5 +1,5 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
-import { asGuest, asMode, loginAs, sql } from "../support";
+import { asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * 100 ta vakansiya + 100 ta ishchi (2026-11-15, egasi: "ozing 100 ta vakansiya joylada 100 lasnyam ishch paneldan oddiy sozlar
@@ -185,9 +185,9 @@ async function search(page: Page, text: string) {
   await page.goto("/");
   await page.evaluate(() => sessionStorage.removeItem("ib_guided_chat"));
   await page.reload();
+  // 2026-11-23: bosh ekrandagi qidiruv qatoridan (hudud — "Butun O'zbekiston")
+  await homeSearch(page, text);
   const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill(text);
-  await box.press("Enter");
   await expect(page.locator("[data-ai-you]").last()).toHaveText(`Siz: ${text}`);
   const last = page.locator("[data-guided-ai]").last();
   await expect(last).toHaveAttribute("data-guided-ai", /^(results|none|ask-place)$/, { timeout: 20_000 });

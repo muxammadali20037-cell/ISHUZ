@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, formReady, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, formReady, homeSearch, loginAs, sql } from "../support";
 
 // E: e'lon berish va qidiruv — shu rejimda (rejim tanlanmasa, avval tasdiq so'raladi)
 test.beforeEach(async ({ context }) => {
@@ -41,13 +41,8 @@ test("mehmon: bosh sahifa (chat) → hudud tugmasi → natija → qidiruv sahifa
   await instrument(page);
   await page.goto("/");
   await expect(page.getByRole("button", { name: /Ovozni (o'chirish|yoqish)/ })).toHaveCount(0);
-  // bosh sahifa — chat (2026-11-21): yozib yuboradi, savolga tugma bilan javob beradi
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("Men buxgalterman, ish kerak");
-  await box.press("Enter");
-  await page.locator("[data-guided-place='all']").last().click();
-  await box.blur();
-  await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
+  // bosh sahifa — chat (2026-11-21): qidiruv qatoridan yozib yuboradi (2026-11-23), suhbatda tugma bilan javob beradi
+  await homeSearch(page, "Men buxgalterman, ish kerak");
   await expect(page.locator("[data-guided-ai]").last()).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
   await page.goto("/search?mode=jobs&region=all&any=1");
   await page.waitForLoadState("networkidle");

@@ -9,6 +9,7 @@ import { StartChat } from "@/features/start-chat/components/start-chat";
 import { INTRO_COOKIE } from "@/features/start-chat/intro";
 import { listingImageEnabled } from "@/features/listing-image/server";
 import { chatQuery } from "@/features/start-chat/query";
+import { homeData } from "@/features/start-chat/home";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
  * /chat — asosiy ekran (pastki menyuning "Qidiruv" bo'limi; mehmon uchun "/" ham shu chat). AI maqsadni yozilgan matndan
  * o'zi aniqlaydi (ega, 2026-11-21); rejim faqat salom matni va misollar uchun (rejimi yo'q mehmon — "Ish kerakmi yoki ishchi?").
  */
-export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[] }> }) {
+export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[]; region?: string | string[] }> }) {
   const [session, mode, params, jar] = await Promise.all([getSession(), getMode(), searchParams, cookies()]);
   if (session?.profile.is_blocked) redirect("/blocked");
   return (
@@ -31,6 +32,8 @@ export default async function ChatPage({ searchParams }: { searchParams: Promise
         post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
         introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
         imageEnabled={listingImageEnabled()}
+        home={await homeData(mode, session, (name) => jar.get(name)?.value)}
+        initialRegion={typeof params.region === "string" ? params.region : null}
       />
     </Shell>
   );

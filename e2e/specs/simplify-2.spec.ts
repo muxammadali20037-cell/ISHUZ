@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * Soddalashtirish 2 (ega, 2026-11-17):
@@ -111,14 +111,9 @@ test("birinchi kirish — kunduzgi rejim (telefon tungi rejimda bo'lsa ham); tun
 test("«men oila shifokoriman» → «Oilaviy shifokor» (oila huquqi yuristi emas); maosh so'ralmaydi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
-  // 2026-11-21: bosh sahifa — chat; hudud tugma bilan, maosh umuman so'ralmaydi
+  // 2026-11-21: bosh sahifa — chat; maosh umuman so'ralmaydi. 2026-11-23: qidiruv qatoridan (hudud — qatorda)
   await page.goto("/");
-  const box = page.locator("form[data-hydrated] #start-chat-text");
-  await box.fill("men oila shifokoriman");
-  await box.press("Enter");
-  await page.locator("[data-guided-ai='ask-place'] [data-guided-place='all']").last().click();
-  await box.blur();
-  await page.locator("[data-guided-ai='next'] [data-guided-next-to='see']").last().click();
+  await homeSearch(page, "men oila shifokoriman");
   const answer = page.locator("[data-guided-ai]").last();
   await expect(answer).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });
   await expect(answer.locator("[data-guided-summary]")).toContainText("Oilaviy shifokor");
@@ -132,7 +127,12 @@ test("chat yozish maydoni: ko'rsatma («Masalan: men oshpazman») telefonda ham 
   for (const width of [320, 360, 390, 1280]) {
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
+    // bosh ekranda yozish maydoni yo'q (qidiruv qatori) — suhbat boshlangach chiqadi
+    // (shu tabdagi suhbat tiklansa — bosh ekran o'rnida suhbat; skriptlar ulangach qaysi biri ko'rinsa, o'sha)
+    const home = page.locator("form[data-home-search][data-hydrated]");
     const box = page.locator("form[data-hydrated] #start-chat-text");
+    await expect(home.or(box).first()).toBeVisible();
+    if (await home.isVisible()) await page.locator("[data-guided-start='post']").click();
     await expect(box, `${width}px`).toHaveAttribute("placeholder", "Masalan: men oshpazman");
     // bitta qator (ko'rsatma ikkinchi qatorga o'tib, kesilib qolmaydi) va maydon ekran ichida
     expect(await box.evaluate((el) => el.scrollHeight <= el.clientHeight + 1), `${width}px`).toBe(true);

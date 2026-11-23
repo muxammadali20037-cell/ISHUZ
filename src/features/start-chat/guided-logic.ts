@@ -17,6 +17,8 @@ export interface Draft {
   nodeId: string | null;
   place: string;
   placeKnown: boolean;
+  /** hudud foydalanuvchining o'z gapida aytilgan (eslab qolingan yoki qatorda tanlangan emas) */
+  placeSaid?: boolean;
   filters: QuickFilters;
   places: QuickOption[];
   /** prepareQuick qaysi rejimda tushungan (filtrlar shu rejimniki) */
@@ -104,12 +106,33 @@ export function draftFromForm(form: QuickForm): Draft {
     nodeId: form.nodeId,
     place: form.place,
     placeKnown: !!form.placeKnown,
+    placeSaid: !!form.placeSaid,
     filters: form.filters ?? NO_FILTERS,
     places: form.places,
     formMode: form.mode,
     askedProfession: false,
     category: form.category ?? null,
   };
+}
+
+/**
+ * Bosh sahifadagi qidiruv qatorida tanlangan hudud — shu qurilmada eslab qolingan viloyatdan ustun (qatorda "Butun O'zbekiston"
+ * tanlansa — butun O'zbekiston); matnda hudud aytilgan bo'lsa — o'shanisi qoladi. "Masofaviy" — faqat ish qidirishda (ishchi
+ * qidirilsa — eslab qolingani yoki savol)
+ */
+export function withPlace(d: Draft, r: Role | null, place?: QuickOption): Draft {
+  if (!place || d.placeSaid) return d;
+  if (place.value === "remote" && r === "workers") return d;
+  return { ...d, place: place.value, placeKnown: true };
+}
+
+/**
+ * "Kasbingiz qanday?" savoliga javobda hudud ham aytilgan bo'lsa ("Toshkentda sotuvchi") — o'sha (oldin tanlangan yoki eslab
+ * qolingandan ustun); aytilmagan bo'lsa — avvalgi hudud saqlanadi (yo'q bo'lsa — eslab qolingani)
+ */
+export function answerPlace(d: Pick<Draft, "place" | "placeKnown" | "placeSaid">, f: Pick<QuickForm, "place" | "placeKnown" | "placeSaid">): Pick<Draft, "place" | "placeKnown" | "placeSaid"> {
+  if (f.placeSaid || (f.placeKnown && !d.placeKnown)) return { place: f.place, placeKnown: true, placeSaid: !!f.placeSaid };
+  return { place: d.place, placeKnown: d.placeKnown, placeSaid: d.placeSaid };
 }
 
 /**

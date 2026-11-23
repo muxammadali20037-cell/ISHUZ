@@ -116,8 +116,8 @@ test.describe("telefon klaviaturasi", () => {
     expect(meta).toContain("interactive-widget=resizes-content");
     const nav = page.locator("nav.bottom-nav");
     await expect(nav).toBeVisible();
-    // bosh sahifa — chat (2026-11-21): yozish maydoniga bosilganda
-    const box = page.locator("form[data-hydrated] #start-chat-text");
+    // bosh sahifa — chat (2026-11-21): yozish maydoniga bosilganda (2026-11-23: bosh ekranda — qidiruv qatori)
+    const box = page.locator("form[data-home-search][data-hydrated] [data-home-q]");
     await box.focus();
     await expect(nav).toBeHidden();
     await expect(page.locator(".ai-fab")).toBeHidden();

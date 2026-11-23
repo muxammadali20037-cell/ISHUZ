@@ -1,5 +1,5 @@
 import { expect, test, type BrowserContext, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql, stack } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql, stack } from "../support";
 
 /**
  * QA (2026-11-21, ega: "odam sifatida ilovaga kirib, hamma narsani qilib ko'r, xato top"): topilgan xatolar qaytmasin.
@@ -104,8 +104,8 @@ test("chat: uzun gapdan kasb to'g'ri olinadi (tuman nomi kasb bo'lmaydi); tushun
   const box = page.locator("form[data-hydrated] #start-chat-text");
   const settled = () => expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
   const last = () => page.locator("[data-guided-ai]").last();
-  await box.fill("asdkjhqwe");
-  await box.press("Enter");
+  // birinchi xabar — bosh ekrandagi qidiruv qatoridan (2026-11-23)
+  await homeSearch(page, "asdkjhqwe");
   await settled();
   // 2026-11-21: forma oynasi o'rniga chatda bitta aniq savol
   await expect(last()).toHaveAttribute("data-guided-ai", "ask-profession");

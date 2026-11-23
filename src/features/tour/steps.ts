@@ -17,8 +17,8 @@ export interface TourStep {
 
 /**
  * 2026-11-22 (ega: "ilovaga kirganda ovozli tushuntirsin, tugmalar nima vazifani bajarishini — uni ham ovozini ber"):
- * chat tepasidagi video-tushuntirishdan keyin — hozirgi tugmalar: bo'sh ekrandagi ikki katta tugma, yozish maydoni,
- * asosiy menyu (Qidiruv · E'lonlarim · Profil), keyin yuqori panel: "E'lon berish" (kompyuterda), xabarlar, til, kirish,
+ * chat tepasidagi video-tushuntirishdan keyin — hozirgi tugmalar: bosh ekrandagi uchta katta tugma (2026-11-23: + sariq
+ * "E'lon berish"), qidiruv qatori, asosiy menyu (Qidiruv · E'lonlarim · Profil), keyin yuqori panel: xabarlar, til, kirish,
  * qo'ng'iroqcha.
  * Ikkala panelda bir xil (bosh ekran ikkalasida ham bir xil); ko'rilgani panel bo'yicha alohida eslab qolinadi.
  */
@@ -26,12 +26,14 @@ const STEPS: readonly TourStep[] = [
   { code: "B0", target: null },
   { code: "B1", target: "start-jobs" },
   { code: "B2", target: "start-workers" },
+  // "E'lon berish": bosh ekrandagi sariq tugma (2026-11-23, uchinchi tugma) — kompyuterda yuqori paneldagisi
+  { code: "B6", target: "post" },
+  // yozish: bosh ekranda — qidiruv qatori, suhbatda — pastdagi maydon
   { code: "B3", target: "composer" },
   { code: "B4", target: "chat" },
   { code: "B5", target: "my-listings" },
   { code: "B7", target: "profile" },
-  // yuqori panel: "E'lon berish" (kompyuterda), xabarlar, til, kirish, qo'ng'iroqcha
-  { code: "B6", target: "post" },
+  // yuqori panel: xabarlar, til, kirish, qo'ng'iroqcha
   { code: "U4", target: "messages" },
   { code: "U2", target: "lang" },
   { code: "U3", target: "login" },

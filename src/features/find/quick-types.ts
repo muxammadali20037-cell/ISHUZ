@@ -56,6 +56,8 @@ export interface QuickForm {
   intent?: QuickMode | null;
   /** hudud matnda aytilgan yoki shu qurilmada eslab qolingan (aks holda chat hududni so'raydi) */
   placeKnown?: boolean;
+  /** hudud aynan matnda aytilgan ("Samarqandda", "masofaviy") — eslab qolingandan va qidiruv qatoridagi tanlovdan ustun */
+  placeSaid?: boolean;
   /** e'lon berish niyati ("vakansiya joylamoqchiman"): kim uchun; null — rejimdan */
   post?: { who: "worker" | "employer" | null } | null;
   /** butun soha so'raldi ("kuryer", "IT", "call-markaz") — shu kategoriyadagi hamma vakansiyalar (families.ts) */
