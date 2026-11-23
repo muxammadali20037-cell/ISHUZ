@@ -91,8 +91,9 @@ test("profil to'ldirilgan bo'lsa ?next= — aynan o'sha vakansiyaga, ariza oynas
   await page.waitForURL(new RegExp(`/jobs/${open.slug}\\?apply=1$`));
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.goto(`/onboarding/worker?next=${encodeURIComponent("https://evil.uz/x")}`);
-  // begona manzil o'rniga — asosiy ekran ("/" kirgan foydalanuvchini chatga olib boradi, 2026-11-20)
-  await page.waitForURL((u) => new URL(u).pathname === "/chat");
+  // begona manzil o'rniga — Bosh sahifa ("/"; 2026-11-23 dan kirgan foydalanuvchi ham shu yerda qoladi)
+  await page.waitForURL((u) => new URL(u).pathname === "/");
+  await expect(page.locator("main [data-start-home]")).toBeVisible();
 });
 
 test("profilsiz foydalanuvchi: 'Arizalar' — onboardingga majburan emas, tushuntirish va 'Ishlarni ko'rish'", async ({ page, context }) => {

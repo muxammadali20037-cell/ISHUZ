@@ -299,8 +299,10 @@ test.describe("kirish oqimi", () => {
     // qaytgan foydalanuvchi: cookie'lar tozalansa ham (yangi qurilma) — til/tanishtiruvsiz, darhol asosiy ekran (chat)
     await context.clearCookies();
     await loginAs(context, NEW_WORKER);
+    // 2026-11-23: kirgan foydalanuvchining "/" — Bosh sahifa (pastki menyuda alohida bo'lim); chat — /chat
     await page.goto("/");
-    expect(path(page)).toBe("/chat");
+    expect(path(page)).toBe("/");
+    await expect(page.locator("main [data-start-home]")).toBeVisible();
     // "tayyor" ekrani faqat profil yakunidan keladi — oqim unga o'zi yo'naltirmaydi
     await page.goto("/start");
     await page.waitForURL((u) => new URL(u).pathname === "/chat");
@@ -354,7 +356,8 @@ test.describe("kirish oqimi", () => {
     await page.goto("/auth/telefon?next=%2Fsaved");
     await page.waitForURL("**/saved");
     await page.goto("/auth?next=https%3A%2F%2Fevil.uz");
-    expect(path(page)).toBe("/chat");
+    // begona manzil qabul qilinmaydi — Bosh sahifaga (2026-11-23 dan "/" kirganlarga ham Bosh sahifa)
+    expect(path(page)).toBe("/");
   });
 
   for (const width of [320, 360, 390, 430]) {

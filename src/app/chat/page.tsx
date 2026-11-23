@@ -17,10 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * /chat — asosiy ekran (pastki menyuning "Qidiruv" bo'limi; mehmon uchun "/" ham shu chat). AI maqsadni yozilgan matndan
+ * /chat — suhbat (pastki menyuning "Qidiruv" bo'limi; "/" — Bosh sahifa, u yerdagi qidiruv va tugmalar shu yerda ?from=home
+ * bilan yangi suhbat bo'lib davom etadi). AI maqsadni yozilgan matndan
  * o'zi aniqlaydi (ega, 2026-11-21); rejim faqat salom matni va misollar uchun (rejimi yo'q mehmon — "Ish kerakmi yoki ishchi?").
  */
-export default async function ChatPage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[]; region?: string | string[] }> }) {
+export default async function ChatPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string | string[]; post?: string | string[]; region?: string | string[]; start?: string | string[]; from?: string | string[] }>;
+}) {
   const [session, mode, params, jar] = await Promise.all([getSession(), getMode(), searchParams, cookies()]);
   if (session?.profile.is_blocked) redirect("/blocked");
   return (
@@ -29,11 +34,13 @@ export default async function ChatPage({ searchParams }: { searchParams: Promise
         mode={mode}
         owner={session?.userId ?? "guest"}
         initialQuery={chatQuery(params.q)}
-        post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
+        post={params.post === "1" ? "resume" : params.post === "new" ? "new" : params.post === "offer" ? "offer" : null}
         introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
         imageEnabled={listingImageEnabled()}
         home={await homeData(mode, session, (name) => jar.get(name)?.value)}
         initialRegion={typeof params.region === "string" ? params.region : null}
+        initialStart={params.start === "jobs" || params.start === "workers" ? params.start : null}
+        fromHome={params.from === "home"}
       />
     </Shell>
   );

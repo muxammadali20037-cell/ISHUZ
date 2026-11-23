@@ -19,7 +19,7 @@ test.beforeEach(async () => {
 
 // 2026-11-21 (ega: "kirgan zahoti chat"): mehmon bosh sahifasi ham chat — "Bo'limlar" menyusi va "Yangi ishlar" ro'yxati
 // olib tashlandi (ularning testlari ham); chat — guided-chat.spec.ts
-test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi va qaytib (asosiy ekran — chat — o'sha rolda)", async ({ page, context }) => {
+test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi va qaytib (Bosh sahifa — o'sha rolda)", async ({ page, context }) => {
   const role = async (id: string) => (await sql<{ active_role: string | null }>("select active_role from public.profiles where id = $1", [id]))[0]!.active_role;
   const beforeA = await role(USERS.workerA);
   const beforeE = await role(USERS.employer);
@@ -30,8 +30,8 @@ test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi 
     // 2026-11-21: rol almashtirish — "Boshqa sozlamalar" ichida
     await fold(page, "more").locator("[data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
-    await page.waitForURL(/\/chat$/);
-    // bosh ekrandagi qidiruv qatori — ish beruvchida ishchilar (2026-11-23)
+    // 2026-11-23: almashtirgach — Bosh sahifa ("/"), o'sha rolda; qidiruv qatori — ish beruvchida ishchilar
+    await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("searchbox", { name: "Qanday ishchi kerak" })).toBeVisible();
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
     expect(await role(USERS.workerA)).toBe("employer");
@@ -42,7 +42,7 @@ test("rol almashtirish — Profilda bir bosishda: ish izlovchi → ish beruvchi 
     await fold(page, "more").locator("[data-fold-toggle]").click();
     await expect(page.locator("main [data-role-switch]")).toHaveText(/Ish izlovchiga o'tish/);
     await page.locator("main [data-role-switch]").click();
-    await page.waitForURL(/\/chat$/);
+    await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
     expect((await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
   } finally {

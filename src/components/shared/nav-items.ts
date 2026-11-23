@@ -2,6 +2,7 @@ import {
   Bookmark,
   BriefcaseBusiness,
   Building2,
+  House,
   CalendarDays,
   ClipboardList,
   FileCheck2,
@@ -162,7 +163,7 @@ export function mainItems(mode: MenuMode): MenuItem[] {
 
 /*
  * Asosiy menyu — 3 ta bo'lim (ega, 2026-11-21, master prompt: "asosiy navigatsiya faqat 3 ta bo'limdan iborat bo'lsin:
- * Chat, E'lonlarim, Profil"; AI bo'limi nomi — "Qidiruv"). Ikkala rejimda bir xil; ish izlovchining E'lonlarimida
+ * Chat, E'lonlarim, Profil"; AI bo'limi nomi — "Qidiruv"); 2026-11-23 (ega): boshida "Bosh sahifa" — 4 ta. Ikkala rejimda bir xil; ish izlovchining E'lonlarimida
  * "Sizga mos". Telefonda pastki menyu, kompyuterda yon menyu.
  * Ishlar/ishchilar ro'yxatlari, e'lon sahifalari va e'lon berish — chatdan ochiladi, shuning uchun "Chat" bo'limida.
  */
@@ -185,7 +186,7 @@ export const isMatchesPath = (p: string) => p.startsWith("/cabinet/matches");
 export const isApplicationsPath = (p: string) => p.startsWith("/employer/applications");
 /** "Chat": chatning o'zi, e'lon berish va chatdan ochiladigan ro'yxatlar/e'lonlar */
 export const isChatPath = (p: string, find?: string | null) =>
-  p === "/" || p.startsWith(CHAT_HREF) || p === "/ai" || p.startsWith("/ai/") || p.startsWith("/post") || isJobsPath(p, find) || isWorkersPath(p, find);
+  p.startsWith(CHAT_HREF) || p === "/ai" || p.startsWith("/ai/") || p.startsWith("/post") || isJobsPath(p, find) || isWorkersPath(p, find);
 /** "E'lonlarim": o'z e'lonlari, "Sizga mos" (ish izlovchi) va kelgan arizalar (ish beruvchi) */
 export const isMyListingsPath = (p: string) => p.startsWith("/cabinet/elonlar") || p.startsWith("/employer/vacancies") || isApplicationsPath(p) || isMatchesPath(p);
 const PROFILE_PREFIXES = ["/cabinet", "/profile", "/settings", "/notifications", "/billing", "/help", "/messages", "/saved", "/applications", "/offers", "/company/settings", "/onboarding"];
@@ -193,6 +194,8 @@ export const isProfilePath = (p: string) => p === "/employer" || (PROFILE_PREFIX
 
 export const APP_WORKERS: MenuItem = { key: "workers", href: WORKERS_HREF, labelKey: "easy.nav.tab_workers", hintKey: "easy.side.hint.candidates", icon: Users, match: isWorkersPath };
 export const APP_JOBS: MenuItem = { key: "jobs", href: "/jobs", labelKey: "easy.nav.tab_jobs", hintKey: "easy.side.hint.jobs", icon: BriefcaseBusiness, match: isJobsPath };
+/** "Bosh sahifa" (ega, 2026-11-23: "Bosh sahifa qo'shilsin pastga") — "/": qidiruv qatori, tugmalar, eng yangi e'lonlar */
+export const APP_HOME: MenuItem = { key: "home", href: "/", labelKey: "easy.nav.tab_home_page", hintKey: "easy.side.hint.home", icon: House, match: (p) => p === "/" };
 /** AI yordamchi bilan qidiruv (ega, 2026-11-21: odamlar o'rtasidagi yozishma bilan adashmasin — nomi "Qidiruv") */
 export const APP_CHAT: MenuItem = { key: "chat", href: CHAT_HREF, labelKey: "easy.nav.tab_chat", hintKey: "easy.start_chat.title", icon: Search, match: isChatPath };
 export const APP_MY_LISTINGS: MenuItem = {
@@ -206,15 +209,15 @@ export const APP_MY_LISTINGS: MenuItem = {
 /** arizalar va ishga takliflar yo'q (ega, 2026-11-21: "bog'lanish faqat telefon orqali") — bo'limlarda son belgisi ham yo'q */
 export const APP_PROFILE: MenuItem = { key: "profile", href: "/cabinet", labelKey: "easy.nav.tab_profile", hintKey: "easy.side.hint.profile", icon: User, match: isProfilePath };
 
-/** Telefondagi pastki menyu: Qidiruv · E'lonlarim · Profil (ikkala rejimda bir xil) */
+/** Telefondagi pastki menyu: Bosh sahifa · Qidiruv · E'lonlarim · Profil (ikkala rejimda bir xil; 2026-11-23 — "Bosh sahifa") */
 export function appTabs(): MenuItem[] {
-  return [APP_CHAT, APP_MY_LISTINGS, APP_PROFILE];
+  return [APP_HOME, APP_CHAT, APP_MY_LISTINGS, APP_PROFILE];
 }
 export const APP_TABS: MenuItem[] = appTabs();
 
 /** Kompyuterdagi yon menyu: o'sha 3 ta bo'lim; xabarlar — alohida qator (telefonda yuqori panelda) */
 export function appSideItems(): MenuItem[] {
-  const [chat, mine, profile] = appTabs();
-  return [chat!, mine!, { ...messages, match: (p) => p.startsWith("/messages") }, { ...profile!, match: (p) => isProfilePath(p) && !p.startsWith("/messages") }];
+  const [home, chat, mine, profile] = appTabs();
+  return [home!, chat!, mine!, { ...messages, match: (p) => p.startsWith("/messages") }, { ...profile!, match: (p) => isProfilePath(p) && !p.startsWith("/messages") }];
 }
 export const APP_SIDE_ITEMS: MenuItem[] = appSideItems();

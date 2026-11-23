@@ -8,7 +8,7 @@ import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
  */
 
 // 2026-11-21 (ega, master prompt): pastki menyu ikkala rejimda bir xil — Qidiruv · E'lonlarim · Profil
-const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
+const TABS = ["Bosh sahifa", "Qidiruv", "E'lonlarim", "Profil"];
 
 test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q; maqsad yozilganidan aniqlanib eslab qolinadi", async ({ page, context }) => {
   await asGuest(context);
@@ -18,9 +18,11 @@ test("mehmon (rejim tanlanmagan): bosh sahifa — chat; rejim almashtirgich yo'q
   await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
   // ko'rish rejim tanlovini o'zi yozmaydi
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
-  // pastki menyu: Qidiruv · E'lonlarim · Profil
+  // pastki menyu: Bosh sahifa · Qidiruv · E'lonlarim · Profil (2026-11-23: "Bosh sahifa" qo'shildi)
   const nav = page.getByRole("navigation").last();
   await expect(nav.getByRole("link")).toHaveText(TABS);
+  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("href", "/");
+  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
   await expect(nav.getByRole("link", { name: "Qidiruv" })).toHaveAttribute("href", "/chat");
   await expect(nav.getByRole("link", { name: "E'lonlarim" })).toHaveAttribute("href", "/cabinet/elonlar");
   await expect(nav.getByRole("link", { name: "Profil" })).toHaveAttribute("href", "/cabinet");
@@ -54,9 +56,8 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
   try {
     await loginAs(context, RET);
     await asMode(context, "worker");
-    // 2026-11-20: kirgan foydalanuvchining asosiy ekrani — chat
+    // 2026-11-23: kirgan foydalanuvchining asosiy ekrani — Bosh sahifa ("/")
     await page.goto("/");
-    await page.waitForURL(/\/chat$/);
     // bosh ekran: qidiruv qatori — ish izlovchiniki
     await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
     await expect(page.getByRole("radiogroup", { name: "Rejim" })).toHaveCount(0);
@@ -70,8 +71,8 @@ test("kirgan foydalanuvchi: almashtirgich yo'q (rol kirishda tanlangan); rol —
     const splash = page.locator("[data-role-splash]");
     await expect(splash).toHaveAttribute("data-role-splash", "employer");
     await expect(splash).toHaveText("Siz ish beruvchi paneliga o'tdingiz");
-    await page.waitForURL((u) => new URL(u).pathname === "/chat");
-    // chat endi ishchilar qidiruvi bilan ochiladi (ish beruvchi rejimi)
+    // 2026-11-23: Bosh sahifa ("/") endi ishchilar qidiruvi bilan ochiladi (ish beruvchi rejimi)
+    await page.waitForURL((u) => new URL(u).pathname === "/");
     await expect(page.getByRole("searchbox", { name: "Qanday ishchi kerak" })).toBeVisible();
     await expect(splash).toHaveCount(0, { timeout: 6_000 });
     // ish beruvchi paneli — o'z rangida (to'q ko'k, K1; avval binafsha)

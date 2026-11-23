@@ -103,9 +103,8 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await context.clearCookies({ name: "ib_tour" });
-  // kirgan foydalanuvchi: "/" — chat; tanishtiruv shu asosiy ekranda
+  // kirgan foydalanuvchi: "/" — Bosh sahifa (2026-11-23); tanishtiruv shu asosiy ekranda
   await page.goto("/");
-  await page.waitForURL(/\/chat$/);
   await expect(card(page)).toHaveAttribute("data-tour-card", "B0");
   await card(page).locator("[data-tour-next]").click();
   // ikkinchi qadam — "Ish qidiryapman" tugmasi

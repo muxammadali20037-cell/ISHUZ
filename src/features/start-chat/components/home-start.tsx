@@ -10,7 +10,6 @@ import { Select } from "@/components/ui/select";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import type { QuickMode, QuickOption } from "@/features/find/quick-types";
 import { employerQuickFilters, seekerQuickFilters } from "@/features/landing/quick-filters";
-import type { GuidedChat } from "../guided";
 import { ChatIntro } from "./chat-intro";
 
 const noopSubscribe = () => () => {};
@@ -22,8 +21,19 @@ const noopSubscribe = () => () => {};
  * Qidiruv ham, tugmalar ham — shu chatning o'zi: natijalar, savollar va e'lon berish suhbat ichida davom etadi.
  * Ish beruvchi rejimida qidiruv — ishchilar, bo'limlar — ishchilar bo'limlari.
  */
+/**
+ * Bosh ekrandagi amallar: "/" (Bosh sahifa) sahifasida — /chat ga o'tib bajariladi (suhbat "Qidiruv"da), /chat'ning bo'sh
+ * holatida — shu chatning o'zida
+ */
+export interface HomeActions {
+  pending: boolean;
+  find: (q: string, place: QuickOption) => void;
+  start: (role: "jobs" | "workers") => void;
+  post: () => void;
+}
+
 export function HomeStart({
-  chat,
+  act,
   mode,
   places,
   place: initialPlace,
@@ -31,7 +41,7 @@ export function HomeStart({
   latest,
   introSeen,
 }: {
-  chat: GuidedChat;
+  act: HomeActions;
   mode: QuickMode;
   places: QuickOption[];
   place: string;
@@ -70,13 +80,15 @@ export function HomeStart({
         aria-label={t("easy.guided.home.search_label")}
         onSubmit={(e) => {
           e.preventDefault();
-          if (chosen) chat.find(q, chosen);
+          if (chosen) act.find(q, chosen);
         }}
         className="grid grid-cols-1 gap-2 rounded-2xl border border-border bg-card p-3 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto] xl:grid-cols-[minmax(0,1fr)_17rem_auto]"
         data-home-search
         data-hydrated={hydrated ? "" : undefined}
         data-tour="composer"
       >
+        {/* skriptlarsiz yuborilganda ham — bosh ekrandan (suhbat yangidan boshlanadi) */}
+        <input type="hidden" name="from" value="home" />
         <div className="min-w-0 sm:col-span-2 xl:col-span-1">
           <label htmlFor="home-q" className="sr-only">
             {t(jobs ? "easy.guided.home.q_label_jobs" : "easy.guided.home.q_label_workers")}
@@ -113,23 +125,20 @@ export function HomeStart({
           <MapPin className="pointer-events-none absolute left-4 top-1/2 z-10 size-5 -translate-y-1/2 text-muted-foreground" aria-hidden />
           <Select id="home-place" name="region" options={places} value={place} onChange={(e) => setPlace(e.target.value)} className="h-12 rounded-xl pl-11" data-home-place />
         </div>
-        <Button type="submit" size="lg" className="h-12 shrink-0 rounded-xl px-6 text-base" disabled={chat.pending} data-home-submit>
+        <Button type="submit" size="lg" className="h-12 shrink-0 rounded-xl px-6 text-base" disabled={act.pending} data-home-submit>
           {t("easy.guided.home.search")}
         </Button>
       </form>
 
-      {/* ega (2026-11-23): "Ish qidiryapman" / "Ishchi qidiryapman" — to'q ko'k oynali (shisha), yonida sariq "E'lon berish";
-          orqada xira rang dog'lari — shisha orqali ko'rinadi */}
-      <div className="relative isolate grid grid-cols-3 gap-2" data-guided-starts>
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <span className="absolute -left-4 top-1/2 size-28 -translate-y-1/2 rounded-full bg-primary/45 blur-2xl" />
-          <span className="absolute left-1/3 top-1/2 size-24 -translate-y-1/2 rounded-full bg-accent-bright/40 blur-2xl" />
-          <span className="absolute right-1/4 top-1/2 size-24 -translate-y-1/2 rounded-full bg-highlight/50 blur-2xl" />
-        </div>
-        <Tile icon={BriefcaseBusiness} label={t("easy.guided.start_jobs")} disabled={chat.pending} onClick={() => chat.start("jobs", t("easy.guided.start_jobs"))} data-guided-start="jobs" data-tour="start-jobs" />
-        <Tile icon={UsersRound} label={t("easy.guided.start_workers")} disabled={chat.pending} onClick={() => chat.start("workers", t("easy.guided.start_workers"))} data-guided-start="workers" data-tour="start-workers" />
-        {/* sariq (ega tanlagan urg'u): kim ekani so'ralmaydi — ikkala variant chiqadi (o'zi haqida / vakansiya) */}
-        <Tile icon={Plus} label={t("easy.guided.home.post")} accent disabled={chat.pending} onClick={() => chat.offerPost(t("easy.guided.home.post"))} data-guided-start="post" data-tour="post" />
+      {/*
+        ega (2026-11-23, variantlardan "1 — nurli shisha"): "Ish qidiryapman" / "Ishchi qidiryapman" — to'q ko'k oynali, ichidan
+        rangli nur taraladi (ko'k / turkuaz); yonida sariq "E'lon berish" — o'sha uslubda, oq nur bilan
+      */}
+      <div className="grid grid-cols-3 gap-2.5 sm:gap-3" data-guided-starts>
+        <Tile icon={BriefcaseBusiness} label={t("easy.guided.start_jobs")} glow="bg-primary" disabled={act.pending} onClick={() => act.start("jobs")} data-guided-start="jobs" data-tour="start-jobs" />
+        <Tile icon={UsersRound} label={t("easy.guided.start_workers")} glow="bg-accent-bright" disabled={act.pending} onClick={() => act.start("workers")} data-guided-start="workers" data-tour="start-workers" />
+        {/* kim ekani so'ralmaydi — ikkala variant chiqadi ("Ishchi izlash uchun" / "Ish izlash uchun") */}
+        <Tile icon={Plus} label={t("easy.guided.home.post")} accent disabled={act.pending} onClick={act.post} data-guided-start="post" data-tour="post" />
       </div>
 
       <QuickLinks mode={mode} />
@@ -145,25 +154,31 @@ export function HomeStart({
   );
 }
 
-function Tile({ icon: Icon, label, accent, ...props }: { icon: LucideIcon; label: string; accent?: boolean } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
+function Tile({
+  icon: Icon,
+  label,
+  accent,
+  glow = "bg-primary",
+  ...props
+}: { icon: LucideIcon; label: string; accent?: boolean; glow?: string } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
   return (
     <button
       type="button"
       className={cn(
         // 320 px da uchta tugma yonma-yon: "qidiryapman" bo'linmasin — eng tor ekranda kichikroq yozuv
-        "press flex min-h-24 min-w-0 flex-col items-center justify-center gap-1.5 rounded-xl border px-1 py-2.5 text-center text-xs font-bold leading-tight shadow-sm transition-colors [overflow-wrap:anywhere] disabled:opacity-60 min-[360px]:px-1.5 min-[360px]:text-sm sm:text-base",
-        accent
-          ? "border-highlight bg-highlight text-highlight-foreground hover:bg-highlight-hover"
-          : "relative overflow-hidden border-navy-foreground/10 bg-navy-2/90 text-navy-foreground shadow-md ring-1 ring-inset ring-navy-foreground/10 backdrop-blur-md hover:bg-navy-2",
+        "press relative isolate flex min-h-28 min-w-0 flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border px-1 py-3 text-center text-xs font-bold leading-tight shadow-lg backdrop-blur-md transition-transform [overflow-wrap:anywhere] hover:-translate-y-0.5 disabled:opacity-60 min-[360px]:px-1.5 min-[360px]:text-sm sm:min-h-32 sm:text-base",
+        accent ? "border-highlight bg-highlight text-highlight-foreground" : "border-navy-foreground/15 bg-navy-2/90 text-navy-foreground",
       )}
       {...props}
     >
-      <span className={cn("relative flex size-9 shrink-0 items-center justify-center rounded-lg", accent ? "bg-card text-foreground" : "bg-navy-foreground/10 text-sidebar-accent")} aria-hidden>
-        <Icon className="size-5" />
+      {/* ichki nur: burchakdagi rangli va pastdagi yumshoq dog' + tepadagi ingichka yaltirash */}
+      <span aria-hidden className={cn("absolute -right-8 -top-8 -z-10 size-24 rounded-full blur-2xl", accent ? "bg-card opacity-70" : cn(glow, "opacity-80"))} />
+      <span aria-hidden className={cn("absolute -bottom-10 -left-8 -z-10 size-20 rounded-full blur-2xl", accent ? "bg-card/40" : "bg-primary/40")} />
+      <span aria-hidden className={cn("absolute inset-x-4 top-0 h-px", accent ? "bg-card/70" : "bg-navy-foreground/40")} />
+      <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-full ring-1", accent ? "bg-card/80 text-highlight-foreground ring-card" : "bg-navy-foreground/15 text-navy-foreground ring-navy-foreground/25")} aria-hidden>
+        <Icon className="size-5.5" />
       </span>
-      <span className="relative" data-tile-label>
-        {label}
-      </span>
+      <span data-tile-label>{label}</span>
     </button>
   );
 }

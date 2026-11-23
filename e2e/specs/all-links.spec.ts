@@ -49,26 +49,32 @@ test("kirgan ish izlovchi → rolni almashtiradi → ish beruvchi: har ikki tomo
   try {
     await loginAs(context, USERS.workerA);
     await asMode(context, "worker");
-    // 2026-11-20: kirgan foydalanuvchining "/" — asosiy ekran (chat)
+    // 2026-11-23: kirgan foydalanuvchining "/" — Bosh sahifa; suhbat — /chat ("Qidiruv")
     await page.goto("/");
-    await page.waitForURL(/\/chat$/);
+    await expect(page.locator("main [data-start-home]")).toBeVisible();
+    await page.goto("/chat");
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
-    await expectAllOpen(page, await linksOn(page, ["/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=jobs"]));
+    await expectAllOpen(page, await linksOn(page, ["/", "/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=jobs"]));
 
     // rolni almashtirish — "Profil" → "Boshqa sozlamalar" ichidagi bitta tugma (2026-11-21)
     await page.goto("/cabinet");
     await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
-    await page.waitForURL((u) => new URL(u).pathname === "/chat");
+    // almashtirgach — Bosh sahifa ("/") o'sha rolda; suhbat maydoni — /chat da
+    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await expect(page.getByRole("searchbox", { name: "Qanday ishchi kerak" })).toBeVisible();
+    await page.goto("/chat");
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
-    await expectAllOpen(page, await linksOn(page, ["/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=workers"]));
+    await expectAllOpen(page, await linksOn(page, ["/", "/chat", "/cabinet", "/cabinet/elonlar", "/search?mode=workers"]));
 
     // va orqaga
     await page.goto("/cabinet");
     await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
     await page.locator("main [data-role-switch]").click();
     await expect(page.locator("[data-role-splash='worker']")).toHaveText("Siz ish izlovchi paneliga o'tdingiz");
-    await page.waitForURL((u) => new URL(u).pathname === "/chat");
+    await page.waitForURL((u) => new URL(u).pathname === "/");
+    await expect(page.getByRole("searchbox", { name: "Kasb yoki lavozim" })).toBeVisible();
+    await page.goto("/chat");
     await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
     // ish izlovchi paneli — yorqin ko'k (to'q ko'k faqat ish beruvchida)
     await expect(page.locator("html")).not.toHaveAttribute("data-panel", "employer");
