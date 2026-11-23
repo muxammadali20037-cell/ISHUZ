@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## 2026-11-23 · Bosh sahifa kompyuterda kengroq (`feat/home-wide`)
+
+Ega (kompyuter skrinshoti): "sahifa juda tor" — katta ekranda o'rtada ingichka ustun, ikki yon bo'sh. Migratsiya yo'q.
+
+- **Kenglik:** bosh ekran (chat bo'sh holati) kompyuterda kengroq: 1024px'dan — 64rem, 1280px'dan — 72rem,
+  1536px'dan — 80rem. Telefon va planshetda o'zgarish yo'q. Suhbat boshlangach — avvalgidek o'qish uchun tor ustun.
+- **Joylashuv (keng ekranda):** qidiruv qatori bir qatorda (matn · hudud · "Qidirish"); tezkor bo'limlar bir qatorda;
+  "Eng yangi vakansiyalar" — 2 ta karta yonma-yon; "Barcha vakansiyalar (N)" o'rtada; sarlavha kattaroq.
+- **Video:** birinchi kirishda ochiladigan video kengaymaydi (o'rtada, avvalgi o'lchamda).
+
 ## 2026-11-23 · Qidiruv qatoridagi yozuv va yangi "E'loningiz joylandi" ekrani (`feat/home-hint-done`)
 
 Ega: qidiruv qatoridagi "Kim kerak: oshpaz, haydovchi…" kesilib qolardi — "Yozing, o'zingizga mosini toping" bo'lsin va
