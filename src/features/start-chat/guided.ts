@@ -7,7 +7,7 @@ import { MESSAGE_MAX_CHARS } from "@/features/assistant/types";
 import { quickPrepare, quickSearch } from "@/features/find/quick-actions";
 import { rememberPlace } from "@/features/find/place-actions";
 import { detectIntent, detectPostIntent, postTopic } from "@/features/find/intent";
-import { quickPostPrepare, quickPostPreview, quickPostPublish } from "@/features/find/quick-post-actions";
+import { quickPostPrepare, quickPostPreview, quickPostPublish, quickPostRefine } from "@/features/find/quick-post-actions";
 import type { PostAnswers, PostChoice, PostExperience } from "@/features/find/quick-post-types";
 import { chooseMode } from "@/features/mode/actions";
 import type { AppMode } from "@/features/mode/mode";
@@ -413,7 +413,29 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     push(label, mid);
     postNext({ ...post, ...patch }, mid);
   };
-  const pickPostChoice = (choice: PostChoice) => pickPost({ profession: choice }, choice.name);
+  /**
+   * "Aynan qaysi biri" tugmasi. Kasb ichida yana yo'nalishlar bo'lsa ("Buxgalter" → "Soliq buxgalteri", …) — yana bitta savol
+   * (ega, 2026-11-23: "kasblarni ich-ichigacha bilib olib, keyin e'lon joylansin"); birinchi variant — kasbning o'zi
+   */
+  const pickPostChoice = (choice: PostChoice) => {
+    if (!choice.more) return pickPost({ profession: { id: choice.id, name: choice.name } }, choice.name);
+    if (pending || !post) return;
+    markAnswered();
+    const mid = id();
+    push(choice.name, mid);
+    const d = post;
+    const run = ++runRef.current;
+    const plain = () => postNext({ ...d, profession: { id: choice.id, name: choice.name } }, mid);
+    quickPostRefine({ id: choice.id }).then(
+      (res) => {
+        if (runRef.current !== run) return;
+        if (!res.ok || !res.data) return plain();
+        setAwaiting("post_which");
+        replace(mid, { kind: "post-ask", ask: "post_which", question: res.data.question, groups: res.data.groups });
+      },
+      () => runRef.current === run && plain(),
+    );
+  };
   const pickPostRegion = (opt: QuickOption) => pickPost({ regionId: opt.value, districtId: null }, opt.label);
   const pickPostExperience = (x: PostExperience, label: string) => pickPost({ experience: x }, label);
   /** izoh savolida tayyor variantni belgilash / olib tashlash */

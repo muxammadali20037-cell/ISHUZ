@@ -21,15 +21,17 @@ export interface ComposerProps {
   onSendFile: (file: File, kind: "image" | "document") => Promise<void>;
   onSendVoice: (blob: Blob, mime: string, seconds: number) => Promise<void>;
   onSendLocation: (lat: number, lng: number) => Promise<void>;
+  /** yozish maydonidagi tayyor matn (birinchi xat — "Assalomu alaykum! …"); foydalanuvchi o'zgartirishi yoki o'chirishi mumkin */
+  initialText?: string;
 }
 
 const MAX_TEXTAREA_PX = 160;
 const noopSubscribe = () => () => {};
 const getIsTouch = () => navigator.maxTouchPoints > 0 || "ontouchstart" in window;
 
-export function Composer({ disabled, disabledNotice, disabledAction, onSendText, onSendFile, onSendVoice, onSendLocation }: ComposerProps) {
+export function Composer({ disabled, disabledNotice, disabledAction, onSendText, onSendFile, onSendVoice, onSendLocation, initialText = "" }: ComposerProps) {
   const { t } = useT();
-  const [text, setText] = useState("");
+  const [text, setText] = useState(initialText);
   const [busy, setBusy] = useState(false);
   const [recording, setRecording] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);

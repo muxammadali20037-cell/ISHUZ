@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, homeSearch, loginAs } from "../support";
+import { USERS, asGuest, asMode, generalArea, homeSearch, loginAs } from "../support";
 
 /**
  * Chat ketma-ketligi (ega, 2026-11-22): bo'sh ekranda ikki katta tugma — «Ish qidiryapman» / «Ishchi qidiryapman»; keyin kasb
@@ -66,6 +66,8 @@ test("ish izlovchi: «O'zim haqimda e'lon berish» — kasb va viloyat bilan, ke
   await place.locator("[data-guided-place='samarkand']").click();
   await blurComposer(page);
   await page.locator("[data-guided-next-to='post']").click();
+  // kasb tanlangan, ichida yo'nalishlar bor — "Buxgalter: aynan qaysi yo'nalishda?" (2026-11-23)
+  await generalArea(page, "Buxgalter");
   await expect(page.locator("[data-guided-ai='post-name']")).toBeVisible();
 });
 

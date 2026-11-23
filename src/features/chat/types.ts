@@ -49,7 +49,18 @@ export interface ConversationContext {
   company: string | null;
   /** Kontekst sahifasi: ishchi uchun /applications/[id] | /offers/[id]; ish beruvchi uchun /jobs/[slug] */
   href: string | null;
+  /** suhbat tepasida qadalgan e'lon kartasi uchun (ega, 2026-11-23): hudud va e'lon rasmi (bo'lsa) */
+  place?: string | null;
+  image?: string | null;
+  /** e'lon turi: ishchi e'loni yoki vakansiya (kartadagi yozuv) */
+  listing?: "worker" | "vacancy";
 }
+
+/**
+ * Birinchi xat (ega, 2026-11-23: "Chatda yozish bosilsa — e'lon qadalib, «Assalomu alaykum»dan boshlanadigan rasmiy tayyor matn
+ * yozib berilsin"): kim kimga yozyapti. null — tayyor matn kerak emas (suhbatni boshlagan tomon emas).
+ */
+export type ChatIntro = "to_worker" | "to_employer" | "to_applicant";
 
 export interface ConversationView {
   id: string;
@@ -58,6 +69,9 @@ export interface ConversationView {
   context: ConversationContext;
   /** Suhbatdosh sahifasi (ish beruvchi uchun /workers/[id], ishchi uchun /company/[slug]) */
   otherHref: string | null;
+  /** birinchi xat turi (yozish maydoniga tayyor matn) va suhbatdoshning ismi (salomlashish uchun) */
+  intro?: ChatIntro | null;
+  otherFirstName?: string | null;
 }
 
 export type ConversationListItem = Database["public"]["Functions"]["my_conversations"]["Returns"][number];

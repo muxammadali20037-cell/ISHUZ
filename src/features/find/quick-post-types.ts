@@ -14,6 +14,8 @@ export const POST_EXPERIENCES: readonly PostExperience[] = ["none", "lt1", "1_3"
 export interface PostChoice {
   id: string;
   name: string;
+  /** ichida yana aniq yo'nalishlar bor — tanlangach "qaysi yo'nalish?" so'raladi */
+  more?: boolean;
 }
 
 /** "Aynan qanday o'qituvchisiz?" — variantlar guruhlab (sarlavha: "Chet tillari"; null — guruhning o'zi) */

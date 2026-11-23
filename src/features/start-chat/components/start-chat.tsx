@@ -702,6 +702,8 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
             <ChoicePicker
               attr="post-choice"
               items={(part.groups ?? []).flatMap((g) => g.items.map((c) => ({ key: c.id, label: c.name, group: g.title, onClick: () => chat.pickPostChoice(c) })))}
+              // yopiq holatda — har yo'nalishdan bittadan (shifokor: terapevt, kardiolog, pediatr — uchala terapevt emas)
+              featured={(part.groups ?? []).flatMap((g) => (g.items[0] ? [{ key: g.items[0].id, label: g.items[0].name, onClick: () => chat.pickPostChoice(g.items[0]!) }] : []))}
               searchPlaceholder={t("easy.guided.pick_search_prof")}
             />
           ) : null}

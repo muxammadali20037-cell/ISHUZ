@@ -281,7 +281,13 @@
     "done_live": "E'loningiz joylandi! Endi mijozlar sizni shu bo'limda ko'radi.",
     "review_title": "E'loningiz qabul qilindi",
     "review_desc": "Ish namunalari tekshirilgach, e'lon katalogda chiqadi. Holatini kabinetda ko'rasiz.",
-    "to_cabinet": "Kabinetga o'tish"
+    "to_cabinet": "Kabinetga o'tish",
+    "type_label": "Kasbingizni yozing — o'zimiz topamiz",
+    "type_placeholder": "Masalan: santexnik, konditsioner ustasi",
+    "type_found": "Topildi: {name}",
+    "type_other": "Ro'yxatda yo'q — «Boshqa xizmatlar» bo'limida, shu nom bilan joylanadi",
+    "type_or_pick": "yoki ro'yxatdan tanlang:",
+    "type_unknown": "Tushunmadim — ro'yxatdan tanlang."
   },
   "svc": {
     "ac": {

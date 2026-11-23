@@ -3,7 +3,10 @@ import "server-only";
 import { createClient, type SupabaseServerClient } from "@/lib/supabase/server";
 import type { SessionContext } from "@/features/auth/session";
 import { fullName } from "@/lib/format";
-import type { ChatMember, ConversationListItem, ConversationView, MessagesPage } from "./types";
+import type { ChatIntro, ChatMember, ConversationListItem, ConversationView, MessagesPage } from "./types";
+import { getT } from "@/lib/i18n/server";
+import { getDistricts, getRegions } from "@/lib/reference";
+import { getListingImageUrl } from "@/features/listing-image/server";
 import { rowToMessage } from "./utils";
 
 export const PAGE_SIZE = 50;
@@ -84,6 +87,31 @@ export async function getMessagesPage(conversationId: string, before?: number): 
  * Suhbat sarlavhasi uchun ko'rinish: a'zolar, kontekst (vakansiya/taklif), havolalar.
  * RLS: suhbat meniki bo'lmasa `conversations` null qaytaradi → null.
  */
+/** "Toshkent shahri, Chilonzor" — joriy tilda; topilmasa null */
+async function placeName(regionId: string | null | undefined, districtId: string | null | undefined): Promise<string | null> {
+  if (!regionId) return null;
+  const [{ name }, regions, districts] = await Promise.all([getT(), getRegions(), getDistricts()]);
+  const region = regions.find((r) => r.id === regionId);
+  if (!region) return null;
+  const district = districtId ? districts.find((d) => d.id === districtId) : undefined;
+  return [name(region), district ? name(district) : null].filter(Boolean).join(", ");
+}
+
+/** Qadalgan karta uchun ishchi e'loni: kasb (joriy tilda), hudud, e'lon rasmi */
+async function workerCard(supabase: SupabaseServerClient, workerId: string): Promise<{ title: string; place: string | null; image: string | null } | null> {
+  const { data } = await supabase
+    .from("worker_profiles")
+    .select("id, region_id, district_id, headline, custom_profession, profession:profession_nodes!worker_profiles_profession_node_id_fkey(name_uz, name_ru, name_en)")
+    .eq("id", workerId)
+    .maybeSingle();
+  if (!data) return null;
+  const { name } = await getT();
+  const node = Array.isArray(data.profession) ? (data.profession[0] ?? null) : data.profession;
+  const title = (node ? name(node) : null) || data.custom_profession || data.headline || "";
+  const [place, image] = await Promise.all([placeName(data.region_id, data.district_id), getListingImageUrl("worker", workerId)]);
+  return { title, place, image };
+}
+
 export async function getConversationView(conversationId: string, session: SessionContext): Promise<ConversationView | null> {
   const supabase = await createClient();
   const me = session.userId;
@@ -121,6 +149,7 @@ export async function getConversationView(conversationId: string, session: Sessi
   // Kontekst: ariza → vakansiya, yoki taklif
   let context: ConversationView["context"];
   let otherHref: string | null = null;
+  let intro: ChatIntro | null = null;
 
   // 0088: raqami ochilgan juftlik — qaysi e'londan ochilgan bo'lsa, o'sha e'lon (ustunlar hali yo'q bazada — undefined)
   const unlock = conv as { unlock_viewer?: string | null; unlock_target?: string | null };
@@ -132,13 +161,25 @@ export async function getConversationView(conversationId: string, session: Sessi
       .eq("target_profile_id", unlock.unlock_target)
       .maybeSingle();
     const workerId = u?.worker_id ?? null;
-    context = { kind: "listing", id: workerId ?? conv.id, title: listRow?.context_title ?? "", company: null, href: workerId ? `/listing/${workerId}` : null };
+    const card = workerId ? await workerCard(supabase, workerId) : null;
+    context = {
+      kind: "listing",
+      id: workerId ?? conv.id,
+      title: card?.title || listRow?.context_title || "",
+      company: null,
+      href: workerId ? `/listing/${workerId}` : null,
+      place: card?.place ?? null,
+      image: card?.image ?? null,
+      listing: "worker",
+    };
     // ish beruvchi — ishchi e'loniga; ishchi — o'z e'loniga havola kontekstda bor, suhbatdosh sahifasi yo'q
     otherHref = me === unlock.unlock_viewer && workerId ? `/listing/${workerId}` : null;
+    // raqamni ochgan ish beruvchi yozadi — ishchiga tayyor xat
+    intro = me === unlock.unlock_viewer ? "to_worker" : null;
   } else if (conv.application_id) {
     const { data: app } = await supabase
       .from("applications")
-      .select("id, vacancy_id, worker_id, vacancies(id, slug, title, companies(name, slug))")
+      .select("id, vacancy_id, worker_id, vacancies(id, slug, title, region_id, district_id, companies(name, slug))")
       .eq("id", conv.application_id)
       .maybeSingle();
     const vacancy = app?.vacancies ?? null;
@@ -150,26 +191,35 @@ export async function getConversationView(conversationId: string, session: Sessi
       title: vacancy?.title ?? listRow?.context_title ?? "",
       company: vacancy?.companies?.name ?? listRow?.company_name ?? null,
       href: amWorker ? `/applications/${conv.application_id}` : vacancy?.slug ? `/jobs/${vacancy.slug}` : app?.vacancy_id ? `/employer/vacancies/${app.vacancy_id}/applications` : null,
+      place: vacancy ? await placeName(vacancy.region_id, vacancy.district_id) : null,
+      image: vacancy?.id ? await getListingImageUrl("vacancy", vacancy.id) : null,
+      listing: "vacancy",
     };
+    intro = amWorker ? "to_employer" : "to_applicant";
     otherHref = amWorker ? (companySlug ? `/company/${companySlug}` : null) : app?.worker_id ? `/workers/${app.worker_id}` : null;
   } else {
     const offerId = conv.job_offer_id ?? "";
     const { data: offer } = await supabase
       .from("job_offers")
-      .select("id, title, vacancy_id, worker_id, vacancies(id, slug, title), companies(name, slug)")
+      .select("id, title, vacancy_id, worker_id, vacancies(id, slug, title, region_id, district_id), companies(name, slug)")
       .eq("id", offerId)
       .maybeSingle();
     const amWorker = !!session.workerId && offer?.worker_id === session.workerId;
     const companySlug = offer?.companies?.slug ?? null;
+    const ov = offer?.vacancies ?? null;
     context = {
       kind: "offer",
       id: offerId,
-      title: offer?.vacancies?.title ?? offer?.title ?? listRow?.context_title ?? "",
+      title: ov?.title ?? offer?.title ?? listRow?.context_title ?? "",
       company: offer?.companies?.name ?? listRow?.company_name ?? null,
-      href: amWorker ? `/offers/${offerId}` : offer?.vacancies?.slug ? `/jobs/${offer.vacancies.slug}` : `/offers/${offerId}`,
+      href: amWorker ? `/offers/${offerId}` : ov?.slug ? `/jobs/${ov.slug}` : `/offers/${offerId}`,
+      place: ov ? await placeName(ov.region_id, ov.district_id) : null,
+      image: ov?.id ? await getListingImageUrl("vacancy", ov.id) : null,
+      listing: "vacancy",
     };
+    intro = amWorker ? "to_employer" : "to_applicant";
     otherHref = amWorker ? (companySlug ? `/company/${companySlug}` : null) : offer?.worker_id ? `/workers/${offer.worker_id}` : null;
   }
 
-  return { id: conv.id, me: meMember, other: otherMember, context, otherHref };
+  return { id: conv.id, me: meMember, other: otherMember, context, otherHref, intro, otherFirstName: otherRow.profiles?.first_name?.trim() || null };
 }

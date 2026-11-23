@@ -16,6 +16,7 @@ import { USERS, snapshotUser, asGuest, asMode, loginAs, sql } from "../support";
 const TITLE = "Konditsioner o'rnatish va tozalash (E2E)";
 
 async function cleanup() {
+  await sql("delete from public.listing_images where entity = 'master' and owner_profile_id in ($1, $2, $3)", [USERS.workerA, USERS.workerB, USERS.employer]);
   await sql("delete from public.master_listings where owner_profile_id in ($1, $2, $3)", [USERS.workerA, USERS.workerB, USERS.employer]);
   await sql("delete from public.admin_users where profile_id = $1", [USERS.workerB]);
   // demo e'lonlar doim joyida (boshqa testlar va keyingi ishga tushirishlar uchun)
@@ -179,6 +180,93 @@ test("oynama-oyna: kategoriya → xizmatlar → ism → hudud va telefon → ras
     phone_public: true,
     description: "Konditsioner ustasi: Konditsioner o'rnatish, Freon to'ldirish. Hudud: Toshkent shahri.",
   });
+});
+
+test("«Qanday ustasiz?» — yozsa ham tanib topadi (imlo xatosi bilan ham); tanilmasa — «Boshqa xizmatlar», yozgani xizmat bo'ladi", async ({ page, context }) => {
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ustalar/elon");
+  const w = page.locator("[data-master-wizard]");
+  const box = w.locator("[data-master-type]");
+  await expect(w.locator("[data-master-wizard-categories] [data-category]")).toHaveCount(12);
+  await box.fill("konditsoner ustasiman");
+  await expect(w.locator("[data-master-type-guess]")).toHaveAttribute("data-master-type-guess", "ac");
+  await expect(w.locator("[data-master-type-guess]")).toHaveText("Topildi: Konditsioner ustasi");
+  await expect(w.locator("[data-category='ac']")).toHaveClass(/border-primary/);
+  await box.fill("сантехник");
+  await expect(w.locator("[data-master-type-guess]")).toHaveAttribute("data-master-type-guess", "plumber");
+  await expect(async () => {
+    await w.locator("[data-master-type-go]").click();
+    await expect(w).toHaveAttribute("data-step", "2", { timeout: 1_000 });
+  }).toPass();
+  await expect(w).toContainText("Santexnik");
+
+  // tanilmagan kasb — "Boshqa xizmatlar", yozgani — tanlangan xizmat
+  await w.locator("[data-master-wizard-back]").click();
+  await expect(w).toHaveAttribute("data-step", "1");
+  await w.locator("[data-master-type]").fill("akvarium tozalash");
+  await expect(w.locator("[data-master-type-guess]")).toHaveAttribute("data-master-type-guess", "");
+  await w.locator("[data-master-type-go]").click();
+  await expect(w).toHaveAttribute("data-step", "2");
+  await expect(w).toContainText("Boshqa xizmatlar");
+  await expect(w.locator("[data-service][aria-pressed='true']")).toHaveText("Akvarium tozalash");
+});
+
+test("qidiruv: «konditsioner ustasi kerak», «santexnk», «сантехник» — kategoriya tanib olinadi, natijalar shu kategoriyadan", async ({ page, context }) => {
+  await asGuest(context);
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const [q, slug, title] of [
+    ["konditsioner ustasi kerak", "ac", "Konditsioner ustasi"],
+    ["santexnk", "plumber", "Santexnik"],
+    ["сантехник", "plumber", "Santexnik"],
+    ["kir yuvish mashinasi", "appliance", "Maishiy texnika ustasi"],
+  ] as const) {
+    await page.goto(`/ustalar/qidiruv?q=${encodeURIComponent(q)}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    await expect(page.locator(`[data-masters-chips] a[aria-current='page']`)).toHaveAttribute("href", new RegExp(`k=${slug}`));
+    const cards = page.locator("[data-masters-results] [data-master-card]");
+    await expect(cards.first()).toBeVisible();
+    // demo e'lonlar — har kategoriyada 4 tadan; boshqa kategoriya aralashmaydi
+    const [row] = await sql<{ n: string }>(
+      "select count(*)::text as n from public.master_listings l join public.master_categories c on c.id = l.category_id where l.status = 'active' and c.slug = $1",
+      [slug],
+    );
+    await expect(cards).toHaveCount(Math.min(Number(row!.n), 12));
+  }
+});
+
+test("usta e'loni rasmi (AI, soxta OpenAI): oxirgi oynada «Rasm yaratish» → e'lon shu rasm bilan; kartada va sahifada — ish namunalaridan alohida", async ({ page, context }) => {
+  test.setTimeout(120_000);
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ustalar/elon");
+  const w = page.locator("[data-master-wizard]");
+  await expect(async () => {
+    await w.locator("[data-category='plumber']").click();
+    await expect(w).toHaveAttribute("data-step", "2", { timeout: 1_000 });
+  }).toPass();
+  await w.locator("[data-service]").first().click();
+  await w.locator("[data-master-wizard-next]").click();
+  await w.locator("[data-master-wizard-next]").click();
+  await w.getByLabel("Viloyat yoki shahar").selectOption({ label: "Toshkent shahri" });
+  await w.locator("[data-master-wizard-next]").click();
+  await expect(w).toHaveAttribute("data-step", "5");
+  await w.locator("[data-listing-image-create]").click();
+  await expect(w.locator("[data-listing-image='ready'] [data-listing-image-preview]")).toBeVisible({ timeout: 60_000 });
+  await w.locator("[data-master-wizard-publish]").click();
+  await page.waitForURL(/\/ustalar\/qidiruv\?k=plumber&joylandi=1$/);
+  const [l] = await sql<{ id: string; slug: string; photos: string[] }>("select id, slug, photos from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
+  // ish namunalari bo'sh — AI rasm u yerga qo'shilmaydi (faqat haqiqiy ishlar)
+  expect(l!.photos).toEqual([]);
+  const [img] = await sql<{ status: string; image_url: string; prompt: string }>("select status, image_url, prompt from public.listing_images where entity = 'master' and entity_id = $1", [l!.id]);
+  expect(img!.status).toBe("ready");
+  expect(img!.prompt).toMatch(/plumber/);
+  await expect(page.locator(`[data-master-card] a[href='/ustalar/${l!.slug}'] img`).first()).toHaveAttribute("src", img!.image_url);
+  await page.goto(`/ustalar/${l!.slug}`);
+  await expect(page.locator("[data-listing-photo] img")).toHaveAttribute("src", img!.image_url);
+  await expect(page.locator("[data-masters-photos]")).toHaveCount(0);
 });
 
 test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; telefon faqat rozilik bilan; so'rov, sharh, statistika", async ({ page, context, browser }) => {

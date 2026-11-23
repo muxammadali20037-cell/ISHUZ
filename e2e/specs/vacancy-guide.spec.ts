@@ -191,6 +191,24 @@ test("kasb aniq bo'lmasa — variantlar; viloyat → tuman tugmalari, «Orqaga»
   await expect(page.getByRole("main")).toContainText("Tez Yetkaz");
 });
 
+test("«shifokor kerak», «doktor kerak» — turli shifokorlar variant (doktorant emas; ega, 2026-11-23)", async ({ page, context }) => {
+  await knownEmployer();
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  for (const text of ["shifokor kerak", "doktor kerak"]) {
+    await page.goto("/post/vacancy?ai=1");
+    await ready(page);
+    await page.locator("[data-guide-sentence]").fill(text);
+    await page.locator("[data-guide-start]").click();
+    await expect(h1(page)).toHaveText("Qaysi biri?");
+    const opts = page.locator("[data-guide-choices] [data-guide-choice]");
+    // har yo'nalishdan: terapevt, kardiolog, pediatr, jarroh … (12 tagacha) va «Boshqa kasb»
+    for (const name of ["Terapevt", "Kardiolog", "Pediatr", "Umumiy jarroh"]) await expect(opts.filter({ hasText: new RegExp(`^${name}$`) })).toHaveCount(1);
+    await expect(page.locator("[data-guide-choices]")).not.toContainText(/doktorant/i);
+    await expect(choice(page, "other")).toHaveText("Boshqa kasb");
+  }
+});
+
 test("«Boshqa kasb» — yozib topadi (xato bilan ham); oddiy formadagi 1-qadamda ham kirish bor", async ({ page, context }) => {
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");

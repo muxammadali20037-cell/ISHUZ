@@ -61,7 +61,9 @@
     "delete_confirm_title": "Delete this message?",
     "delete_confirm_desc": "The message will be deleted for both sides.",
     "deleted_toast": "Message deleted",
-    "context_listing": "Listing"
+    "context_listing": "Listing",
+    "pinned_listing": "Pinned listing",
+    "pinned_vacancy": "Pinned vacancy"
   },
   "composer": {
     "placeholder": "Write a message...",
@@ -98,5 +100,12 @@
     "validation": "Message is empty or too long",
     "not_authenticated": "Sign in to continue",
     "generic": "Message not sent. Please try again."
+  },
+  "intro": {
+    "hello": "Hello!",
+    "hello_name": "Hello, {name}!",
+    "to_worker": "{hello} I came across your listing «{title}» on Ish topdim. We think you could be exactly the person we need. If you're interested, let's talk at a time that suits you. Looking forward to your reply.",
+    "to_employer": "{hello} I saw your vacancy «{title}» on Ish topdim and I'm interested. I believe I'm a good fit for this role. Could you share more details, or can we talk at a convenient time? Looking forward to your reply.",
+    "to_applicant": "{hello} Thank you for your interest in our vacancy «{title}». We'd like to discuss the details with you. When would be a good time?"
   }
 }

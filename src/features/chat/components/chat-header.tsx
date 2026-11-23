@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { Ban, Bell, BellOff, Briefcase, ChevronLeft, EllipsisVertical, Flag, ShieldCheck } from "lucide-react";
+import { Ban, Bell, BellOff, ChevronLeft, EllipsisVertical, Flag, ShieldCheck } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Avatar } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -30,8 +30,6 @@ export function ChatHeader({
   const reportRef = useRef<HTMLDivElement>(null);
   const [first, ...rest] = view.other.name.split(" ");
   const avatar = <Avatar src={view.other.avatar_url} fallback={initials(first, rest.join(" "))} alt={view.other.name} size="md" />;
-  const contextLabel =
-    view.context.kind === "application" ? t("chat.room.context_application") : view.context.kind === "listing" ? t("chat.room.context_listing") : t("chat.room.context_offer");
 
   return (
     <header className="shrink-0 border-b border-border/70 bg-card">
@@ -66,25 +64,7 @@ export function ChatHeader({
               </Badge>
             ) : null}
           </div>
-          {view.context.title ? (
-            view.context.href ? (
-              <Link href={view.context.href} className="flex items-center gap-1 truncate text-xs text-muted-foreground hover:text-primary-ink">
-                <Briefcase className="size-3.5 shrink-0" />
-                <span className="truncate">
-                  {contextLabel}: {view.context.title}
-                  {view.context.company ? ` · ${view.context.company}` : ""}
-                </span>
-              </Link>
-            ) : (
-              <p className="flex items-center gap-1 truncate text-xs text-muted-foreground">
-                <Briefcase className="size-3.5 shrink-0" />
-                <span className="truncate">
-                  {contextLabel}: {view.context.title}
-                  {view.context.company ? ` · ${view.context.company}` : ""}
-                </span>
-              </p>
-            )
-          ) : null}
+          {/* e'lon — suhbat tepasida qadalgan kartada (PinnedListing, 2026-11-23) */}
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger

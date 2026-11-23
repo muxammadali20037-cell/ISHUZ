@@ -8,7 +8,7 @@ import { createPublicClient } from "@/lib/supabase/public";
 import { createClient } from "@/lib/supabase/server";
 import type { SessionContext } from "@/features/auth/session";
 import { getPostViewer } from "@/features/post/queries";
-import { professionFrom } from "@/features/post/understand-listing";
+import { professionBranches, professionFrom } from "@/features/post/understand-listing";
 import { isProhibitedProfession } from "@/features/moderation/policy";
 import { resolveFindQuery } from "./queries";
 import { PLACE_COOKIE, parsePlace } from "./place";
@@ -24,8 +24,8 @@ import { shortName, type PostAnswers, type PostChoice, type PostChoiceGroup, typ
  * qurilmada eslab qolingan joydan; ism va telefon — hisobdan. Hech narsa o'ylab topilmaydi: faqat kasblar daraxti.
  */
 
-/** Guruh ichidagi variantlar soni chegarasi (O'qituvchi — ~32 ta; hammasi ko'rinadi) */
-const MAX_OPTIONS = 60;
+/** Guruh ichidagi variantlar soni chegarasi (Shifokorlar — ~96 ta, O'qituvchi — ~32 ta; hammasi ko'rinadi, qidiruv bilan) */
+const MAX_OPTIONS = 150;
 
 type NodeRow = { id: string; parent_id: string | null; name_uz: string; name_ru: string; name_en: string | null; selectable: boolean; sort_order: number };
 type NodeFull = NodeRow & { aliases: string[] };
@@ -33,54 +33,42 @@ type NodeFull = NodeRow & { aliases: string[] };
 const namesOf = (n: { name_uz: string; name_ru: string; name_en: string | null; aliases?: string[] }) => [n.name_uz, n.name_ru, n.name_en ?? "", ...(n.aliases ?? [])].filter(Boolean);
 
 /**
- * Guruh ("O'qituvchi") ichidagi tanlanadigan kasblar — BITTA so'rov bilan (kasb yo'li `path` bo'yicha): guruhning o'zidagi aniq
- * kasblar (sarlavhasiz) va kichik guruhlar ("Chet tillari" → Ingliz tili o'qituvchisi, …). Aniq kasbning ichidagi
- * ixtisosliklar ("IELTS o'qituvchisi") ro'yxatga kirmaydi — asosiy daraja ko'rsatiladi. Daraxtdagi tartibda.
+ * Guruh ("O'qituvchi", "Shifokorlar") ichidagi tanlanadigan kasblar — kichik guruhlar bo'yicha ("Chet tillari" → Ingliz tili
+ * o'qituvchisi, …). Aniq kasbning ichidagi ixtisosliklar ("IELTS o'qituvchisi") ro'yxatga kirmaydi — ular keyingi savol
+ * (`more`). Daraxtdagi tartibda.
  */
 async function groupOptions(groupId: string): Promise<PostChoiceGroup[]> {
   const { name } = await getT();
-  const { data } = await createPublicClient()
-    .from("profession_nodes")
-    .select("id, parent_id, name_uz, name_ru, name_en, selectable, sort_order, path")
-    .contains("path", [groupId])
-    .eq("is_active", true)
-    .neq("id", groupId)
-    .order("depth")
-    .order("sort_order")
-    .order("name_uz")
-    .limit(600);
-  const rows = data ?? [];
-  const byId = new Map(rows.map((r) => [r.id, r]));
-  const buckets = new Map<string, PostChoice[]>();
-  let count = 0;
-  for (const r of rows) {
-    if (!r.selectable || isProhibitedProfession(r) || count >= MAX_OPTIONS) continue;
-    const at = r.path.indexOf(groupId);
-    const between = r.path.slice(at + 1, -1);
-    // faol bo'lmagan oraliq tugun yoki aniq kasbning ichidagi ixtisoslik — o'tkazib yuboriladi
-    if (at < 0 || between.some((id) => !byId.has(id) || byId.get(id)!.selectable)) continue;
-    const key = between[0] ?? "";
-    (buckets.get(key) ?? buckets.set(key, []).get(key)!).push({ id: r.id, name: name(r) });
-    count += 1;
-  }
-  const order = (key: string) => {
-    const n = byId.get(key);
-    return n ? [n.sort_order, n.name_uz] as const : [-Infinity, ""] as const;
+  const branches = await professionBranches(groupId, MAX_OPTIONS);
+  return branches.map((b) => ({ title: b.title ? name(b.title) : null, items: b.items.map((it) => ({ id: it.id, name: name(it), ...(it.more ? { more: true } : {}) })) }));
+}
+
+/**
+ * Aniq kasbning ichidagi yo'nalishlar (ega, 2026-11-23: "kasblarni ich-ichigacha bilib olib, keyin e'lon joylansin"):
+ * "Buxgalter" → avval kasbning o'zi (umumiy), keyin "Soliq buxgalteri", "Ish haqi buxgalteri", … Ichida yo'nalish yo'q — null.
+ */
+export async function refineOptions(node: { id: string; name: string }): Promise<{ question: string; groups: PostChoiceGroup[] } | null> {
+  const { t } = await getT();
+  const subs = (await groupOptions(node.id)).flatMap((g) => g.items);
+  if (!subs.length) return null;
+  return {
+    question: t("easy.post_ai.which_area", { name: node.name }),
+    groups: [
+      { title: null, items: [{ id: node.id, name: node.name }] },
+      { title: t("easy.post_ai.which_area_list"), items: subs },
+    ],
   };
-  return [...buckets.entries()]
-    .sort(([a], [b]) => {
-      const [sa, na] = order(a);
-      const [sb, nb] = order(b);
-      return sa === sb ? na.localeCompare(nb) : sa - sb;
-    })
-    .map(([key, items]) => ({ title: key ? name(byId.get(key)!) : null, items }));
 }
 
 /** "Aynan qanday o'qituvchisiz?" — bitta so'zli guruh nomi bilan; ko'p so'zli bo'lsa — "… : aynan qaysi biri?" */
-function whichQuestion(t: (k: string, p?: Record<string, string | number>) => string, group: string | null): string {
+function whichQuestion(t: (k: string, p?: Record<string, string | number>) => string, group: string | null, uzName?: string): string {
   if (!group) return t("easy.post_ai.which_one");
   const g = group.trim();
-  if (/^\S+$/.test(g)) return t("easy.post_ai.which", { name: g.charAt(0).toLocaleLowerCase("uz") + g.slice(1) });
+  // ko'plikdagi guruh nomi ("Shifokorlar"): o'zbekchada — birlikda ("Aynan qanday shifokorsiz?"), boshqa tillarda — "Врачи: какой
+  // именно?" ("Какой именно вы врачи?" emas)
+  const plural = !!uzName && /^\S+(lar|ler)$/i.test(uzName.trim());
+  const single = plural && /^\S+(lar|ler)$/i.test(g) ? g.replace(/(lar|ler)$/i, "") : g;
+  if (/^\S+$/.test(single) && (!plural || single !== g)) return t("easy.post_ai.which", { name: single.charAt(0).toLocaleLowerCase("uz") + single.slice(1) });
   return t("easy.post_ai.which_named", { name: g });
 }
 
@@ -122,6 +110,14 @@ async function selectableNode(id: string): Promise<NodeFull | null> {
     .eq("is_active", true)
     .maybeSingle();
   return data && !isProhibitedProfession(data) ? data : null;
+}
+
+/** Ro'yxatdan tanlangan kasb ichidagi yo'nalishlar (chatda "qaysi yo'nalish?"); yo'q yoki kasb topilmasa — null */
+export async function refineById(id: string): Promise<{ question: string; groups: PostChoiceGroup[] } | null> {
+  const { name } = await getT();
+  const node = await selectableNode(id);
+  if (!node?.selectable) return null;
+  return refineOptions({ id: node.id, name: name(node) });
 }
 
 /** Yozilgan matn → boshqa mavzu (qisqa javob), variantlar yoki tayyor oyna */
@@ -174,8 +170,18 @@ export async function preparePost(input: { text: string; session: SessionContext
   // "ish kerak", "e'lon joylamoqchiman" — oyna ochiladi, kasb unda yoziladi
   if (!found && !hasJobIntent(text)) return { kind: "reply", reply: t("easy.post_ai.reply.unclear") };
 
+  let question = groups.length ? whichQuestion(t, group, node?.name_uz) : null;
+  // aniq kasbning ichida yo'nalishlar bor ("Buxgalter", "Oshpaz") — qaysi yo'nalish, so'raladi (birinchi variant — kasbning o'zi)
+  if (profession && !groups.length) {
+    const refine = await refineOptions(profession);
+    if (refine) {
+      groups = refine.groups;
+      question = refine.question;
+      profession = null;
+    }
+  }
   const form = { ...(await baseForm(text, viewerP, { regionSlug: r.regionSlug, districtId: r.districtId })), profession };
-  if (groups.length) return { kind: "options", question: whichQuestion(t, group), groups, form };
+  if (groups.length && question) return { kind: "options", question, groups, form };
   return { kind: "form", form };
 }
 
