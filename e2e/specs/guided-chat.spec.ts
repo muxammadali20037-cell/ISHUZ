@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, generalArea, homeSearch, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
  * Asosiy ekran — chat (ega, 2026-11-21, master prompt + tanlovlar; "muloyim, aniq, jaydari so'zlar bilan so'rasin —
@@ -173,10 +173,9 @@ test("kasb aytilmasa — kasb so'raladi (yoziladi), keyin hudud; e'lon berish ni
   await send(page, "O'zim haqimda e'lon bermoqchiman");
   await settled(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-profession");
-  // kasb aytilgan bo'lsa — kasb so'ralmaydi, faqat yo'nalishi (2026-11-23: "Oshpaz: aynan qaysi yo'nalishda?")
+  // kasb aytilgan bo'lsa — kasb so'ralmaydi
   await send(page, "Men oshpazman, o'zim haqimda e'lon bermoqchiman");
   await settled(page);
-  await generalArea(page, "Oshpaz");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|name|experience)$/);
 });
 

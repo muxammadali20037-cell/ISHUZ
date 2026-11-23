@@ -13,7 +13,6 @@ import { getRegions } from "@/lib/reference";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import { cn } from "@/lib/utils";
 import { CategoryIcon } from "./category-icon";
-import { getListingImageUrl } from "@/features/listing-image/server";
 import { getMasterCategories } from "../queries";
 import type { MasterPublic } from "../types";
 
@@ -59,18 +58,16 @@ export async function MasterCard({
   m: MasterPublic;
   priority?: boolean;
 }) {
-  const [{ t, name, locale }, categories, regions, cover] = await Promise.all([
+  const [{ t, name, locale }, categories, regions] = await Promise.all([
     getT(),
     getMasterCategories(),
     getRegions(),
-    // e'lon surati (AI, 0089) — ish namunasi yo'q bo'lsa kartada shu; namunalar (haqiqiy ishlar) birinchi
-    m.photos[0] ? Promise.resolve(null) : getListingImageUrl("master", m.id),
   ]);
   const category = categories.find((c) => c.id === m.category_id) ?? null;
   const region = m.region_id
     ? (regions.find((r) => r.id === m.region_id) ?? null)
     : null;
-  const photo = m.photos[0] ? vacancyPhotoUrl(m.photos[0]) : (cover ?? m.avatar_url);
+  const photo = m.photos[0] ? vacancyPhotoUrl(m.photos[0]) : m.avatar_url;
   const href = `/ustalar/${m.slug}`;
   const rating = m.rating_count > 0 && m.rating_avg !== null;
   return (

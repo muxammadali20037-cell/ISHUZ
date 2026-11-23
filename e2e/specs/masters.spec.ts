@@ -16,7 +16,6 @@ import { USERS, snapshotUser, asGuest, asMode, loginAs, sql } from "../support";
 const TITLE = "Konditsioner o'rnatish va tozalash (E2E)";
 
 async function cleanup() {
-  await sql("delete from public.listing_images where entity = 'master' and owner_profile_id in ($1, $2, $3)", [USERS.workerA, USERS.workerB, USERS.employer]);
   await sql("delete from public.master_listings where owner_profile_id in ($1, $2, $3)", [USERS.workerA, USERS.workerB, USERS.employer]);
   await sql("delete from public.admin_users where profile_id = $1", [USERS.workerB]);
   // demo e'lonlar doim joyida (boshqa testlar va keyingi ishga tushirishlar uchun)
@@ -234,39 +233,6 @@ test("qidiruv: «konditsioner ustasi kerak», «santexnk», «сантехник
     );
     await expect(cards).toHaveCount(Math.min(Number(row!.n), 12));
   }
-});
-
-test("usta e'loni rasmi (AI, soxta OpenAI): oxirgi oynada «Rasm yaratish» → e'lon shu rasm bilan; kartada va sahifada — ish namunalaridan alohida", async ({ page, context }) => {
-  test.setTimeout(120_000);
-  await loginAs(context, USERS.workerA);
-  await asMode(context, "worker");
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/ustalar/elon");
-  const w = page.locator("[data-master-wizard]");
-  await expect(async () => {
-    await w.locator("[data-category='plumber']").click();
-    await expect(w).toHaveAttribute("data-step", "2", { timeout: 1_000 });
-  }).toPass();
-  await w.locator("[data-service]").first().click();
-  await w.locator("[data-master-wizard-next]").click();
-  await w.locator("[data-master-wizard-next]").click();
-  await w.getByLabel("Viloyat yoki shahar").selectOption({ label: "Toshkent shahri" });
-  await w.locator("[data-master-wizard-next]").click();
-  await expect(w).toHaveAttribute("data-step", "5");
-  await w.locator("[data-listing-image-create]").click();
-  await expect(w.locator("[data-listing-image='ready'] [data-listing-image-preview]")).toBeVisible({ timeout: 60_000 });
-  await w.locator("[data-master-wizard-publish]").click();
-  await page.waitForURL(/\/ustalar\/qidiruv\?k=plumber&joylandi=1$/);
-  const [l] = await sql<{ id: string; slug: string; photos: string[] }>("select id, slug, photos from public.master_listings where owner_profile_id = $1", [USERS.workerA]);
-  // ish namunalari bo'sh — AI rasm u yerga qo'shilmaydi (faqat haqiqiy ishlar)
-  expect(l!.photos).toEqual([]);
-  const [img] = await sql<{ status: string; image_url: string; prompt: string }>("select status, image_url, prompt from public.listing_images where entity = 'master' and entity_id = $1", [l!.id]);
-  expect(img!.status).toBe("ready");
-  expect(img!.prompt).toMatch(/plumber/);
-  await expect(page.locator(`[data-master-card] a[href='/ustalar/${l!.slug}'] img`).first()).toHaveAttribute("src", img!.image_url);
-  await page.goto(`/ustalar/${l!.slug}`);
-  await expect(page.locator("[data-listing-photo] img")).toHaveAttribute("src", img!.image_url);
-  await expect(page.locator("[data-masters-photos]")).toHaveCount(0);
 });
 
 test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; telefon faqat rozilik bilan; so'rov, sharh, statistika", async ({ page, context, browser }) => {

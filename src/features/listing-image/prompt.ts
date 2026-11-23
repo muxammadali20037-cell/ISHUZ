@@ -45,26 +45,8 @@ const SCENES: Record<Archetype, string> = {
   generic: "a professional worker at a modern workplace",
 };
 
-/** Usta e'loni (0089): xizmat kategoriyasi bo'yicha sahna — uy sharoitidagi ish va asboblar */
-const MASTER_SCENES: Record<string, string> = {
-  ac: "an air conditioning technician servicing a wall-mounted split air conditioner in a bright apartment",
-  plumber: SCENES.plumber,
-  electric: SCENES.electrician,
-  appliance: "a home appliance repair technician fixing a washing machine in a bright modern home",
-  repair: "a renovation worker laying tiles and finishing walls in an apartment under renovation",
-  painter: "a painter with a paint roller painting a wall in a bright room",
-  builder: SCENES.builder,
-  welder: SCENES.welder,
-  locksmith: "a locksmith installing a new lock on a wooden front door",
-  moving: "movers carrying cardboard boxes and furniture into a small cargo van",
-  furniture: "a furniture assembler assembling a wooden wardrobe in a bright room",
-  other: "a handyman with an open toolbox doing small home repairs in a bright apartment",
-};
-
 export interface ListingImageInput {
-  /** master — usta e'loni (0089): sahna `masterCategory` bo'yicha */
-  kind: "vacancy" | "worker" | "master";
-  masterCategory?: string | null;
+  kind: "vacancy" | "worker";
   /** kasbning nomlari (inglizcha birinchi), sarlavha — kasb turini aniqlash uchun */
   names: (string | null | undefined)[];
   categorySlug?: string | null;
@@ -78,11 +60,11 @@ function clean(s: string): string {
 export function buildListingImagePrompt(input: ListingImageInput): string {
   const archetype = jobArchetype({ names: input.names, categorySlug: input.categorySlug ?? null });
   const job = clean(input.names.find((n) => n && n.trim()) ?? "") || "worker";
-  const scene = (input.kind === "master" && input.masterCategory ? MASTER_SCENES[input.masterCategory] : undefined) ?? SCENES[archetype];
+  const scene = SCENES[archetype];
   // ishchi e'loni: rasm belgisiz ko'rsatiladi (ega, 2026-11-22) — shuning uchun kameraga qaragan "portret" yo'q, aks holda
   // ish beruvchi uni e'lon egasining o'z surati deb o'ylashi mumkin. Ish joyi va asboblari; odam — faqat orqadan/uzoqdan
   const who =
-    input.kind !== "vacancy"
+    input.kind === "worker"
       ? "Focus on the workplace and the tools of this profession. No portrait and no close-up face: if a person is visible, show them only from behind or far away, busy at work, so the image never looks like a photo of a specific person."
       : "The workplace of this job with an adult Central Asian employee busy at work.";
   return [

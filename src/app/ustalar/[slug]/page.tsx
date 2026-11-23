@@ -8,7 +8,6 @@ import { formatRelative, initials } from "@/lib/format";
 import { getSession } from "@/features/auth/session";
 import { vacancyPhotoUrl } from "@/features/post/photo";
 import { MastersShell } from "@/features/masters/components/masters-shell";
-import { ListingPhoto } from "@/features/listing-image/components/listing-photo";
 import { CategoryIcon } from "@/features/masters/components/category-icon";
 import {
   MasterCard,
@@ -100,8 +99,6 @@ export default async function MasterDetailPage({ params }: { params: Params }) {
         data-demo={m.is_demo || undefined}
       >
         <div className="min-w-0 space-y-5">
-          {/* e'lon surati (AI, 0089) — keng banner; ish namunalari (haqiqiy ishlar) — pastida, alohida */}
-          <ListingPhoto entity="master" id={m.id} alt={category ? name(category) : m.title} />
           {photos.length ? (
             <ul
               className="grid grid-cols-2 gap-2 sm:grid-cols-4"

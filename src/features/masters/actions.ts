@@ -33,7 +33,6 @@ import { getMasterCategories } from "./queries";
 import { getT } from "@/lib/i18n/server";
 import { getDistricts, getRegions } from "@/lib/reference";
 import { checkStoredPhotos } from "@/features/moderation/service";
-import { attachDraftImage } from "@/features/listing-image/server";
 
 /**
  * "Universal ustalar" — server amallari. Yozish faqat egasi nomidan (RLS + triggerlar), holat o'tishlari bazada tekshiriladi;
@@ -174,8 +173,6 @@ const quickSchema = z.object({
   districtId: z.uuid().nullable(),
   phone: z.string().regex(/^\+998\d{9}$/),
   photos: z.array(z.string().max(200)).max(MASTER_PHOTOS_MAX),
-  /** oxirgi oynada yaratilgan AI rasm qoralamasi (0089) — joylanganda e'longa biriktiriladi */
-  imageDraft: z.uuid().nullable().optional(),
 });
 
 /**
@@ -256,8 +253,6 @@ export async function publishMasterQuick(
       .maybeSingle();
     if (live?.status === "active") status = "active";
   }
-  // AI rasm (bo'lsa): faqat shu odamning tayyor qoralamasi; xato e'lonni to'xtatmaydi
-  if (v.imageDraft) await attachDraftImage("master", v.imageDraft, id, session.userId);
   revalidateMasters();
   return { ok: true, data: { id, status, categorySlug: category.slug } };
 }

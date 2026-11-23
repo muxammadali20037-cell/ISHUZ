@@ -1500,9 +1500,7 @@
     "remove_phone": "Qo'shimcha raqamni olib tashlash",
     "preview_phones": "Siz yozgan ikkala raqam e'loningizda bo'ladi — ish beruvchilar ularni ochib, qo'ng'iroq qiladi",
     "q_notes": "Qo'shimcha izoh",
-    "notes_placeholder": "O'zingiz yozing: o'z mashinam bor, tungi smenada ham ishlayman…",
-    "which_area": "{name}: aynan qaysi yo'nalishda?",
-    "which_area_list": "Aniq yo'nalishlar"
+    "notes_placeholder": "O'zingiz yozing: o'z mashinam bor, tungi smenada ham ishlayman…"
   },
   "channel_prompt": {
     "title": "Telegram kanalimizga qo'shiling",

@@ -18,7 +18,6 @@ import { understandMasterQuery } from "../understand";
 import { MASTER_SERVICES_MAX, type MasterCategory } from "../types";
 import { CategoryIcon } from "./category-icon";
 import { PhotosUpload } from "./photos-upload";
-import { ListingImageDraft, type DraftImage } from "@/features/listing-image/components/listing-image-draft";
 
 /**
  * Usta e'loni — oynama-oyna (ega, 2026-11-17): 1) kategoriya (katta plitkalar) → 2) xizmat(lar) → 3) ism-familiya →
@@ -36,15 +35,12 @@ export function MasterWizard({
   regions,
   districts,
   defaults,
-  imageEnabled = false,
 }: {
   userId: string;
   categories: MasterCategory[];
   regions: Region[];
   districts: District[];
   defaults: { firstName: string; lastName: string; phone: string | null; category: string | null };
-  /** AI rasm modeli sozlangan (ega, 2026-11-23: "ustalarda ham rasm yaratish bo'lsin") */
-  imageEnabled?: boolean;
 }) {
   const { t, name } = useT();
   const router = useRouter();
@@ -59,7 +55,6 @@ export function MasterWizard({
   const [districtId, setDistrictId] = useState("");
   const [phone, setPhone] = useState(defaults.phone ?? "+998 ");
   const [photos, setPhotos] = useState<string[]>([]);
-  const [image, setImage] = useState<DraftImage | null>(null);
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState(false);
@@ -128,7 +123,6 @@ export function MasterWizard({
         districtId: districtId || null,
         phone: normalizePhone(phone),
         photos,
-        imageDraft: image?.draft ?? null,
       }),
     );
     if (!res.ok || !res.data) {
@@ -396,22 +390,7 @@ export function MasterWizard({
       </div>
     );
   } else {
-    // e'lon surati (AI, ixtiyoriy) — ish namunalaridan alohida: namunalar — faqat ustaning haqiqiy ishlari
-    body = (
-      <div className="space-y-5">
-        {imageEnabled ? (
-          <ListingImageDraft
-            entity="master"
-            professionId={null}
-            masterCategory={category?.slug ?? null}
-            title={[category ? name(category) : "", services.join(", ")].filter(Boolean).join(": ")}
-            value={image}
-            onChange={setImage}
-          />
-        ) : null}
-        <PhotosUpload userId={userId} value={photos} onChange={setPhotos} />
-      </div>
-    );
+    body = <PhotosUpload userId={userId} value={photos} onChange={setPhotos} />;
   }
 
   return (

@@ -40,24 +40,7 @@ const namesOf = (n: { name_uz: string; name_ru: string; name_en: string | null; 
 async function groupOptions(groupId: string): Promise<PostChoiceGroup[]> {
   const { name } = await getT();
   const branches = await professionBranches(groupId, MAX_OPTIONS);
-  return branches.map((b) => ({ title: b.title ? name(b.title) : null, items: b.items.map((it) => ({ id: it.id, name: name(it), ...(it.more ? { more: true } : {}) })) }));
-}
-
-/**
- * Aniq kasbning ichidagi yo'nalishlar (ega, 2026-11-23: "kasblarni ich-ichigacha bilib olib, keyin e'lon joylansin"):
- * "Buxgalter" → avval kasbning o'zi (umumiy), keyin "Soliq buxgalteri", "Ish haqi buxgalteri", … Ichida yo'nalish yo'q — null.
- */
-export async function refineOptions(node: { id: string; name: string }): Promise<{ question: string; groups: PostChoiceGroup[] } | null> {
-  const { t } = await getT();
-  const subs = (await groupOptions(node.id)).flatMap((g) => g.items);
-  if (!subs.length) return null;
-  return {
-    question: t("easy.post_ai.which_area", { name: node.name }),
-    groups: [
-      { title: null, items: [{ id: node.id, name: node.name }] },
-      { title: t("easy.post_ai.which_area_list"), items: subs },
-    ],
-  };
+  return branches.map((b) => ({ title: b.title ? name(b.title) : null, items: b.items.map((it) => ({ id: it.id, name: name(it) })) }));
 }
 
 /** "Aynan qanday o'qituvchisiz?" — bitta so'zli guruh nomi bilan; ko'p so'zli bo'lsa — "… : aynan qaysi biri?" */
@@ -112,14 +95,6 @@ async function selectableNode(id: string): Promise<NodeFull | null> {
   return data && !isProhibitedProfession(data) ? data : null;
 }
 
-/** Ro'yxatdan tanlangan kasb ichidagi yo'nalishlar (chatda "qaysi yo'nalish?"); yo'q yoki kasb topilmasa — null */
-export async function refineById(id: string): Promise<{ question: string; groups: PostChoiceGroup[] } | null> {
-  const { name } = await getT();
-  const node = await selectableNode(id);
-  if (!node?.selectable) return null;
-  return refineOptions({ id: node.id, name: name(node) });
-}
-
 /** Yozilgan matn → boshqa mavzu (qisqa javob), variantlar yoki tayyor oyna */
 export async function preparePost(input: { text: string; session: SessionContext | null }): Promise<PostUnderstood> {
   const { t, name } = await getT();
@@ -170,18 +145,9 @@ export async function preparePost(input: { text: string; session: SessionContext
   // "ish kerak", "e'lon joylamoqchiman" — oyna ochiladi, kasb unda yoziladi
   if (!found && !hasJobIntent(text)) return { kind: "reply", reply: t("easy.post_ai.reply.unclear") };
 
-  let question = groups.length ? whichQuestion(t, group, node?.name_uz) : null;
-  // aniq kasbning ichida yo'nalishlar bor ("Buxgalter", "Oshpaz") — qaysi yo'nalish, so'raladi (birinchi variant — kasbning o'zi)
-  if (profession && !groups.length) {
-    const refine = await refineOptions(profession);
-    if (refine) {
-      groups = refine.groups;
-      question = refine.question;
-      profession = null;
-    }
-  }
+  // aniq kasb ("Oshpaz") — qo'shimcha savolsiz (ega, 2026-11-23: "faqat guruhlarda so'rasin": shifokor, o'qituvchi)
   const form = { ...(await baseForm(text, viewerP, { regionSlug: r.regionSlug, districtId: r.districtId })), profession };
-  if (groups.length && question) return { kind: "options", question, groups, form };
+  if (groups.length) return { kind: "options", question: whichQuestion(t, group, node?.name_uz), groups, form };
   return { kind: "form", form };
 }
 

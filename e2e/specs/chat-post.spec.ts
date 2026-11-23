@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, chatSend, generalArea, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, chatSend, loginAs, sql } from "../support";
 
 /**
  * 3-bosqich (master prompt; ega, 2026-11-21: "kasb, viloyat, ism, tajriba — tajriba bormi degan joyiga yozsin; raqamingizni
@@ -46,8 +46,6 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
 
   await send(page, "oshpaz");
   await settled(page);
-  // 2026-11-23: kasb ichida yo'nalishlar bor — "Oshpaz: aynan qaysi yo'nalishda?" (birinchisi — kasbning o'zi)
-  await generalArea(page, "Oshpaz");
   // viloyat — tugmalar (yozilmaydi)
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
   await expect(lastAi(page)).toContainText("Qaysi viloyatda ishlamoqchisiz? Pastdan tanlang.");
@@ -127,7 +125,6 @@ test("mehmon: gapda kasb aytilgan — so'ralmaydi; ism yoziladi; «Joylash» —
 
   await send(page, "Men oshpazman, o'zim haqimda e'lon bermoqchiman");
   await settled(page);
-  await generalArea(page, "Oshpaz");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
   await page.locator("[data-post-region]", { hasText: "Samarqand" }).click();
   await settled(page);
@@ -183,9 +180,6 @@ test("guruh kasbi («men o'qituvchiman») — «aynan qaysi biri?» tugmalari; y
   await lastAi(page).locator("[data-post-choice]", { hasText: "Matematika o'qituvchisi" }).click();
   await settled(page);
   await expect(page.locator("[data-ai-you]").last()).toHaveText("Siz: Matematika o'qituvchisi");
-  // ichida yo'nalishlar bor — yana bitta savol (2026-11-23); umumiysi tanlanadi
-  await expect(lastAi(page)).toContainText("Matematika o'qituvchisi: aynan qaysi yo'nalishda?");
-  await generalArea(page, "Matematika o'qituvchisi");
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|experience)$/);
 
   // e'lon o'rniga qidirmoqchi bo'lsa — oddiy so'rov
@@ -256,9 +250,8 @@ test("ish izlovchi: e'lonlarni ko'rdi — ostida kichik «+ E'lon joylash» → 
     await page.locator("#start-chat-text").blur();
     await link.click();
     await settled(page);
-    // kasb qidiruvdan olindi — qayta so'ralmaydi, faqat yo'nalishi (2026-11-23); savollar shu chatda
+    // kasb qidiruvdan olindi — so'ralmaydi; savollar shu chatda
     await expect(page).toHaveURL(/\/chat$/);
-    await generalArea(page, "Oshpaz");
     await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|experience)$/);
     await expect(page.locator("[data-guided-post-link]")).toHaveCount(0);
   } finally {

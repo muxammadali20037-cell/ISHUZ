@@ -12,18 +12,11 @@ export const dynamic = "force-dynamic";
 /** rasm modeli 20–60 s ishlaydi; moderatsiya va saqlash bilan — 2 daqiqagacha */
 export const maxDuration = 120;
 
-const entity = z.enum(["vacancy", "worker", "master"]);
+const entity = z.enum(["vacancy", "worker"]);
 /** joylangan e'lon uchun (tahrir) yoki joylashdan oldingi qoralama uchun (tekshirish sahifasida) */
 const body = z.union([
   z.object({ entity, id: z.uuid() }),
-  z.object({
-    entity,
-    draft: z.uuid(),
-    professionId: z.uuid().nullable().optional(),
-    title: z.string().trim().max(120).nullable().optional(),
-    /** usta e'loni: xizmat kategoriyasi (sahna) */
-    masterCategory: z.string().regex(/^[a-z0-9_]{2,40}$/).nullable().optional(),
-  }),
+  z.object({ entity, draft: z.uuid(), professionId: z.uuid().nullable().optional(), title: z.string().trim().max(120).nullable().optional() }),
 ]);
 
 /**
@@ -48,17 +41,13 @@ export async function POST(req: NextRequest) {
   const input = parsed.data;
   const res =
     "draft" in input
-      ? await generateDraftImage(input.entity, input.draft, session.userId, { professionId: input.professionId ?? null, title: input.title ?? null, masterCategory: input.masterCategory ?? null })
+      ? await generateDraftImage(input.entity, input.draft, session.userId, { professionId: input.professionId ?? null, title: input.title ?? null })
       : await generateListingImage(input.entity, input.id, session.userId);
   if (!res.ok) {
     const status = res.error === "forbidden" ? 403 : res.error === "not_found" ? 404 : res.error === "not_configured" ? 503 : 200;
     return NextResponse.json(res, { status, headers: { "Cache-Control": "no-store" } });
   }
   // kanalda allaqachon chiqqan post — yangi rasm bilan (foydalanuvchini kutdirmaydi); qoralamada post hali yo'q
-  // (usta e'lonlari kanalga chiqmaydi)
-  if ("id" in input && input.entity !== "master") {
-    const kind = input.entity;
-    after(() => refreshChannelPhoto(kind, input.id, String(Date.now())));
-  }
+  if ("id" in input) after(() => refreshChannelPhoto(input.entity, input.id, String(Date.now())));
   return NextResponse.json(res, { headers: { "Cache-Control": "no-store" } });
 }

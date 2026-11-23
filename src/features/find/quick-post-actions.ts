@@ -9,8 +9,8 @@ import { MESSAGE_MAX_CHARS } from "@/features/assistant/types";
 import { publishWorkerListing } from "@/features/post/actions";
 import { getAlertSubscriptions } from "@/features/alerts/queries";
 import { getRegions } from "@/lib/reference";
-import { buildPreview, preparePost, refineById } from "./quick-post-core";
-import type { PostChoiceGroup, PostOutcome, PostPreview, PostUnderstood } from "./quick-post-types";
+import { buildPreview, preparePost } from "./quick-post-core";
+import type { PostOutcome, PostPreview, PostUnderstood } from "./quick-post-types";
 
 /**
  * Yordamchi orqali ishchi e'loni: matnni tushunish → oyna → "Tasdiqlash" (ko'rinishi) → "Joylash".
@@ -39,20 +39,6 @@ export async function quickPostPrepare(input: unknown): Promise<Out<PostUndersto
     return { ok: true, data: await preparePost({ text: parsed.data.text, session: g.session }) };
   } catch (e) {
     console.error(JSON.stringify({ quick_post_prepare_error: e instanceof Error ? e.message.slice(0, 160) : "error" }));
-    return { ok: false, error: "search_failed" };
-  }
-}
-
-/** Tanlangan kasb ichidagi yo'nalishlar ("Buxgalter" → "Soliq buxgalteri", …); yo'q bo'lsa — null (kasb shu holicha qoladi) */
-export async function quickPostRefine(input: unknown): Promise<Out<{ question: string; groups: PostChoiceGroup[] } | null>> {
-  const parsed = z.object({ id: z.uuid() }).safeParse(input);
-  if (!parsed.success) return { ok: false, error: "validation" };
-  const g = await guard();
-  if (!g.ok) return g;
-  try {
-    return { ok: true, data: await refineById(parsed.data.id) };
-  } catch (e) {
-    console.error(JSON.stringify({ quick_post_refine_error: e instanceof Error ? e.message.slice(0, 160) : "error" }));
     return { ok: false, error: "search_failed" };
   }
 }

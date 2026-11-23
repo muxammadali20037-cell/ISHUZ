@@ -1,12 +1,12 @@
 # O'zgarishlar jurnali
 
-## 2026-11-23 · Chatda tayyor xat va qadalgan e'lon, kasbni chuqur tushunish, ustalar (`feat/chat-intro-professions`)
+## 2026-11-24 · Chatda tayyor xat va qadalgan e'lon, shifokor/o'qituvchi savoli, ustalar qidiruvi (`feat/chat-intro-professions`)
 
 Ega (telefon skrinshotlari): "Chatda yozishni bossa — e'lon qadalib, «Assalomu alaykum»dan boshlanadigan rasmiy tayyor
 matn"; "shifokor/doktor deb yozsam — doktorant PhD bo'lib joylandi; doktor desa — qanday doktor, o'qituvchi desa — qanday
-o'qituvchi, kasblarni ich-ichigacha bilib keyin joylansin"; "E'lonni to'liq ko'rish — kichikroq, sariq shishasimon";
-"ustalarda qidirsam bo'lmadi; qanday yozmasin tanib topsin; ustalarda ham rasm yaratish". **Migratsiya: 0089** (prod'ga —
-`supabase/prod/pending.sql`, ega qo'llaydi; kod undan keyin).
+o'qituvchi" (qo'shimcha savol — **faqat guruhlarda**, ega tanlovi: oshpaz, buxgalter kabi aniq kasbda so'ralmaydi);
+"E'lonni to'liq ko'rish — kichikroq, sariq shishasimon"; "ustalarda qidirsam bo'lmadi; qanday yozmasin tanib topsin".
+Migratsiya yo'q. (Ustalar e'loni rasmi — alohida, bazaga 0089 qo'llangach.)
 
 - **Chat:**
   - Suhbat tepasida — qadalgan e'lon (rasm yoki belgi, sarlavha, hudud; bosilsa — e'lon sahifasi).
@@ -17,17 +17,13 @@ o'qituvchi, kasblarni ich-ichigacha bilib keyin joylansin"; "E'lonni to'liq ko'r
 - **Kasbni tushunish:**
   - "Shifokor", "doktor", "vrach" — "Shifokorlar" guruhi: "Aynan qanday shifokorsiz?" (avval "tushunmadim" /
     "Tayanch doktorant (PhD)"). Guruhning aynan yozilgan sinonimi endi qidiruvda ham guruhni topadi ("kamaz", "frontend").
-  - Kasb ichida yo'nalishlar bo'lsa ("Oshpaz", "Buxgalter", "Matematika o'qituvchisi") — yana bitta savol: "…: aynan
-    qaysi yo'nalishda?" (birinchisi — kasbning o'zi).
-  - Variantlar ro'yxatida yopiq holatda har yo'nalishdan bittadan (terapevt, kardiolog, pediatr); hammasi — 79 ta, qidiruv bilan.
+  - Variantlar ro'yxatida yopiq holatda har yo'nalishdan bittadan (terapevt, kardiolog, pediatr); hammasi — qidiruv bilan.
   - Ish beruvchi yordamchisida ("shifokor kerak") — turli yo'nalishdagi 12 tagacha shifokor (doktorantlar emas).
 - **Karta:** "E'lonni to'liq ko'rish" — kichikroq, sariq shishasimon, soyali.
 - **Ustalar:**
   - Qidiruv: "konditsioner ustasi kerak", "santexnk", "сантехник", "kir yuvish mashinasi" — kategoriya tanib olinadi
     (lotin/kirill/rus, qo'shimchalar, imlo xatosi), natija o'sha kategoriyadan; sarlavha va chip ham.
   - "Qanday ustasiz?" — yozib ham bo'ladi: "Topildi: Konditsioner ustasi"; tanilmasa — "Boshqa xizmatlar", yozgani xizmat.
-  - Oxirgi oynada "E'lon rasmi" (AI: ish joyi va asboblar, odam portreti emas): kartada (ish namunasi bo'lmasa) va e'lon
-    sahifasida banner. Ish namunalari — alohida (faqat ustaning haqiqiy ishlari). 0089: `listing_images.entity` — `master` ham.
 
 ## 2026-11-23 · Bosh sahifa: "nurli shisha" tugmalar, pastki menyuda "Bosh sahifa", e'lon tanlovi (`feat/home-tiles-glass`)
 

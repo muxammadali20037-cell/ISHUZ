@@ -52,14 +52,13 @@ export function spread<T>(branches: { items: T[] }[], n: number): T[] {
 export interface ProfessionBranch {
   /** kichik guruh ("Jarrohlik"); null — ildizning o'zidagi aniq kasblar */
   title: ProfessionOption | null;
-  /** `more` — ichida yana aniq yo'nalishlar bor ("Buxgalter" → "Soliq buxgalteri", …) */
-  items: (ProfessionOption & { more: boolean })[];
+  items: ProfessionOption[];
 }
 
 /**
  * Guruh ("Shifokorlar", "O'qituvchi") yoki aniq kasb ichidagi tanlanadigan kasblar — BITTA so'rov bilan (kasb yo'li `path`
  * bo'yicha), daraxtdagi tartibda, kichik guruhlar bo'yicha. Aniq kasbning ichidagi ixtisosliklar ro'yxatga kirmaydi
- * (ular — keyingi savol, `more`). Taqiqlangan kasblar yo'q. `max` — jami variantlar chegarasi.
+ * (asosiy daraja ko'rsatiladi). Taqiqlangan kasblar yo'q. `max` — jami variantlar chegarasi.
  */
 export async function professionBranches(rootId: string, max = 150): Promise<ProfessionBranch[]> {
   const { data } = await createPublicClient()
@@ -74,7 +73,6 @@ export async function professionBranches(rootId: string, max = 150): Promise<Pro
     .limit(800);
   const rows = (data ?? []).filter((r) => !isProhibitedProfession(r));
   const byId = new Map(rows.map((r) => [r.id, r]));
-  const hasKids = new Set(rows.filter((r) => r.selectable && r.parent_id).map((r) => r.parent_id as string));
   const buckets = new Map<string, ProfessionBranch["items"]>();
   let count = 0;
   for (const r of rows) {
@@ -84,7 +82,7 @@ export async function professionBranches(rootId: string, max = 150): Promise<Pro
     // faol bo'lmagan oraliq tugun yoki aniq kasbning ichidagi ixtisoslik — o'tkazib yuboriladi
     if (at < 0 || between.some((id) => !byId.has(id) || byId.get(id)!.selectable)) continue;
     const key = between[0] ?? "";
-    const item = { id: r.id, name_uz: r.name_uz, name_ru: r.name_ru, name_en: r.name_en, more: hasKids.has(r.id) };
+    const item = { id: r.id, name_uz: r.name_uz, name_ru: r.name_ru, name_en: r.name_en };
     (buckets.get(key) ?? buckets.set(key, []).get(key)!).push(item);
     count += 1;
   }
@@ -137,7 +135,7 @@ export async function professionFrom(
       // 12 tagacha — har kichik guruhdan navbat bilan (faqat terapevtlar emas: terapevt, kardiolog, pediatr, jarroh, …)
       const items = spread(await professionBranches(group.id), 12);
       if (items.length === 1) return { one: await picked(items[0]!.id), options: [] };
-      if (items.length) return { one: null, options: items.map(({ id, name_uz, name_ru, name_en }) => ({ id, name_uz, name_ru, name_en })) };
+      if (items.length) return { one: null, options: items };
     }
   }
   for (const { c, hits } of results) {

@@ -166,20 +166,6 @@ export async function homeSearch(page: Page, text: string, region?: string) {
   await q.press("Enter");
 }
 
-/**
- * Ishchi e'loni (chat): kasb ichida yo'nalishlar bo'lsa ("Oshpaz", "Buxgalter" — ega, 2026-11-23: "kasblarni ich-ichigacha bilib
- * olib, keyin e'lon joylansin") — "…: aynan qaysi yo'nalishda?" savoli; birinchi variant — kasbning o'zi (umumiy)
- */
-export async function generalArea(page: Page, name?: string) {
-  const last = page.locator("[data-guided-ai]").last();
-  await expect(last).toHaveAttribute("data-guided-ai", "post-which", { timeout: 20_000 });
-  await expect(last).toContainText("aynan qaysi yo'nalishda?");
-  const first = last.locator("[data-post-choice]").first();
-  if (name) await expect(first).toHaveText(name);
-  await first.click();
-  await expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
-}
-
 /** Chatga yozish: bosh ekranda — qidiruv qatoridan (birinchi xabar), suhbat boshlangach — pastdagi yozish maydonidan */
 export async function chatSend(page: Page, text: string) {
   const home = page.locator("form[data-home-search][data-hydrated]");
