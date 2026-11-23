@@ -46,12 +46,15 @@ test("navigatsiya: mehmonda brend nomi va 'Kirish' ko'rinadi; faol bo'lim belgil
   await page.goto("/");
   await expect(page.getByRole("banner").getByText("topdim")).toBeVisible();
   await expect(page.getByRole("banner").getByRole("link", { name: "Kirish" })).toBeVisible();
-  // 2026-11-21 (ega, master prompt): hamma uchun bir xil 3 ta bo'lim — Qidiruv · E'lonlarim · Profil
+  // 2026-11-21 (ega, master prompt): hamma uchun bir xil bo'limlar; 2026-11-23 (ega): boshida "Bosh sahifa"
   const nav = page.getByRole("navigation", { name: "Asosiy bo'limlar" }).last();
-  const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
+  const TABS = ["Bosh sahifa", "Qidiruv", "E'lonlarim", "Profil"];
   await expect(nav.getByRole("link")).toHaveText(TABS);
-  // bosh sahifa — chat, ya'ni "Qidiruv" bo'limi
+  // "/" — Bosh sahifa; suhbat — "Qidiruv" (/chat)
   await expect(nav.locator("a[aria-current='page']")).toHaveCount(1);
+  await expect(nav.getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
+  await nav.getByRole("link", { name: "Qidiruv" }).click();
+  await page.waitForURL(/\/chat$/);
   await expect(nav.getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
   await nav.getByRole("link", { name: "Profil" }).click();
   await page.waitForURL(/\/cabinet$/);
@@ -68,8 +71,9 @@ test("navigatsiya: kirgan foydalanuvchida 360 px da sarlavha sig'adi (gorizontal
   await loginAs(context, USERS.workerA);
   for (const width of [360, 390]) {
     await page.setViewportSize({ width, height: 780 });
+    // 2026-11-23: kirgan foydalanuvchi ham "/" da — Bosh sahifa (avval /chat ga o'tardi)
     await page.goto("/");
-    await page.waitForURL(/\/chat$/);
+    await expect(page.locator("main [data-start-home]")).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow, `${width}px`).toBeLessThanOrEqual(0);
     // 2026-11-20: xabarlar — sarlavhada (pastki menyuda 5 ta asosiy bo'lim, "Xabarlar" yo'q)
@@ -135,8 +139,9 @@ test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, uch
       // uchta tugma yonma-yon: so'z o'rtasidan bo'linmaydi ("qidiryapma-n" emas), 320 px da ham
       const broken = await main.locator("[data-guided-start]").evaluateAll((els) =>
         els.flatMap((el) => {
-          const node = Array.from(el.childNodes).find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
-          if (!node) return [];
+          const holder = el.querySelector("[data-tile-label]") ?? el;
+          const node = Array.from(holder.childNodes).find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
+          if (!node) return ["(yozuv topilmadi)"];
           const text = node.textContent!;
           const out: string[] = [];
           for (const m of text.matchAll(/\S+/g)) {

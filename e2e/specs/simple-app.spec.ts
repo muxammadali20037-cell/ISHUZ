@@ -2,15 +2,16 @@ import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, homeSearch, loginAs, sql } from "../support";
 
 /**
- * Pastki menyu (ega, 2026-11-21, master prompt): 3 ta bo'lim — Qidiruv · E'lonlarim · Profil, ikkala rejimda bir xil.
+ * Pastki menyu (ega, 2026-11-21, master prompt): Qidiruv · E'lonlarim · Profil, ikkala rejimda bir xil; 2026-11-23 (ega) —
+ * boshida "Bosh sahifa" ("/", kirgan foydalanuvchi ham shu yerda; suhbat — /chat).
  * "Arizalar" (ish beruvchi) — E'lonlarim ichida; "Sizga mos" 2026-11-22 dan yo'q. Chatdan ochiladigan ro'yxatlar va
  * e'lonlar (/jobs, /search, /listing) — "Qidiruv" bo'limida.
- *  - asosiy ekran — chat: kirgan foydalanuvchi /chat ga ("/" yo'naltiradi), mehmonga "/" ning o'zi chat;
+ *  - kirgandan keyin — chat (/chat); "/" — Bosh sahifa (qidiruv va tugmalar /chat da yangi suhbat ochadi);
  *  - AI maqsadni matndan aniqlaydi, yetishmaganini bittadan so'raydi (batafsil — guided-chat.spec.ts).
  */
 test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
-const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
+const TABS = ["Bosh sahifa", "Qidiruv", "E'lonlarim", "Profil"];
 const tabs = (page: Page) => page.locator("nav[data-app-tabs]");
 
 async function nodeId(name: string) {
@@ -43,7 +44,7 @@ test("pastki menyu — ish izlovchida: Qidiruv, E'lonlarim, Profil; «Sizga mos�
   await expect(tabs(page).getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
   // bo'lim ochilganda "Orqaga" yo'q
   await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
-  for (const old of ["Sizga mos", "Ishlar", "Ishchilar", "Arizalar", "Bosh sahifa", "Xabarlar"]) await expect(tabs(page).getByRole("link", { name: old, exact: true })).toHaveCount(0);
+  for (const old of ["Sizga mos", "Ishlar", "Ishchilar", "Arizalar", "Xabarlar"]) await expect(tabs(page).getByRole("link", { name: old, exact: true })).toHaveCount(0);
   await expect(page.locator("header a[href='/ai']")).toHaveCount(0);
   // "Sizga mos" olib tashlandi (ega, 2026-11-22: "moslik umuman kerak emas") — E'lonlarimda ham yo'q
   await tabs(page).getByRole("link", { name: "E'lonlarim" }).click();
@@ -81,27 +82,33 @@ test("mehmon: eski «Sizga mos» havolasi — E'lonlarimga (u yerdan kirishga)",
   expect(new URL(page.url()).searchParams.get("next")).toBe("/cabinet/elonlar");
 });
 
-test("kirgan foydalanuvchi: «/» → chat; bitta yozuv va strelka, ko'rsatma rolga qarab, orqaga tugmasi yo'q", async ({ page, context }) => {
+test("kirgan foydalanuvchi: «/» — Bosh sahifa (qidiruv qatori, uchta tugma); /chat — bitta yozuv va strelka, ko'rsatma rolga qarab", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
+  // 2026-11-23 (ega): pastki menyuda "Bosh sahifa" — kirgan foydalanuvchi ham "/" da qoladi
   await page.goto("/");
-  await expect(page).toHaveURL(/\/chat$/);
-  const chat = page.locator("[data-start-chat]");
-  // 2026-11-21 kechqurun (ega): "ortiqcha narsalar kerakmas"; 2026-11-23 — C varianti: qidiruv qatori va uchta tugma
+  await expect(page).toHaveURL(/\/$/);
+  const home = page.locator("main [data-start-home]");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
-  await expect(chat.locator("[data-guided-start]")).toHaveCount(3);
-  await expect(chat.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
+  await expect(home.locator("[data-guided-start]")).toHaveCount(3);
+  await expect(home.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
   await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
+  // Bosh sahifada suhbat maydoni yo'q — u "Qidiruv" (/chat) da
+  await expect(page.locator("#start-chat-text")).toHaveCount(0);
+  await expect(tabs(page).getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
+  await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
+  await tabs(page).getByRole("link", { name: "Qidiruv" }).click();
+  await page.waitForURL(/\/chat$/);
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: men oshpazman");
   await expect(tabs(page).getByRole("link", { name: "Qidiruv" })).toHaveAttribute("aria-current", "page");
-  await expect(page.getByRole("link", { name: "Orqaga" })).toHaveCount(0);
   // ish beruvchi ham shu ekranga — o'z savoli bilan
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/");
-  await expect(page).toHaveURL(/\/chat$/);
+  await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
   await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
+  await page.goto("/chat");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
 });
 

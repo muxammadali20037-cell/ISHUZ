@@ -131,15 +131,16 @@ test("bosh sahifa chati: skriptlar yuklanmasdan yuborilsa — matn yo'qolmaydi (
   const form = page.locator("form[data-home-search]");
   await expect(form).toBeVisible();
   await expect(form).not.toHaveAttribute("data-hydrated", "");
-  await expect(form).toHaveAttribute("action", "/");
+  // 2026-11-23: suhbat — /chat da ("/" — Bosh sahifa); skriptlarsiz ham o'sha yerga
+  await expect(form).toHaveAttribute("action", "/chat");
   await form.locator("[data-home-q]").fill("Samarqandda oshpaz");
   await form.locator("[data-home-submit]").click();
-  await page.waitForURL((u) => new URL(u).pathname === "/" && new URL(u).searchParams.get("q") === "Samarqandda oshpaz" && new URL(u).searchParams.get("region") === "all");
+  await page.waitForURL((u) => new URL(u).pathname === "/chat" && new URL(u).searchParams.get("q") === "Samarqandda oshpaz" && new URL(u).searchParams.get("region") === "all");
   // skriptlar keldi: savol o'zi yuboriladi, manzildan q olib tashlanadi (yangilansa qayta yuborilmaydi)
   await page.unroute("**/_next/static/chunks/**");
   await page.reload();
   await expect(page.locator("[data-ai-you]")).toHaveText(["Siz: Samarqandda oshpaz"]);
-  await expect(page).toHaveURL((u) => u.pathname === "/" && !u.searchParams.has("q") && !u.searchParams.has("region"));
+  await expect(page).toHaveURL((u) => u.pathname === "/chat" && !u.searchParams.has("q") && !u.searchParams.has("region"));
   // matnda viloyat aytilgan — o'shanisi (qatordagi "Butun O'zbekiston" emas)
   await expect(page.locator("[data-guided-summary]").last()).toContainText("Samarqand", { timeout: 20_000 });
   await expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });

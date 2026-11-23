@@ -71,8 +71,10 @@ test("ru, 360 px: chat sarlavhasi to'liq ko'rinadi (kesilmaydi); <html lang> —
   // bosh ekran (2026-11-23): qidiruv qatori va uchta tugma ham ruscha
   await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Напишите — найдите подходящее вам");
   await expect(page.locator("[data-guided-start]")).toHaveText(["Ищу работу", "Ищу работника", "Подать объявление"]);
-  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Например: я повар");
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+  // suhbat maydoni — "Qidiruv" (/chat) da (2026-11-23: "/" — Bosh sahifa)
+  await page.goto("/chat");
+  await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Например: я повар");
   await locale(context, "oz");
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("lang", "uz-Cyrl");

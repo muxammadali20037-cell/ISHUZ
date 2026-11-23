@@ -8,9 +8,10 @@ import { USERS, asGuest, asMode, loginAs } from "../support";
  * (2026-11-21: bosh sahifa — chat, "Bo'limlar" qatori yo'q). O'sha kuni kechqurun (ega: "ishchi panelida Ishchilar nimaga kerak"): bo'limlar rejimga qarab —
  * ish izlovchida "Sizga mos" (Ishchilar o'rniga), ish beruvchida "Arizalar" (Ishlar o'rniga).
  */
-// 2026-11-21 (ega, master prompt): asosiy menyu — 3 ta bo'lim; kompyuterning yon menyusida yana "Xabarlar"
-const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
-const SIDE = ["Qidiruv", "E'lonlarim", "Xabarlar", "Profil"];
+// 2026-11-21 (ega, master prompt): asosiy menyu — 3 ta bo'lim; kompyuterning yon menyusida yana "Xabarlar".
+// 2026-11-23 (ega): boshida "Bosh sahifa"
+const TABS = ["Bosh sahifa", "Qidiruv", "E'lonlarim", "Profil"];
+const SIDE = ["Bosh sahifa", "Qidiruv", "E'lonlarim", "Xabarlar", "Profil"];
 
 test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; /ai — alohida to'liq ekran", async ({ page, context }) => {
   await asGuest(context);
@@ -64,7 +65,7 @@ for (const who of ["worker", "employer"] as const) {
   });
 }
 
-test("telefon: yuqori panelda alohida «Yordamchi» belgisi yo'q; pastki menyu — 3 ta bo'lim; 320 px da sig'adi", async ({ page, context }) => {
+test("telefon: yuqori panelda alohida «Yordamchi» belgisi yo'q; pastki menyu — 4 ta bo'lim; 320 px da sig'adi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");
   await page.setViewportSize({ width: 390, height: 844 });
@@ -78,6 +79,9 @@ test("telefon: yuqori panelda alohida «Yordamchi» belgisi yo'q; pastki menyu �
   // 320 px: sarlavha va menyu ekrandan chiqmaydi
   await page.setViewportSize({ width: 320, height: 640 });
   await page.goto("/");
-  await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveCount(3);
+  await expect(page.locator("nav.bottom-nav").getByRole("link")).toHaveCount(4);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
+  // 4 ta bo'lim nomi ham 320 px da to'liq sig'adi (kesilmaydi)
+  const cut = await page.locator("nav.bottom-nav a span.truncate").evaluateAll((els) => els.filter((e) => e.scrollWidth > e.clientWidth + 1).map((e) => e.textContent));
+  expect(cut).toEqual([]);
 });

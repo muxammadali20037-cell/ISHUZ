@@ -21,6 +21,7 @@ const ALLOW: Record<string, { rules: Rule[]; why: string }> = {
   "features/auth/components/auth-form.tsx": { rules: ["hex"], why: "Telegram belgisining rasmiy rangi (uchinchi tomon logotipi)" },
   "components/ui/checkbox.tsx": { rules: ["white"], why: "Switch tutqichi har ikki mavzuda oq (rangli/kulrang yo'lak ustida)" },
   "components/shared/app-shell.tsx": { rules: ["blur"], why: "ega (2026-11-23): kompyuterdagi yon menyu — oynali (shisha) panel va orqasidagi xira rang dog'lari" },
+  "features/start-chat/components/home-start.tsx": { rules: ["blur"], why: "ega (2026-11-23): bosh sahifadagi \"Ish qidiryapman / Ishchi qidiryapman\" — to'q ko'k oynali tugmalar va orqasidagi xira dog'lar" },
   "features/admin/components/mfa-form.tsx": { rules: ["white"], why: "QR kod faqat oq fonda o'qiladi" },
   "features/workers/components/portfolio-gallery.tsx": { rules: ["white"], why: "to'liq ekranli qora foto ko'rgich (mavzudan mustaqil)" },
   "features/stories/components/story-viewer.tsx": {

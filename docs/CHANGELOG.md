@@ -1,5 +1,23 @@
 # O'zgarishlar jurnali
 
+## 2026-11-23 · Bosh sahifa: "nurli shisha" tugmalar, pastki menyuda "Bosh sahifa", e'lon tanlovi (`feat/home-tiles-glass`)
+
+Ega: tugmalar uchun variantlardan **1 — nurli shisha**; "Bosh sahifa qo'shilsin pastga"; "e'lon berish bosilganda
+birinchisi 'Ishchi izlash uchun', ikkinchisi 'Ish izlash uchun' deb chiqsin". Migratsiya yo'q.
+
+- **Uchta tugma (nurli shisha):** "Ish qidiryapman" va "Ishchi qidiryapman" — to'q ko'k oynali tugmalar, oq yozuv,
+  dumaloq belgi; ichida burchakdan ko'k/turkuaz nur, pastda yumshoq dog', tepada ingichka yaltirash. "E'lon berish" —
+  shu uslubda sariq. Bosilganda biroz ko'tariladi. 320px'da yozuv so'z o'rtasidan bo'linmaydi (test).
+- **Pastki menyu (telefon) va yon menyu (kompyuter):** birinchi bo'lim — **"Bosh sahifa"** ("/"). Kirgan foydalanuvchi
+  ham "/" da endi Bosh sahifani ko'radi (avval chatga o'tkazilardi). Suhbat — "Qidiruv" (/chat).
+  - Bosh sahifadagi qidiruv, "Ish/Ishchi qidiryapman" va "E'lon berish" — "Qidiruv"da yangi suhbat bo'lib ochiladi
+    (`/chat?…&from=home`; oldingi suhbat tozalanadi, manzil o'zi tozalanadi).
+  - Kirgandan va profil tugagach — avvalgidek chatga (ega, 2026-11-20).
+- **"E'lon berish" tanlovi:** savol "E'lon nima uchun: ishchi izlash uchunmi yoki ish izlash uchunmi?"; tugmalar
+  tartibi — 1) "Ishchi izlash uchun" (vakansiya), 2) "Ish izlash uchun" (o'zim haqimda e'lon). Rus va ingliz
+  tillarida ham.
+- Brend qo'riqchisi: `home-start.tsx` uchun "blur" — ega so'rovi bilan istisno.
+
 ## 2026-11-23 · Bosh sahifa kompyuterda kengroq va oynali yon menyu (`feat/home-wide`)
 
 Ega (kompyuter skrinshoti): "sahifa juda tor" — katta ekranda o'rtada ingichka ustun, ikki yon bo'sh; "yon bar oynani

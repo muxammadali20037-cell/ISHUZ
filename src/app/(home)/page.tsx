@@ -4,10 +4,10 @@ import { DEFAULT_OG_IMAGE, localeAlternates } from "@/lib/seo";
 import { getSession } from "@/features/auth/session";
 import { Shell } from "@/components/shared/shell";
 import { cookies } from "next/headers";
-import { StartChat } from "@/features/start-chat/components/start-chat";
+import { StartChat, StartHome } from "@/features/start-chat/components/start-chat";
+import { redirect } from "next/navigation";
 import { INTRO_COOKIE } from "@/features/start-chat/intro";
 import { listingImageEnabled } from "@/features/listing-image/server";
-import { chatQuery } from "@/features/start-chat/query";
 import { homeData } from "@/features/start-chat/home";
 import { getMode } from "@/features/mode/server";
 import { SiteFooter } from "@/features/landing/market/site-footer";
@@ -25,25 +25,30 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * Bosh sahifa — darhol chat (ega, 2026-11-21: "reklama sahifasi kerak emas, kirgan zahoti chat"). Mehmonga: "Ish kerakmi
- * yoki ishchi? Yozing — topib beramiz."; AI maqsadni o'zi aniqlaydi. Kirgan foydalanuvchi — /chat (layout yo'naltiradi).
+ * Bosh sahifa (ega, 2026-11-21: "reklama sahifasi kerak emas"; 2026-11-23: pastki menyuda "Bosh sahifa" — mehmon ham, kirgan
+ * foydalanuvchi ham): sarlavha, qidiruv qatori, uchta tugma, tezkor bo'limlar va eng yangi e'lonlar. Suhbat — /chat da.
  * Qidiruv tizimlari uchun sarlavha, tavsif va pastki qism (sayt haqida, havolalar) — o'z joyida.
  */
 export default async function HomePage({ searchParams }: { searchParams: Promise<{ q?: string | string[]; post?: string | string[]; region?: string | string[] }> }) {
-  // yo'naltirishlar (bloklangan, kirish oqimi, kirgan foydalanuvchi) — (home)/layout.tsx da
+  // yo'naltirishlar (bloklangan, kirish oqimi) — (home)/layout.tsx da
   const [session, mode, params, jar] = await Promise.all([getSession(), getMode(), searchParams, cookies()]);
+  // eski havolalar va skriptlarsiz yuborilgan matn (?q=, ?post=) — suhbat endi /chat da ("Qidiruv")
+  if (typeof params.q === "string" || typeof params.post === "string") {
+    const qs = new URLSearchParams();
+    for (const k of ["q", "post", "region"] as const) if (typeof params[k] === "string") qs.set(k, params[k]);
+    redirect(`/chat?${qs}`);
+  }
+  const home = await homeData(mode, session, (name) => jar.get(name)?.value);
+  const introSeen = jar.get(INTRO_COOKIE)?.value === "1";
   return (
     <Shell footer={<SiteFooter compact={!!session} />}>
-      <StartChat
-        mode={mode}
-        owner={session?.userId ?? "guest"}
-        initialQuery={chatQuery(params.q)}
-        post={params.post === "1" ? "resume" : params.post === "new" ? "new" : null}
-        introSeen={jar.get(INTRO_COOKIE)?.value === "1"}
-        imageEnabled={listingImageEnabled()}
-        home={await homeData(mode, session, (name) => jar.get(name)?.value)}
-        initialRegion={typeof params.region === "string" ? params.region : null}
-      />
+      {home ? (
+        // Bosh sahifa (2026-11-23): faqat bosh ekran — qidiruv va tugmalar "Qidiruv" (/chat) da yangi suhbat ochadi
+        <StartHome mode={mode} home={home} introSeen={introSeen} imageEnabled={listingImageEnabled()} />
+      ) : (
+        // bosh ekran ma'lumoti o'qilmadi (texnik xato) — avvalgi chat ekrani, sahifa yiqilmaydi
+        <StartChat mode={mode} owner={session?.userId ?? "guest"} introSeen={introSeen} imageEnabled={listingImageEnabled()} home={null} />
+      )}
     </Shell>
   );
 }

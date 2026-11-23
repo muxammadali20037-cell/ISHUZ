@@ -2,7 +2,8 @@
 
 import { createContext, Suspense, use, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, BriefcaseBusiness, Check, ChevronDown, ClipboardList, Info, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, BriefcaseBusiness, Check, ChevronDown, ClipboardList, Info, Loader2, MapPin, PenLine, Phone, Plus, RotateCcw, UsersRound } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,7 @@ import { useGuidedChat, type AiPart, type GuidedChat, type Msg, type Role } from
 import { ChoicePicker, NextOption, PlaceIcon, ProfessionChoices } from "./chat-pickers";
 import { chatProfessionsWithListings, type ChatProfessionCount } from "../actions";
 import { ChatIntro } from "./chat-intro";
-import { HomeStart } from "./home-start";
+import { HomeStart, type HomeActions } from "./home-start";
 import type { HomeData, HomeLatest } from "../home";
 
 /** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
@@ -53,6 +54,8 @@ export function StartChat({
   imageEnabled = false,
   home = null,
   initialRegion = null,
+  initialStart = null,
+  fromHome = false,
 }: {
   mode: AppMode | null;
   /** foydalanuvchi id yoki "guest" — suhbat shu odamniki */
@@ -63,31 +66,39 @@ export function StartChat({
    * ?post=1 — mehmon e'lonni joylash uchun kirib qaytdi: o'sha e'lon kartasi "Joylash" bilan qaytadi;
    * ?post=new — "E'lonlarim"dagi "+ E'lon joylash": e'lon savollari darhol boshlanadi
    */
-  post?: "resume" | "new" | null;
+  post?: "resume" | "new" | "offer" | null;
   /** video-tushuntirish ko'rilgan/yopilgan (cookie) — yig'ilgan holda ("Qanday ishlaydi?") */
   introSeen?: boolean;
   /** AI e'lon rasmi sozlangan (OpenAI kaliti) — e'lon kartasida joylashdan oldin "Rasm yaratish" */
   imageEnabled?: boolean;
   /** bosh ekran (qidiruv qatori, hududlar, eng yangi e'lonlar) — bo'lmasa avvalgi ikki tugmali ekran */
   home?: HomeData | null;
-  /** ?region=… — skriptlar yuklanmasdan qidiruv qatoridan yuborilgan hudud */
+  /** ?region=… — qidiruv qatoridan (bosh sahifadan yoki skriptlarsiz) yuborilgan hudud */
   initialRegion?: string | null;
+  /** ?start=jobs|workers — bosh sahifadagi "Ish qidiryapman" / "Ishchi qidiryapman" */
+  initialStart?: "jobs" | "workers" | null;
+  /** ?from=home — bosh sahifadan kelindi: suhbat yangidan boshlanadi (avvalgisi tozalanadi) */
+  fromHome?: boolean;
 }) {
   const { t } = useT();
   const chat = useGuidedChat(mode, owner);
   const sent = useRef(false);
   useEffect(() => {
-    if (!chat.ready || sent.current || !initialQuery) return;
+    if (!chat.ready || sent.current || (!initialQuery && !initialStart && post !== "offer")) return;
     sent.current = true;
     // manzildan q olib tashlanadi — sahifa yangilansa savol qayta yuborilmaydi
     window.history.replaceState(null, "", window.location.pathname);
+    // bosh sahifadan — yangi suhbat (avvalgi suhbat o'rniga)
+    if (fromHome) chat.clear();
     const place = initialRegion ? home?.places.find((p) => p.value === initialRegion) : undefined;
-    if (place) chat.find(initialQuery, place);
+    if (post === "offer") chat.offerPost(t("easy.guided.home.post"));
+    else if (initialStart) chat.start(initialStart, t(initialStart === "jobs" ? "easy.guided.start_jobs" : "easy.guided.start_workers"), place);
+    else if (place) chat.find(initialQuery, place);
     else chat.ask(initialQuery);
-  }, [chat, initialQuery, initialRegion, home]);
+  }, [chat, initialQuery, initialRegion, initialStart, fromHome, post, home, t]);
   const posted = useRef(false);
   useEffect(() => {
-    if (!chat.ready || posted.current || !post) return;
+    if (!chat.ready || posted.current || (post !== "resume" && post !== "new")) return;
     posted.current = true;
     window.history.replaceState(null, "", window.location.pathname);
     if (post === "resume") chat.resumePost();
@@ -97,9 +108,17 @@ export function StartChat({
   const who = mode === "employer" ? "employer" : mode === "worker" ? "worker" : "guest";
   // ko'rsatma — har savolga mos (ega, 2026-11-22: "telefon so'raganda «Masalan: men oshpazman» nima bu — har so'rovda o'zgarsin")
   const placeholder = chat.awaiting ? t(`easy.guided.placeholder_${chat.awaiting}`) : t(`easy.guided.placeholder_${who}`);
-  // skriptlarsiz yuborilgan matn shu sahifaning o'ziga qaytadi (mehmon — "/", kirgan — "/chat")
-  const action = owner === "guest" ? "/" : "/chat";
+  // skriptlarsiz yuborilgan matn — chatga (/chat; "/" — bosh sahifa, suhbat u yerda emas)
+  const action = "/chat";
   const empty = !chat.msgs.length;
+  // manzil bilan kelgan amal (bosh sahifadan qidiruv/tugma, ?q=, ?post=) bajarilguncha — bosh ekran bir lahza ham ko'rinmasin
+  const booting = empty && !!(initialQuery || initialStart || post);
+  const act: HomeActions = {
+    pending: chat.pending,
+    find: (q, place) => chat.find(q, place),
+    start: (role) => chat.start(role, t(role === "jobs" ? "easy.guided.start_jobs" : "easy.guided.start_workers")),
+    post: () => chat.offerPost(t("easy.guided.home.post")),
+  };
 
   return (
     <ImageEnabled.Provider value={imageEnabled}>
@@ -108,14 +127,19 @@ export function StartChat({
         className={cn(
           "flex min-h-[calc(100dvh-var(--tabbar-height)-4rem)] flex-col",
           // .container-narrow (utilities qatlami) lg:max-w-* ni bosib ketadi — bosh ekranda kenglik shu yerda to'liq beriladi
-          empty && home ? "mx-auto w-full max-w-2xl px-4 sm:px-6 lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl" : "container-narrow",
+          empty && home ? HOME_WIDTH : "container-narrow",
         )}
         data-start-chat
         data-chat-mode={mode ?? "guest"}
       >
-        {empty && home ? (
+        {booting ? (
+          <div className="flex flex-1 items-center justify-center py-16" role="status" aria-live="polite" data-chat-booting>
+            <Loader2 className="size-7 animate-spin text-muted-foreground" aria-hidden />
+            <span className="sr-only">{t("common.labels.loading")}</span>
+          </div>
+        ) : empty && home ? (
           <HomeStart
-            chat={chat}
+            act={act}
             mode={home.mode}
             places={home.places}
             place={home.place}
@@ -253,17 +277,18 @@ function Answer({ msg, part, chat, latest }: { msg: Msg; part: AiPart; chat: Gui
       return (
         <Ai kind="post">
           <Say>{text}</Say>
+          {/* ega (2026-11-23): "E'lon berish"da — avval "Ishchi izlash uchun" (vakansiya), keyin "Ish izlash uchun" (o'zi haqida) */}
           <div className="flex flex-wrap gap-2" data-guided-post>
-            {part.who !== "employer" && open ? (
-              <Button type="button" className="h-auto min-h-11 whitespace-normal py-2 text-base" onClick={() => chat.beginPost(part.query, t("easy.guided.post_who_worker"))} data-guided-post-to="worker">
-                <Plus className="size-5" aria-hidden /> {t("easy.guided.post_who_worker")}
+            {part.who !== "worker" ? (
+              <Button asChild className="h-auto min-h-11 whitespace-normal py-2 text-base" data-guided-post-to="employer">
+                <Link href={vacancyHref(part.query)}>
+                  {part.who ? <Plus className="size-5" aria-hidden /> : <UsersRound className="size-5" aria-hidden />} {part.who ? t("easy.guided.post_employer_btn") : t("easy.guided.post_who_employer")}
+                </Link>
               </Button>
             ) : null}
-            {part.who !== "worker" ? (
-              <Button asChild variant={part.who ? "default" : "outline"} className="h-auto min-h-11 whitespace-normal py-2 text-base" data-guided-post-to="employer">
-                <Link href={vacancyHref(part.query)}>
-                  <Plus className="size-5" aria-hidden /> {part.who ? t("easy.guided.post_employer_btn") : t("easy.guided.post_who_employer")}
-                </Link>
+            {part.who !== "employer" && open ? (
+              <Button type="button" className="h-auto min-h-11 whitespace-normal py-2 text-base" onClick={() => chat.beginPost(part.query, t("easy.guided.post_who_worker"))} data-guided-post-to="worker">
+                <BriefcaseBusiness className="size-5" aria-hidden /> {t("easy.guided.post_who_worker")}
               </Button>
             ) : null}
           </div>
@@ -380,6 +405,53 @@ function RoleStart({ chat, onPick, roles = false }: { chat: GuidedChat; onPick: 
       <NextOption primary icon={<BriefcaseBusiness />} title={t("easy.guided.start_jobs")} sub={t("easy.guided.start_jobs_sub")} disabled={chat.pending} onClick={() => onPick("jobs", t("easy.guided.start_jobs"))} {...tag("jobs")} />
       <NextOption icon={<UsersRound />} title={t("easy.guided.start_workers")} sub={t("easy.guided.start_workers_sub")} disabled={chat.pending} onClick={() => onPick("workers", t("easy.guided.start_workers"))} {...tag("workers")} />
     </div>
+  );
+}
+
+/** Bosh ekran konteyneri — kompyuterda keng (ega, 2026-11-23: "sahifa juda tor") */
+const HOME_WIDTH = "mx-auto w-full max-w-2xl px-4 sm:px-6 lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl";
+
+/**
+ * "/" — Bosh sahifa (ega, 2026-11-23: pastki menyuga "Bosh sahifa" qo'shildi): faqat bosh ekran — suhbat bu yerda ochilmaydi.
+ * Qidiruv, "Ish qidiryapman" / "Ishchi qidiryapman" va "E'lon berish" — "Qidiruv" (/chat) bo'limida yangi suhbat bo'lib
+ * davom etadi (?from=home). Shunda "Bosh sahifa" har doim bosh ekranni, "Qidiruv" esa oxirgi suhbatni ochadi.
+ */
+export function StartHome({ mode, home, introSeen = false, imageEnabled = false }: { mode: AppMode | null; home: HomeData; introSeen?: boolean; imageEnabled?: boolean }) {
+  const router = useRouter();
+  const [going, setGoing] = useState(false);
+  const go = (params: Record<string, string>) => {
+    setGoing(true);
+    router.push(`/chat?${new URLSearchParams({ ...params, from: "home" })}`);
+  };
+  const act: HomeActions = {
+    pending: going,
+    find: (q, place) => {
+      const text = q.replace(/\s+/g, " ").trim();
+      // matn bo'sh — tanlangan hudud bilan "ish/ishchi qidiryapman" ketma-ketligi (kasb so'raladi)
+      go(text ? { q: text, region: place.value } : { start: home.mode, region: place.value });
+    },
+    start: (role) => go({ start: role }),
+    post: () => go({ post: "offer" }),
+  };
+  return (
+    <ImageEnabled.Provider value={imageEnabled}>
+      {/* balandlik ekranga bog'lanmagan (yozish maydoni yo'q): mazmundan keyin darhol pastki qism, pastki menyu uni to'smaydi */}
+      <div className={cn(HOME_WIDTH, "flex flex-col")} data-start-chat data-start-home data-chat-mode={mode ?? "guest"}>
+        <HomeStart
+          act={act}
+          mode={home.mode}
+          places={home.places}
+          place={home.place}
+          action="/chat"
+          introSeen={introSeen}
+          latest={
+            <Suspense fallback={null}>
+              <Latest promise={home.latest} />
+            </Suspense>
+          }
+        />
+      </div>
+    </ImageEnabled.Provider>
   );
 }
 

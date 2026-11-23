@@ -2,13 +2,14 @@ import { expect, test } from "@playwright/test";
 import { USERS, asMode, loginAs, sql } from "../support";
 
 /**
- * Pastki menyu va rollar (ega, 2026-11-21, master prompt): ikkala rolda bir xil 3 ta bo'lim — Qidiruv · E'lonlarim · Profil.
+ * Pastki menyu va rollar (ega, 2026-11-21, master prompt): ikkala rolda bir xil bo'limlar — Qidiruv · E'lonlarim · Profil;
+ * 2026-11-23 (ega): boshida "Bosh sahifa" ("/").
  * "E'lonlarim" — faqat joriy rolning e'lonlari, tepada Faol · Yopilgan · Muddati tugagan yorliqlari; ish beruvchida
  * "Arizalar", ish izlovchida "Sizga mos" — shu bo'lim ichida.
  */
-const TABS = ["Qidiruv", "E'lonlarim", "Profil"];
+const TABS = ["Bosh sahifa", "Qidiruv", "E'lonlarim", "Profil"];
 
-test("ish izlovchi: 3 ta bo'lim, nomlar sig'adi; «E'lonlarim» — o'z e'lonlari; «Profil» belgilanadi", async ({ page, context }) => {
+test("ish izlovchi: 4 ta bo'lim, nomlar sig'adi; «E'lonlarim» — o'z e'lonlari; «Profil» belgilanadi", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   await page.goto("/jobs");

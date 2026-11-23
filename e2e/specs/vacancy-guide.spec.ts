@@ -41,7 +41,6 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await asMode(context, "employer");
   // kirgan ish beruvchining asosiy ekrani — chat: "vakansiya joylamoqchiman" → "Vakansiya joylash" → alohida ekran (yordamchi)
   await page.goto("/");
-  await page.waitForURL(/\/chat$/);
   await homeSearch(page, "Vakansiya joylamoqchiman");
   await page.locator("[data-guided-post-to='employer']").click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);

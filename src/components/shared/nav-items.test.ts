@@ -20,6 +20,7 @@ const PATHS: [string, string | null][] = [
   ["/cabinet", null],
   ["/notifications", null],
   ["/listing/abc", null],
+  ["/", null],
 ];
 
 describe("menyu: bir vaqtda bitta faol bo'lim", () => {
@@ -36,8 +37,8 @@ describe("menyu: bir vaqtda bitta faol bo'lim", () => {
     }
   });
 
-  it("3 ta bo'lim: Qidiruv (chat) · E'lonlarim · Profil", () => {
-    expect(appTabs().map((i) => i.key)).toEqual(["chat", "my-listings", "profile"]);
+  it("4 ta bo'lim: Bosh sahifa · Qidiruv (chat) · E'lonlarim · Profil (2026-11-23)", () => {
+    expect(appTabs().map((i) => i.key)).toEqual(["home", "chat", "my-listings", "profile"]);
     // arizalar va takliflar yo'q (2026-11-21: bog'lanish faqat telefon orqali) — son belgilari ham yo'q
     expect(appTabs().map((i) => i.badgeKey).filter(Boolean)).toEqual([]);
   });
@@ -47,9 +48,13 @@ describe("menyu: bir vaqtda bitta faol bo'lim", () => {
     expect(appTabs().filter((i) => i.match("/employer/applications", null)).map((i) => i.key)).toEqual(["my-listings"]);
   });
   it("chatdan ochiladigan ro'yxatlar va e'lonlar — Qidiruv", () => {
-    for (const [p, f] of [["/", null], ["/chat", null], ["/jobs", null], ["/search", "workers"], ["/listing/abc", null], ["/post/vacancy", null], ["/ai/post", null]] as const) {
+    for (const [p, f] of [["/chat", null], ["/jobs", null], ["/search", "workers"], ["/listing/abc", null], ["/post/vacancy", null], ["/ai/post", null]] as const) {
       expect(activeKey(p, f), p).toEqual(["chat"]);
     }
+  });
+  it("«/» — Bosh sahifa (suhbat — Qidiruvda)", () => {
+    expect(activeKey("/")).toEqual(["home"]);
+    expect(appSideItems().filter((i) => i.match("/", null)).map((i) => i.key)).toEqual(["home"]);
   });
   it("hisob sahifalari — Profil", () => {
     for (const p of ["/cabinet", "/settings", "/notifications", "/billing", "/applications"]) expect(activeKey(p), p).toEqual(["profile"]);

@@ -126,8 +126,8 @@ test("ish beruvchi (kirgan): asosiy ekran — chat; yozilgan so'z ishchilar ichi
   await loginAs(context, USERS.employer);
   // 2026-11-21: kirgan foydalanuvchining "/" — chat; ish beruvchida yozilgan kasb ishchilar ichida qidiriladi.
   // 2026-11-23 (C varianti): bosh ekranda qidiruv qatori — hudud qatorda tanlanadi ("Butun O'zbekiston"), savolsiz natija
+  // 2026-11-23: "/" — Bosh sahifa; qidiruv natijasi "Qidiruv" (/chat) da yangi suhbat bo'lib ochiladi
   await page.goto("/");
-  await page.waitForURL(/\/chat$/);
   await expect(page.getByRole("heading", { level: 1, name: "Ishingiz shu yerdan boshlanadi!" })).toBeVisible();
   await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   await homeSearch(page, "oshpaz");
