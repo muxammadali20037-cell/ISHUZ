@@ -1,5 +1,30 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Chatda tayyor xat va qadalgan e'lon, shifokor/o'qituvchi savoli, ustalar qidiruvi (`feat/chat-intro-professions`)
+
+Ega (telefon skrinshotlari): "Chatda yozishni bossa — e'lon qadalib, «Assalomu alaykum»dan boshlanadigan rasmiy tayyor
+matn"; "shifokor/doktor deb yozsam — doktorant PhD bo'lib joylandi; doktor desa — qanday doktor, o'qituvchi desa — qanday
+o'qituvchi" (qo'shimcha savol — **faqat guruhlarda**, ega tanlovi: oshpaz, buxgalter kabi aniq kasbda so'ralmaydi);
+"E'lonni to'liq ko'rish — kichikroq, sariq shishasimon"; "ustalarda qidirsam bo'lmadi; qanday yozmasin tanib topsin".
+Migratsiya yo'q. (Ustalar e'loni rasmi — alohida, bazaga 0089 qo'llangach.)
+
+- **Chat:**
+  - Suhbat tepasida — qadalgan e'lon (rasm yoki belgi, sarlavha, hudud; bosilsa — e'lon sahifasi).
+  - Yozish maydonida tayyor rasmiy xat (faqat hali yozmagan tomonga; o'zgartirsa bo'ladi): ish beruvchidan ishchiga —
+    "Assalomu alaykum, {ism}! «…» e'loningizni Ish topdim platformasida ko'rdim. Sizni bizga kerakli xodim deb o'yladim…";
+    ishchidan vakansiyaga va arizachiga ham. uz/ru/en.
+  - Sarlavhadagi kichik "E'lon: …" yozuvi o'rniga — qadalgan karta.
+- **Kasbni tushunish:**
+  - "Shifokor", "doktor", "vrach" — "Shifokorlar" guruhi: "Aynan qanday shifokorsiz?" (avval "tushunmadim" /
+    "Tayanch doktorant (PhD)"). Guruhning aynan yozilgan sinonimi endi qidiruvda ham guruhni topadi ("kamaz", "frontend").
+  - Variantlar ro'yxatida yopiq holatda har yo'nalishdan bittadan (terapevt, kardiolog, pediatr); hammasi — qidiruv bilan.
+  - Ish beruvchi yordamchisida ("shifokor kerak") — turli yo'nalishdagi 12 tagacha shifokor (doktorantlar emas).
+- **Karta:** "E'lonni to'liq ko'rish" — kichikroq, sariq shishasimon, soyali.
+- **Ustalar:**
+  - Qidiruv: "konditsioner ustasi kerak", "santexnk", "сантехник", "kir yuvish mashinasi" — kategoriya tanib olinadi
+    (lotin/kirill/rus, qo'shimchalar, imlo xatosi), natija o'sha kategoriyadan; sarlavha va chip ham.
+  - "Qanday ustasiz?" — yozib ham bo'ladi: "Topildi: Konditsioner ustasi"; tanilmasa — "Boshqa xizmatlar", yozgani xizmat.
+
 ## 2026-11-23 · Bosh sahifa: "nurli shisha" tugmalar, pastki menyuda "Bosh sahifa", e'lon tanlovi (`feat/home-tiles-glass`)
 
 Ega: tugmalar uchun variantlardan **1 — nurli shisha**; "Bosh sahifa qo'shilsin pastga"; "e'lon berish bosilganda

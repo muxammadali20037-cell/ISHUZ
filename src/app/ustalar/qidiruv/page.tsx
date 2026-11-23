@@ -60,8 +60,10 @@ export default async function MastersSearchPage({
   // 0076 hali qo'llanmagan baza: filtrlar va "0 ta e'lon" emas — bosh sahifadagi kabi halol holat
   if (!categories.length) return <MastersUnavailable />;
   const result = await searchMasters(p);
-  const current = p.category
-    ? (categories.find((c) => c.slug === p.category) ?? null)
+  // yozilgan so'zdan tanib olingan kategoriya ("santexnik kerak") — sarlavha va chip shu kategoriyada
+  const active = p.category || result?.understood || "";
+  const current = active
+    ? (categories.find((c) => c.slug === active) ?? null)
     : null;
   const pageCount = result
     ? Math.max(1, Math.ceil(result.total / MASTER_PAGE_SIZE))
@@ -108,7 +110,7 @@ export default async function MastersSearchPage({
           <li>
             <Link
               href={masterSearchHref({ ...p, category: "", page: 1 })}
-              className={chip(!p.category)}
+              className={chip(!active)}
             >
               {t("masters.results.all_categories")}
             </Link>
@@ -117,8 +119,8 @@ export default async function MastersSearchPage({
             <li key={c.id}>
               <Link
                 href={masterSearchHref({ ...p, category: c.slug, page: 1 })}
-                className={chip(p.category === c.slug)}
-                aria-current={p.category === c.slug ? "page" : undefined}
+                className={chip(active === c.slug)}
+                aria-current={active === c.slug ? "page" : undefined}
               >
                 <CategoryIcon icon={c.icon} className="size-4" /> {name(c)}
               </Link>

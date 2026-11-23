@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type ReactNode } from "react";
-import { Check, ChevronLeft, Clock3, Phone, Plus } from "lucide-react";
+import { Check, ChevronLeft, Clock3, Phone, Plus, Search, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { normalizePhone } from "@/lib/format";
@@ -14,6 +14,7 @@ import type { District, Region } from "@/lib/reference";
 import { PhoneInput } from "@/features/post/components/inputs";
 import { publishMasterQuick } from "../actions";
 import { masterServiceKeys } from "../services";
+import { understandMasterQuery } from "../understand";
 import { MASTER_SERVICES_MAX, type MasterCategory } from "../types";
 import { CategoryIcon } from "./category-icon";
 import { PhotosUpload } from "./photos-upload";
@@ -57,6 +58,8 @@ export function MasterWizard({
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [review, setReview] = useState(false);
+  /** 1-qadam: kasbini o'zi yozadi (ega, 2026-11-23: "qanday ustaligini qanday yozmasin — tanib topsin") */
+  const [typed, setTyped] = useState("");
 
   const category = categories.find((c) => c.id === categoryId) ?? null;
   const catalog = category ? masterServiceKeys(category.slug).map((k) => t(`masters.svc.${category.slug}.${k}`)) : [];
@@ -167,18 +170,83 @@ export function MasterWizard({
       </p>
     ) : null;
 
+  // yozilgan so'zdan kategoriya ("santexnikman", "konditsoner", "сантехник") — plitka belgilanadi, "Davom etish" bilan tanlanadi
+  const guess = typed.trim().length >= 3 ? understandMasterQuery(typed, categories.map((c) => c.slug)).category : null;
+  const guessed = guess ? (categories.find((c) => c.slug === guess) ?? null) : null;
+  const pickTyped = () => {
+    const s = typed.replace(/\s+/g, " ").trim();
+    if (s.length < 2) return;
+    if (guessed) {
+      if (guessed.id !== categoryId) setServices([]);
+      setCategoryId(guessed.id);
+      return go(2);
+    }
+    // tanilmadi — "Boshqa xizmatlar", yozgani xizmat bo'lib (keyingi oynada ko'rinadi, o'zgartirsa bo'ladi)
+    const other = categories.find((c) => c.slug === "other");
+    if (!other) return setErrors({ category: t("masters.wizard.type_unknown") });
+    setCategoryId(other.id);
+    setServices([(s.charAt(0).toLocaleUpperCase("uz") + s.slice(1)).slice(0, 40)]);
+    go(2);
+  };
+
   let body: ReactNode = null;
   if (step === 1) {
     body = (
+      <div className="space-y-4">
+      <form
+        className="space-y-2 rounded-2xl border-2 border-primary/30 bg-primary-soft/40 p-3"
+        onSubmit={(e) => {
+          e.preventDefault();
+          pickTyped();
+        }}
+        data-master-wizard-type
+      >
+        <label htmlFor="master-type" className="flex items-center gap-1.5 text-base font-bold">
+          <Sparkles className="size-4 text-primary-ink" aria-hidden /> {t("masters.wizard.type_label")}
+        </label>
+        <div className="flex gap-2">
+          <div className="relative min-w-0 flex-1">
+            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+            <Input
+              id="master-type"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              placeholder={t("masters.wizard.type_placeholder")}
+              className="h-12 pl-9 text-base"
+              maxLength={60}
+              enterKeyHint="go"
+              autoComplete="off"
+              data-master-type
+            />
+          </div>
+          <Button type="submit" className="h-12 shrink-0 px-4 text-base" disabled={typed.trim().length < 2} data-master-type-go>
+            {t("masters.wizard.next")}
+          </Button>
+        </div>
+        {typed.trim().length >= 3 ? (
+          <p className="text-sm font-semibold" role="status" data-master-type-guess={guessed?.slug ?? ""}>
+            {guessed ? (
+              <span className="inline-flex items-center gap-1.5 text-success">
+                <Check className="size-4" aria-hidden /> {t("masters.wizard.type_found", { name: name(guessed) })}
+              </span>
+            ) : (
+              <span className="text-muted-foreground">{t("masters.wizard.type_other")}</span>
+            )}
+          </p>
+        ) : null}
+      </form>
+      <p className="text-sm font-semibold text-muted-foreground">{t("masters.wizard.type_or_pick")}</p>
       <div role="radiogroup" aria-label={titles[1]} className="grid grid-cols-2 gap-3 sm:grid-cols-3" data-master-wizard-categories>
         {categories.map((c) => {
-          const on = c.id === categoryId;
+          // yozilgan so'zdan topilgani ham belgilanadi (tanlov — "Davom etish" yoki plitkani bosganda)
+          const picked = c.id === categoryId;
+          const on = picked || c.id === guessed?.id;
           return (
             <button
               key={c.id}
               type="button"
               role="radio"
-              aria-checked={on}
+              aria-checked={picked}
               onClick={() => {
                 if (c.id !== categoryId) setServices([]);
                 setCategoryId(c.id);
@@ -197,6 +265,7 @@ export function MasterWizard({
             </button>
           );
         })}
+      </div>
       </div>
     );
   } else if (step === 2) {

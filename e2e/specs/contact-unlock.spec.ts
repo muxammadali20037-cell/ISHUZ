@@ -60,7 +60,23 @@ test("bepul davr: «Raqamni ko'rsatish» → raqam va «Chatda yozish» (juftlik
   await expect(contact.locator("a[href='tel:+998935550011']").first()).toBeVisible();
   await contact.getByRole("button", { name: "Chatda yozish" }).click();
   await expect(page).toHaveURL(/\/messages\/[0-9a-f-]{36}$/);
-  await expect(page.getByText(`E'lon: ${PROF}`)).toBeVisible();
+  // ega (2026-11-23): e'lon suhbat tepasida qadalgan; yozish maydonida "Assalomu alaykum"dan boshlanadigan tayyor rasmiy xat
+  const pinned = page.locator("[data-pinned-listing='worker']");
+  await expect(pinned).toContainText("Qadalgan e'lon");
+  await expect(pinned.locator("[data-pinned-title]")).toHaveText(PROF);
+  await expect(pinned).toContainText("Toshkent shahri");
+  await expect(pinned.locator("a")).toHaveAttribute("href", `/listing/${id}`);
+  const draft = page.locator("textarea");
+  await expect(draft).toHaveValue(
+    `Assalomu alaykum, Anvar! «${PROF}» e'loningizni Ish topdim platformasida ko'rdim. Sizni bizga kerakli xodim deb o'yladim. Agar taklifimiz sizni qiziqtirsa, qulay vaqtda gaplashib olsak. Javobingizni kutaman.`,
+  );
+  // bir bosishda yuboriladi; keyingi ochilishda tayyor xat qaytmaydi (allaqachon yozilgan)
+  await page.getByRole("button", { name: "Yuborish" }).click();
+  await expect(draft).toHaveValue("");
+  await expect(page.locator("[data-chat-messages]").getByText("Sizni bizga kerakli xodim deb o'yladim", { exact: false })).toBeVisible();
+  await page.reload();
+  await expect(page.locator("textarea")).toHaveValue("");
+  await expect(page.locator("[data-pinned-listing='worker']")).toBeVisible();
 });
 
 test("pullik rejim: «Raqamni ochish · 5 000 so'm» → hamyondan to'lash → raqam va chat shu sahifada; mehmonga — kirish", async ({ page, context, browser }) => {

@@ -181,6 +181,60 @@ test("oynama-oyna: kategoriya → xizmatlar → ism → hudud va telefon → ras
   });
 });
 
+test("«Qanday ustasiz?» — yozsa ham tanib topadi (imlo xatosi bilan ham); tanilmasa — «Boshqa xizmatlar», yozgani xizmat bo'ladi", async ({ page, context }) => {
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/ustalar/elon");
+  const w = page.locator("[data-master-wizard]");
+  const box = w.locator("[data-master-type]");
+  await expect(w.locator("[data-master-wizard-categories] [data-category]")).toHaveCount(12);
+  await box.fill("konditsoner ustasiman");
+  await expect(w.locator("[data-master-type-guess]")).toHaveAttribute("data-master-type-guess", "ac");
+  await expect(w.locator("[data-master-type-guess]")).toHaveText("Topildi: Konditsioner ustasi");
+  await expect(w.locator("[data-category='ac']")).toHaveClass(/border-primary/);
+  await box.fill("сантехник");
+  await expect(w.locator("[data-master-type-guess]")).toHaveAttribute("data-master-type-guess", "plumber");
+  await expect(async () => {
+    await w.locator("[data-master-type-go]").click();
+    await expect(w).toHaveAttribute("data-step", "2", { timeout: 1_000 });
+  }).toPass();
+  await expect(w).toContainText("Santexnik");
+
+  // tanilmagan kasb — "Boshqa xizmatlar", yozgani — tanlangan xizmat
+  await w.locator("[data-master-wizard-back]").click();
+  await expect(w).toHaveAttribute("data-step", "1");
+  await w.locator("[data-master-type]").fill("akvarium tozalash");
+  await expect(w.locator("[data-master-type-guess]")).toHaveAttribute("data-master-type-guess", "");
+  await w.locator("[data-master-type-go]").click();
+  await expect(w).toHaveAttribute("data-step", "2");
+  await expect(w).toContainText("Boshqa xizmatlar");
+  await expect(w.locator("[data-service][aria-pressed='true']")).toHaveText("Akvarium tozalash");
+});
+
+test("qidiruv: «konditsioner ustasi kerak», «santexnk», «сантехник» — kategoriya tanib olinadi, natijalar shu kategoriyadan", async ({ page, context }) => {
+  await asGuest(context);
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const [q, slug, title] of [
+    ["konditsioner ustasi kerak", "ac", "Konditsioner ustasi"],
+    ["santexnk", "plumber", "Santexnik"],
+    ["сантехник", "plumber", "Santexnik"],
+    ["kir yuvish mashinasi", "appliance", "Maishiy texnika ustasi"],
+  ] as const) {
+    await page.goto(`/ustalar/qidiruv?q=${encodeURIComponent(q)}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    await expect(page.locator(`[data-masters-chips] a[aria-current='page']`)).toHaveAttribute("href", new RegExp(`k=${slug}`));
+    const cards = page.locator("[data-masters-results] [data-master-card]");
+    await expect(cards.first()).toBeVisible();
+    // demo e'lonlar — har kategoriyada 4 tadan; boshqa kategoriya aralashmaydi
+    const [row] = await sql<{ n: string }>(
+      "select count(*)::text as n from public.master_listings l join public.master_categories c on c.id = l.category_id where l.status = 'active' and c.slug = $1",
+      [slug],
+    );
+    await expect(cards).toHaveCount(Math.min(Number(row!.n), 12));
+  }
+});
+
 test("usta e'lon joylaydi → moderatsiya → admin tasdiqlaydi → katalogda; telefon faqat rozilik bilan; so'rov, sharh, statistika", async ({ page, context, browser }) => {
   test.setTimeout(180_000);
   // 1) usta: e'lon (rasm bilan — stendda rasm AI bilan tekshirilmaydi, shuning uchun admin navbatiga)

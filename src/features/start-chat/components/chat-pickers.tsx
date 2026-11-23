@@ -72,6 +72,7 @@ export function ChoicePicker({
   moreLabel,
   searchPlaceholder,
   remote,
+  featured,
 }: {
   items: PickItem[];
   attr: string;
@@ -80,6 +81,8 @@ export function ChoicePicker({
   moreLabel?: (count: number) => string;
   searchPlaceholder: string;
   remote?: { search: (q: string) => Promise<PickItem[]> };
+  /** yopiq holatda ko'rinadigan 3 tasi (bo'lmasa — ro'yxat boshidagi 3 tasi); masalan, har yo'nalishdan bittadan */
+  featured?: PickItem[];
 }) {
   const { t } = useT();
   const [open, setOpen] = useState(false);
@@ -119,6 +122,8 @@ export function ChoicePicker({
     return out;
   }, [items]);
   const hidden = items.length - FIRST;
+  // yopiq holatdagi 3 tasi: tanlanganlari (bo'lsa), yetmasa — ro'yxat boshidan
+  const collapsed = featured?.length ? [...featured, ...items.filter((i) => !featured.some((f) => f.key === i.key))].slice(0, FIRST) : items.slice(0, FIRST);
 
   return (
     <div className="space-y-2.5" data-choice-picker={attr}>
@@ -138,7 +143,7 @@ export function ChoicePicker({
           </div>
         ))
       ) : (
-        <Row items={open ? items : items.slice(0, FIRST)} icon={icon} attr={attr} />
+        <Row items={open ? items : collapsed} icon={icon} attr={attr} />
       )}
 
       {!query && hidden > 0 ? (

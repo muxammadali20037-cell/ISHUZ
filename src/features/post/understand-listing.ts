@@ -36,9 +36,77 @@ export async function picked(nodeId: string): Promise<PickedProfession | null> {
   return { id: nodeId, categoryId: data.category_id, trail };
 }
 
+/** Kichik guruhlardan navbat bilan (har biridan birinchisi, keyin ikkinchisi, …) — `n` tagacha */
+export function spread<T>(branches: { items: T[] }[], n: number): T[] {
+  const out: T[] = [];
+  for (let i = 0; out.length < n && branches.some((b) => b.items.length > i); i++) {
+    for (const b of branches) {
+      if (out.length >= n) break;
+      const it = b.items[i];
+      if (it) out.push(it);
+    }
+  }
+  return out;
+}
+
+export interface ProfessionBranch {
+  /** kichik guruh ("Jarrohlik"); null — ildizning o'zidagi aniq kasblar */
+  title: ProfessionOption | null;
+  items: ProfessionOption[];
+}
+
+/**
+ * Guruh ("Shifokorlar", "O'qituvchi") yoki aniq kasb ichidagi tanlanadigan kasblar — BITTA so'rov bilan (kasb yo'li `path`
+ * bo'yicha), daraxtdagi tartibda, kichik guruhlar bo'yicha. Aniq kasbning ichidagi ixtisosliklar ro'yxatga kirmaydi
+ * (asosiy daraja ko'rsatiladi). Taqiqlangan kasblar yo'q. `max` — jami variantlar chegarasi.
+ */
+export async function professionBranches(rootId: string, max = 150): Promise<ProfessionBranch[]> {
+  const { data } = await createPublicClient()
+    .from("profession_nodes")
+    .select("id, parent_id, name_uz, name_ru, name_en, selectable, sort_order, path")
+    .contains("path", [rootId])
+    .eq("is_active", true)
+    .neq("id", rootId)
+    .order("depth")
+    .order("sort_order")
+    .order("name_uz")
+    .limit(800);
+  const rows = (data ?? []).filter((r) => !isProhibitedProfession(r));
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const buckets = new Map<string, ProfessionBranch["items"]>();
+  let count = 0;
+  for (const r of rows) {
+    if (!r.selectable || count >= max) continue;
+    const at = r.path.indexOf(rootId);
+    const between = r.path.slice(at + 1, -1);
+    // faol bo'lmagan oraliq tugun yoki aniq kasbning ichidagi ixtisoslik — o'tkazib yuboriladi
+    if (at < 0 || between.some((id) => !byId.has(id) || byId.get(id)!.selectable)) continue;
+    const key = between[0] ?? "";
+    const item = { id: r.id, name_uz: r.name_uz, name_ru: r.name_ru, name_en: r.name_en };
+    (buckets.get(key) ?? buckets.set(key, []).get(key)!).push(item);
+    count += 1;
+  }
+  const order = (key: string) => {
+    const n = byId.get(key);
+    return n ? ([n.sort_order, n.name_uz] as const) : ([-Infinity, ""] as const);
+  };
+  return [...buckets.entries()]
+    .sort(([a], [b]) => {
+      const [sa, na] = order(a);
+      const [sb, nb] = order(b);
+      return sa === sb ? na.localeCompare(nb) : sa - sb;
+    })
+    .map(([key, items]) => {
+      const n = key ? byId.get(key) : undefined;
+      return { title: n ? { id: n.id, name_uz: n.name_uz, name_ru: n.name_ru, name_en: n.name_en } : null, items };
+    });
+}
+
 /**
  * Matndagi kasb: aniq bo'lsa — bitta (darhol tanlanadi); bir nechta deyarli teng mos keladigan bo'lsa ("kuryer" → piyoda, moto,
  * avto…) — 6 tagacha variant, foydalanuvchi o'zi tanlaydi (taxmin qilib noto'g'ri kasb qo'yilmaydi). Faqat tanlanadigan kasblar.
+ * Guruh nomi yoki sinonimi aynan yozilgan bo'lsa ("shifokor", "doktor", "o'qituvchi") — guruh ichidagi kasblar variant bo'ladi
+ * (ega, 2026-11-23: "doktor desa — qanday doktor? o'qituvchi desa — qanday o'qituvchi?"; avval "doktor" → "Doktorant (PhD)").
  */
 export async function professionFrom(
   text: string,
@@ -58,6 +126,18 @@ export async function professionFrom(
     ),
   );
   const best = new Map<string, { o: ProfessionOption; score: number; from: string; exact: boolean }>();
+  // guruh: nomi yoki sinonimi aynan yozilgan (search_profession_nodes: to'liq moslik — 3 + o'xshashlik), lekin xuddi shu
+  // so'z bilan atalgan aniq kasb yo'q ("haydovchi" — "Haydovchi" kasbi; "shifokor" — faqat "Shifokorlar" guruhi)
+  for (const { c, hits } of results) {
+    const group = hits.find((h) => !h.selectable && h.score >= 3.5 && !isProhibitedProfession(h));
+    const ownSelectable = hits.some((h) => h.selectable && [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && normalizeText(n) === normalizeText(c)));
+    if (group && !ownSelectable) {
+      // 12 tagacha — har kichik guruhdan navbat bilan (faqat terapevtlar emas: terapevt, kardiolog, pediatr, jarroh, …)
+      const items = spread(await professionBranches(group.id), 12);
+      if (items.length === 1) return { one: await picked(items[0]!.id), options: [] };
+      if (items.length) return { one: null, options: items };
+    }
+  }
   for (const { c, hits } of results) {
     for (const h of hits) {
       if (!h.selectable || h.score < 2 || isProhibitedProfession(h)) continue;

@@ -28,6 +28,7 @@ import { uploadChatFile } from "../upload";
 import { groupByDay, relativeDay, rowToMessage } from "../utils";
 import { ChatHeader } from "./chat-header";
 import { Composer } from "./composer";
+import { PinnedListing } from "./pinned-listing";
 import { MessageBubble } from "./message-bubble";
 import { callAction } from "@/lib/action-call";
 
@@ -312,6 +313,16 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
   };
 
   const groups = useMemo(() => groupByDay(messages), [messages]);
+
+  // birinchi xat (ega, 2026-11-23): men hali hech narsa yozmagan bo'lsam — "Assalomu alaykum"dan boshlanadigan rasmiy tayyor matn;
+  // faqat "Yuborish"ni bosish qoladi (o'zgartirsa ham bo'ladi). Faqat birinchi ochilishdagi holatga qarab (keyin o'zgarmaydi)
+  const [introText] = useState(() => {
+    const intro = view.intro;
+    const title = view.context.title.trim();
+    if (!intro || !title || initial.hasMore || initial.messages.some((m) => m.sender_id === myId)) return "";
+    const hello = view.otherFirstName ? t("chat.intro.hello_name", { name: view.otherFirstName }) : t("chat.intro.hello");
+    return t(`chat.intro.${intro}`, { hello, title });
+  });
   const now = new Date();
 
   const dayLabel = (key: string, iso: string) => {
@@ -333,7 +344,9 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
         onToggleBlock={() => (blockedByMe ? void applyBlock(false) : setBlockConfirm(true))}
       />
 
-      <div ref={listRef} onScroll={onScroll} className="relative flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4">
+      <PinnedListing context={view.context} />
+
+      <div ref={listRef} onScroll={onScroll} className="relative flex-1 overflow-y-auto overscroll-contain px-3 py-4 sm:px-4" data-chat-messages>
         <div className="mx-auto flex w-full max-w-3xl flex-col gap-1.5">
           {hasMore ? (
             <div className="mb-2 flex justify-center">
@@ -398,6 +411,7 @@ export function ChatRoom({ view, initial, myId }: { view: ConversationView; init
         onSendFile={handleSendFile}
         onSendVoice={handleSendVoice}
         onSendLocation={handleSendLocation}
+        initialText={introText}
       />
 
       <ConfirmDialog

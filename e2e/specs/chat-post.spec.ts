@@ -188,6 +188,31 @@ test("guruh kasbi («men o'qituvchiman») — «aynan qaysi biri?» tugmalari; y
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^(results|none)$/);
 });
 
+test("«shifokor», «doktor» — «Aynan qanday shifokorsiz?» (ega, 2026-11-23: avval tushunilmasdi / «Doktorant (PhD)» bo'lib ketardi)", async ({ page, context }) => {
+  await loginAs(context, USERS.workerB);
+  await asMode(context, "worker");
+  for (const word of ["Shifokor", "Doktor"]) {
+    await page.goto("/chat?post=new");
+    await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-profession");
+    await send(page, word);
+    await settled(page);
+    const which = lastAi(page);
+    await expect(which).toHaveAttribute("data-guided-ai", "post-which");
+    await expect(which).toContainText("Aynan qanday shifokorsiz?");
+    await expect(which).not.toContainText("tushunmadim");
+    // hamma yo'nalishlar (terapiya, pediatriya, jarrohlik, …) — guruhlab; doktorantlar yo'q
+    await page.locator("#start-chat-text").blur();
+    await which.locator("[data-choice-all]").click();
+    for (const name of ["Terapevt", "Pediatr", "Kardiolog", "Umumiy jarroh"]) await expect(which.locator("[data-post-choice]", { hasText: new RegExp(`^${name}$`) })).toHaveCount(1);
+    await expect(which).not.toContainText(/doktorant/i);
+  }
+  // tanlangach — keyingi savol
+  await lastAi(page).locator("[data-post-choice]", { hasText: /^Kardiolog$/ }).click();
+  await settled(page);
+  await expect(page.locator("[data-ai-you]").last()).toHaveText("Siz: Kardiolog");
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|name|experience)$/);
+});
+
 test("«E'lonlarim» → «+ E'lon joylash» — chatda savollar darhol boshlanadi; vakansiya — alohida ekran", async ({ page, context }) => {
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");

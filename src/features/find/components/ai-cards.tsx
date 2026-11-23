@@ -45,7 +45,9 @@ import { OrgMark, usePlace, usePosted, type JobCardData, type WorkerCardData } f
 
 // oq, sokin karta (ega, 2026-11-21: "ranglar yemagan, bolalarcha") — rang faqat muhim joyda (maosh, tugma)
 const cardCls = "relative rounded-2xl border border-border bg-card p-4 shadow-sm";
-const openBtnCls = "press mt-3 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl px-4 text-base font-bold disabled:opacity-70";
+// ega (2026-11-23): "E'lonni to'liq ko'rish" — biroz kichikroq, sariq shishasimon, soyali (bosh sahifadagi "E'lon berish" uslubida)
+const openBtnCls =
+  "press relative isolate mt-3 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-highlight-hover/60 bg-highlight/90 px-4 text-sm font-bold text-highlight-foreground shadow-md shadow-highlight/30 transition-[transform,box-shadow] hover:-translate-y-px hover:bg-highlight hover:shadow-lg hover:shadow-highlight/40 disabled:opacity-70";
 const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
 
 type Loaded<T> = { phase: "idle" | "loading" | "error" } | ({ phase: "ready" } & T);
@@ -103,13 +105,15 @@ function OpenButton({ open, loading, controls, onClick }: { open: boolean; loadi
       onClick={onClick}
       aria-expanded={open}
       aria-controls={controls}
-      // sokin ikkinchi darajali tugma (asosiy amal — ichkarida: "Ariza yuborish" / qo'ng'iroq)
-      className={cn(openBtnCls, "border border-border bg-card text-foreground hover:bg-secondary")}
+      className={openBtnCls}
       data-ai-card-open
     >
-      {loading ? <Loader2 className="size-5 animate-spin" aria-hidden /> : <FileText className="size-5" aria-hidden />}
+      {/* shisha: tepada ingichka yaltirash va yuqori yarmida yumshoq oq nur (tugma ichida — tashqariga chiqmaydi) */}
+      <span aria-hidden className="absolute inset-x-3 top-0 -z-10 h-px bg-card/80" />
+      <span aria-hidden className="absolute inset-x-0 top-0 -z-10 h-1/2 rounded-t-xl bg-card/25" />
+      {loading ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <FileText className="size-4" aria-hidden />}
       {open ? t("easy.aicard.close") : t("easy.aicard.open")}
-      <ChevronDown className={cn("size-5 transition-transform", open && "rotate-180")} aria-hidden />
+      <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} aria-hidden />
     </button>
   );
 }

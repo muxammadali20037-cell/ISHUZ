@@ -281,7 +281,13 @@
     "done_live": "Your ad is live! Clients now see you in this section.",
     "review_title": "Your ad was received",
     "review_desc": "Once your work photos are checked, the ad appears in the catalogue. See the status in your cabinet.",
-    "to_cabinet": "Open cabinet"
+    "to_cabinet": "Open cabinet",
+    "type_label": "Type your trade — we'll find it",
+    "type_placeholder": "E.g. plumber, AC technician",
+    "type_found": "Found: {name}",
+    "type_other": "Not in the list — it will go to “Other services” under this name",
+    "type_or_pick": "or pick from the list:",
+    "type_unknown": "Didn't get that — pick from the list."
   },
   "svc": {
     "ac": {

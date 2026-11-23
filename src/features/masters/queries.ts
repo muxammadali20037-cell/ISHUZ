@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createPublicClient, REFERENCE_CACHE } from "@/lib/supabase/public";
 import { getRegions } from "@/lib/reference";
 import type { MasterSearchParams } from "./schema";
+import { understandMasterQuery } from "./understand";
 import {
   MASTER_PAGE_SIZE,
   type MasterCategory,
@@ -79,9 +80,16 @@ export async function getMasterCategoryCounts(): Promise<Record<
 export interface MasterSearchResult {
   items: MasterPublic[];
   total: number;
+  /** so'rovdan tanib olingan kategoriya ("santexnik kerak" → plumber), kategoriya alohida tanlanmagan bo'lsa */
+  understood?: string | null;
 }
 
-/** Ommaviy qidiruv (telefonsiz). Xato — null (sahifa halol "vaqtincha ochilmadi" deydi) */
+/**
+ * Ommaviy qidiruv (telefonsiz). Xato — null (sahifa halol "vaqtincha ochilmadi" deydi).
+ * Yozilgan so'z (ega, 2026-11-23: "ustalar bo'limida qidirsam bo'lmadi"): avval kategoriya tanib olinadi ("konditsioner ustasi
+ * kerak", "сантехник", "santexnk") — natija o'sha kategoriyadan; qolgan ma'noli so'zlar sarlavha/tavsifda qidiriladi, ular bilan
+ * hech narsa chiqmasa — kategoriyaning o'zi. Kategoriya tanilmasa — so'zlar bo'yicha (butun gap, keyin har so'z alohida).
+ */
 export async function searchMasters(
   p: Partial<MasterSearchParams> & { limit?: number },
 ): Promise<MasterSearchResult | null> {
@@ -89,33 +97,52 @@ export async function searchMasters(
     getMasterCategories(),
     getRegions(),
   ]);
-  const category = p.category
-    ? (categories.find((c) => c.slug === p.category) ?? null)
-    : null;
   const region = p.region
     ? (regions.find((r) => r.slug === p.region) ?? null)
     : null;
-  if ((p.category && !category) || (p.region && !region))
+  if ((p.category && !categories.some((c) => c.slug === p.category)) || (p.region && !region))
     return { items: [], total: 0 };
+  const text = p.q?.trim() ?? "";
+  const understood = text && !p.category ? understandMasterQuery(text, categories.map((c) => c.slug)) : null;
+  const slug = p.category || understood?.category || null;
+  const category = slug ? (categories.find((c) => c.slug === slug) ?? null) : null;
   const limit = p.limit ?? MASTER_PAGE_SIZE;
-  const { data, error } = await createPublicClient().rpc(
-    "master_listings_public",
-    {
-      p_category: category?.id ?? undefined,
-      p_region: region?.id ?? undefined,
-      p_query: p.q || undefined,
-      p_min_experience: p.exp || undefined,
-      p_sort: p.sort ?? "new",
-      p_limit: limit,
-      p_offset: ((p.page ?? 1) - 1) * limit,
-    },
-  );
-  if (error) {
-    console.error("[masters] search", error.code, error.message);
-    return null;
+  const run = async (query: string | null): Promise<MasterSearchResult | null> => {
+    const { data, error } = await createPublicClient().rpc(
+      "master_listings_public",
+      {
+        p_category: category?.id ?? undefined,
+        p_region: region?.id ?? undefined,
+        p_query: query || undefined,
+        p_min_experience: p.exp || undefined,
+        p_sort: p.sort ?? "new",
+        p_limit: limit,
+        p_offset: ((p.page ?? 1) - 1) * limit,
+      },
+    );
+    if (error) {
+      console.error("[masters] search", error.code, error.message);
+      return null;
+    }
+    const items = data ?? [];
+    return { items, total: Number(items[0]?.total_count ?? 0), understood: understood?.category ?? null };
+  };
+  // kategoriya alohida tanlangan — avvalgidek (yozilgani — sarlavha/tavsifda)
+  if (!understood) return run(text || null);
+  const words = understood.rest;
+  if (understood.category) {
+    if (!words.length) return run(null);
+    const narrow = await run(words.join(" "));
+    return narrow && narrow.total === 0 ? run(null) : narrow;
   }
-  const items = data ?? [];
-  return { items, total: Number(items[0]?.total_count ?? 0) };
+  // kategoriya tanilmadi: avval butun gap, keyin har so'z (uzunidan boshlab) — birinchi natija bergani
+  const first = await run(text);
+  if (!first || first.total > 0) return first;
+  for (const w of [...words].sort((a, b) => b.length - a.length).slice(0, 4)) {
+    const r = await run(w);
+    if (!r || r.total > 0) return r;
+  }
+  return first;
 }
 
 /** Bitta e'lon (faqat faol); topilmasa null */

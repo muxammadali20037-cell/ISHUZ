@@ -67,9 +67,13 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
       // uzunroq (aniqroq) ibora va aniq moslik afzal; kasbning o'z nomi boshqa kasbning sinonimidan ustun
       // ("enaga" — "Enaga" kasbi, sinonimi "enaga" bo'lgan "Tarbiyachi yordamchisi" emas)
       const ownName = [h.name_uz, h.name_ru, h.name_en].some((n) => !!n && bare(n) === cn);
-      // guruh ("O'qituvchi": ichida aniq kasblar) — faqat nomi aynan yozilganida (qidiruv butun guruh bo'yicha); aks holda
-      // sinonimi o'xshash boshqa kasb ("o'qituvchi" → Avtoinstruktor) tanlanib qolardi (ega, 2026-11-17)
-      if ((!h.selectable && !ownName) || h.score < 2 || isProhibitedProfession(h)) continue;
+      // aynan sinonimi yozilgan (search_profession_nodes: nom yoki sinonim to'liq mos — 3 + o'xshashlik, boshqa holatlar ≤ 3)
+      const exact = h.score >= 3.5;
+      // guruh ("O'qituvchi": ichida aniq kasblar) — faqat nomi yoki sinonimi aynan yozilganida (qidiruv butun guruh bo'yicha);
+      // aks holda sinonimi o'xshash boshqa kasb ("o'qituvchi" → Avtoinstruktor) tanlanib qolardi (ega, 2026-11-17).
+      // "shifokor", "doktor", "vrach" — "Shifokorlar" guruhining sinonimlari (ega, 2026-11-23: "shifokor" tushunilmasdi,
+      // "doktor" esa "Tayanch doktorant (PhD)" bo'lib ketardi)
+      if ((!h.selectable && !ownName && !exact) || h.score < 2 || isProhibitedProfession(h)) continue;
       const fit = Math.max(...[h.name_uz, h.name_ru, h.name_en].filter((n): n is string => !!n).map((n) => {
         const f = nameFit(said, n, bare);
         return f.covered * 0.8 - f.extra * 0.4;

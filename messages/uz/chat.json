@@ -61,7 +61,9 @@
     "delete_confirm_title": "Xabarni o'chirasizmi?",
     "delete_confirm_desc": "Xabar ikkala tomon uchun ham o'chiriladi.",
     "deleted_toast": "Xabar o'chirildi",
-    "context_listing": "E'lon"
+    "context_listing": "E'lon",
+    "pinned_listing": "Qadalgan e'lon",
+    "pinned_vacancy": "Qadalgan vakansiya"
   },
   "composer": {
     "placeholder": "Xabar yozing...",
@@ -98,5 +100,12 @@
     "validation": "Xabar bo'sh yoki juda uzun",
     "not_authenticated": "Davom etish uchun tizimga kiring",
     "generic": "Xabar yuborilmadi. Qayta urinib ko'ring."
+  },
+  "intro": {
+    "hello": "Assalomu alaykum!",
+    "hello_name": "Assalomu alaykum, {name}!",
+    "to_worker": "{hello} «{title}» e'loningizni Ish topdim platformasida ko'rdim. Sizni bizga kerakli xodim deb o'yladim. Agar taklifimiz sizni qiziqtirsa, qulay vaqtda gaplashib olsak. Javobingizni kutaman.",
+    "to_employer": "{hello} «{title}» vakansiyangizni Ish topdim platformasida ko'rdim va qiziqib qoldim. O'zimni bu ish uchun mos nomzod deb hisoblayman. Batafsil ma'lumot bersangiz yoki qulay vaqtda gaplashib olsak, xursand bo'lardim. Javobingizni kutaman.",
+    "to_applicant": "{hello} «{title}» vakansiyamizga qiziqish bildirganingiz uchun rahmat. Siz bilan batafsil gaplashib olmoqchimiz. Qachon qulay bo'ladi?"
   }
 }
