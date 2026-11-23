@@ -118,7 +118,14 @@ export function HomeStart({
         </Button>
       </form>
 
-      <div className="grid grid-cols-3 gap-2" data-guided-starts>
+      {/* ega (2026-11-23): "Ish qidiryapman" / "Ishchi qidiryapman" — to'q ko'k oynali (shisha), yonida sariq "E'lon berish";
+          orqada xira rang dog'lari — shisha orqali ko'rinadi */}
+      <div className="relative isolate grid grid-cols-3 gap-2" data-guided-starts>
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <span className="absolute -left-4 top-1/2 size-28 -translate-y-1/2 rounded-full bg-primary/45 blur-2xl" />
+          <span className="absolute left-1/3 top-1/2 size-24 -translate-y-1/2 rounded-full bg-accent-bright/40 blur-2xl" />
+          <span className="absolute right-1/4 top-1/2 size-24 -translate-y-1/2 rounded-full bg-highlight/50 blur-2xl" />
+        </div>
         <Tile icon={BriefcaseBusiness} label={t("easy.guided.start_jobs")} disabled={chat.pending} onClick={() => chat.start("jobs", t("easy.guided.start_jobs"))} data-guided-start="jobs" data-tour="start-jobs" />
         <Tile icon={UsersRound} label={t("easy.guided.start_workers")} disabled={chat.pending} onClick={() => chat.start("workers", t("easy.guided.start_workers"))} data-guided-start="workers" data-tour="start-workers" />
         {/* sariq (ega tanlagan urg'u): kim ekani so'ralmaydi — ikkala variant chiqadi (o'zi haqida / vakansiya) */}
@@ -145,14 +152,18 @@ function Tile({ icon: Icon, label, accent, ...props }: { icon: LucideIcon; label
       className={cn(
         // 320 px da uchta tugma yonma-yon: "qidiryapman" bo'linmasin — eng tor ekranda kichikroq yozuv
         "press flex min-h-24 min-w-0 flex-col items-center justify-center gap-1.5 rounded-xl border px-1 py-2.5 text-center text-xs font-bold leading-tight shadow-sm transition-colors [overflow-wrap:anywhere] disabled:opacity-60 min-[360px]:px-1.5 min-[360px]:text-sm sm:text-base",
-        accent ? "border-highlight bg-highlight text-highlight-foreground hover:bg-highlight-hover" : "border-border-strong bg-card text-foreground hover:border-primary/50",
+        accent
+          ? "border-highlight bg-highlight text-highlight-foreground hover:bg-highlight-hover"
+          : "relative overflow-hidden border-navy-foreground/10 bg-navy-2/90 text-navy-foreground shadow-md ring-1 ring-inset ring-navy-foreground/10 backdrop-blur-md hover:bg-navy-2",
       )}
       {...props}
     >
-      <span className={cn("flex size-9 shrink-0 items-center justify-center rounded-lg", accent ? "bg-card text-foreground" : "bg-primary-soft text-primary-ink")} aria-hidden>
+      <span className={cn("relative flex size-9 shrink-0 items-center justify-center rounded-lg", accent ? "bg-card text-foreground" : "bg-navy-foreground/10 text-sidebar-accent")} aria-hidden>
         <Icon className="size-5" />
       </span>
-      {label}
+      <span className="relative" data-tile-label>
+        {label}
+      </span>
     </button>
   );
 }

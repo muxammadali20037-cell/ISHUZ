@@ -1,5 +1,14 @@
 # O'zgarishlar jurnali
 
+## 2026-11-23 · Bosh sahifa: to'q ko'k oynali tugmalar (`feat/home-tiles-glass`)
+
+Ega: "e'lon joylash sariqda; oldidagilarni ham rangini to'q ko'k bilan shishalik" (telefonda ham, saytda ham). Migratsiya yo'q.
+
+- "Ish qidiryapman" va "Ishchi qidiryapman" — to'q ko'k oynali (shisha) tugmalar, oq yozuv, och ko'k belgi. Yonida sariq
+  "E'lon berish" o'zgarmadi. Orqada ko'k, turkuaz va sariq rangli xira dog'lar shisha orqali ko'rinadi.
+- Qorong'i mavzuda ham ajralib turadi (chegara va ichki chiziq). 320px'da yozuv so'z o'rtasidan bo'linmaydi (test).
+- Brend qo'riqchisi: `home-start.tsx` uchun "blur" — ega so'rovi bilan istisno.
+
 ## 2026-11-23 · Bosh sahifa kompyuterda kengroq va oynali yon menyu (`feat/home-wide`)
 
 Ega (kompyuter skrinshoti): "sahifa juda tor" — katta ekranda o'rtada ingichka ustun, ikki yon bo'sh; "yon bar oynani

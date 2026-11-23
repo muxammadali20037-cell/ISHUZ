@@ -135,8 +135,9 @@ test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, uch
       // uchta tugma yonma-yon: so'z o'rtasidan bo'linmaydi ("qidiryapma-n" emas), 320 px da ham
       const broken = await main.locator("[data-guided-start]").evaluateAll((els) =>
         els.flatMap((el) => {
-          const node = Array.from(el.childNodes).find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
-          if (!node) return [];
+          const holder = el.querySelector("[data-tile-label]") ?? el;
+          const node = Array.from(holder.childNodes).find((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
+          if (!node) return ["(yozuv topilmadi)"];
           const text = node.textContent!;
           const out: string[] = [];
           for (const m of text.matchAll(/\S+/g)) {
