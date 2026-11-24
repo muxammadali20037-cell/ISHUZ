@@ -60,7 +60,18 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   await expect(lastAi(page)).toContainText("Qaysi viloyatda ishlamoqchisiz? Pastdan tanlang.");
   await page.locator("[data-post-region]", { hasText: "Toshkent shahri" }).click();
   await settled(page);
-  // ism hisobda bor (Botir) — so'ralmaydi; tajriba — yoziladi
+  // ism hisobda bor (Botir) — so'ralmaydi; jinsi (tugma) va yoshi (yoziladi) — e'londa birinchi band (ega, 2026-11-24 auditi)
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-gender");
+  await expect(lastAi(page)).toContainText("Siz erkakmisiz yoki ayol?");
+  await lastAi(page).locator("[data-post-gender='male']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-age");
+  await expect(box(page)).toHaveAttribute("inputmode", "numeric");
+  await send(page, "yoshim ko'p");
+  await expect(lastAi(page)).toContainText("Yoshingizni raqam bilan yozing");
+  await send(page, "28");
+  await settled(page);
+  // tajriba — yoziladi
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-experience");
   await expect(lastAi(page)).toContainText("Tajribangiz bormi?");
   await expect(lastAi(page).locator("[data-post-exp]")).toHaveCount(4);
@@ -96,7 +107,7 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   await expect(card).toContainText("Botir B.");
   await expect(card).toContainText("Toshkent shahri");
   await expect(card).toContainText("Oshpaz sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
-  await expect(card.locator("[data-notes-list] li")).toHaveText(["Restoranda ishlamoqchiman", "Sanitar daftarcham (tibbiy kitobcha) bor", "O'z mashinam bor", "Tungi smenada ham ishlayman", "Rus tilini bilaman"]);
+  await expect(card.locator("[data-notes-list] li")).toHaveText(["Erkak, 28 yosh", "Restoranda ishlamoqchiman", "Sanitar daftarcham (tibbiy kitobcha) bor", "O'z mashinam bor", "Tungi smenada ham ishlayman", "Rus tilini bilaman"]);
   await expect(card.locator("[data-post-phone]")).toHaveText("+998 90 ••• •• 67");
   await expect(preview.locator("[data-post-publish]")).toHaveText("Joylash");
   const consent = preview.locator("[data-post-consent]");
@@ -121,7 +132,7 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   const phones = await sql<{ phone: string }>("select phone from public.worker_listing_phones where worker_id in (select id from public.worker_profiles where profile_id = $1)", [USERS.workerB]);
   expect(phones.map((p) => p.phone)).toContain("+998901234567");
   const [wp] = await sql<{ about: string }>("select about from public.worker_profiles where profile_id = $1", [USERS.workerB]);
-  expect(wp!.about).toMatch(/\n\n✅ Restoranda ishlamoqchiman\n✅ Sanitar daftarcham \(tibbiy kitobcha\) bor\n✅ O'z mashinam bor\n✅ Tungi smenada ham ishlayman\n✅ Rus tilini bilaman$/);
+  expect(wp!.about).toMatch(/\n\n✅ Erkak, 28 yosh\n✅ Restoranda ishlamoqchiman\n✅ Sanitar daftarcham \(tibbiy kitobcha\) bor\n✅ O'z mashinam bor\n✅ Tungi smenada ham ishlayman\n✅ Rus tilini bilaman$/);
 });
 
 test("kasbga qarab savol (ega, 2026-11-24: «ishchiga ham»): «C toifa haydovchiman» — toifa so'ralmaydi, mashina — tugma; usta — asboblar (yozib javob); e'londa ✅", async ({ page, context }) => {
@@ -145,6 +156,13 @@ test("kasbga qarab savol (ega, 2026-11-24: «ishchiga ham»): «C toifa haydovch
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
   await page.locator("[data-post-region]", { hasText: "Toshkent shahri" }).click();
   await settled(page);
+  // jinsi — yozib ham ("erkak"), yoshi — tug'ilgan yil bilan ham
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-gender");
+  await send(page, "erkak");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-age");
+  await send(page, String(new Date().getFullYear() - 35));
+  await settled(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-experience");
   await lastAi(page).locator("[data-post-exp='3plus']").click();
   await settled(page);
@@ -155,7 +173,7 @@ test("kasbga qarab savol (ega, 2026-11-24: «ishchiga ham»): «C toifa haydovch
   await send(page, "90 123 45 67");
   await settled(page);
   const card = lastAi(page).locator("[data-post-card]");
-  await expect(card.locator("[data-notes-list] li")).toHaveText(["Haydovchilik guvohnomasi: C toifa", "Shaxsiy mashinam bor"]);
+  await expect(card.locator("[data-notes-list] li")).toHaveText(["Erkak, 35 yosh", "Haydovchilik guvohnomasi: C toifa", "Shaxsiy mashinam bor"]);
 
   // usta: "O'z asboblaringiz bormi?" — yozib javob ("ha") ham tushuniladi; tushunilmasa — tugmalar bilan qayta
   await page.goto("/chat");
@@ -198,6 +216,12 @@ test("mehmon: gapda kasb aytilgan — so'ralmaydi; ism yoziladi; «Joylash» —
   await send(page, "90 123 45 67");
   await expect(lastAi(page)).toContainText("Ismingizni harflar bilan yozing");
   await send(page, "Mening ismim botir");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-gender");
+  await lastAi(page).locator("[data-post-gender='male']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-age");
+  await send(page, "31");
   await settled(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-experience");
   // tugma bilan ham bo'ladi

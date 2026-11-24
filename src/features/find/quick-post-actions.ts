@@ -12,6 +12,7 @@ import { getRegions } from "@/lib/reference";
 import { buildPreview, preparePost } from "./quick-post-core";
 import type { PostOutcome, PostPreview, PostUnderstood } from "./quick-post-types";
 import { isWorkerExtras, type WorkerExtras } from "@/features/post/requirements";
+import { createClient } from "@/lib/supabase/server";
 
 /**
  * Yordamchi orqali ishchi e'loni: matnni tushunish → oyna → "Tasdiqlash" (ko'rinishi) → "Joylash".
@@ -62,6 +63,9 @@ const answersSchema = z.object({
   notes: z.array(z.string().max(80)).max(8).optional(),
   /** kasbga xos javoblar (guvohnoma toifasi, mashina, transport, asboblar) */
   extras: z.custom<WorkerExtras>((x) => isWorkerExtras(x)).optional(),
+  /** jinsi va yoshi — e'londa birinchi ✅ band; profilda jinsi bo'lmasa — u ham yoziladi */
+  gender: z.enum(["male", "female"]).nullable().optional(),
+  age: z.number().int().min(14).max(80).nullable().optional(),
 });
 
 /** "Tasdiqlash": e'lon qanday ko'rinishi (joylanadigan matnning o'zi) */
@@ -115,6 +119,11 @@ export async function quickPostPublish(input: unknown): Promise<Out<PostOutcome>
     newListing: true,
   });
   if (!res.ok || !res.data) return { ok: false, error: res.ok ? "generic" : res.error };
+  // profilda jinsi yo'q bo'lsa — e'londa aytilgani yoziladi (ishchi qidiruvidagi "Jinsi" filtri uchun); bor bo'lsa — tegilmaydi
+  if (a.gender) {
+    const { error: gErr } = await (await createClient()).from("profiles").update({ gender: a.gender }).eq("id", session.userId).is("gender", null);
+    if (gErr) console.error("[quick-post] gender", gErr.code);
+  }
   const [alerts, regions] = await Promise.all([getAlertSubscriptions(session).catch(() => null), getRegions()]);
   const matches = new URLSearchParams({ mode: "jobs", p: a.professionId });
   const slug = regions.find((r) => r.id === a.regionId)?.slug;

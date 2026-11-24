@@ -25,7 +25,7 @@ async function photoWithGps() {
 }
 
 async function openPhotoStep(page: Page) {
-  await page.goto("/post/vacancy");
+  await page.goto("/post/vacancy?step=1");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);
   await pickWholeRegion(page);

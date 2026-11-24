@@ -74,6 +74,9 @@ export interface WorkerDraft {
   source?: "manual" | "ai";
   /** tekshirish sahifasida yaratilgan AI rasm (joylashda e'longa biriktiriladi) */
   image?: DraftImage | null;
+  /** jinsi va yoshi (ega, 2026-11-24 auditi) — e'lon matnida birinchi ✅ band ("Erkak, 28 yosh") */
+  gender?: "male" | "female";
+  ageText?: string;
 }
 
 export interface VacancyDraft {

@@ -101,7 +101,9 @@
     "worker_tag": "👤 Worker looking for a job",
     "master_tag": "🛠 Universal masters service",
     "master_experience": "Experience: {value} yrs",
-    "master_price": "Price: {value}"
+    "master_price": "Price: {value}",
+    "gender_age": "Gender: {gender} · Age: {age}",
+    "any": "any"
   },
   "owner_post": {
     "vacancy": "✅ <b>Your listing is live!</b>\n{title} — job seekers can now find it in search.",

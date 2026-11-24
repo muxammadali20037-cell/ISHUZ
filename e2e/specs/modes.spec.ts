@@ -110,7 +110,7 @@ test("ish izlovchi ishchilar qidiruviga (havola orqali) kirsa — to'siqsiz ochi
 
 test("e'lon berish: avval o'zini tasdiqlaydi; 'yo'q' — kerakli e'longa", async ({ page, context }) => {
   await asGuest(context);
-  await page.goto("/post/vacancy");
+  await page.goto("/post/vacancy?step=1");
   await expect(page.getByRole("heading", { level: 1, name: "Sizga xodim kerakmi?" })).toBeVisible();
   await expect(page.getByLabel("Kasb yoki sohani qidiring")).toHaveCount(0);
   await page.getByRole("button", { name: "Ha, menga xodim kerak" }).click();
@@ -121,7 +121,8 @@ test("e'lon berish: avval o'zini tasdiqlaydi; 'yo'q' — kerakli e'longa", async
   await expect(page.getByRole("heading", { level: 1, name: "Siz ish qidiryapsizmi?" })).toBeVisible();
   await page.getByRole("button", { name: "Yo'q, menga xodim kerak" }).click();
   await page.waitForURL(/\/post\/vacancy$/);
-  await expect(page.getByLabel("Kasb yoki sohani qidiring")).toBeVisible();
+  // yangi vakansiya — savollar bilan (2026-11-24 auditi; oddiy forma — "Oddiy forma" tugmasi)
+  await expect(page.getByRole("heading", { level: 1, name: "Qanday xodim kerak?" })).toBeVisible();
 });
 
 test("chat: rejim tanlangan bo'lsa — rol qayta so'ralmaydi, shu rejim ichida qidiradi (ish beruvchi — ishchilar)", async ({ page, context }) => {

@@ -92,7 +92,7 @@ for (const vp of [
     await page.locator("[data-guided-post-to='employer']").click();
     await page.waitForURL(/\/post\/vacancy\?ai=1/);
     await asMode(context, "employer");
-    await page.goto("/post/vacancy");
+    await page.goto("/post/vacancy?step=1");
     await pickProfession(page, "Buxgalter", "Buxgalter");
     await next(page);
     await pickWholeRegion(page);

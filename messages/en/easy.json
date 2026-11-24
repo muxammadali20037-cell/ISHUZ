@@ -241,7 +241,8 @@
     "saved_title": "Your details are saved",
     "edit_title": "Edit listing",
     "channel_note": "Your listing will also appear in the Ish topdim Telegram channel: profession, area, experience and salary. Your name, photo and phone number are not shown there — employers unlock the number on the site via the “Contact” button.",
-    "new_title": "Another listing"
+    "new_title": "Another listing",
+    "age": "Your age"
   },
   "vacancy": {
     "page_title": "I'm looking for a worker",
@@ -300,7 +301,8 @@
     "pay_monthly": "Monthly",
     "pay_monthly_desc": "Regular job — salary per month",
     "pay_daily": "Daily",
-    "pay_daily_desc": "Work for one or a few days — paid per day"
+    "pay_daily_desc": "Work for one or a few days — paid per day",
+    "requirements": "Requirements"
   },
   "search": {
     "page_title": "Search",
@@ -1394,7 +1396,8 @@
       "x_cad": "Which software must they know?",
       "x_heights": "Is there work at height?",
       "x_el_group": "Electrical safety group required?",
-      "x_vaxta": "Is it rotational work?"
+      "x_vaxta": "Is it rotational work?",
+      "x_sport_place": "Where will they train people?"
     },
     "other_profession": "Another job",
     "profession_input": "Type the job",
@@ -1716,6 +1719,15 @@
         "yes": "Yes, rotational",
         "no": "No, on site",
         "line_yes": "Rotational (fly-in/fly-out) work"
+      },
+      "sport_place": {
+        "label": "Training place",
+        "gym": "Gym or fitness club",
+        "school": "Sports school or school",
+        "private": "Private sessions",
+        "line_gym": "At a gym or fitness club",
+        "line_school": "At a sports school or school",
+        "line_private": "Private sessions"
       }
     }
   },
@@ -2294,6 +2306,22 @@
         "yes": "Yes",
         "no": "No",
         "line_yes": "Has own workshop"
+      },
+      "sport_place": {
+        "gym": "Gym or fitness club",
+        "school": "Sports school or school",
+        "private": "Private sessions",
+        "any": "Any",
+        "line_gym": "Prefers a gym or fitness club",
+        "line_school": "Prefers a sports school",
+        "line_private": "Gives private sessions"
+      },
+      "term_pref": {
+        "permanent": "Permanent",
+        "once": "One-off or daily",
+        "any": "Any",
+        "line_permanent": "Looking for a permanent job",
+        "line_once": "Open to one-off and daily work"
       }
     },
     "placeholder_post_license": "For example: B or C",
@@ -2355,7 +2383,19 @@
     "ask_post_vaxta": "Can you do rotational work?",
     "placeholder_post_vaxta": "Yes or no",
     "ask_post_workshop": "Do you have your own workshop?",
-    "placeholder_post_workshop": "Yes or no"
+    "placeholder_post_workshop": "Yes or no",
+    "ask_post_gender": "Are you a man or a woman? (shown in your listing)",
+    "ask_post_age": "How old are you? Type a number (e.g. 25)",
+    "ask_post_age_retry": "Type your age as a number from 14 to 80 (e.g. 25).",
+    "ask_post_gender_retry": "Sorry — choose \"Man\" or \"Woman\".",
+    "placeholder_post_gender": "Man or woman",
+    "placeholder_post_age": "For example: 25",
+    "person_line": "{gender}, {age} years old",
+    "person_age": "{age} years old",
+    "ask_post_sport_place": "Where do you want to train people?",
+    "placeholder_post_sport_place": "For example: at a gym",
+    "ask_post_term_pref": "What kind of job are you looking for?",
+    "placeholder_post_term_pref": "For example: permanent"
   },
   "intro": {
     "title": "How Ish topdim works",

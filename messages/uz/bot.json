@@ -101,7 +101,9 @@
     "worker_tag": "👤 Ishchi ish qidiryapti",
     "master_tag": "🛠 Universal ustalar xizmati",
     "master_experience": "Tajriba: {value} yil",
-    "master_price": "Narxi: {value}"
+    "master_price": "Narxi: {value}",
+    "gender_age": "Jinsi: {gender} · Yoshi: {age}",
+    "any": "farqi yo'q"
   },
   "owner_post": {
     "vacancy": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi qidiruvda ko'rinadi, ish izlovchilar ko'radi.",

@@ -1,5 +1,34 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Audit: jinsi va yosh kanalga ham, ishchiga ham; har kasbga aniq savol; asosiy tugma — savollar bilan (`fix/audit-requirements`)
+
+Ega: "bir marta umumiy audit qilib chiq, xatolarni top, tuzat; har bitta kasb uchun so'rov ber; kanalga jinsi, yoshi
+kelmayapti e'londa — hammasini detalniy tekshir, kamchilik qolmasin". **Migratsiya yo'q.**
+
+Topilgan xatolar va tuzatishlar:
+- **Ish beruvchining asosiy "E'lon berish" tugmasi** (menyu, sarlavha, bosh sahifa) `/post/vacancy` — oddiy 4 qadamli
+  formaga olib borardi: u yerda kasbga xos savollar, jinsi, yosh, ish vaqti yo'q edi. Endi yangi e'lon — doim savollar
+  bilan (AI bilan vakansiya); oddiy forma — "Oddiy forma" bosilganda (`?step=…`) va tahrirlashda.
+- **Oddiy formada ham** (3-qadam, "Talablar"): kasbga xos savollar, jinsi, yosh chegarasi, ish vaqti (kerak bo'lsa);
+  javoblar e'lon matniga ✅ bilan, tahrirda saqlangan qiymatlar ko'rinadi.
+- **Kanal posti (vakansiya)**: "👤 Jinsi: … · Yoshi: …" — har doim (talab yo'q bo'lsa — "farqi yo'q"); tavsifdagi ✅
+  bandlar ko'proq sig'adi (14 qatorgacha).
+- **Ishchi e'loni**: jinsi va yoshi so'raladi (chatda: "Siz erkakmisiz yoki ayol?", "Yoshingiz nechada?" — "28",
+  "1998" ham tushuniladi; oddiy formada ham — ixtiyoriy). E'londa birinchi ✅ band ("Erkak, 28 yosh"); profilda
+  jinsi bo'lmasa — u ham yoziladi (ishchi qidiruvidagi filtr uchun). Profildagi tug'ilgan sana o'z-o'zidan e'longa chiqmaydi.
+- **Kanal posti (ishchi)**: e'londagi ✅ bandlar ham chiqadi — jinsi va yoshi, kasbga xos javoblar, izoh (raqam va
+  havolasiz, 6 tagacha).
+- **Kasbga mos bo'lmagan savollar**: soha ichida kasb nomiga qarab aniqlashtirildi — ta'lim (avtoinstruktor — guvohnoma,
+  murabbiy — mashg'ulot joyi, dotsent — ilmiy daraja, psixolog/metodist — ma'lumoti, raqs/musiqa — joy va portfolio),
+  energetika (elektr — xavfsizlik guruhi, boshqalar — tungi smena), logistika (omborchi — 1C, yuklovchi — doimiy/bir
+  martalik va tungi smena, logist — tillar), telekom (montaj — balandlik, sotuv — ish haqi turi, pochtalon — transport),
+  tozalash (enaga — doimiy/bir martalik, ishchida sanitar daftarcha), yurist (advokat — litsenziya, boshqalar —
+  ma'lumoti), davlat xizmati (politsiya, harbiy — harbiy xizmat), qurilish texnikasi operatorlari (ishchida — vaxta),
+  "Boshqa" soha (doimiy yoki bir martalik). Endi 1876 kasbning hammasida ikkala rol uchun kamida bitta savol bor.
+- Stendda har soha bo'yicha avtomatik yurib chiqildi (ish beruvchi va ishchi): savol chiqadi, e'lon joylanadi, jinsi va
+  yosh bazada, ✅ bandlar matnda.
+- Supabase maslahatlari ko'rildi: yangi xavf yo'q (eski, ma'lum ogohlantirishlar — alohida ro'yxatda).
+
 ## 2026-11-24 · Hamma kasblar uchun aniq savollar — ish beruvchiga ham, ishchiga ham (`feat/smart-questions-all`)
 
 Ega: "hozir ustadan, kuryerdan, haydovchidan aniq kasbga mos so'raydi — hamma kasblardan, har bitta bosqich, har bir rol

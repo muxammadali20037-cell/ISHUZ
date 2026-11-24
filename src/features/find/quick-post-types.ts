@@ -68,6 +68,9 @@ export interface PostAnswers {
   notes?: string[];
   /** kasbga xos javoblar (ega, 2026-11-24) — serverda tekshirilib, e'lon matniga ✅ bilan */
   extras?: WorkerExtras;
+  /** jinsi va yoshi (ega, 2026-11-24) — e'londa birinchi ✅ band ("Erkak, 28 yosh") */
+  gender?: "male" | "female" | null;
+  age?: number | null;
 }
 
 /** "Sizning e'loningiz shunday ko'rinadi" — serverda, joylanadigan matnning o'zi */

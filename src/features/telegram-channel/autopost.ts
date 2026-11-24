@@ -211,11 +211,23 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
   return out;
 }
 
+/** E'lon matnidagi ✅ bandlar (jinsi va yoshi, kasbga xos javoblar, izoh) — raqam va havolasiz, 6 tagacha */
+export function aboutNotes(about: string | null | undefined): string[] {
+  return (about ?? "")
+    .split(/\r?\n/)
+    .map((l) => l.trim())
+    .filter((l) => l.startsWith("✅"))
+    .map((l) => sanitizeLine(l.replace(/^✅\s*/u, ""), 80))
+    // raqami olib tashlangan "Tel:" kabi bo'sh yorliqlar — tashlanadi
+    .filter((l) => l && !/^(?:tel|telefon|nomer|raqam|aloqa|тел|телефон|номер|phone|contact)\s*[:.-]?$/iu.test(l))
+    .slice(0, 6);
+}
+
 async function workerPosts(db: Db, ids: string[] | null, since: string): Promise<Map<string, ChannelPost>> {
   let q = db
     .from("worker_profiles")
     .select(
-      "id, headline, custom_profession, experience_level, profession:profession_nodes!worker_profiles_profession_node_id_fkey(name_uz), region:regions!worker_profiles_region_id_fkey(name_uz), district:districts!worker_profiles_district_id_fkey(name_uz), prefs:worker_preferences(salary_expected, salary_min, salary_type, schedules), owner:profiles!worker_profiles_profile_id_fkey(is_blocked)",
+      "id, headline, about, custom_profession, experience_level, profession:profession_nodes!worker_profiles_profession_node_id_fkey(name_uz), region:regions!worker_profiles_region_id_fkey(name_uz), district:districts!worker_profiles_district_id_fkey(name_uz), prefs:worker_preferences(salary_expected, salary_min, salary_type, schedules), owner:profiles!worker_profiles_profile_id_fkey(is_blocked)",
     )
     .eq("is_public", true)
     .not("onboarding_completed_at", "is", null);
@@ -244,6 +256,7 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
           salary: prefs?.salary_expected ?? prefs?.salary_min ?? null,
           salaryType: prefs?.salary_type ?? null,
           schedules: (prefs?.schedules ?? []).filter((s) => s !== "negotiable").map((s) => t(`enums.work_schedule.${s}`)),
+          notes: aboutNotes(w.about),
         },
         t,
         base,

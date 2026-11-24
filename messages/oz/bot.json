@@ -101,7 +101,9 @@
     "worker_tag": "👤 Ишчи иш қидиряпти",
     "master_tag": "🛠 Универсал усталар хизмати",
     "master_experience": "Тажриба: {value} йил",
-    "master_price": "Нархи: {value}"
+    "master_price": "Нархи: {value}",
+    "gender_age": "Жинси: {gender} · Ёши: {age}",
+    "any": "фарқи йўқ"
   },
   "owner_post": {
     "vacancy": "✅ <b>Эълонингиз жойланди!</b>\n{title} — энди қидирувда кўринади, иш изловчилар кўради.",

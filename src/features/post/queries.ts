@@ -98,7 +98,7 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
   const [{ data: v }, { data: contact }, defaults] = await Promise.all([
     supabase
       .from("vacancies")
-      .select("id, title, profession_node_id, custom_profession, category_id, region_id, district_id, is_remote, description, salary_from, salary_to, salary_negotiable, salary_type, schedule, experience_min_months, status, client_ref, photo_path")
+      .select("id, title, profession_node_id, custom_profession, category_id, region_id, district_id, is_remote, description, salary_from, salary_to, salary_negotiable, salary_type, schedule, experience_min_months, status, client_ref, photo_path, gender, age_min, age_max, work_time_from, work_time_to")
       .eq("id", vacancyId)
       .maybeSingle(),
     supabase.from("vacancy_contacts").select("phone, show_phone").eq("vacancy_id", vacancyId).maybeSingle(),
@@ -124,6 +124,10 @@ export async function getVacancyPrefill(session: SessionContext, vacancyId: stri
     salaryTo: v.salary_to ? String(v.salary_to) : "",
     schedule: v.schedule !== "negotiable" ? v.schedule : "",
     experienceMonths: exp,
+    // jinsi, yosh chegarasi, ish vaqti (ega, 2026-11-24) — tahrirda o'z qiymati (bo'sh — "farqi yo'q" / "kelishiladi")
+    gender: v.gender ?? "any",
+    age: { min: v.age_min, max: v.age_max },
+    hours: v.work_time_from && v.work_time_to ? { from: v.work_time_from.slice(0, 5), to: v.work_time_to.slice(0, 5) } : null,
     // tahrirlash: shu e'lonning o'z raqami (avval qo'lda yozilgan); bo'lmasa — bo'sh, qo'lda yoziladi
     ...(contact?.phone ? { phone: contact.phone } : {}),
     showPhone: true,

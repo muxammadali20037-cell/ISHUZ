@@ -60,6 +60,7 @@ import {
   professionLabels,
   scrollToError,
 } from "./wizard-frame";
+import { parseWorkerAge, withPersonLine, workerPersonLine } from "../requirements";
 
 const TOTAL = 4;
 const PATH = "/post/worker";
@@ -89,6 +90,7 @@ type Errors = Partial<
     | "phone"
     | "about"
     | "experience"
+    | "age"
     | "form",
     string
   >
@@ -260,6 +262,8 @@ export function WorkerPost({
       if (!normalizePhone(draft.phone)) e.phone = t("easy.fields.phone");
       if (draft.about.trim().length < 10) e.about = t("easy.fields.about");
       if (!draft.experience) e.experience = t("easy.fields.experience");
+      // yosh — ixtiyoriy, lekin yozilgan bo'lsa to'g'ri bo'lsin
+      if (draft.ageText?.trim() && !parseWorkerAge(draft.ageText)) e.age = t("easy.guided.ask_post_age_retry");
     }
     return e;
   };
@@ -269,7 +273,7 @@ export function WorkerPost({
       ? 1
       : e.place
         ? 2
-        : e.firstName || e.phone || e.about || e.experience
+        : e.firstName || e.phone || e.about || e.experience || e.age
           ? 3
           : null;
 
@@ -312,7 +316,8 @@ export function WorkerPost({
           remoteOk: draft.remoteOk,
           firstName: draft.firstName.trim(),
           lastName: draft.lastName.trim(),
-          about: draft.about.trim(),
+          // jinsi va yoshi — e'londa birinchi ✅ band (ega, 2026-11-24 auditi: "kanalga jinsi, yoshi kelmayapti")
+          about: withPersonLine(draft.about.trim(), workerPersonLine(draft.gender, draft.ageText ? parseWorkerAge(draft.ageText) : null, t)),
           experience: draft.experience!,
           salary: parseMoney(draft.salary),
           schedule: draft.schedule || null,
@@ -682,6 +687,39 @@ export function WorkerPost({
               }
               className={bigInput}
             />
+          </div>
+          {/* jinsi va yoshi (ega, 2026-11-24 auditi) — e'londa ko'rinadi */}
+          <div data-worker-gender>
+            <p className="mb-2 text-lg font-semibold">
+              {t("easy.vguide.gender_label")}{" "}
+              <span className="text-base font-normal text-muted-foreground">({t("easy.wizard.optional")})</span>
+            </p>
+            <ChoiceButtons
+              label={t("easy.vguide.gender_label")}
+              value={draft.gender ?? null}
+              onChange={(v) => update({ gender: v })}
+              options={(["male", "female"] as const).map((g) => ({ value: g, label: t(`easy.vguide.${g}`) }))}
+            />
+          </div>
+          <div>
+            <label htmlFor="worker-age" className="mb-2 block text-lg font-semibold">
+              {t("easy.worker.age")}{" "}
+              <span className="text-base font-normal text-muted-foreground">({t("easy.wizard.optional")})</span>
+            </label>
+            <Input
+              id="worker-age"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={4}
+              value={draft.ageText ?? ""}
+              onChange={(e) => update({ ageText: e.target.value.replace(/\D/g, "").slice(0, 4) })}
+              placeholder="25"
+              invalid={!!errors.age}
+              aria-describedby="worker-age-err"
+              className={bigInput}
+              data-worker-age
+            />
+            <FieldError id="worker-age-err" message={errors.age} />
           </div>
           <div>
             <label htmlFor="phone" className="mb-2 block text-lg font-semibold">
