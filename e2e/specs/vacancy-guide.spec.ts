@@ -49,14 +49,17 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await page.locator("[data-guide-sentence]").fill("Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, ovqat bilan");
   await page.locator("[data-guide-start]").click();
 
-  // kasb, tuman va maosh gapdan tushunildi — qayta so'ralmaydi; birinchi savol — ish grafigi
-  await expect(h1(page)).toHaveText("Ish grafigi qanday?");
+  // kasb, tuman, maosh va joy turi ("kafe") gapdan tushunildi — qayta so'ralmaydi; oshpazga xos savol — sanitar daftarcha
+  await expect(h1(page)).toHaveText("Sanitar daftarcha (tibbiy kitobcha) kerakmi?");
   const understood = page.locator("[data-guide-understood]");
   await expect(understood).toContainText("Oshpaz");
+  await expect(understood).toContainText("Kafe");
   await expect(understood).toContainText("Chilonzor");
   await expect(understood).toContainText("5 mln");
-  // kasb, tuman (ikkalasi), maosh — gapdan; ish beruvchi, ismi, telefon — profildan (oshpazga kasbga xos savol yo'q)
-  await expect(page.locator("[data-guide-progress]")).toHaveText("7/14");
+  // kasb, joy turi, tuman (ikkalasi), maosh — gapdan; ish beruvchi, ismi, telefon — profildan
+  await expect(page.locator("[data-guide-progress]")).toHaveText("8/16");
+  await choice(page, "required").click();
+  await expect(h1(page)).toHaveText("Ish grafigi qanday?");
   await choice(page, "5_2").click();
 
   // ish vaqti (ega, 2026-11-24): tayyor oraliqlar yoki o'zi; jinsi; yoshi — aniq emas, chegaralar
@@ -96,6 +99,8 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await expect(desc).toContainText("Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, ovqat bilan.");
   await expect(desc).toContainText("Ish grafigi: 5/2.");
   await expect(desc).toContainText("Tajriba shart emas.");
+  await expect(desc).toContainText("✅ Ish joyi: kafe");
+  await expect(desc).toContainText("✅ Sanitar daftarcha (tibbiy kitobcha) bo'lishi shart");
   await expect(desc).toContainText("✅ Yotoqxona bor");
   await expect(desc).toContainText("✅ Obed tekin");
   await expect(desc).toContainText("✅ Yo'lkira tekin");
@@ -141,13 +146,13 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   // jinsi, yosh chegarasi, ish vaqti — bazada; e'lon holati o'zgarmaydi (qayta moderatsiyaga tushmaydi)
   expect(v).toMatchObject({ gender: "female", age_min: 20, age_max: 40, work_from: "08:30", work_to: "17:30", status: "active" });
   expect(v!.description).toContain("kafemizga oshpaz kerak");
-  expect(v!.description).toMatch(/\n\n✅ Yotoqxona bor\n✅ Obed tekin\n✅ Yo'lkira tekin$/);
+  expect(v!.description).toMatch(/\n\n✅ Ish joyi: kafe\n✅ Sanitar daftarcha \(tibbiy kitobcha\) bo'lishi shart\n✅ Yotoqxona bor\n✅ Obed tekin\n✅ Yo'lkira tekin$/);
 
   // e'lon sahifasida izoh — yashil belgili ro'yxat
   const [pub] = await sql<{ slug: string }>("select slug from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await page.goto(`/jobs/${pub!.slug}`);
   const list = page.locator("[data-notes-list]");
-  await expect(list.locator("li")).toHaveText(["Yotoqxona bor", "Obed tekin", "Yo'lkira tekin"]);
+  await expect(list.locator("li")).toHaveText(["Ish joyi: kafe", "Sanitar daftarcha (tibbiy kitobcha) bo'lishi shart", "Yotoqxona bor", "Obed tekin", "Yo'lkira tekin"]);
   // talablar va ish vaqti — e'lon sahifasida
   const main = page.getByRole("main");
   await expect(main).toContainText("20–40 yosh");
@@ -261,9 +266,19 @@ test("«Boshqa kasb» — yozib topadi (xato bilan ham); oddiy formadagi 1-qadam
   await ready(page);
   // bosiladigan tayyor misol
   await choice(page, "ex4").click();
-  await expect(h1(page)).toHaveText("Ish qayerda?");
+  // farrosh — kasbga xos savol: qayerda tozalaydi (ega, 2026-11-24: "hamma kasblardan aniq so'rash")
+  await expect(h1(page)).toHaveText("Qayerda tozalaydi?");
   await expect(page.locator("[data-guide-understood]")).toContainText("Farrosh");
-  // kasbni o'zgartirish: orqaga → misollar ekrani; yangi gap — kasb aytilmagan → kasb savoli tez variantlar bilan
+  await choice(page, "office").click();
+  await expect(h1(page)).toHaveText("Ish doimiymi yoki bir martalik?");
+  await choice(page, "permanent").click();
+  await expect(h1(page)).toHaveText("Ish qayerda?");
+  // kasbni o'zgartirish: "Orqaga" — javoblar teskari tartibda bekor bo'ladi, oxiri misollar ekrani;
+  // yangi gap — kasb aytilmagan → kasb savoli tez variantlar bilan
+  await page.locator("[data-guide-back]").click();
+  await expect(h1(page)).toHaveText("Ish doimiymi yoki bir martalik?");
+  await page.locator("[data-guide-back]").click();
+  await expect(h1(page)).toHaveText("Qayerda tozalaydi?");
   await page.locator("[data-guide-back]").click();
   await expect(h1(page)).toHaveText("Qanday xodim kerak?");
   await page.locator("[data-guide-sentence]").fill("Yunusobodda ishchi kerak");
@@ -335,6 +350,9 @@ test("IT: «masofadan» deyilgan — joy ham, «qayerda ishlaydi?» ham, ish vaq
   await ready(page);
   await page.locator("[data-guide-sentence]").fill("Frontend dasturchi kerak, masofadan");
   await page.locator("[data-guide-start]").click();
+  // IT: format "masofadan" — gapdan; daraja so'raladi
+  await expect(h1(page)).toHaveText("Qaysi darajadagi mutaxassis kerak?");
+  await choice(page, "middle").click();
   await expect(h1(page)).toHaveText("Oylik qancha?");
   await expect(page.locator("[data-guide-understood]")).toContainText("Masofadan");
   await choice(page, "negotiable").click();

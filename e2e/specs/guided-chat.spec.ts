@@ -173,10 +173,10 @@ test("kasb aytilmasa — kasb so'raladi (yoziladi), keyin hudud; e'lon berish ni
   await send(page, "O'zim haqimda e'lon bermoqchiman");
   await settled(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-profession");
-  // kasb aytilgan bo'lsa — kasb so'ralmaydi
+  // kasb aytilgan bo'lsa — kasb so'ralmaydi; keyingisi — oshpazga xos savol (ega, 2026-11-24)
   await send(page, "Men oshpazman, o'zim haqimda e'lon bermoqchiman");
   await settled(page);
-  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|name|experience)$/);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-venue");
 });
 
 test("suhbat boshqa hisobga ko'rinmaydi (bitta tabda chiqib, boshqasi bilan kirilsa)", async ({ page, context }) => {

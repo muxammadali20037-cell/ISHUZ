@@ -46,6 +46,15 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
 
   await send(page, "oshpaz");
   await settled(page);
+  // oshpaz — kasbga xos savollar (ega, 2026-11-24: "hamma kasblardan aniq"): qayerda ishlamoqchi (tugma), sanitar daftarcha (yozib)
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-venue");
+  await expect(lastAi(page)).toContainText("Qayerda ishlamoqchisiz?");
+  await lastAi(page).locator("[data-post-wx-venue='restaurant']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-medbook");
+  await expect(lastAi(page)).toContainText("Sanitar daftarchangiz (tibbiy kitobcha) bormi?");
+  await send(page, "ha, bor");
+  await settled(page);
   // viloyat — tugmalar (yozilmaydi)
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
   await expect(lastAi(page)).toContainText("Qaysi viloyatda ishlamoqchisiz? Pastdan tanlang.");
@@ -87,7 +96,7 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   await expect(card).toContainText("Botir B.");
   await expect(card).toContainText("Toshkent shahri");
   await expect(card).toContainText("Oshpaz sifatida ish qidiryapman. Tajribam — 1–3 yil. Hudud: Toshkent shahri.");
-  await expect(card.locator("[data-notes-list] li")).toHaveText(["O'z mashinam bor", "Tungi smenada ham ishlayman", "Rus tilini bilaman"]);
+  await expect(card.locator("[data-notes-list] li")).toHaveText(["Restoranda ishlamoqchiman", "Sanitar daftarcham (tibbiy kitobcha) bor", "O'z mashinam bor", "Tungi smenada ham ishlayman", "Rus tilini bilaman"]);
   await expect(card.locator("[data-post-phone]")).toHaveText("+998 90 ••• •• 67");
   await expect(preview.locator("[data-post-publish]")).toHaveText("Joylash");
   const consent = preview.locator("[data-post-consent]");
@@ -112,7 +121,7 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   const phones = await sql<{ phone: string }>("select phone from public.worker_listing_phones where worker_id in (select id from public.worker_profiles where profile_id = $1)", [USERS.workerB]);
   expect(phones.map((p) => p.phone)).toContain("+998901234567");
   const [wp] = await sql<{ about: string }>("select about from public.worker_profiles where profile_id = $1", [USERS.workerB]);
-  expect(wp!.about).toMatch(/\n\n✅ O'z mashinam bor\n✅ Tungi smenada ham ishlayman\n✅ Rus tilini bilaman$/);
+  expect(wp!.about).toMatch(/\n\n✅ Restoranda ishlamoqchiman\n✅ Sanitar daftarcham \(tibbiy kitobcha\) bor\n✅ O'z mashinam bor\n✅ Tungi smenada ham ishlayman\n✅ Rus tilini bilaman$/);
 });
 
 test("kasbga qarab savol (ega, 2026-11-24: «ishchiga ham»): «C toifa haydovchiman» — toifa so'ralmaydi, mashina — tugma; usta — asboblar (yozib javob); e'londa ✅", async ({ page, context }) => {
@@ -174,6 +183,13 @@ test("mehmon: gapda kasb aytilgan — so'ralmaydi; ism yoziladi; «Joylash» —
 
   await send(page, "Men oshpazman, o'zim haqimda e'lon bermoqchiman");
   await settled(page);
+  // kasbga xos savollar: "farqi yo'q" va "yo'q" — e'longa yozilmaydi
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-venue");
+  await lastAi(page).locator("[data-post-wx-venue='any']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-medbook");
+  await lastAi(page).locator("[data-post-wx-medbook='no']").click();
+  await settled(page);
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
   await page.locator("[data-post-region]", { hasText: "Samarqand" }).click();
   await settled(page);
@@ -229,7 +245,12 @@ test("guruh kasbi («men o'qituvchiman») — «aynan qaysi biri?» tugmalari; y
   await lastAi(page).locator("[data-post-choice]", { hasText: "Matematika o'qituvchisi" }).click();
   await settled(page);
   await expect(page.locator("[data-ai-you]").last()).toHaveText("Siz: Matematika o'qituvchisi");
-  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|experience)$/);
+  // o'qituvchi — qayerda dars bermoqchi (yozib ham: "maktabda")
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-teach_place");
+  await expect(lastAi(page)).toContainText("Qayerda dars bermoqchisiz?");
+  await send(page, "maktabda");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-cert");
 
   // e'lon o'rniga qidirmoqchi bo'lsa — oddiy so'rov
   await send(page, "Menga Toshkentdan haydovchi kerak");
@@ -259,7 +280,9 @@ test("«shifokor», «doktor» — «Aynan qanday shifokorsiz?» (ega, 2026-11-2
   await lastAi(page).locator("[data-post-choice]", { hasText: /^Kardiolog$/ }).click();
   await settled(page);
   await expect(page.locator("[data-ai-you]").last()).toHaveText("Siz: Kardiolog");
-  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|name|experience)$/);
+  // shifokor — tibbiy ma'lumoti so'raladi
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-med_edu");
+  await expect(lastAi(page)).toContainText("Tibbiy ma'lumotingiz qanday?");
 });
 
 test("«E'lonlarim» → «+ E'lon joylash» — chatda savollar darhol boshlanadi; vakansiya — alohida ekran", async ({ page, context }) => {
@@ -299,9 +322,9 @@ test("ish izlovchi: e'lonlarni ko'rdi — ostida kichik «+ E'lon joylash» → 
     await page.locator("#start-chat-text").blur();
     await link.click();
     await settled(page);
-    // kasb qidiruvdan olindi — so'ralmaydi; savollar shu chatda
+    // kasb qidiruvdan olindi — so'ralmaydi; savollar shu chatda (birinchisi — oshpazga xos)
     await expect(page).toHaveURL(/\/chat$/);
-    await expect(lastAi(page)).toHaveAttribute("data-guided-ai", /^post-(region|experience)$/);
+    await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-venue");
     await expect(page.locator("[data-guided-post-link]")).toHaveCount(0);
   } finally {
     await sql("delete from public.vacancies where title = 'PL1 Oshpaz — kafe'");

@@ -66,6 +66,10 @@ test("ish izlovchi: «O'zim haqimda e'lon berish» — kasb va viloyat bilan, ke
   await place.locator("[data-guided-place='samarkand']").click();
   await blurComposer(page);
   await page.locator("[data-guided-next-to='post']").click();
+  // buxgalter — kasbga xos savol: qaysi dasturlarni biladi (ega, 2026-11-24)
+  const soft = page.locator("[data-guided-ai='post-fin_soft']");
+  await expect(soft).toContainText("Qaysi dasturlarni bilasiz?");
+  await soft.locator("[data-post-wx-fin_soft='both']").click();
   await expect(page.locator("[data-guided-ai='post-name']")).toBeVisible();
 });
 

@@ -12,11 +12,11 @@ import { WORKER_EXTRA_KEYS, pickWorkerExtras, type WorkerExtraKey, type WorkerEx
  * 2026-11-17 va 2026-11-21 qarorlari) → tayyor e'lon kartasi va "Joylash". Sof qismlar — mijoz va unit test uchun.
  */
 
-/** Kasbga xos savollar (ega, 2026-11-24: "ishchiga ham"): haydovchi — guvohnoma va mashina; kuryer — transport; usta — asboblar */
-export type PostExtraAsk = "post_license" | "post_car" | "post_transport" | "post_tools";
+/** Kasbga xos savollar (ega, 2026-11-24: "ishchiga ham", keyin "hamma kasblardan"): katalog — requirements.ts */
+export type PostExtraAsk = `post_${WorkerExtraKey}`;
 export type PostAsk = "post_profession" | "post_which" | PostExtraAsk | "post_region" | "post_name" | "post_experience" | "post_note" | "post_phone";
 
-export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", "post_license", "post_car", "post_transport", "post_tools", "post_region", "post_name", "post_experience", "post_note", "post_phone"];
+export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", ...WORKER_EXTRA_KEYS.map((k) => `post_${k}` as const), "post_region", "post_name", "post_experience", "post_note", "post_phone"];
 
 /** "post_license" → "license" */
 export function postExtraKey(a: PostAsk): WorkerExtraKey | null {

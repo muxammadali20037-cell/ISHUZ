@@ -14,12 +14,14 @@ describe("kasbga xos savollar (extraKeysFor)", () => {
     expect(extraKeysFor({ category: "courier", names: ["Buyurtmalarni topshirish punkti operatori (PVZ)"] })).toEqual([]);
     expect(extraKeysFor({ category: "courier", names: ["Kuryerlik xizmati dispetcheri"] })).toEqual([]);
   });
-  it("tikuvchi — ishbay/oylik; usta va quruvchi — doimiy/bir martalik; IT — format; fotograf — yo'q", () => {
-    expect(extraKeysFor({ category: "sewing", names: ["Tikuvchi"] })).toEqual(["pay"]);
-    for (const c of ["construction", "craftsman", "electrician", "plumber"]) expect(extraKeysFor({ category: c, names: ["Usta"] })).toEqual(["term"]);
-    expect(extraKeysFor({ category: "it", names: ["Frontend dasturchi"] })).toEqual(["format"]);
-    expect(extraKeysFor({ category: "design", names: ["Fotograf"] })).toEqual([]);
-    expect(extraKeysFor({ category: "restaurant", names: ["Oshpaz"] })).toEqual([]);
+  it("tikuvchi — ishbay/oylik va mashina; usta va quruvchi — doimiy/bir martalik; IT — format va daraja; fotograf — buyurtma; oshpaz — joy va sanitar daftarcha", () => {
+    expect(extraKeysFor({ category: "sewing", names: ["Tikuvchi"] })).toEqual(["pay", "machine"]);
+    for (const c of ["construction", "craftsman", "plumber"]) expect(extraKeysFor({ category: c, names: ["Usta"] })).toEqual(["term"]);
+    expect(extraKeysFor({ category: "electrician", names: ["Elektrik"] })).toEqual(["term", "el_group"]);
+    expect(extraKeysFor({ category: "it", names: ["Frontend dasturchi"] })).toEqual(["format", "level"]);
+    expect(extraKeysFor({ category: "design", names: ["Fotograf"] })).toEqual(["term"]);
+    expect(extraKeysFor({ category: "restaurant", names: ["Oshpaz"] })).toEqual(["venue", "medbook"]);
+    expect(extraKeysFor({ category: "other", names: ["Boshqa"] })).toEqual([]);
     expect(extraKeysFor({ category: null, names: [] })).toEqual([]);
   });
   it("kasb nomining o'zidan: «C toifa haydovchi» → C, «Piyoda kuryer» → piyoda, «Avtokuryer» → avtomobil", () => {
@@ -107,7 +109,8 @@ describe("ishchi e'loni: kasbga xos savollar", () => {
     expect(workerExtraKeysFor({ category: "plumber", names: ["Santexnik"] })).toEqual(["tools"]);
     expect(workerExtraKeysFor({ category: "construction", names: ["Ekskavator operatori"] })).toEqual([]);
     expect(workerExtraKeysFor({ category: "driver", names: ["Samosval haydovchisi"] })).toEqual(["license"]);
-    expect(workerExtraKeysFor({ category: "restaurant", names: ["Oshpaz"] })).toEqual([]);
+    expect(workerExtraKeysFor({ category: "restaurant", names: ["Oshpaz"] })).toEqual(["venue", "medbook"]);
+    expect(workerExtraKeysFor({ category: "other", names: ["Boshqa"] })).toEqual([]);
   });
   it("yozganidan tushunadi va bitta savolga yozilgan javobni («C», «ha», «нет», «velosipedda») taniydi", async () => {
     const { parseWorkerExtra, pickWorkerExtras, workerExtraLines } = await import("./requirements");
@@ -124,5 +127,79 @@ describe("ishchi e'loni: kasbga xos savollar", () => {
     expect(parseWorkerExtra("transport", "velosipedda")).toBe("bike");
     const t = (k: string, v?: Record<string, string | number>) => `${k}${v ? `:${v.value}` : ""}`;
     expect(workerExtraLines({ license: "C", car: "no" }, ["license", "car"], t)).toEqual(["easy.guided.wx.license.line:C"]);
+  });
+});
+
+describe("katalog: hamma kasblar, ikkala rol (ega, 2026-11-24: «har bitta bosqich, har bir rol uchun aniq»)", () => {
+  const CATEGORIES = ["it", "sales", "marketing", "design", "finance", "driver", "logistics", "courier", "construction", "craftsman", "electrician", "plumber", "mechanic", "auto_service", "restaurant", "call_center", "office", "education", "medicine", "cleaning", "security", "sewing", "beauty", "production", "agriculture", "hotel", "legal", "science", "management", "government", "engineering", "telecom", "energy", "mining", "culture", "real_estate", "crafts"];
+  const NAMES: Record<string, string> = { driver: "Haydovchi", courier: "Kuryer", logistics: "Yuklovchi", design: "Grafik dizayner" };
+
+  it("har bir soha (\"Boshqa\"dan tashqari) — ish beruvchiga ham, ishchiga ham kamida bitta aniq savol", async () => {
+    const { extraKeysFor, workerExtraKeysFor } = await import("./requirements");
+    for (const c of CATEGORIES) {
+      const p = { category: c, names: [NAMES[c] ?? "Mutaxassis"] };
+      expect(extraKeysFor(p).length, `ish beruvchi: ${c}`).toBeGreaterThan(0);
+      expect(workerExtraKeysFor(p).length, `ishchi: ${c}`).toBeGreaterThan(0);
+    }
+  });
+
+  it("har savol va variantning matni 4 tilda bor (savol, tugma, e'londagi qator)", async () => {
+    const { EXTRA_KEYS, EXTRA_OPTIONS, WORKER_EXTRA_KEYS, WORKER_EXTRA_OPTIONS } = await import("./requirements");
+    const SILENT = new Set(["any", "not_required", "no", "none"]);
+    for (const loc of ["uz", "oz", "ru", "en"]) {
+      const easy = (await import(`../../../messages/${loc}/easy.json`)).default as Record<string, unknown>;
+      const get = (path: string) => path.split(".").reduce<unknown>((o, k) => (o && typeof o === "object" ? (o as Record<string, unknown>)[k] : undefined), easy);
+      const has = (path: string) => expect(typeof get(path) === "string" && (get(path) as string).length > 0, `${loc}: easy.${path}`).toBe(true);
+      for (const k of EXTRA_KEYS) {
+        has(`vguide.q.x_${k}`);
+        has(`vguide.x.${k}.label`);
+        if (k === "license") {
+          has("vguide.x.license.option");
+          has("vguide.x.license.line");
+          continue;
+        }
+        for (const o of EXTRA_OPTIONS[k]) {
+          has(`vguide.x.${k}.${o}`);
+          if (!SILENT.has(o) && !(k === "format" && o === "remote")) has(`vguide.x.${k}.line_${o}`);
+        }
+      }
+      for (const k of WORKER_EXTRA_KEYS) {
+        has(`guided.ask_post_${k}`);
+        has(`guided.placeholder_post_${k}`);
+        if (k === "license") {
+          has("guided.wx.license.option");
+          has("guided.wx.license.line");
+          continue;
+        }
+        for (const o of WORKER_EXTRA_OPTIONS[k]) {
+          has(`guided.wx.${k}.${o}`);
+          if (!SILENT.has(o)) has(`guided.wx.${k}.line_${o}`);
+        }
+      }
+    }
+  });
+
+  it("gapdan: oshpaz — «kafe» va «sanitar daftarcha»; o'qituvchi — maktab va IELTS; qo'riqchi — sutkalik va armiya; konchi — vaxta", async () => {
+    const { pickExtras, pickWorkerExtras } = await import("./requirements");
+    expect(pickExtras("kafemizga oshpaz kerak, sanitar daftarchasi bo'lsin", ["venue", "medbook"])).toEqual({ venue: "cafe", medbook: "required" });
+    expect(pickExtras("maktabga ingliz tili o'qituvchisi, IELTS 7", ["teach_place", "cert"])).toEqual({ teach_place: "school", cert: "required" });
+    expect(pickExtras("qorovul kerak, sutkalik, armiyadan kelgan", ["guard_shift", "army"])).toEqual({ guard_shift: "day24", army: "required" });
+    expect(pickExtras("konga ishchi kerak, vaxta 15/15", ["vaxta"])).toEqual({ vaxta: "yes" });
+    expect(pickExtras("elektrik kerak, III guruh", ["term", "el_group"])).toEqual({ el_group: "g3" });
+    expect(pickExtras("bog'chaga tarbiyachi", ["teach_place"])).toEqual({ teach_place: "kindergarten" });
+    expect(pickExtras("bog'ga ishchi kerak", ["farm_place"])).toEqual({ farm_place: "garden" });
+    expect(pickWorkerExtras("buxgalterman, 1C va Excel bilaman", ["fin_soft"])).toEqual({ fin_soft: "both" });
+    expect(pickWorkerExtras("oshpazman, sanitar daftarcham bor", ["venue", "medbook"])).toEqual({ medbook: "yes" });
+  });
+
+  it("yozib javob: tugma matniga mos kelsa tanlanadi («maktabda» → Maktab, «o'quv markazi»), noaniq — null", async () => {
+    const { parseWorkerExtra } = await import("./requirements");
+    const labels = { school: "Maktab", center: "O'quv markazi", kindergarten: "Bog'cha", online: "Onlayn", private: "Uyda (repetitorlik)", any: "Farqi yo'q" };
+    expect(parseWorkerExtra("teach_place", "maktabda", labels)).toBe("school");
+    expect(parseWorkerExtra("teach_place", "o'quv markazi", labels)).toBe("center");
+    expect(parseWorkerExtra("teach_place", "farqi yo'q", labels)).toBe("any");
+    expect(parseWorkerExtra("teach_place", "qwerty", labels)).toBeNull();
+    expect(parseWorkerExtra("army", "ha", {})).toBe("yes");
+    expect(parseWorkerExtra("el_group", "3 guruh", {})).toBe("g3");
   });
 });
