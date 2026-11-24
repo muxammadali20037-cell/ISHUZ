@@ -753,6 +753,27 @@ body:has([data-global-back]) [data-header-back] { display: none; }
     --navy-muted: color-mix(in oklab, var(--muted-foreground) 70%, var(--foreground));
     --navy-line: var(--border);
   }
+  /* "E'lonni to'liq ko'rish" (ega, 2026-11-24): ko'k, shaffof shisha — ichi to'la rang emas (yupqa ko'k tus), to'rt tomondan
+     yumshoq ko'k soya, ichida chetlardan yorug'lik va to'rt burchagidan ozgina "quyosh nuri" (kichik oq dog'lar — ega so'rovi
+     bilan bezak; boshqa joyda ishlatilmaydi) */
+  .glass-blue {
+    background-color: color-mix(in oklab, var(--primary) 9%, transparent);
+    background-image:
+      radial-gradient(18px 12px at 0 0, oklch(1 0 0 / 0.85), transparent),
+      radial-gradient(18px 12px at 100% 0, oklch(1 0 0 / 0.85), transparent),
+      radial-gradient(18px 12px at 0 100%, oklch(1 0 0 / 0.6), transparent),
+      radial-gradient(18px 12px at 100% 100%, oklch(1 0 0 / 0.6), transparent);
+    border: 1px solid color-mix(in oklab, var(--primary) 38%, transparent);
+    box-shadow:
+      0 0 10px 0 color-mix(in oklab, var(--primary) 30%, transparent),
+      inset 0 0 6px 0 color-mix(in oklab, var(--card) 80%, transparent);
+  }
+  .glass-blue:hover {
+    background-color: color-mix(in oklab, var(--primary) 14%, transparent);
+    box-shadow:
+      0 0 14px 1px color-mix(in oklab, var(--primary) 38%, transparent),
+      inset 0 0 6px 0 color-mix(in oklab, var(--card) 80%, transparent);
+  }
   .container-narrow {
     @apply mx-auto w-full max-w-2xl px-4 sm:px-6;
   }

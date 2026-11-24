@@ -45,9 +45,10 @@ import { OrgMark, usePlace, usePosted, type JobCardData, type WorkerCardData } f
 
 // oq, sokin karta (ega, 2026-11-21: "ranglar yemagan, bolalarcha") — rang faqat muhim joyda (maosh, tugma)
 const cardCls = "relative rounded-2xl border border-border bg-card p-4 shadow-sm";
-// ega (2026-11-23): "E'lonni to'liq ko'rish" — biroz kichikroq, sariq shishasimon, soyali (bosh sahifadagi "E'lon berish" uslubida)
+// ega (2026-11-24): "E'lonni to'liq ko'rish" — yanada kichik, ko'k shaffof shisha (.glass-blue): ichi to'la rang emas, to'rt
+// tomondan soya, burchaklardan ozgina nur. Ko'rinishi 36px; bosiladigan joy — 44px (::after, a11y)
 const openBtnCls =
-  "press relative isolate mt-3 inline-flex min-h-11 items-center justify-center gap-1.5 rounded-xl border border-highlight-hover/60 bg-highlight/90 px-4 text-sm font-bold text-highlight-foreground shadow-md shadow-highlight/30 transition-[transform,box-shadow] hover:-translate-y-px hover:bg-highlight hover:shadow-lg hover:shadow-highlight/40 disabled:opacity-70";
+  "glass-blue press relative mt-3 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl px-3.5 text-sm font-semibold text-primary-ink transition-[transform,box-shadow,background-color] hover:-translate-y-px after:absolute after:inset-x-0 after:-inset-y-1 after:content-[''] disabled:opacity-70";
 const EXPERIENCE_PRESETS = [60, 36, 24, 12, 6, 0] as const;
 
 type Loaded<T> = { phase: "idle" | "loading" | "error" } | ({ phase: "ready" } & T);
@@ -108,9 +109,6 @@ function OpenButton({ open, loading, controls, onClick }: { open: boolean; loadi
       className={openBtnCls}
       data-ai-card-open
     >
-      {/* shisha: tepada ingichka yaltirash va yuqori yarmida yumshoq oq nur (tugma ichida — tashqariga chiqmaydi) */}
-      <span aria-hidden className="absolute inset-x-3 top-0 -z-10 h-px bg-card/80" />
-      <span aria-hidden className="absolute inset-x-0 top-0 -z-10 h-1/2 rounded-t-xl bg-card/25" />
       {loading ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <FileText className="size-4" aria-hidden />}
       {open ? t("easy.aicard.close") : t("easy.aicard.open")}
       <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} aria-hidden />
