@@ -171,7 +171,7 @@ export function StartChat({
         {/* yozish maydoni pastda yopishgan; klaviatura ochilganda pastki menyu yashiriladi (globals.css: .chat-composer) */}
         {/* bosh ekranda yozish o'rnini qidiruv qatori egallaydi (ikkita matn maydoni bo'lmasin); suhbat boshlangach — shu */}
         <div className={cn("chat-composer sticky z-10 -mx-1 bg-background px-1 pb-2 pt-2", empty && home && "hidden")} data-tour="composer">
-          <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} inputMode={chat.awaiting === "post_phone" ? "tel" : undefined} />
+          <AiPromptBox chat={chat} id="start-chat-text" inputRef={inputRef} note={false} placeholder={placeholder} action={action} inputMode={chat.awaiting === "post_phone" ? "tel" : chat.awaiting === "post_age" ? "numeric" : undefined} />
         </div>
       </div>
     </ImageEnabled.Provider>
@@ -751,6 +751,29 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
         <Ai kind={kind}>
           {intro}
           <Say>{part.retry ? t("easy.guided.ask_post_name_retry") : t("easy.guided.ask_post_name")}</Say>
+        </Ai>
+      );
+    case "post_gender":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.retry ? t("easy.guided.ask_post_gender_retry") : t("easy.guided.ask_post_gender")}</Say>
+          {open ? (
+            <Pills
+              attr="gender"
+              items={(["male", "female"] as const).map((g) => {
+                const label = t(`easy.vguide.${g}`);
+                return { key: g, label, onClick: () => chat.pickPostGender(g, label) };
+              })}
+            />
+          ) : null}
+        </Ai>
+      );
+    case "post_age":
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{part.retry ? t("easy.guided.ask_post_age_retry") : t("easy.guided.ask_post_age")}</Say>
         </Ai>
       );
     case "post_experience":

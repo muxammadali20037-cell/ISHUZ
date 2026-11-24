@@ -57,6 +57,8 @@ export interface WorkerPostData {
   salary: number | null;
   salaryType: string | null;
   schedules: string[];
+  /** e'londagi ✅ bandlar: jinsi va yoshi ("Erkak, 28 yosh"), kasbga xos javoblar, izoh (ega, 2026-11-24) */
+  notes?: string[];
 }
 
 /** Usta e'loni (ega, 2026-11-24: "ustalar e'loni ham kanalga — ishchi e'lonlari kanaliga") */
@@ -156,14 +158,16 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn
     d.remote ? `🌐 ${escapeHtml(t("bot.channel.remote"))}` : d.place ? `📍 ${escapeHtml(d.place)}` : null,
     `💰 ${escapeHtml(salary)}`,
     d.schedule || d.workTime ? `🕘 ${escapeHtml([d.schedule, d.workTime].filter(Boolean).join(" · "))}` : null,
-    d.gender || d.age ? `👤 ${escapeHtml([d.gender, d.age].filter(Boolean).join(" · "))}` : null,
+    // jinsi va yoshi — har doim (ega, 2026-11-24: "kanalga jinsi, yoshi kelmayapti"); talab yo'q bo'lsa — "farqi yo'q"
+    `👤 ${escapeHtml(t("bot.channel.gender_age", { gender: d.gender ?? t("bot.channel.any"), age: d.age ?? t("bot.channel.any") }))}`,
     step == null ? null : `🧰 ${escapeHtml(step === 0 ? t("bot.channel.no_experience") : t("bot.channel.experience", { value: t(`enums.experience_min_months.${step}`) }))}`,
   ].filter((l) => l !== null);
   const tail = phoneTail(d.phone ? [d.phone] : [], t);
   // tavsif — qolgan joyga sig'guncha (escape kengaytirishi uchun zaxira: belgi soni ~1.2×)
   const used = [...head, ...tail].join("\n").length + 2;
   const room = Math.floor((CAPTION_MAX - used) / 1.2);
-  const desc = room >= 40 ? sanitizeText(d.description, Math.min(room, 600)) : "";
+  // ✅ bandlar (kasbga xos javoblar, izoh) ham sig'sin — qatorlar soni 14 tagacha
+  const desc = room >= 40 ? sanitizeText(d.description, Math.min(room, 600), 14) : "";
   const html = [...head, ...(desc ? ["", escapeHtml(desc)] : []), ...tail].join("\n");
   return {
     html,
@@ -188,6 +192,7 @@ export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn =
     d.experience ? `🧰 ${escapeHtml(t("bot.channel.experience", { value: d.experience }))}` : null,
     `💰 ${escapeHtml(t("bot.channel.salary_expect", { value: salary }))}`,
     d.schedules.length ? `🕘 ${escapeHtml(d.schedules.join(", "))}` : null,
+    ...(d.notes?.length ? ["", ...d.notes.map((n) => `✅ ${escapeHtml(n)}`)] : []),
     "",
     `📞 ${escapeHtml(t("bot.channel.contact_on_site"))}`,
   ];

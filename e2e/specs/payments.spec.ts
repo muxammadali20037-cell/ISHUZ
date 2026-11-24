@@ -81,7 +81,7 @@ async function postVacancy(page: Page) {
      values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
     [USERS.employer],
   );
-  await page.goto("/post/vacancy");
+  await page.goto("/post/vacancy?step=1");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);
   await pickWholeRegion(page);

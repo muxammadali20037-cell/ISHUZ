@@ -43,6 +43,8 @@ export const WORKER_DRAFT_RULES: DraftRules<WorkerDraft> = {
   showPhone: isBool,
   source: isSource,
   image: isImage,
+  gender: (x) => x === undefined || x === "male" || x === "female",
+  ageText: (x) => x === undefined || (typeof x === "string" && x.length <= 4),
 };
 
 /** Tahrirlanayotgan vakansiya qoralamasi faqat o'sha vakansiyaga tegishli bo'lsa qabul qilinadi */

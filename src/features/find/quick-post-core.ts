@@ -3,7 +3,7 @@ import "server-only";
 import { cookies } from "next/headers";
 import { getT } from "@/lib/i18n/server";
 import { formatNotes, stripNotes, withNotes } from "@/features/post/notes";
-import { workerExtraLines } from "@/features/post/requirements";
+import { workerExtraLines, workerPersonLine } from "@/features/post/requirements";
 import { withWorkerExtraKeys, workerExtraKeysById } from "./worker-extras";
 import { getDistricts, getRegions } from "@/lib/reference";
 import { createPublicClient } from "@/lib/supabase/public";
@@ -191,7 +191,9 @@ export async function buildPreview(session: SessionContext | null, answers: Post
   // "Izoh" (ega, 2026-11-22: "obed, yo'lkira tekin…" — chiroyli taxlab) — matn oxirida ✅ bilan; yangisi eskisining o'rniga.
   // Kasbga xos javoblar (ega, 2026-11-24: "C toifa", "shaxsiy mashinam bor") — izohdan oldin; faqat shu kasb savollari
   const keys = (await workerExtraKeysById([node.id]).catch(() => new Map())).get(node.id) ?? [];
-  const items = [...workerExtraLines(answers.extras, keys, t), ...formatNotes("", answers.notes ?? [])];
+  // birinchi band — jinsi va yoshi ("Erkak, 28 yosh"; ega, 2026-11-24: "kanalga jinsi, yoshi kelmayapti")
+  const person = workerPersonLine(answers.gender, answers.age, t);
+  const items = [...(person ? [person] : []), ...workerExtraLines(answers.extras, keys, t), ...formatNotes("", answers.notes ?? [])];
   // izoh savoliga javob berilgan bo'lsa (bo'sh — "Izohsiz") avvalgi e'londagi eski ✅ qatorlar olib tashlanadi
   const about = answers.notes || items.length ? withNotes(stripNotes(own), items) : own;
   return {

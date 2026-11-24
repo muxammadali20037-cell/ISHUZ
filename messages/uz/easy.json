@@ -241,7 +241,8 @@
     "saved_title": "Ma'lumotlaringiz saqlandi",
     "edit_title": "E'lonni o'zgartirish",
     "channel_note": "E'loningiz Ish topdim Telegram kanalida ham chiqadi: kasb, hudud, tajriba va maosh. Ismingiz, rasmingiz va telefon raqamingiz kanalda ko'rsatilmaydi — ish beruvchilar «Bog'lanish» tugmasi orqali saytda raqamni ochadi.",
-    "new_title": "Yana bitta e'lon"
+    "new_title": "Yana bitta e'lon",
+    "age": "Yoshingiz"
   },
   "vacancy": {
     "page_title": "Ishchi qidiryapman",
@@ -300,7 +301,8 @@
     "pay_monthly": "Oylik",
     "pay_monthly_desc": "Doimiy ish — maosh oyiga",
     "pay_daily": "Kunlik",
-    "pay_daily_desc": "Bir yoki bir necha kunlik ish — haq har kuni"
+    "pay_daily_desc": "Bir yoki bir necha kunlik ish — haq har kuni",
+    "requirements": "Talablar"
   },
   "search": {
     "page_title": "Qidirish",
@@ -1394,7 +1396,8 @@
       "x_cad": "Qaysi dasturni bilishi kerak?",
       "x_heights": "Balandlikda ish bormi?",
       "x_el_group": "Elektr xavfsizligi guruhi kerakmi?",
-      "x_vaxta": "Ish vaxta usulidami?"
+      "x_vaxta": "Ish vaxta usulidami?",
+      "x_sport_place": "Qayerda mashg'ulot o'tkazadi?"
     },
     "other_profession": "Boshqa kasb",
     "profession_input": "Kasb nomini yozing",
@@ -1716,6 +1719,15 @@
         "yes": "Ha, vaxta",
         "no": "Yo'q, doimiy joyda",
         "line_yes": "Ish vaxta usulida"
+      },
+      "sport_place": {
+        "label": "Mashg'ulot joyi",
+        "gym": "Sport zal yoki fitnes klub",
+        "school": "Sport maktabi yoki maktab",
+        "private": "Shaxsiy mashg'ulotlar",
+        "line_gym": "Sport zal yoki fitnes klubda",
+        "line_school": "Sport maktabi yoki maktabda",
+        "line_private": "Shaxsiy mashg'ulotlar o'tkazish"
       }
     }
   },
@@ -2294,6 +2306,22 @@
         "yes": "Ha, bor",
         "no": "Yo'q",
         "line_yes": "O'z ustaxonam bor"
+      },
+      "sport_place": {
+        "gym": "Sport zal yoki fitnes klub",
+        "school": "Sport maktabi yoki maktab",
+        "private": "Shaxsiy mashg'ulotlar",
+        "any": "Farqi yo'q",
+        "line_gym": "Sport zal yoki fitnes klubda ishlamoqchiman",
+        "line_school": "Sport maktabida ishlamoqchiman",
+        "line_private": "Shaxsiy mashg'ulotlar o'tkazaman"
+      },
+      "term_pref": {
+        "permanent": "Doimiy ish",
+        "once": "Bir martalik yoki kunlik",
+        "any": "Farqi yo'q",
+        "line_permanent": "Doimiy ish qidiryapman",
+        "line_once": "Bir martalik va kunlik ishlarga ham tayyorman"
       }
     },
     "placeholder_post_license": "Masalan: B yoki C",
@@ -2355,7 +2383,19 @@
     "ask_post_vaxta": "Vaxta usulida ishlay olasizmi?",
     "placeholder_post_vaxta": "Ha yoki yo'q",
     "ask_post_workshop": "O'z ustaxonangiz bormi?",
-    "placeholder_post_workshop": "Ha yoki yo'q"
+    "placeholder_post_workshop": "Ha yoki yo'q",
+    "ask_post_gender": "Siz erkakmisiz yoki ayol? (e'loningizda ko'rinadi)",
+    "ask_post_age": "Yoshingiz nechada? Raqam bilan yozing (masalan: 25)",
+    "ask_post_age_retry": "Yoshingizni raqam bilan yozing — 14 dan 80 gacha (masalan: 25).",
+    "ask_post_gender_retry": "Tushunmadim — «Erkak» yoki «Ayol»ni tanlang.",
+    "placeholder_post_gender": "Erkak yoki ayol",
+    "placeholder_post_age": "Masalan: 25",
+    "person_line": "{gender}, {age} yosh",
+    "person_age": "{age} yosh",
+    "ask_post_sport_place": "Qayerda mashg'ulot o'tkazmoqchisiz?",
+    "placeholder_post_sport_place": "Masalan: sport zalda",
+    "ask_post_term_pref": "Qanday ish qidiryapsiz?",
+    "placeholder_post_term_pref": "Masalan: doimiy"
   },
   "intro": {
     "title": "Ish topdim qanday ishlaydi",

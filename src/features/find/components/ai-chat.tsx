@@ -850,7 +850,7 @@ export function AiPromptBox({
   /** sekin telefon: skriptlar yuklanmasdan yuborilsa — matn shu manzilga ?q=… bilan oddiy forma bo'lib boradi (boshi berk yo'q) */
   action?: string;
   /** telefon raqami so'ralganda — raqamli klaviatura */
-  inputMode?: "text" | "tel";
+  inputMode?: "text" | "tel" | "numeric";
 }) {
   const { t } = useT();
   const [text, setText] = useState("");

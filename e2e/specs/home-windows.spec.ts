@@ -35,7 +35,7 @@ test("kunlik ish: formada 'Kunlik' → bazada kunlik → 'Kunlik ishlar'da faqat
 
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
-  await page.goto("/post/vacancy");
+  await page.goto("/post/vacancy?step=1");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);
   await pickWholeRegion(page);

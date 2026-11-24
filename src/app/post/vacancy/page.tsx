@@ -20,12 +20,13 @@ export async function generateMetadata(): Promise<Metadata> {
 /**
  * "Ishchi qidiryapman" — 4 qadamli ish e'loni. ?edit=<id> — mavjud e'lonni o'zgartirish (faqat egasi/menejer).
  * Yangi e'londan oldin foydalanuvchi o'zini tasdiqlaydi ("Ha, menga xodim kerak") — ish izlovchi adashib vakansiya bermaydi.
- * ?ai=1 — "AI bilan oson joylash": bir gap, keyin savollar bittadan, tayyor variantlar bilan (VacancyGuide).
+ * Yangi e'lon (ega, 2026-11-24 auditi) — "AI bilan oson joylash": bir gap, keyin savollar bittadan, tayyor variantlar bilan
+ * (VacancyGuide); ?ai=1 ham shu. Oddiy 4 qadamli forma — ?step=1…4 ("Oddiy forma" tugmasi) va tahrirlash (?edit=).
  */
-export default async function PostVacancyPage({ searchParams }: { searchParams: Promise<{ edit?: string; ai?: string }> }) {
+export default async function PostVacancyPage({ searchParams }: { searchParams: Promise<{ edit?: string; ai?: string; step?: string }> }) {
   const [session, mode] = await Promise.all([getSession(), getMode()]);
   if (session?.profile.is_blocked) redirect("/blocked");
-  const { edit, ai } = await searchParams;
+  const { edit, ai, step } = await searchParams;
   const editId = edit && z.uuid().safeParse(edit).success ? edit : null;
   if (!editId && mode !== "employer") {
     return (
@@ -42,7 +43,8 @@ export default async function PostVacancyPage({ searchParams }: { searchParams: 
     getPostViewer(session),
     getListingDays(),
     getSimpleListingFeatures(),
-    ai === "1" && !editId ? getQuickProfessions() : Promise.resolve([]),
+    // yangi e'lon — savollar bilan (oddiy forma — ?step=…): kasb savolidagi tez variantlar
+    !editId && (ai === "1" || !step) ? getQuickProfessions() : Promise.resolve([]),
   ]);
   const prefill = editId && session ? await getVacancyPrefill(session, editId) : await getEmployerDefaults(session);
   if (editId && !prefill) notFound();

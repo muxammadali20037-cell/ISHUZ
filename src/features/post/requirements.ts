@@ -79,6 +79,7 @@ const OPTS = {
   heights: ["yes", "no"],
   el_group: ["g2", "g3", "g4", "g5", "none"],
   vaxta: ["yes", "no"],
+  sport_place: ["gym", "school", "private"],
 } as const;
 export type ExtraKey = keyof typeof OPTS;
 /** Variantlar (tartibi — tugmalar tartibi) */
@@ -115,6 +116,37 @@ const OTHER_LICENSE = /(traktor|kombayn|forklift|pogruzchik|трактор|ко�
 const NOT_TOOLS = /(operator|prorab|muhandis|smeta|dispetcher|menejer|оператор|прораб|инженер|смет|диспетчер|менеджер)/iu;
 /** ombor va yuk ishchilari (logist, dispetcher emas) — doimiy yoki bir martalik */
 const LOADER_NAME = /(yuklovchi|yuk tashuvchi|ombor ishchisi|gruzchik|hammol|грузчик|разнорабоч|кладовщик|складск)/iu;
+
+/**
+ * Soha ichida turli kasblar (ta'lim: o'qituvchi, avtoinstruktor, murabbiy, metodist…) — kasb nomiga qarab aniq savol.
+ * Birinchi mos qoida olinadi; hech biri mos kelmasa — sohaning umumiy savoli.
+ */
+type NameRule<K> = [RegExp, K[]];
+function byName<K>(name: string, rules: NameRule<K>[], fallback: K[]): K[] {
+  for (const [re, keys] of rules) if (re.test(name)) return keys;
+  return fallback;
+}
+const EDU_DRIVING = /(avtoinstruktor|avtomobil instruktori|toifa\s*(?:\([^)]*\)\s*)?instruktori|автоинструктор|инструктор по вождению)/iu;
+const EDU_SPORT = /(murabbiy|trener|fitnes|pilates|yoga|krossfit|sportchi|qutqaruvchi|lfk|тренер|фитнес|пилатес|йог)/iu;
+const EDU_ADMIN = /(direktor|mudir|o'rinbosar|rektor|prorektor|metodist|dekanat|administrator|kutubxonachi|laborant|kurator|tyutor|psixolog|defektolog|logoped|oligofrenopedagog|ijtimoiy pedagog|vojatiy|tarbiyachi|instructional|директор|завуч|методист|психолог|логопед|дефектолог|воспитател)/iu;
+const EDU_UNIVERSITY = /(dotsent|professor|kafedra|\(otm\)|oliy ta'lim|fakulteti|доцент|профессор|кафедр)/iu;
+const EDU_CREATIVE = /(raqs|musiqa|gitara|fortepiano|skripka|doira|dutor|rasm|aktyor|vokal|xoreograf|san'at|dizayn|pazand|go'zallik|bichish|kasb-hunar|notiqlik|solfedjio|shaxmat|танц|музык|рисов|вокал)/iu;
+const ENERGY_ELECTRIC = /(elektr|podstansiya|transformator|rele|quyosh panel|energotizim|электр|подстанц|трансформатор)/iu;
+const LOG_LOADER = /(yuklovchi|ombor ishchisi|komplektovchi|markirovkachi|sovutgichli ombor|tovar qabul|(?<!по)грузчик|комплектовщик|складск)/iu;
+const LOG_MACHINE = /(forklift|richtrak|shtabeler|погрузчик|ричтрак|штабелер)/iu;
+const LOG_STOCK = /(omborchi|ombor mudiri|ombor smena|wms|inventarizatsiya|taroziboshi|кладовщик|завскладом)/iu;
+/** qurilish texnikasi operatorlari (kran, ekskavator…) — obyektlarga qatnov */
+const MACHINE_OPERATOR = /(operatori|kranchi|машинист|оператор)/iu;
+const ENGINEER_OFFICE = /(prorab|muhandis|smeta|texnik nazorat|прораб|инженер|смет)/iu;
+const AGRI_MACHINE = /(traktor|kombayn|трактор|комбайн)/iu;
+const GOV_UNIFORM = /(politsiya|harbiy|chegarachi|gvardiya|o't o'chiruvchi|qutqaruvchi|patrul|nazoratchi|inspektor|tergovchi|kriminalist|tezkor|ichki ishlar|полиц|военн|пожарн|инспектор)/iu;
+const SCI_LAB = /(laborant|inspektor|mutaxassis|kotib|лаборант|инспектор|специалист)/iu;
+const TEL_MOUNT = /(montaj|montyor|o'rnatuvchi|antenna|bts|optik tola|ulash ustasi|texnigi|kabel|монтаж|антенн)/iu;
+const TEL_SALES = /(savdo|sotuvchi|konsultant|agent|продаж|продав|консультант)/iu;
+const TEL_POST = /(pochtalon|tarqatuvchi|почтальон)/iu;
+const CLEAN_CARE = /(enaga|guvernantka|qarovchi(?!\s*\(dvornik)|keksalarga|uy bekasi|mayordom|uy oshpazi|няня|сиделк|гувернант)/iu;
+const CLEAN_GARDEN = /(bog'bon|obodonlashtirish|dvornik|садовник|дворник)/iu;
+const LEGAL_ADVOCATE = /(advokat|адвокат)/iu;
 
 function driverKeys<K extends "license" | "car">(name: string): K[] {
   const out: ("license" | "car")[] = [];
@@ -158,20 +190,43 @@ const EMPLOYER_BY_CATEGORY: Partial<Record<string, ExtraKey[]>> = {
   culture: ["term"],
   real_estate: ["pay_mode"],
   crafts: ["term"],
+  // "Boshqa" (animator, mardikor, mavsumiy ishchi…) — doimiy yoki bir martalik
+  other: ["term"],
 };
 
 /** Shu kasb uchun qo'shimcha savollar (ish beruvchi; tartibi bilan) */
 export function extraKeysFor(p: ProfessionContext): ExtraKey[] {
   const name = p.names.join(" ");
   switch (p.category) {
-    case "driver":
-      return DRIVER_NAME.test(name) ? driverKeys(name) : [];
+    case "driver": {
+      if (!DRIVER_NAME.test(name)) return ["languages"];
+      const keys = driverKeys<ExtraKey & ("license" | "car")>(name);
+      return keys.length ? keys : AGRI_MACHINE.test(name) ? ["season"] : ["night"];
+    }
     case "courier":
-      return COURIER_NAME.test(name) && !NOT_COURIER.test(name) ? ["transport"] : [];
+      return COURIER_NAME.test(name) && !NOT_COURIER.test(name) ? ["transport"] : ["languages"];
     case "design":
       return PHOTO_NAME.test(name) ? ["term"] : ["format"];
     case "logistics":
-      return LOADER_NAME.test(name) ? ["term"] : [];
+      return byName<ExtraKey>(name, [[LOG_MACHINE, ["night"]], [LOG_STOCK, ["fin_soft"]], [LOG_LOADER, ["term", "night"]], [LOADER_NAME, ["term"]]], ["languages"]);
+    case "education":
+      return byName<ExtraKey>(
+        name,
+        [[EDU_DRIVING, ["license"]], [EDU_SPORT, ["sport_place"]], [EDU_UNIVERSITY, ["degree"]], [EDU_ADMIN, ["edu"]], [EDU_CREATIVE, ["teach_place"]]],
+        ["teach_place", "cert"],
+      );
+    case "energy":
+      return byName<ExtraKey>(name, [[ENERGY_ELECTRIC, ["el_group"]]], ["night"]);
+    case "government":
+      return byName<ExtraKey>(name, [[GOV_UNIFORM, ["edu", "army"]]], ["edu"]);
+    case "science":
+      return byName<ExtraKey>(name, [[SCI_LAB, ["edu"]]], ["degree"]);
+    case "telecom":
+      return byName<ExtraKey>(name, [[DRIVER_NAME, ["license"]], [TEL_MOUNT, ["heights"]], [TEL_SALES, ["pay_mode"]], [TEL_POST, ["transport"]]], ["languages"]);
+    case "cleaning":
+      return byName<ExtraKey>(name, [[CLEAN_CARE, ["term"]], [CLEAN_GARDEN, ["term"]]], ["clean_place", "term"]);
+    case "legal":
+      return byName<ExtraKey>(name, [[LEGAL_ADVOCATE, ["lawyer_license"]]], ["edu"]);
     default:
       return (p.category && EMPLOYER_BY_CATEGORY[p.category]) || [];
   }
@@ -464,6 +519,8 @@ const WOPTS = {
   heights: ["yes", "no"],
   vaxta: ["yes", "no"],
   workshop: ["yes", "no"],
+  sport_place: ["gym", "school", "private", "any"],
+  term_pref: ["permanent", "once", "any"],
 } as const;
 export type WorkerExtraKey = keyof typeof WOPTS;
 export const WORKER_EXTRA_OPTIONS: Record<WorkerExtraKey, readonly string[]> = WOPTS;
@@ -503,19 +560,44 @@ const WORKER_BY_CATEGORY: Partial<Record<string, WorkerExtraKey[]>> = {
   mining: ["vaxta"],
   real_estate: ["car"],
   crafts: ["workshop"],
+  other: ["term_pref"],
 };
 
 export function workerExtraKeysFor(p: ProfessionContext): WorkerExtraKey[] {
   const name = p.names.join(" ");
   switch (p.category) {
-    case "driver":
-      return DRIVER_NAME.test(name) ? driverKeys(name) : [];
+    case "driver": {
+      if (!DRIVER_NAME.test(name)) return ["languages"];
+      const keys = driverKeys<WorkerExtraKey & ("license" | "car")>(name);
+      return keys.length ? keys : ["night"];
+    }
     case "courier":
-      return COURIER_NAME.test(name) && !NOT_COURIER.test(name) ? ["transport"] : [];
+      return COURIER_NAME.test(name) && !NOT_COURIER.test(name) ? ["transport"] : ["languages"];
     case "electrician":
       return NOT_TOOLS.test(name) ? ["el_group"] : ["tools", "el_group"];
+    case "logistics":
+      return byName<WorkerExtraKey>(name, [[LOG_MACHINE, ["night"]], [LOG_STOCK, ["fin_soft"]], [LOG_LOADER, ["night"]], [LOADER_NAME, ["night"]]], ["languages"]);
+    case "education":
+      return byName<WorkerExtraKey>(
+        name,
+        [[EDU_DRIVING, ["license"]], [EDU_SPORT, ["sport_place"]], [EDU_UNIVERSITY, ["degree"]], [EDU_ADMIN, ["edu"]], [EDU_CREATIVE, ["teach_place", "portfolio"]]],
+        ["teach_place", "cert"],
+      );
+    case "energy":
+      return byName<WorkerExtraKey>(name, [[ENERGY_ELECTRIC, ["el_group"]]], ["night"]);
+    case "government":
+      return byName<WorkerExtraKey>(name, [[GOV_UNIFORM, ["army", "edu"]]], ["edu"]);
+    case "science":
+      return byName<WorkerExtraKey>(name, [[SCI_LAB, ["edu"]]], ["degree"]);
+    case "telecom":
+      return byName<WorkerExtraKey>(name, [[DRIVER_NAME, ["license"]], [TEL_MOUNT, ["heights"]], [TEL_SALES, ["cashier"]], [TEL_POST, ["transport"]]], ["languages"]);
+    case "cleaning":
+      return byName<WorkerExtraKey>(name, [[CLEAN_CARE, ["medbook"]], [CLEAN_GARDEN, ["tools"]]], ["clean_place"]);
+    case "legal":
+      return byName<WorkerExtraKey>(name, [[LEGAL_ADVOCATE, ["lawyer_license"]]], ["edu"]);
     default:
-      if (p.category && USTA_TOOLS.has(p.category)) return NOT_TOOLS.test(name) ? [] : ["tools"];
+      // usta: o'z asboblari; texnika operatori — vaxta/obyektlar; muhandis, prorab — ma'lumoti
+      if (p.category && USTA_TOOLS.has(p.category)) return byName<WorkerExtraKey>(name, [[ENGINEER_OFFICE, ["edu"]], [MACHINE_OPERATOR, ["vaxta"]]], ["tools"]);
       return (p.category && WORKER_BY_CATEGORY[p.category]) || [];
   }
 }
@@ -576,3 +658,60 @@ export function workerExtraLines(extras: WorkerExtras | undefined, keys: readonl
 
 /** "HH:MM" tekshiruvi (forma va server uchun) */
 export const TIME_RE = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
+
+// ------------------------------------------------------------------------------------------------ ishchi: jinsi va yoshi
+
+/**
+ * Ishchi e'lonida jinsi va yoshi (ega, 2026-11-24: "kanalga jinsi, yoshi kelmayapti"). Ishchining o'zi aytadi va e'lon
+ * matniga birinchi ✅ band bo'lib tushadi ("Erkak, 28 yosh") — karta, sahifa va kanalda shu ko'rinadi. Profildagi tug'ilgan
+ * sana o'z-o'zidan e'longa chiqarilmaydi (rozilik — shu savolga javob).
+ */
+export type WorkerGender = "male" | "female";
+export const WORKER_AGE_MIN = 14;
+export const WORKER_AGE_MAX = 80;
+
+/** "28", "28 yosh", "yoshim 28", "1998" (tug'ilgan yil) → yosh; tushunilmasa null */
+export function parseWorkerAge(text: string, now: Date = new Date()): number | null {
+  const s = lower(text).trim();
+  const year = /(?:^|[^\d])(19[4-9]\d|20[01]\d)(?:\s*(?:-?\s*y(?:il|\.)\p{L}*|г\.?|год\p{L}*))?(?=$|[^\d])/u.exec(s);
+  if (year) {
+    const age = now.getUTCFullYear() - Number(year[1]);
+    return age >= WORKER_AGE_MIN && age <= WORKER_AGE_MAX ? age : null;
+  }
+  const m = /(?:^|[^\d])(\d{2})(?=$|[^\d])/u.exec(s);
+  if (!m) return null;
+  const age = Number(m[1]);
+  return age >= WORKER_AGE_MIN && age <= WORKER_AGE_MAX ? age : null;
+}
+
+/** "erkak", "ayolman", "мужчина", "female" → jinsi; tushunilmasa null */
+export function parseWorkerGender(text: string): WorkerGender | null {
+  const s = lower(text);
+  const f = /(?:^|[^\p{L}])(ayol\p{L}*|qiz\p{L}*|аёл\p{L}*|қиз\p{L}*|женщин\p{L}*|девушк\p{L}*|женск\p{L}*|female|woman)/iu.test(s);
+  const m = /(?:^|[^\p{L}])(erkak\p{L}*|yigit\p{L}*|эркак\p{L}*|йигит\p{L}*|мужчин\p{L}*|мужск\p{L}*|парень|male|man)(?=$|[^\p{L}])/iu.test(s) || /^erkak/iu.test(s);
+  if (f === m) return null;
+  return f ? "female" : "male";
+}
+
+/** E'londagi band: "Erkak, 28 yosh" (yoshi bo'lmasa — faqat jinsi) */
+export function workerPersonLine(gender: WorkerGender | null | undefined, age: number | null | undefined, t: (k: string, v?: Record<string, string | number>) => string): string | null {
+  const g = gender ? t(`easy.vguide.${gender}`) : null;
+  if (g && age) return t("easy.guided.person_line", { gender: g, age });
+  if (g) return g;
+  if (age) return t("easy.guided.person_age", { age });
+  return null;
+}
+
+/** Avvalgi "Erkak, 28 yosh" bandi (har qanday tilda) — yangisi bilan almashtirish uchun */
+export const PERSON_LINE = /^✅\s*(?:(?:erkak|ayol|эркак|аёл|мужчина|женщина|male|female|man|woman)(?:,\s*\d{2}\s*\S+)?|\d{2}\s*(?:yosh|ёш|лет|года|год|years old))\s*$/iu;
+
+/** E'lon matnida jinsi/yosh bandini yangilash: avvalgisi olib tashlanadi, yangisi ✅ ro'yxatning boshiga */
+export function withPersonLine(text: string, line: string | null): string {
+  // yangi javob yo'q (tahrirda so'ralmadi) — avvalgisi saqlanadi
+  if (!line) return text;
+  const lines = text.split("\n").filter((l) => !PERSON_LINE.test(l.trim()));
+  const clean = lines.join("\n").replace(/\n{3,}/g, "\n\n").trimEnd();
+  const first = lines.findIndex((l, i) => l.trim().startsWith("✅") && lines.slice(i).every((x) => !x.trim() || x.trim().startsWith("✅")));
+  if (first < 0) return `${clean}\n\n✅ ${line}`;
+  return [...lines.slice(0, first), `✅ ${line}`, ...lines.slice(first)].join("\n").trimEnd();
+}

@@ -15,7 +15,7 @@ import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
 import { answerPlace, draftFromForm, isAnyProfession, nextAsk, withPlace, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
 import type { ChatProfession } from "./actions";
 import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, postExtraKey, withProfession, type PostAsk, type PostDraft } from "./post-logic";
-import { WORKER_EXTRA_OPTIONS, parseWorkerExtra, type WorkerExtraKey } from "@/features/post/requirements";
+import { WORKER_EXTRA_OPTIONS, parseWorkerAge, parseWorkerExtra, parseWorkerGender, type WorkerExtraKey, type WorkerGender } from "@/features/post/requirements";
 import { formatNotes } from "@/features/post/notes";
 
 export type { AiPart, Ask, Draft, Msg, Role } from "./guided-logic";
@@ -402,6 +402,15 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
       const x = parseExperience(q);
       return x ? postNext({ ...d, experience: x }, mid) : postRetry("post_experience", mid);
     }
+    // jinsi ("erkak", "ayolman") va yoshi ("28", "1998") — e'londa birinchi band (ega, 2026-11-24)
+    if (a === "post_gender") {
+      const g = parseWorkerGender(q);
+      return g ? postNext({ ...d, gender: g }, mid) : postRetry("post_gender", mid);
+    }
+    if (a === "post_age") {
+      const n = parseWorkerAge(q);
+      return n ? postNext({ ...d, age: n }, mid) : postRetry("post_age", mid);
+    }
     // kasbga xos savol ("C", "ha, bor", "velosipedda") — tushunilmasa tugmalar bilan qayta
     const xk = postExtraKey(a);
     if (xk) {
@@ -431,6 +440,7 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     postNext(withProfession(post, choice), mid);
   };
   const pickPostExtra = (key: WorkerExtraKey, value: string, label: string) => pickPost({ extras: { ...post?.extras, [key]: value } }, label);
+  const pickPostGender = (g: WorkerGender, label: string) => pickPost({ gender: g }, label);
   const pickPostRegion = (opt: QuickOption) => pickPost({ regionId: opt.value, districtId: null }, opt.label);
   const pickPostExperience = (x: PostExperience, label: string) => pickPost({ experience: x }, label);
   /** izoh savolida tayyor variantni belgilash / olib tashlash */
@@ -697,6 +707,7 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     pickPostRegion,
     pickPostExperience,
     pickPostExtra,
+    pickPostGender,
     publishPost,
     resumePost,
     mode: role ?? "jobs",

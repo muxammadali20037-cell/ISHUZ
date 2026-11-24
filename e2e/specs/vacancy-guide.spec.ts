@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asMode, homeSearch, loginAs, sql } from "../support";
+import { USERS, asMode, homeSearch, loginAs, next, pickProfession, pickWholeRegion, sql } from "../support";
 
 /**
  * "AI bilan oson joylash" (2026-11-16, ega: "ish beruvchi panelida ajralib tursin; menga shunaqa kerak desa — ekranda savol
@@ -359,4 +359,44 @@ test("IT: «masofadan» deyilgan — joy ham, «qayerda ishlaydi?» ham, ish vaq
   await expect(h1(page)).toHaveText("Ish grafigi qanday?");
   await choice(page, "5_2").click();
   await expect(h1(page)).toHaveText("Erkak kerakmi yoki ayol?");
+});
+
+test("audit (ega, 2026-11-24): asosiy «E'lon berish» — savollar bilan; oddiy formada ham kasbga xos savol, jinsi, yosh, ish vaqti", async ({ page, context }) => {
+  await knownEmployer();
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  // /post/vacancy (asosiy tugma) — savollar bilan ochiladi
+  await page.goto("/post/vacancy");
+  await expect(h1(page)).toHaveText("Qanday xodim kerak?");
+  await ready(page);
+  // "Oddiy forma" — 4 qadam; 3-qadamda "Talablar"
+  await page.locator("[data-guide-classic]").click();
+  await expect(page).toHaveURL(/step=1/);
+  await pickProfession(page, "Buxgalter", "Buxgalter");
+  await next(page);
+  await pickWholeRegion(page);
+  await next(page);
+  const req = page.locator("[data-vacancy-requirements]");
+  await expect(req.locator("[data-vacancy-extra='fin_soft']")).toContainText("Qaysi dasturni bilishi kerak?");
+  await req.locator("[data-vacancy-extra='fin_soft']").getByRole("radio", { name: "1C" }).click();
+  await req.locator("[data-vacancy-gender]").getByRole("radio", { name: "Ayol" }).click();
+  await req.locator("[data-vacancy-age]").getByRole("radio", { name: "25–45 yosh" }).click();
+  await req.locator("[data-vacancy-hours]").getByRole("radio", { name: "09:00–18:00" }).click();
+  await page.getByRole("radio", { name: "O'zim uchun" }).click();
+  await page.locator("#org").fill("Dilnoza");
+  await page.locator("#phone").fill("90 111 22 33");
+  await page.locator("#desc").fill("Buxgalter kerak, hisobotlar va soliq.");
+  await page.locator("#salary-from").fill("6000000");
+  await next(page);
+  await expect(page.getByRole("main")).toContainText("Ish vaqti: 09:00–18:00");
+  await expect(page.getByRole("main")).toContainText("Jinsi: Ayol");
+  await expect(page.getByRole("main")).toContainText("25–45 yosh");
+  await page.getByRole("button", { name: "E'lonni joylash" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/joylandi/i, { timeout: 20_000 });
+  const [v] = await sql<{ gender: string; age_min: number; age_max: number; work_from: string; description: string }>(
+    "select gender::text, age_min, age_max, to_char(work_time_from, 'HH24:MI') as work_from, description from public.vacancies where owner_profile_id = $1",
+    [USERS.employer],
+  );
+  expect(v).toMatchObject({ gender: "female", age_min: 25, age_max: 45, work_from: "09:00" });
+  expect(v!.description).toMatch(/\n\n✅ 1C dasturini bilishi shart$/);
 });

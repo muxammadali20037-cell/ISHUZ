@@ -392,3 +392,12 @@ describe("joylangan zahoti kanalga (postListingNow)", () => {
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@ish_kanal" });
   });
 });
+
+describe("ishchi e'loni matnidagi ✅ bandlar (kanal uchun)", () => {
+  it("faqat ✅ qatorlar, raqam va havolasiz, 6 tagacha", async () => {
+    const { aboutNotes } = await import("./autopost");
+    expect(aboutNotes("Oshpaz sifatida ish qidiryapman.\n\n✅ Erkak, 28 yosh\n✅ Tel: 90 123 45 67\n✅ t.me/xyz\n✅ Obed tekin")).toEqual(["Erkak, 28 yosh", "Obed tekin"]);
+    expect(aboutNotes(null)).toEqual([]);
+    expect(aboutNotes(Array.from({ length: 9 }, (_, i) => `✅ Band ${i}`).join("\n"))).toHaveLength(6);
+  });
+});

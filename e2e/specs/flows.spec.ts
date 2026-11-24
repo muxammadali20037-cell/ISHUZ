@@ -59,7 +59,7 @@ test("e'lonni joylash tugmasini ikki marta bosish — bitta e'lon", async ({ pag
   await sql("delete from public.vacancies where owner_profile_id = $1", [USERS.employer]);
   await asMode(context, "employer");
   await loginAs(context, USERS.employer);
-  await page.goto("/post/vacancy");
+  await page.goto("/post/vacancy?step=1");
   await pickProfession(page, "Buxgalter", "Buxgalter");
   await next(page);
   await pickWholeRegion(page);

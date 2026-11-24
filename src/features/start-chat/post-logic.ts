@@ -2,7 +2,7 @@ import { normalizeText } from "@/features/search/understand";
 import { normalizePhone } from "@/lib/format";
 import type { QuickOption } from "@/features/find/quick-types";
 import type { PostAnswers, PostChoice, PostExperience, PostForm } from "@/features/find/quick-post-types";
-import { WORKER_EXTRA_KEYS, pickWorkerExtras, type WorkerExtraKey, type WorkerExtras } from "@/features/post/requirements";
+import { WORKER_EXTRA_KEYS, parseWorkerAge, pickWorkerExtras, type WorkerExtraKey, type WorkerExtras, type WorkerGender } from "@/features/post/requirements";
 
 /**
  * Chatning o'zida ishchi e'loni (master prompt, 3-bosqich; ega, 2026-11-21: "kasb, viloyat, ism, tajriba — tajriba bormi
@@ -14,9 +14,9 @@ import { WORKER_EXTRA_KEYS, pickWorkerExtras, type WorkerExtraKey, type WorkerEx
 
 /** Kasbga xos savollar (ega, 2026-11-24: "ishchiga ham", keyin "hamma kasblardan"): katalog — requirements.ts */
 export type PostExtraAsk = `post_${WorkerExtraKey}`;
-export type PostAsk = "post_profession" | "post_which" | PostExtraAsk | "post_region" | "post_name" | "post_experience" | "post_note" | "post_phone";
+export type PostAsk = "post_profession" | "post_which" | PostExtraAsk | "post_region" | "post_name" | "post_gender" | "post_age" | "post_experience" | "post_note" | "post_phone";
 
-export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", ...WORKER_EXTRA_KEYS.map((k) => `post_${k}` as const), "post_region", "post_name", "post_experience", "post_note", "post_phone"];
+export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", ...WORKER_EXTRA_KEYS.map((k) => `post_${k}` as const), "post_region", "post_name", "post_gender", "post_age", "post_experience", "post_note", "post_phone"];
 
 /** "post_license" → "license" */
 export function postExtraKey(a: PostAsk): WorkerExtraKey | null {
@@ -44,6 +44,9 @@ export interface PostDraft {
   phone: string | null;
   /** kasbga xos javoblar ("C", "yes"…) — birinchi gapdan tushunilgani qayta so'ralmaydi */
   extras: WorkerExtras;
+  /** jinsi va yoshi (ega, 2026-11-24: "kanalga jinsi, yoshi kelmayapti") — e'londa birinchi ✅ band */
+  gender: WorkerGender | null;
+  age: number | null;
   /** foydalanuvchining birinchi gapi (kasb keyin tanlansa ham undagi "mashinam bor" olinadi) */
   said: string;
 }
@@ -73,6 +76,9 @@ export function postDraftFromForm(form: PostForm): PostDraft {
     phone: null,
     extras: extrasFor(form.profession, form.text),
     said: form.text,
+    gender: null,
+    // "28 yoshli haydovchiman" — yosh so'ralmaydi
+    age: ageFromSaid(form.text),
   };
 }
 
@@ -83,6 +89,8 @@ export function nextPostAsk(d: PostDraft): Exclude<PostAsk, "post_which"> | null
   for (const k of d.profession.extraKeys ?? []) if (!d.extras[k]) return `post_${k}`;
   if (!d.regionId) return "post_region";
   if (d.firstName.trim().length < 2) return "post_name";
+  if (!d.gender) return "post_gender";
+  if (!d.age) return "post_age";
   if (!d.experience) return "post_experience";
   if (d.notes === null) return "post_note";
   if (!d.phone) return "post_phone";
@@ -103,7 +111,15 @@ export function postAnswers(d: PostDraft): PostAnswers | null {
     phone2: null,
     notes: d.notes ?? [],
     ...(Object.keys(d.extras).length ? { extras: d.extras } : {}),
+    gender: d.gender,
+    age: d.age,
   };
+}
+
+/** Birinchi gapdagi yosh ("28 yoshli", "25 yoshdaman") — faqat "yosh" so'zi bilan (boshqa raqamlar emas) */
+function ageFromSaid(text: string): number | null {
+  const m = /(?:^|[^\d])(\d{2})\s*(?:yosh|ёш|лет|years? old)/iu.exec(text);
+  return m ? parseWorkerAge(m[1]!) : null;
 }
 
 /** Telefon: "90 123 45 67", "901234567", "+998 90 …", "8 90 …" → "+998901234567"; noto'g'ri — null */

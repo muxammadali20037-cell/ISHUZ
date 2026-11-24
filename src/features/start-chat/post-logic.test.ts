@@ -13,6 +13,8 @@ const full: PostDraft = {
   phone: "+998901234567",
   extras: {},
   said: "",
+  gender: "male",
+  age: 30,
 };
 
 describe("chatda e'lon: savollar bittadan, tartib bilan", () => {
@@ -46,11 +48,19 @@ describe("chatda e'lon: savollar bittadan, tartib bilan", () => {
     expect(withProfession({ ...full, said: "velosipedim bor" }, foot).extras).toEqual({ transport: "foot" });
     expect(nextPostAsk(withProfession(full, foot))).toBeNull();
   });
+  it("ismdan keyin — jinsi va yoshi (ega, 2026-11-24: «kanalga jinsi, yoshi kelmayapti»); gapda «28 yoshli» bo'lsa — yosh so'ralmaydi", () => {
+    expect(nextPostAsk({ ...full, gender: null })).toBe("post_gender");
+    expect(nextPostAsk({ ...full, age: null })).toBe("post_age");
+    expect(nextPostAsk({ ...full, gender: null, experience: null })).toBe("post_gender");
+    const form = { text: "28 yoshli oshpazman", profession: { id: full.profession!.id, name: "Oshpaz" }, regionId: null, districtId: null, regions: [], districts: {}, loggedIn: true, firstName: "Botir", lastName: "" };
+    expect(postDraftFromForm(form).age).toBe(28);
+    expect(postDraftFromForm({ ...form, text: "oshpazman, 5 yil tajriba" }).age).toBeNull();
+  });
   it("hisobdagi ism bo'lsa — ism so'ralmaydi", () => {
     expect(nextPostAsk({ ...full, experience: null })).toBe("post_experience");
   });
   it("to'liq bo'lsa — javoblar; bo'lmasa — null", () => {
-    expect(postAnswers(full)).toEqual({ professionId: full.profession!.id, firstName: "Botir", lastName: "", regionId: full.regionId, districtId: null, experience: "1_3", phone: "+998901234567", phone2: null, notes: ["Obed tekin"] });
+    expect(postAnswers(full)).toEqual({ professionId: full.profession!.id, firstName: "Botir", lastName: "", regionId: full.regionId, districtId: null, experience: "1_3", phone: "+998901234567", phone2: null, notes: ["Obed tekin"], gender: "male", age: 30 });
     expect(postAnswers({ ...full, phone: null })).toBeNull();
   });
 });

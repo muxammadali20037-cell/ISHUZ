@@ -52,9 +52,9 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(p.caption).toBe(p.html);
     expect(p.html).not.toMatch(/📞/);
     expect(p.html).not.toMatch(/vercel|ishuz|https?:/i);
-    // jinsi, yosh va ish vaqti berilmagan — qatorlari yo'q
+    // ish vaqti berilmagan — grafik yolg'iz; jinsi va yosh talab qilinmagan — "farqi yo'q" (qator har doim bor)
     expect(p.html).toMatch(/🕘 5\/2(\n|$)/);
-    expect(p.html).not.toMatch(/👤/);
+    expect(p.html).toContain("👤 Jinsi: farqi yo'q · Yoshi: farqi yo'q");
   });
 
   it("vakansiya: ish vaqti grafik yonida, jinsi va yosh chegarasi — alohida qatorda (ega, 2026-11-24)", () => {
@@ -64,7 +64,7 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
       BASE,
     );
     expect(p.html).toContain("🕘 5/2 · 09:00–18:00");
-    expect(p.html).toContain("👤 Ayol · 18–35 yosh");
+    expect(p.html).toContain("👤 Jinsi: Ayol · Yoshi: 18–35 yosh");
   });
 
   it("vakansiya to'liq: tajriba, tavsif (tozalangan) va rozilik berilgan raqam — rasm ostida, 1024 dan oshmaydi", () => {
@@ -134,6 +134,16 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(dialable("998932728766")).toBe("+998932728766");
     expect(dialable("+7 999 123 45 67")).toBeNull();
     expect(dialable("90 123")).toBeNull();
+  });
+
+  it("ishchi e'loni: ✅ bandlar — jinsi va yoshi, kasbga xos javoblar (ega, 2026-11-24: «kanalga jinsi, yoshi kelmayapti»)", () => {
+    const p = workerPost(
+      { id: "x", profession: "Oshpaz", headline: null, place: "Toshkent", experience: null, salary: null, salaryType: null, schedules: [], notes: ["Erkak, 28 yosh", "Restoranda ishlamoqchiman", "<b>Sanitar</b> daftarcham bor"] },
+      t,
+      BASE,
+    );
+    expect(p.html).toContain("✅ Erkak, 28 yosh\n✅ Restoranda ishlamoqchiman\n✅ &lt;b&gt;Sanitar&lt;/b&gt; daftarcham bor");
+    expect(p.caption).toBe(p.html);
   });
 
   it("ishchi maosh kutmasa — kelishiladi", () => {

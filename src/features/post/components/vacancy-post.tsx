@@ -28,7 +28,8 @@ import { PhotoUpload } from "./photo-upload";
 import { AiReadyBanner } from "./ai-quick-fill";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { VacancyGuide } from "./vacancy-guide";
-import { ageLabel, hoursLabel, hoursRelevant } from "../requirements";
+import { AGE_PRESETS, EXTRA_OPTIONS, HOURS_PRESETS, ageLabel, extraKeysFor, extraLines, hoursLabel, hoursRelevant, type ExtraKey } from "../requirements";
+import { notesBlock } from "../notes";
 import type { ProfessionOption } from "../chat-actions";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { PhonePublicNote } from "./phone-public-note";
@@ -63,6 +64,14 @@ const emptyDraft = (): VacancyDraft => ({
   experienceMonths: 0,
   showPhone: false,
 });
+
+/** Matnda yo'q kasbga xos bandlarni ✅ bilan qo'shadi (oxiri ✅ bo'lsa — shu ro'yxatga, bo'lmasa — bo'sh qatordan keyin) */
+function withExtraLines(text: string, lines: string[]): string {
+  const missing = lines.filter((l) => !text.includes(l));
+  if (!missing.length) return text;
+  const block = notesBlock(missing);
+  return /\n✅[^\n]*$/u.test(text) || /^✅/u.test(text.split("\n").at(-1) ?? "") ? `${text}\n${block}` : `${text.trimEnd()}\n\n${block}`;
+}
 
 /** Savollarda berilgan jinsi, yosh va ish vaqti → server maydonlari (berilmagani — yuborilmaydi, bazada o'zgarmaydi) */
 function requirementsPayload(d: VacancyDraft) {
@@ -140,7 +149,9 @@ export function VacancyPost({
   const { step, go } = useStep(TOTAL, draft.step);
   // "AI bilan oson joylash" — savollar bittadan (?ai=1); "Oddiy forma" bosilsa — shu qoralama bilan oddiy qadamlar
   const params = useSearchParams();
-  const guideOn = !editId && params.get("ai") === "1";
+  // audit (ega, 2026-11-24: "har bitta kasb uchun so'rasin"): yangi e'lon — doim savollar bilan (asosiy "E'lon berish" tugmasi
+  // ham shu yerga); oddiy forma — "Oddiy forma" bosilganda (?step=…) yoki tahrirlashda
+  const guideOn = !editId && (params.get("ai") === "1" || !params.get("step"));
   const leaveGuide = (n: number) => {
     const url = new URL(window.location.href);
     url.searchParams.delete("ai");
@@ -164,6 +175,14 @@ export function VacancyPost({
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const { category, professionName, professionTrail } = professionLabels(draft, categories, name, t("professions.custom_badge"));
+  // kasbga xos savollar (ega, 2026-11-24 auditi: "oddiy formada ham har kasbga so'rasin")
+  const lastNode = draft.profession?.trail.at(-1);
+  const extraKeys: ExtraKey[] = extraKeysFor({
+    category: categories.find((c) => c.id === (draft.profession?.categoryId ?? draft.custom?.categoryId))?.slug ?? null,
+    names: lastNode ? [lastNode.name_uz, lastNode.name_ru, lastNode.name_en ?? ""].filter(Boolean) : draft.custom ? [draft.custom.text] : [],
+  });
+  const extraOption = (k: ExtraKey, v: string) => (k === "license" ? t("easy.vguide.x.license.option", { value: v }) : t(`easy.vguide.x.${k}.${v}`));
+  const showHours = hoursRelevant({ remote: draft.place.remote, extras: draft.extras, schedule: draft.schedule });
   // mavjud vakansiyaning maosh davri (kunlik/soatlik raqam oylik deb ko'rsatilmaydi)
   const salaryPeriod = draft.salaryType && draft.salaryType !== "monthly" ? draft.salaryType : null;
   // oylik / kunlik shu formada tanlanadi (0060); soatlik va ishbay — faqat batafsil tahrirda
@@ -270,7 +289,8 @@ export function VacancyPost({
         employerType: draft.employerType!,
         orgName: draft.orgName.trim(),
         phone: phone!,
-        description: draft.description.trim(),
+        // kasbga xos javoblar — matnda bo'lmasa ✅ bilan qo'shiladi (savollar oynasida allaqachon qo'shilgan bo'ladi)
+        description: withExtraLines(draft.description.trim(), extraLines(draft.extras, extraKeys, t)),
         negotiable: draft.negotiable,
         salaryFrom: draft.negotiable ? null : parseMoney(draft.salaryFrom),
         salaryTo: draft.negotiable ? null : parseMoney(draft.salaryTo),
@@ -617,6 +637,75 @@ export function VacancyPost({
             </div>
             <FieldError message={errors.salary} />
           </fieldset>
+
+          {/* talablar (ega, 2026-11-24 auditi): kasbga xos savollar, jinsi, yosh chegarasi, ish vaqti — oddiy formada ham */}
+          <section className="space-y-5" data-vacancy-requirements>
+            <h2 className="text-xl font-bold">{t("easy.vacancy.requirements")}</h2>
+            {extraKeys.map((k) => (
+              <div key={k} data-vacancy-extra={k}>
+                <p className="mb-2 text-lg font-semibold">{t(`easy.vguide.q.x_${k}`)}</p>
+                <ChoiceButtons
+                  label={t(`easy.vguide.q.x_${k}`)}
+                  value={draft.extras?.[k] ?? null}
+                  onChange={(v) =>
+                    update({
+                      extras: { ...draft.extras, [k]: v },
+                      ...(k === "format" && v === "remote" ? { place: { regionId: null, districtId: null, districtChosen: true, remote: true } } : {}),
+                    })
+                  }
+                  options={EXTRA_OPTIONS[k].map((v) => ({ value: v, label: extraOption(k, v) }))}
+                />
+              </div>
+            ))}
+            <div data-vacancy-gender>
+              <p className="mb-2 text-lg font-semibold">{t("easy.vguide.gender_label")}</p>
+              <ChoiceButtons
+                label={t("easy.vguide.gender_label")}
+                value={draft.gender ?? null}
+                onChange={(v) => update({ gender: v })}
+                options={(["male", "female", "any"] as const).map((g) => ({ value: g, label: g === "any" ? t("easy.vguide.any") : t(`easy.vguide.${g}`) }))}
+              />
+            </div>
+            <div data-vacancy-age>
+              <p className="mb-2 text-lg font-semibold">{t("easy.vguide.age_label")}</p>
+              <ChoiceButtons
+                label={t("easy.vguide.age_label")}
+                value={draft.age ? (draft.age.min === null && draft.age.max === null ? "any" : `${draft.age.min ?? ""}-${draft.age.max ?? ""}`) : null}
+                onChange={(v) => {
+                  if (v === "any") return update({ age: { min: null, max: null } });
+                  const [a, b] = v.split("-");
+                  update({ age: { min: a ? Number(a) : null, max: b ? Number(b) : null } });
+                }}
+                options={[
+                  // tahrirda saqlangan boshqa oraliq ham ko'rinsin
+                  ...(draft.age && (draft.age.min !== null || draft.age.max !== null) && !AGE_PRESETS.some((a) => a.min === draft.age!.min && a.max === draft.age!.max)
+                    ? [{ value: `${draft.age.min ?? ""}-${draft.age.max ?? ""}`, label: ageLabel(draft.age, t)! }]
+                    : []),
+                  ...AGE_PRESETS.map((a) => ({ value: `${a.min}-${a.max}`, label: ageLabel(a, t)! })),
+                  { value: "any", label: t("easy.vguide.any") },
+                ]}
+              />
+            </div>
+            {showHours ? (
+              <div data-vacancy-hours>
+                <p className="mb-2 text-lg font-semibold">{t("easy.vguide.hours_label")}</p>
+                <ChoiceButtons
+                  label={t("easy.vguide.hours_label")}
+                  value={draft.hours === undefined ? null : draft.hours ? `${draft.hours.from}-${draft.hours.to}` : "negotiable"}
+                  onChange={(v) => {
+                    if (v === "negotiable") return update({ hours: null });
+                    const [from, to] = v.split("-");
+                    update({ hours: { from: from!, to: to! } });
+                  }}
+                  options={[
+                    ...(draft.hours && !HOURS_PRESETS.some((h) => h.from === draft.hours!.from && h.to === draft.hours!.to) ? [{ value: `${draft.hours.from}-${draft.hours.to}`, label: hoursLabel(draft.hours) }] : []),
+                    ...HOURS_PRESETS.map((h) => ({ value: `${h.from}-${h.to}`, label: hoursLabel(h) })),
+                    { value: "negotiable", label: t("easy.vacancy.negotiable") },
+                  ]}
+                />
+              </div>
+            ) : null}
+          </section>
 
           <div className="rounded-2xl border border-border bg-card">
             <button type="button" aria-expanded={moreOpen} onClick={() => setMoreOpen((o) => !o)} className="flex min-h-14 w-full items-center justify-between gap-3 px-4 text-left">

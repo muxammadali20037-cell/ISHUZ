@@ -2,17 +2,17 @@ import { describe, expect, it } from "vitest";
 import { extraKeysFor, extraLines, extrasFromName, hoursRelevant, isExtras, parseAge, parseGender, parseWorkHours, pickExtras, scheduleRelevant } from "./requirements";
 
 describe("kasbga xos savollar (extraKeysFor)", () => {
-  it("haydovchi — guvohnoma va mashina; haydovchi bo'lmagan (styuardessa) — hech narsa", () => {
+  it("haydovchi — guvohnoma va mashina; haydovchi bo'lmagan (styuardessa) — tillar", () => {
     expect(extraKeysFor({ category: "driver", names: ["Taksi haydovchisi", "Водитель такси"] })).toEqual(["license", "car"]);
-    expect(extraKeysFor({ category: "driver", names: ["Styuardessa (bort kuzatuvchisi)"] })).toEqual([]);
+    expect(extraKeysFor({ category: "driver", names: ["Styuardessa (bort kuzatuvchisi)"] })).toEqual(["languages"]);
     // avtobus, samosval — mashina har doim ish beruvchiniki; traktor — boshqa guvohnoma
     expect(extraKeysFor({ category: "driver", names: ["Shahar avtobusi haydovchisi"] })).toEqual(["license"]);
-    expect(extraKeysFor({ category: "driver", names: ["Traktor haydovchisi"] })).toEqual([]);
+    expect(extraKeysFor({ category: "driver", names: ["Traktor haydovchisi"] })).toEqual(["season"]);
   });
-  it("kuryer — transport; PVZ operatori — yo'q", () => {
+  it("kuryer — transport; PVZ operatori, dispetcher — tillar", () => {
     expect(extraKeysFor({ category: "courier", names: ["Ovqat yetkazib beruvchi"] })).toEqual(["transport"]);
-    expect(extraKeysFor({ category: "courier", names: ["Buyurtmalarni topshirish punkti operatori (PVZ)"] })).toEqual([]);
-    expect(extraKeysFor({ category: "courier", names: ["Kuryerlik xizmati dispetcheri"] })).toEqual([]);
+    expect(extraKeysFor({ category: "courier", names: ["Buyurtmalarni topshirish punkti operatori (PVZ)"] })).toEqual(["languages"]);
+    expect(extraKeysFor({ category: "courier", names: ["Kuryerlik xizmati dispetcheri"] })).toEqual(["languages"]);
   });
   it("tikuvchi — ishbay/oylik va mashina; usta va quruvchi — doimiy/bir martalik; IT — format va daraja; fotograf — buyurtma; oshpaz — joy va sanitar daftarcha", () => {
     expect(extraKeysFor({ category: "sewing", names: ["Tikuvchi"] })).toEqual(["pay", "machine"]);
@@ -21,7 +21,7 @@ describe("kasbga xos savollar (extraKeysFor)", () => {
     expect(extraKeysFor({ category: "it", names: ["Frontend dasturchi"] })).toEqual(["format", "level"]);
     expect(extraKeysFor({ category: "design", names: ["Fotograf"] })).toEqual(["term"]);
     expect(extraKeysFor({ category: "restaurant", names: ["Oshpaz"] })).toEqual(["venue", "medbook"]);
-    expect(extraKeysFor({ category: "other", names: ["Boshqa"] })).toEqual([]);
+    expect(extraKeysFor({ category: "other", names: ["Animator"] })).toEqual(["term"]);
     expect(extraKeysFor({ category: null, names: [] })).toEqual([]);
   });
   it("kasb nomining o'zidan: «C toifa haydovchi» → C, «Piyoda kuryer» → piyoda, «Avtokuryer» → avtomobil", () => {
@@ -107,10 +107,11 @@ describe("ishchi e'loni: kasbga xos savollar", () => {
     expect(workerExtraKeysFor({ category: "driver", names: ["Ҳайдовчи"] })).toEqual(["license", "car"]);
     expect(workerExtraKeysFor({ category: "courier", names: ["Piyoda kuryer"] })).toEqual(["transport"]);
     expect(workerExtraKeysFor({ category: "plumber", names: ["Santexnik"] })).toEqual(["tools"]);
-    expect(workerExtraKeysFor({ category: "construction", names: ["Ekskavator operatori"] })).toEqual([]);
+    expect(workerExtraKeysFor({ category: "construction", names: ["Ekskavator operatori"] })).toEqual(["vaxta"]);
+    expect(workerExtraKeysFor({ category: "construction", names: ["Prorab"] })).toEqual(["edu"]);
     expect(workerExtraKeysFor({ category: "driver", names: ["Samosval haydovchisi"] })).toEqual(["license"]);
     expect(workerExtraKeysFor({ category: "restaurant", names: ["Oshpaz"] })).toEqual(["venue", "medbook"]);
-    expect(workerExtraKeysFor({ category: "other", names: ["Boshqa"] })).toEqual([]);
+    expect(workerExtraKeysFor({ category: "other", names: ["Animator"] })).toEqual(["term_pref"]);
   });
   it("yozganidan tushunadi va bitta savolga yozilgan javobni («C», «ha», «нет», «velosipedda») taniydi", async () => {
     const { parseWorkerExtra, pickWorkerExtras, workerExtraLines } = await import("./requirements");
@@ -131,10 +132,10 @@ describe("ishchi e'loni: kasbga xos savollar", () => {
 });
 
 describe("katalog: hamma kasblar, ikkala rol (ega, 2026-11-24: «har bitta bosqich, har bir rol uchun aniq»)", () => {
-  const CATEGORIES = ["it", "sales", "marketing", "design", "finance", "driver", "logistics", "courier", "construction", "craftsman", "electrician", "plumber", "mechanic", "auto_service", "restaurant", "call_center", "office", "education", "medicine", "cleaning", "security", "sewing", "beauty", "production", "agriculture", "hotel", "legal", "science", "management", "government", "engineering", "telecom", "energy", "mining", "culture", "real_estate", "crafts"];
+  const CATEGORIES = ["other", "it", "sales", "marketing", "design", "finance", "driver", "logistics", "courier", "construction", "craftsman", "electrician", "plumber", "mechanic", "auto_service", "restaurant", "call_center", "office", "education", "medicine", "cleaning", "security", "sewing", "beauty", "production", "agriculture", "hotel", "legal", "science", "management", "government", "engineering", "telecom", "energy", "mining", "culture", "real_estate", "crafts"];
   const NAMES: Record<string, string> = { driver: "Haydovchi", courier: "Kuryer", logistics: "Yuklovchi", design: "Grafik dizayner" };
 
-  it("har bir soha (\"Boshqa\"dan tashqari) — ish beruvchiga ham, ishchiga ham kamida bitta aniq savol", async () => {
+  it("har bir soha (\"Boshqa\" ham) — ish beruvchiga ham, ishchiga ham kamida bitta aniq savol", async () => {
     const { extraKeysFor, workerExtraKeysFor } = await import("./requirements");
     for (const c of CATEGORIES) {
       const p = { category: c, names: [NAMES[c] ?? "Mutaxassis"] };
@@ -201,5 +202,71 @@ describe("katalog: hamma kasblar, ikkala rol (ega, 2026-11-24: «har bitta bosqi
     expect(parseWorkerExtra("teach_place", "qwerty", labels)).toBeNull();
     expect(parseWorkerExtra("army", "ha", {})).toBe("yes");
     expect(parseWorkerExtra("el_group", "3 guruh", {})).toBe("g3");
+  });
+});
+
+describe("ishchi: jinsi va yoshi", () => {
+  it("yosh: «28», «28 yosh», «yoshim 30», tug'ilgan yil «1998»; chegaradan tashqari — null", async () => {
+    const { parseWorkerAge, parseWorkerGender, workerPersonLine, PERSON_LINE } = await import("./requirements");
+    const now = new Date("2026-11-24T00:00:00Z");
+    expect(parseWorkerAge("28", now)).toBe(28);
+    expect(parseWorkerAge("28 yosh", now)).toBe(28);
+    expect(parseWorkerAge("yoshim 30 da", now)).toBe(30);
+    expect(parseWorkerAge("1998", now)).toBe(28);
+    expect(parseWorkerAge("1998 yil", now)).toBe(28);
+    expect(parseWorkerAge("9", now)).toBeNull();
+    expect(parseWorkerAge("95", now)).toBeNull();
+    expect(parseWorkerAge("bilmayman", now)).toBeNull();
+    expect(parseWorkerGender("erkak")).toBe("male");
+    expect(parseWorkerGender("Ayolman")).toBe("female");
+    expect(parseWorkerGender("мужчина")).toBe("male");
+    expect(parseWorkerGender("qwerty")).toBeNull();
+    const t = (k: string, v?: Record<string, string | number>) => (k === "easy.guided.person_line" ? `${v!.gender}, ${v!.age} yosh` : k === "easy.vguide.male" ? "Erkak" : k === "easy.vguide.female" ? "Ayol" : `${v?.age} yosh`);
+    expect(workerPersonLine("male", 28, t)).toBe("Erkak, 28 yosh");
+    expect(workerPersonLine("female", null, t)).toBe("Ayol");
+    expect(workerPersonLine(null, null, t)).toBeNull();
+    expect(PERSON_LINE.test("✅ Erkak, 28 yosh")).toBe(true);
+    expect(PERSON_LINE.test("✅ Мужчина, 28 лет")).toBe(true);
+    expect(PERSON_LINE.test("✅ Obed tekin")).toBe(false);
+  });
+});
+
+describe("e'lon matnida jinsi/yosh bandi", () => {
+  it("yangisi ✅ ro'yxat boshiga, avvalgisi almashtiriladi; javob yo'q — matn o'zgarmaydi", async () => {
+    const { withPersonLine } = await import("./requirements");
+    expect(withPersonLine("Oshpazman.", "Erkak, 28 yosh")).toBe("Oshpazman.\n\n✅ Erkak, 28 yosh");
+    expect(withPersonLine("Oshpazman.\n\n✅ Obed tekin", "Ayol, 30 yosh")).toBe("Oshpazman.\n\n✅ Ayol, 30 yosh\n✅ Obed tekin");
+    expect(withPersonLine("Oshpazman.\n\n✅ Erkak, 28 yosh\n✅ Obed tekin", "Erkak, 29 yosh")).toBe("Oshpazman.\n\n✅ Erkak, 29 yosh\n✅ Obed tekin");
+    expect(withPersonLine("Oshpazman.\n\n✅ Erkak, 28 yosh", null)).toBe("Oshpazman.\n\n✅ Erkak, 28 yosh");
+  });
+});
+
+describe("soha ichida kasb nomiga qarab (audit, 2026-11-24)", () => {
+  it("ta'lim: avtoinstruktor — guvohnoma, murabbiy — mashg'ulot joyi, dotsent — ilmiy daraja, psixolog — ma'lumoti, raqs — joy, ingliz tili — joy va sertifikat", async () => {
+    const { extraKeysFor, workerExtraKeysFor } = await import("./requirements");
+    const e = (n: string) => extraKeysFor({ category: "education", names: [n] });
+    expect(e("Avtoinstruktor")).toEqual(["license"]);
+    expect(e("Futbol murabbiyi")).toEqual(["sport_place"]);
+    expect(e("Dotsent")).toEqual(["degree"]);
+    expect(e("Maktab psixologi")).toEqual(["edu"]);
+    expect(e("Raqs o'qituvchisi")).toEqual(["teach_place"]);
+    expect(e("Ingliz tili o'qituvchisi")).toEqual(["teach_place", "cert"]);
+    expect(workerExtraKeysFor({ category: "education", names: ["Gitara o'qituvchisi"] })).toEqual(["teach_place", "portfolio"]);
+  });
+  it("energetika, logistika, telekom, tozalash, yurist — kasbiga mos", async () => {
+    const { extraKeysFor, workerExtraKeysFor } = await import("./requirements");
+    expect(extraKeysFor({ category: "energy", names: ["Podstansiya elektromontyori"] })).toEqual(["el_group"]);
+    expect(extraKeysFor({ category: "energy", names: ["Yoqilg'i quyish shoxobchasi operatori"] })).toEqual(["night"]);
+    expect(extraKeysFor({ category: "logistics", names: ["Omborchi", "Кладовщик"] })).toEqual(["fin_soft"]);
+    expect(extraKeysFor({ category: "logistics", names: ["Forklift operatori", "Оператор погрузчика"] })).toEqual(["night"]);
+    expect(extraKeysFor({ category: "logistics", names: ["Yuklovchi", "Грузчик"] })).toEqual(["term", "night"]);
+    expect(extraKeysFor({ category: "logistics", names: ["Logist"] })).toEqual(["languages"]);
+    expect(extraKeysFor({ category: "telecom", names: ["Pochta avtomobili haydovchisi"] })).toEqual(["license"]);
+    expect(extraKeysFor({ category: "telecom", names: ["Pochtalon"] })).toEqual(["transport"]);
+    expect(extraKeysFor({ category: "cleaning", names: ["Enaga"] })).toEqual(["term"]);
+    expect(workerExtraKeysFor({ category: "cleaning", names: ["Enaga"] })).toEqual(["medbook"]);
+    expect(extraKeysFor({ category: "legal", names: ["Advokat"] })).toEqual(["lawyer_license"]);
+    expect(extraKeysFor({ category: "legal", names: ["Notarius"] })).toEqual(["edu"]);
+    expect(extraKeysFor({ category: "government", names: ["Ichki ishlar xodimi (politsiya)"] })).toEqual(["edu", "army"]);
   });
 });
