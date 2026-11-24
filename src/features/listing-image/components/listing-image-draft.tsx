@@ -35,12 +35,15 @@ export function ListingImageDraft({
   title,
   value,
   onChange,
+  masterCategory = null,
 }: {
-  entity: "vacancy" | "worker";
+  entity: "vacancy" | "worker" | "master";
   professionId: string | null;
   title: string;
   value: DraftImage | null;
   onChange: (next: DraftImage | null) => void;
+  /** usta e'loni: xizmat kategoriyasi (rasm sahnasi) */
+  masterCategory?: string | null;
 }) {
   const { t } = useT();
   const [phase, setPhase] = useState<Phase>({ step: "idle" });
@@ -55,7 +58,7 @@ export function ListingImageDraft({
       const res = await fetch("/api/listing-image", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ entity, draft, professionId, title: title.trim().slice(0, 120) || null }),
+        body: JSON.stringify({ entity, draft, professionId, title: title.trim().slice(0, 120) || null, ...(entity === "master" ? { masterCategory } : {}) }),
       });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; url?: string; error?: string } | null;
       if (data?.ok && data.url) {

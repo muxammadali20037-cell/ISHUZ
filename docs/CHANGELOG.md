@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Ustalar: e'lon rasmi (AI) — 0089 (`feat/master-images`)
+
+Ega: "ustalarda ham rasm yaratish bo'lsin"; "bazani yangila" (2026-11-24). **Migratsiya 0089 prod'ga qo'llandi**
+(Supabase, `apply_migration`, 2026-11-24): `listing_images.entity` — `master` ham, `claim_listing_image` — `master` ham.
+Hech narsa o'chirilmadi (oldin 9 ta rasm qatori — keyin ham 9 ta); anon/authenticated'ga ruxsat yo'q (tekshirildi).
+`APPLIED_UNTIL = 89`, `pending.sql` — bo'sh.
+
+- "Usta bo'lish"ning oxirgi oynasida — "E'lon rasmi" (AI; ish joyi va asboblar, odam portreti emas; ixtiyoriy).
+- Rasm — kartada (ish namunasi bo'lmasa) va e'lon sahifasida banner. Ish namunalari — alohida (faqat ustaning haqiqiy
+  ishlari; AI rasm u yerga qo'shilmaydi).
+- Sahna xizmat kategoriyasi bo'yicha (konditsioner, santexnika, elektr, maishiy texnika, ta'mir, bo'yoq, qurilish,
+  payvand, qulf, yuk tashish, mebel). Xarajat chegaralari — vakansiya va ishchi e'lonlari bilan bir xil.
+- Ortga qaytarish (kerak bo'lsa): `listing_images_entity_check` — ('vacancy', 'worker'), `claim_listing_image` — 0087 dagi
+  ko'rinish (avval `entity = 'master'` qatorlarini o'chirish kerak).
+
 ## 2026-11-24 · Chatda tayyor xat va qadalgan e'lon, shifokor/o'qituvchi savoli, ustalar qidiruvi (`feat/chat-intro-professions`)
 
 Ega (telefon skrinshotlari): "Chatda yozishni bossa — e'lon qadalib, «Assalomu alaykum»dan boshlanadigan rasmiy tayyor
