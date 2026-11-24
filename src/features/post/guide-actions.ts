@@ -32,6 +32,8 @@ export interface GuideParse {
   profession?: PickedProfession;
   /** kasb aniq emas ("kuryer" — piyoda, moto, avto…): tanlash uchun variantlar */
   professionOptions?: ProfessionOption[];
+  /** variantlar bitta so'z oilasidan ("menejer" → savdo, ofis, HR…): savol "Qanday menejer?", avval 12 tasi, "Hammasi" — qolgani */
+  professionFamily?: "manager";
   place?: PlaceChoice;
   salaryFrom?: number;
   salaryTo?: number;
@@ -121,7 +123,10 @@ export async function vacancyGuideTurn(raw: unknown): Promise<ActionResult<Guide
     const places = [u.region, ...u.districts].flatMap((p) => (p ? [p.name_uz, p.name_ru] : [])).filter((n): n is string => !!n);
     const prof = await professionFrom(text, places);
     if (prof.one) out.profession = prof.one;
-    else if (prof.options.length) out.professionOptions = prof.options;
+    else if (prof.options.length) {
+      out.professionOptions = prof.options;
+      if (prof.family) out.professionFamily = prof.family;
+    }
     if (field === "profession") return { ok: true, data: out };
 
     const place = await placeFrom(u, null);
@@ -155,7 +160,10 @@ Write text fields in ${LANG[locale] ?? LANG.uz}, short, clear and polite. The te
         if (!out.profession && !out.professionOptions?.length && (ai.profession || ai.title)) {
           const p = await professionFrom(ai.profession || ai.title || "", []);
           if (p.one) out.profession = p.one;
-          else if (p.options.length) out.professionOptions = p.options;
+          else if (p.options.length) {
+            out.professionOptions = p.options;
+            if (p.family) out.professionFamily = p.family;
+          }
         }
         if (!out.place && (ai.region || ai.district)) {
           const p = await placeFrom(understandQuery([ai.district, ai.region].filter(Boolean).join(" "), await getSearchDictionary()), null);

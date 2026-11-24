@@ -1397,7 +1397,8 @@
       "x_heights": "Balandlikda ish bormi?",
       "x_el_group": "Elektr xavfsizligi guruhi kerakmi?",
       "x_vaxta": "Ish vaxta usulidami?",
-      "x_sport_place": "Qayerda mashg'ulot o'tkazadi?"
+      "x_sport_place": "Qayerda mashg'ulot o'tkazadi?",
+      "profession_which": "Qanday {name} kerak?"
     },
     "other_profession": "Boshqa kasb",
     "profession_input": "Kasb nomini yozing",
@@ -1729,7 +1730,8 @@
         "line_school": "Sport maktabi yoki maktabda",
         "line_private": "Shaxsiy mashg'ulotlar o'tkazish"
       }
-    }
+    },
+    "all_options": "Hammasi · {count} ta"
   },
   "quick": {
     "remote": "Masofaviy (internet orqali)",
@@ -2449,5 +2451,8 @@
     "share": "Ulashish",
     "view": "E'lonni ko'rish",
     "link_copied": "Havola nusxalandi"
+  },
+  "family": {
+    "manager": "menejer"
   }
 }

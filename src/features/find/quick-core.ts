@@ -19,6 +19,7 @@ import { findJobs, findJobsByText, findJobsInCategory, findWorkers, getNodeInfo,
 import { familyOf, wordsRelatedTo, type FamilyCategory } from "./families";
 import type { JobCardData } from "./components/result-cards";
 import type { WorkerRow } from "./queries";
+import { fixManagerTypos } from "./manager-family";
 import { NO_FILTERS, type QuickAnswers, type QuickFilters, type QuickForm, type QuickList, type QuickMode, type QuickOption, type QuickResult, type QuickSaveState } from "./quick-types";
 
 /**
@@ -108,7 +109,7 @@ export async function prepareQuick(input: { text: string; mode: QuickMode; sessi
   // butun soha ("kuryer", "IT sohasida ish", "call-markaz") — bitta kasb emas, shu sohaning hamma vakansiyalari (faqat ish qidirishda)
   const family = input.mode === "jobs" && input.text ? familyOf(input.text, placeNames.flatMap((n) => n.split(/\s+/))) : null;
   const familyCat = family ? (await getCategories()).find((c) => c.slug === family) : undefined;
-  const profession = familyCat ? name(familyCat) : node ? name(node.trail.at(-1)!) : (textKeywords(input.text, placeNames, 1)[0] ?? "");
+  const profession = familyCat ? name(familyCat) : node ? name(node.trail.at(-1)!) : (textKeywords(fixManagerTypos(input.text), placeNames, 1)[0] ?? "");
 
   // hudud: matnda aytilgani, bo'lmasa — shu qurilmada eslab qolingani ("Yaqin atrofda" / bosh sahifadagi joy)
   let place = "all";

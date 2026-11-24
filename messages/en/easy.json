@@ -1397,7 +1397,8 @@
       "x_heights": "Is there work at height?",
       "x_el_group": "Electrical safety group required?",
       "x_vaxta": "Is it rotational work?",
-      "x_sport_place": "Where will they train people?"
+      "x_sport_place": "Where will they train people?",
+      "profession_which": "What kind of {name} do you need?"
     },
     "other_profession": "Another job",
     "profession_input": "Type the job",
@@ -1729,7 +1730,8 @@
         "line_school": "At a sports school or school",
         "line_private": "Private sessions"
       }
-    }
+    },
+    "all_options": "All · {count}"
   },
   "quick": {
     "remote": "Remote (online)",
@@ -2449,5 +2451,8 @@
     "share": "Share",
     "view": "View the ad",
     "link_copied": "Link copied"
+  },
+  "family": {
+    "manager": "manager"
   }
 }

@@ -255,6 +255,49 @@ test("«shifokor kerak», «doktor kerak» — turli shifokorlar variant (doktor
   }
 });
 
+test("«menejer kerak», «meneger kerak» — «Qanday menejer kerak?»: avval 12 tasi, «Hammasi» — barchasi; aniq aytilgani — darhol (ega, 2026-11-24)", async ({ page, context }) => {
+  await knownEmployer();
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  const opts = page.locator("[data-guide-choices] [data-guide-choice]");
+  // avval "meneger" tushunilmasdi, "menejer" esa tasodifiy "Tadbir tashkilotchisi (event menejer)" bo'lib qolardi
+  for (const text of ["menejer kerak", "meneger kerak", "Нужен менеджер"]) {
+    await page.goto("/post/vacancy?ai=1");
+    await ready(page);
+    await page.locator("[data-guide-sentence]").fill(text);
+    await page.locator("[data-guide-start]").click();
+    await expect(h1(page)).toHaveText("Qanday menejer kerak?");
+    // ko'p so'raladiganlari: 12 ta + «Hammasi» + «Boshqa kasb»
+    await expect(opts).toHaveCount(14);
+    await expect(opts.first()).toHaveText("Savdo menejeri");
+    for (const name of ["Ofis menejeri", "HR menejer", "Loyiha menejeri", "SMM menejer", "Restoran menejeri"]) await expect(opts.filter({ hasText: new RegExp(`^${name}$`) })).toHaveCount(1);
+    await expect(page.locator("[data-guide-choices]")).not.toContainText(/event/i);
+    await expect(choice(page, "all")).toHaveText(/^Hammasi · \d+ ta$/);
+    await expect(choice(page, "other")).toHaveText("Boshqa kasb");
+  }
+  await choice(page, "all").click();
+  await expect(choice(page, "all")).toHaveCount(0);
+  await expect(opts.filter({ hasText: /^Banket menejeri$/ })).toHaveCount(1);
+  await expect(opts.filter({ hasText: /event menejer/ })).toHaveCount(1);
+  expect(await opts.count()).toBeGreaterThan(40);
+  await opts.filter({ hasText: /^Ofis menejeri$/ }).click();
+  await expect(page.locator("[data-guide-understood]")).toContainText("Ofis menejeri");
+  await expect(h1(page)).not.toHaveText("Qanday menejer kerak?");
+
+  // qaysi menejerligi aytilgan — so'ralmaydi (imlo xatosi bilan ham)
+  for (const [text, name] of [
+    ["savdo menejeri kerak", "Savdo menejeri"],
+    ["restoranga meneger kerak", "Restoran menejeri"],
+  ] as const) {
+    await page.goto("/post/vacancy?ai=1");
+    await ready(page);
+    await page.locator("[data-guide-sentence]").fill(text);
+    await page.locator("[data-guide-start]").click();
+    await expect(page.locator("[data-guide-understood]")).toContainText(name);
+    await expect(h1(page)).not.toHaveText(/Qanday menejer kerak\?|Qaysi biri\?/);
+  }
+});
+
 test("«Boshqa kasb» — yozib topadi (xato bilan ham); oddiy formadagi 1-qadamda ham kirish bor", async ({ page, context }) => {
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");

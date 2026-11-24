@@ -20,6 +20,7 @@ import type { JobCardData } from "./components/result-cards";
 import { nameFit } from "./post-intent";
 import { detectIntent, professionCandidates, withoutPlaceOnly, type FindMode } from "./intent";
 import { bestTypoMatch, type TypoEntry } from "./typo";
+import { chooseManager, mentionsManager, onlyManagerWords, type ManagerChoice, type ManagerNode } from "./manager-family";
 import { EMPLOYER_KIND_TYPE, hasSectionFilter, type FindParams } from "./params";
 
 export const PAGE_SIZE = 20;
@@ -60,7 +61,7 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
   // ish kerak" — guruh o'rniga "Katta o'qituvchi" tanlanib, "Ўқитувчи" e'loni chiqmasdi)
   const bare = (s: string) => normalizeText(s).replace(/['‘’ʻʼ`´]/g, "");
   const said = [...new Set(candidates.flatMap((c) => bare(c).split(" ")))];
-  let best: { id: string; score: number } | null = null;
+  let best: { id: string; score: number; from: string } | null = null;
   for (const { c, hits } of results) {
     const cn = bare(c);
     for (const h of hits) {
@@ -79,13 +80,19 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
         return f.covered * 0.8 - f.extra * 0.4;
       }));
       const score = h.score + c.split(" ").length * 0.3 - h.depth * 0.01 + (ownName ? 0.5 : 0) + fit;
-      if (!best || score > best.score) best = { id: h.id, score };
+      if (!best || score > best.score) best = { id: h.id, score, from: c };
     }
   }
+  // "menejer kerak" — 77 ta menejerdan tasodifiy biri (avval "event menejer") emas: aytilgan bo'lsa — o'sha menejer,
+  // aytilmagan bo'lsa — kasbsiz (qidiruv "menejer" so'zi bo'yicha barcha e'lonlardan; e'lon berishda — "Qanday menejer?")
+  const manager = await managerChoice(q, candidates);
+  if (manager && (!best || manager.ids.has(best.id) || onlyManagerWords(best.from))) {
+    best = manager.pick ? { id: manager.pick.id, score: 0, from: "" } : null;
+  }
   // lug'atda yo'q — imlo xatosi bo'lishi mumkin ("oshpz", "kasir"): bitta-ikkita harf farqi bilan eng yaqin kasb
-  if (!best) {
+  if (!best && !manager) {
     const id = await professionByTypo(q, candidates, { groups: true });
-    if (id) best = { id, score: 0 };
+    if (id) best = { id, score: 0, from: "" };
   }
   return {
     mode,
@@ -99,6 +106,44 @@ export async function resolveFindQuery(q: string): Promise<ResolvedQuery> {
     noExperience: u.noExperience,
     experienceMonths: u.experienceMonths,
   };
+}
+
+/** "Menejer" oilasi: nomida "menejer" / "менеджер" bor barcha faol tanlanadigan kasblar (kuniga bir marta yangilanadi) */
+const managerFamilyCached = unstable_cache(
+  async (): Promise<ManagerNode[]> => {
+    const { data, error } = await anon()
+      .from("profession_nodes")
+      .select("id, slug, name_uz, name_ru, name_en, aliases")
+      .eq("is_active", true)
+      .eq("selectable", true)
+      .or("name_uz.ilike.*menejer*,name_ru.ilike.*менеджер*")
+      .order("name_uz")
+      .limit(400);
+    // xato keshlanmaydi — chaqiruvchi avvalgidek (oilasiz) davom etadi
+    if (error) throw new Error(`manager_family:${error.code ?? ""}`);
+    return (data ?? []).filter((n) => !isProhibitedProfession(n));
+  },
+  ["profession-manager-family-v1"],
+  { revalidate: 86_400 },
+);
+export async function managerFamily(): Promise<ManagerNode[]> {
+  try {
+    return await managerFamilyCached();
+  } catch (error) {
+    console.warn("[find] manager family", error instanceof Error ? error.message : error);
+    return [];
+  }
+}
+
+/**
+ * Gapda "menejer" ("meneger", "менеджер", "manager") bo'lsa — aniq aytilgan menejer yoki variantlar (manager-family.ts);
+ * aks holda (yoki ma'lumotnoma ochilmasa) — null. `candidates` — professionCandidates (hudud so'zlarisiz).
+ */
+export async function managerChoice(text: string, candidates: string[]): Promise<(ManagerChoice<ManagerNode> & { ids: Set<string> }) | null> {
+  if (!mentionsManager(text)) return null;
+  const nodes = await managerFamily();
+  if (!nodes.length) return null;
+  return { ...chooseManager(nodes, candidates.filter((c) => !c.includes(" "))), ids: new Set(nodes.map((n) => n.id)) };
 }
 
 /**

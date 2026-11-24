@@ -55,6 +55,8 @@ export interface ChatTurnResult {
   profession?: PickedProfession;
   /** kasb aniq emas ("kuryer" — piyoda, moto, avto…): tanlash uchun variantlar */
   professionOptions?: ProfessionOption[];
+  /** variantlar bitta so'z oilasidan ("menejer" → savdo, ofis, HR…): savol "Qanday menejer?", avval 12 tasi, "Hammasi" — qolgani */
+  professionFamily?: "manager";
   place?: PlaceChoice;
   experience?: SimpleExperience;
   schedule?: ChatSchedule;
@@ -130,7 +132,10 @@ export async function listingChatTurn(
     if (field === "start" || field === "profession") {
       const prof = await professionFrom(text, places);
       if (prof.one) out.profession = prof.one;
-      else if (prof.options.length) out.professionOptions = prof.options;
+      else if (prof.options.length) {
+        out.professionOptions = prof.options;
+        if (prof.family) out.professionFamily = prof.family;
+      }
     }
     if (field === "start" || field === "place") {
       const p = await placeFrom(u, field === "place" ? regionId : null);

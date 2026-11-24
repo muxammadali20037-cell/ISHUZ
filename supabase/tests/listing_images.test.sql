@@ -27,6 +27,24 @@ select pg_temp.ok(not exists (select 1 from public.listing_images where entity_i
 update public.listing_images set status = 'failed', attempts = 3 where entity_id = '87000000-0000-0000-0000-0000000000a1';
 select pg_temp.ok(public.claim_listing_image('vacancy', '87000000-0000-0000-0000-0000000000a1', '87000000-0000-0000-0000-000000000002', 'p', 'm') = 'too_many', '3 urinishdan keyin: too_many');
 
+-- 0091 · admin sinov uchun shaxsiy chegaraga tushmaydi; umumiy sutkalik chegara esa unga ham amal qiladi
+insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
+  ('87000000-0000-0000-0000-000000000003', '+998908700003', now(), '{"first_name":"Admin"}');
+insert into public.admin_users (profile_id, role) values ('87000000-0000-0000-0000-000000000003', 'admin');
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b1', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'ok', 'admin: 1-rasm ok');
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b2', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'ok', 'admin: 2-rasm ok');
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b3', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'ok', 'admin: 3-rasm ham ok (shaxsiy chegara yo''q)');
+update public.listing_images set status = 'failed', attempts = 3 where entity_id = '87000000-0000-0000-0000-0000000000b1';
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b1', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'ok', 'admin: 3 urinishdan keyin ham qayta yarata oladi');
+update public.admin_users set is_active = false where profile_id = '87000000-0000-0000-0000-000000000003';
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b4', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'ok', 'o''chirilgan admin: 1-rasm ok');
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b6', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'ok', 'o''chirilgan admin: 2-rasm ok');
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b7', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'user_limit', 'o''chirilgan admin: oddiy foydalanuvchidek user_limit');
+update public.app_settings set value = '0'::jsonb where key = 'listing_images_daily_limit';
+update public.admin_users set is_active = true where profile_id = '87000000-0000-0000-0000-000000000003';
+select pg_temp.ok(public.claim_listing_image('worker', '87000000-0000-0000-0000-0000000000b5', '87000000-0000-0000-0000-000000000003', 'p', 'm') = 'daily_limit', 'admin ham umumiy daily_limit ga bo''ysunadi');
+delete from public.listing_images where owner_profile_id = '87000000-0000-0000-0000-000000000003';
+
 -- o'qish: mehmon — faqat tayyor; egasi — o'zining hammasi; begona — faqat tayyor
 update public.listing_images set status = 'ready', image_url = 'https://x/a.jpg' where entity_id = '87000000-0000-0000-0000-0000000000a2';
 set local role anon;

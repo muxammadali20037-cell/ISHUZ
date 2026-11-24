@@ -29,6 +29,9 @@ import { SIMPLE_EXPERIENCE, type SimpleExperience } from "../types";
 type Msg = { id: number; role: "bot" | "you"; text: string };
 type Chip = { key: string; label: string; run: () => void };
 
+/** Kasb variantlari uzun bo'lsa ("menejer" — 77 ta) birinchi ko'rinadigani; qolgani "Hammasi" tugmasi ortida */
+const OPTIONS_FIRST = 12;
+
 const WHOLE =
   /(butun|бутун|весь|вся|всё|whole|all\b|farqi\s+yo|фарқи\s+йўқ|не\s+важно)/iu;
 
@@ -61,6 +64,8 @@ export function ListingChat({
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [c, setC] = useState<ChatCollected>(EMPTY_COLLECTED);
   const [options, setOptions] = useState<ProfessionOption[]>([]);
+  /** "menejer" — 77 ta variant: avval 12 tasi, "Hammasi" — qolgani (ega, 2026-11-24) */
+  const [allOptions, setAllOptions] = useState(false);
   const [typing, setTyping] = useState(false);
   const [text, setText] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -267,6 +272,9 @@ export function ListingChat({
       }
       const r = res.data;
       setOptions(r.professionOptions ?? []);
+      setAllOptions(false);
+      // "menejer" — "Aynan qanday menejersiz?" (umumiy "Aniqrog'i qaysi biri?" o'rniga)
+      const pickQuestion = r.professionFamily ? t("easy.post_ai.which", { name: t(`easy.family.${r.professionFamily}`) }) : t("easy.aichat.q_profession_pick");
       setTyping(false);
       const n = apply(c, r);
       if (f === null) {
@@ -276,13 +284,13 @@ export function ListingChat({
           n,
           [t("easy.aichat.hello")],
           !n.profession && r.professionOptions?.length
-            ? t("easy.aichat.q_profession_pick")
+            ? pickQuestion
             : undefined,
         );
         return;
       }
       if (f === "profession" && !n.profession && r.professionOptions?.length) {
-        say("bot", t("easy.aichat.q_profession_pick"));
+        say("bot", pickQuestion);
         return;
       }
       if (!r.understood) {
@@ -328,13 +336,23 @@ export function ListingChat({
 
   const chips: Chip[] = (() => {
     if (!started || pending) return [];
-    if (field === "profession" && options.length)
+    if (field === "profession" && options.length) {
+      const cut = !allOptions && options.length > OPTIONS_FIRST + 1;
       return [
-        ...options.map((o) => ({
+        ...(cut ? options.slice(0, OPTIONS_FIRST) : options).map((o) => ({
           key: o.id,
           label: name(o),
           run: () => pickProfession(o),
         })),
+        ...(cut
+          ? [
+              {
+                key: "all",
+                label: t("easy.vguide.all_options", { count: options.length }),
+                run: () => setAllOptions(true),
+              },
+            ]
+          : []),
         {
           key: "other",
           label: t("easy.aichat.other_profession"),
@@ -345,6 +363,7 @@ export function ListingChat({
           ),
         },
       ];
+    }
     if (field === "region")
       return regions.map((r) => ({
         key: r.id,

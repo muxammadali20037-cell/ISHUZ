@@ -20,6 +20,7 @@ import { findJobs, findJobsByText, findWorkers } from "@/features/find/queries";
 import type { SearchPreview } from "@/features/find/components/newest-preview";
 import type { JobCardData, WorkerCardData } from "@/features/find/components/result-cards";
 import { isCityRegion } from "@/lib/geo/city";
+import { fixManagerTypos } from "@/features/find/manager-family";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -49,7 +50,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
       p: r.nodeId,
       region: params.region ?? (r.remote ? "remote" : r.regionSlug),
       district: params.district ?? r.districtId,
-      q: r.nodeId ? "" : params.q,
+      // "meneger" — sarlavhalarda "menejer" bo'yicha qidiriladi (77 ta menejerdan biri taxmin qilinmaydi)
+      q: r.nodeId ? "" : fixManagerTypos(params.q),
       salary: params.salary ?? r.salary,
       schedule: params.schedule ?? r.schedule,
       noexp: params.noexp || r.noexp,

@@ -4,6 +4,7 @@ import { unstable_cache } from "next/cache";
 import { createPublicClient, REFERENCE_CACHE } from "@/lib/supabase/public";
 import type { ProfessionNode, ProfessionSearchHit, TrailItem } from "./types";
 import { isProhibitedProfession } from "@/features/moderation/policy";
+import { fixManagerTypos } from "@/features/find/manager-family";
 
 /**
  * Kasblar daraxti — ochiq ma'lumot. Cookie'siz anon client: javoblar CDN'da keshlanishi mumkin.
@@ -47,7 +48,8 @@ export async function getProfessionChildren(opts: { categoryId?: string | null; 
 }
 
 export async function searchProfessions(query: string, categoryId?: string | null, limit = 20): Promise<ProfessionSearchHit[]> {
-  const q = query.trim().slice(0, 80);
+  // "meneger" — bazadagi "menejer" (ega, 2026-11-24: "meneger degan kasb bormi" — hech narsa topilmasdi)
+  const q = fixManagerTypos(query.trim().slice(0, 80));
   if (q.length < 2) return [];
   const { data, error } = await anon().rpc("search_profession_nodes", { p_query: q, p_category_id: categoryId ?? undefined, p_limit: limit });
   if (error) {
