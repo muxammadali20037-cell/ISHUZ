@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { revalidatePath, updateTag } from "next/cache";
+import { after } from "next/server";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -34,6 +35,7 @@ import { getT } from "@/lib/i18n/server";
 import { getDistricts, getRegions } from "@/lib/reference";
 import { checkStoredPhotos } from "@/features/moderation/service";
 import { attachDraftImage } from "@/features/listing-image/server";
+import { postListingNow } from "@/features/telegram-channel/autopost";
 
 /**
  * "Universal ustalar" — server amallari. Yozish faqat egasi nomidan (RLS + triggerlar), holat o'tishlari bazada tekshiriladi;
@@ -259,6 +261,9 @@ export async function publishMasterQuick(
   // AI rasm (bo'lsa): faqat shu odamning tayyor qoralamasi; xato e'lonni to'xtatmaydi
   if (v.imageDraft) await attachDraftImage("master", v.imageDraft, id, session.userId);
   revalidateMasters();
+  // darhol katalogda bo'lsa — kanalga ham darhol (ishchi e'lonlari kanaliga; ega, 2026-11-24). Tekshiruvdagisi — tasdiqlangach
+  // oddiy navbat bilan (fon qadami: published_at oxirgi 24 soatda)
+  if (status === "active") after(() => postListingNow("master", id));
   return { ok: true, data: { id, status, categorySlug: category.slug } };
 }
 

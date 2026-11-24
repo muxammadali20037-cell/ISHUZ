@@ -50,7 +50,9 @@ function builder(table: string) {
   return api;
 }
 
-vi.mock("@/lib/supabase/admin", () => ({ createAdminClient: () => ({ from: builder }) }));
+vi.mock("@/lib/supabase/admin", () => ({
+  createAdminClient: () => ({ from: builder, storage: { from: (b: string) => ({ getPublicUrl: (p: string) => ({ data: { publicUrl: `https://sb.test/${b}/${p}` } }) }) } }),
+}));
 const env = vi.hoisted(() => ({ TELEGRAM_BOT_TOKEN: "x" }) as Record<string, string | undefined>);
 vi.mock("@/lib/env", () => ({ getServerEnv: () => env }));
 vi.mock("@/lib/telegram/bot", () => ({ miniAppBaseUrl: () => "https://ishuz.vercel.app" }));
@@ -98,6 +100,29 @@ function worker(id: string, over: Row = {}): Row {
     region: { name_uz: "Samarqand viloyati" },
     district: null,
     prefs: { salary_expected: 5_000_000, salary_min: null, salary_type: "monthly", schedules: ["5_2"] },
+    owner: { is_blocked: false },
+    ...over,
+  };
+}
+
+function master(id: string, over: Row = {}): Row {
+  return {
+    id,
+    slug: `santexnik-${id}`,
+    title: "Santexnika ishlari",
+    services: ["Kran almashtirish"],
+    description: "Har kuni ishlayman",
+    experience_years: 4,
+    price_from: null,
+    price_to: null,
+    price_negotiable: true,
+    photos: [],
+    status: "active",
+    is_demo: false,
+    published_at: now(),
+    category: { name_uz: "Santexnik" },
+    region: { name_uz: "Toshkent shahri" },
+    district: { name_uz: "Chilonzor" },
     owner: { is_blocked: false },
     ...over,
   };
@@ -246,6 +271,51 @@ describe("kanalga avtomatik e'lon", () => {
     tables.vacancies = [vacancy("a")];
     await runChannelAutopost();
     expect(send.mock.calls[0]![0]).toMatchObject({ button: { text: "Ariza qoldirish", url: "https://t.me/ishberuvchi_bot?startapp=j_v-a" }, photo: "https://ishuz.vercel.app/api/promo/vacancy/v-a?f=post" });
+  });
+});
+
+describe("ustalar — ishchi e'lonlari kanaliga (ega, 2026-11-24)", () => {
+  it("faol, haqiqiy usta e'loni — ishchilar kanaliga bir marta; demo, tekshiruvdagi, eski va bloklangan muallifniki — yo'q", async () => {
+    tables.app_settings = [{ key: "channel_autopost", value: { jobs: true, workers: true, workersChat: "@ishchilar" } }];
+    tables.master_listings = [
+      master("m"),
+      master("demo", { is_demo: true }),
+      master("rev", { status: "pending_review" }),
+      master("old", { published_at: old }),
+      master("blk", { owner: { is_blocked: true } }),
+    ];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 1, failed: 0 });
+    const call = send.mock.calls[0]![0] as { chatId: string; html: string; button: { url: string }; photo?: string };
+    expect(call.chatId).toBe("@ishchilar");
+    expect(call.html).toContain("🛠 Universal ustalar xizmati");
+    expect(call.html).toContain("<b>Santexnik</b>");
+    expect(call.html).toContain("📍 Chilonzor, Toshkent shahri");
+    expect(call.button.url).toBe("https://ishuz.vercel.app/ustalar/santexnik-m#contact");
+    // rasm yo'q — rasmsiz xabar
+    expect(call.photo).toBeUndefined();
+    expect(tables.channel_posts).toEqual([expect.objectContaining({ entity_type: "master", entity_id: "m", chat_id: "@ishchilar", status: "posted" })]);
+    send.mockClear();
+    expect((await runChannelAutopost()).posted).toBe(0);
+    expect(send).not.toHaveBeenCalled();
+  });
+
+  it("rasm: e'lon rasmi (AI) bo'lsa — u, bo'lmasa birinchi ish namunasi", async () => {
+    tables.master_listings = [master("a", { photos: ["u1/ish.jpg"] }), master("b", { photos: ["u2/ish.jpg"] })];
+    tables.listing_images = [{ entity: "master", entity_id: "a", status: "ready", image_url: "https://img.test/a.png" }];
+    await runChannelAutopost();
+    const photos = Object.fromEntries(send.mock.calls.map(([x]) => [(x as { button: { url: string } }).button.url.split("/").pop(), (x as { photo?: string }).photo]));
+    expect(photos).toEqual({ "santexnik-a#contact": "https://img.test/a.png", "santexnik-b#contact": "https://sb.test/vacancy-photos/u2/ish.jpg" });
+  });
+
+  it("ishchilar kanali o'chirilgan — ustalar ham yuborilmaydi; joylangan zahoti (postListingNow) — darhol", async () => {
+    tables.master_listings = [master("m")];
+    tables.app_settings = [{ key: "channel_autopost", value: { jobs: true, workers: false } }];
+    expect(await postListingNow("master", "m")).toMatchObject({ posted: 0 });
+    expect((await runChannelAutopost()).posted).toBe(0);
+    tables.app_settings = [{ key: "channel_autopost", value: { jobs: true, workers: true } }];
+    expect(await postListingNow("master", "m")).toMatchObject({ posted: 1 });
+    expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main" });
+    expect((await runChannelAutopost()).posted).toBe(0);
   });
 });
 

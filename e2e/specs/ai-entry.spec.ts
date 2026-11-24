@@ -26,7 +26,7 @@ test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; /ai — alohi
   }
   // planshetda: bo'limlar belgi bilan, "Universal ustalar" ham shu qatorda
   await page.setViewportSize({ width: 800, height: 900 });
-  await expect(nav.getByRole("link", { name: "Universal ustalar" })).toBeVisible();
+  await expect(nav.getByRole("link", { name: "Universal ustalar xizmati" })).toBeVisible();
   await expect(nav.getByRole("link", { name: "Qidiruv" })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
   // bosh sahifa — chat (2026-11-21): ishchi rejimida ustalar havolasi yo'q (ish izlovchiga kerak emas), menyuda bor

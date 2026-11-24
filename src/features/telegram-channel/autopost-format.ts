@@ -54,6 +54,25 @@ export interface WorkerPostData {
   schedules: string[];
 }
 
+/** Usta e'loni (ega, 2026-11-24: "ustalar e'loni ham kanalga — ishchi e'lonlari kanaliga") */
+export interface MasterPostData {
+  slug: string;
+  /** xizmat kategoriyasi ("Santexnik") */
+  category: string;
+  /** "other" — "Boshqa xizmatlar": sarlavhada ustaning o'z yozgani ("Tokar") */
+  categorySlug?: string | null;
+  title: string;
+  services: string[];
+  place: string | null;
+  experienceYears: number | null;
+  priceFrom: number | null;
+  priceTo: number | null;
+  negotiable: boolean;
+  description?: string | null;
+  /** e'lon rasmi (AI) yoki birinchi ish namunasi — to'liq manzil; yo'q — rasmsiz xabar */
+  photo?: string | null;
+}
+
 export interface ChannelPost {
   /** to'liq matn — rasmsiz xabar (yoki rasm ketmasa) */
   html: string;
@@ -175,5 +194,47 @@ export function workerPost(d: WorkerPostData, t: T, base: string, link: LinkFn =
     // rasm — vakansiyadagidek (ega, 2026-11-17: "e'lon joylandimi — shunaqa rasm bo'lib kelsin"): kasbi, tajriba, joyi, maosh
     photo: `${base}/api/promo/worker/${d.id}`,
     caption: html.length <= CAPTION_MAX ? html : `<b>${escapeHtml(sanitizeLine(d.profession, 80))}</b>`,
+  };
+}
+
+/**
+ * Usta e'loni: turi ("🛠 Usta xizmat taklif qiladi"), kategoriya, sarlavha, xizmatlar, joy, tajriba, narx, tavsif. Ism va
+ * telefon YO'Q — ishchi e'lonidagidek (ega, 2026-11-22: raqam saytda ochiladi): "📞 Bog'lanish" — saytdagi e'longa.
+ * Rasm — e'lon rasmi (AI) yoki ustaning birinchi ish namunasi; ikkalasi ham yo'q — rasmsiz xabar.
+ */
+export function masterPost(d: MasterPostData, t: T, base: string, link: LinkFn = (p) => `${base}${p}`): ChannelPost {
+  const other = d.categorySlug === "other";
+  const title = sanitizeLine(d.title, 100);
+  // "Boshqa xizmatlar" — umumiy nom; sarlavha — ustaning o'z yozgani ("Tokar")
+  const category = other && title ? title : sanitizeLine(d.category, 80);
+  const services = sanitizeLine(d.services.map((x) => x.trim()).filter(Boolean).join(", "), 200);
+  const price =
+    d.priceFrom || d.priceTo
+      ? formatSalaryWithPeriod({ from: d.priceFrom, to: d.priceTo, type: null, negotiable: false }, "uz", salaryLabels(t), () => "")
+      : d.negotiable
+        ? t("bot.channel.negotiable")
+        : null;
+  const head = [
+    escapeHtml(t("bot.channel.master_tag")),
+    "",
+    `<b>${escapeHtml(category)}</b>`,
+    title && title.toLowerCase() !== category.toLowerCase() ? `<i>${escapeHtml(title)}</i>` : null,
+    services && services.toLowerCase() !== category.toLowerCase() ? `🔧 ${escapeHtml(services)}` : null,
+    d.place ? `📍 ${escapeHtml(d.place)}` : null,
+    d.experienceYears && d.experienceYears > 0 ? `🧰 ${escapeHtml(t("bot.channel.master_experience", { value: d.experienceYears }))}` : null,
+    price ? `💰 ${escapeHtml(t("bot.channel.master_price", { value: price }))}` : null,
+  ].filter((l) => l !== null);
+  const tail = ["", `📞 ${escapeHtml(t("bot.channel.contact_on_site"))}`];
+  const used = [...head, ...tail].join("\n").length + 2;
+  const room = Math.floor((CAPTION_MAX - used) / 1.2);
+  // avtomatik tavsif ("Santexnik: Kran almashtirish. Hudud: …" — usta o'zi yozmagan) — takror, tashlanadi
+  const auto = !!d.description && [d.category, category].some((c) => d.description!.trim().toLowerCase().startsWith(`${c.toLowerCase()}:`));
+  const desc = room >= 40 && !auto ? sanitizeText(d.description, Math.min(room, 500), 6) : "";
+  const html = [...head, ...(desc ? ["", escapeHtml(desc)] : []), ...tail].join("\n");
+  const url = link(`/ustalar/${encodeURIComponent(d.slug)}`);
+  return {
+    html,
+    button: { text: t("bot.channel.contact"), url: url.startsWith(base) ? `${url}#contact` : url },
+    ...(d.photo ? { photo: d.photo, caption: html.length <= CAPTION_MAX ? html : `<b>${escapeHtml(category)}</b>` } : {}),
   };
 }

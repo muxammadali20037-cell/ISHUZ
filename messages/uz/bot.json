@@ -98,7 +98,10 @@
     "contact": "📞 Bog'lanish",
     "contact_on_site": "Raqam — «Bog'lanish» tugmasi orqali saytda",
     "job_tag": "💼 Ish beruvchi ishchi qidiryapti",
-    "worker_tag": "👤 Ishchi ish qidiryapti"
+    "worker_tag": "👤 Ishchi ish qidiryapti",
+    "master_tag": "🛠 Universal ustalar xizmati",
+    "master_experience": "Tajriba: {value} yil",
+    "master_price": "Narxi: {value}"
   },
   "owner_post": {
     "vacancy": "✅ <b>E'loningiz joylandi!</b>\n{title} — endi qidiruvda ko'rinadi, ish izlovchilar ko'radi.",

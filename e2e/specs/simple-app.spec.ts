@@ -179,7 +179,7 @@ test("«Universal ustalar» — Profilda (chat juda sodda; ega, 2026-11-21: «Pr
   await page.goto("/cabinet");
   await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
   const row = page.locator("main [data-cabinet-masters]");
-  await expect(row).toContainText("Universal ustalar");
+  await expect(row).toContainText("Universal ustalar xizmati");
   await row.click();
   await expect(page).toHaveURL(/\/ustalar$/);
 });

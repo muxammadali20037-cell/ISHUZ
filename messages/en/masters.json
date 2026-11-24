@@ -1,5 +1,5 @@
 {
-  "name": "Universal masters",
+  "name": "Universal masters service",
   "short": "Masters",
   "tagline": "Reliable masters for any service",
   "back": "Back to Ish topdim",
@@ -9,7 +9,7 @@
   "search_placeholder": "Find a handyman…",
   "search": "Search",
   "search_label": "Find a handyman",
-  "meta_title": "Universal masters — plumber, electrician, air conditioner technician and other services",
+  "meta_title": "Universal masters service — plumber, electrician, air conditioner technician and other services",
   "meta_description": "Masters across Tashkent and Uzbekistan: air conditioners, plumbing, electrics, appliances, repairs, moving. Listings appear after review.",
   "badges": {
     "fast": "Fast service",
@@ -198,7 +198,7 @@
     "listing_of": "Listing: {title}"
   },
   "admin": {
-    "title": "Universal masters — moderation",
+    "title": "Universal masters service — moderation",
     "pending": "Pending",
     "all": "All",
     "approve": "Approve",

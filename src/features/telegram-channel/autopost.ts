@@ -8,7 +8,7 @@ import { miniAppLink } from "@/lib/telegram/start-param";
 import { channelChatId, editChannelPhoto, sendChannelMessage } from "./channel";
 import { channelChatIdFrom } from "./media";
 import { AUTOPOST_KEY, parseAutopost } from "./autopost-settings";
-import { sanitizeLine, vacancyPost, workerPost, type ChannelPost, type LinkFn } from "./autopost-format";
+import { masterPost, sanitizeLine, vacancyPost, workerPost, type ChannelPost, type LinkFn } from "./autopost-format";
 
 /**
  * Kanal postidagi tugma havolasi. Kanalda web_app tugmasi ishlamaydi, shuning uchun BotFather'da asosiy Mini App yoqilgan
@@ -42,7 +42,8 @@ const MAX_ATTEMPTS = 3;
 const STALE_CLAIM_MS = 10 * 60 * 1000;
 
 type Db = ReturnType<typeof createAdminClient>;
-type Entity = "vacancy" | "worker";
+/** master — usta e'loni (0090; ega, 2026-11-24: "ishchi e'lonlari kanaliga") */
+type Entity = "vacancy" | "worker" | "master";
 
 const one = <T,>(x: T | T[] | null | undefined): T | null => (Array.isArray(x) ? (x[0] ?? null) : (x ?? null));
 const join = (...xs: (string | null | undefined)[]) => xs.filter((x): x is string => !!x).join(", ") || null;
@@ -247,10 +248,68 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
   return out;
 }
 
+/**
+ * Usta e'lonlari (ega, 2026-11-24): faqat faol, haqiqiy (demo emas), egasi bloklanmagan; oxirgi 24 soatda chiqqanlari.
+ * Rasm — e'lon rasmi (AI, 0089) yoki birinchi ish namunasi; ism va telefon yo'q (raqam saytda).
+ */
+async function masterPosts(db: Db, ids: string[] | null, since: string): Promise<Map<string, ChannelPost>> {
+  let q = db
+    .from("master_listings")
+    .select(
+      "id, slug, title, services, description, experience_years, price_from, price_to, price_negotiable, photos, category:master_categories(slug, name_uz), region:regions(name_uz), district:districts(name_uz), owner:profiles!master_listings_owner_profile_id_fkey(is_blocked)",
+    )
+    .eq("status", "active")
+    .eq("is_demo", false);
+  q = ids ? q.in("id", ids) : q.gte("published_at", since).order("published_at", { ascending: false }).limit(50);
+  const { data, error } = await q;
+  if (error) throw new Error(error.message);
+  const rows = (data ?? []).filter((m) => !one(m.owner)?.is_blocked && one(m.category)?.name_uz);
+  const { data: imgs } = rows.length
+    ? await db.from("listing_images").select("entity_id, image_url").eq("entity", "master").eq("status", "ready").in("entity_id", rows.map((m) => m.id))
+    : { data: [] };
+  const cover = new Map((imgs ?? []).filter((i) => i.image_url).map((i) => [i.entity_id, i.image_url as string]));
+  const t = makeT("uz");
+  const base = miniAppBaseUrl();
+  const link = channelLink(base);
+  const out = new Map<string, ChannelPost>();
+  for (const m of rows) {
+    out.set(
+      m.id,
+      masterPost(
+        {
+          slug: m.slug,
+          category: one(m.category)!.name_uz,
+          categorySlug: one(m.category)?.slug ?? null,
+          title: m.title,
+          services: m.services ?? [],
+          place: join(one(m.district)?.name_uz, one(m.region)?.name_uz),
+          experienceYears: m.experience_years,
+          priceFrom: m.price_from,
+          priceTo: m.price_to,
+          negotiable: m.price_negotiable,
+          description: m.description,
+          // ish namunasi — ochiq bucket (vacancy-photos), manzil shu klient orqali
+          photo: cover.get(m.id) ?? (m.photos?.[0] ? db.storage.from("vacancy-photos").getPublicUrl(m.photos[0]).data.publicUrl : null),
+        },
+        t,
+        base,
+        link,
+      ),
+    );
+  }
+  return out;
+}
+
+const BUILDERS: Record<Entity, (db: Db, ids: string[] | null, since: string) => Promise<Map<string, ChannelPost>>> = {
+  vacancy: vacancyPosts,
+  worker: workerPosts,
+  master: masterPosts,
+};
+
 /** Bir turdagi e'lonlar: avval qayta urinishlar, keyin yangilari; har birini "band qilib" (unique) yuboradi */
 async function runEntity(db: Db, entity: Entity, chatId: string, budget: number, res: AutopostResult): Promise<number> {
   const since = new Date(Date.now() - FRESH_MS).toISOString();
-  const build = entity === "vacancy" ? vacancyPosts : workerPosts;
+  const build = BUILDERS[entity];
 
   // 1) qayta urinish: xato bo'lgan yoki "band qilingan"u yuborilmay qolgan (jarayon uzilgan) yozuvlar
   const { data: retry } = await db
@@ -374,11 +433,12 @@ export async function postListingNow(entity: Entity, id: string): Promise<Autopo
     const db = createAdminClient();
     const { data: row } = await db.from("app_settings").select("value").eq("key", AUTOPOST_KEY).maybeSingle();
     const cfg = parseAutopost(row?.value);
+    // ustalar — ishchi e'lonlari kanaliga (o'sha sozlama)
     const on = entity === "vacancy" ? cfg.jobs : cfg.workers;
     const chatId = on ? (channelChatIdFrom(entity === "vacancy" ? cfg.jobsChat : cfg.workersChat) ?? channelChatId()) : null;
     if (!chatId) return res;
     const since = new Date(Date.now() - FRESH_MS).toISOString();
-    const post = (await (entity === "vacancy" ? vacancyPosts : workerPosts)(db, [id], since)).get(id);
+    const post = (await BUILDERS[entity](db, [id], since)).get(id);
     if (!post) return res;
     const rowId = await claimSlot(db, entity, id, chatId);
     if (rowId) await sendClaimed(db, rowId, chatId, post, res);
@@ -401,7 +461,7 @@ export async function refreshChannelPhoto(entity: Entity, id: string, version: s
     const targets = (rows ?? []).filter((r) => r.message_id && !r.chat_id.startsWith("dm:"));
     if (!targets.length) return 0;
     const since = new Date(Date.now() - FRESH_MS).toISOString();
-    const post = (await (entity === "vacancy" ? vacancyPosts : workerPosts)(db, [id], since)).get(id);
+    const post = (await BUILDERS[entity](db, [id], since)).get(id);
     if (!post?.photo) return 0;
     const photo = `${post.photo}${post.photo.includes("?") ? "&" : "?"}img=${encodeURIComponent(version)}`;
     let done = 0;
@@ -415,7 +475,7 @@ export async function refreshChannelPhoto(entity: Entity, id: string, version: s
   }
 }
 
-/** Bir qadam: vakansiyalar va ishchi e'lonlari (sozlamaga ko'ra). Hech qachon xato otmaydi */
+/** Bir qadam: vakansiyalar, ishchi e'lonlari va ustalar (ishchilar kanaliga; sozlamaga ko'ra). Hech qachon xato otmaydi */
 export async function runChannelAutopost(): Promise<AutopostResult> {
   const res: AutopostResult = { posted: 0, failed: 0 };
   if (!getServerEnv().TELEGRAM_BOT_TOKEN || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res;
@@ -428,7 +488,9 @@ export async function runChannelAutopost(): Promise<AutopostResult> {
     const jobsChat = channelChatIdFrom(cfg.jobsChat) ?? main;
     if (cfg.jobs && jobsChat) budget -= await runEntity(db, "vacancy", jobsChat, budget, res);
     const workersChat = channelChatIdFrom(cfg.workersChat) ?? main;
-    if (cfg.workers && workersChat && budget > 0 && !res.stopped) await runEntity(db, "worker", workersChat, budget, res);
+    if (cfg.workers && workersChat && budget > 0 && !res.stopped) budget -= await runEntity(db, "worker", workersChat, budget, res);
+    // ustalar (ega, 2026-11-24) — ishchi e'lonlari kanaliga
+    if (cfg.workers && workersChat && budget > 0 && !res.stopped) await runEntity(db, "master", workersChat, budget, res);
     // e'lon egalariga — kanal sozlamasidan qat'i nazar
     await runOwnerNotices(db, res);
   } catch (e) {
