@@ -1518,13 +1518,7 @@
     "hint": "Type the number yourself — this exact number appears in the listing."
   },
   "aicard": {
-    "open": "See the full ad",
-    "close": "Hide",
-    "loading": "Loading…",
-    "load_error": "Couldn't load the details.",
-    "phone": "Phone",
-    "about": "About the job",
-    "open_page": "Open the ad page"
+    "open": "View"
   },
   "tour": {
     "label": "Getting to know the app",

@@ -77,8 +77,8 @@ test("matn → so'rovnoma (kasb, hudud oldindan to'ldirilgan; maosh so'ralmaydi)
   await expect(main(page).locator("[data-ai-reply], [data-ai-trace], [data-ai-suggestions]")).toHaveCount(0);
 });
 
-test("karta (ega, 2026-11-19): alohida rangda; «E'lonni to'liq ko'rish» — hamma ma'lumot tartib bilan, telefon bosilsa qo'ng'iroq", async ({ page, context }) => {
-  const [v] = await sql<{ id: string }>("select id from public.vacancies where title = $1", [TITLE]);
+test("karta: yopiq holatda raqam yo'q; «Ko'rish →» — e'lonning o'z sahifasi (ega, 2026-11-24: alohida sahifa), u yerda hamma ma'lumot va telefon", async ({ page, context }) => {
+  const [v] = await sql<{ id: string; slug: string }>("select id, slug from public.vacancies where title = $1", [TITLE]);
   await sql(
     `insert into public.vacancy_contacts (vacancy_id, phone, show_phone) values ($1, '+998901112244', true)
      on conflict (vacancy_id) do update set phone = excluded.phone, show_phone = true`,
@@ -103,19 +103,18 @@ test("karta (ega, 2026-11-19): alohida rangda; «E'lonni to'liq ko'rish» — ha
   await expect(card.locator("a[href^='tel:']")).toHaveCount(0);
   await expect(page.locator("body")).not.toContainText("90 111 22 44");
 
-  await card.getByRole("button", { name: "E'lonni to'liq ko'rish" }).click();
-  const details = card.locator("[data-ai-card-details]");
-  await expect(details.locator("[data-ai-card-about]")).toContainText("Sinov e'loni: ish vaqti 9 dan 18 gacha, tushlik bilan.");
-  for (const label of ["Manzil", "Ish grafigi", "Tajriba", "Bandlik turi"]) await expect(details.locator("dt", { hasText: label })).toHaveCount(1);
-  // telefon: katta "Qo'ng'iroq qilish" va raqamning o'zi — ikkalasi ham qo'ng'iroq
-  await expect(details.locator("[data-ai-card-phone] a[href='tel:+998901112244']")).toHaveCount(2);
-  await expect(details.locator("[data-ai-card-phone]")).toContainText("+998 90 111 22 44");
-  await expect(details.locator("[data-ai-card-apply]")).toHaveAttribute("href", /\?apply=1$/);
-
-  await card.getByRole("button", { name: "Yopish" }).click();
-  await expect(details).toHaveCount(0);
+  // yashirish ishlaydi
   await answer.getByRole("button", { name: "Yashirish" }).click();
   await expect(answer.locator("article")).toHaveCount(0);
+  await answer.getByRole("button", { name: "Ko'rish" }).click();
+  // «Ko'rish →» (o'ng tomonda) — kartaning o'zida ochilmaydi, e'lon sahifasiga o'tadi; u yerda tavsif va telefon
+  const openLink = answer.locator("[data-ai-card='job']").getByRole("link", { name: "Ko'rish" });
+  await expect(openLink).toHaveAttribute("href", `/jobs/${v!.slug}`);
+  await openLink.click();
+  await page.waitForURL(new RegExp(`/jobs/${v!.slug}$`));
+  await expect(page.getByText("Sinov e'loni: ish vaqti 9 dan 18 gacha, tushlik bilan.").first()).toBeVisible();
+  // telefon — sahifadagi aloqa qismida (ochiq raqam yoki "Raqamni ko'rsatish")
+  await expect(page.locator("a[href='tel:+998901112244'], [data-reveal-phone], [data-contact='call']").first()).toBeAttached();
   await sql("delete from public.vacancy_contacts where vacancy_id = $1", [v!.id]);
 });
 

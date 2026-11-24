@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Kartadagi tugma: "Ko'rish →" (o'ng tomonda), ko'k shaffof shisha, e'lon sahifasi (`feat/open-btn-blue`)
+
+Ega (telefon skrinshoti): "yanada kichiklashtir; rangini ko'k qil; to'rtta burchakdan soya bo'lsin, ichini to'la rang
+qilma; 4 ta burchakdan quyosh nuri ozgina tushadi — shunaqa, ko'k rang shaffof bo'lib"; keyin: "rang yaxshi, yozuv
+boshqacha, ochishni boshqacha qilish kerak" — tanlovi: ochilishi — **alohida sahifa**; yozuv — "Ko'rish bo'lsin, o'ng
+tomonda" (**"Ko'rish →"**, kartaning o'ng tomonida). Migratsiya yo'q.
+
+- "E'lonni to'liq ko'rish" o'rniga "Ko'rish →" (o'ng tomonda): e'lonning o'z sahifasi (vakansiya — /jobs/…, ishchi — /listing/…; u yerda
+  hamma ma'lumot, telefon, ariza). Kartaning o'zida ochilish (2026-11-19) va uning server amali (`card-details.ts`) olib
+  tashlandi.
+- Tugma kichikroq (ko'rinishi 36px, bosiladigan joy 44px — a11y), yozuv ko'k (`text-primary-ink`).
+- `.glass-blue` (globals.css): yupqa ko'k tus (to'la rang emas), ko'k chegara, to'rt tomondan yumshoq ko'k soya, ichida
+  chetlardan yorug'lik, to'rt burchagida kichik oq "nur" dog'lari (ega so'rovi bilan bezak — faqat shu tugmada).
+
 ## 2026-11-24 · Kanalga usta e'lonlari — ishchi e'lonlari kanaliga (`feat/masters-channel`)
 
 Ega: "Kanalga e'lon bordimi, ustalar joylagan?" — yo'q edi (kanalga faqat vakansiya va ishchi e'lonlari chiqardi); ega
