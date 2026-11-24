@@ -159,7 +159,7 @@ describe("kanal: usta e'loni (ega, 2026-11-24: ishchi e'lonlari kanaliga)", () =
   it("turi, kategoriya, sarlavha, xizmatlar, joy, tajriba, narx, tavsif; telefon va ism yo'q; tugma — usta sahifasidagi aloqa", () => {
     const p = masterPost(base, t, BASE);
     expect(p.html.split("\n").slice(0, 9)).toEqual([
-      "🛠 Usta xizmat taklif qiladi",
+      "🛠 Universal ustalar xizmati",
       "",
       "<b>Santexnik</b>",
       "<i>Santexnika ishlari, tez va sifatli</i>",

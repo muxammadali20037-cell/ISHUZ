@@ -287,7 +287,7 @@ describe("ustalar — ishchi e'lonlari kanaliga (ega, 2026-11-24)", () => {
     expect(await runChannelAutopost()).toMatchObject({ posted: 1, failed: 0 });
     const call = send.mock.calls[0]![0] as { chatId: string; html: string; button: { url: string }; photo?: string };
     expect(call.chatId).toBe("@ishchilar");
-    expect(call.html).toContain("🛠 Usta xizmat taklif qiladi");
+    expect(call.html).toContain("🛠 Universal ustalar xizmati");
     expect(call.html).toContain("<b>Santexnik</b>");
     expect(call.html).toContain("📍 Chilonzor, Toshkent shahri");
     expect(call.button.url).toBe("https://ishuz.vercel.app/ustalar/santexnik-m#contact");

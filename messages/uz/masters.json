@@ -1,5 +1,5 @@
 {
-  "name": "Universal ustalar",
+  "name": "Universal ustalar xizmati",
   "short": "Ustalar",
   "tagline": "Har qanday xizmat uchun ishonchli ustalarni toping",
   "back": "Ish topdim'ga qaytish",
@@ -9,7 +9,7 @@
   "search_placeholder": "Ustani qidirish…",
   "search": "Qidirish",
   "search_label": "Ustani qidirish",
-  "meta_title": "Universal ustalar — santexnik, elektrik, konditsioner ustasi va boshqa xizmatlar",
+  "meta_title": "Universal ustalar xizmati — santexnik, elektrik, konditsioner ustasi va boshqa xizmatlar",
   "meta_description": "Toshkent va O'zbekiston bo'ylab ustalar: konditsioner, santexnika, elektrik, maishiy texnika, ta'mirlash, yuk tashish. E'lonlar tasdiqlangandan keyin chiqadi.",
   "badges": {
     "fast": "Tezkor xizmat",
@@ -198,7 +198,7 @@
     "listing_of": "E'lon: {title}"
   },
   "admin": {
-    "title": "Universal ustalar — moderatsiya",
+    "title": "Universal ustalar xizmati — moderatsiya",
     "pending": "Kutilmoqda",
     "all": "Barchasi",
     "approve": "Tasdiqlash",

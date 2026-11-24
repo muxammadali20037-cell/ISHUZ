@@ -3,12 +3,17 @@
 ## 2026-11-24 · Kanalga usta e'lonlari — ishchi e'lonlari kanaliga (`feat/masters-channel`)
 
 Ega: "Kanalga e'lon bordimi, ustalar joylagan?" — yo'q edi (kanalga faqat vakansiya va ishchi e'lonlari chiqardi); ega
-tanlovi — "Ishchi e'lonlari kanaliga". **Migratsiya 0090** (`channel_posts.entity_type` — `master` ham).
+tanlovi — "Ishchi e'lonlari kanaliga", "faqat yangilari", "universal ustalar xizmati bo'lsin nomi — ilovada ham, e'londa
+ham". **Migratsiya 0090 prod'ga qo'llandi** (ega: "o'zing qo'lla"; `apply_migration`, 2026-11-24): `channel_posts.entity_type`
+— `master` ham; qatorlar 88 → 88 (ma'lumot o'zgarmadi). `APPLIED_UNTIL = 90`.
+
+- Bo'lim nomi — **"Universal ustalar xizmati"** (ru "Сервис универсальных мастеров", en "Universal masters service"):
+  menyular, bo'lim sahifasi, admin; kanal postining boshida ham — "🛠 Universal ustalar xizmati".
 
 - Faol, haqiqiy (demo emas), egasi bloklanmagan usta e'loni — ishchi e'lonlari kanaliga, bir marta: darhol katalogga
   chiqsa — joylangan zahoti; tekshiruvdan o'tgani — fon navbati bilan (oxirgi 24 soat). Sozlama — "Ishchi e'lonlari va
   ustalar": o'chirilsa, ustalar ham chiqmaydi; alohida kanal ko'rsatilsa — o'sha kanalga.
-- Post: "🛠 Usta xizmat taklif qiladi", kategoriya (yoki "Boshqa xizmatlar"da ustaning o'z yozgani), sarlavha, xizmatlar,
+- Post: "🛠 Universal ustalar xizmati", kategoriya (yoki "Boshqa xizmatlar"da ustaning o'z yozgani), sarlavha, xizmatlar,
   joy, tajriba, narx, tavsif (avtomatik tavsif takrorlanmaydi). Ism va telefon yo'q — "📞 Bog'lanish" saytdagi e'lonning
   aloqa qismiga. Rasm — e'lon rasmi (AI) yoki birinchi ish namunasi; ikkalasi ham yo'q — rasmsiz.
 - Admin "Telegram kanal": "Ishchi e'lonlari va ustalar (ISHCHI)".

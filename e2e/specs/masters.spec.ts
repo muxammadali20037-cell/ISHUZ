@@ -82,10 +82,10 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   // 2026-11-21 kechqurun: bosh sahifa chati juda sodda — "Universal ustalar" Profilda (mehmonga ham)
   await page.goto("/cabinet");
   const entry = page.locator("main [data-cabinet-masters]");
-  await expect(entry).toContainText("Universal ustalar");
+  await expect(entry).toContainText("Universal ustalar xizmati");
   await entry.click();
   await expect(page).toHaveURL(/\/ustalar$/);
-  await expect(page.getByRole("heading", { level: 1, name: "Universal ustalar" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Universal ustalar xizmati" })).toBeVisible();
   // alohida mini-ilova: o'z sarlavhasi, sayt menyusi yo'q; orqaga — Ish topdim
   await expect(page.locator("[data-masters-back]")).toHaveAttribute("href", "/");
   await expect(page.locator("[data-masters-post]")).toHaveAttribute("href", "/auth?next=%2Fustalar%2Felon");
