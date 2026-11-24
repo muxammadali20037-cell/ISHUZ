@@ -14,7 +14,8 @@ import type { AppMode } from "@/features/mode/mode";
 import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
 import { answerPlace, draftFromForm, isAnyProfession, nextAsk, withPlace, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
 import type { ChatProfession } from "./actions";
-import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, type PostAsk, type PostDraft } from "./post-logic";
+import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, postExtraKey, withProfession, type PostAsk, type PostDraft } from "./post-logic";
+import { parseWorkerExtra, type WorkerExtraKey } from "@/features/post/requirements";
 import { formatNotes } from "@/features/post/notes";
 
 export type { AiPart, Ask, Draft, Msg, Role } from "./guided-logic";
@@ -362,9 +363,9 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
           return replace(mid, { kind: "post-ask", ask: "post_which", question: u.question, groups: u.groups });
         }
         if (u.kind === "reply" || !u.form.profession) return postRetry("post_profession", mid, { word: shownWord(q, q) });
-        // gapda viloyat ham aytilgan bo'lsa ("Samarqandda oshpazman") — u ham olinadi
+        // gapda viloyat ham aytilgan bo'lsa ("Samarqandda oshpazman") — u ham olinadi; "mashinam bor" — kasb savoliga javob
         const place = d.regionId ? {} : { regionId: u.form.regionId, districtId: u.form.districtId };
-        postNext({ ...d, profession: u.form.profession, ...place }, mid);
+        postNext({ ...withProfession(d, u.form.profession, q), ...place }, mid);
       },
       () => runRef.current === run && replace(mid, { kind: "error", message: errorText("network") }),
     );
@@ -401,6 +402,12 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
       const x = parseExperience(q);
       return x ? postNext({ ...d, experience: x }, mid) : postRetry("post_experience", mid);
     }
+    // kasbga xos savol ("C", "ha, bor", "velosipedda") — tushunilmasa tugmalar bilan qayta
+    const xk = postExtraKey(a);
+    if (xk) {
+      const v = parseWorkerExtra(xk, q);
+      return v ? postNext({ ...d, extras: { ...d.extras, [xk]: v } }, mid) : postRetry(a, mid);
+    }
     const phone = parsePhone(q);
     return phone ? postNext({ ...d, phone }, mid) : postRetry("post_phone", mid);
   };
@@ -413,7 +420,15 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     push(label, mid);
     postNext({ ...post, ...patch }, mid);
   };
-  const pickPostChoice = (choice: PostChoice) => pickPost({ profession: choice }, choice.name);
+  const pickPostChoice = (choice: PostChoice) => {
+    if (pending || !post) return;
+    markAnswered();
+    const mid = id();
+    push(choice.name, mid);
+    // kasb o'zgardi — shu kasbga xos savollar (birinchi gapda aytilgani olinadi)
+    postNext(withProfession(post, choice), mid);
+  };
+  const pickPostExtra = (key: WorkerExtraKey, value: string, label: string) => pickPost({ extras: { ...post?.extras, [key]: value } }, label);
   const pickPostRegion = (opt: QuickOption) => pickPost({ regionId: opt.value, districtId: null }, opt.label);
   const pickPostExperience = (x: PostExperience, label: string) => pickPost({ experience: x }, label);
   /** izoh savolida tayyor variantni belgilash / olib tashlash */
@@ -679,6 +694,7 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     skipPostNotes,
     pickPostRegion,
     pickPostExperience,
+    pickPostExtra,
     publishPost,
     resumePost,
     mode: role ?? "jobs",

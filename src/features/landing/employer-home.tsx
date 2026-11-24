@@ -16,6 +16,7 @@ import { Fold } from "@/components/shared/fold";
 import { cn } from "@/lib/utils";
 import { HomeMenu } from "./home-menu";
 import { homeMenuLinks } from "./quick-filters";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /**
  * Ish beruvchi bosh sahifasi — 2.0 (2026-11-11, egasi: "ish beruvchilar panelini ham soddalashtir"). Profili tayyor ish beruvchi —
@@ -64,11 +65,13 @@ export async function EmployerHome({ session, flush = false }: { session: Sessio
 
       {/* "Universal ustalar" — alohida yashil bo'lim (2026-11-13; kirganda telefonda — menyuda). "Barchasi siz uchun" — yuqori
           panelda (✨) va yon menyuda; "Mos nomzod chiqsa xabar" — Profil → PRO kuzatuv */}
-      <div className="max-lg:hidden">
-        <Suspense fallback={null}>
-          <MastersHomeSection />
-        </Suspense>
-      </div>
+      {MASTERS_ENABLED ? (
+        <div className="max-lg:hidden">
+          <Suspense fallback={null}>
+            <MastersHomeSection />
+          </Suspense>
+        </div>
+      ) : null}
     </div>
   );
 }

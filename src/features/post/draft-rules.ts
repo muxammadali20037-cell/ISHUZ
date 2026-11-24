@@ -1,4 +1,5 @@
 import { SCHEDULES, SIMPLE_EMPLOYER_TYPES, SIMPLE_EXPERIENCE, VACANCY_EXPERIENCE, type VacancyDraft, type WorkerDraft } from "./types";
+import { AGE_MAX, AGE_MIN, GENDER_CHOICES, TIME_RE, isExtras } from "./requirements";
 import { isBool, isCustomProfession, isId, isPickedProfession, isPlace, isStep, isStr, oneOf, type DraftRules } from "./draft-store";
 
 /** Qurilmada saqlangan qoralama maydonlarini tekshirish (zod'siz — forma brauzerga yengil yuklansin) */
@@ -8,6 +9,16 @@ const isSource = (v: unknown) => v === undefined || v === "manual" || v === "ai"
 const PHOTO_PATH = /^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/;
 /** "Izoh" bandlari: ko'pi bilan 8 ta, har biri 80 belgigacha */
 const isNotes = (x: unknown) => x === undefined || (Array.isArray(x) && x.length <= 8 && x.every((i) => typeof i === "string" && i.length <= 80));
+const isAgeNum = (n: unknown) => n === null || (typeof n === "number" && Number.isInteger(n) && n >= AGE_MIN && n <= AGE_MAX);
+/** yosh chegarasi: { min, max } (null — chegarasiz) */
+const isAge = (x: unknown) => {
+  if (x === undefined) return true;
+  if (!x || typeof x !== "object") return false;
+  const { min, max } = x as { min?: unknown; max?: unknown };
+  return isAgeNum(min) && isAgeNum(max) && (min === null || max === null || (max as number) >= (min as number));
+};
+/** ish vaqti: { from, to } "HH:MM"; null — kelishiladi */
+const isHours = (x: unknown) => x === undefined || x === null || (typeof x === "object" && TIME_RE.test(String((x as { from?: unknown }).from)) && TIME_RE.test(String((x as { to?: unknown }).to)));
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** tekshirish sahifasidagi AI rasm qoralamasi: id va https manzil (boshqasi — qabul qilinmaydi) */
 const isImage = (x: unknown) =>
@@ -60,5 +71,9 @@ export function vacancyDraftRules(editId: string | null): DraftRules<VacancyDraf
     source: isSource,
     image: isImage,
     notes: isNotes,
+    gender: (x) => x === undefined || (GENDER_CHOICES as unknown[]).includes(x),
+    age: isAge,
+    hours: isHours,
+    extras: isExtras,
   };
 }

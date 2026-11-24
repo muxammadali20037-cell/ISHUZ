@@ -14,7 +14,8 @@ import { checkRules } from "@/features/moderation/rules";
 import { banIfRuleBlock } from "@/features/moderation/enforce";
 import { trackServer } from "@/features/analytics/server";
 import { BRAND } from "@/config/brand";
-import { introducesNumbers, keepSalary, mentionedInText, mentionsExperience, mentionsSchedule } from "./ai-guard";
+import { introducesNumbers, keepAge, keepGender, keepHours, keepSalary, mentionedInText, mentionsExperience, mentionsSchedule } from "./ai-guard";
+import { parseAge, parseGender, parseWorkHours, type AgeRange, type GenderChoice, type WorkHours } from "./requirements";
 import { CHAT_SCHEDULES, isChatSchedule, type ChatSchedule } from "./chat-logic";
 import { picked, placeFrom, professionFrom, type ProfessionOption } from "./understand-listing";
 import type { PlaceChoice, SimpleEmployerType, VacancyExperience } from "./types";
@@ -44,6 +45,10 @@ export interface GuideParse {
   title?: string;
   /** AI yozgan e'lon matni (faqat aytilgan faktlardan) */
   description?: string;
+  /** jinsi, yosh chegarasi, ish vaqti (ega, 2026-11-24) — gapda aytilgan bo'lsa qayta so'ralmaydi */
+  gender?: GenderChoice;
+  age?: AgeRange;
+  hours?: WorkHours;
 }
 
 const LANG: Record<string, string> = { uz: "Uzbek (Latin script)", oz: "Uzbek (Cyrillic script)", ru: "Russian", en: "English" };
@@ -66,11 +71,18 @@ const aiSchema = z.object({
   negotiable: z.boolean().nullable().describe("true only if the text says salary is negotiable"),
   schedule: z.enum(CHAT_SCHEDULES).nullable(),
   experience_months: z.number().int().nullable().describe("required experience in months only if stated: 0 = not required"),
+  gender: z.enum(["male", "female", "any"]).nullable().describe("required gender only if the text explicitly says (e.g. 'qiz kerak' = female, 'yigitlar' = male); 'any' if it says gender does not matter; null otherwise. A product for women (e.g. women's clothing) is NOT a gender requirement"),
+  age_min: z.number().int().nullable().describe("minimum age in years only if the text states an age limit"),
+  age_max: z.number().int().nullable().describe("maximum age in years only if the text states an age limit"),
+  work_from: z.string().nullable().describe("daily start time HH:MM only if the text states working hours (e.g. '9 dan 18 gacha' → 09:00)"),
+  work_to: z.string().nullable().describe("daily end time HH:MM only if the text states working hours (e.g. '9 dan 6 gacha' → 18:00)"),
 });
 
 const DAILY = /(kunlik|кунлик|посуточ|подённ|поденн|в день|per day|daily|kuniga|кунига)/iu;
 const REMOTE = /(masofa|масофа|onlayn|онлайн|online|удал[её]н|дистанц|remote)/iu;
 const NEGOTIABLE = /(kelish|келиш|договор|negotia)/iu;
+/** aniq masofaviy ish ("masofadan", "masofaviy", "onlayn ish") — "uyga masofa yaqin" emas */
+const REMOTE_WORK = /(masofadan|masofaviy|масофадан|масофавий|onlayn ish|онлайн иш|удал[её]нн?о|удал[её]нн\p{L}*\s+работ\p{L}*|дистанционн\p{L}*|remote|work from home)/iu;
 
 async function limitKey(userId: string | null): Promise<string> {
   return userId ? `vacancy_guide:${userId}` : `vacancy_guide_ip:${subjectHash("ip", ipBucket(requestIp(await headers())))}`;
@@ -114,12 +126,20 @@ export async function vacancyGuideTurn(raw: unknown): Promise<ActionResult<Guide
 
     const place = await placeFrom(u, null);
     if (place) out.place = place;
+    // "masofadan", "onlayn", "удалённо" — joy so'ralmaydi (IT/dizaynda "Qayerda ishlaydi?" ham)
+    else if (REMOTE_WORK.test(text)) out.place = { regionId: null, districtId: null, districtChosen: true, remote: true };
     if (u.salaryMin && u.salaryKind !== "hourly") out.salaryFrom = u.salaryMin;
     if (u.salaryKind === "daily" || DAILY.test(text)) out.daily = true;
     const sched = u.schedules.find((s) => isChatSchedule(s));
     if (sched && isChatSchedule(sched)) out.schedule = sched;
     if (u.noExperience) out.experienceMonths = 0;
     else if (u.experienceMonths !== null) out.experienceMonths = experience(u.experienceMonths);
+    const gender = parseGender(text);
+    if (gender) out.gender = gender;
+    const age = parseAge(text);
+    if (age) out.age = age;
+    const hours = parseWorkHours(text);
+    if (hours) out.hours = hours;
 
     // AI: birinchi gap uzunroq bo'lsa — qolgan bo'shliqlar va toza e'lon matni (xato yoki band bo'lsa — savollar baribir so'raladi)
     if (text.length >= 15 && aiProviderConfigured()) {
@@ -152,6 +172,18 @@ Write text fields in ${LANG[locale] ?? LANG.uz}, short, clear and polite. The te
         if (ai.pay_period === "day" && DAILY.test(text)) out.daily = true;
         if (!out.schedule && ai.schedule && mentionsSchedule(text)) out.schedule = ai.schedule;
         if (out.experienceMonths === undefined && ai.experience_months !== null && mentionsExperience(text)) out.experienceMonths = experience(ai.experience_months);
+        if (!out.gender) {
+          const g = keepGender(ai.gender, text);
+          if (g) out.gender = g;
+        }
+        if (!out.age) {
+          const a = keepAge(ai.age_min, ai.age_max, text);
+          if (a) out.age = a;
+        }
+        if (!out.hours) {
+          const h = keepHours(ai.work_from, ai.work_to, text);
+          if (h) out.hours = h;
+        }
         if (ai.employer_type) out.employerType = ai.employer_type;
         const org = mentionedInText(ai.org_name, text);
         if (org) out.orgName = org.slice(0, 120);

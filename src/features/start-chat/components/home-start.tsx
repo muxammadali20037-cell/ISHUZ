@@ -11,6 +11,7 @@ import { EMPTY_FIND, findHref } from "@/features/find/params";
 import type { QuickMode, QuickOption } from "@/features/find/quick-types";
 import { employerQuickFilters, seekerQuickFilters } from "@/features/landing/quick-filters";
 import { ChatIntro } from "./chat-intro";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 const noopSubscribe = () => () => {};
 
@@ -189,7 +190,7 @@ function QuickLinks({ mode }: { mode: QuickMode }) {
   const everywhere = { region: null, district: null };
   const seek = Object.fromEntries(seekerQuickFilters(everywhere).map((f) => [f.key, f.href]));
   const hire = Object.fromEntries(employerQuickFilters(everywhere).map((f) => [f.key, f.href]));
-  const links: { key: string; href: string; label: string; icon: LucideIcon }[] =
+  const all: { key: string; href: string; label: string; icon: LucideIcon }[] =
     mode === "jobs"
       ? [
           { key: "new", href: findHref(EMPTY_FIND, { mode: "jobs", any: true, region: "all" }), label: t("welcome.market.q_new"), icon: Sparkles },
@@ -204,6 +205,8 @@ function QuickLinks({ mode }: { mode: QuickMode }) {
           { key: "near", href: hire.near!, label: t("easy.sections.near_workers"), icon: MapPin },
           { key: "masters", href: "/ustalar", label: t("masters.name"), icon: Hammer },
         ];
+  // "Universal ustalar" hozircha yashirin (ega, 2026-11-24)
+  const links = MASTERS_ENABLED ? all : all.filter((l) => l.key !== "masters");
   return (
     <nav aria-label={t("easy.guided.home.quick_label")}>
       <ul className="flex flex-wrap gap-2" data-home-quick>

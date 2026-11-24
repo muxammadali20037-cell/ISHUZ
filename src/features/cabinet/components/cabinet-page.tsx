@@ -16,6 +16,7 @@ import { formatPhone, initials } from "@/lib/format";
 import { LOCALE_NAMES } from "@/lib/i18n/config";
 import { Fold } from "@/components/shared/fold";
 import { RoleSwitchRow } from "@/features/landing/role-switch-row";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /** Profil (pastki menyuning 3-bo'limi): ism, telefon, til, chiqish; qolgani — "Boshqa sozlamalar" ichida */
 export async function CabinetPage({ session, mode }: { session: SessionContext | null; mode: AppMode | null }) {
@@ -34,7 +35,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
             </Link>
           </Button>
         </div>
-        <MastersRow t={t} />
+        {MASTERS_ENABLED ? <MastersRow t={t} /> : null}
       </div>
     );
   }
@@ -144,7 +145,7 @@ export async function CabinetPage({ session, mode }: { session: SessionContext |
 
       <Fold name="more" icon={<Settings />} tint="blue" verb="open" title={t("easy.cabinet.more_settings")}>
         <div className="space-y-3">
-          <MastersRow t={t} />
+          {MASTERS_ENABLED ? <MastersRow t={t} /> : null}
           <RoleSwitchRow
             tone="neutral"
             target={roleTarget}

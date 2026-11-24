@@ -67,3 +67,36 @@ export function introducesNumbers(rewritten: string, original: string): boolean 
   for (const n of nums(rewritten)) if (!orig.has(n)) return true;
   return false;
 }
+
+const GENDER_HINT = /(ayol|аёл|qiz|қиз|xotin|хотин|erkak|эркак|yigit|йигит|девуш|женщ|мужч|парн|парен|female|male|woman|women)/iu;
+const AGE_HINT = /(yosh|ёш|лет|года|возраст|age|years)/iu;
+
+/** AI jinsi — faqat matnda jinsga oid so'z bo'lsa (imlo xatosi bilan ham: "ayollr") */
+export function keepGender<T extends string>(ai: T | null | undefined, text: string): T | null {
+  return ai && GENDER_HINT.test(text) ? ai : null;
+}
+
+const numbersIn = (text: string) => new Set((text.match(/\d+/g) ?? []).map((n) => Number(n)));
+
+/** AI yosh chegarasi — matnda yosh so'zi va o'sha raqamlar bo'lsa */
+export function keepAge(min: number | null | undefined, max: number | null | undefined, text: string): { min: number | null; max: number | null } | null {
+  if (!AGE_HINT.test(text)) return null;
+  const nums = numbersIn(text);
+  const lo = typeof min === "number" && min >= 14 && min <= 80 && nums.has(min) ? min : null;
+  const hi = typeof max === "number" && max >= 14 && max <= 80 && nums.has(max) ? max : null;
+  if (lo === null && hi === null) return null;
+  if (lo !== null && hi !== null && hi < lo) return null;
+  return { min: lo, max: hi };
+}
+
+/** AI ish vaqti ("09:00") — ikkala soat ham matnda raqam bilan aytilgan bo'lsa */
+export function keepHours(from: string | null | undefined, to: string | null | undefined, text: string): { from: string; to: string } | null {
+  const re = /^([01]?\d|2[0-3]):([0-5]\d)$/;
+  const a = re.exec(from ?? "");
+  const b = re.exec(to ?? "");
+  if (!a || !b || from === to) return null;
+  const nums = numbersIn(text);
+  if (!nums.has(Number(a[1])) || !nums.has(Number(b[1]))) return null;
+  const pad = (m: RegExpExecArray) => `${m[1]!.padStart(2, "0")}:${m[2]}`;
+  return { from: pad(a), to: pad(b) };
+}

@@ -115,6 +115,55 @@ test("kirgan ish izlovchi: «o'zim haqimda e'lon» → kasb → viloyat → tajr
   expect(wp!.about).toMatch(/\n\n✅ O'z mashinam bor\n✅ Tungi smenada ham ishlayman\n✅ Rus tilini bilaman$/);
 });
 
+test("kasbga qarab savol (ega, 2026-11-24: «ishchiga ham»): «C toifa haydovchiman» — toifa so'ralmaydi, mashina — tugma; usta — asboblar (yozib javob); e'londa ✅", async ({ page, context }) => {
+  test.setTimeout(90_000);
+  await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);
+  await loginAs(context, USERS.workerB);
+  await asMode(context, "worker");
+  await context.clearCookies({ name: "ib_place" });
+  await page.goto("/chat");
+  await send(page, "O'zim haqimda e'lon bermoqchiman");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-profession");
+  await send(page, "C toifa haydovchiman");
+  await settled(page);
+  // guvohnoma toifasi gapda aytildi — so'ralmaydi; kasbdan keyin darhol: "Shaxsiy mashinangiz bormi?"
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-car");
+  await expect(lastAi(page)).toContainText("Shaxsiy mashinangiz bormi?");
+  await expect(box(page)).toHaveAttribute("placeholder", "Ha yoki yo'q");
+  await lastAi(page).locator("[data-post-wx-car='yes']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
+  await page.locator("[data-post-region]", { hasText: "Toshkent shahri" }).click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-experience");
+  await lastAi(page).locator("[data-post-exp='3plus']").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-note");
+  await lastAi(page).locator("[data-post-notes-skip]").click();
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-phone");
+  await send(page, "90 123 45 67");
+  await settled(page);
+  const card = lastAi(page).locator("[data-post-card]");
+  await expect(card.locator("[data-notes-list] li")).toHaveText(["Haydovchilik guvohnomasi: C toifa", "Shaxsiy mashinam bor"]);
+
+  // usta: "O'z asboblaringiz bormi?" — yozib javob ("ha") ham tushuniladi; tushunilmasa — tugmalar bilan qayta
+  await page.goto("/chat");
+  await send(page, "O'zim haqimda e'lon bermoqchiman");
+  await settled(page);
+  await send(page, "santexnikman");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-tools");
+  await expect(lastAi(page)).toContainText("O'z asboblaringiz bormi?");
+  await send(page, "bilmadim");
+  await expect(lastAi(page)).toContainText("Tushunmadim — quyidagilardan birini tanlang.");
+  await expect(lastAi(page).locator("[data-post-wx-tools]")).toHaveCount(2);
+  await send(page, "ha");
+  await settled(page);
+  await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-region");
+});
+
 test("mehmon: gapda kasb aytilgan — so'ralmaydi; ism yoziladi; «Joylash» — bir marta kirib qaytadi va o'sha karta qaytadi", async ({ page, context }) => {
   test.setTimeout(90_000);
   await sql("delete from public.worker_profiles where profile_id = $1", [USERS.workerB]);

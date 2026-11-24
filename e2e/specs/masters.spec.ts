@@ -79,12 +79,11 @@ async function approveAsAdmin(page: Page, context: import("@playwright/test").Br
 
 test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo e'lon — telefon, reyting va bog'lanish yo'q", async ({ page, context }) => {
   await asGuest(context);
-  // 2026-11-21 kechqurun: bosh sahifa chati juda sodda — "Universal ustalar" Profilda (mehmonga ham)
+  // 2026-11-24: bo'lim hozircha yashirin (menyu, bosh sahifa, Profilda havola yo'q) — to'g'ridan-to'g'ri havola ochilaveradi
   await page.goto("/cabinet");
-  const entry = page.locator("main [data-cabinet-masters]");
-  await expect(entry).toContainText("Universal ustalar xizmati");
-  await entry.click();
-  await expect(page).toHaveURL(/\/ustalar$/);
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator("main [data-cabinet-masters]")).toHaveCount(0);
+  await page.goto("/ustalar");
   await expect(page.getByRole("heading", { level: 1, name: "Universal ustalar xizmati" })).toBeVisible();
   // alohida mini-ilova: o'z sarlavhasi, sayt menyusi yo'q; orqaga — Ish topdim
   await expect(page.locator("[data-masters-back]")).toHaveAttribute("href", "/");
@@ -118,16 +117,14 @@ test("kirish va katalog: turkuaz tugma, o'z sarlavhasi, 12 kategoriya × 4 demo 
   await expect(page.locator("[data-masters-review]")).toHaveCount(0);
   await expect(page.locator("main")).toContainText("Hali baho yo'q");
 
-  // telefonda kirgan foydalanuvchi (ish beruvchi rejimi): yon menyu yo'q — kirish Profildagi "Boshqa sozlamalar" ichidan
-  // (2026-11-21: chatda havola yo'q)
+  // kirgan foydalanuvchi (ish beruvchi rejimi): chatda ham, Profilda ham havola yo'q (bo'lim yashirin)
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
   await expect(page.locator("main [data-chat-choice='find_masters']")).toHaveCount(0);
   await page.goto("/cabinet");
   await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
-  await page.locator("main [data-cabinet-masters]").click();
-  await expect(page).toHaveURL(/\/ustalar$/);
+  await expect(page.locator("main [data-cabinet-masters]")).toHaveCount(0);
 });
 
 test("oynama-oyna: kategoriya → xizmatlar → ism → hudud va telefon → rasmsiz → darhol katalogda (kategoriya sahifasida 'joylandi')", async ({ page, context }) => {

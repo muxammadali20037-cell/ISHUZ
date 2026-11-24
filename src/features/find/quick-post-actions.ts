@@ -11,6 +11,7 @@ import { getAlertSubscriptions } from "@/features/alerts/queries";
 import { getRegions } from "@/lib/reference";
 import { buildPreview, preparePost } from "./quick-post-core";
 import type { PostOutcome, PostPreview, PostUnderstood } from "./quick-post-types";
+import { isWorkerExtras, type WorkerExtras } from "@/features/post/requirements";
 
 /**
  * Yordamchi orqali ishchi e'loni: matnni tushunish → oyna → "Tasdiqlash" (ko'rinishi) → "Joylash".
@@ -59,6 +60,8 @@ const answersSchema = z.object({
   imageDraft: z.uuid().nullable().optional(),
   /** "Izoh" bandlari (mijozda tartibga keltirilgan; serverda yana tozalanadi) */
   notes: z.array(z.string().max(80)).max(8).optional(),
+  /** kasbga xos javoblar (guvohnoma toifasi, mashina, transport, asboblar) */
+  extras: z.custom<WorkerExtras>((x) => isWorkerExtras(x)).optional(),
 });
 
 /** "Tasdiqlash": e'lon qanday ko'rinishi (joylanadigan matnning o'zi) */

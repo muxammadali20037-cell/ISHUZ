@@ -76,9 +76,17 @@ export const vacancyListingSchema = z
     /** tekshirish sahifasida yaratilgan AI rasm qoralamasi (joylanganda e'longa biriktiriladi) */
     imageDraft: z.uuid().nullable().optional(),
     photoPath: z.string().regex(/^[0-9a-f-]{36}\/(?:[0-9a-f-]{36}\.(?:jpg|png|webp)|v-[0-9a-f]{64}\.webp)$/).nullable().optional(),
+    /** jinsi, yosh chegarasi, ish vaqti (ega, 2026-11-24); berilmasa — bazadagi qiymat o'zgarmaydi; null — farqi yo'q / kelishiladi */
+    gender: z.enum(["male", "female"]).nullable().optional(),
+    ageMin: z.number().int().min(14).max(80).nullable().optional(),
+    ageMax: z.number().int().min(14).max(80).nullable().optional(),
+    workTimeFrom: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional(),
+    workTimeTo: z.string().regex(/^(?:[01]\d|2[0-3]):[0-5]\d$/).nullable().optional(),
   })
   .refine(oneProfession, { path: ["professionNodeId"] })
   .refine((v) => v.remote || !!v.regionId, { path: ["regionId"] })
+  .refine((v) => v.ageMin == null || v.ageMax == null || v.ageMax >= v.ageMin, { path: ["ageMax"] })
+  .refine((v) => (v.workTimeFrom == null) === (v.workTimeTo == null) && (v.workTimeFrom == null || v.workTimeFrom !== v.workTimeTo), { path: ["workTimeTo"] })
   .refine((v) => v.negotiable || v.salaryFrom !== null || v.salaryTo !== null, { path: ["salaryFrom"] })
   .refine((v) => v.salaryFrom === null || v.salaryTo === null || v.salaryTo >= v.salaryFrom, { path: ["salaryTo"] });
 export type VacancyListingInput = z.infer<typeof vacancyListingSchema>;

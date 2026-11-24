@@ -17,6 +17,7 @@ import { UserMenu } from "./user-menu";
 import type { TopBarUser } from "./top-bar";
 import { APP_CHAT, MORE_ITEMS, appSideItems, appTabs, type BadgeKey, type MenuItem } from "./nav-items";
 import { usePendingPath } from "./nav-pending";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 export type NavRole = "worker" | "employer" | "guest";
 export type NavMode = "worker" | "employer" | null;
@@ -165,7 +166,8 @@ function DesktopNavView({ counts, find: urlFind }: { counts?: Counts; find: stri
           </li>
         );
       })}
-      {/* "Universal ustalar" (turkuaz) — planshetda belgi bilan; kompyuterda yon menyuda */}
+      {/* "Universal ustalar" (turkuaz) — planshetda belgi bilan; kompyuterda yon menyuda (hozircha yashirin — MASTERS_ENABLED) */}
+      {MASTERS_ENABLED ? (
       <li className="lg:hidden">
         <Link
           href="/ustalar"
@@ -178,6 +180,7 @@ function DesktopNavView({ counts, find: urlFind }: { counts?: Counts; find: stri
           <span className="sr-only">{t("masters.name")}</span>
         </Link>
       </li>
+      ) : null}
     </ul>
     </nav>
   );
@@ -315,13 +318,15 @@ function SideNavView({ counts, mode = null, user, social = [], find: urlFind }: 
         )}
         <nav aria-label={t("easy.side.label")} className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 pb-4">
           <ul className="space-y-1">{main.map(link)}</ul>
-          {/* "Universal ustalar" — boshqa bo'limlar qatorida, bir xil rangda ("Yangi" nuqtasi bilan) */}
-          <Link href="/ustalar" data-track="masters_entry" data-masters-entry aria-current={masters ? "page" : undefined} className={row(masters)}>
-            {masters ? bar : null}
-            <Wrench className={cn("size-4.5 shrink-0", masters ? "text-primary-ink" : "text-muted-foreground")} aria-hidden />
-            <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
-            <NewDot feature="masters" />
-          </Link>
+          {/* "Universal ustalar" — boshqa bo'limlar qatorida, bir xil rangda ("Yangi" nuqtasi bilan); hozircha yashirin */}
+          {MASTERS_ENABLED ? (
+            <Link href="/ustalar" data-track="masters_entry" data-masters-entry aria-current={masters ? "page" : undefined} className={row(masters)}>
+              {masters ? bar : null}
+              <Wrench className={cn("size-4.5 shrink-0", masters ? "text-primary-ink" : "text-muted-foreground")} aria-hidden />
+              <span className="min-w-0 flex-1 truncate">{t("masters.name")}</span>
+              <NewDot feature="masters" />
+            </Link>
+          ) : null}
           <div className="mt-2 border-t border-border pt-3">
             <ul className="space-y-1">{more.map(link)}</ul>
           </div>

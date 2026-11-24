@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, type PostDraft } from "./post-logic";
+import { matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, withProfession, type PostDraft } from "./post-logic";
 
 const full: PostDraft = {
   profession: { id: "11111111-1111-4111-8111-111111111111", name: "Oshpaz" },
@@ -11,6 +11,8 @@ const full: PostDraft = {
   experience: "1_3",
   notes: ["Obed tekin"],
   phone: "+998901234567",
+  extras: {},
+  said: "",
 };
 
 describe("chatda e'lon: savollar bittadan, tartib bilan", () => {
@@ -24,6 +26,25 @@ describe("chatda e'lon: savollar bittadan, tartib bilan", () => {
     expect(nextPostAsk({ ...full, notes: [], phone: null })).toBe("post_phone");
     expect(nextPostAsk({ ...full, phone: null })).toBe("post_phone");
     expect(nextPostAsk(full)).toBeNull();
+  });
+  it("kasbga xos savollar — kasbdan keyin darhol (ega, 2026-11-24); gapda aytilgani so'ralmaydi; javoblar e'longa", () => {
+    const driver = { id: full.profession!.id, name: "Haydovchi", extraKeys: ["license", "car"] as ("license" | "car")[] };
+    const d = { ...full, profession: driver };
+    expect(nextPostAsk({ ...d, regionId: null })).toBe("post_license");
+    expect(nextPostAsk({ ...d, extras: { license: "C" } })).toBe("post_car");
+    expect(nextPostAsk({ ...d, extras: { license: "C", car: "no" } })).toBeNull();
+    // birinchi gapdan: "C toifa haydovchiman, mashinam bor" — ikkala savol ham o'tkaziladi
+    const form = { text: "C toifa haydovchiman, mashinam bor", profession: driver, regionId: null, districtId: null, regions: [], districts: {}, loggedIn: true, firstName: "Botir", lastName: "" };
+    expect(postDraftFromForm(form).extras).toEqual({ license: "C", car: "yes" });
+    expect(nextPostAsk(postDraftFromForm(form))).toBe("post_region");
+    // kasb keyin o'zgarsa — boshqa kasbning javobi tashlanadi, gapdagisi qayta o'qiladi
+    const courier = { id: full.profession!.id, name: "Kuryer", extraKeys: ["transport"] as "transport"[] };
+    expect(withProfession({ ...postDraftFromForm(form), said: "velosipedim bor, kuryerman" }, courier).extras).toEqual({ transport: "bike" });
+    expect(postAnswers({ ...d, extras: { license: "C", car: "no" } })?.extras).toEqual({ license: "C", car: "no" });
+    // kasb nomidan: "Piyoda kuryer" — transport so'ralmaydi (nomdagisi gapdagidan ustun)
+    const foot = { id: full.profession!.id, name: "Piyoda kuryer", extraKeys: ["transport"] as "transport"[] };
+    expect(withProfession({ ...full, said: "velosipedim bor" }, foot).extras).toEqual({ transport: "foot" });
+    expect(nextPostAsk(withProfession(full, foot))).toBeNull();
   });
   it("hisobdagi ism bo'lsa — ism so'ralmaydi", () => {
     expect(nextPostAsk({ ...full, experience: null })).toBe("post_experience");

@@ -2,6 +2,7 @@ import { normalizeText } from "@/features/search/understand";
 import { normalizePhone } from "@/lib/format";
 import type { QuickOption } from "@/features/find/quick-types";
 import type { PostAnswers, PostChoice, PostExperience, PostForm } from "@/features/find/quick-post-types";
+import { WORKER_EXTRA_KEYS, pickWorkerExtras, type WorkerExtraKey, type WorkerExtras } from "@/features/post/requirements";
 
 /**
  * Chatning o'zida ishchi e'loni (master prompt, 3-bosqich; ega, 2026-11-21: "kasb, viloyat, ism, tajriba — tajriba bormi
@@ -11,9 +12,17 @@ import type { PostAnswers, PostChoice, PostExperience, PostForm } from "@/featur
  * 2026-11-17 va 2026-11-21 qarorlari) → tayyor e'lon kartasi va "Joylash". Sof qismlar — mijoz va unit test uchun.
  */
 
-export type PostAsk = "post_profession" | "post_which" | "post_region" | "post_name" | "post_experience" | "post_note" | "post_phone";
+/** Kasbga xos savollar (ega, 2026-11-24: "ishchiga ham"): haydovchi — guvohnoma va mashina; kuryer — transport; usta — asboblar */
+export type PostExtraAsk = "post_license" | "post_car" | "post_transport" | "post_tools";
+export type PostAsk = "post_profession" | "post_which" | PostExtraAsk | "post_region" | "post_name" | "post_experience" | "post_note" | "post_phone";
 
-export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", "post_region", "post_name", "post_experience", "post_note", "post_phone"];
+export const POST_ASKS: readonly PostAsk[] = ["post_profession", "post_which", "post_license", "post_car", "post_transport", "post_tools", "post_region", "post_name", "post_experience", "post_note", "post_phone"];
+
+/** "post_license" → "license" */
+export function postExtraKey(a: PostAsk): WorkerExtraKey | null {
+  const k = a.slice(5);
+  return (WORKER_EXTRA_KEYS as readonly string[]).includes(k) ? (k as WorkerExtraKey) : null;
+}
 
 export function isPostAsk(a: string | null | undefined): a is PostAsk {
   return !!a && (POST_ASKS as readonly string[]).includes(a);
@@ -33,6 +42,22 @@ export interface PostDraft {
   notes: string[] | null;
   /** "+998901234567" */
   phone: string | null;
+  /** kasbga xos javoblar ("C", "yes"…) — birinchi gapdan tushunilgani qayta so'ralmaydi */
+  extras: WorkerExtras;
+  /** foydalanuvchining birinchi gapi (kasb keyin tanlansa ham undagi "mashinam bor" olinadi) */
+  said: string;
+}
+
+/** Kasb tanlandi/o'zgardi: shu kasb savollariga gapdan tushunilgan javoblar (boshqa kasbniki tashlanadi) */
+export function withProfession(d: PostDraft, profession: PostChoice, text = ""): PostDraft {
+  return { ...d, profession, extras: extrasFor(profession, `${d.said} ${text}`) };
+}
+
+/** Gapdan va kasb nomining o'zidan ("Piyoda kuryer" → piyoda, "C toifa haydovchi" → C); nomdagisi ustun */
+function extrasFor(profession: PostChoice | null, text: string): WorkerExtras {
+  const keys = profession?.extraKeys ?? [];
+  if (!profession || !keys.length) return {};
+  return { ...pickWorkerExtras(text, keys), ...pickWorkerExtras(profession.name, keys) };
 }
 
 export function postDraftFromForm(form: PostForm): PostDraft {
@@ -46,12 +71,16 @@ export function postDraftFromForm(form: PostForm): PostDraft {
     experience: null,
     notes: null,
     phone: null,
+    extras: extrasFor(form.profession, form.text),
+    said: form.text,
   };
 }
 
 /** Keyingi savol yoki null — e'lon tayyor (karta ko'rsatiladi) */
 export function nextPostAsk(d: PostDraft): Exclude<PostAsk, "post_which"> | null {
   if (!d.profession) return "post_profession";
+  // kasbga xos savol — kasbdan keyin darhol (gapda aytilgan bo'lsa — o'tkaziladi)
+  for (const k of d.profession.extraKeys ?? []) if (!d.extras[k]) return `post_${k}`;
   if (!d.regionId) return "post_region";
   if (d.firstName.trim().length < 2) return "post_name";
   if (!d.experience) return "post_experience";
@@ -73,6 +102,7 @@ export function postAnswers(d: PostDraft): PostAnswers | null {
     phone: d.phone,
     phone2: null,
     notes: d.notes ?? [],
+    ...(Object.keys(d.extras).length ? { extras: d.extras } : {}),
   };
 }
 

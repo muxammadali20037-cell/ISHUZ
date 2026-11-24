@@ -1,4 +1,5 @@
 import type { ListingStateInfo } from "@/features/post/types";
+import type { WorkerExtraKey, WorkerExtras } from "@/features/post/requirements";
 import type { QuickOption } from "./quick-types";
 
 /**
@@ -14,6 +15,8 @@ export const POST_EXPERIENCES: readonly PostExperience[] = ["none", "lt1", "1_3"
 export interface PostChoice {
   id: string;
   name: string;
+  /** shu kasbga xos savollar (haydovchi — guvohnoma, mashina; kuryer — transport; usta — asboblar); serverda aniqlanadi */
+  extraKeys?: WorkerExtraKey[];
 }
 
 /** "Aynan qanday o'qituvchisiz?" — variantlar guruhlab (sarlavha: "Chet tillari"; null — guruhning o'zi) */
@@ -63,6 +66,8 @@ export interface PostAnswers {
   imageDraft?: string | null;
   /** "Izoh" bandlari (ega, 2026-11-22: "obed, yo'lkira tekin…") — e'lon matniga ✅ bilan qo'shiladi */
   notes?: string[];
+  /** kasbga xos javoblar (ega, 2026-11-24) — serverda tekshirilib, e'lon matniga ✅ bilan */
+  extras?: WorkerExtras;
 }
 
 /** "Sizning e'loningiz shunday ko'rinadi" — serverda, joylanadigan matnning o'zi */

@@ -20,6 +20,7 @@ import { ChannelRow } from "./channel-row";
 import { getServerEnv } from "@/lib/env";
 import { socialLinks } from "@/lib/social";
 import type { HomeMenuLinks } from "./quick-filters";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /**
  * Bosh sahifadagi "Bo'limlar" (2026-11-17, ega: "tartibsiz — pastki menyuda bor ishlar, arizalar, xabarlar, profil;
@@ -104,8 +105,9 @@ export async function HomeMenu({
           },
           near,
         ];
+  // "Universal ustalar" hozircha yashirin (ega, 2026-11-24) — MASTERS_ENABLED
   const items: MenuItem[] = [
-    { ...MASTERS_ITEM, hintKey: "easy.side.menu.masters_hint" },
+    ...(MASTERS_ENABLED ? [{ ...MASTERS_ITEM, hintKey: "easy.side.menu.masters_hint" }] : []),
     ...quick,
   ];
   const target = mode === "employer" ? "worker" : "employer";

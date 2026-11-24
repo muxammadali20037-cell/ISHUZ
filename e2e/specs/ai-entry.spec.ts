@@ -24,9 +24,9 @@ test("mehmon, kompyuter: yuqori menyuda 3 ta bo'lim nomlari bilan; /ai — alohi
     const label = nav.getByRole("link", { name, exact: true }).getByText(name, { exact: true });
     expect(await label.evaluate((el) => el.getBoundingClientRect().width), `"${name}" nomi ko'rinadi`).toBeGreaterThan(10);
   }
-  // planshetda: bo'limlar belgi bilan, "Universal ustalar" ham shu qatorda
+  // planshetda: bo'limlar belgi bilan ("Universal ustalar" hozircha yashirin — ega, 2026-11-24)
   await page.setViewportSize({ width: 800, height: 900 });
-  await expect(nav.getByRole("link", { name: "Universal ustalar xizmati" })).toBeVisible();
+  await expect(nav.locator("[data-masters-entry]")).toHaveCount(0);
   await expect(nav.getByRole("link", { name: "Qidiruv" })).toBeVisible();
   await page.setViewportSize({ width: 1280, height: 900 });
   // bosh sahifa — chat (2026-11-21): ishchi rejimida ustalar havolasi yo'q (ish izlovchiga kerak emas), menyuda bor
@@ -53,7 +53,7 @@ for (const who of ["worker", "employer"] as const) {
     const main = side.getByRole("list").first().getByRole("link");
     await expect(main).toHaveText(SIDE);
     await expect(side.getByRole("link", { name: "Profil" })).toHaveAttribute("aria-current", "page");
-    await expect(side.locator("[data-masters-entry]")).toBeVisible();
+    await expect(side.locator("[data-masters-entry]")).toHaveCount(0);
     await side.getByRole("link", { name: "Qidiruv", exact: true }).click();
     await page.waitForURL(/\/chat$/);
     // chat — oddiy sahifa: yon menyu joyida, bo'lim belgilangan

@@ -9,6 +9,7 @@ import { ListSkeleton } from "./sections";
 import { MastersHomeSection } from "@/features/masters/components/masters-home-section";
 import { getMarketCounts } from "./queries";
 import { StoriesRow } from "@/features/stories/components/stories-row";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /**
  * Bosh sahifa — mehmon yoki rejim tanlamagan foydalanuvchi. 3.0 (2026-11-13, ega: "bosh sahifada faqat eng muhim narsalar"):
@@ -32,11 +33,13 @@ export async function MarketHome() {
       <Suspense fallback={<ListSkeleton />}>
         <LatestJobs />
       </Suspense>
-      <div className="container-wide pb-10 sm:pb-14">
-        <Suspense fallback={null}>
-          <MastersHomeSection />
-        </Suspense>
-      </div>
+      {MASTERS_ENABLED ? (
+        <div className="container-wide pb-10 sm:pb-14">
+          <Suspense fallback={null}>
+            <MastersHomeSection />
+          </Suspense>
+        </div>
+      ) : null}
     </>
   );
 }
