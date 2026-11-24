@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { makeT } from "@/lib/i18n/translate";
-import { dialable, sanitizeLine, sanitizeText, vacancyPost, workerPost } from "./autopost-format";
+import { dialable, masterPost, sanitizeLine, sanitizeText, vacancyPost, workerPost } from "./autopost-format";
 
 const t = makeT("uz");
 const BASE = "https://ishuz.vercel.app";
@@ -140,3 +140,65 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
   });
 });
 
+
+describe("kanal: usta e'loni (ega, 2026-11-24: ishchi e'lonlari kanaliga)", () => {
+  const base = {
+    slug: "santexnik-abc123",
+    category: "Santexnik",
+    title: "Santexnika ishlari, tez va sifatli",
+    services: ["Kran almashtirish", "Unitaz o'rnatish"],
+    place: "Chilonzor, Toshkent shahri",
+    experienceYears: 5,
+    priceFrom: 100_000,
+    priceTo: null,
+    negotiable: true,
+    description: "Har kuni 8 dan 20 gacha.\nTel: +998 90 123 45 67\nKafolat beraman",
+    photo: "https://x.supabase.co/storage/v1/object/public/listing-images/master/a.png",
+  };
+
+  it("turi, kategoriya, sarlavha, xizmatlar, joy, tajriba, narx, tavsif; telefon va ism yo'q; tugma — usta sahifasidagi aloqa", () => {
+    const p = masterPost(base, t, BASE);
+    expect(p.html.split("\n").slice(0, 9)).toEqual([
+      "🛠 Usta xizmat taklif qiladi",
+      "",
+      "<b>Santexnik</b>",
+      "<i>Santexnika ishlari, tez va sifatli</i>",
+      "🔧 Kran almashtirish, Unitaz o&#39;rnatish".replace("&#39;", "'"),
+      "📍 Chilonzor, Toshkent shahri",
+      "🧰 Tajriba: 5 yil",
+      expect.stringMatching(/^💰 Narxi: .*100 000/),
+      "",
+    ]);
+    expect(p.html).toContain("Kafolat beraman");
+    expect(p.html).not.toMatch(/998|123 45 67/);
+    expect(p.html.endsWith("📞 Raqam — «Bog'lanish» tugmasi orqali saytda")).toBe(true);
+    expect(p.button).toEqual({ text: "📞 Bog'lanish", url: `${BASE}/ustalar/santexnik-abc123#contact` });
+    expect(p.photo).toBe(base.photo);
+    expect(p.caption).toBe(p.html);
+  });
+
+  it("narx yo'q — «Kelishiladi»; tajriba 0 — qator yo'q; sarlavha kategoriya bilan bir xil — takrorlanmaydi; rasm yo'q — rasmsiz xabar", () => {
+    const p = masterPost({ ...base, title: "santexnik", priceFrom: null, experienceYears: 0, photo: null, description: null }, t, BASE);
+    expect(p.html).toContain("💰 Narxi: Kelishiladi");
+    expect(p.html).not.toContain("🧰");
+    expect(p.html).not.toContain("<i>");
+    expect(p.photo).toBeUndefined();
+    expect(p.caption).toBeUndefined();
+  });
+
+  it("«Boshqa xizmatlar» — sarlavhada ustaning o'z yozgani; avtomatik tavsif (kategoriya: xizmatlar. Hudud…) takrorlanmaydi", () => {
+    const p = masterPost(
+      { ...base, category: "Boshqa xizmatlar", categorySlug: "other", title: "Tokar", services: ["Tokar"], description: "Boshqa xizmatlar: Tokar. Hudud: Buxoro, Romitan tumani.", photo: null },
+      t,
+      BASE,
+    );
+    expect(p.html.split("\n")[2]).toBe("<b>Tokar</b>");
+    expect(p.html).not.toContain("Boshqa xizmatlar");
+    expect(p.html).not.toContain("Hudud:");
+  });
+
+  it("Mini App havolasi — # siz", () => {
+    const p = masterPost(base, t, BASE, (path) => `https://t.me/bot?startapp=${encodeURIComponent(path)}`);
+    expect(p.button.url).toBe("https://t.me/bot?startapp=%2Fustalar%2Fsantexnik-abc123");
+  });
+});

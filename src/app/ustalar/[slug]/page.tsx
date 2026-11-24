@@ -316,7 +316,8 @@ export default async function MasterDetailPage({ params }: { params: Params }) {
         </div>
 
         <aside
-          className="space-y-4 lg:sticky lg:top-20 lg:self-start"
+          id="contact"
+          className="scroll-mt-20 space-y-4 lg:sticky lg:top-20 lg:self-start"
           data-masters-contact
         >
           <div className="rounded-2xl border border-border bg-card p-4 sm:p-5">

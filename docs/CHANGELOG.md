@@ -1,5 +1,18 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Kanalga usta e'lonlari — ishchi e'lonlari kanaliga (`feat/masters-channel`)
+
+Ega: "Kanalga e'lon bordimi, ustalar joylagan?" — yo'q edi (kanalga faqat vakansiya va ishchi e'lonlari chiqardi); ega
+tanlovi — "Ishchi e'lonlari kanaliga". **Migratsiya 0090** (`channel_posts.entity_type` — `master` ham).
+
+- Faol, haqiqiy (demo emas), egasi bloklanmagan usta e'loni — ishchi e'lonlari kanaliga, bir marta: darhol katalogga
+  chiqsa — joylangan zahoti; tekshiruvdan o'tgani — fon navbati bilan (oxirgi 24 soat). Sozlama — "Ishchi e'lonlari va
+  ustalar": o'chirilsa, ustalar ham chiqmaydi; alohida kanal ko'rsatilsa — o'sha kanalga.
+- Post: "🛠 Usta xizmat taklif qiladi", kategoriya (yoki "Boshqa xizmatlar"da ustaning o'z yozgani), sarlavha, xizmatlar,
+  joy, tajriba, narx, tavsif (avtomatik tavsif takrorlanmaydi). Ism va telefon yo'q — "📞 Bog'lanish" saytdagi e'lonning
+  aloqa qismiga. Rasm — e'lon rasmi (AI) yoki birinchi ish namunasi; ikkalasi ham yo'q — rasmsiz.
+- Admin "Telegram kanal": "Ishchi e'lonlari va ustalar (ISHCHI)".
+
 ## 2026-11-24 · Ustalar: e'lon rasmi (AI) — 0089 (`feat/master-images`)
 
 Ega: "ustalarda ham rasm yaratish bo'lsin"; "bazani yangila" (2026-11-24). **Migratsiya 0089 prod'ga qo'llandi**

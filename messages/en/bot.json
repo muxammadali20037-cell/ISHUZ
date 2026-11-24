@@ -98,7 +98,10 @@
     "contact": "📞 Contact",
     "contact_on_site": "Number — on the site, via the “Contact” button",
     "job_tag": "💼 Employer looking for a worker",
-    "worker_tag": "👤 Worker looking for a job"
+    "worker_tag": "👤 Worker looking for a job",
+    "master_tag": "🛠 A tradesperson offers services",
+    "master_experience": "Experience: {value} yrs",
+    "master_price": "Price: {value}"
   },
   "owner_post": {
     "vacancy": "✅ <b>Your listing is live!</b>\n{title} — job seekers can now find it in search.",

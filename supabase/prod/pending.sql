@@ -1,4 +1,4 @@
--- ISH TOPDIM · prod bazani yangilash: —…— migratsiyalari BITTA faylda (0 ta).
+-- ISH TOPDIM · prod bazani yangilash: 0090…0090 migratsiyalari BITTA faylda (1 ta).
 -- BU FAYL AVTOMATIK YARATILADI (scripts/gen-prod-pending.mjs) — qo'lda tahrirlamang.
 --
 -- Qanday qo'llanadi (ega):
@@ -11,6 +11,16 @@
 -- allaqachon bor narsalar qayta yaratilmaydi, ma'lumot o'chirilmaydi.
 
 begin;
+
+-- ═══════════════ 0090_channel_posts_master.sql ═══════════════
+-- ISH TOPDIM · 0090 · Kanalga usta e'lonlari
+--
+-- Ega (2026-11-24): "ustalar joylagan e'lonlar ham kanalga — ishchi e'lonlari kanaliga". channel_posts (0079) — har e'lon har
+-- kanalga bir marta yuborilishini kuzatadi; endi usta e'loni ham: entity_type = 'master'.
+-- Hech narsa o'chirilmaydi; takror ishga tushirish xavfsiz.
+
+alter table public.channel_posts drop constraint if exists channel_posts_entity_type_check;
+alter table public.channel_posts add constraint channel_posts_entity_type_check check (entity_type in ('vacancy', 'worker', 'master'));
 
 commit;
 
@@ -39,6 +49,7 @@ from (values
   ('0086', 'bir kishida bir nechta ishchi e''loni (worker_profiles.is_primary)', exists (select 1 from information_schema.columns where table_schema = 'public' and table_name = 'worker_profiles' and column_name = 'is_primary') and position('new_listing' in pg_get_functiondef('public.save_simple_worker_listing(jsonb)'::regprocedure)) > 0),
   ('0087', 'listing_images jadvali (e''lon rasmi, AI)', to_regclass('public.listing_images') is not null and to_regprocedure('public.claim_listing_image(text, uuid, uuid, text, text)') is not null),
   ('0088', 'contact_unlocks jadvali (ishchi raqamini ochish, chat)', to_regclass('public.contact_unlocks') is not null and to_regprocedure('public.unlock_worker_contact(uuid)') is not null and to_regprocedure('public.simple_worker_listing(uuid, boolean)') is not null),
-  ('0089', 'usta e''loni rasmi (listing_images: master)', exists (select 1 from pg_constraint where conrelid = 'public.listing_images'::regclass and conname = 'listing_images_entity_check' and pg_get_constraintdef(oid) like '%master%'))
+  ('0089', 'usta e''loni rasmi (listing_images: master)', exists (select 1 from pg_constraint where conrelid = 'public.listing_images'::regclass and conname = 'listing_images_entity_check' and pg_get_constraintdef(oid) like '%master%')),
+  ('0090', 'kanalga usta e''lonlari (channel_posts: master)', exists (select 1 from pg_constraint where conrelid = 'public.channel_posts'::regclass and conname = 'channel_posts_entity_type_check' and pg_get_constraintdef(oid) like '%master%'))
 ) as m(migration, tekshiruv, bor)
 order by m.migration;

@@ -55,10 +55,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(res, { status, headers: { "Cache-Control": "no-store" } });
   }
   // kanalda allaqachon chiqqan post — yangi rasm bilan (foydalanuvchini kutdirmaydi); qoralamada post hali yo'q
-  // (usta e'lonlari kanalga chiqmaydi)
-  if ("id" in input && input.entity !== "master") {
-    const kind = input.entity;
-    after(() => refreshChannelPhoto(kind, input.id, String(Date.now())));
-  }
+  if ("id" in input) after(() => refreshChannelPhoto(input.entity, input.id, String(Date.now())));
   return NextResponse.json(res, { headers: { "Cache-Control": "no-store" } });
 }
