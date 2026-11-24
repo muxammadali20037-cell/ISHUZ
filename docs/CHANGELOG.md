@@ -1,5 +1,27 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Hamma kasblar uchun aniq savollar — ish beruvchiga ham, ishchiga ham (`feat/smart-questions-all`)
+
+Ega: "hozir ustadan, kuryerdan, haydovchidan aniq kasbga mos so'raydi — hamma kasblardan, har bitta bosqich, har bir rol
+uchun so'rash kerak, aniqlik bo'lsin". **Migratsiya yo'q.**
+
+- Savollar katalogi (`requirements.ts`): 37 soha ("Boshqa"dan tashqari) — har biriga 1–2 aniq savol, **ish beruvchi** va
+  **ishchi** uchun alohida. Masalan: oshpaz — qanday joy (kafe, restoran, oshxona, fast-food, to'yxona) va sanitar
+  daftarcha; o'qituvchi — qayerda dars (maktab, o'quv markazi, bog'cha, onlayn, repetitorlik) va sertifikat (IELTS, CEFR);
+  shifokor — muassasa va ma'lumoti; qo'riqchi — navbatchilik (kunduzgi/tungi/sutkalik) va harbiy xizmat; sotuvchi —
+  savdo joyi va ish haqi (oylik/oylik+foiz/foiz), ishchida — kassa; buxgalter — 1C/Excel; IT — format va daraja
+  (Junior/Middle/Senior); tikuvchi — ishbay/oylik va mashina (to'g'ri tikuv/overlok); elektrik va energetika — elektr
+  xavfsizligi guruhi (II–V); konchi — vaxta; qishloq xo'jaligi — dala/issiqxona/ferma/bog' va mavsumiy/doimiy;
+  muhandis — AutoCAD/Revit/SolidWorks; menejer — jamoa kattaligi; yurist — advokatlik litsenziyasi; olim — ilmiy daraja;
+  telekom — balandlikda ish; go'zallik — foiz/oylik, ishchida o'z mijozlari va asboblari; dizayn, marketing, madaniyat
+  (ishchi) — portfolio; hunarmand — o'z ustaxonasi; fotograf — doimiy/bir martalik; yuklovchi — doimiy/bir martalik.
+- Savollar kasbdan keyin darhol, katalogdagi tartibda; gapdan va kasb nomidan tushunilgani so'ralmaydi ("kafe",
+  "sanitar daftarcha", "IELTS", "maktab", "sutkalik", "armiya", "vaxta", "III guruh", "1C va Excel", "Junior"…).
+- "Farqi yo'q", "Shart emas", "Yo'q" — e'longa yozilmaydi; qolgan javoblar — ✅ bandlar.
+- Tungi va sutkalik navbatchilikda ish vaqti so'ralmaydi.
+- Ishchi yozib javob bersa ("maktabda", "o'quv markazi", "ha, bor", "3 guruh") — tugmalardagi matnga qarab tanilaydi.
+- Test: har soha ikkala rolda savolli; har savol, variant va e'lon qatori 4 tilda borligi tekshiriladi.
+
 ## 2026-11-24 · Kasbga qarab savollar: jinsi, yosh chegarasi, ish vaqti; ustalar bo'limi yashirildi; "Hozir ish qidirmoqda" — yashil (`feat/smart-questions`)
 
 Ega: "aqli odamlarni lol qoldirsin — yozganiga qarab savol bersin, tanlagan kasbiga qarab savol bersin… e'londa jinsi, yoshi

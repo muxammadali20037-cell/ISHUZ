@@ -25,7 +25,8 @@ import { chatProfessionsWithListings, type ChatProfessionCount } from "../action
 import { ChatIntro } from "./chat-intro";
 import { HomeStart, type HomeActions } from "./home-start";
 import type { HomeData, HomeLatest } from "../home";
-import { WORKER_EXTRA_OPTIONS, type WorkerExtraKey } from "@/features/post/requirements";
+import { WORKER_EXTRA_OPTIONS } from "@/features/post/requirements";
+import { postExtraKey } from "../post-logic";
 
 /** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
 export function vacancyHref(text = ""): string {
@@ -677,6 +678,25 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
   const { t } = useT();
   const intro = part.intro ? <Say>{t("easy.guided.post_intro")}</Say> : null;
   const kind = `post-${part.ask.replace("post_", "")}`;
+  // kasbga xos savol (ega, 2026-11-24: "hamma kasblardan — har bir rol uchun aniq"): katalog — requirements.ts
+  const xk = postExtraKey(part.ask);
+  if (xk) {
+    return (
+      <Ai kind={kind}>
+        {intro}
+        <Say>{t(part.retry ? "easy.guided.ask_post_extra_retry" : `easy.guided.ask_post_${xk}`)}</Say>
+        {open ? (
+          <Pills
+            attr={`wx-${xk}`}
+            items={WORKER_EXTRA_OPTIONS[xk].map((v) => {
+              const label = xk === "license" ? t("easy.guided.wx.license.option", { value: v }) : t(`easy.guided.wx.${xk}.${v}`);
+              return { key: v, label, onClick: () => chat.pickPostExtra(xk, v, label) };
+            })}
+          />
+        ) : null}
+      </Ai>
+    );
+  }
   switch (part.ask) {
     case "post_profession":
       return (
@@ -726,28 +746,6 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
           ) : null}
         </Ai>
       );
-    case "post_license":
-    case "post_car":
-    case "post_transport":
-    case "post_tools": {
-      // kasbga xos savol (ega, 2026-11-24): haydovchi — guvohnoma, mashina; kuryer — transport; usta — asboblar
-      const key = part.ask.replace("post_", "") as WorkerExtraKey;
-      return (
-        <Ai kind={kind}>
-          {intro}
-          <Say>{t(part.retry ? "easy.guided.ask_post_extra_retry" : `easy.guided.ask_post_${key}`)}</Say>
-          {open ? (
-            <Pills
-              attr={`wx-${key}`}
-              items={WORKER_EXTRA_OPTIONS[key].map((v) => {
-                const label = key === "license" ? t("easy.guided.wx.license.option", { value: v }) : t(`easy.guided.wx.${key}.${v}`);
-                return { key: v, label, onClick: () => chat.pickPostExtra(key, v, label) };
-              })}
-            />
-          ) : null}
-        </Ai>
-      );
-    }
     case "post_name":
       return (
         <Ai kind={kind}>

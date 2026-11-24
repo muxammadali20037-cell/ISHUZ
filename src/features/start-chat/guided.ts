@@ -15,7 +15,7 @@ import { NO_FILTERS, type QuickOption } from "@/features/find/quick-types";
 import { answerPlace, draftFromForm, isAnyProfession, nextAsk, withPlace, placeChoices, readyStep, regionSlugOf, roleOfMode, shownWord, type AiPart, type Ask, type Draft, type Msg, type Role } from "./guided-logic";
 import type { ChatProfession } from "./actions";
 import { isPostAsk, matchRegion, nextPostAsk, parseExperience, parseName, parsePhone, postAnswers, postDraftFromForm, postExtraKey, withProfession, type PostAsk, type PostDraft } from "./post-logic";
-import { parseWorkerExtra, type WorkerExtraKey } from "@/features/post/requirements";
+import { WORKER_EXTRA_OPTIONS, parseWorkerExtra, type WorkerExtraKey } from "@/features/post/requirements";
 import { formatNotes } from "@/features/post/notes";
 
 export type { AiPart, Ask, Draft, Msg, Role } from "./guided-logic";
@@ -405,7 +405,9 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     // kasbga xos savol ("C", "ha, bor", "velosipedda") — tushunilmasa tugmalar bilan qayta
     const xk = postExtraKey(a);
     if (xk) {
-      const v = parseWorkerExtra(xk, q);
+      // tugmalardagi matnlar (joriy tilda) — "maktabda", "o'quv markazi" kabi yozilgan javob ham tanilsin
+      const labels = Object.fromEntries(WORKER_EXTRA_OPTIONS[xk].map((o) => [o, xk === "license" ? o : t(`easy.guided.wx.${xk}.${o}`)]));
+      const v = parseWorkerExtra(xk, q, labels);
       return v ? postNext({ ...d, extras: { ...d.extras, [xk]: v } }, mid) : postRetry(a, mid);
     }
     const phone = parsePhone(q);

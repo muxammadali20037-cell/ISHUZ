@@ -1368,7 +1368,33 @@
       "x_format": "Где работа?",
       "x_term": "Работа постоянная или разовая?",
       "x_pay": "Оплата сдельная или оклад?",
-      "salary_piece": "Сдельно — сколько примерно выходит в месяц?"
+      "salary_piece": "Сдельно — сколько примерно выходит в месяц?",
+      "x_level": "Какой уровень специалиста нужен?",
+      "x_sales_place": "Где продавать?",
+      "x_pay_mode": "Как считается оплата?",
+      "x_fin_soft": "Какую программу должен знать?",
+      "x_vehicles": "С какими машинами работа?",
+      "x_venue": "Какое заведение?",
+      "x_medbook": "Нужна санитарная книжка?",
+      "x_languages": "На каких языках должен говорить?",
+      "x_teach_place": "Где преподавать?",
+      "x_cert": "Нужен сертификат (IELTS, CEFR, национальный)?",
+      "x_med_place": "Где работа?",
+      "x_edu": "Какое образование нужно?",
+      "x_clean_place": "Где убирать?",
+      "x_guard_shift": "Какой график охраны?",
+      "x_army": "Нужна отслуженная армия?",
+      "x_machine": "На какой машине шить?",
+      "x_night": "Есть ночные смены?",
+      "x_season": "Работа сезонная или постоянная?",
+      "x_farm_place": "Где работа?",
+      "x_lawyer_license": "Нужна адвокатская лицензия?",
+      "x_degree": "Нужна учёная степень?",
+      "x_team": "Сколькими людьми руководить?",
+      "x_cad": "Какую программу должен знать?",
+      "x_heights": "Есть работа на высоте?",
+      "x_el_group": "Нужна группа по электробезопасности?",
+      "x_vaxta": "Работа вахтой?"
     },
     "other_profession": "Другая профессия",
     "profession_input": "Напишите профессию",
@@ -1459,6 +1485,237 @@
         "monthly": "Оклад",
         "line_piece": "Оплата сдельная",
         "line_monthly": "Оплата — оклад"
+      },
+      "level": {
+        "label": "Уровень",
+        "junior": "Junior (начинающий)",
+        "middle": "Middle (опытный)",
+        "senior": "Senior (ведущий)",
+        "any": "Не важно",
+        "line_junior": "Уровень: Junior",
+        "line_middle": "Уровень: Middle",
+        "line_senior": "Уровень: Senior"
+      },
+      "sales_place": {
+        "label": "Место продаж",
+        "store": "Магазин или ТЦ",
+        "market": "Рынок",
+        "wholesale": "Оптовая торговля",
+        "online": "Онлайн или по телефону",
+        "line_store": "Продажи в магазине или ТЦ",
+        "line_market": "Продажи на рынке",
+        "line_wholesale": "Оптовые продажи",
+        "line_online": "Продажи онлайн или по телефону"
+      },
+      "pay_mode": {
+        "label": "Тип оплаты",
+        "fixed": "Только оклад",
+        "fixed_percent": "Оклад + процент",
+        "percent": "Только процент",
+        "line_fixed": "Фиксированный оклад",
+        "line_fixed_percent": "Оклад плюс процент",
+        "line_percent": "Оплата — процент"
+      },
+      "fin_soft": {
+        "label": "Программа",
+        "1c": "1С",
+        "excel": "Excel",
+        "any": "Не важно",
+        "line_1c": "Обязательно знание 1С",
+        "line_excel": "Уверенное знание Excel"
+      },
+      "vehicles": {
+        "label": "Автомобили",
+        "light": "Легковые",
+        "truck": "Грузовые",
+        "both": "Оба вида",
+        "line_light": "Работа с легковыми авто",
+        "line_truck": "Работа с грузовыми авто",
+        "line_both": "Легковые и грузовые авто"
+      },
+      "venue": {
+        "label": "Заведение",
+        "cafe": "Кафе",
+        "restaurant": "Ресторан",
+        "canteen": "Столовая",
+        "fastfood": "Фастфуд",
+        "banquet": "Банкетный зал",
+        "line_cafe": "Заведение: кафе",
+        "line_restaurant": "Заведение: ресторан",
+        "line_canteen": "Заведение: столовая",
+        "line_fastfood": "Заведение: фастфуд",
+        "line_banquet": "Заведение: банкетный зал"
+      },
+      "medbook": {
+        "label": "Санкнижка",
+        "required": "Да, нужно",
+        "not_required": "Не обязательно",
+        "line_required": "Обязательна санитарная книжка"
+      },
+      "languages": {
+        "label": "Языки",
+        "uz": "Узбекский",
+        "ru": "Русский",
+        "uz_ru": "Узбекский и русский",
+        "plus_en": "Ещё и английский",
+        "line_uz": "Свободный узбекский язык",
+        "line_ru": "Свободный русский язык",
+        "line_uz_ru": "Узбекский и русский языки",
+        "line_plus_en": "Также нужен английский"
+      },
+      "teach_place": {
+        "label": "Где",
+        "school": "Школа",
+        "center": "Учебный центр",
+        "kindergarten": "Детский сад",
+        "online": "Онлайн",
+        "private": "На дому (репетиторство)",
+        "line_school": "Преподавание в школе",
+        "line_center": "Преподавание в учебном центре",
+        "line_kindergarten": "Работа в детском саду",
+        "line_online": "Онлайн-уроки",
+        "line_private": "Репетиторство на дому"
+      },
+      "cert": {
+        "label": "Сертификат",
+        "required": "Да, нужно",
+        "not_required": "Не обязательно",
+        "line_required": "Обязателен сертификат (IELTS, CEFR или национальный)"
+      },
+      "med_place": {
+        "label": "Учреждение",
+        "state": "Госбольница или поликлиника",
+        "private": "Частная клиника",
+        "pharmacy": "Аптека",
+        "home": "Выезд на дом",
+        "line_state": "Место работы: государственная больница или поликлиника",
+        "line_private": "Место работы: частная клиника",
+        "line_pharmacy": "Место работы: аптека",
+        "line_home": "Работа с выездом к пациентам"
+      },
+      "edu": {
+        "label": "Образование",
+        "higher": "Высшее",
+        "secondary": "Среднее специальное",
+        "any": "Не важно",
+        "line_higher": "Высшее образование",
+        "line_secondary": "Среднее специальное образование"
+      },
+      "clean_place": {
+        "label": "Объект",
+        "office": "Офис",
+        "home": "Квартира или дом",
+        "mall": "Магазин или ТЦ",
+        "hotel": "Гостиница",
+        "line_office": "Объект: офис",
+        "line_home": "Объект: квартира или дом",
+        "line_mall": "Объект: магазин или ТЦ",
+        "line_hotel": "Объект: гостиница"
+      },
+      "guard_shift": {
+        "label": "Смены",
+        "day": "Дневная",
+        "night": "Ночная",
+        "day24": "Суточная (24 часа)",
+        "line_day": "Дневные смены",
+        "line_night": "Ночные смены",
+        "line_day24": "Суточные смены (24 часа)"
+      },
+      "army": {
+        "label": "Армия",
+        "required": "Да, нужно",
+        "not_required": "Не обязательно",
+        "line_required": "Обязательно отслуживший в армии"
+      },
+      "machine": {
+        "label": "Машина",
+        "straight": "Прямострочная",
+        "overlock": "Оверлок",
+        "both": "Обе",
+        "line_straight": "Работа на прямострочной машине",
+        "line_overlock": "Работа на оверлоке",
+        "line_both": "Прямострочная машина и оверлок"
+      },
+      "night": {
+        "label": "Ночные смены",
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть ночные смены"
+      },
+      "season": {
+        "label": "Тип работы",
+        "seasonal": "Сезонная",
+        "permanent": "Постоянная",
+        "line_seasonal": "Сезонная работа",
+        "line_permanent": "Постоянная работа"
+      },
+      "farm_place": {
+        "label": "Место",
+        "field": "Поле",
+        "greenhouse": "Теплица",
+        "livestock": "Животноводство (ферма)",
+        "garden": "Сад",
+        "line_field": "Работа в поле",
+        "line_greenhouse": "Работа в теплице",
+        "line_livestock": "Работа на животноводческой ферме",
+        "line_garden": "Работа в саду"
+      },
+      "lawyer_license": {
+        "label": "Лицензия",
+        "required": "Да, нужно",
+        "not_required": "Не обязательно",
+        "line_required": "Обязательна адвокатская лицензия"
+      },
+      "degree": {
+        "label": "Учёная степень",
+        "phd": "PhD или DSc",
+        "master": "Магистр",
+        "any": "Не обязательно",
+        "line_phd": "Учёная степень PhD или DSc",
+        "line_master": "Степень магистра"
+      },
+      "team": {
+        "label": "Команда",
+        "small": "1–5 человек",
+        "medium": "6–20 человек",
+        "large": "Более 20",
+        "line_small": "Руководство командой 1–5 человек",
+        "line_medium": "Руководство командой 6–20 человек",
+        "line_large": "Руководство коллективом более 20 человек"
+      },
+      "cad": {
+        "label": "Программа",
+        "autocad": "AutoCAD",
+        "revit": "Revit",
+        "solidworks": "SolidWorks",
+        "any": "Не важно",
+        "line_autocad": "Обязательно знание AutoCAD",
+        "line_revit": "Обязательно знание Revit",
+        "line_solidworks": "Обязательно знание SolidWorks"
+      },
+      "heights": {
+        "label": "Работа на высоте",
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Работа на высоте (вышки, крыши)"
+      },
+      "el_group": {
+        "label": "Группа по электробезопасности",
+        "g2": "II группа",
+        "g3": "III группа",
+        "g4": "IV группа",
+        "g5": "V группа",
+        "none": "Не обязательно",
+        "line_g2": "Группа по электробезопасности: II",
+        "line_g3": "Группа по электробезопасности: III",
+        "line_g4": "Группа по электробезопасности: IV",
+        "line_g5": "Группа по электробезопасности: V"
+      },
+      "vaxta": {
+        "label": "Вахта",
+        "yes": "Да, вахта",
+        "no": "Нет, на месте",
+        "line_yes": "Работа вахтовым методом"
       }
     }
   },
@@ -1825,12 +2082,280 @@
         "yes": "Да, есть",
         "no": "Нет",
         "line_yes": "Есть свой инструмент"
+      },
+      "level": {
+        "junior": "Junior (начинающий)",
+        "middle": "Middle",
+        "senior": "Senior",
+        "line_junior": "Уровень: Junior",
+        "line_middle": "Уровень: Middle",
+        "line_senior": "Уровень: Senior"
+      },
+      "portfolio": {
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть портфолио"
+      },
+      "sales_place": {
+        "store": "Магазин или ТЦ",
+        "market": "Рынок",
+        "wholesale": "Оптовая торговля",
+        "online": "Онлайн или по телефону",
+        "any": "Не важно",
+        "line_store": "Хочу работать в магазине или ТЦ",
+        "line_market": "Хочу работать на рынке",
+        "line_wholesale": "Хочу работать в оптовой торговле",
+        "line_online": "Хочу продавать онлайн или по телефону"
+      },
+      "cashier": {
+        "yes": "Да",
+        "no": "Нет",
+        "line_yes": "Умею работать на кассе"
+      },
+      "fin_soft": {
+        "1c": "1С",
+        "excel": "Excel",
+        "both": "1С и Excel",
+        "none": "Никакие",
+        "line_1c": "Знаю 1С",
+        "line_excel": "Хорошо знаю Excel",
+        "line_both": "Знаю 1С и Excel"
+      },
+      "machine": {
+        "straight": "Прямострочная",
+        "overlock": "Оверлок",
+        "both": "Обе",
+        "line_straight": "Шью на прямострочной машине",
+        "line_overlock": "Работаю на оверлоке",
+        "line_both": "Прямострочная машина и оверлок"
+      },
+      "el_group": {
+        "g2": "II группа",
+        "g3": "III группа",
+        "g4": "IV группа",
+        "g5": "V группа",
+        "none": "Нет",
+        "line_g2": "Группа по электробезопасности: II",
+        "line_g3": "Группа по электробезопасности: III",
+        "line_g4": "Группа по электробезопасности: IV",
+        "line_g5": "Группа по электробезопасности: V"
+      },
+      "night": {
+        "yes": "Да",
+        "no": "Нет",
+        "line_yes": "Могу работать в ночную смену"
+      },
+      "vehicles": {
+        "light": "Легковые",
+        "truck": "Грузовые",
+        "both": "Оба вида",
+        "line_light": "Работаю с легковыми авто",
+        "line_truck": "Работаю с грузовыми авто",
+        "line_both": "Работаю с легковыми и грузовыми авто"
+      },
+      "venue": {
+        "cafe": "Кафе",
+        "restaurant": "Ресторан",
+        "canteen": "Столовая",
+        "fastfood": "Фастфуд",
+        "banquet": "Банкетный зал",
+        "any": "Не важно",
+        "line_cafe": "Хочу работать в кафе",
+        "line_restaurant": "Хочу работать в ресторане",
+        "line_canteen": "Хочу работать в столовой",
+        "line_fastfood": "Хочу работать в фастфуде",
+        "line_banquet": "Хочу работать в банкетном зале"
+      },
+      "medbook": {
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть санитарная книжка"
+      },
+      "languages": {
+        "uz": "Узбекский",
+        "ru": "Русский",
+        "uz_ru": "Узбекский и русский",
+        "plus_en": "Ещё и английский",
+        "line_uz": "Говорю на узбекском",
+        "line_ru": "Говорю на русском",
+        "line_uz_ru": "Говорю на узбекском и русском",
+        "line_plus_en": "Знаю также английский"
+      },
+      "teach_place": {
+        "school": "Школа",
+        "center": "Учебный центр",
+        "kindergarten": "Детский сад",
+        "online": "Онлайн",
+        "private": "На дому (репетиторство)",
+        "any": "Не важно",
+        "line_school": "Хочу преподавать в школе",
+        "line_center": "Хочу преподавать в учебном центре",
+        "line_kindergarten": "Хочу работать в детском саду",
+        "line_online": "Могу вести онлайн-уроки",
+        "line_private": "Занимаюсь репетиторством"
+      },
+      "cert": {
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть сертификат (IELTS, CEFR или национальный)"
+      },
+      "med_edu": {
+        "higher": "Высшее",
+        "secondary": "Среднее специальное (колледж)",
+        "student": "Студент",
+        "line_higher": "Высшее медицинское образование",
+        "line_secondary": "Среднее специальное медицинское образование",
+        "line_student": "Студент-медик"
+      },
+      "clean_place": {
+        "office": "Офис",
+        "home": "Квартира или дом",
+        "mall": "Магазин или ТЦ",
+        "hotel": "Гостиница",
+        "any": "Не важно",
+        "line_office": "Хочу работать в офисе",
+        "line_home": "Могу работать в квартирах и домах",
+        "line_mall": "Хочу работать в магазине или ТЦ",
+        "line_hotel": "Хочу работать в гостинице"
+      },
+      "army": {
+        "yes": "Да",
+        "no": "Нет",
+        "line_yes": "Отслужил в армии"
+      },
+      "guard_shift": {
+        "day": "Дневная",
+        "night": "Ночная",
+        "day24": "Суточная (24 часа)",
+        "any": "Не важно",
+        "line_day": "Подходят дневные смены",
+        "line_night": "Работаю в ночные смены",
+        "line_day24": "Работаю сутками"
+      },
+      "own_clients": {
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть своя клиентская база"
+      },
+      "season": {
+        "seasonal": "Сезонную",
+        "permanent": "Постоянную",
+        "any": "Не важно",
+        "line_seasonal": "Ищу сезонную работу",
+        "line_permanent": "Ищу постоянную работу"
+      },
+      "lawyer_license": {
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть адвокатская лицензия"
+      },
+      "degree": {
+        "phd": "PhD или DSc",
+        "master": "Магистр",
+        "none": "Нет",
+        "line_phd": "Учёная степень PhD или DSc",
+        "line_master": "Степень магистра"
+      },
+      "team": {
+        "small": "1–5 человек",
+        "medium": "6–20 человек",
+        "large": "Более 20",
+        "none": "Не руководил",
+        "line_small": "Руководил командой 1–5 человек",
+        "line_medium": "Руководил командой 6–20 человек",
+        "line_large": "Руководил коллективом более 20 человек"
+      },
+      "edu": {
+        "higher": "Высшее",
+        "secondary": "Среднее специальное",
+        "line_higher": "Высшее образование",
+        "line_secondary": "Среднее специальное образование"
+      },
+      "cad": {
+        "autocad": "AutoCAD",
+        "revit": "Revit",
+        "solidworks": "SolidWorks",
+        "none": "Никакой",
+        "line_autocad": "Работаю в AutoCAD",
+        "line_revit": "Работаю в Revit",
+        "line_solidworks": "Работаю в SolidWorks"
+      },
+      "heights": {
+        "yes": "Да",
+        "no": "Нет",
+        "line_yes": "Могу работать на высоте"
+      },
+      "vaxta": {
+        "yes": "Да",
+        "no": "Нет",
+        "line_yes": "Могу работать вахтой"
+      },
+      "workshop": {
+        "yes": "Да, есть",
+        "no": "Нет",
+        "line_yes": "Есть своя мастерская"
       }
     },
     "placeholder_post_license": "Например: B или C",
     "placeholder_post_car": "Да или нет",
     "placeholder_post_transport": "Например: на велосипеде",
-    "placeholder_post_tools": "Да или нет"
+    "placeholder_post_tools": "Да или нет",
+    "ask_post_level": "Какой у вас уровень?",
+    "placeholder_post_level": "Например: Middle",
+    "ask_post_portfolio": "Есть портфолио (примеры работ)?",
+    "placeholder_post_portfolio": "Да или нет",
+    "ask_post_sales_place": "Где хотите работать продавцом?",
+    "placeholder_post_sales_place": "Например: в магазине",
+    "ask_post_cashier": "Умеете работать на кассе?",
+    "placeholder_post_cashier": "Да или нет",
+    "ask_post_fin_soft": "Какие программы знаете?",
+    "placeholder_post_fin_soft": "Например: 1С",
+    "ask_post_machine": "На какой машине шьёте?",
+    "placeholder_post_machine": "Например: оверлок",
+    "ask_post_el_group": "Есть группа по электробезопасности?",
+    "placeholder_post_el_group": "Например: III группа",
+    "ask_post_night": "Можете работать в ночную смену?",
+    "placeholder_post_night": "Да или нет",
+    "ask_post_vehicles": "Какие машины ремонтируете?",
+    "placeholder_post_vehicles": "Например: легковые",
+    "ask_post_venue": "Где хотите работать?",
+    "placeholder_post_venue": "Например: в ресторане",
+    "ask_post_medbook": "Есть санитарная книжка?",
+    "placeholder_post_medbook": "Да или нет",
+    "ask_post_languages": "На каких языках говорите?",
+    "placeholder_post_languages": "Например: узбекский и русский",
+    "ask_post_teach_place": "Где хотите преподавать?",
+    "placeholder_post_teach_place": "Например: в школе",
+    "ask_post_cert": "Есть сертификат (IELTS, CEFR, национальный)?",
+    "placeholder_post_cert": "Да или нет",
+    "ask_post_med_edu": "Какое у вас медицинское образование?",
+    "placeholder_post_med_edu": "Например: высшее",
+    "ask_post_clean_place": "Где можете работать?",
+    "placeholder_post_clean_place": "Например: в офисе",
+    "ask_post_army": "Служили в армии?",
+    "placeholder_post_army": "Да или нет",
+    "ask_post_guard_shift": "Какой график охраны подходит?",
+    "placeholder_post_guard_shift": "Например: сутки",
+    "ask_post_own_clients": "Есть своя клиентская база?",
+    "placeholder_post_own_clients": "Да или нет",
+    "ask_post_season": "Какую работу ищете?",
+    "placeholder_post_season": "Например: сезонную",
+    "ask_post_lawyer_license": "Есть адвокатская лицензия?",
+    "placeholder_post_lawyer_license": "Да или нет",
+    "ask_post_degree": "Есть учёная степень?",
+    "placeholder_post_degree": "Например: PhD",
+    "ask_post_team": "Сколькими людьми руководили?",
+    "placeholder_post_team": "Например: 6–20",
+    "ask_post_edu": "Какое у вас образование?",
+    "placeholder_post_edu": "Например: высшее",
+    "ask_post_cad": "В какой программе работаете?",
+    "placeholder_post_cad": "Например: AutoCAD",
+    "ask_post_heights": "Можете работать на высоте?",
+    "placeholder_post_heights": "Да или нет",
+    "ask_post_vaxta": "Можете работать вахтой?",
+    "placeholder_post_vaxta": "Да или нет",
+    "ask_post_workshop": "Есть своя мастерская?",
+    "placeholder_post_workshop": "Да или нет"
   },
   "intro": {
     "title": "Как работает Ish topdim",

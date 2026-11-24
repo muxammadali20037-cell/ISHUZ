@@ -1,6 +1,6 @@
 import { normalizePhone } from "@/lib/format";
 import { parseMoney } from "./money";
-import { hoursRelevant, scheduleRelevant, type ExtraKey } from "./requirements";
+import { EXTRA_KEYS, hoursRelevant, scheduleRelevant, type ExtraKey } from "./requirements";
 import type { VacancyDraft } from "./types";
 
 /**
@@ -8,15 +8,7 @@ import type { VacancyDraft } from "./types";
  * o'tkazsin, yozuvlar kam bo'lsin"). Bir gapdan tushunilmagan narsalar ekranda BITTADAN so'raladi — tayyor variantlar bilan.
  * Qaysi savol navbatda ekanini shu sof funksiyalar hal qiladi (komponent ham, testlar ham shundan foydalanadi).
  */
-export const GUIDE_STEPS = [
-  "profession",
-  // kasbga xos (ega, 2026-11-24): faqat shu kasbda so'raladi — haydovchi, kuryer, IT/dizayn, usta/quruvchi, tikuvchi
-  "x_license",
-  "x_car",
-  "x_transport",
-  "x_format",
-  "x_term",
-  "x_pay",
+const AFTER_EXTRAS = [
   "region",
   "district",
   "salary",
@@ -32,7 +24,16 @@ export const GUIDE_STEPS = [
   "notes",
   "description",
 ] as const;
-export type GuideStep = (typeof GUIDE_STEPS)[number];
+/** Kasbga xos savol ("x_license", "x_venue"…) — katalog: requirements.ts */
+export type ExtraStep = `x_${ExtraKey}`;
+export type GuideStep = "profession" | ExtraStep | (typeof AFTER_EXTRAS)[number];
+
+/** Savollar tartibi: kasb → shu kasbga xos savollar (katalogdagi tartibda) → joy, maosh, grafik… */
+export function guideSteps(keys: readonly ExtraKey[]): GuideStep[] {
+  return ["profession", ...keys.map((k) => `x_${k}` as const), ...AFTER_EXTRAS];
+}
+/** Hamma mumkin bo'lgan savollar */
+export const GUIDE_STEPS: readonly GuideStep[] = guideSteps(EXTRA_KEYS);
 
 /** Savol berildi va javob olindi (ixtiyoriy savollar uchun: "farqi yo'q" ham javob) */
 export type GuideAsked = ReadonlySet<GuideStep>;
@@ -96,12 +97,12 @@ export function guideAnswered(step: GuideStep, d: View, asked: GuideAsked, keys:
 
 /** Keyingi savol; hammasi bor bo'lsa — null (tekshirish va joylash) */
 export function nextGuideStep(d: View, asked: GuideAsked, keys: readonly ExtraKey[] = []): GuideStep | null {
-  return GUIDE_STEPS.find((s) => !guideAnswered(s, d, asked, keys)) ?? null;
+  return guideSteps(keys).find((s) => !guideAnswered(s, d, asked, keys)) ?? null;
 }
 
 /** Jarayon: nechta savolga javob bor (tepadagi chiziq uchun) — faqat shu e'longa kerakli savollar sanaladi */
 export function guideProgress(d: View, asked: GuideAsked, keys: readonly ExtraKey[] = []): { done: number; total: number } {
-  const steps = GUIDE_STEPS.filter((s) => guideRelevant(s, d, keys));
+  const steps = guideSteps(keys).filter((s) => guideRelevant(s, d, keys));
   return { done: steps.filter((s) => guideAnswered(s, d, asked, keys)).length, total: steps.length };
 }
 

@@ -1368,7 +1368,33 @@
       "x_format": "Where will they work?",
       "x_term": "Permanent or one-off job?",
       "x_pay": "Piece-rate or monthly pay?",
-      "salary_piece": "Piece-rate — roughly how much per month?"
+      "salary_piece": "Piece-rate — roughly how much per month?",
+      "x_level": "What level do you need?",
+      "x_sales_place": "Where will they sell?",
+      "x_pay_mode": "How is pay calculated?",
+      "x_fin_soft": "Which software must they know?",
+      "x_vehicles": "What vehicles will they work on?",
+      "x_venue": "What kind of place?",
+      "x_medbook": "Is a health certificate required?",
+      "x_languages": "Which languages must they speak?",
+      "x_teach_place": "Where will they teach?",
+      "x_cert": "Is a certificate required (IELTS, CEFR, national)?",
+      "x_med_place": "Where is the job?",
+      "x_edu": "What education is required?",
+      "x_clean_place": "Where will they clean?",
+      "x_guard_shift": "What kind of shifts?",
+      "x_army": "Must have completed military service?",
+      "x_machine": "Which sewing machine?",
+      "x_night": "Are there night shifts?",
+      "x_season": "Seasonal or permanent?",
+      "x_farm_place": "Where is the work?",
+      "x_lawyer_license": "Is a bar licence required?",
+      "x_degree": "Is an academic degree required?",
+      "x_team": "How many people will they manage?",
+      "x_cad": "Which software must they know?",
+      "x_heights": "Is there work at height?",
+      "x_el_group": "Electrical safety group required?",
+      "x_vaxta": "Is it rotational work?"
     },
     "other_profession": "Another job",
     "profession_input": "Type the job",
@@ -1459,6 +1485,237 @@
         "monthly": "Monthly",
         "line_piece": "Piece-rate pay",
         "line_monthly": "Monthly salary"
+      },
+      "level": {
+        "label": "Level",
+        "junior": "Junior",
+        "middle": "Middle",
+        "senior": "Senior",
+        "any": "Any",
+        "line_junior": "Level: Junior",
+        "line_middle": "Level: Middle",
+        "line_senior": "Level: Senior"
+      },
+      "sales_place": {
+        "label": "Sales point",
+        "store": "Shop or mall",
+        "market": "Bazaar",
+        "wholesale": "Wholesale",
+        "online": "Online or by phone",
+        "line_store": "Sales in a shop or mall",
+        "line_market": "Sales at a bazaar",
+        "line_wholesale": "Wholesale sales",
+        "line_online": "Sales online or by phone"
+      },
+      "pay_mode": {
+        "label": "Pay type",
+        "fixed": "Fixed salary",
+        "fixed_percent": "Salary + commission",
+        "percent": "Commission only",
+        "line_fixed": "Fixed salary",
+        "line_fixed_percent": "Salary plus commission",
+        "line_percent": "Commission-based pay"
+      },
+      "fin_soft": {
+        "label": "Software",
+        "1c": "1C",
+        "excel": "Excel",
+        "any": "Any",
+        "line_1c": "1C knowledge required",
+        "line_excel": "Good Excel skills required"
+      },
+      "vehicles": {
+        "label": "Vehicles",
+        "light": "Cars",
+        "truck": "Trucks",
+        "both": "Both",
+        "line_light": "Works on cars",
+        "line_truck": "Works on trucks",
+        "line_both": "Works on cars and trucks"
+      },
+      "venue": {
+        "label": "Venue",
+        "cafe": "Café",
+        "restaurant": "Restaurant",
+        "canteen": "Canteen",
+        "fastfood": "Fast food",
+        "banquet": "Banquet hall",
+        "line_cafe": "Venue: café",
+        "line_restaurant": "Venue: restaurant",
+        "line_canteen": "Venue: canteen",
+        "line_fastfood": "Venue: fast food",
+        "line_banquet": "Venue: banquet hall"
+      },
+      "medbook": {
+        "label": "Health certificate",
+        "required": "Yes, required",
+        "not_required": "Not required",
+        "line_required": "Health certificate required"
+      },
+      "languages": {
+        "label": "Languages",
+        "uz": "Uzbek",
+        "ru": "Russian",
+        "uz_ru": "Uzbek and Russian",
+        "plus_en": "English too",
+        "line_uz": "Fluent Uzbek",
+        "line_ru": "Fluent Russian",
+        "line_uz_ru": "Uzbek and Russian required",
+        "line_plus_en": "English also required"
+      },
+      "teach_place": {
+        "label": "Where",
+        "school": "School",
+        "center": "Learning centre",
+        "kindergarten": "Kindergarten",
+        "online": "Online",
+        "private": "Home tutoring",
+        "line_school": "Teaching at a school",
+        "line_center": "Teaching at a learning centre",
+        "line_kindergarten": "Working at a kindergarten",
+        "line_online": "Online lessons",
+        "line_private": "Home tutoring"
+      },
+      "cert": {
+        "label": "Certificate",
+        "required": "Yes, required",
+        "not_required": "Not required",
+        "line_required": "Certificate required (IELTS, CEFR or national)"
+      },
+      "med_place": {
+        "label": "Facility",
+        "state": "State hospital or clinic",
+        "private": "Private clinic",
+        "pharmacy": "Pharmacy",
+        "home": "Home visits",
+        "line_state": "Workplace: state hospital or clinic",
+        "line_private": "Workplace: private clinic",
+        "line_pharmacy": "Workplace: pharmacy",
+        "line_home": "Home visits to patients"
+      },
+      "edu": {
+        "label": "Education",
+        "higher": "Higher",
+        "secondary": "Vocational",
+        "any": "Any",
+        "line_higher": "Higher education",
+        "line_secondary": "Vocational education"
+      },
+      "clean_place": {
+        "label": "Place",
+        "office": "Office",
+        "home": "Home",
+        "mall": "Shop or mall",
+        "hotel": "Hotel",
+        "line_office": "Place: office",
+        "line_home": "Place: home",
+        "line_mall": "Place: shop or mall",
+        "line_hotel": "Place: hotel"
+      },
+      "guard_shift": {
+        "label": "Shifts",
+        "day": "Day",
+        "night": "Night",
+        "day24": "24-hour",
+        "line_day": "Day shifts",
+        "line_night": "Night shifts",
+        "line_day24": "24-hour shifts"
+      },
+      "army": {
+        "label": "Military service",
+        "required": "Yes, required",
+        "not_required": "Not required",
+        "line_required": "Completed military service required"
+      },
+      "machine": {
+        "label": "Machine",
+        "straight": "Lockstitch",
+        "overlock": "Overlock",
+        "both": "Both",
+        "line_straight": "Lockstitch machine",
+        "line_overlock": "Overlock machine",
+        "line_both": "Lockstitch and overlock"
+      },
+      "night": {
+        "label": "Night shifts",
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Night shifts included"
+      },
+      "season": {
+        "label": "Job type",
+        "seasonal": "Seasonal",
+        "permanent": "Permanent",
+        "line_seasonal": "Seasonal job",
+        "line_permanent": "Permanent job"
+      },
+      "farm_place": {
+        "label": "Place",
+        "field": "Field",
+        "greenhouse": "Greenhouse",
+        "livestock": "Livestock farm",
+        "garden": "Orchard",
+        "line_field": "Field work",
+        "line_greenhouse": "Greenhouse work",
+        "line_livestock": "Livestock farm work",
+        "line_garden": "Orchard work"
+      },
+      "lawyer_license": {
+        "label": "Licence",
+        "required": "Yes, required",
+        "not_required": "Not required",
+        "line_required": "Bar licence required"
+      },
+      "degree": {
+        "label": "Degree",
+        "phd": "PhD or DSc",
+        "master": "Master's",
+        "any": "Not required",
+        "line_phd": "PhD or DSc degree",
+        "line_master": "Master's degree"
+      },
+      "team": {
+        "label": "Team",
+        "small": "1–5 people",
+        "medium": "6–20 people",
+        "large": "20+",
+        "line_small": "Manages a team of 1–5",
+        "line_medium": "Manages a team of 6–20",
+        "line_large": "Manages 20+ people"
+      },
+      "cad": {
+        "label": "Software",
+        "autocad": "AutoCAD",
+        "revit": "Revit",
+        "solidworks": "SolidWorks",
+        "any": "Any",
+        "line_autocad": "AutoCAD required",
+        "line_revit": "Revit required",
+        "line_solidworks": "SolidWorks required"
+      },
+      "heights": {
+        "label": "Work at height",
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Work at height (towers, roofs)"
+      },
+      "el_group": {
+        "label": "Electrical safety group",
+        "g2": "Group II",
+        "g3": "Group III",
+        "g4": "Group IV",
+        "g5": "Group V",
+        "none": "Not required",
+        "line_g2": "Electrical safety group II",
+        "line_g3": "Electrical safety group III",
+        "line_g4": "Electrical safety group IV",
+        "line_g5": "Electrical safety group V"
+      },
+      "vaxta": {
+        "label": "Rotation",
+        "yes": "Yes, rotational",
+        "no": "No, on site",
+        "line_yes": "Rotational (fly-in/fly-out) work"
       }
     }
   },
@@ -1825,12 +2082,280 @@
         "yes": "Yes",
         "no": "No",
         "line_yes": "Has own tools"
+      },
+      "level": {
+        "junior": "Junior",
+        "middle": "Middle",
+        "senior": "Senior",
+        "line_junior": "Level: Junior",
+        "line_middle": "Level: Middle",
+        "line_senior": "Level: Senior"
+      },
+      "portfolio": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Portfolio available"
+      },
+      "sales_place": {
+        "store": "Shop or mall",
+        "market": "Bazaar",
+        "wholesale": "Wholesale",
+        "online": "Online or by phone",
+        "any": "Any",
+        "line_store": "Prefers a shop or mall",
+        "line_market": "Prefers a bazaar",
+        "line_wholesale": "Prefers wholesale",
+        "line_online": "Prefers online or phone sales"
+      },
+      "cashier": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Can operate a cash register"
+      },
+      "fin_soft": {
+        "1c": "1C",
+        "excel": "Excel",
+        "both": "1C and Excel",
+        "none": "None",
+        "line_1c": "Knows 1C",
+        "line_excel": "Good Excel skills",
+        "line_both": "Knows 1C and Excel"
+      },
+      "machine": {
+        "straight": "Lockstitch",
+        "overlock": "Overlock",
+        "both": "Both",
+        "line_straight": "Lockstitch machine",
+        "line_overlock": "Overlock machine",
+        "line_both": "Lockstitch and overlock"
+      },
+      "el_group": {
+        "g2": "Group II",
+        "g3": "Group III",
+        "g4": "Group IV",
+        "g5": "Group V",
+        "none": "No",
+        "line_g2": "Electrical safety group II",
+        "line_g3": "Electrical safety group III",
+        "line_g4": "Electrical safety group IV",
+        "line_g5": "Electrical safety group V"
+      },
+      "night": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Can work night shifts"
+      },
+      "vehicles": {
+        "light": "Cars",
+        "truck": "Trucks",
+        "both": "Both",
+        "line_light": "Works on cars",
+        "line_truck": "Works on trucks",
+        "line_both": "Works on cars and trucks"
+      },
+      "venue": {
+        "cafe": "Café",
+        "restaurant": "Restaurant",
+        "canteen": "Canteen",
+        "fastfood": "Fast food",
+        "banquet": "Banquet hall",
+        "any": "Any",
+        "line_cafe": "Prefers a café",
+        "line_restaurant": "Prefers a restaurant",
+        "line_canteen": "Prefers a canteen",
+        "line_fastfood": "Prefers fast food",
+        "line_banquet": "Prefers a banquet hall"
+      },
+      "medbook": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has a health certificate"
+      },
+      "languages": {
+        "uz": "Uzbek",
+        "ru": "Russian",
+        "uz_ru": "Uzbek and Russian",
+        "plus_en": "English too",
+        "line_uz": "Speaks Uzbek",
+        "line_ru": "Speaks Russian",
+        "line_uz_ru": "Speaks Uzbek and Russian",
+        "line_plus_en": "Also speaks English"
+      },
+      "teach_place": {
+        "school": "School",
+        "center": "Learning centre",
+        "kindergarten": "Kindergarten",
+        "online": "Online",
+        "private": "Home tutoring",
+        "any": "Any",
+        "line_school": "Prefers a school",
+        "line_center": "Prefers a learning centre",
+        "line_kindergarten": "Prefers a kindergarten",
+        "line_online": "Can teach online",
+        "line_private": "Home tutoring"
+      },
+      "cert": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has a certificate (IELTS, CEFR or national)"
+      },
+      "med_edu": {
+        "higher": "Higher",
+        "secondary": "Vocational (college)",
+        "student": "Student",
+        "line_higher": "Higher medical education",
+        "line_secondary": "Vocational medical education",
+        "line_student": "Medical student"
+      },
+      "clean_place": {
+        "office": "Office",
+        "home": "Home",
+        "mall": "Shop or mall",
+        "hotel": "Hotel",
+        "any": "Any",
+        "line_office": "Prefers an office",
+        "line_home": "Can work in homes",
+        "line_mall": "Prefers a shop or mall",
+        "line_hotel": "Prefers a hotel"
+      },
+      "army": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Completed military service"
+      },
+      "guard_shift": {
+        "day": "Day",
+        "night": "Night",
+        "day24": "24-hour",
+        "any": "Any",
+        "line_day": "Prefers day shifts",
+        "line_night": "Works night shifts",
+        "line_day24": "Works 24-hour shifts"
+      },
+      "own_clients": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has own clients"
+      },
+      "season": {
+        "seasonal": "Seasonal",
+        "permanent": "Permanent",
+        "any": "Any",
+        "line_seasonal": "Looking for seasonal work",
+        "line_permanent": "Looking for a permanent job"
+      },
+      "lawyer_license": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has a bar licence"
+      },
+      "degree": {
+        "phd": "PhD or DSc",
+        "master": "Master's",
+        "none": "No",
+        "line_phd": "PhD or DSc degree",
+        "line_master": "Master's degree"
+      },
+      "team": {
+        "small": "1–5 people",
+        "medium": "6–20 people",
+        "large": "20+",
+        "none": "None",
+        "line_small": "Managed a team of 1–5",
+        "line_medium": "Managed a team of 6–20",
+        "line_large": "Managed 20+ people"
+      },
+      "edu": {
+        "higher": "Higher",
+        "secondary": "Vocational",
+        "line_higher": "Higher education",
+        "line_secondary": "Vocational education"
+      },
+      "cad": {
+        "autocad": "AutoCAD",
+        "revit": "Revit",
+        "solidworks": "SolidWorks",
+        "none": "None",
+        "line_autocad": "Uses AutoCAD",
+        "line_revit": "Uses Revit",
+        "line_solidworks": "Uses SolidWorks"
+      },
+      "heights": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Can work at height"
+      },
+      "vaxta": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Can do rotational work"
+      },
+      "workshop": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has own workshop"
       }
     },
     "placeholder_post_license": "For example: B or C",
     "placeholder_post_car": "Yes or no",
     "placeholder_post_transport": "For example: by bike",
-    "placeholder_post_tools": "Yes or no"
+    "placeholder_post_tools": "Yes or no",
+    "ask_post_level": "What's your level?",
+    "placeholder_post_level": "For example: Middle",
+    "ask_post_portfolio": "Do you have a portfolio?",
+    "placeholder_post_portfolio": "Yes or no",
+    "ask_post_sales_place": "Where do you want to work in sales?",
+    "placeholder_post_sales_place": "For example: in a shop",
+    "ask_post_cashier": "Can you operate a cash register?",
+    "placeholder_post_cashier": "Yes or no",
+    "ask_post_fin_soft": "Which software do you know?",
+    "placeholder_post_fin_soft": "For example: 1C",
+    "ask_post_machine": "Which sewing machine do you use?",
+    "placeholder_post_machine": "For example: overlock",
+    "ask_post_el_group": "Do you have an electrical safety group?",
+    "placeholder_post_el_group": "For example: Group III",
+    "ask_post_night": "Can you work night shifts?",
+    "placeholder_post_night": "Yes or no",
+    "ask_post_vehicles": "Which vehicles do you work on?",
+    "placeholder_post_vehicles": "For example: cars",
+    "ask_post_venue": "Where would you like to work?",
+    "placeholder_post_venue": "For example: in a restaurant",
+    "ask_post_medbook": "Do you have a health certificate?",
+    "placeholder_post_medbook": "Yes or no",
+    "ask_post_languages": "Which languages do you speak?",
+    "placeholder_post_languages": "For example: Uzbek and Russian",
+    "ask_post_teach_place": "Where do you want to teach?",
+    "placeholder_post_teach_place": "For example: at a school",
+    "ask_post_cert": "Do you have a certificate (IELTS, CEFR, national)?",
+    "placeholder_post_cert": "Yes or no",
+    "ask_post_med_edu": "What's your medical education?",
+    "placeholder_post_med_edu": "For example: higher",
+    "ask_post_clean_place": "Where can you work?",
+    "placeholder_post_clean_place": "For example: in an office",
+    "ask_post_army": "Have you completed military service?",
+    "placeholder_post_army": "Yes or no",
+    "ask_post_guard_shift": "Which shifts suit you?",
+    "placeholder_post_guard_shift": "For example: 24-hour",
+    "ask_post_own_clients": "Do you have your own clients?",
+    "placeholder_post_own_clients": "Yes or no",
+    "ask_post_season": "What kind of job are you looking for?",
+    "placeholder_post_season": "For example: seasonal",
+    "ask_post_lawyer_license": "Do you have a bar licence?",
+    "placeholder_post_lawyer_license": "Yes or no",
+    "ask_post_degree": "Do you have an academic degree?",
+    "placeholder_post_degree": "For example: PhD",
+    "ask_post_team": "How many people have you managed?",
+    "placeholder_post_team": "For example: 6–20",
+    "ask_post_edu": "What's your education?",
+    "placeholder_post_edu": "For example: higher",
+    "ask_post_cad": "Which software do you use?",
+    "placeholder_post_cad": "For example: AutoCAD",
+    "ask_post_heights": "Can you work at height?",
+    "placeholder_post_heights": "Yes or no",
+    "ask_post_vaxta": "Can you do rotational work?",
+    "placeholder_post_vaxta": "Yes or no",
+    "ask_post_workshop": "Do you have your own workshop?",
+    "placeholder_post_workshop": "Yes or no"
   },
   "intro": {
     "title": "How Ish topdim works",

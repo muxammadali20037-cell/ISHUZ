@@ -1368,7 +1368,33 @@
       "x_format": "Qayerda ishlaydi?",
       "x_term": "Ish doimiymi yoki bir martalik?",
       "x_pay": "Ish haqi qanday — ishbaymi yoki oylik?",
-      "salary_piece": "Ishbay — oyiga taxminan qancha chiqadi?"
+      "salary_piece": "Ishbay — oyiga taxminan qancha chiqadi?",
+      "x_level": "Qaysi darajadagi mutaxassis kerak?",
+      "x_sales_place": "Qayerda sotadi?",
+      "x_pay_mode": "Ish haqi qanday hisoblanadi?",
+      "x_fin_soft": "Qaysi dasturni bilishi kerak?",
+      "x_vehicles": "Qanday mashinalar bilan ishlaydi?",
+      "x_venue": "Qanday ovqatlanish joyi?",
+      "x_medbook": "Sanitar daftarcha (tibbiy kitobcha) kerakmi?",
+      "x_languages": "Qaysi tillarda gaplashishi kerak?",
+      "x_teach_place": "Qayerda dars beradi?",
+      "x_cert": "Sertifikat kerakmi (IELTS, CEFR, milliy)?",
+      "x_med_place": "Qayerda ishlaydi?",
+      "x_edu": "Ma'lumoti qanday bo'lsin?",
+      "x_clean_place": "Qayerda tozalaydi?",
+      "x_guard_shift": "Qanday navbatchilik?",
+      "x_army": "Harbiy xizmatni o'tagan bo'lishi kerakmi?",
+      "x_machine": "Qaysi mashinada tikadi?",
+      "x_night": "Tungi smena bormi?",
+      "x_season": "Ish mavsumiymi yoki doimiy?",
+      "x_farm_place": "Qayerda ishlaydi?",
+      "x_lawyer_license": "Advokatlik litsenziyasi kerakmi?",
+      "x_degree": "Ilmiy darajasi kerakmi?",
+      "x_team": "Nechta xodimni boshqaradi?",
+      "x_cad": "Qaysi dasturni bilishi kerak?",
+      "x_heights": "Balandlikda ish bormi?",
+      "x_el_group": "Elektr xavfsizligi guruhi kerakmi?",
+      "x_vaxta": "Ish vaxta usulidami?"
     },
     "other_profession": "Boshqa kasb",
     "profession_input": "Kasb nomini yozing",
@@ -1459,6 +1485,237 @@
         "monthly": "Oylik",
         "line_piece": "Ish haqi ishbay (dona bay)",
         "line_monthly": "Ish haqi oylik"
+      },
+      "level": {
+        "label": "Daraja",
+        "junior": "Junior (boshlovchi)",
+        "middle": "Middle (tajribali)",
+        "senior": "Senior (katta mutaxassis)",
+        "any": "Farqi yo'q",
+        "line_junior": "Daraja: Junior (boshlovchi)",
+        "line_middle": "Daraja: Middle",
+        "line_senior": "Daraja: Senior"
+      },
+      "sales_place": {
+        "label": "Savdo joyi",
+        "store": "Do'kon yoki savdo markazi",
+        "market": "Bozor",
+        "wholesale": "Ulgurji savdo (optom)",
+        "online": "Onlayn yoki telefon orqali",
+        "line_store": "Do'kon yoki savdo markazida savdo",
+        "line_market": "Bozorda savdo",
+        "line_wholesale": "Ulgurji savdo (optom)",
+        "line_online": "Onlayn yoki telefon orqali savdo"
+      },
+      "pay_mode": {
+        "label": "Ish haqi turi",
+        "fixed": "Faqat oylik",
+        "fixed_percent": "Oylik + foiz",
+        "percent": "Faqat foiz (protsent)",
+        "line_fixed": "Ish haqi — belgilangan oylik",
+        "line_fixed_percent": "Ish haqi — oylik va foiz",
+        "line_percent": "Ish haqi — foiz asosida"
+      },
+      "fin_soft": {
+        "label": "Dastur",
+        "1c": "1C",
+        "excel": "Excel",
+        "any": "Farqi yo'q",
+        "line_1c": "1C dasturini bilishi shart",
+        "line_excel": "Excel'ni yaxshi bilishi shart"
+      },
+      "vehicles": {
+        "label": "Mashinalar",
+        "light": "Yengil mashinalar",
+        "truck": "Yuk mashinalari",
+        "both": "Ikkalasi ham",
+        "line_light": "Yengil mashinalar bilan ishlash",
+        "line_truck": "Yuk mashinalari bilan ishlash",
+        "line_both": "Yengil va yuk mashinalari bilan ishlash"
+      },
+      "venue": {
+        "label": "Joy turi",
+        "cafe": "Kafe",
+        "restaurant": "Restoran",
+        "canteen": "Oshxona (stolovaya)",
+        "fastfood": "Fast-food",
+        "banquet": "To'yxona",
+        "line_cafe": "Ish joyi: kafe",
+        "line_restaurant": "Ish joyi: restoran",
+        "line_canteen": "Ish joyi: oshxona (stolovaya)",
+        "line_fastfood": "Ish joyi: fast-food",
+        "line_banquet": "Ish joyi: to'yxona"
+      },
+      "medbook": {
+        "label": "Sanitar daftarcha",
+        "required": "Ha, kerak",
+        "not_required": "Shart emas",
+        "line_required": "Sanitar daftarcha (tibbiy kitobcha) bo'lishi shart"
+      },
+      "languages": {
+        "label": "Tillar",
+        "uz": "O'zbek tili",
+        "ru": "Rus tili",
+        "uz_ru": "O'zbek va rus tili",
+        "plus_en": "Ingliz tili ham",
+        "line_uz": "O'zbek tilida erkin gaplashishi kerak",
+        "line_ru": "Rus tilida erkin gaplashishi kerak",
+        "line_uz_ru": "O'zbek va rus tillarini bilishi kerak",
+        "line_plus_en": "Ingliz tilini ham bilishi kerak"
+      },
+      "teach_place": {
+        "label": "Dars joyi",
+        "school": "Maktab",
+        "center": "O'quv markazi",
+        "kindergarten": "Bog'cha",
+        "online": "Onlayn",
+        "private": "Uyda (repetitorlik)",
+        "line_school": "Maktabda dars berish",
+        "line_center": "O'quv markazida dars berish",
+        "line_kindergarten": "Bog'chada ishlash",
+        "line_online": "Onlayn dars berish",
+        "line_private": "Uyda dars berish (repetitorlik)"
+      },
+      "cert": {
+        "label": "Sertifikat",
+        "required": "Ha, kerak",
+        "not_required": "Shart emas",
+        "line_required": "Sertifikat (IELTS, CEFR yoki milliy) bo'lishi shart"
+      },
+      "med_place": {
+        "label": "Muassasa",
+        "state": "Davlat shifoxonasi yoki poliklinika",
+        "private": "Xususiy klinika",
+        "pharmacy": "Dorixona",
+        "home": "Uyga chaqiruv",
+        "line_state": "Ish joyi: davlat shifoxonasi yoki poliklinika",
+        "line_private": "Ish joyi: xususiy klinika",
+        "line_pharmacy": "Ish joyi: dorixona",
+        "line_home": "Bemorlar uyiga chaqiruv bilan ishlash"
+      },
+      "edu": {
+        "label": "Ma'lumoti",
+        "higher": "Oliy",
+        "secondary": "O'rta maxsus",
+        "any": "Farqi yo'q",
+        "line_higher": "Oliy ma'lumot",
+        "line_secondary": "O'rta maxsus ma'lumot"
+      },
+      "clean_place": {
+        "label": "Joy",
+        "office": "Ofis",
+        "home": "Xonadon (uy)",
+        "mall": "Do'kon yoki savdo markazi",
+        "hotel": "Mehmonxona",
+        "line_office": "Ish joyi: ofis",
+        "line_home": "Ish joyi: xonadon (uy)",
+        "line_mall": "Ish joyi: do'kon yoki savdo markazi",
+        "line_hotel": "Ish joyi: mehmonxona"
+      },
+      "guard_shift": {
+        "label": "Navbatchilik",
+        "day": "Kunduzgi",
+        "night": "Tungi",
+        "day24": "Sutkalik (24 soat)",
+        "line_day": "Kunduzgi navbatchilik",
+        "line_night": "Tungi navbatchilik",
+        "line_day24": "Sutkalik navbatchilik (24 soat)"
+      },
+      "army": {
+        "label": "Harbiy xizmat",
+        "required": "Ha, kerak",
+        "not_required": "Shart emas",
+        "line_required": "Harbiy xizmatni o'tagan bo'lishi shart"
+      },
+      "machine": {
+        "label": "Tikuv mashinasi",
+        "straight": "To'g'ri tikuv (pryamostrochka)",
+        "overlock": "Overlok",
+        "both": "Ikkalasi ham",
+        "line_straight": "To'g'ri tikuv mashinasida ishlash",
+        "line_overlock": "Overlokda ishlash",
+        "line_both": "To'g'ri tikuv va overlokda ishlash"
+      },
+      "night": {
+        "label": "Tungi smena",
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Tungi smenalar ham bor"
+      },
+      "season": {
+        "label": "Ish turi",
+        "seasonal": "Mavsumiy",
+        "permanent": "Doimiy",
+        "line_seasonal": "Mavsumiy ish",
+        "line_permanent": "Doimiy ish"
+      },
+      "farm_place": {
+        "label": "Ish joyi",
+        "field": "Dala",
+        "greenhouse": "Issiqxona",
+        "livestock": "Chorvachilik (ferma)",
+        "garden": "Bog'",
+        "line_field": "Dalada ishlash",
+        "line_greenhouse": "Issiqxonada ishlash",
+        "line_livestock": "Chorvachilik fermasida ishlash",
+        "line_garden": "Bog'da ishlash"
+      },
+      "lawyer_license": {
+        "label": "Litsenziya",
+        "required": "Ha, kerak",
+        "not_required": "Shart emas",
+        "line_required": "Advokatlik litsenziyasi bo'lishi shart"
+      },
+      "degree": {
+        "label": "Ilmiy daraja",
+        "phd": "PhD yoki DSc",
+        "master": "Magistr",
+        "any": "Shart emas",
+        "line_phd": "Ilmiy daraja: PhD yoki DSc",
+        "line_master": "Magistr darajasi"
+      },
+      "team": {
+        "label": "Jamoa",
+        "small": "1–5 kishi",
+        "medium": "6–20 kishi",
+        "large": "20 dan ortiq",
+        "line_small": "1–5 kishilik jamoani boshqarish",
+        "line_medium": "6–20 kishilik jamoani boshqarish",
+        "line_large": "20 dan ortiq xodimni boshqarish"
+      },
+      "cad": {
+        "label": "Dastur",
+        "autocad": "AutoCAD",
+        "revit": "Revit",
+        "solidworks": "SolidWorks",
+        "any": "Farqi yo'q",
+        "line_autocad": "AutoCAD'ni bilishi shart",
+        "line_revit": "Revit'ni bilishi shart",
+        "line_solidworks": "SolidWorks'ni bilishi shart"
+      },
+      "heights": {
+        "label": "Balandlikda ish",
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Balandlikda ishlash (minoralar, tomlar)"
+      },
+      "el_group": {
+        "label": "Elektr xavfsizligi guruhi",
+        "g2": "II guruh",
+        "g3": "III guruh",
+        "g4": "IV guruh",
+        "g5": "V guruh",
+        "none": "Shart emas",
+        "line_g2": "Elektr xavfsizligi bo'yicha II guruh",
+        "line_g3": "Elektr xavfsizligi bo'yicha III guruh",
+        "line_g4": "Elektr xavfsizligi bo'yicha IV guruh",
+        "line_g5": "Elektr xavfsizligi bo'yicha V guruh"
+      },
+      "vaxta": {
+        "label": "Vaxta",
+        "yes": "Ha, vaxta",
+        "no": "Yo'q, doimiy joyda",
+        "line_yes": "Ish vaxta usulida"
       }
     }
   },
@@ -1825,12 +2082,280 @@
         "yes": "Ha, bor",
         "no": "Yo'q",
         "line_yes": "O'z asboblarim bor"
+      },
+      "level": {
+        "junior": "Junior (boshlovchi)",
+        "middle": "Middle",
+        "senior": "Senior",
+        "line_junior": "Daraja: Junior",
+        "line_middle": "Daraja: Middle",
+        "line_senior": "Daraja: Senior"
+      },
+      "portfolio": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Ishlarimdan namunalar (portfolio) bor"
+      },
+      "sales_place": {
+        "store": "Do'kon yoki savdo markazi",
+        "market": "Bozor",
+        "wholesale": "Ulgurji savdo (optom)",
+        "online": "Onlayn yoki telefon orqali",
+        "any": "Farqi yo'q",
+        "line_store": "Do'kon yoki savdo markazida ishlamoqchiman",
+        "line_market": "Bozorda ishlamoqchiman",
+        "line_wholesale": "Ulgurji savdoda ishlamoqchiman",
+        "line_online": "Onlayn yoki telefon orqali sotmoqchiman"
+      },
+      "cashier": {
+        "yes": "Ha",
+        "no": "Yo'q",
+        "line_yes": "Kassa apparatida ishlay olaman"
+      },
+      "fin_soft": {
+        "1c": "1C",
+        "excel": "Excel",
+        "both": "1C va Excel",
+        "none": "Hech biri",
+        "line_1c": "1C dasturini bilaman",
+        "line_excel": "Excel'ni yaxshi bilaman",
+        "line_both": "1C va Excel'ni bilaman"
+      },
+      "machine": {
+        "straight": "To'g'ri tikuv (pryamostrochka)",
+        "overlock": "Overlok",
+        "both": "Ikkalasi ham",
+        "line_straight": "To'g'ri tikuv mashinasida tikaman",
+        "line_overlock": "Overlokda tikaman",
+        "line_both": "To'g'ri tikuv va overlokda tikaman"
+      },
+      "el_group": {
+        "g2": "II guruh",
+        "g3": "III guruh",
+        "g4": "IV guruh",
+        "g5": "V guruh",
+        "none": "Yo'q",
+        "line_g2": "Elektr xavfsizligi bo'yicha II guruh",
+        "line_g3": "Elektr xavfsizligi bo'yicha III guruh",
+        "line_g4": "Elektr xavfsizligi bo'yicha IV guruh",
+        "line_g5": "Elektr xavfsizligi bo'yicha V guruh"
+      },
+      "night": {
+        "yes": "Ha",
+        "no": "Yo'q",
+        "line_yes": "Tungi smenada ham ishlay olaman"
+      },
+      "vehicles": {
+        "light": "Yengil mashinalar",
+        "truck": "Yuk mashinalari",
+        "both": "Ikkalasi ham",
+        "line_light": "Yengil mashinalar bilan ishlayman",
+        "line_truck": "Yuk mashinalari bilan ishlayman",
+        "line_both": "Yengil va yuk mashinalari bilan ishlayman"
+      },
+      "venue": {
+        "cafe": "Kafe",
+        "restaurant": "Restoran",
+        "canteen": "Oshxona (stolovaya)",
+        "fastfood": "Fast-food",
+        "banquet": "To'yxona",
+        "any": "Farqi yo'q",
+        "line_cafe": "Kafeda ishlamoqchiman",
+        "line_restaurant": "Restoranda ishlamoqchiman",
+        "line_canteen": "Oshxonada (stolovaya) ishlamoqchiman",
+        "line_fastfood": "Fast-food'da ishlamoqchiman",
+        "line_banquet": "To'yxonada ishlamoqchiman"
+      },
+      "medbook": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Sanitar daftarcham (tibbiy kitobcha) bor"
+      },
+      "languages": {
+        "uz": "O'zbek tili",
+        "ru": "Rus tili",
+        "uz_ru": "O'zbek va rus tili",
+        "plus_en": "Ingliz tili ham",
+        "line_uz": "O'zbek tilida gaplashaman",
+        "line_ru": "Rus tilida gaplashaman",
+        "line_uz_ru": "O'zbek va rus tillarida gaplashaman",
+        "line_plus_en": "Ingliz tilini ham bilaman"
+      },
+      "teach_place": {
+        "school": "Maktab",
+        "center": "O'quv markazi",
+        "kindergarten": "Bog'cha",
+        "online": "Onlayn",
+        "private": "Uyda (repetitorlik)",
+        "any": "Farqi yo'q",
+        "line_school": "Maktabda dars bermoqchiman",
+        "line_center": "O'quv markazida dars bermoqchiman",
+        "line_kindergarten": "Bog'chada ishlamoqchiman",
+        "line_online": "Onlayn dars bera olaman",
+        "line_private": "Uyda dars beraman (repetitorlik)"
+      },
+      "cert": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Sertifikatim bor (IELTS, CEFR yoki milliy)"
+      },
+      "med_edu": {
+        "higher": "Oliy",
+        "secondary": "O'rta maxsus (kollej)",
+        "student": "Talabaman",
+        "line_higher": "Oliy tibbiy ma'lumot",
+        "line_secondary": "O'rta maxsus tibbiy ma'lumot",
+        "line_student": "Tibbiyot talabasiman"
+      },
+      "clean_place": {
+        "office": "Ofis",
+        "home": "Xonadon (uy)",
+        "mall": "Do'kon yoki savdo markazi",
+        "hotel": "Mehmonxona",
+        "any": "Farqi yo'q",
+        "line_office": "Ofisda ishlamoqchiman",
+        "line_home": "Xonadonlarda ishlay olaman",
+        "line_mall": "Do'kon yoki savdo markazida ishlamoqchiman",
+        "line_hotel": "Mehmonxonada ishlamoqchiman"
+      },
+      "army": {
+        "yes": "Ha",
+        "no": "Yo'q",
+        "line_yes": "Harbiy xizmatni o'taganman"
+      },
+      "guard_shift": {
+        "day": "Kunduzgi",
+        "night": "Tungi",
+        "day24": "Sutkalik (24 soat)",
+        "any": "Farqi yo'q",
+        "line_day": "Kunduzgi navbatchilik ma'qul",
+        "line_night": "Tungi navbatchilikda ishlayman",
+        "line_day24": "Sutkalik navbatchilikda ishlayman"
+      },
+      "own_clients": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "O'z mijozlarim bor"
+      },
+      "season": {
+        "seasonal": "Mavsumiy",
+        "permanent": "Doimiy",
+        "any": "Farqi yo'q",
+        "line_seasonal": "Mavsumiy ish qidiryapman",
+        "line_permanent": "Doimiy ish qidiryapman"
+      },
+      "lawyer_license": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Advokatlik litsenziyam bor"
+      },
+      "degree": {
+        "phd": "PhD yoki DSc",
+        "master": "Magistr",
+        "none": "Yo'q",
+        "line_phd": "Ilmiy daraja: PhD yoki DSc",
+        "line_master": "Magistr darajam bor"
+      },
+      "team": {
+        "small": "1–5 kishi",
+        "medium": "6–20 kishi",
+        "large": "20 dan ortiq",
+        "none": "Boshqarmaganman",
+        "line_small": "1–5 kishilik jamoani boshqarganman",
+        "line_medium": "6–20 kishilik jamoani boshqarganman",
+        "line_large": "20 dan ortiq xodimni boshqarganman"
+      },
+      "edu": {
+        "higher": "Oliy",
+        "secondary": "O'rta maxsus",
+        "line_higher": "Oliy ma'lumotliman",
+        "line_secondary": "O'rta maxsus ma'lumotliman"
+      },
+      "cad": {
+        "autocad": "AutoCAD",
+        "revit": "Revit",
+        "solidworks": "SolidWorks",
+        "none": "Hech biri",
+        "line_autocad": "AutoCAD'da ishlayman",
+        "line_revit": "Revit'da ishlayman",
+        "line_solidworks": "SolidWorks'da ishlayman"
+      },
+      "heights": {
+        "yes": "Ha",
+        "no": "Yo'q",
+        "line_yes": "Balandlikda ishlay olaman"
+      },
+      "vaxta": {
+        "yes": "Ha",
+        "no": "Yo'q",
+        "line_yes": "Vaxta usulida ishlay olaman"
+      },
+      "workshop": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "O'z ustaxonam bor"
       }
     },
     "placeholder_post_license": "Masalan: B yoki C",
     "placeholder_post_car": "Ha yoki yo'q",
     "placeholder_post_transport": "Masalan: velosipedda",
-    "placeholder_post_tools": "Ha yoki yo'q"
+    "placeholder_post_tools": "Ha yoki yo'q",
+    "ask_post_level": "Darajangiz qanday?",
+    "placeholder_post_level": "Masalan: Middle",
+    "ask_post_portfolio": "Ishlaringizdan namunalar (portfolio) bormi?",
+    "placeholder_post_portfolio": "Ha yoki yo'q",
+    "ask_post_sales_place": "Qayerda sotuvchi bo'lib ishlamoqchisiz?",
+    "placeholder_post_sales_place": "Masalan: do'konda",
+    "ask_post_cashier": "Kassa apparatida ishlay olasizmi?",
+    "placeholder_post_cashier": "Ha yoki yo'q",
+    "ask_post_fin_soft": "Qaysi dasturlarni bilasiz?",
+    "placeholder_post_fin_soft": "Masalan: 1C",
+    "ask_post_machine": "Qaysi mashinada tikasiz?",
+    "placeholder_post_machine": "Masalan: overlok",
+    "ask_post_el_group": "Elektr xavfsizligi guruhingiz bormi?",
+    "placeholder_post_el_group": "Masalan: III guruh",
+    "ask_post_night": "Tungi smenada ishlay olasizmi?",
+    "placeholder_post_night": "Ha yoki yo'q",
+    "ask_post_vehicles": "Qanday mashinalarni ta'mirlaysiz?",
+    "placeholder_post_vehicles": "Masalan: yengil mashinalar",
+    "ask_post_venue": "Qayerda ishlamoqchisiz?",
+    "placeholder_post_venue": "Masalan: restoranda",
+    "ask_post_medbook": "Sanitar daftarchangiz (tibbiy kitobcha) bormi?",
+    "placeholder_post_medbook": "Ha yoki yo'q",
+    "ask_post_languages": "Qaysi tillarda gaplashasiz?",
+    "placeholder_post_languages": "Masalan: o'zbek va rus",
+    "ask_post_teach_place": "Qayerda dars bermoqchisiz?",
+    "placeholder_post_teach_place": "Masalan: maktabda",
+    "ask_post_cert": "Sertifikatingiz bormi (IELTS, CEFR, milliy)?",
+    "placeholder_post_cert": "Ha yoki yo'q",
+    "ask_post_med_edu": "Tibbiy ma'lumotingiz qanday?",
+    "placeholder_post_med_edu": "Masalan: oliy",
+    "ask_post_clean_place": "Qayerda ishlay olasiz?",
+    "placeholder_post_clean_place": "Masalan: ofisda",
+    "ask_post_army": "Harbiy xizmatni o'taganmisiz?",
+    "placeholder_post_army": "Ha yoki yo'q",
+    "ask_post_guard_shift": "Qanday navbatchilik ma'qul?",
+    "placeholder_post_guard_shift": "Masalan: sutkalik",
+    "ask_post_own_clients": "O'z mijozlaringiz bormi?",
+    "placeholder_post_own_clients": "Ha yoki yo'q",
+    "ask_post_season": "Qanday ish qidiryapsiz?",
+    "placeholder_post_season": "Masalan: mavsumiy",
+    "ask_post_lawyer_license": "Advokatlik litsenziyangiz bormi?",
+    "placeholder_post_lawyer_license": "Ha yoki yo'q",
+    "ask_post_degree": "Ilmiy darajangiz bormi?",
+    "placeholder_post_degree": "Masalan: PhD",
+    "ask_post_team": "Nechta xodimni boshqargansiz?",
+    "placeholder_post_team": "Masalan: 6–20",
+    "ask_post_edu": "Ma'lumotingiz qanday?",
+    "placeholder_post_edu": "Masalan: oliy",
+    "ask_post_cad": "Qaysi dasturda ishlaysiz?",
+    "placeholder_post_cad": "Masalan: AutoCAD",
+    "ask_post_heights": "Balandlikda ishlay olasizmi?",
+    "placeholder_post_heights": "Ha yoki yo'q",
+    "ask_post_vaxta": "Vaxta usulida ishlay olasizmi?",
+    "placeholder_post_vaxta": "Ha yoki yo'q",
+    "ask_post_workshop": "O'z ustaxonangiz bormi?",
+    "placeholder_post_workshop": "Ha yoki yo'q"
   },
   "intro": {
     "title": "Ish topdim qanday ishlaydi",
