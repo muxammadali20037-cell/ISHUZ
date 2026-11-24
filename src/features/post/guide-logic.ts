@@ -1,5 +1,6 @@
 import { normalizePhone } from "@/lib/format";
 import { parseMoney } from "./money";
+import { hoursRelevant, scheduleRelevant, type ExtraKey } from "./requirements";
 import type { VacancyDraft } from "./types";
 
 /**
@@ -7,16 +8,57 @@ import type { VacancyDraft } from "./types";
  * o'tkazsin, yozuvlar kam bo'lsin"). Bir gapdan tushunilmagan narsalar ekranda BITTADAN so'raladi — tayyor variantlar bilan.
  * Qaysi savol navbatda ekanini shu sof funksiyalar hal qiladi (komponent ham, testlar ham shundan foydalanadi).
  */
-export const GUIDE_STEPS = ["profession", "region", "district", "salary", "schedule", "experience", "employerType", "orgName", "phone", "notes", "description"] as const;
+export const GUIDE_STEPS = [
+  "profession",
+  // kasbga xos (ega, 2026-11-24): faqat shu kasbda so'raladi — haydovchi, kuryer, IT/dizayn, usta/quruvchi, tikuvchi
+  "x_license",
+  "x_car",
+  "x_transport",
+  "x_format",
+  "x_term",
+  "x_pay",
+  "region",
+  "district",
+  "salary",
+  "schedule",
+  // ish vaqti — faqat kerak joyda; jinsi va yoshi — har kasbda (ega, 2026-11-24)
+  "hours",
+  "gender",
+  "age",
+  "experience",
+  "employerType",
+  "orgName",
+  "phone",
+  "notes",
+  "description",
+] as const;
 export type GuideStep = (typeof GUIDE_STEPS)[number];
 
 /** Savol berildi va javob olindi (ixtiyoriy savollar uchun: "farqi yo'q" ham javob) */
 export type GuideAsked = ReadonlySet<GuideStep>;
 
-type View = Pick<VacancyDraft, "profession" | "custom" | "place" | "salaryFrom" | "salaryTo" | "negotiable" | "schedule" | "employerType" | "orgName" | "phone" | "description">;
+type View = Pick<VacancyDraft, "profession" | "custom" | "place" | "salaryFrom" | "salaryTo" | "negotiable" | "schedule" | "employerType" | "orgName" | "phone" | "description" | "gender" | "age" | "hours" | "extras">;
 
-/** Shu savolga javob bormi */
-export function guideAnswered(step: GuideStep, d: View, asked: GuideAsked): boolean {
+/** "x_license" → "license" (kasbga xos savol kaliti) */
+export function extraKeyOf(step: GuideStep): ExtraKey | null {
+  return step.startsWith("x_") ? (step.slice(2) as ExtraKey) : null;
+}
+
+/** Shu savol bu e'lon uchun kerakmi (kasbga va oldingi javoblarga qarab) */
+export function guideRelevant(step: GuideStep, d: View, keys: readonly ExtraKey[]): boolean {
+  const x = extraKeyOf(step);
+  if (x) return keys.includes(x);
+  if (step === "schedule") return scheduleRelevant(d);
+  if (step === "hours") return hoursRelevant({ remote: d.place.remote, extras: d.extras, schedule: d.schedule });
+  return true;
+}
+
+/** Shu savolga javob bormi (kerak bo'lmagan savol — javob berilgan hisoblanadi) */
+export function guideAnswered(step: GuideStep, d: View, asked: GuideAsked, keys: readonly ExtraKey[] = []): boolean {
+  if (!guideRelevant(step, d, keys)) return true;
+  const x = extraKeyOf(step);
+  // masofaviy deb aytilgan bo'lsa — "ofisdami?" so'ralmaydi
+  if (x) return !!d.extras?.[x] || (x === "format" && d.place.remote);
   switch (step) {
     case "profession":
       return !!(d.profession || d.custom);
@@ -28,6 +70,12 @@ export function guideAnswered(step: GuideStep, d: View, asked: GuideAsked): bool
       return d.negotiable || parseMoney(d.salaryFrom) !== null || parseMoney(d.salaryTo) !== null;
     case "schedule":
       return !!d.schedule || asked.has("schedule");
+    case "hours":
+      return d.hours !== undefined;
+    case "gender":
+      return d.gender !== undefined;
+    case "age":
+      return d.age !== undefined;
     case "experience":
       return asked.has("experience");
     case "employerType":
@@ -41,17 +89,20 @@ export function guideAnswered(step: GuideStep, d: View, asked: GuideAsked): bool
       return asked.has("notes");
     case "description":
       return asked.has("description") && d.description.trim().length >= 10;
+    default:
+      return true;
   }
 }
 
 /** Keyingi savol; hammasi bor bo'lsa — null (tekshirish va joylash) */
-export function nextGuideStep(d: View, asked: GuideAsked): GuideStep | null {
-  return GUIDE_STEPS.find((s) => !guideAnswered(s, d, asked)) ?? null;
+export function nextGuideStep(d: View, asked: GuideAsked, keys: readonly ExtraKey[] = []): GuideStep | null {
+  return GUIDE_STEPS.find((s) => !guideAnswered(s, d, asked, keys)) ?? null;
 }
 
-/** Jarayon: nechta savolga javob bor (tepadagi chiziq uchun) */
-export function guideProgress(d: View, asked: GuideAsked): { done: number; total: number } {
-  return { done: GUIDE_STEPS.filter((s) => guideAnswered(s, d, asked)).length, total: GUIDE_STEPS.length };
+/** Jarayon: nechta savolga javob bor (tepadagi chiziq uchun) — faqat shu e'longa kerakli savollar sanaladi */
+export function guideProgress(d: View, asked: GuideAsked, keys: readonly ExtraKey[] = []): { done: number; total: number } {
+  const steps = GUIDE_STEPS.filter((s) => guideRelevant(s, d, keys));
+  return { done: steps.filter((s) => guideAnswered(s, d, asked, keys)).length, total: steps.length };
 }
 
 /** Maosh variantlari (so'm): oylik va kunlik. Bu bozor statistikasi emas — tez tanlash uchun yaxlit summalar */

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { introducesNumbers, keepSalary, mentionedAmounts, mentionedInText, mentionsExperience, mentionsSchedule } from "./ai-guard";
+import { introducesNumbers, keepAge, keepGender, keepHours, keepSalary, mentionedAmounts, mentionedInText, mentionsExperience, mentionsSchedule } from "./ai-guard";
 
 describe("AI natijasi faqat matnga asoslangan bo'lsin", () => {
   it("summalar ajratiladi", () => {
@@ -30,5 +30,15 @@ describe("AI natijasi faqat matnga asoslangan bo'lsin", () => {
   it("tavsifga yangi raqam qo'shilsa — aniqlanadi", () => {
     expect(introducesNumbers("3 yillik tajribaga ega buxgalter", "buxgalterman, 3 yil tajribam bor")).toBe(false);
     expect(introducesNumbers("5 yillik tajriba, 2 ta diplom", "buxgalterman, 3 yil tajribam bor")).toBe(true);
+  });
+
+  it("jinsi, yosh va ish vaqti — faqat matnda asosi bo'lsa (o'ylab topilmaydi)", () => {
+    expect(keepGender("female", "sotuvchi ayollr kerak")).toBe("female");
+    expect(keepGender("male", "sotuvchi kerak")).toBeNull();
+    expect(keepAge(20, 35, "20-35 yoshli")).toEqual({ min: 20, max: 35 });
+    expect(keepAge(20, 35, "20-35 ming oylik")).toBeNull();
+    expect(keepAge(18, 30, "yoshi 30 gacha")).toEqual({ min: null, max: 30 });
+    expect(keepHours("9:00", "18:00", "ish 9 dan 6 gacha emas, 18 gacha")).toEqual({ from: "09:00", to: "18:00" });
+    expect(keepHours("08:00", "17:00", "ish vaqti kelishiladi")).toBeNull();
   });
 });

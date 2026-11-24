@@ -8,14 +8,31 @@ import { useT } from "@/lib/i18n/client";
 import { callAction } from "@/lib/action-call";
 import { formatMoneyShort, formatPhone, normalizePhone } from "@/lib/format";
 import { isCityRegion } from "@/lib/geo/city";
-import type { District, Region } from "@/lib/reference";
+import type { Category, District, Region } from "@/lib/reference";
+import type { PickedProfession } from "@/features/professions/types";
 import { Button } from "@/components/ui/button";
 import { Input, Textarea } from "@/components/ui/input";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { cn } from "@/lib/utils";
 import type { ProfessionOption } from "../chat-actions";
 import { vacancyGuideTurn, type GuideParse } from "../guide-actions";
-import { SALARY_PRESETS, composeDescription, guideProgress, nextGuideStep, type GuideStep } from "../guide-logic";
+import { SALARY_PRESETS, composeDescription, extraKeyOf, guideProgress, guideRelevant, nextGuideStep, type GuideStep } from "../guide-logic";
+import {
+  AGE_MAX,
+  AGE_MIN,
+  AGE_PRESETS,
+  EXTRA_OPTIONS,
+  HOURS_PRESETS,
+  TIME_RE,
+  ageLabel,
+  extraKeysFor,
+  extraLines,
+  extrasFromName,
+  hoursLabel,
+  pickExtras,
+  type ExtraKey,
+  type ProfessionContext,
+} from "../requirements";
 import { VACANCY_NOTE_PRESETS, formatNotes, notesBlock, withNotes } from "../notes";
 import { parseMoney } from "../money";
 import { EMPTY_PLACE, SCHEDULES, SIMPLE_EMPLOYER_TYPES, VACANCY_EXPERIENCE, type PostViewer, type VacancyDraft } from "../types";
@@ -35,6 +52,7 @@ import { FieldError, ReviewRow } from "./wizard-frame";
 export function VacancyGuide({
   regions,
   districts,
+  categories,
   quick,
   draft,
   update,
@@ -54,6 +72,8 @@ export function VacancyGuide({
   initialSentence?: string;
   regions: Region[];
   districts: District[];
+  /** kasb sohasi (kategoriya slug) — kasbga xos savollar uchun (haydovchi, kuryer, usta…) */
+  categories: Category[];
   /** kasb savolidagi tez variantlar (sotuvchi, oshpaz, haydovchi…) */
   quick: ProfessionOption[];
   draft: VacancyDraft;
@@ -79,10 +99,28 @@ export function VacancyGuide({
   const [err, setErr] = useState<string | null>(null);
   /** "Izoh" savolida belgilangan tayyor variantlar */
   const [notePicks, setNotePicks] = useState<string[]>([]);
+  /** "Boshqa yosh" / "Boshqa vaqt" — ikki maydon */
+  const [pair, setPair] = useState<[string, string]>(["", ""]);
   const [thinking, start] = useTransition();
 
-  const step = started ? nextGuideStep(draft, asked) : null;
-  const progress = guideProgress(draft, asked);
+  /** kasb sohasi va nomlari → shu kasbga xos savollar (ega, 2026-11-24: "kasbga qarab nima kerak bo'lsa — shu so'ralsin") */
+  const contextOf = (p: PickedProfession | null, custom = draft.custom): ProfessionContext => {
+    const last = p?.trail.at(-1);
+    const categoryId = p?.categoryId ?? custom?.categoryId ?? null;
+    return {
+      category: categories.find((c) => c.id === categoryId)?.slug ?? null,
+      names: last ? [last.name_uz, last.name_ru, last.name_en ?? ""].filter(Boolean) : custom ? [custom.text] : [],
+    };
+  };
+  const keys: ExtraKey[] = extraKeysFor(contextOf(draft.profession));
+  /** kasb tanlandi: nomidan ("C toifa haydovchi") va birinchi gapdan ("o'z mashinasi bilan") tushunilgan javoblar */
+  const professionPatch = (p: PickedProfession, said: string): Partial<VacancyDraft> => {
+    const ctx = contextOf(p, null);
+    return { profession: p, custom: null, extras: { ...pickExtras(said, extraKeysFor(ctx)), ...extrasFromName(ctx) } };
+  };
+
+  const step = started ? nextGuideStep(draft, asked, keys) : null;
+  const progress = guideProgress(draft, asked, keys);
   const professionName = draft.profession ? name(draft.profession.trail.at(-1)!) : (draft.custom?.text ?? "");
   const region = regions.find((r) => r.id === draft.place.regionId) ?? null;
   const daily = draft.salaryType === "daily";
@@ -99,6 +137,7 @@ export function VacancyGuide({
     setHistory((h) => [...h, s]);
     setTyping(null);
     setText("");
+    setPair(["", ""]);
     setErr(null);
     setOptions([]);
   };
@@ -110,7 +149,18 @@ export function VacancyGuide({
   /** javobni bekor qilish (shu savol qayta chiqadi) */
   const undo = (s: GuideStep) => {
     const patch: Partial<VacancyDraft> = {};
-    if (s === "profession") Object.assign(patch, { profession: null, custom: null, title: "" });
+    if (s === "profession") Object.assign(patch, { profession: null, custom: null, title: "", extras: undefined });
+    const x = extraKeyOf(s);
+    if (x) {
+      const rest = { ...draft.extras };
+      delete rest[x];
+      patch.extras = rest;
+      // "Masofadan" tanlangan bo'lsa — joy ham qayta so'raladi
+      if (x === "format" && draft.place.remote) patch.place = EMPTY_PLACE;
+    }
+    if (s === "hours") patch.hours = undefined;
+    if (s === "gender") patch.gender = undefined;
+    if (s === "age") patch.age = undefined;
     if (s === "region") patch.place = EMPTY_PLACE;
     if (s === "district") patch.place = { ...draft.place, districtId: null, districtChosen: false };
     if (s === "salary") Object.assign(patch, { salaryFrom: "", salaryTo: "", negotiable: false });
@@ -124,12 +174,13 @@ export function VacancyGuide({
       const n = new Set(a);
       n.delete(s);
       // matn yig'ilgan javoblardan tuziladi — kasb, joy, grafik yoki tajriba o'zgarsa, qayta ko'rsatiladi
-      if (["profession", "region", "district", "schedule", "experience", "notes"].includes(s)) n.delete("description");
+      if (["profession", "region", "district", "schedule", "experience", "notes"].includes(s) || extraKeyOf(s)) n.delete("description");
       return n;
     });
     setHistory((h) => h.filter((x) => x !== s));
     setTyping(null);
     setText("");
+    setPair(["", ""]);
     setErr(null);
   };
 
@@ -157,7 +208,7 @@ export function VacancyGuide({
       const p: GuideParse = res.data;
       const pay = p.daily && dailyAllowed ? "daily" : "monthly";
       update({
-        profession: p.profession ?? null,
+        ...(p.profession ? professionPatch(p.profession, value) : { profession: null, extras: undefined }),
         custom: null,
         title: p.title ?? "",
         place: p.place ?? EMPTY_PLACE,
@@ -168,6 +219,10 @@ export function VacancyGuide({
         schedule: p.schedule ?? "",
         experienceMonths: p.experienceMonths ?? 0,
         description: p.description ?? "",
+        // jinsi, yosh, ish vaqti — gapda aytilgan bo'lsa qayta so'ralmaydi
+        gender: p.gender,
+        age: p.age,
+        hours: p.hours,
         ...(p.employerType && !draft.employerType ? { employerType: p.employerType } : {}),
         ...(p.orgName && draft.orgName.trim().length < 2 ? { orgName: p.orgName } : {}),
         source: "ai",
@@ -203,7 +258,7 @@ export function VacancyGuide({
         setErr(errorText(res.ok ? "generic" : res.error));
         return;
       }
-      answer("profession", { profession: res.data.profession, custom: null });
+      answer("profession", professionPatch(res.data.profession, sentence));
     });
   };
 
@@ -217,7 +272,7 @@ export function VacancyGuide({
         setErr(errorText(res.ok ? "generic" : res.error));
         return;
       }
-      if (res.data.profession) answer("profession", { profession: res.data.profession, custom: null });
+      if (res.data.profession) answer("profession", professionPatch(res.data.profession, `${sentence} ${value}`));
       else if (res.data.professionOptions?.length) {
         setOptions(res.data.professionOptions);
         setTyping(null);
@@ -228,11 +283,25 @@ export function VacancyGuide({
 
   // ---------------------------------------------------------------------------------------------------- ekranlar
 
+  /** kasbga xos javob matni ("C toifa", "Piyoda", "Bir martalik ish") */
+  const extraOption = (k: ExtraKey, v: string) => (k === "license" ? t("easy.vguide.x.license.option", { value: v }) : t(`easy.vguide.x.${k}.${v}`));
+  const genderText = (g: NonNullable<VacancyDraft["gender"]>) => (g === "any" ? t("easy.vguide.any") : t(`easy.vguide.${g}`));
+  const ageText = (a: NonNullable<VacancyDraft["age"]>) => ageLabel(a, t) ?? t("easy.vguide.any");
+  const hoursText = (h: VacancyDraft["hours"]) => (h ? hoursLabel(h) : t("easy.vacancy.negotiable"));
+  const piece = keys.includes("pay") && draft.extras?.pay === "piece";
+
   const understood = [
     professionName,
     draft.place.regionId || draft.place.remote ? placeLabel(draft.place, regions, districts, name, t) : null,
     draft.negotiable ? t("easy.vacancy.negotiable") : parseMoney(draft.salaryFrom) ? `${formatMoneyShort(parseMoney(draft.salaryFrom), locale)}${daily ? ` · ${t("easy.vacancy.pay_daily").toLowerCase()}` : ""}` : null,
     draft.schedule ? tEnum("work_schedule", draft.schedule) : null,
+    ...keys.map((k) => {
+      const v = draft.extras?.[k];
+      return v && v !== "any" ? extraOption(k, v) : null;
+    }),
+    draft.hours ? hoursLabel(draft.hours) : null,
+    draft.gender && draft.gender !== "any" ? t(`easy.vguide.${draft.gender}`) : null,
+    draft.age ? ageLabel(draft.age, t) : null,
   ].filter((x): x is string => !!x);
 
   const choices = (items: { key: string; label: string; run: () => void; on?: boolean; wide?: boolean }[]) => (
@@ -314,6 +383,19 @@ export function VacancyGuide({
           { key: "other", label: t("easy.vguide.other_profession"), run: () => (setTyping("profession"), setText(""), setErr(null)), wide: list.length % 2 === 0 },
         ])
       );
+  } else if (step && extraKeyOf(step)) {
+    // kasbga xos savol (haydovchi — guvohnoma, mashina; kuryer — transport; IT — format; usta — doimiy/bir martalik; tikuvchi — ishbay)
+    const k = extraKeyOf(step)!;
+    title = t(`easy.vguide.q.${step}`);
+    const opts = EXTRA_OPTIONS[k];
+    body = choices(
+      opts.map((v, i) => ({
+        key: v,
+        label: extraOption(k, v),
+        run: () => answer(step, { extras: { ...draft.extras, [k]: v }, ...(k === "format" && v === "remote" ? { place: { regionId: null, districtId: null, districtChosen: true, remote: true } } : {}) }),
+        wide: opts.length % 2 === 1 && i === opts.length - 1,
+      })),
+    );
   } else if (step === "region") {
     title = t("easy.vguide.q.region");
     body = choices([
@@ -329,7 +411,7 @@ export function VacancyGuide({
         .map((d) => ({ key: d.id, label: name(d), run: () => answer("district", { place: { ...draft.place, districtId: d.id, districtChosen: true } }) })),
     ]);
   } else if (step === "salary") {
-    title = daily ? t("easy.vguide.q.salary_daily") : t("easy.vguide.q.salary");
+    title = daily ? t("easy.vguide.q.salary_daily") : piece ? t("easy.vguide.q.salary_piece") : t("easy.vguide.q.salary");
     const pay = dailyAllowed ? { salaryType: daily ? ("daily" as const) : ("monthly" as const) } : {};
     body =
       typing === "salary" ? (
@@ -366,6 +448,95 @@ export function VacancyGuide({
       ...SCHEDULES.map((s) => ({ key: s, label: tEnum("work_schedule", s), run: () => answer("schedule", { schedule: s }) })),
       { key: "any", label: t("easy.vguide.any"), run: () => answer("schedule", { schedule: "" }) },
     ]);
+  } else if (step === "hours") {
+    // ish vaqti — faqat kerak joyda (masofaviy, bir martalik, smenali ishda so'ralmaydi)
+    title = t("easy.vguide.q.hours");
+    const [from, to] = pair;
+    body =
+      typing === "hours" ? (
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (TIME_RE.test(from) && TIME_RE.test(to) && from !== to) answer("hours", { hours: { from, to } });
+          }}
+          data-guide-hours-custom
+        >
+          <div className="grid grid-cols-2 gap-3">
+            {([0, 1] as const).map((i) => (
+              <label key={i} className="block">
+                <span className="mb-1 block text-base font-semibold">{t(i === 0 ? "easy.vguide.time_from" : "easy.vguide.time_to")}</span>
+                <Input type="time" step={900} value={pair[i]} onChange={(e) => setPair((p) => (i === 0 ? [e.target.value, p[1]] : [p[0], e.target.value]))} className={bigInput} data-guide-time={i === 0 ? "from" : "to"} />
+              </label>
+            ))}
+          </div>
+          <Button type="submit" size="xl" fullWidth disabled={!TIME_RE.test(from) || !TIME_RE.test(to) || from === to} data-guide-next>
+            {t("easy.vguide.next")} <ArrowRight className="size-5" aria-hidden />
+          </Button>
+        </form>
+      ) : (
+        choices([
+          ...HOURS_PRESETS.map((h) => ({ key: h.from, label: hoursLabel(h), run: () => answer("hours", { hours: h }) })),
+          { key: "other", label: t("easy.vguide.other_time"), run: () => (setTyping("hours"), setPair(["09:00", "18:00"])) },
+          { key: "negotiable", label: t("easy.vacancy.negotiable"), run: () => answer("hours", { hours: null }), wide: true },
+        ])
+      );
+  } else if (step === "gender") {
+    title = t("easy.vguide.q.gender");
+    body = choices([
+      { key: "male", label: t("easy.vguide.male"), run: () => answer("gender", { gender: "male" }) },
+      { key: "female", label: t("easy.vguide.female"), run: () => answer("gender", { gender: "female" }) },
+      { key: "any", label: t("easy.vguide.any"), run: () => answer("gender", { gender: "any" }), wide: true },
+    ]);
+  } else if (step === "age") {
+    // aniq yosh emas — chegaralar (ega, 2026-11-24)
+    title = t("easy.vguide.q.age");
+    const lo = pair[0].trim() ? Number(pair[0]) : null;
+    const hi = pair[1].trim() ? Number(pair[1]) : null;
+    const ok = (n: number | null) => n === null || (Number.isInteger(n) && n >= AGE_MIN && n <= AGE_MAX);
+    const valid = (lo !== null || hi !== null) && ok(lo) && ok(hi) && (lo === null || hi === null || hi >= lo);
+    body =
+      typing === "age" ? (
+        <form
+          className="space-y-3"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (valid) answer("age", { age: { min: lo, max: hi } });
+          }}
+          data-guide-age-custom
+        >
+          <div className="grid grid-cols-2 gap-3">
+            {([0, 1] as const).map((i) => (
+              <label key={i} className="block">
+                <span className="mb-1 block text-base font-semibold">{t(i === 0 ? "easy.vguide.age_from_input" : "easy.vguide.age_to_input")}</span>
+                <Input
+                  inputMode="numeric"
+                  autoComplete="off"
+                  maxLength={2}
+                  value={pair[i]}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(/\D/g, "").slice(0, 2);
+                    setPair((p) => (i === 0 ? [v, p[1]] : [p[0], v]));
+                  }}
+                  placeholder={i === 0 ? "18" : "35"}
+                  className={bigInput}
+                  data-guide-age={i === 0 ? "from" : "to"}
+                />
+              </label>
+            ))}
+          </div>
+          {(pair[0].length === 2 || pair[1].length === 2) && !valid ? <p className="text-base text-destructive">{t("easy.vguide.age_invalid")}</p> : null}
+          <Button type="submit" size="xl" fullWidth disabled={!valid} data-guide-next>
+            {t("easy.vguide.next")} <ArrowRight className="size-5" aria-hidden />
+          </Button>
+        </form>
+      ) : (
+        choices([
+          ...AGE_PRESETS.map((a) => ({ key: `${a.min}-${a.max}`, label: ageLabel(a, t)!, run: () => answer("age", { age: a }) })),
+          { key: "other", label: t("easy.vguide.other_age"), run: () => (setTyping("age"), setPair(["", ""])) },
+          { key: "any", label: t("easy.vguide.any"), run: () => answer("age", { age: { min: null, max: null } }) },
+        ])
+      );
   } else if (step === "experience") {
     title = t("easy.vguide.q.experience");
     body = choices(VACANCY_EXPERIENCE.map((m) => ({ key: String(m), label: t(`easy.vacancy.exp.${m}`), run: () => answer("experience", { experienceMonths: m }), wide: m === 0 })));
@@ -446,9 +617,10 @@ export function VacancyGuide({
             schedule: draft.schedule ? t("easy.vguide.tpl.schedule", { schedule: tEnum("work_schedule", draft.schedule) }) : null,
             experience: t(`easy.vguide.tpl.exp_${draft.experienceMonths}`),
           });
-    // izoh — matn oxirida, ✅ bilan (bir marta)
-    const block = notesBlock(draft.notes ?? []);
-    const proposed = block && !base.includes(block) ? withNotes(base, draft.notes ?? []) : base;
+    // kasbga xos javoblar va izoh — matn oxirida, ✅ bilan (bir marta)
+    const items = [...extraLines(draft.extras, keys, t), ...(draft.notes ?? [])];
+    const block = notesBlock(items);
+    const proposed = block && !base.includes(block) ? withNotes(base, items) : base;
     body =
       typing === "description" ? (
         <form
@@ -489,9 +661,18 @@ export function VacancyGuide({
       <div className="space-y-4" data-guide-done>
         <div className="rounded-2xl border border-border bg-card px-4">
           {row("profession", t("easy.wizard.steps.specialist"), professionName)}
+          {keys.map((k) => {
+            const v = draft.extras?.[k];
+            const s = `x_${k}` as GuideStep;
+            // kasbga xos javoblar — kasbdan keyin (savollar tartibida)
+            return v ? row(s, t(`easy.vguide.x.${k}.label`), extraOption(k, v)) : null;
+          })}
           {row(draft.place.remote ? "region" : "district", t("easy.wizard.steps.location"), placeLabel(draft.place, regions, districts, name, t))}
           {row("salary", t("easy.aichat.salary"), salary)}
-          {row("schedule", t("easy.vacancy.schedule"), draft.schedule ? tEnum("work_schedule", draft.schedule) : t("easy.vguide.any"))}
+          {guideRelevant("schedule", draft, keys) ? row("schedule", t("easy.vacancy.schedule"), draft.schedule ? tEnum("work_schedule", draft.schedule) : t("easy.vguide.any")) : null}
+          {guideRelevant("hours", draft, keys) ? row("hours", t("easy.vguide.hours_label"), <span className="tabular">{hoursText(draft.hours)}</span>) : null}
+          {draft.gender ? row("gender", t("easy.vguide.gender_label"), genderText(draft.gender)) : null}
+          {draft.age ? row("age", t("easy.vguide.age_label"), ageText(draft.age)) : null}
           {row("experience", t("easy.vacancy.experience"), t(`easy.vacancy.exp.${draft.experienceMonths}`))}
           {row(
             ["employerType", "orgName"],

@@ -190,6 +190,18 @@ export async function publishVacancyListing(input: unknown): Promise<ActionResul
   });
   if (error || !data) return { ok: false, error: errorCode(error) };
   const res = data as { vacancy_id: string; slug: string; state: string };
+  // jinsi, yosh chegarasi, ish vaqti (ega, 2026-11-24): save_simple_vacancy bu maydonlarni yozmaydi — egasining o'z RLS huquqi
+  // bilan (can_edit_vacancy). Moderatsiya triggeri bu ustunlarga qaramaydi (holat o'zgarmaydi). Xato — e'lon baribir saqlangan.
+  const req: { gender?: "male" | "female" | null; age_min?: number | null; age_max?: number | null; work_time_from?: string | null; work_time_to?: string | null } = {};
+  if (v.gender !== undefined) req.gender = v.gender;
+  if (v.ageMin !== undefined) req.age_min = v.ageMin;
+  if (v.ageMax !== undefined) req.age_max = v.ageMax;
+  if (v.workTimeFrom !== undefined) req.work_time_from = v.workTimeFrom;
+  if (v.workTimeTo !== undefined) req.work_time_to = v.workTimeTo;
+  if (Object.keys(req).length) {
+    const { error: reqError } = await supabase.from("vacancies").update(req).eq("id", res.vacancy_id);
+    if (reqError) console.error("[publish] requirements", reqError.code, reqError.message);
+  }
   // tekshirish sahifasida tanlangan AI rasm — e'longa (kanal posti undan keyin, rasm bilan chiqadi)
   if (v.imageDraft) await attachDraftImage("vacancy", v.imageDraft, res.vacancy_id, session.userId);
   // 0083: rozilik matni — "raqamim e'londa va Telegram kanalda ko'rinsin"; kanal posti raqamni faqat shu vaqt yozilgan

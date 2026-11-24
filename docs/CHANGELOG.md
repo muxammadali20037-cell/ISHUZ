@@ -1,5 +1,44 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · Kasbga qarab savollar: jinsi, yosh chegarasi, ish vaqti; ustalar bo'limi yashirildi; "Hozir ish qidirmoqda" — yashil (`feat/smart-questions`)
+
+Ega: "aqli odamlarni lol qoldirsin — yozganiga qarab savol bersin, tanlagan kasbiga qarab savol bersin… e'londa jinsi, yoshi
+(aniq yosh emas — yosh chegaralari), ish vaqti — ish beruvchi uchun, faqat ishga qarab so'ralsin: usta kerak desa —
+qanaqa ustaligini so'raydi, shunga qarab ish vaqtini so'raydi yoki so'ramaydi; ustalar bo'limini olib tashla hozircha —
+chalkashtiryapti; «hozir ish qidirmoqda» yashil bo'lsin". Tanlovlar: "Ha, shunday", "Ha, ishchiga ham", "Hamma joydan
+yashir". **Migratsiya yo'q**: jinsi, yosh va vaqt ustunlari bazada bor edi (`vacancies.gender`, `age_min/max`,
+`work_time_from/to`) — e'lon saqlangach egasining o'z RLS huquqi bilan yoziladi; moderatsiya triggeri bu ustunlarga qaramaydi.
+
+- **AI bilan vakansiya** (`/post/vacancy?ai=1`): har kasbga — "Erkak kerakmi yoki ayol?" (Erkak / Ayol / Farqi yo'q) va
+  "Yoshi qancha bo'lsin?" (18–25, 18–35, 25–45, 35–55 yosh, farqi yo'q yoki o'zi: dan–gacha, 14–80).
+  "Soat nechadan nechagacha ishlaydi?" (08–17, 09–18, 10–19, boshqa vaqt, kelishiladi) — faqat kerak joyda: masofaviy,
+  bir martalik va smenali/erkin grafikda so'ralmaydi.
+- **Kasbga xos savollar** (kasbdan keyin darhol): haydovchi — guvohnoma toifasi va mashina kimniki (avtobus, samosval
+  kabi texnikada mashina so'ralmaydi; traktorda — toifa ham); kuryer — nimada yetkazadi; tikuvchi — ishbay yoki oylik
+  (ishbayda maosh savoli "oyiga taxminan qancha"); usta/quruvchi/elektrik/santexnik — doimiy yoki bir martalik (bir
+  martalikda grafik va vaqt so'ralmaydi); IT/dizayn — ofisda, masofadan yoki aralash ("masofadan" — joy so'ralmaydi).
+  Javoblar e'lon matniga ✅ bandlar bo'lib tushadi.
+- **Gapdan tushunadi**: "C toifa", "С тоифа", "o'z mashinasi bilan", "bir martalik", "dona bay", "masofadan", "25-45 yosh",
+  "25 yoshdan 40 yoshgacha", "от 20 до 35 лет", "soat 8 dan 17 gacha", "с 9 до 18", "qiz kerak", "yigitlar", "девушка" —
+  qayta so'ralmaydi ("Tushundim:" qatorida ko'rinadi). Kasb nomidan ham ("C toifa haydovchi", "Piyoda kuryer"). Yosh va
+  maosh soat deb adashtirilmaydi; "men" (o'zbekcha) va "ayollar kiyimi" jins deb olinmaydi. AI ulangan bo'lsa — faqat
+  matnda asosi bo'lsa qabul qilinadi (`keepGender`, `keepAge`, `keepHours`).
+- "Ish vaqti qanday?" (5/2, 6/1…) savoli → **"Ish grafigi qanday?"**; e'lon matnida "Ish grafigi: 5/2."
+- Jarayon ko'rsatkichi — shu e'longa kerakli savollar soni (masalan, haydovchida 16, masofaviy ishda 13).
+- Oxirgi ekran va oddiy formaning tekshirish sahifasi: kasbga xos javoblar, ish vaqti, jinsi, yosh — "O'zgartirish" bilan.
+- Telegram kanal posti: "🕘 5/2 · 09:00–18:00", "👤 Ayol · 18–35 yosh".
+- **Ishchi e'loni (chatda)**: kasbdan keyin — haydovchi: "Haydovchilik guvohnomangiz qaysi toifada?" va "Shaxsiy
+  mashinangiz bormi?"; kuryer: "Nimada yetkazasiz?"; usta: "O'z asboblaringiz bormi?". Tugma yoki yozib ("C", "ha",
+  "нет", "velosipedda"); gapda aytilgani so'ralmaydi. Javoblar e'londa ✅ ("Shaxsiy mashinam bor"; "yo'q" yozilmaydi).
+  Kasb sohasi serverda aniqlanib kasb tanlovlariga qo'shiladi (`worker-extras.ts`).
+- **"Universal ustalar xizmati" yashirildi** (`MASTERS_ENABLED = false`, `features/masters/flags.ts`): yon menyu, planshet
+  belgisi, sayt menyusi, footer, bosh sahifa bo'limlari va tezkor havolalar, Profil, sitemap, Telegram kanalga
+  joylash. E'lonlar bazada qoladi, eski havolalar (`/ustalar…`) ochiladi; e'lon egalariga "E'lonlarim"da o'z e'loni
+  ko'rinaveradi. Qaytarish — bayroqni `true` qilish.
+- **"Hozir ish qidirmoqda" — yashil** (nuqta ham); "Hozir ishchi kerak" — qizilligicha.
+- Testlar: `requirements.test.ts` (yangi), guide-logic, post-logic, ai-guard, autopost, autopost-format; e2e —
+  vacancy-guide (haydovchi, IT masofadan, kuryer, usta), chat-post (haydovchi, usta), masters/simple-app/ai-entry/home-market.
+
 ## 2026-11-24 · Kartadagi tugma: "Ko'rish →" (o'ng tomonda), ko'k shaffof shisha, e'lon sahifasi (`feat/open-btn-blue`)
 
 Ega (telefon skrinshoti): "yanada kichiklashtir; rangini ko'k qil; to'rtta burchakdan soya bo'lsin, ichini to'la rang

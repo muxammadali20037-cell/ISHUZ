@@ -21,6 +21,8 @@ export function channelLink(base: string): LinkFn {
   return (path) => (on ? miniAppLink(path, TELEGRAM_BOT_USERNAME) : null) ?? `${base}${path}`;
 }
 import { resolveTelegramLocale } from "@/features/notifications/telegram";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
+import { ageLabel } from "@/features/post/requirements";
 
 /**
  * Telegram kanalga avtomatik e'lon (0079): yangi chiqqan vakansiya — "ISH", ishchi e'loni (rezyume) — "ISHCHI".
@@ -164,7 +166,7 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
   let q = db
     .from("vacancies")
     .select(
-      "id, slug, title, description, experience_min_months, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, owner_profile_id, company:companies!vacancies_company_id_fkey(name, phone), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
+      "id, slug, title, description, experience_min_months, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, gender, age_min, age_max, work_time_from, work_time_to, owner_profile_id, company:companies!vacancies_company_id_fkey(name, phone), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
     )
     .eq("status", "active");
   q = ids ? q.in("id", ids) : q.gte("published_at", since).order("published_at", { ascending: false }).limit(50);
@@ -195,6 +197,10 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
           description: v.description,
           experienceMonths: v.experience_min_months,
           phone: phones.get(v.id) ?? null,
+          // jinsi, yosh chegarasi, ish vaqti (ega, 2026-11-24)
+          workTime: v.work_time_from && v.work_time_to ? `${v.work_time_from.slice(0, 5)}–${v.work_time_to.slice(0, 5)}` : null,
+          gender: v.gender ? t(`easy.vguide.${v.gender}`) : null,
+          age: ageLabel({ min: v.age_min, max: v.age_max }, t),
         },
         t,
         base,
@@ -429,6 +435,8 @@ async function claimSlot(db: Db, entity: Entity, id: string, chatId: string): Pr
 export async function postListingNow(entity: Entity, id: string): Promise<AutopostResult> {
   const res: AutopostResult = { posted: 0, failed: 0 };
   if (!getServerEnv().TELEGRAM_BOT_TOKEN || !process.env.SUPABASE_SERVICE_ROLE_KEY) return res;
+  // ustalar bo'limi yashirin (ega, 2026-11-24) — kanalga ham chiqmaydi
+  if (entity === "master" && !MASTERS_ENABLED) return res;
   try {
     const db = createAdminClient();
     const { data: row } = await db.from("app_settings").select("value").eq("key", AUTOPOST_KEY).maybeSingle();
@@ -489,8 +497,8 @@ export async function runChannelAutopost(): Promise<AutopostResult> {
     if (cfg.jobs && jobsChat) budget -= await runEntity(db, "vacancy", jobsChat, budget, res);
     const workersChat = channelChatIdFrom(cfg.workersChat) ?? main;
     if (cfg.workers && workersChat && budget > 0 && !res.stopped) budget -= await runEntity(db, "worker", workersChat, budget, res);
-    // ustalar (ega, 2026-11-24) — ishchi e'lonlari kanaliga
-    if (cfg.workers && workersChat && budget > 0 && !res.stopped) await runEntity(db, "master", workersChat, budget, res);
+    // ustalar (ega, 2026-11-24) — ishchi e'lonlari kanaliga; bo'lim yashirin bo'lsa (MASTERS_ENABLED) — joylanmaydi
+    if (MASTERS_ENABLED && cfg.workers && workersChat && budget > 0 && !res.stopped) await runEntity(db, "master", workersChat, budget, res);
     // e'lon egalariga — kanal sozlamasidan qat'i nazar
     await runOwnerNotices(db, res);
   } catch (e) {

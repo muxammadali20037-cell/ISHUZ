@@ -9,6 +9,9 @@ vi.mock("server-only", () => ({}));
 vi.hoisted(() => {
   process.env.SUPABASE_SERVICE_ROLE_KEY = "test";
 });
+// ustalar bo'limi bayrog'i: testlar ikkala holatni ham tekshiradi (hozir ilovada — o'chiq)
+const mastersFlag = vi.hoisted(() => ({ MASTERS_ENABLED: true }));
+vi.mock("@/features/masters/flags", () => mastersFlag);
 
 type Row = Record<string, unknown>;
 const tables: Record<string, Row[]> = {};
@@ -316,6 +319,18 @@ describe("ustalar — ishchi e'lonlari kanaliga (ega, 2026-11-24)", () => {
     expect(await postListingNow("master", "m")).toMatchObject({ posted: 1 });
     expect(send.mock.calls[0]![0]).toMatchObject({ chatId: "@main" });
     expect((await runChannelAutopost()).posted).toBe(0);
+  });
+
+  it("ustalar bo'limi yashirin (MASTERS_ENABLED = false) — kanalga umuman chiqmaydi", async () => {
+    mastersFlag.MASTERS_ENABLED = false;
+    try {
+      tables.master_listings = [master("m")];
+      expect(await postListingNow("master", "m")).toMatchObject({ posted: 0 });
+      expect((await runChannelAutopost()).posted).toBe(0);
+      expect(send).not.toHaveBeenCalled();
+    } finally {
+      mastersFlag.MASTERS_ENABLED = true;
+    }
   });
 });
 

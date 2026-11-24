@@ -3,6 +3,8 @@ import "server-only";
 import { cookies } from "next/headers";
 import { getT } from "@/lib/i18n/server";
 import { formatNotes, stripNotes, withNotes } from "@/features/post/notes";
+import { workerExtraLines } from "@/features/post/requirements";
+import { withWorkerExtraKeys, workerExtraKeysById } from "./worker-extras";
 import { getDistricts, getRegions } from "@/lib/reference";
 import { createPublicClient } from "@/lib/supabase/public";
 import { createClient } from "@/lib/supabase/server";
@@ -145,6 +147,13 @@ export async function preparePost(input: { text: string; session: SessionContext
   // "ish kerak", "e'lon joylamoqchiman" — oyna ochiladi, kasb unda yoziladi
   if (!found && !hasJobIntent(text)) return { kind: "reply", reply: t("easy.post_ai.reply.unclear") };
 
+  // kasbga xos savollar (haydovchi, kuryer, usta — ega, 2026-11-24): soha serverda ma'lum, tanlovlarga qo'shiladi
+  if (profession) profession = (await withWorkerExtraKeys([profession]))[0]!;
+  if (groups.length) {
+    const all = await withWorkerExtraKeys(groups.flatMap((g) => g.items));
+    const byId = new Map(all.map((c) => [c.id, c]));
+    groups = groups.map((g) => ({ ...g, items: g.items.map((c) => byId.get(c.id) ?? c) }));
+  }
   // aniq kasb ("Oshpaz") — qo'shimcha savolsiz (ega, 2026-11-23: "faqat guruhlarda so'rasin": shifokor, o'qituvchi)
   const form = { ...(await baseForm(text, viewerP, { regionSlug: r.regionSlug, districtId: r.districtId })), profession };
   if (groups.length) return { kind: "options", question: whichQuestion(t, group, node?.name_uz), groups, form };
@@ -179,10 +188,12 @@ export async function buildPreview(session: SessionContext | null, answers: Post
   const place = [name(region), district ? name(district) : null].filter(Boolean).join(", ");
   const kept = await keptAbout(session, node.id);
   const own = kept ?? t("easy.post_ai.about", { profession, experience: t(`easy.post_ai.about_exp.${answers.experience}`), place });
-  // "Izoh" (ega, 2026-11-22: "obed, yo'lkira tekin…" — chiroyli taxlab) — matn oxirida ✅ bilan; yangisi eskisining o'rniga
-  const notes = formatNotes("", answers.notes ?? []);
+  // "Izoh" (ega, 2026-11-22: "obed, yo'lkira tekin…" — chiroyli taxlab) — matn oxirida ✅ bilan; yangisi eskisining o'rniga.
+  // Kasbga xos javoblar (ega, 2026-11-24: "C toifa", "shaxsiy mashinam bor") — izohdan oldin; faqat shu kasb savollari
+  const keys = (await workerExtraKeysById([node.id]).catch(() => new Map())).get(node.id) ?? [];
+  const items = [...workerExtraLines(answers.extras, keys, t), ...formatNotes("", answers.notes ?? [])];
   // izoh savoliga javob berilgan bo'lsa (bo'sh — "Izohsiz") avvalgi e'londagi eski ✅ qatorlar olib tashlanadi
-  const about = answers.notes ? withNotes(stripNotes(own), notes) : own;
+  const about = answers.notes || items.length ? withNotes(stripNotes(own), items) : own;
   return {
     answers,
     profession,

@@ -32,6 +32,7 @@ import { HomeMenu } from "./home-menu";
 import { HomeLinkRow } from "./home-link-row";
 import { countMyListings } from "@/features/cabinet/queries";
 import { jobsHref } from "@/features/jobs/search-params";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /** bosh sahifa ro'yxatida haqiqiy e'lon shundan kam bo'lsa — ostida namuna e'lonlar bloki */
 const DEMO_BELOW = 4;
@@ -191,11 +192,13 @@ export async function SeekerHome({
       </Suspense>
 
       {/* "Universal ustalar" — ish e'lonlaridan alohida, o'z yashil rangida (telefonda — bo'limlar ro'yxatida) */}
-      <div className="max-lg:hidden">
-        <Suspense fallback={null}>
-          <MastersHomeSection />
-        </Suspense>
-      </div>
+      {MASTERS_ENABLED ? (
+        <div className="max-lg:hidden">
+          <Suspense fallback={null}>
+            <MastersHomeSection />
+          </Suspense>
+        </div>
+      ) : null}
     </div>
   );
 }

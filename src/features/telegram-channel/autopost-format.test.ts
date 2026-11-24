@@ -52,6 +52,19 @@ describe("kanal e'lonlari: to'liq matn; raqam — faqat rozilik maydonidan, erki
     expect(p.caption).toBe(p.html);
     expect(p.html).not.toMatch(/📞/);
     expect(p.html).not.toMatch(/vercel|ishuz|https?:/i);
+    // jinsi, yosh va ish vaqti berilmagan — qatorlari yo'q
+    expect(p.html).toMatch(/🕘 5\/2(\n|$)/);
+    expect(p.html).not.toMatch(/👤/);
+  });
+
+  it("vakansiya: ish vaqti grafik yonida, jinsi va yosh chegarasi — alohida qatorda (ega, 2026-11-24)", () => {
+    const p = vacancyPost(
+      { slug: "s-1", title: "Sotuvchi", company: null, place: "Toshkent", remote: false, salaryFrom: null, salaryTo: null, salaryType: null, negotiable: true, schedule: "5/2", profession: "Sotuvchi", workTime: "09:00–18:00", gender: "Ayol", age: "18–35 yosh" },
+      t,
+      BASE,
+    );
+    expect(p.html).toContain("🕘 5/2 · 09:00–18:00");
+    expect(p.html).toContain("👤 Ayol · 18–35 yosh");
   });
 
   it("vakansiya to'liq: tajriba, tavsif (tozalangan) va rozilik berilgan raqam — rasm ostida, 1024 dan oshmaydi", () => {

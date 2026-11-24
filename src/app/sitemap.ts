@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
 import { getServerEnv, publicEnv } from "@/lib/env";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /** Soatiga bir marta yangilanadi */
 export const revalidate = 3600;
@@ -28,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     entry(base, "/about", { lastModified: now, changeFrequency: "monthly", priority: 0.4 }),
     entry(base, "/companies", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
     entry(base, "/kasblar", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
-    entry(base, "/ustalar", { lastModified: now, changeFrequency: "daily", priority: 0.6 }),
+    ...(MASTERS_ENABLED ? [entry(base, "/ustalar", { lastModified: now, changeFrequency: "daily", priority: 0.6 })] : []),
     entry(base, "/jobs/xarita", { lastModified: now, changeFrequency: "daily", priority: 0.5 }),
     entry(base, "/for-employers", { lastModified: now, changeFrequency: "monthly", priority: 0.6 }),
     entry(base, "/privacy", { lastModified: now, changeFrequency: "yearly", priority: 0.1 }),

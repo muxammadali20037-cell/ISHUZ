@@ -166,11 +166,13 @@ const saveCls = "absolute right-1.5 top-1.5 z-10";
  */
 export function LiveStatus({ kind, wrap, className }: { kind: "hiring" | "seeking"; wrap?: boolean; className?: string }) {
   const { t } = useT();
+  // "Hozir ish qidirmoqda" — yashil (ega, 2026-11-24); "Hozir ishchi kerak" — qizil (avvalgidek)
+  const seeking = kind === "seeking";
   return (
-    <span data-live-status={kind} className={cn("flex gap-2 text-sm font-extrabold leading-tight text-destructive", wrap ? "items-start" : "items-center", className)}>
+    <span data-live-status={kind} className={cn("flex gap-2 text-sm font-extrabold leading-tight", seeking ? "text-success" : "text-destructive", wrap ? "items-start" : "items-center", className)}>
       <span className={cn("relative flex size-2.5 shrink-0", wrap && "mt-[0.2em]")} aria-hidden>
-        <span className="absolute inline-flex size-full animate-ping rounded-full bg-destructive opacity-50 motion-reduce:hidden" />
-        <span className="relative inline-flex size-2.5 rounded-full bg-destructive" />
+        <span className={cn("absolute inline-flex size-full animate-ping rounded-full opacity-50 motion-reduce:hidden", seeking ? "bg-success" : "bg-destructive")} />
+        <span className={cn("relative inline-flex size-2.5 rounded-full", seeking ? "bg-success" : "bg-destructive")} />
       </span>
       {/* wrap: tor joyda kesilmasin — kerak bo'lsa bir necha qatorga (ega skrinshoti, 2026-11-22: "Hozir ishchi…" kesilardi) */}
       <span className={cn("min-w-0", wrap ? "break-words" : "truncate")}>{t(kind === "hiring" ? "easy.card.hiring_now" : "easy.card.seeking_now")}</span>

@@ -1,6 +1,7 @@
 import type { DraftImage } from "@/features/listing-image/components/listing-image-draft";
 import type { PickedProfession } from "@/features/professions/types";
 import type { Enums } from "@/types/database.types";
+import type { AgeRange, Extras, GenderChoice, WorkHours } from "./requirements";
 
 /** Sodda tajriba tanlovi (ishchi) ↔ bazadagi experience_level */
 export type SimpleExperience = "none" | "lt1" | "1_3" | "3plus";
@@ -105,6 +106,14 @@ export interface VacancyDraft {
   image?: DraftImage | null;
   /** "Izoh" (ega, 2026-11-22: "obed, yo'lkira tekin…") — tartibga keltirilgan bandlar; e'lon matniga ✅ bilan qo'shiladi */
   notes?: string[];
+  /** jinsi (ega, 2026-11-24); undefined — so'ralmagan ("any" — farqi yo'q) */
+  gender?: GenderChoice;
+  /** yosh chegarasi; undefined — so'ralmagan; ikkalasi null — farqi yo'q */
+  age?: AgeRange;
+  /** ish vaqti; null — kelishiladi; undefined — so'ralmagan (masofaviy, bir martalik, smenali ishda so'ralmaydi) */
+  hours?: WorkHours | null;
+  /** kasbga xos javoblar (guvohnoma toifasi, transport, doimiy/bir martalik…) — e'lon matniga ✅ bilan */
+  extras?: Extras;
 }
 
 /**

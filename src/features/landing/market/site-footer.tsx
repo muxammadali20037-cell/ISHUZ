@@ -9,6 +9,7 @@ import { LanguageSelect } from "@/components/shared/language-switcher";
 import { BRAND } from "@/config/brand";
 import { EMPTY_FIND, findHref } from "@/features/find/params";
 import { seekerQuickFilters } from "../quick-filters";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 interface FooterLink {
   href: string;
@@ -39,7 +40,7 @@ export async function SiteFooter({ compact = false }: { compact?: boolean } = {}
         { href: "/jobs/xarita", label: t("map.title") },
         // alohida bo'limlar (sarlavhada joy tor bo'lganda ham nomi bilan topilsin)
         { href: "/ai", label: t("easy.aiws.nav.ai") },
-        { href: "/ustalar", label: t("masters.name") },
+        ...(MASTERS_ENABLED ? [{ href: "/ustalar", label: t("masters.name") }] : []),
       ],
     },
     {

@@ -18,6 +18,7 @@ import { EmployerHead } from "@/features/landing/employer-head";
 import { HomeMenu } from "@/features/landing/home-menu";
 import { homeMenuLinks } from "@/features/landing/quick-filters";
 import { getHomePlace } from "@/features/landing/home-queries";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /**
  * Ish beruvchi paneli (server) — 2.0: /employer va ish beruvchi rejimidagi bosh sahifa. Bosh qismi mehmon sahifasi bilan bir xil
@@ -107,7 +108,7 @@ export async function EmployerDashboard({ session, embedded = false }: { session
         ) : null}
 
         {/* "Universal ustalar" — alohida yashil bo'lim (bosh sahifa ichida; telefonda — menyuda) */}
-        {embedded ? (
+        {embedded && MASTERS_ENABLED ? (
           <Suspense fallback={null}>
             <MastersHomeSection />
           </Suspense>

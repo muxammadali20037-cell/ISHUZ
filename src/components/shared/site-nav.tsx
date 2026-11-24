@@ -8,6 +8,7 @@ import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
+import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 /** Mehmon (rejim tanlanmagan) uchun sayt bo'limlari; "Xizmatlar" — faqat to'lovlar yoqilgan bo'lsa (/pricing) */
 export interface SiteNavConfig {
@@ -106,10 +107,12 @@ function DesktopLinks({ mode }: { mode: string | null }) {
           <Sparkles className="size-4" aria-hidden /> {t("easy.nav.tab_ai")}
         </Link>
       </li>
-      {/* lg–xl (1024–1279): joy yetmaydi — "Universal ustalar" bu qatorda xl dan */}
-      <li className="max-xl:hidden">
-        <MastersLink />
-      </li>
+      {/* lg–xl (1024–1279): joy yetmaydi — "Universal ustalar" bu qatorda xl dan (hozircha yashirin — MASTERS_ENABLED) */}
+      {MASTERS_ENABLED ? (
+        <li className="max-xl:hidden">
+          <MastersLink />
+        </li>
+      ) : null}
     </ul>
   );
 }
@@ -156,11 +159,13 @@ export function SiteMenu({ pricing, registerHref }: SiteNavConfig) {
             <Sparkles className="size-4" aria-hidden /> {t("easy.aiws.nav.ai")}
           </Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild className="theme-masters min-h-11 text-base font-semibold text-primary-ink">
-          <Link href="/ustalar" data-track="site_nav" data-track-to="masters" data-masters-entry>
-            <Wrench className="size-4" aria-hidden /> {t("masters.name")}
-          </Link>
-        </DropdownMenuItem>
+        {MASTERS_ENABLED ? (
+          <DropdownMenuItem asChild className="theme-masters min-h-11 text-base font-semibold text-primary-ink">
+            <Link href="/ustalar" data-track="site_nav" data-track-to="masters" data-masters-entry>
+              <Wrench className="size-4" aria-hidden /> {t("masters.name")}
+            </Link>
+          </DropdownMenuItem>
+        ) : null}
         <DropdownMenuItem asChild className="min-h-11 text-base font-semibold">
           <Link href="/about">{t("common.site.nav_about")}</Link>
         </DropdownMenuItem>

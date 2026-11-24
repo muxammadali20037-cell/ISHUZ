@@ -6,12 +6,16 @@ import { getT } from "@/lib/i18n/server";
 import { createPublicClient } from "@/lib/supabase/public";
 import { searchProfessions } from "@/features/professions/queries";
 import { isProhibitedProfession } from "@/features/moderation/policy";
+import { withWorkerExtraKeys } from "@/features/find/worker-extras";
+import type { WorkerExtraKey } from "@/features/post/requirements";
 
 export interface ChatProfession {
   id: string;
   name: string;
   /** e'lon berishda faqat tanlanadigan (eng quyi) kasb; qidiruvda guruh ham bo'ladi */
   selectable: boolean;
+  /** ishchi e'lonida kasbga xos savollar (haydovchi, kuryer, usta) */
+  extraKeys?: WorkerExtraKey[];
 }
 
 interface Node {
@@ -115,9 +119,9 @@ export async function chatProfessions(input: unknown): Promise<ChatProfession[]>
   try {
     if (q.length >= 2) {
       const hits = await searchProfessions(q, null, 12);
-      return hits.map((h) => ({ id: h.id, name: name(h), selectable: h.selectable }));
+      return withWorkerExtraKeys(hits.map((h) => ({ id: h.id, name: name(h), selectable: h.selectable })));
     }
-    return (await popular(parsed.data.mode)).map((n) => ({ id: n.id, name: name(n), selectable: n.selectable }));
+    return withWorkerExtraKeys((await popular(parsed.data.mode)).map((n) => ({ id: n.id, name: name(n), selectable: n.selectable })));
   } catch (e) {
     console.error("[chat] professions", e instanceof Error ? e.message : e);
     return [];

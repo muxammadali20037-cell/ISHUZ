@@ -25,6 +25,7 @@ import { chatProfessionsWithListings, type ChatProfessionCount } from "../action
 import { ChatIntro } from "./chat-intro";
 import { HomeStart, type HomeActions } from "./home-start";
 import type { HomeData, HomeLatest } from "../home";
+import { WORKER_EXTRA_OPTIONS, type WorkerExtraKey } from "@/features/post/requirements";
 
 /** Vakansiya joylash — yordamchi bilan alohida ekran (ishchi e'loni esa shu chatning o'zida, 3-bosqich) */
 export function vacancyHref(text = ""): string {
@@ -687,7 +688,7 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
               mode="jobs"
               attr="post-prof"
               // aniq kasb — darhol; guruh ("O'qituvchi") — "aynan qaysi biri?" variantlari bilan
-              onPick={(p) => (p.selectable ? chat.pickPostChoice({ id: p.id, name: p.name }) : chat.ask(p.name))}
+              onPick={(p) => (p.selectable ? chat.pickPostChoice({ id: p.id, name: p.name, extraKeys: p.extraKeys }) : chat.ask(p.name))}
             />
           ) : null}
         </Ai>
@@ -725,6 +726,28 @@ function PostAsk({ part, chat, open }: { part: Extract<AiPart, { kind: "post-ask
           ) : null}
         </Ai>
       );
+    case "post_license":
+    case "post_car":
+    case "post_transport":
+    case "post_tools": {
+      // kasbga xos savol (ega, 2026-11-24): haydovchi — guvohnoma, mashina; kuryer — transport; usta — asboblar
+      const key = part.ask.replace("post_", "") as WorkerExtraKey;
+      return (
+        <Ai kind={kind}>
+          {intro}
+          <Say>{t(part.retry ? "easy.guided.ask_post_extra_retry" : `easy.guided.ask_post_${key}`)}</Say>
+          {open ? (
+            <Pills
+              attr={`wx-${key}`}
+              items={WORKER_EXTRA_OPTIONS[key].map((v) => {
+                const label = key === "license" ? t("easy.guided.wx.license.option", { value: v }) : t(`easy.guided.wx.${key}.${v}`);
+                return { key: v, label, onClick: () => chat.pickPostExtra(key, v, label) };
+              })}
+            />
+          ) : null}
+        </Ai>
+      );
+    }
     case "post_name":
       return (
         <Ai kind={kind}>

@@ -28,6 +28,7 @@ import { PhotoUpload } from "./photo-upload";
 import { AiReadyBanner } from "./ai-quick-fill";
 import { AiAvatar } from "@/components/shared/ai-avatar";
 import { VacancyGuide } from "./vacancy-guide";
+import { ageLabel, hoursLabel, hoursRelevant } from "../requirements";
 import type { ProfessionOption } from "../chat-actions";
 import { RegionPicker, placeLabel } from "./region-picker";
 import { PhonePublicNote } from "./phone-public-note";
@@ -62,6 +63,16 @@ const emptyDraft = (): VacancyDraft => ({
   experienceMonths: 0,
   showPhone: false,
 });
+
+/** Savollarda berilgan jinsi, yosh va ish vaqti → server maydonlari (berilmagani — yuborilmaydi, bazada o'zgarmaydi) */
+function requirementsPayload(d: VacancyDraft) {
+  return {
+    ...(d.gender !== undefined ? { gender: d.gender === "any" ? null : d.gender } : {}),
+    ...(d.age !== undefined ? { ageMin: d.age.min, ageMax: d.age.max } : {}),
+    // ish vaqti kerak bo'lmay qolgan bo'lsa (keyin masofaviy yoki smenali tanlandi) — yuborilmaydi
+    ...(d.hours !== undefined && hoursRelevant({ remote: d.place.remote, extras: d.extras, schedule: d.schedule }) ? { workTimeFrom: d.hours?.from ?? null, workTimeTo: d.hours?.to ?? null } : {}),
+  };
+}
 
 type Errors = Partial<Record<"profession" | "place" | "employerType" | "orgName" | "phone" | "description" | "salary" | "form", string>>;
 
@@ -271,6 +282,8 @@ export function VacancyPost({
         source: draft.source ?? "manual",
         // tekshirish sahifasida tanlangan AI rasm (ega, 2026-11-22: "ma'qul kelsa joylash")
         imageDraft: imageEnabled ? (draft.image?.draft ?? null) : null,
+        // jinsi, yosh, ish vaqti (ega, 2026-11-24) — faqat so'ralgan bo'lsa; so'ralmagani (oddiy forma, tahrir) o'zgarmaydi
+        ...requirementsPayload(draft),
       }));
       if (!res.ok || !res.data) {
         const key = `easy.errors.${res.ok ? "generic" : res.error}`;
@@ -394,6 +407,7 @@ export function VacancyPost({
         initialSentence={(params.get("q") ?? "").slice(0, 300)}
         regions={regions}
         districts={districts}
+        categories={categories}
         quick={quick}
         draft={draft}
         update={update}
@@ -423,6 +437,16 @@ export function VacancyPost({
     for (const k of ["employerType", "orgName", "phone", "description", "salary"] as const) if (e[k]) q.push({ label: e[k]!, onClick: () => goTo(3) });
     return q;
   })();
+
+  // "Ko'proq" qatori: grafik, tajriba va AI savollarida berilgan ish vaqti, jinsi, yosh (ega, 2026-11-24)
+  const payload = requirementsPayload(draft);
+  const moreFacts = [
+    draft.schedule ? tEnum("work_schedule", draft.schedule) : null,
+    payload.workTimeFrom && payload.workTimeTo ? `${t("easy.vguide.hours_label")}: ${hoursLabel({ from: payload.workTimeFrom, to: payload.workTimeTo })}` : null,
+    payload.gender ? `${t("easy.vguide.gender_label")}: ${t(`easy.vguide.${payload.gender}`)}` : null,
+    draft.age ? ageLabel(draft.age, t) : null,
+    draft.experienceMonths ? `${t("easy.vacancy.experience")}: ${t(`easy.vacancy.exp.${draft.experienceMonths}`)}` : null,
+  ].filter((x): x is string => !!x);
 
   const stepNames = [t("easy.wizard.steps.specialist"), t("easy.wizard.steps.location"), t("easy.wizard.steps.job"), t("easy.wizard.steps.review")];
   const loginHref = `/auth?${new URLSearchParams({ next: `${editId ? `${PATH}?edit=${editId}&` : `${PATH}?`}step=${step}` }).toString()}`;
@@ -674,9 +698,9 @@ export function VacancyPost({
             <ReviewRow label={t("easy.vacancy.description")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
               <span className="whitespace-pre-line font-normal">{draft.description || "—"}</span>
             </ReviewRow>
-            {draft.schedule || draft.experienceMonths ? (
+            {moreFacts.length ? (
               <ReviewRow label={t("easy.vacancy.more")} onChange={() => goTo(3)} changeLabel={t("easy.wizard.change")}>
-                {[draft.schedule ? tEnum("work_schedule", draft.schedule) : null, draft.experienceMonths ? `${t("easy.vacancy.experience")}: ${t(`easy.vacancy.exp.${draft.experienceMonths}`)}` : null].filter(Boolean).join(" · ")}
+                {moreFacts.join(" · ")}
               </ReviewRow>
             ) : null}
           </div>

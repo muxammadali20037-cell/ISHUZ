@@ -1351,14 +1351,24 @@
       "district": "Qaysi tuman?",
       "salary": "Oylik qancha?",
       "salary_daily": "Kunlik haq qancha?",
-      "schedule": "Ish vaqti qanday?",
+      "schedule": "Ish grafigi qanday?",
       "experience": "Tajriba kerakmi?",
       "employer_type": "Kim ish beradi?",
       "org_name": "Tashkilot nomi?",
       "person_name": "Ismingiz?",
       "phone": "Bog'lanish uchun telefon",
       "description": "E'lon matni. Ma'qulmi?",
-      "notes": "Qo'shimcha izoh bormi?"
+      "notes": "Qo'shimcha izoh bormi?",
+      "hours": "Soat nechadan nechagacha ishlaydi?",
+      "gender": "Erkak kerakmi yoki ayol?",
+      "age": "Yoshi qancha bo'lsin?",
+      "x_license": "Qaysi toifadagi haydovchilik guvohnomasi kerak?",
+      "x_car": "Mashina kimniki bo'ladi?",
+      "x_transport": "Kuryer nimada yetkazadi?",
+      "x_format": "Qayerda ishlaydi?",
+      "x_term": "Ish doimiymi yoki bir martalik?",
+      "x_pay": "Ish haqi qanday — ishbaymi yoki oylik?",
+      "salary_piece": "Ishbay — oyiga taxminan qancha chiqadi?"
     },
     "other_profession": "Boshqa kasb",
     "profession_input": "Kasb nomini yozing",
@@ -1380,14 +1390,77 @@
     "tpl": {
       "need": "{profession} kerak.",
       "place": "Ish joyi: {place}.",
-      "schedule": "Ish vaqti: {schedule}.",
+      "schedule": "Ish grafigi: {schedule}.",
       "exp_0": "Tajriba shart emas.",
       "exp_12": "Tajriba: 1 yildan.",
       "exp_36": "Tajriba: 3 yildan."
     },
     "notes_hint": "Masalan: obed, yo'lkira tekin. Bir nechtasini tanlang yoki o'zingiz yozing — e'londa chiroyli ro'yxat bo'lib chiqadi.",
     "notes_placeholder": "O'zingiz yozing: obed, yo'lkira tekin…",
-    "notes_skip": "Izohsiz davom etish"
+    "notes_skip": "Izohsiz davom etish",
+    "other_time": "Boshqa vaqt",
+    "time_from": "Boshlanishi",
+    "time_to": "Tugashi",
+    "hours_label": "Ish vaqti",
+    "gender_label": "Jinsi",
+    "age_label": "Yoshi",
+    "age_range": "{min}–{max} yosh",
+    "age_from": "{min} yoshdan",
+    "age_to": "{max} yoshgacha",
+    "other_age": "Boshqa yosh",
+    "age_from_input": "Yoshi (dan)",
+    "age_to_input": "Yoshi (gacha)",
+    "age_invalid": "Yoshni 14 dan 80 gacha yozing (\"gacha\" — \"dan\"dan kichik bo'lmasin).",
+    "male": "Erkak",
+    "female": "Ayol",
+    "x": {
+      "license": {
+        "label": "Guvohnoma",
+        "option": "{value} toifa",
+        "line": "Haydovchilik guvohnomasi: {value} toifa"
+      },
+      "car": {
+        "label": "Mashina",
+        "company": "Mashina bizdan",
+        "own": "O'z mashinasi bilan",
+        "line_company": "Mashina ish beruvchidan beriladi",
+        "line_own": "O'z mashinasi bilan ishlaydi"
+      },
+      "transport": {
+        "label": "Transport",
+        "foot": "Piyoda",
+        "bike": "Velosiped yoki skuter",
+        "moto": "Mototsikl",
+        "car": "Avtomobil",
+        "any": "Farqi yo'q",
+        "line_foot": "Piyoda yetkazib beradi",
+        "line_bike": "Velosiped yoki skuterda yetkazadi",
+        "line_moto": "Mototsiklda yetkazadi",
+        "line_car": "Avtomobilda yetkazadi"
+      },
+      "format": {
+        "label": "Ish formati",
+        "office": "Ofisda",
+        "remote": "Masofadan (onlayn)",
+        "hybrid": "Aralash: ofis va masofadan",
+        "line_office": "Ish ofisda",
+        "line_hybrid": "Aralash format: ofisda va masofadan"
+      },
+      "term": {
+        "label": "Ish turi",
+        "permanent": "Doimiy ish",
+        "once": "Bir martalik ish",
+        "line_permanent": "Doimiy ish",
+        "line_once": "Bir martalik ish"
+      },
+      "pay": {
+        "label": "Ish haqi turi",
+        "piece": "Ishbay (dona bay)",
+        "monthly": "Oylik",
+        "line_piece": "Ish haqi ishbay (dona bay)",
+        "line_monthly": "Ish haqi oylik"
+      }
+    }
   },
   "quick": {
     "remote": "Masofaviy (internet orqali)",
@@ -1722,7 +1795,42 @@
       "students": "Talabalar uchun",
       "quick_label": "Tezkor bo'limlar",
       "placeholder": "Yozing, o'zingizga mosini toping"
-    }
+    },
+    "ask_post_license": "Haydovchilik guvohnomangiz qaysi toifada?",
+    "ask_post_car": "Shaxsiy mashinangiz bormi?",
+    "ask_post_transport": "Nimada yetkazasiz?",
+    "ask_post_tools": "O'z asboblaringiz bormi?",
+    "ask_post_extra_retry": "Tushunmadim — quyidagilardan birini tanlang.",
+    "wx": {
+      "license": {
+        "option": "{value} toifa",
+        "line": "Haydovchilik guvohnomasi: {value} toifa"
+      },
+      "car": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "Shaxsiy mashinam bor"
+      },
+      "transport": {
+        "foot": "Piyoda",
+        "bike": "Velosiped yoki skuter",
+        "moto": "Mototsikl",
+        "car": "Avtomobil",
+        "line_foot": "Piyoda yetkazaman",
+        "line_bike": "Velosiped yoki skuterda yetkazaman",
+        "line_moto": "Mototsiklda yetkazaman",
+        "line_car": "Avtomobilda yetkazaman"
+      },
+      "tools": {
+        "yes": "Ha, bor",
+        "no": "Yo'q",
+        "line_yes": "O'z asboblarim bor"
+      }
+    },
+    "placeholder_post_license": "Masalan: B yoki C",
+    "placeholder_post_car": "Ha yoki yo'q",
+    "placeholder_post_transport": "Masalan: velosipedda",
+    "placeholder_post_tools": "Ha yoki yo'q"
   },
   "intro": {
     "title": "Ish topdim qanday ishlaydi",

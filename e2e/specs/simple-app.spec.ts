@@ -168,20 +168,23 @@ test("ish izlovchi: kasb → hudud (tugma) → haqiqiy e'lonlar; topilmasa — �
   await expect(page).toHaveURL(/\/chat$/);
 });
 
-test("«Universal ustalar» — Profilda (chat juda sodda; ega, 2026-11-21: «Profil ichiga»), mehmonga ham", async ({ page, context }) => {
+test("«Universal ustalar» — hozircha yashirin (ega, 2026-11-24): Profilda yo'q, eski havola (/ustalar) esa ochilaveradi", async ({ page, context }) => {
   await asGuest(context);
   await page.goto("/cabinet");
-  await expect(page.locator("main [data-cabinet-masters]")).toHaveAttribute("href", "/ustalar");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page.locator("main [data-cabinet-masters]")).toHaveCount(0);
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/chat");
   await expect(page.locator("[data-start-chat] [data-chat-choice='find_masters']")).toHaveCount(0);
+  await expect(page.locator("[data-home-quick] a[href='/ustalar']")).toHaveCount(0);
   await page.goto("/cabinet");
   await page.locator("main [data-fold='more'] [data-fold-toggle]").click();
-  const row = page.locator("main [data-cabinet-masters]");
-  await expect(row).toContainText("Universal ustalar xizmati");
-  await row.click();
-  await expect(page).toHaveURL(/\/ustalar$/);
+  await expect(page.locator("main [data-cabinet-masters]")).toHaveCount(0);
+  await expect(page.locator("[data-masters-entry]")).toHaveCount(0);
+  // e'lonlar bazada qoladi — to'g'ridan-to'g'ri havola ishlaydi
+  await page.goto("/ustalar");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 });
 
 test("E'lon berish (ish izlovchi): «O'zim haqimda e'lon bermoqchiman» → shu chatda savollar (3-bosqich; to'liq yo'l — chat-post.spec)", async ({ page, context }) => {

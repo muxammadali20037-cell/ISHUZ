@@ -1351,14 +1351,24 @@
       "district": "Which district?",
       "salary": "Monthly pay?",
       "salary_daily": "Daily pay?",
-      "schedule": "Working hours?",
+      "schedule": "Work schedule?",
       "experience": "Experience needed?",
       "employer_type": "Who is hiring?",
       "org_name": "Organization name?",
       "person_name": "Your name?",
       "phone": "Contact phone",
       "description": "Ad text. Looks good?",
-      "notes": "Anything to add?"
+      "notes": "Anything to add?",
+      "hours": "What are the working hours?",
+      "gender": "Man or woman?",
+      "age": "What age?",
+      "x_license": "Which driving licence category?",
+      "x_car": "Whose car?",
+      "x_transport": "How does the courier deliver?",
+      "x_format": "Where will they work?",
+      "x_term": "Permanent or one-off job?",
+      "x_pay": "Piece-rate or monthly pay?",
+      "salary_piece": "Piece-rate — roughly how much per month?"
     },
     "other_profession": "Another job",
     "profession_input": "Type the job",
@@ -1387,7 +1397,70 @@
     },
     "notes_hint": "E.g. free lunch and fare. Pick a few or type your own — they appear as a neat list in the listing.",
     "notes_placeholder": "Type your own: free lunch, fare…",
-    "notes_skip": "Continue without notes"
+    "notes_skip": "Continue without notes",
+    "other_time": "Other hours",
+    "time_from": "Starts",
+    "time_to": "Ends",
+    "hours_label": "Working hours",
+    "gender_label": "Gender",
+    "age_label": "Age",
+    "age_range": "{min}–{max} years",
+    "age_from": "{min}+ years",
+    "age_to": "up to {max} years",
+    "other_age": "Other age",
+    "age_from_input": "Age from",
+    "age_to_input": "Age to",
+    "age_invalid": "Enter an age from 14 to 80 (\"to\" not less than \"from\").",
+    "male": "Man",
+    "female": "Woman",
+    "x": {
+      "license": {
+        "label": "Licence",
+        "option": "Category {value}",
+        "line": "Driving licence: category {value}"
+      },
+      "car": {
+        "label": "Car",
+        "company": "We provide the car",
+        "own": "Own car",
+        "line_company": "Car provided by the employer",
+        "line_own": "Works with own car"
+      },
+      "transport": {
+        "label": "Transport",
+        "foot": "On foot",
+        "bike": "Bike or scooter",
+        "moto": "Motorbike",
+        "car": "Car",
+        "any": "Any",
+        "line_foot": "Delivers on foot",
+        "line_bike": "Delivers by bike or scooter",
+        "line_moto": "Delivers by motorbike",
+        "line_car": "Delivers by car"
+      },
+      "format": {
+        "label": "Work format",
+        "office": "In the office",
+        "remote": "Remote",
+        "hybrid": "Hybrid: office and remote",
+        "line_office": "Office-based",
+        "line_hybrid": "Hybrid: office and remote"
+      },
+      "term": {
+        "label": "Job type",
+        "permanent": "Permanent",
+        "once": "One-off",
+        "line_permanent": "Permanent job",
+        "line_once": "One-off job"
+      },
+      "pay": {
+        "label": "Pay type",
+        "piece": "Piece-rate",
+        "monthly": "Monthly",
+        "line_piece": "Piece-rate pay",
+        "line_monthly": "Monthly salary"
+      }
+    }
   },
   "quick": {
     "remote": "Remote (online)",
@@ -1722,7 +1795,42 @@
       "students": "For students",
       "quick_label": "Quick sections",
       "placeholder": "Type here — find what suits you"
-    }
+    },
+    "ask_post_license": "Which driving licence category do you have?",
+    "ask_post_car": "Do you have your own car?",
+    "ask_post_transport": "How do you deliver?",
+    "ask_post_tools": "Do you have your own tools?",
+    "ask_post_extra_retry": "Sorry, I didn't get that — pick one of the options below.",
+    "wx": {
+      "license": {
+        "option": "Category {value}",
+        "line": "Driving licence: category {value}"
+      },
+      "car": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has own car"
+      },
+      "transport": {
+        "foot": "On foot",
+        "bike": "Bike or scooter",
+        "moto": "Motorbike",
+        "car": "Car",
+        "line_foot": "Delivers on foot",
+        "line_bike": "Delivers by bike or scooter",
+        "line_moto": "Delivers by motorbike",
+        "line_car": "Delivers by car"
+      },
+      "tools": {
+        "yes": "Yes",
+        "no": "No",
+        "line_yes": "Has own tools"
+      }
+    },
+    "placeholder_post_license": "For example: B or C",
+    "placeholder_post_car": "Yes or no",
+    "placeholder_post_transport": "For example: by bike",
+    "placeholder_post_tools": "Yes or no"
   },
   "intro": {
     "title": "How Ish topdim works",

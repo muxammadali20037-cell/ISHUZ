@@ -41,6 +41,11 @@ export interface VacancyPostData {
   experienceMonths?: number | null;
   /** E.164; faqat kanalga rozilik bo'lsa beriladi (chaqiruvchi tekshiradi) */
   phone?: string | null;
+  /** ish vaqti "09:00–18:00" (ega, 2026-11-24) */
+  workTime?: string | null;
+  /** talab: jinsi ("Ayol") va yosh chegarasi ("18–35 yosh") — tayyor matn */
+  gender?: string | null;
+  age?: string | null;
 }
 
 export interface WorkerPostData {
@@ -150,7 +155,8 @@ export function vacancyPost(d: VacancyPostData, t: T, base: string, link: LinkFn
     d.company ? `🏢 ${escapeHtml(sanitizeLine(d.company, 80))}` : null,
     d.remote ? `🌐 ${escapeHtml(t("bot.channel.remote"))}` : d.place ? `📍 ${escapeHtml(d.place)}` : null,
     `💰 ${escapeHtml(salary)}`,
-    d.schedule ? `🕘 ${escapeHtml(d.schedule)}` : null,
+    d.schedule || d.workTime ? `🕘 ${escapeHtml([d.schedule, d.workTime].filter(Boolean).join(" · "))}` : null,
+    d.gender || d.age ? `👤 ${escapeHtml([d.gender, d.age].filter(Boolean).join(" · "))}` : null,
     step == null ? null : `🧰 ${escapeHtml(step === 0 ? t("bot.channel.no_experience") : t("bot.channel.experience", { value: t(`enums.experience_min_months.${step}`) }))}`,
   ].filter((l) => l !== null);
   const tail = phoneTail(d.phone ? [d.phone] : [], t);
