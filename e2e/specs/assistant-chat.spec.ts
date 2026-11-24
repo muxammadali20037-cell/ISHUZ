@@ -77,7 +77,7 @@ test("matn → so'rovnoma (kasb, hudud oldindan to'ldirilgan; maosh so'ralmaydi)
   await expect(main(page).locator("[data-ai-reply], [data-ai-trace], [data-ai-suggestions]")).toHaveCount(0);
 });
 
-test("karta: yopiq holatda raqam yo'q; «Ochish →» — e'lonning o'z sahifasi (ega, 2026-11-24: alohida sahifa), u yerda hamma ma'lumot va telefon", async ({ page, context }) => {
+test("karta: yopiq holatda raqam yo'q; «Ko'rish →» — e'lonning o'z sahifasi (ega, 2026-11-24: alohida sahifa), u yerda hamma ma'lumot va telefon", async ({ page, context }) => {
   const [v] = await sql<{ id: string; slug: string }>("select id, slug from public.vacancies where title = $1", [TITLE]);
   await sql(
     `insert into public.vacancy_contacts (vacancy_id, phone, show_phone) values ($1, '+998901112244', true)
@@ -107,8 +107,8 @@ test("karta: yopiq holatda raqam yo'q; «Ochish →» — e'lonning o'z sahifasi
   await answer.getByRole("button", { name: "Yashirish" }).click();
   await expect(answer.locator("article")).toHaveCount(0);
   await answer.getByRole("button", { name: "Ko'rish" }).click();
-  // «Ochish →» — kartaning o'zida ochilmaydi, e'lon sahifasiga o'tadi; u yerda tavsif va telefon
-  const openLink = answer.locator("[data-ai-card='job']").getByRole("link", { name: "Ochish" });
+  // «Ko'rish →» (o'ng tomonda) — kartaning o'zida ochilmaydi, e'lon sahifasiga o'tadi; u yerda tavsif va telefon
+  const openLink = answer.locator("[data-ai-card='job']").getByRole("link", { name: "Ko'rish" });
   await expect(openLink).toHaveAttribute("href", `/jobs/${v!.slug}`);
   await openLink.click();
   await page.waitForURL(new RegExp(`/jobs/${v!.slug}$`));

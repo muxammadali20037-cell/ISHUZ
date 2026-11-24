@@ -10,14 +10,14 @@ import { OrgMark, usePlace, type JobCardData, type WorkerCardData } from "./resu
 
 /**
  * Yordamchi (AI) javobidagi va bosh sahifadagi kartalar: lavozim (yoki ism va kasb) · maosh · ish beruvchi · joy →
- * "Ochish →". Ega (2026-11-24): "ochishni boshqacha qilish kerak" — tanlovi "Alohida sahifa": tugma e'lonning o'z sahifasini
+ * "Ko'rish →" (o'ng tomonda). Ega (2026-11-24): "ochishni boshqacha qilish kerak" — tanlovi "Alohida sahifa": tugma e'lonning o'z sahifasini
  * ochadi (vakansiya — /jobs/<slug>, ishchi — /listing/<id>); u yerda hamma ma'lumot, telefon va ariza. Orqaga — ro'yxatga.
  * Avvalgi "kartaning o'zida ochilish" (2026-11-19) olib tashlandi.
  */
 
 // oq, sokin karta (ega, 2026-11-21: "ranglar yemagan, bolalarcha") — rang faqat muhim joyda (maosh, tugma)
 const cardCls = "relative rounded-2xl border border-border bg-card p-4 shadow-sm";
-// ega (2026-11-24): "Ochish →" — kichik, ko'k shaffof shisha (.glass-blue): ichi to'la rang emas, to'rt tomondan soya,
+// ega (2026-11-24): "Ko'rish →" (o'ng tomonda) — kichik, ko'k shaffof shisha (.glass-blue): ichi to'la rang emas, to'rt tomondan soya,
 // burchaklardan ozgina nur. Ko'rinishi 36px; bosiladigan joy — 44px (::after, a11y)
 const openBtnCls =
   "glass-blue press relative mt-3 inline-flex h-9 items-center justify-center gap-1.5 rounded-xl px-3.5 text-sm font-semibold text-primary-ink transition-[transform,box-shadow,background-color] hover:-translate-y-px after:absolute after:inset-x-0 after:-inset-y-1 after:content-[''] disabled:opacity-70";
@@ -52,13 +52,15 @@ function PlaceLine({ text }: { text: string }) {
   );
 }
 
-/** "Ochish →" — e'lonning o'z sahifasi (ko'k shaffof shisha, .glass-blue) */
+/** "Ko'rish →" — e'lonning o'z sahifasi (ko'k shaffof shisha, .glass-blue); kartaning o'ng tomonida (ega, 2026-11-24) */
 function OpenLink({ href }: { href: string }) {
   const { t } = useT();
   return (
-    <Link href={href} className={openBtnCls} data-ai-card-open>
-      {t("easy.aicard.open")} <ArrowRight className="size-4" aria-hidden />
-    </Link>
+    <div className="flex justify-end">
+      <Link href={href} className={openBtnCls} data-ai-card-open>
+        {t("easy.aicard.open")} <ArrowRight className="size-4" aria-hidden />
+      </Link>
+    </div>
   );
 }
 
