@@ -41,6 +41,9 @@ import { PhonePublicNote } from "./phone-public-note";
 import { placeLabel } from "./region-picker";
 import { FieldError, ReviewRow } from "./wizard-frame";
 
+/** Kasb variantlari uzun bo'lsa ("menejer" — 77 ta) birinchi ko'rinadigani; qolgani "Hammasi" tugmasi ortida */
+const OPTIONS_FIRST = 12;
+
 /**
  * "AI bilan oson joylash" (ish beruvchi, 2026-11-16). Ega: "menga shunaqa kerak desa — ekranga savol chiqsin, tanlab-tanlab
  * sen bergan variantni o'tkazsin, yozuvlar kam va tushunarli bo'lsin".
@@ -93,6 +96,9 @@ export function VacancyGuide({
   /** javob berilgan savollar ketma-ketligi — "Orqaga" shu bo'yicha */
   const [history, setHistory] = useState<GuideStep[]>([]);
   const [options, setOptions] = useState<ProfessionOption[]>([]);
+  /** variantlar bitta so'z oilasidan ("menejer") — savol "Qanday menejer kerak?"; uzun ro'yxat avval qisqa, "Hammasi" — to'liq */
+  const [family, setFamily] = useState<"manager" | null>(null);
+  const [allOptions, setAllOptions] = useState(false);
   /** shu savolda matn kiritish ochiq ("Boshqa kasb", "Boshqa summa", tavsifni o'zgartirish) */
   const [typing, setTyping] = useState<GuideStep | null>(null);
   const [text, setText] = useState("");
@@ -232,6 +238,8 @@ export function VacancyGuide({
       setAsked(known);
       setHistory([]);
       setOptions(p.professionOptions ?? []);
+      setFamily(p.professionFamily ?? null);
+      setAllOptions(false);
       setSentence(value);
       setTyping(null);
       setText("");
@@ -275,6 +283,8 @@ export function VacancyGuide({
       if (res.data.profession) answer("profession", professionPatch(res.data.profession, `${sentence} ${value}`));
       else if (res.data.professionOptions?.length) {
         setOptions(res.data.professionOptions);
+        setFamily(res.data.professionFamily ?? null);
+        setAllOptions(false);
         setTyping(null);
         setText("");
       } else setErr(t("easy.vguide.not_understood"));
@@ -372,15 +382,24 @@ export function VacancyGuide({
       </div>
     );
   } else if (step === "profession") {
-    title = options.length ? t("easy.vguide.q.profession_pick") : t("easy.vguide.q.profession");
+    title =
+      options.length && family
+        ? t("easy.vguide.q.profession_which", { name: t(`easy.family.${family}`) })
+        : options.length
+          ? t("easy.vguide.q.profession_pick")
+          : t("easy.vguide.q.profession");
     const list = options.length ? options : quick;
+    // "menejer" — 77 ta: avval 12 tasi (ko'p so'raladiganlari), "Hammasi" — qolgani (ega, 2026-11-24)
+    const cut = !allOptions && list.length > OPTIONS_FIRST + 1;
+    const shown = cut ? list.slice(0, OPTIONS_FIRST) : list;
     body =
       typing === "profession" ? (
         textStep({ label: t("easy.vguide.profession_input"), value: text, onChange: setText, onSubmit: () => typeProfession(text), disabled: text.trim().length < 2 })
       ) : (
         choices([
-          ...list.map((o) => ({ key: o.id, label: name(o), run: () => pickProfession(o) })),
-          { key: "other", label: t("easy.vguide.other_profession"), run: () => (setTyping("profession"), setText(""), setErr(null)), wide: list.length % 2 === 0 },
+          ...shown.map((o) => ({ key: o.id, label: name(o), run: () => pickProfession(o) })),
+          ...(cut ? [{ key: "all", label: t("easy.vguide.all_options", { count: list.length }), run: () => setAllOptions(true), wide: true }] : []),
+          { key: "other", label: t("easy.vguide.other_profession"), run: () => (setTyping("profession"), setText(""), setErr(null)), wide: shown.length % 2 === 0 },
         ])
       );
   } else if (step && extraKeyOf(step)) {

@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-24 · "Menejer" — "Qanday menejer kerak?"; adminlarga rasm chegarasi yo'q (`fix/manager-and-image-limit`)
+
+Ega: "meneger degan kasb bormi" → "Ha, tuzat"; "bugun rasm yaratish chegarasiga yetdingiz deyapti nimaga" →
+"Adminlarga chegarasiz". **Migratsiya: 0091** (faqat funksiya almashtirildi; prod'ga qo'llandi va tekshirildi).
+
+- **Menejer**: bazada bitta "Menejer" kasbi yo'q — 77 ta aniq menejer bor. Avval "menejer kerak" deyilsa tasodifiy
+  "Tadbir tashkilotchisi (event menejer)" tanlanib qolardi, "meneger" esa umuman tushunilmasdi. Endi:
+  - "menejer", "meneger", "menedjer", "менеджер", "manager" — bitta so'z;
+  - qaysi menejerligi aytilgan bo'lsa ("savdo menejeri", "restoranga meneger") — darhol o'sha kasb;
+  - aytilmagan bo'lsa — ish beruvchiga "Qanday menejer kerak?", ishchiga "Aynan qanday menejersiz?": avval 12 ta ko'p
+    so'raladigani (savdo, ofis, HR, loyiha, SMM, restoran, marketpleys, mijozlar bilan ishlash, kontent, mehmonxona,
+    ta'minot, operatsion), "Hammasi · 77 ta" — qolgani;
+  - qidiruvda "menejer" — bitta kasbga bog'lanmaydi, e'lon sarlavhalaridan qidiriladi ("meneger" ham).
+- **E'lon rasmi**: faol adminlar uchun shaxsiy sutkalik chegara (5 ta) va bir e'longa 3 urinish chegarasi yo'q — sinab
+  ko'rish uchun. Oddiy foydalanuvchilarda o'zgarish yo'q; umumiy sutkalik chegara (100 ta) adminga ham amal qiladi.
+  Chegara har kuni 05:00 da (Toshkent vaqti) yangilanadi.
+
 ## 2026-11-24 · Audit: jinsi va yosh kanalga ham, ishchiga ham; har kasbga aniq savol; asosiy tugma — savollar bilan (`fix/audit-requirements`)
 
 Ega: "bir marta umumiy audit qilib chiq, xatolarni top, tuzat; har bitta kasb uchun so'rov ber; kanalga jinsi, yoshi

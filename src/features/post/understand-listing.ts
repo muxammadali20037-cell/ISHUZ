@@ -7,7 +7,8 @@ import { getProfessionTrail } from "@/features/professions/queries";
 import type { PickedProfession } from "@/features/professions/types";
 import { normalizeText, type understandQuery } from "@/features/search/understand";
 import { professionCandidates, withoutPlaceOnly } from "@/features/find/intent";
-import { professionByTypo } from "@/features/find/queries";
+import { managerChoice, professionByTypo } from "@/features/find/queries";
+import { onlyManagerWords } from "@/features/find/manager-family";
 import type { PlaceChoice } from "./types";
 
 /**
@@ -111,7 +112,7 @@ export async function professionBranches(rootId: string, max = 150): Promise<Pro
 export async function professionFrom(
   text: string,
   places: string[],
-): Promise<{ one: PickedProfession | null; options: ProfessionOption[] }> {
+): Promise<{ one: PickedProfession | null; options: ProfessionOption[]; family?: "manager" }> {
   const candidates = withoutPlaceOnly(professionCandidates(text), places).slice(
     0,
     12,
@@ -126,6 +127,22 @@ export async function professionFrom(
     ),
   );
   const best = new Map<string, { o: ProfessionOption; score: number; from: string; exact: boolean }>();
+  // "menejer kerak" (ega, 2026-11-24): aytilgan menejer ("savdo menejeri", "restoranga menejer") — darhol; aytilmagan bo'lsa —
+  // "Qanday menejer?" (hammasi, ko'p so'raladiganlari birinchi). Gapda boshqa aniq kasb ham bo'lsa ("ofitsiant kerak,
+  // menejer bilan gaplashing") — o'sha kasb, oila emas
+  const manager = await managerChoice(text, candidates);
+  if (manager) {
+    const other = results.some(
+      ({ c, hits }) => !onlyManagerWords(c) && hits.some((h) => h.selectable && h.score >= 3.5 && !manager.ids.has(h.id) && !isProhibitedProfession(h)),
+    );
+    if (!other) {
+      if (manager.pick) {
+        const one = await picked(manager.pick.id);
+        if (one) return { one, options: [] };
+      }
+      return { one: null, options: manager.ordered.map(({ id, name_uz, name_ru, name_en }) => ({ id, name_uz, name_ru, name_en })), family: "manager" };
+    }
+  }
   // guruh: nomi yoki sinonimi aynan yozilgan (search_profession_nodes: to'liq moslik — 3 + o'xshashlik), lekin xuddi shu
   // so'z bilan atalgan aniq kasb yo'q ("haydovchi" — "Haydovchi" kasbi; "shifokor" — faqat "Shifokorlar" guruhi)
   for (const { c, hits } of results) {

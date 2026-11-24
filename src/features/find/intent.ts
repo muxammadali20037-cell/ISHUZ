@@ -1,4 +1,5 @@
 import { normalizeText } from "@/features/search/understand";
+import { fixManagerTypo } from "./manager-family";
 
 export type FindMode = "jobs" | "workers";
 
@@ -166,7 +167,8 @@ const SLANG: Record<string, string> = {
 export function professionCandidates(text: string): string[] {
   const words = normalizeText(text)
     .split(" ")
-    .map((w) => SLANG[w] ?? w)
+    // "meneger", "menedjer" ("менеджер" lotinda) → "menejer" (manager-family.ts)
+    .map((w) => SLANG[w] ?? fixManagerTypo(w))
     .filter((w) => (w.length >= 3 || SHORT_TERMS.has(w)) && !STOP.has(w) && !/^\d/.test(w));
   const pairs: string[] = [];
   for (let i = 0; i < words.length - 1; i++) pairs.push(`${words[i]} ${words[i + 1]}`);

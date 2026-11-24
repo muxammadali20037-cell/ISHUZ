@@ -13,6 +13,7 @@ import { getPostViewer } from "@/features/post/queries";
 import { professionBranches, professionFrom } from "@/features/post/understand-listing";
 import { isProhibitedProfession } from "@/features/moderation/policy";
 import { resolveFindQuery } from "./queries";
+import { fixManagerTypos } from "./manager-family";
 import { PLACE_COOKIE, parsePlace } from "./place";
 import { normalizeText } from "@/features/search/understand";
 import { hasJobIntent, offTopic, professionMentioned } from "./post-intent";
@@ -118,7 +119,9 @@ export async function preparePost(input: { text: string; session: SessionContext
 
   // kasb nomi gapda haqiqatan bo'lishi kerak ("bugun havo zo'r" → "Havo … elektromontyori" emas)
   const hit = r.nodeId ? await selectableNode(r.nodeId) : null;
-  const node = hit && professionMentioned(text, namesOf(hit), normalizeText) ? hit : null;
+  // "savdo meneger" — "Savdo menejeri" nomi gapda bor deb hisoblanadi (imlo shakli tuzatilgan matn bilan solishtiriladi)
+  const spelled = fixManagerTypos(text);
+  const node = hit && professionMentioned(spelled, namesOf(hit), normalizeText) ? hit : null;
   if (node?.selectable) profession = { id: node.id, name: name(node) };
   else if (node) {
     // guruh ("O'qituvchi") — aynan qaysi biri, so'raladi
@@ -135,9 +138,13 @@ export async function preparePost(input: { text: string; session: SessionContext
     const said = r.regionSlug ? regions.find((x) => x.slug === r.regionSlug) : undefined;
     const res = await professionFrom(text, said ? [said.name_uz, said.name_ru] : []);
     const one = res.one ? await selectableNode(res.one.id) : null;
-    const options = res.options.filter((o) => professionMentioned(text, namesOf(o), normalizeText));
-    if (one && professionMentioned(text, namesOf(one), normalizeText)) profession = { id: one.id, name: name(one) };
-    else if (options.length) groups = [{ title: null, items: options.map((o) => ({ id: o.id, name: name(o) })) }];
+    // "menejerman" — barcha menejerlar (ko'p so'raladiganlari birinchi), nomi gapda bo'lmasa ham: "Aynan qanday menejersiz?"
+    const options = res.family ? res.options : res.options.filter((o) => professionMentioned(spelled, namesOf(o), normalizeText));
+    if (one && professionMentioned(spelled, namesOf(one), normalizeText)) profession = { id: one.id, name: name(one) };
+    else if (options.length) {
+      groups = [{ title: null, items: options.map((o) => ({ id: o.id, name: name(o) })) }];
+      if (res.family) group = t(`easy.family.${res.family}`);
+    }
   }
 
   const found = !!profession || groups.length > 0;

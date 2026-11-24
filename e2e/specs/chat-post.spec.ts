@@ -309,6 +309,30 @@ test("«shifokor», «doktor» — «Aynan qanday shifokorsiz?» (ega, 2026-11-2
   await expect(lastAi(page)).toContainText("Tibbiy ma'lumotingiz qanday?");
 });
 
+test("«menejerman», «meneger» — «Aynan qanday menejersiz?»: ko'p so'raladiganlari birinchi, «Hammasi» — barchasi (ega, 2026-11-24)", async ({ page, context }) => {
+  await loginAs(context, USERS.workerB);
+  await asMode(context, "worker");
+  for (const word of ["menejerman", "Meneger"]) {
+    await page.goto("/chat?post=new");
+    await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-profession");
+    await send(page, word);
+    await settled(page);
+    const which = lastAi(page);
+    await expect(which).toHaveAttribute("data-guided-ai", "post-which");
+    await expect(which).toContainText("Aynan qanday menejersiz?");
+    await expect(which).not.toContainText("tushunmadim");
+    // avval tasodifiy "event menejer" — endi birinchi "Savdo menejeri"
+    await expect(which.locator("[data-post-choice]").first()).toHaveText("Savdo menejeri");
+    await page.locator("#start-chat-text").blur();
+    await which.locator("[data-choice-all]").click();
+    for (const name of ["Ofis menejeri", "HR menejer", "SMM menejer", "Banket menejeri"]) await expect(which.locator("[data-post-choice]", { hasText: new RegExp(`^${name}$`) })).toHaveCount(1);
+  }
+  await lastAi(page).locator("[data-post-choice]", { hasText: /^SMM menejer$/ }).click();
+  await settled(page);
+  await expect(page.locator("[data-ai-you]").last()).toHaveText("Siz: SMM menejer");
+  await expect(lastAi(page)).not.toHaveAttribute("data-guided-ai", "post-which");
+});
+
 test("«E'lonlarim» → «+ E'lon joylash» — chatda savollar darhol boshlanadi; vakansiya — alohida ekran", async ({ page, context }) => {
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
