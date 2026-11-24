@@ -8,7 +8,7 @@ import { logAiUsage } from "@/lib/ai/usage";
 import { checkGeneratedImage } from "@/features/moderation/service";
 import { buildListingImagePrompt } from "./prompt";
 
-export type ListingEntity = "vacancy" | "worker";
+export type ListingEntity = "vacancy" | "worker" | "master";
 const BUCKET = "listing-images";
 const DEFAULT_MODEL = "gpt-image-1.5";
 const one = <T,>(x: T | T[] | null | undefined): T | null => (Array.isArray(x) ? (x[0] ?? null) : (x ?? null));
@@ -88,6 +88,8 @@ interface ListingForImage {
   owner: string;
   names: (string | null)[];
   categorySlug: string | null;
+  /** usta e'loni: xizmat kategoriyasi (sahna uchun) */
+  masterCategory?: string | null;
 }
 
 /** Rasm uchun e'londan faqat kerakli maydonlar: kasb nomlari (ingliz, rus, o'zbek), sarlavha, kategoriya, egasi */
@@ -102,6 +104,12 @@ async function loadListing(entity: ListingEntity, id: string): Promise<ListingFo
     if (!data?.owner_profile_id) return null;
     const p = one(data.profession);
     return { owner: data.owner_profile_id, names: [p?.name_en ?? null, data.title, p?.name_ru ?? null, p?.name_uz ?? null], categorySlug: one(data.category)?.slug ?? null };
+  }
+  if (entity === "master") {
+    const { data } = await db.from("master_listings").select("owner_profile_id, title, category:master_categories(slug, name_en)").eq("id", id).maybeSingle();
+    if (!data?.owner_profile_id) return null;
+    const c = one(data.category);
+    return { owner: data.owner_profile_id, names: [c?.name_en ?? null, data.title], categorySlug: null, masterCategory: c?.slug ?? null };
   }
   const { data } = await db
     .from("worker_profiles")
@@ -171,7 +179,7 @@ export async function generateListingImage(entity: ListingEntity, id: string, us
   const listing = await loadListing(entity, id);
   if (!listing) return { ok: false, error: "not_found" };
   if (listing.owner !== userId) return { ok: false, error: "forbidden" };
-  const prompt = buildListingImagePrompt({ kind: entity, names: listing.names, categorySlug: listing.categorySlug });
+  const prompt = buildListingImagePrompt({ kind: entity, names: listing.names, categorySlug: listing.categorySlug, masterCategory: listing.masterCategory ?? null });
   return produce(entity, id, userId, prompt, cfg);
 }
 
@@ -190,18 +198,27 @@ async function draftNames(professionId: string | null, title: string | null): Pr
  * `attachDraftImage` uni e'longa o'tkazadi. Qoralama id — tasodifiy; mavjud e'lon id'si yoki boshqa odamning qoralamasi
  * bo'lishi mumkin emas (aks holda begona e'longa rasm qo'yilardi). Bir qoralamaga ko'pi bilan 3 urinish ("Boshqa rasm").
  */
-export async function generateDraftImage(entity: ListingEntity, draftId: string, userId: string, input: { professionId: string | null; title: string | null }): Promise<ListingImageResult> {
+export async function generateDraftImage(
+  entity: ListingEntity,
+  draftId: string,
+  userId: string,
+  input: { professionId: string | null; title: string | null; masterCategory?: string | null },
+): Promise<ListingImageResult> {
   const cfg = listingImageConfig();
   if (!cfg) return { ok: false, error: "not_configured" };
   const admin = createAdminClient();
-  const [{ data: row }, { data: real }] = await Promise.all([
-    admin.from("listing_images").select("owner_profile_id").eq("entity", entity).eq("entity_id", draftId).maybeSingle(),
-    entity === "vacancy" ? admin.from("vacancies").select("id").eq("id", draftId).maybeSingle() : admin.from("worker_profiles").select("id").eq("id", draftId).maybeSingle(),
-  ]);
+  const realQuery =
+    entity === "vacancy"
+      ? admin.from("vacancies").select("id").eq("id", draftId).maybeSingle()
+      : entity === "master"
+        ? admin.from("master_listings").select("id").eq("id", draftId).maybeSingle()
+        : admin.from("worker_profiles").select("id").eq("id", draftId).maybeSingle();
+  const [{ data: row }, { data: real }] = await Promise.all([admin.from("listing_images").select("owner_profile_id").eq("entity", entity).eq("entity_id", draftId).maybeSingle(), realQuery]);
   if (real || (row && row.owner_profile_id !== userId)) return { ok: false, error: "forbidden" };
-  const { names, categorySlug } = await draftNames(input.professionId, input.title);
+  // usta e'loni: kasb daraxti yo'q — kategoriya (sahna) va sarlavha (xizmatlar)
+  const { names, categorySlug } = entity === "master" ? { names: [input.title], categorySlug: null } : await draftNames(input.professionId, input.title);
   if (!names.some((n) => n && n.trim())) return { ok: false, error: "invalid" };
-  const prompt = buildListingImagePrompt({ kind: entity, names, categorySlug });
+  const prompt = buildListingImagePrompt({ kind: entity, names, categorySlug, masterCategory: input.masterCategory ?? null });
   return produce(entity, draftId, userId, prompt, cfg);
 }
 

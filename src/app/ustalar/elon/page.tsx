@@ -6,6 +6,7 @@ import { getPostViewer } from "@/features/post/queries";
 import { MastersShell } from "@/features/masters/components/masters-shell";
 import { MasterWizard } from "@/features/masters/components/master-wizard";
 import { getMasterCategories } from "@/features/masters/queries";
+import { listingImageEnabled } from "@/features/listing-image/server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -50,6 +51,7 @@ export default async function MasterNewListingPage({
               phone: viewer.phone,
               category: typeof sp.k === "string" ? sp.k : null,
             }}
+            imageEnabled={listingImageEnabled()}
           />
         ) : (
           <p className="rounded-2xl border border-dashed border-border p-6 text-center text-muted-foreground" data-masters-unavailable>
