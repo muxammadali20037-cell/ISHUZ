@@ -28,6 +28,7 @@ function builder(table: string) {
     insert: (row: Row) => ((op = "insert"), (payload = row), api),
     update: (patch: Row) => ((op = "update"), (payload = patch), api),
     eq: (c: string, v: unknown) => (filters.push((r) => r[c] === v), api),
+    neq: (c: string, v: unknown) => (filters.push((r) => r[c] !== v), api),
     in: (c: string, vs: unknown[]) => (filters.push((r) => vs.includes(r[c])), api),
     lt: (c: string, v: number) => (filters.push((r) => (r[c] as number) < v), api),
     gte: (c: string, v: string) => (filters.push((r) => String(r[c]) >= v), api),
@@ -154,6 +155,15 @@ describe("kanalga avtomatik e'lon", () => {
     expect(tables.channel_posts!.map((r) => r.status)).toEqual(["posted", "posted"]);
     expect(await runChannelAutopost()).toMatchObject({ posted: 0 });
     expect(send).toHaveBeenCalledTimes(2);
+  });
+
+  it("do'kon tekshiruvchisining sinov e'lonlari kanalga chiqmaydi (vakansiya, ishchi, usta)", async () => {
+    const review = "5e1f2e71-0000-4000-8000-000000000001";
+    tables.vacancies = [vacancy("a", { owner_profile_id: review }), vacancy("b", { owner_profile_id: "u1" })];
+    tables.worker_profiles = [worker("w", { profile_id: review })];
+    tables.master_listings = [master("m", { owner_profile_id: review })];
+    expect(await runChannelAutopost()).toMatchObject({ posted: 1 });
+    expect(send.mock.calls.map(([x]) => (x as { button: { url: string } }).button.url)).toEqual(["https://ishuz.vercel.app/jobs/v-b"]);
   });
 
   it("vakansiya raqami — faqat show_phone va kanalga rozilik (channel_phone_at, 0083) bo'lsa; eski rozilik — raqamsiz", async () => {

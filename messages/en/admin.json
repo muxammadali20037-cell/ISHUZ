@@ -369,7 +369,8 @@
     "dismissed_done": "Report dismissed",
     "resolution_note": "Resolution note",
     "block_target": "Block target",
-    "hide_vacancy": "Hide vacancy"
+    "hide_vacancy": "Hide vacancy",
+    "target_ai_content": "AI result"
   },
   "reviews": {
     "title": "Reviews",

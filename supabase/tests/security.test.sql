@@ -180,6 +180,9 @@ select pg_temp.login('a1000000-0000-0000-0000-000000000001');
 select pg_temp.fails($$insert into public.reports (reporter_profile_id, target_type, target_id, reason) values (auth.uid(), 'vacancy', 'x', 'spam')$$, 'RLS: reports ga to''g''ridan-to''g''ri insert taqiqlangan');
 select pg_temp.ok((select public.submit_report('vacancy', (select vacancy_id from t)::text, 'wrong_info', 'noto''g''ri maosh')) is not null, 'submit_report');
 select pg_temp.fails($$select public.submit_report('vacancy', (select vacancy_id from t)::text, 'spam')$$, 'takroriy shikoyat', 'already_reported');
+-- 0092 · AI natijasiga shikoyat: oddiy navbatga tushadi, takror yo'q
+select pg_temp.ok((select public.submit_report('ai_content', 'listing_image:0123456789abcdef', 'abuse', 'https://x.test/a.jpg')) is not null, 'submit_report: ai_content');
+select pg_temp.fails($$select public.submit_report('ai_content', 'listing_image:0123456789abcdef', 'other')$$, 'AI natijasiga takroriy shikoyat', 'already_reported');
 
 -- ---------- Chat: o'chirish faqat RPC ----------
 select public.get_or_create_conversation(p_job_offer_id => (select id from public.job_offers where vacancy_id is null));

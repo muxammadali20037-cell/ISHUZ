@@ -30,7 +30,7 @@ Brend: **«Ish topdim»**, paket: `uz.ishtopdim.app` (Vercel'da `ANDROID_PACKAGE
 - [ ] Vercel env: `SUPPORT_EMAIL` (majburiy — Play va huquqiy sahifalar uchun), `LEGAL_OPERATOR` (MChJ/YaTT nomi, STIR, manzil — kompaniya ochilgach)
 - [ ] `https://SAYT/privacy`, `/cookies`, `/terms`, `/account-deletion` ochiladi va email ko'rinadi
 - [ ] Ilova ichida AI yordamchi (matn) ishlaydi; ovozli kiritish TWA (Chrome) ichida ishlaydi — Play tekshiruvchisi uchun «Microphone — only on tap, not stored» izohi tayyor (pastda)
-- [ ] Tekshiruvchi (Google reviewer) uchun test hisobi: telefon raqami va SMS kodi (yoki doimiy test kodi)
+- [ ] Tekshiruvchi (Google reviewer) uchun test kirish: Vercel env `STORE_REVIEW_PHONE` va `STORE_REVIEW_CODE` (pastdagi «Tekshiruvchi uchun test kirish» bo'limi)
 - [ ] 12 ta tester Gmail manzili (shaxsiy hisob uchun)
 
 ## Ilovada to'lovlar (muhim)
@@ -146,7 +146,7 @@ telefon skrinshotlari `screenshots-uz/01…06.jpg` (ruscha tarjimaga — `screen
 | Privacy policy | `https://SAYT/privacy` |
 | In-app purchases | Yo'q (ilova ichida hech narsa sotilmaydi — yuqoridagi «Ilovada to'lovlar» bo'limi) |
 | Ads (reklama bormi) | Yo'q |
-| App access (kirish uchun login kerakmi) | Ha, ba'zi funksiyalar uchun. Tekshiruvchiga test hisobi bering: telefon raqami va kirish yo'li (masalan, Telegram orqali kirish) |
+| App access (kirish uchun login kerakmi) | Ha, ba'zi funksiyalar uchun. «Tekshiruvchi uchun test kirish» bo'limidagi raqam va kodni yozing (Telegram kerak emas) |
 | Content rating | So'rovnoma: zo'ravonlik/qimor yo'q; **foydalanuvchilar o'zaro yozishadi (chat) — Ha**; foydalanuvchi joylashuvi (hudud/tuman) ulashiladi — Ha |
 | Target audience | 16–17 va 18+ (maxfiylik siyosatidagi yosh chegarasi — 16). 13 yoshgacha **belgilamang** — bolalar uchun qo'shimcha talablar boshlanadi |
 | News app | Yo'q |
@@ -173,6 +173,31 @@ telefon skrinshotlari `screenshots-uz/01…06.jpg` (ruscha tarjimaga — `screen
 - Uzatishda shifrlanadi (HTTPS) — **Ha**.
 - **Mikrofon (RECORD_AUDIO):** TWA'da ruxsat Chrome orqali so'raladi; ilova manifestida alohida ruxsat yo'q. Tekshiruvchi so'rasa: «Ovozli qidiruv — faqat foydalanuvchi mikrofon tugmasini bosganda, brauzerning nutqni tanish xizmati; audio bizning serverga yuborilmaydi va saqlanmaydi» (maxfiylik siyosatida yozilgan).
 - Foydalanuvchi ma'lumotlarini o'chirishni so'rashi mumkin — **Ha**.
+
+### Tekshiruvchi uchun test kirish (Google Play va App Store)
+
+Saytga kirish Telegram orqali bo'ladi, do'kon tekshiruvchisida esa Telegram yo'q. Shuning uchun alohida demo hisob bor:
+
+1. Vercel → Settings → Environment Variables (Production):
+   - `STORE_REVIEW_PHONE` — tekshiruvchi yozadigan raqam, masalan `+998 99 000 00 00`. **O'zingizning raqamingiz bo'lmasin**
+     (egasining raqami `SUPER_ADMIN_PHONES` da bo'lsa, funksiya o'chiq qoladi).
+   - `STORE_REVIEW_CODE` — 6 xonali doimiy kod (tasodifiy tanlang; boshqa joyda ishlatmang). **Sensitive** qilib saqlang.
+   - Redeploy.
+2. Play Console → App content → **App access** → «All or some functionality is restricted» → Add instructions:
+   - Name: `Demo account`
+   - Username / phone: `+998 99 000 00 00` (siz tanlagan raqam)
+   - Password / code: `STORE_REVIEW_CODE` dagi kod
+   - Izoh (inglizcha): `Open the app → "Sign in" → "Phone number" → enter the number → "Send code" → enter the 6-digit code. No SMS or Telegram is needed for this demo account.`
+3. Bu kod faqat bitta alohida demo hisobga («App Review», texnik id) kiritadi — boshqa hech kimning hisobiga kirib bo'lmaydi.
+   Noto'g'ri urinishlar oddiy kod kabi cheklanadi, har kirish xavfsizlik jurnaliga yoziladi.
+4. Demo hisob joylagan e'lonlar Telegram kanalga chiqmaydi. Saytda esa oddiy e'lon kabi ko'rinadi — tekshiruvdan keyin
+   admin paneldan yopib qo'ying. Ilova chiqqandan keyin kodni almashtirsa bo'ladi (yangi kodni konsolga ham yozing).
+
+### AI natijasiga shikoyat (Google Play «AI-Generated Content» talabi)
+
+AI yaratgan e'lon rasmi va AI yozgan «O'zim haqimda» matni ostida «AI natijasi haqida xabar berish» tugmasi bor.
+Shikoyat admin → Shikoyatlar navbatiga «AI natijasi» turi bilan tushadi. Play Console so'rasa: «Users can report AI-generated
+images and texts in the app; reports go to our moderation queue».
 
 ## 4. Yuklash va test
 

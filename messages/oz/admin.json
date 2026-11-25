@@ -369,7 +369,8 @@
     "dismissed_done": "Шикоят рад этилди",
     "resolution_note": "Қарор изоҳи",
     "block_target": "Нишонни блоклаш",
-    "hide_vacancy": "Вакансияни яшириш"
+    "hide_vacancy": "Вакансияни яшириш",
+    "target_ai_content": "AI натижаси"
   },
   "reviews": {
     "title": "Шарҳлар",

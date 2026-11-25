@@ -8,15 +8,19 @@ import { DEMO, cleanDemo, seedDemo } from "./demo-seed";
  * Google Play do'kon sahifasi uchun rasmlar (2.0 dizayn, faqat lokal stendda; namunaviy ma'lumot — demo-seed):
  *   npx playwright test -c e2e/screens/shots.config.ts e2e/screens/play-store.shots.ts
  * Natija: docs/play-store/screenshots-{uz,ru}/01…06.jpg (1080×1920) va feature-graphic-{uz,ru}.png (1024×500).
- * Hech qanday soxta son yo'q: ekranlarda stenddagi haqiqiy (namunaviy) e'lonlar ko'rinadi.
+ * Hech qanday soxta son yo'q: ekranlarda stenddagi haqiqiy (namunaviy) e'lonlar ko'rinadi; kompaniya — «Namuna Savdo»,
+ * tasdiq belgisisiz; telefon raqamlari ko'rinmaydi (2026-11-25: yangi dizayn — bosh sahifa, suhbatda qidiruv, savollar bilan e'lon).
  */
 const OUT = path.join(__dirname, "../../docs/play-store");
 const host = new URL(stack.app).hostname;
 
 const TEXT = {
-  uz: { headline: ["Ish va ishchini", "bir necha daqiqada toping"], pills: ["AI yordamchi", "Mos ishlar", "Telegram orqali kirish"], ask: "Chilonzorda sotuvchi" },
-  ru: { headline: ["Работа и работники —", "за несколько минут"], pills: ["ИИ-помощник", "Подходящие вакансии", "Вход через Telegram"], ask: "продавец в Чиланзаре" },
+  uz: { headline: ["Ish va ishchini", "bir necha daqiqada toping"], pills: ["AI yordamchi", "Mos ishlar", "Telegram orqali kirish"], ask: "Chilonzorda sotuvchi", post: "Chilonzordagi do'konimizga sotuvchi kerak, oyligi 5 mln" },
+  ru: { headline: ["Работа и работники —", "за несколько минут"], pills: ["ИИ-помощник", "Подходящие вакансии", "Вход через Telegram"], ask: "продавец в Чиланзаре", post: "В наш магазин в Чиланзаре нужен продавец, зарплата 5 млн" },
 } as const;
+
+/** Bir martalik oynalar (kanal taklifi, tugmalar bilan tanishuv, video-tushuntirish) — ko'rilgan: rasmda ekranning o'zi */
+const SEEN = ["ib_channel", "ib_tour", "ib_intro_v"].map((name) => ({ name, value: name === "ib_tour" ? "we" : "1", domain: host, path: "/" }));
 
 async function phone(browser: Browser, locale: "uz" | "ru", setup: (c: import("@playwright/test").BrowserContext) => Promise<void>) {
   const c = await browser.newContext({ baseURL: stack.app, viewport: { width: 360, height: 640 }, deviceScaleFactor: 3, locale: locale === "ru" ? "ru-RU" : "uz-UZ", storageState: { cookies: [], origins: [] } });
@@ -24,6 +28,7 @@ async function phone(browser: Browser, locale: "uz" | "ru", setup: (c: import("@
     { name: "ishuz_locale", value: locale, domain: host, path: "/" },
     { name: "ib_intro", value: "1", domain: host, path: "/" },
     { name: "ib_consent", value: "1", domain: host, path: "/" },
+    ...SEEN,
   ]);
   await setup(c);
   return c;
@@ -51,29 +56,30 @@ for (const locale of ["uz", "ru"] as const) {
     const T = TEXT[locale];
 
     // 01 — xush kelibsiz (til + rol)
-    const g = await phone(browser, locale, async (c) => c.clearCookies({ name: "ib_intro" }));
+    const g = await phone(browser, locale, async () => undefined);
     let page = await g.newPage();
     await page.goto("/start/til");
-    await expect(page.locator("form[data-welcome-roles]")).toBeVisible();
+    await expect(page.locator("[data-role-form]")).toBeVisible();
     await shot(page, path.join(dir, "01.jpg"));
     await g.close();
 
-    // 02 — ish izlovchi bosh sahifasi
+    // 02 — bosh sahifa (ish qidiruvchi)
     const w = await phone(browser, locale, (c) => asMode(c, "worker"));
     page = await w.newPage();
     await page.goto("/");
-    await expect(page.locator("#home-feed")).toBeVisible();
+    await expect(page.locator("form[data-home-search]")).toHaveAttribute("data-hydrated", "");
     await shot(page, path.join(dir, "02.jpg"));
 
-    // 03 — AI yordamchi javobi (bazadagi haqiqiy namunaviy e'lonlar)
-    await page.goto("/ai");
-    const field = page.getByRole("main").getByLabel(locale === "ru" ? "Что ищете?" : "Nima qidiryapsiz?");
-    await field.fill(T.ask);
-    await page.getByRole("main").getByRole("button", { name: locale === "ru" ? "Найти" : "Topish" }).click();
-    await expect(page.getByRole("main").locator("article").first()).toBeVisible({ timeout: 20_000 });
-    await page.evaluate(() => window.scrollTo(0, 0));
-    await page.getByRole("main").locator("[data-ai-reply]").last().scrollIntoViewIfNeeded();
-    await page.evaluate(() => window.scrollBy(0, -80));
+    // 03 — oddiy tilda qidiruv (suhbat): bazadagi namunaviy e'lonlar
+    await page.locator("[data-home-q]").fill(T.ask);
+    await page.locator("[data-home-submit]").click();
+    await page.waitForURL((u) => new URL(u).pathname === "/chat");
+    await expect(page.locator("[data-guided-summary]").last()).toBeVisible({ timeout: 20_000 });
+    await expect(page.locator("[data-guided-ai='thinking'], [data-guided-ai='searching']")).toHaveCount(0, { timeout: 20_000 });
+    const show = page.locator("[data-quick-show]").last();
+    if (await show.isVisible()) await show.click();
+    await page.locator("[data-ai-you]").last().scrollIntoViewIfNeeded();
+    await page.evaluate(() => window.scrollBy(0, -60));
     await shot(page, path.join(dir, "03.jpg"));
 
     // 04 — qidiruv natijalari
@@ -88,19 +94,25 @@ for (const locale of ["uz", "ru"] as const) {
     await shot(page, path.join(dir, "06.jpg"));
     await w.close();
 
-    // 05 — ish beruvchi paneli (demo kompaniya)
+    // 05 — ish beruvchi: e'lon bitta gapdan (savollar bilan)
     const e = await phone(browser, locale, async (c) => {
       await loginAs(c, DEMO.employer);
       await c.addCookies([
         { name: "ishuz_locale", value: locale, domain: host, path: "/" },
         { name: "ib_intro", value: "1", domain: host, path: "/" },
         { name: "ib_consent", value: "1", domain: host, path: "/" },
+        ...SEEN,
       ]);
       await asMode(c, "employer");
     });
     page = await e.newPage();
-    await page.goto("/");
-    await expect(page.locator("[data-home='employer-v2']")).toBeVisible();
+    await page.goto("/post/vacancy");
+    await expect(page.locator("[data-guide-sentence]")).toBeVisible();
+    await expect(page.locator("[data-vacancy-guide][aria-busy]")).toHaveCount(0);
+    await page.waitForTimeout(500);
+    await page.locator("[data-guide-sentence]").fill(T.post);
+    await expect(page.locator("[data-guide-start]")).toBeEnabled();
+    await page.locator("[data-guide-sentence]").blur();
     await shot(page, path.join(dir, "05.jpg"));
     await e.close();
 

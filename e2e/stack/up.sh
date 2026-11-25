@@ -70,7 +70,7 @@ node -e 'require("fs").writeFileSync(process.argv[1], JSON.stringify({secret: pr
 echo "→ PostgREST :$PGRST_PORT"
 (setsid nohup "$POSTGREST_BIN" "$ST/pgrst.conf" > "$ST/postgrest.log" 2>&1 < /dev/null & echo $! > "$ST/postgrest.pid")
 echo "→ shlyuz :$GATEWAY_PORT"
-(E2E_JWT_SECRET="$SECRET" GATEWAY_PORT="$GATEWAY_PORT" PGRST_PORT="$PGRST_PORT" STORAGE_DIR="$ST/storage" \
+(E2E_JWT_SECRET="$SECRET" GATEWAY_PORT="$GATEWAY_PORT" PGRST_PORT="$PGRST_PORT" STORAGE_DIR="$ST/storage" E2E_DB_URL="$E2E_PG/$E2E_DB" \
   setsid nohup node e2e/stack/gateway.mjs > "$ST/gateway.log" 2>&1 < /dev/null & echo $! > "$ST/gateway.pid")
 
 # Ilova muhiti: faqat lokal stend; tashqi xizmat kalitlari ataylab bo'sh
@@ -91,6 +91,8 @@ export PAYME_MERCHANT_ID="e2e-merchant" PAYME_KEY="e2e-payme-key-not-secret" PAY
 export MARKET_CACHE_SECONDS=0
 export CLICK_SERVICE_ID="e2e-service" CLICK_MERCHANT_ID="e2e-merchant" CLICK_SECRET_KEY="e2e-click-key-not-secret"
 export SUPER_ADMIN_PHONES="" ADMIN_HOST="" SUPER_ADMIN_EMAILS="owner@e2e.uz"
+# do'kon tekshiruvchisi uchun test kirish (faqat stend; prod'da — Vercel env, kod faqat Play/App Store konsolida)
+export STORE_REVIEW_PHONE="+998 99 000 00 00" STORE_REVIEW_CODE="246810"
 # rasmiy ijtimoiy tarmoqlar (ochiq havolalar; prod'dagi bilan bir xil) — sayt pastki qismi, yon menyu, kabinet, yordam
 export SOCIAL_TELEGRAM_URL="https://t.me/ish_topdim_uz" SOCIAL_INSTAGRAM_URL="https://www.instagram.com/ishtopdim/"
 export NEXT_DIST_DIR=".next-e2e"

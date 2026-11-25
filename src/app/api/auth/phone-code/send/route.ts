@@ -14,6 +14,7 @@ import { activeRestriction, applyRuleHit } from "@/lib/security/restrictions";
 import { RULES, blockingError, strongest } from "@/lib/security/rules";
 import { sendTelegramHtml } from "@/features/notifications/telegram-dispatch";
 import { isTelegramBlockedError, resolveTelegramLocale } from "@/features/notifications/telegram";
+import { isStoreReviewPhone } from "@/features/auth/store-review";
 import { LOGIN_CODE_RESEND_SECONDS, LOGIN_CODE_TTL_SECONDS, generateLoginCode, hashLoginCode } from "@/features/auth/telegram-session";
 
 export const runtime = "nodejs";
@@ -31,12 +32,13 @@ const MAX_ACTIVE_CODES = 3;
 export async function POST(req: NextRequest) {
   const unsafe = rejectUnsafeRequest(req);
   if (unsafe) return unsafe;
-  const { TELEGRAM_BOT_TOKEN } = getServerEnv();
-  if (!TELEGRAM_BOT_TOKEN) return NextResponse.json({ error: "telegram_not_configured" }, { status: 503 });
-
   const body = z.object({ phone: z.string().max(32), locale: z.enum(LOCALES).optional() }).safeParse(await readJsonBody(req));
   const phone = body.success ? normalizePhone(body.data.phone) : null;
   if (!phone) return NextResponse.json({ error: "invalid_phone" }, { status: 400 });
+  // do'kon tekshiruvchisi: kod yuborilmaydi (doimiy kod — store-review.ts), Telegram kerak emas
+  const review = isStoreReviewPhone(phone);
+  const { TELEGRAM_BOT_TOKEN } = getServerEnv();
+  if (!TELEGRAM_BOT_TOKEN && !review) return NextResponse.json({ error: "telegram_not_configured" }, { status: 503 });
 
   const requestId = requestIdOf(req.headers);
   const ip = ipBucket(clientIp(req.headers));
@@ -55,6 +57,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "temporarily_unavailable" }, { status: 503 });
     }
     if (!byPhone.ok || !byIp.ok) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
+    if (review) return NextResponse.json({ ok: true, ttl: LOGIN_CODE_TTL_SECONDS });
 
     const admin = createAdminClient();
     const { data: account } = await admin

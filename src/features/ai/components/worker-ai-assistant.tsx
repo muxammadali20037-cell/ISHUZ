@@ -36,6 +36,7 @@ import {
 } from "../actions";
 import { AiComposer } from "./ai-composer";
 import { callAction } from "@/lib/action-call";
+import { AiReportButton } from "@/features/reports/ai-report-button";
 
 export interface WorkerAiRefs {
   categories: Category[];
@@ -402,6 +403,8 @@ function Review({
           <p className="whitespace-pre-line text-sm leading-relaxed">
             {plan.about}
           </p>
+          {/* Google Play: AI yozgan matn haqida ilova ichidan xabar berish (0092) */}
+          <AiReportButton kind="ai_text" content={plan.about} className="-ml-2 mt-1" />
         </Section>
       ) : null}
 

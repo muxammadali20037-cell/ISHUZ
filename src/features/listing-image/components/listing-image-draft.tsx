@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { ImageOff, ImagePlus, Loader2, RefreshCw, RotateCcw, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
+import { AiReportButton } from "@/features/reports/ai-report-button";
 
 /** tekshirish sahifasida yaratilgan rasm: qoralama id (joylashda e'longa biriktiriladi) va manzili */
 export interface DraftImage {
@@ -117,6 +118,8 @@ export function ListingImageDraft({
               <ImageOff className="size-5" aria-hidden /> {t("easy.listing_image.remove")}
             </Button>
           </div>
+          {/* Google Play: AI natijasi haqida ilova ichidan xabar berish (0092) */}
+          <AiReportButton kind="listing_image" content={value.url} />
         </div>
       ) : null}
 

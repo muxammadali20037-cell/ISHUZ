@@ -27,6 +27,13 @@ const serverSchema = z.object({
   SUPPORT_EMAIL: z.string().email().optional(),
   /** Huquqiy sahifalardagi operator rekvizitlari, masalan: «"Topdim" MChJ, STIR 123456789, Toshkent sh., ...» (ixtiyoriy) */
   LEGAL_OPERATOR: z.string().optional(),
+  /**
+   * Do'kon tekshiruvchisi (Google Play / App Store) uchun test kirish: shu raqam + doimiy 6 xonali kod telefon formasida
+   * faqat alohida demo hisobga kiritadi (Telegram kerak emas). Ikkalasi ham bo'lmasa — o'chiq. Kodni faqat do'kon
+   * konsolidagi "App access" bo'limiga yozing. Raqam egasining (SUPER_ADMIN_PHONES) raqami bo'lsa — o'chiq.
+   */
+  STORE_REVIEW_PHONE: z.string().optional(),
+  STORE_REVIEW_CODE: z.string().regex(/^\d{6}$/).optional(),
   /** Footer'dagi rasmiy ijtimoiy tarmoqlar (to'liq https havola; bo'lmasa ko'rsatilmaydi — soxta havola yo'q) */
   SOCIAL_TELEGRAM_URL: z.string().url().optional(),
   /** bot post yuboradigan kanal: @username yoki -100… (bo'lmasa — SOCIAL_TELEGRAM_URL dagi t.me/<username>) */
@@ -99,6 +106,9 @@ export function getServerEnv() {
     YANDEX_VERIFICATION: process.env.YANDEX_VERIFICATION || undefined,
     SUPPORT_EMAIL: process.env.SUPPORT_EMAIL || undefined,
     LEGAL_OPERATOR: process.env.LEGAL_OPERATOR || undefined,
+    STORE_REVIEW_PHONE: process.env.STORE_REVIEW_PHONE || undefined,
+    // noto'g'ri formatdagi kod butun muhitni yiqitmasin — funksiya o'chiq qoladi
+    STORE_REVIEW_CODE: /^\d{6}$/.test(process.env.STORE_REVIEW_CODE ?? "") ? process.env.STORE_REVIEW_CODE : undefined,
     SOCIAL_TELEGRAM_URL: process.env.SOCIAL_TELEGRAM_URL || undefined,
     TELEGRAM_CHANNEL_ID: process.env.TELEGRAM_CHANNEL_ID || undefined,
     SOCIAL_INSTAGRAM_URL: process.env.SOCIAL_INSTAGRAM_URL || undefined,

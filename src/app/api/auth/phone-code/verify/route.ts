@@ -8,6 +8,7 @@ import { clientIp, ipBucket, subjectHash } from "@/lib/security/request";
 import { logSecurityEvent, requestIdOf } from "@/lib/security/events";
 import { activeRestriction, applyRuleHit } from "@/lib/security/restrictions";
 import { RULES, blockingError, strongest } from "@/lib/security/rules";
+import { ensureStoreReviewProfile, isStoreReviewPhone, storeReviewCodeMatches } from "@/features/auth/store-review";
 import { LOGIN_CODE_MAX_ATTEMPTS, loginCodeMatches, startSessionForProfile } from "@/features/auth/telegram-session";
 
 export const runtime = "nodejs";
@@ -41,6 +42,24 @@ export async function POST(req: NextRequest) {
     if (!byIp.ok) return NextResponse.json({ error: byIp.reason === "unavailable" ? "temporarily_unavailable" : "rate_limited" }, { status: byIp.reason === "unavailable" ? 503 : 429 });
 
     const admin = createAdminClient();
+
+    // do'kon tekshiruvchisi: doimiy kod faqat alohida demo hisobga kiritadi (store-review.ts)
+    if (isStoreReviewPhone(phone)) {
+      if (!storeReviewCodeMatches(body.data.code)) {
+        const [byPhoneFail, byIpFail] = await Promise.all([
+          hitRate(`otp:fail:phone:${phoneHash}`, Number.MAX_SAFE_INTEGER, RULES.otpVerifyFailuresPerPhone.windowSeconds),
+          hitRate(`otp:fail:ip:${ipHash}`, Number.MAX_SAFE_INTEGER, RULES.otpVerifyFailuresPerIp.windowSeconds),
+        ]);
+        if ("count" in byPhoneFail) await applyRuleHit(RULES.otpVerifyFailuresPerPhone, byPhoneFail.count, { subject: phoneHash, subjectHash: phoneHash, route: ROUTE, requestId });
+        if ("count" in byIpFail) await applyRuleHit(RULES.otpVerifyFailuresPerIp, byIpFail.count, { subject: ipHash, subjectHash: ipHash, route: ROUTE, requestId });
+        return NextResponse.json({ error: "invalid_code" }, { status: 400 });
+      }
+      const profileId = await ensureStoreReviewProfile(admin);
+      await startSessionForProfile(admin, profileId);
+      await logSecurityEvent({ type: "auth.store_review_login", severity: "info", reason: "store_review", actorId: profileId, route: ROUTE, requestId });
+      return NextResponse.json({ ok: true });
+    }
+
     const { data: rows } = await admin
       .from("login_codes")
       .select("id, telegram_user_id, code_hash, attempts, expires_at")

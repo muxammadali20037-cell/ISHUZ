@@ -1,7 +1,9 @@
 import { sql } from "../support";
 
 /**
- * Skrinshotlar uchun namunaviy ma'lumot (faqat lokal stendda): bitta tasdiqlangan kompaniya, 8 ta e'lon, bitta ishchi.
+ * Skrinshotlar uchun namunaviy ma'lumot (faqat lokal stendda): bitta namunaviy kompaniya, 8 ta e'lon, bitta ishchi.
+ * Do'kon rasmlarida ham ishlatiladi (ega, 2026-11-25): shuning uchun kompaniya nomi o'ylab topilgan va "Namuna" so'zi bilan,
+ * "Tasdiqlangan" belgisi yo'q — haqiqiy kompaniyaga o'xshash nom yoki soxta tasdiq belgisi ko'rsatilmaydi.
  * Aniq id'lar bilan qayta yoziladi — "oldin" va "keyin" bir xil holatda olinadi. Tozalash: cleanDemo().
  */
 export const DEMO = {
@@ -30,20 +32,20 @@ export async function seedDemo(): Promise<string> {
   );
   await sql(
     `insert into public.companies (id, name, slug, verification_status, verified_at, region_id, created_by)
-     select $1, 'Orient Savdo', 'orient-savdo-demo', 'verified', now(), r.id, $2 from public.regions r where r.slug = 'tashkent_city'
-     on conflict (id) do update set name = excluded.name, verification_status = 'verified'`,
+     select $1, 'Namuna Savdo', 'namuna-savdo-demo', 'unverified', null, r.id, $2 from public.regions r where r.slug = 'tashkent_city'
+     on conflict (id) do update set name = excluded.name, slug = excluded.slug, verification_status = 'unverified', verified_at = null`,
     [COMPANY, EMP],
   );
   await sql(`insert into public.company_members (company_id, profile_id, role) values ($1, $2, 'owner') on conflict do nothing`, [COMPANY, EMP]);
   await sql(
     `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at, company_id)
-     values ($1, 'company', 'Orient Savdo', now(), $2)
+     values ($1, 'company', 'Namuna Savdo', now(), $2)
      on conflict (profile_id) do update set onboarding_completed_at = now(), company_id = excluded.company_id`,
     [EMP, COMPANY],
   ).catch(async () => {
     // company_id ustuni bo'lmasa — eskicha
     await sql(
-      `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at) values ($1, 'company', 'Orient Savdo', now())
+      `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at) values ($1, 'company', 'Namuna Savdo', now())
        on conflict (profile_id) do update set onboarding_completed_at = now()`,
       [EMP],
     );
