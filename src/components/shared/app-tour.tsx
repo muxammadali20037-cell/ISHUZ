@@ -124,12 +124,14 @@ export function AppTour() {
   useEffect(() => {
     if (!step) return;
     document.documentElement.dataset.tour = "open";
-    const el = step.target ? findTarget(step.target) : null;
+    let el = step.target ? findTarget(step.target) : null;
     if (el && !isFixed(el)) el.scrollIntoView({ block: "center", behavior: "auto" });
     let raf = 0;
     const measure = () => {
       cancelAnimationFrame(raf);
       raf = requestAnimationFrame(() => {
+        // oqim bilan kelgan sahifa bo'lagi almashsa — tugma ham yangisi (eskisi DOM'dan chiqqan)
+        if (step.target && (!el || !el.isConnected)) el = findTarget(step.target);
         if (!el) return setBox(null);
         const r = el.getBoundingClientRect();
         setBox({ top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 });
@@ -142,14 +144,19 @@ export function AppTour() {
     const ro = new ResizeObserver(measure);
     ro.observe(document.body);
     if (el) ro.observe(el);
+    const mo = new MutationObserver(measure);
+    mo.observe(document.body, { childList: true, subtree: true });
     document.addEventListener("transitionend", measure, true);
+    document.addEventListener("animationend", measure, true);
     primaryRef.current?.focus({ preventScroll: true });
     return () => {
       cancelAnimationFrame(raf);
       ro.disconnect();
+      mo.disconnect();
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
       document.removeEventListener("transitionend", measure, true);
+      document.removeEventListener("animationend", measure, true);
     };
   }, [step]);
 

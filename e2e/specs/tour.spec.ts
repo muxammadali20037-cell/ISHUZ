@@ -28,10 +28,10 @@ async function walk(page: Page): Promise<string[]> {
       const [a, b] = [await spot.boundingBox(), await el.boundingBox()];
       expect(a && b, code).toBeTruthy();
       // yoritish tugmani o'z ichiga oladi
-      expect(a!.x).toBeLessThanOrEqual(b!.x + 1);
-      expect(a!.y).toBeLessThanOrEqual(b!.y + 1);
-      expect(a!.x + a!.width).toBeGreaterThanOrEqual(b!.x + b!.width - 1);
-      expect(a!.y + a!.height).toBeGreaterThanOrEqual(b!.y + b!.height - 1);
+      expect(a!.x, code).toBeLessThanOrEqual(b!.x + 1);
+      expect(a!.y, code).toBeLessThanOrEqual(b!.y + 1);
+      expect(a!.x + a!.width, code).toBeGreaterThanOrEqual(b!.x + b!.width - 1);
+      expect(a!.y + a!.height, code).toBeGreaterThanOrEqual(b!.y + b!.height - 1);
       // karta ekranda to'liq
       const c = (await card(page).boundingBox())!;
       const vp = page.viewportSize()!;
