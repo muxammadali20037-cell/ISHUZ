@@ -119,6 +119,7 @@ export function StartChat({
     pending: chat.pending,
     find: (q, place) => chat.find(q, place),
     start: (role) => chat.start(role, t(role === "jobs" ? "easy.guided.start_jobs" : "easy.guided.start_workers")),
+    // rol tanlangan — kimligi so'ralmaydi (guided.ts offerPost): ish izlovchi — shu chatda, ish beruvchi — vakansiya yordamchisi
     post: () => chat.offerPost(t("easy.guided.home.post")),
   };
 
@@ -143,6 +144,7 @@ export function StartChat({
           <HomeStart
             act={act}
             mode={home.mode}
+            role={mode}
             places={home.places}
             place={home.place}
             action={action}
@@ -433,7 +435,13 @@ export function StartHome({ mode, home, introSeen = false, imageEnabled = false 
       go(text ? { q: text, region: place.value } : { start: home.mode, region: place.value });
     },
     start: (role) => go({ start: role }),
-    post: () => go({ post: "offer" }),
+    // ish beruvchi — to'g'ri vakansiya yordamchisiga; ish izlovchi — "Qidiruv"da o'z e'loni (kimligi so'ralmaydi);
+    // rol tanlanmagan — ikkala variant
+    post: () => {
+      if (mode !== "employer") return go({ post: "offer" });
+      setGoing(true);
+      router.push(vacancyHref());
+    },
   };
   return (
     <ImageEnabled.Provider value={imageEnabled}>
@@ -442,6 +450,7 @@ export function StartHome({ mode, home, introSeen = false, imageEnabled = false 
         <HomeStart
           act={act}
           mode={home.mode}
+          role={mode}
           places={home.places}
           place={home.place}
           action="/chat"

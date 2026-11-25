@@ -541,9 +541,15 @@ export function useGuidedChat(appMode: AppMode | null, owner: string) {
     return true;
   };
 
-  /** Bosh sahifadagi "E'lon berish": kim ekani noma'lum — ikkala variant ("O'zim haqimda" shu chatda / "Vakansiya") */
+  /**
+   * Bosh sahifadagi "E'lon berish". Rol tanlangan bo'lsa (ega, 2026-11-25: "qaysi rolni tanlagan bo'lsa shunaqa oyna
+   * chiqsin") — so'ralmaydi: ish izlovchi — "O'zim haqimda" shu chatda, ish beruvchi — vakansiya yordamchisi (alohida ekran).
+   * Rol tanlanmagan (mehmon) — ikkala variant.
+   */
   const offerPost = (label: string) => {
     if (pending) return;
+    if (appMode === "worker") return beginPost("", label);
+    if (appMode === "employer") return router.push("/post/vacancy?ai=1");
     markAnswered();
     setAwaiting(null);
     setDraft(null);
