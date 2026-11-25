@@ -132,7 +132,12 @@ test("chat yozish maydoni: ko'rsatma («Masalan: men oshpazman») telefonda ham 
     const home = page.locator("form[data-home-search][data-hydrated]");
     const box = page.locator("form[data-hydrated] #start-chat-text");
     await expect(home.or(box).first()).toBeVisible();
-    if (await home.isVisible()) await page.locator("[data-guided-start='post']").click();
+    // suhbatni ochish: qidiruv (2026-11-25: ish izlovchida «E'lon berish» darhol kasbni so'raydi — ko'rsatma boshqa)
+    if (await home.isVisible()) {
+      await page.locator("[data-home-q]").fill("oshpaz");
+      await page.locator("[data-home-submit]").click();
+      await page.waitForURL((u) => new URL(u).pathname === "/chat");
+    }
     await expect(box, `${width}px`).toHaveAttribute("placeholder", "Masalan: men oshpazman");
     // bitta qator (ko'rsatma ikkinchi qatorga o'tib, kesilib qolmaydi) va maydon ekran ichida
     expect(await box.evaluate((el) => el.scrollHeight <= el.clientHeight + 1), `${width}px`).toBe(true);

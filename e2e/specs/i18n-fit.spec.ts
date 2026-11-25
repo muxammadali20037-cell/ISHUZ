@@ -68,9 +68,10 @@ test("ru, 360 px: chat sarlavhasi to'liq ko'rinadi (kesilmaydi); <html lang> —
   const h1 = page.getByRole("heading", { level: 1 });
   await expect(h1).toHaveText("Ваша работа начинается здесь!");
   expect(await fits(h1), "sarlavha").toBe(true);
-  // bosh ekran (2026-11-23): qidiruv qatori va uchta tugma ham ruscha
+  // bosh ekran (2026-11-23): qidiruv qatori va tugmalar ham ruscha
   await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Напишите — найдите подходящее вам");
-  await expect(page.locator("[data-guided-start]")).toHaveText(["Ищу работу", "Ищу работника", "Подать объявление"]);
+  // ish izlovchi (2026-11-25): faqat o'z oynasi va «E'lon berish»
+  await expect(page.locator("[data-guided-start]")).toHaveText(["Ищу работу", "Подать объявление"]);
   await expect(page.locator("html")).toHaveAttribute("lang", "ru");
   // suhbat maydoni — "Qidiruv" (/chat) da (2026-11-23: "/" — Bosh sahifa)
   await page.goto("/chat");

@@ -82,7 +82,7 @@ test("mehmon: eski «Sizga mos» havolasi — E'lonlarimga (u yerdan kirishga)",
   expect(new URL(page.url()).searchParams.get("next")).toBe("/cabinet/elonlar");
 });
 
-test("kirgan foydalanuvchi: «/» — Bosh sahifa (qidiruv qatori, uchta tugma); /chat — bitta yozuv va strelka, ko'rsatma rolga qarab", async ({ page, context }) => {
+test("kirgan foydalanuvchi: «/» — Bosh sahifa (qidiruv qatori, rolga qarab tugmalar); /chat — bitta yozuv va strelka, ko'rsatma rolga qarab", async ({ page, context }) => {
   await loginAs(context, USERS.workerA);
   await asMode(context, "worker");
   // 2026-11-23 (ega): pastki menyuda "Bosh sahifa" — kirgan foydalanuvchi ham "/" da qoladi
@@ -90,7 +90,8 @@ test("kirgan foydalanuvchi: «/» — Bosh sahifa (qidiruv qatori, uchta tugma);
   await expect(page).toHaveURL(/\/$/);
   const home = page.locator("main [data-start-home]");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
-  await expect(home.locator("[data-guided-start]")).toHaveCount(3);
+  // ish izlovchi (2026-11-25): faqat o'z oynasi va «E'lon berish»
+  await expect(home.locator("[data-guided-start]")).toHaveText(["Ish qidiryapman", "E'lon berish"]);
   await expect(home.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
   await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
   // Bosh sahifada suhbat maydoni yo'q — u "Qidiruv" (/chat) da

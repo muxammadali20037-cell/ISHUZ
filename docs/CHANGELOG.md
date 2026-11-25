@@ -11,7 +11,8 @@ Migratsiya yo'q.
 - «E'lon berish»da endi «ishchi izlash uchunmi yoki ish izlash uchunmi?» deb so'ralmaydi: ish izlovchida o'z e'loni shu
   chatda boshlanadi, ish beruvchida vakansiya yordamchisi ochiladi.
 - Rol tanlanmagan mehmonda — avvalgidek uchala tugma va savol.
-- Tanishtiruvda (tugmalar bilan tanishuv) ko'rinmaydigan tugmaning qadami o'tkazib yuboriladi.
+- Tanishtiruvda (tugmalar bilan tanishuv) ko'rinmaydigan tugmaning qadami o'tkazib yuboriladi; yoritish halqasi sahifa
+  keyinroq siljisa ham tugmaga ergashadi.
 
 ## 2026-11-25 · Play Market'ga tayyorgarlik: tekshiruvchi uchun test kirish, AI natijasiga shikoyat (`feat/store-readiness`)
 

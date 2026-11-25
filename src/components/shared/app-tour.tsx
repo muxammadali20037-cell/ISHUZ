@@ -138,11 +138,18 @@ export function AppTour() {
     measure();
     window.addEventListener("resize", measure);
     window.addEventListener("scroll", measure, true);
+    // sahifa keyinroq siljisa (oqim bilan kelgan bo'lim, shrift, tepadagi video) yoki tugma o'lchami o'zgarsa — halqa ergashadi
+    const ro = new ResizeObserver(measure);
+    ro.observe(document.body);
+    if (el) ro.observe(el);
+    document.addEventListener("transitionend", measure, true);
     primaryRef.current?.focus({ preventScroll: true });
     return () => {
       cancelAnimationFrame(raf);
+      ro.disconnect();
       window.removeEventListener("resize", measure);
       window.removeEventListener("scroll", measure, true);
+      document.removeEventListener("transitionend", measure, true);
     };
   }, [step]);
 
