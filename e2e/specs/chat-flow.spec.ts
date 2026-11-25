@@ -162,6 +162,38 @@ test("bosh ekrandagi sariq «E'lon berish» (2026-11-23): kimligi so'ralmaydi �
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
 });
 
+test("rol tanlangan (ega, 2026-11-25): bosh sahifada faqat o'z oynasi, uzun «E'lon berish» — so'ralmasdan o'z e'loniga", async ({ page, context }) => {
+  // ish izlovchi: "Ish qidiryapman" + "E'lon berish" → "O'zim haqimda" shu chatda (kasb so'raladi), "nima uchun?" savolisiz
+  await loginAs(context, USERS.workerB);
+  await asMode(context, "worker");
+  await page.goto("/");
+  const starts = page.locator("main [data-guided-start]");
+  await expect(starts).toHaveText(["Ish qidiryapman", "E'lon berish"]);
+  await expect(page.locator("main [data-guided-start='workers']")).toHaveCount(0);
+  await page.locator("form[data-home-search][data-hydrated]").waitFor();
+  await page.locator("main [data-guided-start='post']").click();
+  await page.waitForURL((u) => new URL(u).pathname === "/chat");
+  await expect(page.locator("[data-guided-ai='post-profession']")).toBeVisible();
+  await expect(page.locator("[data-ai-you]").last()).toHaveText(/E'lon berish/);
+  await expect(page.locator("[data-guided-ai='post']")).toHaveCount(0);
+
+  // ish beruvchi: "Ishchi qidiryapman" + "E'lon berish" → to'g'ri vakansiya yordamchisi
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  await page.goto("/");
+  await expect(starts).toHaveText(["Ishchi qidiryapman", "E'lon berish"]);
+  await expect(page.locator("main [data-guided-start='jobs']")).toHaveCount(0);
+  await page.locator("form[data-home-search][data-hydrated]").waitFor();
+  await page.locator("main [data-guided-start='post']").click();
+  await page.waitForURL(/\/post\/vacancy\?ai=1/);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Qanday xodim kerak?");
+
+  // "Qidiruv" (chat) bo'sh holatidagi bosh ekranda ham shunday
+  await page.goto("/chat");
+  await page.locator("[data-guided-empty] [data-guided-start='post']").click();
+  await page.waitForURL(/\/post\/vacancy\?ai=1/);
+});
+
 test("bosh ekrandagi qidiruv qatori: kasb + tanlangan viloyat → savolsiz natija; viloyat eslab qolinadi", async ({ page, context }) => {
   await asGuest(context);
   await asMode(context, "worker");

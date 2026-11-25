@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-25 · Bosh sahifa rolga qarab: faqat o'z oynasi va uzun «E'lon berish» (`feat/role-home-tiles`)
+
+Ega: "qaysi rolni tanlagan bo'lsa shunaqa oyna chiqsin… e'lon berish uzunchoq bo'lib ko'rinsin" → variantlardan «B».
+Migratsiya yo'q.
+
+- Rol tanlangan bo'lsa bosh sahifada (va «Qidiruv»ning bo'sh holatida) faqat o'z oynasi: ish izlovchida «Ish qidiryapman»,
+  ish beruvchida «Ishchi qidiryapman». Ostida sariq «E'lon berish» — ikkalasi to'liq kenglikda, ustma-ust (kompyuterda
+  yonma-yon).
+- «E'lon berish»da endi «ishchi izlash uchunmi yoki ish izlash uchunmi?» deb so'ralmaydi: ish izlovchida o'z e'loni shu
+  chatda boshlanadi, ish beruvchida vakansiya yordamchisi ochiladi.
+- Rol tanlanmagan mehmonda — avvalgidek uchala tugma va savol.
+- Tanishtiruvda (tugmalar bilan tanishuv) ko'rinmaydigan tugmaning qadami o'tkazib yuboriladi; yoritish halqasi sahifa
+  keyinroq siljisa ham tugmaga ergashadi.
+
 ## 2026-11-25 · Play Market'ga tayyorgarlik: tekshiruvchi uchun test kirish, AI natijasiga shikoyat (`feat/store-readiness`)
 
 Ega: "Play Market, App Store'ga chiqarish uchun tayyormizmi" → "Ha, boshla". **Migratsiya: 0092** (faqat yangi enum qiymati).

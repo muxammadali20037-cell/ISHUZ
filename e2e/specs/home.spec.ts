@@ -103,7 +103,7 @@ test("bosh sahifa kartalari: 360–1440 px da matn karta chetidan chiqmaydi (ikk
   expect(bad).toEqual([]);
 });
 
-test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, uchta tugma, tezkor bo'limlar; 320–1280 px da sig'adi", async ({ page, context }) => {
+test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, tugmalar (rolga qarab), tezkor bo'limlar; 320–1280 px da sig'adi", async ({ page, context }) => {
   await asGuest(context);
   for (const mode of [null, "worker", "employer"] as const) {
     if (mode) await asMode(context, mode);
@@ -124,7 +124,18 @@ test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, uch
       expect(sb.y, at).toBeGreaterThan(hb.y + hb.height - 1);
       expect(ab.y, at).toBeGreaterThan(sb.y + sb.height - 1);
       expect(qb.y, at).toBeGreaterThan(ab.y + ab.height - 1);
-      await expect(main.locator("[data-guided-start]")).toHaveText(["Ish qidiryapman", "Ishchi qidiryapman", "E'lon berish"]);
+      // rol tanlangan (ega, 2026-11-25) — faqat o'z oynasi va uzun "E'lon berish"; rol tanlanmagan — uchala tugma
+      await expect(main.locator("[data-guided-start]")).toHaveText(
+        mode === "worker" ? ["Ish qidiryapman", "E'lon berish"] : mode === "employer" ? ["Ishchi qidiryapman", "E'lon berish"] : ["Ish qidiryapman", "Ishchi qidiryapman", "E'lon berish"],
+      );
+      if (mode) {
+        // B varianti: ikkalasi bir xil uzun; telefonda — ustma-ust, kompyuterda — yonma-yon
+        const [role, post] = [await box("[data-guided-start]:first-child"), await box("[data-guided-start='post']")];
+        expect(Math.abs(post.width - role.width), at).toBeLessThan(2);
+        expect(role.width, at).toBeGreaterThan(role.height * 2.5);
+        if (width < 1024) expect(post.y, at).toBeGreaterThan(role.y + role.height - 1);
+        else expect(Math.abs(post.y - role.y), at).toBeLessThan(2);
+      }
       // qidiruv maydonidagi ko'rsatma (ega, 2026-11-23: "Yozing, o'zingizga mosini toping" — sig'sin): kesilmaydi, maydon ichida
       const hint = main.locator("[data-home-hint]");
       await expect(hint).toHaveText("Yozing, o'zingizga mosini toping");
