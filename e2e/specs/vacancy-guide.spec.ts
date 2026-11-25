@@ -126,6 +126,23 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await expect(image).toHaveAttribute("data-listing-image", "ready", { timeout: 30_000 });
   const chosen = await image.locator("[data-listing-image-preview]").getAttribute("src");
   expect(chosen).not.toBe(first);
+  // Google Play: AI rasmi haqida ilova ichidan xabar berish (0092) — adminning shikoyatlar navbatiga tushadi
+  await sql("delete from public.reports where target_type = 'ai_content' and reporter_profile_id = $1", [USERS.employer]);
+  await image.locator("[data-ai-report]").click();
+  const sheet = page.getByRole("dialog");
+  await expect(sheet).toContainText("AI natijasi haqida xabar");
+  await expect(sheet.locator("[data-ai-report-send]")).toBeDisabled();
+  await sheet.getByText("Haqoratli yoki nomaqbul").click();
+  await sheet.locator("#ai-report-details").fill("sinov");
+  await sheet.locator("[data-ai-report-send]").click();
+  await expect(page.getByText("Shikoyat yuborildi. Moderatorlar ko'rib chiqadi.")).toBeVisible();
+  const [rep] = await sql<{ target_id: string; reason: string; details: string }>(
+    "select target_id, reason::text, details from public.reports where target_type = 'ai_content' and reporter_profile_id = $1",
+    [USERS.employer],
+  );
+  expect(rep!.target_id).toMatch(/^listing_image:[0-9a-f]{32}$/);
+  expect(rep!.reason).toBe("abuse");
+  expect(rep!.details).toBe(`[listing_image]\n${chosen}\n— sinov`);
   await page.locator("[data-guide-publish]").click();
   await expect(h1(page)).toHaveText(/E'loningiz joylandi|joylandi/i, { timeout: 20_000 });
   // joylangandan keyin savol yo'q — tanlangan rasm e'lonning o'zida

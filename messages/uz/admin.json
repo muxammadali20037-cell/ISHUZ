@@ -369,7 +369,8 @@
     "dismissed_done": "Shikoyat rad etildi",
     "resolution_note": "Qaror izohi",
     "block_target": "Nishonni bloklash",
-    "hide_vacancy": "Vakansiyani yashirish"
+    "hide_vacancy": "Vakansiyani yashirish",
+    "target_ai_content": "AI natijasi"
   },
   "reviews": {
     "title": "Sharhlar",

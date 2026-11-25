@@ -259,5 +259,13 @@
   "role_switched": {
     "worker": "Siz ish izlovchi paneliga o'tdingiz",
     "employer": "Siz ish beruvchi paneliga o'tdingiz"
+  },
+  "ai_report": {
+    "button": "AI natijasi haqida xabar berish",
+    "title": "AI natijasi haqida xabar",
+    "desc": "Haqoratli, nomaqbul yoki noto'g'ri bo'lsa, belgilang. Moderatorlar tekshiradi.",
+    "reason_abuse": "Haqoratli yoki nomaqbul",
+    "reason_wrong_info": "Noto'g'ri yoki chalg'ituvchi",
+    "reason_other": "Boshqa"
   }
 }

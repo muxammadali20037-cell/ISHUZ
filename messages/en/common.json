@@ -259,5 +259,13 @@
   "role_switched": {
     "worker": "You switched to the job seeker panel",
     "employer": "You switched to the employer panel"
+  },
+  "ai_report": {
+    "button": "Report AI result",
+    "title": "Report AI result",
+    "desc": "If it's offensive, inappropriate or wrong, let us know. Moderators will review it.",
+    "reason_abuse": "Offensive or inappropriate",
+    "reason_wrong_info": "Wrong or misleading",
+    "reason_other": "Other"
   }
 }

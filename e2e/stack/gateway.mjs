@@ -7,6 +7,7 @@
 import fs from "node:fs";
 import http from "node:http";
 import crypto from "node:crypto";
+import { execFileSync } from "node:child_process";
 import path from "node:path";
 import { sign } from "./jwt.mjs";
 
@@ -94,7 +95,31 @@ const MAGIC = new Map(); // hashed_token → { id, email } (bir martalik)
 const FAR = 4_102_444_800;
 
 function authUser(id, email) {
-  return { id, aud: "authenticated", role: "authenticated", email, app_metadata: { provider: "email" }, user_metadata: {}, factors: [], created_at: new Date().toISOString() };
+  const u = AUTH_USERS.get(id);
+  return { id, aud: "authenticated", role: "authenticated", email, app_metadata: u?.app_metadata ?? { provider: "email" }, user_metadata: u?.user_metadata ?? {}, factors: [], created_at: new Date().toISOString() };
+}
+
+/**
+ * admin.createUser (do'kon tekshiruvchisining demo hisobi, store-review.ts): haqiqiy GoTrue kabi auth.users ga yozadi
+ * (trigger profilni yaratadi); id yoki email band bo'lsa — 422 "already". Faqat stend bazasi (E2E_DB_URL).
+ */
+function createAuthUser(body) {
+  const id = body.id ?? crypto.randomUUID();
+  const email = String(body.email || "").toLowerCase();
+  if (idByEmail(email)) return { error: "A user with this email address has already been registered" };
+  const out = execFileSync(
+    "psql",
+    [process.env.E2E_DB_URL, "-Atq", "-v", "ON_ERROR_STOP=1", "-v", `id=${id}`, "-v", `email=${email}`, "-v", `app=${JSON.stringify(body.app_metadata ?? {})}`, "-v", `meta=${JSON.stringify(body.user_metadata ?? {})}`],
+    {
+      input: `insert into auth.users (id, email, email_confirmed_at, raw_app_meta_data, raw_user_meta_data)
+              select :'id'::uuid, :'email', now(), :'app'::jsonb, :'meta'::jsonb
+              where not exists (select 1 from auth.users where id = :'id'::uuid or lower(email) = :'email')
+              returning id;`,
+    },
+  ).toString().trim();
+  if (!out) return { error: "A user with this ID already exists" };
+  AUTH_USERS.set(id, { email, password: null, app_metadata: body.app_metadata ?? {}, user_metadata: body.user_metadata ?? {} });
+  return { user: authUser(id, email) };
 }
 
 /** Telegram orqali yaratilgan hisob kabi: email biriktirilmagan bo'lsa — texnik manzil */
@@ -234,6 +259,12 @@ async function handle(req, res) {
     MAGIC.delete(String(body.token_hash));
     return json(res, 200, issueSession(m.id, m.email, "otp"));
   }
+  if (/^\/auth\/v1\/admin\/users\/?(\?|$)/.test(url) && req.method === "POST") {
+    const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
+    if (c?.role !== "service_role") return authError(res, 403, "not_admin", "User not allowed");
+    const r = createAuthUser(await readJson(req));
+    return r.error ? authError(res, 422, "email_exists", r.error) : json(res, 200, r.user);
+  }
   const adminUser = /^\/auth\/v1\/admin\/users\/([0-9a-f-]{36})/.exec(url);
   if (adminUser) {
     const c = verify((req.headers.authorization || "").replace(/^Bearer /, ""));
@@ -245,7 +276,7 @@ async function handle(req, res) {
       const email = body.email ? String(body.email).toLowerCase() : emailOf(id);
       const other = idByEmail(email);
       if (other && other !== id) return authError(res, 422, "email_exists", "A user with this email address has already been registered");
-      AUTH_USERS.set(id, { email, password: body.password ?? AUTH_USERS.get(id)?.password ?? null });
+      AUTH_USERS.set(id, { ...AUTH_USERS.get(id), email, password: body.password ?? AUTH_USERS.get(id)?.password ?? null });
       return json(res, 200, authUser(id, email));
     }
   }

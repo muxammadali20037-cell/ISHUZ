@@ -23,6 +23,7 @@ export function channelLink(base: string): LinkFn {
 import { resolveTelegramLocale } from "@/features/notifications/telegram";
 import { MASTERS_ENABLED } from "@/features/masters/flags";
 import { ageLabel } from "@/features/post/requirements";
+import { STORE_REVIEW_PROFILE_ID } from "@/features/auth/store-review-config";
 
 /**
  * Telegram kanalga avtomatik e'lon (0079): yangi chiqqan vakansiya — "ISH", ishchi e'loni (rezyume) — "ISHCHI".
@@ -168,7 +169,9 @@ async function vacancyPosts(db: Db, ids: string[] | null, since: string): Promis
     .select(
       "id, slug, title, description, experience_min_months, salary_from, salary_to, salary_type, salary_negotiable, schedule, is_remote, custom_profession, gender, age_min, age_max, work_time_from, work_time_to, owner_profile_id, company:companies!vacancies_company_id_fkey(name, phone), region:regions!vacancies_region_id_fkey(name_uz), district:districts!vacancies_district_id_fkey(name_uz), profession:profession_nodes!vacancies_profession_node_id_fkey(name_uz), owner:profiles!vacancies_owner_profile_id_fkey(is_blocked)",
     )
-    .eq("status", "active");
+    .eq("status", "active")
+    // do'kon tekshiruvchisining sinov e'lonlari kanalga chiqmaydi (store-review-config.ts)
+    .neq("owner_profile_id", STORE_REVIEW_PROFILE_ID);
   q = ids ? q.in("id", ids) : q.gte("published_at", since).order("published_at", { ascending: false }).limit(50);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
@@ -230,7 +233,8 @@ async function workerPosts(db: Db, ids: string[] | null, since: string): Promise
       "id, headline, about, custom_profession, experience_level, profession:profession_nodes!worker_profiles_profession_node_id_fkey(name_uz), region:regions!worker_profiles_region_id_fkey(name_uz), district:districts!worker_profiles_district_id_fkey(name_uz), prefs:worker_preferences(salary_expected, salary_min, salary_type, schedules), owner:profiles!worker_profiles_profile_id_fkey(is_blocked)",
     )
     .eq("is_public", true)
-    .not("onboarding_completed_at", "is", null);
+    .not("onboarding_completed_at", "is", null)
+    .neq("profile_id", STORE_REVIEW_PROFILE_ID);
   q = ids ? q.in("id", ids) : q.gte("updated_at", since).order("updated_at", { ascending: false }).limit(50);
   const { data, error } = await q;
   if (error) throw new Error(error.message);
@@ -278,7 +282,8 @@ async function masterPosts(db: Db, ids: string[] | null, since: string): Promise
       "id, slug, title, services, description, experience_years, price_from, price_to, price_negotiable, photos, category:master_categories(slug, name_uz), region:regions(name_uz), district:districts(name_uz), owner:profiles!master_listings_owner_profile_id_fkey(is_blocked)",
     )
     .eq("status", "active")
-    .eq("is_demo", false);
+    .eq("is_demo", false)
+    .neq("owner_profile_id", STORE_REVIEW_PROFILE_ID);
   q = ids ? q.in("id", ids) : q.gte("published_at", since).order("published_at", { ascending: false }).limit(50);
   const { data, error } = await q;
   if (error) throw new Error(error.message);

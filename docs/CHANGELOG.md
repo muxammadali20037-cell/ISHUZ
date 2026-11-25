@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-25 · Play Market'ga tayyorgarlik: tekshiruvchi uchun test kirish, AI natijasiga shikoyat (`feat/store-readiness`)
+
+Ega: "Play Market, App Store'ga chiqarish uchun tayyormizmi" → "Ha, boshla". **Migratsiya: 0092** (faqat yangi enum qiymati).
+
+- **Tekshiruvchi uchun test kirish**: saytga kirish Telegram orqali, Google/Apple tekshiruvchisida esa Telegram yo'q.
+  Vercel'da `STORE_REVIEW_PHONE` va `STORE_REVIEW_CODE` berilsa, telefon formasida shu raqam va doimiy kod faqat
+  alohida demo hisobga («App Review», doimiy id) kiritadi. Boshqa hech kimning hisobiga kirib bo'lmaydi; urinishlar oddiy kod
+  kabi cheklanadi; egasining raqami berilsa — o'chiq; har kirish xavfsizlik jurnaliga yoziladi. Demo hisob e'lonlari
+  Telegram kanalga chiqmaydi.
+- **AI natijasiga shikoyat** (Google Play talabi): AI yaratgan e'lon rasmi va AI yozgan «O'zim haqimda» matni ostida
+  «AI natijasi haqida xabar berish». Shikoyat admin → Shikoyatlar navbatiga «AI natijasi» bo'lib tushadi (0092).
+- **Maxfiylik siyosati**: OpenAI (e'lon rasmi) xizmat ko'rsatuvchilar ro'yxatiga qo'shildi; AI natijasiga shikoyat
+  saqlanishi yozildi (uz, ru, en).
+- **Do'kon rasmlari** qayta olindi (yangi dizayn). Namunaviy kompaniya nomi «Namuna Savdo», tasdiq belgisisiz — haqiqiy
+  kompaniyaga o'xshash nom yoki soxta «Tasdiqlangan» belgisi ko'rsatilmaydi.
+- `docs/PLAY_MARKET.md`: test kirishni sozlash va Play Console'dagi «App access» javobi.
+
 ## 2026-11-24 · "Menejer" — "Qanday menejer kerak?"; adminlarga rasm chegarasi yo'q (`fix/manager-and-image-limit`)
 
 Ega: "meneger degan kasb bormi" → "Ha, tuzat"; "bugun rasm yaratish chegarasiga yetdingiz deyapti nimaga" →

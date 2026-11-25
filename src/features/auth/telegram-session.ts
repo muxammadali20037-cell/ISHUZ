@@ -125,7 +125,7 @@ async function createTelegramAuthUser(admin: AdminClient, u: TelegramIdentity, l
  * Profil uchun sessiya ochadi (cookie'lar joriy javobga yoziladi): magic-link token_hash → verifyOtp.
  * Telefon orqali yaratilgan (email'siz) foydalanuvchiga texnik email biriktiriladi.
  */
-export async function startSessionForProfile(admin: AdminClient, profileId: string, tgId: number): Promise<void> {
+export async function startSessionForProfile(admin: AdminClient, profileId: string, tgId?: number): Promise<void> {
   const [{ data: got, error: getErr }, { data: profile }] = await Promise.all([
     admin.auth.admin.getUserById(profileId),
     admin.from("profiles").select("is_blocked").eq("id", profileId).maybeSingle(),
@@ -135,6 +135,8 @@ export async function startSessionForProfile(admin: AdminClient, profileId: stri
   if (profile?.is_blocked || bannedUntil > Date.now()) throw new AccountBlockedError();
   let email = got.user.email ?? null;
   if (!email) {
+    // emailsiz hisob faqat Telegram orqali yaratilgan bo'ladi (do'kon tekshiruvchisining demo hisobida email bor)
+    if (tgId === undefined) throw new Error("startSession: no email and no telegram id");
     email = telegramEmail(tgId);
     let { error } = await admin.auth.admin.updateUserById(profileId, { email, email_confirm: true, app_metadata: { tg_id: tgId } });
     if (error && /already/i.test(error.message)) {

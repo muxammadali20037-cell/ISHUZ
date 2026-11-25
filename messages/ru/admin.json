@@ -369,7 +369,8 @@
     "dismissed_done": "Жалоба отклонена",
     "resolution_note": "Комментарий к решению",
     "block_target": "Заблокировать объект",
-    "hide_vacancy": "Скрыть вакансию"
+    "hide_vacancy": "Скрыть вакансию",
+    "target_ai_content": "Результат ИИ"
   },
   "reviews": {
     "title": "Отзывы",

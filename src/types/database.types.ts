@@ -7162,7 +7162,7 @@ export type Database = {
         | "abuse"
         | "other";
       report_status: "open" | "in_review" | "resolved" | "dismissed";
-      report_target: "profile" | "vacancy" | "company" | "message" | "review";
+      report_target: "profile" | "vacancy" | "company" | "message" | "review" | "ai_content";
       review_status: "pending" | "approved" | "rejected";
       salary_type: "monthly" | "daily" | "hourly" | "piecework" | "negotiable";
       skill_level: "beginner" | "intermediate" | "good" | "professional";
@@ -7446,7 +7446,7 @@ export const Constants = {
         "other",
       ],
       report_status: ["open", "in_review", "resolved", "dismissed"],
-      report_target: ["profile", "vacancy", "company", "message", "review"],
+      report_target: ["profile", "vacancy", "company", "message", "review", "ai_content"],
       review_status: ["pending", "approved", "rejected"],
       salary_type: ["monthly", "daily", "hourly", "piecework", "negotiable"],
       skill_level: ["beginner", "intermediate", "good", "professional"],
