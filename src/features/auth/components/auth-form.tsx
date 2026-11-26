@@ -15,6 +15,7 @@ import { EntryBack, EntryHeading, EntryIcon, EntryScreen } from "@/features/entr
 import { cn } from "@/lib/utils";
 import { TelegramGate } from "./telegram-login";
 import { TelegramWebLoginButton } from "./telegram-web-login-button";
+import { GoogleLoginButton } from "./google-login-button";
 
 type Step = "phone" | "link" | "code";
 
@@ -58,9 +59,21 @@ function TelegramIcon({ className }: { className?: string }) {
   return <Send className={cn("text-[#2AABEE]", className)} aria-hidden />;
 }
 
+/** Google'ning rasmiy "G" belgisi (brend qoidasi: ranglari o'zgartirilmaydi) */
+function GoogleIcon({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 48 48" className={className} aria-hidden>
+      <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.5z" />
+      <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" />
+      <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z" />
+      <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.5z" />
+    </svg>
+  );
+}
+
 /**
- * 6-ekran: kirish usuli. Faqat haqiqatan ishlaydigan usullar: telefon (kod Telegram bot orqali) va Telegram (bot ochiladi,
- * undagi ilova tugmasi — avtomatik kirish). Google kirish sozlanmagan — ko'rsatilmaydi. Telegram Mini App ichida — darhol kiriladi.
+ * 6-ekran: kirish usuli. Faqat haqiqatan ishlaydigan usullar: Telegram (bot ochiladi, "✅ Kirish"), Google (Supabase'da
+ * yoqilgan bo'lsa; o'rnatilgan oynalarda — yo'q) va telefon (kod Telegram bot orqali). Telegram Mini App ichida — darhol kiriladi.
  */
 export function LoginMethods({
   next,
@@ -69,12 +82,18 @@ export function LoginMethods({
   backHref,
   showBrowse = true,
   adminEmailHref = null,
+  google = false,
+  googleFailed = false,
 }: {
   next: string;
   phoneHref: string;
   botUsername: string | null;
   backHref: string | null;
   showBrowse?: boolean;
+  /** Supabase'da Google kirish yoqilgan (google-login.ts) */
+  google?: boolean;
+  /** Google'dan xato bilan qaytildi (?google=failed) */
+  googleFailed?: boolean;
   /** faqat admin panelga kirishda: email + parol (Telegram ishlamaganda) */
   adminEmailHref?: string | null;
 }) {
@@ -92,6 +111,11 @@ export function LoginMethods({
             </div>
             <EntryHeading className="mt-8" title={t("auth.method.title")} subtitle={t("auth.method.subtitle")} />
             {failed ? <p className="mt-6 rounded-xl bg-warning-soft p-3 text-sm text-warning">{t("auth.telegram_failed")}</p> : null}
+            {googleFailed ? (
+              <p className="mt-6 rounded-xl bg-warning-soft p-3 text-sm text-warning" role="alert" data-google-failed>
+                {t("auth.google_failed")}
+              </p>
+            ) : null}
             {/* ega (2026-11-18): Telegram birinchi o'rinda — bir bosishda, kod va parolsiz (bot sozlangan bo'lsa) */}
             <nav aria-label={t("auth.method.label")} className="mt-8 grid gap-3">
               {botUsername ? (
@@ -107,6 +131,19 @@ export function LoginMethods({
                     <span className="mt-0.5 block text-sm leading-snug opacity-90">{t("auth.method.telegram_desc")}</span>
                   </span>
                 </TelegramWebLoginButton>
+              ) : null}
+              {/* ega (2026-11-26): "Google orqali kirishni ula" — Telegram'dan keyin; o'rnatilgan oynalarda chiqmaydi */}
+              {google ? (
+                <GoogleLoginButton
+                  next={next}
+                  className="press flex min-h-16 items-center gap-3 rounded-2xl border-2 border-border bg-card px-4 py-3 text-left hover:border-primary/50 disabled:opacity-60"
+                >
+                  <GoogleIcon className="size-6 shrink-0" />
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-bold leading-tight">{t("auth.method.google")}</span>
+                    <span className="mt-0.5 block text-sm leading-snug text-muted-foreground">{t("auth.method.google_desc")}</span>
+                  </span>
+                </GoogleLoginButton>
               ) : null}
               <Link
                 href={phoneHref}
