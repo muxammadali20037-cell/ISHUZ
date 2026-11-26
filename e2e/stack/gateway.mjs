@@ -93,6 +93,13 @@ const AUTH_USERS = new Map(); // id → { email, password }
 const MAILBOX = []; // { email, link }
 const MAGIC = new Map(); // hashed_token → { id, email } (bir martalik)
 const FAR = 4_102_444_800;
+/**
+ * Google orqali kirish (Supabase OAuth, PKCE) emulyatsiyasi: test /__e2e/google bilan "Google hisobi"ni beradi,
+ * /authorize kod bilan qaytaradi, /token?grant_type=pkce kod va verifier'ni tekshirib sessiya beradi (auth.users ga
+ * haqiqiy GoTrue kabi yozadi — trigger profilni yaratadi). /auth/v1/settings — provayder yoqilganmi.
+ */
+const GOOGLE = { enabled: true, next: null }; // next: { email, full_name, given_name?, family_name?, avatar_url, deny? }
+const OAUTH_CODES = new Map(); // code → { challenge, method, identity }
 
 function authUser(id, email) {
   const u = AUTH_USERS.get(id);
@@ -103,6 +110,42 @@ function authUser(id, email) {
  * admin.createUser (do'kon tekshiruvchisining demo hisobi, store-review.ts): haqiqiy GoTrue kabi auth.users ga yozadi
  * (trigger profilni yaratadi); id yoki email band bo'lsa — 422 "already". Faqat stend bazasi (E2E_DB_URL).
  */
+function psqlRows(sql, vars) {
+  const args = [process.env.E2E_DB_URL, "-Atq", "-F", "\t", "-v", "ON_ERROR_STOP=1"];
+  for (const [k, v] of Object.entries(vars)) args.push("-v", `${k}=${v}`);
+  const out = execFileSync("psql", args, { input: sql }).toString().trim();
+  return out ? out.split("\n").map((l) => l.split("\t")) : [];
+}
+
+/** Google hisobi bo'yicha foydalanuvchi: email bo'yicha topiladi (Supabase avtomatik bog'lash kabi) yoki yaratiladi */
+function googleUser(identity) {
+  const email = String(identity.email).toLowerCase();
+  const meta = {
+    iss: "https://accounts.google.com",
+    sub: crypto.createHash("sha256").update(email).digest("hex").slice(0, 21),
+    email,
+    email_verified: true,
+    full_name: identity.full_name ?? null,
+    name: identity.full_name ?? null,
+    ...(identity.given_name ? { given_name: identity.given_name, family_name: identity.family_name ?? "" } : {}),
+    avatar_url: identity.avatar_url ?? null,
+    picture: identity.avatar_url ?? null,
+    provider_id: "g-" + email,
+  };
+  const app = { provider: "google", providers: ["google"] };
+  let [row] = psqlRows("select id, to_json(created_at)#>>'{}' from auth.users where lower(email) = :'email' limit 1;", { email });
+  if (!row) {
+    [row] = psqlRows(
+      `insert into auth.users (id, email, email_confirmed_at, raw_app_meta_data, raw_user_meta_data)
+       values (gen_random_uuid(), :'email', now(), :'app'::jsonb, :'meta'::jsonb) returning id, to_json(created_at)#>>'{}';`,
+      { email, app: JSON.stringify(app), meta: JSON.stringify(meta) },
+    );
+  }
+  const [id, createdAt] = row;
+  AUTH_USERS.set(id, { ...AUTH_USERS.get(id), email, password: AUTH_USERS.get(id)?.password ?? null, app_metadata: app, user_metadata: meta });
+  return { id, email, createdAt: new Date(createdAt).toISOString() };
+}
+
 function createAuthUser(body) {
   const id = body.id ?? crypto.randomUUID();
   const email = String(body.email || "").toLowerCase();
@@ -209,6 +252,42 @@ async function handle(req, res) {
   if (url.startsWith("/auth/v1/logout")) {
     res.writeHead(204);
     return res.end();
+  }
+  if (url.startsWith("/__e2e/google") && req.method === "POST") {
+    const body = await readJson(req);
+    if (typeof body.enabled === "boolean") GOOGLE.enabled = body.enabled;
+    GOOGLE.next = body.identity ?? null;
+    return json(res, 200, { ok: true });
+  }
+  if (url.startsWith("/auth/v1/settings") && req.method === "GET") {
+    return json(res, 200, { external: { google: GOOGLE.enabled, email: true, phone: false }, disable_signup: false });
+  }
+  if (url.startsWith("/auth/v1/authorize") && req.method === "GET") {
+    const q = new URL(url, "http://x").searchParams;
+    const target = new URL(q.get("redirect_to") || "http://localhost/");
+    if (q.get("provider") !== "google" || !GOOGLE.enabled) {
+      target.searchParams.set("error", "invalid_request");
+    } else if (!GOOGLE.next || GOOGLE.next.deny) {
+      target.searchParams.set("error", "access_denied");
+      target.searchParams.set("error_description", "User denied");
+    } else {
+      const code = crypto.randomBytes(16).toString("hex");
+      OAUTH_CODES.set(code, { challenge: q.get("code_challenge"), method: (q.get("code_challenge_method") || "plain").toLowerCase(), identity: GOOGLE.next });
+      target.searchParams.set("code", code);
+    }
+    res.writeHead(302, { Location: target.toString() });
+    return res.end();
+  }
+  if (url.startsWith("/auth/v1/token?grant_type=pkce") && req.method === "POST") {
+    const body = await readJson(req);
+    const c = OAUTH_CODES.get(String(body.auth_code || ""));
+    OAUTH_CODES.delete(String(body.auth_code || ""));
+    const verifier = String(body.code_verifier || "");
+    const ok = c && (c.method === "s256" ? crypto.createHash("sha256").update(verifier).digest("base64url") === c.challenge : verifier === c.challenge);
+    if (!ok) return authError(res, 400, "bad_code_verifier", "code challenge does not match previously saved code verifier");
+    const u = googleUser(c.identity);
+    const s = issueSession(u.id, u.email, "oauth");
+    return json(res, 200, { ...s, user: { ...s.user, created_at: u.createdAt } });
   }
   if (url.startsWith("/__e2e/auth/reset") && req.method === "POST") {
     AUTH_USERS.clear();

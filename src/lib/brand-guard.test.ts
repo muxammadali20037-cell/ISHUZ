@@ -18,7 +18,7 @@ const ALLOW: Record<string, { rules: Rule[]; why: string }> = {
   "lib/job-art/person.ts": { rules: ["hex"], why: "kasb chizmasi (SVG → reklama kartasi PNG'i): kiyim, teri va soch ranglari — interfeys tokeni emas" },
   "app/global-error.tsx": { rules: ["hex"], why: "ildiz layout yiqilganda — globals.css yuklanmagan bo'lishi mumkin" },
   "app/layout.tsx": { rules: ["hex"], why: "brauzer themeColor meta (CSS emas)" },
-  "features/auth/components/auth-form.tsx": { rules: ["hex"], why: "Telegram belgisining rasmiy rangi (uchinchi tomon logotipi)" },
+  "features/auth/components/auth-form.tsx": { rules: ["hex"], why: "Telegram va Google belgilarining rasmiy ranglari (uchinchi tomon logotiplari)" },
   "components/ui/checkbox.tsx": { rules: ["white"], why: "Switch tutqichi har ikki mavzuda oq (rangli/kulrang yo'lak ustida)" },
   "components/shared/app-shell.tsx": { rules: ["blur"], why: "ega (2026-11-23): kompyuterdagi yon menyu — oynali (shisha) panel va orqasidagi xira rang dog'lari" },
   "features/start-chat/components/home-start.tsx": { rules: ["blur"], why: "ega (2026-11-23): bosh sahifadagi \"Ish qidiryapman / Ishchi qidiryapman\" — to'q ko'k oynali tugmalar va orqasidagi xira dog'lar" },

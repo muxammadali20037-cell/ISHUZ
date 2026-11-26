@@ -10,6 +10,7 @@ import { RoleScreen } from "@/features/entry/components/role-screen";
 import { isAdminPath } from "@/lib/admin-host";
 import { adminUiEnabled } from "@/lib/features";
 import { ADMIN_LOGIN_PATH } from "@/features/auth/admin-login";
+import { googleLoginEnabled } from "@/features/auth/google-login";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 /**
- * 6-ekran: kirish usuli (telefon / Telegram; admin panelga kirishda — yana email + parol). `?next=` — kirgandan keyin qaytiladigan joy (yo'q bo'lsa — /start: yangi
+ * 6-ekran: kirish usuli (Telegram / Google — Supabase'da yoqilgan bo'lsa / telefon; admin panelga kirishda — yana email + parol). `?next=` — kirgandan keyin qaytiladigan joy (yo'q bo'lsa — /start: yangi
  * foydalanuvchi rol va profilga, qaytgan — bosh sahifasiga). `?phone=` (e'lon formasida yozilgan raqam) — to'g'ridan-to'g'ri
  * raqam ekraniga, qayta yozdirmasdan.
  *
@@ -26,8 +27,8 @@ export async function generateMetadata(): Promise<Metadata> {
  * panelga kirishda va e'lon formasidan kelganda (rol formadan ma'lum, raqam yozilgan). `?role=1` faqat ekranlar tartibi
  * uchun — hech qanday ruxsat bermaydi.
  */
-export default async function AuthPage({ searchParams }: { searchParams: Promise<{ next?: string; phone?: string; role?: string }> }) {
-  const [mode, { next: rawNext, phone: rawPhone, role }] = await Promise.all([getMode(), searchParams]);
+export default async function AuthPage({ searchParams }: { searchParams: Promise<{ next?: string; phone?: string; role?: string; google?: string }> }) {
+  const [mode, { next: rawNext, phone: rawPhone, role, google: googleParam }, google] = await Promise.all([getMode(), searchParams, googleLoginEnabled()]);
   const next = safeInternalPath(rawNext, "") || "/start";
   const phone = rawPhone && /^\+998\d{9}$/.test(rawPhone) ? rawPhone : null;
   const phoneHref = phoneLoginHref({ next, mode, phone });
@@ -47,6 +48,8 @@ export default async function AuthPage({ searchParams }: { searchParams: Promise
       backHref={adminLogin ? null : "/"}
       showBrowse={!adminLogin}
       adminEmailHref={adminLogin && adminUiEnabled() ? `${ADMIN_LOGIN_PATH}?next=${encodeURIComponent(next)}` : null}
+      google={google && !adminLogin}
+      googleFailed={googleParam === "failed"}
     />
   );
 }

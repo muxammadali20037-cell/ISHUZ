@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-26 · Google orqali kirish (`feat/google-login`)
+
+Ega: "Google orqali kirishni ula". Migratsiya yo'q. Sozlash — [GOOGLE_LOGIN.md](GOOGLE_LOGIN.md) (faqat ega qiladi).
+
+- Kirish oynasida «Google orqali kirish» tugmasi (Telegram'dan keyin, telefondan oldin). Tugma faqat Supabase'da Google
+  yoqilgandan keyin chiqadi (`/auth/v1/settings`, 5 daqiqa kesh) — sozlanmaguncha sayt o'zgarmaydi.
+- Telegram Mini App va ichki brauzerlarda (Telegram, Instagram, Facebook, Android WebView) tugma yashirin — Google u yerda
+  kirishni bloklaydi.
+- Yangi hisobga ism Google'dan olinadi (o'zgartirgan ism qayta kirganda saqlanadi); Google rasmi olinmaydi; email
+  hech kimga ko'rinmaydi; til tanlangan tilga qo'yiladi.
+- Bloklangan foydalanuvchi Google orqali ham kira olmaydi (sessiya darhol yopiladi → `/blocked`). Xato bo'lsa — kirish
+  oynasiga qaytib, ogohlantirish. Har kirish xavfsizlik jurnaliga yoziladi; qaytish manzili IP bo'yicha cheklangan.
+- Maxfiylik siyosati (uz, ru, en): Google orqali kirishda olinadigan ma'lumot va Google xizmat ko'rsatuvchilar ro'yxatida.
+- E2E: stend gateway'i Google (PKCE) ni emulyatsiya qiladi — yangi hisob, qayta kirish, rad etish, soxta kod, bloklangan,
+  webview.
+
 ## 2026-11-25 · Bosh sahifa rolga qarab: faqat o'z oynasi va uzun «E'lon berish» (`feat/role-home-tiles`)
 
 Ega: "qaysi rolni tanlagan bo'lsa shunaqa oyna chiqsin… e'lon berish uzunchoq bo'lib ko'rinsin" → variantlardan «B».

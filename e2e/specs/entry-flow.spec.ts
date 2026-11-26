@@ -136,7 +136,8 @@ test.describe("kirish oqimi", () => {
     await expect(page.getByRole("heading", { level: 1, name: "Xush kelibsiz!" })).toBeVisible();
     const methods = page.getByRole("navigation", { name: "Kirish usuli" });
     await expect(methods.getByRole("link")).toHaveCount(1);
-    await expect(page.getByText(/Google/)).toHaveCount(0);
+    // Google orqali kirish (2026-11-26): stendda Supabase'da yoqilgan — tugma bor (google-login.spec.ts)
+    await expect(methods.locator("[data-google-login]")).toHaveText(/Google orqali kirish/);
     await expect(page.getByRole("link", { name: "Kirmasdan e'lonlarni ko'rish" })).toHaveAttribute("href", "/");
     // rol tanlangan — raqam ekraniga to'g'ridan-to'g'ri
     await methods.getByRole("link", { name: /Telefon raqam orqali kirish/ }).click();
