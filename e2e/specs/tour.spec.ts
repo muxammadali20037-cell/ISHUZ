@@ -25,13 +25,19 @@ async function walk(page: Page): Promise<string[]> {
     if (await spot.count()) {
       const target = (await spot.getAttribute("data-tour-spot"))!;
       const el = page.locator(`[data-tour="${target}"]`).filter({ visible: true }).first();
-      const [a, b] = [await spot.boundingBox(), await el.boundingBox()];
-      expect(a && b, code).toBeTruthy();
-      // yoritish tugmani o'z ichiga oladi
-      expect(a!.x, code).toBeLessThanOrEqual(b!.x + 1);
-      expect(a!.y, code).toBeLessThanOrEqual(b!.y + 1);
-      expect(a!.x + a!.width, code).toBeGreaterThanOrEqual(b!.x + b!.width - 1);
-      expect(a!.y + a!.height, code).toBeGreaterThanOrEqual(b!.y + b!.height - 1);
+      // yoritish tugmani o'z ichiga oladi. Sahifa keyinroq siljishi mumkin (shrift, oqim bilan kelgan bo'lim) — halqa
+      // ergashishi shart: qisqa vaqt ichida (2 s) to'liq ustiga tushadi
+      await expect
+        .poll(
+          async () => {
+            const [a, b] = [await spot.boundingBox(), await el.boundingBox()];
+            if (!a || !b) return "yo'q";
+            const miss = [a.x - (b.x + 1), a.y - (b.y + 1), b.x + b.width - 1 - (a.x + a.width), b.y + b.height - 1 - (a.y + a.height)].map((d) => Math.max(0, d));
+            return Math.max(...miss) > 0 ? `chetda ${JSON.stringify({ a, b })}` : "ok";
+          },
+          { message: code, timeout: 2000 },
+        )
+        .toBe("ok");
       // karta ekranda to'liq
       const c = (await card(page).boundingBox())!;
       const vp = page.viewportSize()!;
