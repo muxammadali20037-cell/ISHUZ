@@ -174,6 +174,9 @@ test("Telegram Mini App ichida: 'TOP qilish' — narx va to'lov tugmalari yo'q, 
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto(`/employer/vacancies/${v!.id}`);
+  // Telegram muhitida sahifa gidratsiyadan keyin bir marta qayta chiziladi (server — brauzer, mijoz — Mini App): CI'da
+  // qisqa vaqt ikki nusxa ko'rindi — bitta qolishini kutamiz
+  await expect(page.locator("[data-boost]")).toHaveCount(1);
   await page.locator("[data-boost]").click();
   const dialog = page.getByRole("dialog", { name: "TOP qilish" });
   await expect(dialog.locator('[data-in-app-note="telegram"]')).toHaveText(
