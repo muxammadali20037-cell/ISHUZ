@@ -18,6 +18,8 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 const BASE = "/admin/moderation";
+/** qoidalar admin tekshiruviga qo'ygan sabablar (rules.ts, severity "review") — oddiy tilda */
+const HOLD_REASONS = new Set(["rule_scam_fee", "rule_abroad_job"]);
 
 /** Moderatsiya navbati: AI/qoidalar "ko'rib chiqish"ga qo'ygan, apellyatsiya, kutilayotgan, rad etilgan va xatoli e'lonlar */
 export default async function AdminModerationPage({ searchParams }: { searchParams: Promise<SearchParams> }) {
@@ -80,6 +82,11 @@ export default async function AdminModerationPage({ searchParams }: { searchPara
                       )}
                     </p>
                     {r.preview ? <p className="whitespace-pre-line text-sm text-muted-foreground line-clamp-4 [overflow-wrap:anywhere]">{r.preview}</p> : null}
+                    {r.last_check?.reason_code && HOLD_REASONS.has(r.last_check.reason_code) ? (
+                      <p className="rounded-lg bg-warning-soft px-2.5 py-1.5 text-sm font-medium text-warning" data-hold-reason={r.last_check.reason_code}>
+                        {t(`admin.moderation.hold.${r.last_check.reason_code}`)}
+                      </p>
+                    ) : null}
                     {r.message ? (
                       <p className="text-sm">
                         <span className="font-medium">{t("admin.moderation.reason")}:</span> {r.message}

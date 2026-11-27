@@ -197,3 +197,63 @@ test("toza e'lon (yolg'on topilma yo'q): 'Sport seksiyasiga murabbiy', 'React SP
     await restore();
   }
 });
+
+/**
+ * Firibgar e'lon (ega, 2026-11-27): chet elga ishga olib ketish va nomzoddan pul so'rash — vakansiya admin ko'rmaguncha
+ * chiqmaydi (bloklanmaydi). Stendda AI yo'q: "AI'siz — qoidalar" rejimida oddiy vakansiya darhol faollashadi, chet elga ish
+ * esa admin navbatiga tushadi va admin oddiy tilda sababini ko'radi.
+ */
+test("chet elga ish va nomzoddan pul — admin tekshiruviga (bloklanmaydi); oddiy vakansiya — darhol faol", async ({ page, context, request }) => {
+  const settings = await sql<{ key: string; value: unknown }>("select key, value from public.app_settings where key in ('moderation_enabled', 'moderation_without_ai')");
+  await sql(
+    `insert into public.employer_profiles (profile_id, employer_type, display_name, onboarding_completed_at)
+     values ($1, 'person', 'Dilnoza opa', now()) on conflict (profile_id) do nothing`,
+    [USERS.employer],
+  );
+  await sql("delete from public.vacancies where owner_profile_id = $1 and title like 'M27 %'", [USERS.employer]);
+  try {
+    await sql("update public.app_settings set value = 'true'::jsonb where key = 'moderation_enabled'");
+    await sql("insert into public.app_settings (key, value, is_public) values ('moderation_without_ai', '\"rules\"'::jsonb, false) on conflict (key) do update set value = excluded.value");
+    const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+    const [c] = await sql<{ id: string }>("select id from public.categories where is_active order by sort_order limit 1");
+    const make = async (title: string, description: string) => {
+      const [v] = await sql<{ id: string }>(
+        `insert into public.vacancies (owner_profile_id, title, category_id, region_id, description, status, salary_negotiable)
+         values ($1, $2, $3, $4, $5, 'draft', true) returning id`,
+        [USERS.employer, title, c!.id, r!.id, description],
+      );
+      await sql("select public.activate_vacancy_internal($1, now() + interval '10 days')", [v!.id]);
+      return v!.id;
+    };
+    const clean = await make("M27 Oshpaz", "Kafega oshpaz kerak, oylik 5 mln, ovqat bilan");
+    const abroad = await make("M27 Quruvchi", "Rossiyaga quruvchilar kerak, yo'l kira bizdan, oylik 2000$");
+    const fee = await make("M27 Kuryer", "Kuryer kerak. Hujjatlar uchun pul 300 ming, keyin ishga chiqasiz");
+    const state = async (id: string) =>
+      (await sql<{ s: string; m: string }>("select status::text as s, moderation_state as m from public.vacancies where id = $1", [id]))[0]!;
+    await expect.poll(async () => (await tick(request), (await state(fee)).m), { timeout: 30_000 }).not.toBe("pending");
+    await expect.poll(async () => (await tick(request), (await state(abroad)).m), { timeout: 30_000 }).not.toBe("pending");
+    await expect.poll(async () => (await tick(request), (await state(clean)).m), { timeout: 30_000 }).not.toBe("pending");
+    expect(await state(clean)).toEqual({ s: "active", m: "allowed" });
+    expect(await state(abroad)).toEqual({ s: "pending_review", m: "review" });
+    expect(await state(fee)).toEqual({ s: "pending_review", m: "review" });
+    // muallif bloklanmaydi
+    const [p] = await sql<{ b: boolean }>("select is_blocked as b from public.profiles where id = $1", [USERS.employer]);
+    expect(p!.b).toBe(false);
+
+    // admin navbatida sabab oddiy tilda
+    await sql(
+      `insert into public.admin_users (profile_id, role, permissions, is_active) values ($1, 'super_admin', '{}', true)
+       on conflict (profile_id) do update set is_active = true, role = 'super_admin'`,
+      [USERS.workerB],
+    );
+    await loginAs(context, USERS.workerB, "aal2");
+    await page.goto("/admin/moderation?tab=review&entity=vacancy");
+    await expect(page.locator('[data-hold-reason="rule_abroad_job"]')).toContainText("Chet elga ishga olib ketish.");
+    await expect(page.locator('[data-hold-reason="rule_scam_fee"]')).toContainText("Nomzoddan pul so'ralayotganga o'xshaydi");
+  } finally {
+    await sql("delete from public.admin_users where profile_id = $1", [USERS.workerB]);
+    await sql("delete from public.vacancies where owner_profile_id = $1 and title like 'M27 %'", [USERS.employer]);
+    for (const s of settings) await sql("update public.app_settings set value = $2::jsonb where key = $1", [s.key, JSON.stringify(s.value)]);
+    if (!settings.some((s) => s.key === "moderation_without_ai")) await sql("delete from public.app_settings where key = 'moderation_without_ai'");
+  }
+});

@@ -568,7 +568,9 @@
       "vacancy_publish": "Vacancy posting",
       "worker_promotion": "TOP profile",
       "wallet_topup": "Wallet top-up",
-      "contact_unlock": "Worker number unlock"
+      "contact_unlock": "Worker number unlock",
+      "worker_listing": "Worker listing",
+      "ai_alerts": "AI alerts (retired)"
     },
     "statuses": {
       "pending": "Pending",
@@ -579,7 +581,25 @@
     "providers": {
       "wallet": "Wallet"
     },
-    "total_note": "Payments from the wallet are internal — not counted as revenue (top-ups are)"
+    "total_note": "Payments from the wallet are internal — not counted as revenue (top-ups are)",
+    "report": {
+      "title": "Revenue report",
+      "net": "Net revenue",
+      "revenue": "Revenue",
+      "refunds": "Refunds",
+      "refunds_hint": "Refunds: {amount}",
+      "pending_hint": "{count} more pending",
+      "average": "Average payment",
+      "today": "Today",
+      "chart": "Net revenue per day · {days} days",
+      "by_purpose": "What people paid for",
+      "by_provider": "Payment system",
+      "times": "{count} times",
+      "none": "No payments in this period",
+      "by_day": "By day",
+      "none_days": "No payments in the last {days} days.",
+      "recent": "Recent payments"
+    }
   },
   "search": {
     "title": "Search analytics",
@@ -706,7 +726,11 @@
     "recheck": "Recheck",
     "recheck_title": "Recheck “{title}”?",
     "recheck_desc": "The listing is hidden until the new result and checked again.",
-    "done_recheck": "Sent for recheck"
+    "done_recheck": "Sent for recheck",
+    "hold": {
+      "rule_scam_fee": "Looks like the candidate is asked to pay (for documents, a visa, training, a uniform or a deposit). Job seekers never pay to get a job — reject or check with the employer.",
+      "rule_abroad_job": "Job abroad. Check the employer and its licence to place workers abroad, then approve."
+    }
   },
   "employer_status": {
     "verify": "Verify",

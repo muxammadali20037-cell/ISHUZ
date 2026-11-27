@@ -3,7 +3,8 @@
  *  1. matn normalizatsiya + tezkor qoidalar ("block" bo'lsa — darhol rad etiladi, AI'ga yuborilmaydi);
  *  2. AI: ishga aloqadorlik va taqiqlangan mazmun (matn + havolalar);
  *  3. har bir rasm alohida: AI (rasm + undagi yozuv), yozuv yana qoidalardan o'tadi;
- *  4. eng og'ir natija tanlanadi (reject > review > allow); chetlab o'tishga urinish bo'lsa "allow" bo'lmaydi.
+ *  4. eng og'ir natija tanlanadi (reject > review > allow); chetlab o'tishga urinish bo'lsa "allow" bo'lmaydi;
+ *  5. vakansiyada "review" qoidasi (nomzoddan pul so'rash, chet elga ishga olib ketish) bo'lsa — "allow" bo'lmaydi: admin ko'radi.
  * AI ishlamasa yoki javobi noto'g'ri bo'lsa — xato qaytariladi (e'lon "pending" qoladi va keyin qayta tekshiriladi).
  */
 import { extractLinks } from "./normalize";
@@ -63,7 +64,17 @@ export async function runModerationEngine(input: ModerationInput, deps: EngineDe
   const signals = Array.from(new Set([...input.signals, ...rules.hits.map((h) => `${h.rule}@${h.field}`)]));
   if (rules.block) return fromRule(rules.block, signals);
 
+  // nomzoddan pul so'rash / chet elga ish (ega, 2026-11-27): AI ruxsat bersa ham — admin tekshiruvi. Faqat vakansiya:
+  // ish izlovchining "chet elda ishlaganman" degani shubha emas
+  const hold = input.entity === "vacancy" ? rules.hold : null;
+  const held = (r: ModerationResult): ModerationResult =>
+    hold && r.decision === "allow"
+      ? { ...r, decision: "review", category: hold.category === "injection" ? "uncertain" : hold.category, reasonCode: `rule_${hold.rule}`, flaggedFields: [hold.field] }
+      : r;
+
   if (!deps.aiAvailable) {
+    // admin navbatida sabab oddiy tilda ko'rinsin: AI yo'qligidan oldin — aniq qoida
+    if (hold) return held({ decision: "allow", category: "job_related", reasonCode: "", userMessage: "", flaggedFields: [], signals, source: "rules" });
     const clean = rules.hits.length === 0;
     return {
       decision: deps.withoutAi === "rules" && clean ? "allow" : "review",
@@ -97,6 +108,7 @@ export async function runModerationEngine(input: ModerationInput, deps: EngineDe
     if (best.decision === "reject") break;
   }
 
+  best = held(best);
   if (rules.injection && best.decision === "allow") {
     best = { ...best, decision: "review", category: "uncertain", reasonCode: "manipulation_attempt", flaggedFields: rules.hits.filter((h) => h.category === "injection").map((h) => h.field) };
   }
