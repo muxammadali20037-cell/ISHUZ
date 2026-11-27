@@ -658,16 +658,19 @@ export function VacancyPost({
               </div>
             ))}
             <div data-vacancy-gender>
-              <p className="mb-2 text-lg font-semibold">{t("easy.vguide.gender_label")}</p>
+              <p className="text-lg font-semibold">{t("easy.vguide.gender_label")}</p>
+              {/* Mehnat kodeksi: jinsi va yosh cheklovi — faqat ish talab qilsa; "Farqi yo'q" birinchi (ega, 2026-11-27) */}
+              <p className="mb-2 text-sm text-muted-foreground">{t("easy.vguide.fair_hint")}</p>
               <ChoiceButtons
                 label={t("easy.vguide.gender_label")}
                 value={draft.gender ?? null}
                 onChange={(v) => update({ gender: v })}
-                options={(["male", "female", "any"] as const).map((g) => ({ value: g, label: g === "any" ? t("easy.vguide.any") : t(`easy.vguide.${g}`) }))}
+                options={(["any", "male", "female"] as const).map((g) => ({ value: g, label: g === "any" ? t("easy.vguide.any") : t(`easy.vguide.${g}`) }))}
               />
             </div>
             <div data-vacancy-age>
-              <p className="mb-2 text-lg font-semibold">{t("easy.vguide.age_label")}</p>
+              <p className="text-lg font-semibold">{t("easy.vguide.age_label")}</p>
+              <p className="mb-2 text-sm text-muted-foreground">{t("easy.vguide.fair_hint")}</p>
               <ChoiceButtons
                 label={t("easy.vguide.age_label")}
                 value={draft.age ? (draft.age.min === null && draft.age.max === null ? "any" : `${draft.age.min ?? ""}-${draft.age.max ?? ""}`) : null}
@@ -677,12 +680,12 @@ export function VacancyPost({
                   update({ age: { min: a ? Number(a) : null, max: b ? Number(b) : null } });
                 }}
                 options={[
+                  { value: "any", label: t("easy.vguide.any") },
                   // tahrirda saqlangan boshqa oraliq ham ko'rinsin
                   ...(draft.age && (draft.age.min !== null || draft.age.max !== null) && !AGE_PRESETS.some((a) => a.min === draft.age!.min && a.max === draft.age!.max)
                     ? [{ value: `${draft.age.min ?? ""}-${draft.age.max ?? ""}`, label: ageLabel(draft.age, t)! }]
                     : []),
                   ...AGE_PRESETS.map((a) => ({ value: `${a.min}-${a.max}`, label: ageLabel(a, t)! })),
-                  { value: "any", label: t("easy.vguide.any") },
                 ]}
               />
             </div>

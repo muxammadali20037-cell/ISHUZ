@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { CheckCircle2, CreditCard, Crown, Lock, ReceiptText, RotateCcw, Wallet } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { useAndroidApp } from "@/lib/use-android-app";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { formatMoney } from "@/lib/format";
 import { callAction } from "@/lib/action-call";
 import { cn } from "@/lib/utils";
@@ -68,7 +68,7 @@ export function CheckoutPanel({
 }) {
   const { t, locale } = useT();
   const router = useRouter();
-  const inApp = useAndroidApp();
+  const inApp = usePurchaseLock() !== null;
   const errorText = useBillingError();
   const [quote, setQuote] = useState<CheckoutQuote | null>(null);
   const [failed, setFailed] = useState(false);

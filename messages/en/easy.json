@@ -1731,7 +1731,8 @@
         "line_private": "Private sessions"
       }
     },
-    "all_options": "All · {count}"
+    "all_options": "All · {count}",
+    "fair_hint": "Optional. Only set this if the job requires it."
   },
   "quick": {
     "remote": "Remote (online)",

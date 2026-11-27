@@ -3,7 +3,7 @@
 import { useId, useState, useTransition } from "react";
 import { CreditCard, Gift } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
-import { useAndroidApp } from "@/lib/use-android-app";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { formatMoney } from "@/lib/format";
 import { callAction } from "@/lib/action-call";
 import { cn } from "@/lib/utils";
@@ -25,7 +25,7 @@ const PROVIDER_NAME = { payme: "Payme", click: "Click" } as const;
  */
 export function WalletTopup({ wallet, providers }: { wallet: WalletInfo; providers: PaymentProvider[] }) {
   const { t, locale } = useT();
-  const inApp = useAndroidApp();
+  const inApp = usePurchaseLock() !== null;
   const errorText = useBillingError();
   const presets = TOPUP_PRESETS.filter((p) => p >= wallet.topupMin && p <= wallet.topupMax);
   const [amount, setAmount] = useState<number | null>(presets[1] ?? presets[0] ?? wallet.topupMin);

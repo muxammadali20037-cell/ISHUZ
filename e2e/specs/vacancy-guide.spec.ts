@@ -69,8 +69,13 @@ test("asosiy ekrandan (chat) kirish → bir gap → faqat tushunilmagani so'rala
   await page.locator("[data-guide-time='to']").fill("17:30");
   await page.locator("[data-guide-next]").click();
   await expect(h1(page)).toHaveText("Erkak kerakmi yoki ayol?");
+  // Mehnat kodeksi (ega, 2026-11-27): jinsi va yosh — ixtiyoriy, faqat ish talab qilsa; "Farqi yo'q" birinchi
+  await expect(page.locator("[data-guide-hint]")).toHaveText("Ixtiyoriy. Faqat ish talab qilsa tanlang.");
+  await expect(page.locator("[data-guide-choice]").first()).toHaveAttribute("data-guide-choice", "any");
   await choice(page, "female").click();
   await expect(h1(page)).toHaveText("Yoshi qancha bo'lsin?");
+  await expect(page.locator("[data-guide-hint]")).toHaveText("Ixtiyoriy. Faqat ish talab qilsa tanlang.");
+  await expect(page.locator("[data-guide-choice]").first()).toHaveAttribute("data-guide-choice", "any");
   await expect(page.locator("[data-guide-choices]")).toContainText("18–35 yosh");
   await choice(page, "other").click();
   await page.locator("[data-guide-age='from']").fill("40");
@@ -439,6 +444,10 @@ test("audit (ega, 2026-11-24): asosiy «E'lon berish» — savollar bilan; oddiy
   const req = page.locator("[data-vacancy-requirements]");
   await expect(req.locator("[data-vacancy-extra='fin_soft']")).toContainText("Qaysi dasturni bilishi kerak?");
   await req.locator("[data-vacancy-extra='fin_soft']").getByRole("radio", { name: "1C" }).click();
+  // jinsi va yosh — ixtiyoriy, izoh bilan; "Farqi yo'q" birinchi
+  await expect(req.locator("[data-vacancy-gender]")).toContainText("Ixtiyoriy. Faqat ish talab qilsa tanlang.");
+  await expect(req.locator("[data-vacancy-gender]").getByRole("radio").first()).toHaveAccessibleName("Farqi yo'q");
+  await expect(req.locator("[data-vacancy-age]").getByRole("radio").first()).toHaveAccessibleName("Farqi yo'q");
   await req.locator("[data-vacancy-gender]").getByRole("radio", { name: "Ayol" }).click();
   await req.locator("[data-vacancy-age]").getByRole("radio", { name: "25–45 yosh" }).click();
   await req.locator("[data-vacancy-hours]").getByRole("radio", { name: "09:00–18:00" }).click();

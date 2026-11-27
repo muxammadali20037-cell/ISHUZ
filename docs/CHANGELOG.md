@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-27 · Telegram ichida to'lov yo'q; vakansiyada jinsi va yosh — ixtiyoriy (`feat/stage3-billing-prep`)
+
+Ega: "ha boshladik" — birinchi daromad yo'l xaritasidagi 3-bosqich kod ishlari (to'lov yoqilishidan oldin). Migratsiya yo'q.
+
+- **Telegram Mini App**: Google Play ilovasidagi kabi — pullik xizmat (TOP, e'lonni joylash, hamyonni to'ldirish, raqamni
+  ochish) Telegram ichida sotilmaydi: to'lov oynasida narx va tugmalar o'rniga neytral izoh «Bu pullik xizmatni Telegram
+  ichida xarid qilib bo'lmaydi…»; «Raqamni ochish» va «TOP» kartasida narx ko'rsatilmaydi. Sababi — Telegram qoidasi:
+  Mini App ichida raqamli xizmat faqat Telegram Stars bilan. Saytda (brauzerda) hammasi avvalgidek. Bitta umumiy belgi
+  (`usePurchaseLock`: "android" | "telegram") — barcha to'lov joylari shundan foydalanadi.
+- **Vakansiya: jinsi va yosh** (Mehnat kodeksi — bu belgilar bo'yicha cheklov faqat ish talab qilsa): yordamchida,
+  oddiy formada va ustada — «Farqi yo'q» birinchi, ostida «Ixtiyoriy. Faqat ish talab qilsa tanlang.» Savollar
+  avvalgidek so'raladi (ega, 2026-11-24), faqat tanlov xolis. Admin vakansiya kartasida jinsi va yosh ko'rinadi.
+- **Admin «Tezkor boshqaruv»**: «AI yordamchi (PRO) pullik» va uning narxi olib tashlandi — bu xizmat 2026-11-22 da
+  to'xtatilgan (sotilmaydi, xabar yuborilmaydi), tugma faqat chalg'itardi.
+
 ## 2026-11-27 · Ikkala oyna har kimda, ingichka; kasb rasmi e'longa oldindan qo'yiladi (`feat/home-dual-tiles`)
 
 Ega: "«Ishchi qidiryapman» tagiga yashil rangda «Ish qidiryapman» — ikkala panelda ham bo'lsin, kichikroq, ingichkaroq;

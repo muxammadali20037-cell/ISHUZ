@@ -4,7 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { CalendarClock, Crown, Eye, EyeOff, Megaphone, Send, PartyPopper, ShieldCheck } from "lucide-react";
 import { DiscountBadge, InAppNote, requestPayment } from "@/features/billing/components/payment-dialog";
-import { useAndroidApp } from "@/lib/use-android-app";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { getWorkerListingQuote } from "@/features/billing/actions";
 import type { ListingQuote } from "@/features/billing/types";
 import { formatMoney } from "@/lib/format";
@@ -147,7 +147,7 @@ export function ListingVisibility({
 /** E'lon hali qidiruvda emas (to'lanmagan yoki muddati tugagan) — narx, chegirma va to'lov tugmasi */
 function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUntil: string | null }) {
   const { t, locale } = useT();
-  const inApp = useAndroidApp();
+  const inApp = usePurchaseLock() !== null;
   const [q, setQ] = useState<ListingQuote | null>(null);
   useEffect(() => {
     let alive = true;
@@ -186,7 +186,7 @@ function ListingPayCard({ workerId, listedUntil }: { workerId: string; listedUnt
 /** E'lon muddati: necha kun qolgani (rangli) + 10 kunga uzaytirish */
 function ListingTerm({ until, active, onExtend }: { until: string; active: boolean; onExtend: () => void }) {
   const { t } = useT();
-  const inApp = useAndroidApp();
+  const inApp = usePurchaseLock() !== null;
   const [now] = useState(() => Date.now());
   const ms = new Date(until).getTime() - now;
   const days = Math.max(0, Math.ceil(ms / 86_400_000));

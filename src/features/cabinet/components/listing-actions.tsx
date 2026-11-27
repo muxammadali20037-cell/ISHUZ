@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ConfirmDialog } from "@/components/ui/dialog";
 import { toast } from "@/components/ui/toast";
 import { InAppNote, requestPayment } from "@/features/billing/components/payment-dialog";
-import { useAndroidApp } from "@/lib/use-android-app";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { celebrate } from "@/lib/celebrate";
 import { markFoundJob, markFoundWorker } from "@/features/post/actions";
 import { callAction } from "@/lib/action-call";
@@ -73,7 +73,7 @@ export function FoundButton({
 /** To'lov kutilayotgan e'lon: to'lash (Android ilovada — neytral izoh) */
 export function PayButton({ purpose, targetId, compact = false }: { purpose: "worker_listing" | "vacancy_publish"; targetId: string; compact?: boolean }) {
   const { t } = useT();
-  const inApp = useAndroidApp();
+  const inApp = usePurchaseLock() !== null;
   if (inApp) return <InAppNote />;
   return (
     <Button type="button" className={compact ? COMPACT : "h-auto min-h-12 max-w-full whitespace-normal px-4 py-2 text-base"} onClick={() => requestPayment({ purpose, targetId })}>
