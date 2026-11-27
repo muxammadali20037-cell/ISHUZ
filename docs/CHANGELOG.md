@@ -1,5 +1,19 @@
 # O'zgarishlar jurnali
 
+## 2026-11-28 · Frankfurtga ko'chirish tayyorgarligi: reja, avtomat va "texnik ishlar" rejimi (`feat/frankfurt-migration-prep`)
+
+Ega: "boshla keyingi bosqichni" — 4-bosqich (ZRU-1125: Hindiston "yetarli himoya" ro'yxatida yo'q, Germaniya bor).
+Prod'ga hech narsa qilinmaydi: ko'chirish faqat ega yangi loyiha ochib, sirlarni qo'yib, vaqtni tanlagach. Migratsiya yo'q.
+
+- **docs/FRANKFURT_MIGRATION.md** — nima qayerda (tekshirilgan: 47 MB, 9 foydalanuvchi, 110 fayl, 11 cron, 2 vault siri,
+  ~65 qatorda eski loyiha manzili), egasining qadamlari, sinov, yakuniy ko'chirish, qaytarish yo'li, pd.gov.uz uchun
+  yig'iladigan ma'lumotlar ro'yxati.
+- **Region migration** (GitHub Actions, faqat qo'lda): eski bazani faqat o'qiydi; yangisiga sxema (migratsiyalar) →
+  sxema barmoq izi solishtiruvi → ma'lumot (`public`, `auth`; triggerlarsiz) → manzillar, vault → fayllar → jadvallar
+  soni solishtiruvi. Tasdiq — yangi loyiha ref'i; eski loyihaga qarasa to'xtaydi.
+- **Texnik ishlar rejimi**: Vercel'da `MAINTENANCE_MODE=1` — hamma sahifa va API 503 (uch tilda sahifa, Retry-After),
+  faqat `/api/health` ochiq. Telegram webhook ham 503 oladi va xabarlarni keyin qayta yuboradi.
+
 ## 2026-11-27 · Firibgar e'lonlar admin tekshiruvida; kunlik daromad hisoboti (`feat/scam-moderation-revenue`)
 
 Ega: "boshla keyingi bosqichni" — birinchi daromad yo'l xaritasidagi 3-bosqichning qolgan ikki ishi. Migratsiya yo'q.

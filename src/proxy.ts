@@ -7,6 +7,7 @@ import { adminHostRoute } from "@/lib/admin-host";
 import { safeInternalPath } from "@/lib/security/safe-path";
 import { SEARCH_URL_HEADER } from "@/features/find/params";
 import { ADMIN_LINK_PATH } from "@/features/auth/admin-login";
+import { MAINTENANCE_RETRY_SECONDS, maintenanceBody, maintenanceOn, maintenanceOpen } from "@/lib/maintenance";
 
 /** Login talab qiladigan yo'llar */
 const PROTECTED_PREFIXES = [
@@ -30,6 +31,15 @@ const PROTECTED_PREFIXES = [
 const NOINDEX = "noindex, nofollow, noarchive";
 
 export async function proxy(request: NextRequest) {
+  // Texnik ishlar (bazani ko'chirish): hamma so'rov 503, faqat /api/health ochiq — bazaga hech narsa yozilmaydi
+  if (maintenanceOn() && !maintenanceOpen(request.nextUrl.pathname)) {
+    const { body, contentType } = maintenanceBody(request.nextUrl.pathname);
+    return new NextResponse(body, {
+      status: 503,
+      headers: { "Content-Type": contentType, "Retry-After": String(MAINTENANCE_RETRY_SECONDS), "Cache-Control": "no-store", "X-Robots-Tag": NOINDEX },
+    });
+  }
+
   // Alohida admin host: asosiy saytda /admin yo'q (404), admin hostda faqat panel va kirish
   const host = (request.headers.get("x-forwarded-host") ?? request.headers.get("host") ?? "").split(",")[0]!.trim();
   const adminRoute = adminHostRoute(host, request.nextUrl.pathname, process.env.ADMIN_HOST);
