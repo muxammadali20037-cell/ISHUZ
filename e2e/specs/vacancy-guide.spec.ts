@@ -277,6 +277,19 @@ test("«shifokor kerak», «doktor kerak» — turli shifokorlar variant (doktor
   }
 });
 
+test("gapdagi ish vaqti («soat 9 dan 18 gacha») kasb emas: «Oshpaz», «Soatsoz» emas (2026-11-27)", async ({ page, context }) => {
+  await knownEmployer();
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  await page.goto("/post/vacancy?ai=1");
+  await ready(page);
+  await page.locator("[data-guide-sentence]").fill("Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, soat 9 dan 18 gacha");
+  await page.locator("[data-guide-start]").click();
+  const understood = page.locator("[data-guide-understood]");
+  await expect(understood).toContainText("Oshpaz");
+  await expect(understood).not.toContainText("Soatsoz");
+});
+
 test("«menejer kerak», «meneger kerak» — «Qanday menejer kerak?»: avval 12 tasi, «Hammasi» — barchasi; aniq aytilgani — darhol (ega, 2026-11-24)", async ({ page, context }) => {
   await knownEmployer();
   await loginAs(context, USERS.employer);

@@ -1,5 +1,13 @@
 # O'zgarishlar jurnali
 
+## 2026-11-27 · Gapdagi ish vaqti kasb deb tushunilmaydi (`fix/time-word-profession`)
+
+Sinovda topildi (ega: "Ha, tuzat"): «Chilonzordagi kafemizga oshpaz kerak… soat 9 dan 18 gacha» gapidan yordamchi kasbni
+«Soatsoz» deb oldi — «soat» so'zi kasb sinonimiga to'liq mos kelib, «Oshpaz»dan bir pog'ona oldinga chiqdi.
+
+- Raqam yonidagi «soat» («soat 9 dan», «8 soatlik», «kuniga 9 soat», «soat 9:00 da») kasb nomzodi emas. Raqamsiz
+  «soat ustasi» — avvalgidek kasb. Qidiruv, yordamchi va bosh sahifa chati — hammasi shu bitta funksiyadan foydalanadi.
+
 ## 2026-11-27 · Telegram ichida to'lov yo'q; vakansiyada jinsi va yosh — ixtiyoriy (`feat/stage3-billing-prep`)
 
 Ega: "ha boshladik" — birinchi daromad yo'l xaritasidagi 3-bosqich kod ishlari (to'lov yoqilishidan oldin). Migratsiya yo'q.

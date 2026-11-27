@@ -53,6 +53,19 @@ describe("professionCandidates", () => {
   it("kirill → lotin", () => {
     expect(professionCandidates("Нужен бухгалтер")).toContain("buxgalter");
   });
+  it("vaqt iborasidagi \"soat\" kasb emas (\"Soatsoz\" chiqmasin); \"soat ustasi\" — kasb", () => {
+    for (const text of [
+      "Chilonzordagi kafemizga oshpaz kerak, oyligi 5 mln, soat 9 dan 18 gacha",
+      "Oshpaz kerak, soat 9:00 dan 18:00 gacha",
+      "Oshpaz kerak, 8 soatlik ish",
+      "Oshpaz kerak, kuniga 9 soat",
+    ]) {
+      const c = professionCandidates(text);
+      expect(c.some((x) => x.split(" ").some((w) => w.startsWith("soat"))), text).toBe(false);
+      expect(c, text).toContain("oshpaz");
+    }
+    expect(professionCandidates("Soat ustasi kerak")).toEqual(expect.arrayContaining(["soat ustasi", "soat"]));
+  });
   it("ruscha kelishikdagi so'z asl yozuvida ham", () => {
     expect(professionCandidates("Ищу работу водителем")).toEqual(expect.arrayContaining(["водителем", "водител"]));
     expect(professionCandidates("Ищу работу водителем")).not.toContain("работу");

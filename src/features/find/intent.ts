@@ -164,9 +164,19 @@ const SLANG: Record<string, string> = {
   aytishnik: "dasturchi",
 };
 
+/**
+ * Vaqt iborasidagi "soat" ("soat 9 dan 18 gacha", "8 soatlik", "soat 9:00 da") — kasb emas: aks holda gapda aniq yozilgan
+ * kasb ("oshpaz kerak…") o'rniga "Soatsoz" tanlanib qolardi (2026-11-27, yordamchi sinovida topildi). Raqam yonida bo'lmasa
+ * ("soat ustasi", "soat tuzatuvchi") — kasb so'zi sifatida qoladi.
+ */
+const TIME_WORD = /^soat(lik|dan|gacha|da|ga|i)?$/;
+function dropTimeWords(words: string[]): string[] {
+  const digit = (w: string | undefined) => !!w && /^\d/.test(w);
+  return words.filter((w, i) => !(TIME_WORD.test(w) && (digit(words[i - 1]) || digit(words[i + 1]))));
+}
+
 export function professionCandidates(text: string): string[] {
-  const words = normalizeText(text)
-    .split(" ")
+  const words = dropTimeWords(normalizeText(text).split(" "))
     // "meneger", "menedjer" ("менеджер" lotinda) → "menejer" (manager-family.ts)
     .map((w) => SLANG[w] ?? fixManagerTypo(w))
     .filter((w) => (w.length >= 3 || SHORT_TERMS.has(w)) && !STOP.has(w) && !/^\d/.test(w));
