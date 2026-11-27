@@ -43,8 +43,6 @@ async function workerPostToPreview(page: Page) {
   await expect(lastAi(page)).toHaveAttribute("data-guided-ai", "post-venue");
   await lastAi(page).locator("[data-post-wx-venue='any']").click();
   await settled(page);
-  await lastAi(page).locator("[data-post-wx-medbook='no']").click();
-  await settled(page);
   await page.locator("[data-post-region]", { hasText: "Toshkent shahri" }).click();
   await settled(page);
   await lastAi(page).locator("[data-post-gender='male']").click();
