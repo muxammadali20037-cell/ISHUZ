@@ -96,6 +96,25 @@ describe("moderatsiya tartibi", () => {
     expect(r).toMatchObject({ decision: "reject", flaggedFields: ["photo"] });
   });
 
+  it("nomzoddan pul so'rash / chet elga ish — AI ruxsat bersa ham admin tekshiruviga (faqat vakansiya)", async () => {
+    const fee = await runModerationEngine({ ...base, fields: { ...base.fields, description: "Hujjatlar uchun pul 300 ming, keyin ish" } }, deps());
+    expect(fee).toMatchObject({ decision: "review", category: "illegal_activity", reasonCode: "rule_scam_fee", flaggedFields: ["description"] });
+    const abroad = await runModerationEngine({ ...base, fields: { ...base.fields, description: "Rossiyaga quruvchilar kerak" } }, deps());
+    expect(abroad).toMatchObject({ decision: "review", category: "uncertain", reasonCode: "rule_abroad_job" });
+    // AI rad etsa — rad (yumshatilmaydi)
+    const rejected = await runModerationEngine(
+      { ...base, fields: { ...base.fields, description: "Koreyaga ishga, viza uchun 500$ oldindan to'laysiz" } },
+      deps({ textVerdict: async () => ({ decision: "reject", category: "illegal_activity", reason_code: "advance_fee", user_message: "Nomzoddan pul so'rash mumkin emas.", flagged_fields: ["description"] }) }),
+    );
+    expect(rejected).toMatchObject({ decision: "reject", category: "illegal_activity" });
+    // ish izlovchi: "Rossiyaga ishga borganman" — shubha emas
+    const worker = await runModerationEngine({ ...base, entity: "worker", fields: { description: "Rossiyaga ishga borib kelganman, quruvchiman" } }, deps());
+    expect(worker.decision).toBe("allow");
+    // AI'siz ham — sabab aniq qoida (admin oddiy tilda ko'radi)
+    const noAi = await runModerationEngine({ ...base, fields: { ...base.fields, description: "Rossiyaga quruvchilar kerak" } }, deps({ aiAvailable: false, withoutAi: "rules" }));
+    expect(noAi).toMatchObject({ decision: "review", reasonCode: "rule_abroad_job", source: "rules" });
+  });
+
   it("AI sozlanmagan — admin tekshiruviga (yoki sozlama bo'yicha qoidalar)", async () => {
     expect((await runModerationEngine(base, deps({ aiAvailable: false }))).decision).toBe("review");
     expect((await runModerationEngine(base, deps({ aiAvailable: false, withoutAi: "rules" }))).decision).toBe("allow");

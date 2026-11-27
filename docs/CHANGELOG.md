@@ -1,5 +1,20 @@
 # O'zgarishlar jurnali
 
+## 2026-11-27 · Firibgar e'lonlar admin tekshiruvida; kunlik daromad hisoboti (`feat/scam-moderation-revenue`)
+
+Ega: "boshla keyingi bosqichni" — birinchi daromad yo'l xaritasidagi 3-bosqichning qolgan ikki ishi. Migratsiya yo'q.
+
+- **Moderatsiya**: nomzoddan pul so'rash (hujjat, viza, o'qish, forma, depozit uchun; «oldindan pul to'laysiz»;
+  «предоплата», «оплата за оформление») va chet elga ishga olib ketish («Rossiyaga…», «Koreyada ishlash…», «работа за
+  границей», «ishchi viza qilib beramiz») — vakansiya admin ko'rmaguncha chiqmaydi. Muallif bloklanmaydi. Inkor («hujjatlar
+  uchun pul olinmaydi», «oldindan to'lov yo'q») va Toshkentdagi «turk restorani», «Koreya restorani» — tushmaydi. AI
+  ruxsat bersa ham ushlanadi; AI'ga ham bu qoida (nomzoddan pul — rad, chet elga ish — tekshiruv) aytildi. Faqat
+  vakansiya: ish izlovchining «Rossiyada ishlaganman» degani shubha emas. Admin navbatida sabab oddiy tilda.
+  Eski e'lonlar qayta tekshirilmaydi (prod'da bunday faol e'lon yo'q).
+- **Admin «To'lovlar»**: kunlik daromad hisoboti — 7/30/90 kun, Toshkent vaqti: sof tushum (qaytarilgani ayrilgan),
+  to'lovlar soni, o'rtacha to'lov, bugun; kunlik diagramma, nima uchun to'lashgani va to'lov tizimi (Payme/Click)
+  bo'yicha, kunlar jadvali. Hamyondan to'lov — ichki, sanalmaydi. Pastda — oxirgi 200 ta to'lov (avvalgidek).
+
 ## 2026-11-27 · Gapdagi ish vaqti kasb deb tushunilmaydi; sanitar daftarcha so'ralmaydi (`fix/time-word-profession`)
 
 Sinovda topildi (ega: "Ha, tuzat"): «Chilonzordagi kafemizga oshpaz kerak… soat 9 dan 18 gacha» gapidan yordamchi kasbni

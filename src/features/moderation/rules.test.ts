@@ -162,3 +162,59 @@ describe("qat'iy taqiq (ega, 2026-11-13): so'zning o'zi yetarli — e'lon joylan
     it(`toza: ${text}`, () => expect(blocked(text)).toBeNull());
   }
 });
+
+describe("firibgar e'lon: nomzoddan pul so'rash va chet elga ish (review — admin ko'radi; ega, 2026-11-27)", () => {
+  const hold = (text: string) => checkRules({ description: text }).hold?.rule ?? null;
+  const fee = [
+    "Koreyaga ishga olib ketamiz, viza va hujjatlar uchun 500$ oldindan to'laysiz",
+    "Hujjatlar uchun pul 300 ming, ishga darhol chiqasiz",
+    "Ishga kirish uchun avval 200 ming to'laysiz",
+    "Oldindan pul to'lab qo'yasiz, keyin ish beriladi",
+    "Kartaga pul tashlang, forma beramiz",
+    "Forma uchun pul 150 ming",
+    "O'qish uchun 1 mln so'm, keyin ishga olamiz",
+    "Депозит 100$, работа курьером",
+    "Требуется предоплата за оформление",
+    "Оплата за оформление документов 200$",
+    "Платное обучение, потом трудоустройство",
+    "Registration fee 50$ required",
+    "Ishga qabul qilish uchun zalog 1 mln",
+  ];
+  for (const text of fee) it(`ushlanadi (pul): ${text}`, () => expect(hold(text)).toMatch(/^(scam_fee|abroad_job)$/));
+
+  const abroad = [
+    "Rossiyaga quruvchilar kerak, yo'l kira bizdan",
+    "Moskvaga ishga yuk tashuvchilar kerak",
+    "Koreyada ishlash uchun ishchilar kerak",
+    "Chet elga ishga yuboramiz, oylik 2000$",
+    "Xorijda ish: Polshaga zavod ishchilari",
+    "Dubayga ofitsiantlar kerak",
+    "Qozog'istonga haydovchilar",
+    "Работа в России, строители",
+    "Требуются рабочие в Корею",
+    "Работа за границей, высокая зарплата",
+    "Ishchi viza qilib beramiz",
+    "Jobs abroad, good salary",
+  ];
+  for (const text of abroad) it(`ushlanadi (chet el): ${text}`, () => expect(hold(text)).toMatch(/^(scam_fee|abroad_job)$/));
+
+  // halol e'lonlar — admin navbatiga tushmasin
+  const clean = [
+    "Kafega oshpaz kerak, oylik 5 mln",
+    "Toshkentdagi turk restoraniga oshpaz kerak",
+    "Koreya restorani — ofitsiant kerak",
+    "Koreys tilini biladigan administrator",
+    "Turkiyada ishlab chiqarilgan uskunalar bilan ishlash",
+    "Xorijiy kompaniyaga masofaviy dasturchi",
+    "Hujjatlar uchun pul olinmaydi, hammasi bepul",
+    "Oldindan to'lov yo'q, oylik har oy",
+    "Hech qanday depozit so'ralmaydi",
+    "Yo'l haqi kompaniya hisobidan",
+    "Ingliz tili o'qituvchisi, IELTS 7",
+    "Forma beriladi, ovqat tekin",
+    "O'quv kursi bepul, keyin ish",
+    "Rus tilini biladigan sotuvchi kerak",
+    "Avans beriladi, oylik 2 marta",
+  ];
+  for (const text of clean) it(`toza: ${text}`, () => expect(hold(text)).toBeNull());
+});

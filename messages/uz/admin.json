@@ -568,7 +568,9 @@
       "vacancy_publish": "Vakansiya e'loni",
       "worker_promotion": "TOP profil",
       "wallet_topup": "Hamyonni to'ldirish",
-      "contact_unlock": "Ishchi raqamini ochish"
+      "contact_unlock": "Ishchi raqamini ochish",
+      "worker_listing": "Ishchi e'loni",
+      "ai_alerts": "AI kuzatuv (to'xtatilgan)"
     },
     "statuses": {
       "pending": "Kutilmoqda",
@@ -579,7 +581,25 @@
     "providers": {
       "wallet": "Hamyon"
     },
-    "total_note": "Hamyondan to'lovlar ichki — tushumga qo'shilmaydi (to'ldirish hisoblanadi)"
+    "total_note": "Hamyondan to'lovlar ichki — tushumga qo'shilmaydi (to'ldirish hisoblanadi)",
+    "report": {
+      "title": "Daromad hisoboti",
+      "net": "Sof tushum",
+      "revenue": "Tushum",
+      "refunds": "Qaytarilgan",
+      "refunds_hint": "Qaytarilgan: {amount}",
+      "pending_hint": "Yana {count} ta kutilmoqda",
+      "average": "O'rtacha to'lov",
+      "today": "Bugun",
+      "chart": "Kunlik sof tushum · {days} kun",
+      "by_purpose": "Nima uchun to'lashdi",
+      "by_provider": "To'lov tizimi",
+      "times": "{count} marta",
+      "none": "Bu davrda to'lov yo'q",
+      "by_day": "Kunlar bo'yicha",
+      "none_days": "Oxirgi {days} kunda to'lov bo'lmagan.",
+      "recent": "Oxirgi to'lovlar"
+    }
   },
   "search": {
     "title": "Qidiruv tahlili",
@@ -706,7 +726,11 @@
     "recheck": "Qayta tekshirish",
     "recheck_title": "«{title}» — qayta tekshirilsinmi?",
     "recheck_desc": "E'lon natija chiqquncha yashiriladi va AI/qoidalar bilan qayta tekshiriladi.",
-    "done_recheck": "Qayta tekshiruvga yuborildi"
+    "done_recheck": "Qayta tekshiruvga yuborildi",
+    "hold": {
+      "rule_scam_fee": "Nomzoddan pul so'ralayotganga o'xshaydi (hujjat, viza, o'qish, forma yoki depozit uchun). Ish izlovchi ishga kirish uchun pul to'lamaydi — rad eting yoki ish beruvchidan aniqlang.",
+      "rule_abroad_job": "Chet elga ishga olib ketish. Ish beruvchini va xorijga ishga joylashtirish litsenziyasini tekshiring, keyin tasdiqlang."
+    }
   },
   "employer_status": {
     "verify": "Tasdiqlash",

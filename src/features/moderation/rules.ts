@@ -1,7 +1,9 @@
 /**
- * Tezkor qoidalar (AI'dan oldin, sof modul). Ikki daraja:
+ * Tezkor qoidalar (AI'dan oldin, sof modul). Uch daraja:
  *  - block — aniq va xavfli naqsh (masalan "intim xizmat", "zakladchik", "karta sotib olamiz", "Telegram hisobini buzish"):
  *    e'lon AI'ga yuborilmasdan rad etiladi;
+ *  - review — vakansiyani admin ko'rmaguncha chiqarmaydigan naqsh (nomzoddan pul so'rash, chet elga ishga olib ketish):
+ *    AI "ruxsat" desa ham admin navbatiga tushadi (engine.ts); muallif bloklanmaydi;
  *  - flag  — shubhali signal ("prezident", "18+", "sotiladi", "oldindan to'lov"): faqat AI'ga ishora sifatida beriladi,
  *    yolg'iz o'zi rad etish sababi EMAS (kontekst muhim: "Prezident maktabiga oshpaz kerak" — qonuniy ish).
  * Matn normalizatsiya qilingan (lotin) ko'rinishda tekshiriladi: kirill, ruscha, "1nt1m", "i.n.t.i.m" ham ushlanadi.
@@ -25,7 +27,7 @@ export interface RuleHit {
   /** qoida nomi; "strict_" bilan boshlansa — qat'iy taqiq (muallif bloklanadi) */
   rule: string;
   category: ModerationCategory | "injection";
-  severity: "block" | "flag";
+  severity: "block" | "review" | "flag";
   field: string;
 }
 
@@ -33,6 +35,8 @@ export interface RulesResult {
   hits: RuleHit[];
   /** birinchi "block" topilmasi (bo'lsa — rad etiladi) */
   block: RuleHit | null;
+  /** birinchi "review" topilmasi (bo'lsa — vakansiya admin tekshiruvisiz chiqmaydi) */
+  hold: RuleHit | null;
   /** matnda moderatsiyani chetlab o'tishga urinish ("tekshiruvni o'chir", "ignore previous instructions") */
   injection: boolean;
 }
@@ -68,6 +72,27 @@ const STRICT: Rule[] = [
   { id: "strict_organs", category: "illegal_activity", severity: "block", re: /\b(buyrak|buyragimni|pochk[ua]|pechen|organ(lar|larni|ni)?)\b.{0,15}\b(sotaman|sotamiz|sotiladi|sotib\s*olamiz|prodam|prodayu|kuplyu|donor\s+kerak)\b/ },
 ];
 
+/** inkor: "pul olinmaydi", "to'lov yo'q", "so'ralmaydi" — halol e'lonlarda ko'p uchraydi */
+const NOT_ASKED = "(?!\\s*(?:olinmaydi|so'ralmaydi|yo'q|talab\\s+qilinmaydi|olmaymiz|so'ramaymiz|kerak\\s+emas|bepul|ne\\s+nuzhn|ne\\s+trebuet|net\\b))";
+/** "hujjatlar uchun pul", "viza uchun to'lov", "o'qish uchun 300$" */
+const FEE_FOR = `\\b(?:hujjat|xujjat|viza|bilet|chipta|ro'yxat|registratsiya|rasmiylashtir|oformlen|forma|o'qish|o'quv|trening|kurs|tibbiy\\s+ko'rik|medko'rik|kafolat|garantiya)[a-z']*\\s+uchun\\s+(?:oldindan\\s+)?(?:pul|to'lov|haq|\\d[\\d\\s]*\\s*(?:\\$|dollar|evro|so'm|som|ming|mln))${NOT_ASKED}`;
+/** "oldindan pul to'laysiz", "avval 100$ o'tkazasiz", "kartaga pul tashlang" */
+const PAY_FIRST = `\\b(?:oldindan|avval|birinchi)\\s+(?:pul|to'lov|\\d[\\d\\s]*\\s*(?:\\$|dollar|evro|so'm|som|ming|mln))\\s*(?:ni\\s+)?(?:to'la|tashla|o'tkaz|yubor|ber)[a-z']*|\\bkarta(?:ga|mizga)\\s+(?:pul|\\d[\\d\\s]*\\s*(?:\\$|so'm|som|ming))\\s+(?:tashla|o'tkaz|yubor)[a-z']*`;
+const FEE_RU = `\\bpredoplat[a-z]*${NOT_ASKED}|\\bvstupitel[a-z]*\\s+vznos|\\boplat[a-z]*\\s+(?:za\\s+)?(?:oformlen|viz|dokument|obuchen|registrats|bilet|formu)[a-z]*|\\bza\\s+oformlenie\\b|\\bplatn[a-z]*\\s+obuchen|\\bobuchenie\\s+platn`;
+const FEE_EN = `\\b(?:registration|visa|processing|placement|training)\\s+fee|\\bpay\\s+(?:a\\s+)?(?:deposit|fee)\\b`;
+const DEPOSIT = `\\b(?:depozit|zalog|garov\\s+pul)[a-z']*${NOT_ASKED}`;
+/** chet davlatlar (o'zbek lotin ko'rinishi; kirill matn normalizatsiyada lotinga o'tadi) */
+const COUNTRIES = "(?:rossiya|moskva|sankt-peterburg|peterburg|piter|koreya|janubiy\\s+koreya|turkiya|istanbul|dubay|dubai|amirliklar|yevropa|evropa|germaniya|polsha|chexiya|litva|latviya|estoniya|slovakiya|vengriya|ruminiya|bolgariya|serbiya|xorvatiya|italiya|ispaniya|portugaliya|finlyandiya|angliya|britaniya|aqsh|amerika|kanada|yaponiya|isroil|qozog'iston|saudiya|qatar|kuvayt|xitoy|malayziya)";
+/** ish ma'nosidagi so'zlar ("ishlab chiqarilgan" — emas) */
+const WORK = "(?:ish|ishga|ishda|ishchi[a-z']*|ishlash[a-z']*|ishlaysiz|ishlaydi|vakansiya[a-z']*|rabot[a-z]*|olib\\s+ketamiz|yuboramiz|viza[a-z]*)";
+/** "Rossiyaga", "chet elga", "xorijga" — yo'nalish: ish e'lonida = ishga olib ketish */
+const ABROAD_TO = `\\b(?:${COUNTRIES}|chet\\s*el|xorij)ga\\b`;
+/** "Koreyada ishlash", "chet eldagi ish" — yonida ish so'zi bo'lsa */
+const ABROAD_AT = `\\b(?:${COUNTRIES}|chet\\s*el|xorij)(?:da|dagi)\\b.{0,12}\\b${WORK}\\b|\\b${WORK}\\b.{0,25}\\b(?:${COUNTRIES}|chet\\s*el|xorij)(?:da|dagi)\\b`;
+const ABROAD_RU = "\\b(?:rabot|vakansi|trudoustroy)[a-z]*\\s+(?:v|vo)\\s+(?:rossii|moskve|koree|turtsii|evrope|germanii|polshe|chexii|litve|anglii|britanii|amerike|kanade|yaponii|izraile|kazaxstane|dubae|oae|ssha)\\b|\\bza\\s*granits[a-z]*|\\bzarubezh[a-z]*|\\b(?:v|vo)\\s+(?:rossiyu|moskvu|koreyu|turtsiyu|oae|evropu|germaniyu|polshu|chexiyu|litvu|angliyu|britaniyu|ameriku|ssha|kanadu|yaponiyu|izrail|kazaxstan|saudovskuyu)\\b";
+const ABROAD_EN = "\\b(?:work|job|jobs|vacancy|vacancies)\\s+abroad\\b|\\babroad\\s+(?:work|job|jobs)\\b";
+const WORK_VISA = "\\bishchi\\s+viza|\\bviza\\s+(?:qilib|ochib|tayyorlab|olib)\\s+(?:beramiz|beriladi)|\\brabochaya\\s+viza|\\bvizu\\s+(?:oformlyaem|delaem|sdelaem)|\\bwork\\s+visa";
+
 const RULES: Rule[] = [
   ...STRICT,
   // --- jinsiy xizmatlar ---
@@ -97,6 +122,12 @@ const RULES: Rule[] = [
   { id: "hacking_verb", category: "illegal_activity", severity: "block", re: new RegExp(`\\b(vzlom${W}|buzish|buzadigan|hack${W})\\b.{0,25}\\b(telegram|instagram|whatsapp|facebook|akkaunt|account|stranits|stranic|parol)`) },
   { id: "hacking_tools", category: "illegal_activity", severity: "block", re: /\b(karding|carding|phishing|fishing\s+(sayt|link|stranic)|ddos\s*(xizmat|uslug|atak))[a-z']*\b/ },
   { id: "scam_prepay", category: "illegal_activity", severity: "flag", re: /(oldindan\s*to'?lov|oldindan\s*pul|depozit|zalog|garov\s+pul|pullik\s+o'qish|forma\s+uchun\s+pul|predoplat|platnoe\s+obuchenie|vstupitel[a-z]*\s+vznos)/ },
+  // nomzoddan pul so'rash (ega, 2026-11-27: "chet elga ish va'da qiladigan, nomzoddan pul so'raydigan e'lonlarni moderatsiyada
+  // ushlash"): platforma qoidasi — ish izlovchi ishga kirish uchun pul to'lamaydi. Rad emas, admin tekshiruvi (review):
+  // "hujjatlar uchun pul olinmaydi" kabi inkor — tushmaydi
+  { id: "scam_fee", category: "illegal_activity", severity: "review", re: new RegExp(`${FEE_FOR}|${PAY_FIRST}|${FEE_RU}|${FEE_EN}|${DEPOSIT}`) },
+  // chet elga ishga olib ketish / chet eldagi ish (vakansiya): litsenziya va ish beruvchini admin ko'radi
+  { id: "abroad_job", category: "uncertain", severity: "review", re: new RegExp(`${ABROAD_TO}|${ABROAD_AT}|${ABROAD_RU}|${ABROAD_EN}|${WORK_VISA}`) },
 
   // --- ekstremizm / zo'ravonlik ---
   { id: "extremism_jihad", category: "extremism", severity: "block", re: new RegExp(`\\b(jihod|jixod|dzhihad|djihad)${W}\\b.{0,20}\\b(qil|chaqir|safi|kel|qo'shil)`) },
@@ -163,6 +194,7 @@ export function checkRules(fields: Record<string, string | null | undefined>): R
   return {
     hits,
     block: hits.find((h) => h.severity === "block") ?? null,
+    hold: hits.find((h) => h.severity === "review") ?? null,
     injection: hits.some((h) => h.category === "injection"),
   };
 }
