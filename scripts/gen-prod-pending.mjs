@@ -15,7 +15,7 @@ import { readFileSync, readdirSync, writeFileSync, mkdirSync, existsSync } from 
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-export const APPLIED_UNTIL = 92;
+export const APPLIED_UNTIL = 93;
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MIGRATIONS = join(root, "supabase/migrations");
