@@ -173,10 +173,11 @@ test("rol tanlangan (ega, 2026-11-25, 2026-11-27): bosh sahifada ikkala oyna ham
   const bg = (k: string) => page.locator(`main [data-guided-start='${k}']`).evaluate((el) => getComputedStyle(el).backgroundColor);
   expect(new Set([await bg("workers"), await bg("jobs"), await bg("post")]).size).toBe(3);
   expect(await bg("post")).toBe("rgb(255, 200, 61)");
+  // boundingBox() kutmaydi: gidratsiyada tugma qayta chizilsa CI'da null qaytgan — o'lcham barqaror bo'lguncha kutiladi
   for (const k of ["workers", "jobs", "post"]) {
-    const h = (await page.locator(`main [data-guided-start='${k}']`).boundingBox())!.height;
-    expect(h, k).toBeGreaterThanOrEqual(44);
-    expect(h, k).toBeLessThanOrEqual(64);
+    const tile = page.locator(`main [data-guided-start='${k}']`);
+    await expect.poll(async () => (await tile.boundingBox())?.height ?? 0, { message: k }).toBeGreaterThanOrEqual(44);
+    expect((await tile.boundingBox())!.height, k).toBeLessThanOrEqual(64);
   }
   await page.locator("form[data-home-search][data-hydrated]").waitFor();
   await page.locator("main [data-guided-start='post']").click();
