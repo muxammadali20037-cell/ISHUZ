@@ -90,7 +90,7 @@ export function StepRequirements({ mode, vacancy, refs }: StepProps) {
 
       <div>
         <div className="mb-1.5 text-sm font-medium">
-          {t("vacancies.wizard.requirements.age")} <span className="text-xs font-normal text-muted-foreground">({t("common.labels.optional")})</span>
+          {t("vacancies.wizard.requirements.age")} <span className="text-xs font-normal text-muted-foreground">({t("easy.vguide.fair_hint")})</span>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Field label={t("vacancies.wizard.requirements.age_min")} htmlFor="age-min" error={errors.ageMin?.message ? t(errors.ageMin.message) : undefined}>
@@ -112,7 +112,7 @@ export function StepRequirements({ mode, vacancy, refs }: StepProps) {
         />
       </Field>
 
-      <Field label={t("vacancies.wizard.requirements.gender")} hint={t("common.labels.optional")}>
+      <Field label={t("vacancies.wizard.requirements.gender")} hint={t("easy.vguide.fair_hint")}>
         <Controller
           control={form.control}
           name="gender"

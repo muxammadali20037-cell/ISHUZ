@@ -1731,7 +1731,8 @@
         "line_private": "Shaxsiy mashg'ulotlar o'tkazish"
       }
     },
-    "all_options": "Hammasi · {count} ta"
+    "all_options": "Hammasi · {count} ta",
+    "fair_hint": "Ixtiyoriy. Faqat ish talab qilsa tanlang."
   },
   "quick": {
     "remote": "Masofaviy (internet orqali)",

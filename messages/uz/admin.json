@@ -805,11 +805,6 @@
   "quick": {
     "title": "Tezkor boshqaruv",
     "subtitle": "Eng kerakli sozlamalar. O'zgarish darhol kuchga kiradi va auditga yoziladi.",
-    "ai_paid": "AI yordamchi (PRO) pullik",
-    "ai_paid_hint": "O'chirsangiz — AI yordamchi hamma uchun bepul ishlaydi (to'lovsiz xabar yuboriladi).",
-    "ai_price": "AI yordamchi narxi",
-    "ai_price_hint": "Bir oylik obuna narxi.",
-    "sum_month": "so'm / oy",
     "listings_paid": "E'lon joylash pullik",
     "listings_paid_hint": "O'chirsangiz — ishchi e'lonlari bepul joylanadi.",
     "employer_check": "Ish beruvchini tasdiqlash majburiy",

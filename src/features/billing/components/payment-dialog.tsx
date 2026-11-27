@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useT } from "@/lib/i18n/client";
-import { useAndroidApp } from "@/lib/use-android-app";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { formatDate, formatMoney } from "@/lib/format";
 import { Dialog, Sheet } from "@/components/ui/dialog";
 import { getVacancyQuote } from "../actions";
@@ -77,7 +77,7 @@ export function DiscountBadge({ percent, until }: { percent: number; until: stri
 /** "E'lon qilish" tugmasi ostidagi izoh: aksiya / bepul / to'langan / narx */
 export function PublishModeNote({ vacancyId }: { vacancyId: string }) {
   const { t, locale } = useT();
-  const inApp = useAndroidApp();
+  const inApp = usePurchaseLock() !== null;
   const [q, setQ] = useState<VacancyQuote | null>(null);
   useEffect(() => {
     let alive = true;

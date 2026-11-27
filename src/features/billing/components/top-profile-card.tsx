@@ -4,6 +4,7 @@ import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { Crown } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { formatDate, formatDateTime, formatMoney } from "@/lib/format";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/toast";
@@ -15,6 +16,8 @@ import { callAction } from "@/lib/action-call";
 /** Ishchi bosh sahifasi: "Profilni TOP ga chiqarish" (bepul/aksiya — darhol, aks holda to'lov oynasi) */
 export function TopProfileCard({ workerId, promotedUntil }: { workerId: string; promotedUntil: string | null }) {
   const { t, locale } = useT();
+  // ilova ichida (Google Play / Telegram) narx ko'rsatilmaydi — bosilsa to'lov oynasi neytral izoh beradi
+  const inApp = usePurchaseLock() !== null;
   const router = useRouter();
   const [quote, setQuote] = useState<PromotionQuote | null>(null);
   const [pending, startTransition] = useTransition();
@@ -52,7 +55,7 @@ export function TopProfileCard({ workerId, promotedUntil }: { workerId: string; 
       <div className="min-w-0 flex-1">
         <p className="font-semibold">{t("billing.top.title")}</p>
         <p className="text-sm text-muted-foreground">{active ? t("billing.top.active", { date: formatDateTime(promotedUntil, locale) }) : t("billing.top.desc")}</p>
-        {quote && !active ? (
+        {quote && !active && !(inApp && quote.mode === "payment_required") ? (
           <p className="mt-1 text-xs font-medium text-warning">
             {t(`billing.promo_mode.${quote.mode}`, { date: formatDate(quote.promo_until, locale), hours: quote.hours, price: formatMoney(quote.price, locale, { withCurrency: false }) })}
           </p>

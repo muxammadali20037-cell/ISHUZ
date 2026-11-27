@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock, LogIn, MessageCircle, Phone, RotateCw } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
+import { usePurchaseLock } from "@/lib/use-purchase-lock";
 import { formatMoney, formatPhone, telHref } from "@/lib/format";
 import { toast } from "@/components/ui/toast";
 import { requestPayment } from "@/features/billing/components/payment-dialog";
@@ -130,13 +131,17 @@ export function RevealPhone({
  */
 function UnlockButton({ price, workerId, loginHref }: { price: number; workerId: string; loginHref: string | null }) {
   const { t, locale } = useT();
+  // ilova ichida (Google Play / Telegram) narx ko'rsatilmaydi — bosilsa to'lov oynasi neytral izoh beradi
+  const inApp = usePurchaseLock() !== null;
   const inner = (
     <>
       <Lock className="size-6 shrink-0" aria-hidden />
       <span className="min-w-0 text-left">{t("contacts.unlock.button")}</span>
-      <span className="ml-auto whitespace-nowrap rounded-lg bg-success-foreground/20 px-2 py-0.5 text-base font-extrabold tabular" data-unlock-price>
-        {formatMoney(price, locale)}
-      </span>
+      {inApp ? null : (
+        <span className="ml-auto whitespace-nowrap rounded-lg bg-success-foreground/20 px-2 py-0.5 text-base font-extrabold tabular" data-unlock-price>
+          {formatMoney(price, locale)}
+        </span>
+      )}
     </>
   );
   const cls = "press flex min-h-14 w-full items-center gap-2 rounded-2xl bg-success px-4 py-2 text-lg font-bold leading-tight text-success-foreground shadow-sm hover:opacity-90";

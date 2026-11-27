@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
 import { USERS, asGuest, asMode, loginAs, sql } from "../support";
 
 /**
@@ -133,4 +133,59 @@ test("narxlar yuklanmasa (baza hali yangilanmagan) — sahifa bo'sh qolmaydi: be
   } finally {
     await sql("alter function public.public_tariffs_e2e_off() rename to public_tariffs");
   }
+});
+
+/** Telegram Mini App muhiti (window.Telegram.WebApp) — telegram-login.spec.ts dagi kabi taqlid */
+async function asMiniApp(page: Page) {
+  await page.addInitScript(() => {
+    const noop = () => {};
+    (window as unknown as { Telegram: unknown }).Telegram = {
+      WebApp: {
+        initData: "query_id=AAE&user=%7B%22id%22%3A42%2C%22first_name%22%3A%22Botir%22%7D&auth_date=1760000000&hash=test",
+        initDataUnsafe: { user: { id: 42, first_name: "Botir" } },
+        colorScheme: "light",
+        themeParams: {},
+        platform: "android",
+        version: "7.10",
+        ready: noop,
+        expand: noop,
+        close: noop,
+        BackButton: { show: noop, hide: noop, onClick: noop, offClick: noop, isVisible: false },
+        MainButton: { show: noop, hide: noop, setText: noop, onClick: noop, offClick: noop, showProgress: noop, hideProgress: noop, enable: noop, disable: noop },
+        openTelegramLink: noop,
+        openLink: noop,
+      },
+    };
+  });
+  // kirgan foydalanuvchi — Telegram orqali qayta kirish kerak emas (sessiya o'zgarmaydi)
+  await page.route("**/api/auth/telegram", (route) => route.fulfill({ status: 200, contentType: "application/json", body: '{"ok":true}' }));
+}
+
+test("Telegram Mini App ichida: 'TOP qilish' — narx va to'lov tugmalari yo'q, neytral izoh (to'lov saytda)", async ({ page, context }) => {
+  const [r] = await sql<{ id: string }>("select id from public.regions where slug = 'tashkent_city'");
+  const [c] = await sql<{ id: string }>("select id from public.categories where is_active order by sort_order limit 1");
+  const [v] = await sql<{ id: string }>(
+    `insert into public.vacancies (owner_profile_id, title, category_id, region_id, description, status, salary_negotiable, published_at, expires_at, paid_until)
+     values ($1, 'T80 Oshpaz', $2, $3, 'Oshxonada ishlash', 'active', true, now(), now() + interval '10 days', now() + interval '10 days') returning id`,
+    [USERS.employer, c!.id, r!.id],
+  );
+  await sql("insert into public.wallets (profile_id, balance) values ($1, 200000)", [USERS.employer]);
+  await asMiniApp(page);
+  await loginAs(context, USERS.employer);
+  await asMode(context, "employer");
+  await page.goto(`/employer/vacancies/${v!.id}`);
+  // Telegram muhitida sahifa gidratsiyadan keyin bir marta qayta chiziladi (server — brauzer, mijoz — Mini App): CI'da
+  // qisqa vaqt ikki nusxa ko'rindi — bitta qolishini kutamiz
+  await expect(page.locator("[data-boost]")).toHaveCount(1);
+  await page.locator("[data-boost]").click();
+  const dialog = page.getByRole("dialog", { name: "TOP qilish" });
+  await expect(dialog.locator('[data-in-app-note="telegram"]')).toHaveText(
+    "Bu pullik xizmatni Telegram ichida xarid qilib bo'lmaydi. Qolgan barcha imkoniyatlar ishlayveradi.",
+  );
+  await expect(dialog.locator("[data-tiers]")).toHaveCount(0);
+  await expect(dialog.getByTestId("checkout-price")).toHaveCount(0);
+  await expect(dialog.getByRole("button", { name: /Balansdan|Payme|Click/ })).toHaveCount(0);
+  await expect(dialog).not.toContainText("so'm");
+  const [p] = await sql<{ n: number }>("select count(*)::int as n from public.payments where profile_id = $1", [USERS.employer]);
+  expect(p!.n).toBe(0);
 });

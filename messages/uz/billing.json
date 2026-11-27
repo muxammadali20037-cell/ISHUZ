@@ -222,5 +222,6 @@
     "cta_employer": "Vakansiya joylash",
     "cta_worker": "E'lon berish (ish izlayman)"
   },
-  "contact_title": "Raqamni ochish"
+  "contact_title": "Raqamni ochish",
+  "in_telegram_note": "Bu pullik xizmatni Telegram ichida xarid qilib bo'lmaydi. Qolgan barcha imkoniyatlar ishlayveradi."
 }

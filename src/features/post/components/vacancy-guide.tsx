@@ -351,6 +351,8 @@ export function VacancyGuide({
   );
 
   let title = "";
+  /** savol ostidagi qisqa izoh (bo'lsa) */
+  let hint: string | null = null;
   let body: ReactNode = null;
 
   if (!started) {
@@ -501,15 +503,18 @@ export function VacancyGuide({
         ])
       );
   } else if (step === "gender") {
+    // Mehnat kodeksi: jinsi bo'yicha cheklov — faqat ish talab qilsa; shuning uchun "Farqi yo'q" birinchi (ega, 2026-11-27)
     title = t("easy.vguide.q.gender");
+    hint = t("easy.vguide.fair_hint");
     body = choices([
+      { key: "any", label: t("easy.vguide.any"), run: () => answer("gender", { gender: "any" }), wide: true },
       { key: "male", label: t("easy.vguide.male"), run: () => answer("gender", { gender: "male" }) },
       { key: "female", label: t("easy.vguide.female"), run: () => answer("gender", { gender: "female" }) },
-      { key: "any", label: t("easy.vguide.any"), run: () => answer("gender", { gender: "any" }), wide: true },
     ]);
   } else if (step === "age") {
-    // aniq yosh emas — chegaralar (ega, 2026-11-24)
+    // aniq yosh emas — chegaralar (ega, 2026-11-24); yosh cheklovi ham faqat ish talab qilsa — "Farqi yo'q" birinchi
     title = t("easy.vguide.q.age");
+    hint = t("easy.vguide.fair_hint");
     const lo = pair[0].trim() ? Number(pair[0]) : null;
     const hi = pair[1].trim() ? Number(pair[1]) : null;
     const ok = (n: number | null) => n === null || (Number.isInteger(n) && n >= AGE_MIN && n <= AGE_MAX);
@@ -551,9 +556,9 @@ export function VacancyGuide({
         </form>
       ) : (
         choices([
+          { key: "any", label: t("easy.vguide.any"), run: () => answer("age", { age: { min: null, max: null } }), wide: true },
           ...AGE_PRESETS.map((a) => ({ key: `${a.min}-${a.max}`, label: ageLabel(a, t)!, run: () => answer("age", { age: a }) })),
-          { key: "other", label: t("easy.vguide.other_age"), run: () => (setTyping("age"), setPair(["", ""])) },
-          { key: "any", label: t("easy.vguide.any"), run: () => answer("age", { age: { min: null, max: null } }) },
+          { key: "other", label: t("easy.vguide.other_age"), run: () => (setTyping("age"), setPair(["", ""])), wide: AGE_PRESETS.length % 2 === 0 },
         ])
       );
   } else if (step === "experience") {
@@ -760,7 +765,15 @@ export function VacancyGuide({
       <h1 className="text-2xl font-extrabold leading-tight sm:text-3xl" aria-live="polite">
         {title}
       </h1>
-      {!started ? <p className="mt-1 text-base text-muted-foreground">{t("easy.vguide.intro_hint")}</p> : step === null ? <p className="mt-1 text-base text-muted-foreground">{t("easy.vguide.done_hint")}</p> : null}
+      {!started ? (
+        <p className="mt-1 text-base text-muted-foreground">{t("easy.vguide.intro_hint")}</p>
+      ) : step === null ? (
+        <p className="mt-1 text-base text-muted-foreground">{t("easy.vguide.done_hint")}</p>
+      ) : hint ? (
+        <p className="mt-1 text-base text-muted-foreground" data-guide-hint>
+          {hint}
+        </p>
+      ) : null}
 
       <div key={`${started ? step : "intro"}:${typing ?? ""}:${options.length}`} className="step-forward mt-5">
         {body}

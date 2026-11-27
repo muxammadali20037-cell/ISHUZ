@@ -222,5 +222,6 @@
     "cta_employer": "Post a vacancy",
     "cta_worker": "Post a listing (looking for work)"
   },
-  "contact_title": "Unlock number"
+  "contact_title": "Unlock number",
+  "in_telegram_note": "This paid service can't be purchased inside Telegram. Everything else works as usual."
 }

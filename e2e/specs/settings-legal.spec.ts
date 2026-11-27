@@ -91,8 +91,9 @@ test.describe("admin panel (lokal stend, aal2 sinov sessiyasi)", () => {
       await expect.poll(() => noHorizontalScroll(page), { message: p }).toBe(true);
     }
     await page.goto("/admin");
-    const label = page.getByText("AI yordamchi narxi", { exact: true });
-    const input = page.getByRole("spinbutton", { name: "AI yordamchi narxi" });
+    // "AI yordamchi narxi" olib tashlandi (xizmat 2026-11-22 da to'xtatilgan) — endi raqam ochish narxi
+    const label = page.getByText("Raqam ochish narxi", { exact: true });
+    const input = page.getByRole("spinbutton", { name: "Raqam ochish narxi" });
     // boundingBox() kutmaydi: tezkor boshqaruv kartasi oqimda keyinroq chiziladi (CI'da null qaytgan)
     await expect(label).toBeVisible();
     await expect(input).toBeVisible();
