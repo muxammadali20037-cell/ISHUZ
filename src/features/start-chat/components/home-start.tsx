@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useSyncExternalStore, type ButtonHTMLAttributes, type ReactNode } from "react";
+import { useState, useSyncExternalStore, type ReactNode } from "react";
 import Link from "next/link";
 import { Award, BriefcaseBusiness, CalendarClock, GraduationCap, Hammer, Laptop, MapPin, Plus, Search, Sparkles, UsersRound, type LucideIcon } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
@@ -12,14 +12,15 @@ import type { QuickMode, QuickOption } from "@/features/find/quick-types";
 import type { AppMode } from "@/features/mode/mode";
 import { employerQuickFilters, seekerQuickFilters } from "@/features/landing/quick-filters";
 import { ChatIntro } from "./chat-intro";
+import { StartTile } from "./start-tile";
 import { MASTERS_ENABLED } from "@/features/masters/flags";
 
 const noopSubscribe = () => () => {};
 
 /**
  * Bosh ekran — chat bo'sh holati (ega, 2026-11-23: variantlardan "C — qidiruv qatori" tanlandi, rang — sariq "E'lon
- * berish"). Tepadan: sarlavha → qidiruv qatori (kasb + hudud + "Qidirish") → uchta katta tugma (Ish qidiryapman /
- * Ishchi qidiryapman / E'lon berish — sariq) → tezkor bo'limlar → eng yangi haqiqiy e'lonlar → "Qanday ishlaydi?".
+ * berish"). Tepadan: sarlavha → qidiruv qatori (kasb + hudud + "Qidirish") → uchta ingichka tugma (Ishchi qidiryapman /
+ * Ish qidiryapman — yashil / E'lon berish — sariq) → tezkor bo'limlar → eng yangi haqiqiy e'lonlar → "Qanday ishlaydi?".
  * Qidiruv ham, tugmalar ham — shu chatning o'zi: natijalar, savollar va e'lon berish suhbat ichida davom etadi.
  * Ish beruvchi rejimida qidiruv — ishchilar, bo'limlar — ishchilar bo'limlari.
  */
@@ -99,7 +100,7 @@ export function HomeStart({
             {t(jobs ? "easy.guided.home.q_label_jobs" : "easy.guided.home.q_label_workers")}
           </label>
           {/*
-            ko'rsatma (ega, 2026-11-23: "Yozing, o'zingizga mosini toping" — sig'sin): tor telefonda kesilmaydi, ikkinchi
+            ko'rsatma (ega, 2026-11-23: sig'sin; 2026-11-27: "O'zingizga mos ish va ishchini toping"): tor telefonda kesilmaydi, ikkinchi
             qatorga o'tadi. Ko'rinadigan matn — maydon ostidagi qatlam (maydon balandligi shunga qarab); maydonning o'z
             placeholder'i shaffof — ekran o'qigich uchun
           */}
@@ -136,32 +137,18 @@ export function HomeStart({
       </form>
 
       {/*
-        ega (2026-11-23, variantlardan "1 — nurli shisha"): "Ish qidiryapman" / "Ishchi qidiryapman" — to'q ko'k oynali, ichidan
-        rangli nur taraladi (ko'k / turkuaz); yonida sariq "E'lon berish" — o'sha uslubda, oq nur bilan
+        ega (2026-11-23, variantlardan "1 — nurli shisha"): oynali tugmalar, ichidan rangli nur taraladi.
+        ega (2026-11-27: "«Ishchi qidiryapman» tagiga yashil rangda «Ish qidiryapman» — ikkala panelda ham bo'lsin, kichikroq,
+        ingichkaroq; ikkala tugma ham ishlasin; kirish menyusida ham shunaqa"): har kimga (ish izlovchi, ish beruvchi, mehmon)
+        ikkala tugma ham — to'q ko'k «Ishchi qidiryapman», ostida yashil «Ish qidiryapman», keyin sariq «E'lon berish»; uchalasi
+        ingichka, ustma-ust (kompyuterda — yonma-yon). Boshqa rol tugmasi bosilsa — o'sha qidiruv boshlanadi va rejim almashadi
+        (guided.ts commitRole). "E'lon berish"da rol tanlangan bo'lsa kimligi so'ralmaydi, mehmonda — so'raladi.
       */}
-      {/*
-        ega (2026-11-25: "qaysi rolni tanlagan bo'lsa shunaqa oyna chiqsin, e'lon berish uzunchoq bo'lib ko'rinsin"; variantlardan
-        "B" tanlandi): rol tanlangan bo'lsa — faqat o'z oynasi (ish izlovchi — "Ish qidiryapman", ish beruvchi — "Ishchi
-        qidiryapman") va sariq "E'lon berish" — ikkalasi uzun, ustma-ust (kompyuterda — yonma-yon). "E'lon berish"da kimligi
-        so'ralmaydi — o'z e'loniga. Rol tanlanmagan (mehmon) — uchala tugma, e'londa so'raladi.
-      */}
-      {role ? (
-        <div className="grid gap-2.5 sm:gap-3 lg:grid-cols-2" data-guided-starts data-guided-starts-role={role}>
-          {role === "worker" ? (
-            <Tile wide icon={BriefcaseBusiness} label={t("easy.guided.start_jobs")} glow="bg-primary" disabled={act.pending} onClick={() => act.start("jobs")} data-guided-start="jobs" data-tour="start-jobs" />
-          ) : (
-            <Tile wide icon={UsersRound} label={t("easy.guided.start_workers")} glow="bg-accent-bright" disabled={act.pending} onClick={() => act.start("workers")} data-guided-start="workers" data-tour="start-workers" />
-          )}
-          <Tile wide icon={Plus} label={t("easy.guided.home.post")} accent disabled={act.pending} onClick={act.post} data-guided-start="post" data-tour="post" />
-        </div>
-      ) : (
-        <div className="grid grid-cols-3 gap-2.5 sm:gap-3" data-guided-starts>
-          <Tile icon={BriefcaseBusiness} label={t("easy.guided.start_jobs")} glow="bg-primary" disabled={act.pending} onClick={() => act.start("jobs")} data-guided-start="jobs" data-tour="start-jobs" />
-          <Tile icon={UsersRound} label={t("easy.guided.start_workers")} glow="bg-accent-bright" disabled={act.pending} onClick={() => act.start("workers")} data-guided-start="workers" data-tour="start-workers" />
-          {/* kim ekani noma'lum — ikkala variant chiqadi ("Ishchi izlash uchun" / "Ish izlash uchun") */}
-          <Tile icon={Plus} label={t("easy.guided.home.post")} accent disabled={act.pending} onClick={act.post} data-guided-start="post" data-tour="post" />
-        </div>
-      )}
+      <div className="grid gap-2 sm:gap-2.5 lg:grid-cols-3" data-guided-starts data-guided-starts-role={role ?? undefined}>
+        <StartTile icon={UsersRound} label={t("easy.guided.start_workers")} tone="navy" disabled={act.pending} onClick={() => act.start("workers")} data-guided-start="workers" data-tour="start-workers" />
+        <StartTile icon={BriefcaseBusiness} label={t("easy.guided.start_jobs")} tone="green" disabled={act.pending} onClick={() => act.start("jobs")} data-guided-start="jobs" data-tour="start-jobs" />
+        <StartTile icon={Plus} label={t("easy.guided.home.post")} tone="yellow" disabled={act.pending} onClick={act.post} data-guided-start="post" data-tour="post" />
+      </div>
 
       <QuickLinks mode={mode} />
 
@@ -173,42 +160,6 @@ export function HomeStart({
         </div>
       ) : null}
     </div>
-  );
-}
-
-function Tile({
-  icon: Icon,
-  label,
-  accent,
-  wide,
-  glow = "bg-primary",
-  className,
-  ...props
-}: { icon: LucideIcon; label: string; accent?: boolean; wide?: boolean; glow?: string } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, "children">) {
-  return (
-    <button
-      type="button"
-      className={cn(
-        // 320 px da uchta tugma yonma-yon: "qidiryapman" bo'linmasin — eng tor ekranda kichikroq yozuv
-        "press relative isolate flex min-w-0 items-center justify-center gap-2 overflow-hidden rounded-2xl border py-3 font-bold leading-tight shadow-lg backdrop-blur-md transition-transform [overflow-wrap:anywhere] hover:-translate-y-0.5 disabled:opacity-60",
-        // uzun tugma (rol tanlanganda): belgi chapda, yozuv yonida — kattaroq
-        wide
-          ? "min-h-20 flex-row gap-3.5 px-5 text-left text-lg sm:min-h-24 sm:gap-4 sm:px-6 sm:text-xl"
-          : "min-h-28 flex-col px-1 text-center text-xs min-[360px]:px-1.5 min-[360px]:text-sm sm:min-h-32 sm:text-base",
-        accent ? "border-highlight bg-highlight text-highlight-foreground" : "border-navy-foreground/15 bg-navy-2/90 text-navy-foreground",
-        className,
-      )}
-      {...props}
-    >
-      {/* ichki nur: burchakdagi rangli va pastdagi yumshoq dog' + tepadagi ingichka yaltirash */}
-      <span aria-hidden className={cn("absolute -right-8 -top-8 -z-10 size-24 rounded-full blur-2xl", accent ? "bg-card opacity-70" : cn(glow, "opacity-80"))} />
-      <span aria-hidden className={cn("absolute -bottom-10 -left-8 -z-10 size-20 rounded-full blur-2xl", accent ? "bg-card/40" : "bg-primary/40")} />
-      <span aria-hidden className={cn("absolute inset-x-4 top-0 h-px", accent ? "bg-card/70" : "bg-navy-foreground/40")} />
-      <span className={cn("flex size-11 shrink-0 items-center justify-center rounded-full ring-1", accent ? "bg-card/80 text-highlight-foreground ring-card" : "bg-navy-foreground/15 text-navy-foreground ring-navy-foreground/25")} aria-hidden>
-        <Icon className="size-5.5" />
-      </span>
-      <span data-tile-label>{label}</span>
-    </button>
   );
 }
 

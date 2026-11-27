@@ -108,8 +108,8 @@
       "slides": "Introduction"
     },
     "role": {
-      "title": "What are you looking for?",
-      "subtitle": "Choose — the app will open for your goal.",
+      "title": "Looking for a job or a worker?",
+      "subtitle": "Choose one.",
       "worker_title": "Looking for a job that fits you?",
       "worker_desc": "Browse jobs and post a listing about yourself",
       "employer_title": "Looking for workers for your company?",
@@ -129,7 +129,7 @@
     },
     "welcome": {
       "title": "Hello!",
-      "subtitle": "Welcome! What are you looking for?",
+      "subtitle": "Welcome! Looking for a job or a worker?",
       "how": "How does it work?",
       "start": "Get started",
       "have_account": "I have an account",

@@ -624,7 +624,18 @@
     "merge_title": "«{name}» ni birlashtirish",
     "move_hint": "Yangi ota tugunni qidiring. Ichki tugunlar ham birga ko'chadi.",
     "merge_hint": "Qaysi tugunga qo'shilsin? Profillar, vakansiyalar va ichki tugunlar o'tadi, eski nom sinonim bo'ladi.",
-    "to_root": "Soha ildiziga"
+    "to_root": "Soha ildiziga",
+    "images": {
+      "title": "Kasb rasmlari",
+      "desc": "Har kasbga bitta tayyor rasm: e'lon berayotgan odamga oldindan qo'yiladi — tanlab «Joylash»ni bosadi. Rasm kasbga birinchi marta kerak bo'lganda o'zi yaratiladi. Bu tugma esa ommabop kasblarga oldindan yaratadi: bir bosishda 4 tagacha (1–3 daqiqa), har rasm ≈ $0.05.",
+      "ready": "Tayyor: {count} ta",
+      "generate": "Ommabop kasblarga rasm yaratish",
+      "wait": "Rasmlar yaratilmoqda — 1–3 daqiqa. Sahifani yopmang.",
+      "started": "Bajarildi — yangi rasmlar ro'yxatda",
+      "replace": "Almashtirish",
+      "replaced": "Rasm almashtirildi",
+      "empty": "Hozircha tayyor rasm yo'q."
+    }
   },
   "mfa": {
     "title": "Ikki bosqichli kirish",

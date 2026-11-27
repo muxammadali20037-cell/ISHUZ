@@ -24,8 +24,9 @@ export interface TourStep {
  */
 const STEPS: readonly TourStep[] = [
   { code: "B0", target: null },
-  { code: "B1", target: "start-jobs" },
+  // ekrandagi tartibda (ega, 2026-11-27): tepada «Ishchi qidiryapman», ostida yashil «Ish qidiryapman»
   { code: "B2", target: "start-workers" },
+  { code: "B1", target: "start-jobs" },
   // "E'lon berish": bosh ekrandagi sariq tugma (2026-11-23, uchinchi tugma) — kompyuterda yuqori paneldagisi
   { code: "B6", target: "post" },
   // yozish: bosh ekranda — qidiruv qatori, suhbatda — pastdagi maydon

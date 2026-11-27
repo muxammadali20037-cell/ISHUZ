@@ -2,7 +2,7 @@ import { expect, test } from "@playwright/test";
 import { asGuest } from "../support";
 
 /**
- * Rol tanlash: "Nima qidiryapsiz?" — ikkita savol-karta, bitta bosishda (2026-11-20).
+ * Rol tanlash: "Ish yoki ishchi qidiryapsizmi?" — ikkita tugma, bitta bosishda (2026-11-20, 2026-11-27).
  * 2026-11-17 (ega: "qaysi kasblar sizga mos — kerak emas, qayerda ishlashni xohlaysiz — kerak emas, so'rovnomani umuman olib
  * tashla"): rol tanlangach darhol bosh sahifa; eski /start/kasblar va /start/hudud havolalari bosh sahifaga olib boradi.
  */
@@ -11,7 +11,7 @@ test("ish qidiruvchi: rol → darhol asosiy ekran — chat (kasb va hudud so'ral
   await asGuest(context);
   await context.clearCookies({ name: "ib_mode" });
   await page.goto("/start/rol?from=welcome");
-  await expect(page.getByRole("heading", { level: 1, name: "Nima qidiryapsiz?" })).toBeVisible();
+  await expect(page.getByRole("heading", { level: 1, name: "Ish yoki ishchi qidiryapsizmi?" })).toBeVisible();
   await page.locator("[data-role-choice='worker']").click();
   // 2026-11-20: rol tanlangach — asosiy ekran (chat), ish qidiruvi bilan
   await page.waitForURL((u) => new URL(u).pathname === "/chat");

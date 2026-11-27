@@ -8,6 +8,10 @@ import { getProfessionTrail } from "@/features/professions/queries";
 import { CategoryIcon } from "@/components/shared/category-icon";
 import { AdminPageHeader, Forbidden, QueryError } from "@/features/admin/components/notes";
 import { ProfessionTreeManager, type AdminNode } from "@/features/admin/components/profession-tree-manager";
+import { ProfessionImagesCard } from "@/features/admin/components/profession-images-card";
+
+/** kasb rasmlarini oldindan yaratish (server action): bir bosishda bir nechta rasm, har biri 20–60 s */
+export const maxDuration = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -25,9 +29,19 @@ export default async function AdminProfessionsPage({ searchParams }: { searchPar
   const category = UUID.test(sp.category ?? "") ? categories.find((c) => c.id === sp.category) : undefined;
 
   if (!category) {
+    const supabase = await createClient();
+    const [{ count: ready }, { data: latest }] = await Promise.all([
+      supabase.from("profession_images").select("node_id", { count: "exact", head: true }).eq("status", "ready"),
+      supabase.from("profession_images").select("node_id, image_url").eq("status", "ready").order("updated_at", { ascending: false }).limit(8),
+    ]);
+    const ids = (latest ?? []).map((r) => r.node_id);
+    const { data: named } = ids.length ? await supabase.from("profession_nodes").select("id, name_uz, name_ru, name_en").in("id", ids) : { data: [] };
+    const names = new Map((named ?? []).map((n) => [n.id, name(n)]));
+    const items = (latest ?? []).filter((r) => r.image_url).map((r) => ({ nodeId: r.node_id, url: r.image_url as string, name: names.get(r.node_id) ?? "—" }));
     return (
       <div>
         <AdminPageHeader title={t("admin.professions.title")} subtitle={t("admin.professions.subtitle")} />
+        <ProfessionImagesCard ready={ready ?? 0} items={items} canManage={ctx.can("categories.manage")} />
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
           {categories.map((c) => (
             <Link key={c.id} href={`/admin/professions?category=${c.id}`} className="flex items-center gap-3 rounded-2xl border border-border bg-card p-4 font-medium hover:border-primary">

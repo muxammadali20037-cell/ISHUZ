@@ -5230,6 +5230,10 @@ export type Database = {
         Args: { p_model: string; p_node_id: string; p_prompt: string };
         Returns: boolean;
       };
+      claim_profession_image_by: {
+        Args: { p_batch?: boolean; p_force?: boolean; p_model: string; p_node_id: string; p_owner: string; p_prompt: string };
+        Returns: string;
+      };
       click_complete: {
         Args: {
           p_amount: number;

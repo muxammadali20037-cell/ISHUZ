@@ -109,14 +109,14 @@ test.describe("tuzilma", () => {
     await expect(main.locator("[data-cabinet-links]").getByRole("link", { name: "Ishga takliflar" })).toHaveCount(0);
   });
 
-  test("rol tanlash: ikki savol-karta (rasmsiz), bitta bosish, tanlov qurilmada saqlanadi", async ({ page, context }) => {
+  test("rol tanlash: ikki ingichka tugma (rasmsiz), bitta bosish, tanlov qurilmada saqlanadi", async ({ page, context }) => {
     await asGuest(context);
     await context.clearCookies({ name: "ib_mode" });
     await page.goto("/start/rol?next=%2Fauth%2Ftelefon");
-    const group = page.getByRole("group", { name: "Nima qidiryapsiz?" });
+    const group = page.getByRole("group", { name: "Ish yoki ishchi qidiryapsizmi?" });
     await expect(group.getByRole("button")).toHaveCount(2);
     await expect(group.locator("img")).toHaveCount(0);
-    await group.getByRole("button", { name: /Korxonangizga ishchi qidiryapsizmi\?/ }).click();
+    await group.getByRole("button", { name: /^Ishchi qidiryapman/ }).click();
     await page.waitForURL("**/auth/telefon");
     await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("employer");
   });

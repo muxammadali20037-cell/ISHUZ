@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImageOff, ImagePlus, Loader2, RefreshCw, RotateCcw, Sparkles } from "lucide-react";
 import { useT } from "@/lib/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -10,9 +10,11 @@ import { AiReportButton } from "@/features/reports/ai-report-button";
 export interface DraftImage {
   draft: string;
   url: string;
+  /** kasbning tayyor rasmi (0093) — qaysi kasbniki; o'zi yaratgan rasmda yo'q */
+  preset?: string;
 }
 
-type Phase = { step: "idle" } | { step: "busy" } | { step: "error"; code: string };
+type Phase = { step: "idle" } | { step: "preset" } | { step: "busy" } | { step: "error"; code: string };
 
 /** Qayta urinish mantiqli bo'lgan xatolar (cheklov va taqiq emas) */
 const RETRY = new Set(["generation_failed", "network", "unavailable", "busy", "rate_limited", "provider_unavailable"]);
@@ -29,6 +31,12 @@ function newId(): string {
  * ma'qul bo'lsa — e'lon shu rasm bilan joylanadi; "Boshqa rasm" — yangisi; "Rasmsiz" — rasm olib tashlanadi.
  * Har "Boshqa rasm" — yangi qoralama (oldingisi tayyor qoladi: yangisi chiqmasa, eski rasm bilan joylash mumkin).
  * Xatodan keyin "Qayta urinish" — o'sha qoralama. Faqat kirgan foydalanuvchiga va rasm modeli sozlangan bo'lsa.
+ *
+ * Kasb rasmi (ega, 2026-11-27: "har bitta kasbga rasm yaratib olsak, birinchi qo'yib chiqsin — oddiy rasmni tanlab
+ * «Joylash» bossa buzilmasin"): kasb tanlangan va uning tayyor rasmi bor bo'lsa — sahifa ochilganda o'sha rasm oldindan
+ * qo'yiladi (kutish va xarajat yo'q), "Joylash" kifoya. Rasm yo'q bo'lsa "Rasm yaratish" avval kasb rasmini yaratadi —
+ * keyingi odamlarga ham tayyor turadi. "Boshqa rasm" — faqat shu e'lon uchun yangi rasm. "Rasmsiz" bosilsa — shu kasbga
+ * qayta qo'yilmaydi.
  */
 export function ListingImageDraft({
   entity,
@@ -48,34 +56,78 @@ export function ListingImageDraft({
 }) {
   const { t } = useT();
   const [phase, setPhase] = useState<Phase>({ step: "idle" });
-  /** xatodan keyin qayta urinish — o'sha qoralama */
-  const failed = useRef<string | null>(null);
+  /** xatodan keyin qayta urinish — o'sha qoralama (va o'sha tur: kasb rasmi yoki alohida) */
+  const failed = useRef<{ draft: string; unique: boolean } | null>(null);
+  /** "Rasmsiz" bosilgan kasb — uning rasmi qayta qo'yilmaydi */
+  const declined = useRef<string | null>(null);
+  const valueRef = useRef(value);
+  useEffect(() => {
+    valueRef.current = value;
+  }, [value]);
+  const shared = entity !== "master" && !!professionId;
 
-  const create = async (retry = false) => {
-    const draft = retry && failed.current ? failed.current : newId();
+  // kasbning tayyor rasmi — sahifa ochilganda oldindan (bor bo'lsa); o'zi tanlagan/yaratgan rasm almashtirilmaydi
+  useEffect(() => {
+    const current = valueRef.current;
+    if (!shared || !professionId || declined.current === professionId) return;
+    if (current && (!current.preset || current.preset === professionId)) return;
+    let alive = true;
+    const draft = newId();
+    setPhase({ step: "preset" });
+    fetch("/api/listing-image", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ entity, draft, professionId, preset: true }),
+    })
+      .then((r) => r.json().catch(() => null) as Promise<{ ok?: boolean; url?: string } | null>)
+      .then((data) => {
+        if (!alive) return;
+        if (data?.ok && data.url) onChange({ draft, url: data.url, preset: professionId });
+        // boshqa kasbning oldindan qo'yilgan rasmi qolmasin
+        else if (current?.preset) onChange(null);
+      })
+      .catch(() => undefined)
+      .finally(() => alive && setPhase((p) => (p.step === "preset" ? { step: "idle" } : p)));
+    return () => {
+      alive = false;
+    };
+    // onChange — ota komponentning yangi funksiyasi har renderda; faqat kasb almashganda
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entity, professionId, shared]);
+
+  const create = async (opts: { retry?: boolean; unique?: boolean } = {}) => {
+    const again = opts.retry && failed.current;
+    const draft = again ? failed.current!.draft : newId();
+    const unique = again ? failed.current!.unique : !!opts.unique;
     failed.current = null;
     setPhase({ step: "busy" });
     try {
       const res = await fetch("/api/listing-image", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ entity, draft, professionId, title: title.trim().slice(0, 120) || null, ...(entity === "master" ? { masterCategory } : {}) }),
+        body: JSON.stringify({ entity, draft, professionId, title: title.trim().slice(0, 120) || null, ...(entity === "master" ? { masterCategory } : {}), ...(unique ? { unique: true } : {}) }),
       });
       const data = (await res.json().catch(() => null)) as { ok?: boolean; url?: string; error?: string } | null;
       if (data?.ok && data.url) {
-        onChange({ draft, url: data.url });
+        // birinchi "Rasm yaratish" kasb rasmini yaratadi — u ham kasbniki (boshqa kasb tanlansa almashtiriladi)
+        onChange({ draft, url: data.url, ...(shared && !unique && professionId ? { preset: professionId } : {}) });
         setPhase({ step: "idle" });
       } else {
-        failed.current = draft;
+        failed.current = { draft, unique };
         setPhase({ step: "error", code: data?.error ?? "generation_failed" });
       }
     } catch {
-      failed.current = draft;
+      failed.current = { draft, unique };
       setPhase({ step: "error", code: "network" });
     }
   };
 
-  const state = phase.step === "busy" ? "busy" : phase.step === "error" ? "error" : value ? "ready" : "ask";
+  const remove = () => {
+    if (value?.preset) declined.current = value.preset;
+    onChange(null);
+  };
+
+  const state = phase.step === "busy" ? "busy" : phase.step === "preset" ? "preset" : phase.step === "error" ? "error" : value ? "ready" : "ask";
   return (
     <section className="rounded-xl border border-border bg-card p-4 shadow-sm" data-listing-image={state} aria-live="polite">
       {state === "ask" ? (
@@ -95,6 +147,13 @@ export function ListingImageDraft({
         </>
       ) : null}
 
+      {state === "preset" ? (
+        <div className="flex aspect-[3/2] w-full items-center justify-center rounded-lg bg-secondary motion-safe:animate-pulse" aria-busy>
+          <Loader2 className="size-7 animate-spin text-muted-foreground" aria-hidden />
+          <span className="sr-only">{t("common.labels.loading")}</span>
+        </div>
+      ) : null}
+
       {state === "busy" ? (
         <div className="space-y-3">
           <div className="flex aspect-[3/2] w-full items-center justify-center rounded-lg bg-secondary motion-safe:animate-pulse">
@@ -110,11 +169,12 @@ export function ListingImageDraft({
           {/* eslint-disable-next-line @next/next/no-img-element -- ochiq bucket'dagi tayyor JPEG */}
           <img src={value.url} alt={t("easy.listing_image.done_alt")} width={1536} height={1024} className="aspect-[3/2] w-full rounded-lg border border-border object-cover" data-listing-image-preview />
           <p className="text-base font-semibold text-success">{t("easy.listing_image.ready")}</p>
+          {value.preset ? <p className="-mt-2 text-sm text-muted-foreground" data-listing-image-preset>{t("easy.listing_image.preset_note")}</p> : null}
           <div className="grid grid-cols-2 gap-2">
-            <Button type="button" variant="outline" size="lg" className="text-base" onClick={() => create()} data-listing-image-again>
+            <Button type="button" variant="outline" size="lg" className="text-base" onClick={() => create({ unique: true })} data-listing-image-again>
               <RefreshCw className="size-5" aria-hidden /> {t("easy.listing_image.again")}
             </Button>
-            <Button type="button" variant="ghost" size="lg" className="text-base" onClick={() => onChange(null)} data-listing-image-remove>
+            <Button type="button" variant="ghost" size="lg" className="text-base" onClick={remove} data-listing-image-remove>
               <ImageOff className="size-5" aria-hidden /> {t("easy.listing_image.remove")}
             </Button>
           </div>
@@ -128,11 +188,11 @@ export function ListingImageDraft({
           <p className="text-base">{t(`easy.listing_image.error_${KNOWN.has(phase.code) ? phase.code : "generic"}`)}</p>
           <div className="flex flex-wrap gap-2">
             {RETRY.has(phase.code) ? (
-              <Button type="button" variant="outline" className="h-11 text-base" onClick={() => create(true)} data-listing-image-retry>
+              <Button type="button" variant="outline" className="h-11 text-base" onClick={() => create({ retry: true })} data-listing-image-retry>
                 <RotateCcw className="size-5" aria-hidden /> {t("easy.listing_image.retry")}
               </Button>
             ) : phase.code === "moderation" ? (
-              <Button type="button" variant="outline" className="h-11 text-base" onClick={() => create()} data-listing-image-again>
+              <Button type="button" variant="outline" className="h-11 text-base" onClick={() => create({ unique: true })} data-listing-image-again>
                 <RefreshCw className="size-5" aria-hidden /> {t("easy.listing_image.again")}
               </Button>
             ) : null}

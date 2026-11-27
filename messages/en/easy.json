@@ -1961,7 +1961,8 @@
     "remove": "No image",
     "keep": "Keep the previous one",
     "skip": "Continue without an image",
-    "error_provider_unavailable": "The image service isn't working right now. You can post the listing without an image."
+    "error_provider_unavailable": "The image service isn't working right now. You can post the listing without an image.",
+    "preset_note": "This is a ready image for your profession. Like it? Just post."
   },
   "guided": {
     "hello": "Find a job or a worker, easily",
@@ -2065,7 +2066,7 @@
       "all_workers": "All workers ({count})",
       "students": "For students",
       "quick_label": "Quick sections",
-      "placeholder": "Type here — find what suits you"
+      "placeholder": "Find the right job and worker for you"
     },
     "ask_post_license": "Which driving licence category do you have?",
     "ask_post_car": "Do you have your own car?",
