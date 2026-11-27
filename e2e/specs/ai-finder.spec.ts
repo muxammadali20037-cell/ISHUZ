@@ -129,7 +129,7 @@ test("ish beruvchi (kirgan): asosiy ekran — chat; yozilgan so'z ishchilar ichi
   // 2026-11-23: "/" — Bosh sahifa; qidiruv natijasi "Qidiruv" (/chat) da yangi suhbat bo'lib ochiladi
   await page.goto("/");
   await expect(page.getByRole("heading", { level: 1, name: "Ishingiz shu yerdan boshlanadi!" })).toBeVisible();
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "O'zingizga mos ish va ishchini toping");
   await homeSearch(page, "oshpaz");
   const res = page.locator("[data-guided-ai]").last();
   await expect(res).toHaveAttribute("data-guided-ai", /^(results|none)$/, { timeout: 20_000 });

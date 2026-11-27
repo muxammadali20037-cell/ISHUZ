@@ -108,8 +108,8 @@
       "slides": "Tanishtiruv"
     },
     "role": {
-      "title": "Nima qidiryapsiz?",
-      "subtitle": "Tanlang — ilova shunga moslab ochiladi.",
+      "title": "Ish yoki ishchi qidiryapsizmi?",
+      "subtitle": "Tanlang.",
       "worker_title": "O'zingizga mos ish qidiryapsizmi?",
       "worker_desc": "Ishlarni ko'rasiz va o'zingiz haqingizda e'lon berasiz",
       "employer_title": "Korxonangizga ishchi qidiryapsizmi?",
@@ -129,7 +129,7 @@
     },
     "welcome": {
       "title": "Assalomu alaykum!",
-      "subtitle": "Xush kelibsiz! Nima qidiryapsiz?",
+      "subtitle": "Xush kelibsiz! Ish yoki ishchi qidiryapsizmi?",
       "how": "Qanday ishlaydi?",
       "start": "Boshlash",
       "have_account": "Hisobim mavjud",

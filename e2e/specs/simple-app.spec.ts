@@ -90,10 +90,10 @@ test("kirgan foydalanuvchi: «/» — Bosh sahifa (qidiruv qatori, rolga qarab t
   await expect(page).toHaveURL(/\/$/);
   const home = page.locator("main [data-start-home]");
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
-  // ish izlovchi (2026-11-25): faqat o'z oynasi va «E'lon berish»
-  await expect(home.locator("[data-guided-start]")).toHaveText(["Ish qidiryapman", "E'lon berish"]);
+  // 2026-11-27: ikkala oyna (tepada «Ishchi qidiryapman») va «E'lon berish»
+  await expect(home.locator("[data-guided-start]")).toHaveText(["Ishchi qidiryapman", "Ish qidiryapman", "E'lon berish"]);
   await expect(home.locator("[data-chat-choices], [data-guided-example]")).toHaveCount(0);
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "O'zingizga mos ish va ishchini toping");
   // Bosh sahifada suhbat maydoni yo'q — u "Qidiruv" (/chat) da
   await expect(page.locator("#start-chat-text")).toHaveCount(0);
   await expect(tabs(page).getByRole("link", { name: "Bosh sahifa" })).toHaveAttribute("aria-current", "page");
@@ -108,7 +108,7 @@ test("kirgan foydalanuvchi: «/» — Bosh sahifa (qidiruv qatori, rolga qarab t
   await page.goto("/");
   await expect(page).toHaveURL(/\/$/);
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Ishingiz shu yerdan boshlanadi!");
-  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "Yozing, o'zingizga mosini toping");
+  await expect(page.locator("[data-home-q]")).toHaveAttribute("placeholder", "O'zingizga mos ish va ishchini toping");
   await page.goto("/chat");
   await expect(page.locator("#start-chat-text")).toHaveAttribute("placeholder", "Masalan: menga sotuvchi kerak");
 });

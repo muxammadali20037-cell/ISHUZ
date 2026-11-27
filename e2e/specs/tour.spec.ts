@@ -25,13 +25,19 @@ async function walk(page: Page): Promise<string[]> {
     if (await spot.count()) {
       const target = (await spot.getAttribute("data-tour-spot"))!;
       const el = page.locator(`[data-tour="${target}"]`).filter({ visible: true }).first();
-      const [a, b] = [await spot.boundingBox(), await el.boundingBox()];
-      expect(a && b, code).toBeTruthy();
-      // yoritish tugmani o'z ichiga oladi
-      expect(a!.x, code).toBeLessThanOrEqual(b!.x + 1);
-      expect(a!.y, code).toBeLessThanOrEqual(b!.y + 1);
-      expect(a!.x + a!.width, code).toBeGreaterThanOrEqual(b!.x + b!.width - 1);
-      expect(a!.y + a!.height, code).toBeGreaterThanOrEqual(b!.y + b!.height - 1);
+      // yoritish tugmani o'z ichiga oladi. Sahifa keyinroq siljishi mumkin (shrift, oqim bilan kelgan bo'lim) — halqa
+      // ergashishi shart: qisqa vaqt ichida (2 s) to'liq ustiga tushadi
+      await expect
+        .poll(
+          async () => {
+            const [a, b] = [await spot.boundingBox(), await el.boundingBox()];
+            if (!a || !b) return "yo'q";
+            const miss = [a.x - (b.x + 1), a.y - (b.y + 1), b.x + b.width - 1 - (a.x + a.width), b.y + b.height - 1 - (a.y + a.height)].map((d) => Math.max(0, d));
+            return Math.max(...miss) > 0 ? `chetda ${JSON.stringify({ a, b })}` : "ok";
+          },
+          { message: code, timeout: 2000 },
+        )
+        .toBe("ok");
       // karta ekranda to'liq
       const c = (await card(page).boundingBox())!;
       const vp = page.viewportSize()!;
@@ -63,9 +69,9 @@ test("mehmon ish izlovchi: salom → pastki menyu → til, kirish → yakun; bir
   const voice = page.waitForResponse((r) => r.url().endsWith("/tour/uz/B1.mp3"));
   const codes = await walk(page);
   expect([200, 206]).toContain((await voice).status());
-  // uchta katta tugma (2026-11-23: sariq "E'lon berish" ham), qidiruv qatori, Qidiruv · E'lonlarim · Profil; mehmonda
-  // "Xabarlar" va qo'ng'iroqcha yo'q
-  expect(codes).toEqual(["B0", "B1", "B6", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
+  // uchta tugma (2026-11-27: har kimda ikkala oyna — tepada «Ishchi qidiryapman», ostida «Ish qidiryapman» — va sariq
+  // "E'lon berish"), qidiruv qatori, Qidiruv · E'lonlarim · Profil; mehmonda "Xabarlar" va qo'ng'iroqcha yo'q
+  expect(codes).toEqual(["B0", "B2", "B1", "B6", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
   expect(await tourCookie(page)).toContain("w");
   await page.reload();
   await page.waitForTimeout(1500);
@@ -87,7 +93,7 @@ test("mehmon ish beruvchi: «Kerak emas» — eslab qolinadi; ?tour=1 — qayta;
 
   await page.goto("/?tour=1");
   const codes = await walk(page);
-  expect(codes).toEqual(["B0", "B2", "B6", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
+  expect(codes).toEqual(["B0", "B2", "B1", "B6", "B3", "B4", "B5", "B7", "U2", "U3", "U6"]);
   // kompyuterda: "E'lon berish" tugmasi yuqori panelda — u ham tushuntiriladi
   await page.setViewportSize({ width: 1280, height: 860 });
   await page.goto("/chat?tour=1");
@@ -107,7 +113,7 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
   await page.goto("/");
   await expect(card(page)).toHaveAttribute("data-tour-card", "B0");
   await card(page).locator("[data-tour-next]").click();
-  // ikkinchi qadam — ish beruvchida faqat o'z oynasi: "Ishchi qidiryapman" (2026-11-25)
+  // ikkinchi qadam — tepadagi "Ishchi qidiryapman" (2026-11-27)
   await expect(card(page)).toHaveAttribute("data-tour-card", "B2");
   await card(page).getByRole("button", { name: "Orqaga" }).waitFor();
   await page.keyboard.press("Escape");
@@ -116,7 +122,7 @@ test("kirgan ish beruvchi: rol tanlash va «Kirish» yo'q — xabarlar va qo'ng'
 
   await page.goto("/chat?tour=1");
   const codes = await walk(page);
-  expect(codes).toEqual(["B0", "B2", "B6", "B3", "B4", "B5", "B7", "U4", "U2", "U5", "U6"]);
+  expect(codes).toEqual(["B0", "B2", "B1", "B6", "B3", "B4", "B5", "B7", "U4", "U2", "U5", "U6"]);
 });
 
 test("rus tilida — matnlar ruscha", async ({ page, context }) => {
@@ -129,6 +135,9 @@ test("rus tilida — matnlar ruscha", async ({ page, context }) => {
   // ruscha ovoz hali yo'q — tugma ham, so'rov ham yo'q
   await expect(card(page).getByRole("button", { name: /звук/ })).toHaveCount(0);
   await card(page).getByRole("button", { name: "Начать" }).click();
+  // birinchi tugma — tepadagi «Ищу работника» (2026-11-27), keyin «Ищу работу»
+  await expect(card(page)).toContainText("Ищу работника");
+  await card(page).locator("[data-tour-next]").click();
   await expect(card(page)).toContainText("Ищу работу");
 });
 
@@ -149,6 +158,6 @@ test("video-tushuntirish ochiq — tanishuv kutadi; «Ovozsiz» ko'rilib yopilga
   // videoda "Ovozsiz" tanlangan — tanishuv ham jim (ovozni yoqish tugmasi bilan)
   await expect(card(page).getByRole("button", { name: "Ovozni yoqish" })).toBeVisible();
   await card(page).locator("[data-tour-next]").click();
-  await expect(card(page)).toHaveAttribute("data-tour-card", "B1");
-  await expect(page.locator("[data-tour-spot='start-jobs']")).toBeVisible();
+  await expect(card(page)).toHaveAttribute("data-tour-card", "B2");
+  await expect(page.locator("[data-tour-spot='start-workers']")).toBeVisible();
 });

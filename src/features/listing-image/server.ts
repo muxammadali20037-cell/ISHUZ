@@ -2,28 +2,21 @@ import "server-only";
 
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/types/database.types";
-import { getServerEnv, publicEnv } from "@/lib/env";
+import { publicEnv } from "@/lib/env";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { logAiUsage } from "@/lib/ai/usage";
 import { checkGeneratedImage } from "@/features/moderation/service";
 import { buildListingImagePrompt } from "./prompt";
+import { isProviderOutage, openAiImage, openAiImageConfig } from "@/lib/ai/openai-image";
+
+export { isProviderOutage };
 
 export type ListingEntity = "vacancy" | "worker" | "master";
 const BUCKET = "listing-images";
-const DEFAULT_MODEL = "gpt-image-1.5";
 const one = <T,>(x: T | T[] | null | undefined): T | null => (Array.isArray(x) ? (x[0] ?? null) : (x ?? null));
 
 /** OpenAI rasm modeli sozlanganmi (kalit + service role). Sozlanmagan bo'lsa — "Rasm yaratilsinmi?" savoli chiqmaydi */
-export function listingImageConfig(): { apiKey: string; model: string; quality: "low" | "medium" | "high"; baseUrl: string } | null {
-  const env = getServerEnv();
-  if (!env.OPENAI_API_KEY || !env.SUPABASE_SERVICE_ROLE_KEY) return null;
-  return {
-    apiKey: env.OPENAI_API_KEY,
-    model: env.LISTING_IMAGE_MODEL || DEFAULT_MODEL,
-    quality: env.LISTING_IMAGE_QUALITY ?? "medium",
-    baseUrl: (env.OPENAI_BASE_URL || "https://api.openai.com").replace(/\/$/, ""),
-  };
-}
+export const listingImageConfig = openAiImageConfig;
 
 export function listingImageEnabled(): boolean {
   return listingImageConfig() !== null;
@@ -64,26 +57,6 @@ export async function getListingImageUrls(entity: ListingEntity, ids: string[]):
   }
 }
 
-/** OpenAI Images API (gpt-image): bitta landshaft rasm, JPEG */
-async function openAiImage(cfg: NonNullable<ReturnType<typeof listingImageConfig>>, prompt: string): Promise<{ bytes: Buffer; mime: string }> {
-  const res = await fetch(`${cfg.baseUrl}/v1/images/generations`, {
-    method: "POST",
-    headers: { "content-type": "application/json", authorization: `Bearer ${cfg.apiKey}` },
-    body: JSON.stringify({ model: cfg.model, prompt, n: 1, size: "1536x1024", quality: cfg.quality, output_format: "jpeg", output_compression: 85 }),
-    signal: AbortSignal.timeout(100_000),
-  });
-  if (!res.ok) {
-    // xato matni (kalitsiz) — jurnal uchun qisqa
-    const body = await res.text().catch(() => "");
-    const code = /"code"\s*:\s*"([^"]{1,60})"/.exec(body)?.[1];
-    throw new Error(`provider_http_${res.status}${code ? `_${code}` : ""}`);
-  }
-  const json = (await res.json()) as { data?: { b64_json?: string }[] };
-  const b64 = json.data?.[0]?.b64_json;
-  if (!b64) throw new Error("provider_no_image");
-  return { bytes: Buffer.from(b64, "base64"), mime: "image/jpeg" };
-}
-
 interface ListingForImage {
   owner: string;
   names: (string | null)[];
@@ -122,14 +95,6 @@ async function loadListing(entity: ListingEntity, id: string): Promise<ListingFo
 }
 
 export type ListingImageResult = { ok: true; url: string } | { ok: false; error: string };
-
-/**
- * Provayder tomonidagi xato (balans tugagan, chegara, OpenAI ishlamayapti, javob yo'q): foydalanuvchining aybi emas —
- * urinish sanalmaydi (aks holda e'lon "3 marta urinildi" deb qulflanib qoladi) va tushunarli kod qaytadi.
- */
-export function isProviderOutage(msg: string): boolean {
-  return /^provider_http_(429|5\d\d|401|403)|^provider_http_400_(billing|insufficient|credit)|^provider_no_image|timeout|aborted|fetch failed/i.test(msg);
-}
 
 /**
  * Umumiy yo'l: navbat va xarajat chegarasi (claim_listing_image) → OpenAI → yaratilgan rasm ham tekshiriladi (moderatsiya)
@@ -193,6 +158,22 @@ async function draftNames(professionId: string | null, title: string | null): Pr
 }
 
 /**
+ * Qoralama id'si shu odamniki bo'la oladimi: mavjud e'lon id'si emas (aks holda begona e'longa rasm qo'yilardi) va boshqa
+ * odamning qoralamasi emas
+ */
+export async function draftAllowed(entity: ListingEntity, draftId: string, userId: string): Promise<boolean> {
+  const admin = createAdminClient();
+  const realQuery =
+    entity === "vacancy"
+      ? admin.from("vacancies").select("id").eq("id", draftId).maybeSingle()
+      : entity === "master"
+        ? admin.from("master_listings").select("id").eq("id", draftId).maybeSingle()
+        : admin.from("worker_profiles").select("id").eq("id", draftId).maybeSingle();
+  const [{ data: row }, { data: real }] = await Promise.all([admin.from("listing_images").select("owner_profile_id").eq("entity", entity).eq("entity_id", draftId).maybeSingle(), realQuery]);
+  return !real && !(row && row.owner_profile_id !== userId);
+}
+
+/**
  * E'lon JOYLANISHIDAN OLDIN (ega, 2026-11-22: "rasmni e'lon joylashdan oldin yaratish kerak, ma'qul kelsa joylash kerak"):
  * tekshirish sahifasida rasm qoralama id'si bilan yaratiladi (listing_images.entity_id = qoralama). Joylanganda
  * `attachDraftImage` uni e'longa o'tkazadi. Qoralama id — tasodifiy; mavjud e'lon id'si yoki boshqa odamning qoralamasi
@@ -206,15 +187,7 @@ export async function generateDraftImage(
 ): Promise<ListingImageResult> {
   const cfg = listingImageConfig();
   if (!cfg) return { ok: false, error: "not_configured" };
-  const admin = createAdminClient();
-  const realQuery =
-    entity === "vacancy"
-      ? admin.from("vacancies").select("id").eq("id", draftId).maybeSingle()
-      : entity === "master"
-        ? admin.from("master_listings").select("id").eq("id", draftId).maybeSingle()
-        : admin.from("worker_profiles").select("id").eq("id", draftId).maybeSingle();
-  const [{ data: row }, { data: real }] = await Promise.all([admin.from("listing_images").select("owner_profile_id").eq("entity", entity).eq("entity_id", draftId).maybeSingle(), realQuery]);
-  if (real || (row && row.owner_profile_id !== userId)) return { ok: false, error: "forbidden" };
+  if (!(await draftAllowed(entity, draftId, userId))) return { ok: false, error: "forbidden" };
   // usta e'loni: kasb daraxti yo'q — kategoriya (sahna) va sarlavha (xizmatlar)
   const { names, categorySlug } = entity === "master" ? { names: [input.title], categorySlug: null } : await draftNames(input.professionId, input.title);
   if (!names.some((n) => n && n.trim())) return { ok: false, error: "invalid" };

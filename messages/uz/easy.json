@@ -1961,7 +1961,8 @@
     "remove": "Rasmsiz",
     "keep": "Avvalgi rasm qolsin",
     "skip": "Rasmsiz davom etish",
-    "error_provider_unavailable": "Rasm xizmati hozir ishlamayapti. E'lonni rasmsiz joylashingiz mumkin."
+    "error_provider_unavailable": "Rasm xizmati hozir ishlamayapti. E'lonni rasmsiz joylashingiz mumkin.",
+    "preset_note": "Bu — kasbingiz uchun tayyor rasm. Yoqsa, shunday joylang."
   },
   "guided": {
     "hello": "Ish yoki ishchini oson toping",
@@ -2065,7 +2066,7 @@
       "all_workers": "Barcha ishchilar ({count})",
       "students": "Talabalar uchun",
       "quick_label": "Tezkor bo'limlar",
-      "placeholder": "Yozing, o'zingizga mosini toping"
+      "placeholder": "O'zingizga mos ish va ishchini toping"
     },
     "ask_post_license": "Haydovchilik guvohnomangiz qaysi toifada?",
     "ask_post_car": "Shaxsiy mashinangiz bormi?",

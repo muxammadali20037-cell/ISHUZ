@@ -124,21 +124,20 @@ test("bosh ekran (ega, 2026-11-23 — C varianti): sarlavha, qidiruv qatori, tug
       expect(sb.y, at).toBeGreaterThan(hb.y + hb.height - 1);
       expect(ab.y, at).toBeGreaterThan(sb.y + sb.height - 1);
       expect(qb.y, at).toBeGreaterThan(ab.y + ab.height - 1);
-      // rol tanlangan (ega, 2026-11-25) — faqat o'z oynasi va uzun "E'lon berish"; rol tanlanmagan — uchala tugma
-      await expect(main.locator("[data-guided-start]")).toHaveText(
-        mode === "worker" ? ["Ish qidiryapman", "E'lon berish"] : mode === "employer" ? ["Ishchi qidiryapman", "E'lon berish"] : ["Ish qidiryapman", "Ishchi qidiryapman", "E'lon berish"],
-      );
-      if (mode) {
-        // B varianti: ikkalasi bir xil uzun; telefonda — ustma-ust, kompyuterda — yonma-yon
-        const [role, post] = [await box("[data-guided-start]:first-child"), await box("[data-guided-start='post']")];
-        expect(Math.abs(post.width - role.width), at).toBeLessThan(2);
-        expect(role.width, at).toBeGreaterThan(role.height * 2.5);
-        if (width < 1024) expect(post.y, at).toBeGreaterThan(role.y + role.height - 1);
-        else expect(Math.abs(post.y - role.y), at).toBeLessThan(2);
-      }
-      // qidiruv maydonidagi ko'rsatma (ega, 2026-11-23: "Yozing, o'zingizga mosini toping" — sig'sin): kesilmaydi, maydon ichida
+      // ega (2026-11-27): har kimda (ish izlovchi, ish beruvchi, mehmon) ikkala oyna — tepada «Ishchi qidiryapman», ostida
+      // yashil «Ish qidiryapman» — va «E'lon berish»; uchalasi bir xil kenglikda, ingichka; telefonda ustma-ust, kompyuterda yonma-yon
+      await expect(main.locator("[data-guided-start]")).toHaveText(["Ishchi qidiryapman", "Ish qidiryapman", "E'lon berish"]);
+      const [w, j, post] = [await box("[data-guided-start='workers']"), await box("[data-guided-start='jobs']"), await box("[data-guided-start='post']")];
+      for (const b of [j, post]) expect(Math.abs(b.width - w.width), at).toBeLessThan(2);
+      expect(w.width, at).toBeGreaterThan(w.height * 2.5);
+      expect(w.height, at).toBeLessThanOrEqual(72);
+      if (width < 1024) {
+        expect(j.y, at).toBeGreaterThan(w.y + w.height - 1);
+        expect(post.y, at).toBeGreaterThan(j.y + j.height - 1);
+      } else for (const b of [j, post]) expect(Math.abs(b.y - w.y), at).toBeLessThan(2);
+      // qidiruv maydonidagi ko'rsatma (ega, 2026-11-23 — sig'sin; 2026-11-27: "O'zingizga mos ish va ishchini toping"): kesilmaydi, maydon ichida
       const hint = main.locator("[data-home-hint]");
-      await expect(hint).toHaveText("Yozing, o'zingizga mosini toping");
+      await expect(hint).toHaveText("O'zingizga mos ish va ishchini toping");
       const fit = await hint.evaluate((el) => {
         const f = el.closest("[data-home-field]")!.getBoundingClientRect();
         const r = el.getBoundingClientRect();

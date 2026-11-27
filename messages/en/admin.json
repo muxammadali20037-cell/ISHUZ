@@ -624,7 +624,18 @@
     "merge_title": "Merge “{name}”",
     "move_hint": "Search for the new parent. Nested nodes move too.",
     "merge_hint": "Merge into which node? Profiles, jobs and nested nodes move over; the old name becomes an alias.",
-    "to_root": "To sector root"
+    "to_root": "To sector root",
+    "images": {
+      "title": "Profession images",
+      "desc": "One ready image per profession: it's pre-selected for the person posting — they just press Post. An image is created automatically the first time a profession needs one. This button creates them in advance for popular professions: up to 4 per click (1–3 minutes), ≈ $0.05 each.",
+      "ready": "Ready: {count}",
+      "generate": "Create images for popular professions",
+      "wait": "Creating images — 1–3 minutes. Don't close the page.",
+      "started": "Done — new images are in the list",
+      "replace": "Replace",
+      "replaced": "Image replaced",
+      "empty": "No ready images yet."
+    }
   },
   "mfa": {
     "title": "Two-step sign-in",

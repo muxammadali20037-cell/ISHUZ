@@ -162,14 +162,22 @@ test("bosh ekrandagi sariq «E'lon berish» (2026-11-23): kimligi so'ralmaydi �
   expect((await context.cookies()).find((c) => c.name === "ib_mode")).toBeUndefined();
 });
 
-test("rol tanlangan (ega, 2026-11-25): bosh sahifada faqat o'z oynasi, uzun «E'lon berish» — so'ralmasdan o'z e'loniga", async ({ page, context }) => {
-  // ish izlovchi: "Ish qidiryapman" + "E'lon berish" → "O'zim haqimda" shu chatda (kasb so'raladi), "nima uchun?" savolisiz
+test("rol tanlangan (ega, 2026-11-25, 2026-11-27): bosh sahifada ikkala oyna ham — ko'k «Ishchi qidiryapman», yashil «Ish qidiryapman», ingichka; «E'lon berish» so'ralmasdan o'z e'loniga; boshqa rol tugmasi ham ishlaydi", async ({ page, context }) => {
+  // ish izlovchi: ikkala oyna + "E'lon berish" → "O'zim haqimda" shu chatda (kasb so'raladi), "nima uchun?" savolisiz
   await loginAs(context, USERS.workerB);
   await asMode(context, "worker");
   await page.goto("/");
   const starts = page.locator("main [data-guided-start]");
-  await expect(starts).toHaveText(["Ish qidiryapman", "E'lon berish"]);
-  await expect(page.locator("main [data-guided-start='workers']")).toHaveCount(0);
+  await expect(starts).toHaveText(["Ishchi qidiryapman", "Ish qidiryapman", "E'lon berish"]);
+  // ranglar: to'q ko'k, yashil va sariq (--highlight) — uchalasi har xil; ingichka (≤ 64 px), bosish maydoni ≥ 44 px
+  const bg = (k: string) => page.locator(`main [data-guided-start='${k}']`).evaluate((el) => getComputedStyle(el).backgroundColor);
+  expect(new Set([await bg("workers"), await bg("jobs"), await bg("post")]).size).toBe(3);
+  expect(await bg("post")).toBe("rgb(255, 200, 61)");
+  for (const k of ["workers", "jobs", "post"]) {
+    const h = (await page.locator(`main [data-guided-start='${k}']`).boundingBox())!.height;
+    expect(h, k).toBeGreaterThanOrEqual(44);
+    expect(h, k).toBeLessThanOrEqual(64);
+  }
   await page.locator("form[data-home-search][data-hydrated]").waitFor();
   await page.locator("main [data-guided-start='post']").click();
   await page.waitForURL((u) => new URL(u).pathname === "/chat");
@@ -177,12 +185,11 @@ test("rol tanlangan (ega, 2026-11-25): bosh sahifada faqat o'z oynasi, uzun «E'
   await expect(page.locator("[data-ai-you]").last()).toHaveText(/E'lon berish/);
   await expect(page.locator("[data-guided-ai='post']")).toHaveCount(0);
 
-  // ish beruvchi: "Ishchi qidiryapman" + "E'lon berish" → to'g'ri vakansiya yordamchisi
+  // ish beruvchi: o'sha uchta → "E'lon berish" — to'g'ri vakansiya yordamchisi
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto("/");
-  await expect(starts).toHaveText(["Ishchi qidiryapman", "E'lon berish"]);
-  await expect(page.locator("main [data-guided-start='jobs']")).toHaveCount(0);
+  await expect(starts).toHaveText(["Ishchi qidiryapman", "Ish qidiryapman", "E'lon berish"]);
   await page.locator("form[data-home-search][data-hydrated]").waitFor();
   await page.locator("main [data-guided-start='post']").click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
@@ -190,8 +197,18 @@ test("rol tanlangan (ega, 2026-11-25): bosh sahifada faqat o'z oynasi, uzun «E'
 
   // "Qidiruv" (chat) bo'sh holatidagi bosh ekranda ham shunday
   await page.goto("/chat");
+  await expect(page.locator("[data-guided-empty] [data-guided-start]")).toHaveText(["Ishchi qidiryapman", "Ish qidiryapman", "E'lon berish"]);
   await page.locator("[data-guided-empty] [data-guided-start='post']").click();
   await page.waitForURL(/\/post\/vacancy\?ai=1/);
+
+  // ish beruvchi yashil «Ish qidiryapman»ni bosdi — ish qidiruvi boshlanadi (kasb so'raladi), rejim ish izlovchiga o'tadi
+  await page.goto("/");
+  await page.locator("form[data-home-search][data-hydrated]").waitFor();
+  await page.locator("main [data-guided-start='jobs']").click();
+  await page.waitForURL((u) => new URL(u).pathname === "/chat");
+  await expect(page.locator("[data-ai-you]").last()).toHaveText(/Ish qidiryapman$/);
+  await expect(page.locator("[data-guided-ai='ask-profession']")).toBeVisible();
+  await expect.poll(async () => (await context.cookies()).find((c) => c.name === "ib_mode")?.value).toBe("worker");
 });
 
 test("bosh ekrandagi qidiruv qatori: kasb + tanlangan viloyat → savolsiz natija; viloyat eslab qolinadi", async ({ page, context }) => {

@@ -134,7 +134,9 @@ export function AppTour() {
         if (step.target && (!el || !el.isConnected)) el = findTarget(step.target);
         if (!el) return setBox(null);
         const r = el.getBoundingClientRect();
-        setBox({ top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 });
+        const next = { top: r.top - PAD, left: r.left - PAD, width: r.width + PAD * 2, height: r.height + PAD * 2 };
+        // o'zgarmagan bo'lsa — qayta chizilmaydi (vaqti-vaqti bilan o'lchash arzon bo'lsin)
+        setBox((prev) => (prev && prev.top === next.top && prev.left === next.left && prev.width === next.width && prev.height === next.height ? prev : next));
       });
     };
     measure();
@@ -148,9 +150,15 @@ export function AppTour() {
     mo.observe(document.body, { childList: true, subtree: true });
     document.addEventListener("transitionend", measure, true);
     document.addEventListener("animationend", measure, true);
+    // shrift yuklanib matn qayta o'ralsa yoki yuqoridagi narsa o'lchamini o'zgartirsa ham (body o'lchami o'zgarmasligi
+    // mumkin — kuzatuvchilar sezmaydi): shrift hodisasi va qadam ochiq turganda vaqti-vaqti bilan qayta o'lchash (arzon)
+    document.fonts?.addEventListener?.("loadingdone", measure);
+    const tick = window.setInterval(measure, 300);
     primaryRef.current?.focus({ preventScroll: true });
     return () => {
       cancelAnimationFrame(raf);
+      window.clearInterval(tick);
+      document.fonts?.removeEventListener?.("loadingdone", measure);
       ro.disconnect();
       mo.disconnect();
       window.removeEventListener("resize", measure);

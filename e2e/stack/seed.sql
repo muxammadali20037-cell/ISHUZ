@@ -5,6 +5,9 @@
 -- (bu oqimlar SQL testlarida alohida sinaladi; raqam ochish — contact-unlock.spec o'zi yoqib-o'chiradi)
 update public.app_settings set value = 'false'::jsonb
 where key in ('moderation_enabled', 'listings_paid', 'employer_verification_required', 'ai_alerts_paid', 'worker_phone_required');
+-- kasb rasmlari (0047/0093): stendda OpenAI soxta (gateway) — yoqiq bo'lsa har joylashdan keyin fonda kasb rasmi paydo bo'lib,
+-- boshqa testlardagi e'lonlarga oldindan qo'yilardi. O'chiq; profession-image.spec o'zi yoqadi va qaytaradi
+update public.app_settings set value = 'false'::jsonb where key = 'profession_images_enabled';
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values
   ('7e2e0000-0000-4000-8000-000000000001', '+998901110001', now(), '{"first_name":"Anvar","last_name":"Aliyev"}'),

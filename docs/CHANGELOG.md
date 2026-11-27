@@ -1,5 +1,28 @@
 # O'zgarishlar jurnali
 
+## 2026-11-27 · Ikkala oyna har kimda, ingichka; kasb rasmi e'longa oldindan qo'yiladi (`feat/home-dual-tiles`)
+
+Ega: "«Ishchi qidiryapman» tagiga yashil rangda «Ish qidiryapman» — ikkala panelda ham bo'lsin, kichikroq, ingichkaroq;
+kirish menyusida ham shunaqa", "chiqar hammasini saytga" va "har bitta kasbga rasm yaratib olsak, birinchi qo'yib chiqsin — oddiy rasmni tanlab
+«Joylash» bossa buzilmasin" → tanlovi: "Kerak bo'lganda + tugma". **Migratsiya: 0093**.
+
+- **Bosh ekran**: har kimda (ish izlovchi, ish beruvchi, mehmon) uchta ingichka tugma ustma-ust — to'q ko'k «Ishchi
+  qidiryapman», yashil «Ish qidiryapman», sariq «E'lon berish» (kompyuterda yonma-yon). Boshqa rol tugmasi ham ishlaydi:
+  o'sha qidiruv boshlanadi va rejim almashadi. Tugmalar bilan tanishuv ekrandagi tartibda.
+- **Kirish menyusi** (xush kelibsiz va kirishdagi rol tanlash; ega: "«Nima qidiryapsiz» emas — «Ish yoki ishchi
+  qidiryapsizmi? Tanlang»; rang yo'q bo'lsin, nur soyadan chiqsin"): savol «Ish yoki ishchi qidiryapsizmi?», ostida
+  «Tanlang.»; o'sha ingichka tugmalar oq, rang faqat ostidan taralgan yumshoq nurda (ko'k / yashil); "oxirgi tanlovingiz"
+  belgisi qoladi.
+- Qidiruv maydonidagi yozuv: «O'zingizga mos ish va ishchini toping».
+- **Kasb rasmi**: e'lon tekshiruvida kasbning tayyor rasmi bo'lsa — oldindan qo'yiladi ("Bu — kasbingiz uchun tayyor
+  rasm"), kutish va xarajat yo'q, «Joylash» kifoya. Rasm yo'q bo'lsa «Rasm yaratish» kasb rasmini yaratadi — keyingi
+  odamlarga ham tayyor turadi. «Boshqa rasm» — faqat shu e'lon uchun. «Rasmsiz» bosilsa — qayta qo'yilmaydi.
+- Kasb rasmlari endi OpenAI'da (e'lon rasmlari bilan bir xil; avvalgi Gemini kvota xatosi bilan bitta ham yaratmagan edi).
+  Fonda: joylashdan keyin va soatlik vazifa (sutkada 30 tagacha). Admin → Kasblar → «Kasb rasmlari»: ommabop kasblarga
+  oldindan yaratish (bir bosishda 4 tagacha, sutkada 200 tagacha) va yoqmaganini almashtirish; audit yoziladi.
+- 0093: `claim_profession_image_by` (foydalanuvchi — e'lon rasmlari bilan umumiy kunlik chegara; admin — alohida);
+  Gemini kvotasi sababli to'xtagan 61 ta urinish qayta ochiladi.
+
 ## 2026-11-26 · Google orqali kirish (`feat/google-login`)
 
 Ega: "Google orqali kirishni ula". Migratsiya yo'q. Sozlash — [GOOGLE_LOGIN.md](GOOGLE_LOGIN.md) (faqat ega qiladi).
