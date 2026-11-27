@@ -167,7 +167,8 @@ const EMPLOYER_BY_CATEGORY: Partial<Record<string, ExtraKey[]>> = {
   electrician: ["term", "el_group"],
   mechanic: ["night"],
   auto_service: ["vehicles"],
-  restaurant: ["venue", "medbook"],
+  // sanitar daftarcha so'ralmaydi (ega, 2026-11-27: "daftarchani nima keragi bor — olib tashla"); eski javoblar o'qiladi
+  restaurant: ["venue"],
   call_center: ["languages"],
   office: ["languages"],
   hotel: ["languages"],
@@ -540,7 +541,8 @@ const WORKER_BY_CATEGORY: Partial<Record<string, WorkerExtraKey[]>> = {
   production: ["night"],
   logistics: ["night"],
   auto_service: ["vehicles", "tools"],
-  restaurant: ["venue", "medbook"],
+  // sanitar daftarcha so'ralmaydi (ega, 2026-11-27: "daftarchani nima keragi bor — olib tashla"); eski javoblar o'qiladi
+  restaurant: ["venue"],
   call_center: ["languages"],
   office: ["languages"],
   hotel: ["languages"],
@@ -592,7 +594,7 @@ export function workerExtraKeysFor(p: ProfessionContext): WorkerExtraKey[] {
     case "telecom":
       return byName<WorkerExtraKey>(name, [[DRIVER_NAME, ["license"]], [TEL_MOUNT, ["heights"]], [TEL_SALES, ["cashier"]], [TEL_POST, ["transport"]]], ["languages"]);
     case "cleaning":
-      return byName<WorkerExtraKey>(name, [[CLEAN_CARE, ["medbook"]], [CLEAN_GARDEN, ["tools"]]], ["clean_place"]);
+      return byName<WorkerExtraKey>(name, [[CLEAN_CARE, []], [CLEAN_GARDEN, ["tools"]]], ["clean_place"]);
     case "legal":
       return byName<WorkerExtraKey>(name, [[LEGAL_ADVOCATE, ["lawyer_license"]]], ["edu"]);
     default:
