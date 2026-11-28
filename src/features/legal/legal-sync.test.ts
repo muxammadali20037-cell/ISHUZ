@@ -3,6 +3,7 @@ import uz from "../../../messages/uz/legal.json";
 import oz from "../../../messages/oz/legal.json";
 import ru from "../../../messages/ru/legal.json";
 import en from "../../../messages/en/legal.json";
+import vercel from "../../../vercel.json";
 
 /**
  * Huquqiy matnlar to'rt tilda alohida yoziladi (kirill — qo'lda tuzatilgan matn, avtomatik emas). Bir tilga qo'shilgan
@@ -36,5 +37,18 @@ describe("huquqiy matnlar — tillar mosligi", () => {
     uz.privacy.sections.forEach((section, i) => {
       for (const [lang, doc] of Object.entries(DOCS)) expect(bullets((doc as typeof uz).privacy.sections[i]![1]!), `${lang} privacy[${i}]`).toBe(bullets(section[1]!));
     });
+  });
+
+  it("maxfiylik siyosatidagi server joyi vercel.json hududi bilan bir xil (sayt va baza bir hududda)", () => {
+    const CITY: Record<string, Record<keyof typeof DOCS, string>> = {
+      fra1: { uz: "Germaniyada (Frankfurt)", oz: "Германияда (Франкфурт)", ru: "в Германии (Франкфурт)", en: "in Germany (Frankfurt)" },
+      bom1: { uz: "Hindistonda (Mumbay)", oz: "Ҳиндистонда (Мумбай)", ru: "в Индии (Мумбаи)", en: "in India (Mumbai)" },
+    };
+    const region = vercel.regions[0]!;
+    expect(Object.keys(CITY), "yangi hudud — shu ro'yxatga va maxfiylik siyosatiga qo'shing").toContain(region);
+    for (const [lang, doc] of Object.entries(DOCS)) {
+      const supabase = doc.privacy.sections[3]![1]!.split("\n").find((l) => l.startsWith("- Supabase"));
+      expect(supabase, lang).toContain(CITY[region]![lang as keyof typeof DOCS]);
+    }
   });
 });

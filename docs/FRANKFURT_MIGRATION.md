@@ -58,16 +58,24 @@ kirish (telefon/Telegram/Google), vakansiya, ishchi e'loni, rasm, admin panel.
 1. Vercel → Settings → Environment Variables → `MAINTENANCE_MODE` = `1` (Production) → Redeploy.
    Sayt "Texnik ishlar olib borilmoqda" ko'rsatadi, bazaga hech narsa yozilmaydi; Telegram xabarlari keyin qayta keladi.
 2. Actions → Region migration → `mode = final`. Sonlar 1:1 mos bo'lmasa ish xato bilan tugaydi — keyingi qadamga o'tilmaydi.
-3. Vercel'da uchta kalitni yangi loyihanikiga almashtiring: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-   `SUPABASE_SERVICE_ROLE_KEY`; `MAINTENANCE_MODE` ni o'chiring → Redeploy.
-   Shu bilan birga (Claude, alohida PR): `vercel.json` da `"regions": ["bom1"]` → `["fra1"]` — sayt funksiyalari bazaga
-   yaqin ishlaydi (Mumbai–Frankfurt orasida har so'rovga ~120 ms yo'qolmaydi). PR ko'chirishdan oldin tayyor turadi,
-   kalitlar almashgach birlashtiriladi.
-4. Tekshiruv (Claude): sayt ochiladi, kirish, e'lonlar, rasmlar, admin, cron (`/api/cron/*` ishlayapti), xatolar yo'q.
-5. GitHub sirida `SUPABASE_DB_URL` ni yangi loyihanikiga almashtiring (kunlik zaxira endi Frankfurt'dan).
+3. **Ega:** Vercel'da uchta kalitni yangi loyihanikiga almashtiring: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
+   `SUPABASE_SERVICE_ROLE_KEY`; `MAINTENANCE_MODE` ni o'chiring. **Redeploy bosmang** — yangi deploy keyingi qadamda o'zi bo'ladi.
+4. **Claude:** oldindan tayyor turgan `feat/frankfurt-cutover` PR'ini birlashtiradi. Ko'chirishdan bir kun oldin shu PR'da
+   (CI — ~30 daqiqa — sayt texnik ishlarda turganda emas, oldindan yashil bo'lsin):
+   - `messages/*/legal.json` → `updated` = ko'chirish kuni (4 tilda bir xil — `legal-sync.test.ts` tekshiradi);
+   - `docs/GOOGLE_LOGIN.md` dagi callback manzili → yangi ref.
 
-**Qaytarish (biror narsa ishlamasa):** Vercel kalitlarini eski qiymatlarga qaytarib Redeploy — eski loyiha o'zgarmagan,
-sayt avvalgidek ishlaydi (ko'chirish payti yozilgan narsa yo'q, chunki sayt texnik ishlarda edi).
+   Birlashtirish production deploy qiladi va hammasi bir vaqtda kuchga kiradi: yangi baza kalitlari, sayt funksiyalari
+   `fra1` (Frankfurt) da, maxfiylik siyosatida «Serverlar Germaniyada (Frankfurt)». PR'da: `vercel.json` hududi, 4 tildagi
+   maxfiylik siyosati, README va hujjatlar; test — `vercel.json` hududi va siyosatdagi shahar mos kelishi shart.
+5. **Tekshiruv (Claude):** `/api/health` → `db.ok`, `release` = yangi commit; javob sarlavhasi `x-vercel-id` da `fra1`
+   (Mumbaydagi `bom1` emas); bazaga so'rov vaqti (`db.ms`) kichik; sayt ochiladi, kirish (telefon/Telegram/Google),
+   e'lonlar, rasmlar, admin, cron (`/api/cron/*`), xatolar yo'q.
+6. **Ega:** GitHub sirida `SUPABASE_DB_URL` ni yangi loyihanikiga almashtiring (kunlik zaxira endi Frankfurt'dan).
+
+**Qaytarish (biror narsa ishlamasa):** Vercel kalitlarini eski qiymatlarga qaytarib, Claude `feat/frankfurt-cutover`
+commit'ini qaytaradi (revert — hudud `bom1`, siyosatda yana Mumbay) → yangi deploy. Eski loyiha o'zgarmagan, sayt
+avvalgidek ishlaydi (ko'chirish payti yozilgan narsa yo'q, chunki sayt texnik ishlarda edi).
 
 ## 5. Keyin
 

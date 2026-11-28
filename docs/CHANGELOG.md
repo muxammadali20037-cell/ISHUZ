@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## Frankfurt ko'chirish kuni · Sayt va baza Germaniyada (`feat/frankfurt-cutover`)
+
+Oldindan tayyorlangan; ko'chirish kuni (docs/FRANKFURT_MIGRATION.md §4, 4-qadam) birlashtiriladi. Migratsiya yo'q.
+
+- `vercel.json`: sayt funksiyalari `bom1` (Mumbay) → `fra1` (Frankfurt) — yangi baza bilan bir hududda.
+- Maxfiylik siyosati (4 til): «Serverlar Germaniyada (Frankfurt) joylashgan»; Vercel — «server qismi Germaniyada».
+- Test: `vercel.json` hududi va siyosatdagi shahar mos kelishi shart (biri o'zgarib, ikkinchisi unutilsa CI to'xtaydi).
+- README, SCALE, PROJECT_AUDIT, THREAT_MODEL — yangi hudud; FRANKFURT_MIGRATION — ko'chirish kuni tartibi aniqlashtirildi
+  (ega kalitlarni almashtiradi, Redeploy'siz → Claude PR'ni birlashtiradi → hammasi bitta deploy'da).
+
 ## 2026-11-28 · Kirill yozuvidagi maxfiylik siyosati to'ldirildi (`fix/oz-privacy-sync`)
 
 Frankfurt tayyorgarligi paytida topildi. Migratsiya yo'q.

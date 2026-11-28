@@ -90,7 +90,7 @@ CI'da `e2e` job shu stendni ko'taradi; xato bo'lsa trace, skrinshot va loglar ar
 
 1. [vercel.com/new](https://vercel.com/new) → GitHub repo'ni import qiling (Framework: Next.js, sozlamalar standart).
 2. **Environment Variables**: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `NEXT_PUBLIC_APP_URL`, `APP_URL`, `CRON_SECRET` (masalan `openssl rand -hex 32`), `TELEGRAM_BOT_TOKEN`, `TELEGRAM_BOT_USERNAME`, `TELEGRAM_WEBHOOK_SECRET` → Deploy.
-3. `vercel.json` funksiyalarni `bom1` (Mumbai) regionida ishga tushiradi — Supabase (ap-south-1) bilan bir joyda. Cron'lar Vercel'da emas, Supabase `pg_cron` da (Hobby tarifi cheklovi yo'q).
+3. `vercel.json` funksiyalarni `fra1` (Frankfurt) regionida ishga tushiradi — Supabase (eu-central-1) bilan bir joyda. Cron'lar asosan Supabase `pg_cron` da; haftalik admin hisoboti — Vercel Cron (`vercel.json`, dushanba 09:00 Toshkent; Hobby tarifida kuniga bir martadan ko'p bo'lmasligi kerak).
 4. Domen (masalan `ishtopdim.uz`) → `APP_URL`, `NEXT_PUBLIC_APP_URL`, Supabase Site URL va BotFather'dagi Mini App manziliga yozing.
 
 ## Mobil ilova
