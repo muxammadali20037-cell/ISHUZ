@@ -7,7 +7,7 @@ Bu hujjat "tizim buzilmaydi" demaydi. U nimani himoya qilayotganimiz, kim va qay
 ## 1. Tizim chegaralari
 
 ```
-Brauzer / Telegram Mini App ──HTTPS──► Vercel (Next.js 16, bom1)
+Brauzer / Telegram Mini App ──HTTPS──► Vercel (Next.js 16, fra1)
                                          │  proxy.ts (sessiya, admin host, til)
                                          │  route handlers /api/* , server actions
                                          ├──► Supabase PostgREST  (anon/authenticated JWT → RLS, pre-request)

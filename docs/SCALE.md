@@ -87,7 +87,8 @@ beradi — u HTTP holatiga ta'sir qilmaydi.
 
 ## 4. Infratuzilma
 
-- **Joylashuv:** Vercel `bom1` (Mumbay) va Supabase `ap-south-1` bir hududda — bazaga so'rov 1–2 ms.
+- **Joylashuv:** Vercel `fra1` (Frankfurt) va Supabase `eu-central-1` bir hududda — bazaga so'rov 1–2 ms
+  (2026: Mumbay `bom1`/`ap-south-1` dan ko'chirildi — docs/FRANKFURT_MIGRATION.md).
 - **Ulanishlar:** brauzer va server bazaga PostgREST (Supabase REST) orqali boradi — ulanishlar havzasi (pool)
   Supabase tomonida; serverless funksiyalar to'g'ridan-to'g'ri Postgres ulanishi ochmaydi.
 - **Navbatlar:** moderatsiya, mos ishlar va Telegram — har daqiqada `/api/cron/tick` (Supabase `pg_cron`).

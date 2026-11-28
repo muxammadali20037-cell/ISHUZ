@@ -35,7 +35,7 @@ Shuning uchun **qayta yozish emas, birlashtirish va yangi dizayn** kerak. Asosiy
 | AI | Gemini → Claude fallback (`src/lib/ai/client.ts`), kunlik limit, `ai_usage_log` | Saqlanadi |
 | To'lov | Payme, Click (`/api/payments/*`) — kod bor, hozir o'chiq (bepul rejim) | Keyin |
 | Monitoring | `/api/health`, Sentry (faqat server, `SENTRY_DSN` bilan) — branchda, prod'da hali yo'q | Ega amali |
-| Hosting | Vercel (`bom1`), GitHub Actions CI, shifrlangan DB zaxira | Saqlanadi |
+| Hosting | Vercel (`fra1`), GitHub Actions CI, shifrlangan DB zaxira | Saqlanadi |
 | Test | 96 Vitest fayl (708 test), 47 Playwright spec (236 test), 38 SQL test | CI yashil |
 
 Stekni almashtirishga texnik sabab yo'q. Talabdagi "Next.js + PostgreSQL/Supabase + Vercel" bilan to'liq mos.
