@@ -127,6 +127,27 @@ describe("renderNotification", () => {
     expect(renderNotification("system", { kind: "telegram_relinked" }, ru, "ru").title).toBe("Telegram изменён");
   });
 
+  it("system/weekly_report: hafta raqamlari, o'tgan hafta bilan solishtirib (faqat sonlar)", () => {
+    const cur = { employers: 5, vacancies: 12, applications: 30, activeVacancies: 20, visitors: 54, topBuyers: 2, repeatBuyers: 1, revenue: 158000 };
+    const prev = { employers: 3, vacancies: 9, applications: 18, activeVacancies: 20, visitors: 44, topBuyers: 0, repeatBuyers: 0, revenue: 0 };
+    const r = renderNotification("system", { kind: "weekly_report", from: "2026-11-16", to: "2026-11-22", cur, prev }, uz, "uz");
+    expect(r.title).toBe("Haftalik raqamlar: 16-noyabr – 22-noyabr");
+    expect(r.body.split("\n")).toEqual([
+      "Yangi ish beruvchilar: 5 (oldingi hafta: 3)",
+      "Yangi vakansiyalar: 12 (oldingi hafta: 9)",
+      "Arizalar: 30 (oldingi hafta: 18)",
+      "Bir faol vakansiyaga arizalar: 1.5",
+      "Tashrifchilar: 54 (oldingi hafta: 44)",
+      "TOP sotib olganlar: 2 (oldingi hafta: 0)",
+      "Qayta to'laganlar: 1 (oldingi hafta: 0)",
+      "Tushum: 158 000 so'm (oldingi hafta: 0 so'm)",
+    ]);
+    // chegaraga yetgan tashrifchilar "+" bilan; o'tgan hafta yo'q bo'lsa — qavssiz
+    const capped = renderNotification("system", { kind: "weekly_report", from: "2026-11-16", to: "2026-11-22", cur: { ...cur, visitors: 50000, visitorsCapped: true } }, ru, "ru");
+    expect(capped.body).toContain("Посетители: 50 000+");
+    expect(capped.body).not.toContain("неделей ранее");
+  });
+
   it("system/ai_worker_alert: ish beruvchiga mos nomzod (telefonsiz), ru — ruscha nomlar", () => {
     const payload = {
       kind: "ai_worker_alert", name: "Ali V.", profession: "Oshpaz", profession_ru: "Повар",

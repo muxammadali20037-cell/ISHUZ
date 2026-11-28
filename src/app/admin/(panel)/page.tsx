@@ -13,6 +13,8 @@ import { listSettings } from "@/features/admin/queries/settings";
 import { getAiStatus } from "@/features/admin/queries/ai-status";
 import { QuickControls, type QuickControl } from "@/features/admin/components/quick-controls";
 import { AiStatusCard } from "@/features/admin/components/ai-status-card";
+import { WeeklyCard } from "@/features/admin/components/weekly-card";
+import { getWeeklyComparison } from "@/features/admin/weekly.server";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { t } = await getT();
@@ -25,7 +27,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
   if (!ctx.can("analytics.view")) return <Forbidden perm="analytics.view" />;
   const sp = await searchParams;
   const days = parseDays(sp, 30);
-  const [{ stats, error }, daily, counts, settings, ai] = await Promise.all([getAdminStats(), getDailyStats(days), getSidebarCounts(), listSettings(), getAiStatus()]);
+  const [{ stats, error }, daily, counts, settings, ai, weekly] = await Promise.all([getAdminStats(), getDailyStats(days), getSidebarCounts(), listSettings(), getAiStatus(), getWeeklyComparison()]);
   const totals = sumDaily(daily.rows);
 
   // Tezkor boshqaruv: eng kerakli sozlamalar oddiy tilda (qolganlari — Sozlamalar sahifasida)
@@ -58,6 +60,8 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
       <div className="mb-6 grid gap-4 lg:grid-cols-2">
         {quick.length ? <QuickControls items={quick} canManage={ctx.can("settings.manage")} /> : <QueryError message={settings.error} />}
         <AiStatusCard status={ai} canTest={ctx.can("settings.manage")} />
+        {/* haftalik raqamlar: o'tgan hafta va undan oldingisi (dushanba kuni xuddi shu — bildirishnoma/Telegram'da) */}
+        <WeeklyCard data={weekly.data} error={weekly.error} />
       </div>
       <QueryError message={error} />
       {stats ? (

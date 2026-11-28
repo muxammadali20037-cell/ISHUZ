@@ -182,5 +182,17 @@
     "alert_body": "{event} · daraja: {severity} · chora: {action}",
     "relinked_title": "Telegram almashtirildi",
     "relinked_body": "Hisobingiz yangi Telegram hisobiga ulandi. Bu siz bo'lmasangiz — qo'llab-quvvatlashga yozing."
+  },
+  "weekly": {
+    "title": "Haftalik raqamlar: {from} – {to}",
+    "employers": "Yangi ish beruvchilar",
+    "vacancies": "Yangi vakansiyalar",
+    "applications": "Arizalar",
+    "per_vacancy": "Bir faol vakansiyaga arizalar",
+    "visitors": "Tashrifchilar",
+    "top_buyers": "TOP sotib olganlar",
+    "repeat_buyers": "Qayta to'laganlar",
+    "revenue": "Tushum",
+    "prev": "oldingi hafta: {n}"
   }
 }

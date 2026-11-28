@@ -1128,5 +1128,14 @@
     "err_cta_pair": "The button needs both text and a link (or leave both empty)",
     "err_validation": "Check the fields: the link must start with / or https://",
     "err_video_upload": "The video didn't upload — check your connection and try again"
+  },
+  "weekly": {
+    "title": "Weekly numbers",
+    "hint": "Last week (Mon–Sun) and the week before. Sent every Monday at 09:00 as a notification (on the site and in Telegram).",
+    "col_metric": "Metric",
+    "col_week": "Last week",
+    "col_prev": "Week before",
+    "up": "up",
+    "down": "down"
   }
 }

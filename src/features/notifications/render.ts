@@ -1,12 +1,13 @@
 /**
  * Bildirishnoma matnini (sarlavha + tana + ikonka) type + payload dan yasaydi.
  * Sof funksiya: UI (client/server) va Telegram dispatcher ikkalasi ham shu yerdan foydalanadi.
- * Faqat `t` va `locale` ga bog'liq — kutubxonalarsiz (testlanadi).
+ * Faqat `t` va `locale` ga bog'liq (sana — @/lib/format orqali; testlanadi).
  */
 import type { TFunction } from "@/lib/i18n/translate";
 import type { Locale } from "@/lib/i18n/config";
 import type { Enums, Json } from "@/types/database.types";
 import { isoToTashkent } from "@/features/applications/tashkent-time";
+import { formatDate } from "@/lib/format";
 import { matchLevel } from "@/features/matching/level";
 
 export type NotificationType = Enums<"notification_type">;
@@ -69,16 +70,15 @@ function salaryText(t: TFunction, from: number | null, to: number | null): strin
   return "";
 }
 
-/** ISO sana → "3 oktabr" (Asia/Tashkent). Intl yo'q bo'lsa — ISO kun qismi. */
+/**
+ * ISO sana → "3-oktabr" / "3 октября" (Asia/Tashkent). date-fns tillari bilan: brauzerlarda o'zbekcha Intl oy nomlari yo'q
+ * (Chrome "M10 3" chiqarardi), shuning uchun Intl ishlatilmaydi.
+ */
 function dayText(iso: string, locale: Locale): string {
   if (!iso) return "";
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
-  try {
-    return new Intl.DateTimeFormat(locale === "ru" ? "ru-RU" : locale === "en" ? "en-US" : "uz-UZ", { timeZone: "Asia/Tashkent", day: "numeric", month: "long" }).format(d);
-  } catch {
-    return d.toISOString().slice(0, 10);
-  }
+  return formatDate(d, locale, "d MMMM");
 }
 
 /** Moslik darajasi matni ("Juda mos"); ilovadagi kabi foiz ko'rsatilmaydi */
@@ -96,6 +96,32 @@ function tEnum(t: TFunction, group: string, value: string): string {
   const key = `enums.${group}.${value}`;
   const out = t(key);
   return out === key ? value : out;
+}
+
+/** Haftalik raqamlar (adminlarga): har qatorda shu hafta va o'tgan hafta. Faqat sonlar — shaxsiy ma'lumot yo'q */
+function weeklyBody(t: TFunction, cur: PayloadRecord, prev: PayloadRecord): string {
+  const k = "notifications.weekly";
+  const line = (key: string, field: string, suffix = "") => {
+    const n = num(cur, field) ?? 0;
+    const was = num(prev, field);
+    const value = `${groupThousands(n)}${suffix}`;
+    // "+" (chegaraga yetgan tashrifchilar) faqat shu haftaga; pul birligi ikkala songa ham
+    const unit = suffix === "+" ? "" : suffix;
+    return was === null ? `${t(`${k}.${key}`)}: ${value}` : `${t(`${k}.${key}`)}: ${value} (${t(`${k}.prev`, { n: `${groupThousands(was)}${unit}` })})`;
+  };
+  const apps = num(cur, "applications") ?? 0;
+  const active = num(cur, "activeVacancies") ?? 0;
+  const perVacancy = active > 0 ? String(Math.round((apps / active) * 10) / 10) : "0";
+  return [
+    line("employers", "employers"),
+    line("vacancies", "vacancies"),
+    line("applications", "applications"),
+    `${t(`${k}.per_vacancy`)}: ${perVacancy}`,
+    line("visitors", "visitors", cur.visitorsCapped === true ? "+" : ""),
+    line("top_buyers", "topBuyers"),
+    line("repeat_buyers", "repeatBuyers"),
+    line("revenue", "revenue", ` ${t("notifications.salary.currency")}`),
+  ].join("\n");
 }
 
 /**
@@ -231,6 +257,9 @@ export function renderNotification(type: NotificationType, payload: Json | Paylo
           body: t("notifications.security.alert_body", { event: str(p, "event_type") || "—", severity: str(p, "severity") || "—", action: str(p, "action") || "—" }),
           icon: "system",
         };
+      }
+      if (str(p, "kind") === "weekly_report") {
+        return { title: t("notifications.weekly.title", { from: dayText(str(p, "from"), locale), to: dayText(str(p, "to"), locale) }), body: weeklyBody(t, asRecord(p.cur as Json), asRecord(p.prev as Json)), icon: "system" };
       }
       if (str(p, "kind") === "telegram_relinked") {
         return { title: t("notifications.security.relinked_title"), body: t("notifications.security.relinked_body"), icon: "system" };
