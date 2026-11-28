@@ -18,13 +18,14 @@ test.beforeAll(async () => {
   [{ value: promo }] = (await sql<{ value: unknown }>("select value from public.app_settings where key = 'billing_free_until'")) as [{ value: unknown }];
 });
 test.beforeEach(async () => {
-  await sql("update public.app_settings set value = 'true'::jsonb where key = 'listings_paid'");
+  // 0094: ishchi e'loni sukut bo'yicha bepul — bu fayl ikkalasi ham pullik rejimni sinaydi (to'lov oqimlari)
+  await sql("update public.app_settings set value = 'true'::jsonb where key in ('listings_paid', 'worker_listings_paid')");
   await sql("update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until'");
   await cleanup();
 });
 test.afterEach(async () => {
   await cleanup();
-  await sql("update public.app_settings set value = 'false'::jsonb where key in ('listings_paid', 'ai_alerts_paid')");
+  await sql("update public.app_settings set value = 'false'::jsonb where key in ('listings_paid', 'worker_listings_paid', 'ai_alerts_paid')");
   await sql("update public.app_settings set value = '0'::jsonb where key = 'wallet_bonus_percent'");
   await sql("update public.app_settings set value = $1::jsonb where key = 'billing_free_until'", [JSON.stringify(promo)]);
 });
@@ -235,4 +236,27 @@ test("mehmon: 'To'lovlarim' — kirishga, keyin shu sahifaga", async ({ page, co
   await asGuest(context);
   await page.goto("/billing");
   await page.waitForURL(/\/auth\?next=%2Fbilling/);
+});
+
+/**
+ * 0094 (ega, 2026-11-28): "ish beruvchi vakansiya joylash va ishchi raqamini ko'rish uchun to'laydi; ishchilar bepul".
+ * Vakansiya joylash pullik bo'lsa ham ishchi e'loni to'lovsiz joylanadi; tariflar sahifasida ham shunday ko'rinadi.
+ */
+test("vakansiya pullik, ishchi e'loni bepul: ishchi to'lovsiz joylaydi, tariflarda ishchi Oddiy — «Bepul»", async ({ page, context }) => {
+  await sql("update public.app_settings set value = 'false'::jsonb where key = 'worker_listings_paid'");
+  await loginAs(context, USERS.workerA);
+  await asMode(context, "worker");
+  await postWorkerListing(page);
+  await expect(page.getByRole("heading", { level: 1, name: "E'loningiz joylandi!" })).toBeVisible({ timeout: 30_000 });
+  await expect(page.getByText("Qidiruvda ko'rinyapti")).toBeVisible();
+  await expect(page.getByTestId("checkout")).toHaveCount(0);
+  const [w] = await sql<{ is_public: boolean }>("select is_public from public.worker_profiles where profile_id = $1", [USERS.workerA]);
+  expect(w!.is_public).toBe(true);
+  const [p] = await sql<{ n: number }>("select count(*)::int as n from public.payments where profile_id = $1", [USERS.workerA]);
+  expect(p!.n).toBe(0);
+
+  await page.goto("/pricing");
+  await expect(page.locator('[data-tariff="worker-basic"]')).toContainText("Bepul");
+  await expect(page.locator('[data-tariff="vacancy-basic"]')).not.toContainText("Bepul");
+  await expect(page.locator('[data-tariff="vacancy-basic"]')).toContainText("30 000 so'm");
 });

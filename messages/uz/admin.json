@@ -829,8 +829,8 @@
   "quick": {
     "title": "Tezkor boshqaruv",
     "subtitle": "Eng kerakli sozlamalar. O'zgarish darhol kuchga kiradi va auditga yoziladi.",
-    "listings_paid": "E'lon joylash pullik",
-    "listings_paid_hint": "O'chirsangiz — ishchi e'lonlari bepul joylanadi.",
+    "listings_paid": "Vakansiya joylash pullik",
+    "listings_paid_hint": "Faqat ish beruvchi vakansiyasi. Ishchi e'lonlari bepul qoladi.",
     "employer_check": "Ish beruvchini tasdiqlash majburiy",
     "employer_check_hint": "Yoqilgan bo'lsa — birinchi vakansiya admin tasdiqlaguncha ommaga chiqmaydi.",
     "paid": "Pullik",

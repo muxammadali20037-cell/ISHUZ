@@ -1,5 +1,21 @@
 # O'zgarishlar jurnali
 
+## 2026-11-28 · Ishchi e'loni bepul, vakansiya pullik (0094); Telegram testlari barqaror (`feat/workers-free-listings`)
+
+Ega qarori: "ish beruvchi e'lon joylash va ishchi raqamini ko'rish uchun to'laydi; TOP — xohlasa"; ishchilar bepul;
+birinchi vakansiya bepul; narxlar o'zgarmaydi (vakansiya 30 000, raqam ochish 5 000, Tezkor 49 000, Maksimal 99 000).
+
+- **Migratsiya 0094** (prod'ga — ega ruxsati bilan, `supabase/prod/pending.sql`): `worker_listings_paid()` =
+  `listings_paid()` VA `app_settings.worker_listings_paid` (sukut — false). Ishchi e'loniga tegishli joylar (trigger,
+  holat, narx so'rovi, to'lov qo'riqchisi, ommaviy tariflar) shu funksiyaga o'tdi; vakansiya — avvalgidek
+  `listings_paid()`. Hozir prod'da `listings_paid = false` — xatti-harakat o'zgarmaydi; to'lov yoqilganda ishchilar bepul qoladi.
+- Kabinet va «Tariflar» sahifasi ishchi va vakansiya bayrog'ini alohida o'qiydi (migratsiya hali yo'q bo'lsa — avvalgidek).
+  Admin: «Vakansiya joylash pullik» (ishchi e'lonlari bepul qoladi).
+- **Telegram testlari flaky'sining sababi topildi**: sahifa oqim bilan (streaming SSR) keladi — tayyor bo'lak avval
+  yashirin `<div hidden id="S:n">` da turadi, Playwright ikki nusxani sanaydi. `streamed()` yordamchisi — oqim tugashini
+  kutadi (telegram-fullscreen, telegram-startapp, tariffs). Foydalanuvchiga ko'rinadigan xato emas.
+- docs/PAYMENTS_LAUNCH.md — ega qarori bo'yicha narx modeli.
+
 ## 2026-11-28 · TOP sotib olish oynasi soddalashtirildi; Payme fiskal chek va ishga tushirish ro'yxati (`feat/top-purchase-simplify`)
 
 Ega: "o'zingga tegishlilarni bosqichma-bosqich davom ettir". Migratsiya yo'q.

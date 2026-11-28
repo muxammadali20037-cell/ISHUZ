@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, loginAs, sql } from "../support";
+import { USERS, asGuest, asMode, loginAs, sql, streamed } from "../support";
 
 /**
  * Tariflar (0080; ega, 2026-11-14: "tarif ko'tarilgan sari imkoniyatlar kengayib borsin, narxni baland qo'yma"):
@@ -174,9 +174,8 @@ test("Telegram Mini App ichida: 'TOP qilish' — narx va to'lov tugmalari yo'q, 
   await loginAs(context, USERS.employer);
   await asMode(context, "employer");
   await page.goto(`/employer/vacancies/${v!.id}`);
-  // Telegram muhitida sahifa gidratsiyadan keyin bir marta qayta chiziladi (server — brauzer, mijoz — Mini App): CI'da
-  // qisqa vaqt ikki nusxa ko'rindi — bitta qolishini kutamiz
-  await expect(page.locator("[data-boost]")).toHaveCount(1);
+  // oqim (streaming SSR) tugaguncha tayyor bo'lak yashirin nusxada ham turadi — support.ts/streamed
+  await streamed(page);
   await page.locator("[data-boost]").click();
   const dialog = page.getByRole("dialog", { name: "TOP qilish" });
   await expect(dialog.locator('[data-in-app-note="telegram"]')).toHaveText(

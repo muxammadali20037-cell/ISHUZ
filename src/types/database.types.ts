@@ -7043,6 +7043,7 @@ export type Database = {
         Args: Record<PropertyKey, never>;
         Returns: Json;
       };
+      worker_listings_paid: { Args: Record<PropertyKey, never>; Returns: boolean };
       worker_listing_quote: { Args: Record<PropertyKey, never>; Returns: Json };
       worker_promotion_mode: {
         Args: Record<PropertyKey, never>;

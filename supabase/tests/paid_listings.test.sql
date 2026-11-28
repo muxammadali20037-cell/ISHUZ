@@ -44,6 +44,8 @@ update public.app_settings set value = 'false'::jsonb where key in ('worker_phon
 update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until';
 -- aksiya testda doim faol bo'lsin (sanaga bog'liq bo'lmasin)
 update public.app_settings set value = to_jsonb((now() + interval '30 days')::text) where key = 'listing_discount_until';
+-- 0094: ishchi e'loni sukut bo'yicha bepul; bu fayl ishchi e'loni ham pullik bo'lgan rejimni sinaydi
+update public.app_settings set value = 'true'::jsonb where key = 'worker_listings_paid';
 select pg_temp.ok(public.listings_paid() and not public.billing_enabled() and not public.listing_free_trial(), 'e''lonlar pullik, bepul e''lon yo''q, TOP o''chiq');
 
 insert into auth.users (id, phone, phone_confirmed_at, raw_user_meta_data) values

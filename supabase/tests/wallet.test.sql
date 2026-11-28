@@ -38,7 +38,7 @@ $$;
 
 begin;
 update public.app_settings set value = 'false'::jsonb where key in ('worker_phone_required', 'moderation_enabled', 'vacancy_moderation_enabled', 'employer_verification_required', 'ai_alerts_paid');
-update public.app_settings set value = 'true'::jsonb where key = 'listings_paid';
+update public.app_settings set value = 'true'::jsonb where key in ('listings_paid', 'worker_listings_paid'); -- 0094: ishchi e'loni ham pullik rejim
 update public.app_settings set value = to_jsonb('2020-01-01T00:00:00Z'::text) where key = 'billing_free_until';
 update public.app_settings set value = to_jsonb((now() + interval '30 days')::text) where key = 'listing_discount_until';
 update public.app_settings set value = '10'::jsonb where key = 'wallet_bonus_percent';

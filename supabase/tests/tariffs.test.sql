@@ -127,7 +127,7 @@ update public.app_settings set value = 'false'::jsonb where key = 'tariffs_enabl
 select pg_temp.login('80000000-0000-0000-0000-00000000000e');
 select pg_temp.fails($$select public.wallet_pay('vacancy_publish', (select id from public.vacancies where title = 'T80-Oshpaz'), 'boost')$$, 'tariflar o''chiq — rad', 'billing_disabled');
 select pg_temp.superuser();
-update public.app_settings set value = 'true'::jsonb where key = 'listings_paid';
+update public.app_settings set value = 'true'::jsonb where key in ('listings_paid', 'worker_listings_paid'); -- 0094: ishchi e'loni ham pullik rejim
 select pg_temp.login('80000000-0000-0000-0000-00000000000e');
 insert into public.vacancies (owner_profile_id, title, category_id, region_id)
 select auth.uid(), 'T80-Haydovchi', c.id, r.id from public.categories c, public.regions r where c.slug = 'restaurant' and r.slug = 'tashkent_city';
