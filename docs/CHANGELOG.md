@@ -1,5 +1,15 @@
 # O'zgarishlar jurnali
 
+## 2026-11-28 · Kirill yozuvidagi maxfiylik siyosati to'ldirildi (`fix/oz-privacy-sync`)
+
+Frankfurt tayyorgarligi paytida topildi. Migratsiya yo'q.
+
+- Kirill (oz) maxfiylik siyosati lotindagidan orqada qolgan edi (2026-11-15): Google orqali kirish (ism va email),
+  OpenAI (e'lon rasmi) va «AI natijasi haqida xabar berish» bandlari yo'q edi, «Supabase» kirillga o'girilib ketgan.
+  Endi lotin matni bilan bir xil, sana — 2026-11-26.
+- Yangi test (`legal-sync.test.ts`): to'rt tilda sana, bo'limlar soni, ro'yxat bandlari soni va ma'lumot uzatiladigan
+  har bir xizmat nomi bir xil bo'lishi shart — bir tilga band qo'shilib, boshqasida unutilsa CI to'xtaydi.
+
 ## 2026-11-28 · Haftalik raqamlar hisoboti (`feat/weekly-report`)
 
 Reja, 3-qadam ("o'zingga tegishlilarni bosqichma-bosqich davom ettir"). Migratsiya yo'q.
