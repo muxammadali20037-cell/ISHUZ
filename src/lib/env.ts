@@ -75,6 +75,13 @@ const serverSchema = z.object({
   PAYME_MERCHANT_ID: z.string().optional(),
   PAYME_KEY: z.string().optional(),
   PAYME_TEST: z.string().optional(),
+  /**
+   * Fiskal chek (Payme CheckPerformTransaction → detail): IKPU (MXIK) kodi, qadoq kodi, QQS foizi — buxgalter beradi
+   * (tasnif.soliq.uz). Kod bo'lmasa detail yuborilmaydi (avvalgidek).
+   */
+  PAYME_FISCAL_CODE: z.string().optional(),
+  PAYME_FISCAL_PACKAGE_CODE: z.string().optional(),
+  PAYME_FISCAL_VAT: z.number().int().min(0).max(100).optional(),
   /** Click SHOP API */
   CLICK_SERVICE_ID: z.string().optional(),
   CLICK_MERCHANT_ID: z.string().optional(),
@@ -131,6 +138,10 @@ export function getServerEnv() {
     PAYME_MERCHANT_ID: process.env.PAYME_MERCHANT_ID || undefined,
     PAYME_KEY: process.env.PAYME_KEY || undefined,
     PAYME_TEST: process.env.PAYME_TEST || undefined,
+    // noto'g'ri formatdagi fiskal kod butun muhitni yiqitmasin — detail yuborilmaydi (avvalgidek)
+    PAYME_FISCAL_CODE: /^\d{17}$/.test(process.env.PAYME_FISCAL_CODE ?? "") ? process.env.PAYME_FISCAL_CODE : undefined,
+    PAYME_FISCAL_PACKAGE_CODE: /^\d{1,20}$/.test(process.env.PAYME_FISCAL_PACKAGE_CODE ?? "") ? process.env.PAYME_FISCAL_PACKAGE_CODE : undefined,
+    PAYME_FISCAL_VAT: /^\d{1,2}$/.test(process.env.PAYME_FISCAL_VAT ?? "") ? Number(process.env.PAYME_FISCAL_VAT) : undefined,
     CLICK_SERVICE_ID: process.env.CLICK_SERVICE_ID || undefined,
     CLICK_MERCHANT_ID: process.env.CLICK_MERCHANT_ID || undefined,
     CLICK_SECRET_KEY: process.env.CLICK_SECRET_KEY || undefined,

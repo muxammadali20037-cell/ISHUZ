@@ -93,7 +93,6 @@
   "discount": "{percent}% off your first listing — until {date}",
   "in_app_note": "This paid service can't be purchased in the app. Everything else in the app works as usual.",
   "checkout": {
-    "price_label": "Price",
     "term_days": "{days} days",
     "term_hours": "{hours} h",
     "per_day": "{amount} a day",
@@ -140,7 +139,8 @@
       "resubmit": "Not approved? Fix it and resubmit — no extra payment within {days} days"
     },
     "not_needed": "No payment needed right now — the service is active or free",
-    "contact_paid_toast": "Paid — the number is unlocked"
+    "contact_paid_toast": "Paid — the number is unlocked",
+    "total": "Total"
   },
   "wallet": {
     "title": "My payments",

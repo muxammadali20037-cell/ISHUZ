@@ -156,8 +156,24 @@ export function CheckoutPanel({
     });
   };
 
+  // Soddalashtirilgan oyna (ega: "saytda TOP sotishni soddalashtirish", 2026-11-28): chegirma — eng tepada bir qatorda;
+  // narx bir marta — tarif kartasida; to'lov tugmasi ustida "Jami" qatori (muddat, kuniga); katta "Narxi" bloki yo'q
+  const discountLine =
+    variant !== "compact" && discountPercent > 0 ? (
+      <p className="flex items-center gap-2 rounded-xl border border-warning/30 bg-warning-soft px-3 py-2 text-sm font-semibold text-warning" data-discount-line>
+        <span className="rounded-md bg-warning px-1.5 py-0.5 text-sm font-extrabold text-warning-foreground">−{discountPercent}%</span>
+        <span className="min-w-0">
+          {t("billing.discount", {
+            percent: discountPercent,
+            date: quote.discountUntil ? new Date(quote.discountUntil).toLocaleDateString(locale === "en" ? "en-GB" : "ru-RU", { timeZone: "Asia/Tashkent" }) : "",
+          })}
+        </span>
+      </p>
+    ) : null;
+
   return (
     <div className={cn("space-y-4", className)} data-testid="checkout">
+      {discountLine}
       {tiers.length > 1 ? (
         <fieldset data-tiers>
           <legend className="mb-2 text-base font-bold">{upgrade ? t("billing.tiers.upgrade_title") : t("billing.tiers.choose")}</legend>
@@ -206,33 +222,25 @@ export function CheckoutPanel({
               </li>
             ))}
           </ul>
-          <div className="rounded-2xl border border-border bg-card p-4">
-            <p className="text-sm font-medium text-muted-foreground">{t("billing.checkout.price_label")}</p>
-            <p className="flex flex-wrap items-baseline gap-x-2">
-              <span className="whitespace-nowrap text-3xl font-extrabold tracking-tight tabular" data-testid="checkout-price">
-                {money(price)}
-              </span>
-              {discountPercent > 0 ? <s className="whitespace-nowrap text-base text-muted-foreground tabular">{money(fullPrice)}</s> : null}
-            </p>
-            {term ? (
-              <p className="mt-1 text-base text-muted-foreground">
-                <span className="font-bold text-foreground">{term}</span>
-                {daily ? <> · {t("billing.checkout.per_day", { amount: money(daily) })}</> : null}
-              </p>
-            ) : null}
-          </div>
-          {discountPercent > 0 ? (
-            <p className="flex items-center gap-2 rounded-2xl border border-warning/30 bg-warning-soft px-4 py-3 text-sm font-semibold text-warning">
-              <span className="rounded-lg bg-warning px-2 py-0.5 text-base font-extrabold text-warning-foreground">−{discountPercent}%</span>
-              <span className="min-w-0">
-                {t("billing.discount", {
-                  percent: discountPercent,
-                  date: quote.discountUntil ? new Date(quote.discountUntil).toLocaleDateString(locale === "en" ? "en-GB" : "ru-RU", { timeZone: "Asia/Tashkent" }) : "",
-                })}
-              </span>
-            </p>
-          ) : null}
         </>
+      ) : null}
+
+      {variant !== "compact" ? (
+        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-t border-border pt-3" data-checkout-total>
+          <span className="text-base font-semibold">{t("billing.checkout.total")}</span>
+          <span className="flex flex-wrap items-baseline justify-end gap-x-2">
+            {discountPercent > 0 ? <s className="whitespace-nowrap text-sm text-muted-foreground tabular">{money(fullPrice)}</s> : null}
+            <span className="whitespace-nowrap text-2xl font-extrabold tracking-tight tabular" data-testid="checkout-price">
+              {money(price)}
+            </span>
+          </span>
+          {term ? (
+            <span className="w-full text-right text-sm text-muted-foreground">
+              {term}
+              {daily ? <> · {t("billing.checkout.per_day", { amount: money(daily) })}</> : null}
+            </span>
+          ) : null}
+        </div>
       ) : null}
 
       <div className="grid gap-2">
@@ -249,7 +257,8 @@ export function CheckoutPanel({
             </p>
             {providers.length ? <p className="pt-1 text-center text-sm font-medium text-muted-foreground">{t("billing.checkout.or_card")}</p> : null}
           </>
-        ) : wallet ? (
+        ) : wallet && wallet.balance > 0 ? (
+          // bo'sh hamyon haqida gapirilmaydi (hech qachon to'ldirmagan odamga ortiqcha qator) — faqat pul bor, lekin yetmasa
           <p className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-secondary px-3 py-2 text-sm">
             <span>{t("billing.checkout.balance_low", { amount: money(wallet.balance) })}</span>
             <Link href="/billing" className="font-semibold text-primary-ink underline-offset-4 hover:underline">

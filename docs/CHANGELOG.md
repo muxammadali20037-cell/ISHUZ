@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-28 · TOP sotib olish oynasi soddalashtirildi; Payme fiskal chek va ishga tushirish ro'yxati (`feat/top-purchase-simplify`)
+
+Ega: "o'zingga tegishlilarni bosqichma-bosqich davom ettir". Migratsiya yo'q.
+
+- **TOP oynasi** (3-bosqichdan qolgan "saytda TOP sotishni soddalashtirish"): chegirma — eng tepada bir qatorda; narx
+  bir marta — tarif kartasida; katta «Narxi» bloki o'rniga to'lov tugmalari ustida «Jami» qatori (muddat, kuniga);
+  bo'sh hamyon haqidagi «0 so'm — yetmaydi» qatori yo'q (pul bor, lekin yetmasa — ko'rinadi). Telefonda Payme va Click
+  tugmalari aylantirmasdan ko'rinadi.
+- **Payme fiskal chek** (5-bosqich tayyorgarligi): Vercel'da `PAYME_FISCAL_CODE` (IKPU, 17 raqam),
+  `PAYME_FISCAL_PACKAGE_CODE`, `PAYME_FISCAL_VAT` qo'yilsa — CheckPerformTransaction javobida `detail` (xizmat nomi,
+  narx tiyinda, IKPU, qadoq kodi, QQS). Noto'g'ri formatdagi kod muhitni yiqitmaydi — detail yuborilmaydi.
+  `SetFiscalData` metodi: tranzaksiya bo'lsa `success`, yo'q bo'lsa -32001.
+- **Sinovlar**: Payme JSON-RPC route testi (kalit, buzilgan JSON, noma'lum metod, parametrlar, detail, SetFiscalData);
+  SQL — takroriy bekor qilish, bekor qilinganni bajarish, sabab, noma'lum tranzaksiya, Click summa "50000.00",
+  noma'lum buyurtma.
+- **docs/PAYMENTS_LAUNCH.md** — ega olib keladigan kalitlar va kodlar, kabinet manzillari, sandbox, yoqish tartibi.
+
 ## 2026-11-28 · Frankfurtga ko'chirish tayyorgarligi: reja, avtomat va "texnik ishlar" rejimi (`feat/frankfurt-migration-prep`)
 
 Ega: "boshla keyingi bosqichni" — 4-bosqich (ZRU-1125: Hindiston "yetarli himoya" ro'yxatida yo'q, Germaniya bor).
