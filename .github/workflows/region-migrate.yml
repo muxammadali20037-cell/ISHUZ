@@ -1,0 +1,158 @@
+name: Region migration (Mumbai → Frankfurt)
+
+# 4-bosqich: Supabase bazasini Frankfurt (eu-central-1) loyihasiga ko'chirish. Faqat qo'lda ishga tushadi.
+# Batafsil reja va egasining qadamlari: docs/FRANKFURT_MIGRATION.md
+#
+#   rehearse — sinov: YANGI loyihaga sxema (migratsiyalar), ma'lumot, fayllar; eski sayt ishlayveradi. Natija — jadvallar
+#              soni va sxema barmoq izi solishtiruvi. Istalgancha takrorlash mumkin (yangi loyihaning ma'lumoti almashtiriladi).
+#   final    — sayt "texnik ishlar"da (MAINTENANCE_MODE=1) bo'lganda: yakuniy ma'lumot va fayllar; sonlar 1:1 mos bo'lishi shart.
+#
+# ESKI loyihada hech narsa o'zgarmaydi (faqat o'qiladi). YANGI loyihaning public va auth ma'lumoti har ishga tushishda
+# tozalanib, eski loyihadan qayta yoziladi — shuning uchun tasdiq sifatida yangi loyiha ref'i yoziladi va u eski bilan
+# bir xil bo'lsa ish to'xtaydi.
+#
+# Sirlar (GitHub → Settings → Secrets and variables → Actions; qiymatlar logga chiqmaydi):
+#   SUPABASE_DB_URL            — ESKI loyiha (Session pooler, parol bilan) — zaxira nusxa uchun allaqachon bor
+#   NEW_SUPABASE_DB_URL        — YANGI loyiha (Session pooler, parol bilan)
+#   OLD_SUPABASE_SERVICE_KEY   — eski loyiha service_role (secret) kaliti — fayllarni o'qish uchun
+#   NEW_SUPABASE_SERVICE_KEY   — yangi loyiha service_role (secret) kaliti — fayllarni yozish uchun
+#   CRON_SECRET                — Vercel'dagi CRON_SECRET bilan bir xil (pg_cron → sayt)
+# O'zgaruvchi (Variables): NEW_SUPABASE_URL — https://<yangi-ref>.supabase.co
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "rehearse — sinov (sayt ishlayveradi); final — yakuniy (sayt texnik ishlarda)"
+        type: choice
+        options: [rehearse, final]
+        default: rehearse
+      confirm:
+        description: "Tasdiq: YANGI loyiha ref'ini yozing (https://<ref>.supabase.co dagi <ref>)"
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: region-migrate
+  cancel-in-progress: false
+
+env:
+  OLD_REF: oquqqubmicldvreeqgsg
+  OLD_SUPABASE_URL: https://oquqqubmicldvreeqgsg.supabase.co
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OLD_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+      NEW_DB_URL: ${{ secrets.NEW_SUPABASE_DB_URL }}
+      OLD_SUPABASE_SERVICE_KEY: ${{ secrets.OLD_SUPABASE_SERVICE_KEY }}
+      NEW_SUPABASE_SERVICE_KEY: ${{ secrets.NEW_SUPABASE_SERVICE_KEY }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
+      NEW_SUPABASE_URL: ${{ vars.NEW_SUPABASE_URL }}
+      APP_URL: ${{ vars.APP_URL || 'https://ishuz.vercel.app' }}
+      MODE: ${{ inputs.mode }}
+      CONFIRM: ${{ inputs.confirm }}
+    steps:
+      - name: Sozlama va tasdiq
+        run: |
+          missing=""
+          for k in OLD_DB_URL NEW_DB_URL OLD_SUPABASE_SERVICE_KEY NEW_SUPABASE_SERVICE_KEY CRON_SECRET NEW_SUPABASE_URL; do
+            [ -n "${!k}" ] || missing="$missing $k"
+          done
+          if [ -n "$missing" ]; then echo "::error::Yetishmayapti:$missing (docs/FRANKFURT_MIGRATION.md §2)"; exit 1; fi
+          new_ref="$(printf '%s' "$NEW_SUPABASE_URL" | sed -E 's#^https://([a-z0-9]+)\.supabase\.co/?$#\1#')"
+          if [ "$new_ref" = "$NEW_SUPABASE_URL" ] || [ -z "$new_ref" ]; then echo "::error::NEW_SUPABASE_URL noto'g'ri"; exit 1; fi
+          if [ "$new_ref" = "$OLD_REF" ]; then echo "::error::Yangi loyiha eski bilan bir xil — to'xtatildi"; exit 1; fi
+          if [ "$CONFIRM" != "$new_ref" ]; then echo "::error::Tasdiq mos emas: yangi loyiha ref'ini aynan yozing"; exit 1; fi
+          case "$NEW_DB_URL" in *"$OLD_REF"*) echo "::error::NEW_SUPABASE_DB_URL eski loyihaga qaraydi — to'xtatildi"; exit 1;; esac
+          case "$NEW_DB_URL" in *"$new_ref"*) ;; *) echo "::error::NEW_SUPABASE_DB_URL yangi loyiha ($new_ref) ga qaramaydi"; exit 1;; esac
+          echo "NEW_REF=$new_ref" >> "$GITHUB_ENV"
+          echo "### Ko'chirish: $MODE → $new_ref" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: PostgreSQL 17 client va supabase-js
+        run: |
+          sudo install -d /usr/share/postgresql-common/pgdg
+          sudo curl -fsSL -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc https://www.postgresql.org/media/keys/ACCC4CF8.asc
+          echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" | sudo tee /etc/apt/sources.list.d/pgdg.list > /dev/null
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq postgresql-client-17
+          echo "/usr/lib/postgresql/17/bin" >> "$GITHUB_PATH"
+          npm install --no-save --ignore-scripts @supabase/supabase-js@2
+
+      - name: Eski bazadan nusxa (faqat o'qish)
+        run: |
+          mkdir -p mig
+          # public va auth ma'lumoti; seanslar va Supabase'ning ichki jadvallari kirmaydi (foydalanuvchilar qayta kiradi)
+          pg_dump "$OLD_DB_URL" --data-only --no-owner --no-privileges \
+            --schema=public --schema=auth \
+            --exclude-table-data='auth.schema_migrations' --exclude-table-data='auth.sessions' --exclude-table-data='auth.refresh_tokens' \
+            --exclude-table-data='auth.mfa_amr_claims' --exclude-table-data='auth.flow_state' --exclude-table-data='auth.one_time_tokens' \
+            --exclude-table-data='auth.audit_log_entries' --exclude-table-data='public.rate_limits' \
+            -f mig/data.sql
+          psql "$OLD_DB_URL" -At -f scripts/schema-fingerprint.sql | sort > mig/old.schema
+          echo "Nusxa: $(du -h mig/data.sql | cut -f1)" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Yangi bazada sxema (migratsiyalar)
+        run: |
+          has_schema="$(psql "$NEW_DB_URL" -At -c "select to_regclass('public.profiles') is not null")"
+          if [ "$has_schema" != "t" ]; then
+            # bo'sh loyiha: migratsiyalar tartib bilan (CI'dagi kabi) — sxema, RLS, storage siyosatlari, cron, bucket'lar
+            psql "$NEW_DB_URL" -v ON_ERROR_STOP=1 -q -c "create extension if not exists pg_cron; create extension if not exists pg_net with schema extensions;"
+            for f in supabase/migrations/*.sql; do echo "→ $f"; psql "$NEW_DB_URL" -v ON_ERROR_STOP=1 -q -f "$f"; done
+          else
+            echo "Sxema bor — migratsiyalar qayta qo'llanmaydi"
+          fi
+          psql "$NEW_DB_URL" -At -f scripts/schema-fingerprint.sql | sort > mig/new.schema
+          if ! diff -q mig/old.schema mig/new.schema > /dev/null; then
+            { echo "#### Sxema farqi (eski ↔ yangi)"; echo '```'; diff mig/old.schema mig/new.schema | head -80; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+            echo "::error::Sxema bir xil emas — ma'lumot yozilmadi. Farqni ko'ring (Summary)."
+            exit 1
+          fi
+          echo "Sxema: bir xil ✓" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Yangi bazaga ma'lumot (public va auth tozalanib qayta yoziladi)
+        run: |
+          {
+            echo "\\set ON_ERROR_STOP on"
+            echo "begin;"
+            echo "set local session_replication_role = replica;"
+            # faqat YANGI bazada: migratsiyalar qo'ygan ma'lumot va oldingi sinov o'rniga — eski bazaning aynan nusxasi
+            echo "do \$\$ declare r record; begin
+                    for r in select schemaname, tablename from pg_tables where schemaname = 'public' loop
+                      execute format('truncate table %I.%I cascade', r.schemaname, r.tablename);
+                    end loop;
+                    delete from auth.identities; delete from auth.users;
+                  end \$\$;"
+            echo "\\i mig/data.sql"
+            echo "commit;"
+          } > mig/load.sql
+          psql "$NEW_DB_URL" -v ON_ERROR_STOP=1 -q -f mig/load.sql
+
+      - name: Manzillar, vault va cron
+        run: |
+          # OLD_REF, NEW_REF, APP_URL, CRON_SECRET — muhitdan (\getenv); buyruq satrida sir yo'q
+          psql "$NEW_DB_URL" -v ON_ERROR_STOP=1 -q -f scripts/migrate/post-restore.sql
+          psql "$NEW_DB_URL" -At -c "select count(*) || ' ta cron vazifa' from cron.job" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Fayllar (Storage)
+        run: node scripts/migrate/storage-copy.mjs | tee mig/storage.txt
+
+      - name: Tekshiruv — jadvallar soni
+        run: |
+          psql "$OLD_DB_URL" -At -F '|' -f scripts/migrate/counts.sql > mig/old.counts
+          psql "$NEW_DB_URL" -At -F '|' -f scripts/migrate/counts.sql > mig/new.counts
+          { echo "#### Qatorlar soni"; echo '```'; diff mig/old.counts mig/new.counts && echo "Hammasi mos ✓"; echo '```'; } >> "$GITHUB_STEP_SUMMARY" || true
+          { echo "#### Fayllar"; echo '```'; tail -n 20 mig/storage.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          if [ "$MODE" = "final" ] && ! diff -q mig/old.counts mig/new.counts > /dev/null; then
+            echo "::error::Yakuniy ko'chirishda sonlar mos emas — Vercel kalitlarini ALMASHTIRMANG"; exit 1
+          fi
