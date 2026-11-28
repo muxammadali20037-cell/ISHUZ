@@ -128,6 +128,15 @@ select pg_temp.service();
 select public.payme_create('tx3', (extract(epoch from now()) * 1000)::bigint, (select j ->> 'order_no' from pay2), 5000000);
 select pg_temp.ok((select (public.payme_cancel('tx3', 3) -> 'result' ->> 'state') = '-1'), 'payme: to''lanmagan tranzaksiya bekor');
 select pg_temp.ok((select status = 'draft' from public.vacancies where title = 'V4'), 'bekor qilingan to''lov vakansiyani e''lon qilmaydi');
+-- Payme sandbox (test.paycom.uz) holatlari: takroriy bekor qilish, bekor qilinganni bajarish, sabab, noma'lum tranzaksiya
+select pg_temp.ok((select (public.payme_cancel('tx3', 3) -> 'result' ->> 'state') = '-1'), 'payme: takroriy Cancel idempotent (o''sha holat)');
+select pg_temp.ok((select public.payme_perform('tx3') -> 'error' ->> 'code') = '-31008', 'payme: bekor qilingan tranzaksiya bajarilmaydi');
+select pg_temp.ok((select (public.payme_check('tx3') -> 'result' ->> 'reason') = '3' and (public.payme_check('tx3') -> 'result' ->> 'cancel_time')::bigint > 0), 'payme: CheckTransaction sabab va bekor vaqti');
+select pg_temp.ok((select public.payme_check_perform((select j ->> 'order_no' from pay2), 5000000) -> 'error' ->> 'code') = '-31052', 'payme: bekor qilingan buyurtmaga qayta to''lov yo''q');
+select pg_temp.ok((select public.payme_perform('tx-none') -> 'error' ->> 'code' = '-31003'
+  and public.payme_cancel('tx-none', 1) -> 'error' ->> 'code' = '-31003'
+  and public.payme_check('tx-none') -> 'error' ->> 'code' = '-31003'), 'payme: noma''lum tranzaksiya — -31003');
+select pg_temp.ok((select public.payme_check_perform('abc', 100) -> 'error' ->> 'code') = '-31050', 'payme: buyurtma raqami raqam emas — -31050');
 
 -- ---------- 4. Click ----------
 select pg_temp.login('e7000000-0000-0000-0000-000000000001');
@@ -136,6 +145,8 @@ grant select on pay3 to public;
 select pg_temp.service();
 select pg_temp.ok((select (public.click_prepare(777, (select j ->> 'order_no' from pay3), 100, 0) ->> 'error') = '-2'), 'click: noto''g''ri summa');
 select pg_temp.ok((select (public.click_prepare(777, (select j ->> 'order_no' from pay3), 50000, 0) ->> 'error') = '0'), 'click: prepare');
+select pg_temp.ok((select (public.click_prepare(777, (select j ->> 'order_no' from pay3), 50000.00, 0) ->> 'error') = '0'), 'click: summa "50000.00" ko''rinishida ham mos (takroriy prepare)');
+select pg_temp.ok((select (public.click_prepare(778, '999999999', 50000, 0) ->> 'error') = '-5' and (public.click_prepare(778, 'abc', 50000, 0) ->> 'error') = '-5'), 'click: noma''lum buyurtma — -5');
 select pg_temp.ok((select (public.click_complete(888, (select j ->> 'order_no' from pay3), (select (j ->> 'order_no')::bigint from pay3), 50000, 0) ->> 'error') = '-6'), 'click: begona click_trans_id');
 select pg_temp.ok((select (public.click_complete(777, (select j ->> 'order_no' from pay3), (select (j ->> 'order_no')::bigint from pay3), 50000, 0) ->> 'error') = '0'), 'click: complete');
 select pg_temp.ok((select (public.click_complete(777, (select j ->> 'order_no' from pay3), (select (j ->> 'order_no')::bigint from pay3), 50000, 0) ->> 'error') = '-4'), 'click: takroriy complete — already paid');

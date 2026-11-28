@@ -93,7 +93,6 @@
   "discount": "Birinchi e'longa {percent}% chegirma — {date} gacha",
   "in_app_note": "Bu pullik xizmatni ilova ichida xarid qilib bo'lmaydi. Ilovaning qolgan barcha imkoniyatlari ishlayveradi.",
   "checkout": {
-    "price_label": "Narxi",
     "term_days": "{days} kun",
     "term_hours": "{hours} soat",
     "per_day": "kuniga {amount}",
@@ -140,7 +139,8 @@
       "resubmit": "Tekshiruvdan o'tmasa — tuzatib qayta yuborasiz, {days} kun ichida qayta to'lamaysiz"
     },
     "not_needed": "Hozir to'lov kerak emas — xizmat faol yoki bepul",
-    "contact_paid_toast": "To'landi — raqam ochildi"
+    "contact_paid_toast": "To'landi — raqam ochildi",
+    "total": "Jami"
   },
   "wallet": {
     "title": "To'lovlarim",

@@ -109,9 +109,11 @@ test("ishchi e'loni: to'lov paneli shu ekranda — foyda, narx, kunlik narx, ish
   await expect(checkout.locator("[data-tiers] [data-tier]")).toHaveCount(3);
   await expect(checkout.getByText("kuniga 300 so'm")).toBeVisible();
   await expect(checkout.getByText("Karta ma'lumotlari bizga kelmaydi — to'lov Payme yoki Click sahifasida")).toBeVisible();
-  // hamyon bo'sh — "Balansdan to'lash" yo'q, balans yetmasligi aytiladi
+  // hamyon bo'sh — "Balansdan to'lash" ham, "0 so'm yetmaydi" qatori ham yo'q (soddalashtirilgan oyna, 2026-11-28)
   await expect(checkout.getByRole("button", { name: /Balansdan to'lash/ })).toHaveCount(0);
-  await expect(checkout.getByText("Balansingiz: 0 so'm — bu xizmatga yetmaydi")).toBeVisible();
+  await expect(checkout.getByText(/Balansingiz: 0 so'm/)).toHaveCount(0);
+  // narx bir marta: tarif kartasida va "Jami" qatorida (katta "Narxi" bloki yo'q)
+  await expect(checkout.locator("[data-checkout-total]")).toContainText("Jami");
 
   await checkout.getByRole("button", { name: "Payme orqali to'lash" }).click();
   await page.waitForURL(/checkout\.test\.paycom\.uz/);
