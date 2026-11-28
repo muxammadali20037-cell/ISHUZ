@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { USERS, asGuest, asMode, sql } from "../support";
+import { USERS, asGuest, asMode, sql, streamed } from "../support";
 
 /**
  * Telegram birinchi o'rinda (ega, 2026-11-18): kanal postidagi tugma t.me/<bot>?startapp=… bilan Mini App'ni ochadi —
@@ -59,6 +59,7 @@ test("startapp=j_<slug> — ilova vakansiya sahifasida ochiladi", async ({ page 
 test("xavfli start_param — bosh sahifada qoladi", async ({ page }) => {
   await miniApp(page, "p_" + Buffer.from("//evil.example/x").toString("base64url"));
   await page.goto("/");
+  await streamed(page);
   // bosh sahifa — chat (2026-11-21)
   await expect(page.locator("main [data-start-chat]")).toBeVisible();
   await page.waitForTimeout(800);
@@ -72,6 +73,7 @@ test("kanal oynasi Mini App ichida: «Kanalga o'tish» — kanal Telegram'ning o
   await context.addCookies(keep);
   await miniApp(page, null);
   await page.goto("/");
+  await streamed(page);
   const prompt = page.locator("[data-channel-prompt]");
   await expect(prompt).toBeVisible({ timeout: 10_000 });
   await prompt.getByRole("button", { name: "Kanalga o'tish" }).click();

@@ -20,6 +20,8 @@ interface PublicTariffs {
   vacancy: Tier[];
   worker: Tier[];
   listingsPaid: boolean;
+  /** 0094: ishchi e'loni pullik (sukut — bepul) */
+  workerListingsPaid: boolean;
   tariffsEnabled: boolean;
   discountPercent: number;
   discountUntil: string | null;
@@ -41,6 +43,8 @@ async function loadTariffs(): Promise<PublicTariffs | null> {
     vacancy,
     worker,
     listingsPaid: d.listings_paid === true,
+    // 0094: ishchi e'loni alohida (sukut — bepul); eski bazada (bayroq yo'q) — avvalgidek listings_paid
+    workerListingsPaid: typeof d.worker_listings_paid === "boolean" ? d.worker_listings_paid : d.listings_paid === true,
     tariffsEnabled: d.tariffs_enabled !== false,
     discountPercent: discountActive ? Number(d.discount_percent) || 0 : 0,
     discountUntil: discountActive ? until : null,
@@ -70,7 +74,7 @@ export default async function PricingPage() {
   const column = (kind: "vacancy" | "worker", tiers: Tier[]) => (
     <ul className="grid gap-3 md:grid-cols-3">
       {tiers.map((x) => {
-        const free = x.plan === "basic" && !data?.listingsPaid;
+        const free = x.plan === "basic" && !(kind === "vacancy" ? data?.listingsPaid : data?.workerListingsPaid);
         const sale = !free && data && data.discountPercent > 0 ? Math.round((x.price * (100 - data.discountPercent)) / 100 / 100) * 100 : null;
         return (
           <li

@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { asGuest } from "../support";
+import { asGuest, streamed } from "../support";
 
 /**
  * Telegram Mini App haqiqiy ilova kabi: telefonda ochilganda butun ekranni egallaydi (Bot API 8.0 requestFullscreen),
@@ -67,6 +67,7 @@ test.describe("Telegram Mini App: to'liq ekran", () => {
     await asGuest(context);
     await miniApp(page, "android", "8.0");
     await page.goto("/");
+    await streamed(page);
     await expect(page.locator("html")).toHaveClass(/\btg-fullscreen\b/);
     const names = (await calls(page)).map((c) => c.name);
     expect(names).toEqual(expect.arrayContaining(["ready", "expand", "requestFullscreen", "disableVerticalSwipes"]));

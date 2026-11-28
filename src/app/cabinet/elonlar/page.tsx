@@ -87,7 +87,7 @@ export default async function MyListingsPage({ searchParams }: { searchParams: P
             {t(`easy.cabinet.empty_${bucket}`)}
           </p>
         ) : (
-          <MyListingsSection workers={shown.workers} vacancies={shown.vacancies} paid={mine.paid} masters={shown.masters} addMore={bucket === "active"} />
+          <MyListingsSection workers={shown.workers} vacancies={shown.vacancies} paid={mine.paid} workerPaid={mine.workerPaid} masters={shown.masters} addMore={bucket === "active"} />
         )}
 
         {none || (bucket === "active" && !shown.workers.length) ? (

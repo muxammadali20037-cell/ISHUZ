@@ -52,7 +52,13 @@ qaytarish (TOP'ni o'chirish, hamyondan yechish) — kerak bo'lsa alohida ish.
 ## 5. Yoqish (ega ruxsati bilan)
 
 1. Vercel Production: Payme (va tayyor bo'lsa Click) kalitlari, fiskal kodlar, `BILLING_ENABLED=true` → Redeploy.
-2. Admin → Tezkor boshqaruv: «To'lov» yoqiladi (`billing_enabled`). E'lon joylash bepul qoladi (`listings_paid=false`),
-   raqam ochish bepul (`contact_unlock_paid=false`) — sotiladi faqat TOP (Tezkor/Maksimal) va hamyon.
+2. Narx modeli — **ega qarori (2026-11-28)**: ish beruvchi to'laydi, ishchi bepul.
+   - vakansiya joylash — pullik: `listings_paid = true` (Oddiy 30 000 so'm / 10 kun);
+   - ish beruvchining **birinchi vakansiyasi bepul**: `listing_free_trial = true`;
+   - ishchi raqamini ochish — pullik: `contact_unlock_paid = true` (5 000 so'm);
+   - TOP (Tezkor 49 000, Maksimal 99 000) — ixtiyoriy, xohlagan ish beruvchi oladi;
+   - ishchi (ish izlovchi) e'loni — **bepul**: `worker_listings_paid = false` (0094, sukut);
+   - birinchi to'lovga 50% chegirma — 2027-yil 1-yanvargacha (ega: "1-yanvarda tugasin").
+   Admin → Tezkor boshqaruv: «To'lov» (`billing_enabled`), «Vakansiya joylash pullik», «Raqam ochish pullik».
 3. Ega bitta haqiqiy TOP xaridi qiladi: e'lon TOP'da, Admin → To'lovlar hisobotida ko'rinadi, Payme'da chek bor.
 4. Birinchi hafta: Admin → To'lovlar har kuni; `get_runtime_errors` (Vercel) — `[payme]` / `[click]` xatolari.

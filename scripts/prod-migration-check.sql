@@ -29,7 +29,8 @@ from (values
   ('0090', 'kanalga usta e''lonlari (channel_posts: master)', exists (select 1 from pg_constraint where conrelid = 'public.channel_posts'::regclass and conname = 'channel_posts_entity_type_check' and pg_get_constraintdef(oid) like '%master%')),
   ('0091', 'e''lon rasmi: adminlarga shaxsiy chegara yo''q', exists (select 1 from pg_proc where proname = 'claim_listing_image' and pg_get_functiondef(oid) like '%admin_users%')),
   ('0092', 'AI natijasiga shikoyat (report_target: ai_content)', exists (select 1 from pg_enum e join pg_type t on t.oid = e.enumtypid where t.typname = 'report_target' and e.enumlabel = 'ai_content')),
-  ('0093', 'kasb rasmi: foydalanuvchi va admin navbati (claim_profession_image_by)', to_regprocedure('public.claim_profession_image_by(uuid, uuid, text, text, boolean, boolean)') is not null)
+  ('0093', 'kasb rasmi: foydalanuvchi va admin navbati (claim_profession_image_by)', to_regprocedure('public.claim_profession_image_by(uuid, uuid, text, text, boolean, boolean)') is not null),
+  ('0094', 'ishchi e''loni bepul, vakansiya pullik (worker_listings_paid)', to_regprocedure('public.worker_listings_paid()') is not null)
 ) as m(migration, tekshiruv, bor)
 order by m.migration;
 

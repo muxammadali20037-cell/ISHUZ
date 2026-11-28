@@ -67,13 +67,17 @@ export async function MyListingsSection({
   workers,
   vacancies,
   paid,
+  workerPaid = paid,
   masters,
   addMore = false,
 }: {
   /** 0086: o'zi haqidagi e'lonlar — bir nechta bo'lishi mumkin (asosiysi birinchi) */
   workers: MyWorkerListing[];
   vacancies: MyVacancy[];
+  /** vakansiya joylash pullik */
   paid: boolean;
+  /** ishchi e'loni pullik (0094; sukut — bepul) */
+  workerPaid?: boolean;
   /** usta e'lonlari — faqat "E'lonlarim" sahifasida */
   masters?: MyMasterListing[];
   /** "Yana e'lon joylash" (ega, 2026-11-20: "10 ta, 100 ta e'lon joylasin") — "E'lonlarim" sahifasida */
@@ -103,7 +107,7 @@ export async function MyListingsSection({
               </TitleLink>
               <StatusPill size="sm" tone={stateTone(worker.moderation.state)}>
                 {worker.moderation.state === "listed"
-                  ? worker.listedUntil && paid
+                  ? worker.listedUntil && workerPaid
                     ? t("easy.cabinet.status.listed_until", { date: formatDate(worker.listedUntil, locale) })
                     : t("easy.cabinet.status.listed")
                   : ["moderation_pending", "review", "rejected", "payment_required", "phone_required"].includes(worker.moderation.state)

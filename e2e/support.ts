@@ -66,6 +66,16 @@ export async function draftKeys(page: Page): Promise<string[]> {
   return page.evaluate(() => Object.keys(localStorage).filter((k) => k.startsWith("ib_draft:")));
 }
 
+/**
+ * Sahifa oqim bilan (streaming SSR) keladi: tayyor bo'lgan bo'lak avval yashirin <div hidden id="S:n"> ichida tushadi, so'ng
+ * React skripti uni joyiga qo'yadi. Shu oraliqda (sekin CI mashinasida uzoqroq) bir xil element ikki nusxada turadi va
+ * Playwright'ning qat'iy lokatorlari "2 elements" deb yiqiladi — foydalanuvchiga ko'rinmaydi (yashirin nusxa). Oqim tugashini
+ * kutamiz (2026-11-28: telegram-fullscreen, telegram-startapp, tariffs flaky'larining sababi).
+ */
+export async function streamed(page: Page) {
+  await page.waitForFunction(() => !document.querySelector('div[hidden][id^="S:"]'));
+}
+
 /** Forma serverda darhol chiziladi, lekin qurilmadagi qoralama o'qilguncha (inert, aria-busy) bosilmaydi — foydalanuvchi kabi kutamiz */
 export async function formReady(page: Page) {
   await expect(page.locator('[aria-busy="true"][inert]')).toHaveCount(0);

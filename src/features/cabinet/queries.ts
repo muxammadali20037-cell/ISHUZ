@@ -70,10 +70,10 @@ export async function getMyListings(
   session: SessionContext,
   /** vacancies: false — faqat o'zi haqidagi e'lon (ish beruvchi "E'lonlarim"ida vakansiyalar o'z ro'yxatida) */
   opts: { vacancies?: boolean } = {},
-): Promise<{ workers: MyWorkerListing[]; vacancies: MyVacancy[]; paid: boolean }> {
+): Promise<{ workers: MyWorkerListing[]; vacancies: MyVacancy[]; paid: boolean; workerPaid: boolean }> {
   const supabase = await createClient();
   const withVacancies = opts.vacancies !== false;
-  const [workerRes, vacRes, paidRes, statesRes] = await Promise.all([
+  const [workerRes, vacRes, paidRes, statesRes, workerPaidRes] = await Promise.all([
     // 0086 (ega, 2026-11-20: "10 ta, 100 ta e'lon joylasin"): barcha o'z ishchi e'lonlari — asosiysi birinchi
     session.workerId
       ? supabase
@@ -95,6 +95,8 @@ export async function getMyListings(
       : Promise.resolve({ data: [], error: null }),
     supabase.rpc("listings_paid"),
     supabase.rpc("my_listing_states"),
+    // 0094: ishchi e'loni alohida (sukut — bepul); migratsiya hali yo'q bo'lsa — avvalgidek listings_paid
+    supabase.rpc("worker_listings_paid"),
   ]);
   const states = new Map((statesRes.data ?? []).map((r) => [`${r.entity}:${r.id}`, toListingStateInfo(r.info)]));
   // arizalar soni — ish beruvchining asosiy keyingi amali (RLS: faqat o'z vakansiyalarining arizalari)
@@ -122,10 +124,11 @@ export async function getMyListings(
   if (workerRes.error) console.error("[cabinet] worker", workerRes.error.message);
   if (vacRes.error) console.error("[cabinet] vacancies", vacRes.error.message);
   const paid = paidRes.data !== false;
+  const workerPaid = workerPaidRes.error ? paid : workerPaidRes.data === true;
   const withPhone = new Set((listingPhoneRes.data ?? []).map((r) => r.worker_id));
   const accountPhonePublic = !!(ownContactRes.data?.phone && ownContactRes.data.phone_visibility === "everyone");
   const workers: MyWorkerListing[] = (workerRes.data ?? []).map((w) => {
-    const listed = w.is_public && w.status !== "not_looking" && (!paid || (!!w.listed_until && new Date(w.listed_until) > new Date()));
+    const listed = w.is_public && w.status !== "not_looking" && (!workerPaid || (!!w.listed_until && new Date(w.listed_until) > new Date()));
     const region = w.regions as MyWorkerListing["regionName"] & { slug: string } | null;
     return {
       id: w.id,
@@ -135,7 +138,7 @@ export async function getMyListings(
       regionName: region,
       districtId: w.district_id,
       districtName: w.districts as MyWorkerListing["districtName"],
-      status: listed ? "listed" : w.status === "not_looking" ? "stopped" : paid ? "payment_required" : "stopped",
+      status: listed ? "listed" : w.status === "not_looking" ? "stopped" : workerPaid ? "payment_required" : "stopped",
       listedUntil: w.listed_until,
       moderation: states.get(`worker:${w.id}`) ?? toListingStateInfo({ state: listed ? "listed" : "saved" }),
       // so'rov xatosida eslatma ko'rsatilmaydi (yolg'on ogohlantirish bo'lmasin)
@@ -161,5 +164,5 @@ export async function getMyListings(
       phoneHidden: hiddenVacancyPhones.has(v.id),
     };
   });
-  return { workers, vacancies, paid };
+  return { workers, vacancies, paid, workerPaid };
 }
