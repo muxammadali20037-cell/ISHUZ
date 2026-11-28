@@ -1128,5 +1128,14 @@
     "err_cta_pair": "Tugma uchun matn ham, havola ham kerak (yoki ikkalasini bo'sh qoldiring)",
     "err_validation": "Maydonlarni tekshiring: havola / bilan yoki https:// bilan boshlansin",
     "err_video_upload": "Video yuklanmadi — internetni tekshirib, qayta urinib ko'ring"
+  },
+  "weekly": {
+    "title": "Haftalik raqamlar",
+    "hint": "O'tgan hafta (dushanba–yakshanba) va undan oldingi hafta. Har dushanba 09:00 da xabar bo'lib keladi (saytda va Telegram'da).",
+    "col_metric": "Ko'rsatkich",
+    "col_week": "O'tgan hafta",
+    "col_prev": "Undan oldin",
+    "up": "o'sdi",
+    "down": "kamaydi"
   }
 }

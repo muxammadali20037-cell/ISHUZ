@@ -1,5 +1,22 @@
 # O'zgarishlar jurnali
 
+## 2026-11-28 · Haftalik raqamlar hisoboti (`feat/weekly-report`)
+
+Reja, 3-qadam ("o'zingga tegishlilarni bosqichma-bosqich davom ettir"). Migratsiya yo'q.
+
+- **Admin bosh sahifasi** — «Haftalik raqamlar» kartasi: o'tgan hafta (dushanba–yakshanba, Toshkent) va undan oldingi hafta
+  yonma-yon: yangi ish beruvchilar, yangi vakansiyalar, arizalar, bir faol vakansiyaga arizalar, tashrifchilar,
+  TOP sotib olganlar, qayta to'laganlar, sof tushum (Payme/Click; hamyondan to'lov ichki — kirmaydi; qaytarilgani ayriladi).
+  O'sish/kamayish — strelka bilan.
+- **Har dushanba 09:00 (Toshkent)** — Vercel Cron (`vercel.json`, `0 4 * * 1`) `/api/cron/weekly-report` ni chaqiradi:
+  har faol admin'ga (super_admin, admin yoki «analytics.view»; bloklanmagan) bitta bildirishnoma — saytda va Telegram'da
+  (bildirishnoma navbati orqali). Takrorlanmaydi (admin + hafta kaliti). Faqat sonlar, shaxsiy ma'lumot yo'q.
+  Himoya — `CRON_SECRET` (Vercel'da bor); qo'lda sinash: `?force=1`.
+- Bazadan o'qish sahifalab (PostgREST bir so'rovda 1000 qator beradi; prod'da haftasiga ~1 600 hodisa).
+- Tuzatildi: bildirishnomalardagi sana brauzerda «M11 16» bo'lib chiqardi (Chrome'da o'zbekcha oy nomlari yo'q) —
+  endi «16-noyabr» (vakansiya muddati tugayotgani haqidagi xabarda ham).
+- docs/FRANKFURT_MIGRATION.md — ko'chirishda `vercel.json` hududi `bom1` → `fra1`.
+
 ## 2026-11-28 · Ishchi e'loni bepul, vakansiya pullik (0094); Telegram testlari barqaror (`feat/workers-free-listings`)
 
 Ega qarori: "ish beruvchi e'lon joylash va ishchi raqamini ko'rish uchun to'laydi; TOP — xohlasa"; ishchilar bepul;

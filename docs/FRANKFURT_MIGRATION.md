@@ -60,6 +60,9 @@ kirish (telefon/Telegram/Google), vakansiya, ishchi e'loni, rasm, admin panel.
 2. Actions → Region migration → `mode = final`. Sonlar 1:1 mos bo'lmasa ish xato bilan tugaydi — keyingi qadamga o'tilmaydi.
 3. Vercel'da uchta kalitni yangi loyihanikiga almashtiring: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
    `SUPABASE_SERVICE_ROLE_KEY`; `MAINTENANCE_MODE` ni o'chiring → Redeploy.
+   Shu bilan birga (Claude, alohida PR): `vercel.json` da `"regions": ["bom1"]` → `["fra1"]` — sayt funksiyalari bazaga
+   yaqin ishlaydi (Mumbai–Frankfurt orasida har so'rovga ~120 ms yo'qolmaydi). PR ko'chirishdan oldin tayyor turadi,
+   kalitlar almashgach birlashtiriladi.
 4. Tekshiruv (Claude): sayt ochiladi, kirish, e'lonlar, rasmlar, admin, cron (`/api/cron/*` ishlayapti), xatolar yo'q.
 5. GitHub sirida `SUPABASE_DB_URL` ni yangi loyihanikiga almashtiring (kunlik zaxira endi Frankfurt'dan).
 

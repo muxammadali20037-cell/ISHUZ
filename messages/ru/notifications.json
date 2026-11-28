@@ -182,5 +182,17 @@
     "alert_body": "{event} · уровень: {severity} · мера: {action}",
     "relinked_title": "Telegram изменён",
     "relinked_body": "Ваш аккаунт привязан к новому Telegram. Если это были не вы — напишите в поддержку."
+  },
+  "weekly": {
+    "title": "Итоги недели: {from} – {to}",
+    "employers": "Новые работодатели",
+    "vacancies": "Новые вакансии",
+    "applications": "Отклики",
+    "per_vacancy": "Откликов на одну активную вакансию",
+    "visitors": "Посетители",
+    "top_buyers": "Купили TOP",
+    "repeat_buyers": "Платили повторно",
+    "revenue": "Выручка",
+    "prev": "неделей ранее: {n}"
   }
 }

@@ -182,5 +182,17 @@
     "alert_body": "{event} · даража: {severity} · чора: {action}",
     "relinked_title": "Telegram алмаштирилди",
     "relinked_body": "Ҳисобингиз янги Telegram ҳисобига уланди. Бу сиз бўлмасангиз — қўллаб-қувватлашга ёзинг."
+  },
+  "weekly": {
+    "title": "Ҳафталик рақамлар: {from} – {to}",
+    "employers": "Янги иш берувчилар",
+    "vacancies": "Янги вакансиялар",
+    "applications": "Аризалар",
+    "per_vacancy": "Бир фаол вакансияга аризалар",
+    "visitors": "Ташрифчилар",
+    "top_buyers": "TOP сотиб олганлар",
+    "repeat_buyers": "Қайта тўлаганлар",
+    "revenue": "Тушум",
+    "prev": "олдинги ҳафта: {n}"
   }
 }

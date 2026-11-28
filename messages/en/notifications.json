@@ -182,5 +182,17 @@
     "alert_body": "{event} · severity: {severity} · action: {action}",
     "relinked_title": "Telegram changed",
     "relinked_body": "Your account was linked to a new Telegram. If this wasn't you, contact support."
+  },
+  "weekly": {
+    "title": "Weekly numbers: {from} – {to}",
+    "employers": "New employers",
+    "vacancies": "New vacancies",
+    "applications": "Applications",
+    "per_vacancy": "Applications per active vacancy",
+    "visitors": "Visitors",
+    "top_buyers": "TOP buyers",
+    "repeat_buyers": "Repeat buyers",
+    "revenue": "Revenue",
+    "prev": "week before: {n}"
   }
 }
