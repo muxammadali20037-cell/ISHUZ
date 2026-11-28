@@ -5,7 +5,7 @@
 Ega qarori: "ish beruvchi e'lon joylash va ishchi raqamini ko'rish uchun to'laydi; TOP — xohlasa"; ishchilar bepul;
 birinchi vakansiya bepul; narxlar o'zgarmaydi (vakansiya 30 000, raqam ochish 5 000, Tezkor 49 000, Maksimal 99 000).
 
-- **Migratsiya 0094** (prod'ga — ega ruxsati bilan, `supabase/prod/pending.sql`): `worker_listings_paid()` =
+- **Migratsiya 0094** (ega ruxsati bilan prod'da qo'llandi va tekshirildi, 2026-11-28; `APPLIED_UNTIL = 94`): `worker_listings_paid()` =
   `listings_paid()` VA `app_settings.worker_listings_paid` (sukut — false). Ishchi e'loniga tegishli joylar (trigger,
   holat, narx so'rovi, to'lov qo'riqchisi, ommaviy tariflar) shu funksiyaga o'tdi; vakansiya — avvalgidek
   `listings_paid()`. Hozir prod'da `listings_paid = false` — xatti-harakat o'zgarmaydi; to'lov yoqilganda ishchilar bepul qoladi.
